@@ -772,7 +772,7 @@
   </div>
 
 <mt:if name="id">
-<div class="text-right delete-action mt-4 d-none d-md-block">
+<div class="text-end delete-action mt-4 d-none d-md-block">
   <a
      href="javascript:void(0)"
      mt:command="do-remove-items"
@@ -818,10 +818,10 @@
 <div id="category-field-wrapper"<mt:unless name="disp_prefs_show_category"> style="display: none;"</mt:unless>>
 <mt:if name="object_type" eq="entry">
   <mt:setvarblock name="header_action">
-  <a href="javascript:void(0)" class="float-right category-toggle-link toggle-link" id="open-category-selector1" mt:command="open-category-selector" mt:close-el="close-category-selector1" title="<__trans phrase="Add category">">
+  <a href="javascript:void(0)" class="float-end category-toggle-link toggle-link" id="open-category-selector1" mt:command="open-category-selector" mt:close-el="close-category-selector1" title="<__trans phrase="Add category">">
     <__trans phrase="edit"/>
   </a>
-  <a href="javascript:void(0)" class="float-right category-toggle-link toggle-link" style="display: none;" mt:command="close-category-selector" id="close-category-selector1">
+  <a href="javascript:void(0)" class="float-end category-toggle-link toggle-link" style="display: none;" mt:command="close-category-selector" id="close-category-selector1">
     <__trans phrase="close">
   </a>
   </mt:setvarblock>
@@ -910,7 +910,7 @@
   <mtapp:widget
      id="asset_container"
      label="$widget_label">
-    <div class="text-right asset-list-header mb-2">
+    <div class="text-end asset-list-header mb-2">
       <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open d-inline-block" data-mt-modal-large>
         <mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add Entry Asset">">
         <__trans phrase="Add">

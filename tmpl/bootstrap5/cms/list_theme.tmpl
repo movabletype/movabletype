@@ -64,11 +64,11 @@
   </div>
   <div class="col-10 theme-meta">
 
-    <div class="float-right">
+    <div class="float-end">
     <mt:unless name="current">
       <mt:if name="errors">
       <mtapp:svgicon id="ic_stop" title="failed" color="danger" size="sm">
-      <span class="text-muted mr-2 alert-error icon-left icon-error"><__trans phrase="Failed"></span>
+      <span class="text-muted me-2 alert-error icon-left icon-error"><__trans phrase="Failed"></span>
       </mt:if>
       <mt:if name="warnings">
       <mtapp:svgicon id="ic_error" title="warning" color="warning" size="sm">
@@ -141,7 +141,7 @@
     </mt:if>
   </mt:unless>
 
-    <div class="float-right theme-toggle-button">
+    <div class="float-end theme-toggle-button">
       <a href="#theme-<mt:var name="id" escape="html">-details" data-toggle="collapse" aria-expanded="false" aria-controls="theme-<mt:var name="id" escape="html">">
         <mtapp:svgicon id="ic_collapse" title="toggle_detail" color="secondary">
       </a>
@@ -179,7 +179,7 @@
   <mt:unless name="current">
     <mt:if name="errors">
     <div id="theme-<mt:var name="id">-errors" class="tab-pane theme-errors theme-info">
-      <h4 class="ml-3"><__trans phrase="Theme Errors"></h4>
+      <h4 class="ms-3"><__trans phrase="Theme Errors"></h4>
       <mtapp:statusmsg
          id="saved-added"
          class="error mx-3"
@@ -199,7 +199,7 @@
     </mt:if>
     <mt:if name="warnings">
     <div id="theme-<mt:var name="id">-warnings" class="tab-pane theme-warnings theme-info">
-      <h4 class="ml-3"><__trans phrase="Theme Warnings"></h4>
+      <h4 class="ms-3"><__trans phrase="Theme Warnings"></h4>
       <mtapp:statusmsg
          id="saved-added"
          class="alert mx-3"
@@ -220,7 +220,7 @@
   </mt:unless>
   <mt:if name="info">
     <div id="theme-<mt:var name="id">-info" class="tab-pane theme-info">
-      <h4 class="ml-3"><__trans phrase="Theme Information"></h4>
+      <h4 class="ms-3"><__trans phrase="Theme Information"></h4>
       <ul>
       <mt:loop name="info">
         <li><mt:var name="__value__"></li>

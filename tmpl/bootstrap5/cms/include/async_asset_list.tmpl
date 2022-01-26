@@ -2,9 +2,9 @@
 <mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
 
 <mt:unless name="filter" eq="userpic">
-<div class="float-md-left mr-4 mb-3">
+<div class="float-md-left me-4 mb-3">
   <form action="" method="get" id="modal-type-filter" class="form-inline">
-    <span class="mr-3"><__trans phrase="Asset Type: "></span>
+    <span class="me-3"><__trans phrase="Asset Type: "></span>
     <select name="asset-class" id="asset-class" class="custom-select form-control w-50">
       <option value="">
         <__trans phrase="All Types">
@@ -28,7 +28,7 @@
         <__trans phrase="Search">
       </span>
     </button>
-    <a href="javascript:void(0)" class="search-reset hidden ml-4" style="display: none;"><__trans phrase="Reset"></a>
+    <a href="javascript:void(0)" class="search-reset hidden ms-4" style="display: none;"><__trans phrase="Reset"></a>
   </form>
 </div>
 </mt:unless>
@@ -59,7 +59,7 @@
             </th>
             <th class="head primary string" scope="col">
               <span class="col-label"><__trans phrase="label"></span>
-              <span id="page-status" class="float-right d-md-none"></span>
+              <span id="page-status" class="float-end d-md-none"></span>
             </th>
           </thead>
 </mt:unless>
@@ -133,10 +133,10 @@ function toggleClassOfPaginationContainer() {
   var $pageItems = $paginationContainer.find('.pagination__mobile .page-item');
   if (jQuery(window).width() < 400 && $pageItems.length >= 7) {
     $paginationContainer.addClass('w-100');
-    $pageItems.addClass('mr-auto');
+    $pageItems.addClass('me-auto');
   } else {
     $paginationContainer.removeClass('w-100');
-    $pageItems.removeClass('mr-auto');
+    $pageItems.removeClass('me-auto');
   }
 }
 
@@ -420,7 +420,7 @@ function renderPaginationForMobile(pager) {
 }
 
 function generateMobilePageLink(page, setMrAuto, current) {
-  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+  var mrAutoClass = setMrAuto ? ' me-auto' : '';
   if (current) {
     return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
   } else {
@@ -429,7 +429,7 @@ function generateMobilePageLink(page, setMrAuto, current) {
 }
 
 function generateMobilePageLinkTriangle(page, setMrAuto, next) {
-  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+  var mrAutoClass = setMrAuto ? ' me-auto' : '';
   var iconId = next ? 'ic_tri-right' : 'ic_tri-left';
   return '<li class="page-item' + mrAutoClass + '"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + page + '"><svg role="img" class="mt-icon--inverse mt-icon--sm"><title>next</title><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
 }

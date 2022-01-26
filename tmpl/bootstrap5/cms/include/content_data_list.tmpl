@@ -43,7 +43,7 @@
             </th>
             <th class="head string" scope="col">
               <span class="col-label d-none d-md-inline"><__trans phrase="Data"></span>
-              <span id="page-status" class="float-right d-md-none"></span>
+              <span id="page-status" class="float-end d-md-none"></span>
             </th>
           </thead>
 </mt:unless>
@@ -66,7 +66,7 @@
               <td class="content-data-author d-none d-md-table-cell">
                 <mt:var name="author_name" escape="html">
               </td>
-              <td class="content-data-data text-right text-md-left">
+              <td class="content-data-data text-end text-md-left">
                 <a class="d-inline-block" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
                   <mtapp:svgicon title="Collapse" color="secondary" id="ic_collapse">
                 </a>
@@ -135,10 +135,10 @@ function toggleClassOfPaginationContainer() {
   var $pageItems = $paginationContainer.find('.pagination__mobile .page-item');
   if (jQuery(window).width() < 400 && $pageItems.length >= 7) {
     $paginationContainer.addClass('w-100');
-    $pageItems.addClass('mr-auto');
+    $pageItems.addClass('me-auto');
   } else {
     $paginationContainer.removeClass('w-100');
-    $pageItems.removeClass('mr-auto');
+    $pageItems.removeClass('me-auto');
   }
 }
 
@@ -394,7 +394,7 @@ function renderPaginationForMobile(pager) {
 }
 
 function generateMobilePageLink(page, setMrAuto, current) {
-  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+  var mrAutoClass = setMrAuto ? ' me-auto' : '';
   if (current) {
     return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
   } else {
@@ -403,7 +403,7 @@ function generateMobilePageLink(page, setMrAuto, current) {
 }
 
 function generateMobilePageLinkTriangle(page, setMrAuto, next) {
-  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+  var mrAutoClass = setMrAuto ? ' me-auto' : '';
   var iconId = next ? 'ic_tri-right' : 'ic_tri-left';
   return '<li class="page-item' + mrAutoClass + '"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + page + '"><svg role="img" class="mt-icon--inverse mt-icon--sm"><title>next</title><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
 }
