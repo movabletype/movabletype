@@ -10,7 +10,7 @@
         <__trans phrase="All Types">
       </option>
 <mt:loop name="class_filter_loop">
-      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>>
+      <option value="<mt:var name="key" escape="html">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>>
         <mt:var name="label">
       </option>
 </mt:loop>
@@ -19,7 +19,7 @@
 </div>
 <div>
   <form action="" method="get" id="modal-search" class="form-inline">
-    <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
+    <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="" placeholder="<__trans phrase="Search">" />
     <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').trigger('click'); return false;">
       <mtapp:svgicon id="ic_search" title="Search">
     </a>
@@ -93,7 +93,7 @@
               </td>
               <td class="asset-label primary">
     <mt:if name="has_thumbnail">
-                <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name" escape="html"$>">
+                <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="html" escape="js">');" title="<$mt:var name="file_name" escape="html"$>">
                   <$mt:var name="label" escape="html"$>
                 </a>
                 <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview"></div>
@@ -160,6 +160,9 @@ function loadAssetList(offset) {
 </mt:if>
 <mt:if name="blog_id">
       blog_id: <mt:var name="blog_id" escape="html">,
+</mt:if>
+<mt:if name="content_field_id">
+      content_field_id: '<mt:var name="content_field_id" escape="html">',
 </mt:if>
       dialog_view: 1,
 <mt:if name="upload_mode">
@@ -285,6 +288,8 @@ function renderPagination(pager) {
 
   if (page - 2 >= 1) {
     $pagination.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
+  }
+  if (page - 3 >= 1) {
     $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
   }
 
@@ -300,8 +305,10 @@ function renderPagination(pager) {
     $pagination.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
   }
 
-  if (page + 2 <= maxPage) {
+  if (page + 3 <= maxPage) {
     $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
+  }
+  if (page + 2 <= maxPage) {
     $pagination.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
   }
 

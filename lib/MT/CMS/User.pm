@@ -203,6 +203,12 @@ sub edit {
 sub edit_role {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+        saved   => [qw/MAYBE_STRING/],
+    }) or return;
+
     return $app->return_to_dashboard( redirect => 1 )
         if $app->param('blog_id');
 
@@ -373,6 +379,13 @@ sub save_role {
     $app->validate_magic() or return;
     $app->can_do('save_role') or return $app->permission_denied();
 
+    $app->validate_param({
+        description => [qw/MAYBE_STRING/],
+        id          => [qw/ID/],
+        name        => [qw/MAYBE_STRING/],
+        permission  => [qw/MAYBE_STRING MULTI/],
+    }) or return;
+
     my $id    = $app->param('id');
     my @perms = $app->multi_param('permission');
     my $role;
@@ -425,6 +438,13 @@ sub disable {
 
 sub set_object_status {
     my ( $app, $new_status ) = @_;
+
+    $app->validate_param({
+        _type         => [qw/OBJTYPE/],
+        all_selected  => [qw/MAYBE_STRING/],
+        id            => [qw/ID MULTI/],
+        is_power_edit => [qw/MAYBE_STRING/],
+    }) or return;
 
     $app->validate_magic() or return;
     return $app->permission_denied()
@@ -510,6 +530,12 @@ sub set_object_status {
 sub unlock {
     my ($app) = @_;
 
+    $app->validate_param({
+        all_selected  => [qw/MAYBE_STRING/],
+        id            => [qw/ID MULTI/],
+        is_power_edit => [qw/MAYBE_STRING/],
+    }) or return;
+
     require MT::Lockout;
 
     $app->validate_magic() or return;
@@ -542,6 +568,13 @@ sub unlock {
 
 sub recover_lockout {
     my $app     = shift;
+
+    $app->validate_param({
+        return_args => [qw/MAYBE_STRING/],
+        token       => [qw/MAYBE_STRING/],
+        user_id     => [qw/ID/],
+    }) or return;
+
     my $user_id = $app->param('user_id');
     my $token   = $app->param('token');
 
@@ -730,6 +763,20 @@ sub save_cfg_system_users {
     return $app->permission_denied()
         unless $app->user->is_superuser();
 
+    $app->validate_param({
+        combo_letter_number         => [qw/MAYBE_STRING/],
+        combo_upper_lower           => [qw/MAYBE_STRING/],
+        default_language            => [qw/MAYBE_STRING/],
+        default_time_zone           => [qw/MAYBE_STRING/],
+        default_user_tag_delimiter  => [qw/MAYBE_STRING/],
+        minimum_length              => [qw/MAYBE_STRING/],
+        new_user_default_website_id => [qw/ID/],
+        new_user_theme_id           => [qw/MAYBE_STRING/],
+        notify_user_id              => [qw/IDS/],
+        registration                => [qw/MAYBE_STRING/],
+        require_special_characters  => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $theme_id = $app->param('new_user_theme_id') || '';
     if ($theme_id) {
         require MT::Theme;
@@ -814,6 +861,12 @@ sub save_cfg_system_users {
 sub remove_user_assoc {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        all_selected => [qw/MAYBE_STRING/],
+        blog_id      => [qw/ID/],
+        id           => [qw/ID MULTI/],
+    }) or return;
 
     my $user = $app->user;
     return $app->permission_denied()
@@ -1180,7 +1233,6 @@ PERMCHECK: {
         return $app->permission_denied();
     }
 
-    my $type = $app->param('_type') || '';
     my ( $user, $role );
     if ( $author_id && $author_id ne 'PSEUDO' ) {
         $user = MT::Author->load($author_id);
@@ -1287,29 +1339,16 @@ PERMCHECK: {
         $param->{object_loop} = \@new_object_loop;
     };
 
-    # Only show active users who are not commenters.
-    my $terms = {};
-    if ( $type && ( $type eq 'author' ) ) {
-        $terms->{status} = MT::Author::ACTIVE();
-        $terms->{type}   = MT::Author::AUTHOR();
-    }
-    if ( $type && ( $type eq 'site' ) ) {
-        $terms->{class} = [ 'website', 'blog' ];
-    }
+    my $type = $app->param('_type') || '';  # user, author, group
 
-    my $group = MT->registry( 'object_types', 'group' );
-    my $has_group = $group ? 1 : 0;
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
             panel_type   => $type,
             list_noncron => 1,
             panel_multi  => 1,
-            has_group    => $has_group ? 1 : 0,
+            has_group    => 1,
         };
-        if (   $has_group
-            && $type eq 'author'
-            && !$app->param('link_filter') )
-        {
+        if ($type eq 'user') {
             my $author_terms = {
                 status => MT::Author::ACTIVE(),
                 type   => MT::Author::AUTHOR()
@@ -1333,6 +1372,15 @@ PERMCHECK: {
             );
         }
         else {
+            my $terms = {};
+            if ($type eq 'author') {
+                $terms->{status} = MT::Author::ACTIVE();
+                $terms->{type}   = MT::Author::AUTHOR();
+            }
+            if ($type eq 'group') {
+                require MT::Group;
+                $terms->{status} = MT::Group::ACTIVE();
+            }
             $app->listing(
                 {   terms    => $terms,
                     args     => { sort => 'name' },
@@ -1431,7 +1479,7 @@ PERMCHECK: {
         $params->{blog_id}      = $blog_id;
         $params->{dialog_title} = $app->translate("Grant Permissions");
         $params->{panel_loop}   = [];
-        $params->{has_group}    = $has_group ? 1 : 0;
+        $params->{has_group}    = 1;
 
         for ( my $i = 0; $i <= $#panels; $i++ ) {
             my $source       = $panels[$i];
@@ -1463,7 +1511,7 @@ PERMCHECK: {
                 $terms->{class} = 'website';
             }
 
-            if ( $has_group && $source eq 'author' ) {
+            if ( $source eq 'author' ) {
                 $panel_params->{panel_title}
                     = $app->translate("Select Groups And Users");
                 $panel_params->{items_prompt}
@@ -1530,6 +1578,9 @@ PERMCHECK: {
 sub dialog_select_assoc_type {
     my $app = shift;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my $blog_id   = $app->param('blog_id');
     my $this_user = $app->user;
 PERMCHECK: {
@@ -1556,6 +1607,11 @@ PERMCHECK: {
 sub remove_userpic {
     my $app = shift;
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        user_id => [qw/ID/],
+    }) or return;
+
     my $user_id = $app->param('user_id');
     my $user    = $app->model('author')->load($user_id)
         or return;

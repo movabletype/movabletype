@@ -25,7 +25,9 @@ function smarty_function_mtentriescount($args, &$ctx) {
         }
     
         $lastn = $ctx->stash('_entries_lastn');
-        if ($lastn && $lastn <= count($entries))
+        if (!isset($entries))
+            $count = 0;
+        elseif ($lastn && $lastn <= count($entries))
             $count = $lastn;
         else
             $count = count($entries);

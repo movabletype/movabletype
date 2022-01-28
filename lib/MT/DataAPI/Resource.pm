@@ -73,7 +73,11 @@ sub core_resources {
             {   version          => 3,
                 fields           => "${pkg}v3::Blog::fields",
                 updatable_fields => "${pkg}v3::Blog::updatable_fields",
-            }
+            },
+            {   version          => 4,
+                fields           => "${pkg}v4::Blog::fields",
+                updatable_fields => "${pkg}v4::Blog::updatable_fields",
+            },
         ],
         'website' => [
             {   version          => 1,
@@ -87,7 +91,11 @@ sub core_resources {
             {   version          => 3,
                 fields           => "${pkg}v3::Website::fields",
                 updatable_fields => "${pkg}v3::Website::updatable_fields",
-            }
+            },
+            {   version          => 4,
+                fields           => "${pkg}v4::Website::fields",
+                updatable_fields => "${pkg}v4::Website::updatable_fields",
+            },
         ],
         'asset' => [
             {   version          => 1,

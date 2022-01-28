@@ -217,7 +217,7 @@ sub _send_mt_smtp {
             $auth = 1;
         }
     }
-    my $do_ssl = ( $ssl || $tls ) ? $mgr->SMTPAuth : undef;
+    my $do_ssl = ( $ssl || $tls ) ? $mgr->SMTPAuth : '';
     my $ssl_verify_mode
         = $do_ssl
         ? ( ( $mgr->SSLVerifyNone || $mgr->SMTPSSLVerifyNone ) ? 0 : 1 )
@@ -251,8 +251,9 @@ sub _send_mt_smtp {
         Port    => $port,
         Timeout => $mgr->SMTPTimeout,
         Hello   => $localhost,
+        doSSL   => $do_ssl,
         (   $do_ssl
-            ? ( doSSL           => $do_ssl,
+            ? (
                 SSL_verify_mode => $ssl_verify_mode,
                 SSL_version => MT->config->SSLVersion
                         || MT->config->SMTPSSLVersion
@@ -309,26 +310,14 @@ sub _send_mt_smtp {
     # Set sender header if smtp user id is valid email
     $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
 
-    # Setup headers
-    my $hdr;
-    foreach my $k ( keys %$hdrs ) {
-        next if ( $k =~ /^(To|Bcc|Cc)$/ );
-        $hdr .= "$k: " . $hdrs->{$k} . "\r\n";
-    }
+    $class->_dedupe_headers($hdrs);
 
-    # Sending mail
-    $smtp->mail( $hdrs->{From} );
+    # Sending mail (XXX: better to use sender as ->mail only takes a scalar?)
+    $smtp->mail( ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From} );
 
-    foreach my $h (qw( To Bcc Cc )) {
-        if ( defined $hdrs->{$h} ) {
-            my $addr = $hdrs->{$h};
-            $addr = [$addr] unless 'ARRAY' eq ref $addr;
-            foreach my $a (@$addr) {
-                $smtp->recipient($a);
-            }
-            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" if $h ne 'Bcc';
-        }
-    }
+    my ($hdr, @recipients) = $class->_render_headers($hdrs, 'hide_bcc');
+
+    $smtp->recipient($_) for @recipients;
 
     my $_check_smtp_err;
     {
@@ -356,6 +345,64 @@ sub _send_mt_smtp {
         return $class->error($@);
     }
     1;
+}
+
+sub _lc {
+    my $field = shift;
+    my $lc_field = lc $field;
+    $lc_field =~ s/\-/_/g;
+    $lc_field;
+}
+
+sub _dedupe_headers {
+    my ($class, $hdrs) = @_;
+
+    # dedupe for SendGrid (cf. CLOUD-73)
+    my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
+    my %canonical_map  = map {_lc($_) => $_} @unique_headers;
+    for my $k (sort {$a cmp $b} keys %$hdrs) {
+        my $lc_k    = _lc($k);
+        my $canon_k = $canonical_map{$lc_k};
+        if ($canon_k && $canon_k ne $k) {
+            if ($canon_k =~ /^(?:From|To|Cc|Bcc|Reply-To)$/) {
+                my $addr = delete $hdrs->{$k};
+                my @addrs = ref $hdrs->{$canon_k} eq 'ARRAY' ? @{$hdrs->{$canon_k}} :
+                    defined $hdrs->{$canon_k} && $hdrs->{$canon_k} ne '' ? ($hdrs->{$canon_k}) : ();
+                push @addrs, ref $addr eq 'ARRAY' ? @$addr : $addr;
+                my %seen;
+                $hdrs->{$canon_k} = [grep {!$seen{$_}++} @addrs];
+            } else {
+                $hdrs->{$canon_k} = delete $hdrs->{$k};
+            }
+        }
+    }
+}
+
+sub _render_headers {
+    my ($class, $hdrs, $hide_bcc) = @_;
+
+    # Setup headers
+    my $hdr;
+    foreach my $k ( keys %$hdrs ) {
+        next if ( $k =~ /^(To|Bcc|Cc)$/ );
+        my $value = $hdrs->{$k};
+        if (ref $value eq 'ARRAY') {   # From, Reply-To
+            $hdr .= "$k: " . join( ",\r\n ", @$value ) . "\r\n";
+        } else {
+            $hdr .= "$k: " . $value . "\r\n";
+        }
+    }
+
+    my @recipients;
+    foreach my $h (qw( To Bcc Cc )) {
+        if ( defined $hdrs->{$h} ) {
+            my $addr = $hdrs->{$h};
+            $addr = [$addr] unless 'ARRAY' eq ref $addr;
+            push @recipients, @$addr;
+            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" unless $hide_bcc && $h eq 'Bcc';
+        }
+    }
+    return wantarray ? ($hdr, @recipients) : $hdr;
 }
 
 my @Sendmail
@@ -386,13 +433,13 @@ sub _send_mt_sendmail {
             or return $class->error(
             MT->translate( "Exec of sendmail failed: [_1]", "$!" ) );
     }
-    for my $key ( keys %$hdrs ) {
-        my @arr
-            = ref( $hdrs->{$key} ) eq 'ARRAY'
-            ? @{ $hdrs->{$key} }
-            : ( $hdrs->{$key} );
-        print $MAIL map "$key: $_\n", @arr;
-    }
+
+    $class->_dedupe_headers($hdrs);
+
+    my $hdr = $class->_render_headers($hdrs);
+    $hdr  =~ s{\r\n}{\n}g;
+
+    print $MAIL $hdr;
     print $MAIL "\n";
     print $MAIL $body;
     close $MAIL;

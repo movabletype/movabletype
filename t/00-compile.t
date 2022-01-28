@@ -123,6 +123,7 @@ use_ok('MT::DefaultTemplates');
 use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
+use_ok('MT::ParamValidator');
 
 # MT7
 use_ok('MT::App::Search::ContentData');
@@ -187,11 +188,13 @@ use_ok('MT::DataAPI::Endpoint::v4::Publish');
 use_ok('MT::DataAPI::Endpoint::v4::Search');
 use_ok('MT::DataAPI::Endpoint::v4::Template');
 use_ok('MT::DataAPI::Endpoint::v4::TemplateMap');
+use_ok('MT::DataAPI::Resource::v4::Blog');
 use_ok('MT::DataAPI::Resource::v4::CategorySet');
 use_ok('MT::DataAPI::Resource::v4::ContentData');
 use_ok('MT::DataAPI::Resource::v4::ContentField');
 use_ok('MT::DataAPI::Resource::v4::ContentType');
 use_ok('MT::DataAPI::Resource::v4::Template');
+use_ok('MT::DataAPI::Resource::v4::Website');
 use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
@@ -252,6 +255,9 @@ use_ok('MT::ListProperty');
 
 use_ok('MT::Util');
 use_ok('MT::Util::Archive');
+use_ok('MT::Util::Archive::BinTgz');
+use_ok('MT::Util::Archive::BinZip');
+use_ok('MT::Util::Archive::TempFile');
 SKIP: {
     if ( eval { require Archive::Tar } ) {
         use_ok('MT::Util::Archive::Tgz');

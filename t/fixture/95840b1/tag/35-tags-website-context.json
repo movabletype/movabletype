@@ -54,6 +54,52 @@
          ]
       ]
    },
+   "mt_asset_meta" : {
+      "cols" : [
+         "asset_meta_asset_id",
+         "asset_meta_type",
+         "asset_meta_vblob",
+         "asset_meta_vchar",
+         "asset_meta_vchar_idx",
+         "asset_meta_vclob",
+         "asset_meta_vdatetime",
+         "asset_meta_vdatetime_idx",
+         "asset_meta_vfloat",
+         "asset_meta_vfloat_idx",
+         "asset_meta_vinteger",
+         "asset_meta_vinteger_idx"
+      ],
+      "rows" : [
+         [
+            1,
+            "image_height",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            25,
+            null
+         ],
+         [
+            1,
+            "image_width",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            128,
+            null
+         ]
+      ]
+   },
    "mt_association" : {
       "cols" : [
          "association_author_id",
@@ -175,6 +221,52 @@
             null,
             1,
             "http://localhost/~guest/",
+            null
+         ]
+      ]
+   },
+   "mt_author_meta" : {
+      "cols" : [
+         "author_meta_author_id",
+         "author_meta_type",
+         "author_meta_vblob",
+         "author_meta_vchar",
+         "author_meta_vchar_idx",
+         "author_meta_vclob",
+         "author_meta_vdatetime",
+         "author_meta_vdatetime_idx",
+         "author_meta_vfloat",
+         "author_meta_vfloat_idx",
+         "author_meta_vinteger",
+         "author_meta_vinteger_idx"
+      ],
+      "rows" : [
+         [
+            1,
+            "favorite_sites",
+            "BIN:SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+         ],
+         [
+            1,
+            "favorite_websites",
+            "BIN:SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
             null
          ]
       ]
@@ -728,7 +820,7 @@
       ],
       "rows" : [
          [
-            "AllowComments 1\nCommenterRegistration Allow=1\nDataAPIDisableSite 0\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0050\nStaticFilePath ./mt-static\n",
+            "DataAPIDisableSite 0\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0052\n",
             1
          ]
       ]
@@ -994,9 +1086,9 @@
          [
             null,
             null,
-            "tag:localhost,2021:/first_website//2.8",
+            "tag:localhost,2022:/first_website//2.8",
             1,
-            "2021-06-09 03:11:34",
+            "2022-01-21 00:11:42",
             "blog_entry_1",
             2,
             null,
@@ -1021,7 +1113,7 @@
             "Blog Entry 1",
             null,
             null,
-            202123
+            202203
          ]
       ]
    },
@@ -2521,13 +2613,13 @@
       ],
       "rows" : [
          [
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u000bmagic_token-\u0000\u0000\u0000(50d71ce399c806360fce6d02be0ba49349b72feb\u0000\u0000\u0000\bremember-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tauthor_id-\u0000\u0000\u0000\u00011",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u000bmagic_token-\u0000\u0000\u0000(68ddee805f4132795a37e193efd943b53dc5ad2d\u0000\u0000\u0000\bremember-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005start-\u0000\u0000\u0000\n1642723898\u0000\u0000\u0000\tauthor_id-\u0000\u0000\u0000\u00011",
             null,
             null,
-            "0f50ebf520423557c6412cb30e95f8d91a6ca099",
+            "fad11a3bbce798ec684fd5fe65fdd0b168fb3f14",
             "US",
             "1",
-            1623208289
+            1642723898
          ]
       ]
    },
@@ -4147,5 +4239,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0050; formattedtext 1.00; tinymce 1"
+   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0052; formattedtext 1.00; tinymce 1"
 }

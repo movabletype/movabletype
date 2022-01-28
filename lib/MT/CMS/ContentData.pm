@@ -23,6 +23,7 @@ use MT::Session;
 use MT::Template;
 use MT::TemplateMap;
 use MT::Util;
+use MT::Util::Log;
 
 sub edit {
     my ( $app, $param ) = @_;
@@ -30,6 +31,36 @@ sub edit {
     my $user = $app->user;
     my $cfg  = $app->config;
     my $data;
+
+    $app->validate_param({
+        _recover              => [qw/MAYBE_STRING/],
+        authored_on_date      => [qw/MAYBE_STRING/],
+        authored_on_day       => [qw/MAYBE_STRING/],
+        authored_on_hour      => [qw/MAYBE_STRING/],
+        authored_on_minute    => [qw/MAYBE_STRING/],
+        authored_on_month     => [qw/MAYBE_STRING/],
+        authored_on_second    => [qw/MAYBE_STRING/],
+        authored_on_time      => [qw/MAYBE_STRING/],
+        authored_on_year      => [qw/MAYBE_STRING/],
+        content_type_id       => [qw/ID/],
+        data_label            => [qw/MAYBE_STRING/],
+        id                    => [qw/ID/],
+        identifier            => [qw/MAYBE_STRING/],
+        mobile_view           => [qw/MAYBE_STRING/],
+        no_snapshot           => [qw/MAYBE_STRING/],
+        r                     => [qw/MAYBE_STRING/],
+        reedit                => [qw/MAYBE_STRING/],
+        serialized_data       => [qw/MAYBE_STRING/],
+        status                => [qw/MAYBE_STRING/],
+        unpublished_on_date   => [qw/MAYBE_STRING/],
+        unpublished_on_day    => [qw/MAYBE_STRING/],
+        unpublished_on_hour   => [qw/MAYBE_STRING/],
+        unpublished_on_minute => [qw/MAYBE_STRING/],
+        unpublished_on_month  => [qw/MAYBE_STRING/],
+        unpublished_on_second => [qw/MAYBE_STRING/],
+        unpublished_on_time   => [qw/MAYBE_STRING/],
+        unpublished_on_year   => [qw/MAYBE_STRING/],
+    }) or return;
 
     unless ($blog) {
         return $app->return_to_dashboard( redirect => 1 );
@@ -461,6 +492,38 @@ sub edit {
 
 sub save {
     my ($app) = @_;
+
+    $app->validate_param({
+        _autosave             => [qw/MAYBE_STRING/],
+        authored_on_date      => [qw/MAYBE_STRING/],
+        authored_on_day       => [qw/MAYBE_STRING/],
+        authored_on_hour      => [qw/MAYBE_STRING/],
+        authored_on_minute    => [qw/MAYBE_STRING/],
+        authored_on_month     => [qw/MAYBE_STRING/],
+        authored_on_second    => [qw/MAYBE_STRING/],
+        authored_on_time      => [qw/MAYBE_STRING/],
+        authored_on_year      => [qw/MAYBE_STRING/],
+        blog_id               => [qw/ID MULTI/],     # FIXME: after uploading an image
+        content_type_id       => [qw/ID/],
+        data_label            => [qw/MAYBE_STRING/],
+        from_preview          => [qw/MAYBE_STRING/],
+        id                    => [qw/ID/],
+        identifier            => [qw/MAYBE_STRING/],
+        mobile_view           => [qw/MAYBE_STRING/],
+        return_args           => [qw/MAYBE_STRING/],
+        scheduled             => [qw/MAYBE_STRING/],
+        serialized_data       => [qw/MAYBE_STRING/],
+        status                => [qw/MAYBE_STRING/],
+        unpublished_on_date   => [qw/MAYBE_STRING/],
+        unpublished_on_day    => [qw/MAYBE_STRING/],
+        unpublished_on_hour   => [qw/MAYBE_STRING/],
+        unpublished_on_minute => [qw/MAYBE_STRING/],
+        unpublished_on_month  => [qw/MAYBE_STRING/],
+        unpublished_on_second => [qw/MAYBE_STRING/],
+        unpublished_on_time   => [qw/MAYBE_STRING/],
+        unpublished_on_year   => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $blog  = $app->blog;
     my $cfg   = $app->config;
     my $param = {};
@@ -921,6 +984,14 @@ sub save {
 sub delete {
     my $app = shift;
     return unless $app->validate_magic;
+
+    $app->validate_param({
+        all_selected    => [qw/MAYBE_STRING/],
+        blog_id         => [qw/ID/],
+        content_type_id => [qw/ID/],
+        id              => [qw/ID MULTI/],
+        type            => [qw/WORD/],
+    }) or return;
 
     my $blog;
     if ( my $blog_id = $app->param('blog_id') ) {
@@ -1883,6 +1954,11 @@ sub _build_content_data_preview {
 
 sub publish_content_data {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     _update_content_data_status(
         $app,
         MT::ContentStatus::RELEASE(),
@@ -1892,6 +1968,11 @@ sub publish_content_data {
 
 sub draft_content_data {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     _update_content_data_status( $app, MT::ContentStatus::HOLD(),
         $app->multi_param('id') );
 }

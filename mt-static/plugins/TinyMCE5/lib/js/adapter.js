@@ -37,7 +37,6 @@
   
             language: $('html').attr('lang'),
             menubar: false,
-            branding: false,
             forced_root_block: 'p',
             resize: true,
             icons: 'mt',

@@ -15,6 +15,10 @@ sub view_text {
     my $app  = shift;
     my $user = $app->user;
 
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     my $formatted_text
         = MT->model('formatted_text')->load( scalar $app->param('id') )
         or return $app->error( $app->translate('Cannot load boilerplate.') );

@@ -181,17 +181,12 @@ use vars qw( @ISA %Lexicon );
 	'Sync file list' => '同期リスト',
 
 ## addons/Sync.pack/lib/MT/SyncLog.pm
-	'*Sync setting deleted*' => '*削除されました*',
 	'*User deleted*' => '*削除されました*',
 	'Are you sure you want to reset the sync log?' => 'サーバー配信履歴を消去してもよろしいですか?',
-	'Error' => 'エラー',
 	'FTP' => 'FTP',
 	'Invalid parameter.' => '不正なパラメータです。',
-	'Parallel' => '即時',
 	'Rsync' => 'rsync',
-	'Scheduled' => '日時指定',
 	'Showing only ID: [_1]' => 'ID:[_1]のログ',
-	'Success' => '完了',
 	'Sync Name' => '設定名',
 	'Sync Result' => '配信結果',
 	'Sync Type' => '配信方法',
@@ -205,7 +200,6 @@ use vars qw( @ISA %Lexicon );
 	'Sync Status' => '配信状況',
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
-	'Copied [_1]' => 'サーバ配信設定 ([_1])の複製',
 	'Create Sync Setting' => 'サーバー配信設定の作成',
 	'Deleting sync file list failed "[_1]": [_2]' => '[_1]の配信ファイルリスト削除に失敗しました: [_2]',
 	'Invalid request.' => '不正な要求です。',
@@ -214,9 +208,10 @@ use vars qw( @ISA %Lexicon );
 	'Sync Settings' => 'サーバー配信設定',
 	'The previous synchronization file list has been cleared. [_1] by [_2].' => '[_2] が、[_1]の過去の配信ファイルリストを削除しました。',
 	'The sync setting with the same name already exists.' => '同名のサーバー配信設定がすでに存在します。',
+	'[_1] (copy)' => '[_1] (複製)',
 	q{An error occurred while attempting to connect to the FTP server '[_1]': [_2]} => q{FTPサーバー '[_1]' への接続中にエラーが発生しました: [_2]},
-	q{An error occurred while attempting to retrieve the current directory from '[_1]'} => q{FTPサーバーのカレントディレクトリが取得できませんでした。},
-	q{An error occurred while attempting to retrieve the list of directories from '[_1]'} => q{FTPサーバーからディレクトリの一覧が取得できませんでした},
+	q{An error occurred while attempting to retrieve the current directory from '[_1]': [_2]} => q{FTPサーバー '[_1]' のカレントディレクトリが取得できませんでした: [_2]},
+	q{An error occurred while attempting to retrieve the list of directories from '[_1]': [_2]} => q{FTPサーバー '[_1]' からディレクトリの一覧が取得できませんでした: [_2]},
 	q{Error saving Sync Setting. No response from FTP server '[_1]'.} => q{サーバー配信の設定を保存できません。FTPサーバーからの応答がありません。},
 	q{Sync setting '[_1]' (ID: [_2]) deleted by [_3].} => q{[_3] が、サーバー配信の設定 '[_1]' (ID: [_2]) を削除しました。},
 	q{Sync setting '[_1]' (ID: [_2]) edited by [_3].} => q{[_3] が、サーバー配信の設定 '[_1]' (ID: [_2]) を保存しました。},
@@ -492,6 +487,7 @@ use vars qw( @ISA %Lexicon );
 	'Email Address is required for password reset.' => 'メールアドレスはパスワードをリセットするために必要です。',
 	'Email Address' => '電子メール',
 	'Error sending mail: [_1]' => 'メールを送信できませんでした: [_1]',
+	'Failed login attempt by anonymous user' => '無名のユーザーがサインインしようとしました。',
 	'Failed to open pid file [_1]: [_2]' => 'PIDファイルを開くことができません。',
 	'Failed to send reboot signal: [_1]' => 'プロセス再起動シグナルを送信することができませんでした。',
 	'Internal Error: Login user is not initialized.' => '内部エラー: ユーザーが初期化されていません。',
@@ -653,10 +649,10 @@ use vars qw( @ISA %Lexicon );
 	'View Site' => 'サイトの表示',
 	'Web Services' => 'Webサービス',
 	'Website' => 'ウェブサイト',
-	'_WARNING_DELETE_USER' => 'ユーザーを削除すると、そのユーザーの書いた記事はユーザー不明となり、後で取り消せません。ユーザーを無効化するのが正しい方法です。本当にユーザーを削除してもよろしいですか?',
-	'_WARNING_DELETE_USER_EUM' => 'ユーザーを削除すると、そのユーザーの書いた記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？LDAPディレクトリ上にユーザーがまだ残っている場合、いつでも再作成されてしまいます。',
+	'_WARNING_DELETE_USER' => 'ユーザーの削除操作は取り消せず、削除したユーザーは復元できません。また、このユーザーが作成した記事やウェブページ、コンテンツデータは作成者不明となります。このユーザーを利用しなくなったり、システムへのアクセスを禁止したい場合は、ユーザーのアカウントを無効にすることをおすすめします。選択したユーザーを削除してよろしいですか?',
+	'_WARNING_DELETE_USER_EUM' => 'ユーザーの削除操作は取り消せず、削除したユーザーは復元できません。また、このユーザーが作成した記事やウェブページ、コンテンツデータは作成者不明となります。このユーザーを利用しなくなったり、システムへのアクセスを禁止したい場合は、ユーザーのアカウントを無効にすることをおすすめします。LDAPディレクトリ上に選択したユーザーが残っている場合はアカウントを再作成できますが、削除前の記事などとユーザーを紐づけることはできません。選択したユーザーを削除してよろしいですか?',
 	'_WARNING_PASSWORD_RESET_MULTI' => '選択されたユーザーのパスワードを再設定しようとしています。パスワード再設定用のリンクが直接それぞれのメールアドレスに送られます。実行しますか?',
-	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたブログのテンプレートを、各ブログの利用しているテーマの初期状態に戻します。テンプレートを初期化してもよろしいですか?',
+	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたサイトのテンプレートを、各サイトの利用しているテーマの初期状態に戻します。テンプレートを初期化してもよろしいですか?',
 	'content data' => 'コンテンツデータ',
 	'entry' => '記事',
 	q{Failed login attempt by user who does not have sign in permission. '[_1]' (ID:[_2])} => q{サインイン権限を有しないユーザー '[_1]' (ID:[_2])がサインインを試みましたが失敗しました。},
@@ -1186,6 +1182,7 @@ use vars qw( @ISA %Lexicon );
 	'Entries must be cloned if comments and trackbacks are cloned' => 'コメントやトラックバックの複製により、記事も複製されます。',
 	'Entries must be cloned if comments are cloned' => 'コメントの複製により、記事も複製されます。',
 	'Entries must be cloned if trackbacks are cloned' => 'トラックバックの複製により、記事も複製されます。',
+	'Error' => 'エラー',
 	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.' => 'テンプレートをキャッシュするディレクトリに書き込めません。サイトパスの下にある<code>[_1]</code>ディレクトリのパーミッションを確認してください。',
 	'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.' => 'テンプレートをキャッシュするディレクトリを作成できません。サイトパスの下に<code>[_1]</code>ディレクトリを作成してください。',
 	'Feedback Settings' => 'コミュニケーション設定',
@@ -1230,14 +1227,20 @@ use vars qw( @ISA %Lexicon );
 	'The [_1] must be given a name!' => '[_1]には名前が必要です。',
 	'Tried to update [_1]([_2]), but the object was not found.' => '[_1]([_2])が見つからないため、更新ができません。',
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => '変更を保存しました。(追加:[_1]件, 更新:[_2]件, 削除:[_3]件) 変更を有効にするには<a href="#" onclick="[_4]" class="mt-rebuild">再構築</a>をしてください。',
+	'category_set' => 'カテゴリセット',
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がカテゴリ'[_1]'(ID:[_2])を削除しました。},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{'[_3]'がカテゴリ'[_1]' (ID:[_2])を編集しました。},
 	q{Category '[_1]' created by '[_2]'.} => q{'[_2]'がカテゴリ'[_1]'を作成しました。},
+	q{Category Set '[_1]' (ID:[_2]) edited by '[_3]'} => q{'[_3]'がカテゴリセット'[_1]' (ID:[_2])を編集しました。},
+	q{Category Set '[_1]' created by '[_2]'.} => q{'[_2]'がカテゴリセット'[_1]'を作成しました。},
 	q{The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.} => q{'[_1]'は他のカテゴリと衝突しています。同じ階層にあるカテゴリのベースネームは一意でなければなりません。},
 	q{The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{'[_1]'は他のカテゴリと衝突しています。同じ階層にあるカテゴリの名前は一意でなければなりません。},
 	q{The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{'[_1]'は他のカテゴリと衝突しています。同じ階層にあるカテゴリの名前は一意でなければなりません。},
 	q{The name '[_1]' is too long!} => q{'[_1]'は長すぎます。},
 	q{[_1] order has been edited by '[_2]'.} => q{[_1] の順番を '[_2]' が更新しました。},
+
+## lib/MT/CMS/CategorySet.pm
+	q{Category Set '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がカテゴリセット'[_1]'(ID:[_2])を削除しました。},
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'すべての[_1]',
@@ -1259,6 +1262,7 @@ use vars qw( @ISA %Lexicon );
 	'Unknown list type' => '不明なタイプです。',
 	'Web Services Settings' => 'Webサービス設定',
 	'[_1] Feed' => '[_1]のフィード',
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_2](id:[_3])の壊れたリビジョン[_1]件が削除されました。',
 	'__SELECT_FILTER_VERB' => 'が',
 	q{'[_1]' edited the global template '[_2]'} => q{[_1]がグローバルテンプレート([_2])を編集しました},
 	q{'[_1]' edited the template '[_2]' in the blog '[_3]'} => q{[_1]がブログ([_3])のテンプレート([_2])を編集しました},
@@ -1285,7 +1289,7 @@ use vars qw( @ISA %Lexicon );
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.} => q{公開終了日は、未来の日時を指定してください。},
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.} => q{公開終了日は、公開日より未来の日時を指定してください。},
 	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_3]が新しい[_1] '[_4]' (ID[_2])を追加しました},
-	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_3]が[_1] '[_1]' (ID:[_2])を削除しました},
+	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を削除しました},
 	q{[_1] '[_4]' (ID:[_2]) edited by user '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を変更しました},
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_5]が[_1] '[_6]' (ID:[_2]) の公開状態を[_3]から[_4]に変更しました},
 
@@ -1301,6 +1305,7 @@ use vars qw( @ISA %Lexicon );
 	'Some content fields were deleted: ([_1])' => 'いくつかのコンテンツフィールドが削除されました: [_1]',
 	'The content type name is required.' => 'コンテンツタイプ名は必須です。',
 	'The content type name must be shorter than 255 characters.' => 'コンテンツタイプ名は255文字までです。',
+	'content_type' => 'コンテンツタイプ',
 	q{A content field '[_1]' ([_2]) was added} => q{コンテンツフィールド '[_1]'が追加されました},
 	q{A content field options of '[_1]' ([_2]) was changed} => q{コンテンツフィールド '[_1]'の設定が変更されました},
 	q{A description for content field of '[_1]' should be shorter than 255 characters.} => q{コンテンツフィールド '[_1]'の説明は255文字までです。},
@@ -1309,6 +1314,8 @@ use vars qw( @ISA %Lexicon );
 	q{Content Type '[_1]' (ID:[_2]) added by user '[_3]'} => q{[_3]がコンテンツタイプ '[_1]' (ID: [_2]) を追加しました},
 	q{Content Type '[_1]' (ID:[_2]) deleted by '[_3]'} => q{[_3]がコンテンツタイプ '[_2]' (ID: [_2])を削除しました},
 	q{Content Type '[_1]' (ID:[_2]) edited by user '[_3]'} => q{[_3]がコンテンツタイプ '[_1]' (ID: [_2]) を変更しました},
+	q{Field '[_1]' and '[_2]' must not coexist within the same content type.} => q{コンテンツフィールド'[_1]'と'[_2]'を同じコンテンツタイプ内で同時に利用することはできません},
+	q{Field '[_1]' must be unique in this content type.} => q{コンテンツフィールド'[_1]'が重複しています},
 	q{Name '[_1]' is already used.} => q{'[_1]'はすでに存在します},
 
 ## lib/MT/CMS/Dashboard.pm
@@ -1419,8 +1426,9 @@ use vars qw( @ISA %Lexicon );
 	'(All sites and child sites in this system)' => 'システム内のすべてのサイトと子サイト',
 	'Comment' => 'コメント',
 	'Create Rebuild Trigger' => '再構築トリガーを作成',
-	'Entry or Page' => '記事/ウェブページ',
 	'Entry/Page' => '記事/ウェブページ',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'フォーマットエラー: CSVのフィールド数が正しくありません。',
+	'Format Error: Trigger data include illegal characters.' => 'フォーマットエラー: トリガーデータが不正な文字を含んでいます。',
 	'Save' => '保存',
 	'Search Content Type' => 'コンテンツタイプを検索',
 	'Search Sites and Child Sites' => 'サイトを検索',
@@ -1429,20 +1437,9 @@ use vars qw( @ISA %Lexicon );
 	'Select to apply this trigger to all child sites in this site.' => 'サイト内のすべての子サイトでトリガーを有効にする',
 	'Select to apply this trigger to all sites and child sites in this system.' => 'システム内のすべてのサイトと子サイトでトリガーを有効にする',
 	'TrackBack' => 'トラックバック',
-	'Trackback' => 'トラックバック',
-	'Unpublish' => '公開取り消し',
-	'publishes a TrackBack' => 'トラックバックの公開時',
-	'publishes a comment' => 'コメントの公開時',
-	'publishes a content' => 'コンテンツデータの公開時',
-	'publishes an entry/page' => '記事とウェブページの公開時',
+	'__UNPUBLISHED' => '公開終了',
 	'rebuild indexes and send pings.' => 'インデックスを再構築して更新pingを送信する',
 	'rebuild indexes.' => 'インデックスを再構築する',
-	'saves a content' => 'コンテンツデータの保存時',
-	'saves an entry/page' => '記事とウェブページの保存時',
-	'unpublishes a content' => 'コンテンツデータの公開取りやめ時',
-	'unpublishes an entry/page' => '記事とウェブページの公開取りやめ時',
-	'Format Error: Trigger data include illegal characters.' => 'フォーマットエラー: トリガーデータが不正な文字を含んでいます。',
-	'Format Error: Comma-separated-values contains wrong number of fields.' => 'フォーマットエラー: CSVのフィールド数が正しくありません。',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => '"[_1]"フィールドは入力必須です。',
@@ -1496,6 +1493,7 @@ use vars qw( @ISA %Lexicon );
 	'Create Widget Set' => 'ウィジェットセットの作成',
 	'Create Widget' => 'ウィジェットを作成',
 	'Email Templates' => 'メールテンプレート',
+	'Entry or Page' => '記事/ウェブページ',
 	'Error creating new template: ' => 'テンプレートの作成エラー:',
 	'Global Template' => 'グローバルテンプレート',
 	'Global Templates' => 'グローバルテンプレート',
@@ -1576,7 +1574,7 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'Image quality(JPEG) is [_1]' => 'JPEG 画像の品質は [_1] です',
-	'Image quality(PNG) is [_1]' => 'PNG 画像の品質は [_1] です',
+	'Image quality(PNG) is [_1]' => 'PNG 画像の圧縮レベルは [_1] です',
 	'Importing a file failed: ' => 'ファイルからインポートできませんでした。',
 	'Invalid SitePath.  The SitePath should be valid and absolute, not relative' => 'サイトパス制限には正しい絶対パスを指定してください。',
 	'Invalid author_id' => 'ユーザーのIDが不正です。',
@@ -1889,7 +1887,6 @@ use vars qw( @ISA %Lexicon );
 	'Content Data # [_1] not found.' => 'コンテンツデータ (ID: [_1])が見つかりません。',
 	'Create Content Data' => 'コンテンツデータの作成',
 	'Edit All Content Data' => 'すべてのコンテンツデータの編集',
-	'Manage All Content Data' => 'すべてのコンテンツデータの管理',
 	'Manage Content Data' => 'コンテンツデータの管理',
 	'Publish Content Data' => 'コンテンツデータの公開',
 	'Tags with [_1]' => '[_1]のタグ',
@@ -1950,6 +1947,7 @@ use vars qw( @ISA %Lexicon );
 	'Legacy Quick Filter' => 'クイックフィルタ',
 	'Log' => 'ログ',
 	'Manage Address Book' => 'アドレス帳の管理',
+	'Manage All Content Data' => 'すべてのコンテンツデータの管理',
 	'Manage Assets' => 'アセットの管理',
 	'Manage Blog' => 'ブログの管理',
 	'Manage Categories' => 'カテゴリの管理',
@@ -2049,6 +2047,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1])は不正です。',
+	'log' => 'ログ',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{'[_2]'がログ (ID:[_1])を削除しました。},
 
 ## lib/MT/DataAPI/Callback/Tag.pm
@@ -2062,8 +2061,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid textFormat: [_1]' => '不正なテキストフォーマットです: [_1]',
 
 ## lib/MT/DataAPI/Endpoint/Auth.pm
-	q{Failed login attempt by user who does not have sign in permission via data api. '[_1]' (ID:[_2])} => q{Data API でのサインイン権限を有しないユーザー '[_1]]' (ID: [_2])がサインインを試みましたが失敗しました。},
-	q{User '[_1]' (ID:[_2]) logged in successfully via data api.} => q{ユーザー '[_1]]' (ID: [_2])が Data API でサインインしました。},
+	q{Failed login attempt by user who does not have sign in permission via data api. '[_1]' (ID:[_2])} => q{Data API でのサインイン権限を有しないユーザー '[_1]' (ID: [_2])がサインインを試みましたが失敗しました。},
+	q{User '[_1]' (ID:[_2]) logged in successfully via data api.} => q{ユーザー '[_1]' (ID: [_2])が Data API でサインインしました。},
 
 ## lib/MT/DataAPI/Endpoint/Common.pm
 	'Invalid dateFrom parameter: [_1]' => 'dateFrom パラメータに無効な値が指定されました: [_1]',
@@ -2240,6 +2239,7 @@ use vars qw( @ISA %Lexicon );
 	'Review' => '承認待ち',
 	'Reviewing' => '承認待ち',
 	'Scheduled Entries' => '日時指定されている記事',
+	'Scheduled' => '日時指定',
 	'Spam' => 'スパム',
 	'Unpublished (End)' => '非公開（公開終了）',
 	'Unpublished Entries' => '公開が終了している記事',
@@ -2429,6 +2429,23 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished Pages' => '公開が終了しているウェブページ',
 	q{Pages in folder: [_1]} => q{フォルダ '[_1]'に含まれるページ},
 
+## lib/MT/ParamValidator.pm
+	'Invalid validation rules: [_1]' => '不正な検証規則です: [_1]',
+	'Unknown validation rule: [_1]' => '未知の検証規則です: [_1]',
+	q{'[_1]' has multiple values} => q{'[_1]' に複数の値があります},
+	q{'[_1]' is required} => q{'[_1]' が必要です},
+	q{'[_1]' requires a valid ID} => q{'[_1]' には有効なIDが必要です},
+	q{'[_1]' requires a valid email} => q{'[_1]' には有効なメールアドレスが必要です},
+	q{'[_1]' requires a valid integer} => q{'[_1]' には有効な整数が必要です},
+	q{'[_1]' requires a valid number} => q{'[_1]' には有効な数値が必要です},
+	q{'[_1]' requires a valid objtype} => q{'[_1]' には有効なオブジェクト種別が必要です},
+	q{'[_1]' requires a valid string} => q{'[_1]' には有効な文字列が必要です},
+	q{'[_1]' requires a valid text} => q{'[_1]' には有効なテキストが必要です},
+	q{'[_1]' requires a valid word} => q{'[_1]' には有効な単語が必要です},
+	q{'[_1]' requires a valid xdigit value} => q{'[_1]' には有効な16進数が必要です},
+	q{'[_1]' requires valid (concatenated) IDs} => q{'[_1]' には有効なID(を連結したもの)が必要です},
+	q{'[_1]' requires valid (concatenated) words} => q{'[_1]' には有効な単語(を連結したもの)が必要です},
+
 ## lib/MT/Plugin.pm
 	'My Text Format' => 'My Text Format',
 
@@ -2450,8 +2467,6 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => '同じ種類のオブジェクトではありません。両者とも[_2]である必要があります。',
 	'Unknown method [_1]' => '不正な比較メソッド([_1])です。',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{リビジョンドライバー([_1])の設定が正しくありません: [_2]},
-	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_2](id:[_3])の壊れたリビジョン[_1]件が削除されました。',
-	'*Deleted due to data breakage*' => '*データの破損のため削除されました*',
 
 ## lib/MT/Role.pm
 	'Can administer the site.' => 'サイトを管理できます',
@@ -2528,6 +2543,7 @@ use vars qw( @ISA %Lexicon );
 	'No Content Field could be found: "[_1]"' => 'コンテンツフィールドが見つかりません: "[_1]"',
 	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'include_blogs属性とexclude_blogs属性に同じブログIDが指定されています。',
 	q{The attribute exclude_blogs cannot take '[_1]' for a value.} => q{exclude_blogs属性には'[_1]'を設定できません。},
+	q{You have an error in your '[_2]' attribute: [_1]} => q{[_2]属性でエラーがありました: [_1]},
 	q{You used an '[_1]' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?} => q{[_1]をウェブサイトに属していないブログのコンテキストで利用しようとしています。},
 	q{You used an '[_1]' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an 'MTAuthors' container tag?} => q{[_1]をコンテキスト外で利用しようとしています。MTAuthorsコンテナタグの外部で使っていませんか?},
 	q{You used an '[_1]' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an 'MTComments' container tag?} => q{[_1]をコメントのコンテキスト外で利用しようとしました。MTCommentsコンテナの外部に配置していませんか?},
@@ -2603,7 +2619,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Template/Tags/Asset.pm
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
 	q{No such user '[_1]'} => q{ユーザー([_1])が見つかりません。},
-	q{You have an error in your '[_2]' attribute: [_1]} => q{[_2]属性でエラーがありました: [_1]},
 
 ## lib/MT/Template/Tags/Author.pm
 	'You used an [_1] without a author context set up.' => '[_1]をユーザーのコンテキスト外部で利用しようとしました。',
@@ -2894,6 +2909,8 @@ use vars qw( @ISA %Lexicon );
 	'Migrating create child site permissions...' => '子サイトの作成権限を移行しています...',
 	'Migrating data column of MT::ContentData...' => 'コンテンツデータのdataカラムを移行しています...',
 	'Migrating fields column of MT::ContentType...' => 'コンテンツタイプのFieldsカラムを移行しています...',
+	'MultiBlog migration for site(ID:[_1]) is skipped due to the data breakage.' => 'データが破損しているためサイト(ID:[_1])のマルチブログの設定の移行をスキップします。',
+	'MultiBlog migration is skipped due to the data breakage.' => 'データが破損しているためマルチブログの設定の移行をスキップします。',
 	'Rebuilding Content Type count of Category Sets...' => 'カテゴリセットの情報を再構築しています...',
 	'Rebuilding MT::ContentFieldIndex of embedded_text field...' => '埋め込みテキストデータのインデックスを再構築しています...',
 	'Rebuilding MT::ContentFieldIndex of multi_line_text field...' => 'テキスト（複数行）データのインデックスを再構築しています...',
@@ -2907,7 +2924,11 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'カテゴリの関連付けを再構築しています...',
 	'Rebuilding object tags...' => 'タグの関連付けを再構築しています...',
 	'Remove SQLSetNames...' => 'SQLSetNames をデータベースから削除しています...',
+	'Reorder DEBUG level' => 'DEBUGレベルの値を変更しています',
+	'Reorder SECURITY level' => 'SECURITYレベルの値を変更しています',
+	'Reorder WARNING level' => 'WARNINGレベルの値を変更しています',
 	'Reset default dashboard widgets...' => 'ダッシュボードウィジェットを初期化しています...',
+	'Some MultiBlog migrations for site(ID:[_1]) are skipped due to the data breakage.' => 'データが破損しているためサイト(ID:[_1])の一部のマルチブログの設定の移行をスキップします',
 	'Truncating values of value_varchar column...' => 'コンテンツデータの varchar カラムのインデックスを再構築しています...',
 	'add administer_site permission for Blog Administrator...' => 'ブログ管理者にサイトの管理権限を付与しています...',
 	'change [_1] to [_2]' => '[_1]を[_2]に変更しています',
@@ -2938,21 +2959,28 @@ use vars qw( @ISA %Lexicon );
 	'Registry could not be loaded' => 'レジストリをロードできませんでした。',
 	'Type must be specified' => '種類を指定してください。',
 
-## lib/MT/Util/Archive/Tgz.pm
+## lib/MT/Util/Archive/BinTgz.pm
 	'Both data and file name must be specified.' => 'データとファイルの両方を指定してください。',
 	'Cannot extract from the object' => '解凍できません。',
+	'Cannot find external archiver: [_1]' => '外部アーカイバが見つかりません: [_1]',
 	'Cannot write to the object' => '書き込みできません。',
-	'Could not read from filehandle.' => 'ファイルを読みだせませんでした。',
+	'Failed to create an archive [_1]: [_2]' => 'アーカイブ [_1] を作成できません: [_2]',
 	'File [_1] exists; could not overwrite.' => '[_1]が既に存在します。上書きできません。',
-	'File [_1] is not a tgz file.' => '[_1]はTGZファイルではありません。',
 	'Type must be tgz.' => 'TGZが指定されていません。',
 	'[_1] in the archive contains ..' => 'アーカイブに含まれるファイル[_1]に相対パス指定が含まれています',
 	'[_1] in the archive is an absolute path' => 'アーカイブに含まれるファイル[_1]に絶対パスが含まれています',
 	'[_1] in the archive is not a regular file' => 'アーカイブに含まれるファイル[_1]にシンボリックリンクが含まれています',
 
+## lib/MT/Util/Archive/BinZip.pm
+	'Failed to rename an archive [_1]: [_2]' => 'アーカイブ [_1] をリネームできません: [_2]',
+	'Type must be zip' => 'ZIPが指定されていません。',
+
+## lib/MT/Util/Archive/Tgz.pm
+	'Could not read from filehandle.' => 'ファイルを読みだせませんでした。',
+	'File [_1] is not a tgz file.' => '[_1]はTGZファイルではありません。',
+
 ## lib/MT/Util/Archive/Zip.pm
 	'File [_1] is not a zip file.' => '[_1]はZIPファイルではありません。',
-	'Type must be zip' => 'ZIPが指定されていません。',
 
 ## lib/MT/Util/Captcha.pm
 	'Captcha' => 'Captcha',
@@ -2976,6 +3004,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past entries: [_1]' => '公開終了日を過ぎた記事の処理中にエラーが発生しました: [_1]',
 	'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID, またはTemplateのいずれかを指定してください。',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => '同名のファイルがすでに存在します。ファイル名またはアーカイブパスを変更してください([_1])。',
+	'unpublish' => '公開終了',
 	q{Template '[_1]' does not have an Output File.} => q{テンプレート'[_1]'には出力ファイルの設定がありません。},
 
 ## lib/MT/Website.pm
@@ -3057,7 +3086,7 @@ use vars qw( @ISA %Lexicon );
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされている Perl [_1] は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlをアップグレードしてください。',
 	'This module and its dependencies are required in order to operate Movable Type under psgi.' => 'PSGI環境下でmt.psgiを実行する場合に必要となります。',
 	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Perl 5.8以下の環境で、mt-search.cgiを利用するときに必要です。',
-	'This module required for action streams.' => '', # Translate - New
+	'This module required for action streams.' => 'アクションストリームに必要です',
 	'Web server:' => 'ウェブサーバー',
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atomのインストールは必須ではありません。Atom APIを利用する場合に必要となります。',
 	'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.' => 'XML::SAXは復元の機能を利用する場合に必要となります。',
@@ -3103,6 +3132,8 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/contenttype/tag/content-field.tag
 	'ContentField' => 'コンテンツフィールド',
 	'Move' => '移動',
+	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
+	'Duplicate' => '複製',
 
 ## mt-static/js/contenttype/tag/content-fields.tag
 	'Allow users to change the display and sort of fields by display option' => 'ユーザーにフィールドの並び替えや表示非表示の変更を許可する',
@@ -3273,18 +3304,20 @@ use vars qw( @ISA %Lexicon );
 	'Undo (Ctrl+Z)' => '元に戻す (Ctrl+Z)',
 	'Unlink' => 'リンクを解除',
 	'Unordered List' => '番号なしリスト',
-	'Cut column' => '列の切り取り',
-	'Copy column' => '列のコピー',
-	'Paste column before' => '列の前に貼り付け',
-	'Paste column after' => '列の後に貼り付け',
-	'Horizontal align' => '横配置',
-	'Vertical align' => '縦配置',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.js
 	'HTML' => 'HTML',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => '全画面表示',
+
+## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/langs/plugin.js
+	'Copy column' => '列のコピー',
+	'Cut column' => '列の切り取り',
+	'Horizontal align' => '横配置',
+	'Paste column after' => '列の後に貼り付け',
+	'Paste column before' => '列の前に貼り付け',
+	'Vertical align' => '縦配置',
 
 ## php/lib/block.mtarchives.php
 	'ArchiveType not found - [_1]' => 'アーカイブタイプが見つかりません - [_1]',
@@ -3672,24 +3705,6 @@ use vars qw( @ISA %Lexicon );
 	'Classic Website' => 'クラシックウェブサイト',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
 
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => '関連コンテンツ',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'コメントの確認',
-
-## themes/pico/templates/entry.mtml
-	'Home' => 'ホーム',
-
-## themes/pico/templates/navigation.mtml
-	'Subscribe' => '購読',
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
-	'Pico Styles' => 'Picoスタイル',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Picoはマイクロブログを作成するのに適した、テキストや写真といったコンテンツを引き立てるシンプルなデザインのテーマです。アーカイブリストなどの関連コンテンツは、メインコンテンツの下に配置されます。},
-
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => '新規アセットのアップロード',
 
@@ -4033,10 +4048,10 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout policy' => 'IPアドレスのロック方針',
 	'Image Quality Settings' => '画像品質の設定',
 	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 85.' => 'アップロードされた JPEG 画像や、生成されるサムネイル画像の品質を 0 から 100 の数値で指定します。初期値は 85 です。',
-	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'アップロードされた PNG 画像や、生成されるサムネイル画像の品質を 0 から 9 の数値で設定します。初期値は 7 です。',
+	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'アップロードされた PNG 画像や、生成されるサムネイル画像の圧縮レベルを 0 から 9 の数値で設定します。初期値は 7 です。',
 	'Image quality(JPEG)' => 'JPEG 画像の品質',
-	'Image quality(PNG)' => 'PNG 画像の品質',
-	'Imager does not support ImageQualityPng.' => 'イメージドライバーとして Imager を利用する場合、PNG 画像の品質を設定できません。',
+	'Image quality(PNG)' => 'PNG 画像の圧縮レベル',
+	'Imager does not support ImageQualityPng.' => 'イメージドライバーとして Imager を利用する場合、PNG 画像の圧縮レベルを設定できません。',
 	'Lockout Settings' => 'アカウントロックの設定',
 	'Log Path' => 'ログパス',
 	'Logging Threshold' => 'ログ閾値',
@@ -4258,10 +4273,10 @@ use vars qw( @ISA %Lexicon );
 	'Create and Insert' => '作成して挿入',
 
 ## tmpl/cms/dialog/create_association.tmpl
-	'No sites exist in this installation. [_1]Create a site</a>' => 'サイトがありません。[_1]サイトを作成する</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'ブログがありません。[_1]ブログを作成する</a>',
 	'No groups exist in this installation. [_1]Create a group</a>' => 'グループがありません。[_1]グループを作成する</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'ロールがありません。[_1]ロールを作成する</a>',
+	'No sites exist in this installation. [_1]Create a site</a>' => 'サイトがありません。[_1]サイトを作成する</a>',
 	'No users exist in this installation. [_1]Create a user</a>' => 'ユーザーが存在しません。[_1]ユーザーを作成する</a>',
 	'all' => '全て',
 
@@ -4274,7 +4289,6 @@ use vars qw( @ISA %Lexicon );
 	'Select Trigger Action' => 'アクションを選択',
 	'Select Trigger Event' => 'イベントを選択',
 	'Select Trigger Object' => '対象を選択',
-	'__UNPUBLISHED' => '公開終了',
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Crop' => 'トリミング',
@@ -4320,6 +4334,7 @@ use vars qw( @ISA %Lexicon );
 	'Confirm New Password' => '新しいパスワード確認',
 	'Enter the new password.' => '新しいパスワードを入力してください。',
 	'New Password' => '新しいパスワード',
+	'The password for the user \'[_1]\' has been recovered.' => 'ユーザー「[_1]」のパスワードが再設定されました。',
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Queue.' => 'すべてのテンプレートを公開キュー経由でスタティックパブリッシングします。',
@@ -4590,8 +4605,6 @@ use vars qw( @ISA %Lexicon );
 	'Warning: If you set the basename manually, it may conflict with another content data.' => '警告: 出力ファイル名を手動で設定すると、他のコンテンツデータと衝突を起こす可能性があります。',
 	'You have successfully recovered your saved content data.' => 'コンテンツデータを元に戻しました。',
 	'You must configure this site before you can publish this content data.' => 'コンテンツデータを公開する前にサイトの設定を行ってください。',
-	'You must configure this site before you can publish this entry.' => '記事を公開する前にサイトの設定を行ってください。',
-	'You must configure this site before you can publish this page.' => 'ページを公開する前にサイトの設定を行ってください。',
 	q{Warning: Changing this content data's basename may break inbound links.} => q{警告: このコンテンツデータの出力ファイル名の変更は、内部のリンク切れの原因となります。},
 
 ## tmpl/cms/edit_content_type.tmpl
@@ -4657,6 +4670,8 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully recovered your saved entry.' => '記事を元に戻しました。',
 	'You have successfully recovered your saved page.' => 'ウェブページを元に戻しました。',
 	'You have unsaved changes to this entry that will be lost.' => '保存されていない記事への変更は失われます。',
+	'You must configure this site before you can publish this entry.' => '記事を公開する前にサイトの設定を行ってください。',
+	'You must configure this site before you can publish this page.' => 'ページを公開する前にサイトの設定を行ってください。',
 	'Your changes to the comment have been saved.' => 'コメントの変更を保存しました。',
 	'Your customization preferences have been saved, and are visible in the form below.' => 'カスタマイズ設定を保存しました。下のフォームで確認できます。',
 	'Your notification has been sent.' => '通知を送信しました。',
@@ -5069,6 +5084,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/content_data_table.tmpl
 	'Created' => '作成',
 	'Republish selected [_1] (r)' => '選択した[_1]の再構築',
+	'Unpublish' => '公開取り消し',
 	'View Content Data' => 'コンテンツデータを見る',
 
 ## tmpl/cms/include/copyright.tmpl
@@ -5181,6 +5197,7 @@ use vars qw( @ISA %Lexicon );
 	'Open Site Menu' => 'サイトメニューを開く',
 
 ## tmpl/cms/include/revision_table.tmpl
+	'*Deleted due to data breakage*' => '*データの破損のため削除されました*',
 	'No revisions could be found.' => '変更履歴がありません。',
 	'Note' => 'メモ',
 	'Saved By' => '保存したユーザー',
@@ -5456,6 +5473,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/pinging.tmpl
 	'Pinging sites...' => 'トラックバックと更新通知を送信しています...',
+	'Trackback' => 'トラックバック',
 
 ## tmpl/cms/popup/pinged_urls.tmpl
 	'Failed Trackbacks' => 'トラックバック(未送信)',
@@ -5476,6 +5494,7 @@ use vars qw( @ISA %Lexicon );
 	'Publish Again (s)' => '再構築 (s)',
 	'Publish Again' => '再構築しなおす',
 	'Publish time: [_1].' => '処理時間: [_1]',
+	'Success' => '完了',
 	'The files for [_1] have been published.' => '[_1]を再構築しました。',
 	'View this page.' => 'ページを見る',
 	'View your site.' => 'サイトを見る',

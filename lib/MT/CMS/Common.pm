@@ -316,12 +316,13 @@ sub save {
 
                         my $name  = 'can_' . $_->[0];
                         my $value = $app->param($name);
+                        my $perm_obj = $obj->can($name) ? $obj : $obj->permissions(0);
                         if ( defined $value ) {
-                            $obj->$name($value);
+                            $perm_obj->$name($value);
                             delete $values{$name};
                         }
                         else {
-                            $obj->$name(0);
+                            $perm_obj->$name(0);
                         }
                     }
                 }
@@ -1756,7 +1757,7 @@ sub filtered_list {
 
         $MT::DebugMode && $debug->{section}->('prepare load cols');
         for my $col (@cols) {
-            my $prop = $props->{$col};
+            my $prop = $props->{$col} or next;
             my @result;
             if ( $prop->has('bulk_html') ) {
                 @result = $prop->bulk_html( $objs, $app, \%load_options );

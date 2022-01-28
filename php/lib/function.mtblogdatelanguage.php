@@ -7,7 +7,7 @@
 
 function smarty_function_mtblogdatelanguage($args, &$ctx) {
     $blog = $ctx->stash('blog');
-    return normalize_language( $blog->blog_date_language, $args['locale'],
-        $args['ietf'] );
+    return normalize_language( $blog->blog_date_language, isset($args['locale']) ? $args['locale'] : null,
+        isset($args['ietf']) ? $args['ietf'] : null );
 }
 ?>

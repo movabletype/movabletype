@@ -213,39 +213,35 @@ sub edit {
         }
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## load entry preferences for new/edit entry page of the blog
-            my $pref_param = $app->load_entry_prefs( { type => 'entry' } );
-            %$param = ( %$param, %$pref_param );
-            $pref_param = $app->load_entry_prefs( { type => 'page' } );
-            %$param = ( %$param, %$pref_param );
-            $param->{ 'sort_order_posts_' . ( $obj->sort_order_posts || 0 ) }
-                = 1;
-            $param->{ 'status_default_' . $obj->status_default } = 1
+            my $pref_param = $app->load_entry_prefs({ type => 'entry' });
+            %$param                                                         = (%$param, %$pref_param);
+            $pref_param                                                     = $app->load_entry_prefs({ type => 'page' });
+            %$param                                                         = (%$param, %$pref_param);
+            $param->{ 'sort_order_posts_' . ($obj->sort_order_posts || 0) } = 1;
+            $param->{ 'status_default_' . $obj->status_default }            = 1
                 if $obj->status_default;
-            $param->{ 'allow_comments_default_'
-                    . ( $obj->allow_comments_default || 0 ) } = 1;
-            $param->{system_allow_pings}
-                = $cfg->AllowPings && $blog->allow_pings;
-            $param->{system_allow_comments} = $cfg->AllowComments
-                && ( $blog->allow_reg_comments
-                || $blog->allow_unreg_comments );
+            $param->{ 'allow_comments_default_' . ($obj->allow_comments_default || 0) } = 1;
+            $param->{system_allow_pings}                                                = $cfg->AllowPings && $blog->allow_pings;
+            $param->{system_allow_comments}                                             = $cfg->AllowComments
+                && ($blog->allow_reg_comments
+                || $blog->allow_unreg_comments);
             my $replace_fields = $blog->smart_replace_fields || '';
-            my @replace_fields = split( /,/, $replace_fields );
+            my @replace_fields = split(/,/, $replace_fields);
 
             foreach my $fld (@replace_fields) {
                 $param->{ 'nwc_' . $fld } = 1;
             }
-            $param->{ 'nwc_smart_replace_' . ( $blog->smart_replace || 0 ) }
-                = 1;
-            $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
+            $param->{ 'nwc_smart_replace_' . ($blog->smart_replace || 0) } = 1;
+            $param->{'nwc_replace_none'} = ($blog->smart_replace || 0) == 2;
 
-            $param->{popup}      = $blog->image_default_popup ? 1 : 0;
-            $param->{popup_link}      = $blog->image_default_link;
-            $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
-            $param->{ 'align_' . ( $blog->image_default_align || 'none' ) }
-                = 1;
-            $param->{thumb_width} = $blog->image_default_width || 0;
+            $param->{can_popup}                                           = $blog->can_popup_image();
+            $param->{popup}                                               = $blog->image_default_popup ? 1                         : 0;
+            $param->{popup_link}                                          = $param->{can_popup}        ? $blog->image_default_link : 2;
+            $param->{make_thumb}                                          = $blog->image_default_thumb ? 1                         : 0;
+            $param->{ 'align_' . ($blog->image_default_align || 'none') } = 1;
+            $param->{thumb_width}                                         = $blog->image_default_width || 0;
 
-            $app->add_breadcrumb( $app->translate('Compose Settings') );
+            $app->add_breadcrumb($app->translate('Compose Settings'));
         }
         elsif ( $output eq 'cfg_web_services.tmpl' ) {
             $param->{system_disabled_notify_pings}
@@ -1452,6 +1448,11 @@ sub rebuild_confirm {
 
 sub save_favorite_blogs {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     $app->validate_magic() or return;
     my $fav = $app->param('id');
     return unless int($fav) > 0;
@@ -3020,6 +3021,29 @@ sub clone {
     my ($param) = {};
     my $user    = $app->user;
 
+    $app->validate_param({
+        archive_path          => [qw/MAYBE_STRING/],
+        archive_path_absolute => [qw/MAYBE_STRING/],
+        archive_url           => [qw/MAYBE_STRING/],
+        archive_url_path      => [qw/MAYBE_STRING/],
+        archive_url_subdomain => [qw/MAYBE_STRING/],
+        blog_id               => [qw/ID/],
+        clone                 => [qw/MAYBE_STRING/],
+        enable_archive_paths  => [qw/MAYBE_STRING/],
+        id                    => [qw/ID MULTI/],
+        new_blog_name         => [qw/MAYBE_STRING/],
+        site_path             => [qw/MAYBE_STRING/],
+        site_path_absolute    => [qw/MAYBE_STRING/],
+        site_url              => [qw/MAYBE_STRING/],
+        site_url_path         => [qw/MAYBE_STRING/],
+        site_url_subdomain    => [qw/MAYBE_STRING/],
+        use_absolute          => [qw/MAYBE_STRING/],
+        use_absolute_archive  => [qw/MAYBE_STRING/],
+        use_archive_subdomain => [qw/MAYBE_STRING/],
+        use_subdomain         => [qw/MAYBE_STRING/],
+        verify                => [qw/MAYBE_STRING/],
+    }) or return;
+
     $app->validate_magic() or return;
 
     $app->{hide_goback_button} = 1;
@@ -3370,12 +3394,7 @@ HTML
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
         $subdomain =~ s/\.{2,}/\./g;
         my $path = $app->param('site_url_path');
-        if ( $subdomain || $path ) {
-            $new_blog->site_url("$subdomain/::/$path");
-        }
-        else {
-            $new_blog->site_url( $param->{'site_url'} );
-        }
+        $new_blog->site_url("$subdomain/::/$path");
 
         if ( $param->{enable_archive_paths} ) {
             $new_blog->archive_path(
@@ -3389,12 +3408,7 @@ HTML
             $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
             $subdomain =~ s/\.{2,}/\./g;
             my $path = $app->param('archive_url_path');
-            if ( $subdomain || $path ) {
-                $new_blog->archive_url("$subdomain/::/$path");
-            }
-            else {
-                $new_blog->archive_url( $param->{'site_url'} );
-            }
+            $new_blog->archive_url("$subdomain/::/$path");
         }
 
         $new_blog->save();

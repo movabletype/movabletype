@@ -252,18 +252,17 @@ sub templates {
         else {
             $tmpl_hash = $set ? $def_tmpl->{templates} : $def_tmpl;
         }
-        my $plugin = $tmpl_hash->{plugin};
 
         foreach my $tmpl_set ( keys %$tmpl_hash ) {
             next unless ref( $tmpl_hash->{$tmpl_set} ) eq 'HASH';
             foreach my $tmpl_id ( keys %{ $tmpl_hash->{$tmpl_set} } ) {
                 next if $tmpl_id eq 'plugin';
-                my $p = $tmpl_hash->{plugin}
+                my $plugin = $tmpl_hash->{plugin}
                     || $tmpl_hash->{$tmpl_set}{plugin};
                 my $base_path = $def_tmpl->{base_path}
                     || $tmpl_hash->{$tmpl_set}{base_path};
-                if ( $p && $base_path ) {
-                    $base_path = File::Spec->catdir( $p->path, $base_path );
+                if ( $plugin && $base_path ) {
+                    $base_path = File::Spec->catdir( $plugin->path, $base_path );
                 }
                 elsif ($theme_envelope) {
                     $base_path
@@ -301,6 +300,7 @@ sub templates {
                 $tmpl->{type}       = $type;
                 $tmpl->{key}        = $tmpl_id;
                 $tmpl->{identifier} = $tmpl_id;
+                $tmpl->{plugin}     = $plugin;
 
                 if ( exists $tmpl->{widgets} ) {
                     my $widgets = $tmpl->{widgets};
@@ -345,7 +345,7 @@ sub templates {
                     # allow components/plugins to override core
                     # templates
                     $local_global_tmpls->{$tmpl_key} = $tmpl
-                        if $p && ( $p->id ne 'core' );
+                        if $plugin && ( $plugin->id ne 'core' );
                 }
                 else {
                     $local_global_tmpls->{$tmpl_key} = $tmpl;

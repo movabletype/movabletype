@@ -251,7 +251,7 @@ sub save_revision {
 
     MT->run_callbacks( $class . '::pre_save_revision', $obj, @_ );
 
-    my $current_revision = _handle( $obj, @_ );
+    my $current_revision = _handle( $obj, @_ ) || 0;
 
     MT->run_callbacks( $class . '::post_save_revision',
         $obj, $current_revision );

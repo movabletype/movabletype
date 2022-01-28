@@ -5,7 +5,9 @@ use warnings;
 use Carp;
 use MT::Test::Permission;
 use MT::Serialize;
+use MT::Association;
 use Data::Visitor::Tiny;
+use List::Util qw(uniq);
 
 sub prepare {
     my ( $class, $spec ) = @_;
@@ -25,6 +27,7 @@ sub prepare {
     $class->prepare_author( $spec, \%objs );
     $class->prepare_website( $spec, \%objs );
     $class->prepare_blog( $spec, \%objs );
+    $class->prepare_asset( $spec, \%objs );
     $class->prepare_image( $spec, \%objs );
     $class->prepare_tag( $spec, \%objs );
     $class->prepare_category( $spec, \%objs );
@@ -35,6 +38,7 @@ sub prepare {
     $class->prepare_category_set( $spec, \%objs );
     $class->prepare_content_type( $spec, \%objs );
     $class->prepare_content_data( $spec, \%objs );
+    $class->prepare_role( $spec, \%objs );
     $class->prepare_template( $spec, \%objs );
 
     \%objs;
@@ -55,6 +59,8 @@ sub prepare_author {
         for my $item ( @{ $spec->{author} } ) {
             my %arg = ref $item eq 'HASH' ? %$item : ( name => $item );
             $arg{nickname} ||= $arg{name};
+            delete $arg{roles};  ## not for now
+            my $permissions = delete $arg{permissions};
             my $author = MT::Test::Permission->make_author(%arg);
             if ( !defined $arg{is_superuser} or $arg{is_superuser} ) {
                 $author->is_superuser(1);
@@ -62,6 +68,12 @@ sub prepare_author {
             }
             $objs->{author}{ $author->name } = $author;
             push @author_names, $author->name;
+
+            if ($permissions) {
+                my $perm = $author->permissions(0);
+                $perm->set_these_permissions($permissions);
+                $perm->save;
+            }
         }
     }
     if ( @author_names == 1 ) {
@@ -77,10 +89,18 @@ sub prepare_website {
     if ( ref $spec->{website} eq 'ARRAY' ) {
         for my $item ( @{ $spec->{website} } ) {
             my %arg = ref $item eq 'HASH' ? %$item : ( name => $item );
+            my $authors = delete $arg{authors};
 
             my $site = MT::Test::Permission->make_website(%arg);
             $objs->{website}{ $site->name } = $site;
             push @site_names, $site->name;
+
+            if ($authors) {
+                for my $author_name (@$authors) {
+                    my $author = $objs->{author}{$author_name} or croak "unknown author: $author_name";
+                    MT::Association->link($site, $author);
+                }
+            }
         }
     }
     if ( @site_names == 1 ) {
@@ -101,6 +121,8 @@ sub prepare_blog {
     if ( ref $spec->{blog} eq 'ARRAY' ) {
         for my $item ( @{ $spec->{blog} } ) {
             my %arg = ref $item eq 'HASH' ? %$item : ( name => $item );
+            my $authors = delete $arg{authors};
+
             if ( my $parent_name = delete $arg{parent} ) {
                 my $parent = $objs->{website}{$parent_name} or croak "unknown parent: $parent_name";
                 $arg{parent_id} = $parent->id;
@@ -109,6 +131,13 @@ sub prepare_blog {
             my $blog = MT::Test::Permission->make_blog(%arg);
             $objs->{blog}{ $blog->name } = $blog;
             push @blog_names, $blog->name;
+
+            if ($authors) {
+                for my $author_name (@$authors) {
+                    my $author = $objs->{author}{$author_name} or croak "unknown author: $author_name";
+                    MT::Association->link($blog, $author);
+                }
+            }
         }
     }
     if ( $objs->{blog_id} && @blog_names ) {
@@ -134,7 +163,7 @@ sub prepare_image {
         for my $name ( sort keys %{ $spec->{image} } ) {
             my $item = $spec->{image}{$name};
             if ( ref $item eq 'HASH' ) {
-                my $blog_id = $item->{blog_id} || $objs->{blog_id}
+                my $blog_id = _find_blog_id($objs, $item)
                     or croak "blog_id is required: image";
                 my $file = "$image_dir/$name";
                 MT::Test::Image->write( file => $file );
@@ -161,6 +190,63 @@ sub prepare_image {
             }
         }
     }
+}
+
+sub prepare_asset {
+    my ( $class, $spec, $objs ) = @_;
+    return unless $spec->{asset};
+
+    require File::Path;
+
+    my $asset_dir = "$ENV{MT_TEST_ROOT}/assets";
+    File::Path::mkpath($asset_dir) unless -d $asset_dir;
+
+    if (ref $spec->{asset} eq 'ARRAY') {
+        $spec->{asset} = {map { $_ => {} } @{$spec->{asset}}};
+    }
+    if ( ref $spec->{asset} eq 'HASH' ) {
+        for my $name ( sort keys %{ $spec->{asset} } ) {
+            my $item = $spec->{asset}{$name};
+            if ( ref $item eq 'HASH' ) {
+                my $blog_id = _find_blog_id($objs, $item)
+                    or croak "blog_id is required: asset";
+                my $asset_class = delete $item->{class} || _get_asset_class($name);
+                my $file = "$asset_dir/$name";
+                my ($ext) = $name =~ /(\.[^.]*)\z/;
+                if ($asset_class eq 'image' && !$item->{body}) {
+                    require MT::Test::Image;
+                    MT::Test::Image->write(file => $file);
+                } else {
+                    my $body = delete $item->{body} || $name;
+                    open my $fh, '>', $file;
+                    print $fh $body;
+                    close $fh;
+                }
+                my %args = (
+                    class     => $asset_class,
+                    blog_id   => $blog_id,
+                    url       => "%s/assets/$name",
+                    file_path => $file,
+                    file_ext  => $ext,
+                    %$item,
+                );
+
+                if ( my $parent_name = delete $args{parent} ) {
+                    my $parent = $objs->{$asset_class}{$parent_name}
+                        or croak "unknown parent asset: $parent_name";
+                    $args{parent} = $parent->id;
+                }
+                my $asset = MT::Test::Permission->make_asset(%args);
+                $objs->{$asset_class}{$name} = $asset;
+            }
+        }
+    }
+}
+
+sub _get_asset_class {
+    my $name = shift;
+    my ($class) = MT::Asset->handler_for_file($name) =~ /(\w+)$/;
+    lc($class || 'asset');
 }
 
 sub prepare_tag {
@@ -191,11 +277,6 @@ sub prepare_category {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
-                if ( my $blog_name = delete $arg{blog} ) {
-                    my $blog = $objs->{blog}{$blog_name}
-                        or croak "unknown blog: $blog_name";
-                    $arg{blog_id} = $blog->id;
-                }
                 if ( my $parent_name = $arg{parent} ) {
                     my $parent = $objs->{category}{$parent_name}
                         or croak "unknown parent category: $parent_name";
@@ -205,7 +286,7 @@ sub prepare_category {
             else {
                 %arg = ( label => $item );
             }
-            $arg{blog_id} ||= $objs->{blog_id}
+            $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: category";
             my $cat = MT::Test::Permission->make_category(%arg);
             $objs->{category}{ $cat->label } = $cat;
@@ -222,11 +303,6 @@ sub prepare_folder {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
-                if ( my $blog_name = delete $arg{blog} ) {
-                    my $blog = $objs->{blog}{$blog_name}
-                        or croak "unknown blog: $blog_name";
-                    $arg{blog_id} = $blog->id;
-                }
                 if ( my $parent_name = $arg{parent} ) {
                     my $parent = $objs->{folder}{$parent_name}
                         or croak "unknown parent folder: $parent_name";
@@ -236,7 +312,7 @@ sub prepare_folder {
             else {
                 %arg = ( label => $item );
             }
-            $arg{blog_id} ||= $objs->{blog_id}
+            $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: folder";
             my $folder = MT::Test::Permission->make_folder(%arg);
             $objs->{folder}{ $folder->label } = $folder;
@@ -253,11 +329,6 @@ sub prepare_customfield {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
-                if ( my $blog_name = delete $arg{blog} ) {
-                    my $blog = $objs->{blog}{$blog_name}
-                        or croak "unknown blog: $blog_name";
-                    $arg{blog_id} = $blog->id;
-                }
             }
             else {
                 %arg = (
@@ -268,7 +339,7 @@ sub prepare_customfield {
                     tag      => $item,
                 );
             }
-            $arg{blog_id} ||= $objs->{blog_id}
+            $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: customfield";
             my $field = MT::Test::Permission->make_field(%arg);
             $objs->{customfield}{ $field->name } = $field;
@@ -285,17 +356,6 @@ sub prepare_entry {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
-                if ( my $author_name = delete $arg{author} ) {
-                    my $author = $objs->{author}{$author_name}
-                        or croak "unknown author: $author_name: entry: $arg{title}";
-                    $arg{author_id} = $author->id;
-                }
-                $arg{author_id} ||= $objs->{author_id};
-                if ( my $blog_name = delete $arg{blog} ) {
-                    my $blog = $objs->{blog}{$blog_name}
-                        or croak "unknown blog: $blog_name";
-                    $arg{blog_id} = $blog->id;
-                }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
                     require MT::Entry;
@@ -308,9 +368,9 @@ sub prepare_entry {
             my $title     = $arg{title} || '(no title)';
             my @cat_names = @{ delete $arg{categories} || [] };
 
-            my $blog_id = $arg{blog_id} || $objs->{blog_id}
+            my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: entry: $title";
-            my $author_id = $arg{author_id} || $objs->{author_id}
+            my $author_id = _find_author_id($objs, \%arg)
                 or croak "author_id is required: entry: $title";
 
             my $entry = MT::Test::Permission->make_entry(
@@ -342,17 +402,6 @@ sub prepare_page {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
-                if ( my $author_name = delete $arg{author} ) {
-                    my $author = $objs->{author}{$author_name}
-                        or croak "unknown author: $author_name: page: $arg{title}";
-                    $arg{author_id} = $author->id;
-                }
-                $arg{author_id} ||= $objs->{author_id};
-                if ( my $blog_name = delete $arg{blog} ) {
-                    my $blog = $objs->{blog}{$blog_name}
-                        or croak "unknown blog: $blog_name";
-                    $arg{blog_id} = $blog->id;
-                }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
                     require MT::Entry;
@@ -365,9 +414,9 @@ sub prepare_page {
             my $title       = $arg{title} || '(no title)';
             my $folder_name = delete $arg{folder};
 
-            my $blog_id = $arg{blog_id} || $objs->{blog_id}
+            my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: page: $title";
-            my $author_id = $arg{author_id} || $objs->{author_id}
+            my $author_id = _find_author_id($objs, \%arg)
                 or croak "author_id is required: page: $title";
 
             my $page = MT::Test::Permission->make_page(
@@ -453,7 +502,7 @@ sub prepare_content_type {
                 @field_spec = @{ delete $ct_arg{fields} || [] };
             }
 
-            my $blog_id = $ct_arg{blog_id} || $objs->{blog_id}
+            my $blog_id = _find_blog_id($objs, \%ct_arg)
                 or croak "blog_id is required: content_type: $ct_name";
 
             my $ct = $objs->{content_type}{$ct_name}{content_type};
@@ -559,13 +608,9 @@ sub prepare_content_data {
                     or croak "content_type is required: content_data: $name";
                 $arg{content_type_id} = $ct->id;
 
-                if ( my $author = delete $arg{author} ) {
-                    $author = $objs->{author}{$author}
-                        or croak "unknown author: $author";
-                    $arg{author_id} = $author->id;
-                }
-                $arg{author_id} ||= $objs->{author_id};
-                $arg{blog_id}   ||= $objs->{blog_id}
+                $arg{author_id} ||= _find_author_id($objs, \%arg)
+                    or croak "author_id is required: content_data: $name";
+                $arg{blog_id}   ||= _find_blog_id($objs, \%arg)
                     or croak "blog_id is required: content_data: $name";
                 $arg{label} = $name unless defined $arg{label};
 
@@ -672,6 +717,101 @@ sub prepare_content_data {
     }
 }
 
+sub prepare_role {
+    my ($class, $spec, $objs) = @_;
+    return unless $spec->{role};
+    if (ref $spec->{role} eq 'HASH') {
+        for my $name (keys %{$spec->{role}}) {
+            my @perms;
+            my @role_perms;
+            if (ref $spec->{role}{$name} eq 'HASH') {
+                @role_perms = @{ $spec->{role}{$name}{permissions} || [] };
+            } else {
+                @role_perms = @{ $spec->{role}{$name} || [] };
+            }
+            for my $role_perm (@role_perms) {
+                my $reftype = ref $role_perm;
+                if ($reftype eq 'HASH') {   # for content type
+                    my $ct_name = $role_perm->{content_type};
+                    my $cf_name = $role_perm->{content_field};
+                    my $ct_perm = $role_perm->{permissions};
+                    if ($ct_name) {
+                        my $ct = $objs->{content_type}{$ct_name}{content_type}
+                            or croak "unknown content type: $ct_name";
+                        if ($cf_name) {
+                            my $cf = $objs->{content_type}{$ct_name}{content_field}{$cf_name}
+                                or croak "unknown content field: $ct_name $cf_name";
+                            push @perms, "content_type:".$ct->unique_id."-content_field:".$cf->unique_id;
+                        } else {
+                            croak "content_type role permissions are missing: $name" unless $ct_perm;
+                            for my $perm (@$ct_perm) {
+                                push @perms, "$perm:".$ct->unique_id;
+                                if ($perm eq 'manage_content_data') {
+                                    push @perms, "create_content_data:".$ct->unique_id;
+                                    push @perms, "publish_content_data:".$ct->unique_id;
+                                    push @perms, "edit_all_content_data:".$ct->unique_id;
+                                    for my $cf_name (keys %{$objs->{content_type}{$ct_name}{content_field} || {}}) {
+                                        my $cf = $objs->{content_type}{$ct_name}{content_field}{$cf_name};
+                                        push @perms, "content_type:".$ct->unique_id."-content_field:".$cf->unique_id;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } elsif (!$reftype) {
+                    push @perms, $role_perm;
+                } else {
+                    croak "unknown role type: $name $reftype";
+                }
+            }
+            my $role = MT::Test::Permission->make_role(
+                name        => $name,
+                permissions => join ",", map {qq{'$_'}} uniq @perms,
+            );
+            $objs->{role}{$name} = $role;
+        }
+    }
+
+    # prepare association
+    for my $target (qw/author group/) {
+        if ($spec->{$target} && ref $spec->{$target} eq 'ARRAY') {
+            for my $item ( @{ $spec->{$target} } ) {
+                my %target_arg = ref $item eq 'HASH' ? %$item : ( name => $item );
+                next unless @{$target_arg{roles} || []};
+                my $target_obj = $objs->{$target}{$target_arg{name}};
+                for my $role (@{$target_arg{roles}}) {
+                    my %role_arg;
+                    if (ref $role eq 'HASH') {
+                        %role_arg = %$role;
+                    } else {
+                        %role_arg = (role => $role);
+                    }
+                    my $role_name = $role_arg{role} or croak "role is required";;
+                    my $role_obj = $objs->{role}{$role_name} or croak "unknown role: $role_name";
+
+                    my $site_obj;
+                    if (my $website_name = delete $role_arg{website}) {
+                        $site_obj = $objs->{website}{$website_name} or croak "unknown website: $website_name";
+                    }
+                    if (my $blog_name = delete $role_arg{blog}) {
+                        $site_obj = $objs->{blog}{$blog_name} or croak "unknown blog: $blog_name";
+                    }
+                    if (!$site_obj) {
+                        my @sites = (values(%{$objs->{website} || {}}), values(%{$objs->{blog} || {}}));
+                        if (@sites == 1) {
+                            $site_obj = $sites[0];
+                        } else {
+                            croak "blog/website is required: $role_name";
+                        }
+                    }
+
+                    MT::Association->link($target_obj, $role_obj, $site_obj);
+                }
+            }
+        }
+    }
+}
+
 sub prepare_template {
     my ( $class, $spec, $objs ) = @_;
     return unless $spec->{template};
@@ -686,12 +826,7 @@ sub prepare_template {
                     or croak "unknown archive_type: $archive_type";
                 $arg{type} = _template_type($archive_type);
             }
-            if ( my $blog_name = delete $arg{blog} ) {
-                my $blog = $objs->{blog}{$blog_name}
-                    or croak "unknown blog: $blog_name";
-                $arg{blog_id} = $blog->id;
-            }
-            my $blog_id = $arg{blog_id} ||= $objs->{blog_id}
+            my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: template: $arg{type}";
 
             my $ct;
@@ -775,6 +910,28 @@ sub _file_template {
         next unless $archive_template->{default};
         return $prefix . $archive_template->{template};
     }
+}
+
+sub _find_blog_id {
+    my ($objs, $arg) = @_;
+    if (my $website_name = delete $arg->{website}) {
+        my $site = $objs->{website}{$website_name} or croak "unknown website: $website_name";
+        return $site->id;
+    }
+    if (my $blog_name = delete $arg->{blog}) {
+        my $site = $objs->{blog}{$blog_name} or croak "unknown blog: $blog_name";
+        return $site->id;
+    }
+    $arg->{blog_id} || $objs->{blog_id};
+}
+
+sub _find_author_id {
+    my ($objs, $arg) = @_;
+    if (my $author_name = delete $arg->{author}) {
+        my $author = $objs->{author}{$author_name} or croak "unknown author: $author_name";
+        return $author->id;
+    }
+    $arg->{author_id} || $objs->{author_id};
 }
 
 1;

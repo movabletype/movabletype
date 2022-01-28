@@ -57,14 +57,14 @@
 </mt:if>
 
 <mt:if name="debug_riot">
-<script type="riot/tag" src="<mt:var name="static_uri">riot-ss/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="riot/tag" src="<mt:var name="static_uri">js/ss/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-fields.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-field.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <mt:else>
-<script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">riot-ss/riot.ss.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/contenttype/contenttype.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.min.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/ss/ss.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/contenttype/contenttype.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
 </mt:if>
 
 <script>

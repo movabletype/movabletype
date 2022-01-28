@@ -10,24 +10,16 @@
       <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
       <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
       <input type="hidden" name="new_blog_name" value="<mt:var name="new_blog_name" escape="html">" />
-    <mt:if name="site_url_path">
       <input type="hidden" name="site_url_subdomain" value="<mt:var name="site_url_subdomain" escape="html">" />
       <input type="hidden" name="site_url_path" value="<mt:var name="site_url_path" escape="html">" />
       <input type="hidden" name="use_subdomain" value="<mt:var name="use_subdomain" escape="html">" />
-    <mt:else>
-      <input type="hidden" name="site_url" value="<mt:var name="site_url" escape="html">" />
-    </mt:if>
       <input type="hidden" name="site_path" value="<mt:var name="site_path" escape="html">" />
       <input type="hidden" name="site_path_absolute" value="<mt:var name="site_path_absolute" escape="html">" />
       <input type="hidden" name="use_absolute" value="<mt:var name="use_absolute" escape="html">" />
       <input type="hidden" name="enable_archive_paths" value="<mt:var name="enable_archive_paths" escape="html">" />
-    <mt:if name="archive_url_path">
       <input type="hidden" name="archive_url_subdomain" value="<mt:var name="archive_url_subdomain" escape="html">" />
       <input type="hidden" name="archive_url_path" value="<mt:var name="archive_url_path" escape="html">" />
       <input type="hidden" name="use_archive_subdomain" value="<mt:var name="use_archive_subdomain" escape="html">" />
-    <mt:else>
-      <input type="hidden" name="archive_url" value="<mt:var name="archive_url" escape="html">" />
-    </mt:if>
       <input type="hidden" name="archive_path" value="<mt:var name="archive_path" escape="html">" />
       <input type="hidden" name="archive_path_absolute" value="<mt:var name="archive_path_absolute" escape="html">" />
       <input type="hidden" name="use_absolute_archive" value="<mt:var name="use_absolute_archive" escape="html">" />

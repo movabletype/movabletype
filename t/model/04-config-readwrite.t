@@ -72,6 +72,30 @@ EOF
     is($hash->{b}, '');
     is($hash->{c}, 'file_c');
     is($hash->{d}, 'file_d');
+
+    $cfg->Scalar('reset');
+    is($cfg->Scalar, 'reset', 'right value');
+    $cfg->Scalar('reset-db', 1);
+    is($cfg->Scalar, 'reset', 'right value');
+
+    $cfg->Array('reset');
+    is_deeply([$cfg->Array], ['file_1', 'file_2', 'reset'], 'right value');
+    $cfg->Array(['reset2']);
+    is_deeply([$cfg->Array], ['reset2'], 'right value');
+    $cfg->Array('reset3-db', 1);
+    is_deeply([$cfg->Array], ['reset2'], 'right value');
+
+    $cfg->Hash('e=reset');
+    is($cfg->Hash->{e}, 'reset', 'right value');
+    is($cfg->Hash->{a}, 'db_a', 'right value');
+    $cfg->Hash({a => 'reset', f => 'reset'});
+    is($cfg->Hash->{f}, 'reset', 'right value');
+    is($cfg->Hash->{a}, 'reset', 'right value');
+    $cfg->Hash({f => 'reset2'});
+    is(!exists($cfg->Hash->{a}), '', 'no longer exsits');
+    $cfg->Hash({a => 'reset2', f => 'reset3'}, 1);
+    is($cfg->Hash->{f}, 'reset2', 'right value');
+    is($cfg->Hash->{a}, 'reset2', 'right value');
 };
 
 done_testing();

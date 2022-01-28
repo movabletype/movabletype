@@ -74,4 +74,4 @@ cover_db/
 
 /vendor/
 
-t/selenium/evidence
+t/selenium/**/evidence

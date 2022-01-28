@@ -846,7 +846,7 @@ sub set_tag_filter_context {
     my ( $ctx, $param ) = @_;
 
     # You can pass undef to $object_args if you do not want to filter by SQL statements.
-    my ( $tag_arg, $blog_terms, $blog_args, $object_args, $filters, $datasource ) = @$param{qw(tag_arg blog_terms blog_args object_args filters datasource)};
+    my ( $objects, $tag_arg, $blog_terms, $blog_args, $object_args, $filters, $datasource ) = @$param{qw(objects tag_arg blog_terms blog_args object_args filters datasource)};
 
     require MT::Tag;
     require MT::ObjectTag;
@@ -899,8 +899,10 @@ sub set_tag_filter_context {
     }
 
     # We can filter by "JOIN" statement for simple args. (single tag, "or" condition)
-    return 'filter_only_by_join' if $object_args && $tag_arg !~ m/\b(AND|NOT)\b|\(|\)/i;
+    return 'filter_only_by_join'
+        if !$objects && $object_args && $tag_arg !~ m/\b(AND|NOT)\b|\(|\)/i;
 
+    # TODO: optimize $preloader
     my $preloader = @tag_ids
         ? sub {
         my ($object_id) = @_;

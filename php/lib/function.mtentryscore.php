@@ -8,6 +8,7 @@
 require_once('rating_lib.php');
 
 function smarty_function_mtentryscore($args, &$ctx) {
-    return hdlr_score($ctx, 'entry', $args['namespace'], $args['default'], $args);
+    return hdlr_score($ctx, 'entry', $args['namespace'], 
+        (isset($args['default']) ? $args['default'] : null), $args);
 }
 ?>

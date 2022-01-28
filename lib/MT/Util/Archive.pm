@@ -13,31 +13,32 @@ use base qw( MT::ErrorHandler );
 
 sub new {
     my $pkg = shift;
-    my ( $type, $file ) = @_;
+    my ($type, $file) = @_;
 
-    return $pkg->error( MT->translate('Type must be specified') )
+    return $pkg->error(MT->translate('Type must be specified'))
         unless $type;
 
     my $classes = MT->registry('archivers');
-    return $pkg->error( MT->translate('Registry could not be loaded') )
+    return $pkg->error(MT->translate('Registry could not be loaded'))
         unless $classes && %$classes;
 
     my $class = $classes->{$type};
     $class = $class->{class} if $class;
-    return $pkg->error( MT->translate('Registry could not be loaded') )
+    return $pkg->error(MT->translate('Registry could not be loaded'))
         unless $class;
+
+    $class =~ s/::(\w+)$/::Bin$1/ if MT->config->UseExternalArchiver;
 
     my $obj;
     eval "require $class;";
-    if ( my $e = $@ ) {
+    if (my $e = $@) {
         return $pkg->error($e);
     }
     eval { $obj = $class->new(@_); };
-    if ( my $e = $@ ) {
+    if (my $e = $@) {
         return $pkg->error($e);
-    }
-    elsif ( !defined $obj ) {
-        return $pkg->error( $class->errstr );
+    } elsif (!defined $obj) {
+        return $pkg->error($class->errstr);
     }
 
     $obj;
@@ -49,12 +50,20 @@ sub available_formats {
     return {} unless $classes && %$classes;
 
     my @data;
-    for my $key ( keys %$classes ) {
+    my $use_bin = MT->config->UseExternalArchiver ? 1 : 0;
+    for my $key (sort keys %$classes) {
         my $class = $classes->{$key}->{class};
+        $class =~ s/::(\w+)$/::Bin$1/ if $use_bin;
+        my $error;
         eval "require $class;";
-        next if $@;
+        if ($@) {
+            ($error = $@) =~ s/ at .+? line \d+$//s;
+            $error = MT->translate("Cannot load [_1]: [_2]", $class, $error);
+        } elsif ($use_bin && !$class->find_bin) {
+            $error = $class->errstr;
+        }
         my $label = $classes->{$key}->{label};
-        if ( 'CODE' eq ref($label) ) {
+        if ('CODE' eq ref($label)) {
             $label = $label->();
         }
         push @data,
@@ -62,6 +71,7 @@ sub available_formats {
             key   => $key,
             label => $label,
             class => $class,
+            error => $error,
             };
     }
     @data;

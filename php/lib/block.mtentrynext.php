@@ -49,7 +49,8 @@ function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat) {
                     $eargs['category_id'] = $cat_id;
                 }
                 
-                list($next_entry) = $ctx->mt->db()->fetch_entries($eargs);
+                $entries = $ctx->mt->db()->fetch_entries($eargs);
+                $next_entry = isset($entries[0]) ? $entries[0] : null;
                 if ($next_entry) $_next_cache[$label] = $next_entry;
             }
             $ctx->stash('entry', $next_entry);

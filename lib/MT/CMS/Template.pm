@@ -1363,6 +1363,12 @@ sub _generate_list_widget_params {
 
 sub preview {
     my $app     = shift;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+    }) or return;
+
     my $blog_id = $app->param('blog_id');
     my $blog    = $app->blog;
     my $id      = $app->param('id');
@@ -1936,6 +1942,12 @@ sub _populate_archive_loop {
 sub delete_map {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        id          => [qw/ID/],
+        template_id => [qw/ID/],
+    }) or return;
+
     $app->validate_magic() or return;
     return $app->error( $app->translate('No permissions') )
         unless $app->can_do('edit_templates');
@@ -1965,6 +1977,15 @@ sub delete_map {
 
 sub add_map {
     my $app = shift;
+
+    $app->validate_param({
+        blog_id          => [qw/ID/],
+        cat_field_id     => [qw/ID/],
+        dt_field_id      => [qw/ID/],
+        file_template    => [qw/MAYBE_STRING/],
+        new_archive_type => [qw/MAYBE_STRING/],
+        template_id      => [qw/ID/],
+    }) or return;
 
     $app->validate_magic() or return;
     return $app->error( $app->translate('No permissions') )
@@ -2461,6 +2482,15 @@ sub refresh_all_templates {
     my ($app) = @_;
     $app->validate_magic or return;
 
+    $app->validate_param({
+        backup                 => [qw/MAYBE_STRING/],
+        blog_id                => [qw/ID/],
+        id                     => [qw/ID MULTI/],
+        action_name            => [qw/MAYBE_STRING/],
+        plugin_action_selector => [qw/MAYBE_STRING/],
+        refresh_type           => [qw/MAYBE_STRING/],
+    }) or return;
+
     require MT::Util::Log;
     MT::Util::Log::init();
 
@@ -2478,7 +2508,7 @@ sub refresh_all_templates {
     my @id;
     if ( my $blog_id = $app->param('blog_id') ) {
         if ( 'refresh_blog_templates' eq
-            ( $app->param('plugin_action_selector') || '' ) )
+            ( $app->param('action_name') || $app->param('plugin_action_selector') || '' ) )
         {
             ## called from website wide blog listing screen.
             @id = $app->multi_param('id');
@@ -2827,6 +2857,11 @@ BLOG: for my $blog_id (@id) {
 sub refresh_individual_templates {
     my ($app) = @_;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+    }) or return;
+
     require MT::Util;
 
     my $user = $app->user;
@@ -2988,6 +3023,10 @@ sub refresh_individual_templates {
 sub clone_templates {
     my ($app) = @_;
 
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my $user = $app->user;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
@@ -3039,6 +3078,10 @@ sub publish_templates_from_search {
     my $blog = $app->blog;
     require MT::Blog;
 
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my $templates
         = MT->model('template')->lookup_multi( [ $app->multi_param('id') ] );
     my @at_ids;
@@ -3070,6 +3113,11 @@ TEMPLATE: for my $tmpl (@$templates) {
 sub publish_index_templates {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        from_search => [qw/MAYBE_STRING/],
+        id          => [qw/ID MULTI/],
+    }) or return;
 
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
@@ -3111,6 +3159,13 @@ TEMPLATE: for my $tmpl (@$templates) {
 sub publish_archive_templates {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        from_search => [qw/MAYBE_STRING/],
+        id          => [qw/IDS MULTI/],
+        reedit      => [qw/MAYBE_STRING/],
+    }) or return;
 
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
@@ -3211,6 +3266,13 @@ sub publish_archive_templates {
 sub save_widget {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+        modules => [qw/MAYBE_STRING/],
+        name    => [qw/MAYBE_STRING/],
+    }) or return;
+
     $app->validate_magic() or return;
     my $author = $app->user;
 
@@ -3288,6 +3350,13 @@ sub save_widget {
 sub edit_widget {
     my $app = shift;
     my (%opt) = @_;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+        name    => [qw/MAYBE_STRING/],
+        saved   => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $id      = $app->param('id') || $opt{id};
     my $name    = $app->param('name');
@@ -3438,6 +3507,12 @@ sub edit_widget {
 
 sub delete_widget {
     my $app  = shift;
+
+    $app->validate_param({
+        _type => [qw/OBJTYPE/],
+        id    => [qw/ID MULTI/],
+    }) or return;
+
     my $type = $app->param('_type');
 
     return $app->errtrans("Invalid request.")

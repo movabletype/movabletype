@@ -9,6 +9,7 @@ use URI;
 use URI::QueryParam;
 use Test::More;
 use JSON;
+use File::Basename;
 
 with qw(
     MT::Test::Role::Request
@@ -31,6 +32,7 @@ sub init {
         1, undef,
         sub {
             $_[1]->{__test_output}    = '';
+            $_[1]->{redirect}         = 0;
             $_[1]->{upgrade_required} = 0;
         },
     ) or die(MT->errstr);
@@ -38,6 +40,9 @@ sub init {
         no warnings 'redefine';
         *MT::App::print = sub {
             my $app = shift;
+            if ($app->{redirect} && $_[0] =~ /Status:/) {
+                $app->{__test_output} = '';
+            }
             $app->{__test_output} ||= '';
             $app->{__test_output} .= join('', @_);
         };
@@ -71,6 +76,7 @@ sub launch_server {
         'MT::App::DataAPI'             => 'mt-data-api.cgi',
         'MT::App::Search'              => 'mt-search.cgi',
         'MT::App::Search::ContentData' => 'mt-cdsearch.cgi',
+        'MT::App::Upgrader'            => 'mt-upgrade.cgi',
     );
     my $script = join "/", $ENV{MT_HOME}, $mapping{$app_class} || "mt.cgi";
     my $sep    = $^O eq 'MSWin32' ? ';' : ':';
@@ -94,6 +100,9 @@ sub login {
     $self->{user} = $user;
     delete $self->{session};
     delete $self->{access_token};
+    if (my $app = MT->app) {
+        delete $app->{perms};
+    }
 }
 
 sub request {
@@ -107,10 +116,12 @@ sub request {
 
     $self->{content} = $res->decoded_content // '';
 
+    $self->{html_content} = '';
+
     # redirect?
     my $location;
-    if ($res->code =~ /^30/) {
-        $location = $res->headers->header('Location');
+    if ($res->header('Location')) {
+        $location = $res->header('Location');
     } elsif ($self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
         $location = $2;
     }
@@ -122,8 +133,11 @@ sub request {
         # avoid processing multiple requests in a second
         sleep 1;
 
-        push @{ $self->{locations} ||= [] }, $uri;
-        return $self->request($params, 1) unless $self->{no_redirect};
+        my $max_redirect = $self->{max_redirect} || 10;
+        if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
+            push @{ $self->{locations} ||= [] }, $uri;
+            return $self->request($params, 1) unless $self->{no_redirect};
+        }
     }
 
     if (my $message = $self->message_text) {
@@ -192,6 +206,10 @@ sub _request_locally {
                 -expires => '+10y',
             );
             push @headers, 'Cookie' => CGI::Cookie->new(\%cookie)->as_string;
+        }
+        for my $k (sort grep {/^HTTP_./} keys %ENV) {
+            my $f = ($k =~ /^HTTP_(.+)/)[0];
+            push @headers, $f => $ENV{$k};
         }
     }
 
@@ -275,7 +293,7 @@ sub _request_internally {
 
 sub _app {
     my $self = shift;
-    $self->{_app} || $self->{app_class}->instance;
+    $self->{_app} || MT->app;
 }
 
 sub locations {

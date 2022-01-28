@@ -49,7 +49,7 @@ my @count_specs = (
             my $profiler  = Data::ObjectDriver->profiler;
             my $query_log = $profiler->query_log;
             is( scalar @$query_log, 2, '2 query logs' );
-            like( $query_log->[-1], qr/(?:TOP\(1\)|LIMIT 1$)/, 'Has LIMIT statement' );
+            like( $query_log->[-1], qr/(?:TOP\(1\)|LIMIT 1|ROWNUM as line.+\(line <= 1\)$)/, 'Has LIMIT statement' );
         },
     },
     {   name       => 'pack with grep items',
@@ -75,7 +75,7 @@ my @count_specs = (
             my $profiler  = Data::ObjectDriver->profiler;
             my $query_log = $profiler->query_log;
             shift @$query_log;
-            unlike( $query_log->[0], qr/(?:TOP\(1\)|LIMIT 1$)/, 'Has no LIMIT statement' );
+            unlike( $query_log->[0], qr/(?:TOP\(1\)|LIMIT 1|ROWNUM as line.+\(line <= 1\)$)/, 'Has no LIMIT statement' );
         },
     },
 );

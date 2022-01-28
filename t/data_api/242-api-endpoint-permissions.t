@@ -30,6 +30,11 @@ my $blog = $app->model('blog')->load(1);
 my $start_time
     = MT::Util::ts2iso( $blog, MT::Util::epoch2ts( $blog, time() ), 1 );
 
+my @extra_permissions;
+if ($test_env->addon_exists('Sync.pack')) {
+    @extra_permissions = qw(manage_content_sync);
+}
+
 # test.
 my $suite = suite();
 test_data_api($suite);
@@ -58,13 +63,15 @@ sub suite {
                         blog => undef
                     },
                     {   permissions => [
+                            sort
                             qw( administer_blog administer_site administer_website comment create_post create_site
                                 edit_all_posts edit_assets
                                 edit_categories edit_config edit_notifications edit_tags edit_templates
                                 manage_category_set manage_content_data
                                 manage_content_types manage_feedback manage_member_blogs manage_pages
                                 manage_themes manage_users publish_post rebuild
-                                send_notifications set_publish_paths upload view_blog_log)
+                                send_notifications set_publish_paths upload view_blog_log),
+                            @extra_permissions,
                         ],
                         blog => { id => 1 },
                     },

@@ -1262,12 +1262,13 @@ sub _make_label_html {
 
     my $permalink  = MT::Util::encode_html( $obj->permalink );
     my $static_uri = MT->static_path;
+    my $view_title = MT->translate('View Content Data');
     my $view_link  = ( $status == MT::ContentStatus::RELEASE() && $permalink )
         ? qq{
             <span class="view-link">
               <a href="$permalink" class="d-inline-block" target="_blank">
                 <svg role="img" class="mt-icon mt-icon--sm">
-                  <title>View</title>
+                  <title>${view_title}</title>
                   <use xlink:href="${static_uri}images/sprite.svg#ic_permalink"></use>
                 </svg>
               </a>
@@ -1634,6 +1635,7 @@ sub preview_data {
             ? $preview_handler->( $f, $self->data->{ $f->{id} }, $self )
             : $self->data->{ $f->{id} };
         $field_data = '' unless defined $field_data && $field_data ne '';
+        my $escaped_field_data = MT::Util::encode_html($field_data);
 
         my $field_label = ( $f->{options} || +{} )->{label}
             || MT->translate('(No label)');
@@ -1641,7 +1643,7 @@ sub preview_data {
         my $escaped_field_label = MT::Util::encode_html($field_label);
 
         $data
-            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$field_data</div></div>};
+            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$escaped_field_data</div></div>};
     }
     $data;
 }

@@ -3,13 +3,13 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
-        DefaultLanguage => 'en_US',  ## for now
+        DefaultLanguage => 'en_US',    ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -17,83 +17,64 @@ BEGIN {
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Fixture::CmsPermission::Common1;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 sub make_id {
-    my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-    my $token = join '', map $alpha[ rand @alpha ], 1 .. 40;
+    my @alpha = ('a' .. 'z', 'A' .. 'Z', 0 .. 9);
+    my $token = join '', map $alpha[rand @alpha], 1 .. 40;
     $token;
 }
 
 ### Make test data
 $test_env->prepare_fixture('cms_permission/common1');
 
-my $aikawa = MT::Author->load( { name => 'aikawa' } );
+my $aikawa = MT::Author->load({ name => 'aikawa' });
 
 my $admin = MT::Author->load(1);
 
-# Run
-my ( $app, $out, $sess );
+# XXX: The following tests are to make sure session items are not exposed by the listing framework
+# Everything should be invalid or unknown
 
 subtest 'mode = list' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'list',
-            _type            => 'session',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                       "Request: list" );
-    ok( $out =~ m!Unknown Action!i, "list by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode => 'list',
+        _type  => 'session',
+    });
+    ok($app->generic_error =~ m!Unknown Action!i, "list by admin");
 
-    $sess = MT::Test::Permission->make_session(
+    my $sess = MT::Test::Permission->make_session(
         start => time,
         id    => make_id(),
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'list',
-            _type            => 'session',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                       "Request: list" );
-    ok( $out =~ m!Unknown Action!i, "list by non permitted user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode => 'list',
+        _type  => 'session',
+    });
+    ok($app->generic_error =~ m!Unknown Action!i, "list by non permitted user");
 };
 
 subtest 'mode = save' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'session',
-            start            => time,
-            id               => make_id(),
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode => 'save',
+        _type  => 'session',
+        start  => time,
+        id     => make_id(),
+    });
+    $app->has_invalid_request("save by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'session',
-            start            => time,
-            id               => make_id(),
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode => 'save',
+        _type  => 'session',
+        start  => time,
+        id     => make_id(),
+    });
+    $app->has_invalid_request("save by non permitted user");
 };
 
 subtest 'mode = edit' => sub {
@@ -101,35 +82,26 @@ subtest 'mode = edit' => sub {
         start => time,
         id    => make_id(),
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'session',
-            id               => $sess->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode => 'edit',
+        _type  => 'session',
+        id     => $sess->id,
+    });
+    $app->has_invalid_request("edit by admin");
 
     $sess = MT::Test::Permission->make_session(
         start => time,
         id    => make_id(),
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'session',
-            id               => $sess->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode => 'edit',
+        _type  => 'session',
+        id     => $sess->id,
+    });
+    $app->has_invalid_request("edit by non permitted user");
 };
 
 subtest 'mode = delete' => sub {
@@ -137,35 +109,26 @@ subtest 'mode = delete' => sub {
         start => time,
         id    => make_id(),
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            _type            => 'session',
-            id               => $sess->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
-    ok( $out =~ m!Invalid Request!i, "delete by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode => 'delete',
+        _type  => 'session',
+        id     => $sess->id,
+    });
+    $app->has_invalid_request("delete by admin");
 
     $sess = MT::Test::Permission->make_session(
         start => time,
         id    => make_id(),
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            _type            => 'session',
-            id               => $sess->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
-    ok( $out =~ m!Invalid Request!i, "delete by non permitted user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode => 'delete',
+        _type  => 'session',
+        id     => $sess->id,
+    });
+    $app->has_invalid_request("delete by non permitted user");
 };
 
 done_testing();
