@@ -48,6 +48,7 @@ t/site/
 t/db/mt.db
 t/archive/
 t/update/
+t/selenium/evidence/
 
 *.DS_Store
 *.swp
