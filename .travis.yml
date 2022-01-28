@@ -109,9 +109,9 @@ jobs:
 
     - # chromiumdriver
       if: type != cron
-      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t"
+      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
-      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="MT_TEST_JOBS=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
+      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
 
     - # no need to run extra tests under various environments
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/

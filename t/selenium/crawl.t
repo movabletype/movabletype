@@ -11,7 +11,7 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    plan skip_all => 'Skipped because MT_TEST_JOBS is not 1' if $ENV{MT_TEST_JOBS} && $ENV{MT_TEST_JOBS} != 1;
+    plan skip_all => 'Set MT_TEST_CRAWL=1 to enable the test' if $ENV{MT_TEST_CRAWL};
 
     $test_env = MT::Test::Env->new(
         StaticFilePath => 'MT_HOME/mt-static/',
