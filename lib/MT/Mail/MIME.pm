@@ -46,20 +46,15 @@ sub send {
     return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
 }
 
-my $ValidXferEncRegex = qr/^(base64|quoted\-printable|7bit|8bit|binary)$/;
-
 sub fix_xfer_enc {
     my ($class, $enc, $charset, $body) = @_;
 
     my $non_ascii = $body =~ /[^\x00-\x7F]/;
 
+    $enc ||= MT->config->MailTransferEncoding;
     $enc = $enc ? lc($enc) : '';
-    $enc = '' unless $enc =~ $ValidXferEncRegex;
-    if ($charset =~ /utf-?8/i && (!$enc || $enc eq '7bit')) {
-        my $enc_conf = MT->config->MailTransferEncoding;
-        $enc_conf = $enc_conf ? lc($enc_conf) : '';
-        $enc = $enc_conf ne '7bit' && $enc_conf =~ $ValidXferEncRegex ? $enc_conf : '8bit';
-    }
+    $enc = '' unless $enc       =~ /^(base64|quoted\-printable|7bit|8bit|binary)$/;
+    $enc = 'base64' if $charset =~ /utf-?8/i && (!$enc || $enc eq '7bit') && $non_ascii;
     $enc ||= '7bit';
 
     if ($enc =~ /8bit|7bit/) {

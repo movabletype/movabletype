@@ -55,7 +55,7 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
             ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
             my $last_sent = $server->last_sent_mail;
             like($last_sent, qr{mail body},                           'right body');
-            like($last_sent, qr{Content-Transfer-Encoding: 8bit\r\n}, 'right newline chars');
+            like($last_sent, qr{Content-Transfer-Encoding: 7bit\r\n}, 'right newline chars');
         };
 
         subtest 'different cases' => sub {
