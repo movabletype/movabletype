@@ -97,14 +97,12 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     input           => $body_short,
                     mailEnc         => 'iso-2022-jp',
                     xferEnc         => '8bit',
-                    expected        => sub { $_[0] },
                     expected_header => { 'Content-Transfer-Encoding' => '7bit' },
                 },
                 {
                     name            => 'prefer auto detected xfer encoding 7bit with length is long',
                     input           => $body_long,
                     xferEnc         => '8bit',
-                    expected        => sub { $_[0] },
                     expected_header => { 'Content-Transfer-Encoding' => '8bit' },
                 },
                 {
@@ -112,21 +110,18 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     input           => $body_long,
                     mailEnc         => 'iso-2022-jp',
                     xferEnc         => 'base64',
-                    expected        => sub { $_[0] },
                     expected_header => { 'Content-Transfer-Encoding' => '7bit' },
                 },
                 {
                     name            => 'auto detect xfer encoding for short body',
                     input           => $body_short,
                     xferEnc         => undef,
-                    expected        => sub { $_[0] },
                     expected_header => { 'Content-Transfer-Encoding' => '8bit' },
                 },
                 {
                     name            => 'auto detect xfer encoding for long body',
                     input           => $body_long,
                     xferEnc         => undef,
-                    expected        => sub { $_[0] },
                     expected_header => { 'Content-Transfer-Encoding' => '8bit' },
                 },
                 {
@@ -134,21 +129,18 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     input           => $body_short,
                     mailEnc         => 'iso-2022-jp',
                     xferEnc         => undef,
-                    expected        => sub { $_[0] },
                     expected_header => { 'Content-Transfer-Encoding' => '7bit' },
                 },
                 {
                     name            => 'auto correct wrong xfer encoding',
                     input           => $body_short,
                     xferEnc         => '7bit',
-                    expected        => sub { $_[0] },
                     expected_header => { 'Content-Transfer-Encoding' => '8bit' },
                 },
                 {
                     name            => 'auto correct unknown xfer encoding',
                     input           => $body_short,
                     xferEnc         => 'unknown',
-                    expected        => sub { $_[0] },
                     expected_header => { 'Content-Transfer-Encoding' => '8bit' },
                 },
                 {
@@ -156,7 +148,6 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     input           => $body_short,
                     xferEnc         => 'base64',
                     header          => { To => "あ<t1\@a.com>" },
-                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
                     expected_header => {
                         To                          => expected_regex('あ'),
                         'Content-Transfer-Encoding' => 'base64',
@@ -167,7 +158,6 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     input           => $body_short,
                     xferEnc         => 'base64',
                     header          => { To => ["あ<t1\@a.com>", "い<t2\@a.com>"] },
-                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
                     expected_header => {
                         To                          => expected_regex('あ', 'い'),
                         'Content-Transfer-Encoding' => 'base64',
@@ -179,7 +169,6 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     mailEnc         => 'iso-8859-1',
                     xferEnc         => 'base64', # over spec
                     header          => { To => "a/a<t1\@a.com>" },
-                    expected        => sub { $_[0] },
                     expected_header => {
                         To                          => qr{a/a},
                         'Content-Transfer-Encoding' => '7bit',
@@ -191,7 +180,6 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     mailEnc         => 'iso-8859-1',
                     xferEnc         => 'base64', # over spec
                     header          => { To => ["a/a<t1\@a.com>", "a/b<t2\@a.com>"] },
-                    expected        => sub { $_[0] },
                     expected_header => {
                         To                          => qr{a/a|a/b},
                         'Content-Transfer-Encoding' => '7bit',
@@ -207,12 +195,10 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     for my $lb ('', "\n", "\r\n", "\n\n", "\r\n\r\n", "\r\r\n") {
                         my @cases = ({
                                 name     => 'utf8',
-                                expected => sub { $_[0] },
                             },
                             {
                                 name     => 'iso-2022-jp',
                                 mailEnc  => 'iso-2022-jp',
-                                expected => sub { $_[0] },
                             },
                         );
                         for my $case (@cases) {
@@ -234,7 +220,14 @@ sub send_mail_suite {
     $mt->config->set('MailEncoding',         $data->{mailEnc});
     subtest $data->{name} => sub {
         my ($headers, $body) = send_mail({ %{ $data->{header} || {} } }, $data->{input});
-        my $expected = $data->{expected}->(Encode::encode($data->{mailEnc} || 'utf8', $data->{input}));
+        my $expected = do {
+            my $encoded = Encode::encode($data->{mailEnc} || 'utf8', $data->{input});
+            my $cb = {
+                'base64'           => sub { MIME::Base64::encode_base64($_[0]) },
+                'quoted-printable' => sub { encode_qp($_[0]) },
+            }->{$headers->{'Content-Transfer-Encoding'}->[0]};
+            $cb ? $cb->($encoded) : $encoded;
+        };
         $body     =~ s{\x0d\x0a|\x0d|\x0a}{}g;
         $expected =~ s{\x0d\x0a|\x0d|\x0a}{}g;
         is($body, $expected, 'right body');
