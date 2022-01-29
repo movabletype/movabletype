@@ -32,63 +32,46 @@ isa_ok($mt, 'MT');
 subtest 'fix_xfer_enc' => sub {
     my $mail_module = MT::Util::Mail::find_module('Email::MIME');
     my $test        = sub {
-        my ($conf, $arg, $charset, $body, $expected) = @_;
-        $mt->config->set('MailTransferEncoding', $conf);
-        my $msg = qq!conf:"$conf", arg:"$arg", charset:"$charset"!;
-        is($mail_module->fix_xfer_enc($arg, $charset, $body), $expected, $msg);
+        my ($enc, $charset, $body, $expected) = @_;
+        is($mail_module->fix_xfer_enc($enc, $charset, $body), $expected, qq!enc:"$enc", charset:"$charset"!);
     };
 
-    $test->('',                 '',                 'utf-8',       '',        '8bit');
-    $test->('',                 '',                 'iso-2022-jp', '',        '7bit');
-    $test->('',                 'base64',           'utf-8',       '',        'base64');
-    $test->('',                 'base64',           'iso-2022-jp', '',        'base64');
-    $test->('',                 '8bit',             'utf-8',       '',        '8bit');
-    $test->('',                 '8bit',             'iso-2022-jp', '',        '8bit');
-    $test->('',                 '7bit',             'utf-8',       '',        '8bit');
-    $test->('',                 '7bit',             'UTF-8',       '',        '8bit');
-    $test->('',                 '7bit',             'iso-2022-jp', '',        '7bit');
-    $test->('',                 'quoted-printable', 'utf-8',       '',        'quoted-printable');
-    $test->('',                 'quoted-printable', 'iso-2022-jp', '',        'quoted-printable');
-    $test->('',                 'unknown',          'utf-8',       '',        '8bit');
-    $test->('',                 'unknown',          'iso-2022-jp', '',        '7bit');
-    $test->('base64',           '',                 'utf-8',       '',        'base64');
-    $test->('base64',           '',                 'iso-2022-jp', '',        '7bit');
-    $test->('8bit',             '',                 'utf-8',       '',        '8bit');
-    $test->('8bit',             '',                 'iso-2022-jp', '',        '7bit');
-    $test->('7bit',             '',                 'utf-8',       '',        '8bit');
-    $test->('7bit',             '',                 'UTF-8',       '',        '8bit');
-    $test->('7bit',             '',                 'iso-2022-jp', '',        '7bit');
-    $test->('quoted-printable', '',                 'utf-8',       '',        'quoted-printable');
-    $test->('quoted-printable', '',                 'iso-2022-jp', '',        '7bit');
-    $test->('unknown',          '',                 'utf-8',       '',        '8bit');
-    $test->('unknown',          '',                 'iso-2022-jp', '',        '7bit');
-    $test->('7bit',             'base64',           'iso-2022-jp', '',        'base64');
-    $test->('7bit',             'base64',           'utf-8',       '',        'base64');
-    $test->('8bit',             'base64',           'iso-2022-jp', '',        'base64');
-    $test->('8bit',             'base64',           'utf-8',       '',        'base64');
-    $test->('base64',           '7bit',             'iso-2022-jp', '',        '7bit');
-    $test->('base64',           '7bit',             'utf-8',       '',        'base64');
-    $test->('base64',           '8bit',             'iso-2022-jp', '',        '8bit');
-    $test->('base64',           '8bit',             'utf-8',       '',        '8bit');
+    my $jp = 'あ';
+
+    $test->('',                 'utf-8',       'a', '7bit');
+    $test->('',                 'utf-8',       $jp, 'base64');
+    $test->('',                 'iso-2022-jp', 'a', '7bit');
+    $test->('',                 'iso-2022-jp', $jp, '7bit');
+    $test->('base64',           'utf-8',       'a', 'base64');
+    $test->('base64',           'iso-2022-jp', 'a', 'base64');
+    $test->('8bit',             'utf-8',       'a', '8bit');
+    $test->('8bit',             'iso-2022-jp', 'a', '8bit');
+    $test->('7bit',             'utf-8',       'a', '7bit');
+    $test->('7bit',             'UTF-8',       'a', '7bit');
+    $test->('7bit',             'utf-8',       $jp, 'base64');
+    $test->('7bit',             'UTF-8',       $jp, 'base64');
+    $test->('7bit',             'iso-2022-jp', 'a', '7bit');
+    $test->('quoted-printable', 'utf-8',       'a', 'quoted-printable');
+    $test->('quoted-printable', 'iso-2022-jp', 'a', 'quoted-printable');
+    $test->('unknown',          'utf-8',       'a', '7bit');
+    $test->('unknown',          'iso-2022-jp', 'a', '7bit');
 
     # 998 octets detection tests
-    my $jp = 'あ';
-    $test->('',       '',       'utf-8',       'a' x 999,              'quoted-printable');
-    $test->('',       '',       'iso-2022-jp', 'a' x 999,              'quoted-printable');
-    $test->('',       '',       'utf-8',       $jp . 'a' x 999,        'base64');
-    $test->('',       '',       'iso-2022-jp', $jp . 'a' x 999,        'base64');
-    $test->('',       '',       'utf-8',       "\n" . 'a' x 999,       'quoted-printable');
-    $test->('',       '',       'iso-2022-jp', "\n" . 'a' x 999,       'quoted-printable');
-    $test->('',       '',       'utf-8',       "\n" . $jp . 'a' x 999, 'base64');
-    $test->('',       '',       'iso-2022-jp', "\n" . $jp . 'a' x 999, 'base64');
-    $test->('',       '',       'utf-8',       $jp x 333,              'base64');             # 333 x 3byte = 999
-    $test->('',       '',       'iso-2022-jp', $jp x 333,              '7bit');               # 333 x 2byte = 666
-    $test->('',       '',       'iso-2022-jp', $jp x 500,              'base64');             # 500 x 2byte = 1000
-    $test->('',       '',       'utf-8',       "\n" . $jp x 333,       'base64');             # 333 x 3byte = 999
-    $test->('',       '',       'iso-2022-jp', "\n" . $jp x 333,       '7bit');               # 333 x 2byte = 666
-    $test->('',       '',       'iso-2022-jp', "\n" . $jp x 500,       'base64');             # 500 x 2byte = 1000
-    $test->('',       'base64', 'iso-2022-jp', $jp x 333,              'base64');             # 333 x 2byte = 666
-    $test->('base64', '',       'iso-2022-jp', $jp x 333,              '7bit');               # 333 x 2byte = 666
+    $test->('',       'utf-8',       'a' x 999,              'quoted-printable');
+    $test->('',       'iso-2022-jp', 'a' x 999,              'quoted-printable');
+    $test->('',       'utf-8',       $jp . 'a' x 999,        'base64');
+    $test->('',       'iso-2022-jp', $jp . 'a' x 999,        'base64');
+    $test->('',       'utf-8',       "\n" . 'a' x 999,       'quoted-printable');
+    $test->('',       'iso-2022-jp', "\n" . 'a' x 999,       'quoted-printable');
+    $test->('',       'utf-8',       "\n" . $jp . 'a' x 999, 'base64');
+    $test->('',       'iso-2022-jp', "\n" . $jp . 'a' x 999, 'base64');
+    $test->('',       'utf-8',       $jp x 333,              'base64');             # 333 x 3byte = 999
+    $test->('',       'iso-2022-jp', $jp x 333,              '7bit');               # 333 x 2byte = 666
+    $test->('',       'iso-2022-jp', $jp x 500,              'base64');             # 500 x 2byte = 1000
+    $test->('',       'utf-8',       "\n" . $jp x 333,       'base64');             # 333 x 3byte = 999
+    $test->('',       'iso-2022-jp', "\n" . $jp x 333,       '7bit');               # 333 x 2byte = 666
+    $test->('',       'iso-2022-jp', "\n" . $jp x 500,       'base64');             # 500 x 2byte = 1000
+    $test->('base64', 'iso-2022-jp', $jp x 333,              'base64');             # 333 x 2byte = 666
 };
 
 for my $mod_name ('MIME::Lite', 'Email::MIME') {
@@ -114,103 +97,58 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
             my $body_short = 'a' x 100;     # some number smaller than both 998
             my $body_long  = 'a' x 1000;    # some number bigger than both 998
             my @cases      = ({
-                    name            => 'reduce over spec encoding for iso-2022-jp',
                     input           => $body_short,
                     mailEnc         => 'iso-2022-jp',
-                    xferEnc         => '8bit',
                     expected_header => { 'Content-Transfer-Encoding' => '7bit' },
                 },
                 {
-                    name            => 'prefer auto detected xfer encoding 7bit with length is long',
                     input           => $body_long,
-                    xferEnc         => '8bit',
                     expected_header => { 'Content-Transfer-Encoding' => 'quoted-printable' },
                 },
                 {
-                    name            => 'reduce over spec encoding for iso-2022-jp',
                     input           => $body_long,
                     mailEnc         => 'iso-2022-jp',
                     xferEnc         => 'base64',
-                    expected_header => { 'Content-Transfer-Encoding' => 'quoted-printable' },
-                },
-                {
-                    name            => 'prefer auto detected xfer encoding 7bit with length is long',
-                    input           => $body_long. 'あ',
-                    xferEnc         => '8bit',
                     expected_header => { 'Content-Transfer-Encoding' => 'base64' },
                 },
                 {
-                    name            => 'auto detect xfer encoding for short body',
-                    input           => $body_short,
-                    xferEnc         => undef,
-                    expected_header => { 'Content-Transfer-Encoding' => '8bit' },
+                    input           => $body_long . 'あ',
+                    expected_header => { 'Content-Transfer-Encoding' => 'base64' },
                 },
                 {
-                    name            => 'auto detect xfer encoding for long body',
-                    input           => $body_long,
-                    xferEnc         => undef,
-                    expected_header => { 'Content-Transfer-Encoding' => 'quoted-printable' },
-                },
-                {
-                    name            => 'auto detect xfer encoding for iso-2022-jp',
                     input           => $body_short,
-                    mailEnc         => 'iso-2022-jp',
-                    xferEnc         => undef,
                     expected_header => { 'Content-Transfer-Encoding' => '7bit' },
                 },
                 {
-                    name            => 'auto correct wrong xfer encoding',
-                    input           => $body_short,
-                    xferEnc         => '7bit',
-                    expected_header => { 'Content-Transfer-Encoding' => '8bit' },
+                    input           => $body_long,
+                    expected_header => { 'Content-Transfer-Encoding' => 'quoted-printable' },
                 },
                 {
-                    name            => 'auto correct unknown xfer encoding',
                     input           => $body_short,
-                    xferEnc         => 'unknown',
-                    expected_header => { 'Content-Transfer-Encoding' => '8bit' },
+                    mailEnc         => 'iso-2022-jp',
+                    expected_header => { 'Content-Transfer-Encoding' => '7bit' },
                 },
                 {
-                    name            => 'to header utf8 single',
                     input           => $body_short,
-                    xferEnc         => 'base64',
                     header          => { To => "あ<t1\@a.com>" },
-                    expected_header => {
-                        To                          => expected_regex('あ'),
-                        'Content-Transfer-Encoding' => 'base64',
-                    },
+                    expected_header => { To => expected_regex('あ') },
                 },
                 {
-                    name            => 'to header utf8 multi',
                     input           => $body_short,
-                    xferEnc         => 'base64',
                     header          => { To => ["あ<t1\@a.com>", "い<t2\@a.com>"] },
-                    expected_header => {
-                        To                          => expected_regex('あ', 'い'),
-                        'Content-Transfer-Encoding' => 'base64',
-                    },
+                    expected_header => { To => expected_regex('あ', 'い') },
                 },
                 {
-                    name            => 'to header iso-8859-1 single',
                     input           => $body_short,
                     mailEnc         => 'iso-8859-1',
-                    xferEnc         => 'base64', # over spec
                     header          => { To => "a/a<t1\@a.com>" },
-                    expected_header => {
-                        To                          => qr{a/a},
-                        'Content-Transfer-Encoding' => '7bit',
-                    },
+                    expected_header => { To => qr{a/a} },
                 },
                 {
-                    name            => 'to header iso-8859-1 multi',
                     input           => $body_short,
                     mailEnc         => 'iso-8859-1',
-                    xferEnc         => 'base64', # over spec
                     header          => { To => ["a/a<t1\@a.com>", "a/b<t2\@a.com>"] },
-                    expected_header => {
-                        To                          => qr{a/a|a/b},
-                        'Content-Transfer-Encoding' => '7bit',
-                    },
+                    expected_header => { To => qr{a/a|a/b} },
                 },
             );
             send_mail_suite($_) for @cases;
