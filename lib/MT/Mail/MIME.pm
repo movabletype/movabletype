@@ -49,7 +49,10 @@ sub send {
 my $ValidXferEncRegex = qr/^(base64|quoted\-printable|7bit|8bit|binary)$/;
 
 sub fix_xfer_enc {
-    my ($class, $enc, $charset) = @_;
+    my ($class, $enc, $charset, $body) = @_;
+
+    my $non_ascii = $body =~ /[^\x00-\x7F]/;
+
     $enc = $enc ? lc($enc) : '';
     $enc = '' unless $enc =~ $ValidXferEncRegex;
     if ($charset =~ /utf-?8/i && (!$enc || $enc eq '7bit')) {
@@ -58,6 +61,14 @@ sub fix_xfer_enc {
         $enc = $enc_conf ne '7bit' && $enc_conf =~ $ValidXferEncRegex ? $enc_conf : '8bit';
     }
     $enc ||= '7bit';
+
+    if ($enc =~ /8bit|7bit/) {
+        for my $line (split(/\r\n|\r|\n/, Encode::encode($charset, $body))) {
+            use bytes;
+            return $non_ascii ? 'base64' : 'quoted-printable' if length($line) > 998;
+        }
+    }
+
     return $enc;
 }
 
