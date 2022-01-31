@@ -635,7 +635,7 @@ class MT {
         }
 
         $cache_id = $blog_id.';'.$fi_path;
-        if (!$ctx->is_cached('mt:'.$tpl_id, $cache_id)) {
+        if (!$ctx->isCached('mt:'.$tpl_id, $cache_id)) {
             if (isset($at) && $at) {
                 require_once("archive_lib.php");
                 try {

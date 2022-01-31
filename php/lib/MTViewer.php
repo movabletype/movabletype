@@ -234,7 +234,7 @@ class MTViewer extends Smarty {
     function add_global_filter($name, $code = null) {
         $this->global_attr[$name] = 1;
         if (isset($code)) {
-            $this->register_modifier($name, $code);
+            $this->registerPlugin('modifier', $name, $code);
         }
     }
 
