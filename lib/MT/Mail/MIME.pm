@@ -53,11 +53,20 @@ sub fix_xfer_enc {
 
     $enc ||= MT->config->MailTransferEncoding;
     $enc = $enc ? lc($enc) : '';
-    $enc = '' unless $enc       =~ /^(base64|quoted\-printable|7bit|8bit|binary)$/;
+
+    if ($enc && $enc !~ /^(?:base64|quoted\-printable|7bit|8bit|binary)$/) {
+        $enc = '';
+        require MT::Log;
+        MT->log({
+            message  => MT->translate('MailTransferEncoding was auto detected because an invalid value was given.'),
+            level    => MT::Log::WARNING(),
+        });
+    }
+
     $enc = 'base64' if $charset =~ /utf-?8/i && (!$enc || $enc eq '7bit') && $non_ascii;
     $enc ||= '7bit';
 
-    if ($enc =~ /8bit|7bit/) {
+    if ($enc =~ /^(?:8bit|7bit)$/) {
         for my $line (split(/\r\n|\r|\n/, Encode::encode($charset, $body))) {
             use bytes;
             return $non_ascii ? 'base64' : 'quoted-printable' if length($line) > 998;
