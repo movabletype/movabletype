@@ -40,7 +40,7 @@ subtest 'fix_xfer_enc' => sub {
     my $jp = 'あ';
 
     $test->('',                 'utf-8',       'a', '7bit');
-    $test->('',                 'utf-8',       $jp, 'base64');
+    $test->('',                 'utf-8',       $jp, '8bit');
     $test->('',                 'iso-2022-jp', 'a', '7bit');
     $test->('',                 'iso-2022-jp', $jp, '7bit');
     $test->('base64',           'utf-8',       'a', 'base64');
@@ -49,8 +49,8 @@ subtest 'fix_xfer_enc' => sub {
     $test->('8bit',             'iso-2022-jp', 'a', '8bit');
     $test->('7bit',             'utf-8',       'a', '7bit');
     $test->('7bit',             'UTF-8',       'a', '7bit');
-    $test->('7bit',             'utf-8',       $jp, 'base64');
-    $test->('7bit',             'UTF-8',       $jp, 'base64');
+    $test->('7bit',             'utf-8',       $jp, '8bit');
+    $test->('7bit',             'UTF-8',       $jp, '8bit');
     $test->('7bit',             'iso-2022-jp', 'a', '7bit');
     $test->('quoted-printable', 'utf-8',       'a', 'quoted-printable');
     $test->('quoted-printable', 'iso-2022-jp', 'a', 'quoted-printable');
