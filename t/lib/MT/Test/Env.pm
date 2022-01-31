@@ -138,6 +138,7 @@ sub write_config {
         LoggerPath             => 'TEST_ROOT/log',
         LoggerLevel            => 'DEBUG',
         MailTransfer           => 'debug',
+        MailTransferEncoding   => '8bit',
         DBIRaiseError          => 1,
         ShowIpInformation      => 1,
         EnableAddressBook      => 1,
