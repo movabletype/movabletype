@@ -33,6 +33,7 @@ subtest 'fix_xfer_enc' => sub {
     my $mail_module = MT::Util::Mail::find_module('Email::MIME');
     my $test        = sub {
         my ($enc, $charset, $body, $expected) = @_;
+        $mt->config->set('MailTransferEncoding', $enc);
         is($mail_module->fix_xfer_enc($enc, $charset, $body), $expected, qq!enc:"$enc", charset:"$charset"!);
     };
 

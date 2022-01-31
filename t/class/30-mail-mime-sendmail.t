@@ -46,7 +46,7 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
             validate_headers();
             my $last_sent = $sendmail->last_sent_mail();
             like($last_sent, qr{mail body},                           'right body');
-            like($last_sent, qr{Content-Transfer-Encoding: 7bit\n}, 'right newline chars');
+            like($last_sent, qr{Content-Transfer-Encoding: 8bit\n}, 'right newline chars');
         };
 
         subtest 'different cases' => sub {
