@@ -6,7 +6,7 @@
 # $Id$
 
 include_once("Smarty.class.php");
-class MTViewer extends SmartyBC {
+class MTViewer extends Smarty {
     var $varstack = array();
     var $stash_var_stack = array();
     var $__stash;
