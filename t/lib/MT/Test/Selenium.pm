@@ -414,7 +414,7 @@ sub screenshot_full {
 
 sub retry_until_success {
     my $self = shift;
-    my $args = { limit => 5, task => sub { }, teardown => sub { }, @_ };
+    my $args = { limit => $ENV{MT_TEST_SELENIUM_MAX_RETRY} || 1, task => sub { }, teardown => sub { }, @_ };
     for my $i (1 .. $args->{'limit'}) {
         my $exception;
         my $ret = try {
