@@ -58,8 +58,8 @@ sub fix_xfer_enc {
         $enc = '';
         require MT::Log;
         MT->log({
-            message  => MT->translate('MailTransferEncoding was auto detected because an invalid value was given.'),
-            level    => MT::Log::WARNING(),
+            message => MT->translate('MailTransferEncoding was auto detected because an invalid value was given.'),
+            level   => MT::Log::WARNING(),
         });
     }
 

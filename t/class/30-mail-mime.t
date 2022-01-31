@@ -160,11 +160,11 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 for my $length (1, 1000) {
                     for my $lb ('', "\n", "\r\n", "\n\n", "\r\n\r\n", "\r\r\n") {
                         my @cases = ({
-                                name     => 'utf8',
+                                name => 'utf8',
                             },
                             {
-                                name     => 'iso-2022-jp',
-                                mailEnc  => 'iso-2022-jp',
+                                name    => 'iso-2022-jp',
+                                mailEnc => 'iso-2022-jp',
                             },
                         );
                         for my $case (@cases) {
@@ -188,10 +188,10 @@ sub send_mail_suite {
         my ($headers, $body) = send_mail({ %{ $data->{header} || {} } }, $data->{input});
         my $expected = do {
             my $encoded = Encode::encode($data->{mailEnc} || 'utf8', $data->{input});
-            my $cb = {
+            my $cb      = {
                 'base64'           => sub { MIME::Base64::encode_base64($_[0]) },
                 'quoted-printable' => sub { encode_qp($_[0]) },
-            }->{$headers->{'Content-Transfer-Encoding'}->[0]};
+            }->{ $headers->{'Content-Transfer-Encoding'}->[0] };
             $cb ? $cb->($encoded) : $encoded;
         };
         $body     =~ s{\x0d\x0a|\x0d|\x0a}{}g;
