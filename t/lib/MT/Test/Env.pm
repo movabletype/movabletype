@@ -62,8 +62,16 @@ sub new {
 }
 
 sub load_envfile {
-    my $class   = shift;
+    my $class = shift;
     my $envfile = "$MT_HOME/.mt_test_env";
+    $class->_load_envfile($envfile);
+    my $driver = lc _driver();
+    my $envfile_for_driver = "$MT_HOME/.mt_test_env_$driver";
+    $class->_load_envfile($envfile_for_driver);
+}
+
+sub _load_envfile {
+    my ($class, $envfile) = @_;
     if (-f $envfile) {
         open my $fh, '<', $envfile or die $!;
         while (<$fh>) {

@@ -109,9 +109,9 @@ jobs:
 
     - # chromiumdriver
       if: type != cron
-      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t"
+      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="MT_TEST_SELENIUM_MAX_RETRY=5 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
-      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
+      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
 
     - # no need to run extra tests under various environments (use buster to keep MySQL < 8 for now)
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/

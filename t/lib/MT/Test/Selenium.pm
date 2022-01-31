@@ -82,6 +82,8 @@ our %EXTRA = (
 sub new {
     my ( $class, $env ) = @_;
 
+    plan skip_all => "Selenium testing is skipped by env" if $ENV{MT_TEST_SKIP_SELENIUM};
+
     my $driver_class = $ENV{MT_TEST_SELENIUM_DRIVER} || 'Selenium::Chrome';
     eval "require $driver_class" or plan skip_all => "No $driver_class";
 
@@ -412,7 +414,7 @@ sub screenshot_full {
 
 sub retry_until_success {
     my $self = shift;
-    my $args = { limit => 5, task => sub { }, teardown => sub { }, @_ };
+    my $args = { limit => $ENV{MT_TEST_SELENIUM_MAX_RETRY} || 1, task => sub { }, teardown => sub { }, @_ };
     for my $i (1 .. $args->{'limit'}) {
         my $exception;
         my $ret = try {
