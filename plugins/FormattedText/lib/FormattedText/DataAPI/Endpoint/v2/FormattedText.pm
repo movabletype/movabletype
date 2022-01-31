@@ -17,7 +17,7 @@ sub list {
 
     my $res = filtered_list( $app, $endpoint, 'formatted_text' ) or return;
 
-    +{  totalResults => $res->{count},
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };

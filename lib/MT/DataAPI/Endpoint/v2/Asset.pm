@@ -82,8 +82,8 @@ sub get_thumbnail {
 
     return +{
         url    => $thumbnail,
-        width  => $w,
-        height => $h,
+        width  => $w + 0,
+        height => $h + 0,
     };
 }
 
@@ -157,7 +157,7 @@ sub _list_for_entry {
     my $res = filtered_list( $app, $endpoint, 'asset', \%terms, \%args )
         or return;
 
-    +{  totalResults => $res->{count},
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -187,7 +187,7 @@ sub list_for_tag {
         or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -219,7 +219,7 @@ sub list_for_site_and_tag {
         or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };

@@ -31,7 +31,7 @@ sub list {
         }
     ) or return;
 
-    +{  totalResults => $res->{count} || 0,
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
