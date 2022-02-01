@@ -473,7 +473,7 @@ sub core_search_apis {
                 return 0 if $blog && $blog->is_blog;
                 return 1 if $author->is_superuser;
                 return 1 if $author->permissions(0)->can_do('administer');
-                return 1 if $author->permissions(0)->can_do('edit_template');
+                return 1 if $author->permissions(0)->can_do('edit_templates');
                 return 0;
             },
             'handler'    => '$Core::MT::CMS::Blog::build_blog_table',
@@ -510,7 +510,7 @@ sub core_search_apis {
                 return 0 if $blog_id;
                 return 1 if $author->is_superuser;
                 return 1 if $author->permissions(0)->can_do('administer');
-                return 1 if $author->permissions(0)->can_do('edit_template');
+                return 1 if $author->permissions(0)->can_do('edit_templates');
                 return 0;
             },
             'label'      => 'Sites',
