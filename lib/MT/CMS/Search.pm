@@ -10,14 +10,17 @@ use warnings;
 use MT::Util qw( is_valid_date encode_html first_n_words );
 
 sub core_search_apis {
-    my $app     = shift;
-    my $blog_id = $app->param('blog_id');
-    my $author  = $app->user;
+    my $app = shift;
+
+    # use a different variable name not to be bound in closures by chance.
+    # this user is used to determine if site-related values can be replaced or not.
+    my $user_not_to_be_bound = $app->user;
 
     my $types = {
         content_data => {
             order     => 50,
             condition => sub {
+                my $blog_id = MT->app->param('blog_id');
                 return 0
                     unless $app->model('content_type')->exist(
                     {   (     ($blog_id)
@@ -125,6 +128,7 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
+                my $blog_id = MT->app->param('blog_id');
                 my $cnt = MT->model('permission')->count(
                     [   {   (     ($blog_id)
                                 ? ( blog_id => $blog_id )
@@ -185,6 +189,7 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
+                my $blog_id = MT->app->param('blog_id');
                 my $cnt = MT->model('permission')->count(
                     {   (     ($blog_id)
                             ? ( blog_id => $blog_id )
@@ -235,6 +240,7 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
+                my $blog_id = MT->app->param('blog_id');
                 my $cnt = MT->model('permission')->count(
                     [   {   (     ($blog_id)
                                 ? ( blog_id => $blog_id )
@@ -292,6 +298,7 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
+                my $blog_id = MT->app->param('blog_id');
                 my $cnt = MT->model('permission')->count(
                     {   (     ($blog_id)
                             ? ( blog_id => $blog_id )
@@ -344,6 +351,7 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
+                my $blog_id = MT->app->param('blog_id');
                 my $terms;
                 push @$terms, { author_id => $author->id };
                 if ($blog_id) {
@@ -402,6 +410,8 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if $author->can_manage_users_groups;
+
+                my $blog_id = MT->app->param('blog_id');
                 return 0 if !$blog_id;
 
                 my $cnt = MT->model('permission')->count(
@@ -419,6 +429,8 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if $author->can_manage_users_groups;
+
+                my $blog_id = MT->app->param('blog_id');
                 return 0 if !$blog_id;
 
                 my $perm = $author->permissions($blog_id);
@@ -481,7 +493,7 @@ sub core_search_apis {
                 'description' => sub { $app->translate('Description') },
             },
             'replace_cols'       => [qw(name site_url site_path description)],
-            'can_replace'        => $author->is_superuser(),
+            'can_replace'        => $user_not_to_be_bound->is_superuser(),
             'can_search_by_date' => 0,
             'setup_terms_args'   => sub {
                 my ( $terms, $args, $blog_id ) = @_;
@@ -494,6 +506,7 @@ sub core_search_apis {
             'order'     => 1000,
             'condition' => sub {
                 my $author = MT->app->user;
+                my $blog_id = MT->app->param('blog_id');
                 return 0 if $blog_id;
                 return 1 if $author->is_superuser;
                 return 1 if $author->permissions(0)->can_do('administer');
@@ -517,7 +530,7 @@ sub core_search_apis {
                 'description' => sub { $app->translate('Description') },
             },
             'replace_cols'       => [qw(name site_url site_path description)],
-            'can_replace'        => $author->is_superuser(),
+            'can_replace'        => $user_not_to_be_bound->is_superuser(),
             'can_search_by_date' => 0,
             'view'               => 'system',
             'setup_terms_args'   => sub {
@@ -548,10 +561,11 @@ sub core_search_apis {
             'order'     => 1000,
             'condition' => sub {
                 my $author = MT->app->user;
+                my $blog_id = MT->app->param('blog_id');
                 return 0 if $blog_id;
                 return 1 if $author->is_superuser;
                 return 1 if $author->permissions(0)->can_do('administer');
-                return 1 if $author->permissions(0)->can_do('edit_template');
+                return 1 if $author->permissions(0)->can_do('edit_templates');
                 return 0;
             },
             'label'      => 'Sites',
@@ -586,8 +600,10 @@ sub core_search_apis {
             'system_permission' => 'administer,manage_users_groups',
             'label'             => 'Groups',
             'perm_check'        => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if $author->can_manage_users_groups;
+                my $blog_id = MT->app->param('blog_id');
                 if ($blog_id) {
                     my $perm = $author->permissions($blog_id);
                     return $perm->can_administer_site;
