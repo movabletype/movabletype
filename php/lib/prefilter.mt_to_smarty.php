@@ -301,10 +301,20 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
         $smart_source = $tpl_source;
     }
 
+    $php_open = $ldelim.'mtphp'.$rdelim;
+    $php_close = $ldelim.'/mtphp'.$rdelim;
+
     // allow normal php markers to work-- change them to
     // smarty php blocks...
     $smart_source = preg_replace('/<\?php(\s*.*?)\?>/s',
-        $ldelim.'mtphp'.$rdelim.'\1'.';'.$ldelim.'/mtphp'.$rdelim, $smart_source);
+        $php_open.'\1;'. $php_close, $smart_source);
+
+    // salvage old smarty php tags
+    $smart_source = preg_replace(
+        ["#{$ldelim}\\s*php\\s*{$rdelim}#", "#{$ldelim}\\s*/\\s*php\\s*{$rdelim}#"],
+        [$php_open, $php_close],
+        $smart_source
+    );
 
 #    echo $smart_source;
     return $smart_source;
