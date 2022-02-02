@@ -14,6 +14,7 @@ BEGIN {
 $ENV{EXTENDED_TESTING} or plan skip_all => 'set EXTENDED_TESTING=1 to enable this test';
 
 use MT::Test::PHP;
+use MT::Test::Tag;
 
 $test_env->prepare_fixture('db');
 
@@ -51,4 +52,28 @@ EOF
     is $error_log, '', 'no warnings';
 };
 
+subtest 'php only tag tests' => sub {
+    MT::Test::Tag->run_php_tests(1);
+};
+
 done_testing;
+
+__DATA__
+
+=== raw smarty tag allowed
+--- template
+left:{{textformat}}123{{/textformat}}:right
+--- expected
+left:123:right
+
+=== raw smarty php allowed
+--- template
+left:{{php}} echo 'a'. 'b'{{/php}}:right
+--- expected
+left:ab:right
+
+=== raw php tag allowed
+--- template
+left:<?php echo 'a'. 'b'?>:right
+--- expected
+left:ab:right
