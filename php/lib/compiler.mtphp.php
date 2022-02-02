@@ -6,6 +6,9 @@
 class smarty_compiler_mtphp extends Smarty_Internal_CompileBase {
 
     public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter = null) {
+        if (!$compiler->smarty->mt->config('DynamicTemplateAllowPHP')) {
+            $compiler->trigger_template_error('PHP is not allowed by DynamicTemplateAllowPHP configuration}', null, true);
+        }
         return '<?php ';
     }
 }
