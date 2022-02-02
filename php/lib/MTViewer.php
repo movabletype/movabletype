@@ -5,8 +5,8 @@
 #
 # $Id$
 
-include_once("SmartyBC.class.php");
-class MTViewer extends SmartyBC {
+include_once("Smarty.class.php");
+class MTViewer extends Smarty {
     var $varstack = array();
     var $stash_var_stack = array();
     var $__stash;
@@ -164,7 +164,7 @@ class MTViewer extends SmartyBC {
         $this->register_tag_handler('mtelseif', '','block');
 
         # Unregister the 'core' regex_replace so we can replace it
-        $this->register_modifier('regex_replace', array(&$this, 'regex_replace'));
+        $this->registerPlugin('modifier', 'regex_replace', array(&$this, 'regex_replace'));
 
         $this->setDefaultResourceType('mt');
 
@@ -234,7 +234,7 @@ class MTViewer extends SmartyBC {
     function add_global_filter($name, $code = null) {
         $this->global_attr[$name] = 1;
         if (isset($code)) {
-            $this->register_modifier($name, $code);
+            $this->registerPlugin('modifier', $name, $code);
         }
     }
 
