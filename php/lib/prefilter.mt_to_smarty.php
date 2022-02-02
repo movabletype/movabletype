@@ -241,11 +241,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
             }
 
             if ($fn_tag) {
-                $smart_source .= $ldelim . 'php' . $rdelim
-                    . '$_smarty_tpl->smarty->_cache[\'_tag_stack\'][] = array("' . $mttag . '"'
-                    // . ', array(' . implode(',', $ctx2->_compile_arg_list(null, null, $attrs, $dummy)) . '));'
-                    . ($var_export ? ', ' . var_export($attrs, true) : '')
-                    . ');' . $ldelim . '/php' . $rdelim;
+                $smart_source .= $ldelim . 'push_ctx_stack mttag="' . $mttag . '" ' . $attrargs . $rdelim;
             }
 
             $smart_source .= $ldelim.$open.
@@ -254,9 +250,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                                   $attrargs.
                                   $rdelim;
             if ($fn_tag) {
-                $smart_source .= $ldelim . 'php' . $rdelim
-                    . 'array_pop($_smarty_tpl->smarty->_cache[\'_tag_stack\']);'
-                    . $ldelim . '/php' . $rdelim;
+                $smart_source .= $ldelim . 'pop_ctx_stack' . $rdelim;
             }
 
             if ($close_mod_args) {
@@ -310,7 +304,8 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
     // allow normal php markers to work-- change them to
     // smarty php blocks...
     $smart_source = preg_replace('/<\?php(\s*.*?)\?>/s',
-                                 $ldelim.'php'.$rdelim.'\1'.';'.$ldelim.'/php'.$rdelim, $smart_source);
+        $ldelim.'mtphp'.$rdelim.'\1'.';'.$ldelim.'/mtphp'.$rdelim, $smart_source);
+
 #    echo $smart_source;
     return $smart_source;
 }
