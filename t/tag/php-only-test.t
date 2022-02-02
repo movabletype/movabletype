@@ -66,6 +66,12 @@ left:{{textformat}}123{{/textformat}}:right
 --- expected
 left:123:right
 
+=== raw smarty php allowed
+--- template
+left:{{php}} echo 'a'. 'b'{{/php}}:right
+--- expected
+left:ab:right
+
 === raw php tag allowed
 --- template
 left:<?php echo 'a'. 'b'?>:right
