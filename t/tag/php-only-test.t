@@ -67,12 +67,16 @@ left:{{textformat}}123{{/textformat}}:right
 left:123:right
 
 === raw smarty php allowed
+--- mt_config
+{DynamicTemplateAllowPHP => 1}
 --- template
 left:{{php}} echo 'a'. 'b'{{/php}}:right
 --- expected
 left:ab:right
 
 === raw php tag allowed
+--- mt_config
+{DynamicTemplateAllowPHP => 1}
 --- template
 left:<?php echo 'a'. 'b'?>:right
 --- expected
