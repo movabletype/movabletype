@@ -2529,13 +2529,6 @@ sub core_endpoints {
                 can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'category_set,category_sets',
             },
-            default_params => {
-                limit        => 10,
-                offset       => 0,
-                sortBy       => 'id',
-                sortOrder    => 'ascend',
-                searchFields => 'name',
-            },
             error_codes => {
                 403 => 'Do not have permission to retrieve the list of category sets.',
             },
