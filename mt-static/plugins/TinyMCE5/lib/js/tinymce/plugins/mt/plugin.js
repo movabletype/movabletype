@@ -230,36 +230,35 @@
           function updateButtonVisibility() {
               var s = ed.mtEditorStatus;
               $.each(hiddenControls, function(i, k) {
-                  $container
-                      .find('.mce_' + k)
-                      .css({
-                          display: ''
-                      })
-                      .removeClass('mce_mt_button_hidden');
+                  var label = tinymce.util.I18n.translate(ed.mtButtons[k].tooltip);
+                  $container.find(`button[title="${label}"]`)
+                  .css({
+                    display: ''
+                  })
+                  .removeClass('mce_mt_button_hidden');
               });
               hiddenControls = [];
               
               var supporteds = supportedButtons(s.mode, s.format);
-              
+
               function update(key) {
-                  if (! supporteds[key]) {
-                      $container.find('.mce_' + key)
+                if (! supporteds[key]) {
+                      var label = tinymce.util.I18n.translate(ed.mtButtons[key].tooltip);
+                      $container.find(`button[title="${label}"]`)
                           .css({
                               display: 'none'
                           })
                           .addClass('mce_mt_button_hidden');
                       hiddenControls.push(key);
                   }
-              }
+                }
               
               if (s.mode == 'source') {
                   proxies.source.setFormat(s.format);
               }
-              else {
-                  $.each(ed.mtButtons, function(name, button) {
-                      update(name);
-                  });
-              }
+              $.each(ed.mtButtons, function(name, button) {
+                  update(name);
+              });
               $(ed.editorContainer).find('.tox-toolbar-overlord .tox-toolbar').each(function(i) {
                   if (buttonRows[s.mode][i]) {
                       $(this).show();
