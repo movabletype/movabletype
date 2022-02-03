@@ -140,6 +140,9 @@ sub core_resources {
                 fields           => "${pkg}v2::Tag::fields",
                 updatable_fields => "${pkg}v2::Tag::updatable_fields",
             },
+            {   version          => 5,
+                fields           => "${pkg}v5::Tag::fields",
+            },
         ],
         'template' => [
             {   version          => 2,
