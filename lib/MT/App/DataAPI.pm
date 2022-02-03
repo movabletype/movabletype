@@ -10,6 +10,7 @@ use strict;
 use warnings;
 use base qw( MT::App );
 
+use MT::DataAPI::Endpoint::v5;
 use MT::DataAPI::Resource;
 use MT::DataAPI::Format;
 use MT::App::CMS;
@@ -3343,6 +3344,9 @@ sub core_endpoints {
                 403 => "Do not have permission to remove a member from group.",
             },
         },
+
+        # version5
+        @{MT::DataAPI::Endpoint::v5->endpoints},
     ];
 }
 
