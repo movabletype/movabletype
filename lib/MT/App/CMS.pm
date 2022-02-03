@@ -4110,35 +4110,32 @@ sub _translate_naughty_words {
     return MT::Util::translate_naughty_words($entry);
 }
 
-sub user_who_is_also_editing {
-    my $app  = shift;
-    my $type = $app->param('_type');
-    return unless $type;
-    my $id = $app->param('id');
-    $id = '0' unless $id;
-    my $ident
-        = 'autosave'
-        . ':user=%'
-        . ':type='
-        . $type . ':id='
-        . $id;
-
-    if ( my $blog = $app->blog ) {
+sub user_who_is_also_editing_the_same_stuff {
+    my $app   = shift;
+    my $type  = $app->param('_type') or return;
+    my $id    = $app->param('id') or return;
+    my $ident = 'autosave:user=%:type=' . $type . ':id=' . $id;
+    my $blog  = $app->blog;
+    if ($blog) {
         $ident .= ':blog_id=' . $blog->id;
     }
     if ( $type eq 'content_data' ) {
-        my $content_type_id = $app->param('content_type_id');
+        my $content_type_id = $app->param('content_type_id') or return;
         $ident .= ':content_type_id=' . $content_type_id;
     }
     require MT::Session;
-    my $sess_obj = MT::Session->load( { id => {like => $ident}, kind => 'AS' } );
-    if ($sess_obj) {
-        my ($user_id) = $sess_obj->id =~ /:user=([0-9]+)/;
-        if ($user_id != $app->user->id) {
-            return $app->model('author')->load($user_id);
-        }
+    my $sess_obj = MT::Session->load(
+        { id => {like => $ident}, kind => 'AS' },
+        { sort => 'start', direction => 'descend' } ) or return;
+    my ($user_id) = $sess_obj->id =~ /:user=([0-9]+)/;
+    if ($user_id != $app->user->id) {
+        my $user = $app->model('author')->load($user_id);
+        require MT::Util;
+        return {
+            name => $user->nickname || $user->name,
+            time => MT::Util::format_ts('%Y-%m-%d %H:%M:%S', MT::Util::epoch2ts($blog, $sess_obj->start), $blog),
+        } if $user;
     }
-    return;
 }
 
 sub autosave_session_obj {

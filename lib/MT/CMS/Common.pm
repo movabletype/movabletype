@@ -934,8 +934,9 @@ sub edit {
                 $param{autosaved_object_ts}
                     = MT::Util::epoch2ts( $blog, $sess_obj->start );
             }
-            if (my $other_user = $app->user_who_is_also_editing) {
-                $param{is_also_edited_by} = $other_user->nickname || $other_user->name;
+            if (my $other_user = $app->user_who_is_also_editing_the_same_stuff) {
+                $param{is_also_edited_by} = $other_user->{name};
+                $param{is_also_edited_at} = $other_user->{time};
             }
         }
     }

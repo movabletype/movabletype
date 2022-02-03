@@ -4605,6 +4605,7 @@ use vars qw( @ISA %Lexicon );
 	'Warning: If you set the basename manually, it may conflict with another content data.' => '警告: 出力ファイル名を手動で設定すると、他のコンテンツデータと衝突を起こす可能性があります。',
 	'You have successfully recovered your saved content data.' => 'コンテンツデータを元に戻しました。',
 	'You must configure this site before you can publish this content data.' => 'コンテンツデータを公開する前にサイトの設定を行ってください。',
+	'[_1] is also editing the same data (last updated at [_2]).' => '同じコンテンツデータを編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
 	q{Warning: Changing this content data's basename may break inbound links.} => q{警告: このコンテンツデータの出力ファイル名の変更は、内部のリンク切れの原因となります。},
 
 ## tmpl/cms/edit_content_type.tmpl
@@ -4676,6 +4677,8 @@ use vars qw( @ISA %Lexicon );
 	'Your customization preferences have been saved, and are visible in the form below.' => 'カスタマイズ設定を保存しました。下のフォームで確認できます。',
 	'Your notification has been sent.' => '通知を送信しました。',
 	'[_1] Assets' => '[_1]アセット',
+	'[_1] is also editing the same entry (last updated at [_2]).' => '同じ記事を編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
+	'[_1] is also editing the same page (last updated at [_2]).' => '同じウェブページを編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
 	'_USAGE_VIEW_LOG' => 'エラーの場合は、<a href="[_1]">ログ</a>をチェックしてください。',
 	'edit' => '編集',
 	q{(delimited by '[_1]')} => q{([_1]で区切る)},
@@ -4817,6 +4820,7 @@ use vars qw( @ISA %Lexicon );
 	'You must set the Template Name.' => 'テンプレート名を設定してください。',
 	'You must set the template Output File.' => 'テンプレートの出力ファイル名を設定してください。',
 	'Your [_1] has been published.' => '[_1]を再構築しました。',
+	'[_1] is also editing the same template (last updated at [_2]).' => '同じテンプレートを編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
 	'create' => '新規作成',
 	'hours' => '時間',
 	'minutes' => '分',

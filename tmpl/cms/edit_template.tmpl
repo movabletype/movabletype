@@ -49,7 +49,7 @@
   <mtapp:statusmsg
      id="someone-is-also-editing"
      class="warning">
-    <__trans phrase="[_1] is also editing the same template." params="<mt:var name="is_also_edited_by" escape="html">">
+    <__trans phrase="[_1] is also editing the same template (last updated at [_2])." params="<mt:var name="is_also_edited_by" escape="html">%%<mt:var name="is_also_edited_at" escape="html">">
   </mtapp:statusmsg>
     </mt:unless>
   </mt:if>
