@@ -82,8 +82,8 @@ sub get_thumbnail {
 
     return +{
         url    => $thumbnail,
-        width  => $w ? $w + 0 : undef,
-        height => $h ? $h + 0 : undef,
+        width  => defined $w ? $w + 0 : undef,
+        height => defined $h ? $h + 0 : undef,
     };
 }
 
