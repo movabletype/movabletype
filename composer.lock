@@ -1846,6 +1846,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozarts/assert.git",
+                "reference": "ab2cb0b3b559010b75981b1bdce728da3ee90ad6"
             },
             "dist": {
                 "type": "zip",
