@@ -21,7 +21,15 @@ sub fields {
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
         {   name      => 'content_type_count',
-            alias     => 'ct_count',
+            bulk_from_object => sub {
+                my ($objs, $hashes, $field) = @_;
+                my $app      = MT->instance;
+                my $ct_count = MT->model('category_set')->ct_count_by_blog($app->blog->id);
+                for my $i (0 .. (@$objs - 1)) {
+                    my $obj = $objs->[$i];
+                    $hashes->[$i]{ $field->{name} } = $ct_count->{ $obj->id } || 0;
+                }
+            },
             condition => sub {
                 my $app  = MT->instance or return;
                 my $user = $app->user   or return;

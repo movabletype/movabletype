@@ -23,8 +23,6 @@ jobs:
     - if: type != cron
       env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
     - if: type != cron
-      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t" USE_SELENIUM=1
-    - if: type != cron
       env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: type != cron
       env: TEST_IMAGE_NAME="buster" TEST_COMMAND="phpunit && make test-php-lint"
@@ -109,6 +107,12 @@ jobs:
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="centos8" TEST_COMMAND="phpunit && make test-php-lint"
 
+    - # chromiumdriver
+      if: type != cron
+      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="MT_TEST_SELENIUM_MAX_RETRY=5 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t"
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
+
     - # no need to run extra tests under various environments (use buster to keep MySQL < 8 for now)
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
@@ -120,8 +124,7 @@ before_script:
   - docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "BUILD_RELEASE_NUMBER=1 make"
 
 script:
-  - if [ -z "$USE_SELENIUM" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND" ; fi
-  - if [ -n "$USE_SELENIUM" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "$TEST_COMMAND" ; fi
+  - docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
 
 notifications:
   slack:

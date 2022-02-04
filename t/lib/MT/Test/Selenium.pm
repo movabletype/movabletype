@@ -82,6 +82,8 @@ our %EXTRA = (
 sub new {
     my ( $class, $env ) = @_;
 
+    plan skip_all => "Selenium testing is skipped by env" if $ENV{MT_TEST_SKIP_SELENIUM};
+
     my $driver_class = $ENV{MT_TEST_SELENIUM_DRIVER} || 'Selenium::Chrome';
     eval "require $driver_class" or plan skip_all => "No $driver_class";
 
@@ -119,10 +121,26 @@ sub new {
         code => sub {
             my $port = shift;
 
-            my $host  = MY_HOST;
-            my %extra = ( CGIPath => "http://$host:$port/cgi-bin/" );
+            my $pid_file = "$ENV{MT_TEST_ROOT}/.server.pid";
+            my $host     = MY_HOST;
+            my %extra    = (
+                CGIPath        => "http://$host:$port/cgi-bin/",
+                StaticWebPath  => "http://$host:$port/mt-static/",
+                StaticFilePath => "$ENV{MT_HOME}/mt-static",
+                PIDFilePath    => $pid_file,
+            );
             $env->update_config(%extra);
 
+            if (eval { require Server::Starter; require Net::Server::SS::PreFork; require Starman; 1 }) {
+                my @options = qw(-s Starman --workers 2);
+                push @options, '--env', (DEBUG ? 'development' : 'production');
+                Server::Starter::start_server(
+                    port     => "$host:$port",
+                    pid_file => $pid_file,
+                    exec     => ['plackup', @options, "$ENV{MT_HOME}/mt.psgi"],
+                );
+                exit;
+            }
             my $app        = MT::PSGI->new->to_app;
             my $static_app = Plack::App::Directory->new(
                 root => "$ENV{MT_HOME}/mt-static" );
@@ -179,6 +197,7 @@ sub DESTROY {
     }
     my $driver = $self->{driver} or return;
     $driver->quit;
+    $self->{server}->stop;
 }
 
 sub base_url {
@@ -395,7 +414,7 @@ sub screenshot_full {
 
 sub retry_until_success {
     my $self = shift;
-    my $args = { limit => 5, task => sub { }, teardown => sub { }, @_ };
+    my $args = { limit => $ENV{MT_TEST_SELENIUM_MAX_RETRY} || 1, task => sub { }, teardown => sub { }, @_ };
     for my $i (1 .. $args->{'limit'}) {
         my $exception;
         my $ret = try {

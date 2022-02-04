@@ -24,6 +24,27 @@ use MT::Theme;
 
 $test_env->fix_mysql_create_table_sql;
 
+subtest 'v5_assign_blog_date_language' => sub {
+    require MT::Upgrade::v5;
+    for my $conf_lang ('ja', 'en_US') {
+        for my $db_lang ('ja', 'en-us', 'un-kn', 'en-US') {
+            subtest $conf_lang. ':'. $db_lang => sub {
+                MT->config(DefaultLanguage => $conf_lang);
+                MT::Test->init_db;
+                my $site = MT::Website->load({id => 1});
+                $site->date_language($db_lang);
+                $site->language($db_lang);
+                $site->save;
+                my $updater = MT::Upgrade::v5::upgrade_functions()->{v5_assign_blog_date_language}->{updater};
+                MT::Upgrade::core_update_records('MT::Upgrade', %$updater);
+                $site = MT::Website->load({id => 1});
+                is $site->date_language, $db_lang, 'right date_language';
+                is $site->language, $db_lang ne 'un-kn' ? $db_lang : $conf_lang, 'right language';
+            };
+        }
+    }
+};
+
 subtest 'Upgrade from MT4 to MT7' => sub {
     MT::Test->init_db;
     MT::Website->remove_all;
@@ -114,7 +135,13 @@ subtest 'Upgrade from MT4 to MT7' => sub {
 
     }
 
-    is(MT::Website->count(), 3, 'There are three websites.');
+    my @websites = MT::Website->load();
+    is(scalar @websites, 3, 'There are three websites.');
+    for my $site (@websites) {
+        is $site->date_language, 'en_us', 'right date_language';
+        is $site->language,      'en_US', 'right language';
+    }
+
     is(MT::Blog->count(),    0, 'There is no blog.');
 
     $admin = MT::Author->load(1);

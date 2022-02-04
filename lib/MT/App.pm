@@ -1421,11 +1421,21 @@ sub can_do {
     }
     ## if there were no result from blog permission,
     ## look for system level permission.
-    my $sys_perms = MT::Permission->load(
-        {   author_id => $user->id,
-            blog_id   => 0,
-        }
-    );
+
+    # use the same cache_key as MT::Author::permissions
+    my $cache_key = "__perm_author_" . (defined $user->id ? $user->id : '');
+
+    require MT::Request;
+    my $req = MT::Request->instance;
+    my $sys_perms = $req->stash($cache_key);
+    if (!$sys_perms) {
+        $sys_perms = MT::Permission->load(
+            {   author_id => $user->id,
+                blog_id   => 0,
+            }
+        );
+        $req->stash($cache_key, $sys_perms);
+    }
 
     return $sys_perms ? $sys_perms->can_do($action) : undef;
 }

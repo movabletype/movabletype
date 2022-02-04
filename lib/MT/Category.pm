@@ -676,9 +676,10 @@ sub content_data_count {
 
     my $key_suffix = '';
     if ($ct_id) {
-        $key_suffix = ":ct-$ct_id";
-    } elsif ($cf_id) {
-        $key_suffix = ":cf-$cf_id";
+        $key_suffix .= ":ct-$ct_id";
+    }
+    if ($cf_id) {
+        $key_suffix .= ":cf-$cf_id";
     }
 
     require MT::ObjectCategory;

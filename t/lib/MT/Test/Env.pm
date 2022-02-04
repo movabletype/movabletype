@@ -62,8 +62,16 @@ sub new {
 }
 
 sub load_envfile {
-    my $class   = shift;
+    my $class = shift;
     my $envfile = "$MT_HOME/.mt_test_env";
+    $class->_load_envfile($envfile);
+    my $driver = lc _driver();
+    my $envfile_for_driver = "$MT_HOME/.mt_test_env_$driver";
+    $class->_load_envfile($envfile_for_driver);
+}
+
+sub _load_envfile {
+    my ($class, $envfile) = @_;
     if (-f $envfile) {
         open my $fh, '<', $envfile or die $!;
         while (<$fh>) {
@@ -143,6 +151,7 @@ sub write_config {
         EnableAddressBook      => 1,
         CaptchaSourceImageBase => 'MT_HOME/mt-static/images/captcha-source/',
         NewsboxURL             => 'disable',
+        HideVersion            => 0,
         DebugMode              => $ENV{MT_TEST_DEBUG_MODE} || 0,
     );
 
@@ -912,13 +921,9 @@ sub update_sequences {
         my $table_name   = $class->table_name;
         my ($max) = $dbh->selectrow_array("SELECT MAX(${field_prefix}_${col}) FROM $table_name");
         my $seq = $class->driver->dbd->sequence_name($class);
-        my ($current) = $dbh->selectrow_array("SELECT $seq.NEXTVAL FROM DUAL");
-        my $inc = ($max //= 0) - $current + 1;
-        if ($inc) {
-            my $start = $max + 1;
-            $dbh->do("DROP SEQUENCE $seq");
-            $dbh->do("CREATE SEQUENCE $seq START WITH $start");
-        }
+        my $start = ($max || 0) + 1;
+        $dbh->do("DROP SEQUENCE $seq");
+        $dbh->do("CREATE SEQUENCE $seq START WITH $start");
     }
 }
 
