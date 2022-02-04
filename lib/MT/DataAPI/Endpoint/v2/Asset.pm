@@ -166,6 +166,9 @@ sub _list_for_entry {
 sub list_for_tag {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my $tag = MT::DataAPI::Endpoint::v2::Tag::_retrieve_tag($app) or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',

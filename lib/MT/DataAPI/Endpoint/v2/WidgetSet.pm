@@ -37,6 +37,9 @@ sub list {
 sub list_all {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my %terms = ( type => 'widgetset', );
 
     my $res = filtered_list( $app, $endpoint, 'template', \%terms ) or return;
