@@ -618,8 +618,26 @@
               tooltip : 'insert_link',
               onclickFunctions : {
                   source: function(cmd, ui, val) {
+                      ed.once('OpenWindow', function(dialog){
+                        var text = ed.mtProxies['source'].e.getSelectedText();
+                        dialog.dialog.setData({'text': text});
+                      });
                       ed.execCommand('mceLink');
-                      _before_insert_content()
+                      ed.once('CloseWindow', function(dialog){
+                        var data = dialog.dialog.getData();
+                        if(data.url.value)
+                        ed.mtProxies['source']
+                        .execCommand(
+                            'createLink',
+                            null,
+                            data.url.value,
+                            {
+                                'target': data.target,
+                                'title': data.title,
+                                'text': data.text,
+                            }
+                        );
+                    });
                   }
               }
           });
