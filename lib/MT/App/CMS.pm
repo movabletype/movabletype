@@ -4136,6 +4136,7 @@ sub user_who_is_also_editing_the_same_stuff {
             time => MT::Util::format_ts('%Y-%m-%d %H:%M:%S', MT::Util::epoch2ts($blog, $sess_obj->start), $blog),
         } if $user;
     }
+    return;
 }
 
 sub autosave_session_obj {
