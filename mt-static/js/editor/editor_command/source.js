@@ -32,7 +32,7 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
 
     execCommand: function( command, userInterface, argument, options ) {
         var text = this.e.getSelectedText();
-        if(options['text'])
+        if(options && options['text'])
             text = options['text'];
         if ( !defined( text ) )
             text = '';
