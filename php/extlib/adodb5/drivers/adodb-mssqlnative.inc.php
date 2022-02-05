@@ -102,6 +102,7 @@ class ADODB_mssqlnative extends ADOConnection {
 
 	var $sequences = false;
 	var $mssql_version = '';
+	var $is_utf = false;
 
 	function __construct()
 	{
@@ -151,7 +152,7 @@ class ADODB_mssqlnative extends ADOConnection {
 
 		$arrServerInfo = sqlsrv_server_info($this->_connectionID);
 		$ADODB_FETCH_MODE = $savem;
-		
+
 		$arr = array();
 		$arr['description'] = $arrServerInfo['SQLServerName'].' connected to '.$arrServerInfo['CurrentDatabase'];
 		$arr['version'] = $arrServerInfo['SQLServerVersion'];//ADOConnection::_findvers($arr['description']);
@@ -513,6 +514,8 @@ class ADODB_mssqlnative extends ADOConnection {
 				ADOConnection::outp('No userid or password supplied, attempting connection with Windows Authentication');
 		}
 
+		if ( $this->is_utf )
+			$connectionInfo['CharacterSet'] = 'UTF-8';
 
 		/*
 		* Now merge in the passed connection parameters setting
@@ -1042,6 +1045,11 @@ class ADODB_mssqlnative extends ADOConnection {
 
 	}
 
+	function Execute($sql,$inputarr=false) {
+		if ( $this->is_utf )
+			$sql = preg_replace( '/(\'.*\')/', 'N$1', $sql);
+		return parent::Execute( $sql, $inputarr );
+	}
 }
 
 /*--------------------------------------------------------------------------------------
