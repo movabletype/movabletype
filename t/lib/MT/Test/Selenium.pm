@@ -422,7 +422,8 @@ sub retry_until_success {
             return $args->{'task'}->();
         } catch {
             $exception = $_;
-            diag($exception . ': ' . ($i == $args->{'limit'} ? 'Aborting' : 'Retrying'));
+            $exception =~ s{ at \S+ line \d+\..*}{}s;
+            diag(($i == $args->{'limit'} ? 'Aborting' : 'Retrying'). ': '. $exception);
             $args->{'teardown'}->();
         };
         return $ret unless defined($exception);
