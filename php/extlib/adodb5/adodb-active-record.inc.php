@@ -1156,6 +1156,18 @@ global $_ADODB_ACTIVE_DBS;
 	$save = $db->SetFetchMode(ADODB_FETCH_NUM);
 
 	$qry = "select * from ".$table;
+	// Separate table name if table name was already joined other table.
+	if (preg_match('/^(.+)\sJOIN\s.+ON/i', $table)) {
+		$matches = preg_split('/\s/i', $table);
+		$tblname = trim($matches[0]);
+		$qry = "$tblname.* from ".$table;
+		$table = $tblname;
+	} else
+		$qry = "* from ".$table;
+
+	if (isset($extra['distinct']))
+		$qry = "distinct " . $qry;
+	$qry = "select " . $qry;
 
 	if (!empty($whereOrderBy)) {
 		$qry .= ' WHERE '.$whereOrderBy;
@@ -1199,7 +1211,19 @@ global $_ADODB_ACTIVE_DBS;
 	foreach($rows as $row) {
 
 		$obj = new $class($table,$primkeyArr,$db);
-		if ($obj->ErrorNo()){
+
+		$has_error = false;
+		if ($db->databaseType == 'mssqlnative') {
+			if ($obj->ErrorMsg()) {
+				if ($obj->ErrorNo())
+					$has_error = true;
+			}
+		}
+		else {
+			if ($obj->ErrorNo())
+				$has_error = true;
+		}
+		if ($has_error){
 			$db->_errorMsg = $obj->ErrorMsg();
 			return $false;
 		}
