@@ -11,7 +11,7 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    plan skip_all => 'Set MT_TEST_CRAWL=1 to enable the test' if $ENV{MT_TEST_CRAWL};
+    plan skip_all => 'Set MT_TEST_CRAWL=1 to enable the test' unless $ENV{MT_TEST_CRAWL};
 
     $test_env = MT::Test::Env->new(
         StaticFilePath => 'MT_HOME/mt-static/',
@@ -36,7 +36,7 @@ my $encoder = JSON::XS->new->canonical;
 
 $test_env->prepare_fixture('db_data');
 
-my $s      = MT::Test::Selenium->new($test_env);
+my $s      = MT::Test::Selenium->new($test_env, { rebootable => 1 });
 my $author = MT->model('author')->load(1);
 $author->set_password('Nelson');
 $author->save;
