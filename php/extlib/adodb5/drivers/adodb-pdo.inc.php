@@ -151,6 +151,9 @@ class ADODB_pdo extends ADOConnection {
 					$argDSN .= ';dbname='.$argDatabasename;
 			}
 		}
+		if ( $this->port ) {
+			$argDSN .= ';port=' . $this->port;
+		}
 		/*
 		* Configure for persistent connection if required,
 		* by adding the the pdo parameter into any provided
