@@ -199,4 +199,6 @@ sub _conv_enc_label {
     return $enc;
 }
 
+# trans('AUTO DETECT');
+
 1;
