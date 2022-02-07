@@ -8,9 +8,8 @@ package MT::Import;
 
 use strict;
 use warnings;
-use base qw(MT::ErrorHandler Exporter);
+use base qw(MT::ErrorHandler);
 
-our @EXPORT;
 our %Importers;
 
 use Symbol;
@@ -24,7 +23,8 @@ sub new {
 
 sub importer_keys {
     init() unless %Importers;
-    keys %Importers;
+    my %seen;
+    grep {!$seen{$_}++} ('import_mt', (sort keys %Importers), 'import_mt_format');
 }
 
 sub importer {
@@ -38,7 +38,7 @@ sub importer {
 sub init {
     my $self = shift;
     my $importers = MT->instance->registry("import_formats") || {};
-    %Importers = %$importers;
+    %Importers = (%{core_import_formats()}, %$importers);
 }
 
 sub core_import_formats {
