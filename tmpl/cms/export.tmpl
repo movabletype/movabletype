@@ -1,6 +1,22 @@
 <mt:setvarblock name="page_title"><__trans phrase="Export [_1] Entries" params="<mt:var name="scope_label">"></mt:setvarblock>
 <mt:setvar name="position_actions_bottom" value="1">
 <mt:setvar name="export" value="1">
+<mt:setvarblock name="system_msg">
+<mt:if name="status">
+    <mtapp:statusmsg id="other_process" class="warning">
+    <mt:if name="status{job_id}">
+        <mt:if name="status{started_at}">
+            <__trans phrase="[_1] is running a background job to export entries. (Job ID: [_2], started at [_3])" params="<mt:var name="status{name}" escape="html">%%<mt:var name="status{job_id}" escape="html">%%<mt:var name="status{started_at}" escape="html">">
+        <mt:else>
+            <__trans phrase="[_1] has already registered a background job to export entries. (Job ID: [_2], created on [_3])" params="<mt:var name="status{name}" escape="html">%%<mt:var name="status{job_id}" escape="html">%%<mt:var name="status{created_on}" escape="html">">
+        </mt:if>
+    <mt:else>
+        <__trans phrase="[_1] is exporting entries now." params="<mt:var name="status{name}" escape="html">">
+    </mt:if>
+    </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
+
 <mt:setvarblock name="export_label"><__trans phrase="[_1] to Export" params="<mt:var name="scope_label">"></mt:setvarblock>
 
 <mt:setvarblock name="page_content">
@@ -10,6 +26,22 @@
   <input type="hidden" name="__mode" value="export" />
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+  <mt:if name="background_export_is_available">
+    <mt:unless name="force_background_export">
+    <mtapp:setting
+       id="background_export"
+       label="<__trans phrase="Background export">"
+       help_page="entry_export"
+       help_section="background_export">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="background_export" id="background_export" class="custom-control-input" value="1">
+        <label class="custom-control-label" for="background_export"><__trans phrase="Export entries when the next job is processed."></
+label>
+      </div>
+    </mtapp:setting>
+    </mt:unless>
+  </mt:if>
 
   <mt:setvarblock name="action_buttons">
     <button
