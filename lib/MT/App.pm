@@ -798,6 +798,29 @@ sub multi_listing {
     }
 }
 
+sub parse_filtered_list_permission {
+    my ($app, $maybe_action_list) = @_;
+
+    my $inherit_blogs = 1;
+    if ('HASH' eq ref $maybe_action_list) {
+        $inherit_blogs = $maybe_action_list->{inherit} if defined $maybe_action_list->{inherit};
+        $maybe_action_list = $maybe_action_list->{permit_action};
+    }
+    my @actions;
+    if (ref $maybe_action_list eq 'CODE' || $maybe_action_list =~ m/^sub \{/ || $maybe_action_list =~ m/^\$/ ) {
+        my $code = $maybe_action_list;
+        $code = MT->handler_to_coderef($code);
+        ($maybe_action_list, @actions) = $code->($app);     # may die here
+    }
+
+    if (ref $maybe_action_list eq 'ARRAY') {
+        unshift @actions, @$maybe_action_list;
+    } else {
+        unshift @actions, split /\s*,\s*/, $maybe_action_list;
+    }
+    return (\@actions, $inherit_blogs);
+}
+
 sub json_result {
     my $app = shift;
     my ($result) = @_;
