@@ -1,0 +1,31 @@
+<mt:setvarblock name="page_title"><__trans phrase="Background Export [_1] Entries" params="<mt:var name="scope_label">"></mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<p class="page-desc">
+<mt:if name="can_download">
+  <__trans phrase="Export file is ready to download.">
+  <a href="<mt:var name="status{link}" escape="html">"><__trans phrase="Download"></a>
+<mt:elseif name="job_is_gone">
+  <__trans phrase="The background job is already gone.">
+  <mt:if name="status{ended_at}">
+    <__trans phrase="(Ended at [_1])" params="<mt:var name="status{ended_at}" escape="html">">
+  </mt:if>
+<mt:elseif name="job_is_running">
+  <__trans phrase="The background job is running now. Please wait until the job is finished.">
+  <mt:if name="status{started_at}">
+    <__trans phrase="(Started at [_1])" params="<mt:var name="status{started_at}" escape="html">">
+  </mt:if>
+  <__trans phrase="Please wait until the job is finished.">
+<mt:elseif name="saved">
+  <__trans phrase="A background job is registered.">
+  <__trans phrase="Please wait until the job is finished.">
+<mt:elseif name="status{created_on}">
+  <__trans phrase="A background job is registered.">
+  <__trans phrase="(Created on [_1])" params="<mt:var name="status{created_on}" escape="html">">
+  <__trans phrase="Please wait until the job is finished.">
+</mt:if>
+</p>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
