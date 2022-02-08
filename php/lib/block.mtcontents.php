@@ -63,7 +63,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         }
 
         $counter = 0;
-        $limit = isset($args['limit']) ? $args['limit'] : null;
+        $limit = $args['limit'] ?? '0';
         if (!ctype_digit($limit) && $limit === 'none') {
             $limit = 0;
             $args['limit'] = 0;
@@ -91,7 +91,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
             if (isset($args['id'])) {
                 $args['content_id'] = $args['id'];
             }
-            if (preg_match('/^ContentType/', $at)) {
+            if (preg_match('/^ContentType/', $at ?? '')) {
                 $ts = $ctx->stash('current_timestamp');
                 $tse = $ctx->stash('current_timestamp_end');
                 if ($ts && $tse) {

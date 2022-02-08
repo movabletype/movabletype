@@ -424,6 +424,7 @@ abstract class BaseObject extends ADOdb_Active_Record
                 }
 
                 $obj->$meta_name = $value;
+                $obj->_original or $obj->_original = [];
                 $obj->_original[] = $value;
             }
         }

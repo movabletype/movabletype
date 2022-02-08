@@ -653,7 +653,7 @@ class MTViewer extends Smarty {
             $ts = $args['ts'];
         }
         $ts or $ts = $ctx->stash('current_timestamp');
-        $ts = preg_replace('![^0-9]!', '', $ts);
+        $ts = preg_replace('![^0-9]!', '', $ts ?? '');
         $blog = $ctx->stash('blog');
         if ($ts == '') {
             $t = time();

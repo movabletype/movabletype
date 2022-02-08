@@ -173,7 +173,7 @@ function wday_from_ts($y, $m, $d) {
     $days = $y * 365;
     $days += $y >>= 2;
     $days -= intval($y /= 25);
-    $days += $y >> 2;
+    $days += intval($y) >> 2;
     $days += $In_Year[$leap][$m-1] + $d;
     return $days % 7;
 }
@@ -920,7 +920,7 @@ function strip_hyphen($s) {
 }
 
 function first_n_words($text, $n) {
-    $text = strip_tags($text);
+    $text = strip_tags($text ?? '');
     $words = preg_split('/\s+/', $text);
     $max = count($words) > $n ? $n : count($words);
     return join(' ', array_slice($words, 0, $max));
@@ -1242,7 +1242,7 @@ function create_cat_expr_function($expr, &$cats, $datasource, $param) {
     $expr = preg_replace('/\bNOT\b/i', '!', $expr);
 
     # replace any other 'thing' with '(0)' since it's a category that doesn't even exist.
-    $cat_expr = preg_split("/($regexp)/", $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $cat_expr = preg_split("/($regexp)/", $expr, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $new_cat_expr = array();
     foreach ($cat_expr as $token) {
         if (preg_match("/^(\s+|$regexp)$/", $token, $matches)) {
@@ -1342,7 +1342,7 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     foreach ($tags as $tag) {
         $tags_dict[$tag->tag_name] = $tag;
     }
-    $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $result = '';
     foreach ($tokens as $t) {
         $upperToken = strtoupper( $t );

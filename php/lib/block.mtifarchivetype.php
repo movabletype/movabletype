@@ -23,7 +23,7 @@ function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
                 $content_type = $ctx->stash('content_type');
                 if (isset($content_type)
                     && (   $args['content_type'] === $content_type->content_type_unique_id
-                        || $args['content_type'] === $content_type->content_type_id
+                        || $args['content_type'] === strval($content_type->content_type_id)
                         || $args['content_type'] === $content_type->content_type_name )
                     )
                 {

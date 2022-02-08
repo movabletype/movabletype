@@ -299,7 +299,7 @@ abstract class MTDatabase {
     }
 
     public function db2ts($dbts) {
-        $dbts = preg_replace('/[^0-9]/', '', $dbts);
+        $dbts = preg_replace('/[^0-9]/', '', $dbts ?? '');
         return $dbts;
     }
 
@@ -4196,7 +4196,7 @@ abstract class MTDatabase {
             $str = $args['content_type'];
             if (isset($blog_filter))
                 $blog_filter = 'and '.$blog_filter;
-            if (ctype_digit($str)) {
+            if (ctype_digit(strval($str))) {
                 $sql = "select
                             mt_content_type.*
                         from mt_content_type
