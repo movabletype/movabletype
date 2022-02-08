@@ -239,6 +239,12 @@ sub check_imglib {
     %found;
 }
 
+sub dedupe_and_sort {
+    my @list = @_;
+    my %seen;
+    grep {!$seen{$_->[0]}++} sort {$a->[0] cmp $b->[0] or $b->[1] <=> $a->[1]} @list;
+}
+
 my $invalid = 0;
 
 sub invalid_request {
@@ -961,6 +967,20 @@ if ($mt) {
 @REQ  = @CORE_REQ  unless @REQ;
 @DATA = @CORE_DATA unless @DATA;
 @OPT  = @CORE_OPT  unless @OPT;
+
+@REQ  = dedupe_and_sort(@REQ);
+@DATA = dedupe_and_sort(@DATA);
+@OPT  = dedupe_and_sort(@OPT);
+
+my @new_data;
+for (@DATA) {
+    if ($_->[0] eq 'DBI') {
+        unshift @new_data, $_;
+    } else {
+        push @new_data, $_;
+    }
+}
+@DATA = @new_data;
 
 my %imglib = check_imglib();
 my %extra = (
