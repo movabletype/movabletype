@@ -211,6 +211,34 @@ sub print_http_header {
     print_encode("Content-Type: text/html; charset=utf-8\r\n\r\n");
 }
 
+sub check_imglib {
+    require Config;
+    my %lib = (
+        avif => 'libavif',
+        gif  => 'libgif',
+        jpeg => 'libjpeg',
+        png  => 'libpng',
+        tiff => 'libtiff',
+        webp => 'libwebp',
+    );
+    my @libpaths = split / /, $Config::Config{libpth};
+
+    my %found;
+    FORMAT:
+    for my $format (keys %lib) {
+        for my $libpath (@libpaths) {
+            for my $ext (qw/so dll a/) {
+                my $lib = "$libpath/$lib{$format}.$ext";
+                if (-f $lib) {
+                    $found{$format} = 1;
+                    next FORMAT;
+                }
+            }
+        }
+    }
+    %found;
+}
+
 my $invalid = 0;
 
 sub invalid_request {
@@ -934,6 +962,25 @@ if ($mt) {
 @DATA = @CORE_DATA unless @DATA;
 @OPT  = @CORE_OPT  unless @OPT;
 
+my %imglib = check_imglib();
+my %extra = (
+    'Image::Magick' => sub {
+        require Image::Magick;
+        my $formats = join ", ", map {$imglib{$_} ? "<strong>$_</strong>" : $_} sort Image::Magick->QueryFormat;
+        qq{<__trans phrase="Supported format: [_1]" params="$formats">};
+    },
+    'Graphics::Magick' => sub {
+        require Graphics::Magick;
+        my $formats = join ", ", map {$imglib{$_} ? "<strong>$_</strong>" : $_} sort Graphics::Magick->QueryFormat;
+        qq{<__trans phrase="Supported format: [_1]" params="$formats">};
+    },
+    'Imager' => sub {
+        require Imager;
+        my $formats = join ", ", map {$imglib{$_} ? "<strong>$_</strong>" : $_} sort Imager->read_types;
+        qq{<__trans phrase="Supported format: [_1]" params="$formats">};
+    },
+);
+
 my $i = 0;
 for my $list ( \@REQ, \@DATA, \@OPT ) {
     my $data = ( $list == \@DATA );
@@ -1055,6 +1102,13 @@ MSG
                         . qq{"></p>\n\n}
                 )
             );
+            if ($extra{$mod} && ref $extra{$mod} eq 'CODE') {
+                if (my $extra_desc = eval { $extra{$mod}->() }) {
+                    print_encode(
+                        trans_templ(qq{<p class="extra">$extra_desc</p>\n\n})
+                    );
+                }
+            }
         }
         print_encode("</div>\n") if $mod =~ m/^DBD::/;
         $i++;
