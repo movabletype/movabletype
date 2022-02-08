@@ -600,6 +600,14 @@ my @CORE_OPT = (
         )
     ],
 
+    [   'Graphics::Magick',
+        0, 0,
+        translate(
+            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.',
+            'Graphics::Magick'
+        )
+    ],
+
     [   'GD', 0, 0,
         translate(
             '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.',
