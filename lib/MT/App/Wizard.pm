@@ -217,6 +217,11 @@ sub init_core_registry {
                 label =>
                     'This module is needed if you would like to be able to create thumbnails of uploaded images.',
             },
+            'Graphics::Magick' => {
+                link => 'http://www.graphicsmagick.org/perl.html',
+                label =>
+                    'This module is needed if you would like to be able to create thumbnails of uploaded images.',
+            },
             'GD' => {
                 link => 'https://metacpan.org/pod/GD',
                 label =>
