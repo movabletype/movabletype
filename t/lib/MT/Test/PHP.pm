@@ -21,8 +21,8 @@ error_reporting = E_ALL;
 display_startup_errors = On;
 display_errors = On;
 log_errors = On;
-opcache.jit=on
-opcache.jit_buffer_size=100M
+opcache.jit = On
+opcache.jit_buffer_size = 100M
 INI
     close $fh;
 
