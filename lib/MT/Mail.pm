@@ -437,6 +437,7 @@ sub _send_mt_sendmail {
     $class->_dedupe_headers($hdrs);
 
     my $hdr = $class->_render_headers($hdrs);
+    $hdr  =~ s{\r\n}{\n}g;
 
     print $MAIL $hdr;
     print $MAIL "\n";
