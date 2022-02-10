@@ -1323,15 +1323,13 @@ PERMCHECK: {
         my ($param) = @_;
         my $loop = $param->{object_loop};
         my @has_child_sites    = grep { $_->{has_child}; } @$loop;
-        my @has_child_site_ids = map  { $_->{id} } @has_child_sites;
+        my %has_child_site_ids = map { $_->{id} => 1 } @has_child_sites;
         my @new_object_loop;
         foreach my $data (@$loop) {
 
             # If you have has_child, it is created after the search,
             # so remove the retrieved object
-            if ( !$data->{has_child}
-                && ( grep { $_ eq $data->{id} } @has_child_site_ids ) )
-            {
+            if ( !$data->{has_child} && $has_child_site_ids{$data->{id}} ) {
                 next;
             }
             push @new_object_loop, $data;
