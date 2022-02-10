@@ -1339,7 +1339,7 @@ PERMCHECK: {
         $param->{object_loop} = \@new_object_loop;
     };
 
-    my $type = $app->param('_type') || '';  # user, author, group
+    my $type = $app->param('_type') || '';  # user, author, group, site
 
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
