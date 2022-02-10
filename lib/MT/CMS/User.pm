@@ -1298,10 +1298,7 @@ PERMCHECK: {
             $row->{icon} = MT->static_path . 'images/icons/ic_group.svg';
         }
 
-        if (   $app->param('search')
-            && UNIVERSAL::isa( $obj, 'MT::Blog' )
-            && $obj->is_blog() )
-        {
+        if (UNIVERSAL::isa($obj, 'MT::Blog') && $obj->is_blog()) {
             $row->{has_child} = 1;
             my $child_blogs = [$obj];
             my $parent      = $obj->website;
