@@ -1325,6 +1325,7 @@ PERMCHECK: {
         my @has_child_sites    = grep { $_->{has_child}; } @$loop;
         my %has_child_site_ids = map { $_->{id} => 1 } @has_child_sites;
         my @new_object_loop;
+        my %seen;
         foreach my $data (@$loop) {
 
             # If you have has_child, it is created after the search,
@@ -1332,6 +1333,7 @@ PERMCHECK: {
             if ( !$data->{has_child} && $has_child_site_ids{$data->{id}} ) {
                 next;
             }
+            next if $seen{$data->{id}}++;
             push @new_object_loop, $data;
         }
         $param->{object_loop} = \@new_object_loop;
