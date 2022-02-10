@@ -1381,6 +1381,9 @@ PERMCHECK: {
                 require MT::Group;
                 $terms->{status} = MT::Group::ACTIVE();
             }
+            if ($type eq 'site') {
+                $terms->{class} = ['website', 'blog'];
+            }
             $app->listing(
                 {   terms    => $terms,
                     args     => { sort => 'name' },
