@@ -1299,21 +1299,24 @@ PERMCHECK: {
         }
 
         if (UNIVERSAL::isa($obj, 'MT::Blog') && $obj->is_blog()) {
-            $row->{has_child} = 1;
-            my $child_blogs = [$obj];
-            my $parent      = $obj->website;
-            my $child_sites = [];
-            push @$child_sites,
-                {
-                id          => $_->id,
-                label       => $_->name,
-                description => $_->description
-                } foreach @{$child_blogs};
-            $row->{child_obj}       = $child_sites;
-            $row->{child_obj_count} = scalar @{$child_blogs};
-            $row->{id}              = $parent->id;
-            $row->{label}           = $parent->name;
-            $row->{description}     = $parent->description;
+            if (my $parent = $obj->website) {
+                # replace row only if the blog has a valid parent
+                $row->{has_child} = 1;
+                my $child_blogs = [$obj];
+                my $child_sites = [];
+                foreach (@{$child_blogs}) {
+                    push @$child_sites, {
+                        id          => $_->id,
+                        label       => $_->name,
+                        description => $_->description
+                    };
+                }
+                $row->{child_obj}       = $child_sites;
+                $row->{child_obj_count} = scalar @{$child_blogs};
+                $row->{id}              = $parent->id;
+                $row->{label}           = $parent->name;
+                $row->{description}     = $parent->description;
+            }
         }
     };
     my $pre_build = sub {
