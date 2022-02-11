@@ -80,7 +80,9 @@ our %EXTRA = (
 );
 
 sub new {
-    my ( $class, $env ) = @_;
+    my ( $class, $env, $args ) = @_;
+
+    plan skip_all => "Selenium testing is skipped by env" if $ENV{MT_TEST_SKIP_SELENIUM};
 
     my $driver_class = $ENV{MT_TEST_SELENIUM_DRIVER} || 'Selenium::Chrome';
     eval "require $driver_class" or plan skip_all => "No $driver_class";
@@ -129,7 +131,8 @@ sub new {
             );
             $env->update_config(%extra);
 
-            if (eval { require Server::Starter; require Net::Server::SS::PreFork; require Starman; 1 }) {
+            if ($args->{rebootable} && 
+                    eval { require Server::Starter; require Net::Server::SS::PreFork; require Starman; 1 }) {
                 my @options = qw(-s Starman --workers 2);
                 push @options, '--env', (DEBUG ? 'development' : 'production');
                 Server::Starter::start_server(
@@ -137,7 +140,7 @@ sub new {
                     pid_file => $pid_file,
                     exec     => ['plackup', @options, "$ENV{MT_HOME}/mt.psgi"],
                 );
-                exit;
+                exit(0);
             }
             my $app        = MT::PSGI->new->to_app;
             my $static_app = Plack::App::Directory->new(
@@ -412,14 +415,15 @@ sub screenshot_full {
 
 sub retry_until_success {
     my $self = shift;
-    my $args = { limit => 5, task => sub { }, teardown => sub { }, @_ };
+    my $args = { limit => $ENV{MT_TEST_SELENIUM_MAX_RETRY} || 1, task => sub { }, teardown => sub { }, @_ };
     for my $i (1 .. $args->{'limit'}) {
         my $exception;
         my $ret = try {
             return $args->{'task'}->();
         } catch {
             $exception = $_;
-            diag($exception . ': ' . ($i == $args->{'limit'} ? 'Aborting' : 'Retrying'));
+            $exception =~ s{ at \S+ line \d+.*}{}s;
+            diag(($i == $args->{'limit'} ? 'Aborting' : 'Retrying'). ': '. $exception);
             $args->{'teardown'}->();
         };
         return $ret unless defined($exception);
