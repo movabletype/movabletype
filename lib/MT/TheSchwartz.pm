@@ -15,11 +15,16 @@ use List::Util qw( shuffle );
 my $instance;
 
 our $OBJECT_REPORT  = 0;
+our $HUP;
+
+local $SIG{HUP} = sub { $HUP = 1 };
 
 sub instance {
     $instance ||= MT::TheSchwartz->new();
     return $instance;
 }
+
+sub received_hup { $HUP }
 
 sub debug {
     my $class = shift;
@@ -276,6 +281,7 @@ sub work_periodically {
                 $client->debug($report) if $report ne '';
             }
         }
+        last if $HUP;
 
         sleep $delay;
     }
