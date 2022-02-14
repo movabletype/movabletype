@@ -2031,6 +2031,13 @@ sub delete {
                 next;
             }
         }
+        elsif ($type eq 'ts_job') {
+            if ($obj->grabbed_until) {
+                $return_arg{error} = $app->translate("You can't delete running job(s).");
+                push @not_deleted, $obj->jobid;
+                next;
+            }
+        }
 
         $obj->remove
             or return $app->errtrans(

@@ -1559,7 +1559,17 @@ sub core_list_actions {
                 },
             },
         },
-
+        'ts_job' => {
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+                mobile     => 1,
+            },
+        }
     };
 }
 
@@ -2576,7 +2586,8 @@ sub core_enable_object_methods {
         group => {
             delete => 1,
             save   => 1,
-        }
+        },
+        ts_job => { delete => 1 },
     };
 }
 
