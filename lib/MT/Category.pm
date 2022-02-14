@@ -58,7 +58,7 @@ __PACKAGE__->add_trigger( pre_search => \&_set_category_set_id_if_needed );
 
 sub _set_category_set_id_if_needed {
     my $class = shift;
-    my ( $terms, $args ) = @_;
+    my ( $terms, $args, $root ) = @_;
     my $no_category_set_id = 0;
     if ( ref $args eq 'HASH' && $args->{no_category_set_id} ) {
         delete $args->{no_category_set_id};
@@ -72,14 +72,26 @@ sub _set_category_set_id_if_needed {
         }
         elsif (!exists $terms->{category_set_id}
             && !exists $terms->{id}
-            && !$terms->{parent} )
+            && !$terms->{parent}
+            && !($root && exists $root->{has_category_set_id}))
         {
             $terms->{category_set_id} = 0;
         }
     }
     elsif ( ref $terms eq 'ARRAY' ) {
+        if (!$root) {
+            # Search category_set_id in root terms
+            for my $term (@$terms) {
+                if (ref $term eq 'HASH') {
+                    if (exists $term->{category_set_id}) {
+                        $root->{has_category_set_id} = 1;
+                    }
+                }
+            }
+            $root ||= {};
+        }
         for my $term (@$terms) {
-            $class->_set_category_set_id_if_needed( $term, $args );
+            $class->_set_category_set_id_if_needed( $term, $args, $root );
         }
     }
 }
