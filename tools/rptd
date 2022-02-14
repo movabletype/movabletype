@@ -1,0 +1,151 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use Daemon::Device;
+use Log::Minimal;
+use Getopt::Long qw(:config no_ignore_case bundling pass_through);
+
+GetOptions(
+    \my %opt,
+    # for daemon
+    'spawn=i',
+    'name|as=s',
+    'pidfile=s',
+    'stdout=s',
+    'stderr=s',
+    # for rpt
+    'verbose',
+    'batch_size|load=i',
+    'workers=s',
+    'ignore=s',
+    'sleep=i',
+    'sleep_if_limited=i',
+    'scoreboard=s',
+    'floor=i',
+);
+
+my $name             = delete $opt{name}  || 'rptd';
+my $spawn            = delete $opt{spawn} || 1;
+my $pidfile          = delete $opt{pidfile};
+my $workers          = delete $opt{workers}          || '';
+my $ignore           = delete $opt{ignore}           || '';
+my $sleep            = delete $opt{sleep}            || 5;
+my $sleep_if_limited = delete $opt{sleep_if_limited} || 60;
+
+$opt{prioritize} = 1;
+$opt{batch_size} ||= 10;
+
+exit Daemon::Device->new(
+    daemon => {
+        name      => $name,
+        fork      => 2,
+        lsb_start => '$syslog $remote_fs',
+        lsb_stop  => '$syslog',
+        lsb_sdesc => 'rpt daemon',
+        lsb_desc  => 'run-periodic-tasks daemon',
+        pid_file  => $pidfile,
+    },
+    spawn               => $spawn,
+    replace_children    => 1,
+    parent_hup_to_child => 1,
+    parent              => \&parent,
+    child               => \&client,
+    on_startup          => sub { infof("Launching $name: $$") },
+    on_shutdown         => sub { infof("Shutting down $name: $$") },
+    on_parent_hup       => sub { debugf("$name (parent: $$) received HUP") },
+    on_child_hup        => sub { debugf("$name (child: $$) received HUP") },
+    on_spawn            => sub { debugf("$name ($$) spawning a child") },
+)->run;
+
+sub parent {
+    my $daemon = shift;
+    while (1) {
+        sleep $sleep;
+    }
+}
+
+sub client {
+    my $daemon = shift;
+    infof("$name client ($$) started");
+    require MT;
+    require MT::TheSchwartz;
+    my $mt = MT->new or do { critf(MT->errstr); kill 'TERM', $daemon->ppid; exit; };
+
+    local $SIG{HUP} = sub { infof("$name (client: $$) received HUP"); $MT::TheSchwartz::HUP = 1 };
+
+    if (my $limit = MT->config('RPTFreeMemoryLimit')) {
+        if (!MT::TheSchwartz::_has_enough_memory($limit)) {
+            sleep $sleep_if_limited; die "$name client ($$): Free memory below RPT limit; cancelling RPT launch\n";
+        }
+    }
+    if (my $swaplimit = MT->config('RPTFreeSwapLimit')) {
+        if (!MT::TheSchwartz::_has_enough_swap($swaplimit)) {
+            sleep $sleep_if_limited; die "$name client ($$): Free swap memory below RPT limit; cancelling RPT launch\n";
+        }
+    }
+
+    my @worker_classes;
+    if ($workers) {
+        for my $name (split /,/, $workers) {
+            $name = "MT::Worker::" . $name unless $name =~ /::/;
+            push @worker_classes, $name;
+        }
+    } else {
+        my %ignore_map;
+        for my $name (split /,/, $ignore) {
+            $name = "MT::Worker::" . $name unless $name =~ /::/;
+            $ignore_map{$name} = 1;
+        }
+        my $all_workers = MT->registry("task_workers") || {};
+        for my $worker (values %$all_workers) {
+            my $worker_class = $worker->{class} or next;
+            next if $ignore_map{$worker_class};
+            push @worker_classes, $worker_class;
+        }
+    }
+    $opt{workers} = \@worker_classes if @worker_classes;
+
+    $mt->{vtbl}                 = {};
+    $mt->{is_admin}             = 0;
+    $mt->{template_dir}         = 'cms';
+    $mt->{user_class}           = 'MT::Author';
+    $mt->{plugin_template_path} = 'tmpl';
+    $mt->run_callbacks('init_app', $mt);
+
+    my $client = eval { MT::TheSchwartz->new(%opt) }
+        or do { critf("$name: error initializing TheSchwartz: $@"); kill 'TERM', $daemon->ppid; exit };
+
+    my $last_task_run = 0;
+    my $did_work      = 0;
+
+    # holds state of objects at start
+    while (1) {
+        if ($client->work_once) {
+            $did_work = 1;
+        }
+
+        if ($last_task_run + 60 * 5 < time) {
+            MT->run_tasks();
+            $did_work      = 1;
+            $last_task_run = time;
+        }
+
+        if ($did_work) {
+
+            # Clear RAM cache
+            MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
+            MT->request->reset();
+
+            $did_work = 0;
+        }
+        if ($MT::TheSchwartz::HUP or !$daemon->parent_alive) {
+            debugf("$name client ($$) exiting the main loop");
+            last;
+        }
+        sleep $sleep;
+    }
+    infof("$name client ($$) ended");
+}
