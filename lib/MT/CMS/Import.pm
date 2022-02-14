@@ -240,7 +240,7 @@ sub _register_background_import {
         $param{$key} = $app->param($key);
     }
 
-    my $tmpdir = MT->config->ExportTempDir || MT->config->TempDir;
+    my $tmpdir = MT->config->ImportPath || MT->config->ExportTempDir || MT->config->TempDir;
     if (my ($fh) = $app->upload_info('file')) {
         my $name    = join "-", "import", $param{blog_id}, time;    # or $app->param('file')
         my $tmpfile = File::Spec->catfile($tmpdir, $name);
