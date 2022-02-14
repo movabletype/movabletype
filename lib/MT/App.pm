@@ -3186,6 +3186,7 @@ sub do_reboot {
     if ( my $pidfile = MT->config->PIDFilePath ) {
         $app->_send_hup_to($pidfile);
     }
+    return 1;
 }
 
 sub _send_hup_to {
