@@ -93,7 +93,8 @@ sub list_props {
             html => sub {
                 my $prop = shift;
                 my ($obj, $app, $opts) = @_;
-                return $obj->arg;
+                my $arg = $obj->arg;
+                ref $arg ? JSON::encode_json($arg) : $arg;
             },
         },
         priority => {
