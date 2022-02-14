@@ -39,8 +39,26 @@ __PACKAGE__->install_properties(
     }
 );
 
+my %FuncMap;
+
 sub class_label {
-    MT->translate("Job");
+    MT->translate("Background Job");
+}
+
+sub class_label_plural {
+    MT->translate("Background Job");
+}
+
+sub _get_funcmap {
+    my $funcids = shift;
+    unless (%FuncMap) {
+        my @funcmaps = MT->model('ts_funcmap')->load(
+            undef,
+            {fetchonly => [qw/funcid funcname/]},
+        );
+        %FuncMap = map {$_->funcid => $_->funcname} @funcmaps;
+    }
+    \%FuncMap;
 }
 
 sub list_props {
@@ -57,15 +75,10 @@ sub list_props {
             bulk_html => sub {
                 my $prop = shift;
                 my ( $objs, $app ) = @_;
-                my %func_ids = map {$_->funcid => 1} @$objs;
-                my @funcmaps = MT->model('ts_funcmap')->load(
-                    {funcid => [keys %func_ids]},
-                    {fetchonly => [qw/funcid funcname/]},
-                );
-                my %map = map {$_->funcid => $_->funcname} @funcmaps;
+                my $map = _get_funcmap();
                 my @outs;
                 for my $obj (@$objs) {
-                    my $name = $map{$obj->funcid};
+                    my $name = $map->{$obj->funcid};
                     $name =~ s/.+:://;
                     push @outs, $name;
                 }
@@ -129,7 +142,19 @@ sub list_props {
             raw => sub {
                 my $prop = shift;
                 my ($obj, $app, $opts) = @_;
-                return $obj->grabbed_until ? 'Running' : '';
+                return '' unless $obj->grabbed_until;
+                my $map = _get_funcmap();
+                my $message;
+                if (my $func = $map->{$obj->funcid}) {
+                    if (eval "require $func; 1") {
+                        my $started = $obj->grabbed_until - ($func->grab_for || 1);
+                        my $started_at = MT::Util::format_ts('%Y-%m-%d %H:%M:%S', MT::Util::epoch2ts(undef, $started));
+                        $message = MT->translate('Running from [_1]', $started_at);
+                    } else {
+                        $message = MT->translate('Running');
+                    }
+                }
+                return $message;
             },
         },
         coalesce => {
