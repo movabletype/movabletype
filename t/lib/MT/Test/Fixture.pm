@@ -688,6 +688,9 @@ sub prepare_content_data {
                             }
                         }
                         $data{ $cf->id } = \@asset_ids;
+                    }
+                    elsif ( $cf_type eq 'multi_line_text' ) {
+                        $arg{convert_breaks}{$cf_name} ||= '__default__';
                     } else {
                         $data{ $cf->id } = $cf_arg;
                     }
