@@ -30,6 +30,8 @@ use XMLRPC::Transport::HTTP::Plack;
 use constant DEBUG => $ENV{MT_PSGI_DEBUG} || 0;
 our $mt = MT->new();
 
+my $streaming = $mt->config->PSGIStreaming;
+
 my $mt_app = sub {
     my $app_class = shift;
     return sub {
@@ -37,50 +39,116 @@ my $mt_app = sub {
         eval "require $app_class";
         my $cgi = CGI::PSGI->new($env);
         local *ENV = { %ENV, %$env };    # some MT::App method needs this
-        my $app = $app_class->new( CGIObject => $cgi );
+        my $app = $app_class->new(CGIObject => $cgi);
         delete $app->{init_request};
         MT->set_instance($app);
+        if ($streaming && $ENV{"psgi.streaming"}) {
+            return sub {
+                my $responder = shift;
+                local *ENV = { %ENV, %$env };    # (again)
+                my $writer;
+                my $body = '';
+                no warnings 'redefine';
+                local *MT::App::send_http_header = sub {
+                    my $self = shift;
+                    my ($type) = @_;
+                    $type ||= $self->{response_content_type} || 'text/html';
+                    if (my $charset = $self->charset) {
+                        if ($type =~ m!^text/|\+xml$|/json$! && $type !~ /\bcharset\b/) {
+                            $type .= "; charset=$charset";
+                        }
+                    }
+                    $self->{cgi_headers}{-status} = ($self->response_code || 200) . ($self->{response_message} ? ' ' . $self->{response_message} : '');
+                    $self->{cgi_headers}{-type}   = $type;
+                    my ($status, $headers) = $self->{query}->psgi_header(%{ $self->{cgi_headers} });
+                    $writer = $responder->([$status, $headers]);
+                };
+                local *MT::App::print = sub {
+                    my $self = shift;
+                    if ($writer) {
+                        if (defined $body) {
+                            $writer->write($body);
+                            undef $body;
+                        }
+                        $writer->write(@_);
+                    } else {
+                        $body .= "@_";
+                    }
+                };
+                $app->init_request(CGIObject => $cgi);
+                $app->{cookies} = do { $cgi->cookie; $cgi->{'.cookies'} };    # wtf
+                $app->run;
 
-        # Cheap hack to get the output
-        my ( $header_sent, $body );
-        no warnings qw(redefine);
-        local *MT::App::send_http_header = sub {
-            my $self = shift;
-            $self->{response_content_type} = $_[0] if $_[0];
-            $header_sent++;
-        };
-        local *MT::App::print
-            = sub { my $self = shift; $body .= "@_" if $header_sent };
+                if (!$writer) {
+                    my $type = $app->{response_content_type} || 'text/html';
+                    if (my $charset = $app->charset) {
+                        $type .= "; charset=$charset"
+                            if ($type =~ m!^text/! || $type =~ m!\+xml$!)
+                            && $type !~ /\bcharset\b/;
+                    }
 
-        $app->init_request( CGIObject => $cgi );
-        $app->{cookies} = do { $cgi->cookie; $cgi->{'.cookies'} };    # wtf
-        $app->run;
+                    if (my $location = delete $app->{redirect}) {
+                        $app->{cgi_headers}{-status}   = 302;
+                        $app->{cgi_headers}{-location} = $location;
+                    } else {
+                        $app->{cgi_headers}{-status} = ($app->response_code || 200)
+                            . (
+                            $app->{response_message}
+                            ? ' ' . $app->{response_message}
+                            : ''
+                            );
+                    }
 
-        # copied from MT::App::send_http_header
-        my $type = $app->{response_content_type} || 'text/html';
-        if ( my $charset = $app->charset ) {
-            $type .= "; charset=$charset"
-                if ( $type =~ m!^text/! || $type =~ m!\+xml$! )
-                && $type !~ /\bcharset\b/;
+                    $app->{cgi_headers}{-type} = $type;
+                    my ($status, $headers) = $app->{query}->psgi_header(%{ $app->{cgi_headers} });
+                    $writer = $responder->([$status, $headers]);
+                }
+                if (defined $body) {
+                    $writer->write($body);
+                }
+
+                $writer->close;
+            };
+        } else {
+
+            # Cheap hack to get the output
+            my ($header_sent, $body);
+            no warnings qw(redefine);
+            local *MT::App::send_http_header = sub {
+                my $self = shift;
+                $self->{response_content_type} = $_[0] if $_[0];
+                $header_sent++;
+            };
+            local *MT::App::print = sub { my $self = shift; $body .= "@_" if $header_sent };
+
+            $app->init_request(CGIObject => $cgi);
+            $app->{cookies} = do { $cgi->cookie; $cgi->{'.cookies'} };    # wtf
+            $app->run;
+
+            # copied from MT::App::send_http_header
+            my $type = $app->{response_content_type} || 'text/html';
+            if (my $charset = $app->charset) {
+                $type .= "; charset=$charset"
+                    if ($type =~ m!^text/! || $type =~ m!\+xml$!)
+                    && $type !~ /\bcharset\b/;
+            }
+
+            if ($app->{redirect}) {
+                $app->{cgi_headers}{-status}   = 302;
+                $app->{cgi_headers}{-location} = $app->{redirect};
+            } else {
+                $app->{cgi_headers}{-status} = ($app->response_code || 200)
+                    . (
+                    $app->{response_message}
+                    ? ' ' . $app->{response_message}
+                    : ''
+                    );
+            }
+
+            $app->{cgi_headers}{-type} = $type;
+            my ($status, $headers) = $app->{query}->psgi_header(%{ $app->{cgi_headers} });
+            return [$status, $headers, (defined $body ? [$body] : [])];
         }
-
-        if ( $app->{redirect} ) {
-            $app->{cgi_headers}{-status}   = 302;
-            $app->{cgi_headers}{-location} = $app->{redirect};
-        }
-        else {
-            $app->{cgi_headers}{-status} = ( $app->response_code || 200 )
-                . (
-                $app->{response_message}
-                ? ' ' . $app->{response_message}
-                : ''
-                );
-        }
-
-        $app->{cgi_headers}{-type} = $type;
-        my ( $status, $headers )
-            = $app->{query}->psgi_header( %{ $app->{cgi_headers} } );
-        return [ $status, $headers, (defined $body ? [$body] : []) ];
     };
 };
 
