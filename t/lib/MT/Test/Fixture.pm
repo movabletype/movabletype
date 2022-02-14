@@ -640,7 +640,7 @@ sub prepare_content_data {
                             if (ref $cat_name eq 'SCALAR') {
                                 push @cat_ids, $$cat_name;
                             } else {
-                                my $cat = $set->{category}{$cat_name}{$blog_id}
+                                my $cat = $set->{category}{$cat_name}
                                     or croak "unknown category: $cat_name: content_data: $name";
                                 push @cat_ids, $cat->id;
                             }
