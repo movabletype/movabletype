@@ -1,0 +1,51 @@
+<mt:setvarblock name="page_title"><__trans phrase="Reboot"></mt:setvarblock>
+<mt:setvar name="position_actions_bottom" value="1">
+
+<mt:setvarblock name="page_content">
+
+<mt:if name="warnings">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="danger"
+     can_close="0">
+    <ul>
+    <mt:loop name="warnings">
+        <li><mt:var name="__value__" escape="html"></li>
+    </mt:loop>
+    </ul>
+  </mtapp:statusmsg>
+</mt:if>
+
+<p class="page-desc">
+<__trans phrase="Send HUP to MT and related applications to reboot.">
+</p>
+
+<div id="reboot-panel">
+  <form method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="reboot" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <mtapp:setting
+       id="extra_pidfiles"
+       label="<__trans phrase="Extra PID files">">
+      <div>
+        <textarea name="extra_pidfiles" class="form-control text low" rows="4"><mt:var name="extra_pidfiles" escape="html"></textarea>
+        (<__trans phrase="One file per line.">)
+      </div>
+    </mtapp:setting>
+
+    <mt:setvarblock name="action_buttons">
+      <button
+         type="submit"
+         accesskey="e"
+         title="<__trans phrase="Reboot (e)">"
+         class="action primary button btn btn-primary">
+        <__trans phrase="Reboot">
+      </button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+  </form>
+</div>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

@@ -264,6 +264,8 @@ sub core_methods {
             code           => "${pkg}Tools::upgrade",
             requires_login => 0,
         },
+        'start_reboot'             => "${pkg}Tools::start_reboot",
+        'reboot'                   => "${pkg}Tools::reboot",
         'plugin_control'           => "${pkg}Plugin::plugin_control",
         'rename_tag'               => "${pkg}Tag::rename_tag",
         'remove_user_assoc'        => "${pkg}User::remove_user_assoc",
@@ -2342,6 +2344,19 @@ sub core_menus {
                 return 0;
             },
             view => ['system'],
+        },
+        'tools:system_reboot' => {
+            label      => "Reboot",
+            order      => 1000,
+            mode       => "start_reboot",
+            permission => "administer_site",
+            view       => ['system'],
+            condition => sub {
+                return 0 unless $ENV{"psgi.version"};
+                return 0 unless MT->app->user->is_superuser;
+                return 0 unless MT->config->PIDFilePath;
+                return 1;
+            },
         },
 
         'category_set:manage' => {

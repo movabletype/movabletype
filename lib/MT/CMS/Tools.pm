@@ -987,6 +987,50 @@ sub upgrade {
     return $app->redirect( $app->path . $upgrade_script );
 }
 
+sub start_reboot {
+    my $app = shift;
+    return $app->permission_denied()
+        unless $app->user->is_superuser();
+
+    my %param;
+    my $pidfile = MT->config->PIDFilePath;
+    my @extra_pidfiles = MT->config->ExtraPIDFilePath;
+
+    my %warning;
+    for my $file ($pidfile, @extra_pidfiles) {
+        if (open my $fh, '<', $file) {
+            my $pid = <$fh>;
+            chomp $pid;
+            if (!kill 0, $pid) {
+                $warning{$file} = $app->translate("Cannot send signal to [_1].", $file);
+            }
+        } else {
+            $warning{$file} = $app->translate("Cannot open [_1].", $file);
+        }
+    }
+
+    $param{pidfile}        = $pidfile;
+    $param{extra_pidfiles} = join "\n", grep {!$warning{$_}} @extra_pidfiles;
+    $param{warnings}       = [map "$_: $warning{$_}", sort keys %warning];
+
+    $app->add_breadcrumb( $app->translate('Reboot') );
+    $app->load_tmpl('reboot.tmpl', \%param);
+}
+
+sub reboot {
+    my $app = shift;
+    $app->validate_magic or return;
+    return $app->permission_denied()
+        unless $app->user->is_superuser();
+
+    if (my $extra_pidfiles = $app->param('extra_pidfiles')) {
+        $app->config->ExtraPIDFilePath(grep {$_ && -f $_} split "\n", $extra_pidfiles);
+    }
+
+    $app->reboot;
+    $app->return_to_dashboard(redirect => 1);
+}
+
 sub recover_profile_password {
     my $app = shift;
     $app->validate_magic or return;

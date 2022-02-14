@@ -1797,6 +1797,7 @@ BEGIN {
             'DBMaxRetries'                 => { default => 3 },
             'DBRetryInterval'              => { default => 1 },
             'PIDFilePath'                  => undef,
+            'ExtraPIDFilePath'             => { type => 'ARRAY' },
             'DefaultLanguage'              => { default => 'en_US', },
             'LocalPreviews'                => { default => 0 },
             'EnableAutoRewriteOnIIS'       => { default => 1 },
