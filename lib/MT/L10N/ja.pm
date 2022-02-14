@@ -560,6 +560,7 @@ use vars qw( @ISA %Lexicon );
 	'Asset' => 'アセット',
 	'Assets' => 'アセット',
 	'Associations' => '関連付け',
+	'Background Job' => 'バックグラウンドジョブ',
 	'Batch Edit Entries' => '記事の一括編集',
 	'Batch Edit Pages' => 'ウェブページの一括編集',
 	'Blog' => 'ブログ',
@@ -1266,6 +1267,7 @@ use vars qw( @ISA %Lexicon );
 	'__SELECT_FILTER_VERB' => 'が',
 	q{'[_1]' edited the global template '[_2]'} => q{[_1]がグローバルテンプレート([_2])を編集しました},
 	q{'[_1]' edited the template '[_2]' in the blog '[_3]'} => q{[_1]がブログ([_3])のテンプレート([_2])を編集しました},
+	q{You can't delete running job(s).} => q{実行中のジョブは削除できません。},
 
 ## lib/MT/CMS/ContentData.pm
 	'(No Label)' => '(ラベルなし)',
@@ -1943,6 +1945,7 @@ use vars qw( @ISA %Lexicon );
 	'If/Else Block' => 'If/Else条件ブロック',
 	'Include Template File' => 'テンプレートファイルのインクルード',
 	'Include Template Module' => 'テンプレートモジュールのインクルード',
+	'Job' => 'ジョブ',
 	'Junk Folder Expiration' => 'スパムコメント/トラックバックの廃棄',
 	'Legacy Quick Filter' => 'クイックフィルタ',
 	'Log' => 'ログ',
@@ -2005,6 +2008,8 @@ use vars qw( @ISA %Lexicon );
 	'Unpublish Past Entries' => '公開期限が過ぎた記事の公開を終了',
 	'Upload File' => 'ファイルアップロード',
 	'View Activity Log' => 'ログの閲覧',
+	'View Background Jobs is disabled by system configuration.' => 'バックグラウンドジョブの閲覧は環境変数で無効になっています。',
+	'View Background Jobs' => 'バックグラウンドジョブの閲覧',
 	'View System Activity Log' => 'システムログの閲覧',
 	'Widget Set' => 'ウィジェットセット',
 	'[_1] [_2] between [_3] and [_4]' => '[_2]が[_3]から[_4]の期間内の[_1]',
@@ -2670,7 +2675,15 @@ use vars qw( @ISA %Lexicon );
 	'Job Function' => 'ジョブファンクション',
 
 ## lib/MT/TheSchwartz/Job.pm
-	'Job' => 'ジョブ',
+	'Coalesce' => 'グループ名',
+	'Insert Time' => '作成日時',
+	'IsRunning' => '状態',
+	'Job Arg' => 'ジョブの引数',
+	'Priority' => '優先度',
+	'Running from [_1]' => '[_1]から実行中',
+	'Running' => '実行中',
+	'Unique Key' => 'ユニークキー',
+	'Worker' => 'ワーカー名',
 
 ## lib/MT/Theme.pm
 	'A fatal error occurred while applying element [_1]: [_2].' => '項目「[_1]」を適用する際に、重大なエラーが発生しました: [_2]',
