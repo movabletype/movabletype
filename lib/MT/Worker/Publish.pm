@@ -128,6 +128,7 @@ sub work {
                 }
             );
         }
+        last if MT::TheSchwartz->received_hup;
     }
 
     if ($rebuilt) {
