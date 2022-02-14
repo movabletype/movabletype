@@ -128,7 +128,7 @@ subtest 'publish' => sub {
     );
     my $res
         = $app->post_form_ok( { status => MT::ContentStatus::RELEASE(), } );
-    note explain $res;
+    # note explain $res;
 
     @files = get_files();
     my @expected = qw(
