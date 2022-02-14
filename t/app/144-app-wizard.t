@@ -11,48 +11,38 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use File::Copy;
-
-use MT::Test qw( :app );
+use MT::Test;
+use MT::Test::App;
 use MT::App::Wizard;
-
-# Generate dummy mt-config.cgi when not existing.
-my $no_config_file;
-if ( $no_config_file = !-e 'mt-config.cgi' ) {
-    copy( 't/mysql-test.cfg', 'mt-config.cgi' )
-        or plan skip_all => 'Cannot generate mt-config.cgi';
-}
-
-END {
-    if ($no_config_file) {
-        unlink 'mt-config.cgi';
-    }
-}
+use File::Copy qw/cp/;
 
 subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
-    my $app = _run_app(
-        'MT::App::Wizard',
-        {   __request_method => 'GET',
-            __mode           => 'retry',
-            step             => 'configure',
-        },
-    );
-    my $out = delete $app->{__test_output};
-
-    ok( $out, 'Request: mt-wizard.cgi?__mode=retry&step=configure' );
-
-    {
-        my $title
-            = quotemeta
-            '<h3 id="page-title" class="mb-5">Configuration File Exists</h3>';
-        ok( $out =~ m/$title/, 'Title is "Configuration File Exists"' );
+    my $app = MT::Test::App->new(app_class => 'MT::App::Wizard', no_redirect => 1);
+    my $home_cfg = File::Spec->catfile($ENV{MT_HOME}, 'mt-config.cgi');
+    my $remove;
+    if (!-e $home_cfg) {
+        cp($test_env->config_file => $home_cfg) or die $!;
+        $remove = 1;
     }
 
-    {
-        my $title
-            = quotemeta
-            '<h2 id="page-title" class="d-none d-md-block">Database Configuration</h2>';
-        ok( $out !~ m/$title/, 'Title is not "Database Configuration"' );
+    my $res = $app->get_ok({
+        __mode => 'retry',
+        step   => 'configure',
+    });
+
+    my $cfg = File::Spec->catfile($app->_app->{mt_dir}, 'mt-config.cgi');
+    ok -f $cfg, "mt-config.cgi exists: $cfg";
+    if ($ENV{MT_TEST_RUN_APP_AS_CGI}) {
+        like $app->last_location => qr/mt-upgrade\.cgi/, "redirected to mt-upgrade";
+        is $app->last_location->query_param('__mode') => 'install', "and the mode is install";
+    } else {
+        my $title = $app->page_title;
+        is($title => "Configuration File Exists", 'Title is "Configuration File Exists"');
+        isnt($title => "Database Configuration", 'Title is not "Database Configuration"');
+    }
+
+    if ($remove && -e $home_cfg) {
+        unlink $home_cfg
     }
 };
 

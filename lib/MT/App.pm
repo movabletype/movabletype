@@ -564,8 +564,19 @@ sub listing {
             ? $iter_method
             : ( $class->$iter_method( $terms, $args )
                 or return $app->error( $class->errstr ) );
-        my @data;
+        my @objs;
         while ( my $obj = $iter->() ) {
+            push @objs, $obj;
+            last if ( scalar @objs == $limit ) && ( !$no_limit );
+        }
+
+        if (@objs && $objs[0]->has_meta) {
+            require MT::Meta::Proxy;
+            MT::Meta::Proxy->bulk_load_meta_objects(\@objs);
+        }
+
+        my @data;
+        for my $obj (@objs) {
             my $row = $obj->get_values();
             $hasher->( $obj, $row ) if $hasher;
 
@@ -576,7 +587,6 @@ sub listing {
             #$app->run_callbacks( 'app_listing_'.$app->mode,
             #                     $app, $obj, $row );
             push @data, $row;
-            last if ( scalar @data == $limit ) && ( !$no_limit );
         }
 
         $param->{object_loop} = \@data;
@@ -788,6 +798,29 @@ sub multi_listing {
     }
 }
 
+sub parse_filtered_list_permission {
+    my ($app, $maybe_action_list) = @_;
+
+    my $inherit_blogs = 1;
+    if ('HASH' eq ref $maybe_action_list) {
+        $inherit_blogs = $maybe_action_list->{inherit} if defined $maybe_action_list->{inherit};
+        $maybe_action_list = $maybe_action_list->{permit_action};
+    }
+    my @actions;
+    if (ref $maybe_action_list eq 'CODE' || $maybe_action_list =~ m/^sub \{/ || $maybe_action_list =~ m/^\$/ ) {
+        my $code = $maybe_action_list;
+        $code = MT->handler_to_coderef($code);
+        ($maybe_action_list, @actions) = $code->($app);     # may die here
+    }
+
+    if (ref $maybe_action_list eq 'ARRAY') {
+        unshift @actions, @$maybe_action_list;
+    } else {
+        unshift @actions, split /\s*,\s*/, $maybe_action_list;
+    }
+    return (\@actions, $inherit_blogs);
+}
+
 sub json_result {
     my $app = shift;
     my ($result) = @_;
@@ -931,6 +964,10 @@ sub print {
 sub print_encode {
     my $app = shift;
     my $enc = $app->charset || 'UTF-8';
+    my $restype = $app->{response_content_type} || '';
+    if ($restype =~ m!/json$!) {
+        $enc = 'UTF-8';
+    }
     $app->print( Encode::encode( $enc, $_[0] ) );
 }
 
@@ -1034,13 +1071,21 @@ sub run_callbacks {
         my $app = shift;
         $app->SUPER::init_callbacks(@_);
         return if $callbacks_added;
+
+        my $call_with_current_app = sub {
+            my $method_name = shift;
+            my $current_app = MT->instance;
+            return unless $current_app->isa('MT::App');
+            $current_app->$method_name;
+        };
         MT->add_callback( 'post_save',   0, $app, \&_cb_mark_blog );
         MT->add_callback( 'post_remove', 0, $app, \&_cb_mark_blog );
         MT->add_callback( 'MT::Blog::post_remove', 0, $app,
             \&_cb_unmark_blog );
         MT->add_callback( 'MT::Config::post_save', 0, $app,
-            sub { $app->reboot } );
-        MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
+            sub { $call_with_current_app->('reboot') } );
+        MT->add_callback( 'pre_build', 9, $app,
+            sub { $call_with_current_app->('touch_blogs') } );
         $callbacks_added = 1;
     }
 }
@@ -1376,11 +1421,21 @@ sub can_do {
     }
     ## if there were no result from blog permission,
     ## look for system level permission.
-    my $sys_perms = MT::Permission->load(
-        {   author_id => $user->id,
-            blog_id   => 0,
-        }
-    );
+
+    # use the same cache_key as MT::Author::permissions
+    my $cache_key = "__perm_author_" . (defined $user->id ? $user->id : '');
+
+    require MT::Request;
+    my $req = MT::Request->instance;
+    my $sys_perms = $req->stash($cache_key);
+    if (!$sys_perms) {
+        $sys_perms = MT::Permission->load(
+            {   author_id => $user->id,
+                blog_id   => 0,
+            }
+        );
+        $req->stash($cache_key, $sys_perms);
+    }
 
     return $sys_perms ? $sys_perms->can_do($action) : undef;
 }
@@ -2084,6 +2139,17 @@ sub login {
     my $ctx = MT::Auth->fetch_credentials( { app => $app } );
     unless ($ctx) {
         if ( defined( $app->param('password') ) ) {
+            # Login invalid (empty password)
+            my $username = $app->param('username');
+            my $message  = defined $username && $username ne ''
+                         ? $app->translate("Failed login attempt by user '[_1]'", $username)
+                         : $app->translate("Failed login attempt by anonymous user");
+            $app->log({
+                message  => $message,
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            });
             return $app->error( $app->translate('Invalid login.') );
         }
         return;
@@ -2155,7 +2221,7 @@ sub login {
         || $res == MT::Auth::SESSION_EXPIRED() )
     {
 
-        # Login invlaid (password error, etc...)
+        # Login invalid (password error, etc...)
         $app->log(
             {   message => $app->translate(
                     "Failed login attempt by user '[_1]'", $user
@@ -4001,6 +4067,32 @@ sub param_hash {
         $result{$p} = $q->param($p);
     }
     %result;
+}
+
+sub validate_param {
+    my ($app, $rules) = @_;
+    return 1 if $app->config->DisableValidateParam;
+
+    require MT::ParamValidator;
+    unless ($MT::ParamValidator::Initialized) {
+        my $handlers = $app->registry('param_validator') || {};
+        for my $name (keys %$handlers) {
+            next unless $name && $name =~ /^[A-Za-z][A-Za-z0-9_]*$/;
+            my $code = $app->handler_to_coderef($handlers->{$name});
+            MT::ParamValidator->set_handler($name => $code);
+        }
+        $MT::ParamValidator::Initialized = 1;
+    }
+    my $validator = MT::ParamValidator->new($rules) or return $app->error(MT::ParamValidator->errstr);
+    my $res = $validator->validate_param($app);
+    if (!$res) {
+        if ($MT::DebugMode) {
+            return $app->error($validator->errstr);
+        } else {
+            return $app->error(MT->translate("Invalid request."));
+        }
+    }
+    return $res;
 }
 
 ## Path/server/script-name determination methods

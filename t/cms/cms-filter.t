@@ -6,19 +6,6 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
-use JSON;
-
-BEGIN {
-    eval { require Test::MockModule }
-        or plan skip_all => 'Test::MockModule is not installed';
-
-    eval 'use Test::Data qw( Array ); 1'
-        or plan skip_all => 'Test::Data is not installed';
-
-    eval 'use pQuery; 1'
-        or plan skip_all => 'pQuery is not installed';
-}
-
 our $test_env;
 
 BEGIN {
@@ -28,110 +15,98 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::App;
 
-MT::Test->init_app;
-$test_env->prepare_fixture(
-    sub {
-        MT::Test->init_db;
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-        # Website
-        my $website
-            = MT::Test::Permission->make_website( name => 'my website', );
+    # Website
+    my $website = MT::Test::Permission->make_website(name => 'my website',);
 
-        # Blog
-        my $blog = MT::Test::Permission->make_blog(
-            parent_id => $website->id,
-            name      => 'my blog',
-        );
+    # Blog
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $website->id,
+        name      => 'my blog',
+    );
 
-        my $ct = MT::Test::Permission->make_content_type(
-            blog_id => $website->id,
-            name    => 'test content type',
-        );
+    my $ct = MT::Test::Permission->make_content_type(
+        blog_id => $website->id,
+        name    => 'test content type',
+    );
 
-        my $cf = MT::Test::Permission->make_content_field(
-            blog_id         => $ct->blog_id,
-            content_type_id => $ct->id,
-            name            => 'single text',
-            type            => 'single_line_text',
-        );
-        my $fields = [
-            {   id        => $cf->id,
-                label     => 1,
-                name      => $cf->name,
-                order     => 1,
-                type      => $cf->type,
-                unique_id => $cf->unique_id,
-            }
-        ];
-        $ct->fields($fields);
-        $ct->save or die $ct->errstr;
+    my $cf = MT::Test::Permission->make_content_field(
+        blog_id         => $ct->blog_id,
+        content_type_id => $ct->id,
+        name            => 'single text',
+        type            => 'single_line_text',
+    );
+    my $fields = [{
+        id        => $cf->id,
+        label     => 1,
+        name      => $cf->name,
+        order     => 1,
+        type      => $cf->type,
+        unique_id => $cf->unique_id,
+    }];
+    $ct->fields($fields);
+    $ct->save or die $ct->errstr;
 
-        my @screens = qw/website blog entry page asset log category
-            folder author member tag association
-            role banlist filter permission template
-            category_set content_type content_field
-            content_data group group_member/;
-        foreach my $key (@screens) {
-            if ( $key eq 'content_data' ) {
-                $key .= '.content_data_' . $ct->id;
-            }
-
-            # scope system
-            MT::Test::Permission->make_filter(
-                label     => "Test filter $key system",
-                object_ds => $key,
-                blog_id   => 0,
-            );
-
-            # scope website
-            MT::Test::Permission->make_filter(
-                label     => "Test filter $key website",
-                object_ds => $key,
-                blog_id   => $website->id,
-            );
-
-            # scope blog
-            MT::Test::Permission->make_filter(
-                label     => "Test filter $key blog",
-                object_ds => $key,
-                blog_id   => $blog->id,
-            );
-
-            # not found blog_id
-            MT::Test::Permission->make_filter(
-                label     => "Test filter $key not found blog",
-                object_ds => $key,
-                blog_id   => 999999,
-            );
+    my @screens = qw/website blog entry page asset log category
+        folder author member tag association
+        role banlist filter permission template
+        category_set content_type content_field
+        content_data group group_member/;
+    foreach my $key (@screens) {
+        if ($key eq 'content_data') {
+            $key .= '.content_data_' . $ct->id;
         }
 
-    }
-);
+        # scope system
+        MT::Test::Permission->make_filter(
+            label     => "Test filter $key system",
+            object_ds => $key,
+            blog_id   => 0,
+        );
 
-my $admin = MT->model('author')->load(1);
-my $ct = MT->model('content_type')->load( { name => 'test content type' } );
+        # scope website
+        MT::Test::Permission->make_filter(
+            label     => "Test filter $key website",
+            object_ds => $key,
+            blog_id   => $website->id,
+        );
+
+        # scope blog
+        MT::Test::Permission->make_filter(
+            label     => "Test filter $key blog",
+            object_ds => $key,
+            blog_id   => $blog->id,
+        );
+
+        # not found blog_id
+        MT::Test::Permission->make_filter(
+            label     => "Test filter $key not found blog",
+            object_ds => $key,
+            blog_id   => 999999,
+        );
+    }
+
+});
+
+my $admin   = MT->model('author')->load(1);
+my $ct      = MT->model('content_type')->load({ name => 'test content type' });
 my @filters = MT->model('filter')->load();
 
-my ( $app, $out );
-
 local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
-$app = _run_app(
-    'MT::App::CMS',
-    {   __test_user      => $admin,
-        __request_method => 'POST',
-        __mode           => 'filtered_list',
-        datasource       => 'filter',
-        blog_id          => 0,
-        columns          => 'label,author_name,object_ds,created_on',
-        fid              => '_allpass',
-        limit            => scalar @filters,
-    },
-);
-$out = delete $app->{__test_output};
-
-# diag $out;
-ok( $out, "Request: filtered_list" );
+my $app = MT::Test::App->new('MT::App::CMS');
+$app->login($admin);
+$app->post_ok({
+    __mode     => 'filtered_list',
+    datasource => 'filter',
+    blog_id    => 0,
+    columns    => 'label,author_name,object_ds,created_on',
+    fid        => '_allpass',
+    limit      => scalar @filters,
+});
 
 my $result = {
     website => {
@@ -242,13 +217,14 @@ my $link = [
 foreach my $filter (@filters) {
     my $filter_name = $filter->label;
     my $ds          = $filter->object_ds;
-    ( my $scope = $filter_name ) =~ s/Test\sfilter\s${ds}\s(\w*)$/$1/;
-    if ( grep { $_ eq $filter_name } @$link ) {
-        like( $out, qr/"<a.*?>$filter_name<\/a>"/,
-            "filter link $ds in $scope scope" );
-    }
-    else {
-        like( $out, qr/"$filter_name"/, "filter unlink $ds in $scope scope" );
+    (my $scope = $filter_name) =~ s/Test\sfilter\s${ds}\s(\w*)$/$1/;
+    if (grep { $_ eq $filter_name } @$link) {
+        $app->content_like(
+            qr/"<a.*?>$filter_name<\/a>"/,
+            "filter link $ds in $scope scope"
+        );
+    } else {
+        $app->content_like(qr/"$filter_name"/, "filter unlink $ds in $scope scope");
     }
 }
 

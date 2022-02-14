@@ -35,14 +35,22 @@ subtest 'add param basic' => sub {
         # Comments plugins is automatically disabled if Cloud.pack exists
         $expected--;
     }
+    if (-e "$cwd/plugins/Trackback") {
+        $expected++;
+    }
     is(@$a, $expected, 'right number of loop');
 };
 
 subtest 'add param plugin disabled' => sub {
+    my $cwd = cwd();
+    my $expected = 2;
+    if (-e "$cwd/plugins/Trackback") {
+        $expected++;
+    }
     $app->config->PluginSwitch->{Comments} = 0;
     my $a = MT::CMS::RebuildTrigger::object_type_loop_plugin_reduced($app);
     note explain($a);
-    is(@$a, 2, 'right number of loop');
+    is(@$a, $expected, 'right number of loop');
     delete $app->config->PluginSwitch->{Comments};
 };
 

@@ -11,7 +11,7 @@ BEGIN {
 }
 
 use MT::Test::Tag;
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
@@ -81,4 +81,3 @@ foo
 bar
 baz
 foo
-

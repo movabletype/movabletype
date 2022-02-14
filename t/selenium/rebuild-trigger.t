@@ -118,7 +118,7 @@ subtest 'site context' => sub {
     my $added_count = 0;
 
     for (my $i = 0; $i < scalar @$scenarios; $i++) {
-        diag "scenarios: " . stringify_scenarios($scenarios->[$i]);
+        note "scenarios: " . stringify_scenarios($scenarios->[$i]);
         process_scenarios($scenarios->[$i]);
         assert_no_browser_errors();
         my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
@@ -150,7 +150,7 @@ subtest 'duplication' => sub {
     my $added_count = 0;
 
     for (my $i = 0; $i < scalar @$scenarios; $i++) {
-        diag "scenarios: " . stringify_scenarios($scenarios->[$i]);
+        note "scenarios: " . stringify_scenarios($scenarios->[$i]);
 
         # same scenarios twice
         process_scenarios($scenarios->[$i]) for (1, 2);
@@ -186,7 +186,7 @@ subtest 'duplication with content type' => sub {
     my $added_count = 0;
 
     for (my $i = 0; $i < scalar @$scenarios; $i++) {
-        diag "scenarios: " . stringify_scenarios($scenarios->[$i]);
+        note "scenarios: " . stringify_scenarios($scenarios->[$i]);
 
         # same scenarios twice
         process_scenarios($scenarios->[$i]) for (1, 2);
@@ -220,7 +220,7 @@ subtest 'two cases saved at once' => sub {
     assert_no_browser_errors();
 
     for (my $i = 0; $i < scalar @$scenarios; $i++) {
-        diag "scenarios: " . stringify_scenarios($scenarios->[$i]);
+        note "scenarios: " . stringify_scenarios($scenarios->[$i]);
         process_scenarios($scenarios->[$i]);
     }
 
@@ -250,7 +250,7 @@ subtest 'remove' => sub {
     assert_no_browser_errors();
 
     for (my $i = 0; $i < scalar @$scenarios; $i++) {
-        diag "scenarios: " . stringify_scenarios($scenarios->[$i]);
+        note "scenarios: " . stringify_scenarios($scenarios->[$i]);
         process_scenarios($scenarios->[$i]);
     }
 
@@ -296,7 +296,6 @@ sub process_scenarios {
             $s->driver->refresh();
             wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
         },
-        limit => 5,
     );
 
     # make sure switch to frame succeeded
@@ -311,10 +310,10 @@ sub process_scenarios {
     );
     for (my $j = 0; $j < scalar @{$pages}; $j++) {
         if (!scalar @{ $pages->[$j] }) {    # content type skipping
-            diag "page $j is skipping";
+            note "page $j is skipping";
             next;
         }
-        diag "page $j";
+        note "page $j";
         my @visible_options;
         wait_until {
             $panels[$j]->is_displayed &&
@@ -352,9 +351,10 @@ sub stringify_scenarios {
 }
 
 sub assert_no_browser_errors {
-    my @logs = $s->get_browser_error_log();
-    is(scalar @logs, 0, 'no browser error occured');
-    diag sprintf("<%s> %s", $_->{source}, $_->{message}) for @logs;
+    # mt_[lang].js may not exist depending on the env
+    my @logs = grep { $_->{message} !~ /\bmt_\w+\.js\b.+Failed to load/ } $s->get_browser_error_log();
+    is(scalar @logs, 0, 'no unknown browser error occured');
+    note sprintf("<%s> %s", $_->{source}, $_->{message}) for @logs;
 }
 
 undef $s;

@@ -392,10 +392,8 @@
    "mt_category_set" : {
       "cols" : [
          "category_set_blog_id",
-         "category_set_cat_count",
          "category_set_created_by",
          "category_set_created_on",
-         "category_set_ct_count",
          "category_set_id",
          "category_set_modified_by",
          "category_set_modified_on",
@@ -405,10 +403,8 @@
       "rows" : [
          [
             1,
-            0,
             null,
             "__NOW__",
-            0,
             1,
             null,
             "__NOW__",
@@ -447,17 +443,17 @@
             1,
             null,
             "__NOW__",
-            "3c16612b123762c2196f22550223abb1bda48ce1",
+            "e00fdef7406324db71543cb34a791fb7c3aaaf3c",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0002-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012",
             1,
-            "91cd56ea2f13734fb326a850aa0807cfd1c90a4f",
+            "360a466c55c83a4f77c39fa3b5eb36fa996c3a20",
             null,
             null,
             "__NOW__",
-            9,
+            0,
             2,
-            "91cd56ea2f13734fb326a850aa0807cfd1c90a4f",
+            "360a466c55c83a4f77c39fa3b5eb36fa996c3a20",
             null,
             201722
          ],
@@ -468,38 +464,17 @@
             1,
             null,
             "__NOW__",
-            "3c16612b123762c2196f22550223abb1bda48ce1",
+            "e00fdef7406324db71543cb34a791fb7c3aaaf3c",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             2,
-            "d32ddb2e6f39b8149190b8c85fe02b47d9f9a6d6",
-            null,
-            null,
-            "__NOW__",
-            3,
-            2,
-            "d32ddb2e6f39b8149190b8c85fe02b47d9f9a6d6",
-            null,
-            201722
-         ],
-         [
-            1,
-            "2017-05-30 16:36:00",
-            1,
-            1,
-            null,
-            "__NOW__",
-            "3c16612b123762c2196f22550223abb1bda48ce1",
-            0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0003-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u00013",
-            3,
-            "18febbdafd0f8cbed446cff2e408b6d9b684972a",
+            "b679b0f0c8ba85eb03d0c6bf64c2f49117b19097",
             null,
             null,
             "__NOW__",
             6,
-            1,
-            "18febbdafd0f8cbed446cff2e408b6d9b684972a",
+            2,
+            "b679b0f0c8ba85eb03d0c6bf64c2f49117b19097",
             null,
             201722
          ],
@@ -510,17 +485,59 @@
             1,
             null,
             "__NOW__",
-            "3c16612b123762c2196f22550223abb1bda48ce1",
+            "e00fdef7406324db71543cb34a791fb7c3aaaf3c",
+            0,
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0003-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u00013",
+            3,
+            "d1a6d2a31a21c629ca0883a5ec3a3f86fba1e0e6",
+            null,
+            null,
+            "__NOW__",
+            8,
+            1,
+            "d1a6d2a31a21c629ca0883a5ec3a3f86fba1e0e6",
+            null,
+            201722
+         ],
+         [
+            1,
+            "2017-05-30 16:36:00",
+            1,
+            1,
+            null,
+            "__NOW__",
+            "e00fdef7406324db71543cb34a791fb7c3aaaf3c",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0003-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u00013",
             4,
-            "65956155f4d0f270d89d7d5bddf3cd40006b3188",
+            "23b624a2bba273be071b6eff6cfe15c9da1e7562",
+            null,
+            null,
+            "__NOW__",
+            8,
+            2,
+            "23b624a2bba273be071b6eff6cfe15c9da1e7562",
+            null,
+            201722
+         ],
+         [
+            1,
+            "2017-05-30 16:36:00",
+            1,
+            2,
+            null,
+            "__NOW__",
+            "13b6f5f8ab4cc06d070f1f7d46ec4d40c090a246",
+            0,
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00014A\u0000\u0000\u0000\u0002-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012",
+            5,
+            "694b216cc217ceeadd9ce039737391898917012e",
             null,
             null,
             "__NOW__",
             9,
             2,
-            "65956155f4d0f270d89d7d5bddf3cd40006b3188",
+            "694b216cc217ceeadd9ce039737391898917012e",
             null,
             201722
          ],
@@ -531,38 +548,17 @@
             2,
             null,
             "__NOW__",
-            "fd926bd6ad5efbdbc0e09e244cc52c3717cea7a8",
-            0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00014A\u0000\u0000\u0000\u0002-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012",
-            5,
-            "b9594f784622c6bb8fdb94244356ac721ba45c43",
-            null,
-            null,
-            "__NOW__",
-            8,
-            2,
-            "b9594f784622c6bb8fdb94244356ac721ba45c43",
-            null,
-            201722
-         ],
-         [
-            1,
-            "2017-05-30 16:36:00",
-            1,
-            2,
-            null,
-            "__NOW__",
-            "fd926bd6ad5efbdbc0e09e244cc52c3717cea7a8",
+            "13b6f5f8ab4cc06d070f1f7d46ec4d40c090a246",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00015A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             6,
-            "8dad2bedd17546b997e5485333067f33e8215d64",
+            "c2430676803339e919fc3ce71a0779ddd73ee0c8",
             null,
             null,
             "__NOW__",
-            8,
             2,
-            "8dad2bedd17546b997e5485333067f33e8215d64",
+            2,
+            "c2430676803339e919fc3ce71a0779ddd73ee0c8",
             null,
             201722
          ],
@@ -573,17 +569,17 @@
             2,
             null,
             "__NOW__",
-            "fd926bd6ad5efbdbc0e09e244cc52c3717cea7a8",
+            "13b6f5f8ab4cc06d070f1f7d46ec4d40c090a246",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00015A\u0000\u0000\u0000\u0003-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u00013",
             7,
-            "b4e04ce04dc3afa02ece51f572f290a837e1cf10",
+            "7a6738cfc8c1313f9100ffcd4ec5c929c9bb3b62",
             null,
             null,
             "__NOW__",
-            7,
             1,
-            "b4e04ce04dc3afa02ece51f572f290a837e1cf10",
+            1,
+            "7a6738cfc8c1313f9100ffcd4ec5c929c9bb3b62",
             null,
             201722
          ],
@@ -594,17 +590,17 @@
             2,
             null,
             "__NOW__",
-            "fd926bd6ad5efbdbc0e09e244cc52c3717cea7a8",
+            "13b6f5f8ab4cc06d070f1f7d46ec4d40c090a246",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00016A\u0000\u0000\u0000\u0003-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u00013",
             8,
-            "e03f5e5eeddc85ea411c83c14ec5bb3b71d22e7d",
+            "48321843019f14606dad1c4f7e52e43e8a48796e",
             null,
             null,
             "__NOW__",
-            4,
+            3,
             2,
-            "e03f5e5eeddc85ea411c83c14ec5bb3b71d22e7d",
+            "48321843019f14606dad1c4f7e52e43e8a48796e",
             null,
             201722
          ]
@@ -644,7 +640,7 @@
             null,
             null,
             "categories",
-            "e02d46040af6f1b3b5f2d54030436ecd1b9e3570"
+            "1f2e819ae7fa09e20d6e53df10d9666e8670bb90"
          ],
          [
             1,
@@ -661,7 +657,7 @@
             null,
             null,
             "categories",
-            "64eb31090ee9321c96fb228b86f5238830532d0a"
+            "9097b91fa997644602a642a50753172a6b823652"
          ],
          [
             1,
@@ -678,7 +674,7 @@
             null,
             null,
             "asset",
-            "267a58b0b2a84d14d3c980e5ba80dfd87bccad11"
+            "30e1e5a5c7691d3769cb7d1fc745b7d778d848f1"
          ],
          [
             1,
@@ -695,7 +691,7 @@
             null,
             null,
             "categories",
-            "7360a01d0ac54e61c4c92d54abc89c9cf5e9f426"
+            "72a025a5f16bc16bdc54c54805b534cfa23178cc"
          ],
          [
             1,
@@ -712,7 +708,7 @@
             null,
             null,
             "categories",
-            "e02c72045fd1cefcec68d47f09d7340686f2275a"
+            "a49107d3659a6086bc97034616845d2962d66a25"
          ],
          [
             1,
@@ -729,7 +725,7 @@
             null,
             null,
             "asset",
-            "bea095d2ceba0e1cab75df4b88ff74647fc648ad"
+            "d8414d237ee6a8f68346898046366b92aa37755e"
          ]
       ]
    },
@@ -1067,7 +1063,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0050\n",
+            "DataAPIDisableSite 0\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0052\n",
             1
          ]
       ]
@@ -1095,12 +1091,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006field0\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(267a58b0b2a84d14d3c980e5ba80dfd87bccad11\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\tmy_asset1\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005assetH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006field1\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006field0H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\tmy_asset1\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(30e1e5a5c7691d3769cb7d1fc745b7d778d848f1\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006field1\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011",
             1,
             null,
             "__NOW__",
             "ct1",
-            "3c16612b123762c2196f22550223abb1bda48ce1",
+            "e00fdef7406324db71543cb34a791fb7c3aaaf3c",
             null,
             null
          ],
@@ -1110,12 +1106,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\tmy_asset2\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00016\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(bea095d2ceba0e1cab75df4b88ff74647fc648ad\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006field2\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategoriesH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006field3\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00015",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00016\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(d8414d237ee6a8f68346898046366b92aa37755e\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0005asset\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\tmy_asset2\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006field2\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006field3\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00015",
             2,
             null,
             "__NOW__",
             "ct2",
-            "fd926bd6ad5efbdbc0e09e244cc52c3717cea7a8",
+            "13b6f5f8ab4cc06d070f1f7d46ec4d40c090a246",
             null,
             null
          ]
@@ -1637,5 +1633,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0050; formattedtext 1.00; tinymce 1"
+   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0052; formattedtext 1.00; tinymce 1"
 }

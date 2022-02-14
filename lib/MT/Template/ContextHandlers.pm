@@ -4695,8 +4695,9 @@ B<Example:> Passing Parameters to a Template Module
 
             if ($local_blog->is_blog) {
                 $blog_id = $local_blog->parent_id or return; # skip if data is broken
+            } else {
+                $blog_id = $local_blog->id;
             }
-            $blog_id ||= $local_blog->id;
         }
 
         ## Don't know why but hash key has to be encoded
@@ -5958,9 +5959,9 @@ for the MTOS edition, this would output:
 sub _hdlr_product_name {
     my ( $ctx, $args, $cond ) = @_;
     require MT;
-    my $short_name = MT->translate( MT->product_name );
-    if ( $args->{version} ) {
-        return MT->translate( "[_1] [_2]", $short_name, MT->version_id );
+    my $short_name = MT->product_name;
+    if ( $args->{version} && !MT->config('HideVersion') ) {
+        return join ' ', $short_name, MT->version_id;
     }
     else {
         return $short_name;

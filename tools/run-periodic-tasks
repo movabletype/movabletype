@@ -20,7 +20,7 @@ my $scoreboard;
 my $randomize_jobs = 0;
 my $trace_objects  = 0;
 my $workers;
-my $ignore;
+my $ignore = '';
 my $floor;
 my $process_cap;
 
@@ -57,7 +57,6 @@ my %cfg;
 $cfg{verbose}    = $verbose;
 $cfg{scoreboard} = $scoreboard;
 $cfg{prioritize} = 1;
-$cfg{randomize}  = $randomize_jobs;
 $cfg{floor}      = $floor;
 
 require MT::Bootstrap;
@@ -101,8 +100,7 @@ if ($workers) {
         $name = "MT::Worker::" . $name unless $name =~ /::/;
         push @worker_classes, $name;
     }
-}
-elsif ($ignore) {
+} else {
     my %ignore_map;
     for my $name ( split /,/, $ignore ) {
         $name = "MT::Worker::" . $name unless $name =~ /::/;
@@ -126,9 +124,9 @@ $mt->run_callbacks( 'init_app', $mt );
 
 my $client = eval {
     require MT::TheSchwartz;
-    my $c = MT::TheSchwartz->new(%cfg);
     no warnings 'once';
-    $TheSchwartz::FIND_JOB_BATCH_SIZE = $load;
+    $TheSchwartz::RANDOMIZE_JOBS = !!$randomize_jobs;
+    my $c = MT::TheSchwartz->new(%cfg);
     $c;
 };
 if ( ( my $error = $@ ) && $verbose ) {
@@ -136,6 +134,7 @@ if ( ( my $error = $@ ) && $verbose ) {
 }
 
 if ( $daemonize && $client ) {
+    $client->set_batch_size($load);
     $client->work_periodically($sleep);
 }
 else {

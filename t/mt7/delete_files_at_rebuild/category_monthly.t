@@ -14,7 +14,6 @@ BEGIN {
         RebuildAtDelete      => 1,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
-    $ENV{MT_APP}    = 'MT::App::CMS';
 }
 
 use File::Find ();
@@ -22,8 +21,7 @@ use File::Find ();
 use MT;
 use MT::Test;
 use MT::Test::Permission;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 my $blog_id = 1;
 
@@ -71,46 +69,45 @@ my $map_category_monthly = MT::Test::Permission->make_templatemap(
 );
 
 my $blog = MT::Blog->load($blog_id);
-$blog->site_path( $test_env->root . '/site' );
-$blog->archive_path( join "/", $test_env->root, "site/archive" );
+$blog->site_path($test_env->root . '/site');
+$blog->archive_path(join "/", $test_env->root, "site/archive");
 $blog->save;
 
 subtest 'create entry' => sub {
-    my $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user             => $author,
-            __test_follow_redirects => 1,
-            __mode                  => 'save_entry',
-            _type                   => 'entry',
-            author_id               => $author->id,
-            blog_id                 => $blog_id,
-            return_args      => "__mode=view&_type=entry&blog_id=$blog_id",
-            save_revision    => 1,
-            entry_prefs      => 'Default',
-            custom_prefs     => [qw( tags category feedback assets )],
-            title            => 'entry1',
-            convert_breaks   => 'richtext',
-            text             => '<p>test entry</p>',
-            text_more        => '',
-            status           => 2,
-            authored_on_date => '2018-08-31',
-            authored_on_time => '00:00:00',
-            basename         => 'entry1',
-            'add_category_id_' . $category1->id => 'on',
-            category_ids                        => $category1->id,
-        },
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+    $app->post_ok({
+        __mode                              => 'save_entry',
+        _type                               => 'entry',
+        author_id                           => $author->id,
+        blog_id                             => $blog_id,
+        return_args                         => "__mode=view&_type=entry&blog_id=$blog_id",
+        save_revision                       => 1,
+        entry_prefs                         => 'Default',
+        custom_prefs                        => [qw( tags category feedback assets )],
+        title                               => 'entry1',
+        convert_breaks                      => 'richtext',
+        text                                => '<p>test entry</p>',
+        text_more                           => '',
+        status                              => 2,
+        authored_on_date                    => '2018-08-31',
+        authored_on_time                    => '00:00:00',
+        basename                            => 'entry1',
+        'add_category_id_' . $category1->id => 'on',
+        category_ids                        => $category1->id,
+    });
+
+    ok -e File::Spec->catfile(
+        $blog->archive_path,
+        'category1/2018/08/index.html'
     );
-    delete $app->{__test_output};
 
-    ok -e File::Spec->catfile( $blog->archive_path,
-        'category1/2018/08/index.html' );
-
-    my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
+    my @finfos = MT::FileInfo->load({ blog_id => $blog_id });
     is @finfos => 2, "2 FileInfo";
 
-    File::Find::find(
-        {   wanted => sub {
-                if ( -f $File::Find::name ) {
+    File::Find::find({
+            wanted => sub {
+                if (-f $File::Find::name) {
                     note $File::Find::name;
                 }
             },
@@ -121,51 +118,49 @@ subtest 'create entry' => sub {
 };
 
 subtest 'update entry (change category)' => sub {
-    my $entry1
-        = MT->model('entry')
-        ->load( { blog_id => $blog_id, title => 'entry1' } )
+    my $entry1 = MT->model('entry')->load({ blog_id => $blog_id, title => 'entry1' })
         or die;
-    my $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user             => $author,
-            __test_follow_redirects => 1,
-            __mode                  => 'save_entry',
-            _type                   => 'entry',
-            id                      => $entry1->id,
-            author_id               => $author->id,
-            blog_id                 => $blog_id,
-            return_args => "__mode=view&_type=entry&blog_id=$blog_id&id="
-                . $entry1->id,
-            save_revision    => 1,
-            entry_prefs      => 'Default',
-            custom_prefs     => [qw( tags category feedback assets )],
-            title            => 'entry1',
-            convert_breaks   => 'richtext',
-            text             => '<p>test entry</p>',
-            text_more        => '',
-            old_status       => 2,
-            status           => 2,
-            authored_on_date => '2018-08-31',
-            authored_on_time => '00:00:00',
-            basename         => 'entry1',
-            'add_category_id_' . $category2->id => 'on',
-            category_ids                        => $category2->id,
-        },
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+    $app->post_ok({
+        __mode                              => 'save_entry',
+        _type                               => 'entry',
+        id                                  => $entry1->id,
+        author_id                           => $author->id,
+        blog_id                             => $blog_id,
+        return_args                         => "__mode=view&_type=entry&blog_id=$blog_id&id=" . $entry1->id,
+        save_revision                       => 1,
+        entry_prefs                         => 'Default',
+        custom_prefs                        => [qw( tags category feedback assets )],
+        title                               => 'entry1',
+        convert_breaks                      => 'richtext',
+        text                                => '<p>test entry</p>',
+        text_more                           => '',
+        old_status                          => 2,
+        status                              => 2,
+        authored_on_date                    => '2018-08-31',
+        authored_on_time                    => '00:00:00',
+        basename                            => 'entry1',
+        'add_category_id_' . $category2->id => 'on',
+        category_ids                        => $category2->id,
+    });
+
+    ok !-e File::Spec->catfile(
+        $blog->archive_path,
+        'category1/2018/08/index.html'
     );
-    delete $app->{__test_output};
 
-    ok !-e File::Spec->catfile( $blog->archive_path,
-        'category1/2018/08/index.html' );
+    ok -e File::Spec->catfile(
+        $blog->archive_path,
+        'category2/2018/08/index.html'
+    );
 
-    ok -e File::Spec->catfile( $blog->archive_path,
-        'category2/2018/08/index.html' );
-
-    my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
+    my @finfos = MT::FileInfo->load({ blog_id => $blog_id });
     is @finfos => 2, "2 FileInfo";
 
-    File::Find::find(
-        {   wanted => sub {
-                if ( -f $File::Find::name ) {
+    File::Find::find({
+            wanted => sub {
+                if (-f $File::Find::name) {
                     note $File::Find::name;
                 }
             },
@@ -176,47 +171,50 @@ subtest 'update entry (change category)' => sub {
 };
 
 subtest 'create other entry' => sub {
-    my $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user             => $author,
-            __test_follow_redirects => 1,
-            __mode                  => 'save_entry',
-            _type                   => 'entry',
-            author_id               => $author->id,
-            blog_id                 => $blog_id,
-            return_args      => "__mode=view&_type=entry&blog_id=$blog_id",
-            save_revision    => 1,
-            entry_prefs      => 'Default',
-            custom_prefs     => [qw( tags category feedback assets )],
-            title            => 'entry2',
-            convert_breaks   => 'richtext',
-            text             => '<p>test other entry</p>',
-            text_more        => '',
-            status           => 2,
-            authored_on_date => '2018-10-31',
-            authored_on_time => '00:00:00',
-            basename         => 'entry2',
-            'add_category_id_' . $category2->id => 'on',
-            category_ids                        => $category2->id,
-        },
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+    $app->post_ok({
+        __mode                              => 'save_entry',
+        _type                               => 'entry',
+        author_id                           => $author->id,
+        blog_id                             => $blog_id,
+        return_args                         => "__mode=view&_type=entry&blog_id=$blog_id",
+        save_revision                       => 1,
+        entry_prefs                         => 'Default',
+        custom_prefs                        => [qw( tags category feedback assets )],
+        title                               => 'entry2',
+        convert_breaks                      => 'richtext',
+        text                                => '<p>test other entry</p>',
+        text_more                           => '',
+        status                              => 2,
+        authored_on_date                    => '2018-10-31',
+        authored_on_time                    => '00:00:00',
+        basename                            => 'entry2',
+        'add_category_id_' . $category2->id => 'on',
+        category_ids                        => $category2->id,
+    });
+
+    ok !-e File::Spec->catfile(
+        $blog->archive_path,
+        'category1/2018/12/index.html'
     );
-    delete $app->{__test_output};
 
-    ok !-e File::Spec->catfile( $blog->archive_path,
-        'category1/2018/12/index.html' );
+    ok -e File::Spec->catfile(
+        $blog->archive_path,
+        'category2/2018/08/index.html'
+    );
 
-    ok -e File::Spec->catfile( $blog->archive_path,
-        'category2/2018/08/index.html' );
+    ok -e File::Spec->catfile(
+        $blog->archive_path,
+        'category2/2018/10/index.html'
+    );
 
-    ok -e File::Spec->catfile( $blog->archive_path,
-        'category2/2018/10/index.html' );
-
-    my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
+    my @finfos = MT::FileInfo->load({ blog_id => $blog_id });
     is @finfos => 4, "4 FileInfo";
 
-    File::Find::find(
-        {   wanted => sub {
-                if ( -f $File::Find::name ) {
+    File::Find::find({
+            wanted => sub {
+                if (-f $File::Find::name) {
                     note $File::Find::name;
                 }
             },

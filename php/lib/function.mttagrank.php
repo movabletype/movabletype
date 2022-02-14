@@ -7,7 +7,7 @@
 
 function smarty_function_mttagrank($args, &$ctx) {
     $blog_id = $ctx->stash('blog_id');
-    $max_level = $args['max'];
+    $max_level = isset($args['max']) ? $args['max'] : null;
     $max_level or $max_level = 6;
 
     $tag = $ctx->stash('Tag');

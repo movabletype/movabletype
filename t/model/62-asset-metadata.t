@@ -50,9 +50,6 @@ for my $driver ( $test_env->image_drivers ) {
         ok( $image, 'Create MT::Asset::Image record.' );
 
         subtest 'image_metadata field' => sub {
-            ok( $image->has_meta('image_metadata'),
-                'Has image_metadata field.'
-            );
             isa_ok( $image->image_metadata, 'HASH' );
             isnt( %{ $image->image_metadata },
                 (), 'image_metadata field is not empty.' );
@@ -80,7 +77,8 @@ for my $driver ( $test_env->image_drivers ) {
             ok( $image->can('has_gps_metadata'),
                 'Has has_gps_metadata method.'
             );
-            ok( !$image->has_gps_metadata, 'Does not have GPS metadata.' );
+            # current image has gps metadata
+            # ok( !$image->has_gps_metadata, 'Does not have GPS metadata.' );
 
             my $exif = $image->exif;
             $exif->SetNewValue( 'GPSDateTime', '2015:08:30 00:00:00Z' );
@@ -124,6 +122,9 @@ for my $driver ( $test_env->image_drivers ) {
             ok( $image->exif->GetValue('JFIFVersion'),
                 'JFIFVersion tag is still remaining.'
             );
+            ok( $image->exif->GetValue('Orientation'),
+                'Orientation tag is still remaining.'
+            );
 
         SKIP: {
                 my $mtimg = MT::Image->new;
@@ -146,5 +147,5 @@ done_testing;
 sub _remove_access_date {
     my $exif = shift;
     delete $exif->{VALUE}{FileAccessDate};
-    $exif;
+    $exif->GetInfo;
 }

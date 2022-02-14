@@ -86,12 +86,9 @@ class Category extends BaseObject
             $content_field_id = $terms['content_field_id'];
         }
 
-        if (!$content_field_id
-            && isset($terms['content_field_name'])
-            && $terms['content_field_name']
-        ) {
+        if (empty($content_field_id) && isset($terms['content_field_name']) && $terms['content_field_name']) {
             $content_field_name = $terms['content_field_name'];
-            if ($content_type_id) {
+            if (!empty($content_type_id)) {
                 $cf_content_type_filter = "and cf_content_type_id = $content_type_id";
             } else {
                 $cf_content_type_filter = "";
@@ -107,11 +104,11 @@ class Category extends BaseObject
             $content_field_id = $content_field->id;
         }
 
-        if ($content_type_id) {
+        if (!empty($content_type_id)) {
             $where = $where. ' and cd_content_type_id = ' . $content_type_id;
         }
 
-        if ($content_field_id) {
+        if (!empty($content_field_id)) {
             $content_field_filter = 'and objectcategory_cf_id = ' . $content_field_id;
         } else {
             $content_field_filter = '';

@@ -1320,7 +1320,9 @@ Pager = new Class(Object, {
               link.innerHTML = '1';
               item.appendChild(link);
               this.element.appendChild(item);
+            }
 
+            if(page - 3 >= 1){
               var hidden_item = doc.createElement('li');
               hidden_item.className = 'page-item';
               hidden_item.setAttribute('aria-hidden', 'true');
@@ -1361,13 +1363,15 @@ Pager = new Class(Object, {
               item.appendChild(link);
               this.element.appendChild(item);
             }
-            if(page + 2 <= page_max){
+            if(page + 3 <= page_max){
               var hiddenitem = doc.createElement('li');
               hiddenitem.className = 'page-item';
               hiddenitem.setAttribute('aria-hidden', 'true');
               hiddenitem.innerHTML = '...';
               this.element.appendChild(hiddenitem);
+            }
 
+            if(page + 2 <= page_max){
               var item = doc.createElement('li');
               item.className = 'page-item first-last';
               var link = doc.createElement('a');

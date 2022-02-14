@@ -3194,6 +3194,14 @@ sub build_menus {
     my $filter_key     = $app->param('filter_key');
     my $app_param_id   = $app->param('id');
 
+    my $is_category_set;
+    if ($app_param_type eq 'category' && $mode eq 'view' && !$app->param('is_category_set')) {
+        $is_category_set = $app->model('category')->exist({
+            id => $app_param_id || 0,
+            category_set_id => { not => 0 }
+        });
+    }
+
     foreach my $id (@top_ids) {
         ## skip only if false value was set explicitly.
         next if exists $theme_modify->{$id} && !$theme_modify->{$id};
@@ -3297,11 +3305,6 @@ sub build_menus {
                     && $mode eq 'view'
                     && !$app->param('is_category_set') )
                 {
-                    my $is_category_set = $app->model('category')->exist(
-                        {   id => $app->param('id') || 0,
-                            category_set_id => { not => 0 }
-                        }
-                    );
                     $param->{screen_group}
                         = $is_category_set ? 'category_set' : 'entry';
                 }

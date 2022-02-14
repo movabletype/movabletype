@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 BEGIN {
+    plan skip_all => 'Not for external CGI mode' if $ENV{MT_TEST_RUN_APP_AS_CGI};
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
@@ -27,8 +28,7 @@ use MT::CMS::User;
 use MT::Role;
 
 use MT::Test;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 $test_env->prepare_fixture('db_data');
 
@@ -36,36 +36,36 @@ MT->instance;
 my $user        = MT::Author->load(1);
 my $mock_author = Test::MockModule->new('MT::Author');
 our $is_superuser = 0;
-$mock_author->mock( 'is_superuser', sub {$is_superuser} );
+$mock_author->mock('is_superuser', sub { $is_superuser });
 my $website = MT::Website->load(2);
-is( !!$website->is_blog, '', 'Is a website' );
+is(!!$website->is_blog, '', 'Is a website');
 
-my $admin_role
-    = MT::Role->load( { permissions => { like => '%administer_site%' } } );
+my $admin_role = MT::Role->load({ permissions => { like => '%administer_site%' } });
 require MT::Association;
-MT::Association->link( $user, $admin_role, $website );
+MT::Association->link($user, $admin_role, $website);
 
 my %callbacks = ();
 my $mock_mt   = Test::MockModule->new('MT');
 $mock_mt->mock(
     'run_callbacks',
     sub {
-        my ( $app, $meth, @param ) = @_;
+        my ($app, $meth, @param) = @_;
         $callbacks{$meth} ||= [];
         push @{ $callbacks{$meth} }, \@param;
         $mock_mt->original('run_callbacks')->(@_);
-    }
-);
+    });
 
 subtest 'Check callbacks for each config screens' => sub {
-    my @screens = (
-        {   __mode => 'cfg_prefs',
+    my @screens = ({
+            __mode => 'cfg_prefs',
             name   => 'General Settings',
         },
-        {   __mode => 'cfg_entry',
+        {
+            __mode => 'cfg_entry',
             name   => 'Compose Settings',
         },
-        {   __mode => 'cfg_web_services',
+        {
+            __mode => 'cfg_web_services',
             name   => 'Web Services Settings',
         },
     );
@@ -77,43 +77,36 @@ subtest 'Check callbacks for each config screens' => sub {
             plan skip_all => 'This test is skip for this screen'
                 if $s->{skip};
 
-            my %param = (
-                __test_user => $user,
-                __mode      => $s->{__mode},
-                blog_id     => $website->id
-            );
-            my $app = _run_app( 'MT::App::CMS', \%param );
-            my $out = delete $app->{__test_output};
+            my $app = MT::Test::App->new('MT::App::CMS');
+            $app->login($user);
+            $app->get_ok({
+                __mode  => $s->{__mode},
+                blog_id => $website->id
+            });
 
             for my $t (qw(blog website)) {
-                for my $name (
-                    qw(cms_object_scope_filter cms_view_permission_filter cms_edit)
-                    )
-                {
+                for my $name (qw(cms_object_scope_filter cms_view_permission_filter cms_edit)) {
                     my $cb = 'MT::App::CMS::' . $name . '.' . $t;
-                    is( scalar @{ $callbacks{$cb} || [] },
-                        1, $cb . ' has been called once' );
+                    is(
+                        scalar @{ $callbacks{$cb} || [] },
+                        1, $cb . ' has been called once'
+                    );
                 }
             }
 
-            like(
-                $out,
+            $app->content_like(
                 qr/name="__mode"\s*value="save"(?:(?!form).)*name="_type"\s*value="website"/sm,
                 '"website" is specified for "_type"'
             );
-
-            done_testing;
         };
     }
-
-    done_testing;
 };
 
 subtest 'Check callbacks for each config screens for global level' => sub {
     local $is_superuser = 1;
 
-    my @screens = (
-        {   __mode => 'cfg_web_services',
+    my @screens = ({
+            __mode => 'cfg_web_services',
             name   => 'Web Services Settings',
             like   => qr/__mode" value="save_cfg_system_web_services"/,
         },
@@ -126,60 +119,88 @@ subtest 'Check callbacks for each config screens for global level' => sub {
             plan skip_all => 'This test is skip for this screen'
                 if $s->{skip};
 
-            my %param = (
-                __test_user => $user,
-                __mode      => $s->{__mode},
-                blog_id     => 0,
-            );
-            my $app = _run_app( 'MT::App::CMS', \%param );
-            my $out = delete $app->{__test_output};
+            my $app = MT::Test::App->new('MT::App::CMS');
+            $app->login($user);
+            $app->get_ok({
+                __mode  => $s->{__mode},
+                blog_id => 0,
+            });
 
             for my $t (qw(blog)) {
-                for my $name ( qw(cms_edit) ) {
+                for my $name (qw(cms_edit)) {
                     my $cb = 'MT::App::CMS::' . $name . '.' . $t;
-                    is( scalar @{ $callbacks{$cb} || [] },
-                        1, $cb . ' has been called once' );
+                    is(
+                        scalar @{ $callbacks{$cb} || [] },
+                        1, $cb . ' has been called once'
+                    );
                 }
             }
 
-            like( $out, $s->{like}, 'output' );
-
-            done_testing;
+            $app->content_like($s->{like}, 'output');
         };
     }
-
-    done_testing;
 };
 
 subtest 'Check callbacks for saving' => sub {
     %callbacks = ();
 
-    my %param = (
-        __test_user      => $user,
-        __mode           => 'save',
-        __request_method => 'POST',
-        _type            => 'website',
-        id               => $website->id,
-        blog_id          => $website->id,
-        site_url         => q(),
-    );
-    my $app = _run_app( 'MT::App::CMS', \%param );
-    my $out = delete $app->{__test_output};
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($user);
+    my $res = $app->post_ok({
+        __mode   => 'save',
+        _type    => 'website',
+        id       => $website->id,
+        blog_id  => $website->id,
+        site_url => q(),
+    });
 
     for my $t (qw(blog website)) {
-        for my $name (
-            qw(cms_save_permission_filter cms_save_filter cms_pre_save cms_post_save)
-            )
-        {
+        for my $name (qw(cms_save_permission_filter cms_save_filter cms_pre_save cms_post_save)) {
             my $cb = 'MT::App::CMS::' . $name . '.' . $t;
-            is( scalar @{ $callbacks{$cb} || [] },
-                1, $cb . ' has been called once' );
+            is(
+                scalar @{ $callbacks{$cb} || [] },
+                1, $cb . ' has been called once'
+            );
         }
     }
 
-    like( $out, qr/Location:.*saved=1/, 'Saved successfully' );
+    like $app->message_text => qr/Your preferences have been saved/, 'Saved successfully';
+};
 
-    done_testing;
+subtest 'Check disable image popup' => sub {
+    my %params = (
+        __mode  => 'cfg_entry',
+        blog_id => $website->id
+    );
+    subtest 'check image popup is enabled' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->get_ok(\%params);
+        note $app->wq_find("#image_default_link_popup")->as_html;
+        is($app->wq_find("#image_default_link_popup")->size, 1, 'image popup check is show');
+    };
+
+    subtest 'change DisableImagePopup 1' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $test_env->update_config(DisableImagePopup => 1);
+        $app->get_ok(\%params);
+        note $app->wq_find("#image_default_link_popup")->as_html;
+        is($app->wq_find("#image_default_link_popup")->size, 0, 'image popup check is hide');
+        $test_env->update_config(DisableImagePopup => 0);
+    };
+
+    subtest 'remove popup_image template' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        MT->model('template')->remove({
+            blog_id => $website->id,
+            type    => 'popup_image'
+        });
+        $app->get_ok(\%params);
+        note $app->wq_find("#image_default_link_popup")->as_html;
+        is($app->wq_find("#image_default_link_popup")->size, 0, 'image popup check is hide');
+    };
 };
 
 done_testing;

@@ -28,6 +28,7 @@ my @Img = (
     [ 'test.gif', 400, 300 ],
     [ 'test.jpg', 640, 480 ],
     [ 'test.png', 150, 150 ],
+    [ 'test.bmp', 600, 450 ],
 );
 my @drivers = $test_env->image_drivers;
 
@@ -39,7 +40,7 @@ my $cfg    = MT::ConfigMgr->instance;
 my $tested = 0;
 for my $rec (@Img) {
     my ( $img_filename, $img_width, $img_height ) = @$rec;
-    my ($ext) = $img_filename =~ /\.(gif|jpg|png)$/;
+    my ($ext) = $img_filename =~ /\.(gif|jpg|png|bmp)$/;
     my ( $guard, $img_file ) = MT::Test::Image->tempfile(
         DIR    => $test_env->root,
         SUFFIX => ".$ext",
@@ -65,6 +66,7 @@ for my $rec (@Img) {
             ok( eval 'MT::Image::' . $driver . '->load_driver()',
                 'Also can load driver via class method'
             );
+            $img->_init_image_size;
             is( $img->{width}, $img_width,
                 "$driver says $img_filename is $img_width px wide" );
             is( $img->{height}, $img_height,
@@ -148,8 +150,12 @@ for my $rec (@Img) {
             );
 
             ( my $type = $img_file ) =~ s/.*\.//;
-            for my $to (qw( JPG PNG GIF )) {
+            for my $to (qw( JPG PNG GIF BMP )) {
                 next if lc $to eq lc $type;
+                if ($to eq 'BMP' && $driver =~ /GD|NetPBM/) {
+                    skip "$driver does not fully support BMP", 1;
+                    next;
+                }
                 my $blob = $img->convert( Type => $to );
                 ok( $blob, "convert $img_filename to $to with $driver" );
             }
@@ -162,6 +168,7 @@ for my $rec (@Img) {
 
             isa_ok( $img, 'MT::Image::' . $driver );
             note( MT::Image->errstr ) if MT::Image->errstr;
+            $img->_init_image_size;
             is( $img->{width}, $img_width,
                 "$driver says $img_filename from blob is $img_width px wide"
             );

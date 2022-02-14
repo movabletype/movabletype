@@ -7,7 +7,7 @@
 
 function smarty_function_mtentrytitle($args, &$ctx) {
     $entry = $ctx->stash('entry');
-    $title = $entry->entry_title;
+    $title = isset($entry) ? $entry->entry_title : null;
     if (empty($title)) {
         if (isset($args['generate']) && $args['generate']) {
             require_once("MTUtil.php");

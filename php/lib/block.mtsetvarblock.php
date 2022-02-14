@@ -48,14 +48,14 @@ function smarty_block_mtsetvarblock($args, $content, &$ctx, &$repeat) {
         }
 
         $value = $content;
-        $existing = $vars[$name];
+        $existing = isset($vars[$name]) ? $vars[$name] : null;
 
         require_once("MTUtil.php");
         if (isset($key)) {
             if (!isset($existing))
                 $existing = array($key => $value);
             elseif (is_hash($existing))
-                $existing = $existing[$key];
+                $existing = isset($existing[$key]) ? $existing[$key] : null;
             else
                 return $ctx->error( $ctx->mt->translate("'[_1]' is not a hash.", $name) );
         }
@@ -64,7 +64,7 @@ function smarty_block_mtsetvarblock($args, $content, &$ctx, &$repeat) {
                 $existing[$index] = $value;
             elseif (is_array($existing)) {
                 if ( is_numeric($index) )
-                    $existing = $existing[$index];
+                    $existing = isset($existing[$index]) ? $existing[$index] : null;
                 else
                     return $ctx->error( $ctx->mt->translate("Invalid index.") );
             }
@@ -85,7 +85,7 @@ function smarty_block_mtsetvarblock($args, $content, &$ctx, &$repeat) {
                 return $ctx->error();
         }
 
-        $data = $vars[$name];
+        $data = isset($vars[$name]) ? $vars[$name] : null;
         if ( isset($key) ) {
             if ( ( isset($func) )
               && ( 'delete' == strtolower( $func ) ) ) {

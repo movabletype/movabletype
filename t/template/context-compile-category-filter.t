@@ -272,6 +272,7 @@ sub add_category {
     $new_cat->label($label);
     $new_cat->parent($parent);
     $new_cat->blog_id($blog_id);
+    $new_cat->id($id);
     $new_cat->save() or die $new_cat->errstr;
     $cats_hash{ $new_cat->id } = $new_cat;
     is( $new_cat->id, $id, "The new ID is $id" );

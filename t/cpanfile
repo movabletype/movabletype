@@ -84,6 +84,7 @@ requires 'Net::IP';
 
 on 'test' => sub {
     requires 'Acme::RandomEmoji';
+    requires 'AnyEvent::SMTP::Server';
     requires 'App::Prove::Plugin::MySQLPool';
     requires 'Array::Diff';
     requires 'Carp::Always';
@@ -95,6 +96,9 @@ on 'test' => sub {
     requires 'Devel::GlobalDestruction';
     requires 'DBD::SQLite';
     requires 'DBI', '1.633';
+    requires 'File::Temp', '0.23';
+    requires 'File::Which';
+    requires 'HTML::Filter::Callbacks';
     requires 'HTML::Form';
     requires 'HTTP::DAV';
     requires 'HTTP::Request::Common';
@@ -103,7 +107,10 @@ on 'test' => sub {
     requires 'JSON::XS';  # For speed
     requires 'Log::Log4perl';
     requires 'Log::Minimal';
+    requires 'MIME::Head';
     requires 'Mock::MonkeyPatch';
+    requires 'Mojolicious';
+    requires 'Net::Server::SS::PreFork' unless $^O eq 'MSWin32';
     requires 'Net::SFTP';
     requires 'Parallel::ForkManager';
     requires 'Path::Tiny';
@@ -112,11 +119,12 @@ on 'test' => sub {
     requires 'PHP::Serialization';
     requires 'POSIX::AtFork' unless $^O eq 'MSWin32';
     requires 'Proc::ProcessTable' unless $^O eq 'MSWin32';
-    requires 'pQuery';
     requires 'Role::Tiny';
     requires 'Selenium::Remote::Driver', '1.36';
+    requires 'Server::Starter' unless $^O eq 'MSWin32';
     requires 'SQL::Maker';
     requires 'SQL::Translator', '1.61';   # changed comment generation
+    requires 'Starman' unless $^O eq 'MSWin32';
     requires 'String::CamelCase';
     requires 'Sub::Name';
     requires 'Term::Encoding';

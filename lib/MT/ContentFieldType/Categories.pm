@@ -107,7 +107,7 @@ sub ss_validator {
     my $options = $field_data->{options} || {};
 
     my $iter = MT::Category->load_iter(
-        {   id => @$data ? $data : 0,
+        {   id => @{ $data || [] } ? $data : 0,
             category_set_id => $options->{category_set}
         },
         { fetchonly => { id => 1 } }

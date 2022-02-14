@@ -23,7 +23,7 @@ function smarty_function_mtcategorybasename($args, &$ctx) {
     }
 
     $basename = $cat->category_basename;
-    if ($sep = $args['separator']) {
+    if ($sep = isset($args['separator']) ? $args['separator'] : null) {
         if ($sep == '-') {
             $basename = preg_replace('/_/', '-', $basename);
         } elseif ($sep == '_') {

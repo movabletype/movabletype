@@ -31,51 +31,41 @@ sub init {
 
     $image->SUPER::init(%param);
 
+    $image;
+}
+
+sub _magick {
+    my $image = shift;
+    return $image->{magick} if $image->{magick};
+
+    my $param = $image->{param};
     my %arg = ();
-    if ( my $type = $param{Type} ) {
+    if ( my $type = $param->{Type} ) {
         %arg = ( magick => lc($type) );
     }
     my $magick = $image->{magick} = $image->MagickClass->new(%arg);
-    if ( my $file = $param{Filename} ) {
+    if ( my $file = $param->{Filename} ) {
         my $x;
         eval { $x = $magick->Read($file); };
         return $image->error(
             MT->translate( "Reading file '[_1]' failed: [_2]", $file, $x ) )
             if $x;
-        ( $image->{width}, $image->{height} )
-            = $magick->Get( 'width', 'height' );
     }
-    elsif ( $param{Data} ) {
+    elsif ( $param->{Data} ) {
         my $x;
-        eval { my $x = $magick->BlobToImage( $param{Data} ); };
+        eval { my $x = $magick->BlobToImage( $param->{Data} ); };
         return $image->error(
             MT->translate( "Reading image failed: [_1]", $x ) )
             if $x;
-        ( $image->{width}, $image->{height} )
-            = $magick->Get( 'width', 'height' );
     }
+    $magick;
+}
 
-    # Set quality.
-    my $quality;
-    if ( lc( $magick->Get('magick') ) eq 'jpeg' ) {
-        $quality = $image->jpeg_quality;
-    }
-    elsif ( lc( $magick->Get('magick') ) eq 'png' ) {
-        $quality = $image->png_quality;
-    }
-    if ( defined $quality ) {
-        eval {
-            my $err = $magick->Set( quality => $quality );
-            return $image->error(
-                MT->transalte(
-                    'Setting quality parameter [_1] failed: [_2]', $quality,
-                    $err
-                )
-            ) if $err;
-        };
-    }
-
-    $image;
+sub _init_image_size {
+    my $image = shift;
+    return ($image->{width}, $image->{height}) if defined $image->{width} && defined $image->{height};
+    my $magick = $image->_magick or return;
+    ( $image->{width}, $image->{height} ) = $magick->Get( 'width', 'height' );
 }
 
 # http://www.imagemagick.org/script/command-line-options.php#quality
@@ -95,7 +85,7 @@ sub png_quality {
 
 my $HasRefType;
 sub _get_first_image {
-    my $magick = shift;
+    my $magick = shift or return;
     if ( !defined $HasRefType ) {
         $HasRefType = eval { require Scalar::Util; 1 } ? 1 : 0;
     }
@@ -111,7 +101,7 @@ sub _get_first_image {
 sub scale {
     my $image = shift;
     my ( $w, $h ) = $image->get_dimensions(@_);
-    my $magick = _get_first_image( $image->{magick} );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
     eval {
         my ( $orig_x, $orig_y ) = $magick->Get( 'width', 'height' );
@@ -154,7 +144,7 @@ sub crop_rectangle {
     my $image = shift;
     my %param = @_;
     my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
-    my $magick = _get_first_image( $image->{magick} );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
 
     eval {
@@ -190,7 +180,7 @@ sub crop_rectangle {
 
 sub flipHorizontal {
     my $image  = shift;
-    my $magick = _get_first_image( $image->{magick} );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
 
     eval {
@@ -205,7 +195,7 @@ sub flipHorizontal {
 
 sub flipVertical {
     my $image  = shift;
-    my $magick = _get_first_image( $image->{magick} );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
 
     eval {
@@ -220,7 +210,7 @@ sub flipVertical {
 sub rotate {
     my $image = shift;
     my ( $degrees, $w, $h ) = $image->get_degrees(@_);
-    my $magick = _get_first_image( $image->{magick} );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
 
     eval {
@@ -237,7 +227,7 @@ sub convert {
     my $image  = shift;
     my %param  = @_;
     my $type   = $image->{type} = $param{Type};
-    my $magick = _get_first_image( $image->{magick} );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
 
     eval {
@@ -263,7 +253,7 @@ sub convert {
 
 sub blob {
     my ( $image, $quality ) = @_;
-    my $magick = $image->{magick};
+    my $magick = $image->_magick or return;
     my $blob;
 
     eval {
@@ -275,18 +265,18 @@ sub blob {
         MT->translate( 'Outputting image failed: [_1]', $@ ) )
         if $@;
 
-    return $magick->ImageToBlob;
+    return $blob;
 }
 
 sub _set_quality {
     my ( $image, $quality ) = @_;
-    my $type = $image->{type} or return 1;
-    my $magick = $image->{magick};
+    my $magick = $image->_magick or return;
+    my $type = $magick->Get('magick') or return 1;
 
     if ( !defined $quality ) {
-        my $lc_type = uc($type);
+        my $lc_type = lc($type);
         $lc_type = 'jpeg' if $lc_type eq 'jpg';
-        my $quality_column = uc($type) . '_quality';
+        my $quality_column = $lc_type . '_quality';
         $quality
             = $image->can($quality_column)
             ? $image->$quality_column

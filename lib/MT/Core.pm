@@ -2268,6 +2268,16 @@ BEGIN {
             'DefaultClassParamFilter' => { default => 'all' },
 
             'UseTraditionalTransformer' => undef,
+            'DisableValidateParam'      => undef,
+            'UseExternalArchiver' => undef,
+            'BinTarPath' => undef,
+            'BinZipPath' => undef,
+            'BinUnzipPath' => undef,
+            'DisableImagePopup' => undef,
+            'ForceExifRemoval' => { default => 1 },
+            'TemporaryFileExpiration' => { default => 60 * 60 },
+            'ForceAllowStringSub' => undef,
+            'HideVersion' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2601,6 +2611,7 @@ sub load_core_tasks {
                 $job->uniqkey(1);
                 $job->priority(4);
                 MT::TheSchwartz->insert($job);
+                return;
             },
         },
         'JunkExpiration' => {
@@ -2613,7 +2624,7 @@ sub load_core_tasks {
         },
         'CleanTemporaryFiles' => {
             label     => 'Remove Temporary Files',
-            frequency => 60 * 60,                    # once per hour
+            frequency => $cfg->TemporaryFileExpiration,   # once per hour by default
             code      => sub {
                 MT::Core->remove_temporary_files;
             },
@@ -2691,16 +2702,21 @@ sub remove_compiled_template_files {
 sub remove_temporary_files {
     require MT::Session;
 
+    my $expiration = MT->config->TemporaryFileExpiration;
+
     my @files
         = MT::Session->load(
-        { kind => 'TF', start => [ undef, time - 60 * 60 ] },
+        { kind => 'TF', start => [ undef, time - $expiration ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
+    my @ids;
     foreach my $f (@files) {
         if ( $fmgr->delete( $f->name ) ) {
-            $f->remove;
+            push @ids, $f->id;
         }
     }
+    return unless @ids;
+    MT::Session->remove({id => \@ids});
 
     # This is a silent task; no need to log removal of temporary files
     return '';
@@ -2915,6 +2931,7 @@ sub load_core_permissions {
                 'edit_entry_authored_on'                => 1,
                 'edit_entry_unpublished_on'             => 1,
                 'save_edit_prefs'                       => 1,
+                'view_thumbnail_image'                  => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2945,6 +2962,7 @@ sub load_core_permissions {
                 'insert_asset'                     => 1,
                 'access_to_insert_asset_list'      => 1,
                 'save_edit_prefs'                  => 1,
+                'view_thumbnail_image'             => 1,
             }
         },
         'blog.edit_assets' => {
@@ -2960,6 +2978,7 @@ sub load_core_permissions {
                 'delete_asset_file'                => 1,
                 'edit_assets'                      => 1,
                 'open_asset_edit_screen'           => 1,
+                'view_thumbnail_image'             => 1,
                 'remove_tags_from_assets'          => 1,
                 'remove_tags_from_assets_via_list' => 1,
                 'save_asset'                       => 1,
@@ -3095,6 +3114,7 @@ sub load_core_permissions {
                 'access_to_insert_asset_list'             => 1,
                 'manage_content_data'                     => 1,
                 'use_tools:search'                        => 1,
+                'view_thumbnail_image'                    => 1,
             },
         },
         'blog.manage_pages' => {
@@ -3130,6 +3150,7 @@ sub load_core_permissions {
                 'edit_page_authored_on'           => 1,
                 'edit_page_unpublished_on'        => 1,
                 'save_edit_prefs'                 => 1,
+                'view_thumbnail_image'            => 1,
             }
         },
         'blog.manage_users' => {
@@ -3452,6 +3473,7 @@ sub load_core_permissions {
                 'access_to_website_list'                  => 1,
                 'access_to_blog_list'                     => 1,
                 'use_tools:search'                        => 1,
+                'view_thumbnail_image'                    => 1,
             },
         },
         'system.manage_content_types' => {

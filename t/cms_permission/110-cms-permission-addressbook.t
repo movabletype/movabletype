@@ -3,42 +3,41 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
-        DefaultLanguage => 'en_US',  ## for now
+        DefaultLanguage => 'en_US',    ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test;
 use MT::Test::Permission;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 ### Make test data
 MT->instance;
 my $config = MT->config;
-$config->EnableAddressBook( 1, 1 );
+$config->EnableAddressBook(1, 1);
 $config->save_config;
 
 $test_env->prepare_fixture(sub {
     MT::Test->init_db;
 
     # Website
-    my $website = MT::Test::Permission->make_website( name => 'my website' );
+    my $website = MT::Test::Permission->make_website(name => 'my website');
 
     # Blog
     my $blog = MT::Test::Permission->make_blog(
         parent_id => $website->id,
-        name => 'my blog',
+        name      => 'my blog',
     );
     my $second_blog = MT::Test::Permission->make_blog(
         parent_id => $website->id,
-        name => 'second blog',
+        name      => 'second blog',
     );
 
     # Author
@@ -72,13 +71,13 @@ $test_env->prepare_fixture(sub {
         permissions => "'edit_notifications'",
     );
 
-    my $designer_role = MT::Role->load( { name => MT->translate('Designer') } );
+    my $designer_role = MT::Role->load({ name => MT->translate('Designer') });
 
     require MT::Association;
-    MT::Association->link( $ukawa    => $send_notification => $blog );
-    MT::Association->link( $egawa    => $edit_notification => $blog );
-    MT::Association->link( $aikawa   => $send_notification => $second_blog );
-    MT::Association->link( $ichikawa => $designer_role     => $blog );
+    MT::Association->link($ukawa    => $send_notification => $blog);
+    MT::Association->link($egawa    => $edit_notification => $blog);
+    MT::Association->link($aikawa   => $send_notification => $second_blog);
+    MT::Association->link($ichikawa => $designer_role     => $blog);
 
     # Entry
     my $entry = MT::Test::Permission->make_entry(
@@ -90,357 +89,236 @@ $test_env->prepare_fixture(sub {
     # Notification
     my $addr = MT::Test::Permission->make_notification(
         blog_id => $blog->id,
-        name => 'my notification',
+        name    => 'my notification',
     );
 });
 
-my $website     = MT::Website->load( { name => 'my website' } );
-my $blog        = MT::Blog->load( { name => 'my blog' } );
-my $second_blog = MT::Blog->load( { name => 'second blog' } );
+my $website     = MT::Website->load({ name => 'my website' });
+my $blog        = MT::Blog->load({ name => 'my blog' });
+my $second_blog = MT::Blog->load({ name => 'second blog' });
 
-my $aikawa   = MT::Author->load( { name => 'aikawa' } );
-my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
-my $ukawa    = MT::Author->load( { name => 'ukawa' } );
-my $egawa    = MT::Author->load( { name => 'egawa' } );
+my $aikawa   = MT::Author->load({ name => 'aikawa' });
+my $ichikawa = MT::Author->load({ name => 'ichikawa' });
+my $ukawa    = MT::Author->load({ name => 'ukawa' });
+my $egawa    = MT::Author->load({ name => 'egawa' });
 
 my $admin = MT::Author->load(1);
 
-my $entry = MT::Entry->load( { title => 'my entry' } );
+my $entry = MT::Entry->load({ title => 'my entry' });
 
 require MT::Notification;
-my $addr = MT::Notification->load( { name => 'my notification' } );
-
-# Run
-my ( $app, $out );
+my $addr = MT::Notification->load({ name => 'my notification' });
 
 subtest 'mode = entry_notify' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'entry_notify',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: entry_notify" );
-    ok( $out !~ m!permission=1!i, "entry_notify by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode   => 'entry_notify',
+        blog_id  => $blog->id,
+        entry_id => $entry->id,
+    });
+    $app->has_no_permission_error("entry_notify by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'entry_notify',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: entry_notify" );
-    ok( $out !~ m!permission=1!i, "entry_notify by permitted user" );
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode   => 'entry_notify',
+        blog_id  => $blog->id,
+        entry_id => $entry->id,
+    });
+    $app->has_no_permission_error("entry_notify by permitted user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'entry_notify',
-            blog_id          => $second_blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: entry_notify" );
-    ok( $out =~ m!invalid request!i, "entry_notify by other blog user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode   => 'entry_notify',
+        blog_id  => $second_blog->id,
+        entry_id => $entry->id,
+    });
+    $app->has_invalid_request("entry_notify by other blog user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'entry_notify',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: entry_notify" );
-    ok( $out =~ m!permission=1!i, "entry_notify by other role user" );
-
-    done_testing();
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode   => 'entry_notify',
+        blog_id  => $blog->id,
+        entry_id => $entry->id,
+    });
+    $app->has_permission_error("entry_notify by other role user");
 };
 
 subtest 'mode = export_notification' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'export_notification',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: export_notification" );
-    ok( $out !~ m!permission=1!i, "export_notification by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'export_notification',
+        blog_id => $blog->id,
+    });
+    $app->has_no_permission_error("export_notification by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'export_notification',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: export_notification" );
-    ok( $out !~ m!permission=1!i, "export_notification by permitted user" );
+    $app->login($egawa);
+    $app->post_ok({
+        __mode  => 'export_notification',
+        blog_id => $blog->id,
+    });
+    $app->has_no_permission_error("export_notification by permitted user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'export_notification',
-            blog_id          => $second_blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: export_notification" );
-    ok( $out =~ m!permission=1!i, "export_notification by other blog user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'export_notification',
+        blog_id => $second_blog->id,
+    });
+    $app->has_permission_error("export_notification by other blog user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'export_notification',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: export_notification" );
-    ok( $out =~ m!permission=1!i, "export_notification by other role user" );
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode   => 'export_notification',
+        blog_id  => $blog->id,
+        entry_id => $entry->id,
+    });
+    $app->has_permission_error("export_notification by other role user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'export_notification',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: export_notification" );
-    ok( $out =~ m!permission=1!i,
-        "export_notification by other role user (send notification)" );
-
-    done_testing();
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode   => 'export_notification',
+        blog_id  => $blog->id,
+        entry_id => $entry->id,
+    });
+    $app->has_permission_error("export_notification by other role user (send notification)");
 };
 
 subtest 'mode = send_notify' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user        => $admin,
-            __request_method   => 'POST',
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode             => 'send_notify',
+        blog_id            => $blog->id,
+        entry_id           => $entry->id,
+        send_notify_emails => 'test@example.com',
+    });
+    $app->has_no_permission_error("send_notify by admin");
+
+    {
+        # XXX: The following test is somewhat broken because the user doesn't have enough permission
+        # so the first request succeeds and then the following redirect fails.
+        local $app->{max_redirect} = 1;
+        $app->login($ukawa);
+        $app->post_ok({
             __mode             => 'send_notify',
             blog_id            => $blog->id,
             entry_id           => $entry->id,
             send_notify_emails => 'test@example.com',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                       "Request: send_notify" );
-    ok( $out !~ m!No permissions!i, "send_notify by admin" );
+        });
+        $app->has_no_permission_error("send_notify by permitted user");
+    }
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user        => $ukawa,
-            __request_method   => 'POST',
-            __mode             => 'send_notify',
-            blog_id            => $blog->id,
-            entry_id           => $entry->id,
-            send_notify_emails => 'test@example.com',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                       "Request: send_notify" );
-    ok( $out !~ m!No permissions!i, "send_notify by permitted user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode             => 'send_notify',
+        blog_id            => $second_blog->id,
+        entry_id           => $entry->id,
+        send_notify_emails => 'test@example.com',
+    });
+    $app->has_permission_error("send_notify by other blog user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user        => $aikawa,
-            __request_method   => 'POST',
-            __mode             => 'send_notify',
-            blog_id            => $second_blog->id,
-            entry_id           => $entry->id,
-            send_notify_emails => 'test@example.com',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                       "Request: send_notify" );
-    ok( $out =~ m!No permissions!i, "send_notify by other blog user" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'send_notify',
-            blog_id          => $blog->id,
-            entry_id         => $entry->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                       "Request: send_notify" );
-    ok( $out =~ m!No permissions!i, "send_notify by other role user" );
-
-    done_testing();
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode   => 'send_notify',
+        blog_id  => $blog->id,
+        entry_id => $entry->id,
+    });
+    $app->has_permission_error("send_notify by other role user");
 };
 
 subtest 'mode = list' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'list',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
-    ok( $out !~ m!permission=1!i, "list by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'list',
+        blog_id => $blog->id,
+        _type   => 'notification',
+    });
+    $app->has_no_permission_error("list by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'list',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
-    ok( $out !~ m!permission=1!i, "list by permitted user" );
+    $app->login($egawa);
+    $app->post_ok({
+        __mode  => 'list',
+        blog_id => $blog->id,
+        _type   => 'notification',
+    });
+    $app->has_no_permission_error("list by permitted user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'list',
-            blog_id          => $second_blog->id,
-            _type            => 'notification',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
-    ok( $out =~ m!permission=1!i, "list by other blog user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'list',
+        blog_id => $second_blog->id,
+        _type   => 'notification',
+    });
+    $app->has_permission_error("list by other blog user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'list',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
-    ok( $out =~ m!permission=1!i, "list by other role user" );
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode  => 'list',
+        blog_id => $blog->id,
+        _type   => 'notification',
+    });
+    $app->has_permission_error("list by other role user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'list',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: list" );
-    ok( $out =~ m!permission=1!i,
-        "list by other role user (send notification)" );
-
-    done_testing();
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'list',
+        blog_id => $blog->id,
+        _type   => 'notification',
+    });
+    $app->has_permission_error("list by other role user (send notification)");
 };
 
 subtest 'mode = save' => sub {
 
     # Edit screen is not provided by default installation.
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out !~ m!permission=1!i, "save by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'save',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_no_permission_error("save by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out !~ m!permission=1!i, "save by permitted user" );
+    $app->login($egawa);
+    $app->post_ok({
+        __mode  => 'save',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_no_permission_error("save by permitted user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $second_blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save by other blog user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'save',
+        blog_id => $second_blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_permission_error("save by other blog user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save by other role user" );
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode  => 'save',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_permission_error("save by other role user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: save" );
-    ok( $out =~ m!permission=1!i,
-        "save by other role user (send notification)" );
-
-    done_testing();
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'save',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_permission_error("save by other role user (send notification)");
 };
 
 subtest 'mode = edit' => sub {
@@ -448,158 +326,104 @@ subtest 'mode = edit' => sub {
     # Edit screen is not provided by default installation.
     # We should be displaying more detail message for user, I think.
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid request!i, "edit by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'edit',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_invalid_request("edit by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid request!i, "edit by permitted user" );
+    $app->login($egawa);
+    $app->post_ok({
+        __mode  => 'edit',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_invalid_request("edit by permitted user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            blog_id          => $second_blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid request!i, "edit by other blog user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'edit',
+        blog_id => $second_blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_invalid_request("edit by other blog user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid request!i, "edit by other role user" );
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode  => 'edit',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_invalid_request("edit by other role user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: edit" );
-    ok( $out =~ m!Invalid request!i,
-        "edit by other role user (send notification)" );
-
-    done_testing();
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'edit',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_invalid_request("edit by other role user (send notification)");
 };
 
 subtest 'mode = delete' => sub {
-    $addr = MT::Test::Permission->make_notification( blog_id => $blog->id, );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
-    ok( $out !~ m!permission=1!i, "delete by admin" );
+    my $addr = MT::Test::Permission->make_notification(blog_id => $blog->id,);
+    my $app  = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'delete',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_no_permission_error("delete by admin");
 
-    $addr = MT::Test::Permission->make_notification( blog_id => $blog->id, );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
-    ok( $out !~ m!permission=1!i, "delete by permitted user" );
+    $addr = MT::Test::Permission->make_notification(blog_id => $blog->id,);
+    $app->login($egawa);
+    $app->post_ok({
+        __mode  => 'delete',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_no_permission_error("delete by permitted user");
 
-    $addr = MT::Test::Permission->make_notification( blog_id => $blog->id, );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $second_blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
-    ok( $out =~ m!permission=1!i, "delete by other blog user" );
+    $addr = MT::Test::Permission->make_notification(blog_id => $blog->id,);
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'delete',
+        blog_id => $second_blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_permission_error("delete by other blog user");
 
-    $addr = MT::Test::Permission->make_notification( blog_id => $blog->id, );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
-    ok( $out =~ m!permission=1!i, "delete by other role user" );
+    $addr = MT::Test::Permission->make_notification(blog_id => $blog->id,);
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode  => 'delete',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_permission_error("delete by other role user");
 
-    $addr = MT::Test::Permission->make_notification( blog_id => $blog->id, );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $blog->id,
-            _type            => 'notification',
-            id               => $addr->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: delete" );
-    ok( $out =~ m!permission=1!i,
-        "delete by other role user (send notification)" );
-
-    done_testing();
+    $addr = MT::Test::Permission->make_notification(blog_id => $blog->id,);
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'delete',
+        blog_id => $blog->id,
+        _type   => 'notification',
+        id      => $addr->id,
+    });
+    $app->has_permission_error("delete by other role user (send notification)");
 };
 
 done_testing();

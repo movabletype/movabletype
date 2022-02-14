@@ -78,6 +78,11 @@ my $mock_stats = Test::MockModule->new('MT::Stats');
 $mock_stats->mock( 'readied_provider',
     sub {'MT::Test::DataAPI::Stats::Provider'} );
 
+my @extra_permissions;
+if ($test_env->addon_exists('Sync.pack')) {
+    @extra_permissions = qw(manage_content_sync);
+}
+
 my $suite = suite();
 test_data_api($suite);
 
@@ -715,6 +720,7 @@ sub suite {
                         'blog' => undef
                     },
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -728,11 +734,13 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '1' }
                     },
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -746,7 +754,8 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '2' }
                     }
@@ -786,6 +795,7 @@ sub suite {
                 'totalResults' => 3,
                 'items'        => [
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -799,11 +809,13 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '1' }
                     },
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -817,7 +829,8 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '2' }
                     }
@@ -903,6 +916,7 @@ sub suite {
                         'blog' => undef
                     },
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -916,11 +930,13 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '1' }
                     },
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -934,7 +950,8 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '2' }
                     }

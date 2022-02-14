@@ -13,16 +13,16 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
         }
 
         # Do we want the current category?
-        $include_current = $args['include_current'];
+        $include_current = isset($args['include_current']) ? $args['include_current'] : null;
 
-        $top = $args['top'];
+        $top = isset($args['top']) ? $args['top'] : null;
 
         # Sorting information#   sort_order ::= 'ascend' | 'descend'
         #   sort_method ::= method name (e.g. package::method)
         #
         # sort_method takes precedence
         $sort_order = isset($args['sort_order']) ? $args['sort_order'] : 'ascend';
-        $sort_method = $args['sort_method'];
+        $sort_method = isset($args['sort_method']) ? $args['sort_method'] : null;
         $sort_by = isset($args['sort_by']) ? $args['sort_by'] : 'user_custom';
 
         $category_set_id = 0;
@@ -39,17 +39,17 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
 
         # If we find ourselves in a category context 
         if (!$top) {
-            if ($args['category']) {
+            if (!empty($args['category'])) {
                 require_once("MTUtil.php");
                 $current_cat = cat_path_to_category($args['category'], $blog_id, $class, $category_set_id);
                 if ( is_array( $current_cat ) )
                     $current_cat = $current_cat[0];
             }
-            if ($current_cat == NULL) {
+            if (!isset($current_cat)) {
                 $current_cat = $ctx->stash('category') or $ctx->stash('archive_category');
             }
         }
-        if (!$top && !$args['top_level_categories'] && $current_cat) {
+        if (!$top && empty($args['top_level_categories']) && $current_cat) {
             if ($include_current) {
                 # If we're to include it, just use it to seed the category list
                 $cats = array($current_cat);
@@ -65,7 +65,7 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
                     'sort_by' => $sort_by));
             }
         }
-        if (($top || $args['top_level_categories']) && !$cats) {
+        if (($top || !empty($args['top_level_categories'])) && empty($cats)) {
             # Otherwise, use the top level categories
             $cats = $ctx->mt->db()->fetch_categories(array(
                 'blog_id' => $blog_id,
@@ -77,7 +77,7 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
                 'sort_by' => $sort_by));
         }
 
-        if (!$cats) {
+        if (empty($cats)) {
             $ctx->restore($localvars);
             $repeat = false;
             return '';

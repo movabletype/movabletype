@@ -475,6 +475,7 @@
           <input type="checkbox" name="image_default_popup" id="image_default_popup" class="custom-control-input" value="1" <mt:if name="popup">checked="checked" </mt:if>/>
           <label class="custom-control-label" for="image_default_popup"><__trans phrase="Link to original image"></label>
         </div>
+        <mt:if name="can_popup">
         <div style="margin-left:2.5rem;">
           <div class="custom-control custom-radio">
             <input type="radio" value="1" name="image_default_link" class="custom-control-input" id="image_default_link_popup" <mt:if name="popup_link" lt="2">checked="checked"</mt:if> />
@@ -485,6 +486,7 @@
             <label class="custom-control-label" for="image_default_link_new_tab"><__trans phrase="Display on the same screen"></label>
           </div>
         </div>
+        </mt:if>
       </div>
     </mtapp:setting>
   </mtapp:settinggroup>

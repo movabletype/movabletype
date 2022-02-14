@@ -3,61 +3,85 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
+    plan skip_all => "Not for external CGI server" if $ENV{MT_TEST_RUN_APP_AS_CGI};
+
     $test_env = MT::Test::Env->new(
-        DefaultLanguage => 'en_US',  ## for now
+        DefaultLanguage => 'en_US',    ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :newdb );
+use MT::Test qw(:newdb);
 use MT::Test::Permission;
 use MT::Test::Upgrade;
+use MT::Test::App;
 use MT::Theme;
 
 $test_env->fix_mysql_create_table_sql;
 
-my ( $app, $out );
+subtest 'v5_assign_blog_date_language' => sub {
+    require MT::Upgrade::v5;
+    for my $conf_lang ('ja', 'en_US') {
+        for my $db_lang ('ja', 'en-us', 'un-kn', 'en-US') {
+            subtest $conf_lang. ':'. $db_lang => sub {
+                MT->config(DefaultLanguage => $conf_lang);
+                MT::Test->init_db;
+                my $site = MT::Website->load({id => 1});
+                $site->date_language($db_lang);
+                $site->language($db_lang);
+                $site->save;
+                my $updater = MT::Upgrade::v5::upgrade_functions()->{v5_assign_blog_date_language}->{updater};
+                MT::Upgrade::core_update_records('MT::Upgrade', %$updater);
+                $site = MT::Website->load({id => 1});
+                is $site->date_language, $db_lang, 'right date_language';
+                is $site->language, $db_lang ne 'un-kn' ? $db_lang : $conf_lang, 'right language';
+            };
+        }
+    }
+};
 
 subtest 'Upgrade from MT4 to MT7' => sub {
     MT::Test->init_db;
     MT::Website->remove_all;
 
     my @blog_ids;
-    foreach ( 0 .. 2 ) {
-        my $blog = MT::Test::Permission->make_blog( parent_id => 0, );
-        ok( $blog, 'Create blog.' );
+    foreach (0 .. 2) {
+        my $blog = MT::Test::Permission->make_blog(parent_id => 0,);
+        ok($blog, 'Create blog.');
         push @blog_ids, $blog->id;
     }
     my $admin = MT::Author->load(1);
-    $admin->favorite_blogs( \@blog_ids );
+    $admin->favorite_blogs(\@blog_ids);
     $admin->save or die $admin->errstr;
 
-    is( MT::Website->count(), 0, 'There is no website.' );
-    is( MT::Blog->count(),    3, 'There are three blogs.' );
+    is(MT::Website->count(), 0, 'There is no website.');
+    is(MT::Blog->count(),    3, 'There are three blogs.');
 
-    my $site_admin
-        = MT::Role->load( { name => MT->translate('Site Administrator') } );
-    my $blog = MT::Blog->load( $blog_ids[0] );
-    $admin->add_role( $site_admin, $blog );
+    my $site_admin = MT::Role->load({ name => MT->translate('Site Administrator') });
+    my $blog       = MT::Blog->load($blog_ids[0]);
+    $admin->add_role($site_admin, $blog);
 
     my @roles;
-    my $iter = $admin->role_iter( { blog_id => $blog->id } );
-    while ( my $r = $iter->() ) {
+    my $iter = $admin->role_iter({ blog_id => $blog->id });
+    while (my $r = $iter->()) {
         push @roles, $r;
     }
-    is( scalar @roles, 1, 'Administrator has one role.' );
-    is( $roles[0]->name,
+    is(scalar @roles, 1, 'Administrator has one role.');
+    is(
+        $roles[0]->name,
         MT->translate('Site Administrator'),
         'Administrator has "Site Administrator" role.'
     );
-    my $perms = $admin->permissions( $blog->id );
-    ok( $perms->has('administer_site'),
-        'Administrator has "administer_site" permission.' );
+    my $perms = $admin->permissions($blog->id);
+    ok(
+        $perms->has('administer_site'),
+        'Administrator has "administer_site" permission.'
+    );
 
     my $cfg = MT->config;
     $cfg->MTVersion(4.38);
@@ -69,10 +93,9 @@ subtest 'Upgrade from MT4 to MT7' => sub {
     my @lines  = split /\n/, $data;
     my @new_lines;
     foreach my $line (@lines) {
-        if ( $line =~ /^MTVersion/ ) {
+        if ($line =~ /^MTVersion/) {
             $line = 'MTVersion 4.38';
-        }
-        elsif ( $line =~ /^SchemaVersion/ ) {
+        } elsif ($line =~ /^SchemaVersion/) {
             $line = 'SchemaVersion 4.0077';
         }
         push @new_lines, $line;
@@ -81,135 +104,152 @@ subtest 'Upgrade from MT4 to MT7' => sub {
     $config->data($new_data);
     $config->save or die $config->errstr;
 
-    $app = _run_app(
-        'MT::App::Upgrader',
-        {   __request_method => 'POST',
-            __mode           => 'upgrade',
-            username         => 'Melody',
-            password         => 'Nelson',
-        },
-    );
-    $out = delete $app->{__test_output};
+    my $app = MT::Test::App->new('MT::App::Upgrader');
+    my $res = $app->post({
+        __mode   => 'upgrade',
+        username => 'Melody',
+        password => 'Nelson',
+    });
 
-    my $json_steps = $app->response;
-    while ( @{ $json_steps->{steps} || [] } ) {
+    my $json_steps = $app->_app->response;
+    while (@{ $json_steps->{steps} || [] }) {
 
         require MT::Util;
-        $json_steps = MT::Util::to_json( $json_steps->{steps} );
+        $json_steps = MT::Util::to_json($json_steps->{steps});
 
-        require MT::App::Upgrader;
-        $app = _run_app(
-            'MT::App::Upgrader',
-            {   __request_method => 'POST',
-                username         => 'Melody',
-                password         => 'Nelson',
-                __mode           => 'run_actions',
-                steps            => $json_steps,
-            },
-        );
-        $out = delete $app->{__test_output};
-
-        $out =~ s/^.*JSON://s;
+        $res = $app->post({
+            username => 'Melody',
+            password => 'Nelson',
+            __mode   => 'run_actions',
+            steps    => $json_steps,
+        });
+        (my $json = $res->decoded_content) =~ s/^.*JSON://s;
 
         require JSON;
-        $json_steps = JSON::from_json($out);
+        $json_steps = JSON::from_json($json);
 
-        ok( !$json_steps->{error}, 'Request has no error.' ) or do {
+        ok(!$json_steps->{error}, 'Request has no error.') or do {
             note "ERROR: " . $json_steps->{error};
             last;
         };
 
     }
 
-    is( MT::Website->count(), 3, 'There are three websites.' );
-    is( MT::Blog->count(),    0, 'There is no blog.' );
+    my @websites = MT::Website->load();
+    is(scalar @websites, 3, 'There are three websites.');
+    for my $site (@websites) {
+        is $site->date_language, 'en_us', 'right date_language';
+        is $site->language,      'en_US', 'right language';
+    }
+
+    is(MT::Blog->count(),    0, 'There is no blog.');
 
     $admin = MT::Author->load(1);
-    ok( !$admin->favorite_blogs,
-        'Administrator does not have favorite_blogs' );
+    ok(
+        !$admin->favorite_blogs,
+        'Administrator does not have favorite_blogs'
+    );
     my $favorite_websites = $admin->favorite_websites;
-    is( scalar @$favorite_websites,
-        3, 'Administrator has three favorite_websites.' );
+    is(
+        scalar @$favorite_websites,
+        3, 'Administrator has three favorite_websites.'
+    );
 
-    $iter = $admin->role_iter( { blog_id => $blog->id } );
+    $iter  = $admin->role_iter({ blog_id => $blog->id });
     @roles = ();
-    while ( my $r = $iter->() ) {
+    while (my $r = $iter->()) {
         push @roles, $r;
     }
-    is( scalar @roles, 1, 'Administrator has one role.' );
-    is( $roles[0]->name,
+    is(scalar @roles, 1, 'Administrator has one role.');
+    is(
+        $roles[0]->name,
         MT->translate('Site Administrator'),
         'Administrator has "Site Administrator" role.'
     );
 
-    $perms = $admin->permissions( $blog->id );
-    ok( $perms->has('administer_site'),
-        'Administrator has "administer_site" permission.' );
+    $perms = $admin->permissions($blog->id);
+    ok(
+        $perms->has('administer_site'),
+        'Administrator has "administer_site" permission.'
+    );
 
 };
 
 subtest 'Upgrade from MT5 to MT7' => sub {
     MT::Test->init_db;
 
-    my $blog = MT::Test::Permission->make_blog( parent_id => 0, );
-    ok( $blog, 'Create blog.' );
+    my $blog = MT::Test::Permission->make_blog(parent_id => 0,);
+    ok($blog, 'Create blog.');
 
-    is( MT::Website->count(), 1, 'There is one website.' );
-    is( MT::Blog->count(),    1, 'There is one blog.' );
+    is(MT::Website->count(), 1, 'There is one website.');
+    is(MT::Blog->count(),    1, 'There is one blog.');
 
     my $website = MT::Website->load(1);
     my $admin   = MT::Author->load(1);
-    $admin->favorite_websites( [ $website->id ] );
-    $admin->favorite_blogs(    [ $blog->id ] );
+    $admin->favorite_websites([$website->id]);
+    $admin->favorite_blogs([$blog->id]);
     $admin->save or die $admin->errstr;
 
-    my $site_admin
-        = MT::Role->load( { name => MT->translate('Site Administrator') } );
-    $admin->add_role( $site_admin, $blog );
+    my $site_admin = MT::Role->load({ name => MT->translate('Site Administrator') });
+    $admin->add_role($site_admin, $blog);
 
     my @roles;
-    my $iter = $admin->role_iter( { blog_id => $blog->id } );
-    while ( my $r = $iter->() ) {
+    my $iter = $admin->role_iter({ blog_id => $blog->id });
+    while (my $r = $iter->()) {
         push @roles, $r;
     }
-    is( scalar @roles, 1, 'Administrator has one role.' );
-    is( $roles[0]->name,
+    is(scalar @roles, 1, 'Administrator has one role.');
+    is(
+        $roles[0]->name,
         MT->translate('Site Administrator'),
         'Administrator has "Site Administrator" role.'
     );
-    my $perms = $admin->permissions( $blog->id );
-    ok( $perms->has('administer_site'),
-        'Administrator has "administer_site" permission.' );
+    my $perms = $admin->permissions($blog->id);
+    ok(
+        $perms->has('administer_site'),
+        'Administrator has "administer_site" permission.'
+    );
 
-    MT::Test::Upgrade->upgrade( from => 5.0036 );
+    MT::Test::Upgrade->upgrade(from => 5.0036);
 
-    is( MT::Website->count(), 1, 'There is one website.' );
-    is( MT::Blog->count(),    1, 'There is one blog.' );
+    is(MT::Website->count(), 1, 'There is one website.');
+    is(MT::Blog->count(),    1, 'There is one blog.');
 
     $admin = MT::Author->load(1);
-    is( scalar @{ $admin->favorite_websites },
-        1, "Administrator has one favorite_websites." );
-    is( $admin->favorite_websites->[0],
-        $website->id, "Favorite_websites ID is " . $website->id . "." );
-    is( scalar @{ $admin->favorite_blogs },
-        1, "Administrator has one favorite_blogs." );
-    is( $admin->favorite_blogs->[0],
-        $blog->id, "Favorite_blogs ID is " . $blog->id . "." );
+    is(
+        scalar @{ $admin->favorite_websites },
+        1, "Administrator has one favorite_websites."
+    );
+    is(
+        $admin->favorite_websites->[0],
+        $website->id, "Favorite_websites ID is " . $website->id . "."
+    );
+    is(
+        scalar @{ $admin->favorite_blogs },
+        1, "Administrator has one favorite_blogs."
+    );
+    is(
+        $admin->favorite_blogs->[0],
+        $blog->id, "Favorite_blogs ID is " . $blog->id . "."
+    );
 
-    $iter = $admin->role_iter( { blog_id => $blog->id } );
+    $iter  = $admin->role_iter({ blog_id => $blog->id });
     @roles = ();
-    while ( my $r = $iter->() ) {
+    while (my $r = $iter->()) {
         push @roles, $r;
     }
-    is( scalar @roles, 1, "Administrator has one role." );
-    is( $roles[0]->name,
+    is(scalar @roles, 1, "Administrator has one role.");
+    is(
+        $roles[0]->name,
         MT->translate('Site Administrator'),
         'Administrator has "Site Administrator" role.'
     );
 
-    $perms = $admin->permissions( $blog->id );
-    ok( $perms->has('administer_site'),
-        'Administrator has "administer_site" permission.' );
+    $perms = $admin->permissions($blog->id);
+    ok(
+        $perms->has('administer_site'),
+        'Administrator has "administer_site" permission.'
+    );
 
     my @migrate_roles = (
         'Designer (MT6)',
@@ -218,9 +258,8 @@ subtest 'Upgrade from MT5 to MT7' => sub {
         'Editor (MT6)'
     );
     foreach my $role_name (@migrate_roles) {
-        my $role_count
-            = MT::Role->count( { name => MT->translate($role_name) } );
-        is( $role_count, 1, $role_name . ' has one role.' );
+        my $role_count = MT::Role->count({ name => MT->translate($role_name) });
+        is($role_count, 1, $role_name . ' has one role.');
     }
 
 };
@@ -228,65 +267,78 @@ subtest 'Upgrade from MT5 to MT7' => sub {
 subtest 'Upgrade from MT6 to MT7' => sub {
     MT::Test->init_db;
 
-    my $blog = MT::Test::Permission->make_blog( parent_id => 0, );
-    ok( $blog, 'Create blog.' );
+    my $blog = MT::Test::Permission->make_blog(parent_id => 0,);
+    ok($blog, 'Create blog.');
 
-    is( MT::Website->count(), 1, 'There is one website.' );
-    is( MT::Blog->count(),    1, 'There is one blog.' );
+    is(MT::Website->count(), 1, 'There is one website.');
+    is(MT::Blog->count(),    1, 'There is one blog.');
 
     my $website = MT::Website->load(1);
     my $admin   = MT::Author->load(1);
-    $admin->favorite_websites( [ $website->id ] );
-    $admin->favorite_blogs(    [ $blog->id ] );
+    $admin->favorite_websites([$website->id]);
+    $admin->favorite_blogs([$blog->id]);
     $admin->save or die $admin->errstr;
 
-    my $site_admin
-        = MT::Role->load( { name => MT->translate('Site Administrator') } );
-    $admin->add_role( $site_admin, $blog );
+    my $site_admin = MT::Role->load({ name => MT->translate('Site Administrator') });
+    $admin->add_role($site_admin, $blog);
 
     my @roles;
-    my $iter = $admin->role_iter( { blog_id => $blog->id } );
-    while ( my $r = $iter->() ) {
+    my $iter = $admin->role_iter({ blog_id => $blog->id });
+    while (my $r = $iter->()) {
         push @roles, $r;
     }
-    is( scalar @roles, 1, 'Administrator has one role.' );
-    is( $roles[0]->name,
+    is(scalar @roles, 1, 'Administrator has one role.');
+    is(
+        $roles[0]->name,
         MT->translate('Site Administrator'),
         'Administrator has "Site Administrator" role.'
     );
-    my $perms = $admin->permissions( $blog->id );
-    ok( $perms->has('administer_site'),
-        'Administrator has "administer_site" permission.' );
+    my $perms = $admin->permissions($blog->id);
+    ok(
+        $perms->has('administer_site'),
+        'Administrator has "administer_site" permission.'
+    );
 
-    MT::Test::Upgrade->upgrade( from => 6.0010 );
+    MT::Test::Upgrade->upgrade(from => 6.0010);
 
-    is( MT::Website->count(), 1, 'There is one website.' );
-    is( MT::Blog->count(),    1, 'There is one blog.' );
+    is(MT::Website->count(), 1, 'There is one website.');
+    is(MT::Blog->count(),    1, 'There is one blog.');
 
     $admin = MT::Author->load(1);
-    is( scalar @{ $admin->favorite_websites },
-        1, "Administrator has one favorite_websites." );
-    is( $admin->favorite_websites->[0],
-        $website->id, "Favorite_websites ID is " . $website->id . "." );
-    is( scalar @{ $admin->favorite_blogs },
-        1, "Administrator has one favorite_blogs." );
-    is( $admin->favorite_blogs->[0],
-        $blog->id, "Favorite_blogs ID is " . $blog->id . "." );
+    is(
+        scalar @{ $admin->favorite_websites },
+        1, "Administrator has one favorite_websites."
+    );
+    is(
+        $admin->favorite_websites->[0],
+        $website->id, "Favorite_websites ID is " . $website->id . "."
+    );
+    is(
+        scalar @{ $admin->favorite_blogs },
+        1, "Administrator has one favorite_blogs."
+    );
+    is(
+        $admin->favorite_blogs->[0],
+        $blog->id, "Favorite_blogs ID is " . $blog->id . "."
+    );
 
-    $iter = $admin->role_iter( { blog_id => $blog->id } );
+    $iter  = $admin->role_iter({ blog_id => $blog->id });
     @roles = ();
-    while ( my $r = $iter->() ) {
+    while (my $r = $iter->()) {
         push @roles, $r;
     }
-    is( scalar @roles, 1, "Administrator has one role." );
-    is( $roles[0]->name,
+    is(scalar @roles, 1, "Administrator has one role.");
+    is(
+        $roles[0]->name,
         MT->translate('Site Administrator'),
         'Administrator has "Site Administrator" role.'
     );
 
-    $perms = $admin->permissions( $blog->id );
-    ok( $perms->has('administer_site'),
-        'Administrator has "administer_site" permission.' );
+    $perms = $admin->permissions($blog->id);
+    ok(
+        $perms->has('administer_site'),
+        'Administrator has "administer_site" permission.'
+    );
 
     my @migrate_roles = (
         'Designer (MT6)',
@@ -295,9 +347,8 @@ subtest 'Upgrade from MT6 to MT7' => sub {
         'Editor (MT6)'
     );
     foreach my $role_name (@migrate_roles) {
-        my $role_count
-            = MT::Role->count( { name => MT->translate($role_name) } );
-        is( $role_count, 1, $role_name . ' has one role.' );
+        my $role_count = MT::Role->count({ name => MT->translate($role_name) });
+        is($role_count, 1, $role_name . ' has one role.');
     }
 
 };
@@ -308,32 +359,32 @@ subtest 'MultiBlogMigrationPartial' => sub {
 
     subtest 'unserialize single' => sub {
         my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:2:entry_save');
-        is( ref $rt,             $model, 'right class' );
-        is( $rt->target,         MT::RebuildTrigger::TARGET_BLOG );
-        is( $rt->action,         MT::RebuildTrigger::ACTION_RI );
-        is( $rt->object_type,    MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE );
-        is( $rt->target_blog_id, 2 );
-        is( $rt->event,          MT::RebuildTrigger::EVENT_SAVE );
+        is(ref $rt,             $model, 'right class');
+        is($rt->target,         MT::RebuildTrigger::TARGET_BLOG);
+        is($rt->action,         MT::RebuildTrigger::ACTION_RI);
+        is($rt->object_type,    MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE);
+        is($rt->target_blog_id, 2);
+        is($rt->event,          MT::RebuildTrigger::EVENT_SAVE);
     };
 
     subtest 'unserialize single target=0' => sub {
         my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:0:entry_save');
-        is( ref $rt,             $model, 'right class' );
-        is( $rt->target_blog_id, 0 );
+        is(ref $rt, $model, 'right class');
+        is($rt->target_blog_id, 0);
     };
 
     subtest 'unserialize single target=_blogs_in_website' => sub {
         my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:_blogs_in_website:entry_save');
-        is( ref $rt,             $model, 'right class' );
-        is( $rt->target,         MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE );
-        is( $rt->target_blog_id, 0 );
+        is(ref $rt,             $model, 'right class');
+        is($rt->target,         MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE);
+        is($rt->target_blog_id, 0);
     };
 
     subtest 'unserialize single target=_all' => sub {
         my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:_all:entry_save');
-        is( ref $rt,             $model, 'right class' );
-        is( $rt->target,         MT::RebuildTrigger::TARGET_ALL );
-        is( $rt->target_blog_id, 0 );
+        is(ref $rt,             $model, 'right class');
+        is($rt->target,         MT::RebuildTrigger::TARGET_ALL);
+        is($rt->target_blog_id, 0);
     };
 
     subtest 'unserialize single error' => sub {
@@ -349,8 +400,8 @@ subtest 'MultiBlogMigrationPartial' => sub {
         );
         for (@wrong_inputs) {
             my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize($_);
-            is(ref $rt, '', 'error');
-            is($rt, undef,      'error');
+            is(ref $rt, '',    'error');
+            is($rt,     undef, 'error');
         }
     };
 };
