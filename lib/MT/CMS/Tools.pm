@@ -961,8 +961,8 @@ sub save_cfg_system_web_services {
     require MT::CMS::Blog;
     MT::CMS::Blog::save_data_api_settings($app);
 
-    $app->add_return_arg( 'saved'         => 1 );
-    $app->add_return_arg( 'saved_changes' => 1 );
+    $app->flash( 'saved'         => 1 );
+    $app->flash( 'saved_changes' => 1 );
     return $app->call_return;
 }
 
