@@ -365,6 +365,7 @@ sub prepare_entry {
             }
             my $title     = $arg{title} || '(no title)';
             my @cat_names = @{ delete $arg{categories} || [] };
+            my @tag_names = @{ delete $arg{tags}       || [] };
 
             my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: entry: $title";
@@ -385,6 +386,16 @@ sub prepare_entry {
                     blog_id     => $blog_id,
                     entry_id    => $entry->id,
                     category_id => $category->id,
+                );
+            }
+            for my $tag_name (@tag_names) {
+                my $tag = $objs->{tag}{$tag_name}
+                    or croak "unknown tag: $tag_name entry: $title";
+                MT::Test::Permission->make_objecttag(
+                    blog_id           => $blog_id,
+                    object_id         => $entry->id,
+                    object_datasource => 'entry',
+                    tag_id            => $tag->id,
                 );
             }
         }
@@ -411,6 +422,7 @@ sub prepare_page {
             }
             my $title       = $arg{title} || '(no title)';
             my $folder_name = delete $arg{folder};
+            my @tag_names   = @{ delete $arg{tags} || [] };
 
             my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: page: $title";
@@ -431,6 +443,16 @@ sub prepare_page {
                     blog_id     => $blog_id,
                     entry_id    => $page->id,
                     category_id => $folder->id,
+                );
+            }
+            for my $tag_name (@tag_names) {
+                my $tag = $objs->{tag}{$tag_name}
+                    or croak "unknown tag: $tag_name entry: $title";
+                MT::Test::Permission->make_objecttag(
+                    blog_id           => $blog_id,
+                    object_id         => $page->id,
+                    object_datasource => 'page',
+                    tag_id            => $tag->id,
                 );
             }
         }
