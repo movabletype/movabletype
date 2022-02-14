@@ -277,19 +277,18 @@ sub prepare_category {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
-                if ( my $parent_name = $arg{parent} ) {
-                    my $parent = $objs->{category}{$parent_name}
-                        or croak "unknown parent category: $parent_name";
-                    $arg{parent} = $parent->id;
-                }
+            } else {
+                %arg = (label => $item);
             }
-            else {
-                %arg = ( label => $item );
-            }
-            $arg{blog_id} ||= _find_blog_id($objs, \%arg)
+            my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: category";
+            if (my $parent_name = $arg{parent}) {
+                my $parent = $objs->{category}{$parent_name}{$blog_id}
+                    or croak "unknown parent category: $parent_name";
+                $arg{parent} = $parent->id;
+            }
             my $cat = MT::Test::Permission->make_category(%arg);
-            $objs->{category}{ $cat->label } = $cat;
+            $objs->{category}{ $cat->label }{$blog_id} = $cat;
         }
     }
 }
@@ -303,19 +302,18 @@ sub prepare_folder {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
-                if ( my $parent_name = $arg{parent} ) {
-                    my $parent = $objs->{folder}{$parent_name}
-                        or croak "unknown parent folder: $parent_name";
-                    $arg{parent} = $parent->id;
-                }
+            } else {
+                %arg = (label => $item);
             }
-            else {
-                %arg = ( label => $item );
-            }
-            $arg{blog_id} ||= _find_blog_id($objs, \%arg)
+            my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: folder";
+            if (my $parent_name = $arg{parent}) {
+                my $parent = $objs->{folder}{$parent_name}{$blog_id}
+                    or croak "unknown parent folder: $parent_name";
+                $arg{parent} = $parent->id;
+            }
             my $folder = MT::Test::Permission->make_folder(%arg);
-            $objs->{folder}{ $folder->label } = $folder;
+            $objs->{folder}{ $folder->label }{$blog_id} = $folder;
         }
     }
 }
@@ -381,7 +379,7 @@ sub prepare_entry {
             $objs->{entry}{ $entry->basename } = $entry;
 
             for my $cat_name (@cat_names) {
-                my $category = $objs->{category}{$cat_name}
+                my $category = $objs->{category}{$cat_name}{$blog_id}
                     or croak "unknown category: $cat_name entry: $title";
                 MT::Test::Permission->make_placement(
                     blog_id     => $blog_id,
@@ -427,7 +425,7 @@ sub prepare_page {
             $objs->{page}{ $page->basename } = $page;
 
             if ($folder_name) {
-                my $folder = $objs->{folder}{$folder_name}
+                my $folder = $objs->{folder}{$folder_name}{$blog_id}
                     or croak "unknown folder: $folder_name entry: $title";
                 MT::Test::Permission->make_placement(
                     blog_id     => $blog_id,
@@ -610,7 +608,7 @@ sub prepare_content_data {
 
                 $arg{author_id} ||= _find_author_id($objs, \%arg)
                     or croak "author_id is required: content_data: $name";
-                $arg{blog_id}   ||= _find_blog_id($objs, \%arg)
+                my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                     or croak "blog_id is required: content_data: $name";
                 $arg{label} = $name unless defined $arg{label};
 
@@ -629,9 +627,8 @@ sub prepare_content_data {
                         for my $cat_name (@$cf_arg) {
                             if ( ref $cat_name eq 'SCALAR' ) {
                                 push @cat_ids, $$cat_name;
-                            }
-                            else {
-                                my $cat = $set->{category}{$cat_name}
+                            } else {
+                                my $cat = $set->{category}{$cat_name}{$blog_id}
                                     or croak "unknown category: $cat_name: content_data: $name";
                                 push @cat_ids, $cat->id;
                             }
