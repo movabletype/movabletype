@@ -20,7 +20,7 @@ use MT::Test::App;
 $test_env->prepare_fixture('db');
 my $blog_id = 1;
 my $blog    = MT::Blog->load($blog_id);
-$blog->site_path("$ENV{MT_HOME}/t/test_files");
+$blog->site_path($test_env->root);
 $blog->save or die $blog->errstr;
 
 my $admin = MT::Author->load(1);
