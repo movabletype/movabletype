@@ -124,6 +124,12 @@ sub edit {
             $param->{'recovered_failed'} = 1;
         }
     }
+    elsif ( $app->param('_discard') && !$app->param('reedit') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        if ($sess_obj) {
+            $sess_obj->remove;
+        }
+    }
 
     if ( $app->param('reedit') ) {
         $data = $app->param('serialized_data');
@@ -141,10 +147,6 @@ sub edit {
             $param->{autosaved_object_exists} = 1;
             $param->{autosaved_object_ts}
                 = MT::Util::epoch2ts( $blog, $sess_obj->start );
-        }
-        if (my $other_user = $app->user_who_is_also_editing_the_same_stuff) {
-            $param->{is_also_edited_by} = $other_user->{name};
-            $param->{is_also_edited_at} = $other_user->{time};
         }
     }
 
@@ -197,6 +199,14 @@ sub edit {
                 $content_data->modified_on,
                 $blog, $app->user ? $app->user->preferred_language : undef
             );
+        }
+
+        if (my $other_user = $app->user_who_is_also_editing_the_same_stuff($content_data)) {
+            $param->{is_also_edited_by} = $other_user->{name};
+            $param->{is_also_edited_at} = $other_user->{time};
+        }
+        if ($param->{autosaved_object_ts} && $param->{autosaved_object_ts} < $content_data->modified_on) {
+            $param->{autosaved_object_is_outdated} = 1;
         }
 
         $param->{identifier}

@@ -4111,7 +4111,7 @@ sub _translate_naughty_words {
 }
 
 sub user_who_is_also_editing_the_same_stuff {
-    my $app   = shift;
+    my ($app, $obj) = @_;
     my $type  = $app->param('_type') or return;
     my $id    = $app->param('id') or return;
     my $ident = 'autosave:user=%:type=' . $type . ':id=' . $id;
@@ -4128,7 +4128,7 @@ sub user_who_is_also_editing_the_same_stuff {
         { id => {like => $ident}, kind => 'AS' },
         { sort => 'start', direction => 'descend' } ) or return;
     my ($user_id) = $sess_obj->id =~ /:user=([0-9]+)/;
-    if ($user_id != $app->user->id) {
+    if ($user_id != $app->user->id && MT::Util::epoch2ts($blog, $sess_obj->start) > $obj->modified_on) {
         my $user = $app->model('author')->load($user_id);
         require MT::Util;
         return {
