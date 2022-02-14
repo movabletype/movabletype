@@ -1528,6 +1528,21 @@ sub session {
     }
 }
 
+sub flash {
+    my $app = shift;
+    my $session = $app->session or return;
+    if (@_ == 1 && !ref $_[0]) {
+        return $app->{__flash}{$_[0]};
+    }
+    my $current = $session->get('__flash') || {};
+    if (@_) {
+        my $args = ref $_[0] ? $_[0] : {@_};
+        $current->{$_} = $args->{$_} for keys %$args;
+        $session->set(__flash => $current);
+    }
+    $current;
+}
+
 sub make_magic_token {
     require MT::Util::UniqueID;
     MT::Util::UniqueID::create_magic_token();
@@ -1578,7 +1593,17 @@ sub session_user {
         my $start = time;
         $sess->start($start);
         $sess->set(start => $start) unless $sess->get('start');
-        $sess->save;
+        my $flash = $sess->get('__flash') || {};
+        if (%$flash) {
+            $app->{__flash} = $flash;
+            $sess->set(__flash => undef);
+            # overwrite param values for now but it's better to use $app->flash('key')
+            for my $key (keys %$flash) {
+                my $value = $flash->{$key};
+                $app->param($key => ref $value eq 'ARRAY' ? @$value : $value);
+            }
+        }
+        $sess->save if $sess->is_dirty;
         return $author;
     }
     else {
@@ -4354,6 +4379,9 @@ sub redirect {
         $url = $app->base . $url;
     }
     $app->{redirect} = $url;
+    if (my $old_flash = $app->{_flash}) {
+        $app->flash(%$old_flash);
+    }
     return;
 }
 
