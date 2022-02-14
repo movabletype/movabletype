@@ -3158,6 +3158,8 @@ sub do_reboot {
     return unless $app->{do_reboot};
     delete $app->{do_reboot};
 
+    $app->run_callbacks('reboot', $app);
+
     if ( $ENV{FAST_CGI} ) {
         require MT::Touch;
         MT::Touch->touch( 0, 'config' );
