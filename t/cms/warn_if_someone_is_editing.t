@@ -37,7 +37,11 @@ subtest 'entry' => sub {
     });
     unlike $app->message_text => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
+    my $entry_epoch = MT::Util::ts2epoch($site, $entry->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
+    if ($session->start < $entry_epoch) {
+        $session->start($entry_epoch + 10);
+    }
     $session->save;
 
     $app->login($author2);
@@ -52,8 +56,11 @@ subtest 'entry' => sub {
 
     # author2 decides to continue to edit
     $app->{_app}->user($author2);
-    ok $session = $app->{_app}->autosave_session_obj(1);
-    $session->save;
+    ok my $session2 = $app->{_app}->autosave_session_obj(1);
+    if ($session2->start <= $session->start) {
+        $session2->start($session->start + 10);
+    }
+    $session2->save;
 
     # now author2's autosave is the latest; no need to warn anymore
     $app->login($author2);
@@ -78,7 +85,11 @@ subtest 'page' => sub {
     });
     unlike $app->message_text => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
+    my $page_epoch = MT::Util::ts2epoch($site, $page->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
+    if ($session->start < $page_epoch) {
+        $session->start($page_epoch + 10);
+    }
     $session->save;
 
     $app->login($author2);
@@ -103,7 +114,11 @@ subtest 'template' => sub {
     });
     unlike $app->message_text => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
+    my $template_epoch = MT::Util::ts2epoch($site, $tmpl->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
+    if ($session->start < $template_epoch) {
+        $session->start($template_epoch + 10);
+    }
     $session->save;
 
     $app->login($author2);
@@ -129,7 +144,11 @@ subtest 'cd' => sub {
     });
     unlike $app->message_text => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
+    my $cd_epoch = MT::Util::ts2epoch($site, $cd->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
+    if ($session->start < $cd_epoch) {
+        $session->start($cd_epoch + 10);
+    }
     $session->save;
 
     $app->login($author2);
