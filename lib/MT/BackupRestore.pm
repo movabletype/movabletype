@@ -78,6 +78,7 @@ sub core_backup_instructions {
         'touch'         => { 'skip' => 1 },
         'failedlogin'   => { 'skip' => 1 },
         'accesstoken'   => { 'skip' => 1 },
+        'log'           => { 'skip' => 1 },
     };
 }
 
