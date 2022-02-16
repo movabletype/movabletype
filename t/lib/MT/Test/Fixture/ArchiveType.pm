@@ -417,7 +417,9 @@ sub load_objs {
             label   => \@category_labels,
         }
     );
-    $objs{category} = { map { $_->label => $_ } @entry_categories };
+    for my $category (@entry_categories) {
+        $objs{category}{$category->label}{$category->blog_id} = $category;
+    }
 
     my @folder_labels
         = map { ref $_ ? $_->{label} : $_ } @{ $spec->{folder} };
@@ -426,7 +428,9 @@ sub load_objs {
             label   => \@folder_labels,
         }
     );
-    $objs{folder} = { map { $_->label => $_ } @folders };
+    for my $folder (@folders) {
+        $objs{folder}{$folder->label}{$folder->blog_id} = $folder;
+    }
 
     my @entry_names = map { $_->{basename} } @{ $spec->{entry} };
     my @entries = MT::Entry->load(
