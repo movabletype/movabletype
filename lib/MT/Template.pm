@@ -745,7 +745,8 @@ sub _sync_from_disk {
         else {
 
             # use MT path to base relative paths
-            $lfile = File::Spec->catfile( MT->instance->server_path, $lfile );
+            my $base_path = MT->config->BaseTemplatePath || MT->instance->server_path;
+            $lfile = File::Spec->catfile( $base_path, $lfile );
         }
     }
     return unless -e $lfile && -w _;
@@ -791,7 +792,8 @@ sub _sync_to_disk {
             $lfile = File::Spec->catfile( $blog->site_path, $lfile );
         }
         else {
-            $lfile = File::Spec->catfile( MT->instance->server_path, $lfile );
+            my $base_path = MT->config->BaseTemplatePath || MT->instance->server_path;
+            $lfile = File::Spec->catfile( $base_path, $lfile );
         }
     }
     ## If the linked file already exists, and there is no template text
