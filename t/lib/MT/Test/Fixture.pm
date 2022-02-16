@@ -691,6 +691,7 @@ sub prepare_content_data {
                     }
                     elsif ( $cf_type eq 'multi_line_text' ) {
                         $arg{convert_breaks}{$cf_name} ||= '__default__';
+                        $data{ $cf->id } = $cf_arg;
                     } else {
                         $data{ $cf->id } = $cf_arg;
                     }
