@@ -364,6 +364,10 @@ sub start_element {
                             . $column_data{ct_unique_id} };
                     $obj->column( 'ct_unique_id', $new_ct->unique_id );
                 }
+                elsif ( 'log' eq $name ) {
+                    $self->{skip} += 1;
+                    return;
+                }
 
                 unless ($obj) {
                     $obj = $class->new;
