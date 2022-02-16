@@ -32,6 +32,26 @@ our $mt = MT->new();
 
 my $streaming = $mt->config->PSGIStreaming;
 
+sub _prepare_psgi_headers {
+    my ($app, $type) = @_;
+    $type ||= $app->{response_content_type} || 'text/html';
+    if (my $charset = $app->charset) {
+        $type .= "; charset=$charset"
+            if ($type =~ m!^text/! || $type =~ m!\+xml$!)
+            && $type !~ /\bcharset\b/;
+    }
+
+    if (my $location = delete $app->{redirect}) {
+        $app->{cgi_headers}{-status}   = 302;
+        $app->{cgi_headers}{-location} = $location;
+    } else {
+        $app->{cgi_headers}{-status} = ($app->response_code || 200) . ($app->{response_message} ? ' ' . $app->{response_message} : '');
+    }
+
+    $app->{cgi_headers}{-type} = $type;
+    my ($status, $headers) = $app->{query}->psgi_header(%{ $app->{cgi_headers} });
+}
+
 my $mt_app = sub {
     my $app_class = shift;
     return sub {
@@ -52,15 +72,7 @@ my $mt_app = sub {
                 local *MT::App::send_http_header = sub {
                     my $self = shift;
                     my ($type) = @_;
-                    $type ||= $self->{response_content_type} || 'text/html';
-                    if (my $charset = $self->charset) {
-                        if ($type =~ m!^text/|\+xml$|/json$! && $type !~ /\bcharset\b/) {
-                            $type .= "; charset=$charset";
-                        }
-                    }
-                    $self->{cgi_headers}{-status} = ($self->response_code || 200) . ($self->{response_message} ? ' ' . $self->{response_message} : '');
-                    $self->{cgi_headers}{-type}   = $type;
-                    my ($status, $headers) = $self->{query}->psgi_header(%{ $self->{cgi_headers} });
+                    my ($status, $headers) = _prepare_psgi_headers($app, $type);
                     $writer = $responder->([$status, $headers]);
                 };
                 local *MT::App::print = sub {
@@ -80,27 +92,7 @@ my $mt_app = sub {
                 $app->run;
 
                 if (!$writer) {
-                    my $type = $app->{response_content_type} || 'text/html';
-                    if (my $charset = $app->charset) {
-                        $type .= "; charset=$charset"
-                            if ($type =~ m!^text/! || $type =~ m!\+xml$!)
-                            && $type !~ /\bcharset\b/;
-                    }
-
-                    if (my $location = delete $app->{redirect}) {
-                        $app->{cgi_headers}{-status}   = 302;
-                        $app->{cgi_headers}{-location} = $location;
-                    } else {
-                        $app->{cgi_headers}{-status} = ($app->response_code || 200)
-                            . (
-                            $app->{response_message}
-                            ? ' ' . $app->{response_message}
-                            : ''
-                            );
-                    }
-
-                    $app->{cgi_headers}{-type} = $type;
-                    my ($status, $headers) = $app->{query}->psgi_header(%{ $app->{cgi_headers} });
+                    my ($status, $headers) = _prepare_psgi_headers($app);
                     $writer = $responder->([$status, $headers]);
                 }
                 if (defined $body) {
@@ -125,28 +117,7 @@ my $mt_app = sub {
             $app->{cookies} = do { $cgi->cookie; $cgi->{'.cookies'} };    # wtf
             $app->run;
 
-            # copied from MT::App::send_http_header
-            my $type = $app->{response_content_type} || 'text/html';
-            if (my $charset = $app->charset) {
-                $type .= "; charset=$charset"
-                    if ($type =~ m!^text/! || $type =~ m!\+xml$!)
-                    && $type !~ /\bcharset\b/;
-            }
-
-            if ($app->{redirect}) {
-                $app->{cgi_headers}{-status}   = 302;
-                $app->{cgi_headers}{-location} = $app->{redirect};
-            } else {
-                $app->{cgi_headers}{-status} = ($app->response_code || 200)
-                    . (
-                    $app->{response_message}
-                    ? ' ' . $app->{response_message}
-                    : ''
-                    );
-            }
-
-            $app->{cgi_headers}{-type} = $type;
-            my ($status, $headers) = $app->{query}->psgi_header(%{ $app->{cgi_headers} });
+            my ($status, $headers) = _prepare_psgi_headers($app);
             return [$status, $headers, (defined $body ? [$body] : [])];
         }
     };
