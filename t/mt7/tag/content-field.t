@@ -401,7 +401,7 @@ content_type
 <mt:ContentField content_field="multi_line_text"><mt:ContentFieldValue language="ja"></mt:ContentField>
 </mt:Contents>
 --- expected
-0
+<p>0</p>
 
 === mt:ContentField number value 0
 --- template
