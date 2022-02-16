@@ -117,6 +117,7 @@ sub start_element {
                                 ),
                             $c->class_type || $c->datasource
                         );
+                        MT::Util::Log->debug( '   End importing ' . $c );
                     }
                     $self->{records}       = 0;
                     $self->{current_class} = $class;
@@ -124,6 +125,7 @@ sub start_element {
                         = MT->translate( 'Importing [_1] records:', $class );
                     $callback->( $state, $name );
                     $self->{state} = $state;
+                    MT::Util::Log->debug( '   Start importing ' . $class );
                 }
                 my %column_data
                     = map { $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value} }
@@ -155,8 +157,6 @@ sub start_element {
 
                 my $obj;
                 if ( 'author' eq $name ) {
-                    MT::Util::Log->info( '   Start import ' . $class );
-
                     $obj = $class->load( { name => $column_data{name} } );
                     if ($obj) {
                         if ( UNIVERSAL::isa( MT->instance, 'MT::App' )
@@ -226,12 +226,8 @@ sub start_element {
                             $self->{loaded} = 1;
                         }
                     }
-
-                    MT::Util::Log->info( '   End import   ' . $class );
                 }
                 elsif ( 'template' eq $name ) {
-                    MT::Util::Log->info( '   Start import ' . $class );
-
                     if ( !$column_data{blog_id} ) {
                         $obj = $class->load(
                             {   blog_id => 0,
@@ -261,11 +257,8 @@ sub start_element {
                             }
                         }
                     }
-                    MT::Util::Log->info( '   End import   ' . $class );
                 }
                 elsif ( 'filter' eq $name ) {
-                    MT::Util::Log->info( '   Start import ' . $class );
-
                     if ( $objects->{ "MT::Author#" . $column_data{author_id} }
                         )
                     {
@@ -286,12 +279,8 @@ sub start_element {
                             $self->{skip} += 1;
                         }
                     }
-
-                    MT::Util::Log->info( '   End import   ' . $class );
                 }
                 elsif ( 'image' eq $name ) {
-                    MT::Util::Log->info( '   Start import ' . $class );
-
                     if ( !$column_data{blog_id} ) {
                         $obj = $class->load(
                             {   file_path => $column_data{file_path},
@@ -346,8 +335,6 @@ sub start_element {
                             }
                         }
                     }
-
-                    MT::Util::Log->info( '   End import   ' . $class );
                 }
                 elsif ('content_type' eq $name
                     || 'cf' eq $name
@@ -373,8 +360,6 @@ sub start_element {
                     $obj = $class->new;
                 }
                 unless ( $obj->id ) {
-                    MT::Util::Log->info( '   Start import ' . $class );
-
                     # Pass through even if an blog doesn't restore
                     # the parent object
                     my $success
@@ -435,8 +420,6 @@ sub start_element {
                         $self->{deferred} = $deferred;
                         $self->{skip} += 1;
                     }
-
-                    MT::Util::Log->info( '   End import   ' . $class );
                 }
             }
         }
@@ -759,6 +742,7 @@ sub end_document {
                 . MT->translate( "[_1] records imported.", $records ),
             $c->class_type || $c->datasource
         );
+        MT::Util::Log->debug( '   End importing ' . $c );
     }
 
     1;
