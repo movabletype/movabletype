@@ -49,7 +49,7 @@ class CacheSession extends BaseCache {
     }
 
     public function flush_all() {
-        $mt = MT::get_insrance();
+        $mt = MT::get_instance();
 
         return $mt->db()->flush_session();
     }
