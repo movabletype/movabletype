@@ -9,7 +9,7 @@ require_once('class.basecache.php');
 class CacheSession extends BaseCache {
     public function get ($key, $ttl = null) {
         $ret = $this->get_multi($key, $ttl);
-        return $ret[0];
+        return isset($ret[0]) ? $ret[0] : '';
     }
 
     public function get_multi ($keys, $ttl = null) {
