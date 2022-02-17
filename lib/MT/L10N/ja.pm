@@ -1267,7 +1267,6 @@ use vars qw( @ISA %Lexicon );
 	'__SELECT_FILTER_VERB' => 'が',
 	q{'[_1]' edited the global template '[_2]'} => q{[_1]がグローバルテンプレート([_2])を編集しました},
 	q{'[_1]' edited the template '[_2]' in the blog '[_3]'} => q{[_1]がブログ([_3])のテンプレート([_2])を編集しました},
-	q{You can't delete running job(s).} => q{実行中のジョブは削除できません。},
 
 ## lib/MT/CMS/ContentData.pm
 	'(No Label)' => '(ラベルなし)',
@@ -5473,6 +5472,10 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully deleted the selected tags.' => '選択したタグを削除しました。',
 	'Your tag changes and additions have been made.' => 'タグの変更と追加が完了しました。',
 	q{The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all blogs?} => q{タグ「[_2]」は既に存在します。すべてのブログで「[_1]」を「[_2]」にマージしてもよろしいですか?},
+
+## tmpl/cms/listing/ts_job_list_header.tmpl
+	'The job(s) has been deleted from the database.' => 'ジョブをデータベースから削除しました。',
+	q{You can't delete running job(s). (ID: [_1])} => q{実行中のジョブは削除できません(ID: [_1])},
 
 ## tmpl/cms/login.tmpl
 	'Forgot your password?' => 'パスワードをお忘れですか?',
