@@ -88,7 +88,8 @@ sub langs {
     my $self = shift;
     my @langs = @{ $self->{lang} // [] };
     if (!@langs) {
-        @langs = qw(de es fr ja nl);
+#        @langs = qw(de es fr ja nl);
+        @langs = qw(ja);
     }
     @langs;
 }
