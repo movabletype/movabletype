@@ -90,6 +90,7 @@ sub core_backup_instructions {
         'accesstoken'         => { 'skip' => 1 },
         'cf_idx'              => { 'skip' => 1 },
         'content_field_index' => { 'skip' => 1 },
+        'log'                 => { 'skip' => 1 },
     };
 }
 
