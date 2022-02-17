@@ -12,6 +12,8 @@ use YAML::Tiny;
 my @ignore = qw(
 );
 
+my $core_plugin_re = qr(BlockEditor|ContentInfo|FormattedText|GoogleAnalytics|Markdown|Textile|TinyMCE|WXRImporter|WidgetManager);
+
 sub new {
     my ($class, %args) = @_;
     bless \%args, $class;
@@ -362,7 +364,7 @@ sub _find_phrases {
     my $path = $self->relative($file);
     my $content = $self->slurp($file);
 
-    my $check_component = $file =~ /addons|plugins/ ? 1 : 0;
+    my $check_component = $file =~ /addons|plugins/ && $file !~ /$core_plugin_re/ ? 1 : 0;
 
     my @phrases;
     while ($content =~ m!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!igm) {
