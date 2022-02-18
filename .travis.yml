@@ -87,7 +87,7 @@ jobs:
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="phpunit php/tests/*Test.php && make test-php-lint"
 
-    - # Perl 5.32 / PHP 8.0 / MariaDB 10.5
+    - # Perl 5.26 / PHP 8.0 / MySQL 8.0
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="centos8" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
@@ -106,6 +106,24 @@ jobs:
       env: TEST_IMAGE_NAME="centos8" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="centos8" TEST_COMMAND="phpunit && make test-php-lint"
+
+    - # Perl 5.34 / (PHP 8.1; skipped) / MariaDB 10.6.5
+      if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
 
     - # chromiumdriver
       if: type != cron
