@@ -807,6 +807,19 @@ sub _sync_to_disk {
         close $fh;
     }
     else {
+        my ($vol, $dir) = File::Spec->splitpath($lfile);
+        $dir = File::Spec->catpath($vol, $dir);
+        unless (-d $dir) {
+            require File::Path;
+            eval { File::Path::mkpath($dir) } or return $tmpl->error(
+                MT->translate(
+                    "Opening linked file '[_1]' failed: [_2]",
+                    $lfile,
+                    ( Encode::is_utf8($!) ? "$!" : Encode::decode_utf8($!) )
+                )
+            );
+        }
+
         my $umask = oct $cfg->HTMLUmask;
         my $old   = umask($umask);
         ## Untaint. We assume that the user knows what he/she is doing,
