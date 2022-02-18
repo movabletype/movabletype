@@ -1668,6 +1668,10 @@ sub has_php {
     if ($smarty_major_version > 3) {
         return $HasPHP = 0 if $php_version < 7.1;
     }
+    if ($php_version > 8.0 && $ENV{TRAVIS}) {
+        diag "PHP $php_version is not supported yet";
+        return $HasPHP = 0;
+    }
     $HasPHP;
 }
 
