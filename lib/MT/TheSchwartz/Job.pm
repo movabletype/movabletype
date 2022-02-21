@@ -50,7 +50,6 @@ sub class_label_plural {
 }
 
 sub _get_funcmap {
-    my $funcids = shift;
     unless (%FuncMap) {
         my @funcmaps = MT->model('ts_funcmap')->load(
             undef,
