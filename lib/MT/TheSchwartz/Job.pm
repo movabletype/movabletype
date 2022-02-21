@@ -37,6 +37,7 @@ __PACKAGE__->install_properties(
             },
         },
         role => q{global},
+        cacheable => 0,
     }
 );
 
