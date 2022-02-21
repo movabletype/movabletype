@@ -3,7 +3,7 @@
 <mt:if name="request.not_deleted">
   <mtapp:statusmsg
      id="not-deleted"
-     class="info">
+     class="warning">
     <__trans phrase="You can't delete running job(s). (ID: [_1])", params="<mt:var name="request.error_id" escape="html">">
   </mtapp:statusmsg>
 </mt:if>
