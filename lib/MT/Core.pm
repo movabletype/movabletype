@@ -1714,6 +1714,7 @@ BEGIN {
                 object_label => 'Job',
                 view         => 'system',
                 id_column    => 'jobid',
+                primary      => 'funcid',
                 condition    => sub {
                     my $app = shift;
                     return 1 if MT->config->ShowTsJob;
