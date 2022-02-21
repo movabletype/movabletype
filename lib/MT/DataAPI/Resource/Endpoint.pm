@@ -11,7 +11,7 @@ use warnings;
 
 sub fields {
     return [
-        'id', 'route', 'verb', 'version', 'format', 'resources',
+        'id', 'route', 'verb', 'version', 'format',
         {
             name   => 'component',
             schema => {
@@ -19,6 +19,15 @@ sub fields {
                 properties => {
                     id   => { type => 'string' },
                     name => { type => 'string' },
+                },
+            },
+        },
+        {
+            name   => 'resources',
+            schema => {
+                type  => 'array',
+                items => {
+                    type => 'string',
                 },
             },
         },
