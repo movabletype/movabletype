@@ -95,7 +95,7 @@ sub list_props {
                 my ($obj, $app, $opts) = @_;
                 # might be better to add triggers as orignal TheSchwartz::Job does but for backcompat atm
                 my $arg = TheSchwartz::Job::_cond_thaw( $obj->arg );
-                ref $arg ? JSON::encode_json($arg) : $arg;
+                ref $arg ? eval { JSON::encode_json($arg) } : $arg;
             },
         },
         priority => {
