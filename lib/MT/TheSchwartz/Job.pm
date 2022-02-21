@@ -10,6 +10,7 @@ use strict;
 use warnings;
 use base qw( MT::Object );
 use MT::Util ();
+use TheSchwartz::Job;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -92,7 +93,8 @@ sub list_props {
             html => sub {
                 my $prop = shift;
                 my ($obj, $app, $opts) = @_;
-                my $arg = $obj->arg;
+                # might be better to add triggers as orignal TheSchwartz::Job does but for backcompat atm
+                my $arg = TheSchwartz::Job::_cond_thaw( $obj->arg );
                 ref $arg ? JSON::encode_json($arg) : $arg;
             },
         },
