@@ -24,13 +24,14 @@ my $website = MT::Test::Permission->make_website(name => 'my website');
 my $admin = MT->model('author')->load(1);
 my $app = MT::Test::App->new('MT::App::CMS');
 $app->login($admin);
-$app->post_ok({
-    __mode          => 'save',
+$app->get_ok({
+    __mode          => 'cfg_web_services',
     _type           => 'website',
     id              => $website->id,
     blog_id         => $website->id,
-    cfg_screen      => 'cfg_web_services',
-    enable_data_api => '0',
+});
+$app->post_form_ok({
+    enable_data_api => undef,
 });
 
 ok(grep { $website->id eq $_ } split(',', MT->config('DataAPIDisableSite')), 'Include updated website');
