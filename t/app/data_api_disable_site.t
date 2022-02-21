@@ -22,7 +22,13 @@ MT->instance;
 
 my $website = MT::Test::Permission->make_website(name => 'my website');
 
-diag(__FILE__ . ': Initial DataAPIDisableSite: ' . MT->config('DataAPIDisableSite'));
+sub _get_config_value {
+    $test_env->clear_mt_cache;
+    my $config = MT::Config->load(1) or return;
+    my ($line) = $config->data =~ /^(DataAPIDisableSite.+)$/m;
+    my ($key, $value) = split / /, $line;
+    $value;
+}
 
 my $admin = MT->model('author')->load(1);
 my $app = MT::Test::App->new('MT::App::CMS');
@@ -36,15 +42,11 @@ $app->get_ok({
 $app->post_form_ok({
     enable_data_api => undef,
 });
-diag(__FILE__ . ': ' . $app->message_text || $app->generic_error || 'no message');
-diag(__FILE__ . ': DataAPIDisableSite after post: ' . MT->config('DataAPIDisableSite'));
 
-ok(grep { $website->id eq $_ } split(',', MT->config('DataAPIDisableSite')), 'Include updated website')
-    or diag(__FILE__ . ': ' . MT->config('DataAPIDisableSite'));
+ok(grep { $website->id eq $_ } split(',', _get_config_value()), 'Include updated website');
 
 $website->remove;
 
-ok(!grep { $website->id eq $_ } split(',', MT->config('DataAPIDisableSite')), 'Not include updated website');
-diag(__FILE__ . ': DataAPIDisableSite after removal: ' . MT->config('DataAPIDisableSite'));
+ok(!grep { $website->id eq $_ } split(',', _get_config_value()), 'Not include updated website');
 
 done_testing;
