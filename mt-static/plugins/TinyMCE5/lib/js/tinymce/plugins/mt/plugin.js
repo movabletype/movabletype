@@ -619,8 +619,13 @@
               onclickFunctions : {
                   source: function(cmd, ui, val) {
                       ed.once('OpenWindow', function(dialog){
-                        var text = ed.mtProxies['source'].e.getSelectedText();
-                        dialog.dialog.setData({'text': text});
+                        var s = ed.mtEditorStatus;
+                        if( s.mode == 'source' && (s.format != '0' && s.format != '__default__')){
+                            jQuery('.tox-dialog__body .tox-listbox.tox-listbox--select').attr('disabled', 'disabled');
+                        }
+                        jQuery('.tox-dialog__header button.tox-button--naked, .tox-dialog__footer button.tox-button--secondary').on('click', function(){
+                            ed.off('CloseWindow');
+                        });
                       });
                       ed.execCommand('mceLink');
                       ed.once('CloseWindow', function(dialog){
@@ -637,6 +642,7 @@
                                 'text': data.text,
                             }
                         );
+                        dialog.dialog.setData({});
                     });
                   }
               }
