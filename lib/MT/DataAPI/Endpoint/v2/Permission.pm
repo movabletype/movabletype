@@ -823,7 +823,7 @@ DESCRIPTION
                                     type        => 'array',
                                     description => 'An array of permission resource.',
                                     items       => {
-                                        '$ref' => '#/components/schemas/permission',
+                                        '$ref' => '#/components/schemas/association',
                                     }
                                 },
                             },
