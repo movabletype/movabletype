@@ -480,8 +480,8 @@ sub test_system_mail {
     my $body
         = $app->translate("This is the test email sent by Movable Type.");
 
-    require MT::Mail;
-    if ( MT::Mail->send( \%head, $body ) ) {
+    require MT::Util::Mail;
+    if ( MT::Util::Mail->send( \%head, $body ) ) {
         $app->log(
             {   message => $app->translate(
                     'Test e-mail was successfully sent to [_1]',
@@ -498,7 +498,7 @@ sub test_system_mail {
         return $app->json_error(
             $app->translate(
                 "E-mail was not properly sent. [_1]",
-                MT::Mail->errstr
+                MT::Util::Mail->errstr
             )
         );
     }
