@@ -188,7 +188,8 @@ sub _send_mt_smtp {
         }
     }
 
-    $smtp->mail($user) or return $class->smtp_error($smtp);
+    $smtp->mail(ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From})
+        or return $class->smtp_error($smtp);
 
     for my $h (qw( To Bcc Cc )) {
         next unless defined $hdrs->{$h};
