@@ -21,14 +21,14 @@ sub fields {
         {
             name   => 'pageviews',
             schema => {
-                type        => 'integer',
+                type        => 'string',
                 description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "pageviews"',
             },
         },
         {
             name   => 'visits',
             schema => {
-                type        => 'integer',
+                type        => 'string',
                 description => 'The visits for the path. This property exists only if the metrics to retrieve is "visits"',
             },
         }];
