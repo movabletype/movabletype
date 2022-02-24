@@ -48,6 +48,17 @@ sub fields {
                     [qw( id label parent )],
                 );
             },
+            schema => {
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        id     => { type => 'integer' },
+                        label  => { type => 'string' },
+                        parent => { type => 'string' },
+                    },
+                },
+            },
         },
         {   name      => 'unpublishedDate',
             alias     => 'unpublished_on',
