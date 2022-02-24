@@ -57,9 +57,9 @@ my $cat_apple_id      = $objs->{category_set}{catset_fruit}{category}{cat_apple}
 my $cat_orange_id     = $objs->{category_set}{catset_fruit}{category}{cat_orange}->id;
 my $cat_strawberry_id = $objs->{category_set}{catset_fruit}{category}{cat_strawberry}->id;
 my $cat_peach_id      = $objs->{category_set}{catset_fruit}{category}{cat_peach}->id;
-my $cat_ruler_id      = $objs->{category}{cat_ruler}->id;
-my $cat_eraser_id     = $objs->{category}{cat_eraser}->id;
-my $cat_compass_id    = $objs->{category}{cat_compass}->id;
+my $cat_ruler_id      = $objs->{category}{cat_ruler}{$blog_id}->id;
+my $cat_eraser_id     = $objs->{category}{cat_eraser}{$blog_id}->id;
+my $cat_compass_id    = $objs->{category}{cat_compass}{$blog_id}->id;
 
 if ( $ENV{MT_TEST_PUBLISH_DYNAMIC} ) {
     rmtree($site_root);

@@ -8,6 +8,7 @@ package MT::Category;
 
 use strict;
 use warnings;
+use List::Util qw( first );
 use base qw( MT::Object );
 use MT::Util qw( weaken );
 
@@ -56,30 +57,42 @@ __PACKAGE__->install_properties(
 
 __PACKAGE__->add_trigger( pre_search => \&_set_category_set_id_if_needed );
 
+sub _has_category_set_id {
+    my $class = shift;
+    my ($terms) = @_;
+
+    return
+          ref $terms eq 'HASH'  ? exists $terms->{category_set_id}
+        : ref $terms eq 'ARRAY' ? first { $class->_has_category_set_id($_) } @$terms
+        :                   ();
+}
+
 sub _set_category_set_id_if_needed {
     my $class = shift;
-    my ( $terms, $args ) = @_;
-    my $no_category_set_id = 0;
-    if ( ref $args eq 'HASH' && $args->{no_category_set_id} ) {
-        delete $args->{no_category_set_id};
-        $no_category_set_id = 1;
-    }
+    my ( $terms, $args, $conds ) = @_;
+
+    $conds ||= +{
+        no_category_set_id  => ref $args eq 'HASH' && delete $args->{no_category_set_id},
+        has_category_set_id => $class->_has_category_set_id($terms),
+    };
+
     if ( ref $terms eq 'HASH' ) {
         if ( ( $terms->{category_set_id} || '' ) eq '*'
-            || $no_category_set_id )
+            || $conds->{no_category_set_id} )
         {
             delete $terms->{category_set_id};
         }
         elsif (!exists $terms->{category_set_id}
             && !exists $terms->{id}
-            && !$terms->{parent} )
+            && !$terms->{parent}
+            && !$conds->{has_category_set_id})
         {
             $terms->{category_set_id} = 0;
         }
     }
     elsif ( ref $terms eq 'ARRAY' ) {
         for my $term (@$terms) {
-            $class->_set_category_set_id_if_needed( $term, $args );
+            $class->_set_category_set_id_if_needed( $term, $args, $conds );
         }
     }
 }

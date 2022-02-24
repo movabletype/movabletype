@@ -999,6 +999,8 @@ sub remove {
     my $blog = shift;
     my $blog_id = ref $blog ? $blog->id : undef;
 
+    MT::Util::update_data_api_disable_site(MT->config, $blog_id, 1);
+
     # Load all the models explicitly.
     MT->all_models;
 

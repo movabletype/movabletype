@@ -93,7 +93,7 @@ class Category extends BaseObject
             } else {
                 $cf_content_type_filter = "";
             }
-            $cf_where = "cf_name = \"$content_field_name\"
+            $cf_where = "cf_name = '$content_field_name'
                          $cf_content_type_filter";
             require_once("class.mt_content_field.php");
             $content_field = new ContentField();
