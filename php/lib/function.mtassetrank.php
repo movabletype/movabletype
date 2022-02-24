@@ -8,7 +8,7 @@
 require_once('rating_lib.php');
 
 function smarty_function_mtassetrank($args, &$ctx) {
-    return hdlr_rank($ctx, 'asset', $args['namespace'], $args['max'],
+    return hdlr_rank($ctx, 'asset', $args['namespace'], isset($args['max']) ? $args['max'] : null,
         "", $args
     );
 }

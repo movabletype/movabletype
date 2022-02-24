@@ -44,7 +44,7 @@ $author->set_password('Nelson');
 $author->save or die $author->errstr;
 
 describe 'On Pref Blog Screen (blog_id = 1)' => sub {
-    my $selenium = MT::Test::Selenium->new($test_env);
+    my $selenium = MT::Test::Selenium->new($test_env, { rebootable => 1 });
     use Data::Dumper;
     context 'not save archive path' => sub {
         before all => sub {

@@ -263,8 +263,10 @@ sub _hdlr_archives {
     if ($save_stamps) {
         $save_ts                      = $ctx->{current_timestamp};
         $save_tse                     = $ctx->{current_timestamp_end};
-        $ctx->{current_timestamp}     = undef;
-        $ctx->{current_timestamp_end} = undef;
+        unless ($ctx->{inside_archive_list}) {
+            $ctx->{current_timestamp}     = undef;
+            $ctx->{current_timestamp_end} = undef;
+        }
     }
 
     # Isn't $order used?

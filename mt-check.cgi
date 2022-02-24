@@ -115,11 +115,11 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '7.8.2';
+    $version = '7.9.2';
 }
 my $release_version = '__RELEASE_VERSION_ID__';
 if ( $release_version eq '__RELEASE' . '_VERSION_ID__' ) {
-    $release_version = 'r.5003';
+    $release_version = 'r.5006';
 }
 
 my ( $mt, $LH );
@@ -209,6 +209,40 @@ sub print_http_header {
         print_encode("Connection: close\n");
     }
     print_encode("Content-Type: text/html; charset=utf-8\r\n\r\n");
+}
+
+sub check_imglib {
+    require Config;
+    my %lib = (
+        avif => 'libavif',
+        gif  => 'libgif',
+        jpeg => 'libjpeg',
+        png  => 'libpng',
+        tiff => 'libtiff',
+        webp => 'libwebp',
+    );
+    my @libpaths = split / /, $Config::Config{libpth};
+
+    my %found;
+    FORMAT:
+    for my $format (keys %lib) {
+        for my $libpath (@libpaths) {
+            for my $ext (qw/so dll a/) {
+                my $lib = "$libpath/$lib{$format}.$ext";
+                if (-f $lib) {
+                    $found{$format} = 1;
+                    next FORMAT;
+                }
+            }
+        }
+    }
+    %found;
+}
+
+sub dedupe_and_sort {
+    my @list = @_;
+    my %seen;
+    grep {!$seen{$_->[0]}++} sort {$a->[0] cmp $b->[0] or $b->[1] <=> $a->[1]} @list;
 }
 
 my $invalid = 0;
@@ -600,6 +634,14 @@ my @CORE_OPT = (
         )
     ],
 
+    [   'Graphics::Magick',
+        0, 0,
+        translate(
+            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.',
+            'Graphics::Magick'
+        )
+    ],
+
     [   'GD', 0, 0,
         translate(
             '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.',
@@ -926,6 +968,39 @@ if ($mt) {
 @DATA = @CORE_DATA unless @DATA;
 @OPT  = @CORE_OPT  unless @OPT;
 
+@REQ  = dedupe_and_sort(@REQ);
+@DATA = dedupe_and_sort(@DATA);
+@OPT  = dedupe_and_sort(@OPT);
+
+my @new_data;
+for (@DATA) {
+    if ($_->[0] eq 'DBI') {
+        unshift @new_data, $_;
+    } else {
+        push @new_data, $_;
+    }
+}
+@DATA = @new_data;
+
+my %imglib = check_imglib();
+my %extra = (
+    'Image::Magick' => sub {
+        require Image::Magick;
+        my $formats = join ", ", map {$imglib{$_} ? "<strong>$_</strong>" : $_} sort Image::Magick->QueryFormat;
+        qq{<__trans phrase="Supported format: [_1]" params="$formats">};
+    },
+    'Graphics::Magick' => sub {
+        require Graphics::Magick;
+        my $formats = join ", ", map {$imglib{$_} ? "<strong>$_</strong>" : $_} sort Graphics::Magick->QueryFormat;
+        qq{<__trans phrase="Supported format: [_1]" params="$formats">};
+    },
+    'Imager' => sub {
+        require Imager;
+        my $formats = join ", ", map {$imglib{$_} ? "<strong>$_</strong>" : $_} sort Imager->read_types;
+        qq{<__trans phrase="Supported format: [_1]" params="$formats">};
+    },
+);
+
 my $i = 0;
 for my $list ( \@REQ, \@DATA, \@OPT ) {
     my $data = ( $list == \@DATA );
@@ -1047,6 +1122,13 @@ MSG
                         . qq{"></p>\n\n}
                 )
             );
+            if ($extra{$mod} && ref $extra{$mod} eq 'CODE') {
+                if (my $extra_desc = eval { $extra{$mod}->() }) {
+                    print_encode(
+                        trans_templ(qq{<p class="extra">$extra_desc</p>\n\n})
+                    );
+                }
+            }
         }
         print_encode("</div>\n") if $mod =~ m/^DBD::/;
         $i++;

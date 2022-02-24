@@ -71,6 +71,11 @@ sub index_column {
     return $ddl->drop_index_sql(@_), $ddl->index_column_sql(@_);
 }
 
+sub drop_index {
+    my $ddl = shift;
+    return $ddl->drop_index_sql(@_);
+}
+
 sub fix_class {
     my $ddl = shift;
     my ($class) = @_;
@@ -224,7 +229,7 @@ sub drop_index_sql {
 
     my $props   = $class->properties;
     my $indexes = $props->{indexes};
-    return q() unless exists( $indexes->{$key} );
+    # return q() unless exists( $indexes->{$key} );
 
     if ( ref $indexes->{$key} eq 'HASH' ) {
         my $idx_info = $indexes->{$key};

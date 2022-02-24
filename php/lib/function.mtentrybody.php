@@ -7,9 +7,9 @@
 
 function smarty_function_mtentrybody($args, &$ctx) {
     $entry = $ctx->stash('entry');
-    $text = $entry->entry_text;
+    $text = isset($entry) ? $entry->entry_text : null;
 
-    $cb = $entry->entry_convert_breaks;
+    $cb = isset($entry) ? $entry->entry_convert_breaks : null;
     if (isset($args['convert_breaks'])) {
         $cb = $args['convert_breaks'];
     } elseif (!isset($cb)) {

@@ -90,7 +90,7 @@ sub form_fields {
 <div class="label"><label for="captcha_code">$caption:</label></div>
 <div class="field">
 <input type="hidden" name="token" value="$token" />
-<img id="captcha_image" src="$cgipath$commentscript/captcha/$blog_id/$token" width="150" height="35" /><a href="javascript:void(0)" onclick="var i=document.getElementById('captcha_image');i.src=i.src.replace(/((\\\\?c=\\\\d+)|\\\$)/,'?c='+Date.now());return false;"><img src="${static}images/nav_icons/color/rebuild.gif" alt="refresh captcha" style="margin-bottom:10px"></a><br />
+<img id="captcha_image" src="$cgipath$commentscript/captcha/$blog_id/$token" width="150" height="35" loading="lazy" decoding="async" /><a href="javascript:void(0)" onclick="var i=document.getElementById('captcha_image');i.src=i.src.replace(/((\\\\?c=\\\\d+)|\\\$)/,'?c='+Date.now());return false;"><img src="${static}images/nav_icons/color/rebuild.gif" alt="refresh captcha" style="margin-bottom:10px" loading="lazy" decoding="async"></a><br />
 <input type="text" name="captcha_code" id="captcha_code" class="text" value="" autocomplete="off" />
 <p>$description</p>
 </div>

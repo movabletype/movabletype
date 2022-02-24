@@ -21,8 +21,8 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
     }
 
     $param = '';
-    $include_blogs = $args['include_blogs'] ? $args['include_blogs'] : $ctx->stash('include_blogs');
-    $include_blogs or $include_blogs = $args['blog_ids'] ? $args['blog_ids'] : $ctx->stash('blog_ids');
+    $include_blogs = !empty($args['include_blogs']) ? $args['include_blogs'] : $ctx->stash('include_blogs');
+    $include_blogs or $include_blogs = !empty($args['blog_ids']) ? $args['blog_ids'] : $ctx->stash('blog_ids');
     if ( $include_blogs ) {
         if ($include_blogs != 'all') {
             $incl = $mt->db()->parse_blog_ids( $include_blogs, $include_with_website );
@@ -34,7 +34,7 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
         $blog_id = $ctx->stash('blog_id');
         $param = 'IncludeBlogs=' . $blog_id;
     }
-    if ($exclude_blogs = $args['exclude_blogs'] ? $args['exclude_blogs'] : $ctx->stash('exclude_blogs')) {
+    if ($exclude_blogs = !empty($args['exclude_blogs']) ? $args['exclude_blogs'] : $ctx->stash('exclude_blogs')) {
         $excl = $mt->db()->parse_blog_ids( $exclude_blogs );
         $param = 'ExcludeBlogs=' . implode(',', $excl);
     }

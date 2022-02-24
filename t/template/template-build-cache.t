@@ -41,6 +41,7 @@ $include->save;
 
 my $tmpl = MT::Template->new;
 $tmpl->blog_id( $blog->id );
+$tmpl->name('mytemplate');
 $tmpl->text('<mt:include module="Included Template">');
 $tmpl->type('custom');
 my $ctx = MT::Template::Context->new;

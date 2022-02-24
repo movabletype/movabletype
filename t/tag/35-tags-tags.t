@@ -13,7 +13,7 @@ BEGIN {
 }
 
 use MT::Test::Tag;
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
@@ -130,4 +130,3 @@ TEST
 <mt:Assets><mt:AssetIfTagged></mt:AssetIfTagged><mt:AssetIfTagged tag="@1clm">OK</mt:AssetIfTagged></mt:Assets>
 --- expected
 OK
-

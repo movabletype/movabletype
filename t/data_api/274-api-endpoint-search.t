@@ -262,9 +262,7 @@ sub suite {
 
                 return +{
                     totalResults => scalar @greped_entries,
-                    items        => MT::DataAPI::Resource->from_object(
-                        [ @greped_entries[ 5 .. 9 ] ]
-                    ),
+                    items        => MT::DataAPI::Resource->from_object([grep { $_ } @greped_entries[5 .. 9]]),
                 };
             },
         },

@@ -213,39 +213,35 @@ sub edit {
         }
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## load entry preferences for new/edit entry page of the blog
-            my $pref_param = $app->load_entry_prefs( { type => 'entry' } );
-            %$param = ( %$param, %$pref_param );
-            $pref_param = $app->load_entry_prefs( { type => 'page' } );
-            %$param = ( %$param, %$pref_param );
-            $param->{ 'sort_order_posts_' . ( $obj->sort_order_posts || 0 ) }
-                = 1;
-            $param->{ 'status_default_' . $obj->status_default } = 1
+            my $pref_param = $app->load_entry_prefs({ type => 'entry' });
+            %$param                                                         = (%$param, %$pref_param);
+            $pref_param                                                     = $app->load_entry_prefs({ type => 'page' });
+            %$param                                                         = (%$param, %$pref_param);
+            $param->{ 'sort_order_posts_' . ($obj->sort_order_posts || 0) } = 1;
+            $param->{ 'status_default_' . $obj->status_default }            = 1
                 if $obj->status_default;
-            $param->{ 'allow_comments_default_'
-                    . ( $obj->allow_comments_default || 0 ) } = 1;
-            $param->{system_allow_pings}
-                = $cfg->AllowPings && $blog->allow_pings;
-            $param->{system_allow_comments} = $cfg->AllowComments
-                && ( $blog->allow_reg_comments
-                || $blog->allow_unreg_comments );
+            $param->{ 'allow_comments_default_' . ($obj->allow_comments_default || 0) } = 1;
+            $param->{system_allow_pings}                                                = $cfg->AllowPings && $blog->allow_pings;
+            $param->{system_allow_comments}                                             = $cfg->AllowComments
+                && ($blog->allow_reg_comments
+                || $blog->allow_unreg_comments);
             my $replace_fields = $blog->smart_replace_fields || '';
-            my @replace_fields = split( /,/, $replace_fields );
+            my @replace_fields = split(/,/, $replace_fields);
 
             foreach my $fld (@replace_fields) {
                 $param->{ 'nwc_' . $fld } = 1;
             }
-            $param->{ 'nwc_smart_replace_' . ( $blog->smart_replace || 0 ) }
-                = 1;
-            $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
+            $param->{ 'nwc_smart_replace_' . ($blog->smart_replace || 0) } = 1;
+            $param->{'nwc_replace_none'} = ($blog->smart_replace || 0) == 2;
 
-            $param->{popup}      = $blog->image_default_popup ? 1 : 0;
-            $param->{popup_link}      = $blog->image_default_link;
-            $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
-            $param->{ 'align_' . ( $blog->image_default_align || 'none' ) }
-                = 1;
-            $param->{thumb_width} = $blog->image_default_width || 0;
+            $param->{can_popup}                                           = $blog->can_popup_image();
+            $param->{popup}                                               = $blog->image_default_popup ? 1                         : 0;
+            $param->{popup_link}                                          = $param->{can_popup}        ? $blog->image_default_link : 2;
+            $param->{make_thumb}                                          = $blog->image_default_thumb ? 1                         : 0;
+            $param->{ 'align_' . ($blog->image_default_align || 'none') } = 1;
+            $param->{thumb_width}                                         = $blog->image_default_width || 0;
 
-            $app->add_breadcrumb( $app->translate('Compose Settings') );
+            $app->add_breadcrumb($app->translate('Compose Settings'));
         }
         elsif ( $output eq 'cfg_web_services.tmpl' ) {
             $param->{system_disabled_notify_pings}
@@ -3627,21 +3623,7 @@ sub save_data_api_settings {
 
     my $cfg = $app->config;
 
-    my $data_api_disable_site
-        = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my %data_api_disable_site
-        = map { $_ => 1 } ( split ',', $data_api_disable_site );
-    if ($new_value) {
-        delete $data_api_disable_site{$blog_id};
-    }
-    else {
-        $data_api_disable_site{$blog_id} = 1;
-    }
-    my $new_data_api_disable_site = join ',',
-        ( sort { $a <=> $b } keys %data_api_disable_site );
-    $cfg->DataAPIDisableSite( $new_data_api_disable_site, 1 );
-
-    $cfg->save_config;
+    MT::Util::update_data_api_disable_site($cfg, $blog_id, $new_value);
 
     return 1;
 }
