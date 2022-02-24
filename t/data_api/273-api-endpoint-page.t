@@ -141,7 +141,7 @@ sub suite {
         {    # Search.
             path      => '/v2/sites/1/pages',
             method    => 'GET',
-            params    => { search => 'watching', },
+            params    => { search => 'underlings', },
             callbacks => [
                 {   name  => 'data_api_pre_load_filtered_list.page',
                     count => 2,
@@ -1162,4 +1162,3 @@ __BODY__
         },
     ];
 }
-

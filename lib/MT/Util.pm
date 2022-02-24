@@ -2626,36 +2626,17 @@ sub normalize_language {
 sub clear_site_stats_widget_cache {
     my ($site_id) = @_;
 
-    my $path;
+    my @parts;
     if ($site_id) {
-        my $iter = MT::Permission->load_iter( { blog_id => $site_id } );
-        while ( my $perm = $iter->() ) {
-            my $user_id = $perm->author_id;
-            my $low_dir = sprintf( "%03d", $user_id % 1000 );
-            my $sub_dir = sprintf( "%03d", $site_id % 1000 );
-            my $top_dir = $site_id > $sub_dir ? $site_id - $sub_dir : 0;
-            my $support_path
-                = File::Spec->catdir( MT->app->support_directory_path,
-                'dashboard', 'stats', $top_dir, $sub_dir, $low_dir );
-            my $file = "data_" . $site_id . ".json";
-            my $path = File::Spec->catfile( $support_path, $file );
-            require MT::FileMgr;
-            my $fmgr = MT::FileMgr->new('Local');
-
-            if ( $fmgr->exists($path) ) {
-                $fmgr->delete($path) or return 0;
-            }
-        }
+        my $sub_dir = sprintf( "%03d", $site_id % 1000 );
+        my $top_dir = $site_id > $sub_dir ? $site_id - $sub_dir : 0;
+        @parts = ($top_dir, $sub_dir);
     }
-    else {
-        my $dir = File::Spec->catdir( MT->app->support_directory_path,
-            'dashboard', 'stats' );
-        if ( -d $dir ) {
-            require File::Path;
-            File::Path::rmtree($dir);
-        }
+    my $dir = File::Spec->catdir( MT->app->support_directory_path, 'dashboard', 'stats', @parts );
+    if (-d $dir) {
+        require File::Path;
+        File::Path::rmtree($dir);
     }
-
     return 1;
 }
 
@@ -2867,6 +2848,21 @@ sub date_for_listing {
         : MT::Util::format_ts( $date_format, $ts, $blog,
         $app->user ? $app->user->preferred_language
         : undef );
+}
+
+sub update_data_api_disable_site {
+    my ($cfg, $blog_id, $new_value) = @_;
+    my $data_api_disable_site = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
+    my %data_api_disable_site = map { $_ => 1 } (split ',', $data_api_disable_site);
+    if ($new_value) {
+        delete $data_api_disable_site{$blog_id};
+    } else {
+        $data_api_disable_site{$blog_id} = 1;
+    }
+    my $new_data_api_disable_site = join ',',
+        (sort { $a <=> $b } keys %data_api_disable_site);
+    $cfg->DataAPIDisableSite($new_data_api_disable_site, 1);
+    $cfg->save_config;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;

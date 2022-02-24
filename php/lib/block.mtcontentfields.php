@@ -55,10 +55,11 @@ function smarty_block_mtcontentfields($args, $res, &$ctx, &$repeat) {
             $ctx->stash('content_field_data', $content_field);
 
             $ctx->__stash['vars']['content_field_id'] = $content_field['id'];
-            $ctx->__stash['vars']['content_field_unique_id'] = $content_field['unique_id'];
+            $ctx->__stash['vars']['content_field_unique_id'] = isset($content_field['unique_id']) ? $content_field['unique_id'] : null;
             $ctx->__stash['vars']['content_field_type'] = $content_field['type'];
             $ctx->__stash['vars']['content_field_order'] = $content_field['order'];
-            $ctx->__stash['vars']['content_field_options'] = $content_field['options'];
+            $ctx->__stash['vars']['content_field_options'] = 
+                isset($content_field['options']) ? $content_field['options'] : null;
 
             $content_field_type = ContentFieldTypeFactory::get_type($content_field['type']);
             $ctx->__stash['vars']['content_field_type_label'] = $content_field_type->get_label();

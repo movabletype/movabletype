@@ -127,7 +127,7 @@ subtest 'publish' => sub {
         id              => $cd->id,
     });
     my $res = $app->post_form_ok({ status => MT::ContentStatus::RELEASE(), });
-    note explain $res;
+    # note explain $res;
 
     @files = get_files();
     is(@files, 1, 'right number of files generated');

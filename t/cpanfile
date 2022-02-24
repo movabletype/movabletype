@@ -51,6 +51,7 @@ requires 'Crypt::DSA';
 #requires 'Cache::File';
 
 requires 'MIME::Base64';
+requires 'Email::MIME';
 requires 'XML::Atom';
 requires 'Cache::Memcached';
 requires 'Archive::Tar';
@@ -110,6 +111,8 @@ on 'test' => sub {
     requires 'Log::Minimal';
     requires 'MIME::Head';
     requires 'Mock::MonkeyPatch';
+    requires 'Mojolicious';
+    requires 'Net::Server::SS::PreFork' unless $^O eq 'MSWin32';
     requires 'Net::SFTP';
     requires 'Parallel::ForkManager';
     requires 'Path::Tiny';
@@ -120,8 +123,10 @@ on 'test' => sub {
     requires 'Proc::ProcessTable' unless $^O eq 'MSWin32';
     requires 'Role::Tiny';
     requires 'Selenium::Remote::Driver', '1.36';
+    requires 'Server::Starter' unless $^O eq 'MSWin32';
     requires 'SQL::Maker';
     requires 'SQL::Translator', '1.61';   # changed comment generation
+    requires 'Starman' unless $^O eq 'MSWin32';
     requires 'String::CamelCase';
     requires 'Sub::Name';
     requires 'Term::Encoding';

@@ -167,19 +167,21 @@ sub list_props {
                                     );
                             }
 
-                            my $thumbnail_width_offset = int(
-                                ( $thumb_size - $thumbnail_width ) / 2 );
-                            my $thumbnail_height_offset = int(
-                                ( $thumb_size - $thumbnail_height ) / 2 );
+                            my $style = '';
+                            if ($thumbnail_width && $thumbnail_height) {
+                                my $thumbnail_width_offset = int( ( $thumb_size - $thumbnail_width ) / 2 );
+                                my $thumbnail_height_offset = int( ( $thumb_size - $thumbnail_height ) / 2 );
+                                $style = qq{style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px"};
+                            }
 
                             push @rows, qq{
                                 <div class="pull-left d-none d-md-inline">
-                                    <img alt="" src="$thumbnail_url" class="img-thumbnail" width="$thumbnail_width" height="$thumbnail_height" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                                    <img alt="link1" src="$thumbnail_url" class="img-thumbnail" width="$thumb_size" height="$thumb_size" $style loading="lazy" decoding="async" />
                                     <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                                 </div>
                                 <div class="d-md-none row">
                                     <div class="col-auto mb-2 pl-0">
-                                        <img alt="" src="$thumbnail_url" class="img-thumbnail" width="$thumbnail_width" height="$thumbnail_height" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                                        <img alt="link2" src="$thumbnail_url" class="img-thumbnail" width="$thumb_size" height="$thumb_size" $style loading="lazy" decoding="async" />
                                     </div>
                                     <div class="col pl-0">
                                         <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
@@ -196,7 +198,7 @@ sub list_props {
                         elsif ( $class_type eq 'image' ) {
                             my $svg = qq{
                                     <div class="mt-thumbnail">
-                                        <img src="${static_uri}images/file-image.svg" width="60" height="60">
+                                        <img src="${static_uri}images/file-image.svg" width="60" height="60" loading="lazy" decoding="async">
                                     </div>
                                 };
                             push @rows, qq{
@@ -239,7 +241,7 @@ sub list_props {
                         else {
                             my $svg = qq{
                                     <div class="mt-thumbnail">
-                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60">
+                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60" loading="lazy" decoding="async">
                                     </div>
                                 };
                             push @rows, qq{
@@ -249,7 +251,7 @@ sub list_props {
                                 </div>
                                 <div class="d-md-none row">
                                     <div class="col-auto mb-2 pl-0">
-                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60">
+                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60" loading="lazy" decoding="async">
                                     </div>
                                     <div class="col pl-0">
                                         <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
@@ -267,7 +269,7 @@ sub list_props {
                     else {
                         my $svg = qq{
                                 <div class="mt-thumbnail">
-                                    <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60">
+                                    <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60" loading="lazy" decoding="async">
                                 </div>
                             };
                         push @rows, qq{
