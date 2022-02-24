@@ -35,6 +35,18 @@ sub fields {
                 MT::DataAPI::Resource->from_object( $cats,
                     [ 'id', 'parent', 'label', 'basename' ] );
             },
+            schema => {
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        id       => { type => 'integer' },
+                        parent   => { type => 'string' },
+                        label    => { type => 'string' },
+                        basename => { type => 'string' },
+                    },
+                },
+            },
         },
         {   name             => 'updatable',
             type             => 'MT::DataAPI::Resource::DataType::Boolean',
