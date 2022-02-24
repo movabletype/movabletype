@@ -21,8 +21,8 @@ function smarty_function_mtassetthumbnailurl($args, &$ctx) {
 
     require_once('MTUtil.php');
 
-    list($thumb) = get_thumbnail_file($asset, $blog, $args);
+    $props = get_thumbnail_file($asset, $blog, $args);
 
-    return $thumb;
+    return (isset($props[0]) && is_array($props) ? $props[0] : null);
 }
 ?>

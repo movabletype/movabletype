@@ -10,6 +10,8 @@ use warnings;
 use MT;
 use base qw( MT::ErrorHandler );
 
+our %CachedListProperties;
+
 sub instance {
     my $pkg = shift;
     my ( $cls, $id ) = @_;
@@ -273,11 +275,15 @@ sub list_properties {
     my $cls = shift;
     my %props;
 
+    return $CachedListProperties{$cls} if exists $CachedListProperties{$cls};
+
+    my $cacheable = 1;
     my $local_props = MT->registry( 'list_properties', $cls );
     if ($local_props) {
         for my $key ( keys %$local_props ) {
             my $prop = MT::ListProperty->instance( $cls, $key );
             if ( $prop->has('condition') ) {
+                $cacheable = 0;
                 next unless $prop->condition;
             }
             $props{$key} = $prop;
@@ -290,10 +296,14 @@ sub list_properties {
             next if $props{$key};
             my $prop = MT::ListProperty->instance( $cls, $key );
             if ( $prop->has('condition') ) {
+                $cacheable = 0;
                 next unless $prop->condition;
             }
             $props{$key} = $prop if $prop;
         }
+    }
+    if ($cacheable) {
+        $CachedListProperties{$cls} = \%props;
     }
 
     return \%props;

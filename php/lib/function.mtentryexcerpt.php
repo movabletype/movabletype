@@ -14,7 +14,7 @@ function smarty_function_mtentryexcerpt($args, &$ctx) {
         }
         $cb = 'convert_breaks';
         return apply_text_filter($ctx, $excerpt, $cb);
-    } elseif ($args['no_generate']) {
+    } elseif (!empty($args['no_generate'])) {
         return '';
     }
     if (!isset($args['words'])) {

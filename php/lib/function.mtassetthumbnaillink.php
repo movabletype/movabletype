@@ -22,10 +22,13 @@ function smarty_function_mtassetthumbnaillink($args, &$ctx) {
 
     require_once('MTUtil.php');
 
-    list($thumb, $thumb_w, $thumb_h) = get_thumbnail_file($asset, $blog, $args);
-    if (empty($thumb)) {
+    $props = get_thumbnail_file($asset, $blog, $args);
+    
+    if (empty($props)) {
         return '';
     }
+
+    list($thumb, $thumb_w, $thumb_h) = $props;
 
     $target = "";
     if (isset($args['new_window']))
@@ -33,7 +36,7 @@ function smarty_function_mtassetthumbnaillink($args, &$ctx) {
 
     $asset_url = smarty_function_mtasseturl($args, $ctx);
 
-    return sprintf("<a href=\"%s\"%s><img src=\"%s\" width=\"%d\" height=\"%d\" alt=\"\" /></a>",
+    return sprintf("<a href=\"%s\"%s><img src=\"%s\" width=\"%d\" height=\"%d\" alt=\"\" loading=\"lazy\" decoding=\"async\" /></a>",
         $asset_url,
         $target,
         $thumb,

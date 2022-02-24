@@ -19,14 +19,14 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
         if ($e) {
             $cat = $e->category();
         }
-        $cat or $cat = $ctx->stash('category');
-        $cat or $cat = $ctx->stash('archive_category');
+        !empty($cat) or $cat = $ctx->stash('category');
+        !empty($cat) or $cat = $ctx->stash('archive_category');
         if (!$cat) return '';
         if ($cat->category_category_set_id) {
-            $needs_contents = $args['contents'];
+            $needs_contents = isset($args['contents']) ? $args['contents'] : null;
         }
         else {
-            $needs_entries = $args['entries'];
+            $needs_entries = isset($args['entries']) ? $args['entries'] : null;
         }
         $class = 'category';
         if (isset($args['class'])) {
@@ -66,8 +66,8 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
                 }
                 $ctx->localize($localvars);
                 $ctx->stash('category', $cats[$pos]);
-                if ($needs_entries) $ctx->stash('entries', null);
-                if ($needs_contents) $ctx->stash('contents', null);
+                if (!empty($needs_entries)) $ctx->stash('entries', null);
+                if (!empty($needs_contents)) $ctx->stash('contents', null);
                 $repeat = true;
                 break;
             }
@@ -109,7 +109,7 @@ function _catx_load_categories(&$ctx, $cat, $class, $args) {
 
     $category_set = $ctx->stash('category_set');
     $category_set_id = isset($category_set) ? $category_set->id : 0;
-    $cache_key = "__cat_cache_$blog_id_$parent:$sort_by:$category_set_id";
+    $cache_key = "__cat_cache_${blog_id}_$parent:$sort_by:$category_set_id";
 
     $cats = $ctx->stash($cache_key);
     if (!$cats) {

@@ -7231,6 +7231,7 @@ button.bg-dark:focus {
 }
 
 .position-sticky {
+  position: -webkit-sticky !important;
   position: sticky !important;
 }
 
@@ -7250,8 +7251,9 @@ button.bg-dark:focus {
   z-index: 1030;
 }
 
-@supports (position: sticky) {
+@supports ((position: -webkit-sticky) or (position: sticky)) {
   .sticky-top {
+    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 1020;
@@ -11638,7 +11640,6 @@ h3 .badge, .h3 .badge, .mt-mobileGlobalMenu__dropdownMenu .badge, .mt-mobileGlob
   top: -1px;
   width: 24px;
   fill: #595959;
-  pointer-events: none;
   vertical-align: middle;
 }
 
