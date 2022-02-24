@@ -2,13 +2,9 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
-BEGIN {
-    eval { require Test::MockModule }
-        or plan skip_all => 'Test::MockModule is not installed';
-}
 
 our $test_env;
 BEGIN {
@@ -21,75 +17,41 @@ use File::Path;
 
 use MT::Test;
 use MT::Test::Image;
+use MT::Test::App;
+use Image::ExifTool;
 
-MT::Test->init_app;
+my $has_image_magick = eval { require Image::Magick; 1 };
 
 $test_env->prepare_fixture('db_data');
 
 my $admin = MT::Author->load(1);
 my $blog  = MT::Blog->load(1);
-my $fmgr  = $blog->file_mgr;
 
 File::Path::mkpath $blog->archive_path unless -d $blog->archive_path;
 
-sub _run_app_with_upload_file {
-    my ( $class, $params, $file_path, $file_info ) = @_;
-    my $put_args = undef;
-
-    my $mock_put = sub {
-        my $self = shift;
-        $put_args = [@_];
-    };
-    my $fmgr_module = Test::MockModule->new( ref $fmgr );
-    $fmgr_module->mock( $_, $mock_put ) for qw(put put_data);
-
-    # Quality of image file cannot be changed,
-    # because image file is not uploaded.
-    my $asset_image = Test::MockModule->new('MT::Asset::Image');
-    $asset_image->mock( 'change_quality', sub {1} );
-
-    my $app = Test::MockModule->new('MT::App');
-    $app->mock(
-        'upload_info',
-        sub {
-            open( my $fh, '<', $file_path );
-            $fh, $file_info;
-        }
-    );
-
-    $app = _run_app( $class, $params );
-
-    $app, $put_args;
-}
-
 subtest 'Regular JPEG image' => sub {
-    my $newest_asset = MT::Asset->load( { class => '*' },
-        { sort => [ { column => 'id', desc => 'DESC' } ], } );
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
 
     my $test_image = $test_env->path('test.jpg');
-    MT::Test::Image->write( file => $test_image );
+    MT::Test::Image->write(file => $test_image);
 
-    my ( $app, $put_args ) = _run_app_with_upload_file(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'upload_file',
-            blog_id          => $blog->id,
-            file             => 'test.jpg',
-        },
-        $test_image,
-        { 'Content-Type' => 'image/jpeg' }
-    );
-    my $out = delete $app->{__test_output};
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->js_post_ok({
+        __test_upload => [file => $test_image],
+        __mode        => 'js_upload_file',
+        blog_id       => $blog->id,
+        destination   => '%a',
+    });
 
-    is( $put_args->[1],
-        $test_env->path(qw/ site archives test.jpg /),
-        'Uploaded file path'
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }] },
     );
-    my $created_asset
-        = MT::Asset->load( { id => { '>' => $newest_asset->id } },
-        { sort => [ { column => 'id', desc => 'DESC' } ], } );
-    ok( $created_asset, 'An asset is created' );
+    ok($created_asset, 'An asset is created');
     my $expected_values = {
         'file_ext'   => 'jpg',
         'file_path'  => File::Spec->catfile(qw/ %a test.jpg /),
@@ -104,53 +66,138 @@ subtest 'Regular JPEG image' => sub {
         my $values = $created_asset->column_values();
         +{ map { $_ => $values->{$_} } keys %$expected_values };
     };
-    is_deeply( $result_values, $expected_values,
-        "Created asset's column values" );
+    is_deeply(
+        $result_values, $expected_values,
+        "Created asset's column values"
+    );
+};
 
-    done_testing();
+subtest 'Regular JPEG image, wrt exif removal' => sub {
+    my $org_force_exif_removal = MT->config('ForceExifRemoval');
+    my $asset_dir              = File::Spec->catdir($blog->archive_path, 'assets_c');
+
+    for my $exif_removal (0, 1) {
+        my $name         = 'test_' . ($exif_removal ? 'without' : 'with') . '_exif';
+        my $newest_asset = MT::Asset->load(
+            { class => '*' },
+            { sort  => [{ column => 'id', desc => 'DESC' }] },
+        );
+
+        my $test_image = $test_env->path("$name.jpg");
+        MT::Test::Image->write(file => $test_image);
+        my $tool = Image::ExifTool->new;
+        $tool->ExtractInfo($test_image);
+        $tool->SetNewValue(Keywords => 'mt_test');
+        $tool->SetNewValue('EXIF:Orientation' => 'Horizontal (normal)');
+        $tool->WriteInfo($test_image);
+
+        my $org_exif = Image::ExifTool::ImageInfo($test_image);
+        ok $org_exif->{ProfileCMMType}, "test image has profile information in exif";
+        is $org_exif->{Keywords} => 'mt_test', "test image has Keywords in exif";
+        is $org_exif->{Orientation} => 'Horizontal (normal)', "test image has Orientation in exif";
+
+        $test_env->update_config(ForceExifRemoval => $exif_removal);
+
+        my $app = MT::Test::App->new('CMS');
+        $app->login($admin);
+        $app->js_post_ok({
+            __test_upload => [file => $test_image],
+            __mode        => 'js_upload_file',
+            blog_id       => $blog->id,
+            destination   => '%a',
+        });
+
+        my $created_asset = MT::Asset->load(
+            { id   => { '>' => $newest_asset->id } },
+            { sort => [{ column => 'id', desc => 'DESC' }] },
+        );
+        ok($created_asset, 'An asset is created');
+        my $expected_values = {
+            'file_ext'   => 'jpg',
+            'file_path'  => File::Spec->catfile('%a', "$name.jpg"),
+            'file_name'  => "$name.jpg",
+            'url'        => '%a/' . "$name.jpg",
+            'class'      => 'image',
+            'blog_id'    => '1',
+            'created_by' => '1'
+        };
+        my $result_values = do {
+            return +{} unless $created_asset;
+            my $values = $created_asset->column_values();
+            +{ map { $_ => $values->{$_} } keys %$expected_values };
+        };
+        is_deeply(
+            $result_values, $expected_values,
+            "Created asset's column values"
+        );
+
+        my ($thumbnail)   = grep /$name/, $test_env->files($asset_dir);
+        my $uploaded_file = File::Spec->catfile($blog->archive_path, "$name.jpg");
+
+        for my $item (['uploaded file' => $uploaded_file], [thumbnail => $thumbnail]) {
+            my ($key, $file) = @$item;
+            my $exif = Image::ExifTool::ImageInfo($file);
+            if ($exif_removal or $key eq 'thumbnail') {
+                ok !$exif->{Keywords}, "$key has no Keywords in exif";
+                ok $exif->{ProfileCMMType}, "but $key still has profile information in exif";
+                is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
+                if ($has_image_magick) {
+                    my $magick = Image::Magick->new;
+                    $magick->Read($file);
+                    ok $magick->Get('icc'), "Image::Magick still returns icc";
+                }
+            } else {
+                is $exif->{Keywords} => 'mt_test', "$key still has Keywords in exif";
+                ok $exif->{ProfileCMMType}, "$key still has profile information in exif";
+                is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
+                if ($has_image_magick) {
+                    my $magick = Image::Magick->new;
+                    $magick->Read($file);
+                    ok $magick->Get('icc'), "Image::Magick returns icc";
+                }
+            }
+        }
+    }
+    $test_env->update_config(ForceExifRemoval => $org_force_exif_removal);
 };
 
 subtest 'Regular JPEG image with wrong extension' => sub {
-    my $newest_asset = MT::Asset->load( { class => '*' },
-        { sort => [ { column => 'id', desc => 'DESC' } ], } );
-
-    my $test_image = $test_env->path('test.jpg');
-    MT::Test::Image->write( file => $test_image );
-
-    my ( $app, $put_args ) = _run_app_with_upload_file(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'upload_file',
-            blog_id          => $blog->id,
-            file             => 'wrong-extension-test.gif',
-        },
-        $test_image,
-        { 'Content-Type' => 'image/jpeg' }
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
     );
-    my $out = delete $app->{__test_output};
 
-    like(
-        $out,
-        qr/ext_to=jpg.*ext_from=gif|ext_from=gif.*ext_to=jpg/,
+    my $test_image = $test_env->path('wrong-extension-test.jpg');
+    MT::Test::Image->write(file => $test_image);
+    (my $renamed_test_image = $test_image) =~ s/\.jpg/.gif/;
+    rename $test_image => $renamed_test_image;
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->js_post_ok({
+        __test_upload => [file => $renamed_test_image],
+        __mode        => 'js_upload_file',
+        blog_id       => $blog->id,
+        destination   => '%a',
+    });
+
+    $app->content_like(
+        qr/Extension changed from gif to jpg/,
         'Reported that the extension was changed'
     );
 
-    is( $put_args->[1],
-        $test_env->path(qw/ site archives wrong-extension-test.jpg /),
-        'Uploaded file path'
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }] },
     );
-    my $created_asset
-        = MT::Asset->load( { id => { '>' => $newest_asset->id } },
-        { sort => [ { column => 'id', desc => 'DESC' } ], } );
-    ok( $created_asset, 'An asset is created' );
+    ok($created_asset, 'An asset is created');
     my $expected_values = {
-        'file_ext'  => 'jpg',
-        'file_path' => File::Spec->catfile(qw/ %a wrong-extension-test.jpg /),
-        'file_name' => 'wrong-extension-test.jpg',
-        'url'       => '%a/wrong-extension-test.jpg',
-        'class'     => 'image',
-        'blog_id'   => '1',
+        'file_ext'   => 'jpg',
+        'file_path'  => File::Spec->catfile(qw/ %a wrong-extension-test.jpg /),
+        'file_name'  => 'wrong-extension-test.jpg',
+        'url'        => '%a/wrong-extension-test.jpg',
+        'class'      => 'image',
+        'blog_id'    => '1',
         'created_by' => '1'
     };
     my $result_values = do {
@@ -158,33 +205,28 @@ subtest 'Regular JPEG image with wrong extension' => sub {
         my $values = $created_asset->column_values();
         +{ map { $_ => $values->{$_} } keys %$expected_values };
     };
-    is_deeply( $result_values, $expected_values,
-        "Created asset's column values" );
-
-    done_testing();
+    is_deeply(
+        $result_values, $expected_values,
+        "Created asset's column values"
+    );
 };
 
 subtest 'Regular PDF file' => sub {
-    my $newest_asset = MT::Asset->load( { class => '*' },
-        { sort => [ { column => 'id', desc => 'DESC' } ], } );
-
-    my ( $app, $put_args ) = _run_app_with_upload_file(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'upload_file',
-            blog_id          => $blog->id,
-            file             => 'test.pdf',
-        },
-        File::Spec->catfile( $ENV{MT_HOME}, 't', 'files', 'test.pdf' ),
-        { 'Content-Type' => 'application/pdf' }
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
     );
-    my $out = delete $app->{__test_output};
 
-    is( $put_args->[1],
-        $test_env->path(qw/ site archives test.pdf /),
-        'Uploaded file path'
-    );
+    my $test_pdf = $test_env->save_file('test.pdf', 'dummy');
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->js_post_ok({
+        __test_upload => [file => $test_pdf],
+        __mode        => 'js_upload_file',
+        blog_id       => $blog->id,
+        destination   => '%a',
+    });
     my $expected_values = {
         'file_ext'   => 'pdf',
         'file_path'  => File::Spec->catfile(qw/ %a test.pdf /),
@@ -194,19 +236,20 @@ subtest 'Regular PDF file' => sub {
         'blog_id'    => '1',
         'created_by' => '1'
     };
-    my $created_asset
-        = MT::Asset->load( { id => { '>' => $newest_asset->id } },
-        { sort => [ { column => 'id', desc => 'DESC' } ], } );
-    ok( $created_asset, 'An asset is created' );
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }] },
+    );
+    ok($created_asset, 'An asset is created');
     my $result_values = do {
         return +{} unless $created_asset;
         my $values = $created_asset->column_values();
         +{ map { $_ => $values->{$_} } keys %$expected_values };
     };
-    is_deeply( $result_values, $expected_values,
-        "Created asset's column values" );
-
-    done_testing();
+    is_deeply(
+        $result_values, $expected_values,
+        "Created asset's column values"
+    );
 };
 
 done_testing();

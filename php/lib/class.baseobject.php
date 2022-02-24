@@ -32,7 +32,6 @@ abstract class BaseObject extends ADOdb_Active_Record
         'asset' => array(
             'image_width' => 'vinteger',
             'image_height' => 'vinteger',
-            'image_metadata' => 'vblob'
             ),
         'entry' => array(
             'junk_log' => 'vstring',
@@ -119,7 +118,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (!preg_match($pattern, $name))
             $name = $this->_prefix . $name;
 
-        return $this->$name;
+        return property_exists($this, $name) ? $this->$name : null;
     }
 
     public function __set($name, $value) {
@@ -141,7 +140,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (!preg_match($pattern, $name))
             $name = $this->_prefix . $name;
 
-        $value = $this->$name;
+        $value = property_exists($this, $name) ? $this->$name : null;
         return isset( $value );
     }
 
@@ -175,6 +174,7 @@ abstract class BaseObject extends ADOdb_Active_Record
             }
         }
 
+        $unique_myself = false;
         if (isset($extra['distinct'])) {
             $mt = MT::get_instance();
             $mtdb = $mt->db();
@@ -190,10 +190,10 @@ abstract class BaseObject extends ADOdb_Active_Record
                                           $bindarr,
                                           $pkeysArr,
                                           $extra);
-        $ret_objs;
+        $ret_objs = array();
         $unique_arr = array();
         if ($objs) {
-            if ( $unique_myself ) {
+            if ( !empty($unique_myself) ) {
                 $pkeys = empty($pkeysArr)
                     ? $db->MetaPrimaryKeys( $this->_table )
                     : $pKeysArr;
@@ -218,7 +218,10 @@ abstract class BaseObject extends ADOdb_Active_Record
             }
         }
 
-        return $ret_objs;
+        // XXX:
+        // We want to return an empty list if it is empty, but return null
+        // for backwards compatibility.
+        return $ret_objs ? $ret_objs : null;
     }
 
     // Member functions
@@ -242,7 +245,7 @@ abstract class BaseObject extends ADOdb_Active_Record
     }
 
     public function object_type() {
-        if (isset($this->{$this->_prefix . 'class'})) {
+        if (property_exists($this, $this->_prefix . 'class')) {
             return $this->{$this->_prefix . 'class'};
         }
         else {
@@ -311,7 +314,7 @@ abstract class BaseObject extends ADOdb_Active_Record
                 }
             }
 
-            if (! self::$_meta_info[$obj_type][$meta_name]) {
+            if (empty(self::$_meta_info[$obj_type][$meta_name])) {
                 self::$_meta_info[$obj_type][$meta_name] = $col_name;
             }
 
@@ -362,7 +365,7 @@ abstract class BaseObject extends ADOdb_Active_Record
             if ($children) {
                 foreach ($children as &$child) {
                     $k = $child->$foreign_key;
-                    if (! $meta_hash[$k]) {
+                    if (empty($meta_hash[$k])) {
                         $meta_hash[$k] = array();
                     }
                     $meta_hash[$k][] = $child;
@@ -378,6 +381,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         unset($obj_hash);
 
 
+        $obj_type = null;
         foreach ($objs as &$obj) {
             if (! $obj_type) {
                 $obj_type = $obj->object_type();

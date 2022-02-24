@@ -10,8 +10,8 @@ function smarty_function_mtentrypermalink($args, &$ctx) {
     if (!$entry)
         return '';
     $blog = $ctx->stash('blog');
-    $at = $args['type'];
-    $at or $at = $args['archive_type'];
+    $at = isset($args['type']) ? $args['type'] : null;
+    $at or $at = isset($args['archive_type']) ? $args['archive_type'] : null;
     $at or $at = $blog->blog_archive_type_preferred;
     if (!$at) {
         $at = $blog->blog_archive_type;

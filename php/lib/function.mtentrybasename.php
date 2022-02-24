@@ -13,7 +13,7 @@ function smarty_function_mtentrybasename($args, &$ctx) {
     }
     if (!$entry) return '';
     $basename = $entry->entry_basename;
-    if ($sep = $args['separator']) {
+    if ($sep = isset($args['separator']) ? $args['separator'] : null) {
         if ($sep == '-') {
             $basename = preg_replace('/_/', '-', $basename);
         } elseif ($sep == '_') {

@@ -1246,7 +1246,7 @@ sub _hdlr_asset_thumbnail_link {
     if ( $args->{new_window} ) {
         $ret .= qq( target="_blank");
     }
-    $ret .= sprintf qq(><img src="%s" width="%d" height="%d" alt="" /></a>),
+    $ret .= sprintf qq(><img src="%s" width="%d" height="%d" alt="" loading="lazy" decoding="async" /></a>),
         $url, $w, $h;
     $ret;
 }

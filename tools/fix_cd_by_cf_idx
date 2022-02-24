@@ -1,0 +1,159 @@
+#!/usr/bin/env perl
+use 5.010;
+use strict;
+use warnings;
+use utf8;
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use Getopt::Long;
+use MT::Bootstrap;
+use MT;
+use MT::ContentData;
+use MT::ContentFieldIndex;
+use Log::Minimal;
+
+binmode STDOUT, ":utf8";
+binmode STDERR, ":utf8";
+
+GetOptions(
+    'dry_run|dry-run'    => \my $dry_run,
+    'diff'               => \my $diff,
+    'verbose|v'          => \my $verbose,
+    'debug'              => \my $debug,
+    'blog_id|site_id=i@' => \my @site_ids,
+    'ct_id=i@'           => \my @ct_ids,
+    'cd_id=i@'           => \my @cd_ids,
+    'cf_id=i@'           => \my @all_cf_ids,
+    "help|?"             => sub { usage(); exit },
+);
+
+if ($diff) {
+    require Text::Diff;
+}
+
+my $mt = MT->new;
+
+MT->config('LoggerLevel', 'NONE') unless $verbose;
+
+$MT::DebugMode = 0 unless $debug;
+
+$Log::Minimal::PRINT = sub {
+    my ($time, $type, $message, $trace, $raw_message) = @_;
+    print STDERR "$time [$type] $message\n";
+};
+
+my $field_types = MT->registry('content_field_types');
+
+my %ct_args;
+$ct_args{blog_id} = \@site_ids if @site_ids;
+$ct_args{id}      = \@ct_ids   if @ct_ids;
+
+infof("Loading Content Types ...") if $verbose;
+
+my %cf_map;
+my $ct_iter = MT::ContentType->load_iter(\%ct_args);
+while (my $ct = $ct_iter->()) {
+    my $ct_id = $ct->id;
+    for my $field (@{ $ct->fields }) {
+        my $cf_id   = $field->{id};
+        my $cf_type = $field->{type};
+        next unless $cf_type =~ /single_line_text|multi_line_text|url|embedded_text|text_label/;
+        my $data_type = $field_types->{$cf_type}{data_type};
+        $cf_map{$ct_id}{$cf_id} = "value_$data_type";
+    }
+}
+
+my %cd_args;
+$cd_args{blog_id}         = \@site_ids if @site_ids;
+$cd_args{content_type_id} = \@ct_ids   if @ct_ids;
+$cd_args{id}              = \@cd_ids   if @cd_ids;
+
+infof("Loading Content Data ...") if $verbose;
+
+my $total_updates = my $errors = my $ct = 0;
+my @updates;
+my $cd_iter = MT::ContentData->load_iter(\%cd_args);
+while (my $cd = $cd_iter->()) {
+    infof("Checking $ct ...") if $verbose && !(++$ct % 100);
+    my $cd_id  = $cd->id;
+    my $ct_id  = $cd->content_type_id;
+    my @cf_ids = grep { $cf_map{$ct_id}{$_} } @all_cf_ids;
+    @cf_ids = keys %{ $cf_map{$ct_id} || {} } unless @cf_ids;
+
+    my $idx_iter = MT::ContentFieldIndex->load_iter({
+        content_data_id  => $cd_id,
+        content_field_id => \@cf_ids,
+    });
+    my $data = $cd->data;
+    my $updated;
+    while (my $idx = $idx_iter->()) {
+        my $cf_id     = $idx->content_field_id;
+        my $col       = $cf_map{$ct_id}{$cf_id};
+        my $idx_value = $idx->$col      // '';
+        my $value     = $data->{$cf_id} // '';
+        if ($value ne $idx_value) {
+            $data->{$cf_id} = $idx_value;
+            if ($verbose) {
+                infof("Field $cf_id for content data $cd_id needs update");
+                if ($diff) {
+                    print STDERR Text::Diff::diff(\$value => \$idx_value, { Style => 'Unified' }), "\n\n";
+                }
+            }
+            $updated = 1;
+        }
+    }
+    if ($updated) {
+        $cd->data($data);
+        push @updates, $cd;
+        _bulk_update(\@updates) if @updates >= 100;
+    }
+}
+_bulk_update(\@updates) if @updates;
+
+if ($dry_run) {
+    infof("Will be updated: $total_updates");
+} else {
+    infof("Total updated: $total_updates errored: $errors");
+}
+
+sub _bulk_update {
+    my $updates = shift;
+    unless ($dry_run) {
+        MT::ContentData->driver->begin_work;
+        infof("Updating the changes") if $verbose;
+        eval {
+            for my $cd (@$updates) {
+                # use ->update to avoid unnecessary re-updating of cf_idx etc
+                $cd->update or die $cd->errstr;
+            }
+        };
+        if ($@) {
+            errorf("Rolling back the changes: $@");
+            MT::ContentData->driver->rollback;
+            $errors += @$updates;
+        } else {
+            infof("Committing the changes") if $verbose;
+            MT::ContentData->driver->commit;
+            $total_updates += @$updates;
+        }
+    } else {
+        $total_updates += @$updates;
+    }
+    @$updates = ();
+}
+
+sub usage {
+    print STDERR << "EOT";
+usage: $0
+
+These options are available:
+
+    --site_id   site id(s) to process
+    --ct_id     content type id(s) to process
+    --cd_id     content data id(s) to process
+    --cf_id     content field id(s) to process
+    --dry-run   no update
+    --verbose   verbose output
+    --diff      show diff (requires Text::Diff module)
+EOT
+}

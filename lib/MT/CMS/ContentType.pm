@@ -894,7 +894,7 @@ sub init_content_type {
     my ( $cb, $app ) = @_;
 
     require MT::Object;
-    my $driver = MT::Object->driver;
+    my $driver = eval { MT::Object->driver };
     return
         unless $driver
         && $driver->table_exists( $app->model('content_type') );

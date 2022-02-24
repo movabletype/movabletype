@@ -999,6 +999,8 @@ sub remove {
     my $blog = shift;
     my $blog_id = ref $blog ? $blog->id : undef;
 
+    MT::Util::update_data_api_disable_site(MT->config, $blog_id, 1);
+
     # Load all the models explicitly.
     MT->all_models;
 
@@ -1742,6 +1744,22 @@ sub _adjust_threshold {
         return 0;
     }
 }
+
+sub can_popup_image {
+    my $blog = shift;
+    return 0 if MT->config('DisableImagePopup');
+
+    my $existing = MT->model('template')->exist({
+        blog_id => $blog->id,
+        type    => 'popup_image'
+    });
+
+    if ($existing) {
+        return 1;
+    }
+    return 0;
+}
+
 
 1;
 __END__
