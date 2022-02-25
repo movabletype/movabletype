@@ -262,7 +262,7 @@ sub crop {
 sub remove_metadata {
     my ( $class, $file ) = @_;
 
-    return 1 if lc($file) !~ /\.(jpe?g|tiff?)$/;
+    return 1 if lc($file) !~ /\.(jpe?g)$/;
 
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;

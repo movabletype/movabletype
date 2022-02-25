@@ -81,7 +81,6 @@ sub _init_image_size {
         if ( !defined $Types ) {
             $Types = { map { $_ => $_ } Imager->read_types };
             $Types->{jpg} = 'jpeg' if $Types->{jpeg};
-            $Types->{tif} = 'tiff' if $Types->{tiff};
         }
         return $Types->{ lc $_[0] };
     }

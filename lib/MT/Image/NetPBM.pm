@@ -100,11 +100,6 @@ sub _translate_filetype {
         jpeg => 'jpeg',
         gif  => 'gif',
         png  => 'png',
-
-        # TODO: NetPBM driver does not support TIFF.
-        # case #113464
-        # tif  => 'tiff',
-        # tiff => 'tiff',
     }->{ lc $_[0] };
 }
 
