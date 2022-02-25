@@ -1849,6 +1849,7 @@ BEGIN {
                 default => sub { $_[0]->CGIPath }
             },
             'BaseSitePath'                   => undef,
+            'BaseTemplatePath'               => undef,
             'HideBaseSitePath'               => { default => 0, },
             'HidePerformanceLoggingSettings' => { default => 0, },
             'HidePaformanceLoggingSettings' =>
@@ -2266,6 +2267,7 @@ BEGIN {
             'EnableBackgroundExport' => { default => 1 },
             'ForceBackgroundImport' => undef,
             'ForceBackgroundExport' => undef,
+            'PSGIStreaming' => { default => 1 },
             'HideVersion' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
@@ -2325,6 +2327,7 @@ BEGIN {
             },
             'cms' => {
                 handler         => 'MT::App::CMS',
+                type            => 'psgi_streaming',
                 script          => sub { MT->config->AdminScript },
                 cgi_path        => sub { MT->config->AdminCGIPath },
                 cgi_base        => 'mt',
