@@ -493,7 +493,6 @@ function createUploadBlock () {
     this.progressbar.find('.progress-bar').css('width', val + '%')
                                           .attr('aria-valuenow', parseInt(val));
     if( parseInt(val) >= 100 ) {
-      this.filename.hide();
       this.cancelUpload.hide();
     }
   }
@@ -528,6 +527,7 @@ function createUploadBlock () {
     }
     data += '</span>';
 
+    this.filename.hide();
     jQuery(data).appendTo(this.thumbnail);
     this.thumbnail.parents('.upload-status-block').attr('data-asset-id', id);
   }

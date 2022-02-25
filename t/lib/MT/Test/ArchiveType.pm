@@ -592,7 +592,7 @@ sub _set_stash {
                 || $names->{entry_cat}
                 || $names->{cat};
             return ( undef, " requires entry_category" ) unless $cat_name;
-            my $category = $objs->{category}{$cat_name}
+            my $category = $objs->{category}{$cat_name}{$objs->{blog_id}}
                 or croak "unknown entry_category: $cat_name";
             $stash{category}         = $category;
             $stash{archive_category} = $category;

@@ -11,8 +11,8 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
     if (!isset($res)) {
         $blog = $ctx->stash('blog');
         $blog_id = $blog->blog_id;
-        $at = $args['type'];
-        $at or $at = $args['archive_type'];
+        $at = isset($args['type']) ? $args['type'] : null;
+        $at or $at = isset($args['archive_type']) ? $args['archive_type'] : null;
         $at or $at = $ctx->stash('current_archive_type');
         if ($at) {  # do nothing if we have an $at
         } elseif ($blog_at = $blog->blog_archive_type_preferred) {
@@ -56,7 +56,7 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
                 'preferred' => 1,
                 'type' => $at,
             ));
-            if (isset($maps)) {
+            if (!empty($maps) && is_array($maps)) {
                 $cat_field = $maps[0]->cat_field();
             }
             if (isset($cat_field)) {
@@ -77,7 +77,7 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
         ## handle it here--instead hand it over to <MTCategories>.
         if ($at == 'Category' || $at === 'ContentType-Category') {
             require_once("block.mtcategories.php");
-            return smarty_block_mtcategories($args, $content, $ctx, $repeat);
+            return smarty_block_mtcategories($args, isset($content) ? $content : null, $ctx, $repeat);
         }
         $args['sort'] = 'created_on';
         $args['direction'] = 'descend';

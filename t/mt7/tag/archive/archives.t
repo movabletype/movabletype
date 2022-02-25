@@ -36,7 +36,7 @@ $test_env->prepare_fixture('db');
 my @archive_types = MT->publisher->archive_types;
 my $archive_types = join ',', @archive_types;
 
-plan tests => 2 * @archive_types * blocks;
+plan tests => (1 + 2) * @archive_types * blocks;
 
 foreach my $archive_type (@archive_types) {
     MT::Test::Tag->run_perl_tests(

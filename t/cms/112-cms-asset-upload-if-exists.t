@@ -3,15 +3,9 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
-BEGIN {
-    eval { require Test::MockModule }
-        or plan skip_all => 'Test::MockModule is not installed';
-    eval { require Test::MockObject }
-        or plan skip_all => 'Test::MockObject is not installed';
-}
 
 our $test_env;
 BEGIN {
@@ -24,119 +18,73 @@ use File::Path;
 
 use MT::Test;
 use MT::Test::Image;
-
-MT::Test->init_app;
+use MT::Test::App;
+use File::Copy qw(copy);
 
 $test_env->prepare_fixture('db_data');
 
 my $admin = MT::Author->load(1);
 my $blog  = MT::Blog->load(1);
-my $fmgr  = $blog->file_mgr;
 
 File::Path::mkpath $blog->archive_path unless -d $blog->archive_path;
 
-sub _run_app_with_upload_file {
-    my ( $class, $params, $file_path, $file_info ) = @_;
-    my $put_args = undef;
-
-    my $mock_put = sub {
-        my $self = shift;
-        $put_args = [@_];
-    };
-    my $fmgr_module = Test::MockModule->new( ref $fmgr );
-    $fmgr_module->mock( $_, $mock_put ) for qw(put put_data);
-
-    # Quality of image file cannot be changed,
-    # because image file is not uploaded.
-    my $asset_image = Test::MockModule->new('MT::Asset::Image');
-    $asset_image->mock( 'change_quality', sub {1} );
-
-    my $app = Test::MockModule->new('MT::App');
-    $app->mock(
-        'upload_info',
-        sub {
-            open( my $fh, '<', $file_path );
-            $fh, $file_info;
-        }
-    );
-
-    $app = _run_app( $class, $params );
-
-    $app, $put_args;
-}
-
-my $fmgr_module = Test::MockModule->new( ref $fmgr );
-$fmgr_module->mock(
-    'exists',
-    sub {
-        $_[1] eq $test_env->path(qw/ site archives test.jpg /);
-    }
-);
-
 subtest 'Without "auto_rename_if_exists"' => sub {
-    my $newest_asset = MT::Asset->load( { class => '*' },
-        { sort => [ { column => 'id', desc => 'DESC' } ], } );
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
 
     my $test_image = $test_env->path('test.jpg');
-    MT::Test::Image->write( file => $test_image );
+    MT::Test::Image->write(file => $test_image);
 
-    my ( $app, $put_args ) = _run_app_with_upload_file(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'upload_file',
-            blog_id          => $blog->id,
-            file             => 'test.jpg',
-        },
-        $test_image,
-        { 'Content-Type' => 'image/jpeg' }
-    );
-    my $out = delete $app->{__test_output};
+    copy($test_image, $test_env->path('site/archives/test.jpg'));
 
-    ok( !$put_args, 'Not uploaded' );
-    my $created_asset
-        = MT::Asset->load( { id => { '>' => $newest_asset->id } },
-        { sort => [ { column => 'id', desc => 'DESC' } ], } );
-    ok( !$created_asset, 'Not created' );
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __test_upload => [file => $test_image],
+        __mode        => 'upload_file',
+        blog_id       => $blog->id,
+    });
 
-    done_testing();
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }], });
+    ok(!$created_asset, 'Not created');
 };
 
 subtest 'With "auto_rename_if_exists"' => sub {
-    my $newest_asset = MT::Asset->load( { class => '*' },
-        { sort => [ { column => 'id', desc => 'DESC' } ], } );
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
 
     my $test_image = $test_env->path('test.jpg');
-    MT::Test::Image->write( file => $test_image );
+    MT::Test::Image->write(file => $test_image);
 
-    my ( $app, $put_args ) = _run_app_with_upload_file(
-        'MT::App::CMS',
-        {   __test_user           => $admin,
-            __request_method      => 'POST',
+    copy($test_image, $test_env->path('site/archives/test.jpg'));
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->post_ok({
             __mode                => 'upload_file',
             blog_id               => $blog->id,
-            file                  => 'test.jpg',
+            __test_upload         => [file => $test_image],
             auto_rename_if_exists => 1,
         },
-        $test_image,
-        { 'Content-Type' => 'image/jpeg' }
     );
-    my $out = delete $app->{__test_output};
 
-    my $regex
-        = ( $^O eq 'MSWin32' )
-        ? qr!\\site\\archives\\[0-9a-z]{40}\.jpg!
-        : qr!/site/archives/[0-9a-z]{40}\.jpg!;
-    like( $put_args->[1], $regex, 'Uploaded file path' );
+    my ($uploaded_file) = grep /[0-9a-z]{40}\.jpg$/, $test_env->files($blog->archive_path);
 
-    my $created_asset
-        = MT::Asset->load( { id => { '>' => $newest_asset->id } },
-        { sort => [ { column => 'id', desc => 'DESC' } ], } );
-    ok( $created_asset, 'Created' );
-    my $replaced_basename = File::Basename::basename( $put_args->[1] );
+    my $created_asset = MT::Asset->load(
+        { id   => { '>' => $newest_asset->id } },
+        { sort => [{ column => 'id', desc => 'DESC' }] },
+    );
+    ok($created_asset, 'Created');
+    my $replaced_basename = File::Basename::basename($uploaded_file);
     my $expected_values   = {
         'file_ext'   => 'jpg',
-        'file_path'  => File::Spec->catfile( '%a', $replaced_basename ),
+        'file_path'  => File::Spec->catfile('%a', $replaced_basename),
         'file_name'  => $replaced_basename,
         'url'        => '%a/' . $replaced_basename,
         'class'      => 'image',
@@ -148,8 +96,10 @@ subtest 'With "auto_rename_if_exists"' => sub {
         my $values = $created_asset->column_values();
         +{ map { $_ => $values->{$_} } keys %$expected_values };
     };
-    is_deeply( $result_values, $expected_values,
-        "Created asset's column values" );
+    is_deeply(
+        $result_values, $expected_values,
+        "Created asset's column values"
+    );
 };
 
 done_testing();

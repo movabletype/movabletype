@@ -27,7 +27,7 @@ function smarty_function_mtlink($args, &$ctx) {
             $link = $site_url . $tmpl->template_outfile;
             $_template_links[$cache_key] = $link;
         }
-        if (!$args['with_index']) {
+        if (empty($args['with_index'])) {
             $link = _strip_index($link, $curr_blog);
         }
         return $link;
@@ -38,7 +38,7 @@ function smarty_function_mtlink($args, &$ctx) {
         $ctx->stash('entry', $entry);
         $link = $ctx->tag('EntryPermalink',$args);
         $ctx->restore(array('entry'));
-        if ($args['with_index'] && preg_match('/\/(#.*)$/', $link)) {
+        if (!empty($args['with_index']) && preg_match('/\/(#.*)$/', $link)) {
             $index = $ctx->mt->config('IndexBasename');
             $ext = $curr_blog->blog_file_extension;
             if ($ext) $ext = '.' . $ext; 

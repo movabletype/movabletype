@@ -251,6 +251,10 @@ sub init_upgrade {
 
     require MT::Upgrade;
 
+    # Prevent temporal values for previous tests to be contaminated into DB
+    MT->instance->init_config_from_db;
+    MT->instance->init_plugins;
+
     # Initialize the MT database
     MT::Upgrade->do_upgrade(
         Install => 1,
@@ -280,6 +284,10 @@ sub init_upgrade {
 
     require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+
+    if (lc($ENV{MT_TEST_BACKEND} // '') eq 'oracle') {
+        MT::Test::Env->update_sequences;
+    }
 
     1;
 }
@@ -564,7 +572,7 @@ sub init_data {
             {   blog_id        => 1,
                 title          => 'A preponderance of evidence',
                 text           => 'It is sufficient to say...',
-                text_more      => 'I suck at making up test data.',
+                text_more      => 'Brevity is the soul of wit.',
                 created_on     => '19790131074500',
                 modified_on    => '19790131074600',
                 authored_on    => '19780131074500',
@@ -634,18 +642,17 @@ sub init_data {
     }
 
     my @verses = (
-        'Oh, where have you been, my blue-eyed son?
-Oh, where have you been, my darling young one?',
-        'I saw a newborn baby with wild wolves all around it
-I saw a highway of diamonds with nobody on it',
-        'Heard one hundred drummers whose hands were a-blazin\',
-Heard ten thousand whisperin\' and nobody listenin\'',
-        'I met one man who was wounded in love,
-I met another man who was wounded with hatred',
-        'Where hunger is ugly, where souls are forgotten,
-Where black is the color, where none is the number,
-And it\'s a hard, it\'s a hard, it\'s a hard, it\'s a hard,
-It\'s a hard rain\'s a-gonna fall',
+        'I must be cruel only to be kind;' . "\n" . 'Thus bad begins, and worse remains behind.',
+        'Look like the innocent flower,' . "\n" . 'But be the serpent under it.',
+        'Me, poor man, my library' . "\n" . 'Was dukedom large enough.',
+        'The Devil hath power' . "\n" . 'To assume a pleasing shape.',
+        join(
+            "\n",
+            'The weight of this sad time we must obey,',
+            'Speak what we feel, not what we ought to say.',
+            'The oldest hath borne most: we that are young',
+            'Shall never see so much, nor live so long.'
+        ),
     );
 
     require MT::Category;
@@ -1202,9 +1209,9 @@ It\'s a hard rain\'s a-gonna fall',
     my $page = MT::Page->new();
     $page->set_values(
         {   blog_id     => 1,
-            title       => 'Watching the River Flow',
-            text        => 'What the matter with me,',
-            text_more   => 'I don\'t have much to say,',
+            title       => 'But in ourselves, that we are underlings.',
+            text        => 'Men at some time are masters of their fates:',
+            text_more   => 'The fault, dear Brutus, is not in our stars,',
             keywords    => 'no folder',
             excerpt     => 'excerpt',
             created_on  => '19780131074500',
@@ -1278,8 +1285,8 @@ It\'s a hard rain\'s a-gonna fall',
     $page->set_values(
         {   blog_id     => 1,
             title       => 'Page #1',
-            text        => 'Wish I was back in the city',
-            text_more   => 'Instead of this old bank of sand,',
+            text        => 'Good night, good night! Parting is such sweet sorrow,',
+            text_more   => 'That I shall say good night till it be morrow.',
             keywords    => 'keywords',
             created_on  => '19790131074500',
             authored_on => '19790131074500',
@@ -1304,8 +1311,8 @@ It\'s a hard rain\'s a-gonna fall',
     $page->set_values(
         {   blog_id     => 1,
             title       => 'Page #2',
-            text        => 'With the sub beating down over the chimney tops',
-            text_more   => 'And the one I love so close at hand',
+            text        => 'By the pricking of my thumbs,',
+            text_more   => 'Something wicked this way comes.',
             keywords    => 'keywords',
             created_on  => '19800131074500',
             authored_on => '19800131074500',
@@ -1330,8 +1337,8 @@ It\'s a hard rain\'s a-gonna fall',
     $page->set_values(
         {   blog_id     => 1,
             title       => 'Page #3',
-            text        => 'If I had wings and I could fly,',
-            text_more   => 'I know where I would go.',
+            text        => 'Good night, good night! parting is such sweet sorrow,',
+            text_more   => 'That I shall say good night till it be morrow.',
             keywords    => 'keywords',
             created_on  => '19810131074500',
             authored_on => '19810131074500',
@@ -1470,6 +1477,10 @@ It\'s a hard rain\'s a-gonna fall',
         $map->object_ds( $page->datasource );
         $map->object_id( $page->id );
         $map->save;
+    }
+
+    if (lc($ENV{MT_TEST_BACKEND} // '') eq 'oracle') {
+        MT::Test::Env->update_sequences;
     }
 
     1;
@@ -1653,7 +1664,23 @@ sub has_php {
         my $phpinfo = `php -i 2>&1` or return $HasPHP = 0;
         $HasPHP = 0 if $phpinfo =~ /\-\-without\-(?:pdo\-)?mssql/;
     }
+    my $smarty_major_version = _find_smarty_version();
+    if ($smarty_major_version > 3) {
+        return $HasPHP = 0 if $php_version < 7.1;
+    }
+    if ($php_version > 8.0 && $ENV{TRAVIS}) {
+        diag "PHP $php_version is not supported yet";
+        return $HasPHP = 0;
+    }
     $HasPHP;
+}
+
+sub _find_smarty_version {
+    open my $fh, '<', "$ENV{MT_HOME}/php/extlib/smarty/libs/Smarty.class.php";
+    read($fh, my $buf, 8192) or return;
+    my ($smarty_version) = $buf =~ /SMARTY_VERSION\s*=\s*'([0-9.]+)';/;
+    my ($major, $minor, $patch) = split /\./, $smarty_version;
+    return wantarray ? ($major, $minor, $patch) : $major;
 }
 
 sub validate_param { return [] }

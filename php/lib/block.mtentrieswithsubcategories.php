@@ -8,7 +8,7 @@
 function smarty_block_mtentrieswithsubcategories($args, $content, &$ctx, &$repeat) {
     $localvars = array('entries', 'inside_with_subcategories');
     if (!isset($content)) {
-        $cat = $args['category'];
+        $cat = isset($args['category']) ? $args['category'] : null;
         if (!$cat) {
             $cat = $ctx->stash('category');
             if (isset($cat))

@@ -455,17 +455,27 @@ sub suite {
 
         # list_parent_folders - normal tests
         {   setup => sub {
+                $test_env->update_sequences;
                 my $parent_folder
                     = MT::Test::Permission->make_folder( blog_id => 1 );
+                my $old_parent_id = $parent_folder->id;
                 $parent_folder->id(30);
                 $parent_folder->save or die $parent_folder->errstr;
+                if ($old_parent_id && $old_parent_id != 30) {
+                    $app->model('folder')->remove({id => $old_parent_id});
+                }
 
+                $test_env->update_sequences;
                 my $child_folder = MT::Test::Permission->make_folder(
                     blog_id => 1,
                     parent  => $parent_folder->id,
                 );
+                my $old_child_id = $child_folder->id;
                 $child_folder->id(31);
                 $child_folder->save or die $child_folder->errstr;
+                if ($old_child_id && $old_child_id != 31) {
+                    $app->model('folder')->remove({id => $old_child_id});
+                }
             },
             path     => '/v2/sites/1/folders/31/parents',
             method   => 'GET',
@@ -479,12 +489,17 @@ sub suite {
 
         # list_sibling_folders - normal tests
         {   setup => sub {
+                $test_env->update_sequences;
                 my $sibling_folder = MT::Test::Permission->make_folder(
                     blog_id => 1,
                     parent  => 30,
                 );
+                my $old_sibling_id = $sibling_folder->id;
                 $sibling_folder->id(32);
                 $sibling_folder->save or die $sibling_folder->errstr;
+                if ($old_sibling_id && $old_sibling_id != 32) {
+                    $app->model('folder')->remove({id => $old_sibling_id});
+                }
             },
             path     => '/v2/sites/1/folders/31/siblings',
             method   => 'GET',

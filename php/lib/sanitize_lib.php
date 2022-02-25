@@ -34,7 +34,7 @@ function sanitize($s, $arg) {
                 $closure = 1;
             }
             if (isset($ok_tags[$name])) {
-                if ($tag_attr[$name] == '/')
+                if (isset($tag_attr[$name]) && $tag_attr[$name] == '/')
                     $closure = 2;
 
                 # process attribute list...
@@ -85,6 +85,9 @@ function sanitize($s, $arg) {
                     } elseif (!$closure) {
                         if(!preg_match('/br|wbr|hr|img|col|base|link|meta|input|keygen|area|param|embed|source|track|command/', $name)){
                             $open_tag_a[] = $name;
+                            if (!isset($open_tag_h[$name])) {
+                                $open_tag_h[$name] = 0;
+                            }
                             $open_tag_h[$name]++;
                         }
                     }

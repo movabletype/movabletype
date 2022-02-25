@@ -150,24 +150,19 @@ sub get_image_info {
     my $class  = shift;
     my %params = @_;
 
-    ## Use Image::Size to check if the uploaded file is an image, and if so,
-    ## record additional image info (width, height).
-    eval { require Image::Size; };
-    return $class->error(
-        MT->translate(
-                  "Perl module Image::Size is required to determine "
-                . "the width and height of uploaded images."
-        )
-    ) if $@;
-
+    require Image::ExifTool;
+    my $info;
     if ( my $fh = $params{Fh} ) {
         seek $fh, 0, 0;
-        Image::Size::imgsize($fh);
+        require File::RandomAccess;
+        $info = Image::ExifTool::ImageInfo(File::RandomAccess->new($fh));
+        seek $fh, 0, 0;
     }
     elsif ( my $filename = $params{Filename} ) {
-        local $Image::Size::NO_CACHE = 1;
-        Image::Size::imgsize($filename);
+        $info = Image::ExifTool::ImageInfo($filename);
     }
+    return unless $info;
+    return int($info->{ImageWidth} || 0), int($info->{ImageHeight} || 0), $info->{FileTypeExtension};
 }
 
 sub get_image_type {
@@ -277,10 +272,16 @@ sub remove_metadata {
     }
 
     $exif = Image::ExifTool->new;
-    $exif->SetNewValuesFromFile($file);
+    $exif->ExtractInfo($file);
+
+    my $orientation = $exif->GetValue('Orientation');
+
     $exif->SetNewValue('*');
-    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 )
-        if lc($file) =~ /\.jpe?g$/;
+    if (lc($file) =~ /\.jpe?g$/) {
+        $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
+        $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
+        $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
+    }
     $exif->WriteInfo($file)
         or $class->trans_error( 'Writing metadata failed: [_1]',
         $exif->GetValue('Error') );

@@ -649,10 +649,10 @@ use vars qw( @ISA %Lexicon );
 	'View Site' => 'サイトの表示',
 	'Web Services' => 'Webサービス',
 	'Website' => 'ウェブサイト',
-	'_WARNING_DELETE_USER' => 'ユーザーを削除すると、そのユーザーの書いた記事はユーザー不明となり、後で取り消せません。ユーザーを無効化するのが正しい方法です。本当にユーザーを削除してもよろしいですか?',
-	'_WARNING_DELETE_USER_EUM' => 'ユーザーを削除すると、そのユーザーの書いた記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？LDAPディレクトリ上にユーザーがまだ残っている場合、いつでも再作成されてしまいます。',
+	'_WARNING_DELETE_USER' => 'ユーザーの削除操作は取り消せず、削除したユーザーは復元できません。また、このユーザーが作成した記事やウェブページ、コンテンツデータは作成者不明となります。このユーザーを利用しなくなったり、システムへのアクセスを禁止したい場合は、ユーザーのアカウントを無効にすることをおすすめします。選択したユーザーを削除してよろしいですか?',
+	'_WARNING_DELETE_USER_EUM' => 'ユーザーの削除操作は取り消せず、削除したユーザーは復元できません。また、このユーザーが作成した記事やウェブページ、コンテンツデータは作成者不明となります。このユーザーを利用しなくなったり、システムへのアクセスを禁止したい場合は、ユーザーのアカウントを無効にすることをおすすめします。LDAPディレクトリ上に選択したユーザーが残っている場合はアカウントを再作成できますが、削除前の記事などとユーザーを紐づけることはできません。選択したユーザーを削除してよろしいですか?',
 	'_WARNING_PASSWORD_RESET_MULTI' => '選択されたユーザーのパスワードを再設定しようとしています。パスワード再設定用のリンクが直接それぞれのメールアドレスに送られます。実行しますか?',
-	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたブログのテンプレートを、各ブログの利用しているテーマの初期状態に戻します。テンプレートを初期化してもよろしいですか?',
+	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたサイトのテンプレートを、各サイトの利用しているテーマの初期状態に戻します。テンプレートを初期化してもよろしいですか?',
 	'content data' => 'コンテンツデータ',
 	'entry' => '記事',
 	q{Failed login attempt by user who does not have sign in permission. '[_1]' (ID:[_2])} => q{サインイン権限を有しないユーザー '[_1]' (ID:[_2])がサインインを試みましたが失敗しました。},
@@ -754,7 +754,7 @@ use vars qw( @ISA %Lexicon );
 	'XML::LibXML::SAX is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::LibXML::SAXのインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'XML::SAX::Expat is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::SAX::Expatのインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'XML::SAX::ExpatXS is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::SAX::ExpatXSのインストールは必須ではありません。バックアップデータの復元に必要となります。',
-	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => '[_1]のインストールは必須ではありません。YAML::Tinyよりも、軽量で高速に動作します。',
+	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::Syckのインストールは必須ではありません。YAML::Tinyよりも、軽量で高速に動作します。',
 
 ## lib/MT/ArchiveType/Author.pm
 	'AUTHOR_ADV' => 'ユーザー',
@@ -3079,6 +3079,7 @@ use vars qw( @ISA %Lexicon );
 	'Please consult the installation instructions for help in installing [_1].' => '[_1]のインストールはインストールマニュアルに沿って行ってください。',
 	'SOAP::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.' => 'SOAP::Liteのインストールは必須ではありません。XML-RPC による作業を行う場合に必要となります。',
 	'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.' => 'Storableは必須ではありません。外部プラグインの利用の際に必要となる場合があります。',
+	'Supported format: [_1]' => '対応している形式: [_1]',
 	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'お使いのサーバーにインストールされている DBD::mysqlのバージョンは、Movable Type と互換性がありません。CPAN に公開されている最新バージョンをインストールしてください。',
 	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1]はインストールされていますが、新しいDBIが必要です。上記を参考に必要なDBIを確認してください。',
 	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.' => 'これらのモジュールのインストールは<strong>任意</strong>です。お使いのサーバーにこれらのモジュールがインストールされていない場合でも、Movable Type の基本機能は動作します。これらのモジュールの機能が必要となった場合にはインストールを行ってください。',
@@ -3132,6 +3133,8 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/contenttype/tag/content-field.tag
 	'ContentField' => 'コンテンツフィールド',
 	'Move' => '移動',
+	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
+	'Duplicate' => '複製',
 
 ## mt-static/js/contenttype/tag/content-fields.tag
 	'Allow users to change the display and sort of fields by display option' => 'ユーザーにフィールドの並び替えや表示非表示の変更を許可する',

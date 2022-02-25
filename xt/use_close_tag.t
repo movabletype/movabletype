@@ -31,7 +31,7 @@ for my $dir (@dirs) {
             my $body = path($file)->slurp;
             return unless $body =~ /<use\b/;
             $body = convert_tags($body);
-            my @uses = $body =~ m!(<use\b[^>]+>(?:</use>)?)!gs;
+            my @uses = $body =~ m!(<use\b[^>]+>\s*(?:</use>)?)!gs;
             if (!@uses) {
                 note "# SKIP: $file has no testable <use>s";
                 return;

@@ -54,6 +54,9 @@ subtest 'simple' => sub {
     };
     ok !$@ && !MT::Mail->errstr, "No error" or note $@;
     validate_headers();
+    my $last_sent = last_sent_mail();
+    like($last_sent, qr{mail body}, 'right body');
+    like($last_sent, qr{Content-Transfer-Encoding: 8bit\n}, 'right newline chars');
 };
 
 subtest 'different cases' => sub {
@@ -188,8 +191,13 @@ sub validate_headers {
             ok !@invalid, "no invalid $tag" or note explain \@invalid;
         }
     }
-    unlink $file;
 }
+
+sub last_sent_mail {
+    return do { open my $fh, '<', _last_mail_file() or return; local $/; <$fh> }
+}
+
+sub _last_mail_file { "$ENV{MT_TEST_ROOT}/mail" }
 
 sub _is_valid_email {
     my $address = shift;

@@ -13,8 +13,8 @@ function smarty_function_mtcontentpermalink($args, &$ctx) {
 
 
     $blog = $ctx->stash('blog');
-    $at = $args['type'];
-    $at or $at = $args['archive_type'];
+    $at = isset($args['type']) ? $args['type'] : null;
+    $at or $at = isset($args['archive_type']) ? $args['archive_type'] : null;
     if(!$at)
         $at = "ContentType";
 

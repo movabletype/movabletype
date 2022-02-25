@@ -26,6 +26,8 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    plan skip_all => 'for MySQL only' unless $test_env->driver eq 'mysql';
 }
 
 $test_env->fix_mysql_create_table_sql;
