@@ -83,6 +83,15 @@ if (AssetList) {
         </mt:If>
         myElement.appendChild(myRow);
 
+        // create the image thumbnail if it exists
+        <mt:If name="asset_class" eq="image">
+            var myImageElement = window.document.createElement('img');
+            myImageElement.setAttribute('id', '<mt:var name="id_prefix">list-image-<mt:AssetID>');
+            myImageElement.setAttribute('src', '<mt:AssetThumbnailURL width="100" encode_js="1">');
+            myImageElement.setAttribute('class', 'list-image hidden');
+            myElement.appendChild(myImageElement);
+        </mt:If>
+
         window.parent.document.getElementById("asset-list").appendChild(myElement);
     }
 </mt:Assets>
