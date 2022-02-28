@@ -2153,6 +2153,8 @@ BEGIN {
             'BinTarPath' => undef,
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
+            'DisableImagePopup' => undef,
+            'HideVersion' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

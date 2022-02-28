@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib";    # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -20,6 +20,8 @@ my $server_path = MT->instance->server_path;
 $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
 my $blog = MT::Blog->load(1);
+$blog->captcha_provider('mt_default');
+$blog->save;
 
 my $asset = MT::Asset->load(1);
 my ($year, $month) = unpack 'A4A2', $asset->created_on;
@@ -56,6 +58,17 @@ filters {
     expected     => [qw( var )],
     expected_php => [qw( var )],
 };
+
+sub embed_path {
+    my $in = shift;
+    my $cont = filter_arguments;
+    require File::Temp;
+    my ( $fh, $file ) = File::Temp::tempfile();
+    print $fh $cont;
+    close $fh;
+    $in =~ s{PATH}{$file};
+    $in;
+}
 
 sub fix_path { File::Spec->canonpath(shift) }
 
@@ -3289,6 +3302,22 @@ nightly
 --- expected
 Movable Type
 
+=== test 524.1
+--- mt_config
+{HideVersion => 0}
+--- template
+<MTProductName version="1">
+--- expected regexp
+Movable Type [0-9.]+
+
+=== test 524.2
+--- mt_config
+{HideVersion => 1}
+--- template
+<MTProductName version="1">
+--- expected
+Movable Type
+
 === test 525
 --- template
 <MTSection>Content</MTSection>
@@ -5095,7 +5124,7 @@ true
 --- template
  <mt:assets tag="not_exists"><mt:if tag="categorybasename"></mt:if><mt:assetproperty property="file_size" format="0"></mt:assets>
 --- expected
- 
+
 
 === test 818
 --- template
@@ -5307,3 +5336,44 @@ test3.jpg;test2.jpg;
 --- expected
 test2.jpg;test3.jpg;
 
+=== test 882
+--- template
+<mt:Calendar><mt:CalendarIfToday><strong></mt:CalendarIfToday></mt:Calendar>
+--- expected
+<strong>
+
+=== test 883-1
+--- mt_config
+{AllowFileInclude => 1}
+--- template embed_path=FILE-CONTENT
+left <mt:Include file="PATH"> right
+--- expected
+left FILE-CONTENT right
+
+=== test 883-2
+--- mt_config
+{AllowFileInclude => 0}
+--- template
+left <mt:Include file="PATH"> right
+--- expected_error
+File inclusion is disabled by "AllowFileInclude" config directive.
+--- expected_php_error
+left File include is disabled by "AllowFileInclude" config directive. right
+
+=== test 884
+--- template
+<MTPages no_folder="1"><MTPageID>;</MTPages>
+--- expected
+20;
+
+=== test 885
+--- template
+<mt:CaptchaFields>
+--- expected regexp
+<input type="hidden" name="token" value="[^"]{40}" />
+
+=== test 886
+--- template
+<mt:PasswordValidation form="password_reset_form" password="mypassfield" username="myusernamefield">
+--- expected regexp=s
+function verify_password.+mypassfield.+myusernamefield

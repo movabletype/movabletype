@@ -1735,6 +1735,22 @@ sub to_hash {
     return $hash;
 }
 
+sub can_popup_image {
+    my $blog = shift;
+    return 0 if MT->config('DisableImagePopup');
+
+    my $existing = MT->model('template')->exist(
+        {   blog_id => $blog->id,
+            type    => 'popup_image'
+        }
+    );
+
+    if ($existing) {
+        return 1;
+    }
+    return 0;
+}
+
 1;
 __END__
 

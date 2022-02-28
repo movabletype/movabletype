@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -65,4 +65,3 @@ I met another man who was wounded with hatredHeard one hundred drummers whose ha
 Heard ten thousand whisperin' and nobody listenin'I saw a newborn baby with wild wolves all around it
 I saw a highway of diamonds with nobody on it
 Foot
-
