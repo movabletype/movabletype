@@ -62,64 +62,75 @@ my $mt_app = sub {
         my $app = $app_class->new(CGIObject => $cgi);
         delete $app->{init_request};
         MT->set_instance($app);
-        if ($streaming && $ENV{"psgi.streaming"}) {
-            return sub {
-                my $responder = shift;
-                local *ENV = { %ENV, %$env };    # (again)
-                my $writer;
-                my $body = '';
-                no warnings 'redefine';
-                local *MT::App::send_http_header = sub {
-                    my $self = shift;
-                    my ($type) = @_;
-                    my ($status, $headers) = _prepare_psgi_headers($app, $type);
-                    $writer = $responder->([$status, $headers]);
-                };
-                local *MT::App::print = sub {
-                    my $self = shift;
-                    if ($writer) {
-                        if (defined $body) {
-                            $writer->write($body);
-                            undef $body;
-                        }
-                        $writer->write(@_);
-                    } else {
-                        $body .= "@_";
-                    }
-                };
-                $app->init_request(CGIObject => $cgi);
-                $app->{cookies} = do { $cgi->cookie; $cgi->{'.cookies'} };    # wtf
-                $app->run;
 
-                if (!$writer) {
-                    my ($status, $headers) = _prepare_psgi_headers($app);
-                    $writer = $responder->([$status, $headers]);
-                }
-                if (defined $body) {
-                    $writer->write($body);
-                }
+        # Cheap hack to get the output
+        my ($header_sent, $body);
+        no warnings qw(redefine);
+        local *MT::App::send_http_header = sub {
+            my $self = shift;
+            $self->{response_content_type} = $_[0] if $_[0];
+            $header_sent++;
+        };
+        local *MT::App::print = sub { my $self = shift; $body .= "@_" if $header_sent };
 
-                $writer->close;
-            };
-        } else {
+        $app->init_request(CGIObject => $cgi);
+        $app->{cookies} = do { $cgi->cookie; $cgi->{'.cookies'} };    # wtf
+        $app->run;
 
-            # Cheap hack to get the output
-            my ($header_sent, $body);
-            no warnings qw(redefine);
+        my ($status, $headers) = _prepare_psgi_headers($app);
+        return [$status, $headers, (defined $body ? [$body] : [])];
+    };
+};
+
+my $mt_app_streaming = sub {
+    my $app_class = shift;
+    return sub {
+        my $env = shift;
+        eval "require $app_class";
+        my $cgi = CGI::PSGI->new($env);
+        local *ENV = { %ENV, %$env };    # some MT::App method needs this
+        my $app = $app_class->new(CGIObject => $cgi);
+        delete $app->{init_request};
+        MT->set_instance($app);
+
+        return sub {
+            my $responder = shift;
+            local *ENV = { %ENV, %$env };    # (again)
+            my $writer;
+            my $body = '';
+            no warnings 'redefine';
             local *MT::App::send_http_header = sub {
                 my $self = shift;
-                $self->{response_content_type} = $_[0] if $_[0];
-                $header_sent++;
+                my ($type) = @_;
+                my ($status, $headers) = _prepare_psgi_headers($app, $type);
+                $writer = $responder->([$status, $headers]);
             };
-            local *MT::App::print = sub { my $self = shift; $body .= "@_" if $header_sent };
-
+            local *MT::App::print = sub {
+                my $self = shift;
+                if ($writer) {
+                    if (defined $body) {
+                        $writer->write($body);
+                        undef $body;
+                    }
+                    $writer->write(@_);
+                } else {
+                    $body .= "@_";
+                }
+            };
             $app->init_request(CGIObject => $cgi);
             $app->{cookies} = do { $cgi->cookie; $cgi->{'.cookies'} };    # wtf
             $app->run;
 
-            my ($status, $headers) = _prepare_psgi_headers($app);
-            return [$status, $headers, (defined $body ? [$body] : [])];
-        }
+            if (!$writer) {
+                my ($status, $headers) = _prepare_psgi_headers($app);
+                $writer = $responder->([$status, $headers]);
+            }
+            if (defined $body) {
+                $writer->write($body);
+            }
+
+            $writer->close;
+        };
     };
 };
 
@@ -277,8 +288,10 @@ sub make_app {
             my $req = Plack::Request->new($env);
             $server->handle($req);
         };
-    }
-    else {
+    } elsif ($streaming and $type eq 'psgi_streaming') {
+        my $handler = $app->{handler};
+        $psgi_app = $mt_app_streaming->($handler);
+    } else {
         my $handler = $app->{handler};
         $psgi_app = $mt_app->($handler);
     }
