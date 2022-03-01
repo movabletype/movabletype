@@ -89,6 +89,7 @@ if (AssetList) {
             myImageElement.setAttribute('id', '<mt:var name="id_prefix">list-image-<mt:AssetID>');
             myImageElement.setAttribute('src', '<mt:AssetThumbnailURL width="100" encode_js="1">');
             myImageElement.setAttribute('class', 'list-image hidden');
+            myImageElement.setAttribute('style', 'display:none;');
             myElement.appendChild(myImageElement);
         </mt:If>
 
