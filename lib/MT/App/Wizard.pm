@@ -1009,10 +1009,11 @@ sub optional {
     $param{smtp_port} = 25
         unless $param{smtp_port};
 
-    my $transfer;
-    push @$transfer, { id => 'smtp', name => $app->translate('SMTP Server') };
-    push @$transfer,
-        { id => 'sendmail', name => $app->translate('Sendmail') };
+    my $transfer = [];
+    if (eval { require Net::SMTPS; 1 }) {
+        push @$transfer, { id => 'smtp', name => $app->translate('SMTP Server') };
+    }
+    push @$transfer, { id => 'sendmail', name => $app->translate('Sendmail') };
 
     foreach (@$transfer) {
         if ( $_->{id} eq $param{mail_transfer} ) {
@@ -1035,15 +1036,8 @@ sub optional {
         };
     }
 
-    require MT::Mail;
-    $param{has_net_smtp}      = MT::Mail->can_use_smtp         ? 1 : 0;
-    $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth     ? 1 : 0;
-    $param{has_net_smtp_ssl}  = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
-    $param{has_net_smtp_ssl_msg} = MT::Mail->errstr;
-    $param{has_net_smtp_tls}     = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
-    $param{has_net_smtp_tls_msg} = MT::Mail->errstr;
-    $param{can_use_ssl}          = $param{has_net_smtp_ssl}
-        || $param{has_net_smtp_tls};
+    $param{has_auth_modules} = eval { require Authen::SASL; require MIME::Base64; 1 } ? 1 : 0;
+    $param{has_ssl_modules}  = eval { require IO::Socket::SSL; require Net::SSLeay; 1 } ? 1 : 0;
 
     my $ok = 1;
     my $err_msg;
@@ -1094,15 +1088,15 @@ sub optional {
                 "This is the test email sent by your new installation of Movable Type."
                 );
 
-            require MT::Mail;
-            $ok = MT::Mail->send( \%head, $body );
+            require MT::Util::Mail;
+            $ok = MT::Util::Mail->send( \%head, $body );
 
             if ($ok) {
                 $param{success} = 1;
                 return $app->build_page( "optional.tmpl", \%param );
             }
             else {
-                $err_msg = MT::Mail->errstr;
+                $err_msg = MT::Util::Mail->errstr;
             }
         }
 
