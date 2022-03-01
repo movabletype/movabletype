@@ -3171,10 +3171,10 @@ tar@^6.1.2:
     mkdirp "^1.0.3"
     yallist "^4.0.0"
 
-tinymce-i18n@20.12.25:
-  version "20.12.25"
-  resolved "https://registry.yarnpkg.com/tinymce-i18n/-/tinymce-i18n-20.12.25.tgz#479d2c69613ec2324aeadb4478c9da2d8d4e0bb8"
-  integrity sha512-MOVCgGbkZ2ZVvb9B38Mbdhwam1oZOBXDkxmzcHX3W7c3RCB8r4VG9DS8+4BcsoCCgfUg1JXwh2Hk+7aXcYXkkg==
+tinymce-i18n@22.2.11:
+  version "22.2.11"
+  resolved "https://registry.yarnpkg.com/tinymce-i18n/-/tinymce-i18n-22.2.11.tgz#8ec8939fa01eff1be957adc97a7aebc76fa085c1"
+  integrity sha512-L+RkNm/sQPl4d6HIPjmwMozCkkwrS6iwrVT7bUUpl2yuyWaGbWlFmpMl+RHj7QXcyLCZyp4QeajBI6zQ6vm98Q==
 
 tinymce@5.10.2:
   version "5.10.2"
