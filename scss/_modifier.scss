@@ -1388,6 +1388,10 @@ fieldset.form-group{
   &[draggable="true"], &[aria-grabbed] {
       .ui-sortable-handle{
         cursor: move;
+
+        label{
+          cursor: move;
+        }
       }
       .mt-draggable__content{
         cursor: default;
