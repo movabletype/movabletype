@@ -481,6 +481,10 @@ sub list_for_asset_common {
 
 sub list_for_tag {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     list_for_tag_common( $app, $endpoint, 'entry' );
 }
 

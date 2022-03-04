@@ -236,6 +236,10 @@ sub list_for_asset {
 
 sub list_for_tag {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     MT::DataAPI::Endpoint::v2::Entry::list_for_tag_common( $app, $endpoint,
         'page' );
 }
