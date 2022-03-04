@@ -25,7 +25,7 @@ class MTCache_session extends MTCacheBase {
         else {
             $ret = array();
             foreach ($results as $result) {
-                $ret[] = $result['session_data'];
+                $ret[] = $result->session_data;
             }
             return $ret;
         }

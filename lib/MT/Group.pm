@@ -143,7 +143,8 @@ sub user_count {
             group_id => $group->id,
         }
     );
-    MT::Author->count( $terms, $args );
+    my $count = MT::Author->count( $terms, $args );
+    return $count + 0;
 }
 
 sub role_iter {
