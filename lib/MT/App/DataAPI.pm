@@ -3832,7 +3832,7 @@ sub object_to_resource {
     my ( $app, $res, $fields ) = @_;
     my $ref = ref $res;
 
-    if ( UNIVERSAL::can( $res, 'to_resource' ) ) {
+    if ( $ref && UNIVERSAL::can( $res, 'to_resource' ) ) {
         $res->to_resource($fields);
     }
     elsif ( UNIVERSAL::isa( $res, 'MT::Object' )
@@ -4263,7 +4263,7 @@ sub api {
 
     if (   UNIVERSAL::isa( $response, 'MT::Object' )
         || $response_ref =~ m/\A(?:HASH|ARRAY|MT::DataAPI::Resource::Type::)/
-        || UNIVERSAL::can( $response, 'to_resource' ) )
+        || ($response_ref && UNIVERSAL::can( $response, 'to_resource' ) ) )
     {
         my $format   = $app->current_format;
         my $fields   = $app->param('fields') || '';
