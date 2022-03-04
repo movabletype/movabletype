@@ -91,7 +91,7 @@ sub list_for_category_set {
         }
     ) or return;
 
-    +{  totalResults => $res->{count} || 0,
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -288,7 +288,7 @@ sub list_siblings_for_category_set {
     );
     my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
 
-    +{  totalResults => $res->{count} || 0,
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };

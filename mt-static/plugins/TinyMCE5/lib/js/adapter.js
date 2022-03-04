@@ -14,6 +14,12 @@
     ["tinymce-url-history", "tinymce-custom-colors"].forEach(function(k) {
         tinymce.util.Tools.resolve('tinymce.util.LocalStorage').removeItem(k);
     });
+    var setItem = tinymce.util.Tools.resolve('tinymce.util.LocalStorage').setItem;
+    tinymce.util.Tools.resolve('tinymce.util.LocalStorage').setItem = function(key, value){
+        // Not Save url-history or custom-colors
+        if(key == 'tinymce-url-history' || key == 'tinymce-custom-colors') return;
+        setItem.call(this, key, value);
+    }
 
     MT.Editor.TinyMCE = function() { MT.Editor.apply(this, arguments) };
 
