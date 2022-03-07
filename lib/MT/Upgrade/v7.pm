@@ -214,6 +214,11 @@ sub upgrade_functions {
                 sql   => q{DELETE FROM mt_asset_meta WHERE asset_meta_type = 'image_metadata'},
             },
         },
+        'v7_migrate_data_api_disable_site' => {
+            version_limit => '7.0053',
+            priority      => 3.2,
+            code          => \&_v7_migrate_data_api_disable_site,
+        },
     };
 }
 
@@ -1518,6 +1523,38 @@ sub _v7_remove_sql_set_names {
     my $cfg       = MT->config;
     $cfg->SQLSetNames( undef, 1 );
     $cfg->save_config;
+}
+
+sub _v7_migrate_data_api_disable_site {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Migrating DataAPIDisableSite...'));
+
+    my $cfg                   = MT->config;
+    my $data_api_disable_site = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
+    my @data_api_disable_site = split ',', $data_api_disable_site;
+
+    my @sites = MT->model('website')->load(
+        undef,
+        {
+            fetchonly => { id => 1 },
+        },
+    );
+    my @blogs = MT->model('blog')->load(
+        undef,
+        {
+            fetchonly => { id => 1 },
+        },
+    );
+    push @sites, @blogs;
+    for my $site (@sites) {
+        if (grep { $_ == $site->id } @data_api_disable_site) {
+            $site->allow_data_api(0);
+        } else {
+            $site->allow_data_api(1);
+        }
+        $site->save;
+    }
 }
 
 1;
