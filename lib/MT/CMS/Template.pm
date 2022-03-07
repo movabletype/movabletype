@@ -2102,6 +2102,17 @@ sub pre_save {
 
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
 
+    if ($obj->outfile && $obj->outfile =~ /\s+$/s) {
+        return $eh->error($app->translate("Output filename ends with a whitespace."));
+    }
+    for my $name ($app->multi_param) {
+        next unless $name =~ /^archive_file_tmpl_\d+$/;
+        my $path = $app->param($name);
+        if ($path =~ /\s+$/s) {
+            return $eh->error($app->translate("Archive mapping '[_1]' ends with a whitespace.", $path));
+        }
+    }
+
     # update text heights if necessary
     if ($perms) {
         my $prefs = $perms->template_prefs || '';
