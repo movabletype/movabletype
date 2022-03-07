@@ -1824,7 +1824,7 @@ div.mce-notification-error {
     });
 
     jQuery('div#display-options-detail :checkbox').on('click', function() {
-        var $field_block = jQuery('div#'+this.value+'-field-wrapper') || jQuery('div#'+this.value+'-field');
+        var $field_block = jQuery('div#'+this.value+'-field-wrapper, div#'+this.value+'-field');
         if ( this.checked ) {
             $field_block.show();
         } else {
