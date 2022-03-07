@@ -1805,6 +1805,7 @@ div.mce-notification-error {
     });
     jQuery('#sortable').sortable({
         items: 'div.field.sort-enabled',
+        handle: '.field-header, .field-header + .col',
         placeholder: 'placeholder',
         distance: 3,
         opacity: 0.8,

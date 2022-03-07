@@ -1386,7 +1386,16 @@ fieldset.form-group{
   border: 1px solid $gray;
   border-radius: $border-radius;
   &[draggable="true"], &[aria-grabbed] {
-      cursor: move;
+      .ui-sortable-handle{
+        cursor: move;
+
+        label{
+          cursor: move;
+        }
+      }
+      .mt-draggable__content{
+        cursor: default;
+      }
   }
   .mt-icon, .mt-icon--secondary{
     margin: 0 .5rem 0 0;
