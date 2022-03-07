@@ -78,6 +78,7 @@ __PACKAGE__->install_properties(
             'archive_url'              => 'string(255)',
             'archive_path'             => 'string(255)',
             'content_css'              => 'string(255)',
+            'allow_data_api'           => 'boolean',
             ## Have to keep these around for use in mt-upgrade.cgi.
             'old_style_archive_links' => 'boolean',
             'archive_tmpl_daily'      => 'string(255)',
@@ -2210,6 +2211,10 @@ Contain a comma-delimiter list of category ids, ordered
 =item * folder_order
 
 Contain a comma-delimiter list of folder ids, ordered
+
+=item * allow_data_api
+
+A boolean flag specifying whether the website accepts Data API.
 
 =back
 
