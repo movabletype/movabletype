@@ -34,7 +34,7 @@ sub init {
 
     $image->{param} = \%param;
 
-    if (($param{Filename} && lc $param{Filename} =~ /svg/) or ($param{Type} && lc $param{Type} =~ /svg/)) {
+    if (($param{Filename} && lc $param{Filename} =~ /\.svgz?$/) or ($param{Type} && lc $param{Type} =~ /svg/)) {
         if ($image->{driver} ne 'SVG') {
             if (!eval { require MT::Image::SVG; 1 }) {
                 return $image->error( MT->translate("Cannot load [_1]: [_2]", "MT::Image::SVG", $@) );
