@@ -152,17 +152,24 @@ sub stash {
 sub var {
     my $ctx = shift;
     my $key = lc shift;
-    if ( $key =~ m/^(config|request)\.(.+)$/i ) {
-        if ( lc($1) eq 'request' ) {
+    if ( $key =~ m/^(config|request|flash)\.(.+)$/i ) {
+        my $lc_key = lc($1);
+        if ( $lc_key eq 'request' ) {
             my $mt = MT->instance;
             return '' unless $mt->isa('MT::App');
             return $mt->param($2);
         }
-        elsif ( lc($1) eq 'config' ) {
+        elsif ( $lc_key eq 'config' ) {
             my $setting = $2;
             return '' if $setting =~ m/password/i;
             return '' if $setting =~ m/secret/i;
             return MT->config($setting);
+        }
+        elsif ( $lc_key eq 'flash' ) {
+            my $setting = $2;
+            my $mt = MT->instance;
+            return '' unless $mt->isa('MT::App');
+            return $mt->{__flash}{$setting};
         }
         return '';
     }
