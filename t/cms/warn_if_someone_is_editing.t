@@ -102,6 +102,24 @@ subtest 'entry' => sub {
 
     $app->{_app}->user($author1);
     ok !$app->{_app}->autosave_session_obj, "autosave session for author1 is discarded";
+
+    # new entry
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'entry',
+        blog_id => $site->id,
+    });
+
+    $app->{_app}->user($author1);
+    ok $session = $app->{_app}->autosave_session_obj(1);
+    $session->save;
+
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'entry',
+        blog_id => $site->id,
+    });
+    ok !$app->generic_error, "no error";
 };
 
 subtest 'page' => sub {
@@ -177,6 +195,24 @@ subtest 'page' => sub {
 
     $app->{_app}->user($author1);
     ok !$app->{_app}->autosave_session_obj, "autosave session for author1 is discarded";
+
+    # new page
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'page',
+        blog_id => $site->id,
+    });
+
+    $app->{_app}->user($author1);
+    ok $session = $app->{_app}->autosave_session_obj(1);
+    $session->save;
+
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'page',
+        blog_id => $site->id,
+    });
+    ok !$app->generic_error, "no error";
 };
 
 subtest 'template' => sub {
@@ -252,6 +288,26 @@ subtest 'template' => sub {
 
     $app->{_app}->user($author1);
     ok !$app->{_app}->autosave_session_obj, "autosave session for author1 is discarded";
+
+    # new template
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'template',
+        blog_id => $site->id,
+        type    => 'index',
+    });
+
+    $app->{_app}->user($author1);
+    ok $session = $app->{_app}->autosave_session_obj(1);
+    $session->save;
+
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'template',
+        blog_id => $site->id,
+        type    => 'index',
+    });
+    ok !$app->generic_error, "no error";
 };
 
 subtest 'cd' => sub {
@@ -332,6 +388,26 @@ subtest 'cd' => sub {
 
     $app->{_app}->user($author1);
     ok !$app->{_app}->autosave_session_obj, "autosave session for author1 is discarded";
+
+    # new content data
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'content_data',
+        content_type_id => $cd->content_type_id,
+        blog_id => $site->id,
+    });
+
+    $app->{_app}->user($author1);
+    ok $session = $app->{_app}->autosave_session_obj(1);
+    $session->save;
+
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'content_data',
+        content_type_id => $cd->content_type_id,
+        blog_id => $site->id,
+    });
+    ok !$app->generic_error, "no error";
 };
 
 done_testing;
