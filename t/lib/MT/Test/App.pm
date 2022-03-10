@@ -34,6 +34,7 @@ sub init {
             $_[1]->{__test_output}    = '';
             $_[1]->{redirect}         = 0;
             $_[1]->{upgrade_required} = 0;
+            delete $_[1]->{__flash};
         },
     ) or die(MT->errstr);
     {
