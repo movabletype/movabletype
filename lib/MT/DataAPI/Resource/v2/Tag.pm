@@ -70,7 +70,7 @@ sub fields {
                     },
                 );
 
-                return $count;
+                return $count + 0;
             },
         },
         {   name        => 'updatable',
@@ -215,7 +215,7 @@ sub _object_count {
 
     }
 
-    return $count;
+    return $count + 0;
 }
 
 1;

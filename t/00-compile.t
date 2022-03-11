@@ -203,6 +203,7 @@ use_ok('MT::Util::Deprecated');
 use_ok('MT::Util::Digest::MD5');
 use_ok('MT::Util::Digest::SHA');
 use_ok('MT::Util::UniqueID');
+use_ok('MT::Util::Mail');
 use_ok('MT::Template::Tags::Common');
 use_ok('MT::version');
 
@@ -242,6 +243,9 @@ use_ok('MT::ImportExport::Status');
 use_ok('MT::Import');
 use_ok('MT::JunkFilter');
 use_ok('MT::Mail');
+use_ok('MT::Mail::MIME');
+use_ok('MT::Mail::MIME::Lite');
+use_ok('MT::Mail::Email::MIME');
 use_ok('MT::Promise');
 use_ok('MT::Request');
 use_ok('MT::Sanitize');
