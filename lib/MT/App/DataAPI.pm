@@ -3463,7 +3463,7 @@ sub api {
 
         require MT::CMS::Blog;
         if (   !$user->is_superuser
-            && !MT::CMS::Blog::data_api_is_enabled( $app, $id ) )
+            && !MT::CMS::Blog::data_api_is_enabled( $app, $id, $app->blog ) )
         {
             return $app->print_error(403);
         }
