@@ -1530,9 +1530,13 @@ sub _v7_migrate_data_api_disable_site {
 
     $self->progress($self->translate_escape('Migrating DataAPIDisableSite...'));
 
-    my $cfg                   = MT->config;
-    my $data_api_disable_site = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my @data_api_disable_site = split ',', $data_api_disable_site;
+    # Load from DB directly. Do not refer to mt-config.cgi.
+    my $data = MT->model('config')->load(1)->data;
+    my $data_api_disable_site;
+    if ($data =~ /DataAPIDisableSite\s(.*)/) {
+        $data_api_disable_site = $1;
+    }
+    my @data_api_disable_site = split ',', $data_api_disable_site || '';
 
     my @sites = MT->model('website')->load(
         undef,
@@ -1547,14 +1551,27 @@ sub _v7_migrate_data_api_disable_site {
         },
     );
     push @sites, @blogs;
+    my $from = int( MT->config->SchemaVersion || 0 );
     for my $site (@sites) {
-        if (grep { $_ == $site->id } @data_api_disable_site) {
+        if ($from < 6) {
             $site->allow_data_api(0);
         } else {
-            $site->allow_data_api(1);
+            if (grep { $_ == $site->id } @data_api_disable_site) {
+                $site->allow_data_api(0);
+            } else {
+                $site->allow_data_api(1);
+            }
         }
         $site->save;
     }
+
+    # Clean up
+    if (grep { $_ == 0 } @data_api_disable_site) {
+        MT->config->DataAPIDisableSite('0', 1);
+    } else {
+        MT->config->DataAPIDisableSite('', 1);
+    }
+    MT->config->save_config;
 }
 
 1;
