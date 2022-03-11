@@ -940,7 +940,7 @@ sub edit {
                 $param{autosaved_object_ts}
                     = MT::Util::epoch2ts( $blog, $sess_obj->start );
                 $param{autosaved_object_is_outdated} = 1
-                    if $param{autosaved_object_ts} < $obj->modified_on;
+                    if $obj && $param{autosaved_object_ts} < $obj->modified_on;
             }
             if (my $other_user = $app->user_who_is_also_editing_the_same_stuff($obj)) {
                 $param{is_also_edited_by} = $other_user->{name};

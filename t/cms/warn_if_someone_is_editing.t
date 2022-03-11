@@ -102,6 +102,24 @@ subtest 'entry' => sub {
 
     $app->{_app}->user($author1);
     ok !$app->{_app}->autosave_session_obj, "autosave session for author1 is discarded";
+
+    # new entry
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'entry',
+        blog_id => $site->id,
+    });
+
+    $app->{_app}->user($author1);
+    ok $session = $app->{_app}->autosave_session_obj(1);
+    $session->save;
+
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'entry',
+        blog_id => $site->id,
+    });
+    ok !$app->generic_error, "no error";
 };
 
 subtest 'page' => sub {
@@ -177,6 +195,24 @@ subtest 'page' => sub {
 
     $app->{_app}->user($author1);
     ok !$app->{_app}->autosave_session_obj, "autosave session for author1 is discarded";
+
+    # new page
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'page',
+        blog_id => $site->id,
+    });
+
+    $app->{_app}->user($author1);
+    ok $session = $app->{_app}->autosave_session_obj(1);
+    $session->save;
+
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'page',
+        blog_id => $site->id,
+    });
+    ok !$app->generic_error, "no error";
 };
 
 subtest 'template' => sub {
@@ -252,17 +288,37 @@ subtest 'template' => sub {
 
     $app->{_app}->user($author1);
     ok !$app->{_app}->autosave_session_obj, "autosave session for author1 is discarded";
+
+    # new template
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'template',
+        blog_id => $site->id,
+        type    => 'index',
+    });
+
+    $app->{_app}->user($author1);
+    ok $session = $app->{_app}->autosave_session_obj(1);
+    $session->save;
+
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'template',
+        blog_id => $site->id,
+        type    => 'index',
+    });
+    ok !$app->generic_error, "no error";
 };
 
 subtest 'cd' => sub {
     my $app = MT::Test::App->new('CMS');
     $app->login($author1);
     $app->get_ok({
-        __mode  => 'view',
-        _type   => 'content_data',
-        blog_id => $site->id,
+        __mode          => 'view',
+        _type           => 'content_data',
+        blog_id         => $site->id,
         content_type_id => $cd->content_type_id,
-        id      => $cd->id,
+        id              => $cd->id,
     });
     unlike $app->message_text => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
@@ -273,11 +329,11 @@ subtest 'cd' => sub {
     $app->login($author2);
     $app->{_app}->user($author2);
     $app->get_ok({
-        __mode  => 'view',
-        _type   => 'content_data',
-        blog_id => $site->id,
+        __mode          => 'view',
+        _type           => 'content_data',
+        blog_id         => $site->id,
         content_type_id => $cd->content_type_id,
-        id      => $cd->id,
+        id              => $cd->id,
     });
     like $app->message_text => qr/author1 is also editing the same data/, "has a warning";
 
@@ -292,11 +348,11 @@ subtest 'cd' => sub {
     $app->login($author2);
     $app->{_app}->user($author2);
     $app->get_ok({
-        __mode  => 'view',
-        _type   => 'content_data',
-        blog_id => $site->id,
+        __mode          => 'view',
+        _type           => 'content_data',
+        blog_id         => $site->id,
         content_type_id => $cd->content_type_id,
-        id      => $cd->id,
+        id              => $cd->id,
     });
     unlike $app->message_text => qr/author1 is also editing the same data/, "has no more warning";
 
@@ -309,11 +365,11 @@ subtest 'cd' => sub {
     # now author1 should have a message to recover/discard the saved session
     $app->login($author1);
     $app->get_ok({
-        __mode  => 'view',
-        _type   => 'content_data',
-        blog_id => $site->id,
+        __mode          => 'view',
+        _type           => 'content_data',
+        blog_id         => $site->id,
         content_type_id => $cd->content_type_id,
-        id      => $cd->id,
+        id              => $cd->id,
     });
 
     like $app->message_text => qr/A saved version of this content data.+?but it is outdated/, "warned the saved session is outdated";
@@ -322,16 +378,36 @@ subtest 'cd' => sub {
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
 
     $app->get_ok({
-        __mode   => 'view',
-        _type    => 'content_data',
-        blog_id  => $site->id,
+        __mode          => 'view',
+        _type           => 'content_data',
+        blog_id         => $site->id,
         content_type_id => $cd->content_type_id,
-        id      => $cd->id,
-        _discard => 1,
+        id              => $cd->id,
+        _discard        => 1,
     });
 
     $app->{_app}->user($author1);
     ok !$app->{_app}->autosave_session_obj, "autosave session for author1 is discarded";
+
+    # new content data
+    $app->get_ok({
+        __mode          => 'view',
+        _type           => 'content_data',
+        content_type_id => $cd->content_type_id,
+        blog_id         => $site->id,
+    });
+
+    $app->{_app}->user($author1);
+    ok $session = $app->{_app}->autosave_session_obj(1);
+    $session->save;
+
+    $app->get_ok({
+        __mode          => 'view',
+        _type           => 'content_data',
+        content_type_id => $cd->content_type_id,
+        blog_id         => $site->id,
+    });
+    ok !$app->generic_error, "no error";
 };
 
 done_testing;
