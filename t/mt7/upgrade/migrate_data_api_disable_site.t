@@ -20,7 +20,8 @@ $test_env->prepare_fixture('db');
 
 subtest 'Migrate DataAPIDisableSite as disalbed' => sub {
     my $website = MT::Test::Permission->make_website(name => 'my website');
-    is($website->allow_data_api, undef);
+    $website->allow_data_api(undef); # Force to initial state
+    $website->save;
     _update_data_api_disable_site($website, 1); # Add to DataAPIDisableSite 
 
     MT::Test::Upgrade->upgrade(from => 7.0045);
@@ -31,7 +32,8 @@ subtest 'Migrate DataAPIDisableSite as disalbed' => sub {
 
 subtest 'Migrate DataAPIDisableSite as enabled' => sub {
     my $website = MT::Test::Permission->make_website(name => 'my website');
-    is($website->allow_data_api, undef);
+    $website->allow_data_api(undef); # Force to initial state
+    $website->save;
     _update_data_api_disable_site($website, 0); # No add to DataAPIDisableSite 
 
     MT::Test::Upgrade->upgrade(from => 7.0045);
