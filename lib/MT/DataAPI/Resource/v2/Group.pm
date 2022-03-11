@@ -101,7 +101,7 @@ sub fields {
                         type     => MT::Association::GROUP_BLOG_ROLE(),
                     }
                 );
-                return $count;
+                return $count + 0;
             },
             from_object_default => 0,
         },

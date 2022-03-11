@@ -84,7 +84,7 @@ sub _renderdata_api {
 
     require MT::DataAPI::Resource;
     my $result = {
-        totalResults => ( $count || 0 ),
+        totalResults => $count + 0,
         items => MT::DataAPI::Resource->from_object( \@objects ),
     };
 

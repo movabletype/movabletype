@@ -1117,11 +1117,11 @@ sub suite {
         },
 
         # get_thumbnail - normal tests
-        {   path      => '/v2/sites/1/assets/5/thumbnail',
+        {   path      => '/v2/sites/1/assets/1/thumbnail',
             method    => 'GET',
             author_id => 0,
             result    => sub {
-                my $image = $app->model('asset')->load(5);
+                my $image = $app->model('asset')->load(1);
                 my ( $thumbnail, $w, $h ) = $image->thumbnail_url;
                 return +{
                     url    => $thumbnail,
