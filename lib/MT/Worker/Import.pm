@@ -9,7 +9,7 @@ use warnings;
 use base qw( TheSchwartz::Worker );
 use MT::Import;
 use MT::ImportExport;
-use MT::Mail;
+use MT::Util::Mail;
 use MT::Util::Log;
 use JSON;
 use TheSchwartz::Job;
@@ -148,10 +148,10 @@ sub notify {
     my $template = delete $params{template};
     my $body     = MT->build_email($template, \%params) or return;
 
-    my $sent = MT::Mail->send(\%head, $body);
+    my $sent = MT::Util::Mail->send(\%head, $body);
     if (!$sent) {
         MT->log({
-            message  => MT->translate('Error sending mail: [_1]', MT::Mail->errstr),
+            message  => MT->translate('Error sending mail: [_1]', MT::Util::Mail->errstr),
             level    => MT::Log::ERROR(),
             class    => 'system',
             category => 'email',
