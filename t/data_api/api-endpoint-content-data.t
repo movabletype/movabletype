@@ -34,6 +34,9 @@ $app->user($user);
 
 my $site_id = 1;
 
+my $content_data_label_index = 0;
+sub unique_content_data_label{ 'test:' . $content_data_label_index++ }
+
 my $content_type
     = MT::Test::Permission->make_content_type( blog_id => $site_id );
 my $content_type_id = $content_type->id;
@@ -181,6 +184,9 @@ $ct_with_asset->save;
 
 $user->permissions(0)->rebuild;
 $user->permissions($site_id)->rebuild;
+
+MT->request->reset;
+MT::CMS::ContentType::init_content_type(sub { die }, $app);
 
 irregular_tests_for_create();
 normal_tests_for_create();
@@ -389,7 +395,7 @@ sub normal_tests_for_create {
             method => 'POST',
             params => {
                 content_data => {
-                    label => 'test',
+                    label => unique_content_data_label(),
                     data  => [
                         {   id   => $single_field->id,
                             data => 'single',
@@ -445,7 +451,7 @@ sub normal_tests_for_create {
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params =>
-                { content_data => { label => 'test', status => 'Draft', }, },
+                { content_data => { label => unique_content_data_label() , status => 'Draft', }, },
             restrictions => {
                 0 => [
 
@@ -494,7 +500,7 @@ sub normal_tests_for_create {
         {   note   => 'blog.manage_content_data',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => { label => 'test' }, },
+            params => { content_data => { label => unique_content_data_label() }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -544,7 +550,7 @@ sub normal_tests_for_create {
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params =>
-                { content_data => { label => 'test', status => 'Draft', }, },
+                { content_data => { label => unique_content_data_label(), status => 'Draft', }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -593,7 +599,7 @@ sub normal_tests_for_create {
         {   note   => 'blog.manage_content_data:???',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => { label => 'test' }, },
+            params => { content_data => { label => unique_content_data_label() }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -644,7 +650,7 @@ sub normal_tests_for_create {
         {   note   => 'blog.manage_content_data:??? and own content_data',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => { label => 'test' }, },
+            params => { content_data => { label => unique_content_data_label() }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -696,7 +702,7 @@ sub normal_tests_for_create {
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params =>
-                { content_data => { label => 'test', status => 'Draft' }, },
+                { content_data => { label => unique_content_data_label(), status => 'Draft' }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -748,7 +754,7 @@ sub normal_tests_for_create {
             method => 'POST',
             params => {
                 content_data => {
-                    label           => 'test',
+                    label           => unique_content_data_label(),
                     unpublishedDate => '2020-01-01 00:00:00'
                 },
             },
@@ -770,7 +776,7 @@ sub normal_tests_for_create {
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
-                content_data => { label => 'test', unpublishedDate => '' },
+                content_data => { label => unique_content_data_label(), unpublishedDate => '' },
             },
             complete => sub {
                 my $cd = MT->model('content_data')->load(
@@ -802,7 +808,7 @@ sub normal_tests_for_create {
                     'publish_own_content_data_' . $content_type->unique_id,
                 ],
             },
-            params    => { content_data => { label => 'test' }, },
+            params    => { content_data => { label => unique_content_data_label() }, },
             callbacks => [
                 {   name =>
                         'MT::App::DataAPI::data_api_save_permission_filter.content_data',
