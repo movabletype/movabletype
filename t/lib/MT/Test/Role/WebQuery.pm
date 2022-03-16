@@ -20,7 +20,7 @@ sub _trim {
 
 sub _find_text {
     my ( $self, $selector ) = @_;
-    my @elems = eval { $self->wq_find($selector) };
+    my @elems = eval { $self->wq_find($selector) } or return;
     return wantarray ? (map { $_->text } @elems) : $elems[0]->text;
 }
 
