@@ -36,6 +36,53 @@ my $Autosave_Session_Alert_TTL = do {
     $MT::App::CMS::Autosave_Session_Alert_TTL;
 };
 
+
+subtest 'autosave session purge' => sub {
+    mock_time sub {
+        my $app = MT::Test::App->new('CMS');
+        $app->login($author1);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        my @messages = $app->message_text;
+        is(grep(/is also editing/, @messages), 0, 'no warning');
+        $app->{_app}->user($author1);
+        ok my $session = $app->{_app}->autosave_session_obj(1);
+        $session->save;
+
+        # sleep until right before ttl
+        sleep MT->config->AutosaveSessionTimeout;
+
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        @messages = $app->message_text;
+        is(grep(/A saved version of this entry was auto-saved/, @messages), 1, 'has a warning');
+
+        # sleep until right after ttl and purge session
+        sleep 1;
+        MT::Core::purge_session_records();
+
+        $app->{_app}->user($author1);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        @messages = $app->message_text;
+        is(grep(/A saved version of this entry was auto-saved/, @messages), 0, 'no warning');
+
+        $session->remove;
+    }, time;
+};
+
 subtest 'entry' => sub {
     my $app = MT::Test::App->new('CMS');
     $app->login($author1);
