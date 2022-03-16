@@ -2403,6 +2403,9 @@ use vars qw( @ISA %Lexicon );
 	'Contacts' => '連絡先',
 	'Save Changes' => '変更を保存',
 
+## lib/MT/Object.pm
+	'An error occurred while saving changes to the database.' => 'データベースへの保存中にエラーが発生しました。',
+
 ## lib/MT/ObjectAsset.pm
 	'Asset Placement' => 'アセットの関連付け',
 
