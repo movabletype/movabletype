@@ -42,7 +42,6 @@ subtest 'entry' => sub {
     is(@messages, 1, 'right number of alerts');
     unlike $messages[0] => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
-    my $entry_epoch = MT::Util::ts2epoch($site, $entry->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
 
@@ -128,6 +127,8 @@ subtest 'entry' => sub {
         blog_id => $site->id,
     });
     ok !$app->generic_error, "no error";
+
+    $session->remove, $session2->remove;
 };
 
 subtest 'page' => sub {
@@ -143,7 +144,6 @@ subtest 'page' => sub {
     is(@messages, 1, 'right number of alerts');
     unlike $messages[0] => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
-    my $page_epoch = MT::Util::ts2epoch($site, $page->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
 
@@ -229,6 +229,8 @@ subtest 'page' => sub {
         blog_id => $site->id,
     });
     ok !$app->generic_error, "no error";
+
+    $session->remove, $session2->remove;
 };
 
 subtest 'template' => sub {
@@ -244,7 +246,6 @@ subtest 'template' => sub {
     is(@messages, 0, 'right number of alerts');
     unlike $messages[0] => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
-    my $template_epoch = MT::Util::ts2epoch($site, $tmpl->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
 
@@ -332,6 +333,8 @@ subtest 'template' => sub {
         type    => 'index',
     });
     ok !$app->generic_error, "no error";
+
+    $session->remove, $session2->remove;
 };
 
 subtest 'cd' => sub {
@@ -348,7 +351,6 @@ subtest 'cd' => sub {
     is(@messages, 1, 'right number of alerts');
     unlike $messages[0] => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
-    my $cd_epoch = MT::Util::ts2epoch($site, $cd->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
 
@@ -440,6 +442,8 @@ subtest 'cd' => sub {
         blog_id         => $site->id,
     });
     ok !$app->generic_error, "no error";
+
+    $session->remove, $session2->remove;
 };
 
 done_testing;
