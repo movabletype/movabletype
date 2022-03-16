@@ -2565,7 +2565,7 @@ use vars qw( @ISA %Lexicon );
 	', uppercase and lowercase letters' => '、大文字と小文字を含む',
 	'Actions' => 'アクション',
 	'All About Me' => 'All About Me',
-	'Cannot load template' => 'てんぷれーとを読み込めません',
+	'Cannot load template' => 'テンプレートを読み込めません',
 	'Cannot load user.' => 'ユーザーをロードできませんでした。',
 	'Choose the display options for this content field in the listing screen.' => '一覧での表示について選択します。',
 	'Default' => '既定値',
