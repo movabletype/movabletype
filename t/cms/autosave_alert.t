@@ -505,7 +505,7 @@ subtest 'entry autosave session expiration' => sub {
         $session->save;
 
         # sleep until right before ttl
-        sleep $Autosave_Session_Alert_TTL - 1;
+        sleep $Autosave_Session_Alert_TTL;
 
         $app->login($author2);
         $app->{_app}->user($author2);
