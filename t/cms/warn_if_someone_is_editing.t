@@ -45,9 +45,8 @@ subtest 'entry' => sub {
         blog_id => $site->id,
         id      => $entry->id,
     });
-    my @messages = $app->message_text_all;
-    is(@messages, 1, 'right number of alerts');
-    unlike $messages[0] => qr/is also editing/, "no warning";
+    my @messages = $app->message_text;
+    is(grep(/is also editing/, @messages), 0, 'no warning');
     $app->{_app}->user($author1);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
@@ -60,9 +59,8 @@ subtest 'entry' => sub {
         blog_id => $site->id,
         id      => $entry->id,
     });
-    @messages = $app->message_text_all;
-    is(@messages, 2, 'right number of alerts');
-    like $messages[0] => qr/author1 is also editing the same entry/, "has a warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same entry/, @messages), 1, 'has a warning');
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -80,9 +78,8 @@ subtest 'entry' => sub {
         blog_id => $site->id,
         id      => $entry->id,
     });
-    @messages = $app->message_text_all;
-    is(@messages, 2, 'right number of alerts');
-    unlike $messages[0] => qr/author1 is also editing the same entry/, "has no more warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same entry/, @messages), 0, 'has no more warning');
 
     # let author2 update the entry
     $app->post_form_ok();
@@ -99,9 +96,8 @@ subtest 'entry' => sub {
         id      => $entry->id,
     });
 
-    @messages = $app->message_text_all;
-    is(@messages, 2, 'right number of alerts');
-    like $messages[0] => qr/A saved version of this entry.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text;
+    is(grep(/A saved version of this entry.+?but it is outdated/, @messages), 1, 'warned the saved session is outdated');
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
@@ -135,7 +131,8 @@ subtest 'entry' => sub {
     });
     ok !$app->generic_error, "no error";
 
-    $session->remove, $session2->remove;
+    $session->remove;
+    $session2->remove;
 };
 
 subtest 'page' => sub {
@@ -147,9 +144,8 @@ subtest 'page' => sub {
         blog_id => $site->id,
         id      => $page->id,
     });
-    my @messages = $app->message_text_all;
-    is(@messages, 1, 'right number of alerts');
-    unlike $messages[0] => qr/is also editing/, "no warning";
+    my @messages = $app->message_text;
+    is(grep(/is also editing/, @messages), 0, 'no warning');
     $app->{_app}->user($author1);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
@@ -162,9 +158,8 @@ subtest 'page' => sub {
         blog_id => $site->id,
         id      => $page->id,
     });
-    @messages = $app->message_text_all;
-    is(@messages, 2, 'right number of alerts');
-    like $messages[0] => qr/author1 is also editing the same page/, "has a warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same page/, @messages), 1, 'has a warning');
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -182,9 +177,8 @@ subtest 'page' => sub {
         blog_id => $site->id,
         id      => $page->id,
     });
-    @messages = $app->message_text_all;
-    is(@messages, 2, 'right number of alerts');
-    unlike $messages[0] => qr/author1 is also editing the same page/, "has no more warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same page/, @messages), 0, 'has no more warning');
 
     # let author2 update the page
     $app->post_form_ok();
@@ -201,9 +195,8 @@ subtest 'page' => sub {
         id      => $page->id,
     });
 
-    @messages = $app->message_text_all;
-    is(@messages, 2, 'right number of alerts');
-    like $messages[0] => qr/A saved version of this page.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text;
+    is(grep(/A saved version of this page.+?but it is outdated/, @messages), 1, 'warned the saved session is outdated');
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
@@ -237,7 +230,8 @@ subtest 'page' => sub {
     });
     ok !$app->generic_error, "no error";
 
-    $session->remove, $session2->remove;
+    $session->remove;
+    $session2->remove;
 };
 
 subtest 'template' => sub {
@@ -249,9 +243,8 @@ subtest 'template' => sub {
         blog_id => $site->id,
         id      => $tmpl->id,
     });
-    my @messages = $app->message_text_all;
-    is(@messages, 0, 'right number of alerts');
-    unlike $messages[0] => qr/is also editing/, "no warning";
+    my @messages = $app->message_text;
+    is(grep(/is also editing/, @messages), 0, 'no warning');
     $app->{_app}->user($author1);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
@@ -264,9 +257,8 @@ subtest 'template' => sub {
         blog_id => $site->id,
         id      => $tmpl->id,
     });
-    @messages = $app->message_text_all;
-    is(@messages, 1, 'right number of alerts');
-    like $messages[0] => qr/author1 is also editing the same template/, "has a warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same template/, @messages), 1, 'has a warning');
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -284,9 +276,8 @@ subtest 'template' => sub {
         blog_id => $site->id,
         id      => $tmpl->id,
     });
-    @messages = $app->message_text_all;
-    is(@messages, 1, 'right number of alerts');
-    unlike $messages[0] => qr/author1 is also editing the same template/, "has no more warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same template/, @messages), 0, 'has no more warning');
 
     # let author2 update the entry
     $app->post_form_ok();
@@ -303,9 +294,8 @@ subtest 'template' => sub {
         id      => $tmpl->id,
     });
 
-    @messages = $app->message_text_all;
-    is(@messages, 1, 'right number of alerts');
-    like $messages[0] => qr/A saved version of this Template.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text;
+    is(grep(/A saved version of this Template.+?but it is outdated/, @messages), 1, 'warned the saved session is outdated');
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
@@ -341,7 +331,8 @@ subtest 'template' => sub {
     });
     ok !$app->generic_error, "no error";
 
-    $session->remove, $session2->remove;
+    $session->remove;
+    $session2->remove;
 };
 
 subtest 'cd' => sub {
@@ -354,9 +345,8 @@ subtest 'cd' => sub {
         content_type_id => $cd->content_type_id,
         id              => $cd->id,
     });
-    my @messages = $app->message_text_all;
-    is(@messages, 1, 'right number of alerts');
-    unlike $messages[0] => qr/is also editing/, "no warning";
+    my @messages = $app->message_text;
+    is(grep(/is also editing/, @messages), 0, 'no warning');
     $app->{_app}->user($author1);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
@@ -370,9 +360,8 @@ subtest 'cd' => sub {
         content_type_id => $cd->content_type_id,
         id              => $cd->id,
     });
-    @messages = $app->message_text_all;
-    is(@messages, 2, 'right number of alerts');
-    like $messages[0] => qr/author1 is also editing the same data/, "has a warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same data/, @messages), 1, 'has a warning');
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -391,9 +380,8 @@ subtest 'cd' => sub {
         content_type_id => $cd->content_type_id,
         id              => $cd->id,
     });
-    @messages = $app->message_text_all;
-    is(@messages, 2, 'right number of alerts');
-    unlike $messages[0] => qr/author1 is also editing the same data/, "has no more warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same data/, @messages), 0, 'has no more warning');
 
     # let author2 update the content data
     $app->post_form_ok();
@@ -411,9 +399,8 @@ subtest 'cd' => sub {
         id              => $cd->id,
     });
 
-    @messages = $app->message_text_all;
-    is(@messages, 2, 'right number of alerts');
-    like $messages[0] => qr/A saved version of this content data.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text;
+    is(grep(/A saved version of this content data.+?but it is outdated/, @messages), 1, 'warned the saved session is outdated');
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
@@ -450,7 +437,8 @@ subtest 'cd' => sub {
     });
     ok !$app->generic_error, "no error";
 
-    $session->remove, $session2->remove;
+    $session->remove;
+    $session2->remove;
 };
 
 subtest 'entry autosave session expiration' => sub {
@@ -463,9 +451,8 @@ subtest 'entry autosave session expiration' => sub {
             blog_id => $site->id,
             id      => $entry->id,
         });
-        my @messages = $app->message_text_all;
-        is(@messages, 1, 'right number of alerts');
-        unlike $messages[0] => qr/is also editing/, "no warning";
+        my @messages = $app->message_text;
+        is(grep(/is also editing/, @messages), 0, 'no warning');
         $app->{_app}->user($author1);
         ok my $session = $app->{_app}->autosave_session_obj(1);
         $session->save;
@@ -481,9 +468,8 @@ subtest 'entry autosave session expiration' => sub {
             blog_id => $site->id,
             id      => $entry->id,
         });
-        @messages = $app->message_text_all;
-        is(@messages, 2, 'right number of alerts');
-        like $messages[0] => qr/author1 is also editing the same entry/, "has no warning";
+        @messages = $app->message_text;
+        is(grep(/author1 is also editing the same entry/, @messages), 1, 'has a warning');
 
         # sleep until right after ttl
         sleep 1;
@@ -496,9 +482,8 @@ subtest 'entry autosave session expiration' => sub {
             blog_id => $site->id,
             id      => $entry->id,
         });
-        @messages = $app->message_text_all;
-        is(@messages, 1, 'right number of alerts');
-        unlike $messages[0] => qr/author1 is also editing the same entry/, "has a warning";
+        @messages = $app->message_text;
+        is(grep(/author1 is also editing the same entry/, @messages), 0, 'has no warning');
 
         $session->remove;
     }, time;
