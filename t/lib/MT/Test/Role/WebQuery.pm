@@ -23,6 +23,12 @@ sub _find_text {
     eval { $self->wq_find($selector)->text };
 }
 
+sub _find_text_all {
+    my ( $self, $selector ) = @_;
+    my @elems = eval { $self->wq_find($selector) };
+    map { $_->text } @elems;
+}
+
 sub header_title {
     my $self = shift;
     _trim( $self->_find_text("title") );
@@ -37,6 +43,13 @@ sub message_text {
     my $self = shift;
     my $message_class = MT->version_number >= 7 ? '.alert' : '.msg';
     _trim( $self->_find_text($message_class) );
+}
+
+sub message_text_all {
+    my $self = shift;
+    my $message_class = MT->version_number >= 7 ? '.alert' : '.msg';
+    my @texts = $self->_find_text_all($message_class);
+    return map { _trim($_) } (@texts);
 }
 
 sub generic_error {

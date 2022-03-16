@@ -38,7 +38,9 @@ subtest 'entry' => sub {
         blog_id => $site->id,
         id      => $entry->id,
     });
-    unlike $app->message_text => qr/is also editing/, "no warning";
+    my @messages = $app->message_text_all;
+    is(@messages, 1, 'right number of alerts');
+    unlike $messages[0] => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
     my $entry_epoch = MT::Util::ts2epoch($site, $entry->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
@@ -52,7 +54,9 @@ subtest 'entry' => sub {
         blog_id => $site->id,
         id      => $entry->id,
     });
-    like $app->message_text => qr/author1 is also editing the same entry/, "has a warning";
+    @messages = $app->message_text_all;
+    is(@messages, 2, 'right number of alerts');
+    like $messages[0] => qr/author1 is also editing the same entry/, "has a warning";
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -70,7 +74,9 @@ subtest 'entry' => sub {
         blog_id => $site->id,
         id      => $entry->id,
     });
-    unlike $app->message_text => qr/author1 is also editing the same entry/, "has no more warning";
+    @messages = $app->message_text_all;
+    is(@messages, 2, 'right number of alerts');
+    unlike $messages[0] => qr/author1 is also editing the same entry/, "has no more warning";
 
     # let author2 update the entry
     $app->post_form_ok();
@@ -87,7 +93,9 @@ subtest 'entry' => sub {
         id      => $entry->id,
     });
 
-    like $app->message_text => qr/A saved version of this entry.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text_all;
+    is(@messages, 2, 'right number of alerts');
+    like $messages[0] => qr/A saved version of this entry.+?but it is outdated/, "warned the saved session is outdated";
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
@@ -131,7 +139,9 @@ subtest 'page' => sub {
         blog_id => $site->id,
         id      => $page->id,
     });
-    unlike $app->message_text => qr/is also editing/, "no warning";
+    my @messages = $app->message_text_all;
+    is(@messages, 1, 'right number of alerts');
+    unlike $messages[0] => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
     my $page_epoch = MT::Util::ts2epoch($site, $page->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
@@ -145,7 +155,9 @@ subtest 'page' => sub {
         blog_id => $site->id,
         id      => $page->id,
     });
-    like $app->message_text => qr/author1 is also editing the same page/, "has a warning";
+    @messages = $app->message_text_all;
+    is(@messages, 2, 'right number of alerts');
+    like $messages[0] => qr/author1 is also editing the same page/, "has a warning";
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -163,7 +175,9 @@ subtest 'page' => sub {
         blog_id => $site->id,
         id      => $page->id,
     });
-    unlike $app->message_text => qr/author1 is also editing the same page/, "has no more warning";
+    @messages = $app->message_text_all;
+    is(@messages, 2, 'right number of alerts');
+    unlike $messages[0] => qr/author1 is also editing the same page/, "has no more warning";
 
     # let author2 update the page
     $app->post_form_ok();
@@ -180,7 +194,9 @@ subtest 'page' => sub {
         id      => $page->id,
     });
 
-    like $app->message_text => qr/A saved version of this page.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text_all;
+    is(@messages, 2, 'right number of alerts');
+    like $messages[0] => qr/A saved version of this page.+?but it is outdated/, "warned the saved session is outdated";
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
@@ -224,7 +240,9 @@ subtest 'template' => sub {
         blog_id => $site->id,
         id      => $tmpl->id,
     });
-    unlike $app->message_text => qr/is also editing/, "no warning";
+    my @messages = $app->message_text_all;
+    is(@messages, 0, 'right number of alerts');
+    unlike $messages[0] => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
     my $template_epoch = MT::Util::ts2epoch($site, $tmpl->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
@@ -238,7 +256,9 @@ subtest 'template' => sub {
         blog_id => $site->id,
         id      => $tmpl->id,
     });
-    like $app->message_text => qr/author1 is also editing the same template/, "has a warning";
+    @messages = $app->message_text_all;
+    is(@messages, 1, 'right number of alerts');
+    like $messages[0] => qr/author1 is also editing the same template/, "has a warning";
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -256,7 +276,9 @@ subtest 'template' => sub {
         blog_id => $site->id,
         id      => $tmpl->id,
     });
-    unlike $app->message_text => qr/author1 is also editing the same template/, "has no more warning";
+    @messages = $app->message_text_all;
+    is(@messages, 1, 'right number of alerts');
+    unlike $messages[0] => qr/author1 is also editing the same template/, "has no more warning";
 
     # let author2 update the entry
     $app->post_form_ok();
@@ -273,7 +295,9 @@ subtest 'template' => sub {
         id      => $tmpl->id,
     });
 
-    like $app->message_text => qr/A saved version of this Template.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text_all;
+    is(@messages, 1, 'right number of alerts');
+    like $messages[0] => qr/A saved version of this Template.+?but it is outdated/, "warned the saved session is outdated";
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
@@ -320,7 +344,9 @@ subtest 'cd' => sub {
         content_type_id => $cd->content_type_id,
         id              => $cd->id,
     });
-    unlike $app->message_text => qr/is also editing/, "no warning";
+    my @messages = $app->message_text_all;
+    is(@messages, 1, 'right number of alerts');
+    unlike $messages[0] => qr/is also editing/, "no warning";
     $app->{_app}->user($author1);
     my $cd_epoch = MT::Util::ts2epoch($site, $cd->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
@@ -335,7 +361,9 @@ subtest 'cd' => sub {
         content_type_id => $cd->content_type_id,
         id              => $cd->id,
     });
-    like $app->message_text => qr/author1 is also editing the same data/, "has a warning";
+    @messages = $app->message_text_all;
+    is(@messages, 2, 'right number of alerts');
+    like $messages[0] => qr/author1 is also editing the same data/, "has a warning";
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -354,7 +382,9 @@ subtest 'cd' => sub {
         content_type_id => $cd->content_type_id,
         id              => $cd->id,
     });
-    unlike $app->message_text => qr/author1 is also editing the same data/, "has no more warning";
+    @messages = $app->message_text_all;
+    is(@messages, 2, 'right number of alerts');
+    unlike $messages[0] => qr/author1 is also editing the same data/, "has no more warning";
 
     # let author2 update the content data
     $app->post_form_ok();
@@ -372,7 +402,9 @@ subtest 'cd' => sub {
         id              => $cd->id,
     });
 
-    like $app->message_text => qr/A saved version of this content data.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text_all;
+    is(@messages, 2, 'right number of alerts');
+    like $messages[0] => qr/A saved version of this content data.+?but it is outdated/, "warned the saved session is outdated";
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
