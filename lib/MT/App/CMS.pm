@@ -4110,6 +4110,8 @@ sub _translate_naughty_words {
     return MT::Util::translate_naughty_words($entry);
 }
 
+our $Autosave_Session_Alert_TTL = 60 * 60 * 24 * 30;
+
 sub user_who_is_also_editing_the_same_stuff {
     my ($app, $obj) = @_;
     my $type  = $app->param('_type') or return;
@@ -4125,7 +4127,7 @@ sub user_who_is_also_editing_the_same_stuff {
     }
     require MT::Session;
     my $sess_obj = MT::Session->load(
-        { id => {like => $ident}, kind => 'AS' },
+        { id => {like => $ident}, kind => 'AS', start => \('> '. (time - $Autosave_Session_Alert_TTL)) },
         { sort => 'start', direction => 'descend' } ) or return;
     my ($user_id) = $sess_obj->id =~ /:user=([0-9]+)/;
     if ($user_id != $app->user->id && MT::Util::epoch2ts($blog, $sess_obj->start) > $obj->modified_on) {

@@ -3,6 +3,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
+use Test::MockTime::HiRes;
 use MT::Test::Env;
 our $test_env;
 
@@ -28,6 +29,12 @@ my $tmpl    = MT::Template->load({ name => 'tmpl_individual' });
 
 $site->server_offset(0);
 $site->save;
+
+my $Autosave_Session_Alert_TTL = do {
+    require MT::App::CMS;
+    no warnings('once');
+    $MT::App::CMS::Autosave_Session_Alert_TTL;
+};
 
 subtest 'entry' => sub {
     my $app = MT::Test::App->new('CMS');
@@ -444,6 +451,57 @@ subtest 'cd' => sub {
     ok !$app->generic_error, "no error";
 
     $session->remove, $session2->remove;
+};
+
+subtest 'entry autosave session expiration' => sub {
+    mock_time sub {
+        my $app = MT::Test::App->new('CMS');
+        $app->login($author1);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        my @messages = $app->message_text_all;
+        is(@messages, 1, 'right number of alerts');
+        unlike $messages[0] => qr/is also editing/, "no warning";
+        $app->{_app}->user($author1);
+        ok my $session = $app->{_app}->autosave_session_obj(1);
+        $session->save;
+
+        # sleep until right before ttl
+        sleep $Autosave_Session_Alert_TTL - 1;
+
+        $app->login($author2);
+        $app->{_app}->user($author2);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        @messages = $app->message_text_all;
+        is(@messages, 2, 'right number of alerts');
+        like $messages[0] => qr/author1 is also editing the same entry/, "has no warning";
+
+        # sleep until right after ttl
+        sleep 1;
+
+        $app->login($author2);
+        $app->{_app}->user($author2);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        @messages = $app->message_text_all;
+        is(@messages, 1, 'right number of alerts');
+        unlike $messages[0] => qr/author1 is also editing the same entry/, "has a warning";
+
+        $session->remove;
+    }, time;
 };
 
 done_testing;
