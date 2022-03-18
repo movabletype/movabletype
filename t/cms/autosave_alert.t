@@ -30,13 +30,6 @@ my $tmpl    = MT::Template->load({ name => 'tmpl_individual' });
 $site->server_offset(0);
 $site->save;
 
-my $Autosave_Session_Alert_TTL = do {
-    require MT::App::CMS;
-    no warnings('once');
-    $MT::App::CMS::Autosave_Session_Alert_TTL;
-};
-
-
 subtest 'autosave session purge' => sub {
     mock_time sub {
         my $app = MT::Test::App->new('CMS');
@@ -505,7 +498,7 @@ subtest 'entry autosave session expiration' => sub {
         $session->save;
 
         # sleep until right before ttl
-        sleep $Autosave_Session_Alert_TTL;
+        sleep MT->config->AutosaveSessionTimeout;
 
         $app->login($author2);
         $app->{_app}->user($author2);
