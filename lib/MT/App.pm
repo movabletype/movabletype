@@ -2629,6 +2629,7 @@ sub _send_comment_notification {
     my $from_addr;
     my $reply_to;
     if ( $cfg->EmailReplyTo ) {
+        MT::Util::Deprecated::warning(name => 'EmailReplyTo', since => '7.9');
         $reply_to = $comment->email;
     }
     else {
@@ -2769,6 +2770,7 @@ sub _send_sysadmins_email {
     my $from_addr;
     my $reply_to;
     if ( $cfg->EmailReplyTo ) {
+        MT::Util::Deprecated::warning(name => 'EmailReplyTo', since => '7.9');
         $reply_to = $cfg->EmailAddressMain || $from;
     }
     else {
