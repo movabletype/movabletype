@@ -2038,18 +2038,17 @@ BEGIN {
             'NewsboxURL' => {
                 default => 'https://www.movabletype.org/news/newsbox.json',
             },
-            'FeedbackURL' =>
-                { default => 'http://www.movabletype.org/feedback.html', },
+            'FeedbackURL' => { default => 'http://www.movabletype.org/feedback.html', },
 
-            'EmailAddressMain'      => undef,
-            'EmailReplyTo'          => undef,
-            'EmailNotificationBcc'  => { default => 1, },
-            'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
-            'UserSessionTimeout'    => { default => 60 * 60 * 4, },
-            'UserSessionCookieName' => { default => \&UserSessionCookieName },
-            'UserSessionCookieDomain' =>
-                { default => '<$MTBlogHost exclude_port="1"$>' },
-            'UserSessionCookiePath' => { default => \&UserSessionCookiePath },
+            'EmailAddressMain'         => undef,
+            'EmailReplyTo'             => undef,
+            'EmailNotificationBcc'     => { default => 1, },
+            'CommentSessionTimeout'    => { default => 60 * 60 * 24 * 3, },
+            'UserSessionTimeout'       => { default => 60 * 60 * 4, },
+            'AutosaveSessionTimeout'   => { default => 60 * 60 * 24 * 30, },
+            'UserSessionCookieName'    => { default => \&UserSessionCookieName },
+            'UserSessionCookieDomain'  => { default => '<$MTBlogHost exclude_port="1"$>' },
+            'UserSessionCookiePath'    => { default => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
             'LaunchBackgroundTasks'    => { default => 0 },
             'TransparentProxyIPs'      => { default => 0, },
@@ -2737,6 +2736,10 @@ sub purge_session_records {
 
     # remove stale search cache
     MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },
+        { range => { start => 1 } } );
+
+    # remove autosave sessions
+    MT::Session->remove( { kind => 'AS', start => [ undef, time - MT->config->AutosaveSessionTimeout ] },
         { range => { start => 1 } } );
 
     # remove all the other session records

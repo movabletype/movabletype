@@ -3,6 +3,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
+use Test::MockTime::HiRes;
 use MT::Test::Env;
 our $test_env;
 
@@ -29,6 +30,52 @@ my $tmpl    = MT::Template->load({ name => 'tmpl_individual' });
 $site->server_offset(0);
 $site->save;
 
+subtest 'autosave session purge' => sub {
+    mock_time sub {
+        my $app = MT::Test::App->new('CMS');
+        $app->login($author1);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        my @messages = $app->message_text;
+        is(grep(/is also editing/, @messages), 0, 'no warning');
+        $app->{_app}->user($author1);
+        ok my $session = $app->{_app}->autosave_session_obj(1);
+        $session->save;
+
+        # sleep until right before ttl
+        sleep MT->config->AutosaveSessionTimeout;
+
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        @messages = $app->message_text;
+        is(grep(/A saved version of this entry was auto-saved/, @messages), 1, 'has a warning');
+
+        # sleep until right after ttl and purge session
+        sleep 1;
+        MT::Core::purge_session_records();
+
+        $app->{_app}->user($author1);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        @messages = $app->message_text;
+        is(grep(/A saved version of this entry was auto-saved/, @messages), 0, 'no warning');
+
+        $session->remove;
+    }, time;
+};
+
 subtest 'entry' => sub {
     my $app = MT::Test::App->new('CMS');
     $app->login($author1);
@@ -38,9 +85,9 @@ subtest 'entry' => sub {
         blog_id => $site->id,
         id      => $entry->id,
     });
-    unlike $app->message_text => qr/is also editing/, "no warning";
+    my @messages = $app->message_text;
+    is(grep(/is also editing/, @messages), 0, 'no warning');
     $app->{_app}->user($author1);
-    my $entry_epoch = MT::Util::ts2epoch($site, $entry->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
 
@@ -52,7 +99,8 @@ subtest 'entry' => sub {
         blog_id => $site->id,
         id      => $entry->id,
     });
-    like $app->message_text => qr/author1 is also editing the same entry/, "has a warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same entry/, @messages), 1, 'has a warning');
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -70,7 +118,8 @@ subtest 'entry' => sub {
         blog_id => $site->id,
         id      => $entry->id,
     });
-    unlike $app->message_text => qr/author1 is also editing the same entry/, "has no more warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same entry/, @messages), 0, 'has no more warning');
 
     # let author2 update the entry
     $app->post_form_ok();
@@ -87,7 +136,8 @@ subtest 'entry' => sub {
         id      => $entry->id,
     });
 
-    like $app->message_text => qr/A saved version of this entry.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text;
+    is(grep(/A saved version of this entry.+?but it is outdated/, @messages), 1, 'warned the saved session is outdated');
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
@@ -120,6 +170,9 @@ subtest 'entry' => sub {
         blog_id => $site->id,
     });
     ok !$app->generic_error, "no error";
+
+    $session->remove;
+    $session2->remove;
 };
 
 subtest 'page' => sub {
@@ -131,9 +184,9 @@ subtest 'page' => sub {
         blog_id => $site->id,
         id      => $page->id,
     });
-    unlike $app->message_text => qr/is also editing/, "no warning";
+    my @messages = $app->message_text;
+    is(grep(/is also editing/, @messages), 0, 'no warning');
     $app->{_app}->user($author1);
-    my $page_epoch = MT::Util::ts2epoch($site, $page->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
 
@@ -145,7 +198,8 @@ subtest 'page' => sub {
         blog_id => $site->id,
         id      => $page->id,
     });
-    like $app->message_text => qr/author1 is also editing the same page/, "has a warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same page/, @messages), 1, 'has a warning');
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -163,7 +217,8 @@ subtest 'page' => sub {
         blog_id => $site->id,
         id      => $page->id,
     });
-    unlike $app->message_text => qr/author1 is also editing the same page/, "has no more warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same page/, @messages), 0, 'has no more warning');
 
     # let author2 update the page
     $app->post_form_ok();
@@ -180,7 +235,8 @@ subtest 'page' => sub {
         id      => $page->id,
     });
 
-    like $app->message_text => qr/A saved version of this page.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text;
+    is(grep(/A saved version of this page.+?but it is outdated/, @messages), 1, 'warned the saved session is outdated');
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
@@ -213,6 +269,9 @@ subtest 'page' => sub {
         blog_id => $site->id,
     });
     ok !$app->generic_error, "no error";
+
+    $session->remove;
+    $session2->remove;
 };
 
 subtest 'template' => sub {
@@ -224,9 +283,9 @@ subtest 'template' => sub {
         blog_id => $site->id,
         id      => $tmpl->id,
     });
-    unlike $app->message_text => qr/is also editing/, "no warning";
+    my @messages = $app->message_text;
+    is(grep(/is also editing/, @messages), 0, 'no warning');
     $app->{_app}->user($author1);
-    my $template_epoch = MT::Util::ts2epoch($site, $tmpl->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
 
@@ -238,7 +297,8 @@ subtest 'template' => sub {
         blog_id => $site->id,
         id      => $tmpl->id,
     });
-    like $app->message_text => qr/author1 is also editing the same template/, "has a warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same template/, @messages), 1, 'has a warning');
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -256,7 +316,8 @@ subtest 'template' => sub {
         blog_id => $site->id,
         id      => $tmpl->id,
     });
-    unlike $app->message_text => qr/author1 is also editing the same template/, "has no more warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same template/, @messages), 0, 'has no more warning');
 
     # let author2 update the entry
     $app->post_form_ok();
@@ -273,7 +334,8 @@ subtest 'template' => sub {
         id      => $tmpl->id,
     });
 
-    like $app->message_text => qr/A saved version of this Template.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text;
+    is(grep(/A saved version of this Template.+?but it is outdated/, @messages), 1, 'warned the saved session is outdated');
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
@@ -308,6 +370,9 @@ subtest 'template' => sub {
         type    => 'index',
     });
     ok !$app->generic_error, "no error";
+
+    $session->remove;
+    $session2->remove;
 };
 
 subtest 'cd' => sub {
@@ -320,9 +385,9 @@ subtest 'cd' => sub {
         content_type_id => $cd->content_type_id,
         id              => $cd->id,
     });
-    unlike $app->message_text => qr/is also editing/, "no warning";
+    my @messages = $app->message_text;
+    is(grep(/is also editing/, @messages), 0, 'no warning');
     $app->{_app}->user($author1);
-    my $cd_epoch = MT::Util::ts2epoch($site, $cd->modified_on);
     ok my $session = $app->{_app}->autosave_session_obj(1);
     $session->save;
 
@@ -335,7 +400,8 @@ subtest 'cd' => sub {
         content_type_id => $cd->content_type_id,
         id              => $cd->id,
     });
-    like $app->message_text => qr/author1 is also editing the same data/, "has a warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same data/, @messages), 1, 'has a warning');
 
     sleep 1;    # to make sure session for the author2 is newer
 
@@ -354,7 +420,8 @@ subtest 'cd' => sub {
         content_type_id => $cd->content_type_id,
         id              => $cd->id,
     });
-    unlike $app->message_text => qr/author1 is also editing the same data/, "has no more warning";
+    @messages = $app->message_text;
+    is(grep(/author1 is also editing the same data/, @messages), 0, 'has no more warning');
 
     # let author2 update the content data
     $app->post_form_ok();
@@ -372,7 +439,8 @@ subtest 'cd' => sub {
         id              => $cd->id,
     });
 
-    like $app->message_text => qr/A saved version of this content data.+?but it is outdated/, "warned the saved session is outdated";
+    @messages = $app->message_text;
+    is(grep(/A saved version of this content data.+?but it is outdated/, @messages), 1, 'warned the saved session is outdated');
 
     $app->{_app}->user($author1);
     ok $app->{_app}->autosave_session_obj, "autosave session for author1 still exists";
@@ -408,6 +476,57 @@ subtest 'cd' => sub {
         blog_id         => $site->id,
     });
     ok !$app->generic_error, "no error";
+
+    $session->remove;
+    $session2->remove;
+};
+
+subtest 'entry autosave session expiration' => sub {
+    mock_time sub {
+        my $app = MT::Test::App->new('CMS');
+        $app->login($author1);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        my @messages = $app->message_text;
+        is(grep(/is also editing/, @messages), 0, 'no warning');
+        $app->{_app}->user($author1);
+        ok my $session = $app->{_app}->autosave_session_obj(1);
+        $session->save;
+
+        # sleep until right before ttl
+        sleep MT->config->AutosaveSessionTimeout;
+
+        $app->login($author2);
+        $app->{_app}->user($author2);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        @messages = $app->message_text;
+        is(grep(/author1 is also editing the same entry/, @messages), 1, 'has a warning');
+
+        # sleep until right after ttl
+        sleep 1;
+
+        $app->login($author2);
+        $app->{_app}->user($author2);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        @messages = $app->message_text;
+        is(grep(/author1 is also editing the same entry/, @messages), 0, 'has no warning');
+
+        $session->remove;
+    }, time;
 };
 
 done_testing;
