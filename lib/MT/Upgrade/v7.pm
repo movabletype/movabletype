@@ -181,6 +181,7 @@ sub upgrade_functions {
         'v7_reorder_warning_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type  => 'log',
                 label => 'Reorder WARNING level',
@@ -190,6 +191,7 @@ sub upgrade_functions {
         'v7_reorder_security_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type   => 'log',
                 label => 'Reorder SECURITY level',
@@ -199,6 +201,7 @@ sub upgrade_functions {
         'v7_reorder_debug_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type   => 'log',
                 label => 'Reorder DEBUG level',
@@ -1518,6 +1521,16 @@ sub _v7_remove_sql_set_names {
     my $cfg       = MT->config;
     $cfg->SQLSetNames( undef, 1 );
     $cfg->save_config;
+}
+
+sub _v7_reorder_log_level_condition {
+    my ( $self, %param ) = @_;
+    my $from = $param{from};
+
+    return unless $from;
+    return if $from >= 6.0026 && $from < 7;
+
+    1;
 }
 
 1;
