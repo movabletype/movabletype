@@ -1969,11 +1969,6 @@ sub _post_save_cfg_screens {
             $app->config->save_config;
         }
     }
-    if ( $screen eq 'cfg_web_services' ) {
-        my $blog_id         = $app->param('id');
-        my $enable_data_api = $app->param('enable_data_api');
-        save_data_api_settings( $app, $blog_id, $enable_data_api );
-    }
 
     return 1;
 }
@@ -2058,9 +2053,6 @@ sub post_save {
         # Add this blog to the user's "favorite blogs", pushing any 10th
         # blog off the list
         my $auth = $app->user;
-
-        # disable data api by default
-        save_data_api_settings( $app, $obj->id, 0 );
 
         # Grant permission
         my $assoc_class = $app->model('association');
@@ -3601,19 +3593,6 @@ sub can_view_blog_list {
             if $p->blog->is_blog;
     }
     return $cond ? 1 : 0;
-}
-
-sub save_data_api_settings {
-    my ( $app, $blog_id, $new_value ) = @_;
-
-    $blog_id   = $app->param('id') || 0         unless defined $blog_id;
-    $new_value = $app->param('enable_data_api') unless defined $new_value;
-
-    my $cfg = $app->config;
-
-    MT::Util::update_data_api_disable_site($cfg, $blog_id, $new_value);
-
-    return 1;
 }
 
 sub _determine_total {

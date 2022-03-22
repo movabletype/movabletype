@@ -212,10 +212,6 @@ sub seed_database {
     my $App = $MT::Upgrade::App;
     $App->{author} = $author if ref $App;
 
-    # disable system scope data api
-    require MT::CMS::Blog;
-    MT::CMS::Blog::save_data_api_settings( $App, 0, 0 );
-
     require MT::Role;
     MT::Role->create_default_roles(%param)
         or return $self->error(
