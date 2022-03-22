@@ -2625,13 +2625,12 @@ sub _send_comment_notification {
     require MT::Util::Mail;
     my $author = $entry->author;
     return unless $author && $author->email;
-    $app->set_language($author->preferred_language) if $author && $author->preferred_language;
+    $app->set_language($author->preferred_language) if $author->preferred_language;
     my $from_addr = $comment->email;
     if (!$from_addr || !is_valid_email($from_addr)) {
         $from_addr = $cfg->EmailAddressMain || $author->email;
         $from_addr = $comment->author . ' <' . $from_addr . '>' if $comment->author;
     }
-    return unless $from_addr;
     my %head = (
         id      => 'new_comment',
         To      => $author->email,
