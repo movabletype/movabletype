@@ -99,6 +99,14 @@ sub make_website {
     $theme->apply($website);
     $website->save() or die "Couldn't save blog: " . $website->errstr;
 
+    my %pd_args = ('plugin' => 'DataAPI', 'key' => 'configuration:blog:' . $website->id);
+    my $pd = MT->model('plugindata')->load(\%pd_args);
+    unless ($pd) {
+        $pd = MT->model('plugindata')->new(%pd_args);
+    }
+    $pd->data({ enable_data_api => 1 });
+    $pd->save;
+
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     return $website;
@@ -158,6 +166,14 @@ sub make_blog {
         or die MT::Theme->errstr;
     $theme->apply($blog);
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
+
+    my %pd_args = ('plugin' => 'DataAPI', 'key' => 'configuration:blog:' . $blog->id);
+    my $pd = MT->model('plugindata')->load(\%pd_args);
+    unless ($pd) {
+        $pd = MT->model('plugindata')->new(%pd_args);
+    }
+    $pd->data({ enable_data_api => 1 });
+    $pd->save;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 

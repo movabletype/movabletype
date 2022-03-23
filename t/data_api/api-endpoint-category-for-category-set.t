@@ -707,14 +707,15 @@ sub normal_tests_for_list_categories {
         }
     );
     test_data_api(
-        {   note => 'not logged in with DataAPIDisableSite',
+        {   note => 'not logged in with Data API disabled',
             path =>
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories",
             method    => 'GET',
             author_id => 0,
             setup     => sub {
-                $app->config->DataAPIDisableSite('9999');
-                $app->config->save_config;
+                my $pd = MT->model('plugindata')->new(plugin => 'DataAPI', key => 'configuration:blog:9999');
+                $pd->data({ enable_data_api => 0 });
+                $pd->save;
             },
             params    => { sortBy => 'id', },
             callbacks => [

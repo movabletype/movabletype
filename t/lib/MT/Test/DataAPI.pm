@@ -39,8 +39,13 @@ sub test_data_api {
 
     my $app = MT::App::DataAPI->new;
 
-    $app->config->DataAPIDisableSite( '', 1 );
-    $app->config->save_config;
+    my %pd_args = (plugin => 'DataAPI', key => 'configuration');
+    my $pd = MT->model('plugindata')->load(\%pd_args);
+    unless ($pd) {
+        $pd = MT->model('plugindata')->new(%pd_args);
+    }
+    $pd->data({ enable_data_api => 1 });
+    $pd->save;
 
     my $is_superuser;
     my $mock_author = Test::MockModule->new('MT::Author');

@@ -2588,11 +2588,18 @@ sub restriction_tests_for_list {
         {   note   => 'restrict sitei_id = 1',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'GET',
-            setup        => sub {
-                $app->config->DataAPIDisableSite(1);
-                $app->config->save_config;
+            setup  => sub {
+                my $pd = MT->model('plugindata')->load({ plugin => 'DataAPI', key => "configuration:blog:$site_id" });
+                $pd->data({ enable_data_api => 0 });
+                $pd->save;
             },
             code => 403,
+            complete => sub {
+                # Restore Data API plugin configuration
+                my $pd = MT->model('plugindata')->load({ plugin => 'DataAPI', key => "configuration:blog:$site_id" });
+                $pd->data({ enable_data_api => 1 });
+                $pd->save;
+            },
         }
     );
 
@@ -2600,9 +2607,14 @@ sub restriction_tests_for_list {
         {   note   => 'restrict site_id = 2',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'GET',
-            setup        => sub {
-                $app->config->DataAPIDisableSite(2);
-                $app->config->save_config;
+            setup  => sub {
+                my %pd_args = (plugin => 'DataAPI', key => 'configuration:blog:2');
+                my $pd = MT->model('plugindata')->load(\%pd_args);
+                unless ($pd) {
+                    $pd = MT->model('plugindata')->new(%pd_args);
+                }
+                $pd->data({ enable_data_api => 0 });
+                $pd->save;
             },
             callbacks => [
                 {   name =>

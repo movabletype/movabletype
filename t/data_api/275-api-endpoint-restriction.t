@@ -134,8 +134,9 @@ sub suite {
             method       => 'GET',
             is_superuser => 1,
             setup        => sub {
-                $app->config->DataAPIDisableSite(1);
-                $app->config->save_config;
+                my $pd = MT->model('plugindata')->load({ plugin => 'DataAPI', key => 'configuration:blog:1' });
+                $pd->data({ enable_data_api => 0 });
+                $pd->save;
             },
             complete => sub {
                 my ( $data, $body ) = @_;

@@ -273,6 +273,13 @@ sub init_upgrade {
             my $website
                 = MT::Website->create_default_website('First Website');
             $website->save;
+            my %pd_args = ('plugin' => 'DataAPI', 'key' => 'configuration:blog:' . $website->id);
+            my $pd = MT->model('plugindata')->load(\%pd_args);
+            unless ($pd) {
+                $pd = MT->model('plugindata')->new(%pd_args);
+            }
+            $pd->data({ enable_data_api => 1 });
+            $pd->save;
             my $author = MT::Author->load;
             my ($website_admin_role)
                 = MT::Role->load_by_permission('administer_site');
@@ -347,6 +354,13 @@ sub init_data {
         or die MT::Theme->errstr;
     $classic_website->apply($website);
     $website->save() or die "Couldn't save blog 1: " . $website->errstr;
+    my %pd_args = ('plugin' => 'DataAPI', 'key' => 'configuration:blog:' . $website->id);
+    my $pd = MT->model('plugindata')->load(\%pd_args);
+    unless ($pd) {
+        $pd = MT->model('plugindata')->new(%pd_args);
+    }
+    $pd->data({ enable_data_api => 1 });
+    $pd->save;
 
     require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
@@ -391,6 +405,14 @@ sub init_data {
         or die MT::Theme->errstr;
     $classic_blog->apply($blog);
     $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
+
+    %pd_args = ('plugin' => 'DataAPI', 'key' => 'configuration:blog:' . $blog->id);
+    $pd = MT->model('plugindata')->load(\%pd_args);
+    unless ($pd) {
+        $pd = MT->model('plugindata')->new(%pd_args);
+    }
+    $pd->data({ enable_data_api => 1 });
+    $pd->save;
 
     #    $blog->create_default_templates('mt_blog');
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
