@@ -106,6 +106,7 @@ subtest 'entry: ok' => sub {
         '<mt:var name="dir">/%-f',
         'entry/<mt:var name="path">/%-f.html',
         '<$mt:if name="var"$>entry/%-f.html</mt:if>',
+        '<mt:var name="<mt:var name="var_name">" >entry/%-f.html',
     );
     for my $pattern (@ok_patterns) {
         my $app = MT::Test::App->new;
@@ -135,8 +136,10 @@ subtest 'entry: ng' => sub {
         'entry/%-f ',
         '<mt:if name="var"> entry/%-f</mt:if>',
         '<mt:var name="dir"> /%-f',
+        ' <mt:var name="dir">/%-f',
         'entry/ <mt:var name="path"> /%-f.html',
         '<mt:if name="var">entry/%-f </mt:if>',
+        '<mt:var name="<mt:var name="var_name">"> entry/%-f.html',
     );
     for my $pattern (@ng_patterns) {
         my $app = MT::Test::App->new;
