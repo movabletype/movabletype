@@ -1070,12 +1070,14 @@ sub post {
         }
         );
 
-    if ( !$app->run_callbacks( 'api_post_save.comment', $app, $comment, $commenter ) ) {
+    if ( !$app->run_callbacks( 'api_post_save_junk.comment', $app, $comment, $commenter ) ) {
         return $app->handle_error( $app->errstr );
     }
 
     if ( $comment->id && !$comment->is_junk ) {
 
+        $app->run_callbacks( 'api_post_save.comment',
+            $app, $comment, $commenter );
         $entry->modified_on( epoch2ts( $blog, time ) );
         $entry->save;
 
