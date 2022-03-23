@@ -615,7 +615,7 @@ sub _restrict_site {
         my $key_prefix = 'configuration:blog:';
         my $plugindata_iter = MT->model('plugindata')->load_iter({
             plugin => 'DataAPI',
-            key    => [ map { $key_prefix . $_ } @site_ids ],
+            key    => [ map { $_ == 0 ? 'configuration' : $key_prefix . $_ } @site_ids ],
         });
         my @enable_sites;
         while (my $data = $plugindata_iter->()) {

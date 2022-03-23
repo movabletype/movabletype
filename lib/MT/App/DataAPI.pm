@@ -3465,7 +3465,7 @@ sub api {
 
         my $plugindata = MT->model('plugindata')->load({
             plugin => 'DataAPI',
-            key    => [ "configuration:blog:$id" ],
+            key    => [ $id == 0 ? 'configuration' : "configuration:blog:$id" ],
         });
         if (   !$user->is_superuser
             && !($plugindata && $plugindata->data->{enable_data_api}))
