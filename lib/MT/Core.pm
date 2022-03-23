@@ -2357,8 +2357,6 @@ BEGIN {
                 type    => 'run_once',
             },
             'data_api' => {
-                handler   => 'MT::App::DataAPI',
-                script    => sub { MT->config->DataAPIScript },
                 methods   => sub { MT->app->core_methods() },
                 endpoints => sub { MT->app->core_endpoints() },
                 resources => sub { MT::DataAPI::Resource->core_resources() },

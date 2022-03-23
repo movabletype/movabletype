@@ -24,6 +24,8 @@ sub id                 {'data_api'}
 sub DEFAULT_VERSION () {4}
 sub API_VERSION ()     {4.1}
 
+sub script_name { MT->config->DataAPIScript }
+
 sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;

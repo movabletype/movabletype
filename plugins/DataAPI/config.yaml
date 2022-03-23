@@ -6,6 +6,11 @@ author_name: Six Apart Ltd.
 description: <MT_TRANS phrase="Movable Type Data API">
 l10n_class: DataAPI::L10N
 
+applications:
+    data_api:
+        handler: MT::App::DataAPI
+        script: '$DataAPI::MT::App::DataAPI::script_name'
+
 system_config_template:
     code: $DataAPI::DataAPI::App::config_tmpl
 blog_config_template:
