@@ -604,12 +604,38 @@ sub _restrict_site {
 
     return if ( !$class->has_column($column) );
 
-    # Load config settings.
     my $cfg = $app->config;
-    my $data_api_disable_site
-        = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my @data_api_disable_site = ( split ',', $data_api_disable_site )
-        or return;
+    my @data_api_disable_sites;
+    if ($cfg->is_readonly('DataAPIDisableSite')) {
+        @data_api_disable_sites = split ',', defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
+    } else {
+        my @site_ids = map { $_->id } MT->model('website')->load();
+        push @site_ids, map { $_->id } MT->model('blog')->load();
+        push @site_ids, 0; # for system configuration
+        my $key_prefix = 'configuration:blog:';
+        my $plugindata_iter = MT->model('plugindata')->load_iter({
+            plugin => 'DataAPI',
+            key    => [ map { $key_prefix . $_ } @site_ids ],
+        });
+        my @enable_sites;
+        while (my $data = $plugindata_iter->()) {
+            if ($data->data->{enable_data_api}) {
+                my $key = $data->key;
+                if ($key eq 'configuration') {
+                    push @enable_sites, 0;
+                } else {
+                    my ($blog_id) = $key =~ /${key_prefix}(\d+)/;
+                    push @enable_sites, $blog_id;
+                }
+            }
+        }
+        for my $site_id (@site_ids) {
+            if (!grep { $site_id eq $_ } @enable_sites) {
+                push @data_api_disable_sites, $site_id;
+            }
+        }
+    }
+    return unless @data_api_disable_sites;
 
     # Set filters.
     $filter->append_item(
@@ -624,7 +650,7 @@ sub _restrict_site {
                                 value  => $_,
                             },
                         };
-                    } @data_api_disable_site,
+                    } @data_api_disable_sites,
                 ],
             },
         },
