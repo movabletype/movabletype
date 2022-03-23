@@ -30,52 +30,6 @@ my $tmpl    = MT::Template->load({ name => 'tmpl_individual' });
 $site->server_offset(0);
 $site->save;
 
-subtest 'autosave session purge' => sub {
-    mock_time sub {
-        my $app = MT::Test::App->new('CMS');
-        $app->login($author1);
-        $app->get_ok({
-            __mode  => 'view',
-            _type   => 'entry',
-            blog_id => $site->id,
-            id      => $entry->id,
-        });
-        my @messages = $app->message_text;
-        is(grep(/is also editing/, @messages), 0, 'no warning');
-        $app->{_app}->user($author1);
-        ok my $session = $app->{_app}->autosave_session_obj(1);
-        $session->save;
-
-        # sleep until right before ttl
-        sleep MT->config->AutosaveSessionTimeout;
-
-        $app->get_ok({
-            __mode  => 'view',
-            _type   => 'entry',
-            blog_id => $site->id,
-            id      => $entry->id,
-        });
-        @messages = $app->message_text;
-        is(grep(/A saved version of this entry was auto-saved/, @messages), 1, 'has a warning');
-
-        # sleep until right after ttl and purge session
-        sleep 1;
-        MT::Core::purge_session_records();
-
-        $app->{_app}->user($author1);
-        $app->get_ok({
-            __mode  => 'view',
-            _type   => 'entry',
-            blog_id => $site->id,
-            id      => $entry->id,
-        });
-        @messages = $app->message_text;
-        is(grep(/A saved version of this entry was auto-saved/, @messages), 0, 'no warning');
-
-        $session->remove;
-    }, time;
-};
-
 subtest 'entry' => sub {
     my $app = MT::Test::App->new('CMS');
     $app->login($author1);
@@ -481,8 +435,15 @@ subtest 'cd' => sub {
     $session2->remove;
 };
 
-subtest 'entry autosave session expiration' => sub {
-    mock_time sub {
+subtest 'autosave session purge' => sub {
+    if ($ENV{MT_TEST_RUN_APP_AS_CGI}) {
+        $test_env->update_config(AutosaveSessionTimeout => 5);
+        *sleep = sub { CORE::sleep(@_) };
+    } else {
+        Test::MockTime::set_fixed_time(CORE::time());
+    }
+
+    subtest 'self session' => sub {
         my $app = MT::Test::App->new('CMS');
         $app->login($author1);
         $app->get_ok({
@@ -500,8 +461,22 @@ subtest 'entry autosave session expiration' => sub {
         # sleep until right before ttl
         sleep MT->config->AutosaveSessionTimeout;
 
-        $app->login($author2);
-        $app->{_app}->user($author2);
+        unless ($ENV{MT_TEST_RUN_APP_AS_CGI}) {
+            $app->get_ok({
+                __mode  => 'view',
+                _type   => 'entry',
+                blog_id => $site->id,
+                id      => $entry->id,
+            });
+            @messages = $app->message_text;
+            is(grep(/A saved version of this entry was auto-saved/, @messages), 1, 'has a warning');
+        }
+
+        # sleep until right after ttl and purge session
+        sleep 1;
+        MT::Core::purge_session_records();
+
+        $app->{_app}->user($author1);
         $app->get_ok({
             __mode  => 'view',
             _type   => 'entry',
@@ -509,7 +484,41 @@ subtest 'entry autosave session expiration' => sub {
             id      => $entry->id,
         });
         @messages = $app->message_text;
-        is(grep(/author1 is also editing the same entry/, @messages), 1, 'has a warning');
+        is(grep(/A saved version of this entry was auto-saved/, @messages), 0, 'no warning');
+
+        $session->remove;
+    };
+
+    subtest 'other author session' => sub {
+        my $app = MT::Test::App->new('CMS');
+        $app->login($author1);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $site->id,
+            id      => $entry->id,
+        });
+        my @messages = $app->message_text;
+        is(grep(/is also editing/, @messages), 0, 'no warning');
+        $app->{_app}->user($author1);
+        ok my $session = $app->{_app}->autosave_session_obj(1);
+        $session->save;
+
+        # sleep until right before ttl
+        sleep MT->config->AutosaveSessionTimeout;
+
+        unless ($ENV{MT_TEST_RUN_APP_AS_CGI}) {
+            $app->login($author2);
+            $app->{_app}->user($author2);
+            $app->get_ok({
+                __mode  => 'view',
+                _type   => 'entry',
+                blog_id => $site->id,
+                id      => $entry->id,
+            });
+            @messages = $app->message_text;
+            is(grep(/author1 is also editing the same entry/, @messages), 1, 'has a warning');
+        }
 
         # sleep until right after ttl
         sleep 1;
@@ -526,7 +535,7 @@ subtest 'entry autosave session expiration' => sub {
         is(grep(/author1 is also editing the same entry/, @messages), 0, 'has no warning');
 
         $session->remove;
-    }, time;
+    };
 };
 
 done_testing;
