@@ -3461,9 +3461,12 @@ sub api {
         }
         $app->param( 'blog_id', $id );
 
-        require MT::CMS::Blog;
+        my $plugindata = MT->model('plugindata')->load({
+            plugin => 'DataAPI',
+            key    => [ "configuration:blog:$id" ],
+        });
         if (   !$user->is_superuser
-            && !MT::CMS::Blog::data_api_is_enabled( $app, $id ) )
+            && !($plugindata && $plugindata->data->{enable_data_api}))
         {
             return $app->print_error(403);
         }
