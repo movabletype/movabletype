@@ -2089,7 +2089,7 @@ sub _path_contains_inappropriate_whitespaces {
     my ($path, $ignore_tag) = @_;
     return unless $path;
     if ($ignore_tag) {
-        1 while $path =~ s!<[/\$]?[Mm][Tt][^<>]+?>!!g;
+        1 while $path =~ s!<[/\$]?[Mm][Tt][^<>]+>!!g;
     }
     for my $part (split /[\\\/]/, $path) {
         return 1 if $part =~ /(?:^\s|\s$)/s;
