@@ -2624,124 +2624,105 @@ sub _send_comment_notification {
 
     require MT::Util::Mail;
     my $author = $entry->author;
-    $app->set_language( $author->preferred_language )
-        if $author && $author->preferred_language;
-    my $from_addr;
-    my $reply_to;
-    if ( $cfg->EmailReplyTo ) {
-        $reply_to = $comment->email;
+    return unless $author && $author->email;
+    $app->set_language($author->preferred_language) if $author->preferred_language;
+    my $from_addr = $comment->email;
+    if (!$from_addr || !is_valid_email($from_addr)) {
+        $from_addr = $cfg->EmailAddressMain || $author->email;
+        $from_addr = $comment->author . ' <' . $from_addr . '>' if $comment->author;
     }
-    else {
-        $from_addr = $comment->email;
+    my %head = (
+        id      => 'new_comment',
+        To      => $author->email,
+        From    => $from_addr,
+        Subject => '[' . $blog->name . '] ' . $app->translate("New Comment Added to '[_1]'", $entry->title),
+    );
+    my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
+    $head{'Content-Type'} = qq(text/plain; charset="$charset");
+    my $base;
+    {
+        local $app->{is_admin} = 1;
+        $base = $app->base . $app->mt_uri;
     }
-    $from_addr = undef if $from_addr && !is_valid_email($from_addr);
-    $reply_to  = undef if $reply_to  && !is_valid_email($reply_to);
-    if ( $author && $author->email )
-    {    # } && is_valid_email($author->email)) {
-        if ( !$from_addr ) {
-            $from_addr = $cfg->EmailAddressMain || $author->email;
-            $from_addr = $comment->author . ' <' . $from_addr . '>'
-                if $comment->author;
+    if ( $base =~ m!^/! ) {
+        my ($blog_domain) = $blog->site_url =~ m|(.+://[^/]+)|;
+        $base = $blog_domain . $base;
+    }
+    my $nonce
+        = MT::Util::perl_sha1_digest_hex( $comment->id
+            . $comment->created_on
+            . $blog->id
+            . $cfg->SecretToken );
+    my $approve_link = $base
+        . $app->uri_params(
+        'mode' => 'approve_item',
+        args   => {
+            blog_id => $blog->id,
+            '_type' => 'comment',
+            id      => $comment->id,
+            nonce   => $nonce
         }
-        my %head = (
-            id => 'new_comment',
-            To => $author->email,
-            $from_addr ? ( From       => $from_addr ) : (),
-            $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
-            Subject => '['
-                . $blog->name . '] '
-                . $app->translate(
-                "New Comment Added to '[_1]'",
-                $entry->title
-                )
         );
-        my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
-        $head{'Content-Type'} = qq(text/plain; charset="$charset");
-        my $base;
-        {
-            local $app->{is_admin} = 1;
-            $base = $app->base . $app->mt_uri;
+    my $spam_link = $base
+        . $app->uri_params(
+        'mode' => 'handle_junk',
+        args   => {
+            blog_id => $blog->id,
+            '_type' => 'comment',
+            id      => $comment->id,
+            nonce   => $nonce
         }
-        if ( $base =~ m!^/! ) {
-            my ($blog_domain) = $blog->site_url =~ m|(.+://[^/]+)|;
-            $base = $blog_domain . $base;
-        }
-        my $nonce
-            = MT::Util::perl_sha1_digest_hex( $comment->id
-                . $comment->created_on
-                . $blog->id
-                . $cfg->SecretToken );
-        my $approve_link = $base
-            . $app->uri_params(
-            'mode' => 'approve_item',
-            args   => {
-                blog_id => $blog->id,
-                '_type' => 'comment',
-                id      => $comment->id,
-                nonce   => $nonce
-            }
-            );
-        my $spam_link = $base
-            . $app->uri_params(
-            'mode' => 'handle_junk',
-            args   => {
-                blog_id => $blog->id,
-                '_type' => 'comment',
-                id      => $comment->id,
-                nonce   => $nonce
-            }
-            );
-        my $edit_link = $base
-            . $app->uri_params(
-            'mode' => 'view',
-            args   => {
-                blog_id => $blog->id,
-                '_type' => 'comment',
-                id      => $comment->id
-            }
-            );
-        my $ban_link = $base
-            . $app->uri_params(
-            'mode' => 'save',
-            args   => {
-                '_type' => 'banlist',
-                blog_id => $blog->id,
-                ip      => $comment->ip
-            }
-            );
-        my %param = (
-            blog           => $blog,
-            entry          => $entry,
-            view_url       => $comment_link,
-            approve_url    => $approve_link,
-            spam_url       => $spam_link,
-            edit_url       => $edit_link,
-            ban_url        => $ban_link,
-            comment        => $comment,
-            unapproved     => !$comment->visible(),
-            state_editable => (
-                $author->is_superuser()
-                    || (
-                       $author->permissions( $blog->id )->can_manage_feedback
-                    || $author->permissions( $blog->id )->can_publish_post )
-            ) ? 1 : 0,
         );
-        my $body = MT->build_email( 'new-comment.tmpl', \%param );
-        MT::Util::Mail->send( \%head, $body ) or do {
-            $app->log(
-                {   message => $app->translate(
-                        'Error sending mail: [_1]',
-                        MT::Util::Mail->errstr
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'email'
-                }
-            );
+    my $edit_link = $base
+        . $app->uri_params(
+        'mode' => 'view',
+        args   => {
+            blog_id => $blog->id,
+            '_type' => 'comment',
+            id      => $comment->id
+        }
+        );
+    my $ban_link = $base
+        . $app->uri_params(
+        'mode' => 'save',
+        args   => {
+            '_type' => 'banlist',
+            blog_id => $blog->id,
+            ip      => $comment->ip
+        }
+        );
+    my %param = (
+        blog           => $blog,
+        entry          => $entry,
+        view_url       => $comment_link,
+        approve_url    => $approve_link,
+        spam_url       => $spam_link,
+        edit_url       => $edit_link,
+        ban_url        => $ban_link,
+        comment        => $comment,
+        unapproved     => !$comment->visible(),
+        state_editable => (
+            $author->is_superuser()
+                || (
+                   $author->permissions( $blog->id )->can_manage_feedback
+                || $author->permissions( $blog->id )->can_publish_post )
+        ) ? 1 : 0,
+    );
+    my $body = MT->build_email( 'new-comment.tmpl', \%param );
+    MT::Util::Mail->send( \%head, $body ) or do {
+        $app->log(
+            {   message => $app->translate(
+                    'Error sending mail: [_1]',
+                    MT::Util::Mail->errstr
+                ),
+                level    => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'email'
+            }
+        );
 
-            return $app->error( MT::Util::Mail->errstr() );
-        };
-    }
+        return $app->error( MT::Util::Mail->errstr() );
+    };
 }
 
 sub _send_sysadmins_email {
@@ -2766,18 +2747,9 @@ sub _send_sysadmins_email {
 
     require MT::Util::Mail;
 
-    my $from_addr;
-    my $reply_to;
-    if ( $cfg->EmailReplyTo ) {
-        $reply_to = $cfg->EmailAddressMain || $from;
-    }
-    else {
-        $from_addr = $cfg->EmailAddressMain || $from;
-    }
-    $from_addr = undef if $from_addr && !is_valid_email($from_addr);
-    $reply_to  = undef if $reply_to  && !is_valid_email($reply_to);
+    my $from_addr = $cfg->EmailAddressMain || $from;
 
-    unless ( $from_addr || $reply_to ) {
+    if (!$from_addr || !is_valid_email($from_addr)) {
         $app->log(
             {   message =>
                     MT->translate("System Email Address is not configured."),
@@ -2792,10 +2764,9 @@ sub _send_sysadmins_email {
     foreach my $a (@sysadmins) {
         next unless $a->email && is_valid_email( $a->email );
         my %head = (
-            id => $email_id,
-            To => $a->email,
-            $from_addr ? ( From       => $from_addr ) : (),
-            $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
+            id      => $email_id,
+            To      => $a->email,
+            From    => $from_addr,
             Subject => $subject,
         );
         my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
