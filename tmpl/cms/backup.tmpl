@@ -14,6 +14,7 @@
 </mt:if>
 
 <div id="backup-panel">
+  <p class="page-desc"><__trans phrase="Not all the tables are exported. If you need to back up everything (including config, session values, logs, and so on), consider using a database utility. You can also download public logs from the <a href="[_1]">Log</a> menu." params="<mt:var name="script_url">?__mode=list&_type=log<mt:if name="blog_id">&blog_id=<mt:var name="blog_id" escape="html"></mt:if>"></p>
   <form method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="backup" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
