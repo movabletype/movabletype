@@ -1070,28 +1070,28 @@ sub post {
         }
         );
 
-    if ( !$app->run_callbacks( 'api_post_save_junk.comment', $app, $comment, $commenter ) ) {
-        return $app->handle_error( $app->errstr );
-    }
+    if ($comment->id) {
+        if (!$comment->is_junk) {
 
-    if ( $comment->id && !$comment->is_junk ) {
+            $app->run_callbacks('api_post_save.comment', $app, $comment, $commenter);
+            $entry->modified_on(epoch2ts($blog, time));
+            $entry->save;
 
-        $app->run_callbacks( 'api_post_save.comment',
-            $app, $comment, $commenter );
-        $entry->modified_on( epoch2ts( $blog, time ) );
-        $entry->save;
-
-        $app->log(
-            {   message => $app->translate(
-                    'Comment on "[_1]" by [_2].', $entry->title,
-                    $comment->author
+            $app->log({
+                message => $app->translate(
+                    'Comment on "[_1]" by [_2].',
+                    $entry->title, $comment->author
                 ),
                 class    => 'comment',
                 category => 'new',
                 blog_id  => $blog->id,
                 metadata => $comment->id,
+            });
+        } else {
+            if (!$app->run_callbacks('api_post_save_junk.comment', $app, $comment, $commenter)) {
+                return $app->handle_error($app->errstr);
             }
-        );
+        }
     }
 
     # Form a link to the comment
