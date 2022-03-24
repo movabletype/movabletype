@@ -21,6 +21,7 @@ use File::Spec;
 use File::Basename;
 use MT;
 use MT::Mail;
+use MT::Mail::MIME;
 
 use Cwd qw( abs_path );
 use URI;
