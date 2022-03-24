@@ -1659,7 +1659,7 @@ my $HasPHP;
 sub has_php {
     return $HasPHP if defined $HasPHP;
     my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
-    my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
+    my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/im;
     $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
     if (MT->config->ObjectDriver =~ /u?mssqlserver/i) {
         my $phpinfo = `php -i 2>&1` or return $HasPHP = 0;
