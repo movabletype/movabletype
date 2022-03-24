@@ -31,16 +31,16 @@ for my $plugin_name ('NotInstalled', 'FormattedText') {
     }
 }
 
-is(MT::PluginData->count(), 12, 'test data prepared');
+is(MT::PluginData->count(), 13, 'test data prepared');
 
 {
     my $log_count = MT::Log->count();
     my ($stdin, $stdout, $stderr) = do_command();
-    is(MT::PluginData->count(),       12, 'not deleted yet');
+    is(MT::PluginData->count(),       13, 'not deleted yet');
     is(MT::Log->count() - $log_count, 0,  'right number of logs left');
 
     ($stdin, $stdout, $stderr) = do_command(['--delete']);
-    is(MT::PluginData->count(),                                                                       4, 'deleted');
+    is(MT::PluginData->count(),                                                                       5, 'deleted');
     is(MT::PluginData->count({ plugin => 'NotInstalled', key => 'configuration:blog:10' }),  1, 'right record remains');
     is(MT::PluginData->count({ plugin => 'NotInstalled', key => 'configuration' }),          1, 'right record remains');
     is(MT::PluginData->count({ plugin => 'FormattedText', key => 'configuration:blog:10' }), 1, 'right record remains');
@@ -51,7 +51,7 @@ is(MT::PluginData->count(), 12, 'test data prepared');
     is(scalar(split(',', ($log[1]->metadata =~ /keys:(.+)/)[0])), 2, 'right number of ids in metadata');
 
     ($stdin, $stdout, $stderr) = do_command(['--delete']);
-    is(MT::PluginData->count(), 4, 'no more deletion');
+    is(MT::PluginData->count(), 5, 'no more deletion');
 }
 
 {
@@ -59,9 +59,9 @@ is(MT::PluginData->count(), 12, 'test data prepared');
     my $pd        = MT::PluginData->new('plugin' => 'NotInstalled', 'key' => 'configuration:blog:100');
     $pd->data(\'1');    # broken data emulation
     $pd->save;
-    is(MT::PluginData->count(), 5, 'added');
+    is(MT::PluginData->count(), 6, 'added');
     my ($stdin, $stdout, $stderr) = do_command(['--delete']);
-    is(MT::PluginData->count(),                                                                       4, 'deleted');
+    is(MT::PluginData->count(),                                                                       5, 'deleted');
     is(MT::PluginData->count({ plugin => 'NotInstalled', key => 'configuration:blog:10' }),  1, 'right record remains');
     is(MT::PluginData->count({ plugin => 'NotInstalled', key => 'configuration' }),          1, 'right record remains');
     is(MT::PluginData->count({ plugin => 'FormattedText', key => 'configuration:blog:10' }), 1, 'right record remains');

@@ -117,8 +117,24 @@ require MIME::Base64;
 
 done_testing;
 
+sub _gather_new_site_id {
+    my ($oldies, $objects) = @_;
+    my %new_site_id;
+    for my $name (qw/website blog/) {
+        my $old_objects = $oldies->{$name};
+        for my $old (@$old_objects) {
+            my $class   = MT->model($name);
+            my $key     = "$class#" . $old->id;
+            my $tmp_obj = $objects->{$key};
+            $new_site_id{$old->id} = $tmp_obj->id;
+        }
+    }
+    return \%new_site_id;
+}
+
 sub checkthemout {
     my ( $oldies, $objects ) = @_;
+    my $new_site_id = _gather_new_site_id($oldies, $objects);
     foreach my $name ( sort keys %$oldies ) {
         my $old_objects = $oldies->{$name};
         my %meta;
@@ -248,6 +264,11 @@ sub checkthemout {
   # MT::Author and MT::Comment have subroutines with the same name as columns.
                         is( $old->column($col), $obj->column($col),
                             "$class<$col>" . $obj->id );
+                    }
+                    elsif ($name eq 'plugindata' && $col eq 'key' && $old->$col =~ /^configuration:blog:(\d+)$/i) {
+                        # The site ID may be changed. Replace new one for comparing key column.
+                        my $old_id = $1;
+                        is('configuration:blog:' . $new_site_id->{$old_id}, $obj->$col, "$class<$col>" . $obj->id);
                     }
                     else {
                         is( $old->$col, $obj->$col,
