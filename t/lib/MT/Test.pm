@@ -87,6 +87,7 @@ BEGIN {
 unless ( $ENV{MT_TEST_MAIL} ) {
     no warnings 'redefine';
     *MT::Mail::_send_mt_debug = sub {1};
+    *MT::Mail::MIME::_send_mt_debug = sub {1};
 }
 
 sub import {
