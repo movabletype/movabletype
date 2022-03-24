@@ -103,6 +103,7 @@ sub has_thumbnail {
     my $asset = shift;
 
     return unless -f $asset->file_path;
+    return 0 if $asset->file_ext =~ /tiff?$/;
 
     require MT::Image;
     my $image = MT::Image->new(
