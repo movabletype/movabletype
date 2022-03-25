@@ -1088,9 +1088,7 @@ sub post {
                 metadata => $comment->id,
             });
         } else {
-            if (!$app->run_callbacks('api_post_save_junk.comment', $app, $comment, $commenter)) {
-                return $app->handle_error($app->errstr);
-            }
+            $app->run_callbacks('api_post_save_junk.comment', $app, $comment, $commenter);
         }
     }
 
