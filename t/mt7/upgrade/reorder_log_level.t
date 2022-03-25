@@ -111,4 +111,36 @@ subtest 'Log level DEBUG' => sub {
     }
 };
 
+subtest 'condition' => sub {
+    # WARNING: 2 -> 3
+
+    subtest 'should apply if 6.0025 or earlier' => sub {
+        my $log = $log_class->new( message => 'test', level => 2, class => 'system' );
+        $log->save;
+        MT::Test::Upgrade->upgrade( from => 6.0025 );
+        is $log_class->load($log->id)->level, 3;
+    };
+
+    subtest 'should apply if 7.x and 7.0049 or earlier' => sub {
+        my $log = $log_class->new( message => 'test', level => 2, class => 'system' );
+        $log->save;
+        MT::Test::Upgrade->upgrade( from => 7.0049 );
+        is $log_class->load($log->id)->level, 3;
+    };
+
+    subtest 'should not apply if 6.x and 6.0026 or later' => sub {
+        my $log = $log_class->new( message => 'test', level => 2, class => 'system' );
+        $log->save;
+        MT::Test::Upgrade->upgrade( from => 6.0026 );
+        is $log_class->load($log->id)->level, 2;
+    };
+
+    subtest 'should not apply if 7.0050 or later' => sub {
+        my $log = $log_class->new( message => 'test', level => 2, class => 'system' );
+        $log->save;
+        MT::Test::Upgrade->upgrade( from => 7.0050 );
+        is $log_class->load($log->id)->level, 2;
+    };
+};
+
 done_testing;

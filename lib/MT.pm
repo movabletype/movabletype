@@ -28,6 +28,9 @@ our (
 );
 my %Text_filters;
 
+our $STATUS;
+$SIG{USR2} = sub { $MT::STATUS ||= 'Got USR2 signal'; print STDERR "$$: $MT::STATUS\n"; return };
+
 # For state determination in MT::Object
 our $plugins_installed;
 

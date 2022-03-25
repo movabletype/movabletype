@@ -4128,8 +4128,8 @@ sub user_who_is_also_editing_the_same_stuff {
     }
     require MT::Session;
     my $sess_obj = MT::Session->load(
-        { id => {like => $ident}, kind => 'AS' },
-        { sort => 'start', direction => 'descend' } ) or return;
+        { id    => { like  => $ident }, kind => 'AS',    start     => [time - MT->config->AutosaveSessionTimeout - 1] },
+        { range => { start => 1 },      sort => 'start', direction => 'descend' }) or return;
     my ($user_id) = $sess_obj->id =~ /:user=([0-9]+)/;
     if ($user_id != $app->user->id && MT::Util::epoch2ts($blog, $sess_obj->start) > $obj->modified_on) {
         my $user = $app->model('author')->load($user_id);
