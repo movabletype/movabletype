@@ -1057,8 +1057,8 @@ sub post {
     return $app->preview('pending') unless $comment;
 
     $app->user($commenter);
-    $comment->save
-        or $app->log(
+    unless ($comment->save) {
+        $app->log(
         {   message => $app->translate(
                 "Comment save failed with [_1]",
                 $comment->errstr
@@ -1069,6 +1069,9 @@ sub post {
             category => 'new',
         }
         );
+        return $app->handle_error(
+            $app->translate("An error occurred.") );
+    }
 
     if ($comment->id) {
         if (!$comment->is_junk) {
