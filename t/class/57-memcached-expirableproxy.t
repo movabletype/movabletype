@@ -18,14 +18,8 @@ use Test::MockTime::HiRes;
 use MT::Test;
 use MT::Memcached::ExpirableProxy;
 
-my $alive = eval {
-    my $m = MT::Memcached->instance;
-    $m->set( __FILE__, __FILE__, 1 );
-};
-
-if ( !$alive ) {
-    plan skip_all => "Memcached is not available";
-}
+my $m = MT::Memcached->instance;
+$m->set( __FILE__, __FILE__, 1 );
 
 my @values = (
     {   key   => 'test_key1',

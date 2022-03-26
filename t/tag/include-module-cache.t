@@ -19,6 +19,7 @@ use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Tag;
 use MT::Memcached;
+use Test::Memcached;
 
 my $app = MT->instance;
 
@@ -35,7 +36,13 @@ my $template = MT::Test::Permission->make_template(
     text    => 'MODULE-CONTENT'
 );
 
-my $i;
+_teardown();
+MT::Test::Tag->run_perl_tests($blog->id, sub { setup(1) });
+_teardown();
+MT::Test::Tag->run_php_tests($blog->id, sub { setup() });
+_teardown();
+
+my ($i, $memd, $memd_server);
 
 sub setup {
     my $perl = shift;
@@ -46,21 +53,16 @@ sub setup {
     return;
 }
 
-_teardown();
-MT::Test::Tag->run_perl_tests($blog->id, sub { setup(1) });
-_teardown();
-MT::Test::Tag->run_php_tests($blog->id, sub { setup() });
-_teardown();
+sub memcached_filter {
+    my $val = shift;
+    $val =~ s{MEMCACHED_SERVER}{$memd_server};
+    return $val;
+}
 
 sub _teardown {
+    $memd->stop if $memd;
+    ($memd, $memd_server) = $test_env->start_memcahed_server();
     $i = 1;
-    require MT::Cache::Session;
-    MT::Cache::Session->new->flush_all;
-    MT::Memcached->cleanup;
-    require Cache::Memcached;
-    my $memcached = Cache::Memcached->new(servers => ['127.0.0.1:11211']);
-    $memcached->flush_all;
-    $memcached->disconnect_all;
 }
 
 done_testing;
@@ -92,24 +94,24 @@ MODULE-CONTENT2
 MODULE-CONTENT2
 
 === include module cache with memcached 1
---- mt_config
-{MemcachedServers => '127.0.0.1:11211'}
+--- mt_config memcached_filter
+{MemcachedServers => 'MEMCACHED_SERVER'}
 --- template
 <mt:Include module="MyTemplate">
 --- expected
 MODULE-CONTENT4
 
 === include module cache with memcached 2
---- mt_config
-{MemcachedServers => '127.0.0.1:11211'}
+--- mt_config memcached_filter
+{MemcachedServers => 'MEMCACHED_SERVER'}
 --- template
 <mt:Include module="MyTemplate" cache="1">
 --- expected
 MODULE-CONTENT5
 
 === include module cache with memcached 3
---- mt_config
-{MemcachedServers => '127.0.0.1:11211'}
+--- mt_config memcached_filter
+{MemcachedServers => 'MEMCACHED_SERVER'}
 --- template
 <mt:Include module="MyTemplate" cache="1">
 --- expected
