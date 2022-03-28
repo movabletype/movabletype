@@ -300,6 +300,8 @@ sub init_core_callbacks {
             $pkg
                 . 'pre_load_filtered_list.group' =>
                 "${pfx}Group::CMSPreLoadFilteredList_group",
+            $pkg . 'post_save.group' => "${pfx}Group::post_save",
+            $pkg . 'post_delete.group' => "${pfx}Group::post_delete",
 
         }
     );
