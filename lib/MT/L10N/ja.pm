@@ -4139,6 +4139,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/content_field_type_options/asset_image.tmpl
 	'Allow users to select multiple image assets?' => '複数の画像の選択を許可する',
 	'Allow users to upload a new image asset?' => '新しい画像ファイルのアップロードを許可する',
+	'Thumbnail height' => 'サムネイル画像の最大高',
+	'Thumbnail width' => 'サムネイル画像の最大幅',
 
 ## tmpl/cms/content_field_type_options/asset_video.tmpl
 	'Allow users to select multiple video assets?' => '複数のビデオの選択を許可する',
