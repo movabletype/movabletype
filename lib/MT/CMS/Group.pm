@@ -322,7 +322,7 @@ sub view_group {
     $obj = $group_class->load($id) if $id;
     my $user_class = $app->model('user');
     $app->add_breadcrumb( $app->translate("Groups"),
-        $app->uri( mode => 'list', args => { _type => 'group' } ) );
+        $app->uri( mode => 'list', args => { _type => 'group', blog_id => 0, } ) );
     if ($id) {
         %param = %{ $obj->column_values };
         delete $param{external_id};
