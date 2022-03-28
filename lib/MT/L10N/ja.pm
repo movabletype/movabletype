@@ -3124,6 +3124,9 @@ _4]'から削除しました。},
 	'Click to edit contact' => 'クリックして連絡先を編集',
 	'Contacts' => '連絡先',
 
+## lib/MT/Object.pm
+	'An error occurred while saving changes to the database.' => 'データベースへの保存中にエラーが発生しました。',
+
 ## lib/MT/ObjectAsset.pm
 	'Asset Placement' => 'アイテムの関連付け',
 
