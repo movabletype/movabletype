@@ -29,7 +29,7 @@ our (
 my %Text_filters;
 
 our $STATUS;
-$SIG{USR2} = sub { $MT::STATUS ||= 'Got USR2 signal'; print STDERR "$$: $MT::STATUS\n"; return };
+$SIG{USR2} = sub { $MT::STATUS ||= 'Got USR2 signal'; print STDERR "$$: $MT::STATUS\n"; return } unless $^O eq 'MSWin32';
 
 # For state determination in MT::Object
 our $plugins_installed;
