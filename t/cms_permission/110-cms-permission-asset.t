@@ -165,7 +165,7 @@ my $blog    = MT::Blog->load({ name => 'my blog' });
 
 my $aikawa   = MT::Author->load({ name => 'aikawa' });
 my $ichikawa = MT::Author->load({ name => 'ichikawa' });
-my $ukawa    = MT::Author->load({ name => => 'ukawa' });
+my $ukawa    = MT::Author->load({ name => 'ukawa' });
 my $egawa    = MT::Author->load({ name => 'egawa' });
 my $ogawa    = MT::Author->load({ name => 'ogawa' });
 my $kagawa   = MT::Author->load({ name => 'kagawa' });
@@ -267,17 +267,16 @@ subtest 'mode = dialog_asset_modal' => sub {
         "dialog_asset_modal by admin"
     );
 
-    # By Permitted user
-    $app->login($kagawa);
+    # By create_post
+    $app->login($aikawa);
     $app->get_ok({
         __mode     => 'dialog_asset_modal',
         edit_field => 'customfield_test',
-        label      => 'New Label',
         blog_id    => $blog->id,
     });
     $app->content_like(
-        qr!<div id="content-body-left"!i,
-        "dialog_asset_modal by permitted user"
+        qr!name="select_asset" id="select_asset"!i,
+        "dialog_asset_modal by create_post"
     );
 
     # By non Permitted user
@@ -289,17 +288,15 @@ subtest 'mode = dialog_asset_modal' => sub {
     });
     $app->has_permission_error("dialog_asset_modal by other blog");
 
-    # By other permission
-    $app->login($aikawa);
+    # By edit_assets
+    $app->login($kagawa);
     $app->get_ok({
         __mode     => 'dialog_asset_modal',
         edit_field => 'customfield_test',
+        label      => 'New Label',
         blog_id    => $blog->id,
     });
-    $app->content_like(
-        qr!name="select_asset" id="select_asset"!i,
-        "dialog_asset_modal by other permission"
-    );
+    $app->has_permission_error("dialog_asset_modal by edit_assets");
 };
 
 subtest 'mode = dialog_list_asset' => sub {
@@ -318,18 +315,17 @@ subtest 'mode = dialog_list_asset' => sub {
         "dialog_list_asset by admin"
     );
 
-    # By Permitted user
-    $app->login($kagawa);
+    # By create_post
+    $app->login($aikawa);
     $app->get_ok({
         __mode     => 'dialog_list_asset',
         edit_field => 'customfield_test',
-        label      => 'New Label',
         blog_id    => $blog->id,
     });
     $app->has_no_permission_error("XXX");
     $app->content_like(
-        qr!<div id="content-body-left"!i,
-        "dialog_list_asset by permitted user"
+        qr!name="select_asset" id="select_asset"!i,
+        "dialog_list_asset by create_post"
     );
 
     # By non Permitted user
@@ -341,18 +337,15 @@ subtest 'mode = dialog_list_asset' => sub {
     });
     $app->has_permission_error("dialog_list_asset by other blog");
 
-    # By other permission
-    $app->login($aikawa);
+    # By edit_assets
+    $app->login($kagawa);
     $app->get_ok({
         __mode     => 'dialog_list_asset',
         edit_field => 'customfield_test',
+        label      => 'New Label',
         blog_id    => $blog->id,
     });
-    $app->has_no_permission_error("XXX");    ## XXX: bug?
-    $app->content_like(
-        qr!name="select_asset" id="select_asset"!i,
-        "dialog_list_asset by other permission"
-    );
+    $app->has_permission_error("dialog_list_asset by edit_assets");
 };
 
 subtest 'mode = asset_insert' => sub {
