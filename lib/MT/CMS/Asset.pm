@@ -189,16 +189,8 @@ sub dialog_list_asset {
     my $blog;
     $blog = $blog_class->load($blog_id) if $blog_id;
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            if $blog_id && !$app->can_do('access_to_insert_asset_list');
-    }
+    return $app->permission_denied()
+        if $blog_id && !$app->can_do('access_to_insert_asset_list');
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
@@ -330,16 +322,8 @@ sub insert {
 
     $app->validate_magic() or return;
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            unless $app->can_do('insert_asset');
-    }
+    return $app->permission_denied()
+        unless $app->can_do('insert_asset');
 
     my $text = $app->param('no_insert') ? "" : _process_post_upload($app);
     return unless defined $text;
@@ -3122,16 +3106,8 @@ sub dialog_asset_modal {
     my %param;
     _set_start_upload_params( $app, \%param );
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            if $blog_id && !$app->can_do('access_to_insert_asset_list');
-    }
+    return $app->permission_denied()
+        if $blog_id && !$app->can_do('access_to_insert_asset_list');
 
     $param{can_multi} = 1
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
@@ -3274,16 +3250,8 @@ sub insert_asset {
 
     $app->validate_magic() or return;
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            unless $app->can_do('insert_asset');
-    }
+    return $app->permission_denied()
+        unless $app->can_do('insert_asset');
 
     require MT::Asset;
     my $text;
