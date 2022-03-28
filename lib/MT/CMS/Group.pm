@@ -549,4 +549,49 @@ sub edit_role {
     $tmpl;
 }
 
+sub post_save {
+    my $eh = shift;
+    my ($app, $obj, $original) = @_;
+
+    if (!$original->id) {
+        $app->log({
+            message => $app->translate(
+                "Group '[_1]' created by '[_2]'.", $obj->name,
+                $app->user->name
+            ),
+            level    => MT::Log::INFO(),
+            class    => 'group',
+            category => 'new',
+        });
+    }
+    else {
+        $app->log({
+            message => $app->translate(
+                "Group '[_1]' (ID:[_2]) edited by '[_3]'",
+                $obj->name, $obj->id, $app->user->name
+            ),
+            level    => MT::Log::NOTICE(),
+            class    => 'group',
+            category => 'edit',
+            metadata => $obj->id,
+        });
+    }
+    1;
+}
+
+sub post_delete {
+    my ($eh, $app, $obj) = @_;
+
+    $app->log({
+        message => $app->translate(
+            "Group '[_1]' (ID:[_2]) deleted by '[_3]'",
+            $obj->name, $obj->id, $app->user->name
+        ),
+        level    => MT::Log::NOTICE(),
+        class    => 'group',
+        category => 'delete'
+    });
+    1;
+}
+
 1;
