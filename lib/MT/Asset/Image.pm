@@ -103,6 +103,7 @@ sub has_thumbnail {
     my $asset = shift;
 
     return unless -f $asset->file_path;
+    return 0 if $asset->file_ext =~ /tiff?$/;
 
     require MT::Image;
     my $image = MT::Image->new(
@@ -199,6 +200,8 @@ sub thumbnail_file {
 
     my $file_path = $asset->file_path;
     return undef unless $fmgr->file_size($file_path);
+
+    return undef if $asset->file_ext =~ /tiff?$/;
 
     require MT::Util;
     my $asset_cache_path = $asset->_make_cache_path( $param{Path} );

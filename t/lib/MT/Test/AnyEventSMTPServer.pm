@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use Test::More;
 use Test::TCP;
-use Test::More;
 use MIME::Head;
 use Path::Tiny;
 use IO::String;
@@ -90,6 +89,12 @@ sub _data_validate {
         close $fh;
     }
     note $data;
+
+    if (open my $fh, '>', _last_recipients_file()) {
+        print $fh join("\n", @{$stash->{to}});
+        close $fh;
+    }
+
     return 1;
 }
 
@@ -98,6 +103,12 @@ sub last_sent_mail {
 }
 
 sub _last_mail_file { "$ENV{MT_TEST_ROOT}/.mail" }
+
+sub last_sent_recipients {
+    return do { open my $fh, '<', _last_recipients_file() or return; local $/; split("\n", <$fh>) }
+}
+
+sub _last_recipients_file { "$ENV{MT_TEST_ROOT}/.mail-recipients" }
 
 sub stop {
     my $self = shift;

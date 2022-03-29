@@ -19,7 +19,7 @@ sub list {
 
     my $res = filtered_list( $app, $endpoint, 'category_set' ) or return;
 
-    +{  totalResults => $res->{count} || 0,
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };

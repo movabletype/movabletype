@@ -1394,6 +1394,9 @@ use vars qw( @ISA %Lexicon );
 	'Select Users' => 'ユーザーを選択',
 	'User load failed: [_1]' => 'ユーザーをロードできませんでした: [_1]',
 	'Users Selected' => '選択されたユーザー',
+	q{Group '[_1]' (ID:[_2]) deleted by '[_3]'} => q{[_3]がグループ「[_1]」(ID:[_2]) を削除しました。},
+	q{Group '[_1]' (ID:[_2]) edited by '[_3]'} => q{[_3]がグループ「[_1]」(ID:[_2])を編集しました。},
+	q{Group '[_1]' created by '[_2]'.} => q{[_2]がグループ「[_1]」を作成しました。},
 	q{User '[_1]' (ID:[_2]) removed from group '[_3]' (ID:[_4]) by '[_5]'} => q{[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」から削除しました。},
 	q{User '[_1]' (ID:[_2]) was added to group '[_3]' (ID:[_4]) by '[_5]'} => q{[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」に追加しました。},
 
@@ -1506,6 +1509,7 @@ use vars qw( @ISA %Lexicon );
 	'One or more errors were found in the included template module ([_1]).' => 'テンプレートモジュール([_1])でエラーが見つかりました。',
 	'One or more errors were found in this template.' => 'テンプレートでエラーが見つかりました。',
 	'Orphaned' => 'Orphaned',
+	'Output filename contains an inappropriate whitespace.' => '出力ファイル名に不適切な空白が含まれています。',
 	'Preview' => 'プレビュー',
 	'Published Date' => '公開日',
 	'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.' => '「[_3]」を初期化します(<a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">バックアップ</a>)。',
@@ -1532,6 +1536,7 @@ use vars qw( @ISA %Lexicon );
 	'system' => 'システム',
 	'template' => 'テンプレート',
 	'widget' => 'ウィジェット',
+	q{Archive mapping '[_1]' contains an inappropriate whitespace.} => q{アーカイブマッピング '[_1]' に不適切な空白が含まれています。},
 	q{Skipping template '[_1]' since it appears to be a custom template.} => q{カスタムテンプレートと思われるため、'[_1]'をスキップします。},
 	q{Skipping template '[_1]' since it has not been changed.} => q{[_1]は変更されていないのでスキップします。},
 	q{Template '[_1]' (ID:[_2]) created by '[_3]'} => q{'[_3]'がテンプレート'[_1]'(ID:[_2])を作成しました。},
@@ -2403,6 +2408,9 @@ use vars qw( @ISA %Lexicon );
 	'Contacts' => '連絡先',
 	'Save Changes' => '変更を保存',
 
+## lib/MT/Object.pm
+	'An error occurred while saving changes to the database.' => 'データベースへの保存中にエラーが発生しました。',
+
 ## lib/MT/ObjectAsset.pm
 	'Asset Placement' => 'アセットの関連付け',
 
@@ -2562,7 +2570,7 @@ use vars qw( @ISA %Lexicon );
 	', uppercase and lowercase letters' => '、大文字と小文字を含む',
 	'Actions' => 'アクション',
 	'All About Me' => 'All About Me',
-	'Cannot load template' => 'てんぷれーとを読み込めません',
+	'Cannot load template' => 'テンプレートを読み込めません',
 	'Cannot load user.' => 'ユーザーをロードできませんでした。',
 	'Choose the display options for this content field in the listing screen.' => '一覧での表示について選択します。',
 	'Default' => '既定値',
@@ -3716,6 +3724,7 @@ use vars qw( @ISA %Lexicon );
 	'Export (e)' => 'エクスポート',
 	'No size limit' => '分割しない',
 	'Reset' => 'リセット',
+	'Not all the tables are exported. If you need to back up everything (including config, session values, logs, and so on), consider using a database utility. You can also download public logs from the <a href="[_1]">Log</a> menu.' => 'エクスポートには含まれない情報もあります。設定やセッション情報、ログなども含めた完全なバックアップが必要な場合はデータベース付属のユーティリティの利用を検討してください。管理画面から確認できるログについては<a href="[_1]">ログ</a>メニューからもダウンロードできます。',
 	'Target File Size' => '出力ファイルのサイズ',
 	'What to Export' => 'エクスポート対象',
 	q{Don't compress} => q{圧縮しない},
@@ -4136,6 +4145,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/content_field_type_options/asset_image.tmpl
 	'Allow users to select multiple image assets?' => '複数の画像の選択を許可する',
 	'Allow users to upload a new image asset?' => '新しい画像ファイルのアップロードを許可する',
+	'Thumbnail height' => 'サムネイル画像の最大高',
+	'Thumbnail width' => 'サムネイル画像の最大幅',
 
 ## tmpl/cms/content_field_type_options/asset_video.tmpl
 	'Allow users to select multiple video assets?' => '複数のビデオの選択を許可する',
@@ -4575,7 +4586,8 @@ use vars qw( @ISA %Lexicon );
 	'(Number of decimal places: [_1])' => '(小数点以下の桁数: [_1])',
 	'<a href="[_1]" >Create another [_2]?</a>' => '続けて<a href="[_1]">[_2]を作成</a>しますか？',
 	'@' => '@',
-	'A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'コンテンツデータは自動保存されています([_2])。<a href="[_1]" class="alert-link">自動保存された内容を元に戻す</a>',
+	'A saved version of this content data was auto-saved [_2] but it is outdated.<br><a href="[_1]" class="alert-link">Recover auto-saved content</a> / <a href="[_3]" class="alert-link">Discard auto-saved content</a>' => 'このコンテンツデータには[_2]に自動保存された修正版がありますが、現在の内容は自動保存よりも後に保存されたものです。<br><a href="[_1]" class="alert-link">自動保存された内容に戻す</a> / <a href="[_3]" class="alert-link">自動保存された内容を破棄する</a>',
+	'A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'このコンテンツデータには[_2]に自動保存された修正版があります。<a href="[_1]" class="alert-link">自動保存された内容に戻す</a>',
 	'An error occurred while trying to recover your saved content data.' => 'コンテンツデータを元に戻す際にエラーが発生しました。',
 	'Auto-saving...' => '自動保存中...',
 	'Change note' => '変更メモ',
@@ -4606,6 +4618,7 @@ use vars qw( @ISA %Lexicon );
 	'Warning: If you set the basename manually, it may conflict with another content data.' => '警告: 出力ファイル名を手動で設定すると、他のコンテンツデータと衝突を起こす可能性があります。',
 	'You have successfully recovered your saved content data.' => 'コンテンツデータを元に戻しました。',
 	'You must configure this site before you can publish this content data.' => 'コンテンツデータを公開する前にサイトの設定を行ってください。',
+	'[_1] is also editing the same data (last updated at [_2]).' => '同じコンテンツデータを編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
 	q{Warning: Changing this content data's basename may break inbound links.} => q{警告: このコンテンツデータの出力ファイル名の変更は、内部のリンク切れの原因となります。},
 
 ## tmpl/cms/edit_content_type.tmpl
@@ -4622,8 +4635,10 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '(カンマ区切りリスト)',
 	'(space-delimited list)' => '(スペース区切りリスト)',
 	'<a href="[_2]">[_1]</a>' => '<a href="[_2]">[_1]</a>',
-	'A saved version of this entry was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => '[_2]は自動保存されました。<a href="[_1]" class="alert-link">自動保存された内容を元に戻す</a>',
-	'A saved version of this page was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => '[_2]は自動保存されました。<a href="[_1]" class="alert-link">自動保存された内容を元に戻す</a>',
+	'A saved version of this entry was auto-saved [_2] but it is outdated.<br><a href="[_1]" class="alert-link">Recover auto-saved content</a> / <a href="[_3]" class="alert-link">Discard auto-saved content</a>' => 'この記事には[_2]に自動保存された修正版がありますが、現在の内容は自動保存よりも後に保存されたものです。<br><a href="[_1]" class="alert-link">自動保存された内容に戻す</a> / <a href="[_3]" class="alert-link">自動保存された内容を破棄する</a>',
+	'A saved version of this entry was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'この記事には[_2]に自動保存された修正版があります。<a href="[_1]" class="alert-link">自動保存された内容に戻す</a>',
+	'A saved version of this page was auto-saved [_2] but it is outdated.<br><a href="[_1]" class="alert-link">Recover auto-saved content</a> / <a href="[_3]" class="alert-link">Discard auto-saved content</a>' => 'このウェブページには[_2]に自動保存された修正版がありますが、現在の内容は自動保存よりも後に保存されたものです。<br><a href="[_1]" class="alert-link">自動保存された内容に戻す</a> / <a href="[_3]" class="alert-link">自動保存された内容を破棄する</a>',
+	'A saved version of this page was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'このウェブページには[_2]に自動保存された修正版があります。<a href="[_1]" class="alert-link">自動保存された内容に戻す</a>',
 	'Accept' => '受信設定',
 	'Add Entry Asset' => 'アセットの追加',
 	'Add category' => 'カテゴリを追加',
@@ -4677,6 +4692,8 @@ use vars qw( @ISA %Lexicon );
 	'Your customization preferences have been saved, and are visible in the form below.' => 'カスタマイズ設定を保存しました。下のフォームで確認できます。',
 	'Your notification has been sent.' => '通知を送信しました。',
 	'[_1] Assets' => '[_1]アセット',
+	'[_1] is also editing the same entry (last updated at [_2]).' => '同じ記事を編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
+	'[_1] is also editing the same page (last updated at [_2]).' => '同じウェブページを編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
 	'_USAGE_VIEW_LOG' => 'エラーの場合は、<a href="[_1]">ログ</a>をチェックしてください。',
 	'edit' => '編集',
 	q{(delimited by '[_1]')} => q{([_1]で区切る)},
@@ -4757,7 +4774,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_template.tmpl
 	': every ' => '毎',
 	'<a href="[_1]" class="rebuild-link">Publish</a> this template.' => 'このテンプレートを<a href="[_1]" class="rebuild-link">再構築する</a>',
-	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]" class="alert-link">Recover auto-saved content</a>' => '[_1]は自動保存されました。<a href="[_2]" class="alert-link">自動保存された内容を元に戻す</a>',
+	'A saved version of this [_1] was auto-saved [_3] but it is outdated.<br><a href="[_2]" class="alert-link">Recover auto-saved content</a> / <a href="[_4]" class="alert-link">Discard auto-saved content</a>' => 'この[_1]には[_3]に自動保存された修正版がありますが、現在の内容は自動保存よりも後に保存されたものです。<br><a href="[_2]" class="alert-link">自動保存された内容に戻す</a> / <a href="[_4]" class="alert-link">自動保存された内容を破棄する</a>',
+	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]" class="alert-link">Recover auto-saved content</a>' => '[_1]には[_3]に自動保存された修正版があります。<a href="[_2]" class="alert-link">自動保存された内容に戻す</a>',
 	'An error occurred while trying to recover your saved [_1].' => '[_1]を元に戻す際にエラーが発生しました。',
 	'Archive map has been successfully updated.' => 'アーカイブマッピングの更新を完了しました。',
 	'Are you sure you want to remove this template map?' => 'テンプレートマップを削除してよろしいですか?',
@@ -4818,6 +4836,7 @@ use vars qw( @ISA %Lexicon );
 	'You must set the Template Name.' => 'テンプレート名を設定してください。',
 	'You must set the template Output File.' => 'テンプレートの出力ファイル名を設定してください。',
 	'Your [_1] has been published.' => '[_1]を再構築しました。',
+	'[_1] is also editing the same template (last updated at [_2]).' => '同じテンプレートを編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
 	'create' => '新規作成',
 	'hours' => '時間',
 	'minutes' => '分',
