@@ -3124,6 +3124,9 @@ _4]'から削除しました。},
 	'Click to edit contact' => 'クリックして連絡先を編集',
 	'Contacts' => '連絡先',
 
+## lib/MT/Object.pm
+	'An error occurred while saving changes to the database.' => 'データベースへの保存中にエラーが発生しました。',
+
 ## lib/MT/ObjectAsset.pm
 	'Asset Placement' => 'アイテムの関連付け',
 
@@ -4429,6 +4432,7 @@ _4]'から削除しました。},
 	'Make Backup (b)' => 'バックアップを作成 (b)',
 	'Make Backup' => 'バックアップを作成',
 	'No size limit' => '分割しない',
+	'Not all the tables are backed up. If you need to back up everything (including config, session values, logs, and so on), consider using a database utility. You can also download public logs from the <a href="[_1]">Log</a> menu.' => 'バックアップには含まれない情報もあります。設定やセッション情報、ログなども含めた完全なバックアップが必要な場合はデータベース付属のユーティリティの利用を検討してください。管理画面から確認できるログについては<a href="[_1]">ログ</a>メニューからもダウンロードできます。',
 	'Target File Size' => '出力ファイルのサイズ',
 	'The type of archive format to use.' => '使用するフォーマットの種類を選択します。',
 	'This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.' => 'このオプションでユーザー、ロール、アソシエーション、ブログ、記事、カテゴリ、テンプレート、タグをバックアップできます。',

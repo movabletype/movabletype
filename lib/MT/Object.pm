@@ -1069,7 +1069,10 @@ sub save {
         $obj->SUPER::save(@_);
     };
     if ( my $err = $@ ) {
-        return $obj->error($err);
+        require MT::Util::Log;
+        MT::Util::Log::init();
+        MT::Util::Log->error($err);
+        return $obj->error(MT->translate('An error occurred while saving changes to the database.'));
     }
     delete $obj->{__orig_value};
     return $res;
