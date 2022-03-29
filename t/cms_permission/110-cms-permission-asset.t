@@ -12,6 +12,9 @@ BEGIN {
         DefaultLanguage => 'en_US',    ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    # Disable Commercial.pack temporarily.
+    $test_env->skip_if_addon_exists('Commercial.pack');
 }
 
 use MT::Test;
