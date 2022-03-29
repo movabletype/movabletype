@@ -15,11 +15,14 @@ use MT::DataAPI::Resource;
 sub list {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my $res = filtered_list( $app, $endpoint, 'tag' )
         or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -36,7 +39,7 @@ sub list_for_site {
         or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -44,6 +47,9 @@ sub list_for_site {
 
 sub get {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my $tag = _retrieve_tag($app) or return;
 
@@ -68,6 +74,9 @@ sub get_for_site {
 
 sub rename {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my ($orig_tag) = _retrieve_tag($app) or return;
 
@@ -147,6 +156,9 @@ sub rename_for_site {
 
 sub delete {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my ($tag) = _retrieve_tag($app) or return;
 

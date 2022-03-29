@@ -985,6 +985,7 @@ sub _make_content_data_listing_screens {
                     'access_to_content_data_list',
                 ];
             },
+            data_api_permission => undef,
             feed_link => sub {
 
                 # TODO: fix permission

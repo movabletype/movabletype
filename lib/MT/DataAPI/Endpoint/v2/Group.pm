@@ -22,7 +22,7 @@ sub list {
     my $res = filtered_list( $app, $endpoint, 'group' ) or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -51,7 +51,7 @@ sub list_for_user {
         or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -172,7 +172,7 @@ sub list_members_for_group {
         or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };

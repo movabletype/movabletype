@@ -28,7 +28,7 @@ sub list_common {
 
     my $res = filtered_list( $app, $endpoint, $class, \%terms ) or return;
 
-    +{  totalResults => $res->{count},
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -120,7 +120,7 @@ sub list_siblings_common {
     );
     my $res = filtered_list( $app, $endpoint, $class, \%terms ) or return;
 
-    +{  totalResults => $res->{count},
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -317,7 +317,7 @@ sub list_for_entry {
     );
     my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
 
-    +{  totalResults => $res->{count},
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
