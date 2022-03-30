@@ -230,6 +230,7 @@ sub report {
 my %l10n_classes = (
     'feeds-app-lite' => 'FeedsLite::L10N',
     'mixiComment'    => 'mixiComment::L10N',
+    'spamlookup'     => 'spamlookup::L10N',
 );
 
 sub l10n_class {
