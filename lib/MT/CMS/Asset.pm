@@ -1040,7 +1040,8 @@ sub build_asset_hasher {
                 = $obj->$thumbnail_method(
                 Height => $height,
                 Width  => $width,
-                Square => $square
+                Square => $square,
+                Ts     => 1,
                 );
 
             $meta->{thumbnail_width_offset}
@@ -1053,6 +1054,7 @@ sub build_asset_hasher {
                     = $obj->$thumbnail_method(
                     Height => $default_preview_height,
                     Width  => $default_preview_width,
+                    Ts     => 1,
                     );
                 $meta->{preview_width_offset} = int(
                     ( $default_preview_width - $meta->{preview_width} ) / 2 );

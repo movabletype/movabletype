@@ -27,6 +27,9 @@ our (
 );
 my %Text_filters;
 
+our $STATUS;
+$SIG{USR2} = sub { $MT::STATUS ||= 'Got USR2 signal'; print STDERR "$$: $MT::STATUS\n"; return };
+
 # For state determination in MT::Object
 our $plugins_installed;
 
@@ -39,7 +42,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.8.2',              '__PRODUCT_VERSION_ID__',
+        '6.8.5',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +59,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 2;
+        $RELEASE_NUMBER = 5;
     }
 
     $DebugMode = 0;

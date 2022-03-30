@@ -59,6 +59,11 @@ use vars qw($server);
         MT::XMLRPCServer::Util::mt_new;
         XMLRPC::Transport::HTTP::FCGI->new;
         };
-    $server->dispatch_to( 'blogger', 'metaWeblog', 'mt', 'wp' );
+    $server->dispatch_with( {
+        'mt'         => 'MT::XMLRPCServer',
+        'blogger'    => 'blogger',
+        'metaWeblog' => 'metaWeblog',
+        'wp'         => 'wp',
+    } );
     $server->handle;
 }

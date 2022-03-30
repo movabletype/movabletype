@@ -2154,6 +2154,8 @@ BEGIN {
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
 
+            'DisableImagePopup' => undef,
+            'HideVersion' => { default => 1 },
             'HideConfigWarnings' => { default => undef },
         },
         upgrade_functions => \&load_upgrade_fns,
