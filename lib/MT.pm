@@ -2202,7 +2202,7 @@ sub build_page {
         $param->{ $config_field . '_readonly' } = 1;
     }
 
-    $param->{disable_self_managed} = $mt->config->DisableSelfManaged;
+    $param->{hide_config_warnings} = $mt->config->HideConfigWarnings;
 
     my $tmpl_file = '';
     if ( UNIVERSAL::isa( $file, 'MT::Template' ) ) {
