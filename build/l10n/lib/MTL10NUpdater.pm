@@ -16,9 +16,7 @@ sub new {
 }
 
 sub names {
-    my $self = shift;
-    return '' unless $self->parent;
-
+    my $self  = shift;
     my @names = @{ $self->{name} // [] };
     if (!@names) {
         if ($self->parent) {
@@ -58,9 +56,9 @@ sub mt_dir {
 }
 
 sub _mt_dir {
-    my $self = shift;
+    my $self     = shift;
     my $basename = $self->_basename;
-    my $parent = $self->parent or return Cwd::realpath(".");
+    my $parent   = $self->parent or return Cwd::realpath(".");
     $basename =~ s/\-$parent//;
     Cwd::realpath("../$basename");
 }
@@ -96,17 +94,17 @@ sub slurp {
 sub is_addons { shift->parent eq 'addons' }
 
 sub langs {
-    my $self = shift;
+    my $self  = shift;
     my @langs = @{ $self->{lang} // [] };
     if (!@langs) {
-#        @langs = qw(de es fr ja nl);
+        # @langs = qw(de es fr ja nl);
         @langs = qw(ja);
     }
     @langs;
 }
 
 sub update {
-    my $self = shift;
+    my $self    = shift;
     my $verbose = $self->{verbose};
     my @needs_update;
     my @possibly_removable;
@@ -117,7 +115,7 @@ sub update {
         for my $lang ($self->langs) {
             my ($preamble, $lexicon) = $self->load_current_l10n($name, $lang);
             my $core_lexicon = $self->load_core_l10n($lang) // {};
-            my $output = $preamble . '%Lexicon = (' . "\n";
+            my $output       = $preamble . '%Lexicon = (' . "\n";
             my %seen;
             for my $path (sort keys %$mapping) {
                 my @lines;
@@ -126,11 +124,11 @@ sub update {
                     my $phrase = $item;
                     if (ref $item eq 'ARRAY') {
                         $component = $item->[1];
-                        $phrase = $item->[0];
+                        $phrase    = $item->[0];
                     }
                     next if $seen{$phrase}++;
                     next if $phrase =~ /\A\s*\z/;
-                    my $trans = $lexicon->{$phrase};
+                    my $trans   = $lexicon->{$phrase};
                     my $message = '';
                     my $is_core;
                     my $core_trans = $core_lexicon->{$phrase} // $core_lexicon->{ lc $phrase };
@@ -153,14 +151,12 @@ sub update {
                             push @contradicted, [$name, $lang, $phrase, "$trans <=> $core_trans"];
                         }
                         $is_core = 1 unless $component;
-                    }
-                    elsif (!defined $trans or $trans eq '') {
-                        if (defined $lexicon->{lc $phrase} && $lexicon->{lc $phrase} ne '') {
-                            $trans = $lexicon->{lc $phrase};
+                    } elsif (!defined $trans or $trans eq '') {
+                        if (defined $lexicon->{ lc $phrase } && $lexicon->{ lc $phrase } ne '') {
+                            $trans   = $lexicon->{ lc $phrase };
                             $message = $verbose ? ' # Translate - Case' : '';
-                        }
-                        else {
-                            $trans = '';
+                        } else {
+                            $trans   = '';
                             $message = ' # Translate - New';
                         }
                         push @needs_update, [$name, $lang, $phrase, ""];
@@ -170,7 +166,7 @@ sub update {
                         ($qs, $qe) = ('q{', '}');
                         if ($phrase =~ /\n/s) {
                             $phrase =~ s/\n/\\n/gs;
-                            $trans =~ s/\n/\\n/gs;
+                            $trans  =~ s/\n/\\n/gs;
                             $qs = 'qq{';
                         }
                         if ($phrase =~ /[{}]/ or $trans =~ /[{}]/) {
@@ -180,7 +176,7 @@ sub update {
                         }
                         if ($trans && ($phrase =~ /\n/s or $trans =~ /\n/s)) {
                             my $phrase_n = $phrase =~ tr/\n/\n/;
-                            my $trans_n = $trans =~ tr/\n/\n/;
+                            my $trans_n  = $trans  =~ tr/\n/\n/;
                             warn encode_utf8("Unexpected \\n: in $name $lang ($phrase_n <=> $trans_n):\nPHRASE $phrase\nTRANS: $trans\n");
                         }
                     }
@@ -188,7 +184,7 @@ sub update {
                     if ($is_core && $self->{ignore_core}) {
                         $line =~ s/^/#/gm;
                     }
-                    push @lines, $line; 
+                    push @lines, $line;
                 }
                 next unless @lines;
                 @lines = sort @lines if $self->{sort};
@@ -219,7 +215,7 @@ sub update {
 }
 
 sub report {
-    my $list = shift;
+    my $list    = shift;
     my $current = '';
     for my $item (@$list) {
         my $flag = "$item->[0]: $item->[1]";
@@ -276,22 +272,21 @@ sub has_l10n {
 
 sub core_l10n_file {
     my ($self, $lang) = @_;
-    Cwd::realpath(File::Spec->catfile( $self->mt_dir, "lib", "MT", "L10N", $lang . ".pm" ));
+    Cwd::realpath(File::Spec->catfile($self->mt_dir, "lib", "MT", "L10N", $lang . ".pm"));
 }
 
 sub load_current_l10n {
     my ($self, $name, $lang) = @_;
 
     my $package = $self->l10n_class($name) . "::$lang";
-    my $file = $self->l10n_file($name, $lang) or die "No l10n file: $name $lang";
-    my $module = $self->slurp($file);
+    my $file    = $self->l10n_file($name, $lang) or die "No l10n file: $name $lang";
+    my $module  = $self->slurp($file);
     $module =~ s/\A(.+?)(\%Lexicon\s*=)/package $package; use utf8; our $2/s;
     my $preamble = $1 or die "No preamble? $name $lang";
     $module =~ s/^\s*use base.+$//m;
     eval $module or die "Failed to load current l10n module $name $lang: $@";
     no strict 'refs';
     my %lexicon = %{"$package\::Lexicon"};
-
     ($preamble, \%lexicon);
 }
 
@@ -302,7 +297,7 @@ sub load_core_l10n {
         warn "Core l10n file is missing: $file";
     }
     my $package = join "::", "MT", "L10N", $lang;
-    
+
     my $module = $self->slurp($file);
     $module =~ s/\A(?:.+?)(\%Lexicon\s*=)/package $package; use utf8; our $1/s;
     eval $module or die "Failed to load core l10n module $lang: $@";
@@ -385,7 +380,7 @@ sub find_phrases {
 
 sub _find_phrases {
     my ($self, $file, $mapping) = @_;
-    my $path = $self->relative($file);
+    my $path    = $self->relative($file);
     my $content = $self->slurp($file);
 
     my $check_component = $file =~ /addons|plugins/ ? 1 : 0;
@@ -393,7 +388,7 @@ sub _find_phrases {
     my @phrases;
     while ($content =~ m!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!igm) {
         my ($msg, %args) = ($1);
-        while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<[^>]+?>|[^\2])*?)?\2/g) {  #'
+        while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<[^>]+?>|[^\2])*?)?\2/g) {    #'
             $args{$1} = $3;
         }
         next unless exists $args{phrase};
@@ -416,7 +411,7 @@ sub _find_phrases {
         $phrase =~ s/(?<![':\\])\\'/'/g;
         $phrase =~ s/\\n/\n/g;
         if ($check_component && $component && $component !~ /^(?:MT|\$mt|\$ctx->mt|\$app|\$self|\$class)$/) {
-            push @phrases, [$phrase, $component];  # component-specific
+            push @phrases, [$phrase, $component];    # component-specific
         } else {
             push @phrases, $phrase;
         }
@@ -424,7 +419,7 @@ sub _find_phrases {
 
     while ($content =~ /\s*(?:["'])?label(?:_plural)?(?:["'])?\s*=>\s*(["'])(.*?)([^\\])\1/gs) {
         next if $2 =~ /^$1/;
-        my $phrase = $2.$3;
+        my $phrase = $2 . $3;
         next if $phrase =~ /^string\(/;
         $phrase =~ s/(?<![':\\])\\'/'/g;
         if ($check_component) {
@@ -441,8 +436,7 @@ sub _find_phrases {
             $phrase =~ s/(?<![':\\])\\'/'/g;
             push @phrases, $phrase;
         }
-    }
-    elsif ($path =~ /\.yaml$/) {
+    } elsif ($path =~ /\.yaml$/) {
         while ($content =~ /\s*(?:label:|label_plural:)\s*(.+)/g) {
             my $phrase = $1;
             $phrase =~ s/(^'+|'+$)//g;
