@@ -8,11 +8,7 @@ use File::Find;
 use File::Basename;
 use Encode;
 use YAML::Tiny;
-
-my @ignore = qw(
-);
-
-my $core_plugin_re = qr(BlockEditor|ContentInfo|FormattedText|GoogleAnalytics|Markdown|Textile|TinyMCE|WXRImporter|WidgetManager);
+use Regexp::Trie;
 
 sub new {
     my ($class, %args) = @_;
@@ -25,7 +21,12 @@ sub names {
 
     my @names = @{ $self->{name} // [] };
     if (!@names) {
-        @names = map { basename($_) } grep -d $_, glob $self->path($self->parent, '*');
+        if ($self->parent) {
+            @names = map { basename($_) } grep -d $_, glob $self->extra_path('*');
+        } else {
+            @names = map { basename($_) } grep -d $_, glob $self->path('plugins/*');
+            push @names, '';
+        }
     }
     if ($self->is_addons) {
         return map { s/\.pack$//; $_ } @names;
@@ -69,6 +70,16 @@ sub path {
     Cwd::realpath(File::Spec->catdir($self->root, @_));
 }
 
+sub extra_path {
+    my $self = shift;
+    $self->path($self->parent ? $self->parent : 'plugins', @_);
+}
+
+sub extra_static_path {
+    my $self = shift;
+    $self->path("mt-static", $self->parent ? $self->parent : 'plugins', @_);
+}
+
 sub relative {
     my ($self, $path) = @_;
     File::Spec->abs2rel($path, $self->root);
@@ -101,9 +112,9 @@ sub update {
     my @possibly_removable;
     my @contradicted;
     for my $name ($self->names) {
+        next if $name && !$self->has_l10n($name);
         my $mapping = $self->find_phrases($name);
         for my $lang ($self->langs) {
-            print STDERR "Updating $name $lang\n";
             my ($preamble, $lexicon) = $self->load_current_l10n($name, $lang);
             my $core_lexicon = $self->load_core_l10n($lang) // {};
             my $output = $preamble . '%Lexicon = (' . "\n";
@@ -122,16 +133,16 @@ sub update {
                     my $trans = $lexicon->{$phrase};
                     my $message = '';
                     my $is_core;
-                    my $core_trans = $core_lexicon->{$phrase} // $core_lexicon->{lc $phrase};
-                    if ($core_trans or ($component && !$self->parent)) {
+                    my $core_trans = $core_lexicon->{$phrase} // $core_lexicon->{ lc $phrase };
+                    if ($core_trans or ($component && !$self->has_l10n($name))) {
                         $trans //= $core_trans;
-                        $message = $verbose && $self->parent ? ' # Core' : '';
+                        $message = $verbose && $self->has_l10n($name) ? ' # Core' : '';
                         if ($component) {
                             if ($verbose) {
-                                $message = '#' unless $self->parent;
+                                $message = '#' unless $self->has_l10n($name);
                                 $message .= " (possibly removable from core: $component)";
                             }
-                            if (!$verbose && !$self->parent) {
+                            if (!$verbose && !$self->has_l10n($name)) {
                                 $seen{$phrase}--;
                                 next;
                             }
@@ -227,25 +238,40 @@ my %l10n_classes = (
 
 sub l10n_class {
     my ($self, $name) = @_;
-    return "MT::L10N" unless $self->parent;
+    return "MT::L10N" unless $name;
 
-    my $config = $self->load_config_yaml($name);
-    my $l10n_class = $config->{l10n_class} // $l10n_classes{$name} // "MT::${name}::L10N";
+    my $config = $self->load_config($name);
+    $self->{l10n_class}{$name} = $config->{l10n_class} // $l10n_classes{$name} // '';
 }
 
 sub l10n_file {
     my ($self, $name, $lang) = @_;
     my $l10n_class = $self->l10n_class($name, $lang);
-    $self->path( $self->parent, $self->is_addons ? "$name.pack" : $name, "lib", split('::', $l10n_class), "$lang.pm" );
+    my $file;
+    if ($name) {
+        $file = $self->extra_path($self->is_addons ? "$name.pack" : $name, "lib", split('::', $l10n_class), "$lang.pm");
+        if (!$file or !-f $file) {
+            $file = $self->path("lib/MT/L10N/$lang.pm");
+        }
+    } else {
+        $file = $self->path("lib", split('::', $l10n_class), "$lang.pm");
+    }
+    $file;
 }
 
-sub load_config_yaml {
+sub load_config {
     my ($self, $name) = @_;
-    my $file = $self->path( $self->parent, $self->is_addons ? "$name.pack" : $name, 'config.yaml' );
+    my $file = $self->extra_path($self->is_addons ? "$name.pack" : $name, 'config.yaml');
     return {} unless $file && -f $file;
     my $config = YAML::Tiny::LoadFile($file);
     $config = $config->[0] if ref $config eq 'ARRAY';
     return $config;
+}
+
+sub has_l10n {
+    my ($self, $name) = @_;
+    return unless $name;
+    $self->{l10n_class}{$name} // $self->l10n_class($name) ? 1 : 0;
 }
 
 sub core_l10n_file {
@@ -290,11 +316,10 @@ sub find_phrases {
     $name .= ".pack" if $self->is_addons;
 
     my @dirs;
-    my $ignore_re;
-    if ($self->parent) {
+    if ($self->has_l10n($name)) {
         @dirs = (
-            $self->path($self->parent, $name),
-            $self->path("mt-static", $self->parent, $name),
+            $self->extra_path($name),
+            $self->extra_static_path($name),
         );
     } else {
         @dirs = qw(
@@ -308,53 +333,52 @@ sub find_phrases {
             addons
             plugins
         );
-        require Regexp::Trie;
-        my $rt = Regexp::Trie->new;
-        $rt->add($_) for qw(
-            fabric.js
-            chart-api/mtchart.js
-            tiny_mce/plugins/insertdatetime/plugin.js
-            tiny_mce/plugins/save/plugin.js
-            tiny_mce/plugins/spellchecker/plugin.js
-            tiny_mce/plugins/template/plugin.js
-            tiny_mce/plugins/textcolor/plugin.js
-            tiny_mce/plugins/toc/plugin.js
-            tiny_mce/tinymce.js
-            tiny_mce/plugins/help/plugin.js
-            tiny_mce/themes/silver/theme.js
-            themes/mont-blanc/
-            php/lib/content_field_type_lib.php
-        );
-        $ignore_re = $rt->regexp;
     }
+
+    my $ignore_re = _gen_re(qw(
+        fabric.js
+        chart-api/mtchart.js
+        tiny_mce/plugins/insertdatetime/plugin.js
+        tiny_mce/plugins/save/plugin.js
+        tiny_mce/plugins/spellchecker/plugin.js
+        tiny_mce/plugins/template/plugin.js
+        tiny_mce/plugins/textcolor/plugin.js
+        tiny_mce/plugins/toc/plugin.js
+        tiny_mce/tinymce.js
+        tiny_mce/plugins/help/plugin.js
+        tiny_mce/themes/silver/theme.js
+        themes/mont-blanc/
+        php/lib/content_field_type_lib.php
+    ));
 
     my $verbose = $self->{verbose};
     my %mapping;
 
-    for my $file (glob "*.cgi") {
-        $self->_find_phrases($file, \%mapping);
+    if (!$name) {
+        for my $file (glob "*.cgi") {
+            $self->_find_phrases($file, \%mapping);
+        }
     }
 
     for my $dir (@dirs) {
         next unless -d $dir;
         finddepth({
-            no_chdir => 1,
-            follow => $self->parent ? 0 : 1,
-            preprocess => sub {
-                my @dirs = @_;
-                grep {basename($_) !~ m!(?:^|/)(?:\.|extlib|local|t)$!} @dirs
-            },
-            wanted => sub {
-                my $file = $File::Find::name;
-                return unless -f $file && $file =~ /\.(?:cgi|pm|pl|php|tmpl|pre|js|mtml|tag|yaml|cfg)$/;
-                return if $file =~ /min\.js$/;
-                return if $file =~ m!/L10N/!;
-                return if $ignore_re && $file =~ /$ignore_re/;
-                print STDERR "Scanning $file\n" if $verbose;
+                no_chdir => 1,
+                follow   => $self->parent ? 0 : 1,
+                wanted   => sub {
+                    my $file = $File::Find::name;
+                    return unless -f $file && $file =~ /\.(?:cgi|pm|pl|php|tmpl|pre|js|mtml|tag|yaml|cfg)$/;
+                    return                          if $file               =~ m!(?:^|/)(?:\.[^/]+|extlib|local|t)(?:/|$)!;
+                    return                          if $file               =~ /min\.js$/;
+                    return                          if $file               =~ m!/L10N/!;
+                    return                          if $ignore_re && $file =~ /$ignore_re/;
+                    print STDERR "Scanning $file\n" if $verbose;
 
-                $self->_find_phrases($file, \%mapping);
+                    $self->_find_phrases($file, \%mapping);
+                },
             },
-        }, $dir);
+            $dir
+        );
     }
     \%mapping;
 }
@@ -364,7 +388,7 @@ sub _find_phrases {
     my $path = $self->relative($file);
     my $content = $self->slurp($file);
 
-    my $check_component = $file =~ /addons|plugins/ && $file !~ /$core_plugin_re/ ? 1 : 0;
+    my $check_component = $file =~ /addons|plugins/ ? 1 : 0;
 
     my @phrases;
     while ($content =~ m!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!igm) {
@@ -432,6 +456,12 @@ sub _find_phrases {
     }
 
     $mapping->{$path} = \@phrases;
+}
+
+sub _gen_re {
+    my $rt = Regexp::Trie->new;
+    $rt->add($_) for @_;
+    $rt->regexp;
 }
 
 1;
