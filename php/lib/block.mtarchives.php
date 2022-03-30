@@ -9,8 +9,8 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('current_archive_type', 'archive_types', 'archive_type_index', 'old_preferred_archive_type'), common_loop_vars());
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
-        $at = $args['type'];
-        $at or $at = $args['archive_type'];
+        $at = isset($args['type']) ? $args['type'] : null;
+        $at or $at = isset($args['archive_type']) ? $args['archive_type'] : null;
         $at or $at = $blog->blog_archive_type;
         if (empty($at) || $at == 'None') {
             $repeat = false;

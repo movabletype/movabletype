@@ -1847,14 +1847,17 @@ BEGIN {
                 default => sub { $_[0]->CGIPath }
             },
             'BaseSitePath'                   => undef,
+            'BaseTemplatePath'               => { default => undef },
             'HideBaseSitePath'               => { default => 0, },
             'HidePerformanceLoggingSettings' => { default => 0, },
             'HidePaformanceLoggingSettings' =>
                 { alias => 'HidePerformanceLoggingSettings' },
             'CookieDomain'          => undef,
             'CookiePath'            => undef,
+            'MailModule'            => { default => 'MIME::Lite', },
             'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
+            'MailTransferEncoding'  => undef,
             'SMTPServer'            => { default => 'localhost', },
             'SMTPAuth'              => { default => 0, },
             'SMTPUser'              => undef,
@@ -2035,19 +2038,19 @@ BEGIN {
             'NewsboxURL' => {
                 default => 'https://www.movabletype.org/news/newsbox.json',
             },
-            'FeedbackURL' =>
-                { default => 'http://www.movabletype.org/feedback.html', },
+            'FeedbackURL' => { default => 'http://www.movabletype.org/feedback.html', },
 
-            'EmailAddressMain'      => undef,
-            'EmailReplyTo'          => undef,
-            'EmailNotificationBcc'  => { default => 1, },
-            'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
-            'UserSessionTimeout'    => { default => 60 * 60 * 4, },
-            'UserSessionCookieName' => { default => \&UserSessionCookieName },
-            'UserSessionCookieDomain' =>
-                { default => '<$MTBlogHost exclude_port="1"$>' },
-            'UserSessionCookiePath' => { default => \&UserSessionCookiePath },
+            'EmailAddressMain'         => undef,
+            'EmailReplyTo'             => undef,
+            'EmailNotificationBcc'     => { default => 1, },
+            'CommentSessionTimeout'    => { default => 60 * 60 * 24 * 3, },
+            'UserSessionTimeout'       => { default => 60 * 60 * 4, },
+            'AutosaveSessionTimeout'   => { default => 60 * 60 * 24 * 30, },
+            'UserSessionCookieName'    => { default => \&UserSessionCookieName },
+            'UserSessionCookieDomain'  => { default => '<$MTBlogHost exclude_port="1"$>' },
+            'UserSessionCookiePath'    => { default => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
+            'MaxUserSession'           => { default => 10000 },
             'LaunchBackgroundTasks'    => { default => 0 },
             'TransparentProxyIPs'      => { default => 0, },
             'DebugMode'                => { default => 0, },
@@ -2257,6 +2260,12 @@ BEGIN {
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
 
+            'DisableImagePopup' => undef,
+            'ForceExifRemoval' => { default => 1 },
+            'TemporaryFileExpiration' => { default => 60 * 60 },
+            'ForceAllowStringSub' => undef,
+            'PSGIStreaming' => { default => 1 },
+            'HideVersion' => { default => 1 },
             'HideConfigWarnings' => { default => undef },
         },
         upgrade_functions => \&load_upgrade_fns,
@@ -2316,6 +2325,7 @@ BEGIN {
             },
             'cms' => {
                 handler         => 'MT::App::CMS',
+                type            => 'psgi_streaming',
                 script          => sub { MT->config->AdminScript },
                 cgi_path        => sub { MT->config->AdminCGIPath },
                 cgi_base        => 'mt',
@@ -2604,7 +2614,7 @@ sub load_core_tasks {
         },
         'CleanTemporaryFiles' => {
             label     => 'Remove Temporary Files',
-            frequency => 60 * 60,                    # once per hour
+            frequency => $cfg->TemporaryFileExpiration,   # once per hour by default
             code      => sub {
                 MT::Core->remove_temporary_files;
             },
@@ -2682,16 +2692,21 @@ sub remove_compiled_template_files {
 sub remove_temporary_files {
     require MT::Session;
 
+    my $expiration = MT->config->TemporaryFileExpiration;
+
     my @files
         = MT::Session->load(
-        { kind => 'TF', start => [ undef, time - 60 * 60 ] },
+        { kind => 'TF', start => [ undef, time - $expiration ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
+    my @ids;
     foreach my $f (@files) {
         if ( $fmgr->delete( $f->name ) ) {
-            $f->remove;
+            push @ids, $f->id;
         }
     }
+    return unless @ids;
+    MT::Session->remove({id => \@ids});
 
     # This is a silent task; no need to log removal of temporary files
     return '';
@@ -2724,6 +2739,10 @@ sub purge_session_records {
 
     # remove stale search cache
     MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },
+        { range => { start => 1 } } );
+
+    # remove autosave sessions
+    MT::Session->remove( { kind => 'AS', start => [ undef, time - MT->config->AutosaveSessionTimeout ] },
         { range => { start => 1 } } );
 
     # remove all the other session records

@@ -35,6 +35,15 @@ sub trans_error {
 
 sub errstr { ref( $_[0] ) ? $_[0]->{_errstr} : $ERROR }
 
+sub clear_error {
+    my $class = shift;
+    if (ref $class) {
+        delete $class->{_errstr};
+    } else {
+        undef $ERROR;
+    }
+}
+
 1;
 __END__
 

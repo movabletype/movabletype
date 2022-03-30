@@ -128,7 +128,6 @@ for my $type (qw(entry page)) {
                 local $app->config->{__var}{ lc('GlobalSanitizeSpec') } = $org_spec;
                 if (exists $data->{config} && exists $data->{config}{GlobalSanitizeSpec}) {
                     my $data_spec = $data->{config}{GlobalSanitizeSpec};
-                    $app->config->{__var}{ lc('GlobalSanitizeSpec') } = $data_spec;
                     $test_env->update_config(GlobalSanitizeSpec => $data_spec);
                 } else {
                     $test_env->update_config(GlobalSanitizeSpec => $org_spec);

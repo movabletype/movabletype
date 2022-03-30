@@ -1896,7 +1896,7 @@ sub _rebuild_content_archive_type {
                 : $obj->authored_on();
         }
 
-        my %blog_at = map { $_ => 1 } split /,/, $blog->archive_type;
+        my %blog_at = map { $_ => 1 } split /,/, ($blog->archive_type || '');
         return '' unless $blog_at{$at};
 
         $file = $archiver->archive_file(

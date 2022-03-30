@@ -7231,6 +7231,7 @@ button.bg-dark:focus {
 }
 
 .position-sticky {
+  position: -webkit-sticky !important;
   position: sticky !important;
 }
 
@@ -7250,8 +7251,9 @@ button.bg-dark:focus {
   z-index: 1030;
 }
 
-@supports (position: sticky) {
+@supports ((position: -webkit-sticky) or (position: sticky)) {
   .sticky-top {
+    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 1020;
@@ -11197,8 +11199,16 @@ fieldset.form-group {
   border-radius: 0.25rem;
 }
 
-.mt-draggable[draggable="true"], .mt-draggable--entryField[draggable="true"], .mt-draggable[aria-grabbed], .mt-draggable--entryField[aria-grabbed] {
+.mt-draggable[draggable="true"] .ui-sortable-handle, .mt-draggable--entryField[draggable="true"] .ui-sortable-handle, .mt-draggable[aria-grabbed] .ui-sortable-handle, .mt-draggable--entryField[aria-grabbed] .ui-sortable-handle {
   cursor: move;
+}
+
+.mt-draggable[draggable="true"] .ui-sortable-handle label, .mt-draggable--entryField[draggable="true"] .ui-sortable-handle label, .mt-draggable[aria-grabbed] .ui-sortable-handle label, .mt-draggable--entryField[aria-grabbed] .ui-sortable-handle label {
+  cursor: move;
+}
+
+.mt-draggable[draggable="true"] .mt-draggable__content, .mt-draggable--entryField[draggable="true"] .mt-draggable__content, .mt-draggable[aria-grabbed] .mt-draggable__content, .mt-draggable--entryField[aria-grabbed] .mt-draggable__content {
+  cursor: default;
 }
 
 .mt-draggable .mt-icon, .mt-draggable--entryField .mt-icon, .mt-draggable .mt-icon--primary, .mt-draggable--entryField .mt-icon--primary, .mt-draggable .mt-icon--secondary, .mt-draggable--entryField .mt-icon--secondary, .mt-draggable .mt-icon--success, .mt-draggable--entryField .mt-icon--success, .mt-draggable .mt-icon--info, .mt-draggable--entryField .mt-icon--info, .mt-draggable .mt-icon--warning, .mt-draggable--entryField .mt-icon--warning, .mt-draggable .mt-icon--danger, .mt-draggable--entryField .mt-icon--danger, .mt-draggable .mt-icon--inverse, .mt-draggable--entryField .mt-icon--inverse, .mt-draggable .mt-icon--secondary, .mt-draggable--entryField .mt-icon--secondary {
@@ -11638,7 +11648,6 @@ h3 .badge, .h3 .badge, .mt-mobileGlobalMenu__dropdownMenu .badge, .mt-mobileGlob
   top: -1px;
   width: 24px;
   fill: #595959;
-  pointer-events: none;
   vertical-align: middle;
 }
 
@@ -11900,5 +11909,17 @@ a:hover .mt-icon--secondary {
 /* Adjustments */
 .nav-tabs .nav-link.active {
   border-color: #ddd #ddd #FFFFFF;
+}
+
+/* edit entry image popup */
+ul#asset-list li img.list-image,
+ul.asset-list li img.list-image {
+  position: absolute;
+  z-index: 100;
+  left: -115px;
+  top: -5px;
+  padding: 5px;
+  background-color: #666666;
+  border-radius: 3px;
 }
 /*# sourceMappingURL=mt.css.map */

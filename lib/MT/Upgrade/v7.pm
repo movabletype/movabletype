@@ -181,6 +181,7 @@ sub upgrade_functions {
         'v7_reorder_warning_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type  => 'log',
                 label => 'Reorder WARNING level',
@@ -190,6 +191,7 @@ sub upgrade_functions {
         'v7_reorder_security_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type   => 'log',
                 label => 'Reorder SECURITY level',
@@ -199,10 +201,20 @@ sub upgrade_functions {
         'v7_reorder_debug_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type   => 'log',
                 label => 'Reorder DEBUG level',
                 sql   => 'UPDATE mt_log SET log_level = 0 WHERE log_level = 16',
+            },
+        },
+        'v7_remove_image_metadata' => {
+            version_limit => '7.0051',
+            priority      => 3.1,
+            updater       => {
+                type   => 'asset:meta',
+                label => 'Remove image metadata',
+                sql   => q{DELETE FROM mt_asset_meta WHERE asset_meta_type = 'image_metadata'},
             },
         },
     };
@@ -493,11 +505,7 @@ sub _migrate_system_privileges {
             'Migrating system level permissions to new structure...')
     );
 
-    my $iter = MT->model('author')->load_iter(
-        {   status => MT::Author::ACTIVE(),
-            type   => MT::Author::AUTHOR(),
-        }
-    );
+    my $iter = MT->model('author')->load_iter({ type => MT::Author::AUTHOR() });
     while ( my $author = $iter->() ) {
         $author->can_sign_in_cms(1);
         $author->can_sign_in_data_api(1);
@@ -1513,6 +1521,16 @@ sub _v7_remove_sql_set_names {
     my $cfg       = MT->config;
     $cfg->SQLSetNames( undef, 1 );
     $cfg->save_config;
+}
+
+sub _v7_reorder_log_level_condition {
+    my ( $self, %param ) = @_;
+    my $from = $param{from};
+
+    return unless $from;
+    return if $from >= 6.0026 && $from < 7;
+
+    1;
 }
 
 1;

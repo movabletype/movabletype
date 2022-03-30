@@ -8,8 +8,8 @@
 function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
     $localvars = array(array('content', 'content_type', '_contents_counter','contents','current_timestamp','modification_timestamp','_contents_limit', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_contents_glue', 'blog', 'blog_id', 'conditional', 'else_content', '__out'), common_loop_vars());
 
-    $blog_id = $args['site_id'];
-    $blog_id or $blog_id = $args['blog_id'];
+    $blog_id = isset($args['site_id']) ? $args['site_id'] : null;
+    $blog_id or $blog_id = isset($args['blog_id']) ? $args['blog_id'] : null;
     $blog_id or $blog_id = $ctx->stash('blog_id');
     if (!(isset($blog_id) && $blog_id)) {
         return $ctx->mt->translate("You used an '[_1]' tag outside of the context of the site;", 'mtContents');
@@ -20,8 +20,10 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         $ctx->localize($localvars);
 
         $content_type = _get_content_type( $ctx, $args, $blog_terms );
-        if (!is_array($content_type))
+        if (!is_array($content_type)) {
             $ctx->error($content_type);
+            $content_type = [];
+        }
         foreach ( $content_type as $c ) {
             $content_type_id[] = $c->content_type_id;
         }
@@ -29,7 +31,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         $tag = $ctx->this_tag();
         if ($tag == 'mtcontents' && isset($args['author']) )
             $ctx->__stash['contents'] = null;
-        if ($ctx->__stash['contents']) {
+        if (!empty($ctx->__stash['contents'])) {
             if (isset($args['id']) ||
                 isset($args['blog_id']) ||
                 isset($args['site_id']) ||
@@ -41,7 +43,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
                 $ctx->__stash['contents'] = null;
             }
         }
-        if ($ctx->__stash['contents']) {
+        if (!empty($ctx->__stash['contents'])) {
             foreach ($args as $k => $v) {
                 if (!substr_compare($k, 'field___', 0, 8)) {
                     $ctx->__stash['contents'] = null;
@@ -49,7 +51,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
                 }
             }
         }
-        if ($ctx->__stash['contents']) {
+        if (!empty($ctx->__stash['contents'])) {
             if (isset($args['sort_by'])) {
                 $ids = array();
                 foreach ($ctx->__stash['contents'] as $c) {
@@ -61,7 +63,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         }
 
         $counter = 0;
-        $limit = $args['limit'];
+        $limit = isset($args['limit']) ? $args['limit'] : null;
         if (!ctype_digit($limit) && $limit === 'none') {
             $limit = 0;
             $args['limit'] = 0;
@@ -99,7 +101,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
                     $args['current_timestamp_end'] = $tse;
                 }
                 if (isset($archiver)) {
-                    $args['limit'] or $args['limit'] = -1;
+                    !empty($args['limit']) or $args['limit'] = -1;
                     $archiver->setup_args($args);
                 }
             }
@@ -118,14 +120,14 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
 
             if ( isset($args['offset']) && ($args['offset'] == 'auto') )
                 $total_count = 0;
-            $contents = $ctx->mt->db()->fetch_contents($args, $content_type_id, $total_count);
+            $contents = $ctx->mt->db()->fetch_contents($args, isset($content_type_id) ? $content_type_id : null, $total_count);
             if ( isset($args['offset']) && ($args['offset'] == 'auto') )
                 $ctx->stash('__pager_total_count', $total_count);
             $ctx->stash('contents', $contents);
 
         }
 
-        $ctx->stash('_contents_glue', $args['glue']);
+        $ctx->stash('_contents_glue', isset($args['glue']) ? $args['glue'] : null);
         if (!isset($contents)) {
             $limit = 0;
         }

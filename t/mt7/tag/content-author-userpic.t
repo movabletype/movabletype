@@ -17,7 +17,7 @@ use utf8;
 
 use MT::Test::Tag;
 
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
@@ -73,6 +73,6 @@ __END__
 --- template
 <mt:Contents content_type="test content data"><mt:ContentAuthorUserpic></mt:Contents>
 --- expected
-<img src="/cgi-bin/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="Userpic" />
+<img src="/cgi-bin/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="Userpic" loading="lazy" decoding="async" />
 
 

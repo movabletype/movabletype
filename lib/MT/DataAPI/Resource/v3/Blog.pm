@@ -45,45 +45,46 @@ sub fields {
                     path => $dest,
                 };
             },
-            condition => \&_can_view,
+            condition => \&can_view,
         },
         {   name                => 'extraPath',
             alias               => 'extra_path',
             from_object         => sub { $_[0]->extra_path; },
             from_object_default => '',
-            condition           => \&_can_view,
+            condition           => \&can_view,
         },
         {   name                => 'allowToChangeAtUpload',
             alias               => 'allow_to_change_at_upload',
             type                => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object         => sub { $_[0]->allow_to_change_at_upload },
             from_object_default => 1,
-            condition           => \&_can_view,
+            condition           => \&can_view,
         },
         {   name                => 'operationIfExists',
             alias               => 'operation_if_exists',
+            type                => 'MT::DataAPI::Resource::DataType::Integer',
             from_object         => sub { $_[0]->operation_if_exists; },
             from_object_default => 1,
-            condition           => \&_can_view,
+            condition           => \&can_view,
         },
         {   name                => 'normalizeOrientation',
             alias               => 'normalize_orientation',
             type                => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object         => sub { $_[0]->normalize_orientation; },
             from_object_default => 1,
-            condition           => \&_can_view,
+            condition           => \&can_view,
         },
         {   name                => 'autoRenameNonAscii',
             alias               => 'auto_rename_non_ascii',
             type                => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object         => sub { $_[0]->auto_rename_non_ascii; },
             from_object_default => 1,
-            condition           => \&_can_view,
+            condition           => \&can_view,
         },
     ];
 }
 
-sub _can_view {
+sub can_view {
     my $app  = MT->instance;
     my $user = $app->user;
 

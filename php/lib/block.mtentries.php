@@ -29,7 +29,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
                  isset($args['author']) ))
                 $ctx->__stash['entries'] = null;
         }
-        if ($ctx->__stash['entries']) {
+        if (!empty($ctx->__stash['entries'])) {
             if (isset($args['id']) ||
                 isset($args['recently_commented_on']) ||
                 isset($args['include_subcategories']) ||
@@ -47,7 +47,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         }
 
         $counter = 0;
-        $lastn = $args['lastn'];
+        $lastn = isset($args['lastn']) ? $args['lastn'] : null;
         $ctx->stash('_entries_lastn', $lastn);
         $ctx->stash('__out', false);
     } else {
@@ -105,18 +105,18 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
                 $args['current_timestamp_end'] = $tse;
             }
             if (isset($archiver)) {
-                ($args['limit'] || $args['lastn']) or $args['lastn'] = -1;
+                (!empty($args['limit']) || !empty($args['lastn'])) or $args['lastn'] = -1;
                 $archiver->setup_args($args);
             }
         }
         $cat = $ctx->stash('category');
         if (isset($cat) && !$cat->category_category_set_id && (($args['class'] == 'entry' && $cat->category_class == 'category') || ($args['class'] == 'page' && $cat->category_class == 'folder'))) {
-            $args['category'] or $args['categories'] or $args['category_id'] = $cat->category_id;
+            !empty($args['category']) or !empty($args['categories']) or $args['category_id'] = $cat->category_id;
             if ($ctx->stash('inside_mt_categories')) {
                 $args['category_id'] = $cat->category_id;
                 $args['show_empty'] = $ctx->stash('show_empty');
             } else {
-                $args['category'] or $args['categories'] or $args['category_id'] = $cat->category_id;
+                !empty($args['category']) or !empty($args['categories']) or $args['category_id'] = $cat->category_id;
             }
         }
 
@@ -139,7 +139,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         return $ret;
     }
 
-    $ctx->stash('_entries_glue', $args['glue']);
+    $ctx->stash('_entries_glue', isset($args['glue']) ? $args['glue'] : null);
     if (($lastn > count($entries)) || ($lastn == -1)) {
         $lastn = count($entries);
         $ctx->stash('_entries_lastn', $lastn);

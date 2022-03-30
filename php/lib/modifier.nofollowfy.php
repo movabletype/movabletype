@@ -14,7 +14,7 @@ function smarty_modifier_nofollowfy($str, $arg = 1) {
     $ctx =& $mt->context();
     $blog = $ctx->stash('blog');
 
-    $curr_tag = $ctx->_tag_stack[count($ctx->_tag_stack) - 1];
+    $curr_tag = !empty($ctx->_tag_stack) ? $ctx->_tag_stack[count($ctx->_tag_stack) - 1] : null;
     $enable= false;
     if ( isset($curr_tag[1]['nofollowfy']) )
         $enable = $curr_tag[1]['nofollowfy'] ? true : false;
@@ -25,7 +25,7 @@ function smarty_modifier_nofollowfy($str, $arg = 1) {
     $arg = strtolower($arg);
     if ($arg == 'mtcommentbody' || $arg == 'mtcommentauthorlink' || $arg == 'mtcommenturl') {
         $comment = $ctx->stash('comment');
-        if ($comment->comment_commenter_id) {
+        if (!empty($comment->comment_commenter_id)) {
             // is an authenticated comment
             $auth = $comment->commenter();
             if ($auth && $blog->blog_follow_auth_links)
@@ -42,7 +42,7 @@ function nofollowfy_cb($matches) {
     $attr = array_diff($attr[0], $rel_arr);
     if (count($rel_arr) > 0)
         $rel = array_pop($rel_arr);
-    if ($rel) {
+    if (!empty($rel)) {
         $rel = preg_replace('/ ?\bnofollow\b ?/', ' ', $rel);
         $rel = preg_replace('/^(rel\s*=\s*[\'"]?) ?/i', '\1nofollow ', $rel);
     } else {
