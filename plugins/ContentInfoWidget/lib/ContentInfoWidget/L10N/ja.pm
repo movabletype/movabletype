@@ -24,8 +24,8 @@ our %Lexicon = (
 	'Widget' => 'ウィジェット',
 
 ## plugins/ContentInfoWidget/tmpl/widget.tmpl
+	'Content Field' => 'コンテンツフィールド',
 	'Content Type' => 'コンテンツタイプ',
-	'Content field' => 'コンテンツフィールド',
 	'Copy Unique ID' => 'ユニークIDをコピー',
 	'Create a new Content Type?' => '新しいコンテンツタイプを作成',
 	'ID' => 'ID',
