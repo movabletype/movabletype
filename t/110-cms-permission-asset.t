@@ -10,6 +10,9 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    # Disable Commercial.pack temporarily.
+    $test_env->skip_if_addon_exists('Commercial.pack');
 }
 
 use MT::Test;
@@ -369,21 +372,20 @@ subtest 'mode = dialog_asset_modal' => sub {
     ok( $out =~ m!<div id="content-body-left">!i,
         "dialog_asset_modal by admin" );
 
-    # By Permitted user
+    # By create_post
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $kagawa,
+        {   __test_user      => $aikawa,
             __request_method => 'GET',
             __mode           => 'dialog_asset_modal',
             edit_field       => 'customfield_test',
-            label            => 'New Label',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_asset_modal" );
     ok( $out =~ m!<div id="content-body-left">!i,
-        "dialog_asset_modal by permitted user"
+        "dialog_asset_modal by create_post"
     );
 
     # By non Permitted user
@@ -401,10 +403,10 @@ subtest 'mode = dialog_asset_modal' => sub {
     ok( $out =~ m!__mode=dashboard!i && $out =~ m!permission=1!i,
         "dialog_asset_modal by other blog" );
 
-    # By other permission
+    # By edit_assets
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
+        {   __test_user      => $kagawa,
             __request_method => 'GET',
             __mode           => 'dialog_asset_modal',
             edit_field       => 'customfield_test',
@@ -413,9 +415,8 @@ subtest 'mode = dialog_asset_modal' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_asset_modal" );
-    ok( $out =~ m!name="select_asset" id="select_asset"!i,
-        "dialog_asset_modal by other permission"
-    );
+    ok( $out =~ m!__mode=dashboard!i && $out =~ m!permission=1!i,
+        "dialog_asset_modal by edit_assets" );
 };
 
 subtest 'mode = dialog_list_asset' => sub {
@@ -435,21 +436,20 @@ subtest 'mode = dialog_list_asset' => sub {
     ok( $out =~ m!<div id="content-body-left">!i,
         "dialog_list_asset by admin" );
 
-    # By Permitted user
+    # By create_post
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $kagawa,
+        {   __test_user      => $aikawa,
             __request_method => 'GET',
             __mode           => 'dialog_list_asset',
             edit_field       => 'customfield_test',
-            label            => 'New Label',
             blog_id          => $blog->id,
         }
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_list_asset" );
     ok( $out =~ m!<div id="content-body-left">!i,
-        "dialog_list_asset by permitted user"
+        "dialog_list_asset by create_post"
     );
 
     # By non Permitted user
@@ -467,10 +467,10 @@ subtest 'mode = dialog_list_asset' => sub {
     ok( $out =~ m!__mode=dashboard!i && $out =~ m!permission=1!i,
         "dialog_list_asset by other blog" );
 
-    # By other permission
+    # By edit_assets
     $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $aikawa,
+        {   __test_user      => $kagawa,
             __request_method => 'GET',
             __mode           => 'dialog_list_asset',
             edit_field       => 'customfield_test',
@@ -479,9 +479,8 @@ subtest 'mode = dialog_list_asset' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dialog_list_asset" );
-    ok( $out =~ m!name="select_asset" id="select_asset"!i,
-        "dialog_list_asset by other permission"
-    );
+    ok( $out =~ m!__mode=dashboard!i && $out =~ m!permission=1!i,
+        "dialog_list_asset by edit_assets" );
 };
 
 subtest 'mode = asset_insert' => sub {
