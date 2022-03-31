@@ -2921,6 +2921,7 @@ use vars qw( @ISA %Lexicon );
 	'Migrating create child site permissions...' => '子サイトの作成権限を移行しています...',
 	'Migrating data column of MT::ContentData...' => 'コンテンツデータのdataカラムを移行しています...',
 	'Migrating fields column of MT::ContentType...' => 'コンテンツタイプのFieldsカラムを移行しています...',
+	'Migrating filters that have conditions on the log level...' => 'ログレベルに対する条件を持つフィルターを移行しています...',
 	'MultiBlog migration for site(ID:[_1]) is skipped due to the data breakage.' => 'データが破損しているためサイト(ID:[_1])のマルチブログの設定の移行をスキップします。',
 	'MultiBlog migration is skipped due to the data breakage.' => 'データが破損しているためマルチブログの設定の移行をスキップします。',
 	'Rebuilding Content Type count of Category Sets...' => 'カテゴリセットの情報を再構築しています...',
