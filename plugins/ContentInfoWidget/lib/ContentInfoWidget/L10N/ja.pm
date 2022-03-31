@@ -12,7 +12,7 @@ use base 'ContentInfoWidget::L10N';
 our %Lexicon = (
 
 ## plugins/ContentInfoWidget/config.yaml
-	'Show ContentType information on the right sidebar of Edit Template.' => 'テンプレート編集画面の右サイドバーにコンテンツタイプ情報を表示します',
+	'Show ContentType information on the right sidebar of Edit Template.' => 'テンプレート編集画面の右サイドバーにコンテンツタイプ情報を表示します。',
 
 ## plugins/ContentInfoWidget/tmpl/config.tmpl
 	'Content Type Archive' => 'コンテンツタイプアーカイブ',
