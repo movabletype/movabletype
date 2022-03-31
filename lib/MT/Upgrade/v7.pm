@@ -214,6 +214,11 @@ sub upgrade_functions {
                 sql   => q{DELETE FROM mt_asset_meta WHERE asset_meta_type = 'image_metadata'},
             },
         },
+        'v7_migrate_data_api_disable_site' => {
+            version_limit => '7.0053',
+            priority      => 3.2,
+            code          => \&_v7_migrate_data_api_disable_site,
+        },
     };
 }
 
@@ -1518,6 +1523,65 @@ sub _v7_remove_sql_set_names {
     my $cfg       = MT->config;
     $cfg->SQLSetNames( undef, 1 );
     $cfg->save_config;
+}
+
+sub _v7_migrate_data_api_disable_site {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Migrating DataAPIDisableSite...'));
+
+    # Load from DB directly. Do not refer to mt-config.cgi.
+    my $data = MT->model('config')->load(1)->data;
+    my $data_api_disable_site;
+    if ($data =~ /DataAPIDisableSite\s(.*)/) {
+        $data_api_disable_site = $1;
+    }
+    my @data_api_disable_sites = split ',', $data_api_disable_site || '';
+
+    my @sites = MT->model('website')->load(
+        undef,
+        {
+            fetchonly => { id => 1 },
+        },
+    );
+    my @blogs = MT->model('blog')->load(
+        undef,
+        {
+            fetchonly => { id => 1 },
+        },
+    );
+    push @sites, @blogs;
+    my $from = int( MT->config->SchemaVersion || 0 );
+    for my $site (@sites) {
+        my $pd = MT->model('plugindata')->new(plugin => 'DataAPI', key => 'configuration:blog:' . $site->id);
+        if ($from < 6) {
+            $pd->data({ enable_data_api => 0 });
+        } else {
+            if (grep { $_ == $site->id } @data_api_disable_sites) {
+                $pd->data({ enable_data_api => 0 });
+            } else {
+                $pd->data({ enable_data_api => 1 });
+            }
+        }
+        $pd->save;
+    }
+
+    # Create system configuration
+    my $pd = MT->model('plugindata')->new(plugin => 'DataAPI', key => 'configuration');
+    if (grep { $_ == 0 } @data_api_disable_sites) {
+        $pd->data({ enable_data_api => 0 });
+    } else {
+        $pd->data({ enable_data_api => 1 });
+    }
+    $pd->save;
+
+    # Clean up DataAPIDisableSite
+    if (grep { $_ == 0 } @data_api_disable_sites) {
+        MT->config->DataAPIDisableSite('0', 1);
+    } else {
+        MT->config->DataAPIDisableSite('', 1);
+    }
+    MT->config->save_config;
 }
 
 1;

@@ -2904,6 +2904,7 @@ use vars qw( @ISA %Lexicon );
 	'Error removing records: [_1]' => 'レコードの削除中にエラーが発生しました: [_1]',
 	'Error saving record (ID:[_1]): [_2].' => 'レコード (ID:[_1]) の保存中にエラーが発生しました: [_2]',
 	'Error saving record: [_1]' => 'レコードの保存中にエラーが発生しました: [_1]',
+	'Migrating DataAPIDisableSite...' => 'DataAPIDisableSiteを移行しています...',
 	'Migrating Max Length option of Single Line Text fields...' => 'テキスト型のコンテンツフィールドの最大値を修正しています...',
 	'Migrating MultiBlog settings...' => 'マルチブログの設定を移行しています...',
 	'Migrating create child site permissions...' => '子サイトの作成権限を移行しています...',
