@@ -1536,21 +1536,15 @@ sub _v7_migrate_data_api_disable_site {
     if ($data =~ /DataAPIDisableSite\s(.*)/) {
         $data_api_disable_site = $1;
     }
-    my @data_api_disable_site = split ',', $data_api_disable_site || '';
+    my @data_api_disable_site = split /,/, $data_api_disable_site || '';
 
-    my @sites = MT->model('website')->load(
-        undef,
+    my @sites = MT->model('website')->load({
+            class => '*',
+        },
         {
             fetchonly => { id => 1 },
         },
     );
-    my @blogs = MT->model('blog')->load(
-        undef,
-        {
-            fetchonly => { id => 1 },
-        },
-    );
-    push @sites, @blogs;
     my $from = int( MT->config->SchemaVersion || 0 );
     for my $site (@sites) {
         if ($from < 6) {

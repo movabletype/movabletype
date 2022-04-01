@@ -605,10 +605,12 @@ sub _restrict_site {
     my $cfg = $app->config;
     my @data_api_disable_sites = split ',', defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
     if (!$cfg->is_readonly('DataAPIDisableSite')) {
-        my @not_allow_data_api_sites = map { $_->id } MT->model('website')->load({ allow_data_api => 0 }, { fetchonly => { id => 1 } });
+        my @not_allow_data_api_sites = map { $_->id } MT->model('website')->load({
+                class          => '*',
+                allow_data_api => 0,
+            },
+            { fetchonly => { id => 1 } });
         push @data_api_disable_sites, @not_allow_data_api_sites;
-        my @not_allow_data_api_blogs = map { $_->id } MT->model('blog')->load({ allow_data_api => 0 }, { fetchonly => { id => 1 } });
-        push @data_api_disable_sites, @not_allow_data_api_blogs;
     }
     return unless @data_api_disable_sites;
 

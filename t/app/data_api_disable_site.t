@@ -23,10 +23,11 @@ MT->instance;
 my $website = MT::Test::Permission->make_website(name => 'my website');
 
 sub _get_config_value {
-    my @site_ids;
-    for my $m (qw/website blog/) {
-        push @site_ids, map { $_->id } MT->model($m)->load({ allow_data_api => 0 }, { fetchonly => { id => 1 } });
-    }
+    my @site_ids = map { $_->id } MT->model('website')->load({
+            class          => '*',
+            allow_data_api => 0,
+        },
+        { fetchonly => { id => 1 } });
     return @site_ids;
 }
 
