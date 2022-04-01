@@ -2259,12 +2259,14 @@ BEGIN {
             'BinTarPath' => undef,
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
+
             'DisableImagePopup' => undef,
             'ForceExifRemoval' => { default => 1 },
             'TemporaryFileExpiration' => { default => 60 * 60 },
             'ForceAllowStringSub' => undef,
             'PSGIStreaming' => { default => 1 },
             'HideVersion' => { default => 1 },
+            'HideConfigWarnings' => { default => undef },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

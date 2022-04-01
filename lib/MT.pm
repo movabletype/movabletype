@@ -2205,6 +2205,8 @@ sub build_page {
         $param->{ $config_field . '_readonly' } = 1;
     }
 
+    $param->{hide_config_warnings} = $mt->config->HideConfigWarnings;
+
     my $tmpl_file = '';
     if ( UNIVERSAL::isa( $file, 'MT::Template' ) ) {
         $tmpl      = $file;
