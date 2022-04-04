@@ -794,7 +794,7 @@ sub revoke_from_user {
 sub list_for_group_openapi_spec {
     +{
         tags        => ['Groups', 'Permissions'],
-        summary     => 'Retrieve a list of permissions for user',
+        summary     => 'Retrieve a list of permissions for group',
         description => <<'DESCRIPTION',
 - Authentication is required
 - If you want to get others list, you should have Administer privilege.
