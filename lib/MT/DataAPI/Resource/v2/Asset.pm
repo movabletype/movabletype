@@ -58,6 +58,14 @@ sub fields {
                     };
                 }
             },
+            schema => {
+                type       => 'object',
+                properties => {
+                    fileSize => { type => 'integer' },
+                    height   => { type => 'integer' },
+                    width    => { type => 'integer' },
+                },
+            },
         },
         {   name             => 'updatable',
             type             => 'MT::DataAPI::Resource::DataType::Boolean',

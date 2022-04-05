@@ -33,13 +33,13 @@ sub list_for_site_openapi_spec {
         tags       => ['Tags'],
         summary    => 'Retrieve a list of tags that related with specific site',
         parameters => [
-            { '$ref' => '#/components/parameters/tag/search' },
-            { '$ref' => '#/components/parameters/tag/searchFields' },
-            { '$ref' => '#/components/parameters/tag/limit' },
-            { '$ref' => '#/components/parameters/tag/offset' },
-            { '$ref' => '#/components/parameters/tag/sortBy' },
-            { '$ref' => '#/components/parameters/tag/sortOrder' },
-            { '$ref' => '#/components/parameters/tag/fields' },
+            { '$ref' => '#/components/parameters/tag_search' },
+            { '$ref' => '#/components/parameters/tag_searchFields' },
+            { '$ref' => '#/components/parameters/tag_limit' },
+            { '$ref' => '#/components/parameters/tag_offset' },
+            { '$ref' => '#/components/parameters/tag_sortBy' },
+            { '$ref' => '#/components/parameters/tag_sortOrder' },
+            { '$ref' => '#/components/parameters/tag_fields' },
         ],
         responses => {
             200 => {
@@ -116,7 +116,7 @@ sub get_for_site_openapi_spec {
         tags       => ['Tags'],
         summary    => 'Retrieve a single tag by its ID',
         parameters => [
-            { '$ref' => '#/components/parameters/tag/fields' },
+            { '$ref' => '#/components/parameters/tag_fields' },
         ],
         responses => {
             200 => {

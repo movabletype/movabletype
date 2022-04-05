@@ -28,10 +28,10 @@ sub list_openapi_spec {
   - to read private properties
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/user/search' },
-            { '$ref' => '#/components/parameters/user/searchFields' },
-            { '$ref' => '#/components/parameters/user/limit' },
-            { '$ref' => '#/components/parameters/user/offset' },
+            { '$ref' => '#/components/parameters/user_search' },
+            { '$ref' => '#/components/parameters/user_searchFields' },
+            { '$ref' => '#/components/parameters/user_limit' },
+            { '$ref' => '#/components/parameters/user_offset' },
             {
                 in     => 'query',
                 name   => 'sortBy',
@@ -51,10 +51,10 @@ The field name for sort. You can specify one of following values
 **Default**: name
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/user/sortOrder' },
-            { '$ref' => '#/components/parameters/user/fields' },
-            { '$ref' => '#/components/parameters/user/includeIds' },
-            { '$ref' => '#/components/parameters/user/excludeIds' },
+            { '$ref' => '#/components/parameters/user_sortOrder' },
+            { '$ref' => '#/components/parameters/user_fields' },
+            { '$ref' => '#/components/parameters/user_includeIds' },
+            { '$ref' => '#/components/parameters/user_excludeIds' },
             {
                 in     => 'query',
                 name   => 'status',

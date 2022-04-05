@@ -296,19 +296,19 @@ sub list_for_category_openapi_spec {
   - to retrieve unpublished entry
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/entry/search' },
-            { '$ref' => '#/components/parameters/entry/searchFields' },
-            { '$ref' => '#/components/parameters/entry/limit' },
-            { '$ref' => '#/components/parameters/entry/offset' },
-            { '$ref' => '#/components/parameters/entry/sortBy' },
-            { '$ref' => '#/components/parameters/entry/sortOrder' },
-            { '$ref' => '#/components/parameters/entry/fields' },
-            { '$ref' => '#/components/parameters/entry/includeIds' },
-            { '$ref' => '#/components/parameters/entry/excludeIds' },
-            { '$ref' => '#/components/parameters/entry/status' },
-            { '$ref' => '#/components/parameters/entry/maxComments' },
-            { '$ref' => '#/components/parameters/entry/maxTrackbacks' },
-            { '$ref' => '#/components/parameters/entry/no_text_filter' },
+            { '$ref' => '#/components/parameters/entry_search' },
+            { '$ref' => '#/components/parameters/entry_searchFields' },
+            { '$ref' => '#/components/parameters/entry_limit' },
+            { '$ref' => '#/components/parameters/entry_offset' },
+            { '$ref' => '#/components/parameters/entry_sortBy' },
+            { '$ref' => '#/components/parameters/entry_sortOrder' },
+            { '$ref' => '#/components/parameters/entry_fields' },
+            { '$ref' => '#/components/parameters/entry_includeIds' },
+            { '$ref' => '#/components/parameters/entry_excludeIds' },
+            { '$ref' => '#/components/parameters/entry_status' },
+            { '$ref' => '#/components/parameters/entry_maxComments' },
+            { '$ref' => '#/components/parameters/entry_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/entry_no_text_filter' },
         ],
         responses => {
             200 => {
@@ -393,19 +393,19 @@ sub list_for_asset_openapi_spec {
   - to retrieve unpublished entry
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/entry/search' },
-            { '$ref' => '#/components/parameters/entry/searchFields' },
-            { '$ref' => '#/components/parameters/entry/limit' },
-            { '$ref' => '#/components/parameters/entry/offset' },
-            { '$ref' => '#/components/parameters/entry/sortBy' },
-            { '$ref' => '#/components/parameters/entry/sortOrder' },
-            { '$ref' => '#/components/parameters/entry/fields' },
-            { '$ref' => '#/components/parameters/entry/includeIds' },
-            { '$ref' => '#/components/parameters/entry/excludeIds' },
-            { '$ref' => '#/components/parameters/entry/status' },
-            { '$ref' => '#/components/parameters/entry/maxComments' },
-            { '$ref' => '#/components/parameters/entry/maxTrackbacks' },
-            { '$ref' => '#/components/parameters/entry/no_text_filter' },
+            { '$ref' => '#/components/parameters/entry_search' },
+            { '$ref' => '#/components/parameters/entry_searchFields' },
+            { '$ref' => '#/components/parameters/entry_limit' },
+            { '$ref' => '#/components/parameters/entry_offset' },
+            { '$ref' => '#/components/parameters/entry_sortBy' },
+            { '$ref' => '#/components/parameters/entry_sortOrder' },
+            { '$ref' => '#/components/parameters/entry_fields' },
+            { '$ref' => '#/components/parameters/entry_includeIds' },
+            { '$ref' => '#/components/parameters/entry_excludeIds' },
+            { '$ref' => '#/components/parameters/entry_status' },
+            { '$ref' => '#/components/parameters/entry_maxComments' },
+            { '$ref' => '#/components/parameters/entry_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/entry_no_text_filter' },
         ],
         responses => {
             200 => {
@@ -529,19 +529,19 @@ sub list_for_site_and_tag_openapi_spec {
   - to retrieve unpublished entry
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/entry/search' },
-            { '$ref' => '#/components/parameters/entry/searchFields' },
-            { '$ref' => '#/components/parameters/entry/limit' },
-            { '$ref' => '#/components/parameters/entry/offset' },
-            { '$ref' => '#/components/parameters/entry/sortBy' },
-            { '$ref' => '#/components/parameters/entry/sortOrder' },
-            { '$ref' => '#/components/parameters/entry/fields' },
-            { '$ref' => '#/components/parameters/entry/includeIds' },
-            { '$ref' => '#/components/parameters/entry/excludeIds' },
-            { '$ref' => '#/components/parameters/entry/status' },
-            { '$ref' => '#/components/parameters/entry/maxComments' },
-            { '$ref' => '#/components/parameters/entry/maxTrackbacks' },
-            { '$ref' => '#/components/parameters/entry/no_text_filter' },
+            { '$ref' => '#/components/parameters/entry_search' },
+            { '$ref' => '#/components/parameters/entry_searchFields' },
+            { '$ref' => '#/components/parameters/entry_limit' },
+            { '$ref' => '#/components/parameters/entry_offset' },
+            { '$ref' => '#/components/parameters/entry_sortBy' },
+            { '$ref' => '#/components/parameters/entry_sortOrder' },
+            { '$ref' => '#/components/parameters/entry_fields' },
+            { '$ref' => '#/components/parameters/entry_includeIds' },
+            { '$ref' => '#/components/parameters/entry_excludeIds' },
+            { '$ref' => '#/components/parameters/entry_status' },
+            { '$ref' => '#/components/parameters/entry_maxComments' },
+            { '$ref' => '#/components/parameters/entry_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/entry_no_text_filter' },
         ],
         responses => {
             200 => {
@@ -785,16 +785,17 @@ DESCRIPTION
         },
         responses => {
             200 => {
-                content => {
+                description => 'No Errors',
+                content     => {
                     'application/json' => {
                         schema => {
                             type       => 'object',
                             properties => {
                                 status => {
-                                    schema => { type => 'string' },
+                                    type => 'string',
                                 },
                                 message => {
-                                    schema => { type => 'string' },
+                                    type => 'string',
                                 },
                             },
                         },
@@ -897,7 +898,7 @@ sub preview_by_id_openapi_spec {
         summary     => 'Make a preview for a entry with existing data',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- **This endpoint is available in Movable Type 6.1.2 or later.**
+- **This endpoint has been available since Movable Type 6.1.2.**
 - **entry** parameter is required. If you just want to get preview entry from existing data, you should provide entry parameter with empty json.
 
 #### Permissions
@@ -1015,7 +1016,7 @@ sub preview_openapi_spec {
     $spec->{summary} = 'Make a preview for a entry';
     $spec->{description} = <<'DESCRIPTION',
 - Authorization is required.
-- **This endpoint is available in Movable Type 6.1.2 or later.**
+- **This endpoint has been available since Movable Type 6.1.2.**
 
 #### Permissions
 

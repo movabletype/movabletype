@@ -17,15 +17,15 @@ sub list_openapi_spec {
         tags       => ['FormattedText'],
         summary    => 'Retrieve a list of formatted_texts in the specified site',
         parameters => [
-            { '$ref' => '#/components/parameters/formatted_text/search' },
-            { '$ref' => '#/components/parameters/formatted_text/searchFields' },
-            { '$ref' => '#/components/parameters/formatted_text/limit' },
-            { '$ref' => '#/components/parameters/formatted_text/offset' },
-            { '$ref' => '#/components/parameters/formatted_text/sortBy' },
-            { '$ref' => '#/components/parameters/formatted_text/sortOrder' },
-            { '$ref' => '#/components/parameters/formatted_text/fields' },
-            { '$ref' => '#/components/parameters/formatted_text/includeIds' },
-            { '$ref' => '#/components/parameters/formatted_text/excludeIds' },
+            { '$ref' => '#/components/parameters/formatted_text_search' },
+            { '$ref' => '#/components/parameters/formatted_text_searchFields' },
+            { '$ref' => '#/components/parameters/formatted_text_limit' },
+            { '$ref' => '#/components/parameters/formatted_text_offset' },
+            { '$ref' => '#/components/parameters/formatted_text_sortBy' },
+            { '$ref' => '#/components/parameters/formatted_text_sortOrder' },
+            { '$ref' => '#/components/parameters/formatted_text_fields' },
+            { '$ref' => '#/components/parameters/formatted_text_includeIds' },
+            { '$ref' => '#/components/parameters/formatted_text_excludeIds' },
         ],
         responses => {
             200 => {
@@ -81,7 +81,7 @@ sub get_openapi_spec {
         tags       => ['FormattedText'],
         summary    => 'Retrieve single formatted_text by its ID',
         parameters => [
-            { '$ref' => '#/components/parameters/formatted_text/fields' },
+            { '$ref' => '#/components/parameters/formatted_text_fields' },
         ],
         responses => {
             200 => {

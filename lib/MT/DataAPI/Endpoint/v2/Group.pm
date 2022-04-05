@@ -21,13 +21,13 @@ sub list_openapi_spec {
         tags       => ['Groups'],
         summary    => 'Retrieve a list of groups',
         parameters => [
-            { '$ref' => '#/components/parameters/group/search' },
-            { '$ref' => '#/components/parameters/group/searchFields' },
-            { '$ref' => '#/components/parameters/group/limit' },
-            { '$ref' => '#/components/parameters/group/offset' },
-            { '$ref' => '#/components/parameters/group/sortBy' },
-            { '$ref' => '#/components/parameters/group/sortOrder' },
-            { '$ref' => '#/components/parameters/group/fields' },
+            { '$ref' => '#/components/parameters/group_search' },
+            { '$ref' => '#/components/parameters/group_searchFields' },
+            { '$ref' => '#/components/parameters/group_limit' },
+            { '$ref' => '#/components/parameters/group_offset' },
+            { '$ref' => '#/components/parameters/group_sortBy' },
+            { '$ref' => '#/components/parameters/group_sortOrder' },
+            { '$ref' => '#/components/parameters/group_fields' },
         ],
         responses => {
             200 => {
@@ -120,7 +120,7 @@ sub get_openapi_spec {
         tags       => ['Groups'],
         summary    => 'Retrieve single group by its ID',
         parameters => [
-            { '$ref' => '#/components/parameters/group/fields' },
+            { '$ref' => '#/components/parameters/group_fields' },
         ],
         responses => {
             200 => {
@@ -348,13 +348,13 @@ sub list_members_for_group_openapi_spec {
         tags       => ['Groups'],
         summary    => 'Retrieve a list of members for specified group',
         parameters => [
-            { '$ref' => '#/components/parameters/group/search' },
-            { '$ref' => '#/components/parameters/group/searchFields' },
-            { '$ref' => '#/components/parameters/group/limit' },
-            { '$ref' => '#/components/parameters/group/offset' },
-            { '$ref' => '#/components/parameters/group/sortBy' },
-            { '$ref' => '#/components/parameters/group/sortOrder' },
-            { '$ref' => '#/components/parameters/group/fields' },
+            { '$ref' => '#/components/parameters/group_search' },
+            { '$ref' => '#/components/parameters/group_searchFields' },
+            { '$ref' => '#/components/parameters/group_limit' },
+            { '$ref' => '#/components/parameters/group_offset' },
+            { '$ref' => '#/components/parameters/group_sortBy' },
+            { '$ref' => '#/components/parameters/group_sortOrder' },
+            { '$ref' => '#/components/parameters/group_fields' },
         ],
         responses => {
             200 => {
@@ -428,7 +428,7 @@ sub get_member_openapi_spec {
         tags       => ['Groups'],
         summary    => 'Retrieve single member by its ID for specified group',
         parameters => [
-            { '$ref' => '#/components/parameters/group/fields' },
+            { '$ref' => '#/components/parameters/group_fields' },
         ],
         responses => {
             200 => {

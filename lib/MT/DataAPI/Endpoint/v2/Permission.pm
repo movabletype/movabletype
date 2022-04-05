@@ -24,12 +24,12 @@ sub list_for_user_openapi_spec {
 - If you want to get others list, you should have Administer privilege.
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/permission/limit' },
-            { '$ref' => '#/components/parameters/permission/offset' },
-            { '$ref' => '#/components/parameters/permission/sortBy' },
-            { '$ref' => '#/components/parameters/permission/sortOrder' },
-            { '$ref' => '#/components/parameters/permission/fields' },
-            { '$ref' => '#/components/parameters/permission/blogIds' },
+            { '$ref' => '#/components/parameters/permission_limit' },
+            { '$ref' => '#/components/parameters/permission_offset' },
+            { '$ref' => '#/components/parameters/permission_sortBy' },
+            { '$ref' => '#/components/parameters/permission_sortOrder' },
+            { '$ref' => '#/components/parameters/permission_fields' },
+            { '$ref' => '#/components/parameters/permission_blogIds' },
         ],
         responses => {
             200 => {
@@ -103,12 +103,12 @@ sub list_openapi_spec {
 - Need Administer privilege.
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/permission/limit' },
-            { '$ref' => '#/components/parameters/permission/offset' },
-            { '$ref' => '#/components/parameters/permission/sortBy' },
-            { '$ref' => '#/components/parameters/permission/sortOrder' },
-            { '$ref' => '#/components/parameters/permission/fields' },
-            { '$ref' => '#/components/parameters/permission/blogIds' },
+            { '$ref' => '#/components/parameters/permission_limit' },
+            { '$ref' => '#/components/parameters/permission_offset' },
+            { '$ref' => '#/components/parameters/permission_sortBy' },
+            { '$ref' => '#/components/parameters/permission_sortOrder' },
+            { '$ref' => '#/components/parameters/permission_fields' },
+            { '$ref' => '#/components/parameters/permission_blogIds' },
         ],
         responses => {
             200 => {
@@ -184,11 +184,11 @@ sub list_for_site_openapi_spec {
 - Blog Administrator for blog
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/permission/limit' },
-            { '$ref' => '#/components/parameters/permission/offset' },
-            { '$ref' => '#/components/parameters/permission/sortBy' },
-            { '$ref' => '#/components/parameters/permission/sortOrder' },
-            { '$ref' => '#/components/parameters/permission/fields' },
+            { '$ref' => '#/components/parameters/permission_limit' },
+            { '$ref' => '#/components/parameters/permission_offset' },
+            { '$ref' => '#/components/parameters/permission_sortBy' },
+            { '$ref' => '#/components/parameters/permission_sortOrder' },
+            { '$ref' => '#/components/parameters/permission_fields' },
         ],
         responses => {
             200 => {
@@ -268,12 +268,12 @@ sub list_for_role_openapi_spec {
 - Administer
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/permission/limit' },
-            { '$ref' => '#/components/parameters/permission/offset' },
-            { '$ref' => '#/components/parameters/permission/sortBy' },
-            { '$ref' => '#/components/parameters/permission/sortOrder' },
-            { '$ref' => '#/components/parameters/permission/fields' },
-            { '$ref' => '#/components/parameters/permission/blogIds' },
+            { '$ref' => '#/components/parameters/permission_limit' },
+            { '$ref' => '#/components/parameters/permission_offset' },
+            { '$ref' => '#/components/parameters/permission_sortBy' },
+            { '$ref' => '#/components/parameters/permission_sortOrder' },
+            { '$ref' => '#/components/parameters/permission_fields' },
+            { '$ref' => '#/components/parameters/permission_blogIds' },
         ],
         responses => {
             200 => {
@@ -794,18 +794,18 @@ sub revoke_from_user {
 sub list_for_group_openapi_spec {
     +{
         tags        => ['Groups', 'Permissions'],
-        summary     => 'Retrieve a list of permissions for user',
+        summary     => 'Retrieve a list of permissions for group',
         description => <<'DESCRIPTION',
 - Authentication is required
 - If you want to get others list, you should have Administer privilege.
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/permission/limit' },
-            { '$ref' => '#/components/parameters/permission/offset' },
-            { '$ref' => '#/components/parameters/permission/sortBy' },
-            { '$ref' => '#/components/parameters/permission/sortOrder' },
-            { '$ref' => '#/components/parameters/permission/fields' },
-            { '$ref' => '#/components/parameters/permission/blogIds' },
+            { '$ref' => '#/components/parameters/permission_limit' },
+            { '$ref' => '#/components/parameters/permission_offset' },
+            { '$ref' => '#/components/parameters/permission_sortBy' },
+            { '$ref' => '#/components/parameters/permission_sortOrder' },
+            { '$ref' => '#/components/parameters/permission_fields' },
+            { '$ref' => '#/components/parameters/permission_blogIds' },
         ],
         responses => {
             200 => {
@@ -823,7 +823,7 @@ DESCRIPTION
                                     type        => 'array',
                                     description => 'An array of permission resource.',
                                     items       => {
-                                        '$ref' => '#/components/schemas/permission',
+                                        '$ref' => '#/components/schemas/association',
                                     }
                                 },
                             },

@@ -353,6 +353,10 @@ sub fields {
                 return \@fields;
             },
             condition => \&_can_view_cfg_screens,
+            schema => {
+                type  => 'array',
+                items => { type => 'string' },
+            },
         },
         {   name        => 'pageCustomPrefs',
             from_object => sub {
@@ -367,6 +371,10 @@ sub fields {
                 return \@fields;
             },
             condition => \&_can_view_cfg_screens,
+            schema => {
+                type  => 'array',
+                items => { type => 'string' },
+            },
         },
         {   name      => 'contentCss',
             alias     => 'content_css',
@@ -396,6 +404,10 @@ sub fields {
                 return $new_fields;
             },
             condition => \&_can_view_cfg_screens,
+            schema => {
+                type  => 'array',
+                items => { type => 'string' },
+            },
         },
 
         # Feedback Settings screen
@@ -457,6 +469,16 @@ sub fields {
                     [qw/ id name /] );
             },
             condition => \&_can_view_cfg_screens,
+            schema => {
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        id   => { type => 'integer' },
+                        name => { type => 'string' },
+                    },
+                },
+            },
         },
 
         # template tags
@@ -529,6 +551,13 @@ sub fields {
                     ? MT::DataAPI::Resource->from_object( $parent,
                     [qw( id name )] )
                     : undef;
+            },
+            schema => {
+                type       => 'object',
+                properties => {
+                    id   => { type => 'string' },
+                    name => { type => 'string' },
+                },
             },
         },
 

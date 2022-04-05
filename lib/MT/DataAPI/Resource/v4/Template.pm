@@ -69,6 +69,12 @@ sub fields {
                 }
             }
         },
+        schema => {
+            type       => 'object',
+            properties => {
+                id => { type => 'string' },
+            },
+        },
     };
     $fields;
 }

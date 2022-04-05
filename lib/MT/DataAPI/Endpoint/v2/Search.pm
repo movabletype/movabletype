@@ -82,7 +82,7 @@ DESCRIPTION
                     ],
                 },
                 description => <<'DESCRIPTION',
-The sort column for the search results. Available value is follows.
+The sort column for the search results. Available values are as follows.
 
 #### created_on
 
@@ -105,7 +105,7 @@ DESCRIPTION
                     default     => 'ascend',
                 },
                 description => <<'DESCRIPTION',
-Defines the sort order search results. Available value is follows.
+Defines the sort order search results. Available values are as follows.
 
 #### ascend
 

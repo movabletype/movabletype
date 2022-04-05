@@ -19,10 +19,10 @@ sub list_openapi_spec {
         tags       => ['Assets'],
         summary    => 'Retrieve assets in the specified site',
         parameters => [
-            { '$ref' => '#/components/parameters/asset/search' },
-            { '$ref' => '#/components/parameters/asset/searchFields' },
-            { '$ref' => '#/components/parameters/asset/limit' },
-            { '$ref' => '#/components/parameters/asset/offset' },
+            { '$ref' => '#/components/parameters/asset_search' },
+            { '$ref' => '#/components/parameters/asset_searchFields' },
+            { '$ref' => '#/components/parameters/asset_limit' },
+            { '$ref' => '#/components/parameters/asset_offset' },
             {
                 in          => 'query',
                 name        => 'class',
@@ -57,8 +57,8 @@ Sort by the ID of user who created each asset.
 **Default**: created_on
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/asset/sortOrder' },
-            { '$ref' => '#/components/parameters/asset/fields' },
+            { '$ref' => '#/components/parameters/asset_sortOrder' },
+            { '$ref' => '#/components/parameters/asset_fields' },
             {
                 in => 'query',
                 name => 'relatedAssets',
@@ -122,7 +122,7 @@ sub get_openapi_spec {
         tags       => ['Assets'],
         summary    => 'Retrieve single asset by its ID',
         parameters => [
-            { '$ref' => '#/components/parameters/asset/fields' },
+            { '$ref' => '#/components/parameters/asset_fields' },
         ],
         responses => {
             200 => {
@@ -403,8 +403,8 @@ sub list_for_entry_openapi_spec {
         tags       => ['Assets', 'Entries'],
         summary    => 'Retrieve assets that related with specified entry',
         parameters => [
-            { '$ref' => '#/components/parameters/asset/limit' },
-            { '$ref' => '#/components/parameters/asset/offset' },
+            { '$ref' => '#/components/parameters/asset_limit' },
+            { '$ref' => '#/components/parameters/asset_offset' },
             {
                 in          => 'query',
                 name        => 'class',
@@ -439,8 +439,8 @@ Sort by the ID of user who created each asset.
 **Default**: created_on
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/asset/sortOrder' },
-            { '$ref' => '#/components/parameters/asset/fields' },
+            { '$ref' => '#/components/parameters/asset_sortOrder' },
+            { '$ref' => '#/components/parameters/asset_fields' },
         ],
         responses => {
             200 => {
@@ -488,8 +488,8 @@ sub list_for_page_openapi_spec {
         tags       => ['Assets', 'Pages'],
         summary    => 'Retrieve assets that related with specified page',
         parameters => [
-            { '$ref' => '#/components/parameters/asset/limit' },
-            { '$ref' => '#/components/parameters/asset/offset' },
+            { '$ref' => '#/components/parameters/asset_limit' },
+            { '$ref' => '#/components/parameters/asset_offset' },
             {
                 in          => 'query',
                 name        => 'class',
@@ -524,8 +524,8 @@ Sort by the ID of user who created each asset.
 **Default**: created_on
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/asset/sortOrder' },
-            { '$ref' => '#/components/parameters/asset/fields' },
+            { '$ref' => '#/components/parameters/asset_sortOrder' },
+            { '$ref' => '#/components/parameters/asset_fields' },
         ],
         responses => {
             200 => {
@@ -635,8 +635,8 @@ sub list_for_site_and_tag_openapi_spec {
         tags       => ['Assets', 'Tags'],
         summary    => 'Retrieve assets that related with specified tag',
         parameters => [
-            { '$ref' => '#/components/parameters/asset/limit' },
-            { '$ref' => '#/components/parameters/asset/offset' },
+            { '$ref' => '#/components/parameters/asset_limit' },
+            { '$ref' => '#/components/parameters/asset_offset' },
             {
                 in          => 'query',
                 name        => 'class',
@@ -671,8 +671,8 @@ Sort by the ID of user who created each asset.
 **Default**: created_on
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/asset/sortOrder' },
-            { '$ref' => '#/components/parameters/asset/fields' },
+            { '$ref' => '#/components/parameters/asset_sortOrder' },
+            { '$ref' => '#/components/parameters/asset_fields' },
         ],
         responses => {
             200 => {
@@ -758,7 +758,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'If specify "1", the API always overwrites an existing file with the uploaded file. This parameter is available in Movable Type 6.1.2',
+                description => 'If specify "1", the API always overwrites an existing file with the uploaded file. This parameter has been available since Movable Type 6.1.2',
             },
         ],
         requestBody => {

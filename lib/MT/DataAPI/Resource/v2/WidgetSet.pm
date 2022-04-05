@@ -30,7 +30,7 @@ sub fields {
                 items => {
                     type       => 'object',
                     properties => {
-                        id   => { type => 'integer' },
+                        id   => { type => 'string' },
                         name => { type => 'string' },
                     },
                 },

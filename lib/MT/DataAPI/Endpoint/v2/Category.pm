@@ -18,10 +18,10 @@ sub list_openapi_spec {
         tags       => ['Categories'],
         summary    => 'Retrieve categories in the specified site',
         parameters => [
-            { '$ref' => '#/components/parameters/category/search' },
-            { '$ref' => '#/components/parameters/category/searchFields' },
-            { '$ref' => '#/components/parameters/category/limit' },
-            { '$ref' => '#/components/parameters/category/offset' },
+            { '$ref' => '#/components/parameters/category_search' },
+            { '$ref' => '#/components/parameters/category_searchFields' },
+            { '$ref' => '#/components/parameters/category_limit' },
+            { '$ref' => '#/components/parameters/category_offset' },
             {
                 in     => 'query',
                 name   => 'sortBy',
@@ -59,8 +59,8 @@ Sort by the label of each category.
 **Default**: user_custom
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/category/sortOrder' },
-            { '$ref' => '#/components/parameters/category/fields' },
+            { '$ref' => '#/components/parameters/category_sortOrder' },
+            { '$ref' => '#/components/parameters/category_fields' },
             {
                 in     => 'query',
                 name   => 'top',
@@ -75,8 +75,8 @@ If set to 1, retrieves only top level categories. New in v2
 **Default**: 0
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/category/includeIds' },
-            { '$ref' => '#/components/parameters/category/excludeIds' },
+            { '$ref' => '#/components/parameters/category_includeIds' },
+            { '$ref' => '#/components/parameters/category_excludeIds' },
         ],
         responses => {
             200 => {
@@ -279,10 +279,10 @@ sub list_siblings_openapi_spec {
         tags       => ['Categories'],
         summary    => 'Retrieve siblings categories from the specified category',
         parameters => [
-            { '$ref' => '#/components/parameters/category/search' },
-            { '$ref' => '#/components/parameters/category/searchFields' },
-            { '$ref' => '#/components/parameters/category/limit' },
-            { '$ref' => '#/components/parameters/category/offset' },
+            { '$ref' => '#/components/parameters/category_search' },
+            { '$ref' => '#/components/parameters/category_searchFields' },
+            { '$ref' => '#/components/parameters/category_limit' },
+            { '$ref' => '#/components/parameters/category_offset' },
             {
                 in     => 'query',
                 name   => 'sortBy',
@@ -321,8 +321,8 @@ Sort by the label of each category.
 **Default**: user_custom
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/category/sortOrder' },
-            { '$ref' => '#/components/parameters/category/fields' },
+            { '$ref' => '#/components/parameters/category_sortOrder' },
+            { '$ref' => '#/components/parameters/category_fields' },
             {
                 in          => 'query',
                 name        => 'top',
@@ -337,8 +337,8 @@ If set to 1, retrieves only top level categories. New in v2
 **Default**: 0
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/category/includeIds' },
-            { '$ref' => '#/components/parameters/category/excludeIds' },
+            { '$ref' => '#/components/parameters/category_includeIds' },
+            { '$ref' => '#/components/parameters/category_excludeIds' },
         ],
         responses => {
             200 => {
@@ -423,11 +423,11 @@ DESCRIPTION
                     default => 0,
                 },
                 description => <<'DESCRIPTION',
-#### 0
+#### 1
 
 The list does not include current category.
 
-#### 1
+#### 0
 
 The list includes current category.
 
@@ -594,7 +594,7 @@ sub get_openapi_spec {
         tags       => ['Categories'],
         summary    => 'Retrieve single category by its ID',
         parameters => [
-            { '$ref' => '#/components/parameters/category/fields' },
+            { '$ref' => '#/components/parameters/category_fields' },
         ],
         responses => {
             200 => {
@@ -812,10 +812,10 @@ sub list_for_entry_openapi_spec {
 
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/category/search' },
-            { '$ref' => '#/components/parameters/category/searchFields' },
-            { '$ref' => '#/components/parameters/category/limit' },
-            { '$ref' => '#/components/parameters/category/offset' },
+            { '$ref' => '#/components/parameters/category_search' },
+            { '$ref' => '#/components/parameters/category_searchFields' },
+            { '$ref' => '#/components/parameters/category_limit' },
+            { '$ref' => '#/components/parameters/category_offset' },
             {
                 in     => 'query',
                 name   => 'sortBy',
@@ -854,8 +854,8 @@ Sort by the label of each category.
 **Default**: user_custom
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/category/sortOrder' },
-            { '$ref' => '#/components/parameters/category/fields' },
+            { '$ref' => '#/components/parameters/category_sortOrder' },
+            { '$ref' => '#/components/parameters/category_fields' },
             {
                 in          => 'query',
                 name        => 'top',
@@ -870,8 +870,8 @@ If set to 1, retrieves only top level categories. New in v2
 **Default**: 0
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/category/includeIds' },
-            { '$ref' => '#/components/parameters/category/excludeIds' },
+            { '$ref' => '#/components/parameters/category_includeIds' },
+            { '$ref' => '#/components/parameters/category_excludeIds' },
             {
                 in     => 'query',
                 name   => 'type',

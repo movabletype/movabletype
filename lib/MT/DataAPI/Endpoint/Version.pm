@@ -13,6 +13,14 @@ sub version_openapi_spec {
     +{
         tags      => ['Common API'],
         summary   => 'Get server API version',
+        description => <<'DESCRIPTION',
+Retrieves Data API version of the server.
+
+**This endpoint has been available since Movable Type 6.2.4.**
+
+This endpoint does not need /v3 or something API endpoint version identifier.
+You can call like: `https://host/path/your-mt-data-api.cgi/version`
+DESCRIPTION
         responses => {
             200 => {
                 description => 'OK',
