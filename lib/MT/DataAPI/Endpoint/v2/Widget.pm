@@ -78,7 +78,7 @@ sub list {
     my $res = filtered_list( $app, $endpoint, 'template', \%terms ) or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -86,6 +86,9 @@ sub list {
 
 sub list_all {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my %terms = ( type => 'widget', );
 
@@ -169,7 +172,7 @@ sub list_for_widgetset {
     my $res = filtered_list( $app, $endpoint, 'template', \%terms ) or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -554,6 +557,7 @@ sub clone {
 
     $app->param( 'id', $widget->id );
 
+    require MT::CMS::Template;
     MT::CMS::Template::clone_templates($app);
 
     if ( $app->errstr ) {

@@ -46,6 +46,18 @@ DESCRIPTION
                 schema      => { type => 'string' },
                 description => 'This is an required parameter. The comma separated ID list of entries to rebuild.',
             },
+            {
+                'in'        => 'query',
+                name        => 'blogId',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'startTime',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter.',
+            },
         ],
         responses => {
             200 => {

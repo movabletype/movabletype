@@ -431,7 +431,7 @@ DESCRIPTION
             {
                 'in'        => 'query',
                 name        => 'fields',
-                schema      => { type => 'integer' },
+                schema      => { type => 'string' },
                 description => 'This is an optional parameter. The field list to retrieve as part of the Entries resource. That list should be separated by commma. If this parameter is not specified, All fields will be returned. ',
             },
         ],

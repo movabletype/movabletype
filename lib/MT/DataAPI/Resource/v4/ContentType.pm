@@ -31,6 +31,18 @@ sub fields {
                 MT::DataAPI::Resource->from_object( $obj->field_objs,
                     [ 'id', 'label', 'type', 'uniqueID' ] );
             },
+            schema => {
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        id       => { type => 'string' },
+                        label    => { type => 'string' },
+                        type     => { type => 'string' },
+                        uniqueID => { type => 'string' },
+                    },
+                },
+            },
         },
         {   name  => 'dataLabel',
             alias => 'data_label',

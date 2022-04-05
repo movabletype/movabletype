@@ -46,6 +46,13 @@ sub fields {
                 };
             },
             condition => \&can_view,
+            schema => {
+                type       => 'object',
+                properties => {
+                    raw  => { type => 'string' },
+                    path => { type => 'string' },
+                },
+            },
         },
         {   name                => 'extraPath',
             alias               => 'extra_path',
@@ -62,6 +69,7 @@ sub fields {
         },
         {   name                => 'operationIfExists',
             alias               => 'operation_if_exists',
+            type                => 'MT::DataAPI::Resource::DataType::Integer',
             from_object         => sub { $_[0]->operation_if_exists; },
             from_object_default => 1,
             condition           => \&can_view,

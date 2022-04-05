@@ -794,7 +794,7 @@ sub revoke_from_user {
 sub list_for_group_openapi_spec {
     +{
         tags        => ['Groups', 'Permissions'],
-        summary     => 'Retrieve a list of permissions for user',
+        summary     => 'Retrieve a list of permissions for group',
         description => <<'DESCRIPTION',
 - Authentication is required
 - If you want to get others list, you should have Administer privilege.
@@ -823,7 +823,7 @@ DESCRIPTION
                                     type        => 'array',
                                     description => 'An array of permission resource.',
                                     items       => {
-                                        '$ref' => '#/components/schemas/permission',
+                                        '$ref' => '#/components/schemas/association',
                                     }
                                 },
                             },
@@ -856,7 +856,7 @@ sub list_for_group {
         or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };

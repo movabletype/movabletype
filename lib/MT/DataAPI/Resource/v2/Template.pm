@@ -132,6 +132,10 @@ sub fields {
 
                 return MT::DataAPI::Resource->from_object( \@maps );
             },
+            schema => {
+                type  => 'array',
+                items => { '$ref' => '#/components/schemas/templatemap' },
+            },
         },
         {   name             => 'updatable',
             type             => 'MT::DataAPI::Resource::DataType::Boolean',

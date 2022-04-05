@@ -3939,10 +3939,14 @@ abstract class MTDatabase {
         if (!empty($ttl) && $ttl > 0)
             $expire_sql = "and session_start >= " . (time() - $ttl);
         $key_sql = '';
-        if (is_array($ids))
+        if (is_array($ids)) {
+            $ids = array_map(function($id){
+                return $this->conn->Quote($id);
+            }, $ids);
             $key_sql = 'and session_id in (' . join(",", $ids) . ')';
-        else
+        } else {
             $key_sql = "and session_id = '$ids'";
+        }
 
         $where = "session_kind = 'CO'
                   $key_sql

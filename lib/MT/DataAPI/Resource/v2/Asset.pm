@@ -49,14 +49,22 @@ sub fields {
 
                     $hash->{meta} = +{
                         width => $obj->has_meta('image_width')
-                        ? $obj->image_width
+                        ? $obj->image_width + 0
                         : undef,
                         height => $obj->has_meta('image_height')
-                        ? $obj->image_height
+                        ? $obj->image_height + 0
                         : undef,
                         fileSize => $size,
                     };
                 }
+            },
+            schema => {
+                type       => 'object',
+                properties => {
+                    fileSize => { type => 'integer' },
+                    height   => { type => 'integer' },
+                    width    => { type => 'integer' },
+                },
             },
         },
         {   name             => 'updatable',

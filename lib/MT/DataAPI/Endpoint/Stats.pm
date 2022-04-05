@@ -161,7 +161,7 @@ DESCRIPTION
                                     type       => 'object',
                                     properties => {
                                         pageviews => {
-                                            type        => 'integer',
+                                            type        => 'string',
                                             description => 'The sum total of the pageviews in the specified period.',
                                         },
                                     },
@@ -255,7 +255,7 @@ DESCRIPTION
                                     type       => 'object',
                                     properties => {
                                         visits => {
-                                            type        => 'integer',
+                                            type        => 'string',
                                             description => 'The sum total of the pageviews in the specified period.',
                                         },
                                     },
@@ -358,7 +358,7 @@ DESCRIPTION
                                     type       => 'object',
                                     properties => {
                                         pageviews => {
-                                            type        => 'integer',
+                                            type        => 'string',
                                             description => 'The sum total of the pageviews in the specified period.',
                                         },
                                     },
@@ -451,7 +451,7 @@ DESCRIPTION
                                     type       => 'object',
                                     properties => {
                                         visits => {
-                                            type        => 'integer',
+                                            type        => 'string',
                                             description => 'The sum total of the pageviews in the specified period.',
                                         },
                                     },

@@ -91,7 +91,7 @@ sub list_for_category_set {
         }
     ) or return;
 
-    +{  totalResults => $res->{count} || 0,
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -288,7 +288,7 @@ sub list_siblings_for_category_set {
     );
     my $res = filtered_list( $app, $endpoint, 'category', \%terms ) or return;
 
-    +{  totalResults => $res->{count} || 0,
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -523,8 +523,6 @@ Update an existing category. This endpoint need folllowing permissions.
 Post form data is following:
 
 - category (Category) - Category resource
-
-This method accepts PUT and POST with __method=PUT.
 DESCRIPTION
         requestBody => {
             content => {
@@ -592,8 +590,6 @@ sub delete_for_category_set_openapi_spec {
 Update an existing category. This endpoint need folllowing permissions.
 
 - Manage Category Set
-
-This method accepts DELETE and POST with __method=DELETE.
 DESCRIPTION
         responses => {
             200 => {
