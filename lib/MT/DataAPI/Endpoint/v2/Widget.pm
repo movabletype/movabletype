@@ -557,6 +557,7 @@ sub clone {
 
     $app->param( 'id', $widget->id );
 
+    require MT::CMS::Template;
     MT::CMS::Template::clone_templates($app);
 
     if ( $app->errstr ) {

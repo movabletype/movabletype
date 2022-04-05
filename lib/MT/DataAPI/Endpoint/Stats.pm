@@ -135,7 +135,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each uniqueness paths. However, that data does not contains page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
             },
         ],
         responses => {
@@ -161,7 +161,7 @@ DESCRIPTION
                                     type       => 'object',
                                     properties => {
                                         pageviews => {
-                                            type        => 'integer',
+                                            type        => 'string',
                                             description => 'The sum total of the pageviews in the specified period.',
                                         },
                                     },
@@ -255,7 +255,7 @@ DESCRIPTION
                                     type       => 'object',
                                     properties => {
                                         visits => {
-                                            type        => 'integer',
+                                            type        => 'string',
                                             description => 'The sum total of the pageviews in the specified period.',
                                         },
                                     },
@@ -332,7 +332,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each uniqueness paths. However, that data does not contains page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
             },
         ],
         responses => {
@@ -358,7 +358,7 @@ DESCRIPTION
                                     type       => 'object',
                                     properties => {
                                         pageviews => {
-                                            type        => 'integer',
+                                            type        => 'string',
                                             description => 'The sum total of the pageviews in the specified period.',
                                         },
                                     },
@@ -451,7 +451,7 @@ DESCRIPTION
                                     type       => 'object',
                                     properties => {
                                         visits => {
-                                            type        => 'integer',
+                                            type        => 'string',
                                             description => 'The sum total of the pageviews in the specified period.',
                                         },
                                     },
