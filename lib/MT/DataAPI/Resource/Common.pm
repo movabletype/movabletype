@@ -102,8 +102,12 @@ our %fields = (
             }
         },
         schema => {
-            type   => 'string',
-            format => 'date-time',
+            type       => 'object',
+            properties => {
+                displayName => { type => 'string' },
+                id          => { type => 'integer' },
+                userpicUrl  => { type => 'string' },
+            },
         },
     },
     modifiedBy => {
@@ -129,8 +133,12 @@ our %fields = (
             }
         },
         schema => {
-            type   => 'string',
-            format => 'date-time',
+            type       => 'object',
+            properties => {
+                displayName => { type => 'string' },
+                id          => { type => 'integer' },
+                userpicUrl  => { type => 'string' },
+            },
         },
     },
 );

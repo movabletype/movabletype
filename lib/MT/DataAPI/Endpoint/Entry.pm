@@ -114,7 +114,7 @@ sub list_openapi_spec {
         description => <<'DESCRIPTION',
 Retrieve a list of entries.
 
-Authorization is required if want to include unpublished entries.
+Authorization is required to include unpublished entries.
 DESCRIPTION
         parameters => [{
                 'in'        => 'query',
@@ -272,7 +272,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of entries found that by the request.',
+                                    description => ' The total number of entries.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -327,7 +327,7 @@ DESCRIPTION
                         type       => 'object',
                         properties => {
                             entry => {
-                                '$ref' => '#/components/schemas/entry',
+                                '$ref' => '#/components/schemas/entry_updatable',
                             },
                         },
                     },
@@ -431,7 +431,7 @@ DESCRIPTION
             {
                 'in'        => 'query',
                 name        => 'fields',
-                schema      => { type => 'integer' },
+                schema      => { type => 'string' },
                 description => 'This is an optional parameter. The field list to retrieve as part of the Entries resource. That list should be separated by commma. If this parameter is not specified, All fields will be returned. ',
             },
         ],
@@ -482,7 +482,6 @@ Update an entry.
 
 Authorization is required.
 
-This method accepts PUT and POST with __method=PUT.
 DESCRIPTION
         requestBody => {
             content => {
@@ -490,15 +489,8 @@ DESCRIPTION
                     schema => {
                         type       => 'object',
                         properties => {
-                            '__method' => {
-                                type        => 'string',
-                                description => "This is not required but if request method is 'POST', should be set as 'PUT' ",
-                                enum        => [
-                                    'PUT',
-                                ],
-                            },
                             entry => {
-                                '$ref' => '#/components/schemas/entry',
+                                '$ref' => '#/components/schemas/entry_updatable',
                             },
                         },
                     },
@@ -518,16 +510,6 @@ DESCRIPTION
             },
             404 => {
                 description => 'Not Found',
-                content     => {
-                    'application/json' => {
-                        schema => {
-                            '$ref' => '#/components/schemas/ErrorContent',
-                        },
-                    },
-                },
-            },
-            405 => {
-                description => "Request method is not 'PUT' or 'POST' with '__method=PUT'",
                 content     => {
                     'application/json' => {
                         schema => {
@@ -578,26 +560,7 @@ Delete an entry.
 
 Authorization is required.
 
-This method accepts DELETE and POST with __method=DELETE.
 DESCRIPTION
-        requestBody => {
-            content => {
-                'application/x-www-form-urlencoded' => {
-                    schema => {
-                        type       => 'object',
-                        properties => {
-                            '__method' => {
-                                type => 'string',
-                                enum => [
-                                    'DELETE',
-                                ],
-                                description => "This is not required but if request method is not a 'DELETE', should be set as 'DELETE'",
-                            },
-                        },
-                    },
-                },
-            },
-        },
         responses => {
             200 => {
                 description => 'OK',
@@ -611,16 +574,6 @@ DESCRIPTION
             },
             404 => {
                 description => 'Not Found',
-                content     => {
-                    'application/json' => {
-                        schema => {
-                            '$ref' => '#/components/schemas/ErrorContent',
-                        },
-                    },
-                },
-            },
-            405 => {
-                description => "Request method is not 'DELETE' or 'POST' with '__method=DELETE'",
                 content     => {
                     'application/json' => {
                         schema => {

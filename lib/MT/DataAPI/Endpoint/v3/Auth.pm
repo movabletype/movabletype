@@ -12,6 +12,15 @@ use MT::Author;
 use MT::DataAPI::Endpoint::Auth;
 use MT::Log;
 
+sub authentication_openapi_spec {
+    my $spec = MT::DataAPI::Endpoint::Auth::authentication_openapi_spec();
+    $spec->{summary}     = 'User authentication by username and password';
+    $spec->{description} = 'Create a new session and access token. This is like sign-in.';
+    $spec->{requestBody}{content}{'application/x-www-form-urlencoded'}{schema}{properties}{username}{description} = 'Your Sign-in Name';
+    $spec->{requestBody}{content}{'application/x-www-form-urlencoded'}{schema}{properties}{password}{description} = 'Your Web Service Password';
+    return $spec;
+}
+
 sub authentication {
     my ($app) = @_;
     MT::DataAPI::Endpoint::Auth::_authentication( $app, \&_login );

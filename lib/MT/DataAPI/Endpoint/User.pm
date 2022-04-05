@@ -72,8 +72,6 @@ sub update_openapi_spec {
 Update user data.
 
 Authorization is required.
-
-This method accepts PUT and POST with __method=PUT.
 DESCRIPTION
         requestBody => {
             content => {
@@ -81,15 +79,8 @@ DESCRIPTION
                     schema => {
                         type       => 'object',
                         properties => {
-                            '__method' => {
-                                type        => 'string',
-                                description => "This is not required but if request method is 'POST', should be set as 'PUT'",
-                                enum        => [
-                                    'PUT',
-                                ],
-                            },
                             user => {
-                                '$ref' => '#/components/schemas/user',
+                                '$ref' => '#/components/schemas/user_updatable',
                             },
                         },
                     },
@@ -109,16 +100,6 @@ DESCRIPTION
             },
             404 => {
                 description => 'Not Found',
-                content     => {
-                    'application/json' => {
-                        schema => {
-                            '$ref' => '#/components/schemas/ErrorContent',
-                        },
-                    },
-                },
-            },
-            405 => {
-                description => "Request method is not 'PUT' or 'POST' with '__method=PUT'",
                 content     => {
                     'application/json' => {
                         schema => {

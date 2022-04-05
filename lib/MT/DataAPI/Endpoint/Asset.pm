@@ -104,6 +104,19 @@ DESCRIPTION
     };
 }
 
+sub upload_v2_openapi_spec {
+    my $spec = __PACKAGE__->upload_openapi_spec;
+    $spec->{description} = <<'DESCRIPTION';
+This endpoint is marked as deprecated in v2.0.
+
+#### Permissions
+
+- upload
+DESCRIPTION
+    $spec->{deprecated} = JSON::true;
+    return $spec;
+}
+
 sub upload {
     my ( $app, $endpoint ) = @_;
 

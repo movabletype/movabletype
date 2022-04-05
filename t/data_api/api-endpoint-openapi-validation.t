@@ -18,14 +18,17 @@ use MT::Test::DataAPI;
 
 $test_env->prepare_fixture('db_data');
 
-my $suite = suite();
-test_data_api($suite);
+for my $version (qw/1 2 3 4/) {
+    my $suite = suite($version);
+    test_data_api($suite);
+}
 
 done_testing;
 
 sub suite {
+    my ($version) = @_;
     return +[
-        {   path   => '/v1/',
+        {   path   => "/v$version/",
             method => 'GET',
             code  => 200,
             complete => sub {
@@ -33,7 +36,7 @@ sub suite {
                 my $body_json = MT::Util::from_json($body);
                 my $jv = JSON::Validator->new->schema($body_json)->schema;
                 isa_ok $jv, 'JSON::Validator::Schema::OpenAPIv3';
-                is_deeply $jv->errors, [], 'errors';
+                is_deeply $jv->errors, [], 'No errors on v' . $version;
             },
         },
     ];

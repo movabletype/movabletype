@@ -10,6 +10,31 @@ use strict;
 use warnings;
 
 use MT::DataAPI::Endpoint::Asset;
+use MT::DataAPI::Endpoint::v2::Asset;
+
+sub upload_openapi_spec {
+    my $spec = MT::DataAPI::Endpoint::v2::Asset::upload_openapi_spec();
+    $spec->{requestBody}{content}{'multipart/form-data'}{schema}{properties}{autoRenameNonAscii} = {
+        type => 'integer',
+        description => 'If this value is "1", the filename is renamed non-ascii filename automatically',
+        enum => [0, 1],
+    };
+    return $spec;
+}
+
+sub upload_deprecated_openapi_spec {
+    my $spec = MT::DataAPI::Endpoint::Asset::upload_v2_openapi_spec();
+    $spec->{description} = <<'DESCRIPTION';
+This endpoint is marked as deprecated in v2.0.
+
+Upload single file to specific site.
+
+#### Permissions
+
+- upload
+DESCRIPTION
+    return $spec;
+}
 
 sub upload {
     my ( $app, $endpoint ) = @_;
