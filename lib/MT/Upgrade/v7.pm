@@ -208,6 +208,36 @@ sub upgrade_functions {
                 sql   => 'UPDATE mt_log SET log_level = 0 WHERE log_level = 16',
             },
         },
+        'v7_migrate_filters_for_log_level' => {
+            version_limit => '7.0050',
+            priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
+            updater       => {
+                type  => 'filter',
+                label => 'Migrating filters that have conditions on the log level...',
+                terms => { object_ds => 'log' },
+                code  => do {
+                    my %map = (
+                        2  => 3,
+                        8  => 5,
+                        16 => 0,
+                    );
+                    sub {
+                        my $self  = shift;
+                        my $items = $self->items
+                            or return;
+                        for my $item (@$items) {
+                            if ($item->{type} eq 'level') {
+                                if (defined(my $new_value = $map{ $item->{args}{value} })) {
+                                    $item->{args}{value} = $new_value;
+                                    $self->items($items);
+                                }
+                            }
+                        }
+                    };
+                },
+            },
+        },
         'v7_remove_image_metadata' => {
             version_limit => '7.0051',
             priority      => 3.1,

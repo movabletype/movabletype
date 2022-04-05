@@ -70,6 +70,12 @@ sub fields {
 
                 return;
             },
+            schema      => {
+                type => 'array',
+                items => {
+                    type => 'string',
+                },
+            },
         },
     ];
 }

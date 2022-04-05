@@ -94,6 +94,8 @@ my $cd_release_sixapart = MT::Test::Permission->make_content_data(
     content_type_id => $content_type_id,
     status          => MT::ContentStatus::RELEASE(),
     data            => { $single_field->id => 'sixapart', },
+    created_on      => '20180605121212',
+    modified_on     => '20180605121212',
 );
 
 my $cd_release_movabletype = MT::Test::Permission->make_content_data(
@@ -101,6 +103,8 @@ my $cd_release_movabletype = MT::Test::Permission->make_content_data(
     content_type_id => $content_type_id,
     status          => MT::ContentStatus::RELEASE(),
     data            => { $single_field->id => 'movabletype', },
+    created_on      => '20180605121213',
+    modified_on     => '20180605121213',
 );
 
 my $cd_hold_sixapart = MT::Test::Permission->make_content_data(
@@ -127,7 +131,7 @@ test_data_api(
         author_id => 0,
         result => sub {
             +{  totalResults => 2,
-                items => MT::DataAPI::Resource->from_object( [$cd_release_sixapart, $cd_release_movabletype] ),
+                items => MT::DataAPI::Resource->from_object( [$cd_release_movabletype, $cd_release_sixapart] ),
             };
         },
     }

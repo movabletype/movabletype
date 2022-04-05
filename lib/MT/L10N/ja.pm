@@ -2402,6 +2402,10 @@ use vars qw( @ISA %Lexicon );
 	'You do not have a valid path to sendmail on your machine. Perhaps you should try using SMTP?' => 'sendmailへのパスが正しくありません。SMTPの設定を試してください。',
 	q{Unknown MailTransfer method '[_1]'} => q{MailTransferの設定([_1])が不正です。},
 
+## lib/MT/Mail/MIME.pm
+	'An error occured during sending mail' => 'メール送信中にエラーが発生しました',
+	'MailTransferEncoding was auto detected because an invalid value was given.' => 'MailTransferEncoding の値が不正です。送信時に機械的に修正しました。',
+
 ## lib/MT/Notification.pm
 	'Cancel' => 'キャンセル',
 	'Click to edit contact' => 'クリックして連絡先を編集',
@@ -2917,6 +2921,7 @@ use vars qw( @ISA %Lexicon );
 	'Migrating create child site permissions...' => '子サイトの作成権限を移行しています...',
 	'Migrating data column of MT::ContentData...' => 'コンテンツデータのdataカラムを移行しています...',
 	'Migrating fields column of MT::ContentType...' => 'コンテンツタイプのFieldsカラムを移行しています...',
+	'Migrating filters that have conditions on the log level...' => 'ログレベルに対する条件を持つフィルターを移行しています...',
 	'MultiBlog migration for site(ID:[_1]) is skipped due to the data breakage.' => 'データが破損しているためサイト(ID:[_1])のマルチブログの設定の移行をスキップします。',
 	'MultiBlog migration is skipped due to the data breakage.' => 'データが破損しているためマルチブログの設定の移行をスキップします。',
 	'Rebuilding Content Type count of Category Sets...' => 'カテゴリセットの情報を再構築しています...',
@@ -2932,6 +2937,7 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'カテゴリの関連付けを再構築しています...',
 	'Rebuilding object tags...' => 'タグの関連付けを再構築しています...',
 	'Remove SQLSetNames...' => 'SQLSetNames をデータベースから削除しています...',
+	'Remove image metadata' => '画像のメタデータを削除しています',
 	'Reorder DEBUG level' => 'DEBUGレベルの値を変更しています',
 	'Reorder SECURITY level' => 'SECURITYレベルの値を変更しています',
 	'Reorder WARNING level' => 'WARNINGレベルの値を変更しています',
@@ -3002,6 +3008,9 @@ use vars qw( @ISA %Lexicon );
 	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
 	'Logger configuration for Log module [_1] seems problematic' => 'ログモジュール [_1] の設定に問題がありそうです',
 	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
+
+## lib/MT/Util/Mail.pm
+	'Error loading mail module: [_1].' => 'メールモジュールのロードに失敗しました: [_1]',
 
 ## lib/MT/Util/YAML.pm
 	'Cannot load YAML module: [_1]' => 'YAMLモジュールをロードできません: [_1]',
