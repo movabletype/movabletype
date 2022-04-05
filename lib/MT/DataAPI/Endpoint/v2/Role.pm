@@ -12,6 +12,47 @@ use warnings;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list_openapi_spec {
+    +{
+        tags      => ['Roles'],
+        summary   => 'Retrieve a list of roles',
+        parameters => [
+            { '$ref' => '#/components/parameters/role_search' },
+            { '$ref' => '#/components/parameters/role_searchFields' },
+            { '$ref' => '#/components/parameters/role_limit' },
+            { '$ref' => '#/components/parameters/role_offset' },
+            { '$ref' => '#/components/parameters/role_sortBy' },
+            { '$ref' => '#/components/parameters/role_sortOrder' },
+            { '$ref' => '#/components/parameters/role_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of roles.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of role resource. ',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/role',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -20,6 +61,49 @@ sub list {
     +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Roles'],
+        summary     => 'Create a new role',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            role => {
+                                '$ref' => '#/components/schemas/role_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/role',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -52,6 +136,38 @@ sub create {
     $new_role;
 }
 
+sub get_openapi_spec {
+    +{
+        tags       => ['Roles'],
+        summary    => 'Retrieve a single role by its ID',
+        parameters => [
+            { '$ref' => '#/components/parameters/role_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/role',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Role not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -63,6 +179,49 @@ sub get {
         or return;
 
     $role;
+}
+
+sub update_openapi_spec {
+    +{
+        tags        => ['Roles'],
+        summary     => 'Update an existing role',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            role => {
+                                '$ref' => '#/components/schemas/role_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/role',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Role not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub update {
@@ -86,6 +245,35 @@ sub update {
     ) or return;
 
     $new_role;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags      => ['Roles'],
+        summary   => 'Delete an existing role',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/role',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Role not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {

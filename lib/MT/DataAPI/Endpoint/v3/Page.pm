@@ -12,7 +12,18 @@ use warnings;
 use MT::Entry;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Endpoint::Entry;
+use MT::DataAPI::Endpoint::v2::Page;
 use MT::DataAPI::Resource;
+
+sub create_openapi_spec {
+    my $spec = MT::DataAPI::Endpoint::v2::Page::create_openapi_spec();
+    $spec->{requestBody}{content}{'application/x-www-form-urlencoded'}{schema}{properties}{publish} = {
+        type        => 'integer',
+        description => 'If this value is "0", the entry is not published',
+        enum        => [0, 1],
+    };
+    return $spec;
+}
 
 sub create {
     my ( $app, $endpoint ) = @_;
@@ -119,6 +130,16 @@ sub create {
     remove_autosave_session_obj( $app, $new_page->class );
 
     $new_page;
+}
+
+sub update_openapi_spec {
+    my $spec = MT::DataAPI::Endpoint::v2::Page::update_openapi_spec();
+    $spec->{requestBody}{content}{'application/x-www-form-urlencoded'}{schema}{properties}{publish} = {
+        type        => 'integer',
+        description => 'If this value is "0", the entry is not published',
+        enum        => [0, 1],
+    };
+    return $spec;
 }
 
 sub update {
