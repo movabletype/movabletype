@@ -10,6 +10,8 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
+    plan skip_all => 'JSON::Validator requires Perl 5.14' if $] < 5.014;
+
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
