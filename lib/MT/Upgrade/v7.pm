@@ -1538,19 +1538,13 @@ sub _v7_migrate_data_api_disable_site {
     }
     my @data_api_disable_sites = split ',', $data_api_disable_site || '';
 
-    my @sites = MT->model('website')->load(
-        undef,
+    my @sites = MT->model('website')->load({
+            class => '*',
+        },
         {
             fetchonly => { id => 1 },
         },
     );
-    my @blogs = MT->model('blog')->load(
-        undef,
-        {
-            fetchonly => { id => 1 },
-        },
-    );
-    push @sites, @blogs;
     my $from = int( MT->config->SchemaVersion || 0 );
     for my $site (@sites) {
         my $pd = MT->model('plugindata')->new(plugin => 'DataAPI', key => 'configuration:blog:' . $site->id);
