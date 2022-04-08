@@ -1536,7 +1536,7 @@ sub _v7_migrate_data_api_disable_site {
     if ($data =~ /DataAPIDisableSite\s(.*)/) {
         $data_api_disable_site = $1;
     }
-    my @data_api_disable_site = split /,/, $data_api_disable_site || '';
+    my %data_api_disable_site = map { $_ => 1 } split /,/, $data_api_disable_site || '';
 
     my @sites = MT->model('website')->load({
             class => '*',
@@ -1550,7 +1550,7 @@ sub _v7_migrate_data_api_disable_site {
         if ($from < 6) {
             $site->allow_data_api(0);
         } else {
-            if (grep { $_ == $site->id } @data_api_disable_site) {
+            if ($data_api_disable_site{$site->id}) {
                 $site->allow_data_api(0);
             } else {
                 $site->allow_data_api(1);
@@ -1560,7 +1560,7 @@ sub _v7_migrate_data_api_disable_site {
     }
 
     # Clean up
-    if (grep { $_ == 0 } @data_api_disable_site) {
+    if ($data_api_disable_site{0}) {
         MT->config->DataAPIDisableSite('0', 1);
     } else {
         MT->config->DataAPIDisableSite('', 1);
