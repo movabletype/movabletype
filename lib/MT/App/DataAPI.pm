@@ -19,6 +19,7 @@ use MT::App::Search::Common;
 use MT::AccessToken;
 
 our %endpoints = ();
+our %schemas   = ();
 
 sub id                 {'data_api'}
 sub DEFAULT_VERSION () {4}
@@ -41,74 +42,115 @@ sub core_methods {
 
 sub core_endpoints {
     my $app = shift;
-    my $pkg = '$Core::MT::DataAPI::Endpoint::';
-    return [
-
+    return [{
+            id              => 'openapi',
+            route           => '/',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::OpenAPI::build_schema',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::OpenAPI::openapi_spec',
+            requires_login  => 0,
+        },
+        {
+            id              => 'version',
+            route           => '/version',
+            version         => 1,
+            requires_login  => 0,
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Version::version_openapi_spec',
+        },
         # version 1
-        {   id             => 'list_endpoints',
-            route          => '/endpoints',
-            version        => 1,
-            handler        => "${pkg}Util::endpoints",
-            requires_login => 0,
+        {
+            id              => 'list_endpoints',
+            route           => '/endpoints',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Util::endpoints',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Util::endpoints_openapi_spec',
+            requires_login  => 0,
         },
-        {   id             => 'authorize',
-            route          => '/authorization',
-            version        => 1,
-            handler        => "${pkg}Auth::authorization",
-            format         => 'html',
-            requires_login => 0,
+        {
+            id              => 'authorize',
+            route           => '/authorization',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Auth::authorization',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Auth::authorization_openapi_spec',
+            format          => 'html',
+            requires_login  => 0,
         },
-        {   id             => 'authenticate',
-            route          => '/authentication',
-            verb           => 'POST',
-            version        => 1,
-            handler        => "${pkg}Auth::authentication",
-            requires_login => 0,
+        {
+            id              => 'authenticate',
+            route           => '/authentication',
+            verb            => 'POST',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Auth::authentication',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Auth::authentication_openapi_spec',
+            requires_login  => 0,
         },
-        {   id             => 'get_token',
-            route          => '/token',
-            verb           => 'POST',
-            version        => 1,
-            handler        => "${pkg}Auth::token",
-            requires_login => 0,
-        },
-        {   id             => 'revoke_authentication',
-            route          => '/authentication',
-            verb           => 'DELETE',
-            version        => 1,
-            handler        => "${pkg}Auth::revoke_authentication",
-            requires_login => 0,
-        },
-        {   id      => 'revoke_token',
-            route   => '/token',
-            verb    => 'DELETE',
-            version => 1,
-            handler => "${pkg}Auth::revoke_token",
-        },
-        {   id          => 'get_user',
-            route       => '/users/:user_id',
-            version     => 1,
-            handler     => "${pkg}User::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested user.',
+        {
+            id              => 'get_token',
+            route           => '/token',
+            verb            => 'POST',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Auth::token',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Auth::token_openapi_spec',
+            openapi_options => {
+                can_use_session_id => 1,
             },
             requires_login => 0,
         },
-        {   id          => 'update_user',
-            route       => '/users/:user_id',
-            resources   => ['user'],
-            verb        => 'PUT',
-            version     => 1,
-            handler     => "${pkg}User::update",
+        {
+            id              => 'revoke_authentication',
+            route           => '/authentication',
+            verb            => 'DELETE',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Auth::revoke_authentication',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Auth::revoke_authentication_openapi_spec',
+            openapi_options => {
+                can_use_session_id => 1,
+            },
+            requires_login => 0,
+        },
+        {
+            id              => 'revoke_token',
+            route           => '/token',
+            verb            => 'DELETE',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Auth::revoke_token',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Auth::revoke_token_openapi_spec',
+        },
+        {
+            id              => 'get_user',
+            route           => '/users/:user_id',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::User::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::User::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes => {
+                403 => 'Do not have permission to retrieve the requested user.',
+            },
+            requires_login => 0,
+        },
+        {
+            id              => 'update_user',
+            route           => '/users/:user_id',
+            resources       => ['user'],
+            verb            => 'PUT',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::User::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::User::update_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to update the requested user.',
             },
         },
-        {   id             => 'list_blogs_for_user',
-            route          => '/users/:user_id/sites',
-            version        => 1,
-            handler        => "${pkg}Blog::list",
+        {
+            id              => 'list_blogs_for_user',
+            route           => '/users/:user_id/sites',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Blog::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Blog::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'site,sites',
+            },
             default_params => {
                 limit     => 25,
                 offset    => 0,
@@ -116,26 +158,32 @@ sub core_endpoints {
                 sortOrder => 'ascend',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of blogs.',
+                403 => 'Do not have permission to retrieve the list of blogs.',
             },
             requires_login => 0,
         },
-        {   id          => 'get_blog',
-            route       => '/sites/:site_id',
-            version     => 1,
-            handler     => "${pkg}Blog::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested blog.',
+        {
+            id              => 'get_blog',
+            route           => '/sites/:site_id',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Blog::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Blog::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested blog.',
             },
             requires_login => 0,
         },
-        {   id             => 'list_entries',
-            route          => '/sites/:site_id/entries',
-            verb           => 'GET',
-            version        => 1,
-            handler        => "${pkg}Entry::list",
+        {
+            id              => 'list_entries',
+            route           => '/sites/:site_id/entries',
+            verb            => 'GET',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Entry::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Entry::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'entry,entries',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -145,55 +193,69 @@ sub core_endpoints {
                 filterKeys   => 'status',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested entries.',
+                403 => 'Do not have permission to retrieve the requested entries.',
             },
             requires_login => 0,
         },
-        {   id        => 'create_entry',
-            route     => '/sites/:site_id/entries',
-            resources => ['entry'],
-            verb      => 'POST',
-            version   => 1,
-            handler   => "${pkg}Entry::create",
-            default_params => { save_revision => 1, },
-            error_codes =>
-                { 403 => 'Do not have permission to create an entry.', },
+        {
+            id              => 'create_entry',
+            route           => '/sites/:site_id/entries',
+            resources       => ['entry'],
+            verb            => 'POST',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Entry::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Entry::create_openapi_spec',
+            default_params  => { save_revision => 1, },
+            error_codes     => {
+                403 => 'Do not have permission to create an entry.',
+            },
         },
-        {   id          => 'get_entry',
-            route       => '/sites/:site_id/entries/:entry_id',
-            version     => 1,
-            handler     => "${pkg}Entry::get",
+        {
+            id              => 'get_entry',
+            route           => '/sites/:site_id/entries/:entry_id',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Entry::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Entry::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested entry.',
+                403 => 'Do not have permission to retrieve the requested entry.',
             },
             requires_login => 0,
         },
-        {   id        => 'update_entry',
-            route     => '/sites/:site_id/entries/:entry_id',
-            resources => ['entry'],
-            verb      => 'PUT',
-            version   => 1,
-            handler   => "${pkg}Entry::update",
-            default_params => { save_revision => 1, },
-            error_codes =>
-                { 403 => 'Do not have permission to update an entry.', },
+        {
+            id              => 'update_entry',
+            route           => '/sites/:site_id/entries/:entry_id',
+            resources       => ['entry'],
+            verb            => 'PUT',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Entry::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Entry::update_openapi_spec',
+            default_params  => { save_revision => 1, },
+            error_codes     => {
+                403 => 'Do not have permission to update an entry.',
+            },
         },
-        {   id      => 'delete_entry',
-            route   => '/sites/:site_id/entries/:entry_id',
-            verb    => 'DELETE',
-            version => 1,
-            handler => "${pkg}Entry::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete an entry.', },
+        {
+            id              => 'delete_entry',
+            route           => '/sites/:site_id/entries/:entry_id',
+            verb            => 'DELETE',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Entry::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Entry::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete an entry.',
+            },
         },
-        {   id             => 'list_categories',
-            route          => '/sites/:site_id/categories',
-            verb           => 'GET',
-            version        => 1,
-            handler        => "${pkg}Category::list",
-            default_params => {
+        {
+            id              => 'list_categories',
+            route           => '/sites/:site_id/categories',
+            verb            => 'GET',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Category::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Category::list_openapi_spec',
+            default_params  => {
                 limit        => 10,
                 offset       => 0,
                 sortBy       => 'user_custom',
@@ -201,27 +263,32 @@ sub core_endpoints {
                 searchFields => 'label,basename',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of categories.',
+                403 => 'Do not have permission to retrieve the list of categories.',
             },
             requires_login => 0,
         },
-        {   id             => 'upload_asset',
-            route          => '/sites/:site_id/assets/upload',
-            verb           => 'POST',
-            version        => 1,
-            handler        => "${pkg}Asset::upload",
-            default_params => {
+        {
+            id              => 'upload_asset',
+            route           => '/sites/:site_id/assets/upload',
+            verb            => 'POST',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Asset::upload',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Asset::upload_openapi_spec',
+            default_params  => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
             },
-            error_codes => { 403 => 'Do not have permission to upload.', },
+            error_codes => {
+                403 => 'Do not have permission to upload.',
+            },
         },
-        {   id             => 'list_permissions_for_user',
-            route          => '/users/:user_id/permissions',
-            version        => 1,
-            handler        => "${pkg}Permission::list",
-            default_params => {
+        {
+            id              => 'list_permissions_for_user',
+            route           => '/users/:user_id/permissions',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Permission::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Permission::list_openapi_spec',
+            default_params  => {
                 limit      => 25,
                 offset     => 0,
                 sortBy     => 'blog_id',
@@ -229,50 +296,69 @@ sub core_endpoints {
                 filterKeys => 'blogIds',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested user\'s permissions.',
+                403 => 'Do not have permission to retrieve the requested user\'s permissions.',
             },
         },
-        {   id      => 'publish_entries',
-            route   => '/publish/entries',
-            verb    => 'GET',
-            version => 1,
-            handler => "${pkg}Publish::entries",
-            error_codes => { 403 => 'Do not have permission to publish.', },
+        {
+            id              => 'publish_entries',
+            route           => '/publish/entries',
+            verb            => 'GET',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Publish::entries',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Publish::entries_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to publish.',
+            },
         },
-        {   id      => 'get_stats_provider',
-            route   => '/sites/:site_id/stats/provider',
-            version => 1,
-            handler => "${pkg}Stats::provider",
+        {
+            id              => 'get_stats_provider',
+            route           => '/sites/:site_id/stats/provider',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Stats::provider',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Stats::provider_openapi_spec',
         },
-        {   id      => 'list_stats_pageviews_for_path',
-            route   => '/sites/:site_id/stats/path/pageviews',
-            version => 1,
-            handler => "${pkg}Stats::pageviews_for_path",
+        {
+            id              => 'list_stats_pageviews_for_path',
+            route           => '/sites/:site_id/stats/path/pageviews',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Stats::pageviews_for_path',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Stats::pageviews_for_path_openapi_spec',
         },
-        {   id      => 'list_stats_visits_for_path',
-            route   => '/sites/:site_id/stats/path/visits',
-            version => 1,
-            handler => "${pkg}Stats::visits_for_path",
+        {
+            id              => 'list_stats_visits_for_path',
+            route           => '/sites/:site_id/stats/path/visits',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Stats::visits_for_path',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Stats::visits_for_path_openapi_spec',
         },
-        {   id      => 'list_stats_pageviews_for_date',
-            route   => '/sites/:site_id/stats/date/pageviews',
-            version => 1,
-            handler => "${pkg}Stats::pageviews_for_date",
+        {
+            id              => 'list_stats_pageviews_for_date',
+            route           => '/sites/:site_id/stats/date/pageviews',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Stats::pageviews_for_date',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Stats::pageviews_for_date_openapi_spec',
         },
-        {   id      => 'list_stats_visits_for_date',
-            route   => '/sites/:site_id/stats/date/visits',
-            version => 1,
-            handler => "${pkg}Stats::visits_for_date",
+        {
+            id              => 'list_stats_visits_for_date',
+            route           => '/sites/:site_id/stats/date/visits',
+            version         => 1,
+            handler         => '$Core::MT::DataAPI::Endpoint::Stats::visits_for_date',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Stats::visits_for_date_openapi_spec',
         },
 
         # version 2
         # category endpoints
-        {   id             => 'list_categories',
-            route          => '/sites/:site_id/categories',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Category::list",
+        {
+            id              => 'list_categories',
+            route           => '/sites/:site_id/categories',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'category,categories',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -281,16 +367,21 @@ sub core_endpoints {
                 searchFields => 'label,basename',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of categories.',
+                403 => 'Do not have permission to retrieve the list of categories.',
             },
             requires_login => 0,
         },
-        {   id             => 'list_categories_for_entry',
-            route          => '/sites/:site_id/entries/:entry_id/categories',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Category::list_for_entry",
+        {
+            id              => 'list_categories_for_entry',
+            route           => '/sites/:site_id/entries/:entry_id/categories',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::list_for_entry',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::list_for_entry_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'category,categories',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -299,27 +390,36 @@ sub core_endpoints {
                 searchFields => 'label,basename',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested categories for entry.',
+                403 => 'Do not have permission to retrieve the requested categories for entry.',
             },
             requires_login => 0,
         },
-        {   id          => 'list_parent_categories',
-            route       => '/sites/:site_id/categories/:category_id/parents',
-            verb        => 'GET',
-            version     => 2,
-            handler     => "${pkg}v2::Category::list_parents",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of categories.',
+        {
+            id              => 'list_parent_categories',
+            route           => '/sites/:site_id/categories/:category_id/parents',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::list_parents',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::list_parents_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the list of categories.',
             },
             requires_login => 0,
         },
-        {   id      => 'list_sibling_categories',
-            route   => '/sites/:site_id/categories/:category_id/siblings',
-            verb    => 'GET',
-            version => 2,
-            handler => "${pkg}v2::Category::list_siblings",
+        {
+            id              => 'list_sibling_categories',
+            route           => '/sites/:site_id/categories/:category_id/siblings',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::list_siblings',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::list_siblings_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'category,categories',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -328,73 +428,98 @@ sub core_endpoints {
                 searchFields => 'label,basename',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of categories.',
+                403 => 'Do not have permission to retrieve the list of categories.',
             },
             requires_login => 0,
         },
-        {   id          => 'list_child_categories',
-            route       => '/sites/:site_id/categories/:category_id/children',
-            verb        => 'GET',
-            version     => 2,
-            handler     => "${pkg}v2::Category::list_children",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of categories.',
+        {
+            id              => 'list_child_categories',
+            route           => '/sites/:site_id/categories/:category_id/children',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::list_children',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::list_children_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the list of categories.',
             },
             requires_login => 0,
         },
-        {   id        => 'create_category',
-            route     => '/sites/:site_id/categories',
-            resources => ['category'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::Category::create",
-            error_codes =>
-                { 403 => 'Do not have permission to create a category.', },
+        {
+            id              => 'create_category',
+            route           => '/sites/:site_id/categories',
+            resources       => ['category'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::create_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a category.',
+            },
         },
-        {   id          => 'get_category',
-            route       => '/sites/:site_id/categories/:category_id',
-            version     => 2,
-            handler     => "${pkg}v2::Category::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested category.',
+        {
+            id              => 'get_category',
+            route           => '/sites/:site_id/categories/:category_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested category.',
             },
             requires_login => 0,
         },
-        {   id        => 'update_category',
-            route     => '/sites/:site_id/categories/:category_id',
-            resources => ['category'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::Category::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a category.', },
+        {
+            id              => 'update_category',
+            route           => '/sites/:site_id/categories/:category_id',
+            resources       => ['category'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a category.',
+            },
         },
-        {   id      => 'delete_category',
-            route   => '/sites/:site_id/categories/:category_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Category::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a category.', },
+        {
+            id              => 'delete_category',
+            route           => '/sites/:site_id/categories/:category_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a category.',
+            },
         },
-        {   id      => 'permutate_categories',
-            route   => '/sites/:site_id/categories/permutate',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Category::permutate",
-            error_codes =>
-                { 403 => 'Do not have permission to permutate categories.', },
+        {
+            id              => 'permutate_categories',
+            route           => '/sites/:site_id/categories/permutate',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::permutate',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::permutate_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to permutate categories.',
+            },
         },
 
         # folder endpoints
-        {   id             => 'list_folders',
-            route          => '/sites/:site_id/folders',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Folder::list",
+        {
+            id              => 'list_folders',
+            route           => '/sites/:site_id/folders',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'folder,folders',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -403,27 +528,36 @@ sub core_endpoints {
                 searchFields => 'label,basename',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of folders.',
+                403 => 'Do not have permission to retrieve the list of folders.',
             },
             requires_login => 0,
         },
-        {   id          => 'list_parent_folders',
-            route       => '/sites/:site_id/folders/:folder_id/parents',
-            verb        => 'GET',
-            version     => 2,
-            handler     => "${pkg}v2::Folder::list_parents",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of folders.',
+        {
+            id              => 'list_parent_folders',
+            route           => '/sites/:site_id/folders/:folder_id/parents',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_parents',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_parents_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the list of folders.',
             },
             requires_login => 0,
         },
-        {   id             => 'list_sibling_folders',
-            route          => '/sites/:site_id/folders/:folder_id/siblings',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Folder::list_siblings",
+        {
+            id              => 'list_sibling_folders',
+            route           => '/sites/:site_id/folders/:folder_id/siblings',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_siblings',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_siblings_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'folder,folders',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -432,73 +566,98 @@ sub core_endpoints {
                 searchFields => 'label,basename',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of folders.',
+                403 => 'Do not have permission to retrieve the list of folders.',
             },
             requires_login => 0,
         },
-        {   id          => 'list_child_folders',
-            route       => '/sites/:site_id/folders/:folder_id/children',
-            verb        => 'GET',
-            version     => 2,
-            handler     => "${pkg}v2::Folder::list_children",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of folders.',
+        {
+            id              => 'list_child_folders',
+            route           => '/sites/:site_id/folders/:folder_id/children',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_children',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_children_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the list of folders.',
             },
             requires_login => 0,
         },
-        {   id        => 'create_folder',
-            route     => '/sites/:site_id/folders',
-            resources => ['folder'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::Folder::create",
-            error_codes =>
-                { 403 => 'Do not have permission to create a folder.', },
+        {
+            id              => 'create_folder',
+            route           => '/sites/:site_id/folders',
+            resources       => ['folder'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::create_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a folder.',
+            },
         },
-        {   id          => 'get_folder',
-            route       => '/sites/:site_id/folders/:folder_id',
-            version     => 2,
-            handler     => "${pkg}v2::Folder::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested folder.',
+        {
+            id              => 'get_folder',
+            route           => '/sites/:site_id/folders/:folder_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested folder.',
             },
             requires_login => 0,
         },
-        {   id        => 'update_folder',
-            route     => '/sites/:site_id/folders/:folder_id',
-            resources => ['folder'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::Folder::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a folder.', },
+        {
+            id              => 'update_folder',
+            route           => '/sites/:site_id/folders/:folder_id',
+            resources       => ['folder'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a folder.',
+            },
         },
-        {   id      => 'delete_folder',
-            route   => '/sites/:site_id/folders/:folder_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Folder::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a folder.', },
+        {
+            id              => 'delete_folder',
+            route           => '/sites/:site_id/folders/:folder_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a folder.',
+            },
         },
-        {   id      => 'permutate_folders',
-            route   => '/sites/:site_id/folders/permutate',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Folder::permutate",
-            error_codes =>
-                { 403 => 'Do not have permission to permutate folders.', },
+        {
+            id              => 'permutate_folders',
+            route           => '/sites/:site_id/folders/permutate',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::permutate',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::permutate_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to permutate folders.',
+            },
         },
 
         # asset endpoints
-        {   id             => 'list_assets',
-            route          => '/sites/:site_id/assets',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Asset::list",
+        {
+            id              => 'list_assets',
+            route           => '/sites/:site_id/assets',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+                filtered_list_ds_nouns => 'asset,assets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -508,36 +667,41 @@ sub core_endpoints {
                 filterKeys   => 'class',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested assets.',
+                403 => 'Do not have permission to retrieve the requested assets.',
             },
             requires_login => 0,
         },
 
-#        {   id             => 'list_all_assets',
-#            route          => '/assets',
-#            verb           => 'GET',
-#            version        => 2,
-#            handler        => "${pkg}v2::Asset::list",
-#            default_params => {
-#                limit        => 10,
-#                offset       => 0,
-#                sortBy       => 'created_on',
-#                sortOrder    => 'descend',
-#                searchFields => 'label',
-#                filterKeys   => 'class',
-#            },
-#            error_codes => {
-#                403 =>
-#                    'Do not have permission to retrieve the requested assets.',
-#            },
-#            requires_login => 0,
-#        },
-        {   id             => 'list_assets_for_entry',
-            route          => '/sites/:site_id/entries/:entry_id/assets',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Asset::list_for_entry",
+        #        {   id             => 'list_all_assets',
+        #            route          => '/assets',
+        #            verb           => 'GET',
+        #            version        => 2,
+        #            handler        => "${pkg}v2::Asset::list",
+        #            default_params => {
+        #                limit        => 10,
+        #                offset       => 0,
+        #                sortBy       => 'created_on',
+        #                sortOrder    => 'descend',
+        #                searchFields => 'label',
+        #                filterKeys   => 'class',
+        #            },
+        #            error_codes => {
+        #                403 =>
+        #                    'Do not have permission to retrieve the requested assets.',
+        #            },
+        #            requires_login => 0,
+        #        },
+        {
+            id              => 'list_assets_for_entry',
+            route           => '/sites/:site_id/entries/:entry_id/assets',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_entry',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_entry_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'asset,assets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -547,16 +711,21 @@ sub core_endpoints {
                 filterKeys   => 'class',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested assets for entry.',
+                403 => 'Do not have permission to retrieve the requested assets for entry.',
             },
             requires_login => 0,
         },
-        {   id             => 'list_assets_for_page',
-            route          => '/sites/:site_id/pages/:page_id/assets',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Asset::list_for_page",
+        {
+            id              => 'list_assets_for_page',
+            route           => '/sites/:site_id/pages/:page_id/assets',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_page',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_page_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'asset,assets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -566,34 +735,39 @@ sub core_endpoints {
                 filterKeys   => 'class',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested assets for page.',
+                403 => 'Do not have permission to retrieve the requested assets for page.',
             },
             requires_login => 0,
         },
 
-#        {   id             => 'list_assets_for_tag',
-#            route          => '/tags/:tag_id/assets',
-#            version        => 2,
-#            handler        => "${pkg}v2::Asset::list_for_tag",
-#            default_params => {
-#                limit        => 10,
-#                offset       => 0,
-#                sortBy       => 'created_on',
-#                sortOrder    => 'descend',
-#                searchFields => 'label',
-#                filterKeys   => 'class',
-#            },
-#            error_codes => {
-#                403 =>
-#                    'Do not have permission to retrieve the requested assets for tag.',
-#            },
-#            requires_login => 0,
-#        },
-        {   id             => 'list_assets_for_site_and_tag',
-            route          => '/sites/:site_id/tags/:tag_id/assets',
-            version        => 2,
-            handler        => "${pkg}v2::Asset::list_for_site_and_tag",
+        #        {   id             => 'list_assets_for_tag',
+        #            route          => '/tags/:tag_id/assets',
+        #            version        => 2,
+        #            handler        => "${pkg}v2::Asset::list_for_tag",
+        #            default_params => {
+        #                limit        => 10,
+        #                offset       => 0,
+        #                sortBy       => 'created_on',
+        #                sortOrder    => 'descend',
+        #                searchFields => 'label',
+        #                filterKeys   => 'class',
+        #            },
+        #            error_codes => {
+        #                403 =>
+        #                    'Do not have permission to retrieve the requested assets for tag.',
+        #            },
+        #            requires_login => 0,
+        #        },
+        {
+            id              => 'list_assets_for_site_and_tag',
+            route           => '/sites/:site_id/tags/:tag_id/assets',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_site_and_tag',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_site_and_tag_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'asset,assets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -603,79 +777,101 @@ sub core_endpoints {
                 filterKeys   => 'class',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested assets for site and tag.',
+                403 => 'Do not have permission to retrieve the requested assets for site and tag.',
             },
             requires_login => 0,
         },
         {    # Different from v1 upload_asset endpoint.
-            id             => 'upload_asset',
-            route          => '/assets/upload',
-            verb           => 'POST',
-            version        => 2,
-            handler        => "${pkg}v2::Asset::upload",
-            default_params => {
+            id              => 'upload_asset',
+            route           => '/assets/upload',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::upload',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::upload_openapi_spec',
+            default_params  => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
             },
-            error_codes => { 403 => 'Do not have permission to upload.', },
+            error_codes => {
+                403 => 'Do not have permission to upload.',
+            },
         },
         {    # Same as v2 upload_asset.
-            id             => 'upload_asset_for_site',
-            route          => '/sites/:site_id/assets/upload',
-            verb           => 'POST',
-            version        => 2,
-            handler        => "${pkg}Asset::upload",
-            default_params => {
+            id              => 'upload_asset_for_site',
+            route           => '/sites/:site_id/assets/upload',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::Asset::upload',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Asset::upload_v2_openapi_spec',
+            default_params  => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
             },
-            error_codes => { 403 => 'Do not have permission to upload.', },
-        },
-        {   id          => 'get_asset',
-            route       => '/sites/:site_id/assets/:asset_id',
-            version     => 2,
-            handler     => "${pkg}v2::Asset::get",
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested asset.',
+                403 => 'Do not have permission to upload.',
+            },
+        },
+        {
+            id              => 'get_asset',
+            route           => '/sites/:site_id/assets/:asset_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested asset.',
             },
             requires_login => 0,
         },
-        {   id        => 'update_asset',
-            route     => '/sites/:site_id/assets/:asset_id',
-            resources => ['asset'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::Asset::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update an asset.', },
+        {
+            id              => 'update_asset',
+            route           => '/sites/:site_id/assets/:asset_id',
+            resources       => ['asset'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update an asset.',
+            },
         },
-        {   id      => 'delete_asset',
-            route   => '/sites/:site_id/assets/:asset_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Asset::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete an asset.', },
+        {
+            id              => 'delete_asset',
+            route           => '/sites/:site_id/assets/:asset_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete an asset.',
+            },
         },
-        {   id          => 'get_thumbnail',
-            route       => '/sites/:site_id/assets/:asset_id/thumbnail',
-            version     => 2,
-            handler     => "${pkg}v2::Asset::get_thumbnail",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested thumbnail.',
+        {
+            id              => 'get_thumbnail',
+            route           => '/sites/:site_id/assets/:asset_id/thumbnail',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::get_thumbnail',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::get_thumbnail_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested thumbnail.',
             },
             requires_login => 0,
         },
 
         # entry endpoints
-        {   id      => 'list_entries_for_category',
-            route   => '/sites/:site_id/categories/:category_id/entries',
-            verb    => 'GET',
-            version => 2,
-            handler => "${pkg}v2::Entry::list_for_category",
+        {
+            id              => 'list_entries_for_category',
+            route           => '/sites/:site_id/categories/:category_id/entries',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_category',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_category_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'entry,entries',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -685,16 +881,21 @@ sub core_endpoints {
                 filterKeys   => 'status',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of entries.',
+                403 => 'Do not have permission to retrieve the list of entries.',
             },
             requires_login => 0,
         },
-        {   id             => 'list_entries_for_asset',
-            route          => '/sites/:site_id/assets/:asset_id/entries',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Entry::list_for_asset",
+        {
+            id              => 'list_entries_for_asset',
+            route           => '/sites/:site_id/assets/:asset_id/entries',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_asset',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_asset_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'entry,entries',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -704,34 +905,39 @@ sub core_endpoints {
                 filterKeys   => 'status',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of entries.',
+                403 => 'Do not have permission to retrieve the list of entries.',
             },
             requires_login => 0,
         },
 
-#        {   id             => 'list_entries_for_tag',
-#            route          => '/tags/:tag_id/entries',
-#            version        => 2,
-#            handler        => "${pkg}v2::Entry::list_for_tag",
-#            default_params => {
-#                limit        => 10,
-#                offset       => 0,
-#                sortBy       => 'authored_on',
-#                sortOrder    => 'descend',
-#                searchFields => 'title,body,more,keywords,excerpt,basename',
-#                filterKeys   => 'status',
-#            },
-#            error_codes => {
-#                403 =>
-#                    'Do not have permission to retrieve the requested entries for tag.',
-#            },
-#            requires_login => 0,
-#        },
-        {   id             => 'list_entries_for_site_and_tag',
-            route          => '/sites/:site_id/tags/:tag_id/entries',
-            version        => 2,
-            handler        => "${pkg}v2::Entry::list_for_site_and_tag",
+        #        {   id             => 'list_entries_for_tag',
+        #            route          => '/tags/:tag_id/entries',
+        #            version        => 2,
+        #            handler        => "${pkg}v2::Entry::list_for_tag",
+        #            default_params => {
+        #                limit        => 10,
+        #                offset       => 0,
+        #                sortBy       => 'authored_on',
+        #                sortOrder    => 'descend',
+        #                searchFields => 'title,body,more,keywords,excerpt,basename',
+        #                filterKeys   => 'status',
+        #            },
+        #            error_codes => {
+        #                403 =>
+        #                    'Do not have permission to retrieve the requested entries for tag.',
+        #            },
+        #            requires_login => 0,
+        #        },
+        {
+            id              => 'list_entries_for_site_and_tag',
+            route           => '/sites/:site_id/tags/:tag_id/entries',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_site_and_tag',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_site_and_tag_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'entry,entries',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -741,69 +947,92 @@ sub core_endpoints {
                 filterKeys   => 'status',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested entries for site and tag.',
+                403 => 'Do not have permission to retrieve the requested entries for site and tag.',
             },
             requires_login => 0,
         },
-        {   id        => 'create_entry',
-            route     => '/sites/:site_id/entries',
-            resources => ['entry'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::Entry::create",
-            default_params => { save_revision => 1, },
-            error_codes =>
-                { 403 => 'Do not have permission to create an entry.', },
+        {
+            id              => 'create_entry',
+            route           => '/sites/:site_id/entries',
+            resources       => ['entry'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::create_openapi_spec',
+            default_params  => { save_revision => 1, },
+            error_codes     => {
+                403 => 'Do not have permission to create an entry.',
+            },
         },
-        {   id        => 'update_entry',
-            route     => '/sites/:site_id/entries/:entry_id',
-            resources => ['entry'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::Entry::update",
-            default_params => { save_revision => 1, },
-            error_codes =>
-                { 403 => 'Do not have permission to update an entry.', },
+        {
+            id              => 'update_entry',
+            route           => '/sites/:site_id/entries/:entry_id',
+            resources       => ['entry'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::update_openapi_spec',
+            default_params  => { save_revision => 1, },
+            error_codes     => {
+                403 => 'Do not have permission to update an entry.',
+            },
         },
-        {   id      => 'import_entries',
-            route   => '/sites/:site_id/entries/import',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Entry::import",
-            error_codes =>
-                { 403 => 'Do not have permission to import entries.', },
+        {
+            id              => 'import_entries',
+            route           => '/sites/:site_id/entries/import',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::import',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::import_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to import entries.',
+            },
         },
-        {   id      => 'export_entries',
-            route   => '/sites/:site_id/entries/export',
-            version => 2,
-            handler => "${pkg}v2::Entry::export",
-            error_codes =>
-                { 403 => 'Do not have permission to export entries.', },
+        {
+            id              => 'export_entries',
+            route           => '/sites/:site_id/entries/export',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::export',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::export_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to export entries.',
+            },
         },
-        {   id      => 'preview_entry_by_id',
-            route   => '/sites/:site_id/entries/:entry_id/preview',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Entry::preview_by_id",
-            error_codes =>
-                { 403 => 'Do not have permission to preview entry.', },
+        {
+            id              => 'preview_entry_by_id',
+            route           => '/sites/:site_id/entries/:entry_id/preview',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::preview_by_id',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::preview_by_id_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to preview entry.',
+            },
         },
-        {   id      => 'preview_entry',
-            route   => '/sites/:site_id/entries/preview',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Entry::preview",
-            error_codes =>
-                { 403 => 'Do not have permission to preview entry.', },
+        {
+            id              => 'preview_entry',
+            route           => '/sites/:site_id/entries/preview',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::preview',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::preview_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to preview entry.',
+            },
         },
 
         # page endpoints
-        {   id             => 'list_pages',
-            route          => '/sites/:site_id/pages',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Page::list",
+        {
+            id              => 'list_pages',
+            route           => '/sites/:site_id/pages',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'page,pages',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -813,16 +1042,21 @@ sub core_endpoints {
                 filterKeys   => 'status',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested pages.',
+                403 => 'Do not have permission to retrieve the requested pages.',
             },
             requires_login => 0,
         },
-        {   id             => 'list_pages_for_folder',
-            route          => '/sites/:site_id/folders/:folder_id/pages',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Page::list_for_folder",
+        {
+            id              => 'list_pages_for_folder',
+            route           => '/sites/:site_id/folders/:folder_id/pages',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_folder',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_folder_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'page,pages',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -832,16 +1066,21 @@ sub core_endpoints {
                 filterKeys   => 'status',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested pages.',
+                403 => 'Do not have permission to retrieve the requested pages.',
             },
             requires_login => 0,
         },
-        {   id             => 'list_pages_for_asset',
-            route          => '/sites/:site_id/assets/:asset_id/pages',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Page::list_for_asset",
+        {
+            id              => 'list_pages_for_asset',
+            route           => '/sites/:site_id/assets/:asset_id/pages',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_asset',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_asset_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'page,pages',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -851,36 +1090,41 @@ sub core_endpoints {
                 filterKeys   => 'status',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested pages.',
+                403 => 'Do not have permission to retrieve the requested pages.',
             },
             requires_login => 0,
         },
 
-#        {   id             => 'list_pages_for_tag',
-#            route          => '/tags/:tag_id/pages',
-#            verb           => 'GET',
-#            version        => 2,
-#            handler        => "${pkg}v2::Page::list_for_tag",
-#            default_params => {
-#                limit        => 10,
-#                offset       => 0,
-#                sortBy       => 'modified_on',
-#                sortOrder    => 'descend',
-#                searchFields => 'title,body,more,keywords,excerpt,basename',
-#                filterKeys   => 'status',
-#            },
-#            error_codes => {
-#                403 =>
-#                    'Do not have permission to retrieve the requested pages.',
-#            },
-#            requires_login => 0,
-#        },
-        {   id             => 'list_pages_for_site_and_tag',
-            route          => '/sites/:site_id/tags/:tag_id/pages',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Page::list_for_site_and_tag",
+        #        {   id             => 'list_pages_for_tag',
+        #            route          => '/tags/:tag_id/pages',
+        #            verb           => 'GET',
+        #            version        => 2,
+        #            handler        => "${pkg}v2::Page::list_for_tag",
+        #            default_params => {
+        #                limit        => 10,
+        #                offset       => 0,
+        #                sortBy       => 'modified_on',
+        #                sortOrder    => 'descend',
+        #                searchFields => 'title,body,more,keywords,excerpt,basename',
+        #                filterKeys   => 'status',
+        #            },
+        #            error_codes => {
+        #                403 =>
+        #                    'Do not have permission to retrieve the requested pages.',
+        #            },
+        #            requires_login => 0,
+        #        },
+        {
+            id              => 'list_pages_for_site_and_tag',
+            route           => '/sites/:site_id/tags/:tag_id/pages',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_site_and_tag',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_site_and_tag_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'page,pages',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -890,72 +1134,96 @@ sub core_endpoints {
                 filterKeys   => 'status',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested pages.',
+                403 => 'Do not have permission to retrieve the requested pages.',
             },
             requires_login => 0,
         },
-        {   id        => 'create_page',
-            route     => '/sites/:site_id/pages',
-            resources => ['page'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::Page::create",
-            default_params => { save_revision => 1, },
-            error_codes =>
-                { 403 => 'Do not have permission to create a page.', },
+        {
+            id              => 'create_page',
+            route           => '/sites/:site_id/pages',
+            resources       => ['page'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::create_openapi_spec',
+            default_params  => { save_revision => 1, },
+            error_codes     => {
+                403 => 'Do not have permission to create a page.',
+            },
         },
-        {   id          => 'get_page',
-            route       => '/sites/:site_id/pages/:page_id',
-            version     => 2,
-            handler     => "${pkg}v2::Page::get",
+        {
+            id              => 'get_page',
+            route           => '/sites/:site_id/pages/:page_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested page.',
+                403 => 'Do not have permission to retrieve the requested page.',
             },
             requires_login => 0,
         },
-        {   id        => 'update_page',
-            route     => '/sites/:site_id/pages/:page_id',
-            resources => ['page'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::Page::update",
-            default_params => { save_revision => 1, },
-            error_codes =>
-                { 403 => 'Do not have permission to update a page.', },
+        {
+            id              => 'update_page',
+            route           => '/sites/:site_id/pages/:page_id',
+            resources       => ['page'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::update_openapi_spec',
+            default_params  => { save_revision => 1, },
+            error_codes     => {
+                403 => 'Do not have permission to update a page.',
+            },
         },
-        {   id      => 'delete_page',
-            route   => '/sites/:site_id/pages/:page_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Page::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a page.', },
+        {
+            id              => 'delete_page',
+            route           => '/sites/:site_id/pages/:page_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a page.',
+            },
         },
-        {   id      => 'preview_page_by_id',
-            route   => '/sites/:site_id/pages/:page_id/preview',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Entry::preview_by_id",
-            error_codes =>
-                { 403 => 'Do not have permission to preview page.', },
+        {
+            id              => 'preview_page_by_id',
+            route           => '/sites/:site_id/pages/:page_id/preview',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::preview_by_id',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::preview_by_id_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to preview page.',
+            },
         },
-        {   id      => 'preview_page',
-            route   => '/sites/:site_id/pages/preview',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Page::preview",
-            error_codes =>
-                { 403 => 'Do not have permission to preview page.', },
+        {
+            id              => 'preview_page',
+            route           => '/sites/:site_id/pages/preview',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::preview',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::preview_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to preview page.',
+            },
         },
 
         # site endpoints
-        {   id             => 'list_sites',
-            route          => '/sites',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Blog::list",
+        {
+            id              => 'list_sites',
+            route           => '/sites',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Blog::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Blog::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'site,sites',
+            },
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -964,16 +1232,56 @@ sub core_endpoints {
                 searchFields => 'name',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of blogs.',
+                403 => 'Do not have permission to retrieve the list of blogs.',
             },
             requires_login => 0,
         },
-        {   id             => 'list_sites_by_parent',
-            route          => '/sites/:site_id/children',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Blog::list_by_parent",
+        {
+            id              => 'get_blog',
+            route           => '/sites/:site_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::Blog::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Blog::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested blog.',
+            },
+            requires_login => 0,
+        },
+        {
+            id              => 'list_blogs_for_user',
+            route           => '/users/:user_id/sites',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::Blog::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Blog::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'site,sites',
+            },
+            default_params => {
+                limit     => 25,
+                offset    => 0,
+                sortBy    => 'name',
+                sortOrder => 'ascend',
+            },
+            error_codes => {
+                403 => 'Do not have permission to retrieve the list of blogs.',
+            },
+            requires_login => 0,
+        },
+        {
+            id              => 'list_sites_by_parent',
+            route           => '/sites/:site_id/children',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Blog::list_by_parent',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Blog::list_by_parent_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'site,sites',
+            },
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -982,52 +1290,68 @@ sub core_endpoints {
                 searchFields => 'name',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of blogs.',
+                403 => 'Do not have permission to retrieve the list of blogs.',
             },
             requires_login => 0,
         },
-        {   id        => 'insert_new_blog',
-            route     => '/sites/:site_id',
-            resources => ['blog'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::Blog::insert_new_blog",
-            error_codes =>
-                { 403 => 'Do not have permission to create a blog.', },
+        {
+            id              => 'insert_new_blog',
+            route           => '/sites/:site_id',
+            resources       => ['blog'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Blog::insert_new_blog',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Blog::insert_new_blog_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a blog.',
+            },
         },
-        {   id        => 'insert_new_website',
-            route     => '/sites',
-            resources => ['website'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::Blog::insert_new_website",
-            error_codes =>
-                { 403 => 'Do not have permission to create a website.', },
+        {
+            id              => 'insert_new_website',
+            route           => '/sites',
+            resources       => ['website'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Blog::insert_new_website',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Blog::insert_new_website_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a website.',
+            },
         },
-        {   id      => 'update_site',
-            route   => '/sites/:site_id',
-            verb    => 'PUT',
-            version => 2,
-            handler => "${pkg}v2::Blog::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a site.', },
+        {
+            id              => 'update_site',
+            route           => '/sites/:site_id',
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Blog::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Blog::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a site.',
+            },
         },
-        {   id      => 'delete_site',
-            route   => '/sites/:site_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Blog::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a site.', },
+        {
+            id              => 'delete_site',
+            route           => '/sites/:site_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Blog::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Blog::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a site.',
+            },
         },
 
         # role endpoints
-        {   id             => 'list_roles',
-            route          => '/roles',
-            verb           => 'GET',
-            version        => 2,
-            handler        => "${pkg}v2::Role::list",
+        {
+            id              => 'list_roles',
+            route           => '/roles',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Role::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Role::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'role,roles',
+            },
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -1036,70 +1360,65 @@ sub core_endpoints {
                 searchFields => 'name,description',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of roles.',
-            },
-        },
-        {   id        => 'create_role',
-            route     => '/roles',
-            resources => ['role'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::Role::create",
-            error_codes =>
-                { 403 => 'Do not have permission to create a role.', },
-        },
-        {   id          => 'get_role',
-            route       => '/roles/:role_id',
-            version     => 2,
-            handler     => "${pkg}v2::Role::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested role.',
-            },
-        },
-        {   id        => 'update_role',
-            route     => '/roles/:role_id',
-            resources => ['role'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::Role::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a role.', },
-        },
-        {   id      => 'delete_role',
-            route   => '/roles/:role_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Role::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a role.', },
-        },
-
-        # permission endpoints
-        {   id             => 'list_permissions',
-            route          => '/permissions',
-            version        => 2,
-            handler        => "${pkg}v2::Permission::list",
-            default_params => {
-                limit      => 25,
-                offset     => 0,
-                sortBy     => 'blog_id',
-                sortOrder  => 'ascend',
-                filterKeys => 'blogIds',
-            },
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of permissions.',
+                403 => 'Do not have permission to retrieve the list of roles.',
             },
         },
         {
+            id              => 'create_role',
+            route           => '/roles',
+            resources       => ['role'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Role::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Role::create_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a role.',
+            },
+        },
+        {
+            id              => 'get_role',
+            route           => '/roles/:role_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Role::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Role::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested role.',
+            },
+        },
+        {
+            id              => 'update_role',
+            route           => '/roles/:role_id',
+            resources       => ['role'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Role::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Role::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a role.',
+            },
+        },
+        {
+            id              => 'delete_role',
+            route           => '/roles/:role_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Role::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Role::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a role.',
+            },
+        },
 
-            # update
-            id             => 'list_permissions_for_user',
-            route          => '/users/:user_id/permissions',
-            version        => 2,
-            handler        => "${pkg}v2::Permission::list_for_user",
+        # permission endpoints
+        {
+            id              => 'list_permissions',
+            route           => '/permissions',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Permission::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Permission::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'permission,permissions',
+            },
             default_params => {
                 limit      => 25,
                 offset     => 0,
@@ -1108,14 +1427,39 @@ sub core_endpoints {
                 filterKeys => 'blogIds',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested user\'s permissions.',
+                403 => 'Do not have permission to retrieve the list of permissions.',
             },
         },
-        {   id             => 'list_permissions_for_site',
-            route          => '/sites/:site_id/permissions',
-            version        => 2,
-            handler        => "${pkg}v2::Permission::list_for_site",
+        {
+            # update
+            id              => 'list_permissions_for_user',
+            route           => '/users/:user_id/permissions',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Permission::list_for_user',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Permission::list_for_user_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'permission,permissions',
+            },
+            default_params => {
+                limit      => 25,
+                offset     => 0,
+                sortBy     => 'blog_id',
+                sortOrder  => 'ascend',
+                filterKeys => 'blogIds',
+            },
+            error_codes => {
+                403 => 'Do not have permission to retrieve the requested user\'s permissions.',
+            },
+        },
+        {
+            id              => 'list_permissions_for_site',
+            route           => '/sites/:site_id/permissions',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Permission::list_for_site',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Permission::list_for_site_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'permission,permissions',
+            },
             default_params => {
                 limit     => 25,
                 offset    => 0,
@@ -1123,14 +1467,18 @@ sub core_endpoints {
                 sortOrder => 'ascend',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of permissions.',
+                403 => 'Do not have permission to retrieve the list of permissions.',
             },
         },
-        {   id             => 'list_permissions_for_role',
-            route          => '/roles/:role_id/permissions',
-            version        => 2,
-            handler        => "${pkg}v2::Permission::list_for_role",
+        {
+            id              => 'list_permissions_for_role',
+            route           => '/roles/:role_id/permissions',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Permission::list_for_role',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Permission::list_for_role_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'permission,permissions',
+            },
             default_params => {
                 limit      => 25,
                 offset     => 0,
@@ -1139,58 +1487,80 @@ sub core_endpoints {
                 filterKeys => 'blogIds',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of permissions.',
+                403 => 'Do not have permission to retrieve the list of permissions.',
             },
         },
-        {   id      => 'grant_permission_to_site',
-            route   => '/sites/:site_id/permissions/grant',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Permission::grant_to_site",
-            error_codes =>
-                { 403 => 'Do not have permission to grant a permission.', },
+        {
+            id              => 'grant_permission_to_site',
+            route           => '/sites/:site_id/permissions/grant',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Permission::grant_to_site',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Permission::grant_to_site_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to grant a permission.',
+            },
         },
-        {   id      => 'grant_permission_to_user',
-            route   => '/users/:user_id/permissions/grant',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Permission::grant_to_user",
-            error_codes =>
-                { 403 => 'Do not have permission to grant a permission.', },
+        {
+            id              => 'grant_permission_to_user',
+            route           => '/users/:user_id/permissions/grant',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Permission::grant_to_user',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Permission::grant_to_user_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to grant a permission.',
+            },
         },
-        {   id      => 'revoke_permission_from_site',
-            route   => '/sites/:site_id/permissions/revoke',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Permission::revoke_from_site",
-            error_codes =>
-                { 403 => 'Do not have permission to revoke a permission.', },
+        {
+            id              => 'revoke_permission_from_site',
+            route           => '/sites/:site_id/permissions/revoke',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Permission::revoke_from_site',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Permission::revoke_from_site_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to revoke a permission.',
+            },
         },
-        {   id      => 'revoke_permission_from_user',
-            route   => '/users/:user_id/permissions/revoke',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Permission::revoke_from_user",
-            error_codes =>
-                { 403 => 'Do not have permission to revoke a permission.', },
+        {
+            id              => 'revoke_permission_from_user',
+            route           => '/users/:user_id/permissions/revoke',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Permission::revoke_from_user',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Permission::revoke_from_user_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to revoke a permission.',
+            },
         },
 
         # search endpoints
-        {   id      => 'search',
-            route   => '/search',
-            version => 2,
-            handler => "${pkg}v2::Search::search",
-            error_codes =>
-                { 403 => 'Do not have permission to search objects.', },
+        {
+            id              => 'search',
+            route           => '/search',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Search::search',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Search::search_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to search objects.',
+            },
             requires_login => 0,
         },
 
         # log endpoints
-        {   id             => 'list_logs',
-            route          => '/sites/:site_id/logs',
-            version        => 2,
-            handler        => "${pkg}v2::Log::list",
+        {
+            id              => 'list_logs',
+            route           => '/sites/:site_id/logs',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Log::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Log::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'log,logs',
+            },
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -1200,80 +1570,96 @@ sub core_endpoints {
                 filterKeys   => 'level',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of activity logs.',
+                403 => 'Do not have permission to retrieve the list of activity logs.',
             },
         },
-        {   id          => 'get_log',
-            route       => '/sites/:site_id/logs/:log_id',
-            version     => 2,
-            handler     => "${pkg}v2::Log::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested log.',
+        {
+            id              => 'get_log',
+            route           => '/sites/:site_id/logs/:log_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Log::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Log::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested log.',
             },
         },
-        {   id        => 'create_log',
-            route     => '/sites/:site_id/logs',
-            resources => ['log'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::Log::create",
-            error_codes =>
-                { 403 => 'Do not have permission to create a log.', },
+        {
+            id              => 'create_log',
+            route           => '/sites/:site_id/logs',
+            resources       => ['log'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Log::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Log::create_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a log.',
+            },
         },
-        {   id        => 'update_log',
-            route     => '/sites/:site_id/logs/:log_id',
-            resources => ['log'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::Log::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a log.', },
+        {
+            id              => 'update_log',
+            route           => '/sites/:site_id/logs/:log_id',
+            resources       => ['log'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Log::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Log::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a log.',
+            },
         },
-        {   id      => 'delete_log',
-            route   => '/sites/:site_id/logs/:log_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Log::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a log.', },
+        {
+            id              => 'delete_log',
+            route           => '/sites/:site_id/logs/:log_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Log::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Log::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a log.',
+            },
         },
-        {   id      => 'reset_logs',
-            route   => '/sites/:site_id/logs',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Log::reset",
-            error_codes =>
-                { 403 => 'Do not have permission to reset logs.', },
+        {
+            id              => 'reset_logs',
+            route           => '/sites/:site_id/logs',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Log::reset',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Log::reset_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to reset logs.',
+            },
         },
-        {   id      => 'export_logs',
-            route   => '/sites/:site_id/logs/export',
-            verb    => 'GET',
-            version => 2,
-            handler => "${pkg}v2::Log::export",
-            error_codes =>
-                { 403 => 'Do not have permission to export logs.', },
+        {
+            id              => 'export_logs',
+            route           => '/sites/:site_id/logs/export',
+            verb            => 'GET',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Log::export',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Log::export_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to export logs.',
+            },
         },
 
-# tag endpoints
-#        {   id             => 'list_tags',
-#            route          => '/tags',
-#            version        => 2,
-#            default_params => {
-#                limit        => 25,
-#                offset       => 0,
-#                sortBy       => 'name',
-#                sortOrder    => 'ascend',
-#                searchFields => 'name',
-#            },
-#            handler     => "${pkg}v2::Tag::list",
-#            error_codes => {
-#                403 => 'Do not have permission to retrieve the list of tags.',
-#            },
-#            requires_login => 0,
-#        },
-        {   id             => 'list_tags_for_site',
+        # tag endpoints
+        #        {   id             => 'list_tags',
+        #            route          => '/tags',
+        #            version        => 2,
+        #            default_params => {
+        #                limit        => 25,
+        #                offset       => 0,
+        #                sortBy       => 'name',
+        #                sortOrder    => 'ascend',
+        #                searchFields => 'name',
+        #            },
+        #            handler     => "${pkg}v2::Tag::list",
+        #            error_codes => {
+        #                403 => 'Do not have permission to retrieve the list of tags.',
+        #            },
+        #            requires_login => 0,
+        #        },
+        {
+            id             => 'list_tags_for_site',
             route          => '/sites/:site_id/tags',
             version        => 2,
             default_params => {
@@ -1283,141 +1669,164 @@ sub core_endpoints {
                 sortOrder    => 'ascend',
                 searchFields => 'name',
             },
-            handler     => "${pkg}v2::Tag::list_for_site",
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Tag::list_for_site',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Tag::list_for_site_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'tag,tags',
+            },
             error_codes => {
                 403 => 'Do not have permission to retrieve the list of tags.',
             },
             requires_login => 0,
         },
 
- #        {   id          => 'get_tag',
- #            route       => '/tags/:tag_id',
- #            version     => 2,
- #            handler     => "${pkg}v2::Tag::get",
- #            error_codes => {
- #                403 =>
- #                    'Do not have permission to retrieve the requested tag.',
- #            },
- #            requires_login => 0,
- #        },
-        {   id          => 'get_tag_for_site',
-            route       => '/sites/:site_id/tags/:tag_id',
-            version     => 2,
-            handler     => "${pkg}v2::Tag::get_for_site",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested tag.',
+        #        {   id          => 'get_tag',
+        #            route       => '/tags/:tag_id',
+        #            version     => 2,
+        #            handler     => "${pkg}v2::Tag::get",
+        #            error_codes => {
+        #                403 =>
+        #                    'Do not have permission to retrieve the requested tag.',
+        #            },
+        #            requires_login => 0,
+        #        },
+        {
+            id              => 'get_tag_for_site',
+            route           => '/sites/:site_id/tags/:tag_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Tag::get_for_site',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Tag::get_for_site_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested tag.',
             },
             requires_login => 0,
         },
 
-       #        {   id      => 'rename_tag',
-       #            route   => '/tags/:tag_id',
-       #            verb    => 'PUT',
-       #            version => 2,
-       #            handler => "${pkg}v2::Tag::rename",
-       #            error_codes =>
-       #                { 403 => 'Do not have permission to rename a tag.', },
-       #        },
-        {   id      => 'rename_tag_for_site',
-            route   => '/sites/:site_id/tags/:tag_id',
-            verb    => 'PUT',
-            version => 2,
-            handler => "${pkg}v2::Tag::rename_for_site",
-            error_codes =>
-                { 403 => 'Do not have permission to rename a tag.', },
+        #        {   id      => 'rename_tag',
+        #            route   => '/tags/:tag_id',
+        #            verb    => 'PUT',
+        #            version => 2,
+        #            handler => "${pkg}v2::Tag::rename",
+        #            error_codes =>
+        #                { 403 => 'Do not have permission to rename a tag.', },
+        #        },
+        {
+            id              => 'rename_tag_for_site',
+            route           => '/sites/:site_id/tags/:tag_id',
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Tag::rename_for_site',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Tag::rename_for_site_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to rename a tag.',
+            },
         },
 
-       #        {   id      => 'delete_tag',
-       #            route   => '/tags/:tag_id',
-       #            verb    => 'DELETE',
-       #            version => 2,
-       #            handler => "${pkg}v2::Tag::delete",
-       #            error_codes =>
-       #                { 403 => 'Do not have permission to delete a tag.', },
-       #        },
-        {   id      => 'delete_tag_for_site',
-            route   => '/sites/:site_id/tags/:tag_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Tag::delete_for_site",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a tag.', },
+        #        {   id      => 'delete_tag',
+        #            route   => '/tags/:tag_id',
+        #            verb    => 'DELETE',
+        #            version => 2,
+        #            handler => "${pkg}v2::Tag::delete",
+        #            error_codes =>
+        #                { 403 => 'Do not have permission to delete a tag.', },
+        #        },
+        {
+            id              => 'delete_tag_for_site',
+            route           => '/sites/:site_id/tags/:tag_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Tag::delete_for_site',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Tag::delete_for_site_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a tag.',
+            },
         },
 
         # theme endpoints
-        {   id          => 'list_themes',
-            route       => '/themes',
-            version     => 2,
-            handler     => "${pkg}v2::Theme::list",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested themes.',
+        {
+            id              => 'list_themes',
+            route           => '/themes',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Theme::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Theme::list_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested themes.',
             },
         },
-        {   id          => 'list_themes_for_site',
-            route       => '/sites/:site_id/themes',
-            version     => 2,
-            handler     => "${pkg}v2::Theme::list_for_site",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested site\'s themes.',
+        {
+            id              => 'list_themes_for_site',
+            route           => '/sites/:site_id/themes',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Theme::list_for_site',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Theme::list_for_site_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested site\'s themes.',
             },
         },
-        {   id          => 'get_theme',
-            route       => '/themes/:theme_id',
-            version     => 2,
-            handler     => "${pkg}v2::Theme::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested theme.',
+        {
+            id              => 'get_theme',
+            route           => '/themes/:theme_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Theme::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Theme::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested theme.',
             },
         },
-        {   id          => 'get_theme_for_site',
-            route       => '/sites/:site_id/themes/:theme_id',
-            version     => 2,
-            handler     => "${pkg}v2::Theme::get_for_site",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested site\'s theme.',
+        {
+            id              => 'get_theme_for_site',
+            route           => '/sites/:site_id/themes/:theme_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Theme::get_for_site',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Theme::get_for_site_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested site\'s theme.',
             },
         },
-        {   id          => 'apply_theme_to_site',
-            route       => '/sites/:site_id/themes/:theme_id/apply',
-            verb        => 'POST',
-            version     => 2,
-            handler     => "${pkg}v2::Theme::apply",
-            error_codes => {
-                403 =>
-                    'Do not have permission to apply the requested theme to site.',
+        {
+            id              => 'apply_theme_to_site',
+            route           => '/sites/:site_id/themes/:theme_id/apply',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Theme::apply',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Theme::apply_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to apply the requested theme to site.',
             },
         },
-        {   id          => 'uninstall_theme',
-            route       => '/themes/:theme_id',
-            verb        => 'DELETE',
-            version     => 2,
-            handler     => "${pkg}v2::Theme::uninstall",
-            error_codes => {
-                403 =>
-                    'Do not have permission to uninstall the requested theme.',
+        {
+            id              => 'uninstall_theme',
+            route           => '/themes/:theme_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Theme::uninstall',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Theme::uninstall_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to uninstall the requested theme.',
             },
         },
-        {   id          => 'export_site_theme',
-            route       => '/sites/:site_id/export_theme',
-            verb        => 'POST',
-            version     => 2,
-            handler     => "${pkg}v2::Theme::export",
-            error_codes => {
-                403 =>
-                    'Do not have permission to export the requested theme.',
+        {
+            id              => 'export_site_theme',
+            route           => '/sites/:site_id/export_theme',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Theme::export',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Theme::export_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to export the requested theme.',
             },
         },
 
         # template endpoints
-        {   id             => 'list_templates',
-            route          => '/sites/:site_id/templates',
-            version        => 2,
-            handler        => "${pkg}v2::Template::list",
+        {
+            id              => 'list_templates',
+            route           => '/sites/:site_id/templates',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Template::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Template::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'template,templates',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1427,120 +1836,149 @@ sub core_endpoints {
                 filterKeys   => 'type',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of templates.',
+                403 => 'Do not have permission to retrieve the list of templates.',
             },
         },
 
-#        {   id             => 'list_all_templates',
-#            route          => '/templates',
-#            version        => 2,
-#            handler        => "${pkg}v2::Template::list",
-#            default_params => {
-#                limit        => 10,
-#                offset       => 0,
-#                sortBy       => 'blog_id',
-#                sortOrder    => 'ascend',
-#                searchFields => 'name,templateType,text',
-#                filterKeys   => 'type',
-#            },
-#            error_codes => {
-#                403 =>
-#                    'Do not have permission to retrieve the list of templates.',
-#            },
-#        },
-        {   id          => 'get_template',
-            route       => '/sites/:site_id/templates/:template_id',
-            version     => 2,
-            handler     => "${pkg}v2::Template::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested template.',
+        #        {   id             => 'list_all_templates',
+        #            route          => '/templates',
+        #            version        => 2,
+        #            handler        => "${pkg}v2::Template::list",
+        #            default_params => {
+        #                limit        => 10,
+        #                offset       => 0,
+        #                sortBy       => 'blog_id',
+        #                sortOrder    => 'ascend',
+        #                searchFields => 'name,templateType,text',
+        #                filterKeys   => 'type',
+        #            },
+        #            error_codes => {
+        #                403 =>
+        #                    'Do not have permission to retrieve the list of templates.',
+        #            },
+        #        },
+        {
+            id              => 'get_template',
+            route           => '/sites/:site_id/templates/:template_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Template::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Template::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested template.',
             },
         },
-        {   id        => 'create_template',
-            route     => '/sites/:site_id/templates',
-            resources => ['template'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::Template::create",
-            error_codes =>
-                { 403 => 'Do not have permission to create a template.', },
-        },
-        {   id        => 'update_template',
-            route     => '/sites/:site_id/templates/:template_id',
-            resources => ['template'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::Template::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a template.', },
-        },
-        {   id      => 'delete_template',
-            route   => '/sites/:site_id/templates/:template_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Template::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a template.', },
-        },
-
-        {   id      => 'publish_template',
-            route   => '/sites/:site_id/templates/:template_id/publish',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Template::publish",
-            error_codes =>
-                { 403 => 'Do not have permission to publish a template.', },
-        },
-        {   id      => 'refresh_template',
-            route   => '/sites/:site_id/templates/:template_id/refresh',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Template::refresh",
-            error_codes =>
-                { 403 => 'Do not have permission to refresh a template.', },
-        },
-        {   id          => 'refresh_templates_for_site',
-            route       => '/sites/:site_id/refresh_templates',
-            verb        => 'POST',
-            version     => 2,
-            handler     => "${pkg}v2::Template::refresh_for_site",
-            error_codes => {
-                403 =>
-                    'Do not have permission to refresh templates of the request site.',
+        {
+            id              => 'create_template',
+            route           => '/sites/:site_id/templates',
+            resources       => ['template'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Template::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Template::create_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a template.',
             },
         },
-        {   id      => 'clone_template',
-            route   => '/sites/:site_id/templates/:template_id/clone',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Template::clone",
-            error_codes =>
-                { 403 => 'Do not have permission to clone a template.', },
+        {
+            id              => 'update_template',
+            route           => '/sites/:site_id/templates/:template_id',
+            resources       => ['template'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Template::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Template::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a template.',
+            },
         },
-        {   id      => 'preview_template_by_id',
-            route   => '/sites/:site_id/templates/:template_id/preview',
-            version => 2,
-            handler => "${pkg}v2::Template::preview_by_id",
-            verb    => 'POST',
-            error_codes =>
-                { 403 => 'Do not have permission to get template preview.', },
+        {
+            id              => 'delete_template',
+            route           => '/sites/:site_id/templates/:template_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Template::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Template::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a template.',
+            },
         },
-        {   id      => 'preview_template',
-            route   => '/sites/:site_id/templates/preview',
-            version => 2,
-            handler => "${pkg}v2::Template::preview",
-            verb    => 'POST',
-            error_codes =>
-                { 403 => 'Do not have permission to get template preview.', },
+        {
+            id              => 'publish_template',
+            route           => '/sites/:site_id/templates/:template_id/publish',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Template::publish',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Template::publish_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to publish a template.',
+            },
+        },
+        {
+            id              => 'refresh_template',
+            route           => '/sites/:site_id/templates/:template_id/refresh',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Template::refresh',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Template::refresh_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to refresh a template.',
+            },
+        },
+        {
+            id              => 'refresh_templates_for_site',
+            route           => '/sites/:site_id/refresh_templates',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Template::refresh_for_site',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Template::refresh_for_site_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to refresh templates of the request site.',
+            },
+        },
+        {
+            id              => 'clone_template',
+            route           => '/sites/:site_id/templates/:template_id/clone',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Template::clone',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Template::clone_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to clone a template.',
+            },
+        },
+        {
+            id              => 'preview_template_by_id',
+            route           => '/sites/:site_id/templates/:template_id/preview',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Template::preview_by_id',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Template::preview_by_id_openapi_spec',
+            verb            => 'POST',
+            error_codes     => {
+                403 => 'Do not have permission to get template preview.',
+            },
+        },
+        {
+            id              => 'preview_template',
+            route           => '/sites/:site_id/templates/preview',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Template::preview',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Template::preview_openapi_spec',
+            verb            => 'POST',
+            error_codes     => {
+                403 => 'Do not have permission to get template preview.',
+            },
         },
 
         # templatemap endpoints
-        {   id      => 'list_templatemaps',
-            route   => '/sites/:site_id/templates/:template_id/templatemaps',
-            version => 2,
-            handler => "${pkg}v2::TemplateMap::list",
+        {
+            id              => 'list_templatemaps',
+            route           => '/sites/:site_id/templates/:template_id/templatemaps',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::TemplateMap::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::TemplateMap::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'templatemap,templatemaps',
+            },
             default_params => {
                 limit      => 10,
                 offset     => 0,
@@ -1549,54 +1987,65 @@ sub core_endpoints {
                 filterKeys => 'archiveType,buildType,isPreferred',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of templatemaps.',
+                403 => 'Do not have permission to retrieve the list of templatemaps.',
             },
         },
-        {   id => 'get_templatemap',
-            route =>
-                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
-            version     => 2,
-            handler     => "${pkg}v2::TemplateMap::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested templatemap.',
+        {
+            id              => 'get_templatemap',
+            route           => '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::TemplateMap::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::TemplateMap::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested templatemap.',
             },
         },
-        {   id    => 'create_templatemap',
-            route => '/sites/:site_id/templates/:template_id/templatemaps',
-            resources => ['templatemap'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::TemplateMap::create",
-            error_codes =>
-                { 403 => 'Do not have permission to create a templatemap.', },
+        {
+            id              => 'create_templatemap',
+            route           => '/sites/:site_id/templates/:template_id/templatemaps',
+            resources       => ['templatemap'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::TemplateMap::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::TemplateMap::create_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a templatemap.',
+            },
         },
-        {   id => 'update_templatemap',
-            route =>
-                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
-            resources => ['templatemap'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::TemplateMap::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a templatemap.', },
+        {
+            id              => 'update_templatemap',
+            route           => '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            resources       => ['templatemap'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::TemplateMap::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::TemplateMap::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a templatemap.',
+            },
         },
-        {   id => 'delete_templatemap',
-            route =>
-                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::TemplateMap::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a templatemap.', },
+        {
+            id              => 'delete_templatemap',
+            route           => '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::TemplateMap::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::TemplateMap::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a templatemap.',
+            },
         },
 
         # widgetset endpoints.
-        {   id             => 'list_widgetsets',
-            route          => '/sites/:site_id/widgetsets',
-            version        => 2,
-            handler        => "${pkg}v2::WidgetSet::list",
+        {
+            id              => 'list_widgetsets',
+            route           => '/sites/:site_id/widgetsets',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::WidgetSet::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::WidgetSet::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'widgetset,widgetsets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1605,68 +2054,82 @@ sub core_endpoints {
                 searchFields => 'name',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of widgetsets.',
+                403 => 'Do not have permission to retrieve the list of widgetsets.',
             },
         },
 
-#        {   id             => 'list_all_widgetsets',
-#            route          => '/widgetsets',
-#            version        => 2,
-#            handler        => "${pkg}v2::WidgetSet::list_all",
-#            default_params => {
-#                limit        => 10,
-#                offset       => 0,
-#                sortBy       => 'blog_id',
-#                sortOrder    => 'ascend',
-#                searchFields => 'name',
-#            },
-#            error_codes => {
-#                403 =>
-#                    'Do not have permission to retrieve the list of widgetsets.',
-#            },
-#        },
-        {   id          => 'get_widgetset',
-            route       => '/sites/:site_id/widgetsets/:widgetset_id',
-            version     => 2,
-            handler     => "${pkg}v2::WidgetSet::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested widgetset.',
+        #        {   id             => 'list_all_widgetsets',
+        #            route          => '/widgetsets',
+        #            version        => 2,
+        #            handler        => "${pkg}v2::WidgetSet::list_all",
+        #            default_params => {
+        #                limit        => 10,
+        #                offset       => 0,
+        #                sortBy       => 'blog_id',
+        #                sortOrder    => 'ascend',
+        #                searchFields => 'name',
+        #            },
+        #            error_codes => {
+        #                403 =>
+        #                    'Do not have permission to retrieve the list of widgetsets.',
+        #            },
+        #        },
+        {
+            id              => 'get_widgetset',
+            route           => '/sites/:site_id/widgetsets/:widgetset_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::WidgetSet::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::WidgetSet::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested widgetset.',
             },
         },
-        {   id        => 'create_widgetset',
-            route     => '/sites/:site_id/widgetsets',
-            resources => ['widgetset'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::WidgetSet::create",
-            error_codes =>
-                { 403 => 'Do not have permission to create a widgetset.', },
+        {
+            id              => 'create_widgetset',
+            route           => '/sites/:site_id/widgetsets',
+            resources       => ['widgetset'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::WidgetSet::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::WidgetSet::create_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a widgetset.',
+            },
         },
-        {   id        => 'update_widgetset',
-            route     => '/sites/:site_id/widgetsets/:widgetset_id',
-            resources => ['widgetset'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::WidgetSet::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a widgetset.', },
+        {
+            id              => 'update_widgetset',
+            route           => '/sites/:site_id/widgetsets/:widgetset_id',
+            resources       => ['widgetset'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::WidgetSet::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::WidgetSet::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a widgetset.',
+            },
         },
-        {   id      => 'delete_widgetset',
-            route   => '/sites/:site_id/widgetsets/:widgetset_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::WidgetSet::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a widgetset.', },
+        {
+            id              => 'delete_widgetset',
+            route           => '/sites/:site_id/widgetsets/:widgetset_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::WidgetSet::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::WidgetSet::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a widgetset.',
+            },
         },
 
         # widget endpoints.
-        {   id             => 'list_widgets',
-            route          => '/sites/:site_id/widgets',
-            version        => 2,
-            handler        => "${pkg}v2::Widget::list",
+        {
+            id              => 'list_widgets',
+            route           => '/sites/:site_id/widgets',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Widget::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Widget::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'widget,widgets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1675,31 +2138,35 @@ sub core_endpoints {
                 searchFields => 'name,text',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of widgets.',
+                403 => 'Do not have permission to retrieve the list of widgets.',
             },
         },
 
-#        {   id             => 'list_all_widgets',
-#            route          => '/widgets',
-#            version        => 2,
-#            handler        => "${pkg}v2::Widget::list_all",
-#            default_params => {
-#                limit        => 10,
-#                offset       => 0,
-#                sortBy       => 'blog_id',
-#                sortOrder    => 'ascend',
-#                searchFields => 'name,text',
-#            },
-#            error_codes => {
-#                403 =>
-#                    'Do not have permission to retrieve the list of widgets.',
-#            },
-#        },
-        {   id      => 'list_widgets_for_widgetset',
-            route   => '/sites/:site_id/widgetsets/:widgetset_id/widgets',
-            version => 2,
-            handler => "${pkg}v2::Widget::list_for_widgetset",
+        #        {   id             => 'list_all_widgets',
+        #            route          => '/widgets',
+        #            version        => 2,
+        #            handler        => "${pkg}v2::Widget::list_all",
+        #            default_params => {
+        #                limit        => 10,
+        #                offset       => 0,
+        #                sortBy       => 'blog_id',
+        #                sortOrder    => 'ascend',
+        #                searchFields => 'name,text',
+        #            },
+        #            error_codes => {
+        #                403 =>
+        #                    'Do not have permission to retrieve the list of widgets.',
+        #            },
+        #        },
+        {
+            id              => 'list_widgets_for_widgetset',
+            route           => '/sites/:site_id/widgetsets/:widgetset_id/widgets',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Widget::list_for_widgetset',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Widget::list_for_widgetset_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'widget,widgets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1708,78 +2175,99 @@ sub core_endpoints {
                 searchFields => 'name,text',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve widgets of the request widgetset.',
+                403 => 'Do not have permission to retrieve widgets of the request widgetset.',
             },
         },
-        {   id          => 'get_widgets',
-            route       => '/sites/:site_id/widgets/:widget_id',
-            version     => 2,
-            handler     => "${pkg}v2::Widget::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested widget.',
+        {
+            id              => 'get_widgets',
+            route           => '/sites/:site_id/widgets/:widget_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Widget::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Widget::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested widget.',
             },
         },
-        {   id => 'get_widget_for_widgetset',
-            route =>
-                '/sites/:site_id/widgetsets/:widgetset_id/widgets/:widget_id',
-            version     => 2,
-            handler     => "${pkg}v2::Widget::get_for_widgetset",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve a widget of the request widgetset.',
+        {
+            id              => 'get_widget_for_widgetset',
+            route           => '/sites/:site_id/widgetsets/:widgetset_id/widgets/:widget_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Widget::get_for_widgetset',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Widget::get_for_widgetset_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve a widget of the request widgetset.',
             },
         },
-        {   id        => 'create_widget',
-            route     => '/sites/:site_id/widgets',
-            resources => ['widget'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::Widget::create",
-            error_codes =>
-                { 403 => 'Do not have permission to create a widget.', },
+        {
+            id              => 'create_widget',
+            route           => '/sites/:site_id/widgets',
+            resources       => ['widget'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Widget::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Widget::create_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a widget.',
+            },
         },
-        {   id        => 'update_widget',
-            route     => '/sites/:site_id/widgets/:widget_id',
-            resources => ['widget'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::Widget::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a widget.', },
+        {
+            id              => 'update_widget',
+            route           => '/sites/:site_id/widgets/:widget_id',
+            resources       => ['widget'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Widget::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Widget::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a widget.',
+            },
         },
-        {   id      => 'delete_widget',
-            route   => '/sites/:site_id/widgets/:widget_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Widget::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a widget.', },
+        {
+            id              => 'delete_widget',
+            route           => '/sites/:site_id/widgets/:widget_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Widget::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Widget::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a widget.',
+            },
         },
 
-        {   id      => 'refresh_widget',
-            route   => '/sites/:site_id/widgets/:widget_id/refresh',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Widget::refresh",
-            error_codes =>
-                { 403 => 'Do not have permission to refresh a widget.', },
+        {
+            id              => 'refresh_widget',
+            route           => '/sites/:site_id/widgets/:widget_id/refresh',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Widget::refresh',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Widget::refresh_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to refresh a widget.',
+            },
         },
-        {   id      => 'clone_widget',
-            route   => '/sites/:site_id/widgets/:widget_id/clone',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Widget::clone",
-            error_codes =>
-                { 403 => 'Do not have permission to clone a widget.', },
+        {
+            id              => 'clone_widget',
+            route           => '/sites/:site_id/widgets/:widget_id/clone',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Widget::clone',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Widget::clone_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to clone a widget.',
+            },
         },
 
         # user endpoints
-        {   id             => 'list_users',
-            route          => '/users',
-            version        => 2,
-            handler        => "${pkg}v2::User::list",
+        {
+            id              => 'list_users',
+            route           => '/users',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::User::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::User::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'user,users',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1789,258 +2277,327 @@ sub core_endpoints {
                 filterKeys   => 'status,lockout',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested users.',
+                403 => 'Do not have permission to retrieve the requested users.',
             },
             requires_login => 0,
         },
-        {   id        => 'create_user',
-            route     => '/users',
-            version   => 2,
-            verb      => 'POST',
-            resources => ['user'],
-            handler   => "${pkg}v2::User::create",
-            error_codes =>
-                { 403 => 'Do not have permission to create a user.', },
+        {
+            id              => 'create_user',
+            route           => '/users',
+            version         => 2,
+            verb            => 'POST',
+            resources       => ['user'],
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::User::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::User::create_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a user.',
+            },
         },
-        {   id      => 'delete_user',
-            route   => '/users/:user_id',
-            version => 2,
-            verb    => 'DELETE',
-            handler => "${pkg}v2::User::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a user.', },
+        {
+            id              => 'delete_user',
+            route           => '/users/:user_id',
+            version         => 2,
+            verb            => 'DELETE',
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::User::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::User::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a user.',
+            },
         },
-        {   id      => 'unlock_user',
-            route   => '/users/:user_id/unlock',
-            version => 2,
-            verb    => 'POST',
-            handler => "${pkg}v2::User::unlock",
-            error_codes =>
-                { 403 => 'Do not have permission to unlock a user.', },
+        {
+            id              => 'unlock_user',
+            route           => '/users/:user_id/unlock',
+            version         => 2,
+            verb            => 'POST',
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::User::unlock',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::User::unlock_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to unlock a user.',
+            },
         },
-        {   id          => 'recover_password_for_user',
-            route       => '/users/:user_id/recover_password',
-            version     => 2,
-            verb        => 'POST',
-            handler     => "${pkg}v2::User::recover_password",
-            error_codes => {
+        {
+            id              => 'recover_password_for_user',
+            route           => '/users/:user_id/recover_password',
+            version         => 2,
+            verb            => 'POST',
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::User::recover_password',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::User::recover_password_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to recover password for user.',
             },
         },
-        {   id             => 'recover_password',
-            route          => '/recover_password',
-            version        => 2,
-            verb           => 'POST',
-            handler        => "${pkg}v2::User::recover",
-            requires_login => 0,
+        {
+            id              => 'recover_password',
+            route           => '/recover_password',
+            version         => 2,
+            verb            => 'POST',
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::User::recover',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::User::recover_openapi_spec',
+            requires_login  => 0,
         },
 
         # plugin endpoints
-        {   id          => 'list_plugins',
-            route       => '/plugins',
-            version     => 2,
-            handler     => "${pkg}v2::Plugin::list",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of plugins.',
+        {
+            id              => 'list_plugins',
+            route           => '/plugins',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Plugin::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Plugin::list_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the list of plugins.',
             },
         },
-        {   id          => 'get_plugin',
-            route       => '/plugins/:plugin_id',
-            version     => 2,
-            handler     => "${pkg}v2::Plugin::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested plugin.',
+        {
+            id              => 'get_plugin',
+            route           => '/plugins/:plugin_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Plugin::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Plugin::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested plugin.',
             },
         },
-        {   id      => 'enable_plugin',
-            route   => '/plugins/:plugin_id/enable',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Plugin::enable",
-            error_codes =>
-                { 403 => 'Do not have permission to enable a plugin.', },
+        {
+            id              => 'enable_plugin',
+            route           => '/plugins/:plugin_id/enable',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Plugin::enable',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Plugin::enable_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to enable a plugin.',
+            },
         },
-        {   id      => 'disable_plugin',
-            route   => '/plugins/:plugin_id/disable',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Plugin::disable",
-            error_codes =>
-                { 403 => 'Do not have permission to disable a plugin.', },
+        {
+            id              => 'disable_plugin',
+            route           => '/plugins/:plugin_id/disable',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Plugin::disable',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Plugin::disable_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to disable a plugin.',
+            },
         },
-        {   id      => 'enable_all_plugins',
-            route   => '/plugins/enable',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Plugin::enable_all",
-            error_codes =>
-                { 403 => 'Do not have permission to enable all plugins.', },
+        {
+            id              => 'enable_all_plugins',
+            route           => '/plugins/enable',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Plugin::enable_all',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Plugin::enable_all_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to enable all plugins.',
+            },
         },
-        {   id      => 'disable_all_plugins',
-            route   => '/plugins/disable',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Plugin::disable_all",
-            error_codes =>
-                { 403 => 'Do not have permission to disable all plugins.', },
+        {
+            id              => 'disable_all_plugins',
+            route           => '/plugins/disable',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Plugin::disable_all',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Plugin::disable_all_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to disable all plugins.',
+            },
         },
 
         # back up and restore endpoints
-        {   id          => 'backup_site',
-            route       => '/sites/:site_id/backup',
-            version     => 2,
-            handler     => "${pkg}v2::BackupRestore::backup",
-            error_codes => {
-                403 =>
-                    'Do not have permission to back up the requested site.',
+        {
+            id              => 'backup_site',
+            route           => '/sites/:site_id/backup',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::BackupRestore::backup',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::BackupRestore::backup_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to back up the requested site.',
             },
         },
 
-#        {   id          => 'restore_site',
-#            route       => '/restore',
-#            verb        => 'POST',
-#            version     => 2,
-#            handler     => "${pkg}v2::BackupRestore::restore",
-#            error_codes => {
-#                403 =>
-#                    'Do not have permission to restore the requested site data.',
-#            },
-#        },
+        #        {   id          => 'restore_site',
+        #            route       => '/restore',
+        #            verb        => 'POST',
+        #            version     => 2,
+        #            handler     => "${pkg}v2::BackupRestore::restore",
+        #            error_codes => {
+        #                403 =>
+        #                    'Do not have permission to restore the requested site data.',
+        #            },
+        #        },
 
         # version 3
-        {   id             => 'authenticate',
-            route          => '/authentication',
-            verb           => 'POST',
-            version        => 3,
-            handler        => "${pkg}v3::Auth::authentication",
-            requires_login => 0,
+        {
+            id              => 'authenticate',
+            route           => '/authentication',
+            verb            => 'POST',
+            version         => 3,
+            handler         => '$Core::MT::DataAPI::Endpoint::v3::Auth::authentication',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v3::Auth::authentication_openapi_spec',
+            requires_login  => 0,
         },
-        {   id             => 'upload_asset',
-            route          => '/assets/upload',
-            verb           => 'POST',
-            version        => 3,
-            handler        => "${pkg}v3::Asset::upload",
-            default_params => {
+        {
+            id              => 'upload_asset',
+            route           => '/assets/upload',
+            verb            => 'POST',
+            version         => 3,
+            handler         => '$Core::MT::DataAPI::Endpoint::v3::Asset::upload',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v3::Asset::upload_openapi_spec',
+            default_params  => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
             },
-            error_codes => { 403 => 'Do not have permission to upload.', },
+            error_codes => {
+                403 => 'Do not have permission to upload.',
+            },
         },
-        {   id             => 'upload_asset_for_site',
-            route          => '/sites/:site_id/assets/upload',
-            verb           => 'POST',
-            version        => 3,
-            handler        => "${pkg}v3::Asset::upload",
-            default_params => {
+        {
+            id              => 'upload_asset_for_site',
+            route           => '/sites/:site_id/assets/upload',
+            verb            => 'POST',
+            version         => 3,
+            handler         => '$Core::MT::DataAPI::Endpoint::v3::Asset::upload',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v3::Asset::upload_deprecated_openapi_spec',
+            default_params  => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
             },
-            error_codes => { 403 => 'Do not have permission to upload.', },
+            error_codes => {
+                403 => 'Do not have permission to upload.',
+            },
         },
-        {   id        => 'create_entry',
-            route     => '/sites/:site_id/entries',
-            resources => ['entry'],
-            verb      => 'POST',
-            version   => 3,
-            handler   => "${pkg}v3::Entry::create",
-            default_params => { save_revision => 1, },
-            error_codes =>
-                { 403 => 'Do not have permission to create an entry.', },
+        {
+            id              => 'create_entry',
+            route           => '/sites/:site_id/entries',
+            resources       => ['entry'],
+            verb            => 'POST',
+            version         => 3,
+            handler         => '$Core::MT::DataAPI::Endpoint::v3::Entry::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v3::Entry::create_openapi_spec',
+            default_params  => { save_revision => 1, },
+            error_codes     => {
+                403 => 'Do not have permission to create an entry.',
+            },
         },
-        {   id        => 'update_entry',
-            route     => '/sites/:site_id/entries/:entry_id',
-            resources => ['entry'],
-            verb      => 'PUT',
-            version   => 3,
-            handler   => "${pkg}v3::Entry::update",
-            default_params => { save_revision => 1, },
-            error_codes =>
-                { 403 => 'Do not have permission to update an entry.', },
+        {
+            id              => 'update_entry',
+            route           => '/sites/:site_id/entries/:entry_id',
+            resources       => ['entry'],
+            verb            => 'PUT',
+            version         => 3,
+            handler         => '$Core::MT::DataAPI::Endpoint::v3::Entry::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v3::Entry::update_openapi_spec',
+            default_params  => { save_revision => 1, },
+            error_codes     => {
+                403 => 'Do not have permission to update an entry.',
+            },
         },
-        {   id        => 'create_page',
-            route     => '/sites/:site_id/pages',
-            resources => ['page'],
-            verb      => 'POST',
-            version   => 3,
-            handler   => "${pkg}v3::Page::create",
-            default_params => { save_revision => 1, },
-            error_codes =>
-                { 403 => 'Do not have permission to create a page.', },
+        {
+            id              => 'create_page',
+            route           => '/sites/:site_id/pages',
+            resources       => ['page'],
+            verb            => 'POST',
+            version         => 3,
+            handler         => '$Core::MT::DataAPI::Endpoint::v3::Page::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v3::Page::create_openapi_spec',
+            default_params  => { save_revision => 1, },
+            error_codes     => {
+                403 => 'Do not have permission to create a page.',
+            },
         },
-        {   id        => 'update_page',
-            route     => '/sites/:site_id/pages/:page_id',
-            resources => ['page'],
-            verb      => 'PUT',
-            version   => 3,
-            handler   => "${pkg}v3::Page::update",
-            default_params => { save_revision => 1, },
-            error_codes =>
-                { 403 => 'Do not have permission to update a page.', },
+        {
+            id              => 'update_page',
+            route           => '/sites/:site_id/pages/:page_id',
+            resources       => ['page'],
+            verb            => 'PUT',
+            version         => 3,
+            handler         => '$Core::MT::DataAPI::Endpoint::v3::Page::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v3::Page::update_openapi_spec',
+            default_params  => { save_revision => 1, },
+            error_codes     => {
+                403 => 'Do not have permission to update a page.',
+            },
         },
 
         # version 4
 
         # category_set
-        {   id          => 'list_category_sets',
-            route       => '/sites/:site_id/categorySets',
-            version     => 4,
-            handler     => "${pkg}v4::CategorySet::list",
+        {
+            id              => 'list_category_sets',
+            route           => '/sites/:site_id/categorySets',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'category_set,category_sets',
+            },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of category sets.',
+                403 => 'Do not have permission to retrieve the list of category sets.',
             },
             requires_login => 0,
         },
-        {   id          => 'create_category_set',
-            route       => '/sites/:site_id/categorySets',
-            resources   => ['category_set'],
-            verb        => 'POST',
-            version     => 4,
-            handler     => "${pkg}v4::CategorySet::create",
-            error_codes => {
+        {
+            id              => 'create_category_set',
+            route           => '/sites/:site_id/categorySets',
+            resources       => ['category_set'],
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::create_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to create a category set.',
             },
         },
-        {   id          => 'get_category_set',
-            route       => '/sites/:site_id/categorySets/:category_set_id',
-            version     => 4,
-            handler     => "${pkg}v4::CategorySet::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested category set.',
+        {
+            id              => 'get_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested category set.',
             },
             requires_login => 0,
         },
-        {   id          => 'update_category_set',
-            route       => '/sites/:site_id/categorySets/:category_set_id',
-            resources   => ['category_set'],
-            verb        => 'PUT',
-            version     => 4,
-            handler     => "${pkg}v4::CategorySet::update",
-            error_codes => {
+        {
+            id              => 'update_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id',
+            resources       => ['category_set'],
+            verb            => 'PUT',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::update_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to update a category set.',
             },
         },
-        {   id          => 'delete_category_set',
-            route       => '/sites/:site_id/categorySets/:category_set_id',
-            verb        => 'DELETE',
-            version     => 4,
-            handler     => "${pkg}v4::CategorySet::delete",
-            error_codes => {
+        {
+            id              => 'delete_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id',
+            verb            => 'DELETE',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::delete_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to delete a category set.',
             },
         },
 
         # category for category_set
-        {   id => 'list_categories_for_category_set',
-            route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories',
-            verb           => 'GET',
-            version        => 4,
-            handler        => "${pkg}v4::Category::list_for_category_set",
+        {
+            id              => 'list_categories_for_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id/categories',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::list_for_category_set',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::list_for_category_set_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'category,categories',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2049,29 +2606,36 @@ sub core_endpoints {
                 searchFields => 'label,basename',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested categories for category set. ',
+                403 => 'Do not have permission to retrieve the requested categories for category set. ',
             },
             requires_login => 0,
         },
-        {   id => 'list_parent_categories_for_category_set',
-            route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/parents',
-            verb    => 'GET',
-            version => 4,
-            handler => "${pkg}v4::Category::list_parents_for_category_set",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested categories for category set.',
+        {
+            id              => 'list_parent_categories_for_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/parents',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::list_parents_for_category_set',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::list_parents_for_category_set_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested categories for category set.',
             },
             requires_login => 0,
         },
-        {   id => 'list_sibling_categories_for_category_set',
-            route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/siblings',
-            verb    => 'GET',
-            version => 4,
-            handler => "${pkg}v4::Category::list_siblings_for_category_set",
+        {
+            id              => 'list_sibling_categories_for_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/siblings',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::list_siblings_for_category_set',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::list_siblings_for_category_set_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'category,categories',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2080,88 +2644,98 @@ sub core_endpoints {
                 searchFields => 'label,basename',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested categories for category set.',
+                403 => 'Do not have permission to retrieve the requested categories for category set.',
             },
             requires_login => 0,
         },
-        {   id => 'list_child_categories_for_category_set',
-            route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/children',
-            verb    => 'GET',
-            version => 4,
-            handler => "${pkg}v4::Category::list_children_for_category_set",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested categories for category set.',
+        {
+            id              => 'list_child_categories_for_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id/categories/:category_id/children',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::list_children_for_category_set',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::list_children_for_category_set_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested categories for category set.',
             },
             requires_login => 0,
         },
-        {   id => 'create_category_for_category_set',
-            route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories',
-            resources   => ['category'],
-            verb        => 'POST',
-            version     => 4,
-            handler     => "${pkg}v4::Category::create_for_category_set",
-            error_codes => {
-                403 =>
-                    'Do not have permission to create a category for category set.',
+        {
+            id              => 'create_category_for_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id/categories',
+            resources       => ['category'],
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::create_for_category_set',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::create_for_category_set_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a category for category set.',
             },
         },
-        {   id => 'get_category_for_category_set',
-            route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
-            verb        => 'GET',
-            version     => 4,
-            handler     => "${pkg}v4::Category::get_for_category_set",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested category for category set.',
+        {
+            id              => 'get_category_for_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::get_for_category_set',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::get_for_category_set_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested category for category set.',
             },
             requires_login => 0,
         },
-        {   id => 'update_category_for_category_set',
-            route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
-            resources   => ['category'],
-            verb        => 'PUT',
-            version     => 4,
-            handler     => "${pkg}v4::Category::update_for_category_set",
-            error_codes => {
-                403 =>
-                    'Do not have permission to update a category for category set.',
+        {
+            id              => 'update_category_for_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
+            resources       => ['category'],
+            verb            => 'PUT',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::update_for_category_set',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::update_for_category_set_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a category for category set.',
             },
         },
-        {   id => 'delete_category_for_category_set',
-            route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
-            verb        => 'DELETE',
-            version     => 4,
-            handler     => "${pkg}v4::Category::delete_for_category_set",
-            error_codes => {
-                403 =>
-                    'Do not have permission to delete a category for category set.',
+        {
+            id              => 'delete_category_for_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id/categories/:category_id',
+            verb            => 'DELETE',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::delete_for_category_set',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::delete_for_category_set_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a category for category set.',
             },
         },
-        {   id => 'permutate_categories_for_category_set',
-            route =>
-                '/sites/:site_id/categorySets/:category_set_id/categories/permutate',
-            verb        => 'POST',
-            version     => 4,
-            handler     => "${pkg}v4::Category::permutate_for_category_set",
-            error_codes => {
-                403 =>
-                    'Do not have permission to permutate categories for category set.',
+        {
+            id              => 'permutate_categories_for_category_set',
+            route           => '/sites/:site_id/categorySets/:category_set_id/categories/permutate',
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::permutate_for_category_set',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::permutate_for_category_set_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to permutate categories for category set.',
             },
         },
 
         # content_type
-        {   id             => 'list_content_types',
-            route          => '/sites/:site_id/contentTypes',
-            verb           => 'GET',
-            version        => 4,
-            handler        => "${pkg}v4::ContentType::list",
+        {
+            id              => 'list_content_types',
+            route           => '/sites/:site_id/contentTypes',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentType::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentType::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'content_type,content_types',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2170,56 +2744,67 @@ sub core_endpoints {
                 searchFields => 'name,description',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of content types.',
+                403 => 'Do not have permission to retrieve the list of content types.',
             },
         },
-        {   id          => 'create_content_type',
-            route       => '/sites/:site_id/contentTypes',
-            resources   => ['content_type'],
-            verb        => 'POST',
-            version     => 4,
-            handler     => "${pkg}v4::ContentType::create",
-            error_codes => {
+        {
+            id              => 'create_content_type',
+            route           => '/sites/:site_id/contentTypes',
+            resources       => ['content_type'],
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentType::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentType::create_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to create a content type.',
             },
         },
-        {   id          => 'get_content_type',
-            route       => '/sites/:site_id/contentTypes/:content_type_id',
-            verb        => 'GET',
-            version     => 4,
-            handler     => "${pkg}v4::ContentType::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested content type.',
+        {
+            id              => 'get_content_type',
+            route           => '/sites/:site_id/contentTypes/:content_type_id',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentType::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentType::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested content type.',
             },
         },
-        {   id          => 'update_content_type',
-            route       => '/sites/:site_id/contentTypes/:content_type_id',
-            resources   => ['content_type'],
-            verb        => 'PUT',
-            version     => 4,
-            handler     => "${pkg}v4::ContentType::update",
-            error_codes => {
+        {
+            id              => 'update_content_type',
+            route           => '/sites/:site_id/contentTypes/:content_type_id',
+            resources       => ['content_type'],
+            verb            => 'PUT',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentType::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentType::update_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to update a content type.',
             },
         },
-        {   id          => 'delete_content_type',
-            route       => '/sites/:site_id/contentTypes/:content_type_id',
-            verb        => 'DELETE',
-            version     => 4,
-            handler     => "${pkg}v4::ContentType::delete",
-            error_codes => {
+        {
+            id              => 'delete_content_type',
+            route           => '/sites/:site_id/contentTypes/:content_type_id',
+            verb            => 'DELETE',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentType::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentType::delete_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to delete a content type.',
             },
         },
 
         # content_field
-        {   id      => 'list_content_fields',
-            route   => '/sites/:site_id/contentTypes/:content_type_id/fields',
-            verb    => 'GET',
-            version => 4,
-            handler => "${pkg}v4::ContentField::list",
+        {
+            id              => 'list_content_fields',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/fields',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentField::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentField::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'content_field,content_fields',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2228,69 +2813,79 @@ sub core_endpoints {
                 searchFields => 'label,description',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of content fields.',
+                403 => 'Do not have permission to retrieve the list of content fields.',
             },
         },
-        {   id    => 'create_content_field',
-            route => '/sites/:site_id/contentTypes/:content_type_id/fields',
-            resources   => ['content_field'],
-            verb        => 'POST',
-            version     => 4,
-            handler     => "${pkg}v4::ContentField::create",
-            error_codes => {
+        {
+            id              => 'create_content_field',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/fields',
+            resources       => ['content_field'],
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentField::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentField::create_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to create a content type.',
             },
         },
-        {   id => 'get_content_field',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/fields/:content_field_id',
-            verb        => 'GET',
-            version     => 4,
-            handler     => "${pkg}v4::ContentField::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested content field.',
+        {
+            id              => 'get_content_field',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/fields/:content_field_id',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentField::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentField::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested content field.',
             },
         },
-        {   id => 'update_content_field',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/fields/:content_field_id',
-            resources   => ['content_field'],
-            verb        => 'PUT',
-            version     => 4,
-            handler     => "${pkg}v4::ContentField::update",
-            error_codes => {
+        {
+            id              => 'update_content_field',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/fields/:content_field_id',
+            resources       => ['content_field'],
+            verb            => 'PUT',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentField::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentField::update_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to update a content field.',
             },
         },
-        {   id => 'delete_content_field',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/fields/:content_field_id',
-            verb        => 'DELETE',
-            version     => 4,
-            handler     => "${pkg}v4::ContentField::delete",
-            error_codes => {
+        {
+            id              => 'delete_content_field',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/fields/:content_field_id',
+            verb            => 'DELETE',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentField::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentField::delete_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to delete a content field.',
             },
         },
-        {   id => 'permutate_content_fields',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/fields/permutate',
-            verb        => 'POST',
-            version     => 4,
-            handler     => "${pkg}v4::ContentField::permutate",
-            error_codes => {
+        {
+            id              => 'permutate_content_fields',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/fields/permutate',
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentField::permutate',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentField::permutate_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to permutate content fields.',
             },
         },
 
         # content_data
-        {   id      => 'list_content_data',
-            route   => '/sites/:site_id/contentTypes/:content_type_id/data',
-            verb    => 'GET',
-            version => 4,
-            handler => "${pkg}v4::ContentData::list",
+        {
+            id              => 'list_content_data',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/data',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentData::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'content_data,content_data',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2300,98 +2895,122 @@ sub core_endpoints {
                 filterKeys   => 'status',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of content data.',
+                403 => 'Do not have permission to retrieve the list of content data.',
             },
             requires_login => 0,
         },
-        {   id        => 'create_content_data',
-            route     => '/sites/:site_id/contentTypes/:content_type_id/data',
-            resources => ['content_data'],
-            verb      => 'POST',
-            version   => 4,
-            handler   => "${pkg}v4::ContentData::create",
-            error_codes => {
+        {
+            id              => 'create_content_data',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/data',
+            resources       => ['content_data'],
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentData::create_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to create a content data.',
             },
         },
-        {   id => 'get_content_data',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id',
-            verb        => 'GET',
-            version     => 4,
-            handler     => "${pkg}v4::ContentData::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested content data.',
+        {
+            id              => 'get_content_data',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentData::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested content data.',
             },
             requires_login => 0,
         },
-        {   id => 'update_content_data',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id',
-            resources   => ['content_data'],
-            verb        => 'PUT',
-            version     => 4,
-            handler     => "${pkg}v4::ContentData::update",
-            error_codes => {
+        {
+            id              => 'update_content_data',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id',
+            resources       => ['content_data'],
+            verb            => 'PUT',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentData::update_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to update a content data.',
             },
         },
-        {   id => 'delete_content_data',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id',
-            verb        => 'DELETE',
-            version     => 4,
-            handler     => "${pkg}v4::ContentData::delete",
-            error_codes => {
+        {
+            id              => 'delete_content_data',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id',
+            verb            => 'DELETE',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentData::delete_openapi_spec',
+            error_codes     => {
                 403 => 'Do not have permission to delete a content data.',
             },
         },
-        {   id => 'preview_content_data_by_id',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id/preview',
-            resources => ['content_data'],
-            verb      => 'POST',
-            version   => 4,
-            handler   => "${pkg}v4::ContentData::preview_by_id",
-            error_codes =>
-                { 403 => 'Do not have permission to preview content data.', },
+        {
+            id              => 'preview_content_data_by_id',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/data/:content_data_id/preview',
+            resources       => ['content_data'],
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::preview_by_id',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentData::preview_by_id_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to preview content data.',
+            },
         },
-        {   id => 'preview_content_data',
-            route =>
-                '/sites/:site_id/contentTypes/:content_type_id/data/preview',
-            resources => ['content_data'],
-            verb      => 'POST',
-            version   => 4,
-            handler   => "${pkg}v4::ContentData::preview",
-            error_codes =>
-                { 403 => 'Do not have permission to preview content data.', },
+        {
+            id              => 'preview_content_data',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/data/preview',
+            resources       => ['content_data'],
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::preview',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentData::preview_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to preview content data.',
+            },
         },
-        {   id      => 'publish_content_data',
-            route   => '/publish/contentData',
-            verb    => 'GET',
-            version => 4,
-            handler => "${pkg}v4::Publish::content_data",
-            error_codes =>
-                { 403 => 'Do not have permission to publish content_data.', },
+        {
+            id              => 'publish_content_data',
+            route           => '/publish/contentData',
+            verb            => 'GET',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Publish::content_data',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Publish::content_data_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to publish content_data.',
+            },
         },
 
         # search
-        {   id      => 'search',
-            route   => '/search',
-            version => 4,
-            handler => "${pkg}v4::Search::search",
-            error_codes =>
-                { 403 => 'Do not have permission to search objects.', },
+        {
+            id              => 'search',
+            route           => '/search',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Search::search',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Search::search_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to search objects.',
+            },
             requires_login => 0,
         },
 
         # template
-        {   id             => 'list_templates',
-            route          => '/sites/:site_id/templates',
-            version        => 4,
-            handler        => "${pkg}v4::Template::list",
+        {
+            id              => 'list_templates',
+            route           => '/sites/:site_id/templates',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Template::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Template::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'template,templates',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2401,67 +3020,87 @@ sub core_endpoints {
                 filterKeys   => 'type',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of templates.',
+                403 => 'Do not have permission to retrieve the list of templates.',
             },
         },
-        {   id          => 'get_template',
-            route       => '/sites/:site_id/templates/:template_id',
-            version     => 4,
-            handler     => "${pkg}v4::Template::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested template.',
+        {
+            id              => 'get_template',
+            route           => '/sites/:site_id/templates/:template_id',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Template::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Template::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested template.',
             },
         },
-        {   id        => 'update_template',
-            route     => '/sites/:site_id/templates/:template_id',
-            resources => ['template'],
-            verb      => 'PUT',
-            version   => 4,
-            handler   => "${pkg}v4::Template::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a template.', },
+        {
+            id              => 'update_template',
+            route           => '/sites/:site_id/templates/:template_id',
+            resources       => ['template'],
+            verb            => 'PUT',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Template::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Template::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a template.',
+            },
         },
-        {   id      => 'delete_template',
-            route   => '/sites/:site_id/templates/:template_id',
-            verb    => 'DELETE',
-            version => 4,
-            handler => "${pkg}v4::Template::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a template.', },
+        {
+            id              => 'delete_template',
+            route           => '/sites/:site_id/templates/:template_id',
+            verb            => 'DELETE',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Template::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Template::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a template.',
+            },
         },
 
-        {   id      => 'publish_template',
-            route   => '/sites/:site_id/templates/:template_id/publish',
-            verb    => 'POST',
-            version => 4,
-            handler => "${pkg}v4::Template::publish",
-            error_codes =>
-                { 403 => 'Do not have permission to publish a template.', },
+        {
+            id              => 'publish_template',
+            route           => '/sites/:site_id/templates/:template_id/publish',
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Template::publish',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Template::publish_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to publish a template.',
+            },
         },
-        {   id      => 'refresh_template',
-            route   => '/sites/:site_id/templates/:template_id/refresh',
-            verb    => 'POST',
-            version => 4,
-            handler => "${pkg}v4::Template::refresh",
-            error_codes =>
-                { 403 => 'Do not have permission to refresh a template.', },
+        {
+            id              => 'refresh_template',
+            route           => '/sites/:site_id/templates/:template_id/refresh',
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Template::refresh',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Template::refresh_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to refresh a template.',
+            },
         },
-        {   id      => 'clone_template',
-            route   => '/sites/:site_id/templates/:template_id/clone',
-            verb    => 'POST',
-            version => 4,
-            handler => "${pkg}v4::Template::clone",
-            error_codes =>
-                { 403 => 'Do not have permission to clone a template.', },
+        {
+            id              => 'clone_template',
+            route           => '/sites/:site_id/templates/:template_id/clone',
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::Template::clone',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Template::clone_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to clone a template.',
+            },
         },
 
         # templatemap endpoints
-        {   id      => 'list_templatemaps',
-            route   => '/sites/:site_id/templates/:template_id/templatemaps',
-            version => 4,
-            handler => "${pkg}v4::TemplateMap::list",
+        {
+            id              => 'list_templatemaps',
+            route           => '/sites/:site_id/templates/:template_id/templatemaps',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::TemplateMap::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::TemplateMap::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'templatemap,templatemaps',
+            },
             default_params => {
                 limit      => 10,
                 offset     => 0,
@@ -2470,54 +3109,65 @@ sub core_endpoints {
                 filterKeys => 'archiveType,buildType,isPreferred',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the list of templatemaps.',
+                403 => 'Do not have permission to retrieve the list of templatemaps.',
             },
         },
-        {   id => 'get_templatemap',
-            route =>
-                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
-            version     => 4,
-            handler     => "${pkg}v4::TemplateMap::get",
-            error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested templatemap.',
+        {
+            id              => 'get_templatemap',
+            route           => '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::TemplateMap::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::TemplateMap::get_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested templatemap.',
             },
         },
-        {   id    => 'create_templatemap',
-            route => '/sites/:site_id/templates/:template_id/templatemaps',
-            resources => ['templatemap'],
-            verb      => 'POST',
-            version   => 4,
-            handler   => "${pkg}v4::TemplateMap::create",
-            error_codes =>
-                { 403 => 'Do not have permission to create a templatemap.', },
+        {
+            id              => 'create_templatemap',
+            route           => '/sites/:site_id/templates/:template_id/templatemaps',
+            resources       => ['templatemap'],
+            verb            => 'POST',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::TemplateMap::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::TemplateMap::create_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to create a templatemap.',
+            },
         },
-        {   id => 'update_templatemap',
-            route =>
-                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
-            resources => ['templatemap'],
-            verb      => 'PUT',
-            version   => 4,
-            handler   => "${pkg}v4::TemplateMap::update",
-            error_codes =>
-                { 403 => 'Do not have permission to update a templatemap.', },
+        {
+            id              => 'update_templatemap',
+            route           => '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            resources       => ['templatemap'],
+            verb            => 'PUT',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::TemplateMap::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::TemplateMap::update_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to update a templatemap.',
+            },
         },
-        {   id => 'delete_templatemap',
-            route =>
-                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
-            verb    => 'DELETE',
-            version => 4,
-            handler => "${pkg}v4::TemplateMap::delete",
-            error_codes =>
-                { 403 => 'Do not have permission to delete a templatemap.', },
+        {
+            id              => 'delete_templatemap',
+            route           => '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            verb            => 'DELETE',
+            version         => 4,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::TemplateMap::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::TemplateMap::delete_openapi_spec',
+            error_codes     => {
+                403 => 'Do not have permission to delete a templatemap.',
+            },
         },
 
         # group
-        {   id             => 'list_groups',
-            route          => '/groups',
-            version        => 2,
-            handler        => "${pkg}v2::Group::list",
+        {
+            id              => 'list_groups',
+            route           => '/groups',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Group::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Group::list_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'group,groups',
+            },
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -2527,14 +3177,18 @@ sub core_endpoints {
                 filterKeys   => 'status',
             },
             error_codes => {
-                403 =>
-                    'Do not have permission to retrieve the requested groups.',
+                403 => 'Do not have permission to retrieve the requested groups.',
             },
         },
-        {   id             => 'list_groups_for_user',
-            route          => '/users/:user_id/groups',
-            version        => 2,
-            handler        => "${pkg}v2::Group::list_for_user",
+        {
+            id              => 'list_groups_for_user',
+            route           => '/users/:user_id/groups',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Group::list_for_user',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Group::list_for_user_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'group,groups',
+            },
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -2544,48 +3198,58 @@ sub core_endpoints {
                 filterKeys   => 'status',
             },
             error_codes => {
-                403 =>
-                    "Do not have permission to retrieve the requested user's groups.",
+                403 => "Do not have permission to retrieve the requested user's groups.",
             },
         },
-        {   id          => 'get_group',
-            route       => '/groups/:group_id',
-            version     => 2,
-            handler     => "${pkg}v2::Group::get",
-            error_codes => {
-                403 =>
-                    "Do not have permission to retrieve the requested group.",
+        {
+            id              => 'get_group',
+            route           => '/groups/:group_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Group::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Group::get_openapi_spec',
+            error_codes     => {
+                403 => "Do not have permission to retrieve the requested group.",
             },
         },
-        {   id        => 'create_group',
-            route     => '/groups',
-            resources => ['group'],
-            verb      => 'POST',
-            version   => 2,
-            handler   => "${pkg}v2::Group::create",
-            error_codes =>
-                { 403 => "Do not have permission to create a group.", },
+        {
+            id              => 'create_group',
+            route           => '/groups',
+            resources       => ['group'],
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Group::create',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Group::create_openapi_spec',
+            error_codes     => {
+                403 => "Do not have permission to create a group.",
+            },
         },
-        {   id        => 'update_group',
-            route     => '/groups/:group_id',
-            resources => ['group'],
-            verb      => 'PUT',
-            version   => 2,
-            handler   => "${pkg}v2::Group::update",
-            error_codes =>
-                { 403 => "Do not have permission to update a group.", },
+        {
+            id              => 'update_group',
+            route           => '/groups/:group_id',
+            resources       => ['group'],
+            verb            => 'PUT',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Group::update',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Group::update_openapi_spec',
+            error_codes     => {
+                403 => "Do not have permission to update a group.",
+            },
         },
-        {   id      => 'delete_group',
-            route   => '/groups/:group_id',
-            verb    => 'DELETE',
-            version => 2,
-            handler => "${pkg}v2::Group::delete",
-            error_codes =>
-                { 403 => "Do not have permission to delete a group.", },
+        {
+            id              => 'delete_group',
+            route           => '/groups/:group_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Group::delete',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Group::delete_openapi_spec',
+            error_codes     => {
+                403 => "Do not have permission to delete a group.",
+            },
         },
 
         # permission
-        {   id             => 'list_permissions_for_group',
+        {
+            id             => 'list_permissions_for_group',
             route          => '/groups/:group_id/permissions',
             version        => 2,
             default_params => {
@@ -2595,34 +3259,48 @@ sub core_endpoints {
                 sortOrder  => 'ascend',
                 filterKeys => 'blogIds',
             },
-            handler     => "${pkg}v2::Permission::list_for_group",
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Permission::list_for_group',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Permission::list_for_group_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'permission,permissions',
+            },
             error_codes => {
-                403 =>
-                    "Do not have permission to retrieve the requested group's permissions."
+                403 => "Do not have permission to retrieve the requested group's permissions.",
             },
         },
-        {   id      => 'grant_permission_to_group',
-            route   => '/groups/:group_id/permissions/grant',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Permission::grant_to_group",
-            error_codes =>
-                { 403 => "Do not have permission to grant a permission." },
+        {
+            id              => 'grant_permission_to_group',
+            route           => '/groups/:group_id/permissions/grant',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Permission::grant_to_group',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Permission::grant_to_group_openapi_spec',
+            error_codes     => {
+                403 => "Do not have permission to grant a permission.",
+            },
         },
-        {   id      => 'revoke_permission_from_group',
-            route   => '/groups/:group_id/permissions/revoke',
-            verb    => 'POST',
-            version => 2,
-            handler => "${pkg}v2::Permission::revoke_from_group",
-            error_codes =>
-                { 403 => "Do not have permission to revoke a permission.", },
+        {
+            id              => 'revoke_permission_from_group',
+            route           => '/groups/:group_id/permissions/revoke',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Permission::revoke_from_group',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Permission::revoke_from_group_openapi_spec',
+            error_codes     => {
+                403 => "Do not have permission to revoke a permission.",
+            },
         },
 
         # group member
-        {   id             => 'list_members_for_group',
-            route          => '/groups/:group_id/members',
-            version        => 2,
-            handler        => "${pkg}v2::Group::list_members_for_group",
+        {
+            id              => 'list_members_for_group',
+            route           => '/groups/:group_id/members',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Group::list_members_for_group',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Group::list_members_for_group_openapi_spec',
+            openapi_options => {
+                filtered_list_ds_nouns => 'user,users',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2632,36 +3310,39 @@ sub core_endpoints {
                 filterKeys   => 'status,lockout',
             },
             error_codes => {
-                403 =>
-                    "Do not have permission to retrieve the list of group members.",
+                403 => "Do not have permission to retrieve the list of group members.",
             },
         },
-        {   id          => 'get_member_for_group',
-            route       => '/groups/:group_id/members/:member_id',
-            version     => 2,
-            handler     => "${pkg}v2::Group::get_member",
-            error_codes => {
-                403 =>
-                    "Do not have permission to retrieve the requested group member.",
+        {
+            id              => 'get_member_for_group',
+            route           => '/groups/:group_id/members/:member_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Group::get_member',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Group::get_member_openapi_spec',
+            error_codes     => {
+                403 => "Do not have permission to retrieve the requested group member.",
             },
         },
-        {   id          => 'add_member_to_group',
-            route       => '/groups/:group_id/members',
-            verb        => 'POST',
-            version     => 2,
-            handler     => "${pkg}v2::Group::add_member",
-            error_codes => {
+        {
+            id              => 'add_member_to_group',
+            route           => '/groups/:group_id/members',
+            verb            => 'POST',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Group::add_member',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Group::add_member_openapi_spec',
+            error_codes     => {
                 403 => "Do not have permission to add a member to group.",
             },
         },
-        {   id          => 'remove_member_from_group',
-            route       => '/groups/:group_id/members/:member_id',
-            verb        => 'DELETE',
-            version     => 2,
-            handler     => "${pkg}v2::Group::remove_member",
-            error_codes => {
-                403 =>
-                    "Do not have permission to remove a member from group.",
+        {
+            id              => 'remove_member_from_group',
+            route           => '/groups/:group_id/members/:member_id',
+            verb            => 'DELETE',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::v2::Group::remove_member',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Group::remove_member_openapi_spec',
+            error_codes     => {
+                403 => "Do not have permission to remove a member from group.",
             },
         },
     ];
@@ -2918,6 +3599,84 @@ sub _compile_endpoints {
 sub endpoints {
     my ( $app, $version ) = @_;
     $endpoints{$version} ||= $app->_compile_endpoints($version);
+}
+
+sub fields_to_schema {
+    my ($app, $resource_name) = @_;
+    my $schema = {
+        type => 'object',
+    };
+    my $resource = MT::DataAPI::Resource->resource($resource_name);
+    for my $field (@{ $resource->{fields} }) {
+        if ($field->{schema}) {
+            $schema->{properties}{ $field->{name} } = {
+                %{ $field->{schema} },
+            };
+        } elsif (defined $field->{type} && $field->{type} =~ m/MT::DataAPI::Resource::DataType::Object\z/) {
+            $schema->{properties}{ $field->{name} }{type} = 'object';
+            for my $key (@{ $field->{fields} }) {
+                $schema->{properties}{ $field->{name} }{properties}{$key} = {
+                    type => 'string',
+                };
+            }
+        } elsif (defined $field->{type} && $field->{type} =~ m/MT::DataAPI::Resource::DataType::/) {
+            my $type_schema = $app->handler_to_coderef($field->{type} . '::schema')->();
+            $schema->{properties}{ $field->{name} } = {
+                %$type_schema,
+            };
+        } elsif (defined $field->{type}) {
+            $schema->{properties}{ $field->{name} } = {
+                type => $field->{type},
+            };
+        } else {
+            $schema->{properties}{ $field->{name} } = {
+                type => 'string',
+            };
+        }
+    }
+    my $updatable_schema;
+    if (scalar(@{ $resource->{updatable_fields} })) {
+        $schema->{description} = 'Updatable fields are ' . join(', ', map { $_->{name} } @{ $resource->{updatable_fields} });
+        $updatable_schema->{type} = 'object';
+        for my $f (@{ $resource->{updatable_fields} }) {
+            my $field_name = $f->{name};
+            if (exists $schema->{properties}{$field_name}) {
+                $updatable_schema->{properties}{$field_name} = $schema->{properties}{$field_name};
+            }
+        }
+    }
+    return ($schema, $updatable_schema);
+}
+
+sub _compile_schemas {
+    my ($app, $version) = @_;
+    my %hash       = ();
+    my @components = MT::Component->select();
+    for my $c (@components) {
+        my $resources = $c->registry('applications', 'data_api', 'resources');
+        next unless defined $resources;
+        for my $key (keys %$resources) {
+            if (ref($resources->{$key}) eq 'ARRAY') {
+                for my $v (@{ $resources->{$key} }) {
+                    $v->{version} ||= 1;
+                    next if $v->{version} > $version;
+                    ($hash{$key}, my $updatable_schema) = $app->fields_to_schema($key);
+                    if ($updatable_schema) {
+                        $hash{"${key}_updatable"} = $updatable_schema;
+                    }
+                }
+            } else {
+                # alias
+                next;
+            }
+        }
+    }
+    return \%hash;
+}
+
+sub schemas {
+    my ($app, $version) = @_;
+    $schemas{$version} ||= $app->_compile_schemas($version);
 }
 
 sub current_endpoint {

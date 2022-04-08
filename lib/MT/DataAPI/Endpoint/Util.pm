@@ -8,6 +8,52 @@ package MT::DataAPI::Endpoint::Util;
 use warnings;
 use strict;
 
+sub endpoints_openapi_spec {
+    +{
+        tags        => ['Endpoints'],
+        summary     => 'Retrieve a list of endpoints',
+        description => 'Retrieve a list of endpoints.',
+        parameters  => [{
+                'in'        => 'query',
+                name        => 'includeComponents',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The comma separated ID list of components (a.k.a plugin) to include to result. ',
+            },
+            {
+                'in'        => 'query',
+                name        => 'excludeComponents',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The comma separated ID list of components (a.k.a plugin) to exclude from result. ',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => 'The total number of endpoints found.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Endpoints resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/endpoint',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub endpoints {
     my ( $app, $endpoint ) = @_;
 

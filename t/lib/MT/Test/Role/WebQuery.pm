@@ -20,7 +20,8 @@ sub _trim {
 
 sub _find_text {
     my ( $self, $selector ) = @_;
-    eval { $self->wq_find($selector)->text };
+    my @elems = eval { $self->wq_find($selector) } or return;
+    return wantarray ? (map { $_->text } @elems) : $elems[0]->text;
 }
 
 sub header_title {
@@ -36,7 +37,11 @@ sub page_title {
 sub message_text {
     my $self = shift;
     my $message_class = MT->version_number >= 7 ? '.alert' : '.msg';
-    _trim( $self->_find_text($message_class) );
+    if (wantarray) {
+        return map { _trim($_) } $self->_find_text($message_class);
+    } else {
+        return _trim(scalar $self->_find_text($message_class));
+    }
 }
 
 sub generic_error {

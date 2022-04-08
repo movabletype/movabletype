@@ -102,10 +102,12 @@ on 'test' => sub {
     requires 'HTML::Filter::Callbacks';
     requires 'HTML::Form';
     requires 'HTTP::DAV';
+    requires 'HTTP::Request::AsCGI';
     requires 'HTTP::Request::Common';
     requires 'IO::String';
     requires 'IPC::Run3';
     requires 'JSON::XS';  # For speed
+    requires 'JSON::Validator';
     requires 'Log::Log4perl';
     requires 'Log::Minimal';
     requires 'MIME::Head';

@@ -1600,11 +1600,6 @@ sub restore {
         = File::Spec->splitpath($uploaded)
         if defined($uploaded);
     $app->mode('start_restore');
-    if ( defined($uploaded_filename)
-        && ( $uploaded_filename =~ /^.+\.manifest$/i ) )
-    {
-        return restore_upload_manifest( $app, $fh );
-    }
 
     $app->log(
         {   message  => (
@@ -1617,6 +1612,12 @@ sub restore {
             category => 'restore',
         }
     );
+
+    if ( defined($uploaded_filename)
+        && ( $uploaded_filename =~ /^.+\.manifest$/i ) )
+    {
+        return restore_upload_manifest( $app, $fh );
+    }
 
     my $param = { return_args => '__mode=dashboard' };
 

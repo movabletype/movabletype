@@ -1394,6 +1394,9 @@ use vars qw( @ISA %Lexicon );
 	'Select Users' => 'ユーザーを選択',
 	'User load failed: [_1]' => 'ユーザーをロードできませんでした: [_1]',
 	'Users Selected' => '選択されたユーザー',
+	q{Group '[_1]' (ID:[_2]) deleted by '[_3]'} => q{[_3]がグループ「[_1]」(ID:[_2]) を削除しました。},
+	q{Group '[_1]' (ID:[_2]) edited by '[_3]'} => q{[_3]がグループ「[_1]」(ID:[_2])を編集しました。},
+	q{Group '[_1]' created by '[_2]'.} => q{[_2]がグループ「[_1]」を作成しました。},
 	q{User '[_1]' (ID:[_2]) removed from group '[_3]' (ID:[_4]) by '[_5]'} => q{[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」から削除しました。},
 	q{User '[_1]' (ID:[_2]) was added to group '[_3]' (ID:[_4]) by '[_5]'} => q{[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」に追加しました。},
 
@@ -1506,6 +1509,7 @@ use vars qw( @ISA %Lexicon );
 	'One or more errors were found in the included template module ([_1]).' => 'テンプレートモジュール([_1])でエラーが見つかりました。',
 	'One or more errors were found in this template.' => 'テンプレートでエラーが見つかりました。',
 	'Orphaned' => 'Orphaned',
+	'Output filename contains an inappropriate whitespace.' => '出力ファイル名に不適切な空白が含まれています。',
 	'Preview' => 'プレビュー',
 	'Published Date' => '公開日',
 	'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.' => '「[_3]」を初期化します(<a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">バックアップ</a>)。',
@@ -1532,6 +1536,7 @@ use vars qw( @ISA %Lexicon );
 	'system' => 'システム',
 	'template' => 'テンプレート',
 	'widget' => 'ウィジェット',
+	q{Archive mapping '[_1]' contains an inappropriate whitespace.} => q{アーカイブマッピング '[_1]' に不適切な空白が含まれています。},
 	q{Skipping template '[_1]' since it appears to be a custom template.} => q{カスタムテンプレートと思われるため、'[_1]'をスキップします。},
 	q{Skipping template '[_1]' since it has not been changed.} => q{[_1]は変更されていないのでスキップします。},
 	q{Template '[_1]' (ID:[_2]) created by '[_3]'} => q{'[_3]'がテンプレート'[_1]'(ID:[_2])を作成しました。},
@@ -2397,11 +2402,18 @@ use vars qw( @ISA %Lexicon );
 	'You do not have a valid path to sendmail on your machine. Perhaps you should try using SMTP?' => 'sendmailへのパスが正しくありません。SMTPの設定を試してください。',
 	q{Unknown MailTransfer method '[_1]'} => q{MailTransferの設定([_1])が不正です。},
 
+## lib/MT/Mail/MIME.pm
+	'An error occured during sending mail' => 'メール送信中にエラーが発生しました',
+	'MailTransferEncoding was auto detected because an invalid value was given.' => 'MailTransferEncoding の値が不正です。送信時に機械的に修正しました。',
+
 ## lib/MT/Notification.pm
 	'Cancel' => 'キャンセル',
 	'Click to edit contact' => 'クリックして連絡先を編集',
 	'Contacts' => '連絡先',
 	'Save Changes' => '変更を保存',
+
+## lib/MT/Object.pm
+	'An error occurred while saving changes to the database.' => 'データベースへの保存中にエラーが発生しました。',
 
 ## lib/MT/ObjectAsset.pm
 	'Asset Placement' => 'アセットの関連付け',
@@ -2562,7 +2574,7 @@ use vars qw( @ISA %Lexicon );
 	', uppercase and lowercase letters' => '、大文字と小文字を含む',
 	'Actions' => 'アクション',
 	'All About Me' => 'All About Me',
-	'Cannot load template' => 'てんぷれーとを読み込めません',
+	'Cannot load template' => 'テンプレートを読み込めません',
 	'Cannot load user.' => 'ユーザーをロードできませんでした。',
 	'Choose the display options for this content field in the listing screen.' => '一覧での表示について選択します。',
 	'Default' => '既定値',
@@ -2910,6 +2922,7 @@ use vars qw( @ISA %Lexicon );
 	'Migrating create child site permissions...' => '子サイトの作成権限を移行しています...',
 	'Migrating data column of MT::ContentData...' => 'コンテンツデータのdataカラムを移行しています...',
 	'Migrating fields column of MT::ContentType...' => 'コンテンツタイプのFieldsカラムを移行しています...',
+	'Migrating filters that have conditions on the log level...' => 'ログレベルに対する条件を持つフィルターを移行しています...',
 	'MultiBlog migration for site(ID:[_1]) is skipped due to the data breakage.' => 'データが破損しているためサイト(ID:[_1])のマルチブログの設定の移行をスキップします。',
 	'MultiBlog migration is skipped due to the data breakage.' => 'データが破損しているためマルチブログの設定の移行をスキップします。',
 	'Rebuilding Content Type count of Category Sets...' => 'カテゴリセットの情報を再構築しています...',
@@ -2925,6 +2938,7 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'カテゴリの関連付けを再構築しています...',
 	'Rebuilding object tags...' => 'タグの関連付けを再構築しています...',
 	'Remove SQLSetNames...' => 'SQLSetNames をデータベースから削除しています...',
+	'Remove image metadata' => '画像のメタデータを削除しています',
 	'Reorder DEBUG level' => 'DEBUGレベルの値を変更しています',
 	'Reorder SECURITY level' => 'SECURITYレベルの値を変更しています',
 	'Reorder WARNING level' => 'WARNINGレベルの値を変更しています',
@@ -2995,6 +3009,9 @@ use vars qw( @ISA %Lexicon );
 	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
 	'Logger configuration for Log module [_1] seems problematic' => 'ログモジュール [_1] の設定に問題がありそうです',
 	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
+
+## lib/MT/Util/Mail.pm
+	'Error loading mail module: [_1].' => 'メールモジュールのロードに失敗しました: [_1]',
 
 ## lib/MT/Util/YAML.pm
 	'Cannot load YAML module: [_1]' => 'YAMLモジュールをロードできません: [_1]',
@@ -3717,6 +3734,7 @@ use vars qw( @ISA %Lexicon );
 	'Export (e)' => 'エクスポート',
 	'No size limit' => '分割しない',
 	'Reset' => 'リセット',
+	'Not all the tables are exported. If you need to back up everything (including config, session values, logs, and so on), consider using a database utility. You can also download public logs from the <a href="[_1]">Log</a> menu.' => 'エクスポートには含まれない情報もあります。設定やセッション情報、ログなども含めた完全なバックアップが必要な場合はデータベース付属のユーティリティの利用を検討してください。管理画面から確認できるログについては<a href="[_1]">ログ</a>メニューからもダウンロードできます。',
 	'Target File Size' => '出力ファイルのサイズ',
 	'What to Export' => 'エクスポート対象',
 	q{Don't compress} => q{圧縮しない},
@@ -4137,6 +4155,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/content_field_type_options/asset_image.tmpl
 	'Allow users to select multiple image assets?' => '複数の画像の選択を許可する',
 	'Allow users to upload a new image asset?' => '新しい画像ファイルのアップロードを許可する',
+	'Thumbnail height' => 'サムネイル画像の最大高',
+	'Thumbnail width' => 'サムネイル画像の最大幅',
 
 ## tmpl/cms/content_field_type_options/asset_video.tmpl
 	'Allow users to select multiple video assets?' => '複数のビデオの選択を許可する',

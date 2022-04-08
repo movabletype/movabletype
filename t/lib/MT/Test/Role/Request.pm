@@ -7,12 +7,14 @@ use HTML::LinkExtor;
 use Scalar::Util qw/blessed/;
 use Test::More;
 use JSON ();
+use HTTP::Request::AsCGI;
 
 requires qw/ request base_url /;
 
 sub _convert_params {
     my $params = shift;
     if ( blessed $params && $params->isa('HTTP::Request') ) {
+        my $c = HTTP::Request::AsCGI->new($params)->setup;
         my $param_method = CGI->VERSION < 4 ? 'param' : 'multi_param';
         my $cgi = CGI->new( $params->content );
         my %hash;

@@ -322,7 +322,7 @@ sub view_group {
     $obj = $group_class->load($id) if $id;
     my $user_class = $app->model('user');
     $app->add_breadcrumb( $app->translate("Groups"),
-        $app->uri( mode => 'list', args => { _type => 'group' } ) );
+        $app->uri( mode => 'list', args => { _type => 'group', blog_id => 0, } ) );
     if ($id) {
         %param = %{ $obj->column_values };
         delete $param{external_id};
@@ -547,6 +547,51 @@ sub edit_role {
     );
     $params->{members} += $group_count;
     $tmpl;
+}
+
+sub post_save {
+    my $eh = shift;
+    my ($app, $obj, $original) = @_;
+
+    if (!$original->id) {
+        $app->log({
+            message => $app->translate(
+                "Group '[_1]' created by '[_2]'.", $obj->name,
+                $app->user->name
+            ),
+            level    => MT::Log::INFO(),
+            class    => 'group',
+            category => 'new',
+        });
+    }
+    else {
+        $app->log({
+            message => $app->translate(
+                "Group '[_1]' (ID:[_2]) edited by '[_3]'",
+                $obj->name, $obj->id, $app->user->name
+            ),
+            level    => MT::Log::NOTICE(),
+            class    => 'group',
+            category => 'edit',
+            metadata => $obj->id,
+        });
+    }
+    1;
+}
+
+sub post_delete {
+    my ($eh, $app, $obj) = @_;
+
+    $app->log({
+        message => $app->translate(
+            "Group '[_1]' (ID:[_2]) deleted by '[_3]'",
+            $obj->name, $obj->id, $app->user->name
+        ),
+        level    => MT::Log::NOTICE(),
+        class    => 'group',
+        category => 'delete'
+    });
+    1;
 }
 
 1;

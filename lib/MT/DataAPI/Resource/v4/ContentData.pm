@@ -111,6 +111,20 @@ sub fields {
                     $obj->data($obj_data);
                 }
             },
+            schema => {
+                type       => 'object',
+                properties => {
+                    data => {
+                        'oneOf' => [
+                            { type => 'string' },
+                            { type => 'array', items => { type => 'string' } },
+                        ],
+                    },
+                    id    => { type => 'string' },
+                    label => { type => 'string' },
+                    type  => { type => 'string' },
+                },
+            },
         },
         {   name  => 'date',
             alias => 'authored_on',
