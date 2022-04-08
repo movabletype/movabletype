@@ -2085,6 +2085,18 @@ sub can_delete {
     return $author->permissions($blog_id)->can_edit_templates;
 }
 
+sub _path_contains_inappropriate_whitespaces {
+    my ($path, $ignore_tag) = @_;
+    return unless $path;
+    if ($ignore_tag) {
+        1 while $path =~ s!<[/\$]?[Mm][Tt][^<>]+>!!g;
+    }
+    for my $part (split /[\\\/]/, $path) {
+        return 1 if $part =~ /(?:^\s|\s$)/s;
+    }
+    return;
+}
+
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
@@ -2101,6 +2113,17 @@ sub pre_save {
     }
 
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
+
+    if (_path_contains_inappropriate_whitespaces($obj->outfile)) {
+        return $eh->error($app->translate("Output filename contains an inappropriate whitespace."));
+    }
+    for my $name ($app->multi_param) {
+        next unless $name =~ /^archive_file_tmpl_\d+$/;
+        my $path = $app->param($name);
+        if (_path_contains_inappropriate_whitespaces($path, 1)) {
+            return $eh->error($app->translate("Archive mapping '[_1]' contains an inappropriate whitespace.", MT::Util::encode_html($path)));
+        }
+    }
 
     # update text heights if necessary
     if ($perms) {

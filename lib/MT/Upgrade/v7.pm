@@ -181,6 +181,7 @@ sub upgrade_functions {
         'v7_reorder_warning_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type  => 'log',
                 label => 'Reorder WARNING level',
@@ -190,6 +191,7 @@ sub upgrade_functions {
         'v7_reorder_security_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type   => 'log',
                 label => 'Reorder SECURITY level',
@@ -199,10 +201,41 @@ sub upgrade_functions {
         'v7_reorder_debug_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type   => 'log',
                 label => 'Reorder DEBUG level',
                 sql   => 'UPDATE mt_log SET log_level = 0 WHERE log_level = 16',
+            },
+        },
+        'v7_migrate_filters_for_log_level' => {
+            version_limit => '7.0050',
+            priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
+            updater       => {
+                type  => 'filter',
+                label => 'Migrating filters that have conditions on the log level...',
+                terms => { object_ds => 'log' },
+                code  => do {
+                    my %map = (
+                        2  => 3,
+                        8  => 5,
+                        16 => 0,
+                    );
+                    sub {
+                        my $self  = shift;
+                        my $items = $self->items
+                            or return;
+                        for my $item (@$items) {
+                            if ($item->{type} eq 'level') {
+                                if (defined(my $new_value = $map{ $item->{args}{value} })) {
+                                    $item->{args}{value} = $new_value;
+                                    $self->items($items);
+                                }
+                            }
+                        }
+                    };
+                },
             },
         },
         'v7_remove_image_metadata' => {
@@ -1523,6 +1556,16 @@ sub _v7_remove_sql_set_names {
     my $cfg       = MT->config;
     $cfg->SQLSetNames( undef, 1 );
     $cfg->save_config;
+}
+
+sub _v7_reorder_log_level_condition {
+    my ( $self, %param ) = @_;
+    my $from = $param{from};
+
+    return unless $from;
+    return if $from >= 6.0026 && $from < 7;
+
+    1;
 }
 
 sub _v7_migrate_data_api_disable_site {

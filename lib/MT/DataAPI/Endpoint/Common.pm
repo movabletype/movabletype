@@ -215,8 +215,10 @@ sub _query_builder {
 sub filtered_list {
     my ( $app, $endpoint, $ds, $terms, $args, $options ) = @_;
 
+    (my $callback_ds = $ds) =~ s/\..*//;
+
     run_permission_filter( $app, 'data_api_list_permission_filter',
-        $ds, $terms, $args, $options )
+        $callback_ds, $terms, $args, $options )
         or return;
 
     $terms   ||= {};
@@ -233,7 +235,6 @@ sub filtered_list {
         = !$blog         ? undef
         : $blog->is_blog ? [$blog_id]
         :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
-    my $resource_data = MT::DataAPI::Resource->resource($ds);
 
     my $setting = MT->registry( listing_screens => $ds ) || {};
 
@@ -289,7 +290,7 @@ sub filtered_list {
             unless $allowed;
     }
 
-    my $class = $setting->{datasource} || MT->model($ds);
+    my $class = $setting->{datasource} || MT->model( $setting->{object_type} || $ds );
     my $filteritems;
     my $allpass = 0;
     if ( my $items = $app->param('items') ) {
@@ -316,6 +317,7 @@ sub filtered_list {
         }
     );
 
+    my $resource_data = MT::DataAPI::Resource->resource( $setting->{object_type} || $ds );
     if ( my $search = $app->param('search') ) {
         my @fields = ();
         if ( my $specified = $app->param('searchFields') ) {
@@ -552,7 +554,7 @@ sub filtered_list {
         %$options,
     );
 
-    MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $ds,
+    MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $callback_ds,
         $app, $filter, \%count_options, \@cols );
 
     my $count_result = $filter->count_objects(%count_options);
@@ -571,7 +573,7 @@ sub filtered_list {
 
     my $objs;
     if ($count) {
-        MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $ds,
+        MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $callback_ds,
             $app, $filter, \%load_options, \@cols );
 
         $objs = $filter->load_objects(%load_options);

@@ -12,6 +12,59 @@ use warnings;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list_openapi_spec {
+    +{
+        tags       => ['Templates', 'TemplateMaps'],
+        summary    => 'Retrieve a list of templatemaps in the specified site',
+        parameters => [
+            { '$ref' => '#/components/parameters/templatemap_search' },
+            { '$ref' => '#/components/parameters/templatemap_searchFields' },
+            { '$ref' => '#/components/parameters/templatemap_limit' },
+            { '$ref' => '#/components/parameters/templatemap_offset' },
+            { '$ref' => '#/components/parameters/templatemap_sortBy' },
+            { '$ref' => '#/components/parameters/templatemap_sortOrder' },
+            { '$ref' => '#/components/parameters/templatemap_fields' },
+            { '$ref' => '#/components/parameters/templatemap_includeIds' },
+            { '$ref' => '#/components/parameters/templatemap_excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of templatemaps.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of templatemap resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/templatemap',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -34,6 +87,35 @@ sub list {
     };
 }
 
+sub get_openapi_spec {
+    +{
+        tags       => ['Templates', 'TemplateMaps'],
+        summary    => 'Retrieve a single templatemap by its ID',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/templatemap',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template or TemplateMap not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -46,6 +128,49 @@ sub get {
         or return;
 
     return $map;
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Templates', 'TemplateMaps'],
+        summary     => 'Create a new templatemap',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            templatemap => {
+                                '$ref' => '#/components/schemas/templatemap_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/templatemap',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub create {
@@ -70,6 +195,49 @@ sub create {
     return $new_map;
 }
 
+sub update_openapi_spec {
+    +{
+        tags        => ['Templates', 'TemplateMaps'],
+        summary     => 'Update an existing templatemap',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            templatemap => {
+                                '$ref' => '#/components/schemas/templatemap_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/templatemap',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template or TemplateMap not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
@@ -82,6 +250,35 @@ sub update {
     save_object( $app, 'templatemap', $new_map, $orig_map ) or return;
 
     return $new_map;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags      => ['Templates', 'TemplateMaps'],
+        summary   => 'Delete an existing templatemap',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/templatemap',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template or TemplateMap not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {

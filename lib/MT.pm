@@ -28,6 +28,9 @@ our (
 );
 my %Text_filters;
 
+our $STATUS;
+$SIG{USR2} = sub { $MT::STATUS ||= 'Got USR2 signal'; print STDERR "$$: $MT::STATUS\n"; return } unless $^O eq 'MSWin32';
+
 # For state determination in MT::Object
 our $plugins_installed;
 
@@ -2201,6 +2204,8 @@ sub build_page {
     {
         $param->{ $config_field . '_readonly' } = 1;
     }
+
+    $param->{hide_config_warnings} = $mt->config->HideConfigWarnings;
 
     my $tmpl_file = '';
     if ( UNIVERSAL::isa( $file, 'MT::Template' ) ) {
