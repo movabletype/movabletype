@@ -1531,41 +1531,44 @@ sub _v7_migrate_data_api_disable_site {
     $self->progress($self->translate_escape('Migrating DataAPIDisableSite...'));
 
     # Load from DB directly. Do not refer to mt-config.cgi.
-    my $data = MT->model('config')->load(1)->data;
-    my $data_api_disable_site;
-    if ($data =~ /DataAPIDisableSite\s(.*)/) {
-        $data_api_disable_site = $1;
-    }
-    my %data_api_disable_site = map { $_ => 1 } split /,/, $data_api_disable_site || '';
+    my ($config) = MT->model('config')->search;
+    if ($config) {
+        my $data = $config->data;
+        my $data_api_disable_site;
+        if ($data =~ /DataAPIDisableSite\s(.*)/) {
+            $data_api_disable_site = $1;
+        }
+        my %data_api_disable_site = map { $_ => 1 } split /,/, $data_api_disable_site || '';
 
-    my @sites = MT->model('website')->load({
-            class => '*',
-        },
-        {
-            fetchonly => { id => 1 },
-        },
-    );
-    my $from = int( MT->config->SchemaVersion || 0 );
-    for my $site (@sites) {
-        if ($from < 6) {
-            $site->allow_data_api(0);
-        } else {
-            if ($data_api_disable_site{$site->id}) {
+        my @sites = MT->model('website')->load({
+                class => '*',
+            },
+            {
+                fetchonly => { id => 1 },
+            },
+        );
+        my $from = int( MT->config->SchemaVersion || 0 );
+        for my $site (@sites) {
+            if ($from < 6) {
                 $site->allow_data_api(0);
             } else {
-                $site->allow_data_api(1);
+                if ($data_api_disable_site{$site->id}) {
+                    $site->allow_data_api(0);
+                } else {
+                    $site->allow_data_api(1);
+                }
             }
+            $site->save;
         }
-        $site->save;
-    }
 
-    # Clean up
-    if ($data_api_disable_site{0}) {
-        MT->config->DataAPIDisableSite('0', 1);
-    } else {
-        MT->config->DataAPIDisableSite('', 1);
+        # Clean up
+        if ($data_api_disable_site{0}) {
+            MT->config->DataAPIDisableSite('0', 1);
+        } else {
+            MT->config->DataAPIDisableSite('', 1);
+        }
+        MT->config->save_config;
     }
-    MT->config->save_config;
 }
 
 1;
