@@ -255,10 +255,10 @@
               
               if (s.mode == 'source') {
                   proxies.source.setFormat(s.format);
+                  $.each(ed.mtButtons, function(name, button) {
+                    update(name);
+                });
               }
-              $.each(ed.mtButtons, function(name, button) {
-                  update(name);
-              });
               $(ed.editorContainer).find('.tox-toolbar-overlord .tox-toolbar').each(function(i) {
                   if (buttonRows[s.mode][i]) {
                       $(this).show();
