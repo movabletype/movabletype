@@ -10,11 +10,15 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new( MemcachedServers => '127.0.0.1:11211', );
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test;
+use MT::Test::Memcached;
+
+my $memcached = MT::Test::Memcached->new or plan skip_all => "Memcached is not available";
+MT->config(MemcachedServers => $memcached->address);
 
 my $m = MT::Memcached->instance;
 $m->set(__FILE__, __FILE__, 1);

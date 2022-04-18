@@ -56,28 +56,9 @@ sub new {
         config => \%extra_config,
     }, $class;
 
-    $self->asign_memcached_servers if $extra_config{MemcachedServers};
-
     $self->write_config(\%extra_config);
 
     $self;
-}
-
-sub start_memcahed_server {
-    my ($self) = @_;
-    require Test::Memcached;
-    my $memd = Test::Memcached->new(options => { user => 'root' });
-    $memd->start;
-    return($memd, '127.0.0.1:'. $memd->option('tcp_port'));
-}
-
-sub asign_memcached_servers {
-    my ($self) = @_;
-    return if $self->{config}->{MemcachedServers} ne '127.0.0.1:11211';
-    my ($memd, $server) = $self->start_memcahed_server();
-    $self->{config}->{MemcachedServers} = $server;
-    $self->{memcached_driver} = $memd;
-    1;
 }
 
 sub load_envfile {

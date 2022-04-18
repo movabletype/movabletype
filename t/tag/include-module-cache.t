@@ -19,7 +19,7 @@ use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Tag;
 use MT::Memcached;
-use Test::Memcached;
+use MT::Test::Memcached;
 
 my $app = MT->instance;
 
@@ -61,7 +61,8 @@ sub memcached_filter {
 
 sub _teardown {
     $memd->stop if $memd;
-    ($memd, $memd_server) = $test_env->start_memcahed_server();
+    $memd = MT::Test::Memcached->new or plan skip_all => "Memcached is not available";
+    $memd_server = $memd->address;
     $i = 1;
 }
 
