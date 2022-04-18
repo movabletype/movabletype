@@ -447,9 +447,10 @@ sub site_stats_widget_pageview_lines {
     ) or return undef;
 
     my @items = @{ $for_date->{items} };
+    my @headers = @{ $for_date->{headers} ? $for_date->{headers} : ['date', 'pageviews'] };
     my %counts;
     foreach my $item (@items) {
-        $counts{ $item->{date} } = $item->{pageviews};
+        $counts{ $item->{$headers[0]} } = $item->{$headers[1]};
     }
     return \%counts;
 }
