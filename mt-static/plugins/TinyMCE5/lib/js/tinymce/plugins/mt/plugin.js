@@ -231,7 +231,7 @@
               var s = ed.mtEditorStatus;
               $.each(hiddenControls, function(i, k) {
                   var label = tinymce.util.I18n.translate(ed.mtButtons[k].tooltip);
-                  $container.find(`button[title="${label}"]`)
+                  $container.find('button[title="' + label + '"]')
                   .css({
                     display: ''
                   })
@@ -244,7 +244,7 @@
               function update(key) {
                 if (! supporteds[key]) {
                       var label = tinymce.util.I18n.translate(ed.mtButtons[key].tooltip);
-                      $container.find(`button[title="${label}"]`)
+                      $container.find('button[title="' + label + '"]')
                           .css({
                               display: 'none'
                           })
