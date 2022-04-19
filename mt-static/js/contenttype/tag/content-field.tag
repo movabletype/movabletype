@@ -27,7 +27,7 @@
     }
     duplicateField(e) {
       var index = this.parent.fields.indexOf(e.item)
-      var newItem = { ...this.parent.fields[index] }
+      var newItem = Array.prototype.slice.call(this.parent.fields[index])
       var field = this.parent.tags['content-field'][index].tags[newItem.type]
       var options = field.gatheringData()
       newItem.options = options
@@ -39,7 +39,7 @@
           label = trans('No Name')
         }
       }
-      newItem.label = `${trans('Duplicate')} - ${label}`
+      newItem.label = trans('Duplicate') + '-' + label
       newItem.options.label = newItem.label
       newItem.order = this.parent.fields.length+1
       newItem.isNew = true

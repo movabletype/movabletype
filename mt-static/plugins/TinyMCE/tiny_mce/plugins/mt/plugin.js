@@ -242,7 +242,7 @@
                 var s = ed.mtEditorStatus;
                 $.each(hiddenControls, function(i, k) {
                     $container
-                        .find(`[aria-label="${k}"]`)
+                        .find('[aria-label="' + k + '"]')
                         .css({
                             display: ''
                         })
@@ -254,7 +254,7 @@
 
                 function update(key) {
                     if (! supporteds[key]) {
-                        $container.find(`[aria-label="${key}"]`)
+                        $container.find('[aria-label="' + key + '"]')
                             .css({
                                 display: 'none'
                             })
