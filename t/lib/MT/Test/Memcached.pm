@@ -15,7 +15,7 @@ sub new {
     $memcached_options //= {};
     $memcached_options->{user} //= 'root';
 
-    my $memd = Test::Memcached->new(options => $memcached_options);
+    my $memd = Test::Memcached->new(options => $memcached_options) or return;
     $memd->start;
 
     bless { server => $memd }, $class;
