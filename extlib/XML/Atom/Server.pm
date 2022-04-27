@@ -6,7 +6,7 @@ use strict;
 use XML::Atom;
 use base qw( XML::Atom::ErrorHandler );
 use MIME::Base64 qw( encode_base64 decode_base64 );
-use Digest::SHA1 qw( sha1 );
+use Digest::SHA qw( sha1 );
 use XML::Atom::Util qw( first encode_xml textValue );
 use XML::Atom::Entry;
 
@@ -227,7 +227,7 @@ sub show_error {
 FAULT
     } else {
         return <<ERR;
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <error>$err</error>
 ERR
     }

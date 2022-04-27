@@ -40,7 +40,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::APP12;
 
-$VERSION = '2.71';
+$VERSION = '2.74';
 
 sub PrintLensInfo($$$);
 
@@ -113,6 +113,8 @@ my %olympusLensTypes = (
     '0 34 00' => 'Olympus Zuiko Digital ED 9-18mm F4.0-5.6', #7
     '0 34 10' => 'Olympus M.Zuiko Digital ED 12-45mm F4.0 Pro', #IB
     '0 35 00' => 'Olympus Zuiko Digital 14-54mm F2.8-3.5 II', #PH
+    '0 35 10' => 'Olympus M.Zuiko 100-400mm F5.0-6.3', #IB
+    '0 36 10' => 'Olympus M.Zuiko Digital ED 8-25mm F4 Pro', #IB
     # Sigma lenses
     '1 01 00' => 'Sigma 18-50mm F3.5-5.6 DC', #8
     '1 01 10' => 'Sigma 30mm F2.8 EX DN', #NJ
@@ -138,7 +140,6 @@ my %olympusLensTypes = (
     '1 15 00' => 'Sigma 10-20mm F4.0-5.6 EX DC HSM', #11
     '1 16 00' => 'Sigma APO 70-200mm F2.8 II EX DG Macro HSM', #11
     '1 17 00' => 'Sigma 50mm F1.4 EX DG HSM', #11
-    '1 18 60' => 'Test',
     # Panasonic/Leica lenses
     '2 01 00' => 'Leica D Vario Elmarit 14-50mm F2.8-3.5 Asph.', #11
     '2 01 10' => 'Lumix G Vario 14-45mm F3.5-5.6 Asph. Mega OIS', #16
@@ -183,6 +184,7 @@ my %olympusLensTypes = (
     '2 36 10' => 'Leica DG Elmarit 200mm F2.8 Power OIS', #IB
     '2 37 10' => 'Leica DG Vario-Elmarit 50-200mm F2.8-4 Asph. Power OIS', #IB
     '2 38 10' => 'Leica DG Vario-Summilux 10-25mm F1.7 Asph.', #IB
+    '2 40 10' => 'Leica DG Vario-Summilux 25-50mm F1.7 Asph.', #IB (H-X2550)
     '3 01 00' => 'Leica D Vario Elmarit 14-50mm F2.8-3.5 Asph.', #11
     '3 02 00' => 'Leica D Summilux 25mm F1.4 Asph.', #11
     # Tamron lenses
@@ -429,6 +431,7 @@ my %olympusCameraTypes = (
     S0085 => 'E-PL10', #IB
     S0089 => 'E-M5MarkIII',
     S0092 => 'E-M1MarkIII', #IB
+    S0093 => 'E-P7', #IB
     SR45 => 'D220',
     SR55 => 'D320L',
     SR83 => 'D340L',

@@ -7,7 +7,7 @@ URI::Heuristic - Expand URI using heuristics
 =head1 SYNOPSIS
 
  use URI::Heuristic qw(uf_uristr);
- $u = uf_uristr("perl");             # http://www.perl.com
+ $u = uf_uristr("example");          # http://www.example.com
  $u = uf_uristr("www.sol.no/sol");   # http://www.sol.no/sol
  $u = uf_uristr("aas");              # http://www.aas.no
  $u = uf_uristr("ftp.funet.fi");     # ftp://ftp.funet.fi
@@ -91,7 +91,7 @@ use warnings;
 
 use Exporter 5.57 'import';
 our @EXPORT_OK = qw(uf_uri uf_uristr uf_url uf_urlstr);
-our $VERSION = "4.20";
+our $VERSION = '5.10';
 
 our ($MY_COUNTRY, $DEBUG);
 
