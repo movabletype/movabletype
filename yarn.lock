@@ -2080,10 +2080,11 @@ ms@^2.0.0:
 
 "mt-data-api-sdk@https://github.com/movabletype/mt-data-api-sdk-js.git":
   version "0.1.0"
-  resolved "https://github.com/movabletype/mt-data-api-sdk-js.git#ab206139b84c85a9e39b180de438b727e19828e2"
+  uid "9d6311d50e4e76f5b0b56890b0cdfaea84a67753"
+  resolved "https://github.com/movabletype/mt-data-api-sdk-js.git#9d6311d50e4e76f5b0b56890b0cdfaea84a67753"
   dependencies:
     form-data "~0.0.10"
-    xmlhttprequest "git://github.com/usualoma/node-XMLHttpRequest.git"
+    xmlhttprequest "https://github.com/usualoma/node-XMLHttpRequest.git"
 
 nan@^2.12.1, nan@^2.13.2:
   version "2.14.2"
@@ -3395,9 +3396,10 @@ wrappy@1:
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
 
-"xmlhttprequest@git://github.com/usualoma/node-XMLHttpRequest.git":
+"xmlhttprequest@https://github.com/usualoma/node-XMLHttpRequest.git":
   version "1.5.0"
-  resolved "git://github.com/usualoma/node-XMLHttpRequest.git#c48de38ff210b0247f49e8a29dc4635cd4480891"
+  uid c48de38ff210b0247f49e8a29dc4635cd4480891
+  resolved "https://github.com/usualoma/node-XMLHttpRequest.git#c48de38ff210b0247f49e8a29dc4635cd4480891"
 
 xpath@0.0.32:
   version "0.0.32"
