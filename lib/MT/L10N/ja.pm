@@ -1425,7 +1425,7 @@ use vars qw( @ISA %Lexicon );
 	q{Plugin '[_1]' is enabled by [_2]} => q{[_2]が[_1]プラグインを有効にしました},
 
 ## lib/MT/CMS/RebuildTrigger.pm
-	'(All child sites in this site)' => 'このサイトの全ての子サイト',
+	'(All child sites in this site)' => 'このサイトのすべての子サイト',
 	'(All sites and child sites in this system)' => 'システム内のすべてのサイトと子サイト',
 	'Comment' => 'コメント',
 	'Create Rebuild Trigger' => '再構築トリガーを作成',
