@@ -15,7 +15,7 @@ riot.tag2('content-field', '<div class="mt-collapse__container"> <div class="col
     }.bind(this)
     this.duplicateField = function(e) {
       var index = this.parent.fields.indexOf(e.item)
-      var newItem = Array.prototype.slice.call(this.parent.fields[index])
+      var newItem = jQuery.extend({},this.parent.fields[index])
       var field = this.parent.tags['content-field'][index].tags[newItem.type]
       var options = field.gatheringData()
       newItem.options = options
