@@ -15,6 +15,48 @@ use MT::App;
 use MT::CMS::Plugin;
 use MT::DataAPI::Endpoint::Common;
 
+sub list_openapi_spec {
+    +{
+        tags      => ['Plugins'],
+        summary   => 'Retrieve a list of plugins in the specified site',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of plugins.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of plugin resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/plugin',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -36,6 +78,35 @@ sub list {
     };
 }
 
+sub get_openapi_spec {
+    +{
+        tags       => ['Plugins'],
+        summary    => 'Retrieve single plugin by its ID',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/plugin',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Plugin not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -45,10 +116,74 @@ sub get {
     return _retrieve_plugin($app);
 }
 
+sub enable_openapi_spec {
+    +{
+        tags      => ['Plugins'],
+        summary   => 'Enable a plugin',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Plugin not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub enable {
     my ( $app, $endpoint ) = @_;
     my $plugin = _retrieve_plugin($app) or return;
     _switch_plugin_state( $app, $plugin->{signature}, 'on' );
+}
+
+sub disable_openapi_spec {
+    +{
+        tags      => ['Plugins'],
+        summary   => 'Disable a plugin',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Plugin not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub disable {
@@ -57,9 +192,73 @@ sub disable {
     _switch_plugin_state( $app, $plugin->{signature}, 'off' );
 }
 
+sub enable_all_openapi_spec {
+    +{
+        tags      => ['Plugins'],
+        summary   => 'Enable all plugins',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Plugin not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub enable_all {
     my ( $app, $endpoint ) = @_;
     _switch_plugin_state( $app, '*', 'on' );
+}
+
+sub disable_all_openapi_spec {
+    +{
+        tags      => ['Plugins'],
+        summary   => 'Disable all plugins',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Plugin not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub disable_all {

@@ -186,15 +186,8 @@ sub dialog_list_asset {
     my $blog;
     $blog = $blog_class->load($blog_id) if $blog_id;
 
-    my $edit_field = $app->param('edit_field') || '';
-    if ( $edit_field =~ m/^customfield_.*$/ ) {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            if $blog_id && !$app->can_do('access_to_insert_asset_list');
-    }
+    return $app->permission_denied()
+        if $blog_id && !$app->can_do('access_to_insert_asset_list');
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
@@ -226,7 +219,8 @@ sub dialog_list_asset {
 
     $app->add_breadcrumb( $app->translate("Files") );
 
-    if ($blog_id) {
+    my $content_field_id = $app->param('content_field_id');
+    if ($blog_id && !$content_field_id) {
         my $blog_ids = $app->_load_child_blog_ids($blog_id);
         push @$blog_ids, $blog_id;
         $terms{blog_id} = $blog_ids;
@@ -324,15 +318,8 @@ sub insert {
 
     $app->validate_magic() or return;
 
-    my $edit_field = $app->param('edit_field') || '';
-    if ( $edit_field =~ m/^customfield_.*$/ ) {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            unless $app->can_do('insert_asset');
-    }
+    return $app->permission_denied()
+        unless $app->can_do('insert_asset');
 
     my $text = $app->param('no_insert') ? "" : _process_post_upload($app);
     return unless defined $text;
@@ -346,6 +333,7 @@ sub insert {
     }
     my $tmpl;
 
+    my $edit_field = $app->param('edit_field') || '';
     my $id = $app->param('id') or return $app->errtrans("Invalid request.");
     my $asset = MT->model('asset')->load($id);
     if ($extension_message) {
@@ -1058,7 +1046,8 @@ sub build_asset_hasher {
                 = $obj->$thumbnail_method(
                 Height => $height,
                 Width  => $width,
-                Square => $square
+                Square => $square,
+                Ts     => 1,
                 );
 
             $meta->{thumbnail_width_offset}
@@ -1071,6 +1060,7 @@ sub build_asset_hasher {
                     = $obj->$thumbnail_method(
                     Height => $default_preview_height,
                     Width  => $default_preview_width,
+                    Ts     => 1,
                     );
                 $meta->{preview_width_offset} = int(
                     ( $default_preview_width - $meta->{preview_width} ) / 2 );
@@ -1499,6 +1489,8 @@ sub _upload_file_compat {
                     )[2];
                 if (   $ext_new ne lc($ext_old)
                     && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
+                    && !( lc($ext_old) eq 'ico'  && $ext_new =~ /^(bmp|png|gif)$/ )
+                    && !( lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg' )
                     && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
                 {
                     if ( $basename eq $ext_old ) {
@@ -1918,6 +1910,10 @@ sub _upload_file_compat {
         # and ImageQualityPng.
         $asset->change_quality
             if $app->config('AutoChangeImageQuality');
+
+        if ($app->config('ForceExifRemoval')) {
+            $asset->remove_all_metadata;
+        }
     }
 
     $asset->mime_type($mimetype) if $mimetype;
@@ -2041,6 +2037,8 @@ sub _upload_file {
 
         if (   $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
+            && !( lc($ext_old) eq 'ico'  && $ext_new =~ /^(?:bmp|png|gif)$/ )
+            && !( lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg' )
             && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
         {
             if ( $basename eq $ext_old ) {
@@ -2458,6 +2456,10 @@ sub _upload_file {
         # and ImageQualityPng.
         $asset->change_quality
             if $app->config('AutoChangeImageQuality');
+
+        if ($app->config('ForceExifRemoval')) {
+            $asset->remove_all_metadata;
+        }
     }
 
     $asset->mime_type($mimetype) if $mimetype;
@@ -3063,16 +3065,8 @@ sub dialog_asset_modal {
     my %param;
     _set_start_upload_params( $app, \%param );
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            if $blog_id && !$app->can_do('access_to_insert_asset_list');
-    }
+    return $app->permission_denied()
+        if $blog_id && !$app->can_do('access_to_insert_asset_list');
 
     $param{can_multi} = 1
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
@@ -3245,14 +3239,8 @@ sub insert_asset {
     }) or return;
 
     my $edit_field = $app->param('edit_field') || '';
-    if ( $edit_field =~ m/^customfield_.*$/ ) {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            unless $app->can_do('insert_asset');
-    }
+    return $app->permission_denied()
+        unless $app->can_do('insert_asset');
 
     require MT::Asset;
     my $text;
@@ -3316,10 +3304,11 @@ sub insert_asset {
 
     my $can_multi;
     my $content_field_id = $app->param('content_field_id');
+    my $options;
     if ($content_field_id) {
         require MT::ContentField;
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
-            my $options = $content_field->options;
+            $options = $content_field->options;
             $can_multi = $options->{multiple} ? 1 : 0;
         }
         else {
@@ -3331,8 +3320,8 @@ sub insert_asset {
         my @assets_data;
         my $hasher = build_asset_hasher(
             $app,
-            PreviewWidth  => 80,
-            PreviewHeight => 80,
+            PreviewWidth  => $options->{preview_width} || 80,
+            PreviewHeight => $options->{preview_height} || 80,
         );
         for my $obj (@$assets) {
             my $row = $obj->get_values;

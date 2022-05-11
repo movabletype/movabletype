@@ -69,7 +69,7 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
         }
         $ctx->stash('category_sets', $category_sets);
 
-        $glue = $args['glue'];
+        $glue = isset($args['glue']) ? $args['glue'] : null;
         $ctx->stash('_category_sets_glue', $glue);
         $ctx->stash('__out', false);
         $counter = 0;
@@ -92,7 +92,7 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
         $ctx->stash('category_set', $cs);
         $ctx->stash('blog', $cs->blog());
         $ctx->stash('blog_id', $cs->blog_id);
-        if($content_type)
+        if(!empty($content_type))
             $ctx->stash('content_type', $content_type);
 
         if (!empty($glue) && !empty($content)) {
@@ -113,4 +113,3 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
 
     return $content;
 }
-

@@ -16,16 +16,73 @@ use MT::DataAPI::Resource;
 
 use MT::Group;
 
+sub list_openapi_spec {
+    +{
+        tags       => ['Groups'],
+        summary    => 'Retrieve a list of groups',
+        parameters => [
+            { '$ref' => '#/components/parameters/group_search' },
+            { '$ref' => '#/components/parameters/group_searchFields' },
+            { '$ref' => '#/components/parameters/group_limit' },
+            { '$ref' => '#/components/parameters/group_offset' },
+            { '$ref' => '#/components/parameters/group_sortBy' },
+            { '$ref' => '#/components/parameters/group_sortOrder' },
+            { '$ref' => '#/components/parameters/group_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of groups.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of group resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/group',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
     my $res = filtered_list( $app, $endpoint, 'group' ) or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
+}
+
+sub list_for_user_openapi_spec {
+    my $spec = __PACKAGE__->list_openapi_spec();
+    $spec->{tags}           = ['Users', 'Groups'];
+    $spec->{responses}{404} = {
+        description => 'User not found.',
+        content     => {
+            'application/json' => {
+                schema => {
+                    '$ref' => '#/components/schemas/ErrorContent',
+                },
+            },
+        },
+    };
+    return $spec;
 }
 
 sub list_for_user {
@@ -51,11 +108,43 @@ sub list_for_user {
         or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
 
+}
+
+sub get_openapi_spec {
+    +{
+        tags       => ['Groups'],
+        summary    => 'Retrieve single group by its ID',
+        parameters => [
+            { '$ref' => '#/components/parameters/group_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/group',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Group not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub get {
@@ -68,6 +157,39 @@ sub get {
         or return;
 
     return $group;
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Groups'],
+        summary     => 'Create a new group',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            group => {
+                                '$ref' => '#/components/schemas/group_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/group',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub create {
@@ -100,6 +222,49 @@ sub create {
     return $new_group;
 }
 
+sub update_openapi_spec {
+    +{
+        tags        => ['Groups'],
+        summary     => 'Update a group',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            group => {
+                                '$ref' => '#/components/schemas/group_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/group',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Group not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
@@ -126,6 +291,35 @@ sub update {
     return $new_group;
 }
 
+sub delete_openapi_spec {
+    +{
+        tags      => ['Groups'],
+        summary   => 'Delete a group',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/group',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Group not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub delete {
     my ( $app, $endpoint ) = @_;
 
@@ -147,6 +341,57 @@ sub delete {
     $app->run_callbacks( 'data_api_post_delete.group', $app, $group );
 
     return $group;
+}
+
+sub list_members_for_group_openapi_spec {
+    +{
+        tags       => ['Groups'],
+        summary    => 'Retrieve a list of members for specified group',
+        parameters => [
+            { '$ref' => '#/components/parameters/group_search' },
+            { '$ref' => '#/components/parameters/group_searchFields' },
+            { '$ref' => '#/components/parameters/group_limit' },
+            { '$ref' => '#/components/parameters/group_offset' },
+            { '$ref' => '#/components/parameters/group_sortBy' },
+            { '$ref' => '#/components/parameters/group_sortOrder' },
+            { '$ref' => '#/components/parameters/group_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of members.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of member resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/user',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Group not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub list_members_for_group {
@@ -172,9 +417,41 @@ sub list_members_for_group {
         or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub get_member_openapi_spec {
+    +{
+        tags       => ['Groups'],
+        summary    => 'Retrieve single member by its ID for specified group',
+        parameters => [
+            { '$ref' => '#/components/parameters/group_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/user',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Group or Member not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -188,6 +465,51 @@ sub get_member {
         or return;
 
     return $member;
+}
+
+sub add_member_openapi_spec {
+    +{
+        tags        => ['Groups'],
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            member => {
+                                type       => 'object',
+                                properties => {
+                                    id => { type => 'integer' },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/user',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Group or Member not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub add_member {
@@ -229,6 +551,34 @@ sub add_member {
     );
 
     return $member;
+}
+
+sub remove_member_openapi_spec {
+    +{
+        tags        => ['Groups'],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/user',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Group or Member not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub remove_member {

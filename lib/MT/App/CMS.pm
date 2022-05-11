@@ -3182,6 +3182,14 @@ sub build_menus {
     my $filter_key     = $app->param('filter_key');
     my $app_param_id   = $app->param('id');
 
+    my $is_category_set;
+    if ($app_param_type eq 'category' && $mode eq 'view' && !$app->param('is_category_set')) {
+        $is_category_set = $app->model('category')->exist({
+            id => $app_param_id || 0,
+            category_set_id => { not => 0 }
+        });
+    }
+
     foreach my $id (@top_ids) {
         ## skip only if false value was set explicitly.
         next if exists $theme_modify->{$id} && !$theme_modify->{$id};
@@ -3285,11 +3293,6 @@ sub build_menus {
                     && $mode eq 'view'
                     && !$app->param('is_category_set') )
                 {
-                    my $is_category_set = $app->model('category')->exist(
-                        {   id => $app->param('id') || 0,
-                            category_set_id => { not => 0 }
-                        }
-                    );
                     $param->{screen_group}
                         = $is_category_set ? 'category_set' : 'entry';
                 }
@@ -4105,6 +4108,35 @@ sub _translate_naughty_words {
     my ( $app, $entry ) = @_;
     require MT::Util;
     return MT::Util::translate_naughty_words($entry);
+}
+
+sub user_who_is_also_editing_the_same_stuff {
+    my ($app, $obj) = @_;
+    my $type  = $app->param('_type') or return;
+    my $id    = $app->param('id') or return;
+    my $ident = 'autosave:user=%:type=' . $type . ':id=' . $id;
+    my $blog  = $app->blog;
+    if ($blog) {
+        $ident .= ':blog_id=' . $blog->id;
+    }
+    if ( $type eq 'content_data' ) {
+        my $content_type_id = $app->param('content_type_id') or return;
+        $ident .= ':content_type_id=' . $content_type_id;
+    }
+    require MT::Session;
+    my $sess_obj = MT::Session->load(
+        { id    => { like  => $ident }, kind => 'AS',    start     => [time - MT->config->AutosaveSessionTimeout - 1] },
+        { range => { start => 1 },      sort => 'start', direction => 'descend' }) or return;
+    my ($user_id) = $sess_obj->id =~ /:user=([0-9]+)/;
+    if ($user_id != $app->user->id && MT::Util::epoch2ts($blog, $sess_obj->start) > $obj->modified_on) {
+        my $user = $app->model('author')->load($user_id);
+        require MT::Util;
+        return {
+            name => $user->nickname || $user->name,
+            time => MT::Util::format_ts('%Y-%m-%d %H:%M:%S', MT::Util::epoch2ts($blog, $sess_obj->start), $blog),
+        } if $user;
+    }
+    return;
 }
 
 sub autosave_session_obj {

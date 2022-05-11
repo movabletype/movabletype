@@ -27,15 +27,17 @@
       <mt:var name="error">
     </mtapp:statusmsg>
   </mt:if>
-  <mt:unless name="blog_id">
-    <mt:if name="config_warning_default_access_allowed">
-      <mtapp:statusmsg
-         id="info"
-         class="info"
-         can_close="0">
-        <mt:var name="config_warning_default_access_allowed">
-      </mtapp:statusmsg>
-    </mt:if>
+  <mt:unless name="hide_config_warnings">
+    <mt:unless name="blog_id">
+      <mt:if name="config_warning_default_access_allowed">
+        <mtapp:statusmsg
+           id="info"
+           class="info"
+           can_close="0">
+          <mt:var name="config_warning_default_access_allowed">
+        </mtapp:statusmsg>
+      </mt:if>
+    </mt:unless>
   </mt:unless>
 </mt:setvarblock>
 
@@ -89,7 +91,7 @@
             <th class="head primary" scope="col"><span class="col-label"><__trans phrase="Data" escape="js"></span></th>
             <th class="head primary" scope="col"><span class="col-label"><__trans phrase="Trigger" escape="js"></span></th>
             <th class="head primary" scope="col"><span class="col-label"><__trans phrase="Action" escape="js"></span></th>
-            <th class="head si" scope="col"><svg title="<__trans phrase="Remove">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash"></use></svg></th>
+            <th class="head si" scope="col"><svg role="img" class="mt-icon mt-icon--sm"><title><__trans phrase="Remove"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash"></use></svg></th>
           </tr>
           <tr class="hidden template">
               <td scop="col"></td>
@@ -98,7 +100,7 @@
               <td scop="col"></td>
               <td scop="col" class="si">
                   <a class="d-inline-block">
-                      <svg title="<__trans phrase="Remove">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash"></use></svg>
+                      <svg role="img" class="mt-icon mt-icon--sm"><title><__trans phrase="Remove"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash"></use></svg>
                   </a>
                   <input type="hidden" name="rebuild_trigger" value="">
               </td>

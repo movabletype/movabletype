@@ -28,7 +28,7 @@ function smarty_function_mtcontentfieldvalue($args, &$ctx) {
         }
     }
 
-    $value = $ctx->__stash['vars']['__value__'];
+    $value = isset($ctx->__stash['vars']['__value__']) ? $ctx->__stash['vars']['__value__'] : null;
     return $field_type->get_field_value($value, $ctx, $args);
 }
 ?>

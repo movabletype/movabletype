@@ -47,6 +47,10 @@ my $category2 = MT::Test::Permission->make_category(
     blog_id         => $blog->id,
     category_set_id => $category_set2->id,
 );
+my $category3 = MT::Test::Permission->make_category(
+    blog_id         => $blog->id,
+    category_set_id => $category_set2->id,
+);
 
 # Content
 my $content_type1 = MT::Test::Permission->make_content_type(
@@ -71,6 +75,13 @@ my $cf_category2 = MT::Test::Permission->make_content_field(
     name               => 'test category field',
     type               => 'categories',
 );
+my $cf_category3 = MT::Test::Permission->make_content_field(
+    blog_id            => $blog->id,
+    content_type_id    => $content_type2->id,
+    related_cat_set_id => $category_set2->id,
+    name               => 'test category field',
+    type               => 'categories',
+);
 $content_type1->fields([{
         id        => $cf_category1->id,
         name      => $cf_category1->name,
@@ -87,6 +98,14 @@ $content_type2->fields([{
         order     => 1,
         type      => $cf_category2->type,
         unique_id => $cf_category2->unique_id,
+    },
+    {
+        id        => $cf_category3->id,
+        name      => $cf_category3->name,
+        options   => { label => $cf_category3->name, },
+        order     => 1,
+        type      => $cf_category3->type,
+        unique_id => $cf_category3->unique_id,
     },
 ]);
 $content_type1->save or die $content_type1->errstr;
@@ -129,6 +148,17 @@ subtest 'category_set' => sub {
         qr!second test category set!i,
         "not_contains filter by a name of a content type succeeded"
     );
+
+    $app->post_ok({
+        'blog_id'    => $blog->id,
+        '__mode'     => 'filtered_list',
+        'datasource' => 'category_set',
+        'columns'    => 'category_count,content_type_count',
+        'items'      => '"[]"'
+    });
+    $app->has_no_permission_error("filtered_list method succeeded");
+    my $obj = MT::Util::from_json($app->content);
+    is_deeply($obj->{result}{objects}, [[$category_set1->id, 1, 1], [$category_set2->id, 2, 2]]);
 };
 
 done_testing();

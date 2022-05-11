@@ -114,6 +114,7 @@ sub fields {
             },
         },
         {   name        => 'isSuperuser',
+            type        => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object => sub {
                 my ($obj) = @_;
                 my $app  = MT->instance or return;
@@ -126,6 +127,7 @@ sub fields {
             },
         },
         {   name        => 'lockedOut',
+            type        => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object => sub {
                 my ($obj) = @_;
                 my $app  = MT->instance or return;
@@ -139,6 +141,12 @@ sub fields {
             bulk_from_object => \&_system_permissions_bulk_from_object,
             to_object => sub { },    # Do nothing.
             type_to_object => \&_system_permissions_type_to_object,
+            schema => {
+                type  => 'array',
+                items => {
+                    type => 'string',
+                },
+            },
         },
         $MT::DataAPI::Resource::Common::fields{createdBy},
         $MT::DataAPI::Resource::Common::fields{modifiedBy},

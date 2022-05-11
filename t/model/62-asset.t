@@ -131,7 +131,7 @@ my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
         'as_html_popup'
     );
     is( $asset->as_html( { include => 1, wrap_text => 1, align => 'right' } ),
-        '<img alt="Image photo" src="http://narnia.na/nana/images/test.jpg" width="640" height="480" class="mt-image-right" style="float: right; margin: 0 0 20px 20px;" />',
+        '<img alt="Image photo" src="http://narnia.na/nana/images/test.jpg" width="640" height="480" class="mt-image-right" style="float: right; margin: 0 0 20px 20px;" loading="lazy" decoding="async" />',
         'as_html_include'
     );
 

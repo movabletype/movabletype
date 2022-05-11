@@ -13,6 +13,86 @@ use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 use MT::Util qw( archive_file_for );
 
+sub list_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Data'],
+        summary     => 'Content Data Collection',
+        description => <<'DESCRIPTION',
+Retrieve list of content data of specified content type in the specified site.
+
+Authentication required if you want to retrieve unpublished content data. Required pemissions are as follows.
+
+- Manage Content Data (site, system, each content type)
+- Publish Content Data (each content type)
+- Edit All Content Data (each content type)
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/content_data_limit' },
+            { '$ref' => '#/components/parameters/content_data_offset' },
+            {
+                in     => 'query',
+                name   => 'sortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'id',
+                        'uniqueID',
+                        'authored_on',
+                        'created_on',
+                        'modified_on',
+                    ],
+                    default => 'id',
+                },
+                description => <<'DESCRIPTION',
+The field name for sort. You can specify one of following values.
+- id
+- uniqueID
+- authored_on
+- created_on
+- modified_on
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/content_data_sortOrder' },
+            { '$ref' => '#/components/parameters/content_data_fields' },
+            { '$ref' => '#/components/parameters/content_data_includeIds' },
+            { '$ref' => '#/components/parameters/content_data_excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type => 'integer',
+                                },
+                                items => {
+                                    type  => 'array',
+                                    items => {
+                                        '$ref' => '#/components/schemas/cd',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -20,12 +100,72 @@ sub list {
 
     my $terms = { ct_unique_id => $content_type->unique_id, };
 
-    my $res = filtered_list( $app, $endpoint, 'content_data', $terms )
+    my $res = filtered_list( $app, $endpoint, 'content_data.content_data_' . $content_type->id, $terms )
         or return;
 
-    +{  totalResults => $res->{count} || 0,
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Data'],
+        summary     => 'Create Content Data',
+        description => <<'DESCRIPTION',
+**Authentication Required** Create a new content data. This endpoint requires following permissions.
+
+- Manage Content Data (site, system, each content type)
+- Create Content Data (each content type)
+
+Post form data is following
+
+- content_data (ContentData) - Single ContentData resource
+
+Known issues (these will be solved in future release)
+
+- If content type contains non required Content Type field, request will failed when post data does not contain its data.
+- If content type contains non required Date and Time field, request will failed when post data does not contain its data.
+- Date and Time field must be specified by YYYYMMDDHHmmSS format.
+DESCRIPTION
+
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            content_data => {
+                                '$ref' => '#/components/schemas/cd_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/cd',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -72,6 +212,47 @@ sub create {
     $new_content_data;
 }
 
+sub get_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Data'],
+        summary     => 'Fetch single Content Data',
+        description => <<'DESCRIPTION',
+Fetch single content data.
+
+Authentication required if you want fetch unpublished content data. Required permissions are as follows.
+
+- Manage Content Data (site, system, each content type)
+- Edit All Content Data (each content type)
+- Publish Content Data (each content type)
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/content_data_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/cd',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type or Content_data not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -83,6 +264,60 @@ sub get {
         or return;
 
     $content_data;
+}
+
+sub update_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Data'],
+        summary     => 'Update Content Data',
+        description => <<'DESCRIPTION',
+Authentication Required Update a single content data. This endpoint requires folllowing permissions.
+
+- Manage Content Data (site, system, each content type)
+- Edit All Content Data (each content type)
+- Publish Content Data (each content type)
+
+Post form data is following:
+
+- content_data (ContentData, required) -Single ContentData resource.
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            content_data => {
+                                '$ref' => '#/components/schemas/cd_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/cd',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type or Content_data not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub update {
@@ -137,6 +372,44 @@ sub update {
     $post_save->();
 
     $new_content_data;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Data'],
+        summary     => 'Delete single content data',
+        description => <<'DESCRIPTION',
+**Authentication required.**
+
+Delete a single content data. This endpoint requires folllowing permissions.
+
+- Manage Content Data (site, system, each content type)
+- Edit All Content Data (each content type)
+- Publish Content Data (each content type)
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/cd',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type or Content_data not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {
@@ -260,6 +533,82 @@ sub _build_post_save_sub {
     };
 }
 
+sub preview_by_id_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Data'],
+        summary     => 'Make a preview by id',
+        description => <<'DESCRIPTION',
+**Authentication required.**
+
+Make a preview by ID. This endpoint requires following permissions.
+
+- Content Data (site, system, each content type)
+- Create Content Data (each content type)
+
+Post form data is as follows
+
+- entry (Entry, required) - Should be provide empty json. This parameter will be removed in the future.
+
+Known issues (these will be solved in future release)
+
+- If content type contains non required Content Type field, request will failed when post data does not contain its data.
+- If content type contains non required Date and Time field, request will failed when post data does not contain its data.
+- Date and Time field must be specified by YYYYMMDDHHmmSS format.
+DESCRIPTION
+        parameters => [{
+                in     => 'query',
+                name   => 'raw',
+                schema => {
+                    type    => 'integer',
+                    enum    => [0, 1],
+                    default => 0,
+                },
+                description => 'If specify "1", will be returned preview contents.',
+            },
+        ],
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            content_data => {
+                                '$ref' => '#/components/schemas/cd',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status  => { type => 'string' },
+                                preview => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type or Content_data not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub preview_by_id {
     my ( $app, $endpoint ) = @_;
 
@@ -282,6 +631,82 @@ sub preview_by_id {
     $app->param( 'authored_on_time', $authored_on_time );
 
     _preview_common( $app, $content_data );
+}
+
+sub preview_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Data'],
+        summary     => 'Make a preview by data',
+        description => <<'DESCRIPTION',
+**Authentication required.**
+
+Make a preview by specified data. This endpoint requires following permissions.
+
+- Manage Content Data (site, system, each content type)
+- Create Content Data (each content type)
+
+Post form data is following
+
+- content_data (ContentData) - Single ContentData resource
+
+Known issues (these will be solved in future release)
+
+- If content type contains non required Content Type field, request will failed when post data does not contain its data.
+- If content type contains non required Date and Time field, request will failed when post data does not contain its data.
+- Date and Time field must be specified by YYYYMMDDHHmmSS format.
+DESCRIPTION
+        parameters => [{
+                in     => 'query',
+                name   => 'raw',
+                schema => {
+                    type    => 'integer',
+                    enum    => [0, 1],
+                    default => 0,
+                },
+                description => 'If specify "1", will be returned preview contents.',
+            },
+        ],
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            content_data => {
+                                '$ref' => '#/components/schemas/cd',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status  => { type => 'string' },
+                                preview => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub preview {

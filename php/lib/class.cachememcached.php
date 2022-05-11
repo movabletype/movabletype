@@ -69,7 +69,7 @@ class CacheMemcached extends BaseCache {
     }
 
     public function get_multi ($keys, $ttl = null) {
-        return self::$_server->get($key);
+        return self::$_server->get($keys);
     }
 
     public function delete ($key) {
@@ -92,7 +92,7 @@ class CacheMemcached extends BaseCache {
 
     public function set ($key, $val, $ttl = null) {
         $expire = empty($ttl)
-            ? $this->ttl
+            ? (isset($this->ttl) ? $this->ttl : null)
             : $ttl;
         return self::$_server->set($key, $val, false, $expire);
     }

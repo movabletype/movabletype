@@ -649,10 +649,10 @@ use vars qw( @ISA %Lexicon );
 	'View Site' => 'サイトの表示',
 	'Web Services' => 'Webサービス',
 	'Website' => 'ウェブサイト',
-	'_WARNING_DELETE_USER' => 'ユーザーを削除すると、そのユーザーの書いた記事はユーザー不明となり、後で取り消せません。ユーザーを無効化するのが正しい方法です。本当にユーザーを削除してもよろしいですか?',
-	'_WARNING_DELETE_USER_EUM' => 'ユーザーを削除すると、そのユーザーの書いた記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？LDAPディレクトリ上にユーザーがまだ残っている場合、いつでも再作成されてしまいます。',
+	'_WARNING_DELETE_USER' => 'ユーザーの削除操作は取り消せず、削除したユーザーは復元できません。また、このユーザーが作成した記事やウェブページ、コンテンツデータは作成者不明となります。このユーザーを利用しなくなったり、システムへのアクセスを禁止したい場合は、ユーザーのアカウントを無効にすることをおすすめします。選択したユーザーを削除してよろしいですか?',
+	'_WARNING_DELETE_USER_EUM' => 'ユーザーの削除操作は取り消せず、削除したユーザーは復元できません。また、このユーザーが作成した記事やウェブページ、コンテンツデータは作成者不明となります。このユーザーを利用しなくなったり、システムへのアクセスを禁止したい場合は、ユーザーのアカウントを無効にすることをおすすめします。LDAPディレクトリ上に選択したユーザーが残っている場合はアカウントを再作成できますが、削除前の記事などとユーザーを紐づけることはできません。選択したユーザーを削除してよろしいですか?',
 	'_WARNING_PASSWORD_RESET_MULTI' => '選択されたユーザーのパスワードを再設定しようとしています。パスワード再設定用のリンクが直接それぞれのメールアドレスに送られます。実行しますか?',
-	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたブログのテンプレートを、各ブログの利用しているテーマの初期状態に戻します。テンプレートを初期化してもよろしいですか?',
+	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたサイトのテンプレートを、各サイトの利用しているテーマの初期状態に戻します。テンプレートを初期化してもよろしいですか?',
 	'content data' => 'コンテンツデータ',
 	'entry' => '記事',
 	q{Failed login attempt by user who does not have sign in permission. '[_1]' (ID:[_2])} => q{サインイン権限を有しないユーザー '[_1]' (ID:[_2])がサインインを試みましたが失敗しました。},
@@ -754,7 +754,7 @@ use vars qw( @ISA %Lexicon );
 	'XML::LibXML::SAX is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::LibXML::SAXのインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'XML::SAX::Expat is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::SAX::Expatのインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'XML::SAX::ExpatXS is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::SAX::ExpatXSのインストールは必須ではありません。バックアップデータの復元に必要となります。',
-	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => '[_1]のインストールは必須ではありません。YAML::Tinyよりも、軽量で高速に動作します。',
+	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::Syckのインストールは必須ではありません。YAML::Tinyよりも、軽量で高速に動作します。',
 
 ## lib/MT/ArchiveType/Author.pm
 	'AUTHOR_ADV' => 'ユーザー',
@@ -1394,6 +1394,9 @@ use vars qw( @ISA %Lexicon );
 	'Select Users' => 'ユーザーを選択',
 	'User load failed: [_1]' => 'ユーザーをロードできませんでした: [_1]',
 	'Users Selected' => '選択されたユーザー',
+	q{Group '[_1]' (ID:[_2]) deleted by '[_3]'} => q{[_3]がグループ「[_1]」(ID:[_2]) を削除しました。},
+	q{Group '[_1]' (ID:[_2]) edited by '[_3]'} => q{[_3]がグループ「[_1]」(ID:[_2])を編集しました。},
+	q{Group '[_1]' created by '[_2]'.} => q{[_2]がグループ「[_1]」を作成しました。},
 	q{User '[_1]' (ID:[_2]) removed from group '[_3]' (ID:[_4]) by '[_5]'} => q{[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」から削除しました。},
 	q{User '[_1]' (ID:[_2]) was added to group '[_3]' (ID:[_4]) by '[_5]'} => q{[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」に追加しました。},
 
@@ -1506,6 +1509,7 @@ use vars qw( @ISA %Lexicon );
 	'One or more errors were found in the included template module ([_1]).' => 'テンプレートモジュール([_1])でエラーが見つかりました。',
 	'One or more errors were found in this template.' => 'テンプレートでエラーが見つかりました。',
 	'Orphaned' => 'Orphaned',
+	'Output filename contains an inappropriate whitespace.' => '出力ファイル名に不適切な空白が含まれています。',
 	'Preview' => 'プレビュー',
 	'Published Date' => '公開日',
 	'Refreshing template <strong>[_3]</strong> after making <a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">backup</a>.' => '「[_3]」を初期化します(<a href="?__mode=view&amp;blog_id=[_1]&amp;_type=template&amp;id=[_2]">バックアップ</a>)。',
@@ -1532,6 +1536,7 @@ use vars qw( @ISA %Lexicon );
 	'system' => 'システム',
 	'template' => 'テンプレート',
 	'widget' => 'ウィジェット',
+	q{Archive mapping '[_1]' contains an inappropriate whitespace.} => q{アーカイブマッピング '[_1]' に不適切な空白が含まれています。},
 	q{Skipping template '[_1]' since it appears to be a custom template.} => q{カスタムテンプレートと思われるため、'[_1]'をスキップします。},
 	q{Skipping template '[_1]' since it has not been changed.} => q{[_1]は変更されていないのでスキップします。},
 	q{Template '[_1]' (ID:[_2]) created by '[_3]'} => q{'[_3]'がテンプレート'[_1]'(ID:[_2])を作成しました。},
@@ -2397,11 +2402,18 @@ use vars qw( @ISA %Lexicon );
 	'You do not have a valid path to sendmail on your machine. Perhaps you should try using SMTP?' => 'sendmailへのパスが正しくありません。SMTPの設定を試してください。',
 	q{Unknown MailTransfer method '[_1]'} => q{MailTransferの設定([_1])が不正です。},
 
+## lib/MT/Mail/MIME.pm
+	'An error occured during sending mail' => 'メール送信中にエラーが発生しました',
+	'MailTransferEncoding was auto detected because an invalid value was given.' => 'MailTransferEncoding の値が不正です。送信時に機械的に修正しました。',
+
 ## lib/MT/Notification.pm
 	'Cancel' => 'キャンセル',
 	'Click to edit contact' => 'クリックして連絡先を編集',
 	'Contacts' => '連絡先',
 	'Save Changes' => '変更を保存',
+
+## lib/MT/Object.pm
+	'An error occurred while saving changes to the database.' => 'データベースへの保存中にエラーが発生しました。',
 
 ## lib/MT/ObjectAsset.pm
 	'Asset Placement' => 'アセットの関連付け',
@@ -2562,7 +2574,7 @@ use vars qw( @ISA %Lexicon );
 	', uppercase and lowercase letters' => '、大文字と小文字を含む',
 	'Actions' => 'アクション',
 	'All About Me' => 'All About Me',
-	'Cannot load template' => 'てんぷれーとを読み込めません',
+	'Cannot load template' => 'テンプレートを読み込めません',
 	'Cannot load user.' => 'ユーザーをロードできませんでした。',
 	'Choose the display options for this content field in the listing screen.' => '一覧での表示について選択します。',
 	'Default' => '既定値',
@@ -2909,6 +2921,7 @@ use vars qw( @ISA %Lexicon );
 	'Migrating create child site permissions...' => '子サイトの作成権限を移行しています...',
 	'Migrating data column of MT::ContentData...' => 'コンテンツデータのdataカラムを移行しています...',
 	'Migrating fields column of MT::ContentType...' => 'コンテンツタイプのFieldsカラムを移行しています...',
+	'Migrating filters that have conditions on the log level...' => 'ログレベルに対する条件を持つフィルターを移行しています...',
 	'MultiBlog migration for site(ID:[_1]) is skipped due to the data breakage.' => 'データが破損しているためサイト(ID:[_1])のマルチブログの設定の移行をスキップします。',
 	'MultiBlog migration is skipped due to the data breakage.' => 'データが破損しているためマルチブログの設定の移行をスキップします。',
 	'Rebuilding Content Type count of Category Sets...' => 'カテゴリセットの情報を再構築しています...',
@@ -2924,6 +2937,7 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'カテゴリの関連付けを再構築しています...',
 	'Rebuilding object tags...' => 'タグの関連付けを再構築しています...',
 	'Remove SQLSetNames...' => 'SQLSetNames をデータベースから削除しています...',
+	'Remove image metadata' => '画像のメタデータを削除しています',
 	'Reorder DEBUG level' => 'DEBUGレベルの値を変更しています',
 	'Reorder SECURITY level' => 'SECURITYレベルの値を変更しています',
 	'Reorder WARNING level' => 'WARNINGレベルの値を変更しています',
@@ -2994,6 +3008,9 @@ use vars qw( @ISA %Lexicon );
 	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
 	'Logger configuration for Log module [_1] seems problematic' => 'ログモジュール [_1] の設定に問題がありそうです',
 	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
+
+## lib/MT/Util/Mail.pm
+	'Error loading mail module: [_1].' => 'メールモジュールのロードに失敗しました: [_1]',
 
 ## lib/MT/Util/YAML.pm
 	'Cannot load YAML module: [_1]' => 'YAMLモジュールをロードできません: [_1]',
@@ -3079,6 +3096,7 @@ use vars qw( @ISA %Lexicon );
 	'Please consult the installation instructions for help in installing [_1].' => '[_1]のインストールはインストールマニュアルに沿って行ってください。',
 	'SOAP::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.' => 'SOAP::Liteのインストールは必須ではありません。XML-RPC による作業を行う場合に必要となります。',
 	'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.' => 'Storableは必須ではありません。外部プラグインの利用の際に必要となる場合があります。',
+	'Supported format: [_1]' => '対応している形式: [_1]',
 	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'お使いのサーバーにインストールされている DBD::mysqlのバージョンは、Movable Type と互換性がありません。CPAN に公開されている最新バージョンをインストールしてください。',
 	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1]はインストールされていますが、新しいDBIが必要です。上記を参考に必要なDBIを確認してください。',
 	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.' => 'これらのモジュールのインストールは<strong>任意</strong>です。お使いのサーバーにこれらのモジュールがインストールされていない場合でも、Movable Type の基本機能は動作します。これらのモジュールの機能が必要となった場合にはインストールを行ってください。',
@@ -3132,6 +3150,8 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/contenttype/tag/content-field.tag
 	'ContentField' => 'コンテンツフィールド',
 	'Move' => '移動',
+	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
+	'Duplicate' => '複製',
 
 ## mt-static/js/contenttype/tag/content-fields.tag
 	'Allow users to change the display and sort of fields by display option' => 'ユーザーにフィールドの並び替えや表示非表示の変更を許可する',
@@ -3713,6 +3733,7 @@ use vars qw( @ISA %Lexicon );
 	'Export (e)' => 'エクスポート',
 	'No size limit' => '分割しない',
 	'Reset' => 'リセット',
+	'Not all the tables are exported. If you need to back up everything (including config, session values, logs, and so on), consider using a database utility. You can also download public logs from the <a href="[_1]">Log</a> menu.' => 'エクスポートには含まれない情報もあります。設定やセッション情報、ログなども含めた完全なバックアップが必要な場合はデータベース付属のユーティリティの利用を検討してください。管理画面から確認できるログについては<a href="[_1]">ログ</a>メニューからもダウンロードできます。',
 	'Target File Size' => '出力ファイルのサイズ',
 	'What to Export' => 'エクスポート対象',
 	q{Don't compress} => q{圧縮しない},
@@ -4133,6 +4154,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/content_field_type_options/asset_image.tmpl
 	'Allow users to select multiple image assets?' => '複数の画像の選択を許可する',
 	'Allow users to upload a new image asset?' => '新しい画像ファイルのアップロードを許可する',
+	'Thumbnail height' => 'サムネイル画像の最大高',
+	'Thumbnail width' => 'サムネイル画像の最大幅',
 
 ## tmpl/cms/content_field_type_options/asset_video.tmpl
 	'Allow users to select multiple video assets?' => '複数のビデオの選択を許可する',
@@ -4572,7 +4595,8 @@ use vars qw( @ISA %Lexicon );
 	'(Number of decimal places: [_1])' => '(小数点以下の桁数: [_1])',
 	'<a href="[_1]" >Create another [_2]?</a>' => '続けて<a href="[_1]">[_2]を作成</a>しますか？',
 	'@' => '@',
-	'A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'コンテンツデータは自動保存されています([_2])。<a href="[_1]" class="alert-link">自動保存された内容を元に戻す</a>',
+	'A saved version of this content data was auto-saved [_2] but it is outdated.<br><a href="[_1]" class="alert-link">Recover auto-saved content</a> / <a href="[_3]" class="alert-link">Discard auto-saved content</a>' => 'このコンテンツデータには[_2]に自動保存された修正版がありますが、現在の内容は自動保存よりも後に保存されたものです。<br><a href="[_1]" class="alert-link">自動保存された内容に戻す</a> / <a href="[_3]" class="alert-link">自動保存された内容を破棄する</a>',
+	'A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'このコンテンツデータには[_2]に自動保存された修正版があります。<a href="[_1]" class="alert-link">自動保存された内容に戻す</a>',
 	'An error occurred while trying to recover your saved content data.' => 'コンテンツデータを元に戻す際にエラーが発生しました。',
 	'Auto-saving...' => '自動保存中...',
 	'Change note' => '変更メモ',
@@ -4603,6 +4627,7 @@ use vars qw( @ISA %Lexicon );
 	'Warning: If you set the basename manually, it may conflict with another content data.' => '警告: 出力ファイル名を手動で設定すると、他のコンテンツデータと衝突を起こす可能性があります。',
 	'You have successfully recovered your saved content data.' => 'コンテンツデータを元に戻しました。',
 	'You must configure this site before you can publish this content data.' => 'コンテンツデータを公開する前にサイトの設定を行ってください。',
+	'[_1] is also editing the same data (last updated at [_2]).' => '同じコンテンツデータを編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
 	q{Warning: Changing this content data's basename may break inbound links.} => q{警告: このコンテンツデータの出力ファイル名の変更は、内部のリンク切れの原因となります。},
 
 ## tmpl/cms/edit_content_type.tmpl
@@ -4619,8 +4644,10 @@ use vars qw( @ISA %Lexicon );
 	'(comma-delimited list)' => '(カンマ区切りリスト)',
 	'(space-delimited list)' => '(スペース区切りリスト)',
 	'<a href="[_2]">[_1]</a>' => '<a href="[_2]">[_1]</a>',
-	'A saved version of this entry was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => '[_2]は自動保存されました。<a href="[_1]" class="alert-link">自動保存された内容を元に戻す</a>',
-	'A saved version of this page was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => '[_2]は自動保存されました。<a href="[_1]" class="alert-link">自動保存された内容を元に戻す</a>',
+	'A saved version of this entry was auto-saved [_2] but it is outdated.<br><a href="[_1]" class="alert-link">Recover auto-saved content</a> / <a href="[_3]" class="alert-link">Discard auto-saved content</a>' => 'この記事には[_2]に自動保存された修正版がありますが、現在の内容は自動保存よりも後に保存されたものです。<br><a href="[_1]" class="alert-link">自動保存された内容に戻す</a> / <a href="[_3]" class="alert-link">自動保存された内容を破棄する</a>',
+	'A saved version of this entry was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'この記事には[_2]に自動保存された修正版があります。<a href="[_1]" class="alert-link">自動保存された内容に戻す</a>',
+	'A saved version of this page was auto-saved [_2] but it is outdated.<br><a href="[_1]" class="alert-link">Recover auto-saved content</a> / <a href="[_3]" class="alert-link">Discard auto-saved content</a>' => 'このウェブページには[_2]に自動保存された修正版がありますが、現在の内容は自動保存よりも後に保存されたものです。<br><a href="[_1]" class="alert-link">自動保存された内容に戻す</a> / <a href="[_3]" class="alert-link">自動保存された内容を破棄する</a>',
+	'A saved version of this page was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'このウェブページには[_2]に自動保存された修正版があります。<a href="[_1]" class="alert-link">自動保存された内容に戻す</a>',
 	'Accept' => '受信設定',
 	'Add Entry Asset' => 'アセットの追加',
 	'Add category' => 'カテゴリを追加',
@@ -4674,6 +4701,8 @@ use vars qw( @ISA %Lexicon );
 	'Your customization preferences have been saved, and are visible in the form below.' => 'カスタマイズ設定を保存しました。下のフォームで確認できます。',
 	'Your notification has been sent.' => '通知を送信しました。',
 	'[_1] Assets' => '[_1]アセット',
+	'[_1] is also editing the same entry (last updated at [_2]).' => '同じ記事を編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
+	'[_1] is also editing the same page (last updated at [_2]).' => '同じウェブページを編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
 	'_USAGE_VIEW_LOG' => 'エラーの場合は、<a href="[_1]">ログ</a>をチェックしてください。',
 	'edit' => '編集',
 	q{(delimited by '[_1]')} => q{([_1]で区切る)},
@@ -4754,7 +4783,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_template.tmpl
 	': every ' => '毎',
 	'<a href="[_1]" class="rebuild-link">Publish</a> this template.' => 'このテンプレートを<a href="[_1]" class="rebuild-link">再構築する</a>',
-	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]" class="alert-link">Recover auto-saved content</a>' => '[_1]は自動保存されました。<a href="[_2]" class="alert-link">自動保存された内容を元に戻す</a>',
+	'A saved version of this [_1] was auto-saved [_3] but it is outdated.<br><a href="[_2]" class="alert-link">Recover auto-saved content</a> / <a href="[_4]" class="alert-link">Discard auto-saved content</a>' => 'この[_1]には[_3]に自動保存された修正版がありますが、現在の内容は自動保存よりも後に保存されたものです。<br><a href="[_2]" class="alert-link">自動保存された内容に戻す</a> / <a href="[_4]" class="alert-link">自動保存された内容を破棄する</a>',
+	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]" class="alert-link">Recover auto-saved content</a>' => '[_1]には[_3]に自動保存された修正版があります。<a href="[_2]" class="alert-link">自動保存された内容に戻す</a>',
 	'An error occurred while trying to recover your saved [_1].' => '[_1]を元に戻す際にエラーが発生しました。',
 	'Archive map has been successfully updated.' => 'アーカイブマッピングの更新を完了しました。',
 	'Are you sure you want to remove this template map?' => 'テンプレートマップを削除してよろしいですか?',
@@ -4815,6 +4845,7 @@ use vars qw( @ISA %Lexicon );
 	'You must set the Template Name.' => 'テンプレート名を設定してください。',
 	'You must set the template Output File.' => 'テンプレートの出力ファイル名を設定してください。',
 	'Your [_1] has been published.' => '[_1]を再構築しました。',
+	'[_1] is also editing the same template (last updated at [_2]).' => '同じテンプレートを編集中のユーザーがいます: [_1] (最終更新日時: [_2])',
 	'create' => '新規作成',
 	'hours' => '時間',
 	'minutes' => '分',
