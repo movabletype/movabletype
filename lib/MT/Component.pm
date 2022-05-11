@@ -747,7 +747,7 @@ sub __deep_codify_string_sub {
     Data::Visitor::Tiny::visit($data, sub {
         my ($key, $valueref) = @_;
         if ($$valueref && $$valueref =~ /sub\s*\{/s) {
-            my $code = MT->handler_to_coderef($$valueref, undef, 1);
+            my $code = MT->handler_to_coderef($$valueref, undef, {allow_string_sub => 1});
             $$valueref = $code if $code;
         }
     });

@@ -2618,7 +2618,8 @@ sub effective_captcha_provider {
 
 sub handler_to_coderef {
     my $pkg = shift;
-    my ( $name, $delayed, $allow_string_sub ) = @_;
+    my ( $name, $delayed ) = @_;
+    my $allow_string_subs = ref $_[-1] eq 'HASH' ? $_[-1]{allow_string_sub} : undef;
 
     return $name if ref($name) eq 'CODE';
     return undef unless defined $name && $name ne '';
