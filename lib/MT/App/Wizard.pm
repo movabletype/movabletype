@@ -408,21 +408,25 @@ sub init_core_registry {
             'sqlite2' => { options => { path_required => 1, }, },
         },
         image_drivers => {
-            magick => {
+            graphicsmagick => {
                 order  => 100,
+                driver => 'GraphicsMagick',
+            },
+            imagemagick => {
+                order  => 200,
                 driver => 'ImageMagick',
             },
             gd => {
-                order  => 200,
-                driver => 'GD',
-            },
-            netpbm => {
                 order  => 300,
-                driver => 'NetPBM',
+                driver => 'GD',
             },
             imager => {
                 order  => 400,
                 driver => 'Imager',
+            },
+            netpbm => {
+                order  => 500,
+                driver => 'NetPBM',
             },
         },
     };
