@@ -15,20 +15,25 @@ use base qw(Exporter);
 our %providers;
 
 sub readied_provider {
-    my ( $app, $blog ) = @_;
+    my ($app, $blog, $provider_arg) = @_;
 
-    if ( !%providers ) {
+    if (!%providers) {
         my $all_providers = $app->registry('stats_providers');
         return undef unless $all_providers;
-        for my $k ( keys %$all_providers ) {
-            $providers{$k} = $app->registry( 'stats_providers', $k );
+        for my $k (keys %$all_providers) {
+            $providers{$k} = $app->registry('stats_providers', $k);
             eval "require $providers{$k}{provider};";
         }
     }
+    if ($provider_arg) {
+        if ($providers{$provider_arg}{provider} && $providers{$provider_arg}{provider}->is_ready($app, $blog)) {
+            return $providers{$provider_arg}{provider}->new($provider_arg, $blog);
+        }
+    }
 
-    for my $k ( keys %providers ) {
-        if ( $providers{$k}{provider}->is_ready( $app, $blog ) ) {
-            return $providers{$k}{provider}->new( $k, $blog );
+    for my $k (keys %providers) {
+        if ($providers{$k}{provider}->is_ready($app, $blog)) {
+            return $providers{$k}{provider}->new($k, $blog);
         }
     }
 
