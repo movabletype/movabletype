@@ -359,9 +359,9 @@ sub find_phrases {
     for my $dir (@dirs) {
         next unless -d $dir;
         finddepth({
-                no_chdir => 1,
-                follow   => $self->parent ? 0 : 1,
-                wanted   => sub {
+                no_chdir    => 1,
+                follow_fast => $self->parent ? 0 : 1,
+                wanted      => sub {
                     my $file = $File::Find::name;
                     return unless -f $file && $file =~ /\.(?:cgi|pm|pl|php|tmpl|pre|js|mtml|tag|yaml|cfg)$/;
                     return                          if $file               =~ m!(?:^|/)(?:\.[^/]+|extlib|local|t)(?:/|$)!;
