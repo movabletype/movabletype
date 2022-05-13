@@ -44,9 +44,7 @@ my @cfg_candidates = (
     File::Spec->catfile( $ENV{MT_HOME}, 'mt-config.cgi' ),
     File::Spec->catfile( $ENV{MT_HOME}, 'mt.cfg' ),
 );
-unshift( @cfg_candidates,
-    File::Spec->catfile( $ENV{MT_HOME}, $ENV{MT_CONFIG} ) )
-    if $ENV{MT_CONFIG};
+unshift @cfg_candidates, $ENV{MT_CONFIG} if $ENV{MT_CONFIG};
 
 my $cfg_path;
 for my $cfg_candidate (@cfg_candidates) {
