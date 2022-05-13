@@ -25,7 +25,6 @@ use Plack::App::File;
 use IPC::Open3;
 use IO::Select;
 use Symbol qw( gensym );
-use XMLRPC::Transport::HTTP::Plack;
 
 use constant DEBUG => $ENV{MT_PSGI_DEBUG} || 0;
 our $mt = MT->new();
@@ -275,6 +274,7 @@ sub make_app {
     elsif ( $type eq 'xmlrpc' ) {
         my $handler = $app->{handler};
         my $server;
+        require XMLRPC::Transport::HTTP::Plack;
         $server = XMLRPC::Transport::HTTP::Plack->new;
         $server->dispatch_with( {
             'mt'         => 'MT::XMLRPCServer',
