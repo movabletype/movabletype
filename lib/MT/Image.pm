@@ -267,7 +267,7 @@ sub remove_metadata {
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;
     $exif->ExtractInfo($file);
-    if ( $exif->GetValue('Error') || $exif->GetValue('Warning') ) {
+    if ($exif->GetValue('Error')) {
         return 1;
     }
 
