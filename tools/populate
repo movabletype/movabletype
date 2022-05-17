@@ -90,6 +90,7 @@ my %defs = (
                 my @at = split /,/, $this_obj->archive_type;
                 $at[int(rand(scalar @at))]
             } ),
+            field('class', 'website' ),
             field('site_path', sub { "/www/blog_$this_iter" } ),
             field('archive_path', sub { $this_obj->site_path . '/archives' }),
             field('site_url', sub { "http://www.blog${this_iter}.com/" } ),
@@ -169,6 +170,7 @@ my %defs = (
             field('nickname', \&random_name),
             field('email', \&random_email),
             field('url', \&random_url),
+            field('auth_type', 'MT'),
             field('type', sub { ref $this_parent eq 'MT::Comment' ? 2 : 1 }, 3.0),
             field('password', sub { $this_obj->type == 1 ? crypt('Nelson', 'xx') : '' }),
             field('preferred_language', sub { $this_obj->type == 1 ? ($this_obj->name eq 'Melody' ? 'en_US' : [ 'en_US', 'en_US', 'en-us', 'fr', 'de' ]) : undef }, 2.5),
