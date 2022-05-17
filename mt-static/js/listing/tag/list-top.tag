@@ -1,9 +1,14 @@
 <list-top>
   <div class="d-none d-md-block mb-3" data-is="display-options"></div>
   <div id="actions-bar-top" class="row mb-5 mb-md-3">
-    <virtual data-is="list-actions"
-      if={ opts.useActions }
-    ></virtual>
+    <div class="col">
+      <virtual data-is="list-actions"
+        if={ opts.useActions }
+      ></virtual>
+    </div>
+    <div class="col-auto list-counter">
+      <virtual data-is="list-count"></virtual>
+    </div>
   </div>
   <div class="row mb-5 mb-md-3">
     <div class="col-12">

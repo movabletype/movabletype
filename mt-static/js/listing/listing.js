@@ -215,6 +215,11 @@ riot.tag2('list-actions', '<div data-is="list-actions-for-pc" class="col d-none 
 });
 
 
+riot.tag2('list-count', '<div class="text-right"> {store.count == 0 ? 0 : (store.page == 1 ? 1 : (store.limit * (store.page-1) + 1))} - {(store.limit * store.page) > store.count ? store.count : (store.limit * store.page)} / {store.count} </div>', '', '', function(opts) {
+    this.mixin('listTop')
+});
+
+
 riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header"></div> <div id="list-filter-collapse" class="collapse"> <div data-is="list-filter-detail" id="filter-detail" class="card-block p-3"> </div> </div>', '', '', function(opts) {
     riot.mixin('listFilterTop', {
       init: function () {
@@ -854,7 +859,7 @@ riot.tag2('list-table-column', '<virtual></virtual>', '', '', function(opts) {
     this.root.innerHTML = opts.content
 });
 
-riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-options"></div> <div id="actions-bar-top" class="row mb-5 mb-md-3"> <virtual data-is="list-actions" if="{opts.useActions}"></virtual> </div> <div class="row mb-5 mb-md-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <div style="overflow-x: auto"> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <virtual data-is="list-pagination"></virtual> </div> <virtual data-is="display-options-for-mobile"> </virtual>', '', '', function(opts) {
+riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-options"></div> <div id="actions-bar-top" class="row mb-5 mb-md-3"> <div class="col"> <virtual data-is="list-actions" if="{opts.useActions}"></virtual> </div> <div class="col-auto list-counter"> <virtual data-is="list-count"></virtual> </div> </div> <div class="row mb-5 mb-md-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <div style="overflow-x: auto"> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <virtual data-is="list-pagination"></virtual> </div> <virtual data-is="display-options-for-mobile"> </virtual>', '', '', function(opts) {
     riot.mixin('listTop', {
       init: function () {
         if (this.__.tagName == 'list-top') {
