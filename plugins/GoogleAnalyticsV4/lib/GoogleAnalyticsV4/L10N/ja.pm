@@ -22,7 +22,7 @@ use vars qw( %Lexicon );
 	'You did not specify a client ID.' => 'Client IDが指定されていません。',
 	'You did not specify a code.' => 'codeが指定されていません。',
 	'The name of the profile' => 'プロファイル名',
-	'The web property ID of the profile' => 'ウェブ プロパティ ID',
+	'The resource name of the property | The measurement id of the WebStreamData' => 'プロパティのリソース名 | 測定ID',
 
 ## plugins/GoogleAnalytics/lib/GoogleAnalytics/OAuth2.pm
 	'An error occurred when getting token: [_1]: [_2]' => 'トークンが取得できません: [_1]: [_2]',

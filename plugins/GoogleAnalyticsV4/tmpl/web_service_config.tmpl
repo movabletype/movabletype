@@ -5,17 +5,17 @@
 <p><mt:Var name="missing_modules" /></p>
 <mt:Else>
 
-<div id="use-parent-client" style="<mt:Unless name="parent_client">display: none</mt:Unless>">
+<div id="ga4_use-parent-client" style="<mt:Unless name="parent_client">display: none</mt:Unless>">
 <mtapp:setting
-   id="setup_own_client_id"
+   id="ga4_setup_own_client_id"
    label="<__trans phrase="OAuth2 settings">">
 <__trans phrase="This [_2] is using the settings of [_1]." params="<mt:If name="has_parent_client_permission"><a href="<mt:Var name="mt_url">?__mode=cfg_web_services&amp;_type=blog<mt:If name="parent_client_blog_id">&amp;blog_id=<mt:Var name="parent_client_blog_id" /></mt:If>"></mt:If><mt:If name="parent_client_blog_id"><mt:Var name="parent_client_blog_name" /><mt:Else><__trans phrase="System" /></mt:If><mt:If name="has_parent_client_permission"></a></mt:If>%%<mt:var name="scope_label" escape="html">" />
-<a href="#" id="setup_own_client_id" class="button"><__trans phrase="Other Google account" /></a>
+<a href="#" id="ga4_setup_own_client_id" class="button"><__trans phrase="Other Google account" /></a>
 <input type="hidden" id="ga4_parent_client_id" value="<mt:Var name="parent_client_id" encode_html="1" />" />
 </mtapp:setting>
 </div>
 
-<div id="use-own-client" style="<mt:If name="parent_client">display: none</mt:If>">
+<div id="ga4_use-own-client" style="<mt:If name="parent_client">display: none</mt:If>">
 <mt:SetVarBlock name="hint"><__trans phrase="Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> before selecting profile." /></mt:SetVarBlock>
 <mtapp:setting
    id="ga4_redirect_uri"
@@ -36,7 +36,7 @@
 </mtapp:setting>
 
 <mtapp:setting
-   id="client_secret"
+   id="ga4_client_secret"
    label="<__trans phrase="Client secret of the OAuth2 application">"
    label_for="ga4_client_secret">
     <input type="text" id="ga4_client_secret" class="form-control" name="ga4_client_secret" value="<mt:Var name="ga4_client_secret" encode_html="1" />" />
@@ -59,6 +59,7 @@
 <input type="hidden" id="ga4_configured_client_secret" value="<mt:Var name="configured_client_secret" encode_html="1" />" />
 <input type="hidden" id="ga4_profile_name" name="ga4_profile_name" value="<mt:Var name="ga4_profile_name" encode_html="1" />" />
 <input type="hidden" id="ga4_profile_web_property_id" name="ga4_profile_web_property_id" value="<mt:Var name="ga4_profile_web_property_id" encode_html="1" />" />
+<input type="hidden" id="ga4_measurement_id" name="ga4_measurement_id" value="<mt:Var name="ga4_measurement_id" />" />
 <input type="hidden" id="ga4_parent_profile_name" value="<mt:Var name="parent_profile_name" />" />
 <input type="hidden" id="ga4_parent_profile_web_property_id" value="<mt:Var name="parent_profile_web_property_id" />" />
 <script type="text/javascript">
@@ -110,7 +111,7 @@ jQuery(function($) {
         .on('input click keyup change', function() {
             if (
                 ($('#ga4_client_id').val() && $('#ga4_client_secret').val()) ||
-                ($('#use-parent-client:visible').length === 1)
+                ($('#ga4_use-parent-client:visible').length === 1)
             ) {
                 $('#ga4_select_profile').prop('disabled', false);
             }
@@ -149,9 +150,9 @@ jQuery(function($) {
         }
     });
 
-    $('#setup_own_client_id').on('click', function() {
-        $('#use-parent-client').hide();
-        $('#use-own-client').show();
+    $('#ga4_setup_own_client_id').on('click', function() {
+        $('#ga4_use-parent-client').hide();
+        $('#ga4_use-own-client').show();
         $(
             '#ga4_parent_client_id,' +
             '#ga4_profile_name, #ga4_profile_web_property_id, #ga4_profile_id,' +

@@ -17,10 +17,15 @@ jQuery(function($) {
         if ($radio.length) {
             var $tr = $radio.closest('tr');
             $p($p.find('#ga4_profile_name')).val(
-                $.trim($tr.find('.panel-label').text())
+                $tr.find('.panel-label').text().trim()
             );
+            var description = $tr.find('.panel-description').text().trim();
+            var profile_data = description.split('|');
             $p($p.find('#ga4_profile_web_property_id')).val(
-                $.trim($tr.find('.panel-description').text())
+                profile_data[0].trim()
+            );
+            $p($p.find('#ga4_measurement_id')).val(
+                profile_data[1].trim()
             );
             $p($p.find('#ga4_profile_id')).val($radio.val());
 

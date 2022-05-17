@@ -80,7 +80,8 @@ sub refresh_access_token {
             client_secret => $client_secret,
             grant_type    => 'refresh_token',
         }));
-
+use Data::Dumper;
+print Dumper $res;
     return $app->error(
         translate(
             'An error occurred when refreshing access token: [_1]: [_2]',
@@ -136,7 +137,7 @@ sub get_profiles {
         $uri->query_form(
             access_token => $token_data->{data}{access_token},
             'pageSize'   => $max_results,
-            'pageToken'  => $data
+            'pageToken'  => $next_page_token
         );
 
         my $res = $ua->request(GET($uri));
@@ -164,6 +165,11 @@ sub get_profiles {
         foreach my $account (@{ $data->{accountSummaries} }) {
             if ($account->{propertySummaries}) {
                 foreach my $property_summaries (@{ $account->{propertySummaries} }) {
+                    my $web_stream = get_webstream($app, $ua, $token_data, $property_summaries->{property});
+                    if($web_stream){
+                        $property_summaries->{measurementId} = $web_stream->[0]->{measurementId};
+                        $property_summaries->{defaultUri} = $web_stream->[0]->{defaultUri};
+                    }
                     push @property_summaries, $property_summaries;
                 }
             }
@@ -220,6 +226,48 @@ sub plugin_data_pre_save {
         && lc($app->param('plugin_sig') || '') eq plugin()->id);
 
     1;
+}
+
+sub get_webstream {
+    my ($app, $ua, $token_data, $parent) = @_;
+
+    my @list            = ();
+    my $max_results     = 200;
+    my $start_index     = 1;
+    my $next_page_token = '';
+    my $data;
+
+    while (1) {
+        my $uri = URI->new('https://analyticsadmin.googleapis.com/v1alpha/' . $parent . '/dataStreams');
+        $uri->query_form(
+            access_token => $token_data->{data}{access_token},
+            'pageSize'   => $max_results,
+            'pageToken'  => $next_page_token
+        );
+
+        my $res = $ua->request(GET($uri));
+        return $app->error(
+            translate(
+                'An error occurred when getting profiles: [_1]: [_2]',
+                GoogleAnalyticsV4::extract_response_error($res)
+            ),
+            500
+        ) unless $res->is_success;
+
+        $data = MT::Util::from_json(Encode::decode('utf-8', $res->content));
+        my @web_streams;
+        foreach my $data_stream (@{ $data->{dataStreams} }) {
+            if ($data_stream->{webStreamData}) {
+                push @web_streams, $data_stream->{webStreamData};
+            }
+        }
+        push @list, @web_streams;
+
+        last unless ($data->{nextPageToken});
+
+        $next_page_token = $data->{nextPageToken};
+    }
+    return \@list;
 }
 
 1;

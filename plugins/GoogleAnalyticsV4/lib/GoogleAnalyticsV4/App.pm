@@ -101,7 +101,7 @@ sub config_tmpl {
 
             if (defined $parent_profile_blog_id) {
                 $parent_profile = $current->{profile};
-                delete @$config{qw(profile_name profile_web_property_id profile_id)};
+                delete @$config{qw(profile_name profile_web_property_id profile_id measurement_id)};
             } elsif ($blog) {
                 my $parent = GoogleAnalyticsV4::current_plugindata_hash(
                     $app,
@@ -131,7 +131,7 @@ sub config_tmpl {
         }
 
         if (!$config->{client_id} && !defined($parent_client_blog_id)) {
-            delete @$config{qw(profile_name profile_web_property_id profile_id)};
+            delete @$config{qw(profile_name profile_web_property_id profile_id measurement_id)};
         }
     }
 
@@ -178,6 +178,7 @@ sub config_tmpl {
                     : '',
                     parent_profile_name            => $parent_profile->data->{profile_name},
                     parent_profile_web_property_id => $parent_profile->data->{profile_web_property_id},
+                    parent_measurement_id => $parent_profile->data->{measurement_id},
                     )
                 : ()
             ),
@@ -210,7 +211,7 @@ sub save_config {
 
     for my $k (qw(
         client_id client_secret
-        profile_name profile_web_property_id profile_id
+        profile_name profile_web_property_id profile_id measurement_id
     ))
     {
         $config->{$k} = $app->param('ga4_' . $k);
@@ -238,7 +239,7 @@ sub save_config {
     if ((!$config->{client_id} && !$config->{parent_client_id})
         || !$config->{profile_id})
     {
-        delete @$config{ qw(token_data profile_name profile_web_property_id profile_id
+        delete @$config{ qw(token_data profile_name profile_web_property_id profile_id measurement_id
             parent_client_id) };
     }
 
@@ -308,7 +309,7 @@ sub select_profile {
         'select_profile.tmpl',
         {
             panel_label       => translate('The name of the profile'),
-            panel_description => translate('The web property ID of the profile'),
+            panel_description => translate('The resource name of the property | The measurement id of the WebStreamData'),
             panel_type        => 'profile',
             panel_first       => 1,
             panel_last        => 1,
@@ -317,7 +318,8 @@ sub select_profile {
                     +{
                         id          => $_->{property},
                         label       => $_->{displayName},
-                        description => $_->{property},
+                        link        => $_->{defaultUri},
+                        description => $_->{property} . ' | ' . $_->{measurementId},
                     }
                 } @$list
             ],
@@ -330,7 +332,9 @@ sub select_profile {
 
 sub select_profile_complete {
     my $app = shift;
-
+    my %property = $app->param_hash;
+    use Data::Dumper;
+    MT->log( Dumper \%property);
     plugin()->load_tmpl('select_profile_complete.tmpl');
 }
 

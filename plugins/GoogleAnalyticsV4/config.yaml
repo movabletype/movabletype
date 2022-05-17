@@ -11,6 +11,7 @@ settings:
     client_secret:
     profile_name:
     profile_web_property_id:
+    measurement_id:
     profile_id:
     token_data:
     parent_client_id:

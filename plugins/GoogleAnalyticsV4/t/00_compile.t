@@ -14,9 +14,9 @@ BEGIN {
 
 use MT;
 
-use_ok('GoogleAnalytics');
-use_ok('GoogleAnalytics::App');
-use_ok('GoogleAnalytics::OAuth2');
-use_ok('GoogleAnalytics::Provider');
+use_ok('GoogleAnalyticsV4');
+use_ok('GoogleAnalyticsV4::App');
+use_ok('GoogleAnalyticsV4::OAuth2');
+use_ok('GoogleAnalyticsV4::Provider');
 
 done_testing;
