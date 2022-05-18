@@ -1425,7 +1425,7 @@ use vars qw( @ISA %Lexicon );
 	q{Plugin '[_1]' is enabled by [_2]} => q{[_2]が[_1]プラグインを有効にしました},
 
 ## lib/MT/CMS/RebuildTrigger.pm
-	'(All child sites in this site)' => 'このサイトの全ての子サイト',
+	'(All child sites in this site)' => 'このサイトのすべての子サイト',
 	'(All sites and child sites in this system)' => 'システム内のすべてのサイトと子サイト',
 	'Comment' => 'コメント',
 	'Create Rebuild Trigger' => '再構築トリガーを作成',
@@ -3215,7 +3215,7 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/js/listing/tag/list-table.tag
 	'All [_1] items are selected' => '全[_1]件が選択されています',
-	'All' => '全て',
+	'All' => 'すべて',
 	'Loading...' => 'ロード中...',
 	'Select All' => 'すべて選択',
 	'Select all [_1] items' => '全[_1]件を選択する',
@@ -3363,7 +3363,7 @@ use vars qw( @ISA %Lexicon );
 	'file' => 'ファイル',
 
 ## php/lib/mtdb.base.php
-	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'include_blogs属性で指定されたブログがexclude_blogs属性で全て除外されています。',
+	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'include_blogs属性で指定されたブログがexclude_blogs属性ですべて除外されています。',
 
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
@@ -3808,7 +3808,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/cfg_feedback.tmpl
 	'([_1])' => '([_1])',
-	'Accept TrackBacks from any source.' => '全てのトラックバックを許可する',
+	'Accept TrackBacks from any source.' => 'すべてのトラックバックを許可する',
 	'Accept comments according to the policies shown below.' => 'コメントポリシーを設定し、コメントを受け付ける',
 	'Allow HTML' => 'HTMLを許可',
 	'Allow commenters to include a limited set of HTML tags in their comments. Otherwise all HTML will be stripped out.' => 'コメントの内容に特定のHTMLタグの利用を許可する (許可しない場合は、すべてのHTMLタグが利用できなくなります)',
@@ -4299,7 +4299,7 @@ use vars qw( @ISA %Lexicon );
 	'No roles exist in this installation. [_1]Create a role</a>' => 'ロールがありません。[_1]ロールを作成する</a>',
 	'No sites exist in this installation. [_1]Create a site</a>' => 'サイトがありません。[_1]サイトを作成する</a>',
 	'No users exist in this installation. [_1]Create a user</a>' => 'ユーザーが存在しません。[_1]ユーザーを作成する</a>',
-	'all' => '全て',
+	'all' => 'すべて',
 
 ## tmpl/cms/dialog/create_trigger.tmpl
 	'Event' => 'イベント',
@@ -4756,11 +4756,11 @@ use vars qw( @ISA %Lexicon );
 	'The TrackBack has been approved.' => 'トラックバックを公開しました。',
 	'This trackback was classified as spam.' => 'このトラックバックはスパムと判定されました。',
 	'TrackBack Text' => 'トラックバックの本文',
-	'View all TrackBacks created on this day' => 'この日のトラックバックを全て見る',
-	'View all TrackBacks from this IP address' => 'このIPアドレスからのトラックバックを全て見る',
-	'View all TrackBacks on this category' => 'このカテゴリの全てのトラックバックを見る',
-	'View all TrackBacks on this entry' => 'この記事で受信した全てのトラックバックを見る',
-	'View all TrackBacks with this status' => 'このステータスのトラックバックを全て表示',
+	'View all TrackBacks created on this day' => 'この日のトラックバックをすべて見る',
+	'View all TrackBacks from this IP address' => 'このIPアドレスからのトラックバックをすべて見る',
+	'View all TrackBacks on this category' => 'このカテゴリのすべてのトラックバックを見る',
+	'View all TrackBacks on this entry' => 'この記事で受信したすべてのトラックバックを見る',
+	'View all TrackBacks with this status' => 'このステータスのトラックバックをすべて表示',
 
 ## tmpl/cms/edit_role.tmpl
 	'Administration' => '管理',
@@ -5021,7 +5021,7 @@ use vars qw( @ISA %Lexicon );
 	q{Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.} => q{ファイルのアップロードは可能ですが、'[_1]'への書き込みが行えないため、画像ファイルのサムネイルを作成する事ができません。},
 
 ## tmpl/cms/include/async_asset_list.tmpl
-	'All Types' => '全てのアセット',
+	'All Types' => 'すべてのアセット',
 	'Asset Type: ' => 'アセット種類',
 	'label' => '名前',
 
