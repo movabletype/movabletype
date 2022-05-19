@@ -1,6 +1,8 @@
 package SOAP::Lite::Deserializer::XMLSchemaSOAP1_1;
 use strict;
 
+our $VERSION = '1.27'; # VERSION
+
 sub anyTypeValue { 'ur-type' }
 
 sub as_boolean {

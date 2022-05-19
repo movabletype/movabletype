@@ -1,6 +1,6 @@
 package XML::XPath::Parser;
 
-$VERSION = '1.42';
+$VERSION = '1.44';
 
 use strict; use warnings;
 use vars qw/
@@ -67,6 +67,11 @@ sub new {
     $self->{direction} = 'forward';
     $self->{cache} = {};
     return $self;
+}
+
+sub cleanup {
+    my $self = shift;
+    $self->{cache} = {};
 }
 
 sub get_var {
