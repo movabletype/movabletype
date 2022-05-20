@@ -659,6 +659,10 @@ sub list_props {
                 },
             ],
         },
+        modified_by => {
+            base    => '__virtual.modified_by',
+            display => 'optional',
+        },
         created_on => {
             base    => '__virtual.created_on',
             display => 'none',

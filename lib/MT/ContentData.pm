@@ -1181,6 +1181,10 @@ sub make_list_props {
             blog_name     => { display => 'none', filter_editable => 0 },
             current_context => { filter_editable => 0 },
             __mobile => { base => 'entry.__mobile', col => 'label' },
+            modified_by => {
+                base  => '__virtual.modified_by',
+                order => $order + 500,
+            },
             %{$field_list_props},
         };
         MT::__merge_hash( $props->{$key}, $common_list_props );
