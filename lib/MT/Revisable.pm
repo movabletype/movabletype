@@ -154,9 +154,8 @@ sub mt_postsave_obj {
             my $max = $blog->$col;
             $obj->handle_max_revisions($max);
         } elsif ( $obj->datasource eq 'template' ) {
-            if ( my $global_max = MT->config->GlobalTemplateMaxRevisions ) {
-                $obj->handle_max_revisions($global_max);
-            }
+            my $global_max = MT->config->GlobalTemplateMaxRevisions;
+            $obj->handle_max_revisions($global_max);
         }
         my $revision_note = $app->param('revision-note');
         my $revision      = $obj->save_revision($revision_note);
