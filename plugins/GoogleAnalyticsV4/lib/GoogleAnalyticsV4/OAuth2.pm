@@ -52,9 +52,6 @@ sub get_token {
         500
     ) unless $res->is_success;
 
-    use Data::Dumper;
-    MT->log($res->content);
-
     my $token_data = {
         start     => time(),
         client_id => $client_id,
@@ -80,8 +77,7 @@ sub refresh_access_token {
             client_secret => $client_secret,
             grant_type    => 'refresh_token',
         }));
-use Data::Dumper;
-print Dumper $res;
+
     return $app->error(
         translate(
             'An error occurred when refreshing access token: [_1]: [_2]',

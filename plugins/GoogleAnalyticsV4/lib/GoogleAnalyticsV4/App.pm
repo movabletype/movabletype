@@ -333,8 +333,6 @@ sub select_profile {
 sub select_profile_complete {
     my $app = shift;
     my %property = $app->param_hash;
-    use Data::Dumper;
-    MT->log( Dumper \%property);
     plugin()->load_tmpl('select_profile_complete.tmpl');
 }
 

@@ -102,8 +102,7 @@ sub _request {
         Content_Type  => 'application/json',
         Content       => MT::Util::to_json($params),
     );
-use Data::Dumper;
-print Dumper $res;
+
     if ($res->code == 401 && !$retry_count) {
         return $self->_request(@_, 1);
     }
