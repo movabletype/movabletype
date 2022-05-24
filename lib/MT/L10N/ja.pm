@@ -3163,7 +3163,6 @@ use vars qw( @ISA %Lexicon );
 	'(None)' => '(なし)',
 
 ## mt-static/js/listing/list_data.js
-	'Unknown Filter' => '無名のフィルタ',
 	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
 
 ## mt-static/js/listing/listing.js
