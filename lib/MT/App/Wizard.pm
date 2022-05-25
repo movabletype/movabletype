@@ -414,7 +414,6 @@ sub init_core_registry {
             'Time::HiRes' => {
                 link  => 'https://metacpan.org/pod/Time::HiRes',
                 label => 'This module is required for profiling.',
-                'This module is required for executing run-periodic-tasks.',
             },
         },
         required_packages => {
