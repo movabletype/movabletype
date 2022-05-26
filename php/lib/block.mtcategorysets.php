@@ -41,12 +41,10 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
             }
         } else { 
             if( isset($args['content_type']) && !empty($args['content_type']) ) {
-                $content_types = $ctx->mt->db()->fetch_content_types($args);
-                if(!$content_types || count($content_types) == 0) {
+                if(!$content_type) {
                     $repeat = false;
                     return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
                 }
-                $content_type = $content_types[0];
             }
             if($content_type){
                 $content_fields = $content_type->fields;
