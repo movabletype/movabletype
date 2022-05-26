@@ -247,6 +247,11 @@ sub upgrade_functions {
                 sql   => q{DELETE FROM mt_asset_meta WHERE asset_meta_type = 'image_metadata'},
             },
         },
+        'v7_migrate_data_api_disable_site' => {
+            version_limit => '7.0053',
+            priority      => 3.2,
+            code          => \&_v7_migrate_data_api_disable_site,
+        },
     };
 }
 
@@ -1561,6 +1566,52 @@ sub _v7_reorder_log_level_condition {
     return if $from >= 6.0026 && $from < 7;
 
     1;
+}
+
+sub _v7_migrate_data_api_disable_site {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Migrating DataAPIDisableSite...'));
+
+    # Load from DB directly. Do not refer to mt-config.cgi.
+    my ($config) = MT->model('config')->search;
+    if ($config) {
+        my $data = $config->data;
+        my $data_api_disable_site;
+        if ($data =~ /DataAPIDisableSite\s(.*)/) {
+            $data_api_disable_site = $1;
+        }
+        my %data_api_disable_site = map { $_ => 1 } split /,/, $data_api_disable_site || '';
+
+        my @sites = MT->model('website')->load({
+                class => '*',
+            },
+            {
+                fetchonly => { id => 1 },
+            },
+        );
+        my $from = int( MT->config->SchemaVersion || 0 );
+        for my $site (@sites) {
+            if ($from < 6) {
+                $site->allow_data_api(0);
+            } else {
+                if ($data_api_disable_site{$site->id}) {
+                    $site->allow_data_api(0);
+                } else {
+                    $site->allow_data_api(1);
+                }
+            }
+            $site->save;
+        }
+
+        # Clean up
+        if ($data_api_disable_site{0}) {
+            MT->config->DataAPIDisableSite('0', 1);
+        } else {
+            MT->config->DataAPIDisableSite('', 1);
+        }
+        MT->config->save_config;
+    }
 }
 
 1;
