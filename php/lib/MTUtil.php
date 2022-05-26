@@ -981,7 +981,7 @@ function get_content_type_context(&$ctx, $args) {
     $blog         = $ctx->stash('blog');
     $content_type = $ctx->stash('content_type');
     $blog_id      = (!empty($args['blog_id']) ? $args['blog_id'] : ($blog->id || ''));
-    if ($str = $args['content_type']) {
+    if (isset($args['content_type']) && $str = $args['content_type']) {
         ## If $str points to $content_type, just return it
         if ($content_type && ((preg_match('/^[0-9]+$/', $str) && $content_type->id === $str) ||
             ($str === $content_type->unique_id) || ($str === $content_type->name && $content_type->blog_id === $blog_id))) {
