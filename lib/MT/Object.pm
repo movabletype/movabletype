@@ -1258,7 +1258,17 @@ sub set_defaults {
     $obj->{'column_values'} = $defaults ? {%$defaults} : {};
 }
 
-sub __properties { }
+sub __properties { +{} }
+
+sub driver {
+    my $class = shift;
+    if (%{$class->properties}) {
+        return $class->SUPER::driver(@_);
+    } else {
+        require MT::ObjectDriverFactory;
+        return MT::ObjectDriverFactory->instance;
+    }
+}
 
 sub dbi_driver {
     my $class = shift;
