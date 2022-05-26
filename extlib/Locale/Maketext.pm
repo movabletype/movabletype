@@ -1,7 +1,6 @@
 package Locale::Maketext;
 use strict;
-use vars qw( @ISA $VERSION $MATCH_SUPERS $USING_LANGUAGE_TAGS
-$USE_LITERALS $MATCH_SUPERS_TIGHTLY);
+our $USE_LITERALS;
 use Carp ();
 use I18N::LangTags ();
 use I18N::LangTags::Detect ();
@@ -26,12 +25,12 @@ BEGIN {
 }
 
 
-$VERSION = '1.28';
-@ISA = ();
+our $VERSION = '1.31';
+our @ISA = ();
 
-$MATCH_SUPERS = 1;
-$MATCH_SUPERS_TIGHTLY = 1;
-$USING_LANGUAGE_TAGS  = 1;
+our $MATCH_SUPERS = 1;
+our $MATCH_SUPERS_TIGHTLY = 1;
+our $USING_LANGUAGE_TAGS  = 1;
 # Turning this off is somewhat of a security risk in that little or no
 # checking will be done on the legality of tokens passed to the
 # eval("use $module_name") in _try_use.  If you turn this off, you have
@@ -137,19 +136,20 @@ sub fail_with { # an actual attribute method!
 
 #--------------------------------------------------------------------------
 
-sub blacklist {
-    my ( $handle, @methods ) = @_;
+sub _exclude {
+    my ( $handle, @methods  ) = @_;
 
-    unless ( defined $handle->{'blacklist'} ) {
+    unless ( defined $handle->{'denylist'} ) {
         no strict 'refs';
 
         # Don't let people call methods they're not supposed to from maketext.
         # Explicitly exclude all methods in this package that start with an
         # underscore on principle.
-        $handle->{'blacklist'} = {
+        $handle->{'denylist'} = {
             map { $_ => 1 } (
                 qw/
                   blacklist
+                  denylist
                   encoding
                   fail_with
                   failure_handler_auto
@@ -161,13 +161,37 @@ sub blacklist {
                   maketext
                   new
                   whitelist
+                  allowlist
                   /, grep { /^_/ } keys %{ __PACKAGE__ . "::" }
             ),
         };
     }
 
     if ( scalar @methods ) {
-        $handle->{'blacklist'} = { %{ $handle->{'blacklist'} }, map { $_ => 1 } @methods };
+        $handle->{'denylist'} = { %{ $handle->{'denylist'} }, map { $_ => 1 } @methods };
+    }
+
+    delete $handle->{'_external_lex_cache'};
+    return;
+}
+
+sub blacklist {
+    my ( $handle, @methods  ) = @_;
+    _exclude ( $handle, @methods );
+    return;
+}
+
+sub denylist {
+    my ( $handle, @methods  ) = @_;
+    _exclude ( $handle, @methods );
+    return;
+}
+
+sub _include {
+    my ( $handle, @methods ) = @_;
+    if ( scalar @methods ) {
+        $handle->{'allowlist'} = {} unless defined $handle->{'allowlist'};
+        $handle->{'allowlist'} = { %{ $handle->{'allowlist'} }, map { $_ => 1 } @methods };
     }
 
     delete $handle->{'_external_lex_cache'};
@@ -175,13 +199,14 @@ sub blacklist {
 }
 
 sub whitelist {
-    my ( $handle, @methods ) = @_;
-    if ( scalar @methods ) {
-        $handle->{'whitelist'} = {} unless defined $handle->{'whitelist'};
-        $handle->{'whitelist'} = { %{ $handle->{'whitelist'} }, map { $_ => 1 } @methods };
-    }
+    my ( $handle, @methods  ) = @_;
+    _include ( $handle, @methods );
+    return;
+}
 
-    delete $handle->{'_external_lex_cache'};
+sub allowlist {
+    my ( $handle, @methods  ) = @_;
+    _include ( $handle, @methods );
     return;
 }
 
@@ -229,6 +254,7 @@ sub new {
     my $class = ref($_[0]) || $_[0];
     my $handle = bless {}, $class;
     $handle->blacklist;
+    $handle->denylist;
     $handle->init;
     return $handle;
 }
@@ -680,8 +706,10 @@ sub _compile {
                     }
                     elsif($m =~ /^\w+$/s
                         && !$handle->{'blacklist'}{$m}
+                        && !$handle->{'denylist'}{$m}
                         && ( !defined $handle->{'whitelist'} || $handle->{'whitelist'}{$m} )
-                        # exclude anything fancy and restrict to the whitelist/blacklist.
+                        && ( !defined $handle->{'allowlist'} || $handle->{'allowlist'}{$m} )
+                        # exclude anything fancy and restrict to the allowlist/denylist (and historical whitelist/blacklist).
                     ) {
                         push @code, ' $_[0]->' . $m . '(';
                     }

@@ -45,6 +45,10 @@ my $objs = MT::Test::Fixture->prepare({
             blog_id => 2,
             name    => 'template1',
             text    => 'test',
+        }, {
+            blog_id => 0,
+            name    => 'global_template',
+            text    => 'test',
         },
     ],
 });
@@ -83,6 +87,8 @@ for my $ds ('template', 'cd', 'entry') {
     my $col = 'max_revisions_' . $ds;
     is $site2->$col, undef, 'revision_max is undef for brandnew sites';
 
+    my $expected_oks = $ds eq 'template' ? 2 : 1;   # +1 for the global templates
+
     my $obj = $objs->{ $ds_spec->{$ds}->{fixture} }{ $ds . '1' };
 
     MT->model($ds . ':revision')->remove({ $ds . '_id' => $obj->id });
@@ -95,34 +101,34 @@ for my $ds ('template', 'cd', 'entry') {
 
     {
         my $count = MT->model($ds . ':revision')->count({ $ds . '_id' => $obj->id });
-        is $count, 21, 'excessive';
+        is $count, 21, "$ds: excessive";
     }
 
     {
         my ($stdin, $stdout, $stderr) = do_command(["--$ds"]);
         my $count = MT->model($ds . ':revision')->count({ $ds . '_id' => $obj->id });
-        is $count, 21, 'not deleted yet';
+        is $count, 21, "$ds: not deleted yet";
         my $oks = () = $stdout =~ /OK\./g;
-        is $oks, 1, 'right number of tests processed';
-        is(($stdout =~ qr{Detected: (\d+)})[0], 1, 'right amount detected');
+        is $oks, $expected_oks, "$ds: right number of tests processed" or note $stdout;
+        is(($stdout =~ qr{Detected: (\d+)})[0], 1, "$ds: right amount detected");
     }
 
     {
         my ($stdin, $stdout, $stderr) = do_command(["--$ds", '--delete']);
         my $count = MT->model($ds . ':revision')->count({ $ds . '_id' => $obj->id });
-        is $count, 20, 'deleted';
+        is $count, 20, "$ds: deleted";
         my $oks = () = $stdout =~ /OK\./g;
-        is $oks, 1, 'right number of tests processed';
-        is(($stdout =~ qr{Deleted: (\d+)})[0], 1, 'right amount deleted');
+        is $oks, $expected_oks, "$ds: right number of tests processed";
+        is(($stdout =~ qr{Deleted: (\d+)})[0], 1, "$ds: right amount deleted");
     }
 
     {
         my ($stdin, $stdout, $stderr) = do_command(["--$ds", '--delete']);
         my $count = MT->model($ds . ':revision')->count({ $ds . '_id' => $obj->id });
-        is $count, 20, 'no more deletion';
+        is $count, 20, "$ds: no more deletion";
         my $oks = () = $stdout =~ /OK\./g;
-        is $oks, 2, 'right number of tests processed';
-        is(($stdout =~ qr{Deleted: (\d+)})[0], 0, 'right amount deleted');
+        is $oks, $expected_oks + 1, "$ds: right number of tests processed";
+        is(($stdout =~ qr{Deleted: (\d+)})[0], 0, "$ds: right amount deleted");
     }
 
     $site2->$col(3);
@@ -131,10 +137,10 @@ for my $ds ('template', 'cd', 'entry') {
     {
         my ($stdin, $stdout, $stderr) = do_command(["--$ds", '--delete']);
         my $count = MT->model($ds . ':revision')->count({ $ds . '_id' => $obj->id });
-        is $count, 3, 'deleted';
+        is $count, 3, "$ds: deleted";
         my $oks = () = $stdout =~ /OK\./g;
-        is $oks, 1, 'right number of tests processed';
-        is(($stdout =~ qr{Deleted: (\d+)})[0], 17, 'right amount deleted');
+        is $oks, $expected_oks, "$ds: right number of tests processed";
+        is(($stdout =~ qr{Deleted: (\d+)})[0], 17, "$ds: right amount deleted");
     }
 }
 
@@ -156,6 +162,25 @@ for my $ds ('template', 'cd', 'entry') {
         my $oks = () = $stdout =~ /OK\./g;
         is $oks, 1, 'right number of tests processed';
         is(($stdout =~ qr{Deleted: (\d+)})[0], 2, 'right amount deleted');
+    }
+}
+
+{
+    my $obj = $objs->{'template'}{'global_template'};
+
+    for (1 .. 21) {
+        my $rev_obj = $obj->clone();
+        $rev_obj->{changed_revisioned_cols} = ['text'];
+        $rev_obj->save_revision('test');
+    }
+
+    {
+        my ($stdin, $stdout, $stderr) = do_command(["--template", '--delete', '--limit=2']);
+        my $count = MT->model('template:revision')->count({ 'template_id' => $obj->id });
+        is $count, 20, 'global template: deleted';
+        my $oks = () = $stdout =~ /OK\./g;
+        is $oks, 2, 'global template: right number of tests processed';
+        is(($stdout =~ qr{Deleted: (\d+)})[0], 1, 'global template: right amount deleted');
     }
 }
 

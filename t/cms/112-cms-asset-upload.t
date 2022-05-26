@@ -87,13 +87,13 @@ subtest 'Regular JPEG image, wrt exif removal' => sub {
         MT::Test::Image->write(file => $test_image);
         my $tool = Image::ExifTool->new;
         $tool->ExtractInfo($test_image);
-        $tool->SetNewValue(Keywords => 'mt_test');
+        $tool->SetNewValue(Comment => 'mt_test');
         $tool->SetNewValue('EXIF:Orientation' => 'Horizontal (normal)');
         $tool->WriteInfo($test_image);
 
         my $org_exif = Image::ExifTool::ImageInfo($test_image);
         ok $org_exif->{ProfileCMMType}, "test image has profile information in exif";
-        is $org_exif->{Keywords} => 'mt_test', "test image has Keywords in exif";
+        is $org_exif->{Comment} => 'mt_test', "test image has Comment in exif";
         is $org_exif->{Orientation} => 'Horizontal (normal)', "test image has Orientation in exif";
 
         $test_env->update_config(ForceExifRemoval => $exif_removal);
@@ -138,7 +138,7 @@ subtest 'Regular JPEG image, wrt exif removal' => sub {
             my ($key, $file) = @$item;
             my $exif = Image::ExifTool::ImageInfo($file);
             if ($exif_removal or $key eq 'thumbnail') {
-                ok !$exif->{Keywords}, "$key has no Keywords in exif";
+                ok !$exif->{Comment}, "$key has no Comment in exif" or note explain $exif;
                 ok $exif->{ProfileCMMType}, "but $key still has profile information in exif";
                 is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
                 if ($has_image_magick) {
@@ -147,7 +147,7 @@ subtest 'Regular JPEG image, wrt exif removal' => sub {
                     ok $magick->Get('icc'), "Image::Magick still returns icc";
                 }
             } else {
-                is $exif->{Keywords} => 'mt_test', "$key still has Keywords in exif";
+                is $exif->{Comment} => 'mt_test', "$key still has Comment in exif";
                 ok $exif->{ProfileCMMType}, "$key still has profile information in exif";
                 is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
                 if ($has_image_magick) {

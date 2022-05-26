@@ -50,7 +50,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 require Exporter;
 
-$VERSION = '3.42';
+$VERSION = '3.44';
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(EscapeXML UnescapeXML);
 
@@ -2017,6 +2017,11 @@ my %sPantryItem = (
         Groups => { 2 => 'Location' },
         Writable => 'integer',
         PrintConv => {
+            OTHER => sub {
+                my ($val, $inv) = @_;
+                return undef unless $inv and $val =~ /^([-+0-9])/;
+                return($1 eq '-' ? 1 : 0);
+            },
             0 => 'Above Sea Level',
             1 => 'Below Sea Level',
         },
@@ -3258,8 +3263,14 @@ NoLoop:
             }
         }
         # generate a default tagInfo hash if necessary
-        $tagInfo or $tagInfo = { Name => $name, IsDefault => 1, Priority => 0 };
-
+        unless ($tagInfo) {
+            # shorten tag name if necessary
+            if ($$et{ShortenXmpTags}) {
+                my $shorten = $$et{ShortenXmpTags};
+                $name = &$shorten($name);
+            }
+            $tagInfo = { Name => $name, IsDefault => 1, Priority => 0 };
+        }
         # add tag Namespace entry for tags in variable-namespace tables
         $$tagInfo{Namespace} = $xns if $xns;
         if ($$et{curURI}{$ns} and $$et{curURI}{$ns} =~ m{^http://ns.exiftool.(?:ca|org)/(.*?)/(.*?)/}) {
@@ -3778,6 +3789,7 @@ sub ParseXMPElement($$$;$$$$)
                 # (unless we already extracted shorthand values from this element)
                 if (length $val or not $shorthand) {
                     my $lastProp = $$propList[-1];
+                    $lastProp = '' unless defined $lastProp;
                     if (defined $nodeID) {
                         SaveBlankInfo($blankInfo, $propList, $val);
                     } elsif ($lastProp eq 'rdf:type' and $wasEmpty) {

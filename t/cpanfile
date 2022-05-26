@@ -51,6 +51,7 @@ requires 'Crypt::DSA';
 #requires 'Cache::File';
 
 requires 'MIME::Base64';
+requires 'Email::MIME';
 requires 'XML::Atom';
 requires 'Cache::Memcached';
 requires 'Archive::Tar';
@@ -101,10 +102,12 @@ on 'test' => sub {
     requires 'HTML::Filter::Callbacks';
     requires 'HTML::Form';
     requires 'HTTP::DAV';
+    requires 'HTTP::Request::AsCGI';
     requires 'HTTP::Request::Common';
     requires 'IO::String';
     requires 'IPC::Run3';
     requires 'JSON::XS';  # For speed
+    requires 'JSON::Validator';
     requires 'Log::Log4perl';
     requires 'Log::Minimal';
     requires 'MIME::Head';
@@ -135,6 +138,7 @@ on 'test' => sub {
     requires 'Test::Deep';
     requires 'Test::File';
     requires 'Test::LeakTrace';
+    requires 'Test::Memcached';
     requires 'Test::MockModule';
     requires 'Test::MockObject';
     requires 'Test::MockTime::HiRes';

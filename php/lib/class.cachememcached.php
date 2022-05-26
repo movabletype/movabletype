@@ -69,7 +69,7 @@ class CacheMemcached extends BaseCache {
     }
 
     public function get_multi ($keys, $ttl = null) {
-        return self::$_server->get($key);
+        return self::$_server->get($keys);
     }
 
     public function delete ($key) {

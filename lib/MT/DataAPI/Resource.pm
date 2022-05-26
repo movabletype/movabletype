@@ -191,6 +191,36 @@ sub core_resources {
                 updatable_fields => "${pkg}v2::Group::updatable_fields",
             },
         ],
+        'endpoint' => [
+            {
+                version => 1,
+                fields => "${pkg}Endpoint::fields",
+            },
+        ],
+        statisticsdate => [
+            {
+                version => 1,
+                fields => "${pkg}StatisticsDate::fields",
+            },
+        ],
+        statisticspath => [
+            {
+                version => 1,
+                fields => "${pkg}StatisticsPath::fields",
+            },
+        ],
+        theme => [
+            {
+                version => 2,
+                fields => "${pkg}v2::Theme::fields",
+            },
+        ],
+        plugin => [
+            {
+                version => 2,
+                fields => "${pkg}v2::Plugin::fields",
+            },
+        ],
     };
 }
 
@@ -623,6 +653,12 @@ sub to_object {
     }
 }
 
+sub schema {
+    return +{
+        type => 'integer',
+    };
+}
+
 package MT::DataAPI::Resource::DataType::Boolean;
 
 use boolean ();
@@ -641,6 +677,12 @@ sub to_object {
     foreach my $o (@$objs) {
         $o->$name( $o->$name ? 1 : 0 ) if defined $o->$name;
     }
+}
+
+sub schema {
+    return +{
+        type => 'boolean',
+    };
 }
 
 package MT::DataAPI::Resource::DataType::ISO8601;
@@ -702,6 +744,13 @@ sub to_object {
             );
         }
     }
+}
+
+sub schema {
+    return +{
+        type   => 'string',
+        format => 'date-time',
+    };
 }
 
 1;

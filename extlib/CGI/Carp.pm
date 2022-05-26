@@ -1,5 +1,4 @@
 package CGI::Carp;
-use if $] >= 5.019, 'deprecate';
 
 my $appease_cpants_kwalitee = q/
 use strict;
@@ -292,7 +291,7 @@ Set C<$CGI::Carp::FULL_PATH> to 1.
 =head1 AUTHOR INFORMATION
 
 The CGI.pm distribution is copyright 1995-2007, Lincoln D. Stein. It is
-distributed under GPL and the Artistic License 2.0. It is currently
+distributed under the Artistic License 2.0. It is currently
 maintained by Lee Johnson with help from many contributors.
 
 Address bug reports and comments to: https://github.com/leejo/CGI.pm/issues
@@ -327,7 +326,7 @@ use File::Spec;
 
 $main::SIG{__WARN__}=\&CGI::Carp::warn;
 
-$CGI::Carp::VERSION     = '4.38';
+$CGI::Carp::VERSION     = '4.54';
 $CGI::Carp::CUSTOM_MSG  = undef;
 $CGI::Carp::DIE_HANDLER = undef;
 $CGI::Carp::TO_BROWSER  = 1;

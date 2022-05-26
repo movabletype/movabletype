@@ -13,6 +13,43 @@ use URI;
 use MT::Stats qw(readied_provider);
 use MT::DataAPI::Resource;
 
+sub provider_openapi_spec {
+    +{
+        tags        => ['Statistics'],
+        summary     => 'Retrieve a current effective provider',
+        description => <<'DESCRIPTION',
+Retrieve a current effective provider.
+
+Authorization is required.
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                id => { type => 'string' },
+                            }
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub provider {
     my ( $app, $endpoint ) = @_;
 
@@ -50,9 +87,196 @@ sub _invoke {
     $provider->$method( $app, $params );
 }
 
+sub pageviews_for_path_openapi_spec {
+    +{
+        tags        => ['Statistics'],
+        summary     => 'Retrieve pageviews count for each path from provider (e.g. Google Analytics)',
+        description => <<'DESCRIPTION',
+Retrieve pageviews count for each path from provider (e.g. Google Analytics).
+
+Authorization is required.
+DESCRIPTION
+        parameters => [{
+                'in'        => 'query',
+                name        => 'startDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'endDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'limit',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'offset',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'path',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
+            },
+            {
+                'in'   => 'query',
+                name   => 'uniquePath',
+                schema => {
+                    type => 'integer',
+                    enum => [0, 1],
+                },
+                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => 'The total number of paths.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Items for path resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/statisticspath',
+                                    },
+                                },
+                                totals => {
+                                    type       => 'object',
+                                    properties => {
+                                        pageviews => {
+                                            type        => 'string',
+                                            description => 'The sum total of the pageviews in the specified period.',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub pageviews_for_path {
     my ( $app, $endpoint ) = @_;
     _maybe_raw( fill_in_archive_info( _invoke(@_), $app->blog ) );
+}
+
+sub visits_for_path_openapi_spec {
+    +{
+        tags        => ['Statistics'],
+        summary     => 'Retrieve visits count for each path from provider (e.g. Google Analytics)',
+        description => <<'DESCRIPTION',
+Retrieve visits count for each date from provider (e.g. Google Analytics).
+
+Authorization is required.
+DESCRIPTION
+        parameters => [{
+                'in'        => 'query',
+                name        => 'startDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'endDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'limit',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'offset',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'path',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => 'The total number of paths.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Items for path resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/statisticspath',
+                                    },
+                                },
+                                totals => {
+                                    type       => 'object',
+                                    properties => {
+                                        visits => {
+                                            type        => 'string',
+                                            description => 'The sum total of the pageviews in the specified period.',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub visits_for_path {
@@ -60,8 +284,196 @@ sub visits_for_path {
     _maybe_raw( fill_in_archive_info( _invoke(@_), $app->blog ) );
 }
 
+sub pageviews_for_date_openapi_spec {
+    +{
+        tags        => ['Statistics'],
+        summary     => 'Retrieve pageviews count for each date from provider (e.g. Google Analytics)',
+        description => <<'DESCRIPTION',
+Retrieve pageviews count for each date from provider (e.g. Google Analytics).
+
+Authorization is required.
+DESCRIPTION
+        parameters => [{
+                'in'        => 'query',
+                name        => 'startDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'endDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'limit',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'offset',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'path',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
+            },
+            {
+                'in'   => 'query',
+                name   => 'uniquePath',
+                schema => {
+                    type => 'integer',
+                    enum => [0, 1],
+                },
+                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each uniqueness paths. However, that data does not contain page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => 'The total number of paths.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Items for date resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/statisticsdate',
+                                    },
+                                },
+                                totals => {
+                                    type       => 'object',
+                                    properties => {
+                                        pageviews => {
+                                            type        => 'string',
+                                            description => 'The sum total of the pageviews in the specified period.',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub pageviews_for_date {
     _maybe_raw( _invoke(@_) );
+}
+
+sub visits_for_date_openapi_spec {
+    +{
+        tags        => ['Statistics'],
+        summary     => 'Retrieve visits count for each date from provider (e.g. Google Analytics)',
+        description => <<'DESCRIPTION',
+Retrieve visits count for each date from provider (e.g. Google Analytics).
+
+Authorization is required.
+DESCRIPTION
+        parameters => [{
+                'in'        => 'query',
+                name        => 'startDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'endDate',
+                schema      => { type => 'string', format => 'date' },
+                description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'limit',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'offset',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'path',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => 'The total number of paths.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Items for date resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/statisticsdate',
+                                    },
+                                },
+                                totals => {
+                                    type       => 'object',
+                                    properties => {
+                                        visits => {
+                                            type        => 'string',
+                                            description => 'The sum total of the pageviews in the specified period.',
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+
+    };
 }
 
 sub visits_for_date {
@@ -112,11 +524,15 @@ sub fill_in_archive_info {
                 ( @in_paths && @like_paths ? '-or' : () ),
                 @like_paths,
             ]
-        ]
+        ],
+        {sort => 'id', direction => 'descend'},
     );
 
+    my %seen;
     while ( my $fi = $iter->() ) {
-        my $url       = $fi->url;
+        my $url = $fi->url;
+        next if $seen{$url}++;
+
         my $item_list = $items{$url};
         if ( !$item_list ) {
             $url =~ s#\/index\.[^/]+\z#/#g;

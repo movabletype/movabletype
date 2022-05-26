@@ -61,6 +61,12 @@ sub fields {
                     } @$cats
                 ];
             },
+            schema => {
+                type  => 'array',
+                items => {
+                    type => 'string',
+                },
+            },
         },
         {   name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',
@@ -114,6 +120,10 @@ sub fields {
             from_object => sub {
                 my ($obj) = @_;
                 MT::DataAPI::Resource->from_object( $obj->assets );
+            },
+            schema => {
+                type  => 'array',
+                items => { '$ref' => '#/components/schemas/asset' },
             },
         },
         $MT::DataAPI::Resource::Common::fields{tags},

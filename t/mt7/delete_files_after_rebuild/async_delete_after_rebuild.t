@@ -33,6 +33,7 @@ use Time::Seconds;
 use MT::PublishOption;
 use MT::EntryStatus;
 use MT::ContentStatus;
+use Path::Tiny;
 
 $test_env->prepare_fixture('archive_type_distinct');
 my $objs = MT::Test::Fixture::ArchiveTypeDistinct->load_objs;
@@ -57,9 +58,9 @@ my $cat_apple_id      = $objs->{category_set}{catset_fruit}{category}{cat_apple}
 my $cat_orange_id     = $objs->{category_set}{catset_fruit}{category}{cat_orange}->id;
 my $cat_strawberry_id = $objs->{category_set}{catset_fruit}{category}{cat_strawberry}->id;
 my $cat_peach_id      = $objs->{category_set}{catset_fruit}{category}{cat_peach}->id;
-my $cat_ruler_id      = $objs->{category}{cat_ruler}->id;
-my $cat_eraser_id     = $objs->{category}{cat_eraser}->id;
-my $cat_compass_id    = $objs->{category}{cat_compass}->id;
+my $cat_ruler_id      = $objs->{category}{cat_ruler}{$blog_id}->id;
+my $cat_eraser_id     = $objs->{category}{cat_eraser}{$blog_id}->id;
+my $cat_compass_id    = $objs->{category}{cat_compass}{$blog_id}->id;
 
 if ( $ENV{MT_TEST_PUBLISH_DYNAMIC} ) {
     rmtree($site_root);
@@ -322,6 +323,27 @@ subtest 'unpublish the newly-created entry' => sub {
     run_rpt_if_async();
 
     diff_should_be($entry_diff);
+
+    # extra test for draft
+    my $path = MT::Util::archive_file_for($entry, $site, 'Individual');
+    my $file = path(File::Spec->catfile($site->archive_path, $path));
+    ok !-f $file, "target file $file is gone";
+    $file->parent->mkpath;
+    $file->spew("test");
+    ok -f $file, "target file exists now";
+
+    $app->post_form_ok( { status => MT::EntryStatus::HOLD() } );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    ok -f $file, "target file still exists";
+    is $file->slurp => "test", "content of the target file is not changed";
+
+    unlink $file;
+
+    diff_should_be(0);
 };
 
 subtest 'create yet another new (but out-of-date) entry' => sub {
@@ -455,6 +477,30 @@ subtest 'unpublish the newly-created entry by DataAPI' => sub {
     run_rpt_if_async();
 
     diff_should_be($entry_diff);
+
+    # extra test for draft
+    my $path = MT::Util::archive_file_for($entry, $site, 'Individual');
+    my $file = path(File::Spec->catfile($site->archive_path, $path));
+    ok !-f $file, "target file $file is gone";
+    $file->parent->mkpath;
+    $file->spew("test");
+    ok -f $file, "target file exists now";
+
+    $app->api_request_ok(
+        PUT   => "/v4/sites/$blog_id/entries/$entry_id",
+        entry => { status => 'Draft' },
+    );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    ok -f $file, "target file still exists";
+    is $file->slurp => "test", "content of the target file is not changed";
+
+    unlink $file;
+
+    diff_should_be(0);
 };
 
 # the same date: less archives are involved
@@ -779,6 +825,27 @@ subtest 'unpublish the newly-created content data' => sub {
     run_rpt_if_async();
 
     diff_should_be($content_diff);
+
+    # extra test for draft
+    my $path = MT::Util::archive_file_for($cd, $site, 'ContentType');
+    my $file = path(File::Spec->catfile($site->archive_path, $path));
+    ok !-f $file, "target file $file is gone";
+    $file->parent->mkpath;
+    $file->spew("test");
+    ok -f $file, "target file exists now";
+
+    $app->post_form_ok( { status => MT::ContentStatus::HOLD() } );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    ok -f $file, "target file still exists";
+    is $file->slurp => "test", "content of the target file is not changed";
+
+    unlink $file;
+
+    diff_should_be(0);
 };
 
 subtest 'create yet another new content data' => sub {
@@ -929,6 +996,30 @@ subtest 'unpublish the newly-created content data by DataAPI' => sub {
     run_rpt_if_async();
 
     diff_should_be($content_diff);
+
+    # extra test for draft
+    my $path = MT::Util::archive_file_for($cd, $site, 'ContentType');
+    my $file = path(File::Spec->catfile($site->archive_path, $path));
+    ok !-f $file, "target file $file is gone";
+    $file->parent->mkpath;
+    $file->spew("test");
+    ok -f $file, "target file exists now";
+
+    $app->api_request_ok(
+        PUT          => "/v4/sites/$blog_id/contentTypes/$ct_id/data/$cd_id",
+        content_data => { status => 'Draft' },
+    );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    ok -f $file, "target file still exists";
+    is $file->slurp => "test", "content of the target file is not changed";
+
+    unlink $file;
+
+    diff_should_be(0);
 };
 
 # same date: less contents are involved
@@ -1205,7 +1296,7 @@ subtest 'change authored_on of the newly-created entry' => sub {
     @prev_files = @current_files;
 };
 
-subtest 'delete the newly-created entry (just to restore the initial state)' => sub {
+subtest 'unpublish the newly-created entry (just to restore the initial state)' => sub {
     $test_env->clear_mt_cache;
 
     sleep 1;
@@ -1224,21 +1315,7 @@ subtest 'delete the newly-created entry (just to restore the initial state)' => 
         }
     );
 
-    my $form = $app->form;
-    my ($input)
-        = grep { ( $_->{'mt:command'} || '' ) eq 'do-remove-items' }
-        $form->find_input( undef, 'submit' );
-    my %return_args = (
-        __mode  => 'list',
-        _type   => $input->{'mt:object-type'},
-        blog_id => $input->{'mt:blog-id'},
-    );
-
-    $app->post_form_ok(
-        {   __mode      => 'delete',
-            return_args => join( '&', map {"$_=$return_args{$_}"} keys %return_args ),
-        }
-    );
+    $app->post_form_ok( { status => MT::EntryStatus::HOLD() } );
 
     ok !$app->generic_error, "No errors" or die $app->generic_error;
 
@@ -1247,6 +1324,32 @@ subtest 'delete the newly-created entry (just to restore the initial state)' => 
     diff_should_be($entry_datetime_change_diff);
 
     cmp_bag( \@prev_files, \@initial_files, "back to the initial state" );
+
+    # extra test for draft
+    my $path = MT::Util::archive_file_for($entry, $site, 'Individual');
+    my $file = path(File::Spec->catfile($site->archive_path, $path));
+    ok !-f $file, "target file $file is gone";
+    $file->parent->mkpath;
+    $file->spew("test");
+    ok -f $file, "target file exists now";
+
+    my $date     = Time::Piece->new;
+    my $new_date = Time::Piece->new( time + ONE_YEAR * 2 );
+    my $year     = $date->year;
+    my $new_year = $new_date->year;
+
+    $app->post_form_ok( { "authored_on_date" => $new_date->ymd, status => MT::EntryStatus::HOLD() } );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    ok -f $file, "target file still exists";
+    is $file->slurp => "test", "content of the target file is not changed";
+
+    unlink $file;
+
+    diff_should_be(0);
 };
 
 subtest 'create yet yet yet another new entry' => sub {
@@ -1320,7 +1423,7 @@ subtest 'change category of the newly-created entry' => sub {
     @prev_files = @current_files;
 };
 
-subtest 'delete the newly-created entry (just to restore the initial state)' => sub {
+subtest 'unpublish the newly-created entry (just to restore the initial state)' => sub {
     $test_env->clear_mt_cache;
 
     sleep 1;
@@ -1339,21 +1442,7 @@ subtest 'delete the newly-created entry (just to restore the initial state)' => 
         }
     );
 
-    my $form = $app->form;
-    my ($input)
-        = grep { ( $_->{'mt:command'} || '' ) eq 'do-remove-items' }
-        $form->find_input( undef, 'submit' );
-    my %return_args = (
-        __mode  => 'list',
-        _type   => $input->{'mt:object-type'},
-        blog_id => $input->{'mt:blog-id'},
-    );
-
-    $app->post_form_ok(
-        {   __mode      => 'delete',
-            return_args => join( '&', map {"$_=$return_args{$_}"} keys %return_args ),
-        }
-    );
+    $app->post_form_ok( { status => MT::EntryStatus::HOLD() } );
 
     ok !$app->generic_error, "No errors" or die $app->generic_error;
 
@@ -1362,6 +1451,27 @@ subtest 'delete the newly-created entry (just to restore the initial state)' => 
     diff_should_be($entry_category_change_diff);
 
     cmp_bag( \@prev_files, \@initial_files, "back to the initial state" );
+
+    # extra test for draft
+    my $path = MT::Util::archive_file_for($entry, $site, 'Individual');
+    my $file = path(File::Spec->catfile($site->archive_path, $path));
+    ok !-f $file, "target file $file is gone";
+    $file->parent->mkpath;
+    $file->spew("test");
+    ok -f $file, "target file exists now";
+
+    $app->post_form_ok( { "category_ids" => "$cat_eraser_id,$cat_compass_id", status => MT::EntryStatus::HOLD() } );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    ok -f $file, "target file still exists";
+    is $file->slurp => "test", "content of the target file is not changed";
+
+    unlink $file;
+
+    diff_should_be(0);
 };
 
 subtest 'create yet yet another new content data' => sub {
@@ -1446,7 +1556,7 @@ subtest 'change authored_on of the newly-created content data' => sub {
     ok !MT::DeleteFileInfo->count, "nothing is left as marked";
 };
 
-subtest 'delete the newly-created content data (just to restore the initial state)' => sub {
+subtest 'unpublish the newly-created content data (just to restore the initial state)' => sub {
     $test_env->clear_mt_cache;
 
     sleep 1;
@@ -1466,22 +1576,7 @@ subtest 'delete the newly-created content data (just to restore the initial stat
         }
     );
 
-    my $form = $app->form;
-    my ($input)
-        = grep { ( $_->{'mt:command'} || '' ) eq 'do-remove-items' }
-        $form->find_input( undef, 'submit' );
-    my %return_args = (
-        __mode  => 'list',
-        _type   => $input->{'mt:object-type'},
-        type    => $input->{'mt:subtype'},
-        blog_id => $input->{'mt:blog-id'},
-    );
-
-    $app->post_form_ok(
-        {   __mode      => 'delete',
-            return_args => join( '&', map {"$_=$return_args{$_}"} keys %return_args ),
-        }
-    );
+    $app->post_form_ok( { status => MT::ContentStatus::HOLD() } );
 
     ok !$app->generic_error, "No errors" or die $app->generic_error;
 
@@ -1490,6 +1585,32 @@ subtest 'delete the newly-created content data (just to restore the initial stat
     diff_should_be( $content_category_change_diff + 1 );
 
     cmp_bag( \@prev_files, \@initial_files, "back to the initial state" );
+
+    # extra test for draft
+    my $path = MT::Util::archive_file_for($cd, $site, 'ContentType');
+    my $file = path(File::Spec->catfile($site->archive_path, $path));
+    ok !-f $file, "target file $file is gone";
+    $file->parent->mkpath;
+    $file->spew("test");
+    ok -f $file, "target file exists now";
+
+    my $date     = Time::Piece->new;
+    my $new_date = Time::Piece->new( time + ONE_YEAR * 2 );
+    my $year     = $date->year;
+    my $new_year = $new_date->year;
+
+    $app->post_form_ok( { authored_on_date => $new_date->ymd, status => MT::ContentStatus::HOLD() } );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    ok -f $file, "target file still exists";
+    is $file->slurp => "test", "content of the target file is not changed";
+
+    unlink $file;
+
+    diff_should_be(0);
 };
 
 subtest 'create yet yet yet another new content data' => sub {
@@ -1569,7 +1690,7 @@ subtest 'change category of the newly-created content data' => sub {
     ok !MT::DeleteFileInfo->count, "nothing is left as marked";
 };
 
-subtest 'delete the newly-created content data (just to restore the initial state)' => sub {
+subtest 'unpublish the newly-created content data (just to restore the initial state)' => sub {
     $test_env->clear_mt_cache;
 
     sleep 1;
@@ -1589,22 +1710,7 @@ subtest 'delete the newly-created content data (just to restore the initial stat
         }
     );
 
-    my $form = $app->form;
-    my ($input)
-        = grep { ( $_->{'mt:command'} || '' ) eq 'do-remove-items' }
-        $form->find_input( undef, 'submit' );
-    my %return_args = (
-        __mode  => 'list',
-        _type   => $input->{'mt:object-type'},
-        type    => $input->{'mt:subtype'},
-        blog_id => $input->{'mt:blog-id'},
-    );
-
-    $app->post_form_ok(
-        {   __mode      => 'delete',
-            return_args => join( '&', map {"$_=$return_args{$_}"} keys %return_args ),
-        }
-    );
+    $app->post_form_ok( { status => MT::ContentStatus::HOLD() } );
 
     ok !$app->generic_error, "No errors" or die $app->generic_error;
 
@@ -1613,6 +1719,27 @@ subtest 'delete the newly-created content data (just to restore the initial stat
     diff_should_be( $content_category_change_diff + 1 );
 
     cmp_bag( \@prev_files, \@initial_files, "back to the initial state" );
+
+    # extra test for draft
+    my $path = MT::Util::archive_file_for($cd, $site, 'ContentType');
+    my $file = path(File::Spec->catfile($site->archive_path, $path));
+    ok !-f $file, "target file $file is gone";
+    $file->parent->mkpath;
+    $file->spew("test");
+    ok -f $file, "target file exists now";
+
+    $app->post_form_ok( { "category-$cf_same_fruit_id" => $cat_orange_id, status => MT::ContentStatus::HOLD() } );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    ok -f $file, "target file still exists";
+    is $file->slurp => "test", "content of the target file is not changed";
+
+    unlink $file;
+
+    diff_should_be(0);
 };
 
 subtest 'create yet yet yet yet another new entry by DataAPI' => sub {
@@ -1679,7 +1806,7 @@ subtest 'change authored_on of the newly-created entry by DataAPI' => sub {
     @prev_files = @current_files;
 };
 
-subtest 'delete the newly-created entry (just to restore the initial state)' => sub {
+subtest 'unpublish the newly-created entry (just to restore the initial state)' => sub {
     $test_env->clear_mt_cache;
 
     sleep 1;
@@ -1688,39 +1815,46 @@ subtest 'delete the newly-created entry (just to restore the initial state)' => 
     ok my $entry = MT::Entry->load( { title => 'yet yet yet yet another new entry by DataAPI' } );
     my $entry_id = $entry->id;
 
-    my $app = MT::Test::App->new('MT::App::CMS');
+    my $app = MT::Test::App->new('MT::App::DataAPI');
     $app->login($author1);
-    $app->get_ok(
-        {   __mode  => 'view',
-            _type   => 'entry',
-            blog_id => $blog_id,
-            id      => $entry_id,
-        }
-    );
 
-    my $form = $app->form;
-    my ($input)
-        = grep { ( $_->{'mt:command'} || '' ) eq 'do-remove-items' }
-        $form->find_input( undef, 'submit' );
-    my %return_args = (
-        __mode  => 'list',
-        _type   => $input->{'mt:object-type'},
-        blog_id => $input->{'mt:blog-id'},
+    $app->api_request_ok(
+        PUT   => "/v4/sites/$blog_id/entries/$entry_id",
+        entry => { status => 'Draft' },
     );
-
-    $app->post_form_ok(
-        {   __mode      => 'delete',
-            return_args => join( '&', map {"$_=$return_args{$_}"} keys %return_args ),
-        }
-    );
-
-    ok !$app->generic_error, "No errors" or die $app->generic_error;
 
     run_rpt_if_async();
 
     diff_should_be($entry_category_change_diff);
 
     cmp_bag( \@prev_files, \@initial_files, "back to the initial state" );
+
+    # extra test for draft
+    my $path = MT::Util::archive_file_for($entry, $site, 'Individual');
+    my $file = path(File::Spec->catfile($site->archive_path, $path));
+    ok !-f $file, "target file $file is gone";
+    $file->parent->mkpath;
+    $file->spew("test");
+    ok -f $file, "target file exists now";
+
+    my $date     = Time::Piece->new;
+    my $new_date = Time::Piece->new( time + ONE_YEAR * 2 );
+    my $year     = $date->year;
+    my $new_year = $new_date->year;
+
+    $app->api_request_ok(
+        PUT   => "/v4/sites/$blog_id/entries/$entry_id",
+        entry => { date => $new_date->ymd, status => 'Draft' },
+    );
+
+    run_rpt_if_async();
+
+    ok -f $file, "target file still exists";
+    is $file->slurp => "test", "content of the target file is not changed";
+
+    unlink $file;
+
+    diff_should_be(0);
 };
 
 subtest 'create yet yet yet yet another new content data by DataAPI' => sub {
@@ -1794,7 +1928,7 @@ subtest 'change authored_on of the newly-created content data by DataAPI' => sub
     ok !MT::DeleteFileInfo->count, "nothing is left as marked";
 };
 
-subtest 'delete the newly-created content data (just to restore the initial state)' => sub {
+subtest 'unpublish the newly-created content data (just to restore the initial state)' => sub {
     $test_env->clear_mt_cache;
 
     sleep 1;
@@ -1803,41 +1937,46 @@ subtest 'delete the newly-created content data (just to restore the initial stat
     ok my $cd = MT::ContentData->load( { label => 'yet yet yet yet another new content data by DataAPI' } );
     my $cd_id = $cd->id;
 
-    my $app = MT::Test::App->new('MT::App::CMS');
+    my $app = MT::Test::App->new('MT::App::DataAPI');
     $app->login($author1);
-    $app->get_ok(
-        {   __mode          => 'view',
-            _type           => 'content_data',
-            content_type_id => $ct_id,
-            blog_id         => $blog_id,
-            id              => $cd_id,
-        }
-    );
 
-    my $form = $app->form;
-    my ($input)
-        = grep { ( $_->{'mt:command'} || '' ) eq 'do-remove-items' }
-        $form->find_input( undef, 'submit' );
-    my %return_args = (
-        __mode  => 'list',
-        _type   => $input->{'mt:object-type'},
-        type    => $input->{'mt:subtype'},
-        blog_id => $input->{'mt:blog-id'},
+    $app->api_request_ok(
+        PUT          => "/v4/sites/$blog_id/contentTypes/$ct_id/data/$cd_id",
+        content_data => { status => 'Draft' },
     );
-
-    $app->post_form_ok(
-        {   __mode      => 'delete',
-            return_args => join( '&', map {"$_=$return_args{$_}"} keys %return_args ),
-        }
-    );
-
-    ok !$app->generic_error, "No errors" or die $app->generic_error;
 
     run_rpt_if_async();
 
     diff_should_be( $content_category_change_diff + 1 );
 
     cmp_bag( \@prev_files, \@initial_files, "back to the initial state" );
+
+    # extra test for draft
+    my $path = MT::Util::archive_file_for($cd, $site, 'ContentType');
+    my $file = path(File::Spec->catfile($site->archive_path, $path));
+    ok !-f $file, "target file $file is gone";
+    $file->parent->mkpath;
+    $file->spew("test");
+    ok -f $file, "target file exists now";
+
+    my $date     = Time::Piece->new;
+    my $new_date = Time::Piece->new( time + ONE_YEAR * 2 );
+    my $year     = $date->year;
+    my $new_year = $new_date->year;
+
+    $app->api_request_ok(
+        PUT          => "/v4/sites/$blog_id/contentTypes/$ct_id/data/$cd_id",
+        content_data => { date => $new_date->ymd, status => 'Draft' },
+    );
+
+    run_rpt_if_async();
+
+    ok -f $file, "target file still exists";
+    is $file->slurp => "test", "content of the target file is not changed";
+
+    unlink $file;
+
+    diff_should_be(0);
 };
 
 done_testing;

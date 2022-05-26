@@ -43,8 +43,9 @@ sub data_load_handler {
     my $convert_breaks
         = $app->param("content-field-${field_id}_convert_breaks");
     $convert_breaks = '' unless defined $convert_breaks;
+    my $full_rich_text = defined $options->{full_rich_text} ? $options->{full_rich_text} : 1;
 
-    if ( $convert_breaks eq 'richtext' && !$options->{full_rich_text} ) {
+    if ( $convert_breaks eq 'richtext' && !$full_rich_text ) {
         return scalar $app->param("editor-input-content-field-$field_id");
     }
     else {

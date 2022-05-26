@@ -4,9 +4,11 @@ require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(guess_media_type media_suffix);
 @EXPORT_OK = qw(add_type add_encoding read_media_types);
-$VERSION = "6.02";
+our $VERSION = '6.04';
 
 use strict;
+use Scalar::Util qw(blessed);
+use Carp qw(croak);
 
 # note: These hashes will also be filled with the entries found in
 # the 'media.types' file.
@@ -47,10 +49,17 @@ sub guess_media_type
     return undef unless defined $file;
 
     my $fullname;
-    if (ref($file)) {
-	# assume URI object
-	$file = $file->path;
-	#XXX should handle non http:, file: or ftp: URIs differently
+    if (ref $file) {
+        croak("Unable to determine filetype on unblessed refs") unless blessed($file);
+        if ($file->can('path')) {
+            $file = $file->path;
+        }
+        elsif ($file->can('filename')) {
+            $fullname = $file->filename;
+        }
+        else {
+            $fullname = "" . $file;
+        }
     }
     else {
 	$fullname = $file;  # enable peek at actual file
@@ -124,7 +133,7 @@ sub media_suffix {
 }
 
 
-sub file_exts 
+sub file_exts
 {
     require File::Basename;
     my @parts = reverse split(/\./, File::Basename::basename($_[0]));
@@ -133,7 +142,7 @@ sub file_exts
 }
 
 
-sub add_type 
+sub add_type
 {
     my($type, @exts) = @_;
     for my $ext (@exts) {
@@ -154,7 +163,7 @@ sub add_encoding
 }
 
 
-sub read_media_types 
+sub read_media_types
 {
     my(@files) = @_;
 
@@ -214,9 +223,12 @@ The following functions are exported by default:
 
 =item guess_media_type( $uri )
 
-=item guess_media_type( $filename_or_uri, $header_to_modify )
+=item guess_media_type( $filename_or_object, $header_to_modify )
 
-This function tries to guess media type and encoding for a file or a URI.
+This function tries to guess media type and encoding for a file or objects that
+support the a C<path> or C<filename> method, eg, L<URI> or L<File::Temp> objects.
+When an object does not support either method, it will be stringified to
+determine the filename.
 It returns the content type, which is a string like C<"text/html">.
 In array context it also returns any content encodings applied (in the
 order used to encode the file).  You can pass a URI object

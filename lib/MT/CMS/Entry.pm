@@ -1722,19 +1722,6 @@ sub save {
 
     $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $orig_obj );
 
-    # Delete old archive files.
-    if ( $app->config('DeleteFilesAtRebuild') && $id ) {
-        $app->request->cache( 'file', {} );    # clear cache
-        my $file = archive_file_for( $obj, $blog, $archive_type );
-        if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() ) {
-            $app->publisher->remove_entry_archive_file(
-                Entry       => $orig_obj,
-                ArchiveType => $archive_type,
-                Category    => $primary_category_old,
-            );
-        }
-    }
-
     ## If the saved status is RELEASE, or if the *previous* status was
     ## RELEASE, then rebuild entry archives, indexes, and send the
     ## XML-RPC ping(s). Otherwise the status was and is HOLD, and we
@@ -1742,6 +1729,19 @@ sub save {
     if ( ( $obj->status || 0 ) == MT::Entry::RELEASE()
         || $status_old == MT::Entry::RELEASE() )
     {
+        # Delete old archive files.
+        if ( $app->config('DeleteFilesAtRebuild') && $id ) {
+            $app->request->cache( 'file', {} );    # clear cache
+            my $file = archive_file_for( $obj, $blog, $archive_type );
+            if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() ) {
+                $app->publisher->remove_entry_archive_file(
+                    Entry       => $orig_obj,
+                    ArchiveType => $archive_type,
+                    Category    => $primary_category_old,
+                );
+            }
+        }
+
         # If there are no static pages, just rebuild indexes.
         if ( $blog->count_static_templates($archive_type) == 0
             || MT::Util->launch_background_tasks() )

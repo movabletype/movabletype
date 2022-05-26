@@ -21,6 +21,7 @@ use File::Spec;
 use File::Basename;
 use MT;
 use MT::Mail;
+use MT::Mail::MIME;
 
 use Cwd qw( abs_path );
 use URI;
@@ -87,6 +88,7 @@ BEGIN {
 unless ( $ENV{MT_TEST_MAIL} ) {
     no warnings 'redefine';
     *MT::Mail::_send_mt_debug = sub {1};
+    *MT::Mail::MIME::_send_mt_debug = sub {1};
 }
 
 sub import {
@@ -1653,30 +1655,9 @@ sub query_param_contains {
     ok !$fail, $message;
 }
 
-my $HasPHP;
-
 sub has_php {
-    return $HasPHP if defined $HasPHP;
-    my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
-    my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
-    $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
-    if (MT->config->ObjectDriver =~ /u?mssqlserver/i) {
-        my $phpinfo = `php -i 2>&1` or return $HasPHP = 0;
-        $HasPHP = 0 if $phpinfo =~ /\-\-without\-(?:pdo\-)?mssql/;
-    }
-    my $smarty_major_version = _find_smarty_version();
-    if ($smarty_major_version > 3) {
-        return $HasPHP = 0 if $php_version < 7.1;
-    }
-    $HasPHP;
-}
-
-sub _find_smarty_version {
-    open my $fh, '<', "$ENV{MT_HOME}/php/extlib/smarty/libs/Smarty.class.php";
-    read($fh, my $buf, 8192) or return;
-    my ($smarty_version) = $buf =~ /SMARTY_VERSION\s*=\s*'([0-9.]+)';/;
-    my ($major, $minor, $patch) = split /\./, $smarty_version;
-    return wantarray ? ($major, $minor, $patch) : $major;
+    require MT::Test::PHP;
+    MT::Test::PHP->php_version ? 1 : 0;
 }
 
 sub validate_param { return [] }

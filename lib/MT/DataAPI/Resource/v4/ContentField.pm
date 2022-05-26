@@ -31,6 +31,16 @@ sub fields {
                 $app->request( 'data_api_content_field_hashes_for_save',
                     Storable::dclone($hashes) );
             },
+            schema => {
+                type        => 'object',
+                description => 'This schema shows only common options',
+                properties  => {
+                    label       => { type => 'string' },
+                    description => { type => 'string' },
+                    required    => { type => 'string' },
+                    display     => { type => 'string' },
+                },
+            },
         },
         {   name      => 'type',
             to_object => sub {

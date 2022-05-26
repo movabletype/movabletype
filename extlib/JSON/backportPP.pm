@@ -15,7 +15,7 @@ use JSON::backportPP::Boolean;
 use Carp ();
 #use Devel::Peek;
 
-$JSON::backportPP::VERSION = '4.06';
+$JSON::backportPP::VERSION = '4.07';
 
 @JSON::PP::EXPORT = qw(encode_json decode_json from_json to_json);
 
@@ -1566,6 +1566,11 @@ sub incr_parse {
                     }
                 }
 
+                unless ( $coder->get_utf8 ) {
+                    utf8::upgrade( $self->{incr_text} );
+                    utf8::decode( $self->{incr_text} );
+                }
+
                 my ($obj, $offset) = $coder->PP_decode_json( $self->{incr_text}, 0x00000001 );
                 push @ret, $obj;
                 use bytes;
@@ -1772,10 +1777,6 @@ JSON::PP - JSON::XS compatible pure-Perl module.
  
  use JSON;
 
-
-=head1 VERSION
-
-    4.05
 
 =head1 DESCRIPTION
 

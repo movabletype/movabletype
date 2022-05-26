@@ -1,5 +1,5 @@
 package UNIVERSAL::require;
-$UNIVERSAL::require::VERSION = '0.18';
+$UNIVERSAL::require::VERSION = '0.19';
 
 # We do this because UNIVERSAL.pm uses CORE::require().  We're going
 # to put our own require() into UNIVERSAL and that makes an ambiguity.
@@ -22,7 +22,7 @@ our $Level = 0;
 
 =head1 NAME
 
-UNIVERSAL::require - require() modules from a variable
+UNIVERSAL::require - require() modules from a variable [deprecated]
 
 =head1 SYNOPSIS
 
@@ -38,6 +38,12 @@ UNIVERSAL::require - require() modules from a variable
 
 
 =head1 DESCRIPTION
+
+Before using this module, you should look at the alternatives,
+some of which are listed in SEE ALSO below.
+
+This module provides a safe mechanism for loading a module at runtime,
+when you have the name of the module in a variable.
 
 If you've ever had to do this...
 
@@ -192,7 +198,23 @@ Now maintained by Neil Bowers (NEILB).
 
 =head1 SEE ALSO
 
-L<Module::Load>,  L<perlfunc/require>, L<http://dev.perl.org/rfc/253.pod>
+L<Module::Load> provides functions for loading code,
+and importing functions.
+It's actively maintained.
+
+L<Module::Runtime> provides a number of usesful functions
+for require'ing and use'ing modules,
+and associated operations.
+
+L<Mojo::Loader> is a class loader and plugin framework.
+L<Module::Loader> is a stand-alone module that was inspired
+by C<Mojo::Loader>.
+
+There are many other modules that may be of interest on CPAN.
+An old review of some of them can be read at
+L<https://neilb.org/reviews/module-loading.html>.
+
+L<perlfunc/require>.
 
 =cut
 
