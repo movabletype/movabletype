@@ -9,8 +9,9 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('_category_sets_counter', '_category_sets_glue', 'blog_id', 'blog', 'category_sets', 'category_set', 'content_type', '__out'), common_loop_vars());
 
     if (!isset($content)) {
+        require_once("MTUtil.php");
         $blog = $ctx->stash('blog');
-        $content_type = $ctx->stash('content_type');
+        $content_type = get_content_type_context($ctx, $args);
 
         $ctx->localize($localvars);
 
