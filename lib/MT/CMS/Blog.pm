@@ -258,7 +258,7 @@ sub edit {
                 } foreach keys %$pings;
             $param->{pings_loop} = \@pings;
 
-            $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
+            $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
 
             if ( $cfg->is_readonly('DataAPIDisableSite') ) {
                 $param->{'data_api_disable_site_readonly'} = 1;
@@ -353,7 +353,8 @@ sub edit {
     elsif ( $param->{output} && $param->{output} eq 'cfg_web_services.tmpl' )
     {
         # System level web services settings.
-        $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
+        $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
+
         if ( $app->config->is_readonly('DataAPIDisableSite') ) {
             $param->{'data_api_disable_site_readonly'} = 1;
             $param->{config_warning} = $app->translate(
@@ -3605,12 +3606,19 @@ sub can_view_blog_list {
 }
 
 sub data_api_is_enabled {
-    my ( $app, $blog_id ) = @_;
-    my $cfg = $app->config;
+    my ( $app, $blog_id, $blog ) = @_;
 
-    my @disable_site = split ',',
-        defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    return ( grep { $blog_id == $_ } @disable_site ) ? 0 : 1;
+    my $cfg = $app->config;
+    my @disable_sites = split ',', defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
+    if ($cfg->is_readonly('DataAPIDisableSite')) {
+        return ( grep { $blog_id == $_ } @disable_sites ) ? 0 : 1;
+    } else {
+        if ($blog_id == 0) {
+            return ( grep { $blog_id == $_ } @disable_sites ) ? 0 : 1;
+        } else {
+            return $blog->allow_data_api;
+        }
+    }
 }
 
 sub save_data_api_settings {
