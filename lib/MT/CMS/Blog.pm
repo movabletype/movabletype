@@ -2062,7 +2062,7 @@ sub post_save {
         my $auth = $app->user;
 
         # disable data api by default
-        save_data_api_settings( $app, $obj->id, 0 );
+        $obj->allow_data_api(0);
 
         # Grant permission
         my $assoc_class = $app->model('association');
@@ -3627,9 +3627,20 @@ sub save_data_api_settings {
     $blog_id   = $app->param('id') || 0         unless defined $blog_id;
     $new_value = $app->param('enable_data_api') unless defined $new_value;
 
-    my $cfg = $app->config;
-
-    MT::Util::update_data_api_disable_site($cfg, $blog_id, $new_value);
+    if ($blog_id == 0) {
+        my $cfg = $app->config;
+        $cfg->DataAPIDisableSite($new_value ? '' : $blog_id, 1);
+        $cfg->save_config;
+    } else {
+        my $blog;
+        if ($app->blog && $app->blog->id == $blog_id) {
+            $blog = $app->blog;
+        } else {
+            $blog = MT->model('blog')->load($blog_id);
+        }
+        $blog->allow_data_api($new_value ? 1 : 0);
+        $blog->save;
+    }
 
     return 1;
 }
