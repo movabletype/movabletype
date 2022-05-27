@@ -274,6 +274,7 @@ sub init_upgrade {
         unless ( $args{not_create_website} ) {
             my $website
                 = MT::Website->create_default_website('First Website');
+            $website->allow_data_api(1);
             $website->save;
             my $author = MT::Author->load;
             my ($website_admin_role)
@@ -325,6 +326,7 @@ sub init_data {
             description              => "Narnia None Test Website",
             custom_dynamic_templates => 'custom',
             convert_paras            => 1,
+            allow_data_api           => 1,
             allow_reg_comments       => 1,
             allow_unreg_comments     => 0,
             allow_pings              => 1,
@@ -366,6 +368,7 @@ sub init_data {
             description              => "Narnia None Test Blog",
             custom_dynamic_templates => 'custom',
             convert_paras            => 1,
+            allow_data_api           => 1,
             allow_reg_comments       => 1,
             allow_unreg_comments     => 0,
             allow_pings              => 1,

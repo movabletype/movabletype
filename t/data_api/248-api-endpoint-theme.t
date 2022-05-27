@@ -26,6 +26,9 @@ my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
 
+my $export_dir = $test_env->path('tmp');
+File::Path::mkpath($export_dir);
+
 # test.
 my $suite = suite();
 test_data_api($suite);
@@ -355,6 +358,9 @@ sub suite {
         # export_site_theme - normal tests
         {   path   => '/v2/sites/2/export_theme',
             method => 'POST',
+            setup  => sub {
+                $app->config->ExportTempDir($export_dir);
+            },
             params => { overwrite_yes => 1, },
             result => sub {
                 +{ status => 'success' };
