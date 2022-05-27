@@ -1,0 +1,7 @@
+id: DataAPI
+name: Data API
+version: 4.1
+author_link: https://www.movabletype.org/
+author_name: Six Apart Ltd.
+description: <MT_TRANS phrase="Movable Type Data API">
+l10n_class: DataAPI::L10N
