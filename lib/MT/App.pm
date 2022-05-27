@@ -4379,7 +4379,7 @@ sub redirect {
         $url = $app->base . $url;
     }
     $app->{redirect} = $url;
-    if (my $old_flash = $app->{_flash}) {
+    if (my $old_flash = $app->{__flash}) {
         $app->flash(%$old_flash);
     }
     return;
