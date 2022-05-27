@@ -23,11 +23,13 @@ MT->instance;
 my $website = MT::Test::Permission->make_website(name => 'my website');
 
 sub _get_config_value {
-    $test_env->clear_mt_cache;
-    my $config = MT::Config->load(1) or return;
-    my ($line) = $config->data =~ /^(DataAPIDisableSite.+)$/m;
-    my ($key, $value) = split / /, $line;
-    $value;
+    my @site_ids = map { $_->id } MT->model('website')->load({
+            class          => '*',
+            allow_data_api => 0,
+        },
+        { fetchonly => { id => 1 } });
+
+    return @site_ids;
 }
 
 my $admin = MT->model('author')->load(1);
@@ -43,10 +45,10 @@ $app->post_form_ok({
     enable_data_api => undef,
 });
 
-ok(grep { $website->id eq $_ } split(',', _get_config_value()), 'Include updated website');
+ok(grep { $website->id eq $_ } _get_config_value(), 'Include updated website');
 
 $website->remove;
 
-ok(!grep { $website->id eq $_ } split(',', _get_config_value()), 'Not include updated website');
+ok(!grep { $website->id eq $_ } _get_config_value(), 'Not include updated website');
 
 done_testing;
