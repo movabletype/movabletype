@@ -11,5 +11,5 @@ system_config_template:
 blog_config_template:
     code: $DataAPI::DataAPI::App::config_tmpl
 
-settings:
-    enable_data_api:
+callbacks:
+    save_config_filter.DataAPI: $DataAPI::DataAPI::App::update_allow_data_api
