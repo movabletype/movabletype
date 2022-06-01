@@ -32,14 +32,20 @@ subtest 'Save DataAPI plugin settings in system' => sub {
     is($cfg->DataAPIDisableSite, '0');
     my $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save_plugin_config',
-            plugin_sig       => 'DataAPI',
-            enable_data_api  => 1,
+        {   __test_user             => $admin,
+            __request_method        => 'POST',
+            __mode                  => 'save_plugin_config',
+            plugin_sig              => 'DataAPI',
+            enable_data_api         => 1,
+            return_args             => '__mode=cfg_plugins&blog_id=0',
+            __test_follow_redirects => 1,
         }
     );
     is($cfg->DataAPIDisableSite, '');
+
+    my $out = delete $app->{__test_output};
+    my $id = MT::Util::perl_sha1_digest_hex('DataAPI');
+    unlike($out, qr/resetPlugin\(getByID\('plugin-${id}-form'\)\)/, 'Hide Reset to Defaults button');
 };
 
 subtest 'Save DataAPI plugin settings in website' => sub {
@@ -49,17 +55,23 @@ subtest 'Save DataAPI plugin settings in website' => sub {
 
     my $app = _run_app(
         'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save_plugin_config',
-            blog_id          => $blog->id,
-            plugin_sig       => 'DataAPI',
-            enable_data_api  => 1,
+        {   __test_user             => $admin,
+            __request_method        => 'POST',
+            __mode                  => 'save_plugin_config',
+            blog_id                 => $blog->id,
+            plugin_sig              => 'DataAPI',
+            enable_data_api         => 1,
+            return_args             => '__mode=cfg_plugins&_type=blog&blog_id=' . $blog->id . '&id=' . $blog->id,
+            __test_follow_redirects => 1,
         }
     );
 
     $blog  = $mt->model('blog')->load(1);
     ok($blog->allow_data_api);
+
+    my $out = delete $app->{__test_output};
+    my $id = MT::Util::perl_sha1_digest_hex('DataAPI');
+    unlike($out, qr/resetPlugin\(getByID\('plugin-${id}-form'\)\)/, 'Hide Reset to Defaults button');
 };
 
 subtest 'Save cfg_web_services DataAPI settings in system' => sub {

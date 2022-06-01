@@ -38,6 +38,16 @@ sub update_allow_data_api {
     return 1;
 }
 
+# Reset to Defaults button doesn't work in DataAPI plugin
+sub disable_reset_button {
+    my ( $cb, $app, $param, $tmpl ) = @_;
+    for my $plugin (@{$param->{plugin_loop}}) {
+        if ($plugin->{plugin_sig} eq 'DataAPI' && $plugin->{plugin_settings_id}) {
+            delete $plugin->{plugin_settings_id};
+        }
+    }
+}
+
 1;
 
 __END__

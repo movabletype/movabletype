@@ -18,3 +18,4 @@ blog_config_template:
 
 callbacks:
     save_config_filter.DataAPI: $DataAPI::DataAPI::App::update_allow_data_api
+    template_param.cfg_plugin: $DataAPI::DataAPI::App::disable_reset_button
