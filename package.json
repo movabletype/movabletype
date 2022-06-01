@@ -62,7 +62,7 @@
     "riot": "3.7.4",
     "svg4everybody": "^2.1.9",
     "tinymce": "5.10.2",
-    "tinymce-i18n": "20.12.25",
+    "tinymce-i18n": "22.5.2",
     "xpath": "0.0.32"
   }
 }
