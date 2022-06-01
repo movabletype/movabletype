@@ -10,20 +10,19 @@ use warnings;
 
 sub config_tmpl {
     my ($plugin, $param, $scope) = @_;
-    my %param;
     if ($scope eq 'system') {
         my $cfg = MT->config;
         my %disable_sites = map { $_ => 1 } split /,/, defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-        $param{enable_data_api} = $disable_sites{0} ? 0 : 1;
+        $param->{enable_data_api} = $disable_sites{0} ? 0 : 1;
     } else {
         my ($blog_id) = $scope =~ m/blog:(\d+)/;
         my $blog = MT::Blog->load($blog_id);
         if ($blog) {
-            $param{blog_id}         = $blog_id;
-            $param{enable_data_api} = $blog->allow_data_api;
+            $param->{blog_id}         = $blog_id;
+            $param->{enable_data_api} = $blog->allow_data_api;
         }
     }
-    $plugin->load_tmpl('config.tmpl', \%param);
+    $plugin->load_tmpl('config.tmpl', $param);
 }
 
 sub update_allow_data_api {
