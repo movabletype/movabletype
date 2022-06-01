@@ -17,7 +17,7 @@ my $crlf = "\x0d\x0a";
 
 sub render {
     my ($class, %args) = @_;
-    my ($header, $body) = @args{qw(header body)};
+    my ($header, $body, $files) = @args{qw(header body files)};
     my $conf = MT->config;
     my $mail_enc = lc($conf->MailEncoding || 'utf-8');
     $header->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
@@ -36,11 +36,34 @@ sub render {
     my $msg;
 
     eval {
-        # MIME::Lite suggests direct settting mime-* or content-* fields is dengerous
-        my %special_fields;
-        map { $special_fields{$_} = delete $header->{$_} if $_ =~ /^(mime\-|content\-)/i } keys(%$header);
-        $msg = MIME::Lite->new(%$header, Data => $body);
-        $msg->attr($_, $special_fields{$_}) for keys(%special_fields);
+        if ($files && @$files) {
+            $msg = MIME::Lite->new(Type => 'multipart/mixed');
+            $msg->attr($_, $header->{$_}) for keys(%$header);
+            $msg->attr('Content-Type' => 'multipart/mixed');
+
+            my $text_part = MIME::Lite->new(Data => $body);
+            $text_part->attr($_, $header->{$_}) for (grep { $_ =~ /^content/i } keys(%$header));
+            $msg->attach($text_part);
+
+            require File::Basename;
+            require MIME::Types;
+            my $types = MIME::Types->new;
+
+            for my $file (@$files) {
+                my ($type, $name, $path) = @{$file}{qw(type name path)};
+                my $basename = File::Basename::basename($path);
+                my $part = MIME::Lite->new(
+                    Type        => ($type || $types->mimeTypeOf($basename)->type() || 'application/octet-stream'),
+                    Path        => $path,
+                    Filename    => $name || $basename,
+                    Disposition => 'attachment'
+                ) or die "Error adding $path: $!\n";
+                $msg->attach($part);
+            }
+        } else {
+            $msg = MIME::Lite->new(Data => $body);
+            $msg->attr($_, $header->{$_}) for keys(%$header);
+        }
     };
     return $class->error(MT->translate('Failed to encode mail' . ($@ ? ':' . $@ : ''))) if $@ || !$msg;
 

@@ -17,21 +17,58 @@ my $crlf = "\x0d\x0a";
 
 sub render {
     my ($class, %args) = @_;
-    my ($header, $body) = @args{qw(header body)};
+    my ($header, $body, $files) = @args{qw(header body files)};
     my $conf = MT->config;
     my $mail_enc = lc($conf->MailEncoding || 'utf-8');
     $header->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
     $header->{'Content-Transfer-Encoding'} = $class->fix_xfer_enc($header->{'Content-Transfer-Encoding'}, $mail_enc, $body);
 
     my $msg = eval {
-        Email::MIME->create(
-            header_str => [%$header],
-            body_str   => $body,
-            attributes => {
-                charset  => $mail_enc,
-                encoding => $header->{'Content-Transfer-Encoding'},
-            },
-        );
+        if ($files && @$files) {
+            my @parts;
+            push @parts, Email::MIME->create(
+                body_str   => $body,
+                attributes => {
+                    content_type => 'text/plain',
+                    disposition  => 'inline',
+                    charset      => $mail_enc,
+                    encoding     => $header->{'Content-Transfer-Encoding'},
+                },
+            );
+
+            require File::Basename;
+            require MIME::Types;
+            my $types = MIME::Types->new;
+
+            for my $file (@$files) {
+                my ($type, $name, $path) = @{$file}{qw(type name path)};
+                my $basename = File::Basename::basename($path);
+                push @parts, Email::MIME->create(
+                    attributes => {
+                        content_type => ($type || $types->mimeTypeOf($basename) || 'application/octet-stream'),
+                        disposition  => 'attachment',
+                        encoding     => 'base64',
+                        filename     => ($name || $basename),
+                    },
+                    body => _slurp($path),
+                );
+            }
+
+            $header->{'Content-Type'} = 'multipart/mixed';
+            Email::MIME->create(
+                header_str => [%$header],
+                parts      => \@parts,
+            );
+        } else {
+            Email::MIME->create(
+                header_str => [%$header],
+                body_str   => $body,
+                attributes => {
+                    charset  => $mail_enc,
+                    encoding => $header->{'Content-Transfer-Encoding'},
+                },
+            );
+        }
     };
     return $class->error(MT->translate('Failed to encode mail' . ($@ ? ':' . $@ : ''))) if $@ || !$msg;
 
@@ -39,6 +76,14 @@ sub render {
     $encoded =~ s{\x0d(?!\x0a)|(?<!\x0d)\x0a}{$crlf}g;
 
     return $encoded;
+}
+
+sub _slurp {
+    my $path = shift;
+    open my $fh, '<', $path or die "$path: $!";
+    binmode $fh;
+    local $/;
+    <$fh>;
 }
 
 1;

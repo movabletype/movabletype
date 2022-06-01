@@ -17,6 +17,7 @@ BEGIN {
 }
 
 use MT::Test;
+use MT::Test::Image;
 use MT;
 use MT::Util::Mail;
 use MIME::Base64;
@@ -177,7 +178,88 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 }
             }
         };
+
+        subtest 'attach files' => sub {
+            $mt->config->set('MailTransferEncoding', 'base64');
+            $mt->config->set('MailEncoding',         'utf8');
+            my (undef, $file1) = MT::Test::Image->tempfile(DIR => $test_env->root, SUFFIX => '.gif');
+            my (undef, $file2) = MT::Test::Image->tempfile(DIR => $test_env->root, SUFFIX => '.png');
+
+            subtest 'simple' => sub {
+                my $ret = render_and_parse(
+                    header => { To => 'to@example.com' },
+                    body   => '日本語',
+                    files  => [{ path => $file1 }, { path => $file2 }],
+                );
+
+                is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
+                like($ret->[0]->{header}->{'Content-Type'}, qr{multipart/mixed}, 'right header');
+                is($ret->[1]->{header}->{'Content-Disposition'},       'inline', 'right header');
+                is($ret->[1]->{header}->{'Content-Transfer-Encoding'}, 'base64', 'right header');
+                like($ret->[1]->{body},                                  qr{日本語},              'right body');
+                like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},       'right header');
+                like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename=.+\.gif}, 'right header');
+                like($ret->[2]->{header}->{'Content-Type'},              qr{image/gif},        'right header');
+                like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},           'right header');
+                like($ret->[2]->{body},                                  qr{R0lGODlhk},        'right body');
+                like($ret->[3]->{header}->{'Content-Disposition'},       qr{attachment},       'right header');
+                like($ret->[3]->{header}->{'Content-Disposition'},       qr{filename=.+\.png}, 'right header');
+                like($ret->[3]->{header}->{'Content-Type'},              qr{image/png},        'right header');
+                like($ret->[3]->{header}->{'Content-Transfer-Encoding'}, qr{base64},           'right header');
+                like($ret->[3]->{body},                                  qr{iVBORw0KG},        'right body');
+                is(scalar @$ret, 4, 'right number of mime parts');
+            };
+
+            subtest 'name and type specified' => sub {
+                my $ret = render_and_parse(
+                    header => { To => 'to@example.com' },
+                    body   => '日本語',
+                    files  => [{ path => $file1, name => 'my_file.gif', type => 'image/mygif' }],
+                );
+
+                is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
+                like($ret->[0]->{header}->{'Content-Type'}, qr{multipart/mixed}, 'right header');
+                is($ret->[1]->{header}->{'Content-Disposition'},       'inline', 'right header');
+                is($ret->[1]->{header}->{'Content-Transfer-Encoding'}, 'base64', 'right header');
+                like($ret->[1]->{body},                                  qr{日本語},                       'right body');
+                like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
+                like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?my_file\.gif"?}, 'right header');
+                like($ret->[2]->{header}->{'Content-Type'},              qr{image/mygif},               'right header');
+                like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
+                like($ret->[2]->{body},                                  qr{R0lGODlhk},                 'right body');
+                is(scalar @$ret, 3, 'right number of mime parts');
+            };
+        };
     };
+}
+
+sub render_and_parse {
+    my $module  = $MT::Util::Mail::Module;
+    my $encoded = $module->render(@_);
+    note $encoded;
+    my $boundary = ($encoded =~ qr{multipart/mixed;\s*boundary=(.+)})[0];
+    $boundary =~ s{"}{}g;
+    my @parts = split(/^--$boundary/m, $encoded);
+    my $ret;
+    for my $part (@parts) {
+        my ($header, $body) = split(/\x0d\x0a\x0d\x0a/, $part, 2);
+        my %header_kv;
+        for my $hl (split(/\x0d\x0a/, $header)) {
+            $hl =~ s{\x0d|\x0a}{}g;
+            my ($key, $value) = split(/: /, $hl);
+            $header_kv{$key} = $value;
+        }
+        if ($header_kv{'Content-Type'} =~ qr{text/}) {
+            my $cb = {
+                'base64'           => sub { MIME::Base64::decode_base64($_[0]) },
+                'quoted-printable' => sub { decode_qp($_[0]) },
+            }->{ $header_kv{'Content-Transfer-Encoding'} };
+            $body = $cb->($body) if $cb;
+            $body = Encode::decode('utf8', $body);
+        }
+        push @$ret, { header => \%header_kv, body => $body };
+    }
+    return $ret;
 }
 
 sub send_mail_suite {

@@ -17,7 +17,16 @@ use MT::Util qw(is_valid_email);
 
 sub send {
     my $class = shift;
-    my ($hdrs_arg, $body) = @_;
+    my ($hdrs_arg, $body, $files) = @_;
+
+    if ($files) {
+        unless (ref($files) && ref($files) eq 'ARRAY') {
+            return $class->error(MT->translate('Files must be an array reference.'));
+        }
+        if ( grep { ref $_ ne 'HASH' } @$files) {
+            return $class->error(MT->translate('Elements of files must be an hash reference.'));
+        }
+    }
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
     for my $h (keys %hdrs) {
@@ -40,9 +49,9 @@ sub send {
     $hdrs{Sender} = $hdrs{From}[0] if (ref $hdrs{From} eq 'ARRAY' && scalar(@{ $hdrs{From} }) > 1);
 
     my $xfer = $conf->MailTransfer;
-    return $class->_send_mt_sendmail(\%hdrs, $body) if $xfer eq 'sendmail';
-    return $class->_send_mt_smtp(\%hdrs, $body)     if $xfer eq 'smtp';
-    return $class->_send_mt_debug(\%hdrs, $body)    if $xfer eq 'debug';
+    return $class->_send_mt_sendmail(\%hdrs, $body, $files) if $xfer eq 'sendmail';
+    return $class->_send_mt_smtp(\%hdrs, $body, $files)     if $xfer eq 'smtp';
+    return $class->_send_mt_debug(\%hdrs, $body, $files)    if $xfer eq 'debug';
     return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
 }
 
@@ -111,15 +120,15 @@ sub _dedupe_headers {
 
 sub _send_mt_debug {
     my $class = shift;
-    my ($hdrs, $body) = @_;
-    my $msg = $class->render(header => $hdrs, body => $body);
+    my ($hdrs, $body, $files) = @_;
+    my $msg = $class->render(header => $hdrs, body => $body, files => $files);
     print STDERR $msg;
     1;
 }
 
 sub _send_mt_smtp {
     my $class = shift;
-    my ($hdrs, $body) = @_;
+    my ($hdrs, $body, $files) = @_;
     my $conf = MT->config;
 
     # SMTP Configuration
@@ -201,7 +210,7 @@ sub _send_mt_smtp {
 
     delete $hdrs->{Bcc};
 
-    my $msg = $class->render(header => $hdrs, body => $body);
+    my $msg = $class->render(header => $hdrs, body => $body, files => $files);
     $smtp->data()         or return $class->smtp_error($smtp);
     $smtp->datasend($msg) or return $class->smtp_error($smtp);
     $smtp->dataend()      or return $class->smtp_error($smtp);
@@ -222,7 +231,7 @@ my @Sendmail = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
 
 sub _send_mt_sendmail {
     my $class = shift;
-    my ($hdrs, $body) = @_;
+    my ($hdrs, $body, $files) = @_;
     my $conf = MT->config;
 
     my $sm_loc;
@@ -240,7 +249,7 @@ sub _send_mt_sendmail {
             or return $class->error(MT->translate("Exec of sendmail failed: [_1]", "$!"));
     }
 
-    my $msg = $class->render(header => $hdrs, body => $body);
+    my $msg = $class->render(header => $hdrs, body => $body, files => $files);
     $msg =~ s{\r\n}{\n}g;
     print $MAIL $msg;
     close $MAIL;
@@ -300,10 +309,11 @@ directive.
 
 =head1 USAGE
 
-=head2 MT::Mail::MIME->send(\%headers, $body)
+=head2 MT::Mail::MIME->send(\%headers, $body, \@files)
 
 Sends a mail message with the headers I<\%headers> and the message body
-I<$body>.
+I<$body>. Optionaly, you can attach files with I<$files> if your I<MailModule>
+supports it.
 
 The keys and values in I<\%headers> are passed directly in to the mail
 program or server, so you can use any valid mail header names as keys. If
@@ -314,6 +324,19 @@ reference to a list of the header values. For example:
 
 If you wish the lines in I<$body> to be wrapped, you should do this yourself;
 it will not be done by I<send>.
+
+You can give the method multiple files for mail attachment.
+
+    @files = ( { path => 'path/to/your.png' }, ... );
+
+Each files can also contain types and names in case you don't like the auto
+detection.
+
+    push @files, {
+        path => 'path/to/your.png', 
+        type => 'image/png', 
+        name => 'yourname.png',
+    };
 
 On success, I<send> returns true; on failure, it returns C<undef>, and the
 error message is in C<MT::Mail::MIME-E<gt>errstr>.
