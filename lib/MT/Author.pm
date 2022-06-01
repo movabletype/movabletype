@@ -1501,10 +1501,11 @@ sub userpic_html {
     my ( $thumb_url, $w, $h ) = $author->userpic_url(%param) or return;
     return unless $thumb_url;
     my $asset = $author->userpic(@_);
+    my $loading_lazy = $param{LoadingLazy} ? 'loading="lazy" decoding="async" ' : '';
     my $format
         = $param{Ts}
-        ? q{<img src="%s&%d" width="%d" height="%d" alt="%s" loading="lazy" decoding="async" />}
-        : q{<img src="%s?%d" width="%d" height="%d" alt="%s" loading="lazy" decoding="async" />};
+        ? qq{<img src="%s&%d" width="%d" height="%d" alt="%s" $loading_lazy/>}
+        : qq{<img src="%s?%d" width="%d" height="%d" alt="%s" $loading_lazy/>};
     sprintf $format,
         MT::Util::encode_html($thumb_url), $asset->id, $w, $h,
         MT::Util::encode_html( $asset->label );

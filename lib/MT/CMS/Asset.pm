@@ -421,8 +421,8 @@ sub asset_userpic {
 
     my $thumb_html
         = $user
-        ? $user->userpic_html( Asset => $asset, Ts => 1 )
-        : $app->model('author')->userpic_html( Asset => $asset, Ts => 1 );
+        ? $user->userpic_html( Asset => $asset, Ts => 1, LoadingLazy => 1 )
+        : $app->model('author')->userpic_html( Asset => $asset, Ts => 1, LoadingLazy => 1 );
 
     $app->load_tmpl(
         'dialog/asset_userpic.tmpl',
