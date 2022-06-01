@@ -60,6 +60,15 @@ sub send {
                 class    => 'system',
                 category => 'email'
             });
+        } else {
+            if (MT->config->MailLogForSuccess) {
+                MT->instance->log({
+                    message  => MT->translate('Mail was sent successfully'),
+                    level    => MT::Log::INFO(),
+                    class    => 'system',
+                    category => 'email'
+                });
+            }
         }
     }
 
