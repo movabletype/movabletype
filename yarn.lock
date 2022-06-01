@@ -1663,10 +1663,10 @@ jquery-ui-touch-punch@^0.2.3:
   resolved "https://registry.yarnpkg.com/jquery-ui-touch-punch/-/jquery-ui-touch-punch-0.2.3.tgz#eed82242733ba243f46b3e87c1841b308191da68"
   integrity sha1-7tgiQnM7okP0az6HwYQbMIGR2mg=
 
-jquery-validation@^1.19.3:
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/jquery-validation/-/jquery-validation-1.19.3.tgz#50b350eba8b02bcfd119ba15f199487b7eb64086"
-  integrity sha512-iXxCS5W7STthSTMFX/NDZfWHBLbJ1behVK3eAgHXAV8/0vRa9M4tiqHvJMr39VGWHMGdlkhrtrkBuaL2UlE8yw==
+jquery-validation@^1.19.4:
+  version "1.19.4"
+  resolved "https://registry.yarnpkg.com/jquery-validation/-/jquery-validation-1.19.4.tgz#a765781d954e5876fa437d5c75b7a9440bfa37a8"
+  integrity sha512-PcwKcATCR+JL77m9kkWd84NAHAunJP9iasF6IbMxUgl73xDAimxjt5oYFmYHDXBmTZM4rpkXxMNR/jGI5TlSjA==
 
 jquery@^3.6.0:
   version "3.6.0"
