@@ -51,8 +51,6 @@ my $blog  = MT::Blog->load({ name => 'my blog' });
 my $entry = MT::Entry->load({ title => 'my entry' });
 
 subtest 'mode = rebuild_new_phase' => sub {
-    $test_env->clear_mt_cache;
-
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
     $app->post_ok({
