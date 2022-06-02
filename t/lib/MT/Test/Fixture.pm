@@ -162,8 +162,7 @@ sub prepare_image {
         for my $name (sort keys %{ $spec->{image} }) {
             my $item = $spec->{image}{$name};
             if (ref $item eq 'HASH') {
-                my $blog_id = _find_blog_id($objs, $item)
-                    or croak "blog_id is required: image";
+                my $blog_id = _find_blog_id($objs, $item);
                 my $file = "$image_dir/$name";
                 my $dir  = File::Basename::dirname($file);
                 File::Path::mkpath($dir) unless -d $dir;
@@ -927,7 +926,7 @@ sub _find_blog_id {
         my $site = $objs->{blog}{$blog_name} or croak "unknown blog: $blog_name";
         return $site->id;
     }
-    $arg->{blog_id} || $objs->{blog_id};
+    $arg->{blog_id} // $objs->{blog_id};
 }
 
 sub _find_author_id {
