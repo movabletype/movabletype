@@ -2015,16 +2015,16 @@ sub _hdlr_entry_author_display_name {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return $a ? $a->nickname || '' : '';
+    my $author = $e->author;
+    return $author ? $author->nickname || '' : '';
 }
 
 sub _hdlr_entry_modified_author_display_name {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->modified_author;
-    return $a ? $a->nickname || '' : '';
+    my $author = $e->modified_author;
+    return $author ? $author->nickname || '' : '';
 }
 
 ###########################################################################
@@ -2059,16 +2059,16 @@ sub _hdlr_entry_author_username {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return $a ? $a->name || '' : '';
+    my $author = $e->author;
+    return $author ? $author->name || '' : '';
 }
 
 sub _hdlr_entry_modified_author_username {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->modified_author;
-    return $a ? $a->name || '' : '';
+    my $author = $e->modified_author;
+    return $author ? $author->name || '' : '';
 }
 
 ###########################################################################
@@ -2096,20 +2096,20 @@ sub _hdlr_entry_author_email {
     my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return '' unless $a && defined $a->email;
+    my $author = $e->author;
+    return '' unless $author && defined $author->email;
     return $args
-        && $args->{'spam_protect'} ? spam_protect( $author->email ) : $a->email;
+        && $args->{'spam_protect'} ? spam_protect( $author->email ) : $author->email;
 }
 
 sub _hdlr_entry_modified_author_email {
     my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->modified_author;
-    return '' unless $a && defined $a->email;
+    my $author = $e->modified_author;
+    return '' unless $author && defined $author->email;
     return $args
-        && $args->{'spam_protect'} ? spam_protect( $a->email ) : $a->email;
+        && $args->{'spam_protect'} ? spam_protect( $author->email ) : $author->email;
 }
 
 ###########################################################################
@@ -2125,16 +2125,16 @@ sub _hdlr_entry_author_url {
     my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return $a ? $a->url || "" : "";
+    my $author = $e->author;
+    return $author ? $author->url || "" : "";
 }
 
 sub _hdlr_entry_modified_author_url {
     my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->modified_author;
-    return $a ? $a->url || "" : "";
+    my $author = $e->modified_author;
+    return $author ? $author->url || "" : "";
 }
 
 ###########################################################################
@@ -2182,29 +2182,29 @@ sub _hdlr_entry_author_link {
     my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return '' unless $a;
-    __hdlr_entry_author_link($ctx, $args, $cond, $a);
+    my $author = $e->author;
+    return '' unless $author;
+    __hdlr_entry_author_link($ctx, $args, $cond, $author);
 }
 
 sub _hdlr_entry_modified_author_link {
     my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->modified_author;
-    return '' unless $a;
-    __hdlr_entry_author_link($ctx, $args, $cond, $a);
+    my $author = $e->modified_author;
+    return '' unless $author;
+    __hdlr_entry_author_link($ctx, $args, $cond, $author);
 }
 
 sub __hdlr_entry_author_link {
-    my ( $ctx, $args, $cond, $a ) = @_;
+    my ( $ctx, $args, $cond, $author ) = @_;
 
     my $type = $args->{type} || '';
 
     if ( $type && $type eq 'archive' ) {
         require MT::Author;
-        if ( $a->type == MT::Author::AUTHOR() ) {
-            local $ctx->{__stash}{author} = $a;
+        if ( $author->type == MT::Author::AUTHOR() ) {
+            local $ctx->{__stash}{author} = $author;
             local $ctx->{current_archive_type} = undef;
             if (my $link = $ctx->invoke_handler(
                     'archivelink', { type => 'Author' }, $cond
@@ -2213,14 +2213,14 @@ sub __hdlr_entry_author_link {
             {
                 my $target = $args->{new_window} ? ' target="_blank"' : '';
                 my $displayname
-                    = encode_html( remove_html( $a->nickname || '' ) );
+                    = encode_html( remove_html( $author->nickname || '' ) );
                 return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
                     $displayname;
             }
         }
     }
 
-    return MT::Template::Tags::Common::hdlr_author_link( @_, $a );
+    return MT::Template::Tags::Common::hdlr_author_link( @_, $author );
 }
 
 ###########################################################################
@@ -2235,16 +2235,16 @@ sub _hdlr_entry_author_id {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return $a ? $a->id || '' : '';
+    my $author = $e->author;
+    return $author ? $author->id || '' : '';
 }
 
 sub _hdlr_entry_modified_author_id {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->modified_author;
-    return $a ? $a->id || '' : '';
+    my $author = $e->modified_author;
+    return $author ? $author->id || '' : '';
 }
 
 ###########################################################################

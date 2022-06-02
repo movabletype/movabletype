@@ -1070,28 +1070,28 @@ sub _hdlr_content_author_link {
     my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    my $a = $cd->author;
-    return '' unless $a;
-    __hdlr_content_author_link($ctx, $args, $cond, $a);
+    my $author = $cd->author;
+    return '' unless $author;
+    __hdlr_content_author_link($ctx, $args, $cond, $author);
 }
 
 sub _hdlr_content_modified_author_link {
     my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    my $a = $cd->modified_author;
-    return '' unless $a;
-    __hdlr_content_author_link($ctx, $args, $cond, $a);
+    my $author = $cd->modified_author;
+    return '' unless $author;
+    __hdlr_content_author_link($ctx, $args, $cond, $author);
 }
 
 sub __hdlr_content_author_link {
-    my ( $ctx, $args, $cond, $a ) = @_;
+    my ( $ctx, $args, $cond, $author ) = @_;
     my $type = $args->{type} || '';
 
     if ( $type && $type eq 'archive' ) {
         require MT::Author;
-        if ( $a->type == MT::Author::AUTHOR() ) {
-            local $ctx->{__stash}{author} = $a;
+        if ( $author->type == MT::Author::AUTHOR() ) {
+            local $ctx->{__stash}{author} = $author;
             local $ctx->{current_archive_type} = undef;
             if (my $link = $ctx->invoke_handler(
                     'archivelink', { type => 'ContentType-Author' },
@@ -1101,14 +1101,14 @@ sub __hdlr_content_author_link {
             {
                 my $target = $args->{new_window} ? ' target="_blank"' : '';
                 my $displayname
-                    = encode_html( remove_html( $a->nickname || '' ) );
+                    = encode_html( remove_html( $author->nickname || '' ) );
                 return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
                     $displayname;
             }
         }
     }
 
-    return MT::Template::Tags::Common::hdlr_author_link( @_, $a );
+    return MT::Template::Tags::Common::hdlr_author_link( @_, $author );
 }
 
 =head2 ContentAuthorURL, ContentModifiedAuthorURL

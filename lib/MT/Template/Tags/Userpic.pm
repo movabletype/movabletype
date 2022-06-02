@@ -113,16 +113,16 @@ sub _hdlr_entry_author_userpic {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author or return '';
-    return $a->userpic_html() || '';
+    my $author = $e->author or return '';
+    return $author->userpic_html() || '';
 }
 
 sub _hdlr_entry_modified_author_userpic {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->modified_author or return '';
-    return $a->userpic_html() || '';
+    my $author = $e->modified_author or return '';
+    return $author->userpic_html() || '';
 }
 
 ###########################################################################
@@ -138,16 +138,16 @@ sub _hdlr_entry_author_userpic_url {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author or return '';
-    return $a->userpic_url() || '';
+    my $author = $e->author or return '';
+    return $author->userpic_url() || '';
 }
 
 sub _hdlr_entry_modified_author_userpic_url {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->modified_author or return '';
-    return $a->userpic_url() || '';
+    my $author = $e->modified_author or return '';
+    return $author->userpic_url() || '';
 }
 
 ###########################################################################
