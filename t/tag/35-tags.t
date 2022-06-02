@@ -31,12 +31,14 @@ my ($year, $month) = unpack 'A4A2', $asset->created_on;
 my $tsdiff = time - ts2epoch($blog, '19780131074500');
 my $daysdiff = int($tsdiff / (60 * 60 * 24));
 
+my $asset3 = MT::Asset->load(3);
+
 my $modified_by = MT::Test::Permission->make_author(
     name             => 'Foo Bar',
     nickname         => 'foobar',
     email            => 'foobar@localhost',
     url              => 'https://foobar.com',
-    userpic_asset_id => $asset->id,
+    userpic_asset_id => $asset3->id,
 );
 
 # use driver directly not to auto-update modified_at
@@ -4932,3 +4934,21 @@ foobar@localhost
 <MTPages lastn="1"><MTPageModifiedAuthorURL></MTPages>
 --- expected
 https://foobar.com
+
+=== test 900
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorUserpic></MTEntries>
+--- expected
+<img src="/mt-static/support/assets_c/userpics/userpic-6-100x100.png?3" width="100" height="100" alt="Image photo" loading="lazy" decoding="async" />
+
+=== test 901
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorUserpicAsset><MTAssetFilename></MTEntryModifiedAuthorUserpicAsset></MTEntries>
+--- expected
+test.jpg
+
+=== test 902
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorUserpicURL></MTEntries>
+--- expected
+/mt-static/support/assets_c/userpics/userpic-6-100x100.png
