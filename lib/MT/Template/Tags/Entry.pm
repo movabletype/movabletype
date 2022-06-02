@@ -2003,9 +2003,9 @@ sub _hdlr_entry_author {
 
 ###########################################################################
 
-=head2 EntryAuthorDisplayName
+=head2 EntryAuthorDisplayName, EntryModifiedAuthorDisplayName
 
-Outputs the display name of the author for the current entry in context.
+Outputs the display name of the (last modified) author for the current entry in context.
 If the author has not provided a display name for publishing, this tag
 will output an empty string.
 
@@ -2016,6 +2016,14 @@ sub _hdlr_entry_author_display_name {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $a = $e->author;
+    return $a ? $a->nickname || '' : '';
+}
+
+sub _hdlr_entry_modified_author_display_name {
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $a = $e->modified_author;
     return $a ? $a->nickname || '' : '';
 }
 
@@ -2040,9 +2048,9 @@ sub _hdlr_entry_author_nick {
 
 ###########################################################################
 
-=head2 EntryAuthorUsername
+=head2 EntryAuthorUsername, EntryModifiedAuthorUsername
 
-Outputs the username of the author for the entry currently in context.
+Outputs the username of the (last modified) author for the entry currently in context.
 B<NOTE: it is not recommended to publish MT usernames.>
 
 =cut
@@ -2055,11 +2063,19 @@ sub _hdlr_entry_author_username {
     return $a ? $a->name || '' : '';
 }
 
+sub _hdlr_entry_modified_author_username {
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $a = $e->modified_author;
+    return $a ? $a->name || '' : '';
+}
+
 ###########################################################################
 
-=head2 EntryAuthorEmail
+=head2 EntryAuthorEmail, EntryModifiedAuthorEmail
 
-Outputs the email address of the author for the current entry in context.
+Outputs the email address of the (last modified) author for the current entry in context.
 B<NOTE: it is not recommended to publish e-mail addresses for MT users.>
 
 B<Attributes:>
@@ -2083,14 +2099,24 @@ sub _hdlr_entry_author_email {
     my $a = $e->author;
     return '' unless $a && defined $a->email;
     return $args
+        && $args->{'spam_protect'} ? spam_protect( $author->email ) : $a->email;
+}
+
+sub _hdlr_entry_modified_author_email {
+    my ( $ctx, $args ) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $a = $e->modified_author;
+    return '' unless $a && defined $a->email;
+    return $args
         && $args->{'spam_protect'} ? spam_protect( $a->email ) : $a->email;
 }
 
 ###########################################################################
 
-=head2 EntryAuthorURL
+=head2 EntryAuthorURL, EntryModifiedAuthorURL
 
-Outputs the Website URL field from the author's profile for the
+Outputs the Website URL field from the (last modified) author's profile for the
 current entry in context.
 
 =cut
@@ -2103,11 +2129,19 @@ sub _hdlr_entry_author_url {
     return $a ? $a->url || "" : "";
 }
 
+sub _hdlr_entry_modified_author_url {
+    my ( $ctx, $args ) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $a = $e->modified_author;
+    return $a ? $a->url || "" : "";
+}
+
 ###########################################################################
 
-=head2 EntryAuthorLink
+=head2 EntryAuthorLink, EntryModifiedAuthorLink
 
-Outputs a linked author name suitable for publishing in the 'byline'
+Outputs a linked (last modified) author name suitable for publishing in the 'byline'
 of an entry.
 
 B<Attributes:>
@@ -2150,6 +2184,20 @@ sub _hdlr_entry_author_link {
         or return $ctx->_no_entry_error();
     my $a = $e->author;
     return '' unless $a;
+    __hdlr_entry_author_link($ctx, $args, $cond, $a);
+}
+
+sub _hdlr_entry_modified_author_link {
+    my ( $ctx, $args, $cond ) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $a = $e->modified_author;
+    return '' unless $a;
+    __hdlr_entry_author_link($ctx, $args, $cond, $a);
+}
+
+sub __hdlr_entry_author_link {
+    my ( $ctx, $args, $cond, $a ) = @_;
 
     my $type = $args->{type} || '';
 
@@ -2177,9 +2225,9 @@ sub _hdlr_entry_author_link {
 
 ###########################################################################
 
-=head2 EntryAuthorID
+=head2 EntryAuthorID, EntryModifiedAuthorID
 
-Outputs the numeric ID of the author for the current entry in context.
+Outputs the numeric ID of the (last modified) author for the current entry in context.
 
 =cut
 
@@ -2188,6 +2236,14 @@ sub _hdlr_entry_author_id {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $a = $e->author;
+    return $a ? $a->id || '' : '';
+}
+
+sub _hdlr_entry_modified_author_id {
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $a = $e->modified_author;
     return $a ? $a->id || '' : '';
 }
 
