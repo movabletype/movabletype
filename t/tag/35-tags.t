@@ -12,6 +12,7 @@ BEGIN {
 }
 
 use MT::Test::Tag;
+use MT::Test::Permission;
 use MT::Util qw(ts2epoch epoch2ts);
 
 $test_env->prepare_fixture('db_data');
@@ -29,6 +30,18 @@ my ($year, $month) = unpack 'A4A2', $asset->created_on;
 # entry we want to capture is dated: 19780131074500
 my $tsdiff = time - ts2epoch($blog, '19780131074500');
 my $daysdiff = int($tsdiff / (60 * 60 * 24));
+
+my $modified_by = MT::Test::Permission->make_author(
+    name             => 'Foo Bar',
+    nickname         => 'foobar',
+    email            => 'foobar@localhost',
+    url              => 'https://foobar.com',
+    userpic_asset_id => $asset->id,
+);
+
+# use driver directly not to auto-update modified_at
+MT::Entry->driver->dbh->do('UPDATE mt_entry SET entry_modified_by = ?', undef, $modified_by->id);
+$test_env->clear_mt_cache;
 
 my %vars = (
     CFG_FILE => MT->instance->{cfg_file},
@@ -4859,3 +4872,63 @@ function verify_password.+mypassfield.+myusernamefield
 --- expected
 2
 3
+
+=== test 890
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorDisplayName></MTEntries>
+--- expected
+foobar
+
+=== test 891
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorUsername></MTEntries>
+--- expected
+Foo Bar
+
+=== test 892
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorEmail></MTEntries>
+--- expected
+foobar@localhost
+
+=== test 893
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorURL></MTEntries>
+--- expected
+https://foobar.com
+
+=== test 894
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorLink></MTEntries>
+--- expected
+<a href="https://foobar.com">foobar</a>
+
+=== test 895
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorID></MTEntries>
+--- expected
+6
+
+=== test 896
+--- template
+<MTPages lastn="1"><MTPageModifiedAuthorDisplayName></MTPages>
+--- expected
+foobar
+
+=== test 897
+--- template
+<MTPages lastn="1"><MTPageModifiedAuthorEmail></MTPages>
+--- expected
+foobar@localhost
+
+=== test 898
+--- template
+<MTPages lastn="1"><MTPageModifiedAuthorLink></MTPages>
+--- expected
+<a href="https://foobar.com">foobar</a>
+
+=== test 899
+--- template
+<MTPages lastn="1"><MTPageModifiedAuthorURL></MTPages>
+--- expected
+https://foobar.com
