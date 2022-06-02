@@ -4846,7 +4846,7 @@ left File include is disabled by "AllowFileInclude" config directive. right
 --- expected regexp=s
 function verify_password.+mypassfield.+myusernamefield
 
-=== test if elsif else1
+=== test 887: test if elsif else1
 --- template
 <MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3<MTElse>4</MTIf>
 <MTVar name='idx' value='3'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3<MTElse>4</MTIf>
@@ -4856,7 +4856,7 @@ function verify_password.+mypassfield.+myusernamefield
 3
 4
 
-=== test  if elsif else2
+=== test 888: test  if elsif else2
 --- template
 <MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse>4</MTIf>
 <MTVar name='idx' value='5'><MTIf name='idx' eq='2'>2<MTElse>4</MTIf>
@@ -4864,7 +4864,7 @@ function verify_password.+mypassfield.+myusernamefield
 2
 4
 
-=== test  if elsif else3
+=== test 889: test  if elsif else3
 --- template
 <MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3</MTIf>
 <MTVar name='idx' value='3'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3</MTIf>
