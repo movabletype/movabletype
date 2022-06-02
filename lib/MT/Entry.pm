@@ -913,15 +913,14 @@ sub author {
     $entry->cache_property(
         'author',
         sub {
-            return undef unless $entry->author_id;
+            my $author_id    = $entry->author_id or return undef;
             my $req          = MT::Request->instance();
             my $author_cache = $req->stash('author_cache');
-            my $author       = $author_cache->{ $entry->author_id };
+            my $author       = $author_cache->{$author_id};
             unless ($author) {
                 require MT::Author;
-                $author = MT::Author->load( $entry->author_id )
-                    or return undef;
-                $author_cache->{ $entry->author_id } = $author;
+                $author = MT::Author->load($author_id) or return undef;
+                $author_cache->{$author_id} = $author;
                 $req->stash( 'author_cache', $author_cache );
             }
             $author;
