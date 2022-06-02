@@ -219,23 +219,10 @@ sub recover_password {
             );
 
             require MT::Util::Mail;
-            MT::Util::Mail->send( \%head, $body ) or do {
-                $app->log(
-                    {   message => $app->translate(
-                            'Error sending mail: [_1]',
-                            MT::Util::Mail->errstr
-                        ),
-                        level    => MT::Log::ERROR(),
-                        class    => 'system',
-                        category => 'email'
-                    }
-                );
-                die $app->translate(
-                    "Error sending e-mail ([_1]); Please fix the problem, then "
-                        . "try again to recover your password.",
-                    MT::Util::Mail->errstr
-                );
-            };
+            MT::Util::Mail->send(\%head, $body) or die $app->translate(
+                "Error sending e-mail ([_1]); Please fix the problem, then try again to recover your password.",
+                MT::Util::Mail->errstr
+            );
         }
     );
 
@@ -481,7 +468,7 @@ sub test_system_mail {
         = $app->translate("This is the test email sent by Movable Type.");
 
     require MT::Util::Mail;
-    if ( MT::Util::Mail->send( \%head, $body ) ) {
+    if ( MT::Util::Mail->send( \%head, $body, { no_logging => 1 } ) ) {
         $app->log(
             {   message => $app->translate(
                     'Test e-mail was successfully sent to [_1]',
@@ -2853,25 +2840,10 @@ sub reset_password {
     );
 
     require MT::Util::Mail;
-    MT::Util::Mail->send( \%head, $body ) or do {
-        $app->log(
-            {   message => $app->translate(
-                    'Error sending mail: [_1]',
-                    MT::Util::Mail->errstr
-                ),
-                level    => MT::Log::ERROR(),
-                class    => 'system',
-                category => 'email'
-            }
-        );
-        return $app->error(
-            $app->translate(
-                "Error sending e-mail ([_1]); Please fix the problem, then "
-                    . "try again to recover your password.",
-                MT::Util::Mail->errstr
-            )
-        );
-    };
+    MT::Util::Mail->send(\%head, $body) or return $app->error($app->translate(
+        "Error sending e-mail ([_1]); Please fix the problem, then try again to recover your password.",
+        MT::Util::Mail->errstr
+    ));
 
     ( 1, $message );
 }

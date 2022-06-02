@@ -1163,7 +1163,7 @@ sub optional {
                 );
 
             require MT::Util::Mail;
-            $ok = MT::Util::Mail->send( \%head, $body );
+            $ok = MT::Util::Mail->send( \%head, $body, { no_logging => 1 } );
 
             if ($ok) {
                 $param{success} = 1;

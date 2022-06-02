@@ -17,7 +17,8 @@ use MT::Util qw(is_valid_email);
 
 sub send {
     my $class = shift;
-    my ($hdrs_arg, $body) = @_;
+    my ($hdrs_arg, $body, $args) = @_;
+    $args ||= {};
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
     for my $h (keys %hdrs) {
@@ -40,10 +41,29 @@ sub send {
     $hdrs{Sender} = $hdrs{From}[0] if (ref $hdrs{From} eq 'ARRAY' && scalar(@{ $hdrs{From} }) > 1);
 
     my $xfer = $conf->MailTransfer;
-    return $class->_send_mt_sendmail(\%hdrs, $body) if $xfer eq 'sendmail';
-    return $class->_send_mt_smtp(\%hdrs, $body)     if $xfer eq 'smtp';
-    return $class->_send_mt_debug(\%hdrs, $body)    if $xfer eq 'debug';
-    return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
+    my $success;
+    if ($xfer eq 'sendmail') {
+        $success = $class->_send_mt_sendmail(\%hdrs, $body);
+    } elsif ($xfer eq 'smtp') {
+        $success = $class->_send_mt_smtp(\%hdrs, $body);
+    } elsif ($xfer eq 'debug') {
+        $success = $class->_send_mt_debug(\%hdrs, $body);
+    } else {
+        $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
+    }
+
+    if (!$args->{no_logging}) {
+        if (!$success) {
+            MT->instance->log({
+                message  => MT->translate('Error sending mail: [_1]', MT::Util::Mail->errstr),
+                level    => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'email'
+            });
+        }
+    }
+
+    return $success;
 }
 
 sub fix_xfer_enc {

@@ -148,23 +148,10 @@ sub send_notify {
     my $i = 1;
     require MT::Util::Mail;
     unless ( exists $params{from_address} ) {
-        MT::Util::Mail->send( \%head, $body ) or do {
-            $app->log(
-                {   message => $app->translate(
-                        'Error sending mail: [_1]',
-                        MT::Util::Mail->errstr
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'email'
-                }
-            );
-
-            return $app->errtrans(
-                "Error sending mail ([_1]): Try another MailTransfer setting?",
-                MT::Util::Mail->errstr
-            );
-        };
+        MT::Util::Mail->send(\%head, $body) or return $app->errtrans(
+            "Error sending mail ([_1]): Try another MailTransfer setting?",
+            MT::Util::Mail->errstr
+        );
     }
     delete $head{To};
 
@@ -182,25 +169,10 @@ sub send_notify {
         } @addresses_to_send;
     }
     foreach my $info (@email_to_send) {
-        MT::Util::Mail->send( $info, $body ) or do {
-            $app->log(
-                {   message => $app->translate(
-                        'Error sending mail: [_1]',
-                        MT::Util::Mail->errstr
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'email'
-                }
-            );
-
-            return $app->error(
-                $app->translate(
-                    "Error sending mail ([_1]): Try another MailTransfer setting?",
-                    MT::Util::Mail->errstr
-                )
-            );
-        };
+        MT::Util::Mail->send($info, $body) or return $app->error($app->translate(
+            "Error sending mail ([_1]): Try another MailTransfer setting?",
+            MT::Util::Mail->errstr
+        ));
     }
     $app->redirect(
         $app->uri(

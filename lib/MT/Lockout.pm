@@ -246,17 +246,7 @@ sub _insert_failedlogin {
             );
 
             require MT::Util::Mail;
-            MT::Util::Mail->send( \%head, $body )
-                or $app->log(
-                {   message => $app->translate(
-                        'Error sending mail: [_1]',
-                        MT::Util::Mail->errstr
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'email'
-                }
-                );
+            MT::Util::Mail->send( \%head, $body );
         }
 
         $app->run_callbacks( 'post_lockout.user', $app, $username,
@@ -300,17 +290,7 @@ sub _insert_failedlogin {
             );
 
             require MT::Util::Mail;
-            MT::Util::Mail->send( \%head, $body )
-                or $app->log(
-                {   message => $app->translate(
-                        'Error sending mail: [_1]',
-                        MT::Util::Mail->errstr
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'email'
-                }
-                );
+            MT::Util::Mail->send( \%head, $body );
         }
 
         $app->run_callbacks( 'post_lockout.ip', $app, $username, $remote_ip );
