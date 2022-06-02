@@ -153,6 +153,7 @@ sub prepare_image {
     require MT::Test::Image;
     require Image::ExifTool;
     require File::Path;
+    require File::Basename;
 
     my $image_dir = "$ENV{MT_TEST_ROOT}/images";
     File::Path::mkpath($image_dir) unless -d $image_dir;
@@ -164,6 +165,8 @@ sub prepare_image {
                 my $blog_id = _find_blog_id($objs, $item)
                     or croak "blog_id is required: image";
                 my $file = "$image_dir/$name";
+                my $dir  = File::Basename::dirname($file);
+                File::Path::mkpath($dir) unless -d $dir;
                 MT::Test::Image->write(file => $file);
                 my $info = Image::ExifTool::ImageInfo($file);
                 my %args = (
