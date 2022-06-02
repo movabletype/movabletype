@@ -660,6 +660,16 @@ sub author {
     );
 }
 
+sub modified_author {
+    my $self = shift;
+    $self->cache_property(
+        'modified_author',
+        sub {
+            scalar MT::Author->load( $self->modified_by || 0 );
+        },
+    );
+}
+
 sub terms_for_tags {
     require MT::ContentStatus;
     return { status => MT::ContentStatus::RELEASE() };

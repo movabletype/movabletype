@@ -929,6 +929,26 @@ sub author {
     );
 }
 
+sub modified_author {
+    my $entry = shift;
+    $entry->cache_property(
+        'modified_author',
+        sub {
+            my $modified_by  = $entry->modified_by or return undef;
+            my $req          = MT::Request->instance();
+            my $author_cache = $req->stash('author_cache');
+            my $author       = $author_cache->{$modified_by};
+            unless ($author) {
+                require MT::Author;
+                $author = MT::Author->load($modified_by) or return undef;
+                $author_cache->{$modified_by} = $author;
+                $req->stash( 'author_cache', $author_cache );
+            }
+            $author;
+        }
+    );
+}
+
 sub __load_category_data {
     my $entry = shift;
     my $t     = MT->get_timer;
