@@ -64,7 +64,7 @@ sub edit {
     }
 
     if ($id) {
-        if ( $blog && $blog->use_revision ) {
+        if ( ($blog && $blog->use_revision) or (!$blog && MT->config->GlobalTemplateMaxRevisions) ) {
             my $rn = $app->param('r') || 0;
             if ( $obj->current_revision > 0 || $rn != $obj->current_revision )
             {
@@ -968,7 +968,7 @@ sub edit {
         || ( $obj && ( $obj->outfile || '' ) !~ m/\.(css|xml|rss|js)$/ ) )
         && ( !exists $param->{can_preview} );
 
-    if ( $blog && $blog->use_revision ) {
+    if ( ($blog && $blog->use_revision) or (!$blog && MT->config->GlobalTemplateMaxRevisions) ) {
         $param->{use_revision} = 1;
 
  #TODO: the list of revisions won't appear on the edit screen.

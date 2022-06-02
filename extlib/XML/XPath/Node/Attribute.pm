@@ -4,7 +4,7 @@ use strict; use warnings;
 use vars qw/@ISA $VERSION/;
 
 @ISA = ('XML::XPath::Node');
-$VERSION = '1.42';
+$VERSION = '1.44';
 
 package XML::XPath::Node::AttributeImpl;
 
@@ -12,7 +12,7 @@ use vars qw/@ISA $VERSION/;
 @ISA = ('XML::XPath::NodeImpl', 'XML::XPath::Node::Attribute');
 use XML::XPath::Node ':node_keys';
 
-$VERSION = '1.42';
+$VERSION = '1.44';
 
 sub new {
 	my $class = shift;

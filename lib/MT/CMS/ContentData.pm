@@ -364,6 +364,9 @@ sub edit {
                 $field->{value} = $field->{options}{initial_value};
             }
         }
+        if ($field->{type} eq 'multi_line_text') {
+            $field->{options}{full_rich_text} = 1 unless defined $field->{options}{full_rich_text};
+        }
 
         my $content_field_type = $content_field_types->{ $field->{type} };
 

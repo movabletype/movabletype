@@ -46,8 +46,6 @@ sub edit {
 
         $param->{system_allow_comments} = $cfg->AllowComments;
         $param->{system_allow_pings}    = $cfg->AllowPings;
-        $param->{tk_available}          = eval { require MIME::Base64; 1; }
-            && eval { require LWP::UserAgent; 1 };
         $param->{'auto_approve_commenters'}
             = !$obj->manual_approve_commenters;
         $param->{"moderate_comments"} = $obj->moderate_unreg_comments;

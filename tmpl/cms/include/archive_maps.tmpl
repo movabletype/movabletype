@@ -89,7 +89,7 @@
              help_page="templates"
              help_section="cat_field_id"
              shown="$show_cat_field">
-            <select name="cat_field_id_<mt:var name="map_id">" id="cat_field_id_<mt:var name="map_id">" tabindex="12" class="custom-select form-control">
+            <select name="cat_field_id_<mt:var name="map_id">" id="cat_field_id_<mt:var name="map_id">" class="custom-select form-control">
               <mt:loop name='cat_fields'>
                 <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
               </mt:loop>
@@ -108,7 +108,7 @@
              help_page="templates"
              help_section="dt_field_id"
              shown="$show_dt_field">
-            <select name="dt_field_id_<mt:var name="map_id">" id="dt_field_id_<mt:var name="map_id">" tabindex="13" class="custom-select form-control">
+            <select name="dt_field_id_<mt:var name="map_id">" id="dt_field_id_<mt:var name="map_id">" class="custom-select form-control">
               <mt:loop name='dt_fields'>
                 <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
               </mt:loop>

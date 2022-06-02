@@ -44,7 +44,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.9.2',              '__PRODUCT_VERSION_ID__',
+        '7.9.4',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -62,11 +62,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 2;
+        $RELEASE_NUMBER = 4;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5006';
+        $RELEASE_VERSION_ID = 'r.5202';
     }
 
     $DebugMode = 0;
@@ -2618,7 +2618,7 @@ sub effective_captcha_provider {
 
 sub handler_to_coderef {
     my $pkg = shift;
-    my ( $name, $delayed, $allow_string_sub ) = @_;
+    my ( $name, $delayed ) = @_;
 
     return $name if ref($name) eq 'CODE';
     return undef unless defined $name && $name ne '';
@@ -2638,7 +2638,7 @@ sub handler_to_coderef {
             $component = $1;
         }
     }
-    if ($name =~ m/^\s*sub\s*\{/s && ($allow_string_sub || MT->config('ForceAllowStringSub'))) {
+    if ( $name =~ m/^\s*sub\s*\{/s ) {
         $code = eval $name or die $@;
 
         if ($component) {
