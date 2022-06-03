@@ -4,7 +4,7 @@ Cache::IOString - wrapper for IO::String to use in Cache implementations
 
 =head1 DESCRIPTION
 
-This module implements a derived class of IO::String that handles access 
+This module implements a derived class of IO::String that handles access
 modes and allows callback on close.  It is for use by Cache implementations
 and should not be used directly.
 

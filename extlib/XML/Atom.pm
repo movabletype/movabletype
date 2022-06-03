@@ -4,20 +4,12 @@ package XML::Atom;
 use strict;
 
 use 5.008_001;
-our $VERSION = '0.38';
+our $VERSION = '0.43';
 
 BEGIN {
     @XML::Atom::EXPORT = qw( LIBXML DATETIME);
     if (eval { require XML::LibXML }) {
-        my $ver    = $XML::LibXML::VERSION;
-        my $rt_ver = XML::LibXML::LIBXML_RUNTIME_VERSION();
-        *{XML::Atom::LIBXML} = sub() {
-            # We should require XML::LibXML v1.7 / libxml2 v2.7.4 for any setup options.
-            return 1 if 1.7 <= $ver
-                && 20703 < $rt_ver;
-            require XML::XPath;
-            return 0;
-        };
+        *{XML::Atom::LIBXML} = sub() {1};
     } else {
         require XML::XPath;
         *{XML::Atom::LIBXML} = sub() {0};
@@ -27,18 +19,6 @@ BEGIN {
     } else {
         *{XML::Atom::DATETIME} = sub() {0};
     }
-
-    require XML::XPath::Function;
-    local $^W = 0;
-    *XML::XPath::Function::namespace_uri = sub {
-        my $self = shift;
-        my($node, @params) = @_;
-        my $ns = $node->getNamespace($node->getPrefix);
-        if (!$ns) {
-            $ns = ($node->getNamespaces)[0];
-        }
-        XML::XPath::Literal->new($ns ? $ns->getExpanded : '');
-    };
 
     $XML::Atom::ForceUnicode = 0;
     $XML::Atom::DefaultVersion = 0.3;

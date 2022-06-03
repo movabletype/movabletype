@@ -33,6 +33,12 @@ sub fields {
                     ];
                 }
             },
+            schema => {
+                type => 'array',
+                items => {
+                    type => 'string',
+                },
+            },
         },
     ];
 }

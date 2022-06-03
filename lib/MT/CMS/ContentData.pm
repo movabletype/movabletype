@@ -364,6 +364,9 @@ sub edit {
                 $field->{value} = $field->{options}{initial_value};
             }
         }
+        if ($field->{type} eq 'multi_line_text') {
+            $field->{options}{full_rich_text} = 1 unless defined $field->{options}{full_rich_text};
+        }
 
         my $content_field_type = $content_field_types->{ $field->{type} };
 
@@ -888,41 +891,41 @@ sub save {
     $app->run_callbacks( 'cms_post_save.content_data',
         $app, $content_data, $orig );
 
-    # Delete old archive files.
-    if ( $app->config('DeleteFilesAtRebuild') && $content_data_id ) {
-        $app->request->cache( 'file', {} );    # clear cache
-        my $file = MT::Util::archive_file_for( $content_data, $blog,
-            $archive_type );
-        if (   $file ne $orig_file
-            || $content_data->status != MT::ContentStatus::RELEASE() )
-        {
-            $app->publisher->remove_content_data_archive_file(
-                ContentData => $orig,
-                ArchiveType => $archive_type,
-            );
-        }
-        MT::Util::Log::init();
-        for my $param (@old_archive_params) {
-            my $orig = $param->{ContentData};
-            next if $orig->status != MT::ContentStatus::RELEASE();
-            my $fi = $param->{FileInfo};
-            if ( MT->config('DeleteFilesAfterRebuild') ) {
-                $fi->mark_to_remove;
-                MT::Util::Log->debug( 'Marked to remove ' . $fi->file_path );
-            }
-            else {
-                $fi->remove;
-                $app->publisher->_delete_archive_file(%$param);
-            }
-        }
-    }
-
     ## If the saved status is RELEASE, or if the *previous* status was
     ## RELEASE, then rebuild content data archives and indexes.
     ## Otherwise the status was and is HOLD, and we don't have to do anything.
     if ( ( $content_data->status || 0 ) == MT::ContentStatus::RELEASE()
         || $status_old == MT::ContentStatus::RELEASE() )
     {
+        # Delete old archive files.
+        if ( $app->config('DeleteFilesAtRebuild') && $content_data_id ) {
+            $app->request->cache( 'file', {} );    # clear cache
+            my $file = MT::Util::archive_file_for( $content_data, $blog,
+                $archive_type );
+            if (   $file ne $orig_file
+                || $content_data->status != MT::ContentStatus::RELEASE() )
+            {
+                $app->publisher->remove_content_data_archive_file(
+                    ContentData => $orig,
+                    ArchiveType => $archive_type,
+                );
+            }
+            MT::Util::Log::init();
+            for my $param (@old_archive_params) {
+                my $orig = $param->{ContentData};
+                next if $orig->status != MT::ContentStatus::RELEASE();
+                my $fi = $param->{FileInfo};
+                if ( MT->config('DeleteFilesAfterRebuild') ) {
+                    $fi->mark_to_remove;
+                    MT::Util::Log->debug( 'Marked to remove ' . $fi->file_path );
+                }
+                else {
+                    $fi->remove;
+                    $app->publisher->_delete_archive_file(%$param);
+                }
+            }
+        }
+
         my $old_categories
             = %categories_old
             ? MT::Util::to_json( \%categories_old )

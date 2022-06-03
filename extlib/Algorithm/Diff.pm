@@ -5,10 +5,8 @@ use strict;
 use integer;    # see below in _replaceNextLargerWith() for mod to make
                 # if you don't use this
 use vars qw( $VERSION @EXPORT_OK );
-$VERSION = 1.19_03;
-#          ^ ^^ ^^-- Incremented at will
-#          | \+----- Incremented for non-trivial changes to features
-#          \-------- Incremented for fundamental changes
+$VERSION = '1.201';
+
 require Exporter;
 *import    = \&Exporter::import;
 @EXPORT_OK = qw(
@@ -42,7 +40,7 @@ sub _withPositionsOfInInterval
     for ( $index = $start ; $index <= $end ; $index++ )
     {
         my $element = $aCollection->[$index];
-        my $key = &$keyGen( $element, @_ );
+        my $key = $keyGen ? &$keyGen( $element, @_ ) : $element;
         if ( exists( $d{$key} ) )
         {
             unshift ( @{ $d{$key} }, $index );
@@ -147,12 +145,7 @@ sub _longestCommonSubsequence
 
     # set up code refs
     # Note that these are optimized.
-    if ( !defined($keyGen) )    # optimize for strings
-    {
-        $keyGen = sub { $_[0] };
-        $compare = sub { my ( $a, $b ) = @_; $a eq $b };
-    }
-    else
+    if ( $keyGen )    # optimize for strings
     {
         $compare = sub {
             my $a = shift;
@@ -175,7 +168,8 @@ sub _longestCommonSubsequence
         # First we prune off any common elements at the beginning
         while ( $aStart <= $aFinish
             and $bStart <= $bFinish
-            and &$compare( $a->[$aStart], $b->[$bStart], @_ ) )
+            and ( $keyGen ? &$compare( $a->[$aStart], $b->[$bStart], @_ )
+                          : ( $a->[$aStart] eq $b->[$bStart] ) ) )
         {
             $matchVector->[ $aStart++ ] = $bStart++;
             $prunedCount++;
@@ -184,7 +178,8 @@ sub _longestCommonSubsequence
         # now the end
         while ( $aStart <= $aFinish
             and $bStart <= $bFinish
-            and &$compare( $a->[$aFinish], $b->[$bFinish], @_ ) )
+            and ( $keyGen ? &$compare( $a->[$aFinish], $b->[$bFinish], @_ )
+                          : ( $a->[$aFinish] eq $b->[$bFinish] ) ) )
         {
             $matchVector->[ $aFinish-- ] = $bFinish--;
             $prunedCount++;
@@ -200,7 +195,7 @@ sub _longestCommonSubsequence
     my ( $i, $ai, $j, $k );
     for ( $i = $aStart ; $i <= $aFinish ; $i++ )
     {
-        $ai = &$keyGen( $a->[$i], @_ );
+        $ai = $keyGen ? &$keyGen( $a->[$i], @_ ) : $a->[$i];
         if ( exists( $bMatches->{$ai} ) )
         {
             $k = 0;
@@ -975,8 +970,8 @@ Therefore, the following three lists will contain the same values:
 
 =head2 C<new>
 
-    $diff = Algorithm::Diffs->new( \@seq1, \@seq2 );
-    $diff = Algorithm::Diffs->new( \@seq1, \@seq2, \%opts );
+    $diff = Algorithm::Diff->new( \@seq1, \@seq2 );
+    $diff = Algorithm::Diff->new( \@seq1, \@seq2, \%opts );
 
 C<new> computes the smallest set of additions and deletions necessary
 to turn the first sequence into the second and compactly records them
@@ -985,8 +980,6 @@ in the object.
 You use the object to iterate over I<hunks>, where each hunk represents
 a contiguous section of items which should be added, deleted, replaced,
 or left unchanged.
-
-=over 4
 
 The following summary of all of the methods looks a lot like Perl code
 but some of the symbols have different meanings:
@@ -1017,6 +1010,8 @@ is "reset" (not currently pointing at any hunk).
 
 Passing in C<undef> for an optional argument is always treated the same
 as if no argument were passed in.
+
+=over 4
 
 =item C<Next>
 
@@ -1099,25 +1094,25 @@ follow 4 values:
 
 =over 4
 
-=item 3
+=item Z<>3
 
 C<3==(1|2)>.  This hunk contains items from @seq1 and the items
 from @seq2 that should replace them.  Both sequence 1 and 2
 contain changed items so both the 1 and 2 bits are set.
 
-=item 2
+=item Z<>2
 
 This hunk only contains items from @seq2 that should be inserted (not
 items from @seq1).  Only sequence 2 contains changed items so only the 2
 bit is set.
 
-=item 1
+=item Z<>1
 
 This hunk only contains items from @seq1 that should be deleted (not
 items from @seq2).  Only sequence 1 contains changed items so only the 1
 bit is set.
 
-=item 0
+=item Z<>0
 
 This means that the items in this hunk are the same in both sequences.
 Neither sequence 1 nor 2 contain changed items so neither the 1 nor the
@@ -1479,7 +1474,7 @@ this module (the new OO interface is more powerful and much easier to
 use).
 
 Imagine that there are two arrows.  Arrow A points to an element of
-sequence A, and arrow B points to an element of the sequence B. 
+sequence A, and arrow B points to an element of the sequence B.
 Initially, the arrows point to the first elements of the respective
 sequences.  C<traverse_sequences> will advance the arrows through the
 sequences one element at a time, calling an appropriate user-specified
@@ -1521,9 +1516,9 @@ corresponding index in A or B.
 If arrow A reaches the end of its sequence, before arrow B does,
 C<traverse_sequences> will call the C<A_FINISHED> callback when it
 advances arrow B, if there is such a function; if not it will call
-C<DISCARD_B> instead.  Similarly if arrow B finishes first. 
+C<DISCARD_B> instead.  Similarly if arrow B finishes first.
 C<traverse_sequences> returns when both arrows are at the ends of their
-respective sequences.  It returns true on success and false on failure. 
+respective sequences.  It returns true on success and false on failure.
 At present there is no way to fail.
 
 C<traverse_sequences> may be passed an optional fourth parameter; this
@@ -1582,8 +1577,8 @@ with different order of events.
 C<traverse_balanced> might be a bit slower than C<traverse_sequences>,
 noticeable only while processing huge amounts of data.
 
-The C<sdiff> function of this module 
-is implemented as call to C<traverse_balanced>.
+The C<sdiff> function of this module is implemented as call to
+C<traverse_balanced>.
 
 C<traverse_balanced> does not have a useful return value; you are expected to
 plug in the appropriate behavior with the callback functions.
@@ -1689,7 +1684,7 @@ empty mail message to mjd-perl-diff-request@plover.com.
 
 Versions through 0.59 (and much of this documentation) were written by:
 
-Mark-Jason Dominus, mjd-perl-diff@plover.com
+Mark-Jason Dominus
 
 This version borrows some documentation and routine names from
 Mark-Jason's, but Diff.pm's code was completely replaced.

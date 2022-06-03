@@ -46,6 +46,13 @@ sub fields {
                 };
             },
             condition => \&can_view,
+            schema => {
+                type       => 'object',
+                properties => {
+                    raw  => { type => 'string' },
+                    path => { type => 'string' },
+                },
+            },
         },
         {   name                => 'extraPath',
             alias               => 'extra_path',

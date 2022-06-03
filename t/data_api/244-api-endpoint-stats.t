@@ -26,6 +26,14 @@ use MT::DataAPI::Endpoint::Stats;
 
 $test_env->prepare_fixture('db_data');
 
+# tweak for MTC-25052
+my $finfo = MT->model('fileinfo')->load({url => '/nana/archives/1978/01/a-rainy-day.html'});
+my $clone = $finfo->clone;
+$clone->id(undef);
+$clone->save;
+$finfo->entry_id(21);
+$finfo->save;
+
 my $app  = MT::App::DataAPI->new;
 my $blog = $app->model('blog')->load(1);
 ( my $spec_dir = __FILE__ ) =~ s/t$/d/;

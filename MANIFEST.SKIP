@@ -186,6 +186,7 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^mt-cp.cgi
 #?package=MTCLOUD ^addons/Community.pack
 #?package=MTCLOUD ^mt-static/addons/Community.pack
+#?package=MTCLOUD ^addons/Cloud.pack/tools/Cloud.pack/cloud-log
 
 #?package=MTP ^COPYING
 #?package=MTP ^COPYRIGHT

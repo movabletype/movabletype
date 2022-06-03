@@ -186,15 +186,8 @@ sub dialog_list_asset {
     my $blog;
     $blog = $blog_class->load($blog_id) if $blog_id;
 
-    my $edit_field = $app->param('edit_field') || '';
-    if ( $edit_field =~ m/^customfield_.*$/ ) {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            if $blog_id && !$app->can_do('access_to_insert_asset_list');
-    }
+    return $app->permission_denied()
+        if $blog_id && !$app->can_do('access_to_insert_asset_list');
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
@@ -325,15 +318,8 @@ sub insert {
 
     $app->validate_magic() or return;
 
-    my $edit_field = $app->param('edit_field') || '';
-    if ( $edit_field =~ m/^customfield_.*$/ ) {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            unless $app->can_do('insert_asset');
-    }
+    return $app->permission_denied()
+        unless $app->can_do('insert_asset');
 
     my $text = $app->param('no_insert') ? "" : _process_post_upload($app);
     return unless defined $text;
@@ -347,6 +333,7 @@ sub insert {
     }
     my $tmpl;
 
+    my $edit_field = $app->param('edit_field') || '';
     my $id = $app->param('id') or return $app->errtrans("Invalid request.");
     my $asset = MT->model('asset')->load($id);
     if ($extension_message) {
@@ -3078,16 +3065,8 @@ sub dialog_asset_modal {
     my %param;
     _set_start_upload_params( $app, \%param );
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            if $blog_id && !$app->can_do('access_to_insert_asset_list');
-    }
+    return $app->permission_denied()
+        if $blog_id && !$app->can_do('access_to_insert_asset_list');
 
     $param{can_multi} = 1
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
@@ -3260,14 +3239,8 @@ sub insert_asset {
     }) or return;
 
     my $edit_field = $app->param('edit_field') || '';
-    if ( $edit_field =~ m/^customfield_.*$/ ) {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            unless $app->can_do('insert_asset');
-    }
+    return $app->permission_denied()
+        unless $app->can_do('insert_asset');
 
     require MT::Asset;
     my $text;
@@ -3331,10 +3304,11 @@ sub insert_asset {
 
     my $can_multi;
     my $content_field_id = $app->param('content_field_id');
+    my $options;
     if ($content_field_id) {
         require MT::ContentField;
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
-            my $options = $content_field->options;
+            $options = $content_field->options;
             $can_multi = $options->{multiple} ? 1 : 0;
         }
         else {
@@ -3346,8 +3320,8 @@ sub insert_asset {
         my @assets_data;
         my $hasher = build_asset_hasher(
             $app,
-            PreviewWidth  => 80,
-            PreviewHeight => 80,
+            PreviewWidth  => $options->{preview_width} || 80,
+            PreviewHeight => $options->{preview_height} || 80,
         );
         for my $obj (@$assets) {
             my $row = $obj->get_values;

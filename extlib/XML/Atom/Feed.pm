@@ -279,14 +279,14 @@ permalink, I<tag> URI scheme or I<urn:uuid> for handy.
 
 =head1 UNICODE FLAGS
 
-By default, XML::Atom takes off all the Unicode flag fro mthe feed content. For example,
+By default, XML::Atom takes off all the Unicode flag from the feed content. For example,
 
   my $title = $feed->title;
 
 the variable C<$title> contains UTF-8 bytes without Unicode flag set,
-even if the feed title contains some multibyte chracters.
+even if the feed title contains some multibyte characters.
 
-If you don't like this behaviour and wants to andle everything as
+If you don't like this behaviour and wants to handle everything as
 Unicode characters (rather than UTF-8 bytes), set
 C<$XML::Atom::ForceUnicode> flag to 1.
 

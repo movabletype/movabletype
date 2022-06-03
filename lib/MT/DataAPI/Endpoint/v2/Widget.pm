@@ -12,6 +12,59 @@ use warnings;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list_openapi_spec {
+    +{
+        tags       => ['Widgets'],
+        summary    => 'Retrieve a list of widgets in the specified site',
+        parameters => [
+            { '$ref' => '#/components/parameters/widget_search' },
+            { '$ref' => '#/components/parameters/widget_searchFields' },
+            { '$ref' => '#/components/parameters/widget_limit' },
+            { '$ref' => '#/components/parameters/widget_offset' },
+            { '$ref' => '#/components/parameters/widget_sortBy' },
+            { '$ref' => '#/components/parameters/widget_sortOrder' },
+            { '$ref' => '#/components/parameters/widget_fields' },
+            { '$ref' => '#/components/parameters/widget_includeIds' },
+            { '$ref' => '#/components/parameters/widget_excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of widgets.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of widget resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/template',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -48,6 +101,59 @@ sub list_all {
     };
 }
 
+sub list_for_widgetset_openapi_spec {
+    +{
+        tags       => ['Widgets', 'WidgetSets'],
+        summary    => 'Retrieve a list of widgets in the specified widgetset',
+        parameters => [
+            { '$ref' => '#/components/parameters/widget_search' },
+            { '$ref' => '#/components/parameters/widget_searchFields' },
+            { '$ref' => '#/components/parameters/widget_limit' },
+            { '$ref' => '#/components/parameters/widget_offset' },
+            { '$ref' => '#/components/parameters/widget_sortBy' },
+            { '$ref' => '#/components/parameters/widget_sortOrder' },
+            { '$ref' => '#/components/parameters/widget_fields' },
+            { '$ref' => '#/components/parameters/widget_includeIds' },
+            { '$ref' => '#/components/parameters/widget_excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of widgets.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of widget resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/template',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or WidgetSet not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list_for_widgetset {
     my ( $app, $endpoint ) = @_;
 
@@ -72,6 +178,39 @@ sub list_for_widgetset {
     };
 }
 
+sub get_openapi_spec {
+    +{
+        tags       => ['Widgets'],
+        summary    => 'Retrieve a single widget by its ID',
+        parameters => [
+            { '$ref' => '#/components/parameters/widget_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Widget not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -82,6 +221,38 @@ sub get {
         or return;
 
     return $widget;
+}
+
+sub get_for_widgetset_openapi_spec {
+    +{
+        tags       => ['Widgets', 'WidgetSets'],
+        summary    => 'Retrieve a single widget by widgetset ID',
+        parameters => [
+            { '$ref' => '#/components/parameters/widget_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Widget not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub get_for_widgetset {
@@ -109,6 +280,49 @@ sub get_for_widgetset {
     return $widget;
 }
 
+sub create_openapi_spec {
+    +{
+        tags        => ['Widgets'],
+        summary     => 'Create a new widget',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            widget => {
+                                '$ref' => '#/components/schemas/template_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub create {
     my ( $app, $endpoint ) = @_;
 
@@ -129,6 +343,49 @@ sub create {
     return $new_widget;
 }
 
+sub update_openapi_spec {
+    +{
+        tags        => ['Widgets'],
+        summary     => 'Update a widget',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            widget => {
+                                '$ref' => '#/components/schemas/template_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Widget not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
@@ -140,6 +397,35 @@ sub update {
     save_object( $app, 'widget', $new_widget, $orig_widget ) or return;
 
     return $new_widget;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags      => ['Widgets'],
+        summary   => 'Delete a widget',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Widget not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {
@@ -159,6 +445,44 @@ sub delete {
     $app->run_callbacks( 'data_api_post_delete.template', $app, $widget );
 
     return $widget;
+}
+
+sub refresh_openapi_spec {
+    +{
+        tags      => ['Widgets'],
+        summary   => 'Reset widget text to default',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status   => { type => 'string' },
+                                messages => {
+                                    type  => 'array',
+                                    items => {
+                                        type => 'string',
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Widget not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub refresh {
@@ -190,6 +514,38 @@ sub refresh {
     };
 }
 
+sub clone_openapi_spec {
+    +{
+        tags        => ['Widgets'],
+        summary     => 'Make a clone of a widget',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Widget not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub clone {
     my ( $app, $endpoint ) = @_;
 
@@ -201,6 +557,7 @@ sub clone {
 
     $app->param( 'id', $widget->id );
 
+    require MT::CMS::Template;
     MT::CMS::Template::clone_templates($app);
 
     if ( $app->errstr ) {

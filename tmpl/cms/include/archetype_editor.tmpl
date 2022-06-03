@@ -64,7 +64,7 @@
         <textarea name="_text_" id="editor-content-textarea" class="text full"></textarea>
         <!-- the iframe bootstraps the js -->
         <$mt:setvar name="delayed_bootstrap" value="1"$>
-        <iframe tabindex="3" id="editor-content-iframe" frameborder="0" scrolling="yes" src="<$mt:var name="static_uri"$>html/editor-content.html?cs=<$mt:var name="language_encoding"$>" style="height: <$mt:var name="editor_content_height"$>px"></iframe>
+        <iframe id="editor-content-iframe" frameborder="0" scrolling="yes" src="<$mt:var name="static_uri"$>html/editor-content.html?cs=<$mt:var name="language_encoding"$>" style="height: <$mt:var name="editor_content_height"$>px"></iframe>
         <input type="hidden" id="editor-input-content" name="text" value="<$mt:var name="text" escape="html"$>" />
         <input type="hidden" id="editor-input-extended" name="text_more" value="<$mt:var name="text_more" escape="html"$>" />
       <mt:ignore>
