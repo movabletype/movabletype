@@ -183,6 +183,8 @@ BEGIN {
             'objectcategory'      => 'MT::ObjectCategory',
             'rebuild_trigger'     => 'MT::RebuildTrigger',
 
+            'import_export_status' => 'MT::ImportExport::Status',
+
             # TheSchwartz tables
             'ts_job'        => 'MT::TheSchwartz::Job',
             'ts_error'      => 'MT::TheSchwartz::Error',
@@ -2263,6 +2265,10 @@ BEGIN {
             'DisableImagePopup' => undef,
             'ForceExifRemoval' => { default => 1 },
             'TemporaryFileExpiration' => { default => 60 * 60 },
+            'EnableBackgroundImport' => { default => 1 },
+            'EnableBackgroundExport' => { default => 1 },
+            'ForceBackgroundImport' => undef,
+            'ForceBackgroundExport' => undef,
             'PSGIStreaming' => { default => 1 },
             'PSGIServeStatic' => { default => 1 },
             'HideVersion' => { default => 1 },
@@ -2440,7 +2446,15 @@ BEGIN {
             'mt_summary_watcher' => {
                 label => "Adds Summarize workers to queue.",
                 class => 'MT::Worker::SummaryWatcher',
-            }
+            },
+            'mt_import_entries' => {
+                label => "Import entries.",
+                class => 'MT::Worker::Import',
+            },
+            'mt_export_entries' => {
+                label => "Export entries.",
+                class => 'MT::Worker::Export',
+            },
         },
         archivers => {
             'zip' => {

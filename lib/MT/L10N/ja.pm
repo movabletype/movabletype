@@ -374,6 +374,18 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/monthly_archive_list.mtml
 	'[_1] <a href="[_2]">Archives</a>' => '[_1] <a href="[_2]">アーカイブ</a>',
 
+## default_templates/notify-bg-export-error.mtml
+	'Exporting entries has failed.' => '記事のエクスポートに失敗しました。',
+
+## default_templates/notify-bg-export.mtml
+	'Exporting entries has completed.' => '記事のエクスポートが完了しました。',
+
+## default_templates/notify-bg-import-error.mtml
+	'Importing entries has failed.' => '記事のインポートに失敗しました。',
+
+## default_templates/notify-bg-import.mtml
+	'Importing entries has completed.' => '記事のインポートが完了しました。',
+
 ## default_templates/notify-entry.mtml
 	'Message from Sender:' => 'メッセージ: ',
 	'Publish Date: [_1]' => '日付: [_1]',
@@ -1379,6 +1391,7 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_2]' (ID:[_3]) status changed from [_4] to [_5]} => q{[_1]「[_2] (ID:[_3])」の公開状態が[_4]から[_5]に変更されました。},
 
 ## lib/MT/CMS/Export.pm
+	'Background Export Site Entries' => '記事のエクスポート (バックグラウンド)',
 	'Export Site Entries' => '記事のエクスポート',
 	'Please select a site.' => 'サイトを選択してください。',
 	'You do not have export permissions' => 'エクスポートする権限がありません。',
@@ -1422,6 +1435,7 @@ use vars qw( @ISA %Lexicon );
 	q{User '[_1]' (ID:[_2]) was added to group '[_3]' (ID:[_4]) by '[_5]'} => q{[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」に追加しました。},
 
 ## lib/MT/CMS/Import.pm
+	'Background Import Site Entries' => '記事のインポート (バックグラウンド)',
 	'Import Site Entries' => '記事のインポート',
 	'Importer type [_1] was not found.' => '[_1]というインポート形式は存在しません。',
 	'You do not have import permission' => 'インポートの権限がありません。',
@@ -1955,6 +1969,7 @@ use vars qw( @ISA %Lexicon );
 	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive. [_2]' => 'パフォーマンスログを出力するディレクトリ「[_1]」を作成できませんでした。ディレクトリを書き込み可能に設定するか、または書き込みできる場所をPerformanceLoggingPathディレクティブで指定してください。: [_2]',
 	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable. [_1]' => 'パフォーマンスをログを出力できませんでした。PerformanceLoggingPathにディレクトリがありますが、書き込みできません。',
 	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file. [_1]' => 'パフォーマンスログを出力できませんでした。PerformanceLoggingPathにはファイルではなくディレクトリへのパスを指定してください。',
+	'Export entries.' => '記事のエクスポート',
 	'Filter' => 'フィルタ',
 	'Folder' => 'フォルダ',
 	'Get Variable' => '変数のGet',
@@ -1967,6 +1982,7 @@ use vars qw( @ISA %Lexicon );
 	'IP addresses' => 'IPアドレス',
 	'If Block' => 'If条件ブロック',
 	'If/Else Block' => 'If/Else条件ブロック',
+	'Import entries.' => '記事のインポート',
 	'Include Template File' => 'テンプレートファイルのインクルード',
 	'Include Template Module' => 'テンプレートモジュールのインクルード',
 	'Junk Folder Expiration' => 'スパムコメント/トラックバックの廃棄',
@@ -2231,6 +2247,10 @@ use vars qw( @ISA %Lexicon );
 	'Monthly Archives Dropdown' => '月別アーカイブ(ドロップダウン)',
 	'Monthly Entry Listing' => '月別記事リスト',
 	'Navigation' => 'ナビゲーション',
+	'Notify Background Export Completion' => '記事のエクスポートの完了通知',
+	'Notify Background Export Error' => '記事のエクスポートのエラー通知',
+	'Notify Background Import Completion' => '記事のインポートの完了通知',
+	'Notify Background Import Error' => '記事のインポートのエラー通知',
 	'OpenID Accepted' => 'OpenID対応',
 	'Page Listing' => 'ページ一覧',
 	'Popup Image' => 'ポップアップ画像',
@@ -2302,6 +2322,9 @@ use vars qw( @ISA %Lexicon );
 	'__COMMENT_COUNT' => 'コメント数',
 	'__GROUP_MEMBER_COUNT' => 'メンバー数',
 
+## lib/MT/I18N/ja.pm
+	'AUTO DETECT' => '自動検出',
+
 ## lib/MT/IPBanList.pm
 	'IP Ban' => '禁止IPリスト',
 	'IP Bans' => '禁止IPリスト',
@@ -2362,6 +2385,9 @@ use vars qw( @ISA %Lexicon );
 	q{Invalid date format '[_1]'; must be 'MM/DD/YYYY HH:MM:SS AM|PM' (AM|PM is optional)} => q{日付の形式が正しくありません。'MM/DD/YYYY HH:MM:SS AM|PM' (AM|PMは任意)でなければなりません。},
 	q{Invalid status value '[_1]'} => q{状態[_1]は正しくありません},
 	q{Saving entry ('[_1]')...} => q{記事([_1])を保存しています...},
+
+## lib/MT/ImportExport/Status.pm
+	'Import/Export Status' => 'インポート/エクスポート状況',
 
 ## lib/MT/JunkFilter.pm
 	'Action: Junked (score below threshold)' => '結果: スパム(スコアがしきい値以下)',
@@ -3049,6 +3075,20 @@ use vars qw( @ISA %Lexicon );
 	'Child Site Count' => '子サイト数',
 	'First Website' => 'First Website',
 
+## lib/MT/Worker/Export.pm
+	'Background export entries from site [_1] has failed.' => 'サイト[_1]からの記事のエクスポートに失敗しました。',
+	'Background export entries from site [_1] has finished.' => 'サイト[_1]からの記事のエクスポートが終了しました。',
+	'Background export entries from site [_1] has started.' => 'サイト[_1]からの記事のエクスポートを開始しました。',
+	'Export completed' => 'エクスポート完了',
+	'Export failed' => 'エクスポート失敗',
+
+## lib/MT/Worker/Import.pm
+	'Background import entries into site [_1] has failed.' => 'サイト[_1]への記事のインポートに失敗しました。',
+	'Background import entries into site [_1] has finished.' => 'サイト[_1]への記事のインポートが終了しました。',
+	'Background import entries into site [_1] has started.' => 'サイト[_1]への記事のインポートを開始しました。',
+	'Import completed' => 'インポート完了',
+	'Import failed' => 'インポート失敗',
+
 ## lib/MT/Worker/Publish.pm
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- 完了 ([_1]ファイル - [_2]秒)',
 	'Background Publishing Done' => 'バックグラウンドパブリッシングが完了しました',
@@ -3721,6 +3761,21 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => '新規アセットのアップロード',
+
+## tmpl/cms/background_export.tmpl
+	'(Created on [_1])' => '(作成日時 [_1])',
+	'(Ended at [_1])' => '(終了日時 [_1])',
+	'(Started at [_1])' => '(開始日時 [_1])',
+	'A background job is registered.' => 'ジョブを登録しました。',
+	'Background Export [_1] Entries' => '記事のエクスポート (バックグラウンド)',
+	'Download' => 'ダウンロード',
+	'Export file is ready to download.' => 'エクスポートファイルをダウンロードできます。',
+	'Please wait until the job is finished.' => 'ジョブが完了するまでお待ちください。',
+	'The background job is already gone.' => 'ジョブがありません。',
+	'The background job is running now. Please wait until the job is finished.' => 'ジョブを実行中です。完了までお待ちください。',
+
+## tmpl/cms/background_import.tmpl
+	'Background Import [_1] Entries' => '記事のインポート (バックグラウンド)',
 
 ## tmpl/cms/backup.tmpl
 	'Archive Format' => '圧縮フォーマット',
@@ -4871,8 +4926,12 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred' => 'エラーが発生しました。',
 
 ## tmpl/cms/export.tmpl
+	'Background export' => 'バックグラウンドでのエクスポート',
 	'Export [_1] Entries' => '[_1]の記事をエクスポート',
-	'Export [_1]' => '[_1]をエクスポート',
+	'Export entries when the next job is processed.' => '次のジョブを実行するときに記事をエクスポートします。',
+	'[_1] has already registered a background job to export entries. (Job ID: [_2], created on [_3])' => '[_1]がすでに記事のエクスポートを予約済みです。(ジョブID [_2]、登録日時 [_3])',
+	'[_1] is exporting entries now.' => '[_1]が記事のエクスポートを実行中です。',
+	'[_1] is running a background job to export entries. (Job ID: [_2], started at [_3])' => '[_1]がバックグラウンドで記事のエクスポートを実行中です。(ジョブID [_2]、開始日時 [_3])',
 	'[_1] to Export' => 'エクスポートする[_1]',
 	'_USAGE_EXPORT_1' => 'Movable Typeから記事をエクスポートして、基本的なデータ(記事、コメント、トラックバック)を保存できます。',
 
@@ -4936,6 +4995,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',
 	'Apply this formatting if text format is not set on each entry.' => '記事に、テキストフォーマットが指定されていない場合に、適用されます。',
+	'Background import' => 'バックグラウンドでのインポート',
 	'Default category for entries (optional)' => '記事の既定カテゴリ(オプション)',
 	'Default password for new users:' => '新しいユーザーの初期パスワード',
 	'Enter a default password for new users.' => '新しいユーザーの初期パスワード入力してください。',
@@ -4945,6 +5005,7 @@ use vars qw( @ISA %Lexicon );
 	'Import File Encoding' => 'インポートするファイルの文字コード',
 	'Import [_1] Entries' => '[_1]に記事をインポート',
 	'Import as me' => '自分の記事としてインポートする',
+	'Import entries when the next job is processed.' => '次のジョブを実行するときに記事をインポートします。',
 	'Importing from' => 'インポート元',
 	'Ownership of imported entries' => 'インポートした記事の所有者',
 	'Preserve original user' => '記事の著者を変更しない',
@@ -4953,6 +5014,9 @@ use vars qw( @ISA %Lexicon );
 	'Upload import file (optional)' => 'インポートファイルをアップロード(オプション)',
 	'You must select a site to import.' => 'インポート先のサイトを選択してください。',
 	'You will be assigned the user of all imported entries.  If you wish the original user to keep ownership, you must contact your MT system administrator to perform the import so that new users can be created if necessary.' => 'あなたがインポートした記事を作成したことになります。元の著者を変更せずにインポートしたい場合には、システム管理者がインポート作業を行ってください。その場合には必要に応じて新しいユーザーを作成できます。',
+	'[_1] has already registered a background job to import entries. (Job ID: [_2], created on [_3])' => '[_1]がすでに記事のインポートを予約済みです。(ジョブID [_2]、登録日時 [_3])',
+	'[_1] is importing entries now.' => '[_1] が記事のインポートを実行中です。',
+	'[_1] is running a background job to import entries. (Job ID: [_2], started at [_3])' => '[_1] がバックグラウンドで記事のインポートを実行中です。(ジョブID [_2]、開始日時 [_3])',
 
 ## tmpl/cms/import_others.tmpl
 	'Default entry status (optional)' => '既定の公開状態(任意)',

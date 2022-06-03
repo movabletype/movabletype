@@ -91,6 +91,7 @@ sub core_backup_instructions {
         'cf_idx'              => { 'skip' => 1 },
         'content_field_index' => { 'skip' => 1 },
         'log'                 => { 'skip' => 1 },
+        'import_export_status' => { 'skip' => 1 },
     };
 }
 

@@ -239,6 +239,7 @@ use_ok('MT::Image::Imager');
 use_ok('MT::Image::ImageMagick');
 use_ok('MT::Image::GraphicsMagick');
 use_ok('MT::ImportExport');
+use_ok('MT::ImportExport::Status');
 use_ok('MT::Import');
 use_ok('MT::JunkFilter');
 use_ok('MT::Mail');
@@ -421,6 +422,8 @@ use_ok('MT::Meta');
 use_ok('MT::Meta::Proxy');
 
 # Job worker
+use_ok('MT::Worker::Export');
+use_ok('MT::Worker::Import');
 use_ok('MT::Worker::Publish');
 use_ok('MT::Worker::Sync');
 use_ok('MT::Worker::Summarize');
