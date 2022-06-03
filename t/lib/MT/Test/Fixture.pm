@@ -832,8 +832,7 @@ sub prepare_template {
                     or croak "unknown archive_type: $archive_type";
                 $arg{type} = _template_type($archive_type);
             }
-            my $blog_id = _find_blog_id($objs, \%arg)
-                or croak "blog_id is required: template: $arg{type}";
+            my $blog_id = _find_blog_id($objs, \%arg) || 0;
 
             my $ct;
             if (my $ct_name = delete $arg{content_type}) {

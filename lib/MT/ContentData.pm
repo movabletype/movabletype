@@ -1249,6 +1249,7 @@ sub _make_label_html {
         : $status == MT::ContentStatus::UNPUBLISH() ? 'Unpublish'
         :                                             '';
     my $lc_status_class = lc $status_class;
+    my $status_class_trans = MT->translate($status_class);
 
     my $status_icon_id
         = $status == MT::ContentStatus::HOLD()      ? 'ic_draft'
@@ -1272,7 +1273,7 @@ sub _make_label_html {
         my $static_uri = MT->static_path;
         $status_img = qq{
           <svg role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
-              <title>$status_class</title>
+              <title>$status_class_trans</title>
               <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
           </svg>
         };
