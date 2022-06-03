@@ -51,6 +51,15 @@ sub send_and_log {
             class    => 'system',
             category => 'email'
         });
+    } else {
+        if (MT->config->MailLogAlways) {
+            MT->instance->log({
+                message  => MT->translate('Mail was sent successfully'),
+                level    => MT::Log::INFO(),
+                class    => 'system',
+                category => 'email'
+            });
+        }
     }
     
     return $success;
