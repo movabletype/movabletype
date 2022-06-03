@@ -1875,6 +1875,7 @@ BEGIN {
             'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
             'MailTransferEncoding'  => undef,
+            'MailLogPath'           => undef,
             'SMTPServer'            => { default => 'localhost', },
             'SMTPAuth'              => { default => 0, },
             'SMTPUser'              => undef,
