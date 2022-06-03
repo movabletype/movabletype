@@ -20,7 +20,7 @@ sub wrap {
     unless ( defined $CACHE_ENABLED ) {
         $CACHE_ENABLED = MT->config->DisableObjectCache ? 0 : 1;
     }
-    my $use_caching = 1;
+    my $use_caching = defined $object_class ? 1 : 0;
     if ( $CACHE_ENABLED && $object_class ) {
         if ( my $props = $object_class->properties ) {
             $use_caching = 0

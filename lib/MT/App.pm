@@ -3554,8 +3554,7 @@ sub takedown {
         for qw( cookies perms session trace response_content _blog
         WeblogPublisher init_request );
 
-    my $driver = $MT::Object::DRIVER;
-    $driver->clear_cache if $driver && $driver->can('clear_cache');
+    MT->clear_cache_of_loaded_models;
 
     require MT::Auth;
     MT::Auth->release;
@@ -4611,8 +4610,6 @@ sub DESTROY {
     ## a persistent environment, the object will not go out of scope.
     ## Same with the ConfigMgr object and ObjectDriver.
     MT::Request->finish();
-    undef $MT::Object::DRIVER;
-    undef $MT::Object::DBI_DRIVER;
     undef $MT::ConfigMgr::cfg;
 }
 
