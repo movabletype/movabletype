@@ -32,6 +32,22 @@ sub send {
     return MT->error(MT->translate('Error loading mail module: [_1].', MT->config->MailModule || 'MT::Mail'));
 }
 
+sub send_and_log {
+    my ($class, @args) = @_;
+    my $success = $class->send(@args);
+
+    if (!$success && $Module->errstr) {
+        MT->instance->log({
+            message  => MT->translate('Error sending mail: [_1]', $Module->errstr),
+            level    => MT::Log::ERROR(),
+            class    => 'system',
+            category => 'email'
+        });
+    }
+    
+    return $success;
+}
+
 sub errstr {
     my ($class) = @_;
     return $Module ? $Module->errstr : $class->SUPER::errstr;
