@@ -1,0 +1,20 @@
+<mt:setvarblock name="system_msg">
+<div id="msg-block">
+<mt:if name="request.not_deleted">
+  <mtapp:statusmsg
+     id="not-deleted"
+     class="warning">
+    <__trans phrase="You can't delete running job(s). (ID: [_1])", params="<mt:var name="request.error_id" escape="html">">
+  </mtapp:statusmsg>
+</mt:if>
+
+<mt:if name="request.saved_deleted">
+  <mtapp:statusmsg
+    id="saved-deleted"
+    class="success"
+    can_close="0">
+    <__trans phrase="The job(s) has been deleted from the database.">
+  </mtapp:statusmsg>
+</mt:if>
+</div>
+</mt:setvarblock>
