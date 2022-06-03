@@ -655,7 +655,37 @@ sub author {
     $self->cache_property(
         'author',
         sub {
-            scalar MT::Author->load( $self->author_id || 0 );
+            my $author_id = $self->author_id or return undef;
+            my $req       = MT::Request->instance;
+            my $cache     = $req->stash('author_cache');
+            my $author    = $cache->{$author_id};
+            unless ($author) {
+                require MT::Author;
+                $author = MT::Author->load($author_id) or return undef;
+                $cache->{$author_id} = $author;
+                $req->stash('author_cache', $cache);
+            }
+            $author;
+        },
+    );
+}
+
+sub modified_author {
+    my $self = shift;
+    $self->cache_property(
+        'modified_author',
+        sub {
+            my $modified_by = $self->modified_by or return undef;
+            my $req         = MT::Request->instance;
+            my $cache       = $req->stash('author_cache');
+            my $author      = $cache->{$modified_by};
+            unless ($author) {
+                require MT::Author;
+                $author = MT::Author->load($modified_by) or return undef;
+                $cache->{$modified_by} = $author;
+                $req->stash('author_cache', $cache);
+            }
+            $author;
         },
     );
 }
