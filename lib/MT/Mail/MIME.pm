@@ -17,10 +17,13 @@ use MT::Util qw(is_valid_email);
 
 sub send {
     my $class = shift;
-    my ($hdrs_arg, $body, $files) = @_;
+    my ($hdrs_arg, $body) = @_;
+    my $files;
 
-    if ($files) {
-        unless (ref($files) && ref($files) eq 'ARRAY') {
+    if (ref($body) eq 'ARRAY') {
+        $files = $body->[1];
+        $body = $body->[0];
+        unless (ref($files) eq 'ARRAY') {
             return $class->error(MT->translate('Files must be an array reference.'));
         }
         if ( grep { ref $_ ne 'HASH' } @$files) {
@@ -309,11 +312,10 @@ directive.
 
 =head1 USAGE
 
-=head2 MT::Mail::MIME->send(\%headers, $body, \@files)
+=head2 MT::Mail::MIME->send(\%headers, $body)
 
 Sends a mail message with the headers I<\%headers> and the message body
-I<$body>. Optionaly, you can attach files with I<$files> if your I<MailModule>
-supports it.
+I<$body>. Optionaly, you can attach files if your I<MailModule> supports it.
 
 The keys and values in I<\%headers> are passed directly in to the mail
 program or server, so you can use any valid mail header names as keys. If
@@ -328,11 +330,12 @@ it will not be done by I<send>.
 You can give the method multiple files for mail attachment.
 
     @files = ( { path => 'path/to/your.png' }, ... );
+    $body = [$body, \@file ];
 
 Each files can also contain types and names in case you don't like the auto
 detection.
 
-    push @files, {
+    push @{$body->[1]}, {
         path => 'path/to/your.png', 
         type => 'image/png', 
         name => 'yourname.png',

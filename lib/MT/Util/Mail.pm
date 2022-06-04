@@ -27,9 +27,17 @@ sub find_module {
 BEGIN { find_module() }
 
 sub send {
-    my ($class, @args) = @_;
-    return $Module->send(@args) if $Module;
-    return MT->error(MT->translate('Error loading mail module: [_1].', MT->config->MailModule || 'MT::Mail'));
+    my ($class, $hdrs, $body) = @_;
+
+    unless ($Module) {
+        return MT->error(MT->translate('Error loading mail module: [_1].', MT->config->MailModule || 'MT::Mail'));
+    }
+
+    if ($Module eq 'MT::Mail' && ref($body)) {
+        return $class->error(MT->translate('$body must be an scalar value'));
+    }
+
+    return $Module->send($hdrs, $body);
 }
 
 sub errstr {
