@@ -42,7 +42,7 @@ my $modified_by = MT::Test::Permission->make_author(
 );
 
 # use driver directly not to auto-update modified_at
-MT::Entry->driver->dbh->do('UPDATE mt_entry SET entry_modified_by = ?', undef, $modified_by->id);
+MT::Entry->driver->rw_handle->do('UPDATE mt_entry SET entry_modified_by = ?', undef, $modified_by->id);
 $test_env->clear_mt_cache;
 
 my %vars = (
