@@ -17,37 +17,26 @@ my $crlf = "\x0d\x0a";
 
 sub render {
     my ($class, %args) = @_;
-    my ($header, $body, $files) = @args{qw(header body files)};
+    my ($header, $body) = @args{qw(header body)};
     my $conf = MT->config;
     my $mail_enc = lc($conf->MailEncoding || 'utf-8');
-    $header->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
-    $header->{'Content-Transfer-Encoding'} = $class->fix_xfer_enc($header->{'Content-Transfer-Encoding'}, $mail_enc, $body);
-
+ 
     my $msg;
 
     eval {
-        if ($files && @$files) {
+        if (ref($body) eq 'ARRAY') {
             my @parts;
-            push @parts, Email::MIME->create(
-                body_str   => $body,
-                attributes => {
-                    content_type => 'text/plain',
-                    disposition  => 'inline',
-                    charset      => $mail_enc,
-                    encoding     => $header->{'Content-Transfer-Encoding'},
-                },
-            );
-
-            for my $file (@$files) {
-                my ($name, $type, $body) = $class->prepare_attach_args($file);
+            for my $props (@{$class->prepare_parts($body, $mail_enc)}) {
+                my ($disposition, $type, $pbody, $name, $charset) = @$props;
                 push @parts, Email::MIME->create(
                     attributes => {
                         content_type => $type,
-                        disposition  => 'attachment',
+                        disposition  => $disposition,
                         encoding     => 'base64',
                         filename     => $name,
+                        charset      => $charset,
                     },
-                    body => $body,
+                    body => $pbody,
                 );
             }
 
@@ -57,6 +46,9 @@ sub render {
                 parts      => \@parts,
             );
         } else {
+            $header->{'Content-Type'} ||= qq(text/plain; charset="$mail_enc");
+            $header->{'Content-Transfer-Encoding'} =
+                $class->fix_xfer_enc($header->{'Content-Transfer-Encoding'}, $mail_enc, $body);
             $msg = Email::MIME->create(
                 header_str => [%$header],
                 body_str   => $body,

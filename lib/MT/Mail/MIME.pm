@@ -20,17 +20,6 @@ sub send {
     my ($hdrs_arg, $body) = @_;
     my $files;
 
-    if (ref($body) eq 'ARRAY') {
-        $files = $body->[1];
-        $body = $body->[0];
-        unless (ref($files) eq 'ARRAY') {
-            return $class->error(MT->translate('Files must be an array reference.'));
-        }
-        if ( grep { ref $_ ne 'HASH' } @$files) {
-            return $class->error(MT->translate('Elements of files must be an hash reference.'));
-        }
-    }
-
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
     for my $h (keys %hdrs) {
         if (ref($hdrs{$h}) eq 'ARRAY') {
@@ -52,9 +41,9 @@ sub send {
     $hdrs{Sender} = $hdrs{From}[0] if (ref $hdrs{From} eq 'ARRAY' && scalar(@{ $hdrs{From} }) > 1);
 
     my $xfer = $conf->MailTransfer;
-    return $class->_send_mt_sendmail(\%hdrs, $body, $files) if $xfer eq 'sendmail';
-    return $class->_send_mt_smtp(\%hdrs, $body, $files)     if $xfer eq 'smtp';
-    return $class->_send_mt_debug(\%hdrs, $body, $files)    if $xfer eq 'debug';
+    return $class->_send_mt_sendmail(\%hdrs, $body) if $xfer eq 'sendmail';
+    return $class->_send_mt_smtp(\%hdrs, $body)     if $xfer eq 'smtp';
+    return $class->_send_mt_debug(\%hdrs, $body)    if $xfer eq 'debug';
     return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
 }
 
@@ -123,15 +112,15 @@ sub _dedupe_headers {
 
 sub _send_mt_debug {
     my $class = shift;
-    my ($hdrs, $body, $files) = @_;
-    my $msg = $class->render(header => $hdrs, body => $body, files => $files);
+    my ($hdrs, $body) = @_;
+    my $msg = $class->render(header => $hdrs, body => $body);
     print STDERR $msg;
     1;
 }
 
 sub _send_mt_smtp {
     my $class = shift;
-    my ($hdrs, $body, $files) = @_;
+    my ($hdrs, $body) = @_;
     my $conf = MT->config;
 
     # SMTP Configuration
@@ -213,7 +202,7 @@ sub _send_mt_smtp {
 
     delete $hdrs->{Bcc};
 
-    my $msg = $class->render(header => $hdrs, body => $body, files => $files);
+    my $msg = $class->render(header => $hdrs, body => $body);
     $smtp->data()         or return $class->smtp_error($smtp);
     $smtp->datasend($msg) or return $class->smtp_error($smtp);
     $smtp->dataend()      or return $class->smtp_error($smtp);
@@ -234,7 +223,7 @@ my @Sendmail = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
 
 sub _send_mt_sendmail {
     my $class = shift;
-    my ($hdrs, $body, $files) = @_;
+    my ($hdrs, $body) = @_;
     my $conf = MT->config;
 
     my $sm_loc;
@@ -252,7 +241,7 @@ sub _send_mt_sendmail {
             or return $class->error(MT->translate("Exec of sendmail failed: [_1]", "$!"));
     }
 
-    my $msg = $class->render(header => $hdrs, body => $body, files => $files);
+    my $msg = $class->render(header => $hdrs, body => $body);
     $msg =~ s{\r\n}{\n}g;
     print $MAIL $msg;
     close $MAIL;
@@ -278,23 +267,42 @@ sub _can_use {
 
 my $Types;
 
-sub prepare_attach_args {
-    my ($class, $file) = @_;
+sub prepare_parts {
+    my ($class, $parts, $charset) = @_;
+    my @ret;
 
-    require File::Basename;
-    require MIME::Types;
+    require MT::I18N::default;
 
-    my $Types ||= MIME::Types->new;
-    my ($type, $name, $path, $body) = @{$file}{qw(type name path body)};
-    if ($body) {
-        $type ||= 'text/plain';
-        $body = Encode::encode_utf8($body);
-    } elsif ($path) {
-        $name ||= File::Basename::basename($path);
-        $type ||= $Types->mimeTypeOf($name)->type() || 'application/octet-stream';
-        $body = _slurp($path);
+    for (my $i = 0; $i < scalar(@$parts); $i++) {
+        my $part = $parts->[$i];
+        if (ref $part) {
+            require File::Basename;
+            require MIME::Types;
+
+            $Types ||= MIME::Types->new;
+            my ($type, $name, $path, $body) = @{$part}{qw(type name path body)};
+            if ($body) {
+                $type ||= 'text/plain';
+                $body = MT::I18N::default->encode_text_encode($body, undef, $charset);
+                push @ret, ['attachment', $type, $body, $name, $charset];
+            } elsif ($path) {
+                $name ||= File::Basename::basename($path);
+                $type ||= $Types->mimeTypeOf($name)->type() || 'application/octet-stream';
+                $body = _slurp($path);
+                push @ret, ['attachment', $type, $body, $name, undef];
+            }
+        } else {
+            push @ret, [
+                ($i == 0 ? 'inline' : 'attachment'),
+                'text/plain',
+                MT::I18N::default->encode_text_encode($part, undef, $charset),
+                undef,
+                $charset,
+            ];
+        }
     }
-    return $name, $type, $body;
+
+    return \@ret;
 }
 
 sub _slurp {
@@ -356,15 +364,14 @@ reference to a list of the header values. For example:
 If you wish the lines in I<$body> to be wrapped, you should do this yourself;
 it will not be done by I<send>.
 
-You can give the method multiple files for mail attachment.
+You can send multipart mail by giving array ref for $body instead of scalar.
 
-    @files = ( { path => 'path/to/your.png' }, ... );
-    $body = [$body, \@file ];
+    $body = [ { path => 'path/to/your.png' }, {...}, ... ];
 
 Each files can also contain types and names in case you don't like the auto
 detection.
 
-    push @{$body->[1]}, {
+    push @$body, {
         path => 'path/to/your.png', 
         type => 'image/png', 
         name => 'yourname.png',
@@ -372,7 +379,16 @@ detection.
 
 You can also set the file body by string.
 
-    push @{$body->[1]}, { body => 'file content' };
+    push @$body, { body => 'file content' };
+
+Or, you can attach text/plain part by scalar directly to $body.
+
+    push @$body, 'file content';
+
+If the first part of $body is an scalar, it will be treated as inline instead of
+attachment.
+
+    $body = ['hello', $file1, $file2, ... ];
 
 On success, I<send> returns true; on failure, it returns C<undef>, and the
 error message is in C<MT::Mail::MIME-E<gt>errstr>.

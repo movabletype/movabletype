@@ -17,13 +17,9 @@ my $crlf = "\x0d\x0a";
 
 sub render {
     my ($class, %args) = @_;
-    my ($header, $body, $files) = @args{qw(header body files)};
+    my ($header, $body) = @args{qw(header body)};
     my $conf = MT->config;
     my $mail_enc = lc($conf->MailEncoding || 'utf-8');
-    $header->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
-    $header->{'Content-Transfer-Encoding'} = $class->fix_xfer_enc($header->{'Content-Transfer-Encoding'}, $mail_enc, $body);
-    require MT::I18N::default;
-    $body = MT::I18N::default->encode_text_encode($body, undef, $mail_enc);
 
     $class->encwords($header, $mail_enc);
 
@@ -36,30 +32,31 @@ sub render {
     my $msg;
 
     eval {
-        if ($files && @$files) {
+        if (ref($body) eq 'ARRAY') {
             my @parts;
-            push @parts, do {
-                my $text_part = MIME::Lite->new(Data => $body);
-                $text_part->attr($_, $header->{$_}) for (grep { $_ =~ /^content/i } keys(%$header));
-                $text_part;
-            };
-
-            for my $file (@$files) {
-                my ($name, $type, $body) = $class->prepare_attach_args($file);
-                push @parts, MIME::Lite->new(
+            for my $props (@{$class->prepare_parts($body, $mail_enc)}) {
+                my ($disposition, $type, $pbody, $name, $charset) = @$props;
+                my $part = MIME::Lite->new(
                     Type        => $type,
-                    Data        => $body,
+                    Data        => $pbody,
                     Encoding    => 'base64',
                     Filename    => $name,
-                    Disposition => 'attachment'
+                    Disposition => $disposition,
                 ) or die "Error adding an attachment: $!\n";
+                $part->attr('content-type.charset' => $charset);
+                push @parts, $part;
             }
             $msg = MIME::Lite->new(Type => 'multipart/mixed');
             $msg->attr($_, $header->{$_}) for keys(%$header);
             $msg->attr('Content-Type' => 'multipart/mixed');
             $msg->attach($_) for @parts;
         } else {
-            $msg = MIME::Lite->new(Data => $body);
+            $header->{'Content-Type'} ||= qq(text/plain; charset="$mail_enc");
+            $header->{'Content-Transfer-Encoding'} =
+                $class->fix_xfer_enc($header->{'Content-Transfer-Encoding'}, $mail_enc, $body);
+            require MT::I18N::default;
+            $body = MT::I18N::default->encode_text_encode($body, undef, $mail_enc);
+            $msg  = MIME::Lite->new(Data => $body);
             $msg->attr($_, $header->{$_}) for keys(%$header);
         }
     };

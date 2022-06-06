@@ -188,8 +188,7 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
             subtest 'simple' => sub {
                 my $ret = render_and_parse(
                     header => { To => 'to@example.com' },
-                    body   => '日本語',
-                    files  => [{ path => $file1 }, { path => $file2 }],
+                    body  => ['日本語', { path => $file1 }, { path => $file2 }],
                 );
 
                 is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
@@ -213,8 +212,7 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
             subtest 'name and type specified' => sub {
                 my $ret = render_and_parse(
                     header => { To => 'to@example.com' },
-                    body   => '日本語',
-                    files  => [{ path => $file1, name => 'my_file.gif', type => 'image/mygif' }],
+                    body  => ['日本語', { path => $file1, name => 'my_file.gif', type => 'image/mygif' }],
                 );
 
                 is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
@@ -233,8 +231,7 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
             subtest 'body given' => sub {
                 my $ret = render_and_parse(
                     header => { To => 'to@example.com' },
-                    body   => '日本語',
-                    files  => [{ body => "ライン1\nライン2", name => 'my_file.log', type => 'text/plain' }],
+                    body  => ['日本語', { body => "ライン1\nライン2", name => 'my_file.log', type => 'text/plain' }],
                 );
 
                 is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
