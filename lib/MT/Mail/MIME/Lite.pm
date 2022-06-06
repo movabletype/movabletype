@@ -92,7 +92,7 @@ sub encwords {
                                     . ' '
                                     . $2;
                             }
-                        } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
+                        } elsif ($header !~ m/^(Content-Type|MIME-Version)/i) {
                             $_ = MIME::EncWords::encode_mimeword(
                                 MT::I18N::default->encode_text_encode($_, undef, $mail_enc),
                                 'b',
@@ -113,7 +113,7 @@ sub encwords {
                                 . ' '
                                 . $2;
                         }
-                    } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
+                    } elsif ($header !~ m/^(Content-Type|MIME-Version)/i) {
                         $hdrs->{$header} = MIME::EncWords::encode_mimeword(
                             MT::I18N::default->encode_text_encode($val, undef, $mail_enc),
                             'b',
