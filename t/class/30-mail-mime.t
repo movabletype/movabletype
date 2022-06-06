@@ -229,6 +229,26 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 like($ret->[2]->{body},                                  qr{R0lGODlhk},                 'right body');
                 is(scalar @$ret, 3, 'right number of mime parts');
             };
+
+            subtest 'body given' => sub {
+                my $ret = render_and_parse(
+                    header => { To => 'to@example.com' },
+                    body   => '日本語',
+                    files  => [{ body => "ライン1\nライン2", name => 'my_file.log', type => 'text/plain' }],
+                );
+
+                is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
+                like($ret->[0]->{header}->{'Content-Type'}, qr{multipart/mixed}, 'right header');
+                is($ret->[1]->{header}->{'Content-Disposition'},       'inline', 'right header');
+                is($ret->[1]->{header}->{'Content-Transfer-Encoding'}, 'base64', 'right header');
+                like($ret->[1]->{body},                                  qr{日本語},                       'right body');
+                like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
+                like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?my_file\.log"?}, 'right header');
+                like($ret->[2]->{header}->{'Content-Type'},              qr{text/plain},                'right header');
+                like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
+                is($ret->[2]->{body}, "ライン1\nライン2", 'right body');
+                is(scalar @$ret,      3,            'right number of mime parts');
+            };
         };
     };
 }
@@ -237,9 +257,8 @@ sub render_and_parse {
     my $module  = $MT::Util::Mail::Module;
     my $encoded = $module->render(@_);
     note $encoded;
-    my $boundary = ($encoded =~ qr{multipart/mixed;\s*boundary=(.+)})[0];
-    $boundary =~ s{"}{}g;
-    my @parts = split(/^--$boundary/m, $encoded);
+    my $boundary = ($encoded =~ qr{multipart/mixed;\s*boundary="?([^"\x0d\x0a]+)"?})[0];
+    my @parts    = split(/[\x0d\x0a]+--$boundary-*[\x0d\x0a]+/m, $encoded);
     my $ret;
     for my $part (@parts) {
         my ($header, $body) = split(/\x0d\x0a\x0d\x0a/, $part, 2);

@@ -276,6 +276,35 @@ sub _can_use {
     return 1;
 }
 
+my $Types;
+
+sub prepare_attach_args {
+    my ($class, $file) = @_;
+
+    require File::Basename;
+    require MIME::Types;
+
+    my $Types ||= MIME::Types->new;
+    my ($type, $name, $path, $body) = @{$file}{qw(type name path body)};
+    if ($body) {
+        $type ||= 'text/plain';
+        $body = Encode::encode_utf8($body);
+    } elsif ($path) {
+        $name ||= File::Basename::basename($path);
+        $type ||= $Types->mimeTypeOf($name)->type() || 'application/octet-stream';
+        $body = _slurp($path);
+    }
+    return $name, $type, $body;
+}
+
+sub _slurp {
+    my $path = shift;
+    open my $fh, '<', $path or die "$path: $!";
+    binmode $fh;
+    local $/;
+    <$fh>;
+}
+
 1;
 __END__
 
@@ -340,6 +369,10 @@ detection.
         type => 'image/png', 
         name => 'yourname.png',
     };
+
+You can also set the file body by string.
+
+    push @{$body->[1]}, { body => 'file content' };
 
 On success, I<send> returns true; on failure, it returns C<undef>, and the
 error message is in C<MT::Mail::MIME-E<gt>errstr>.

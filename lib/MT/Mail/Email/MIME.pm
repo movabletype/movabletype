@@ -23,7 +23,9 @@ sub render {
     $header->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
     $header->{'Content-Transfer-Encoding'} = $class->fix_xfer_enc($header->{'Content-Transfer-Encoding'}, $mail_enc, $body);
 
-    my $msg = eval {
+    my $msg;
+
+    eval {
         if ($files && @$files) {
             my @parts;
             push @parts, Email::MIME->create(
@@ -36,31 +38,26 @@ sub render {
                 },
             );
 
-            require File::Basename;
-            require MIME::Types;
-            my $types = MIME::Types->new;
-
             for my $file (@$files) {
-                my ($type, $name, $path) = @{$file}{qw(type name path)};
-                my $basename = File::Basename::basename($path);
+                my ($name, $type, $body) = $class->prepare_attach_args($file);
                 push @parts, Email::MIME->create(
                     attributes => {
-                        content_type => ($type || $types->mimeTypeOf($basename) || 'application/octet-stream'),
+                        content_type => $type,
                         disposition  => 'attachment',
                         encoding     => 'base64',
-                        filename     => ($name || $basename),
+                        filename     => $name,
                     },
-                    body => _slurp($path),
+                    body => $body,
                 );
             }
 
             $header->{'Content-Type'} = 'multipart/mixed';
-            Email::MIME->create(
+            $msg = Email::MIME->create(
                 header_str => [%$header],
                 parts      => \@parts,
             );
         } else {
-            Email::MIME->create(
+            $msg = Email::MIME->create(
                 header_str => [%$header],
                 body_str   => $body,
                 attributes => {
@@ -76,14 +73,6 @@ sub render {
     $encoded =~ s{\x0d(?!\x0a)|(?<!\x0d)\x0a}{$crlf}g;
 
     return $encoded;
-}
-
-sub _slurp {
-    my $path = shift;
-    open my $fh, '<', $path or die "$path: $!";
-    binmode $fh;
-    local $/;
-    <$fh>;
 }
 
 1;

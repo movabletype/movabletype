@@ -37,29 +37,27 @@ sub render {
 
     eval {
         if ($files && @$files) {
+            my @parts;
+            push @parts, do {
+                my $text_part = MIME::Lite->new(Data => $body);
+                $text_part->attr($_, $header->{$_}) for (grep { $_ =~ /^content/i } keys(%$header));
+                $text_part;
+            };
+
+            for my $file (@$files) {
+                my ($name, $type, $body) = $class->prepare_attach_args($file);
+                push @parts, MIME::Lite->new(
+                    Type        => $type,
+                    Data        => $body,
+                    Encoding    => 'base64',
+                    Filename    => $name,
+                    Disposition => 'attachment'
+                ) or die "Error adding an attachment: $!\n";
+            }
             $msg = MIME::Lite->new(Type => 'multipart/mixed');
             $msg->attr($_, $header->{$_}) for keys(%$header);
             $msg->attr('Content-Type' => 'multipart/mixed');
-
-            my $text_part = MIME::Lite->new(Data => $body);
-            $text_part->attr($_, $header->{$_}) for (grep { $_ =~ /^content/i } keys(%$header));
-            $msg->attach($text_part);
-
-            require File::Basename;
-            require MIME::Types;
-            my $types = MIME::Types->new;
-
-            for my $file (@$files) {
-                my ($type, $name, $path) = @{$file}{qw(type name path)};
-                my $basename = File::Basename::basename($path);
-                my $part = MIME::Lite->new(
-                    Type        => ($type || $types->mimeTypeOf($basename)->type() || 'application/octet-stream'),
-                    Path        => $path,
-                    Filename    => $name || $basename,
-                    Disposition => 'attachment'
-                ) or die "Error adding $path: $!\n";
-                $msg->attach($part);
-            }
+            $msg->attach($_) for @parts;
         } else {
             $msg = MIME::Lite->new(Data => $body);
             $msg->attr($_, $header->{$_}) for keys(%$header);
