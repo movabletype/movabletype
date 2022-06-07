@@ -181,6 +181,22 @@ sub list_props {
                 my $name = $obj->name;
                 $name = '' if !defined $name;
                 $name =~ s/^\s+|\s+$//g;
+                my $scope_label = '';
+                my $badge_class = '';
+                my $scope_html  = '';
+                my $scope_lc    = '';
+                if ($obj->is_blog) {
+                    $scope_label = MT->translate('Child Site');
+                    $badge_class = 'badge badge-info ';
+                    $scope_lc    = 'blog';
+                } else {
+                    $scope_label = MT->translate('Parent Site');
+                    $badge_class = 'badge badge-success ';
+                    $scope_lc    = 'website';
+                }
+                $scope_html = qq{
+                    <span class="${badge_class} ${scope_lc} sticky-label">$scope_label</span>
+                };
                 my $dashboard_link = $app->uri(
                     mode => 'dashboard',
                     args => { blog_id => $obj->id, },
@@ -189,11 +205,11 @@ sub list_props {
                     my $can_double_encode = 1;
                     $name
                         = MT::Util::encode_html( $name, $can_double_encode );
-                    return qq{<a href="$dashboard_link">$name</a>};
+                    return qq{$scope_html <a href="$dashboard_link"> $name</a>};
                 }
                 else {
                     return MT->translate(
-                        qq{[_1] (<a href="[_2]">id:[_3]</a>)},
+                        qq{[_1] ($scope_html <a href="[_2]">id:[_3]</a>)},
                         'No Name', $dashboard_link, $obj->id, );
                 }
             }
