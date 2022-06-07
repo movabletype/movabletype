@@ -21,9 +21,14 @@ my %SMTPModules = (
     SSLorTLS => [ 'IO::Socket::SSL', 'Net::SSLeay' ],
 );
 
+my @sent;
+
+sub sent { @sent }
+
 sub send {
     my $class = shift;
     my ( $hdrs_arg, $body ) = @_;
+    @sent = ();
 
     local $hdrs_arg->{id} = $hdrs_arg->{id};
     my $id = delete $hdrs_arg->{id};
@@ -402,6 +407,7 @@ sub _render_headers {
             $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" unless $hide_bcc && $h eq 'Bcc';
         }
     }
+    @sent = @recipients;
     return wantarray ? ($hdr, @recipients) : $hdr;
 }
 
