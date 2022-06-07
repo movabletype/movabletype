@@ -14,8 +14,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 my $mt = MT->instance;
 
@@ -426,173 +425,131 @@ subtest 'Website scope' => sub {
 
     subtest 'List boilerplates' => sub {
         foreach my $data (@view_suite) {
-            my $app = _run_app(
-                'MT::App::CMS',
-                {   __test_user => $data->{user},
-                    __mode      => 'list',
-                    _type       => 'formatted_text',
-                    blog_id     => $website->id,
-                },
-            );
-            my $out = delete $app->{__test_output};
+            my $app = MT::Test::App->new;
+            $app->login($data->{user});
+            $app->get_ok({
+                __mode  => 'list',
+                _type   => 'formatted_text',
+                blog_id => $website->id,
+            });
 
-            if ( $data->{ok} ) {
-                unlike( $out, qr/(redirect|permission)=1/,
-                          'Permission: '
-                        . $data->{perm}
-                        . ": Can list boilerplates" );
-            }
-            else {
-                like( $out, qr/(redirect|permission)=1/,
-                          'Permission: '
-                        . $data->{perm}
-                        . ": Cannot list boilerplates" );
+            if ($data->{ok}) {
+                $app->has_no_permission_error('Permission: ' . $data->{perm} . ": Can list boilerplates");
+            } else {
+                $app->has_permission_error('Permission: ' . $data->{perm} . ": Cannot list boilerplates");
             }
         }
     };
 
     subtest 'View boilerplate (for new object)' => sub {
         foreach my $data (@view_suite) {
-            my $app = _run_app(
-                'MT::App::CMS',
-                {   __test_user => $data->{user},
-                    __mode      => 'view',
-                    _type       => 'formatted_text',
-                    blog_id     => $website->id,
-                },
-            );
-            my $out = delete $app->{__test_output};
+            my $app = MT::Test::App->new;
+            $app->login($data->{user});
+            $app->get_ok({
+                __mode  => 'view',
+                _type   => 'formatted_text',
+                blog_id => $website->id,
+            });
 
-            if ( $data->{ok} ) {
-                unlike( $out, qr/(redirect|permission)=1/,
-                          'Permission: '
-                        . $data->{perm}
-                        . ": Can view boilerplate" );
-            }
-            else {
-                like( $out, qr/(redirect|permission)=1/,
-                          'Permission: '
-                        . $data->{perm}
-                        . ": Cannot view boilerplate" );
+            if ($data->{ok}) {
+                $app->has_no_permission_error('Permission: ' . $data->{perm} . ": Can view boilerplate");
+            } else {
+                $app->has_permission_error('Permission: ' . $data->{perm} . ": Cannot view boilerplate");
             }
         }
     };
 
     subtest 'View boilerplate (for existing object)' => sub {
         foreach my $data (@edit_suite) {
-            my $app = _run_app(
-                'MT::App::CMS',
-                {   __test_user => $data->{user},
-                    __mode      => 'view',
-                    _type       => 'formatted_text',
-                    blog_id     => $website->id,
-                    id          => $data->{boilerplate}->id,
-                },
-            );
-            my $out = delete $app->{__test_output};
+            my $app = MT::Test::App->new;
+            $app->login($data->{user});
+            $app->get_ok({
+                __mode  => 'view',
+                _type   => 'formatted_text',
+                blog_id => $website->id,
+                id      => $data->{boilerplate}->id,
+            });
 
-            if ( $data->{ok} ) {
-                my $test
-                    = 'Permission: '
-                    . $data->{perm}
-                    . ': Can view boilerplate';
-                if ( exists $data->{oneself} ) {
+            if ($data->{ok}) {
+                my $test = 'Permission: ' . $data->{perm} . ': Can view boilerplate';
+                if (exists $data->{oneself}) {
                     $test .= $data->{oneself} ? ' by oneself' : ' by others';
                 }
-                unlike( $out, qr/(redirect|permission)=1/, $test );
-            }
-            else {
-                my $test
-                    = 'Permission: '
-                    . $data->{perm}
-                    . ': Cannot view boilerplate';
-                if ( exists $data->{oneself} ) {
+                $app->has_no_permission_error($test);
+            } else {
+                my $test = 'Permission: ' . $data->{perm} . ': Cannot view boilerplate';
+                if (exists $data->{oneself}) {
                     $test .= $data->{oneself} ? ' by oneself' : ' by others';
                 }
-                like( $out, qr/(redirect|permission)=1/, $test );
+                $app->has_permission_error($test);
             }
         }
     };
 
     subtest 'Save boilerplate (for new object)' => sub {
         foreach my $data (@view_suite) {
-            my $app = _run_app(
-                'MT::App::CMS',
-                {   __test_user      => $data->{user},
-                    __request_method => 'POST',
-                    __mode           => 'save',
-                    _type            => 'formatted_text',
-                    blog_id          => $website->id,
-                    label            => 'New boilerplate ' . $cnt,
-                },
-            );
-            $cnt++;
-            my $out = delete $app->{__test_output};
+            my $app = MT::Test::App->new;
 
-            if ( $data->{ok} ) {
-                my $test
-                    = 'Permission: '
-                    . $data->{perm}
-                    . ': Can create boilerplate';
-                ok( $out =~ /saved=1&saved_added=1/
-                        && $out !~ /(redirect|permission)=1/,
-                    $test
-                );
-            }
-            else {
-                my $test
-                    = 'Permission: '
-                    . $data->{perm}
-                    . ': Cannot create boilerplate';
-                ok( $out !~ /saved=1&saved_added=1/
-                        && $out =~ /(redirect|permission)=1/,
-                    $test
-                );
+            # use admin first to get the correct form (ie. return_args)
+            $app->login($admin);
+            $app->get_ok({
+                __mode  => 'view',
+                _type   => 'formatted_text',
+                blog_id => $website->id,
+            });
+            my %form = $app->form->form;
+            delete $form{magic_token};
+
+            $app->login($data->{user});
+            $form{label} = 'New boilerplate ' . $cnt;
+            $app->post_ok(\%form);
+            $cnt++;
+
+            if ($data->{ok}) {
+                my $test = 'Permission: ' . $data->{perm} . ': Can create boilerplate';
+                $app->has_no_permission_error($test);
+                like $app->message_text => qr/This boilerplate has been saved/, "saved correctly";
+            } else {
+                my $test = 'Permission: ' . $data->{perm} . ': Cannot create boilerplate';
+                $app->has_permission_error($test);
+                unlike $app->message_text => qr/This boilerplate has been saved/, "not saved";
             }
         }
     };
 
     subtest 'Save boilerplate (for existing object)' => sub {
         foreach my $data (@edit_suite) {
-            my $app = _run_app(
-                'MT::App::CMS',
-                {   __test_user      => $data->{user},
-                    __request_method => 'POST',
-                    __mode           => 'save',
-                    _type            => 'formatted_text',
-                    blog_id          => $website->id,
-                    id               => $data->{boilerplate}->id,
-                    label            => 'Change ' . $cnt,
-                },
-            );
-            $cnt++;
-            my $out = delete $app->{__test_output};
+            my $app = MT::Test::App->new;
 
-            if ( $data->{ok} ) {
-                my $test
-                    = 'Permission: '
-                    . $data->{perm}
-                    . ': Can update boilerplate';
-                if ( exists $data->{oneself} ) {
+            $app->login($admin);
+            $app->get_ok({
+                __mode  => 'view',
+                _type   => 'formatted_text',
+                blog_id => $website->id,
+                id      => $data->{boilerplate}->id,
+            });
+            my %form = $app->form->form;
+            delete $form{magic_token};
+
+            $app->login($data->{user});
+            $form{label} = 'Change ' . $cnt,
+                $app->post_ok(\%form);
+            $cnt++;
+
+            if ($data->{ok}) {
+                my $test = 'Permission: ' . $data->{perm} . ': Can update boilerplate';
+                if (exists $data->{oneself}) {
                     $test .= $data->{oneself} ? ' by oneself' : ' by others';
                 }
-                ok( $out =~ /saved=1&saved_changes=1/
-                        && $out !~ /(redirect|permission)=1/,
-                    $test
-                );
-            }
-            else {
-                my $test
-                    = 'Permission: '
-                    . $data->{perm}
-                    . ': Cannot update boilerplate';
-                if ( exists $data->{oneself} ) {
+                $app->has_no_permission_error($test);
+                like $app->message_text => qr/Your changes have been saved/, "saved correctly";
+            } else {
+                my $test = 'Permission: ' . $data->{perm} . ': Cannot update boilerplate';
+                if (exists $data->{oneself}) {
                     $test .= $data->{oneself} ? ' by oneself' : ' by others';
                 }
-                ok( $out !~ /saved=1&saved_changes=1/
-                        && $out =~ /(redirect|permission)=1/,
-                    $test
-                );
+                $app->has_permission_error($test);
+                unlike $app->message_text => qr/Your changes have been saved/, "not saved";
             }
         }
     };
@@ -614,44 +571,32 @@ subtest 'Website scope' => sub {
                 $data->{boilerplate} = $temp;
             }
 
-            my $app = _run_app(
-                'MT::App::CMS',
-                {   __test_user      => $data->{user},
-                    __request_method => 'POST',
-                    __mode           => 'delete',
-                    _type            => 'formatted_text',
-                    action_name      => 'delete',
-                    blog_id          => $website->id,
-                    id               => $data->{boilerplate}->id,
-                },
-            );
-            my $out = delete $app->{__test_output};
+            my $app = MT::Test::App->new;
 
-            if ( $data->{ok} ) {
-                my $test
-                    = 'Permission: '
-                    . $data->{perm}
-                    . ': Can delete boilerplate';
-                if ( exists $data->{oneself} ) {
+            $app->login($data->{user});
+            $app->post_ok({
+                __mode      => 'delete',
+                _type       => 'formatted_text',
+                action_name => 'delete',
+                blog_id     => $website->id,
+                id          => $data->{boilerplate}->id,
+                return_args => '__mode=list&_type=formatted_text&blog_id=' . $website->id . '&does_act=1',
+            });
+
+            if ($data->{ok}) {
+                my $test = 'Permission: ' . $data->{perm} . ': Can delete boilerplate';
+                if (exists $data->{oneself}) {
                     $test .= $data->{oneself} ? ' by oneself' : ' by others';
                 }
-                ok( $out =~ /saved_deleted=1/
-                        && $out !~ /(redirect|permission)=1/,
-                    $test
-                );
-            }
-            else {
-                my $test
-                    = 'Permission: '
-                    . $data->{perm}
-                    . ': Cannot delete boilerplate';
-                if ( exists $data->{oneself} ) {
+                $app->has_no_permission_error($test);
+                like $app->message_text => qr/The boilerplate has been deleted from the database/, "deleted correctly";
+            } else {
+                my $test = 'Permission: ' . $data->{perm} . ': Cannot delete boilerplate';
+                if (exists $data->{oneself}) {
                     $test .= $data->{oneself} ? ' by oneself' : ' by others';
                 }
-                ok( $out !~ /saved_deleted=1/
-                        && $out =~ /(redirect|permission)=1/,
-                    $test
-                );
+                $app->has_permission_error($test);
+                unlike $app->message_text => qr/The boilerplate has been deleted from the database/, "deleted correctly";
             }
         }
     };

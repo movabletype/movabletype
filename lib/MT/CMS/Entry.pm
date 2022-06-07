@@ -2065,7 +2065,7 @@ PERMCHECK: {
 
     MT::Util::Log->debug(' End   callbacks cms_post_bulk_save.');
 
-    $app->add_return_arg( 'saved' => 1, is_power_edit => 1 );
+    $app->flash(saved => 1, is_power_edit => 1);
 
     MT::Util::Log->debug('--- End   save_entries.');
 
@@ -2867,6 +2867,7 @@ sub update_entry_status {
 sub _finish_rebuild {
     my $app = shift;
     my ( $entry, $is_new ) = @_;
+    $app->flash($is_new ? ( saved_added => 1 ) : ( saved_changes => 1 ));
     $app->redirect(
         $app->uri(
             'mode' => 'view',
@@ -2874,7 +2875,6 @@ sub _finish_rebuild {
                 '_type' => $entry->class,
                 blog_id => $entry->blog_id,
                 id      => $entry->id,
-                ( $is_new ? ( saved_added => 1 ) : ( saved_changes => 1 ) )
             }
         )
     );
@@ -2941,9 +2941,9 @@ sub delete {
             or return $app->errtrans('Removing stats cache failed.');
     }
 
-    $app->add_return_arg( saved_deleted => 1 );
+    $app->flash(saved_deleted => 1);
     if ( $app->param('is_power_edit') ) {
-        $app->add_return_arg( is_power_edit => 1 );
+        $app->flash(is_power_edit => 1);
     }
 
     if ( $app->config('RebuildAtDelete') ) {
@@ -2970,7 +2970,7 @@ sub delete {
             $rebuild_func->();
         }
 
-        $app->add_return_arg( no_rebuild => 1 );
+        $app->flash(no_rebuild => 1);
         my %params = (
             is_full_screen  => 1,
             redirect_target => $app->base
