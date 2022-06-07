@@ -67,7 +67,7 @@ sub send_and_log {
 
 sub errstr {
     my ($class) = @_;
-    return $Module ? $Module->errstr : $class->SUPER::errstr;
+    return $Module ? $Module->errstr : MT->errstr;
 }
 
 1;
