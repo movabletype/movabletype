@@ -604,13 +604,13 @@
 
           let _before_insert_content = function(){
             ed.off('beforeExecCommand', _insertContent);
-            ed.once('beforeExecCommand', _insertContent);
+            ed.on('beforeExecCommand', _insertContent);
           }
           let _insertContent = function(e) {
               if (e.command == 'mceInsertContent' && e.value) {
                   ed.mtProxies.source.editor.insertContent(e.value);
+                  ed.off('beforeExecCommand', _insertContent);
               }
-              ed.off('beforeExecCommand', _insertContent);
           };
 
           ed.addMTButton('mt_source_link', {
