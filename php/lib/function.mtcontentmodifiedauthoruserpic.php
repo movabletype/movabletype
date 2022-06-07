@@ -41,7 +41,7 @@ function smarty_function_mtcontentmodifiedauthoruserpic($args, &$ctx) {
 
     $dimensions = sprintf('width="%s" height="%s"', $size, $size);
 
-    $link =sprintf('<img src="%s?%d" %s alt="%s" loading="lazy" decoding="async" />',
+    $link =sprintf('<img src="%s?%d" %s alt="%s" />',
                    encode_html($userpic_url), $asset_id, $dimensions, encode_html($asset[0]->label));
 
     return $link;

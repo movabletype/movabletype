@@ -370,7 +370,7 @@ foobar
 --- template
 <mt:Contents content_type="ct"><mt:ContentModifiedAuthorUserpic></mt:Contents>
 --- expected
-<img src="/cgi-bin/mt-static/support/assets_c/userpics/userpic-[% foobar_id %]-100x100.png?2" width="100" height="100" alt="Userpic" loading="lazy" decoding="async" />
+<img src="/cgi-bin/mt-static/support/assets_c/userpics/userpic-[% foobar_id %]-100x100.png?2" width="100" height="100" alt="Userpic" />
 
 === MT::ContentModifiedAuthorUserpicURL
 --- template
