@@ -513,6 +513,24 @@ abstract class BaseObject extends ADOdb_Active_Record
         return $author;
     }
 
+    public function modified_author () {
+        $col_name = $this->_prefix . "modified_by";
+        $author = null;
+        if (isset($this->$col_name) && is_numeric($this->$col_name)) {
+            $author_id = $this->$col_name;
+
+            $author = $this->load_cache($this->_prefix . ":" . $this->id . ":author:" . $author_id);
+            if (empty($author)) {
+                require_once('class.mt_author.php');
+                $author = new Author;
+                $author->Load("author_id = $author_id");
+                $this->cache($this->_prefix . ":" . $this->id . ":author:" . $author->id, $author);
+            }
+        }
+
+        return $author;
+    }
+
     public function entry () {
         $col_name = $this->_prefix . "entry_id";
         $entry = null;

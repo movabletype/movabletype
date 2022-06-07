@@ -1996,6 +1996,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Website' => 'ウェブサイトの管理',
 	'Member' => 'メンバー',
 	'Members' => 'メンバー',
+	'Modified by' => '更新者',
 	'Movable Type Default' => 'Movable Type 既定',
 	'My Items' => '私のアセット',
 	'My [_1]' => '自分の[_1]',
