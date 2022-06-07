@@ -688,6 +688,10 @@ sub prepare_content_data {
                             }
                         }
                         $data{ $cf->id } = \@asset_ids;
+                    }
+                    elsif ( $cf_type eq 'multi_line_text' ) {
+                        $arg{convert_breaks}{$cf_name} ||= '__default__';
+                        $data{ $cf->id } = $cf_arg;
                     } else {
                         $data{ $cf->id } = $cf_arg;
                     }
@@ -826,8 +830,7 @@ sub prepare_template {
                     or croak "unknown archive_type: $archive_type";
                 $arg{type} = _template_type($archive_type);
             }
-            my $blog_id = _find_blog_id($objs, \%arg)
-                or croak "blog_id is required: template: $arg{type}";
+            my $blog_id = _find_blog_id($objs, \%arg) || 0;
 
             my $ct;
             if (my $ct_name = delete $arg{content_type}) {

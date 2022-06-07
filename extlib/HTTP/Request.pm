@@ -3,7 +3,7 @@ package HTTP::Request;
 use strict;
 use warnings;
 
-our $VERSION = '6.14';
+our $VERSION = '6.36';
 
 use base 'HTTP::Message';
 
@@ -92,7 +92,17 @@ sub uri
 sub uri_canonical
 {
     my $self = shift;
-    return $self->{'_uri_canonical'} ||= $self->{'_uri'}->canonical;
+
+    my $uri = $self->{_uri};
+
+    if (defined (my $canon = $self->{_uri_canonical})) {
+        # early bailout if these are the exact same string;
+        # rely on stringification of the URI objects
+        return $canon if $canon eq $uri;
+    }
+
+    # otherwise we need to refresh the memoized value
+    $self->{_uri_canonical} = $uri->canonical;
 }
 
 
@@ -145,7 +155,7 @@ HTTP::Request - HTTP style request message
 
 =head1 VERSION
 
-version 6.14
+version 6.36
 
 =head1 SYNOPSIS
 
@@ -251,14 +261,13 @@ to an endpoint.
     use strict;
     use warnings;
 
-    use Encode qw(encode_utf8);
     use HTTP::Request ();
     use JSON::MaybeXS qw(encode_json);
 
     my $url = 'https://www.example.com/api/user/123';
     my $header = ['Content-Type' => 'application/json; charset=UTF-8'];
     my $data = {foo => 'bar', baz => 'quux'};
-    my $encoded_data = encode_utf8(encode_json($data));
+    my $encoded_data = encode_json($data);
 
     my $r = HTTP::Request->new('POST', $url, $header, $encoded_data);
     # at this point, we could send it via LWP::UserAgent
@@ -276,7 +285,6 @@ C<add_part> method from L<HTTP::Message> makes this simple.
     use strict;
     use warnings;
 
-    use Encode qw(encode_utf8);
     use HTTP::Request ();
     use JSON::MaybeXS qw(encode_json);
 
@@ -317,7 +325,7 @@ C<add_part> method from L<HTTP::Message> makes this simple.
     sub build_json_request {
         my ($url, $href) = @_;
         my $header = ['Authorization' => "Bearer $auth_token", 'Content-Type' => 'application/json; charset=UTF-8'];
-        return HTTP::Request->new('POST', $url, $header, encode_utf8(encode_json($href)));
+        return HTTP::Request->new('POST', $url, $header, encode_json($href));
     }
 
 =head1 SEE ALSO
@@ -331,7 +339,7 @@ Gisle Aas <gisle@activestate.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 1994-2017 by Gisle Aas.
+This software is copyright (c) 1994 by Gisle Aas.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

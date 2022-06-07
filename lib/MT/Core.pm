@@ -1329,6 +1329,7 @@ BEGIN {
             content_data  => '$Core::MT::ContentData::list_props',
             group         => '$Core::MT::Group::list_props',
             group_member  => '$Core::MT::Group::member_list_props',
+            ts_job        => '$Core::MT::TheSchwartz::Job::list_props',
         },
         system_filters => {
             entry        => '$Core::MT::Entry::system_filters',
@@ -1341,7 +1342,7 @@ BEGIN {
             association  => '$Core::MT::Association::system_filters',
             group        => '$Core::MT::Group::system_filters',
             group_member => '$Core::MT::Group::member_system_filters',
-
+            website      => '$Core::MT::Website::system_filters',
         },
         listing_screens => {
             website => {
@@ -1709,6 +1710,22 @@ BEGIN {
                 search_label        => 'User',
                 search_type         => 'author',
             },
+            ts_job => {
+                object_label => 'Job',
+                view         => 'system',
+                id_column    => 'jobid',
+                primary      => 'funcid',
+                condition    => sub {
+                    my $app = shift;
+                    return 1 if MT->config->ShowTsJob;
+                    $app->errtrans(
+                        'View Background Jobs is disabled by system configuration.');
+                },
+                permission       => 'administer',
+                use_filters      => 0,
+                default_sort_key => 'insert_time',
+                screen_label     => 'View Background Jobs',
+            },
         },
         summaries => {
             'author' => {
@@ -1847,14 +1864,17 @@ BEGIN {
                 default => sub { $_[0]->CGIPath }
             },
             'BaseSitePath'                   => undef,
+            'BaseTemplatePath'               => { default => undef },
             'HideBaseSitePath'               => { default => 0, },
             'HidePerformanceLoggingSettings' => { default => 0, },
             'HidePaformanceLoggingSettings' =>
                 { alias => 'HidePerformanceLoggingSettings' },
             'CookieDomain'          => undef,
             'CookiePath'            => undef,
+            'MailModule'            => { default => 'MIME::Lite', },
             'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
+            'MailTransferEncoding'  => undef,
             'SMTPServer'            => { default => 'localhost', },
             'SMTPAuth'              => { default => 0, },
             'SMTPUser'              => undef,
@@ -2035,23 +2055,24 @@ BEGIN {
             'NewsboxURL' => {
                 default => 'https://www.movabletype.org/news/newsbox.json',
             },
-            'FeedbackURL' =>
-                { default => 'http://www.movabletype.org/feedback.html', },
+            'FeedbackURL' => { default => 'http://www.movabletype.org/feedback.html', },
 
-            'EmailAddressMain'      => undef,
-            'EmailReplyTo'          => undef,
-            'EmailNotificationBcc'  => { default => 1, },
-            'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
-            'UserSessionTimeout'    => { default => 60 * 60 * 4, },
-            'UserSessionCookieName' => { default => \&UserSessionCookieName },
-            'UserSessionCookieDomain' =>
-                { default => '<$MTBlogHost exclude_port="1"$>' },
-            'UserSessionCookiePath' => { default => \&UserSessionCookiePath },
+            'EmailAddressMain'         => undef,
+            'EmailReplyTo'             => undef,
+            'EmailNotificationBcc'     => { default => 1, },
+            'CommentSessionTimeout'    => { default => 60 * 60 * 24 * 3, },
+            'UserSessionTimeout'       => { default => 60 * 60 * 4, },
+            'AutosaveSessionTimeout'   => { default => 60 * 60 * 24 * 30, },
+            'UserSessionCookieName'    => { default => \&UserSessionCookieName },
+            'UserSessionCookieDomain'  => { default => '<$MTBlogHost exclude_port="1"$>' },
+            'UserSessionCookiePath'    => { default => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
+            'MaxUserSession'           => { default => 10000 },
             'LaunchBackgroundTasks'    => { default => 0 },
             'TransparentProxyIPs'      => { default => 0, },
             'DebugMode'                => { default => 0, },
             'ShowIPInformation'        => { default => 0, },
+            'ShowTsJob'                => { default => 0, },
             'AllowComments'            => { default => 1, },
             'AllowPings'               => { default => 1, },
             'HelpURL'                  => undef,
@@ -2256,11 +2277,15 @@ BEGIN {
             'BinTarPath' => undef,
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
+
             'DisableImagePopup' => undef,
             'ForceExifRemoval' => { default => 1 },
             'TemporaryFileExpiration' => { default => 60 * 60 },
-            'ForceAllowStringSub' => undef,
+            'PSGIStreaming' => { default => 1 },
+            'PSGIServeStatic' => { default => 1 },
             'HideVersion' => { default => 1 },
+            'HideConfigWarnings' => { default => undef },
+            'GlobalTemplateMaxRevisions' => { default => 20 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2319,6 +2344,7 @@ BEGIN {
             },
             'cms' => {
                 handler         => 'MT::App::CMS',
+                type            => 'psgi_streaming',
                 script          => sub { MT->config->AdminScript },
                 cgi_path        => sub { MT->config->AdminCGIPath },
                 cgi_base        => 'mt',
@@ -2732,6 +2758,10 @@ sub purge_session_records {
 
     # remove stale search cache
     MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },
+        { range => { start => 1 } } );
+
+    # remove autosave sessions
+    MT::Session->remove( { kind => 'AS', start => [ undef, time - MT->config->AutosaveSessionTimeout ] },
         { range => { start => 1 } } );
 
     # remove all the other session records

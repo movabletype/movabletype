@@ -35,6 +35,14 @@ sub fields {
                     return undef;
                 }
             },
+            schema => {
+                type       => 'object',
+                properties => {
+                    id     => { type => 'integer' },
+                    label  => { type => 'string' },
+                    parent => { type => 'string' },
+                },
+            },
         },
     ];
 }

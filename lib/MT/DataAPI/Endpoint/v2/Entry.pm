@@ -21,6 +21,23 @@ use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Endpoint::Entry;
 use MT::DataAPI::Resource;
 
+sub create_openapi_spec {
+    my $spec = MT::DataAPI::Endpoint::Entry::create_openapi_spec();
+    $spec->{description} = <<'DESCRIPTION';
+- Authorization is required.
+
+#### Update in v2.0
+
+- You can attach categories and assets in one request.
+
+#### Permissions
+
+- create_post
+DESCRIPTION
+    $spec->{responses}{404}{description} = 'Site not found.';
+    return $spec;
+}
+
 sub create {
     my ( $app, $endpoint ) = @_;
 
@@ -138,6 +155,25 @@ sub create {
     $new_entry;
 }
 
+sub update_openapi_spec {
+    my $spec = MT::DataAPI::Endpoint::Entry::update_openapi_spec();
+    $spec->{sumamry} = 'Update an existing entry';
+    $spec->{description} = <<'DESCRIPTION';
+- Authorization is required.
+
+#### Update in v2.0
+
+- You can attach/detach categories and assets in one request.
+
+#### Permissions
+
+- edit_entry
+  - to retrieve unpublished entry
+DESCRIPTION
+    $spec->{responses}{404}{description} = 'Site or Entry not found.';
+    return $spec;
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
@@ -247,6 +283,71 @@ sub update {
     $new_entry;
 }
 
+sub list_for_category_openapi_spec {
+    +{
+        tags        => ['Entries', 'Categories'],
+        summary     => 'Retrieve a list of entries by specific category',
+        description => <<'DESCRIPTION',
+- Authorization is required to include unpublished entries.
+
+#### Permissions
+
+- edit_entry
+  - to retrieve unpublished entry
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/entry_search' },
+            { '$ref' => '#/components/parameters/entry_searchFields' },
+            { '$ref' => '#/components/parameters/entry_limit' },
+            { '$ref' => '#/components/parameters/entry_offset' },
+            { '$ref' => '#/components/parameters/entry_sortBy' },
+            { '$ref' => '#/components/parameters/entry_sortOrder' },
+            { '$ref' => '#/components/parameters/entry_fields' },
+            { '$ref' => '#/components/parameters/entry_includeIds' },
+            { '$ref' => '#/components/parameters/entry_excludeIds' },
+            { '$ref' => '#/components/parameters/entry_status' },
+            { '$ref' => '#/components/parameters/entry_maxComments' },
+            { '$ref' => '#/components/parameters/entry_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/entry_no_text_filter' },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of entries.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Entries resource. ',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/entry',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Category not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list_for_category {
     my ( $app, $endpoint ) = @_;
     list_for_category_common( $app, $endpoint, 'entry' );
@@ -276,6 +377,71 @@ sub list_for_category_common {
         items => MT::DataAPI::Resource::Type::ObjectList->new(
             $res ? $res->{objects} : {}
         ),
+    };
+}
+
+sub list_for_asset_openapi_spec {
+    +{
+        tags        => ['Entries', 'Assets'],
+        summary     => 'Retrieve a list of entries that related with specific asset',
+        description => <<'DESCRIPTION',
+- Authorization is required to include unpublished entries.
+
+#### Permissions
+
+- edit_entry
+  - to retrieve unpublished entry
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/entry_search' },
+            { '$ref' => '#/components/parameters/entry_searchFields' },
+            { '$ref' => '#/components/parameters/entry_limit' },
+            { '$ref' => '#/components/parameters/entry_offset' },
+            { '$ref' => '#/components/parameters/entry_sortBy' },
+            { '$ref' => '#/components/parameters/entry_sortOrder' },
+            { '$ref' => '#/components/parameters/entry_fields' },
+            { '$ref' => '#/components/parameters/entry_includeIds' },
+            { '$ref' => '#/components/parameters/entry_excludeIds' },
+            { '$ref' => '#/components/parameters/entry_status' },
+            { '$ref' => '#/components/parameters/entry_maxComments' },
+            { '$ref' => '#/components/parameters/entry_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/entry_no_text_filter' },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of entries.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Entries resource. ',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/entry',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Asset not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -315,6 +481,10 @@ sub list_for_asset_common {
 
 sub list_for_tag {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     list_for_tag_common( $app, $endpoint, 'entry' );
 }
 
@@ -343,6 +513,71 @@ sub list_for_tag_common {
         items => MT::DataAPI::Resource::Type::ObjectList->new(
             $res ? $res->{objects} : {}
         ),
+    };
+}
+
+sub list_for_site_and_tag_openapi_spec {
+    +{
+        tags        => ['Entries', 'Tags'],
+        summary     => 'Retrieve a list of entries that related with specific tag',
+        description => <<'DESCRIPTION',
+- Authorization is required to include unpublished entries.
+
+#### Permissions
+
+- edit_entry
+  - to retrieve unpublished entry
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/entry_search' },
+            { '$ref' => '#/components/parameters/entry_searchFields' },
+            { '$ref' => '#/components/parameters/entry_limit' },
+            { '$ref' => '#/components/parameters/entry_offset' },
+            { '$ref' => '#/components/parameters/entry_sortBy' },
+            { '$ref' => '#/components/parameters/entry_sortOrder' },
+            { '$ref' => '#/components/parameters/entry_fields' },
+            { '$ref' => '#/components/parameters/entry_includeIds' },
+            { '$ref' => '#/components/parameters/entry_excludeIds' },
+            { '$ref' => '#/components/parameters/entry_status' },
+            { '$ref' => '#/components/parameters/entry_maxComments' },
+            { '$ref' => '#/components/parameters/entry_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/entry_no_text_filter' },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of entries.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Entries resource. ',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/entry',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Tag not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -493,6 +728,94 @@ sub _check_import_parameters {
     return 1;
 }
 
+sub import_openapi_spec {
+    +{
+        tags        => ['Entries'],
+        summary     => 'Import entries',
+        requestBody => {
+            content => {
+                'multipart/form-data' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            import_as_me => {
+                                type        => 'integer',
+                                enum        => [0, 1],
+                                default     => 1,
+                                description => <<'DESCRIPTION',
+#### 0
+
+Preserve original user
+
+#### 1
+
+Import as me
+
+**Default**: 1
+DESCRIPTION
+                            },
+                            password => {
+                                type        => 'string',
+                                description => 'If you choose import_as_me is 0, you must define a default password for those new accounts.',
+                            },
+                            import_type => {
+                                type => 'string',
+                            },
+                            default_status => {
+                                type        => 'string',
+                                description => 'If you set import_type is "import_mt_format", also you can set default entry status.',
+                            },
+                            encoding => {
+                                type => 'string',
+                            },
+                            convert_breaks => {
+                                type => 'string',
+                            },
+                            default_cat_id => {
+                                type => 'integer',
+                            },
+                            file => {
+                                type   => 'string',
+                                format => 'binary',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => {
+                                    type => 'string',
+                                },
+                                message => {
+                                    type => 'string',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub import {
     my ( $app, $endpoint ) = @_;
 
@@ -530,6 +853,33 @@ sub import {
     };
 }
 
+sub export_openapi_spec {
+    +{
+        tags      => ['Entries'],
+        summary   => 'Export entries',
+        responses => {
+            200 => {
+                description => 'Text as Movable Type Import / Export Format',
+                content     => {
+                    'text/plain' => {
+                        schema => { type => 'string' },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub export {
     my ( $app, $endpoint ) = @_;
 
@@ -540,6 +890,73 @@ sub export {
     MT::CMS::Export::export($app);
 
     return;
+}
+
+sub preview_by_id_openapi_spec {
+    +{
+        tags        => ['Entries'],
+        summary     => 'Make a preview for a entry with existing data',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- **This endpoint has been available since Movable Type 6.1.2.**
+- **entry** parameter is required. If you just want to get preview entry from existing data, you should provide entry parameter with empty json.
+
+#### Permissions
+
+- create_post
+DESCRIPTION
+        parameters => [{
+                in     => 'query',
+                name   => 'raw',
+                schema => {
+                    type    => 'integer',
+                    enum    => [0, 1],
+                    default => 0,
+                },
+                description => 'If specify "1", will be returned preview contents.',
+            },
+        ],
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            entry => {
+                                '$ref' => '#/components/schemas/entry',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status  => { type => 'string' },
+                                preview => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Entry not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub preview_by_id {
@@ -592,6 +1009,20 @@ sub preview_by_id {
     }
 
     return _preview_common( $app, $entry );
+}
+
+sub preview_openapi_spec {
+    my $spec = __PACKAGE__->preview_by_id_openapi_spec();
+    $spec->{summary} = 'Make a preview for a entry';
+    $spec->{description} = <<'DESCRIPTION',
+- Authorization is required.
+- **This endpoint has been available since Movable Type 6.1.2.**
+
+#### Permissions
+
+- create_post
+DESCRIPTION
+    return $spec;
 }
 
 sub preview {

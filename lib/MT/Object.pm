@@ -160,7 +160,9 @@ sub install_properties {
 
     $props->{get_driver} ||= sub {
         require MT::ObjectDriverFactory;
-        return MT::ObjectDriverFactory->instance;
+        my $coderef = MT::ObjectDriverFactory->driver_for_class($class);
+        $class->get_driver($coderef);
+        return $coderef->(@_);
     };
 
     $class->SUPER::install_properties($props);
@@ -1087,7 +1089,10 @@ sub save {
         $obj->SUPER::save(@_);
     };
     if ( my $err = $@ ) {
-        return $obj->error($err);
+        require MT::Util::Log;
+        MT::Util::Log::init();
+        MT::Util::Log->error($err);
+        return $obj->error(MT->translate('An error occurred while saving changes to the database.'));
     }
     delete $obj->{__orig_value};
     return $res;
@@ -1253,17 +1258,16 @@ sub set_defaults {
     $obj->{'column_values'} = $defaults ? {%$defaults} : {};
 }
 
-sub __properties { }
-
-our $DRIVER;
+sub __properties { +{} }
 
 sub driver {
     my $class = shift;
-    require MT::ObjectDriverFactory;
-    return $DRIVER ||= MT::ObjectDriverFactory->instance
-        if UNIVERSAL::isa( $class, 'MT::Object' );
-    my $driver = $class->SUPER::driver(@_);
-    return $driver;
+    if (%{$class->properties}) {
+        return $class->SUPER::driver(@_);
+    } else {
+        require MT::ObjectDriverFactory;
+        return MT::ObjectDriverFactory->instance;
+    }
 }
 
 sub dbi_driver {

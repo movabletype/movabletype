@@ -218,12 +218,12 @@ sub recover_password {
                 }
             );
 
-            require MT::Mail;
-            MT::Mail->send( \%head, $body ) or do {
+            require MT::Util::Mail;
+            MT::Util::Mail->send( \%head, $body ) or do {
                 $app->log(
                     {   message => $app->translate(
                             'Error sending mail: [_1]',
-                            MT::Mail->errstr
+                            MT::Util::Mail->errstr
                         ),
                         level    => MT::Log::ERROR(),
                         class    => 'system',
@@ -233,7 +233,7 @@ sub recover_password {
                 die $app->translate(
                     "Error sending e-mail ([_1]); Please fix the problem, then "
                         . "try again to recover your password.",
-                    MT::Mail->errstr
+                    MT::Util::Mail->errstr
                 );
             };
         }
@@ -480,8 +480,8 @@ sub test_system_mail {
     my $body
         = $app->translate("This is the test email sent by Movable Type.");
 
-    require MT::Mail;
-    if ( MT::Mail->send( \%head, $body ) ) {
+    require MT::Util::Mail;
+    if ( MT::Util::Mail->send( \%head, $body ) ) {
         $app->log(
             {   message => $app->translate(
                     'Test e-mail was successfully sent to [_1]',
@@ -498,7 +498,7 @@ sub test_system_mail {
         return $app->json_error(
             $app->translate(
                 "E-mail was not properly sent. [_1]",
-                MT::Mail->errstr
+                MT::Util::Mail->errstr
             )
         );
     }
@@ -1603,11 +1603,6 @@ sub restore {
         = File::Spec->splitpath($uploaded)
         if defined($uploaded);
     $app->mode('start_restore');
-    if ( defined($uploaded_filename)
-        && ( $uploaded_filename =~ /^.+\.manifest$/i ) )
-    {
-        return restore_upload_manifest( $app, $fh );
-    }
 
     $app->log(
         {   message  => (
@@ -1620,6 +1615,12 @@ sub restore {
             category => 'restore',
         }
     );
+
+    if ( defined($uploaded_filename)
+        && ( $uploaded_filename =~ /^.+\.manifest$/i ) )
+    {
+        return restore_upload_manifest( $app, $fh );
+    }
 
     my $param = { return_args => '__mode=dashboard' };
 
@@ -2851,12 +2852,12 @@ sub reset_password {
         }
     );
 
-    require MT::Mail;
-    MT::Mail->send( \%head, $body ) or do {
+    require MT::Util::Mail;
+    MT::Util::Mail->send( \%head, $body ) or do {
         $app->log(
             {   message => $app->translate(
                     'Error sending mail: [_1]',
-                    MT::Mail->errstr
+                    MT::Util::Mail->errstr
                 ),
                 level    => MT::Log::ERROR(),
                 class    => 'system',
@@ -2867,7 +2868,7 @@ sub reset_password {
             $app->translate(
                 "Error sending e-mail ([_1]); Please fix the problem, then "
                     . "try again to recover your password.",
-                MT::Mail->errstr
+                MT::Util::Mail->errstr
             )
         );
     };

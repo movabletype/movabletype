@@ -133,6 +133,7 @@ subtest 'mode=save_content_data (update)' => sub {
         $content_data->id, 'content data ID is not changed'
     );
 
+    $test_env->clear_mt_cache;
     $content_data = MT::ContentData->load($content_data->id);
     is(
         keys %{ $content_data->data },

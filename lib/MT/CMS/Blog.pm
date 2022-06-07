@@ -46,8 +46,6 @@ sub edit {
 
         $param->{system_allow_comments} = $cfg->AllowComments;
         $param->{system_allow_pings}    = $cfg->AllowPings;
-        $param->{tk_available}          = eval { require MIME::Base64; 1; }
-            && eval { require LWP::UserAgent; 1 };
         $param->{'auto_approve_commenters'}
             = !$obj->manual_approve_commenters;
         $param->{"moderate_comments"} = $obj->moderate_unreg_comments;
@@ -3621,21 +3619,7 @@ sub save_data_api_settings {
 
     my $cfg = $app->config;
 
-    my $data_api_disable_site
-        = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my %data_api_disable_site
-        = map { $_ => 1 } ( split ',', $data_api_disable_site );
-    if ($new_value) {
-        delete $data_api_disable_site{$blog_id};
-    }
-    else {
-        $data_api_disable_site{$blog_id} = 1;
-    }
-    my $new_data_api_disable_site = join ',',
-        ( sort { $a <=> $b } keys %data_api_disable_site );
-    $cfg->DataAPIDisableSite( $new_data_api_disable_site, 1 );
-
-    $cfg->save_config;
+    MT::Util::update_data_api_disable_site($cfg, $blog_id, $new_value);
 
     return 1;
 }

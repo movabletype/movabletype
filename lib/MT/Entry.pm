@@ -268,6 +268,7 @@ sub list_props {
                     : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
                     :                                     '';
                 my $lc_status_class = lc $status_class;
+                my $status_class_trans = MT->translate($status_class);
 
                 my $status_icon_id
                     = $status == MT::Entry::HOLD()      ? 'ic_draft'
@@ -291,7 +292,7 @@ sub list_props {
                     my $static_uri = MT->static_path;
                     $status_img = qq{
                         <svg role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
-                            <title>$status_class</title>
+                            <title>$status_class_trans</title>
                             <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
                         </svg>
                     };

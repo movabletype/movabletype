@@ -1559,7 +1559,17 @@ sub core_list_actions {
                 },
             },
         },
-
+        'ts_job' => {
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+                mobile     => 1,
+            },
+        }
     };
 }
 
@@ -2321,6 +2331,18 @@ sub core_menus {
             },
             view => [qw( system website blog )],
         },
+        'tools:ts_job' => {
+            label     => "Background Job",
+            order     => 700,
+            mode      => 'list',
+            args      => { _type => 'ts_job' },
+            condition => sub {
+                return 0 unless $app->config->ShowTsJob;
+                return 1 if $app->user->is_superuser;
+                return 0;
+            },
+            view => ['system'],
+        },
 
         'category_set:manage' => {
             label      => 'Manage',
@@ -2564,7 +2586,8 @@ sub core_enable_object_methods {
         group => {
             delete => 1,
             save   => 1,
-        }
+        },
+        ts_job => { delete => 1 },
     };
 }
 
@@ -4108,6 +4131,35 @@ sub _translate_naughty_words {
     my ( $app, $entry ) = @_;
     require MT::Util;
     return MT::Util::translate_naughty_words($entry);
+}
+
+sub user_who_is_also_editing_the_same_stuff {
+    my ($app, $obj) = @_;
+    my $type  = $app->param('_type') or return;
+    my $id    = $app->param('id') or return;
+    my $ident = 'autosave:user=%:type=' . $type . ':id=' . $id;
+    my $blog  = $app->blog;
+    if ($blog) {
+        $ident .= ':blog_id=' . $blog->id;
+    }
+    if ( $type eq 'content_data' ) {
+        my $content_type_id = $app->param('content_type_id') or return;
+        $ident .= ':content_type_id=' . $content_type_id;
+    }
+    require MT::Session;
+    my $sess_obj = MT::Session->load(
+        { id    => { like  => $ident }, kind => 'AS',    start     => [time - MT->config->AutosaveSessionTimeout - 1] },
+        { range => { start => 1 },      sort => 'start', direction => 'descend' }) or return;
+    my ($user_id) = $sess_obj->id =~ /:user=([0-9]+)/;
+    if ($user_id != $app->user->id && MT::Util::epoch2ts($blog, $sess_obj->start) > $obj->modified_on) {
+        my $user = $app->model('author')->load($user_id);
+        require MT::Util;
+        return {
+            name => $user->nickname || $user->name,
+            time => MT::Util::format_ts('%Y-%m-%d %H:%M:%S', MT::Util::epoch2ts($blog, $sess_obj->start), $blog),
+        } if $user;
+    }
+    return;
 }
 
 sub autosave_session_obj {

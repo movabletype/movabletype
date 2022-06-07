@@ -707,6 +707,37 @@ sub normal_tests_for_list_categories {
         }
     );
     test_data_api(
+        {   note => 'not logged in with DataAPIDisableSite',
+            path =>
+                "/v4/sites/$site_id/categorySets/$category_set_id/categories",
+            method    => 'GET',
+            author_id => 0,
+            setup     => sub {
+                $app->config->DataAPIDisableSite('9999');
+                $app->config->save_config;
+            },
+            params    => { sortBy => 'id', },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_view_permission_filter.category_set',
+                    count => 1,
+                },
+                {   name  => 'data_api_pre_load_filtered_list.category',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                my @cats = MT->model('category')->load(
+                    { category_set_id => $category_set_id },
+                    { sort            => 'id', direction => 'descend' },
+                );
+                +{  totalResults => scalar @cats,
+                    items => MT::DataAPI::Resource->from_object( \@cats ),
+                };
+            },
+        }
+    );
+    test_data_api(
         {   note => 'non superuser',
             path =>
                 "/v4/sites/$site_id/categorySets/$category_set_id/categories",

@@ -6,14 +6,14 @@ XML::XPath - Parse and evaluate XPath statements.
 
 =head1 VERSION
 
-Version 1.42
+Version 1.44
 
 =cut
 
 use strict; use warnings;
 use vars qw($VERSION $AUTOLOAD $revision);
 
-$VERSION = '1.42';
+$VERSION = '1.44';
 $XML::XPath::Namespaces = 1;
 $XML::XPath::ParseParamEnt = 1;
 $XML::XPath::Debug = 0;
@@ -485,6 +485,7 @@ sub cleanup {
         my $context = $self->get_context;
         return unless $context;
         $context->dispose;
+        $self->{path_parser}->cleanup if $self->{path_parser};
     }
 }
 

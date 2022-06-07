@@ -33,7 +33,7 @@
 
   ListData.prototype.addFilterItem = function (filterItem) {
     if (this.currentFilter.id == this.allpassFilter.id) {
-      this.createNewFilter(trans('Unknown Filter'));
+      this.createNewFilter(trans('New Filter'));
     }
     this.currentFilter.items.push({ type: filterItem });
   };

@@ -156,6 +156,7 @@ subtest 'Unauthorized fields' => sub {
     });
     $app->has_no_permission_error('edit by aikawa');
 
+    $test_env->clear_mt_cache;
     my $saved_cd = MT::ContentData->load($cd_admin->id);
     is($saved_cd->data->{ $content_field->id }, 'test text', 'test field1');
     is(

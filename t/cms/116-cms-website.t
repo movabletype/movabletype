@@ -122,7 +122,7 @@ subtest 'Test cfg_prefs mode' => sub {
 
             {
                 my $archive_url  = 'http://localhost/archive/path/';
-                my $archive_path = $test_env->root . "new/$type/archive/path";
+                my $archive_path = $test_env->root . "/new/$type/archive/path";
 
                 if ($type eq 'website') {
                     $app->post_form_ok({
@@ -137,7 +137,6 @@ subtest 'Test cfg_prefs mode' => sub {
                 } else {
                     $app->post_form_ok({
                         enable_archive_paths   => 1,
-                        archive_path           => $archive_path,
                         archive_path_absolute  => $archive_path,
                         site_url_path          => 'nana/',
                         archive_url_path       => 'nana/archives/',
@@ -149,6 +148,7 @@ subtest 'Test cfg_prefs mode' => sub {
                 }
                 like $app->message_text => qr/Your preferences have been saved/, "Request: save $type";
 
+                $test_env->clear_mt_cache;
                 $test_blog = MT->model($type)->load($test_blog->id);
                 if ($type eq 'website') {
                     is(

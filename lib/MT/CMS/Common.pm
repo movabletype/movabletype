@@ -743,6 +743,12 @@ sub edit {
             $param{'recovered_failed'} = 1;
         }
     }
+    elsif ( $app->param('_discard') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        if ($sess_obj) {
+            $sess_obj->remove;
+        }
+    }
     elsif ( $app->param('qp') ) {
 
         # dedupe
@@ -932,6 +938,12 @@ sub edit {
                 $param{autosaved_object_exists} = 1;
                 $param{autosaved_object_ts}
                     = MT::Util::epoch2ts( $blog, $sess_obj->start );
+                $param{autosaved_object_is_outdated} = 1
+                    if $obj && $param{autosaved_object_ts} < $obj->modified_on;
+            }
+            if (my $other_user = $app->user_who_is_also_editing_the_same_stuff($obj)) {
+                $param{is_also_edited_by} = $other_user->{name};
+                $param{is_also_edited_at} = $other_user->{time};
             }
         }
     }
@@ -2027,6 +2039,12 @@ sub delete {
                 );
             if ($used_in_categories_field) {
                 push @not_deleted, $obj->id;
+                next;
+            }
+        }
+        elsif ($type eq 'ts_job') {
+            if ($obj->grabbed_until) {
+                push @not_deleted, $obj->jobid;
                 next;
             }
         }

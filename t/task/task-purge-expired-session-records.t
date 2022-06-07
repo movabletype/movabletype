@@ -76,4 +76,25 @@ ok( $session_class->load( $remembered->id ),
     'A remembered session record is not purged'
 );
 
+$session_class->remove_all;
+
+{
+    MT->config('MaxUserSession', 2);
+
+    my @target;
+    my $time = time;
+    my @kind = ('US', 'DS', 'US', 'DS');
+    for (0 .. 3) {
+        push @target, make_session({ id => $_, kind => $kind[$_], start => $time - $_ }, { remember => 1 });
+    }
+    my $not_target = make_session({ id => 4, kind => 'SI', start => $time - 4 });
+
+    is(MT::Session->count, 5, 'right number');
+    MT::Core::purge_session_records();
+    is(MT::Session->count(), 3, 'right number');
+    ok(MT::Session->load($target[0]->id),  'session remains');
+    ok(MT::Session->load($target[1]->id),  'session remains');
+    ok(MT::Session->load($not_target->id), 'session remains');
+}
+
 done_testing();

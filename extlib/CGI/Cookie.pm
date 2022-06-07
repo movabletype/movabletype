@@ -3,9 +3,7 @@ package CGI::Cookie;
 use strict;
 use warnings;
 
-use if $] >= 5.019, 'deprecate';
-
-our $VERSION='4.38';
+our $VERSION='4.54';
 
 use CGI::Util qw(rearrange unescape escape);
 use overload '""' => \&as_string, 'cmp' => \&compare, 'fallback' => 1;
@@ -167,7 +165,7 @@ sub bake {
           : Apache->request
   } if $MOD_PERL;
   if ($r) {
-      $r->headers_out->add('Set-Cookie' => $self->as_string);
+      $r->err_headers_out->add('Set-Cookie' => $self->as_string);
   } else {
       require CGI;
       print CGI::header(-cookie => $self);
@@ -230,7 +228,7 @@ sub httponly { # HttpOnly
     return $self->{'httponly'};
 }
 
-my %_legal_samesite = ( Strict => 1, Lax => 1 );
+my %_legal_samesite = ( Strict => 1, Lax => 1, None => 1 );
 sub samesite { # SameSite
     my $self = shift;
     my $samesite = ucfirst lc +shift if @_; # Normalize casing.
@@ -339,7 +337,7 @@ See these URLs for more information:
 
 =item B<6. samesite flag>
 
-Allowed settings are C<Strict> and C<Lax>.
+Allowed settings are C<Strict>, C<Lax> and C<None>.
 
 As of June 2016, support is limited to recent releases of Chrome and Opera.
 
@@ -392,8 +390,9 @@ cookie only when a cryptographic protocol is in use.
 B<-httponly> if set to a true value, the cookie will not be accessible
 via JavaScript.
 
-B<-samesite> may be C<Lax> or C<Strict> and is an evolving part of the
-standards for cookies. Please refer to current documentation regarding it.
+B<-samesite> may be C<Lax>, C<Strict>, or C<None> and is an evolving part
+of the standards for cookies. Please refer to current documentation
+regarding it.
 
 For compatibility with Apache::Cookie, you may optionally pass in
 a mod_perl request object as the first argument to C<new()>. It will
@@ -439,7 +438,7 @@ argument to the header() method:
 Mod_perl users can set cookies using the request object's header_out()
 method:
 
-  $r->headers_out->set('Set-Cookie' => $c);
+  $r->err_headers_out->add('Set-Cookie' => $c);
 
 Internally, Cookie overloads the "" operator to call its as_string()
 method when incorporated into the HTTP header.  as_string() turns the
@@ -533,7 +532,7 @@ Get or set the cookie's max_age value.
 =head1 AUTHOR INFORMATION
 
 The CGI.pm distribution is copyright 1995-2007, Lincoln D. Stein. It is
-distributed under GPL and the Artistic License 2.0. It is currently
+distributed under the Artistic License 2.0. It is currently
 maintained by Lee Johnson with help from many contributors.
 
 Address bug reports and comments to: https://github.com/leejo/CGI.pm/issues

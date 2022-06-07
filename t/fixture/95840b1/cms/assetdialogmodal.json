@@ -25,8 +25,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 1",
             "jpg",
-            "RamTlJrTJC.jpg",
-            "__TEST_ROOT__/RamTlJrTJC.jpg",
+            "hasqnN6KD5.jpg",
+            "__TEST_ROOT__/hasqnN6KD5.jpg",
             1,
             "Sample Image 1",
             "text/plain",
@@ -42,8 +42,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 2",
             "jpg",
-            "RamTlJrTJC.jpg",
-            "__TEST_ROOT__/RamTlJrTJC.jpg",
+            "hasqnN6KD5.jpg",
+            "__TEST_ROOT__/hasqnN6KD5.jpg",
             2,
             "Sample Image 2",
             "text/plain",
@@ -552,7 +552,7 @@
             null,
             null,
             "asset_image",
-            "e1f130167241b055710ddd5068c28efdaad617db"
+            "fa3ba510ce6defda01cb6c079f93c448a6fbfcfc"
          ]
       ]
    },
@@ -596,7 +596,7 @@
             null,
             "__NOW__",
             "content type 1",
-            "6a98644bbd634db35bc0849e207f40f87662c605",
+            "91e65ddfdef24b1118cfa9e7123125b7d9a6a783",
             null,
             null
          ]
