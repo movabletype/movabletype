@@ -298,6 +298,28 @@ sub list_props {
                 } @$objs;
                 return @sorted;
             },
+            verb                  => ' ',
+            single_select_options => [
+                {
+                    label => MT->translate('__INTEGER_FILTER_EQUAL'),
+                    value => 1,
+                },
+                {
+                    label => MT->translate('__INTEGER_FILTER_NOT_EQUAL'),
+                    value => 0,
+                },
+            ],
+            singleton => 1,
+            base      => '__virtual.single_select',
+            terms     => sub {
+                my $prop = shift;
+                my ($args, $db_terms, $db_args) = @_;
+                if ($args->{value}) {
+                    $db_terms->{parent_id} = \'IS NULL';
+                } else {
+                        $db_terms->{parent_id} = \'IS NOT NULL';
+                }
+            }
         },
         created_on => {
             base  => '__virtual.created_on',
@@ -1759,7 +1781,6 @@ sub can_popup_image {
     }
     return 0;
 }
-
 
 1;
 __END__

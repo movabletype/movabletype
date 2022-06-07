@@ -1462,8 +1462,9 @@ sub save_favorite_blogs {
     elsif ( $blog && !$blog->is_blog ) {
         $app->add_to_favorite_websites($fav);
     }
+    $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript+json");
-    return 'true';
+    $app->print_encode("true");
 }
 
 sub cc_return {

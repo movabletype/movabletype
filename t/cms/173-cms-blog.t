@@ -37,6 +37,7 @@ my $user        = MT::Author->load(1);
 my $mock_author = Test::MockModule->new('MT::Author');
 our $is_superuser = 0;
 $mock_author->mock('is_superuser', sub { $is_superuser });
+my $blog = MT::Blog->load(1);
 my $website = MT::Website->load(2);
 is(!!$website->is_blog, '', 'Is a website');
 
@@ -200,6 +201,42 @@ subtest 'Check disable image popup' => sub {
         $app->get_ok(\%params);
         note $app->wq_find("#image_default_link_popup")->as_html;
         is($app->wq_find("#image_default_link_popup")->size, 0, 'image popup check is hide');
+    };
+};
+
+subtest 'save_favorite_blogs' => sub {
+    subtest 'Add website' => sub {
+        $user->favorite_sites([]);
+        $user->favorite_blogs([]);
+        $user->save;
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->post_ok({
+            __mode  => 'save_favorite_blogs',
+            id       => $website->id
+        });
+        is $app->content, 'true';
+
+        is_deeply $user->favorite_blogs, [];
+        is_deeply $user->favorite_websites, [$website->id];
+    };
+
+    subtest 'Add blog' => sub {
+        $user->favorite_sites([]);
+        $user->favorite_blogs([]);
+        $user->save;
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->post_ok({
+            __mode  => 'save_favorite_blogs',
+            id       => $blog->id
+        });
+        is $app->content, 'true';
+
+        is_deeply $user->favorite_blogs, [$blog->id];
+        is_deeply $user->favorite_websites, [$website->id];
     };
 };
 
