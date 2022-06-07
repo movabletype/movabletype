@@ -1444,25 +1444,25 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x360-1.j
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 278
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink width='160'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto-1.jpg" width="160" height="120" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto-1.jpg" width="160" height="120" alt="" /></a>
 
 === test 279
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink height='240'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox240-1.jpg" width="320" height="240" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox240-1.jpg" width="320" height="240" alt="" /></a>
 
 === test 280
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink scale='100'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 281
 --- template
@@ -1474,25 +1474,25 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x360-1.j
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 283
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' width='160'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto-1.jpg" width="160" height="120" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto-1.jpg" width="160" height="120" alt="" /></a>
 
 === test 284
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' scale='100'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 285
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' scale='100'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 286
 --- template
@@ -2586,7 +2586,7 @@ Bob D
 --- template
 <MTAuthors lastn="1"><MTAuthorUserpic></MTAuthors>
 --- expected
-<img src="/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3" width="100" height="100" alt="Image photo" loading="lazy" decoding="async" />
+<img src="/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3" width="100" height="100" alt="Image photo" />
 
 === test 492
 --- template
@@ -2916,7 +2916,7 @@ Header:January 31, 1978  7:45 AM,Footer:January 31, 1978  7:45 AM,Header:January
 --- template
 <MTEntries lastn="1"><MTEntryAuthorUserpic></MTEntries>
 --- expected
-<img src="/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3" width="100" height="100" alt="Image photo" loading="lazy" decoding="async" />
+<img src="/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3" width="100" height="100" alt="Image photo" />
 
 === test 557
 --- template
@@ -4529,25 +4529,25 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox960-1.
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink width='1280'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 835
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink width='1280' force='1'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-1280xauto-1.jpg" width="1280" height="960" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-1280xauto-1.jpg" width="1280" height="960" alt="" /></a>
 
 === test 836
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink height='960'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 837
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink height='960' force='1'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox960-1.jpg" width="1280" height="960" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox960-1.jpg" width="1280" height="960" alt="" /></a>
 
 === test 838
 --- template
