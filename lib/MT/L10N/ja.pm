@@ -3060,6 +3060,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Website.pm
 	'Child Site Count' => '子サイト数',
 	'First Website' => 'First Website',
+	'Show only Parent Site' => '親サイトだけを表示',
+	'Show only Child Site' => '子サイトだけを表示',
 
 ## lib/MT/Worker/Publish.pm
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- 完了 ([_1]ファイル - [_2]秒)',

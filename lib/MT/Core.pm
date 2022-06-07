@@ -1342,7 +1342,7 @@ BEGIN {
             association  => '$Core::MT::Association::system_filters',
             group        => '$Core::MT::Group::system_filters',
             group_member => '$Core::MT::Group::member_system_filters',
-
+            website      => '$Core::MT::Website::system_filters',
         },
         listing_screens => {
             website => {
