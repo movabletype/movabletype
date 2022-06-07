@@ -4939,7 +4939,7 @@ https://foobar.com
 --- template
 <MTEntries lastn="1"><MTEntryModifiedAuthorUserpic></MTEntries>
 --- expected
-<img src="/mt-static/support/assets_c/userpics/userpic-6-100x100.png?3" width="100" height="100" alt="Image photo" loading="lazy" decoding="async" />
+<img src="/mt-static/support/assets_c/userpics/userpic-6-100x100.png?3" width="100" height="100" alt="Image photo" />
 
 === test 901
 --- template
