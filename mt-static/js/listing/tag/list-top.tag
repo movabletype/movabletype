@@ -6,7 +6,7 @@
         if={ opts.useActions }
       ></virtual>
     </div>
-    <div class="col-auto list-counter">
+    <div class="col-auto align-self-end list-counter">
       <virtual data-is="list-count"></virtual>
     </div>
   </div>
