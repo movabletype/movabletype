@@ -407,7 +407,7 @@ sub _render_headers {
             $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" unless $hide_bcc && $h eq 'Bcc';
         }
     }
-    $Sent{recipient} = [@recipients];
+    $Sent{recipients} = [@recipients];
     return wantarray ? ($hdr, @recipients) : $hdr;
 }
 

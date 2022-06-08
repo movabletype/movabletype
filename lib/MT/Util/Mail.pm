@@ -60,7 +60,7 @@ sub send_and_log {
                 metadata => join(
                     "\n",
                     MT->translate("Subject: [_1]",   $sent->{subject}),
-                    MT->translate("Recipient: [_1]", join(', ', @{ $sent->{recipient} }))
+                    MT->translate("Recipient: [_1]", join(', ', @{ $sent->{recipients} }))
                 ),
                 level    => MT::Log::INFO(),
                 class    => 'system',

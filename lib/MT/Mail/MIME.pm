@@ -197,8 +197,8 @@ sub _send_mt_smtp {
     $smtp->mail(ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From})
         or return $class->smtp_error($smtp);
 
-    $Sent{recipient} = _recipient($hdrs);
-    for (@{$Sent{recipient}}) {
+    $Sent{recipients} = _recipients($hdrs);
+    for (@{$Sent{recipients}}) {
         $smtp->recipient($_) or return $class->smtp_error($smtp);
     }
 
@@ -243,7 +243,7 @@ sub _send_mt_sendmail {
             or return $class->error(MT->translate("Exec of sendmail failed: [_1]", "$!"));
     }
 
-    $Sent{recipients} = _recipient($hdrs);
+    $Sent{recipients} = _recipients($hdrs);
 
     my $msg = $class->render(header => $hdrs, body => $body);
     $msg =~ s{\r\n}{\n}g;
@@ -252,7 +252,7 @@ sub _send_mt_sendmail {
     1;
 }
 
-sub _recipient {
+sub _recipients {
     my $hdrs = shift;
     my @ret;
     for my $h (qw( To Bcc Cc )) {
