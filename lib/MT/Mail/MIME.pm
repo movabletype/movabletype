@@ -275,16 +275,17 @@ sub prepare_parts {
     for (my $i = 0; $i < scalar(@$parts); $i++) {
         my $part = $parts->[$i];
         if (ref $part) {
-            require File::Basename;
-            require MIME::Types;
-
-            $Types ||= MIME::Types->new;
             my ($type, $name, $path, $body) = @{$part}{qw(type name path body)};
             if ($body) {
                 $type ||= 'text/plain';
                 $body = MT::I18N::default->encode_text_encode($body, undef, $charset);
                 push @ret, ['attachment', $type, $body, $name, $charset];
             } elsif ($path) {
+                if (!$Types) {
+                    require File::Basename;
+                    require MIME::Types;
+                    $Types = MIME::Types->new;
+                }
                 $name ||= File::Basename::basename($path);
                 $type ||= $Types->mimeTypeOf($name)->type() || 'application/octet-stream';
                 $body = _slurp($path);
