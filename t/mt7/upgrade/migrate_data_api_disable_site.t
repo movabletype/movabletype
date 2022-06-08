@@ -67,7 +67,7 @@ subtest 'Clean up DataAPIDisableSite after this migration from MT5' => sub {
 
     $website = MT->model('website')->load($website->id);
     is($website->allow_data_api, 0);
-    is(MT->config->DataAPIDisableSite, '');
+    is(MT->config->DataAPIDisableSite, '0');
 };
 
 sub _update_data_api_disable_site {

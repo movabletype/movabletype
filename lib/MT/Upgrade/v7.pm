@@ -1605,10 +1605,14 @@ sub _v7_migrate_data_api_disable_site {
         }
 
         # Clean up
-        if ($data_api_disable_site{0}) {
+        if ($from < 6) {
             MT->config->DataAPIDisableSite('0', 1);
         } else {
-            MT->config->DataAPIDisableSite('', 1);
+            if ($data_api_disable_site{0}) {
+                MT->config->DataAPIDisableSite('0', 1);
+            } else {
+                MT->config->DataAPIDisableSite('', 1);
+            }
         }
         MT->config->save_config;
     }
