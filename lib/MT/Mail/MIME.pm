@@ -291,7 +291,8 @@ sub prepare_parts {
                 $body = _slurp($path);
                 push @ret, ['attachment', $type, $body, $name, undef];
             } else {
-                die 'Multipart property requires either body or path.';
+                require Carp;
+                Carp::croak 'Multipart property requires either body or path.';
             }
         } else {
             push @ret, [
