@@ -54,10 +54,14 @@ sub send_and_log {
         });
     } else {
         if (MT->config->MailLogAlways) {
-            my @addrs = $Module->sent;
+            my $sent = $Module->sent;
             MT->instance->log({
                 message  => MT->translate('Mail was sent successfully'),
-                metadata => MT->translate("Recipient: [_1]", join(', ', @addrs)),
+                metadata => join(
+                    "\n",
+                    MT->translate("Subject: [_1]",   $sent->{subject}),
+                    MT->translate("Recipient: [_1]", join(', ', @{ $sent->{recipient} }))
+                ),
                 level    => MT::Log::INFO(),
                 class    => 'system',
                 category => 'email'

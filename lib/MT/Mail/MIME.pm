@@ -15,14 +15,13 @@ use Encode;
 use Sys::Hostname;
 use MT::Util qw(is_valid_email);
 
-my @sent;
+my %Sent;
 
-sub sent { @sent }
+sub sent { \%Sent }
 
 sub send {
     my $class = shift;
     my ($hdrs_arg, $body) = @_;
-    @sent = ();
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
     for my $h (keys %hdrs) {
@@ -32,6 +31,8 @@ sub send {
             $hdrs{$h} =~ y/\n\r/  /;
         }
     }
+
+    %Sent = (subject => $hdrs{Subject});
 
     my $conf = MT->config;
 
@@ -196,7 +197,8 @@ sub _send_mt_smtp {
     $smtp->mail(ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From})
         or return $class->smtp_error($smtp);
 
-    for (@sent = _recipients($hdrs)) {
+    $Sent{recipient} = _recipient($hdrs);
+    for (@{$Sent{recipient}}) {
         $smtp->recipient($_) or return $class->smtp_error($smtp);
     }
 
@@ -241,7 +243,7 @@ sub _send_mt_sendmail {
             or return $class->error(MT->translate("Exec of sendmail failed: [_1]", "$!"));
     }
 
-    @sent = _recipients($hdrs);
+    $Sent{recipients} = _recipient($hdrs);
 
     my $msg = $class->render(header => $hdrs, body => $body);
     $msg =~ s{\r\n}{\n}g;
@@ -250,7 +252,7 @@ sub _send_mt_sendmail {
     1;
 }
 
-sub _recipients {
+sub _recipient {
     my $hdrs = shift;
     my @ret;
     for my $h (qw( To Bcc Cc )) {
@@ -258,7 +260,7 @@ sub _recipients {
         my $addr = $hdrs->{$h};
         push @ret, $_ for (ref $addr eq 'ARRAY' ? @$addr : $addr);
     }
-    return @ret;
+    return \@ret;
 }
 
 sub _can_use {
