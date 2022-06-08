@@ -44,30 +44,35 @@ sub send_and_log {
     my ($class, @args) = @_;
     my $success = $class->send(@args);
 
+    my $log_meta = do {
+        my $sent  = $Module->sent;
+        my @lines = MT->translate("Subject: [_1]", $sent->{subject} || q{""});
+        if ($sent->{recipients} && @{ $sent->{recipients} }) {
+            push @lines, MT->translate("Recipient: [_1]", join(', ', @{ $sent->{recipients} }));
+        }
+        join("\n", @lines);
+    };
+
     if (!$success) {
         MT->instance->log({
             message  => MT->translate('Error sending mail: [_1]', $class->errstr),
+            metadata => $log_meta,
             level    => MT::Log::ERROR(),
             class    => 'system',
             category => 'email'
         });
     } else {
         if (MT->config->MailLogAlways) {
-            my $sent = $Module->sent;
             MT->instance->log({
                 message  => MT->translate('Mail was sent successfully'),
-                metadata => join(
-                    "\n",
-                    MT->translate("Subject: [_1]",   $sent->{subject}),
-                    MT->translate("Recipient: [_1]", join(', ', @{ $sent->{recipients} }))
-                ),
+                metadata => $log_meta,
                 level    => MT::Log::INFO(),
                 class    => 'system',
                 category => 'email'
             });
         }
     }
-    
+
     return $success;
 }
 
