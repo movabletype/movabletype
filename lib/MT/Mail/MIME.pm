@@ -18,7 +18,6 @@ use MT::Util qw(is_valid_email);
 sub send {
     my $class = shift;
     my ($hdrs_arg, $body) = @_;
-    my $files;
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
     for my $h (keys %hdrs) {
