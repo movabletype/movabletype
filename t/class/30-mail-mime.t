@@ -307,6 +307,18 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 like($ret->[1]->{body},                                  qr{0},      'right body');
                 is(scalar @$ret, 2, 'right number of mime parts');
             };
+
+            subtest 'overwrite charset' => sub {
+                my $ret = render_and_parse(
+                    header => { To => 'to@example.com' },
+                    body   => [{ body => "あ", charset => 'iso-2022-jp' }],
+                );
+
+                like($ret->[1]->{header}->{'Content-Type'}, qr{text/plain},              'right header');
+                like($ret->[1]->{header}->{'Content-Type'}, qr{charset="?iso-2022-jp"?}, 'right header');
+                like($ret->[1]->{body},                     qr{あ},                       'right body');
+                is(scalar @$ret, 2, 'right number of mime parts');
+            };
         };
     };
 }
@@ -332,7 +344,8 @@ sub render_and_parse {
                 'quoted-printable' => sub { decode_qp($_[0]) },
             }->{ $header_kv{'Content-Transfer-Encoding'} };
             $body = $cb->($body) if $cb;
-            $body = Encode::decode('utf8', $body);
+            my $charset = ($header_kv{'Content-Type'} =~ qr{charset="?([^";]+)"?})[0];
+            $body = Encode::decode($charset, $body);
         }
         push @$ret, { header => \%header_kv, body => $body };
     }

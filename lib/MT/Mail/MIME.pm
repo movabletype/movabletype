@@ -274,11 +274,12 @@ sub prepare_parts {
 
     for my $part (@$parts) {
         if (ref $part) {
-            my ($type, $name, $path, $body) = @{$part}{qw(type name path body)};
+            my ($type, $name, $path, $body, $pcharset) = @{$part}{qw(type name path body charset)};
+            $pcharset ||= $charset;
             if (defined $body) {
                 $type ||= 'text/plain';
-                $body = MT::I18N::default->encode_text_encode($body, undef, $charset);
-                push @ret, ['attachment', $type, $body, $name, $charset];
+                $body = MT::I18N::default->encode_text_encode($body, undef, $pcharset);
+                push @ret, ['attachment', $type, $body, $name, $pcharset];
             } elsif ($path) {
                 if (!$Types) {
                     require File::Basename;
