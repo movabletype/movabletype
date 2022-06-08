@@ -276,7 +276,7 @@ sub prepare_parts {
         my $part = $parts->[$i];
         if (ref $part) {
             my ($type, $name, $path, $body) = @{$part}{qw(type name path body)};
-            if ($body) {
+            if (defined $body) {
                 $type ||= 'text/plain';
                 $body = MT::I18N::default->encode_text_encode($body, undef, $charset);
                 push @ret, ['attachment', $type, $body, $name, $charset];
