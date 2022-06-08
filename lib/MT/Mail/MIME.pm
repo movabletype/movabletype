@@ -272,8 +272,7 @@ sub prepare_parts {
 
     require MT::I18N::default;
 
-    for (my $i = 0; $i < scalar(@$parts); $i++) {
-        my $part = $parts->[$i];
+    for my $part (@$parts) {
         if (ref $part) {
             my ($type, $name, $path, $body) = @{$part}{qw(type name path body)};
             if (defined $body) {
@@ -293,7 +292,7 @@ sub prepare_parts {
             }
         } else {
             push @ret, [
-                ($i == 0 ? 'inline' : 'attachment'),
+                (@ret ? 'attachment' : 'inline'),
                 'text/plain',
                 MT::I18N::default->encode_text_encode($part, undef, $charset),
                 undef,
