@@ -277,6 +277,21 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 like($ret->[2]->{body}, qr{パート2}, 'right body');
                 is(scalar @$ret, 3, 'right number of mime parts');
             };
+
+            subtest 'part body without name' => sub {
+                my $ret = render_and_parse(
+                    header => { To => 'to@example.com' },
+                    body   => [{ body => "パート", type => 'text/plain' }],
+                );
+
+                like($ret->[1]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
+                unlike($ret->[1]->{header}->{'Content-Disposition'},       qr{filename=}, 'right header');
+                like($ret->[1]->{header}->{'Content-Type'},              qr{text/plain},                'right header');
+                unlike($ret->[1]->{header}->{'Content-Type'}, qr{name=}, 'right header');
+                like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
+                like($ret->[1]->{body},                                  qr{パート},            'right body');
+                is(scalar @$ret, 2, 'right number of mime parts');
+            };
         };
     };
 }
