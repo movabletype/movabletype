@@ -34,7 +34,7 @@ sub send {
     }
 
     if ($Module eq 'MT::Mail' && ref($body)) {
-        return $class->error(MT->translate('$body must be an scalar value'));
+        return $class->error(MT->translate(q{MT::Mail doesn't support file attachments. Please change MailModule setting.}));
     }
 
     return $Module->send($hdrs, $body);
