@@ -45,9 +45,8 @@ sub send_and_log {
     my $success = $class->send(@args);
 
     if (!$success) {
-        my $message = $Module ? MT->translate('Error sending mail: [_1]', $class->errstr) : $class->errstr;
         MT->instance->log({
-            message  => $message,
+            message  => MT->translate('Error sending mail: [_1]', $class->errstr),
             level    => MT::Log::ERROR(),
             class    => 'system',
             category => 'email'
