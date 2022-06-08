@@ -290,6 +290,8 @@ sub prepare_parts {
                 $type ||= $Types->mimeTypeOf($name)->type() || 'application/octet-stream';
                 $body = _slurp($path);
                 push @ret, ['attachment', $type, $body, $name, undef];
+            } else {
+                die 'Multipart property requires either body or path.';
             }
         } else {
             push @ret, [
