@@ -354,9 +354,9 @@ directive.
 =head2 MT::Mail::MIME->send(\%headers, $body)
 
 Sends a mail message with the headers I<\%headers> and the message body
-I<$body>. Optionaly, you can attach files if your I<MailModule> supports it.
+I<$body>. Optionally, you can attach files if your I<MailModule> supports it.
 
-The keys and values in I<\%headers> are passed directly in to the mail
+The keys and values in I<\%headers> are passed directly into the mail
 program or server, so you can use any valid mail header names as keys. If
 you need to supply a list of header values, specify the hash value as a
 reference to a list of the header values. For example:
@@ -366,11 +366,11 @@ reference to a list of the header values. For example:
 If you wish the lines in I<$body> to be wrapped, you should do this yourself;
 it will not be done by I<send>.
 
-You can send multipart mail by giving array ref for $body instead of scalar.
+You can send multipart mail by giving array ref for $body instead of a scalar.
 
     $body = [ { path => 'path/to/your.png' }, {...}, ... ];
 
-Each files can also contain types and names in case you don't like the auto
+Each file can also contain types and names in case you don't like the auto
 detection.
 
     push @$body, {
@@ -387,7 +387,7 @@ Or, you can attach text/plain part by scalar directly to $body.
 
     push @$body, 'file content';
 
-If the first part of $body is an scalar, it will be treated as inline instead of
+If the first part of $body is a scalar, it will be treated as inline instead of
 attachment.
 
     $body = ['hello', $file1, $file2, ... ];
