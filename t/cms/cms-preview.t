@@ -17,11 +17,16 @@ use MT;
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::App;
+use Web::Query::LibXML;
 
 $test_env->prepare_fixture('db');
 
 my $blog_id = 1;
 my $blog    = MT::Blog->load($blog_id);
+$blog->site_path($test_env->root);
+$blog->archive_path($test_env->root . '/archive');
+$blog->archive_url('http://localhost/');
+$blog->save;
 
 my $admin = MT::Author->load(1);
 
@@ -72,14 +77,30 @@ my $template1 = MT::Test::Permission->make_template(
     blog_id => $blog->id,
     name    => 'Test template',
     type    => 'individual',
-    text    => 'Individual test',
+    text    => <<'HTML',
+<!doctype html>
+<html><head><title>Individual test</title></head>
+<body>
+<p id="canonical_url"><mt:CanonicalURL></p>
+<p id="canonical_link"><mt:CanonicalLink></p>
+</body>
+</html>
+HTML
 );
 my $template2 = MT::Test::Permission->make_template(
     blog_id         => $blog->id,
     name            => 'Test template',
     type            => 'ct',
-    text            => 'ContentType test',
     content_type_id => $content_type->id,
+    text            => <<'HTML',
+<!doctype html>
+<html><head><title>ContentType test</title></head>
+<body>
+<p id="canonical_url"><mt:CanonicalURL></p>
+<p id="canonical_link"><mt:CanonicalLink></p>
+</body>
+</html>
+HTML
 );
 my $template_map1 = MT::Test::Permission->make_templatemap(
     template_id   => $template1->id,
@@ -118,19 +139,28 @@ MT->add_callback(
 subtest 'entry' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->post_ok({
-        __mode              => 'preview_entry',
-        blog_id             => $blog->id,
-        id                  => $entry1->id,
-        title               => 'The rewritten title',
-        tags                => 'tag1,tag2',
-        authored_on_date    => '20190215',
-        authored_on_time    => '000000',
-        unpublished_on_date => '20190216',
-        unpublished_on_time => '000000',
-        rev_numbers         => '0,0',
+    $app->get_ok({
+        __mode  => 'view',
+        _type   => 'entry',
+        blog_id => $blog->id,
+        id      => $entry1->id,
     });
+    my $form = $app->form;
+    my $input = $form->find_input('__mode');
+    $input->readonly(0);
+    $input->value('preview_entry');
+    $app->post_ok($form->click);
     $app->has_no_permission_error("preview_entry method succeeded");
+
+    my ($preview) = grep /mt-preview/, $test_env->files;
+    ok -f $preview, "preview ($preview) exists";
+    my $html = do { open my $fh, '<', $preview; local $/; <$fh> };
+    my $wq = Web::Query::LibXML->new($html);
+    my $canon_url  = $wq->find('p#canonical_url')->text;
+    my $canon_link = $wq->find('p#canonical_link')->html;
+    is $canon_url => 'http://localhost/entry/2018/08/entry.html', "correct CanonincalURL";
+    like $canon_link => qr{rel="canonical"}, "CanonicalLink has rel=canonical";
+    like $canon_link => qr{href="http://localhost/entry/2018/08/entry.html"}, "CanonicalLink has correct URL";
 
     my $entry2 = MT->model('entry')->load($entry1->id);
     ok(
@@ -148,20 +178,29 @@ subtest 'content_data' => sub {
     my $field_name = 'content-field-' . $cf_single->id;
     my $app        = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->post_ok({
-        __mode              => 'preview_content_data',
-        blog_id             => $blog->id,
-        content_type_id     => $content_type->id,
-        id                  => $cd1->id,
-        data_label          => 'The rewritten label',
-        $field_name         => 'The rewritten text',
-        authored_on_date    => '20190215',
-        authored_on_time    => '000000',
-        unpublished_on_date => '20190216',
-        unpublished_on_time => '000000',
-        rev_numbers         => '0,0',
+    $app->get_ok({
+        __mode          => 'view',
+        _type           => 'content_data',
+        blog_id         => $blog->id,
+        content_type_id => $content_type->id,
+        id              => $cd1->id,
     });
+    my $form = $app->form;
+    my $input = $form->find_input('__mode');
+    $input->readonly(0);
+    $input->value('preview_content_data');
+    $app->post_ok($form->click);
     $app->has_no_permission_error("preview_content_data method succeeded");
+
+    my ($preview) = grep /mt-preview/, $test_env->files;
+    ok -f $preview, "preview ($preview) exists";
+    my $html = do { open my $fh, '<', $preview; local $/; <$fh> };
+    my $wq = Web::Query::LibXML->new($html);
+    my $canon_url  = $wq->find('p#canonical_url')->text;
+    my $canon_link = $wq->find('p#canonical_link')->html;
+    is $canon_url => 'http://localhost/cd/2017/05/my content data.html', "correct CanonincalURL";
+    like $canon_link => qr{rel="canonical"}, "CanonicalLink has rel=canonical";
+    like $canon_link => qr{href="http://localhost/cd/2017/05/my content data.html"}, "CanonicalLink has correct URL";
 
     my $cd2 = MT->model('cd')->load($cd1->id);
     ok(
