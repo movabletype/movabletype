@@ -184,6 +184,7 @@ subtest 'entry' => sub {
         $entry2->title eq 'entry',
         'original entry has not been changed (not cache)'
     );
+    unlink $preview;
 };
 
 subtest 'content_data' => sub {
@@ -224,6 +225,7 @@ subtest 'content_data' => sub {
         $cd2->data->{ $cf_single->id } eq 'single line text',
         'original content_data has not been changed (not cache)'
     );
+    unlink $preview;
 };
 
 subtest 'template' => sub {
