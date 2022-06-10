@@ -102,19 +102,31 @@ my $template2 = MT::Test::Permission->make_template(
 </html>
 HTML
 );
-my $template_map1 = MT::Test::Permission->make_templatemap(
+my $template_map1_1 = MT::Test::Permission->make_templatemap(
+    template_id   => $template1->id,
+    blog_id       => $blog->id,
+    archive_type  => 'Individual',
+    file_template => 'another/entry/%y/%m/%f',
+);
+my $template_map1_2 = MT::Test::Permission->make_templatemap(
     template_id   => $template1->id,
     blog_id       => $blog->id,
     archive_type  => 'Individual',
     file_template => 'entry/%y/%m/%f',
     is_preferred  => 1,
 );
-my $template_map2 = MT::Test::Permission->make_templatemap(
+my $template_map2_1 = MT::Test::Permission->make_templatemap(
     template_id   => $template2->id,
     blog_id       => $blog->id,
     archive_type  => 'ContentType',
     file_template => 'cd/%y/%m/%f',
     is_preferred  => 1,
+);
+my $template_map2_2 = MT::Test::Permission->make_templatemap(
+    template_id   => $template2->id,
+    blog_id       => $blog->id,
+    archive_type  => 'ContentType',
+    file_template => 'another/cd/%y/%m/%f',
 );
 
 MT->add_callback(
