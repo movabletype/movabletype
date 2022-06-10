@@ -112,7 +112,7 @@ my $template_map1_2 = MT::Test::Permission->make_templatemap(
     template_id   => $template1->id,
     blog_id       => $blog->id,
     archive_type  => 'Individual',
-    file_template => 'entry/%y/%m/%f',
+    file_template => 'entry/%y/%m<$mt:SetVar name="slash" value="//"$><$mt:Var name="slash"$>%f',
     is_preferred  => 1,
 );
 my $template_map2_1 = MT::Test::Permission->make_templatemap(
