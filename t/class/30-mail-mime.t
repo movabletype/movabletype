@@ -185,6 +185,13 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
             my (undef, $file1) = MT::Test::Image->tempfile(DIR => $test_env->root, SUFFIX => '.gif');
             my (undef, $file2) = MT::Test::Image->tempfile(DIR => $test_env->root, SUFFIX => '.png');
 
+            subtest 'prepare_parts' => sub {
+                my $parts = MT::Mail::MIME->prepare_parts([
+                    {name => 'foo.unknown', 'path' => $file1},
+                ], 'utf8');
+                is($parts->[0]->[1], 'application/octet-stream', 'right type');
+            };
+
             subtest 'simple' => sub {
                 my $ret = render_and_parse(
                     header => { To => 'to@example.com' },

@@ -287,7 +287,10 @@ sub prepare_parts {
                     $Types = MIME::Types->new;
                 }
                 $name ||= File::Basename::basename($path);
-                $type ||= $Types->mimeTypeOf($name)->type() || 'application/octet-stream';
+                unless ($type) {
+                    my $found = $Types->mimeTypeOf($name);
+                    $type = $found ? $found->type() : 'application/octet-stream';
+                }
                 $body = _slurp($path);
                 push @ret, ['attachment', $type, $body, $name, undef];
             } else {
