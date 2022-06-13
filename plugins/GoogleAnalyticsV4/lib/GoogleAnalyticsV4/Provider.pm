@@ -94,7 +94,7 @@ sub _request {
 
     my $uri = URI->new("https://analyticsdata.googleapis.com/v1beta/$config->{profile_id}:runReport");
 
-    my $ua = new_ua();
+    my $ua = GoogleAnalyticsV4::new_ua();
 
     my $res = $ua->request(
         POST $uri,
@@ -110,7 +110,7 @@ sub _request {
     return $app->error(
         translate(
             'An error occurred when retrieving statistics data: [_1]: [_2]',
-            GoogleAnalytics::extract_response_error($res)
+            GoogleAnalyticsV4::extract_response_error($res)
         ),
         500
     ) unless $res->is_success;
