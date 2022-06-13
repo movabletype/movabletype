@@ -190,7 +190,7 @@ sub list_props {
                     $badge_class = 'badge badge-info ';
                     $scope_lc    = 'blog';
                 } else {
-                    $scope_label = MT->translate('Parent Site');
+                    $scope_label = MT->translate('Site');
                     $badge_class = 'badge badge-success ';
                     $scope_lc    = 'website';
                 }
