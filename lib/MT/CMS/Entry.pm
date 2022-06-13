@@ -955,11 +955,17 @@ sub _build_entry_preview {
     my $archive_file;
     my $orig_file;
     my $file_ext;
+    my $archive_url;
     if ($tmpl_map) {
         $tmpl = MT::Template->load( $tmpl_map->template_id );
         MT::Request->instance->cache( 'build_template', $tmpl );
         $file_ext = $blog->file_extension || '';
         $archive_file = $entry->archive_file;
+        my $base_url = $blog->archive_url;
+        $base_url = $blog->site_url if $type eq 'page';
+        $base_url .= '/' unless $base_url =~ m|/$|;
+        $archive_url = $base_url . $archive_file;
+        $archive_url =~ s{(?<!:)//+}{/}g;
 
         my $blog_path
             = $type eq 'page'
@@ -986,7 +992,7 @@ sub _build_entry_preview {
     $ctx->{current_timestamp}    = $ao_ts;
     $ctx->{current_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
-    $ctx->stash('current_mapping_url', $entry->archive_url);
+    $ctx->stash('current_mapping_url', $archive_url);
 
     my $archiver = MT->publisher->archiver($at);
     if ( my $params = $archiver->template_params ) {
