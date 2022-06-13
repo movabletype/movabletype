@@ -1,0 +1,17 @@
+id: AttachMailTest
+name: AttachMailTest
+version: 0.01
+author_link: http://www.movabletype.org/
+author_name: Six Apart Ltd.
+description: <MT_TRANS phrase="AttachMailTest.">
+methods:
+    attach_mail_test_form: $AttachMailTest::MT::Plugin::AttachMailTest::App::CMS::attach_mail_test_form
+    attach_mail_test_send: $AttachMailTest::MT::Plugin::AttachMailTest::App::CMS::attach_mail_test_send
+applications:
+    cms:
+        menus:
+            tools:attach_mail_test:
+                label: AttachMailTest
+                order: 2000
+                mode: attach_mail_test_form
+                view: system

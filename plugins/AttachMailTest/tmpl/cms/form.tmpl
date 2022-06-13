@@ -1,0 +1,87 @@
+<mt:setvarblock name="page_title"><__trans phrase="Attach mail test"></mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+    <mt:if name="success">
+    <mtapp:statusmsg
+        id="success"
+        class="success">
+        <__trans phrase="An email has been sent.">
+    </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error"
+        can_close="0">
+        <__trans phrase="Failed to send an email. See the system log fo details.">
+    </mtapp:statusmsg>
+    </mt:if>
+
+    <div class="page_content">
+
+        <mtapp:form id="send" mode="attach_mail_test_send" enctype="multipart/form-data">
+
+            <mtapp:setting
+                id="to_address"
+                label="<__trans phrase="To">"
+                label_for="to_address"
+                hint="<__trans phrase="Set one or more addresses separated by commas.">"
+                show_hint="1">
+                <input type="text" id="to_address" class="form-control text email required" name="to">
+            </mtapp:setting>
+
+            <mtapp:setting
+                id="cc_address"
+                label="<__trans phrase="Cc">"
+                label_for="cc_address"
+                hint="<__trans phrase="Set one or more addresses separated by commas.">"
+                show_hint="1">
+                <input type="text" id="cc_address" class="form-control text email" name="cc">
+            </mtapp:setting>
+
+            <mtapp:setting
+                id="bcc_address"
+                label="<__trans phrase="Bcc">"
+                label_for="bcc_address"
+                hint="<__trans phrase="Set one or more addresses separated by commas.">"
+                show_hint="1">
+                <input type="text" id="bcc_address" class="form-control text email" name="bcc">
+            </mtapp:setting>
+
+            <mtapp:setting
+                id="subject"
+                label="<__trans phrase="Subject">"
+                label_for="subject">
+                <input type="text" id="subject" class="form-control text required" name="subject">
+            </mtapp:setting>
+
+            <mtapp:setting
+                id="body"
+                label="<__trans phrase="Message body">">
+                <textarea name="body" id="body" class="form-control text low"></textarea>
+            </mt:app:setting>
+
+            <mtapp:setting
+                id="file1"
+                label="<__trans phrase="file1">"
+                label_for="file1">
+                <input type="file" id="file1" class="form-control text" name="file1">
+            </mtapp:setting>
+
+            <mtapp:setting
+                id="file2"
+                label="<__trans phrase="file2">"
+                label_for="file2">
+                <input type="file" id="file2" class="form-control text" name="file2">
+            </mtapp:setting>
+
+            <mt:setvarblock name="action_buttons">
+            <button type="submit" class="btn btn-primary action primary button"><__trans phrase="Send"></button>
+            </mt:setvarblock>
+            <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+        </mtapp:form>
+    </div>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
