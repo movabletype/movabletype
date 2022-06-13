@@ -41,7 +41,7 @@ sub get_from_cache {
     my $driver = shift;
 
     $driver->start_query( 'RAMCACHE_GET ?', \@_ );
-    my $ret = MT->request->{__stash}{__objects}{$_[0]};
+    my $ret = MT->request->{__stash}{__objects}{$$}{$_[0]};
     $driver->end_query(undef);
 
     return if !defined $ret;
@@ -51,12 +51,12 @@ sub get_from_cache {
 sub add_to_cache {
     my $driver = shift;
 
-    if ( scalar keys %{MT->request->{__stash}{__objects} || {}} > MAX_CACHE_SIZE ) {
+    if ( scalar keys %{MT->request->{__stash}{__objects}{$$} || {}} > MAX_CACHE_SIZE ) {
         $driver->clear_cache();
     }
 
     $driver->start_query( 'RAMCACHE_ADD ?', \@_ );
-    my $ret = MT->request->{__stash}{__objects}{$_[0]} = $_[1];
+    my $ret = MT->request->{__stash}{__objects}{$$}{$_[0]} = $_[1];
     $driver->end_query(undef);
 
     return if !defined $ret;
@@ -67,7 +67,7 @@ sub update_cache {
     my $driver = shift;
 
     $driver->start_query( 'RAMCACHE_SET ?', \@_ );
-    my $ret = MT->request->{__stash}{__objects}{$_[0]} = $_[1];
+    my $ret = MT->request->{__stash}{__objects}{$$}{$_[0]} = $_[1];
     $driver->end_query(undef);
 
     return if !defined $ret;
@@ -78,7 +78,7 @@ sub remove_from_cache {
     my $driver = shift;
 
     $driver->start_query( 'RAMCACHE_DELETE ?', \@_ );
-    my $ret = delete MT->request->{__stash}{__objects}{$_[0]};
+    my $ret = delete MT->request->{__stash}{__objects}{$$}{$_[0]};
     $driver->end_query(undef);
 
     return if !defined $ret;
@@ -89,7 +89,7 @@ sub clear_cache {
     my $driver = shift;
 
     $driver->start_query('RAMCACHE_CLEAR') if ref $driver;
-    delete MT->request->{__stash}{__objects};
+    delete MT->request->{__stash}{__objects}{$$};
     $driver->end_query(undef) if ref $driver;
 
     return;
