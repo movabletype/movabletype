@@ -179,154 +179,162 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
             }
         };
 
-        subtest 'attach files' => sub {
-            $mt->config->set('MailTransferEncoding', 'base64');
-            $mt->config->set('MailEncoding',         'utf8');
-            my (undef, $file1) = MT::Test::Image->tempfile(DIR => $test_env->root, SUFFIX => '.gif');
-            my (undef, $file2) = MT::Test::Image->tempfile(DIR => $test_env->root, SUFFIX => '.png');
+        for my $setting (['ISO-2022-JP', '8bit'], ['UTF-8', 'quoted-printable']) {
+            my ($mailenc, $xfer_enc) = @$setting;
+            $mt->config->set('MailEncoding',         $mailenc);
+            $mt->config->set('MailTransferEncoding', $xfer_enc);
+            my $charsetl = lc($mailenc);
+            my $desc     = sprintf('MailEncoding=%s, MailTransferEncoding=%s', $mailenc, $xfer_enc);
 
-            subtest 'prepare_parts' => sub {
-                my $parts = MT::Mail::MIME->prepare_parts([
-                    {name => 'foo.unknown', 'path' => $file1},
-                ], 'utf8');
-                is($parts->[0]->[1], 'application/octet-stream', 'right type');
+            subtest 'attach files with ' . $desc => sub {
+                my (undef, $file1) = MT::Test::Image->tempfile(DIR => $test_env->root, SUFFIX => '.gif');
+                my (undef, $file2) = MT::Test::Image->tempfile(DIR => $test_env->root, SUFFIX => '.png');
+
+                subtest 'prepare_parts' => sub {
+                    my $parts = MT::Mail::MIME->prepare_parts([
+                            { name => 'foo.unknown', 'path' => $file1 },
+                        ],
+                        $mailenc
+                    );
+                    is($parts->[0]->[1], 'application/octet-stream', 'right type');
+                };
+
+                subtest 'simple' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => ['日本語', { path => $file1 }, { path => $file2 }],
+                    );
+
+                    is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
+                    like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                'right header');
+                    like($ret->[1]->{header}->{'Content-Type'},              qr{text/plain},            'right header');
+                    like($ret->[1]->{header}->{'Content-Type'},              qr{charset="?$charsetl"?}, 'right header');
+                    unlike($ret->[1]->{header}->{'Content-Type'}, qr{name=}, 'right header');
+                    like($ret->[1]->{body},                                  qr{日本語},              'right body');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},       'right header');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename=.+\.gif}, 'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{image/gif},        'right header');
+                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},           'right header');
+                    like($ret->[2]->{body},                                  qr{R0lGODlhk},        'right body');
+                    like($ret->[3]->{header}->{'Content-Disposition'},       qr{attachment},       'right header');
+                    like($ret->[3]->{header}->{'Content-Disposition'},       qr{filename=.+\.png}, 'right header');
+                    like($ret->[3]->{header}->{'Content-Type'},              qr{image/png},        'right header');
+                    like($ret->[3]->{header}->{'Content-Transfer-Encoding'}, qr{base64},           'right header');
+                    like($ret->[3]->{body},                                  qr{iVBORw0KG},        'right body');
+                    is(scalar @$ret, 4, 'right number of mime parts');
+                };
+
+                subtest 'name and type specified' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => ['日本語', { path => $file1, name => 'my_file.gif', type => 'image/mygif' }],
+                    );
+
+                    is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
+                    like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
+                    like($ret->[1]->{body},                                  qr{日本語},                       'right body');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?my_file\.gif"?}, 'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{image/mygif},               'right header');
+                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
+                    like($ret->[2]->{body},                                  qr{R0lGODlhk},                 'right body');
+                    is(scalar @$ret, 3, 'right number of mime parts');
+                };
+
+                subtest 'body given' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => ['日本語', { body => "ライン1\nライン2", name => 'my_file.log', type => 'text/plain' }],
+                    );
+
+                    is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
+                    like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
+                    like($ret->[1]->{body},                                  qr{日本語},                       'right body');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?my_file\.log"?}, 'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{text/plain},                'right header');
+                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
+                    like($ret->[2]->{body},                                  qr{\Aライン1\nライン2\z},            'right body');
+                    is(scalar @$ret, 3, 'right number of mime parts');
+                };
+
+                subtest 'multiple part in scalar' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => ['パート1', 'パート2'],
+                    );
+
+                    is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
+                    like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                'right header');
+                    like($ret->[1]->{header}->{'Content-Type'},              qr{text/plain},            'right header');
+                    like($ret->[1]->{header}->{'Content-Type'},              qr{charset="?$charsetl"?}, 'right header');
+                    unlike($ret->[2]->{header}->{'Content-Type'}, qr{name=}, 'right header');
+                    like($ret->[1]->{body},                            qr{パート1},       'right body');
+                    like($ret->[2]->{header}->{'Content-Disposition'}, qr{attachment}, 'right header');
+                    unlike($ret->[2]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{text/plain},            'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{charset="?$charsetl"?}, 'right header');
+                    unlike($ret->[2]->{header}->{'Content-Type'}, qr{name=}, 'right header');
+                    like($ret->[2]->{body}, qr{パート2}, 'right body');
+                    is(scalar @$ret, 3, 'right number of mime parts');
+                };
+
+                subtest 'part body without name' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => [{ body => "パート", type => 'text/plain' }],
+                    );
+
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{attachment}, 'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Type'}, qr{text/plain}, 'right header');
+                    unlike($ret->[1]->{header}->{'Content-Type'}, qr{name=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64}, 'right header');
+                    like($ret->[1]->{body},                                  qr{パート},    'right body');
+                    is(scalar @$ret, 2, 'right number of mime parts');
+                };
+
+                subtest 'falsy string body' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => [{ body => "0" }],
+                    );
+
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{attachment}, 'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Type'}, qr{text/plain}, 'right header');
+                    unlike($ret->[1]->{header}->{'Content-Type'}, qr{name=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64}, 'right header');
+                    like($ret->[1]->{body},                                  qr{0},      'right body');
+                    is(scalar @$ret, 2, 'right number of mime parts');
+                };
+
+                subtest 'overwrite charset' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => [{ body => "あ", charset => 'iso-2022-jp' }],
+                    );
+
+                    like($ret->[1]->{header}->{'Content-Type'}, qr{text/plain},              'right header');
+                    like($ret->[1]->{header}->{'Content-Type'}, qr{charset="?iso-2022-jp"?}, 'right header');
+                    like($ret->[1]->{body},                     qr{あ},                       'right body');
+                    is(scalar @$ret, 2, 'right number of mime parts');
+                };
             };
-
-            subtest 'simple' => sub {
-                my $ret = render_and_parse(
-                    header => { To => 'to@example.com' },
-                    body   => ['日本語', { path => $file1 }, { path => $file2 }],
-                );
-
-                is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
-                like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
-                like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
-                unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
-                like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},           'right header');
-                like($ret->[1]->{header}->{'Content-Type'},              qr{text/plain},       'right header');
-                like($ret->[1]->{header}->{'Content-Type'},              qr{charset="?utf8"?}, 'right header');
-                unlike($ret->[1]->{header}->{'Content-Type'}, qr{name=}, 'right header');
-                like($ret->[1]->{body},                                  qr{日本語},              'right body');
-                like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},       'right header');
-                like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename=.+\.gif}, 'right header');
-                like($ret->[2]->{header}->{'Content-Type'},              qr{image/gif},        'right header');
-                like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},           'right header');
-                like($ret->[2]->{body},                                  qr{R0lGODlhk},        'right body');
-                like($ret->[3]->{header}->{'Content-Disposition'},       qr{attachment},       'right header');
-                like($ret->[3]->{header}->{'Content-Disposition'},       qr{filename=.+\.png}, 'right header');
-                like($ret->[3]->{header}->{'Content-Type'},              qr{image/png},        'right header');
-                like($ret->[3]->{header}->{'Content-Transfer-Encoding'}, qr{base64},           'right header');
-                like($ret->[3]->{body},                                  qr{iVBORw0KG},        'right body');
-                is(scalar @$ret, 4, 'right number of mime parts');
-            };
-
-            subtest 'name and type specified' => sub {
-                my $ret = render_and_parse(
-                    header => { To => 'to@example.com' },
-                    body   => ['日本語', { path => $file1, name => 'my_file.gif', type => 'image/mygif' }],
-                );
-
-                is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
-                like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
-                like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
-                unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
-                like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
-                like($ret->[1]->{body},                                  qr{日本語},                       'right body');
-                like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
-                like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?my_file\.gif"?}, 'right header');
-                like($ret->[2]->{header}->{'Content-Type'},              qr{image/mygif},               'right header');
-                like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
-                like($ret->[2]->{body},                                  qr{R0lGODlhk},                 'right body');
-                is(scalar @$ret, 3, 'right number of mime parts');
-            };
-
-            subtest 'body given' => sub {
-                my $ret = render_and_parse(
-                    header => { To => 'to@example.com' },
-                    body   => ['日本語', { body => "ライン1\nライン2", name => 'my_file.log', type => 'text/plain' }],
-                );
-
-                is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
-                like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
-                like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
-                unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
-                like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
-                like($ret->[1]->{body},                                  qr{日本語},                       'right body');
-                like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
-                like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?my_file\.log"?}, 'right header');
-                like($ret->[2]->{header}->{'Content-Type'},              qr{text/plain},                'right header');
-                like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
-                like($ret->[2]->{body},                                  qr{\Aライン1\nライン2\z},            'right body');
-                is(scalar @$ret, 3, 'right number of mime parts');
-            };
-
-            subtest 'multiple part in scalar' => sub {
-                my $ret = render_and_parse(
-                    header => { To => 'to@example.com' },
-                    body   => ['パート1', 'パート2'],
-                );
-
-                is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
-                like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
-                like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
-                unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
-                like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},           'right header');
-                like($ret->[1]->{header}->{'Content-Type'},              qr{text/plain},       'right header');
-                like($ret->[1]->{header}->{'Content-Type'},              qr{charset="?utf8"?}, 'right header');
-                unlike($ret->[2]->{header}->{'Content-Type'}, qr{name=}, 'right header');
-                like($ret->[1]->{body},                            qr{パート1},       'right body');
-                like($ret->[2]->{header}->{'Content-Disposition'}, qr{attachment}, 'right header');
-                unlike($ret->[2]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
-                like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},           'right header');
-                like($ret->[2]->{header}->{'Content-Type'},              qr{text/plain},       'right header');
-                like($ret->[2]->{header}->{'Content-Type'},              qr{charset="?utf8"?}, 'right header');
-                unlike($ret->[2]->{header}->{'Content-Type'}, qr{name=}, 'right header');
-                like($ret->[2]->{body}, qr{パート2}, 'right body');
-                is(scalar @$ret, 3, 'right number of mime parts');
-            };
-
-            subtest 'part body without name' => sub {
-                my $ret = render_and_parse(
-                    header => { To => 'to@example.com' },
-                    body   => [{ body => "パート", type => 'text/plain' }],
-                );
-
-                like($ret->[1]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
-                unlike($ret->[1]->{header}->{'Content-Disposition'},       qr{filename=}, 'right header');
-                like($ret->[1]->{header}->{'Content-Type'},              qr{text/plain},                'right header');
-                unlike($ret->[1]->{header}->{'Content-Type'}, qr{name=}, 'right header');
-                like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
-                like($ret->[1]->{body},                                  qr{パート},            'right body');
-                is(scalar @$ret, 2, 'right number of mime parts');
-            };
-
-            subtest 'falsy string body' => sub {
-                my $ret = render_and_parse(
-                    header => { To => 'to@example.com' },
-                    body   => [{ body => "0" }],
-                );
-
-                like($ret->[1]->{header}->{'Content-Disposition'}, qr{attachment}, 'right header');
-                unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
-                like($ret->[1]->{header}->{'Content-Type'}, qr{text/plain}, 'right header');
-                unlike($ret->[1]->{header}->{'Content-Type'}, qr{name=}, 'right header');
-                like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64}, 'right header');
-                like($ret->[1]->{body},                                  qr{0},      'right body');
-                is(scalar @$ret, 2, 'right number of mime parts');
-            };
-
-            subtest 'overwrite charset' => sub {
-                my $ret = render_and_parse(
-                    header => { To => 'to@example.com' },
-                    body   => [{ body => "あ", charset => 'iso-2022-jp' }],
-                );
-
-                like($ret->[1]->{header}->{'Content-Type'}, qr{text/plain},              'right header');
-                like($ret->[1]->{header}->{'Content-Type'}, qr{charset="?iso-2022-jp"?}, 'right header');
-                like($ret->[1]->{body},                     qr{あ},                       'right body');
-                is(scalar @$ret, 2, 'right number of mime parts');
-            };
-        };
+        }
     };
 }
 
