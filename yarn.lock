@@ -1653,20 +1653,20 @@ jquery-json@^2.6.0:
   resolved "https://registry.yarnpkg.com/jquery-json/-/jquery-json-2.6.0.tgz#14e60ba6586f9e59505a30b69399c20bd7d5d98c"
   integrity sha1-FOYLplhvnllQWjC2k5nCC9fV2Yw=
 
-jquery-migrate@^3.3.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/jquery-migrate/-/jquery-migrate-3.3.2.tgz#7829ee24de3054d0d2f42dd093390d8a7b7af01a"
-  integrity sha512-L3gYhr7yEtLUSAeqXSicVa0vRD4aGwjw/bWY8YzrO2o/qDY1BaMyP3oB3bZf5Auy3Hu9ynliio0CTyDWCBPVDw==
+jquery-migrate@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/jquery-migrate/-/jquery-migrate-3.4.0.tgz#915d6e914c76bd7410a58c86d20fec0052784af9"
+  integrity sha512-K0W02EhZyqjVpyF5pdi+t238cIfQACzMsXiX4AEfEOxPPfiZZFzf3brtFY21FOOEPiWZF4mH04TXHDE6e2YDyg==
 
 jquery-ui-touch-punch@^0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/jquery-ui-touch-punch/-/jquery-ui-touch-punch-0.2.3.tgz#eed82242733ba243f46b3e87c1841b308191da68"
   integrity sha1-7tgiQnM7okP0az6HwYQbMIGR2mg=
 
-jquery-validation@^1.19.3:
-  version "1.19.3"
-  resolved "https://registry.yarnpkg.com/jquery-validation/-/jquery-validation-1.19.3.tgz#50b350eba8b02bcfd119ba15f199487b7eb64086"
-  integrity sha512-iXxCS5W7STthSTMFX/NDZfWHBLbJ1behVK3eAgHXAV8/0vRa9M4tiqHvJMr39VGWHMGdlkhrtrkBuaL2UlE8yw==
+jquery-validation@^1.19.4:
+  version "1.19.4"
+  resolved "https://registry.yarnpkg.com/jquery-validation/-/jquery-validation-1.19.4.tgz#a765781d954e5876fa437d5c75b7a9440bfa37a8"
+  integrity sha512-PcwKcATCR+JL77m9kkWd84NAHAunJP9iasF6IbMxUgl73xDAimxjt5oYFmYHDXBmTZM4rpkXxMNR/jGI5TlSjA==
 
 jquery@^3.6.0:
   version "3.6.0"
@@ -2075,7 +2075,6 @@ ms@^2.0.0:
 
 "mt-data-api-sdk@https://github.com/movabletype/mt-data-api-sdk-js.git":
   version "0.1.0"
-  uid "9d6311d50e4e76f5b0b56890b0cdfaea84a67753"
   resolved "https://github.com/movabletype/mt-data-api-sdk-js.git#9d6311d50e4e76f5b0b56890b0cdfaea84a67753"
   dependencies:
     form-data "~0.0.10"
@@ -3385,7 +3384,6 @@ wrappy@1:
 
 "xmlhttprequest@https://github.com/usualoma/node-XMLHttpRequest.git":
   version "1.5.0"
-  uid c48de38ff210b0247f49e8a29dc4635cd4480891
   resolved "https://github.com/usualoma/node-XMLHttpRequest.git#c48de38ff210b0247f49e8a29dc4635cd4480891"
 
 xpath@0.0.32:
