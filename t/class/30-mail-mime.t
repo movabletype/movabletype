@@ -116,7 +116,8 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 },
                 {
                     input           => $body_long . 'あ',
-                    expected_header => { 'Content-Transfer-Encoding' => 'base64' },
+                    header          => { Subject => "い" },
+                    expected_header => { 'Content-Transfer-Encoding' => 'base64', Subject => expected_regex('い') },
                 },
                 {
                     input           => $body_short,
