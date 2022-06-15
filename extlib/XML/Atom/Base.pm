@@ -27,7 +27,7 @@ sub init {
     my $elem;
     unless ($elem = $param{Elem}) {
         if (LIBXML) {
-            my $doc = XML::LibXML::Document->createDocument('1.0', 'utf-8');
+            my $doc = XML::LibXML::Document->createDocument('1.0', 'UTF-8');
             my $ns = $obj->ns;
             my ($ns_uri, $ns_prefix);
             if ( ref $ns and $ns->isa('XML::Atom::Namespace') ) {
@@ -353,11 +353,11 @@ sub mk_object_list_accessor {
 sub as_xml {
     my $obj = shift;
     if (LIBXML) {
-        my $doc = XML::LibXML::Document->new('1.0', 'utf-8');
+        my $doc = XML::LibXML::Document->new('1.0', 'UTF-8');
         $doc->setDocumentElement($obj->elem->cloneNode(1));
         return $doc->toString(1);
     } else {
-        return '<?xml version="1.0" encoding="utf-8"?>' . "\n" .
+        return '<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
             $obj->elem->toString;
     }
 }

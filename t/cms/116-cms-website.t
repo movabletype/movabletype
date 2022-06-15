@@ -170,26 +170,30 @@ subtest 'Test cfg_prefs mode' => sub {
 
             {
                 my $archive_url  = 'http://localhost/archive/path/';
-                my $archive_path = $test_env->root . "new/$type/archive/path";
+                my $archive_path = $test_env->root . "/new/$type/archive/path";
 
-                $app->post_ok({
-                    __mode               => 'save',
-                    _type                => $type,
-                    blog_id              => $test_blog->id,
-                    id                   => $test_blog->id,
-                    enable_archive_paths => 1,
-                    archive_url          => $archive_url,
-                    archive_path         => $archive_path,
-                    site_url_path        => $type eq 'blog' ? 'nana/' : '',
-                    archive_url_path     => $type eq 'blog'
-                    ? 'nana/archives/'
-                    : '',
-                    cfg_screen             => 'cfg_prefs',
-                    preferred_archive_type => 'Individual',
-                    max_revisions_entry    => 20,
-                    max_revisions_cd       => 20,
-                    max_revisions_template => 20,
-                });
+                if ($type eq 'website') {
+                    $app->post_form_ok({
+                        enable_archive_paths => 1,
+                        archive_url          => $archive_url,
+                        archive_path         => $archive_path,
+                        preferred_archive_type => 'Individual',
+                        max_revisions_entry    => 20,
+                        max_revisions_cd       => 20,
+                        max_revisions_template => 20,
+                    });
+                } else {
+                    $app->post_form_ok({
+                        enable_archive_paths   => 1,
+                        archive_path_absolute  => $archive_path,
+                        site_url_path          => 'nana/',
+                        archive_url_path       => 'nana/archives/',
+                        preferred_archive_type => 'Individual',
+                        max_revisions_entry    => 20,
+                        max_revisions_cd       => 20,
+                        max_revisions_template => 20,
+                    });
+                }
                 ok($app->last_location->query_param('saved'), 'Request: save blog');
 
                 $test_blog = MT->model($type)->load($test_blog->id);

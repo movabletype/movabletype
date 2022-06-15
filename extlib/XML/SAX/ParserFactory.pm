@@ -5,7 +5,7 @@ package XML::SAX::ParserFactory;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 use Symbol qw(gensym);
 use XML::SAX;

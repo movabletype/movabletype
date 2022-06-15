@@ -13,7 +13,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.721';
+our $VERSION = '0.722';
 
 sub new {
     my $class = shift;
@@ -32,7 +32,7 @@ sub setHandlers {
     my $self = shift;
 
     # allow symbolic refs, avoid "subroutine redefined" warnings
-    no strict 'refs';
+    no strict 'refs';  ## no critic
     no warnings qw(redefine);
     # clear all handlers if called without parameters
     if (not @_) {
@@ -64,8 +64,8 @@ sub _regexp {
     # this copyright and citation notice remains intact and that modifications
     # or additions are clearly identified.
 
-    # Modifications may be tracked on SOAP::Lite's SVN at
-    # https://soaplite.svn.sourceforge.net/svnroot/soaplite/
+    # Modifications may be tracked on XML::Parser::Lite's source code repository at
+    # https://github.com/redhotpenguin/perl-XML-Parser-Lite
     #
     use re 'eval';
     my $TextSE = "[^<]+";
@@ -128,7 +128,7 @@ my $REGEXP = _regexp('??');
 sub _parse_re {
     use re "eval";
     undef $^R;
-    no strict 'refs';
+    no strict 'refs';  ## no critic
     1 while $_[0] =~ m{$REGEXP}go
 };
 
@@ -358,7 +358,9 @@ L<XML::Parser::REX> - another module that parses XML with regular expressions.
 
 Copyright (C) 2000-2007 Paul Kulchenko. All rights reserved.
 
-Copyright (C) 2008- Martin Kutter. All rights reserved.
+Copyright (C) 2008 Martin Kutter. All rights reserved.
+
+Copyright (C) 2013-2015 Fred Moyer. All rights reserved.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
@@ -367,16 +369,22 @@ This parser is based on "shallow parser"
 L<http://www.cs.sfu.ca/~cameron/REX.html>
 Copyright (c) 1998, Robert D. Cameron.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Paul Kulchenko (paulclinger@yahoo.com)
 
 Martin Kutter (martin.kutter@fen-net.de)
 
+Fred Moyer (fred@redhotpenguin.com)
+
 Additional handlers supplied by Adam Leggett.
 
+=head1 CONTRIBUTORS
+
+David Steinbrunner (dsteinbrunner@pobox.com)
+
+Neil Bowers (neil@bowers.com)
+
+Paul Cochrane (paul@liekut.de)
+
 =cut
-
-
-
-

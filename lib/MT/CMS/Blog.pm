@@ -46,8 +46,6 @@ sub edit {
 
         $param->{system_allow_comments} = $cfg->AllowComments;
         $param->{system_allow_pings}    = $cfg->AllowPings;
-        $param->{tk_available}          = eval { require MIME::Base64; 1; }
-            && eval { require LWP::UserAgent; 1 };
         $param->{'auto_approve_commenters'}
             = !$obj->manual_approve_commenters;
         $param->{"moderate_comments"} = $obj->moderate_unreg_comments;
@@ -1464,8 +1462,9 @@ sub save_favorite_blogs {
     elsif ( $blog && !$blog->is_blog ) {
         $app->add_to_favorite_websites($fav);
     }
+    $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript+json");
-    return 'true';
+    $app->print_encode("true");
 }
 
 sub cc_return {

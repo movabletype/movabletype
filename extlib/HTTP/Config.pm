@@ -3,7 +3,7 @@ package HTTP::Config;
 use strict;
 use warnings;
 
-our $VERSION = '6.14';
+our $VERSION = '6.36';
 
 use URI;
 
@@ -155,8 +155,12 @@ my %MATCH = (
     m_header__ => sub {
         my($v, $k, $uri, $request, $response) = @_;
         return unless $request;
-        return 1 if $request->header($k) eq $v;
-        return 1 if $response && $response->header($k) eq $v;
+        my $req_header = $request->header($k);
+        return 1 if defined($req_header) && $req_header eq $v;
+        if ($response) {
+            my $res_header = $response->header($k);
+            return 1 if defined($res_header) && $res_header eq $v;
+        }
         return 0;
     },
     m_response_attr__ => sub {
@@ -245,7 +249,7 @@ HTTP::Config - Configuration for request and response objects
 
 =head1 VERSION
 
-version 6.14
+version 6.36
 
 =head1 SYNOPSIS
 
@@ -440,7 +444,7 @@ Gisle Aas <gisle@activestate.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 1994-2017 by Gisle Aas.
+This software is copyright (c) 1994 by Gisle Aas.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

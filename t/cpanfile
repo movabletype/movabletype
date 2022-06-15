@@ -138,6 +138,7 @@ on 'test' => sub {
     requires 'Test::Deep';
     requires 'Test::File';
     requires 'Test::LeakTrace';
+    requires 'Test::Memcached';
     requires 'Test::MockModule';
     requires 'Test::MockObject';
     requires 'Test::MockTime::HiRes';

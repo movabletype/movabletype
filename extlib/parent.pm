@@ -1,7 +1,7 @@
 package parent;
 use strict;
-use vars qw($VERSION);
-$VERSION = '0.236';
+
+our $VERSION = '0.238';
 
 sub import {
     my $class = shift;
@@ -99,7 +99,15 @@ that had accumulated in it.
 
 =head1 SEE ALSO
 
-L<base>
+=over 4
+
+=item L<base>
+
+=item L<parent::versioned>
+
+A fork of L<parent> that provides version checking in parent class modules.
+
+=back
 
 =head1 AUTHORS AND CONTRIBUTORS
 
@@ -109,7 +117,7 @@ Rafaël Garcia-Suarez, Bart Lateur, Max Maischein, Anno Siegel, Michael Schwern
 
 Max Maischein C< corion@cpan.org >
 
-Copyright (c) 2007-10 Max Maischein C<< <corion@cpan.org> >>
+Copyright (c) 2007-2017 Max Maischein C<< <corion@cpan.org> >>
 Based on the idea of C<base.pm>, which was introduced with Perl 5.004_04.
 
 =head1 LICENSE
