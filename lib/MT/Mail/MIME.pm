@@ -25,6 +25,10 @@ sub send {
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
     for my $h (keys %hdrs) {
+        unless (defined $hdrs{$h}) {
+            $hdrs{$h} = '';
+            next;
+        }
         if (ref($hdrs{$h}) eq 'ARRAY') {
             map { y/\n\r/  / } @{ $hdrs{$h} };
         } elsif (!ref($hdrs{$h})) {
