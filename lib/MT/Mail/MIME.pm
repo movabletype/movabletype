@@ -279,6 +279,7 @@ sub prepare_parts {
             if (defined $body) {
                 $type ||= 'text/plain';
                 $body = MT::I18N::default->encode_text_encode($body, undef, $pcharset);
+                $name = _encword($name, $pcharset) if $name;
                 push @ret, ['attachment', $type, $body, $name, $pcharset];
             } elsif ($path) {
                 if (!$Types) {
@@ -292,6 +293,7 @@ sub prepare_parts {
                     $type = $found ? $found->type() : 'application/octet-stream';
                 }
                 $body = _slurp($path);
+                $name = _encword($name, $pcharset);
                 push @ret, ['attachment', $type, $body, $name, undef];
             } else {
                 require Carp;
@@ -309,6 +311,16 @@ sub prepare_parts {
     }
 
     return \@ret;
+}
+
+sub _encword {
+    my ($word, $charset) = @_;
+    if ($charset ne 'iso-8859-1' || ($word =~ /[^[:print:]]/)) {
+        require MIME::EncWords;
+        $word = MIME::EncWords::encode_mimeword(
+            MT::I18N::default->encode_text_encode($word, undef, $charset), 'b', $charset);
+    }
+    return $word;
 }
 
 sub _slurp {

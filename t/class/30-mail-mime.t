@@ -24,6 +24,7 @@ use MIME::Base64;
 use MIME::QuotedPrint;
 use MIME::EncWords;
 use Encode;
+use File::Basename;
 
 my $mt = MT->new() or die MT->errstr;
 $mt->config('MailTransfer', 'debug');
@@ -204,6 +205,8 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                         header => { To => 'to@example.com' },
                         body   => ['日本語', { path => $file1 }, { path => $file2 }],
                     );
+                    my $exp_name1 = expected_regex(File::Basename::basename($file1));
+                    my $exp_name2 = expected_regex(File::Basename::basename($file2));
 
                     is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
                     like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
@@ -213,17 +216,17 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     like($ret->[1]->{header}->{'Content-Type'},              qr{text/plain},            'right header');
                     like($ret->[1]->{header}->{'Content-Type'},              qr{charset="?$charsetl"?}, 'right header');
                     unlike($ret->[1]->{header}->{'Content-Type'}, qr{name=}, 'right header');
-                    like($ret->[1]->{body},                                  qr{日本語},              'right body');
-                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},       'right header');
-                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename=.+\.gif}, 'right header');
-                    like($ret->[2]->{header}->{'Content-Type'},              qr{image/gif},        'right header');
-                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},           'right header');
-                    like($ret->[2]->{body},                                  qr{R0lGODlhk},        'right body');
-                    like($ret->[3]->{header}->{'Content-Disposition'},       qr{attachment},       'right header');
-                    like($ret->[3]->{header}->{'Content-Disposition'},       qr{filename=.+\.png}, 'right header');
-                    like($ret->[3]->{header}->{'Content-Type'},              qr{image/png},        'right header');
-                    like($ret->[3]->{header}->{'Content-Transfer-Encoding'}, qr{base64},           'right header');
-                    like($ret->[3]->{body},                                  qr{iVBORw0KG},        'right body');
+                    like($ret->[1]->{body},                                  qr{日本語},                     'right body');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},              'right header');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?$exp_name1"?}, 'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{image/gif},               'right header');
+                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                  'right header');
+                    like($ret->[2]->{body},                                  qr{R0lGODlhk},               'right body');
+                    like($ret->[3]->{header}->{'Content-Disposition'},       qr{attachment},              'right header');
+                    like($ret->[3]->{header}->{'Content-Disposition'},       qr{filename="?$exp_name2"?}, 'right header');
+                    like($ret->[3]->{header}->{'Content-Type'},              qr{image/png},               'right header');
+                    like($ret->[3]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                  'right header');
+                    like($ret->[3]->{body},                                  qr{iVBORw0KG},               'right body');
                     is(scalar @$ret, 4, 'right number of mime parts');
                 };
 
@@ -232,18 +235,18 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                         header => { To => 'to@example.com' },
                         body   => ['日本語', { path => $file1, name => 'my_file.gif', type => 'image/mygif' }],
                     );
-
+                    my $exp_name = expected_regex('my_file.gif');
                     is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
                     like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
                     like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
                     unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
-                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
-                    like($ret->[1]->{body},                                  qr{日本語},                       'right body');
-                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
-                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?my_file\.gif"?}, 'right header');
-                    like($ret->[2]->{header}->{'Content-Type'},              qr{image/mygif},               'right header');
-                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
-                    like($ret->[2]->{body},                                  qr{R0lGODlhk},                 'right body');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                 'right header');
+                    like($ret->[1]->{body},                                  qr{日本語},                    'right body');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},             'right header');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?$exp_name"?}, 'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{image/mygif},            'right header');
+                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                 'right header');
+                    like($ret->[2]->{body},                                  qr{R0lGODlhk},              'right body');
                     is(scalar @$ret, 3, 'right number of mime parts');
                 };
 
@@ -252,18 +255,19 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                         header => { To => 'to@example.com' },
                         body   => ['日本語', { body => "ライン1\nライン2", name => 'my_file.log', type => 'text/plain' }],
                     );
+                    my $exp_name = expected_regex('my_file.log');
 
                     is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
                     like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
                     like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
                     unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
-                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
-                    like($ret->[1]->{body},                                  qr{日本語},                       'right body');
-                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
-                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?my_file\.log"?}, 'right header');
-                    like($ret->[2]->{header}->{'Content-Type'},              qr{text/plain},                'right header');
-                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
-                    like($ret->[2]->{body},                                  qr{\Aライン1\nライン2\z},            'right body');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                 'right header');
+                    like($ret->[1]->{body},                                  qr{日本語},                    'right body');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},             'right header');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?$exp_name"?}, 'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{text/plain},             'right header');
+                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                 'right header');
+                    like($ret->[2]->{body},                                  qr{\Aライン1\nライン2\z},         'right body');
                     is(scalar @$ret, 3, 'right number of mime parts');
                 };
 
@@ -333,6 +337,17 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     like($ret->[1]->{body},                     qr{あ},                       'right body');
                     is(scalar @$ret, 2, 'right number of mime parts');
                 };
+
+                subtest 'non-ascii filename' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => [{ body => "aaa", name => 'アクセス.log' }],
+                    );
+
+                    like($ret->[1]->{header}->{'Content-Type'},        qr{text/plain},             'right header');
+                    like($ret->[1]->{header}->{'Content-Disposition'}, expected_regex('アクセス.log'), 'right header');
+                    is(scalar @$ret, 2, 'right number of mime parts');
+                };
             };
         }
     };
@@ -348,6 +363,7 @@ sub render_and_parse {
     for my $part (@parts) {
         my ($header, $body) = split(/\x0d\x0a\x0d\x0a/, $part, 2);
         my %header_kv;
+        $header =~ s{\x0d\x0a\s}{}g;
         for my $hl (split(/\x0d\x0a/, $header)) {
             $hl =~ s{\x0d|\x0a}{}g;
             my ($key, $value) = split(/: /, $hl);
@@ -400,7 +416,8 @@ sub send_mail_suite {
 
 sub expected_regex {
     my (@words) = @_;
-    my @regex   = map { quotemeta(MIME::EncWords::encode_mimeword(Encode::encode('utf8', $_), 'b', 'utf-8')) } @words;
+    my $charset = $mt->config('MailEncoding');
+    my @regex   = map { quotemeta(MIME::EncWords::encode_mimeword(Encode::encode($charset, $_), 'b', $charset)) } @words;
     my $join    = join('|', @regex);
     return qr{$join};
 }
