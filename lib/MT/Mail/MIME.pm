@@ -36,7 +36,7 @@ sub send {
         }
     }
 
-    %Sent = (subject => $hdrs{Subject}) if defined($hdrs{Subject});
+    %Sent = defined($hdrs{Subject}) ? (subject => $hdrs{Subject}) : ();
 
     my $conf = MT->config;
 

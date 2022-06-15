@@ -102,6 +102,21 @@ subtest 'send_and_log' => sub {
         is($log[0]->{metadata}, q{Subject: }, 'right metadata');
         is(@log,                1,            'right number of logs');
     };
+
+    subtest 'make sure %sent is initialized' => sub {
+        $mt->config('MailTransfer', 'unknown');
+        $MT::Util::Mail::Module = 'MIME::Lite';
+
+        # send with subject
+        MT::Mail::MIME->send({Subject => 'hello'}, 'a');
+        is(MT::Mail::MIME->sent->{subject}, 'hello', 'subject is set');
+
+        # send without subject
+        MT::Mail::MIME->send({}, 'a');
+        ok(!exists(MT::Mail::MIME->sent->{subject}), 'previous subject is deleted');
+
+        $mt->config('MailTransfer', 'debug');
+    };
 };
 
 subtest '_encword' => sub {
