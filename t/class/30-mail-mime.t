@@ -47,6 +47,33 @@ subtest 'send_and_log' => sub {
         is($log[0]->{message}, MT->translate('Mail was sent successfully'), 'right message');
         is(@log,               1,                                           'right number of logs');
 
+        @log                   = ();
+        $MT::Mail::_Mock::Mock = sub {
+            %MT::Mail::_Mock::Sent = (subject => '0');
+            return 1;
+        };
+        MT::Util::Mail->send_and_log();
+        is($log[0]->{metadata}, q{Subject: 0}, 'right metadata');
+        is(@log,                1,             'right number of logs');
+
+        @log                   = ();
+        $MT::Mail::_Mock::Mock = sub {
+            %MT::Mail::_Mock::Sent = (subject => '');
+            return 1;
+        };
+        MT::Util::Mail->send_and_log();
+        is($log[0]->{metadata}, q{Subject: }, 'right metadata');
+        is(@log,                1,            'right number of logs');
+
+        @log                   = ();
+        $MT::Mail::_Mock::Mock = sub { 
+            %MT::Mail::_Mock::Sent = ();
+            return 1;
+        };
+        MT::Util::Mail->send_and_log();
+        ok(!exists $log[0]->{metadata}, 'metadata ommited');
+        is(@log, 1, 'right number of logs');
+
         @log = ();
         $mt->config('MailLogAlways', 0);
         MT::Util::Mail->send_and_log();
@@ -72,8 +99,8 @@ subtest 'send_and_log' => sub {
             return 0;
         };
         MT::Util::Mail->send_and_log();
-        is($log[0]->{metadata}, q{Subject: ""}, 'right metadata');
-        is(@log,                1,              'right number of logs');
+        is($log[0]->{metadata}, q{Subject: }, 'right metadata');
+        is(@log,                1,            'right number of logs');
     };
 };
 
