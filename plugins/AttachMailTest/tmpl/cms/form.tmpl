@@ -1,5 +1,13 @@
 <mt:setvarblock name="page_title"><__trans phrase="Attach mail test"></mt:setvarblock>
 
+<mt:setvarblock name="css_include" append="1">
+    <style>
+    .page_content .template {
+        display:none;
+    }
+    </style>
+</mt:setvarblock>
+
 <mt:setvarblock name="page_content">
     <mt:if name="success">
     <mtapp:statusmsg
@@ -60,26 +68,58 @@
                 label="<__trans phrase="Message body">">
                 <textarea name="body" id="body" class="form-control text low"></textarea>
             </mt:app:setting>
+            
+            <div class="attachmentContainer">
+            </div>
 
-            <mtapp:setting
-                id="file1"
-                label="<__trans phrase="file1">"
-                label_for="file1">
-                <input type="file" id="file1" class="form-control text" name="file1">
-            </mtapp:setting>
-
-            <mtapp:setting
-                id="file2"
-                label="<__trans phrase="file2">"
-                label_for="file2">
-                <input type="file" id="file2" class="form-control text" name="file2">
-            </mtapp:setting>
+            <button class="btn btn-default action button add-file"><__trans phrase="Add MIME part by file"></button>
+            <button class="btn btn-default action button add-text"><__trans phrase="Add MIME part by text"></button>
 
             <mt:setvarblock name="action_buttons">
             <button type="submit" class="btn btn-primary action primary button"><__trans phrase="Send"></button>
             </mt:setvarblock>
-            <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+            <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1" align_right="1">
         </mtapp:form>
+
+        <div class="field field-content form-group field-left-label template template1">
+            <label class="first-child"></label>
+            <input type="file" class="form-control last-child">
+            <label><__trans phrase="Filename"> (Optional): </label>
+            <input type="text" class="form-control text name">
+        </div>
+        <div class="field field-content form-group field-left-label template template2">
+            <label class="first-child"></label>
+            <textarea class="form-control text low last-child"></textarea>
+            <label><__trans phrase="Filename"> (Optional): </label>
+            <input type="text" class="form-control text name">
+        </div>
+
+        <script>
+            (function($){
+                'use strict';
+                var cont = $('.attachmentContainer');
+                var tpl1 = $('.template1').clone().removeClass('template');
+                var tpl2 = $('.template2').clone().removeClass('template');
+                var clone = function(template, element){
+                    var len = cont.children('div').length + 1;
+                    var part = template.clone();
+                    part.find('label:nth-child(1)').html('attachment' + len).attr('for', 'attach' + len);
+                    part.find(element).attr('id', 'attach' + len);
+                    part.find(element).attr('name', 'attach' + len);
+                    part.find('.name').attr('name', 'attach' + len + '-name');
+                    cont.append(part);
+                    return part;
+                };
+                $('.add-file').on('click', function() {
+                    var part = clone(tpl1, 'input');
+                    return false;
+                });
+                $('.add-text').on('click', function() {
+                    var part = clone(tpl2, 'textarea');
+                    return false;
+                });
+            })(jQuery);
+        </script>
     </div>
 </mt:setvarblock>
 

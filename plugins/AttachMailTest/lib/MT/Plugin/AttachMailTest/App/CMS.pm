@@ -25,13 +25,25 @@ sub attach_mail_test_send {
     my $body  = $q->param('body');
     my @parts = ($body);
 
-    for my $i (1, 2) {
-        my ($fh, $info) = $app->upload_info('file' . $i);
+    my $attach_count = 0;
+    while (1) {
+        my $field = 'attach' . ($attach_count + 1);
+        my ($fh, $info) = $app->upload_info($field);
         if ($fh) {
             my $path     = $q->tmpFileName($fh);
-            my $filename = ($info->{'Content-Disposition'} =~ qr{filename="?([^"]+)"?})[0];
+            my $filename = $q->param('attach' . ($attach_count + 1) . '-name');
+            $filename ||= ($info->{'Content-Disposition'} =~ qr{filename="?([^"]+)"?})[0];
             push @parts, { name => $filename, path => $path };
+        } elsif (my $attach = $q->param($field)) {
+            if (my $name = $q->param('attach' . ($attach_count + 1) . '-name')) {
+                push @parts, { body => $attach, name => $name };
+            } else {
+                push @parts, { body => $attach };
+            }
+        } else {
+            last;
         }
+        $attach_count++;
     }
 
     require MT::Util::Mail;
