@@ -887,7 +887,7 @@ class MT {
     function error_handler($errno, $errstr, $errfile, $errline) {
         $this->_write_error_log($errno, $errstr, $errfile, $errline);
 
-        if ($errno & (E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED)) {
+        if ($errno & (E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED ^ E_USER_NOTICE ^ E_USER_WARNING ^ E_USER_DEPRECATED)) {
             if ( !empty( $this->db ) ) {
                 $errstr = encode_html_entities($errstr, ENT_QUOTES);
                 $errfile = encode_html_entities($errfile, ENT_QUOTES);

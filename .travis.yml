@@ -67,7 +67,7 @@ jobs:
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="phpunit php/tests/*Test.php && make test-php-lint"
 
-    - # 5.10 / PHP 5.3 / MySQL 5.1
+    - # 5.10 / PHP 5.5 / MySQL 5.1
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
