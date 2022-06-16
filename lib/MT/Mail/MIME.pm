@@ -315,7 +315,7 @@ sub prepare_parts {
 
 sub _encword {
     my ($word, $charset) = @_;
-    if ($charset ne 'iso-8859-1' || ($word =~ /[^[:print:]]/)) {
+    if (defined $word && $word =~ /(?:\P{ASCII}|=\?)/s) {
         require MIME::EncWords;
         $word = MIME::EncWords::encode_mimeword(
             MT::I18N::default->encode_text_encode($word, undef, $charset), 'b', $charset);
