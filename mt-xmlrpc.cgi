@@ -65,5 +65,16 @@ use vars qw($server);
         'metaWeblog' => 'metaWeblog',
         'wp'         => 'wp',
     } );
+    $server->on_action(sub {
+        my ($action, $method_uri, $method_name) = @_;
+
+        my $class =
+                $server->dispatch_with->{$method_uri}
+            || $server->dispatch_with->{ $action || '' }
+            || defined($action) && $action =~ /^"(.+)"$/ && $server->dispatch_with->{$1};
+
+        die "Denied access to method ($method_name)\n"
+            unless $class && $class->can($method_name);
+    });
     $server->handle;
 }
