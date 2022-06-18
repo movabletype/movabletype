@@ -185,18 +185,20 @@ sub list_props {
                 my $badge_class = '';
                 my $scope_html  = '';
                 my $scope_lc    = '';
-                if ($obj->is_blog) {
-                    $scope_label = MT->translate('Child Site');
-                    $badge_class = 'badge badge-info ';
-                    $scope_lc    = 'blog';
-                } else {
-                    $scope_label = MT->translate('Site');
-                    $badge_class = 'badge badge-success ';
-                    $scope_lc    = 'website';
+                if(!$app->blog){
+                    if ($obj->is_blog) {
+                        $scope_label = MT->translate('Child Site');
+                        $badge_class = 'badge badge-info ';
+                        $scope_lc    = 'blog';
+                    } else {
+                        $scope_label = MT->translate('Site');
+                        $badge_class = 'badge badge-success ';
+                        $scope_lc    = 'website';
+                    }
+                    $scope_html = qq{
+                        <span class="${badge_class} ${scope_lc} sticky-label">$scope_label</span>
+                    };
                 }
-                $scope_html = qq{
-                    <span class="${badge_class} ${scope_lc} sticky-label">$scope_label</span>
-                };
                 my $dashboard_link = $app->uri(
                     mode => 'dashboard',
                     args => { blog_id => $obj->id, },
