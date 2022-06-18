@@ -220,9 +220,11 @@ sub generate_site_stats_data {
     my $time;
     $time = $fmgr->file_mod_time($path) if -f $path;
 
+
     # Get readied provider
+    my $stats_provider = MT->config('StatsProvider');
     require MT::App::DataAPI;
-    my $provider = readied_provider( $app, $blog );
+    my $provider = readied_provider( $app, $blog, $stats_provider );
     $param->{provider} = $provider
         if $provider;
 
@@ -382,6 +384,7 @@ sub generate_site_stats_data {
     }
 
     delete $param->{provider};
+    $param->{stats_provider} = $provider->id;
 
     1;
 }

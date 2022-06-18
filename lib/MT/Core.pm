@@ -2267,6 +2267,7 @@ BEGIN {
             'PSGIStreaming' => { default => 1 },
             'HideVersion' => { default => 1 },
             'HideConfigWarnings' => { default => undef },
+            'StatsProvider' => { default => undef },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
