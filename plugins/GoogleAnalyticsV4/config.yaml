@@ -29,6 +29,7 @@ web_services:
             code: $GoogleAnalyticsV4::GoogleAnalyticsV4::App::config_tmpl
         save_config:
             code: $GoogleAnalyticsV4::GoogleAnalyticsV4::App::save_config
+        order: 200
 
 stats_providers:
     GoogleAnalyticsV4:
