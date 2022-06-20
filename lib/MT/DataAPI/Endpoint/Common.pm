@@ -604,12 +604,17 @@ sub _restrict_site {
 
     return if ( !$class->has_column($column) );
 
-    # Load config settings.
     my $cfg = $app->config;
-    my $data_api_disable_site
-        = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my @data_api_disable_site = ( split ',', $data_api_disable_site )
-        or return;
+    my @data_api_disable_sites = split ',', defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
+    if (!$cfg->is_readonly('DataAPIDisableSite')) {
+        my @not_allow_data_api_sites = map { $_->id } MT->model('website')->load({
+                class          => '*',
+                allow_data_api => 0,
+            },
+            { fetchonly => { id => 1 } });
+        push @data_api_disable_sites, @not_allow_data_api_sites;
+    }
+    return unless @data_api_disable_sites;
 
     # Set filters.
     $filter->append_item(
@@ -624,7 +629,7 @@ sub _restrict_site {
                                 value  => $_,
                             },
                         };
-                    } @data_api_disable_site,
+                    } @data_api_disable_sites,
                 ],
             },
         },
