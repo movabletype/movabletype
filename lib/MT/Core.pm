@@ -1939,6 +1939,7 @@ BEGIN {
             'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
             'MailTransferEncoding'  => undef,
+            'MailLogAlways'         => undef,
             'SMTPServer'            => { default => 'localhost', },
             'SMTPAuth'              => { default => 0, },
             'SMTPUser'              => undef,
