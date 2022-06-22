@@ -4556,7 +4556,7 @@ ter opnieuw te proberen.',
 ## tmpl/cms/edit_content_data.tmpl
 	'(Max length: [_1])' => '(Max lengte: [_1])',
 	'(Max select: [_1])' => '(Max selectie: [_1])',
-	'(Max tags: [_2])' => '(Max tags: [_2])',
+	'(Max tags: [_1])' => '(Max tags: [_1])',
 	'(Max: [_1] / Number of decimal places: [_2])' => '(Max: [_1] / Aantal decimalen: [_2])',
 	'(Max: [_1])' => '(Max: [_1])',
 	'(Min length: [_1] / Max length: [_2])' => '(Min lengte: [_1] / Max lengte: [_2])',
