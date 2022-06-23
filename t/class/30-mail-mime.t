@@ -32,44 +32,38 @@ $mt->config('MailTransfer', 'debug');
 isa_ok($mt, 'MT');
 
 subtest 'send_and_log' => sub {
-    my $mail_module = 'MT::Mail::_Mock';
-    $MT::Util::Mail::Module = $mail_module;
+    $MT::Util::Mail::Module = 'MT::Mail::MIME::Lite';
+    eval { require Test::MockModule } or plan skip_all => 'Test::MockModule is not installed';
+    my $mock = Test::MockModule->new('MT::Mail::MIME::Lite');
+    my %sent;
+    $mock->mock('sent', sub { \%sent });
 
     my @log;
     no warnings 'redefine';
     local *MT::log = sub { unshift @log, $_[1] };
 
     subtest 'success' => sub {
-        @log                   = ();
-        $MT::Mail::_Mock::Mock = sub { 1 };
+        @log = ();
+        $mock->mock('send', sub { 1 });
         $mt->config('MailLogAlways', 1);
         MT::Util::Mail->send_and_log();
         is($log[0]->{message}, MT->translate('Mail was sent successfully'), 'right message');
         is(@log,               1,                                           'right number of logs');
 
-        @log                   = ();
-        $MT::Mail::_Mock::Mock = sub {
-            %MT::Mail::_Mock::Sent = (subject => '0');
-            return 1;
-        };
+        @log = ();
+        $mock->mock('send', sub { %sent = (subject => '0'); 1 });
         MT::Util::Mail->send_and_log();
         is($log[0]->{metadata}, q{Subject: 0}, 'right metadata');
         is(@log,                1,             'right number of logs');
 
-        @log                   = ();
-        $MT::Mail::_Mock::Mock = sub {
-            %MT::Mail::_Mock::Sent = (subject => '');
-            return 1;
-        };
+        @log = ();
+        $mock->mock('send', sub { %sent = (subject => ''); 1 });
         MT::Util::Mail->send_and_log();
         is($log[0]->{metadata}, q{Subject: }, 'right metadata');
         is(@log,                1,            'right number of logs');
 
-        @log                   = ();
-        $MT::Mail::_Mock::Mock = sub { 
-            %MT::Mail::_Mock::Sent = ();
-            return 1;
-        };
+        @log = ();
+        $mock->mock('send', sub { %sent = (); 1 });
         MT::Util::Mail->send_and_log();
         ok(!exists $log[0]->{metadata}, 'metadata ommited');
         is(@log, 1, 'right number of logs');
@@ -81,23 +75,25 @@ subtest 'send_and_log' => sub {
     };
 
     subtest 'fail' => sub {
-        @log                   = ();
-        $MT::Mail::_Mock::Mock = sub {
-            $_[0]->error('fail message');
-            %MT::Mail::_Mock::Sent = (subject => 'Warning', recipients => ['to1', 'to2']);
-            return 0;
-        };
+        @log = ();
+        $mock->mock(
+            'send',
+            sub {
+                %sent = (subject => 'Warning', recipients => ['to1', 'to2']);
+                return $_[0]->error('fail message');
+            });
         MT::Util::Mail->send_and_log();
         is($log[0]->{message},  "Error sending mail: fail message\n",    'right message');
         is($log[0]->{metadata}, "Subject: Warning\nRecipient: to1, to2", 'right metadata');
         is(@log,                1,                                       'right number of logs');
 
-        @log                   = ();
-        $MT::Mail::_Mock::Mock = sub {
-            $_[0]->error('fail message');
-            %MT::Mail::_Mock::Sent = (subject => '');
-            return 0;
-        };
+        @log = ();
+        $mock->mock(
+            'send',
+            sub {
+                %sent = (subject => '');
+                return $_[0]->error('fail message');
+            });
         MT::Util::Mail->send_and_log();
         is($log[0]->{metadata}, q{Subject: }, 'right metadata');
         is(@log,                1,            'right number of logs');
@@ -105,10 +101,9 @@ subtest 'send_and_log' => sub {
 
     subtest 'make sure %sent is initialized' => sub {
         $mt->config('MailTransfer', 'unknown');
-        $MT::Util::Mail::Module = 'MIME::Lite';
 
         # send with subject
-        MT::Mail::MIME->send({Subject => 'hello'}, 'a');
+        MT::Mail::MIME->send({ Subject => 'hello' }, 'a');
         is(MT::Mail::MIME->sent->{subject}, 'hello', 'subject is set');
 
         # send without subject
@@ -554,16 +549,3 @@ sub send_mail {
 }
 
 done_testing();
-
-package MT::Mail::_Mock;
-use strict;
-use warnings;
-use MT;
-use base qw( MT::Mail::MIME );
-
-our $Mock;
-our %Sent;
-
-sub send { my $success = $Mock->($_[0]) }
-
-sub sent { \%Sent }
