@@ -452,7 +452,7 @@ our %Languages;
 
 sub format_ts {
     my ( $format, $ts, $blog, $lang, $is_mail ) = @_;
-    return '' unless defined $ts and $ts ne '';
+    return '' unless defined $ts and $ts ne '' and !ref $ts;
     my %f;
     unless ($lang) {
         $lang
