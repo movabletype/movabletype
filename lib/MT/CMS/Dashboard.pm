@@ -222,9 +222,8 @@ sub generate_site_stats_data {
 
 
     # Get readied provider
-    my $stats_provider = MT->config('StatsProvider');
     require MT::App::DataAPI;
-    my $provider = readied_provider( $app, $blog, $stats_provider );
+    my $provider = readied_provider( $app, $blog );
     $param->{provider} = $provider
         if $provider;
 
@@ -384,7 +383,7 @@ sub generate_site_stats_data {
     }
 
     delete $param->{provider};
-    $param->{stats_provider} = $provider->id;
+    $param->{stats_provider} = $provider->id if $provider;
 
     1;
 }

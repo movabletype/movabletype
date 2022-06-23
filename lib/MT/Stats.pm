@@ -25,10 +25,15 @@ sub readied_provider {
             eval "require $providers{$k}{provider};";
         }
     }
+
+    my $provider;
     if ($provider_arg) {
-        if ($providers{$provider_arg}{provider} && $providers{$provider_arg}{provider}->is_ready($app, $blog)) {
-            return $providers{$provider_arg}{provider}->new($provider_arg, $blog);
-        }
+        $provider = $provider_arg;
+    } else {
+        $provider = MT->config('DefaultStatsProvider');
+    }
+    if ($provider && $providers{$provider}{provider} && $providers{$provider}{provider}->is_ready($app, $blog)) {
+        return $providers{$provider}{provider}->new($provider, $blog);
     }
 
     for my $k (keys %providers) {
