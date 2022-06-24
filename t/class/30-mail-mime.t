@@ -112,6 +112,9 @@ subtest 'send_and_log' => sub {
 
         $mt->config('MailTransfer', 'debug');
     };
+
+    # It seems to be needed for perl-5.10.1 to unmock send method when closure refers to %sent.
+    undef $mock;
 };
 
 subtest '_encword' => sub {
