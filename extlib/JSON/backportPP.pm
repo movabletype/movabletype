@@ -15,7 +15,7 @@ use JSON::backportPP::Boolean;
 use Carp ();
 #use Devel::Peek;
 
-$JSON::backportPP::VERSION = '4.09';
+$JSON::backportPP::VERSION = '4.10';
 
 @JSON::PP::EXPORT = qw(encode_json decode_json from_json to_json);
 
@@ -1310,7 +1310,7 @@ BEGIN {
         }
 
         for my $c ( unpack( $type, $str ) ) { # emulate pv_uni_display() ?
-            my $chr_c = $c;
+            my $chr_c = chr($c);
             $mess .=  $chr_c eq '\\' ? '\\\\'
                     : $chr_c =~ /[[:print:]]/ ? $chr_c
                     : $chr_c eq '\a' ? '\a'
