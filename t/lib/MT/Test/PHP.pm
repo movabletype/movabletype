@@ -27,6 +27,10 @@ sub php_version {
         Test::More::diag "PHP $PHPVersion is not supported yet";
         return $PHPVersion = 0;
     }
+    if ($PHPVersion < 7.2) {
+        Test::More::diag "PHP $PHPVersion is not supported";
+        return $PHPVersion = 0;
+    }
     $PHPVersion;
 }
 
