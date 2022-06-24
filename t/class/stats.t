@@ -17,8 +17,6 @@ BEGIN {
 $test_env->prepare_fixture('db');
 
 use MT::Test;
-use MT::App::CMS;
-use CGI;
 
 my $app  = MT->instance;
 my $blog = MT::Website->load(1);
