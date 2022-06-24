@@ -23,10 +23,6 @@ sub php_version {
     if ($smarty_major_version > 3) {
         return $PHPVersion = 0 if $PHPVersion < 7.1;
     }
-    if ($PHPVersion > 8.0 && $ENV{TRAVIS}) {
-        Test::More::diag "PHP $PHPVersion is not supported yet";
-        return $PHPVersion = 0;
-    }
     if ($PHPVersion < 7.2) {
         Test::More::diag "PHP $PHPVersion is not supported";
         return $PHPVersion = 0;
