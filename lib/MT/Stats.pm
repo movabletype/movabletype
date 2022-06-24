@@ -26,17 +26,9 @@ sub readied_provider {
         }
     }
 
-    my $provider;
-    if ($provider_arg) {
-        $provider = $provider_arg;
-    } else {
-        $provider = MT->config('DefaultStatsProvider');
-    }
-    if ($provider && $providers{$provider}{provider} && $providers{$provider}{provider}->is_ready($app, $blog)) {
-        return $providers{$provider}{provider}->new($provider, $blog);
-    }
-
-    for my $k (keys %providers) {
+    my %seen;
+    my @provider_keys = grep { $_ && !$seen{$_}++ } ($provider_arg || MT->config('DefaultStatsProvider'), keys %providers);
+    for my $k (@provider_keys) {
         if ($providers{$k}{provider}->is_ready($app, $blog)) {
             return $providers{$k}{provider}->new($k, $blog);
         }
