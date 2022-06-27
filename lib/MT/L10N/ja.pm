@@ -1093,7 +1093,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
 	'Cannot import requested file because a site was not found in either the existing Movable Type system or the exported data. A site must be created first.' => 'サイトのデータが含まれていないため、このファイルをインポートすることができません。サイトを先に作成してください。',
-	'Cannot import requested file because doing so requires the Digest::SHA Perl module. Please contact your Movable Type system administrator.' => 'Digest::SHAがインストールされていないため、このファイルをインポートすることができません。システム管理者問い合わせてください。',
+	'Cannot import requested file because doing so requires the Digest::SHA Perl module. Please contact your Movable Type system administrator.' => 'Digest::SHAがインストールされていないため、このファイルをインポートすることができません。システム管理者に問い合わせてください。',
 
 ## lib/MT/BasicAuthor.pm
 	'authors' => 'ユーザー',
