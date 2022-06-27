@@ -1964,7 +1964,7 @@ textarea.form-control, textarea.mt-contentblock__textarea {
   display: inline-flex;
   align-items: center;
   padding-left: 0;
-  margin-right: 0.75rem;
+  margin-right: 1.5rem;
 }
 
 .form-check-inline .form-check-input {
@@ -3639,7 +3639,7 @@ input[type="button"].btn-block {
   position: relative;
   display: block;
   min-height: 1.5rem;
-  padding-left: 2.5rem;
+  padding-left: 1.3rem;
 }
 
 .custom-control-inline {
@@ -3690,7 +3690,7 @@ input[type="button"].btn-block {
 .custom-control-label::before {
   position: absolute;
   top: 0.25rem;
-  left: -2.5rem;
+  left: -1.3rem;
   display: block;
   width: 1rem;
   height: 1rem;
@@ -3703,7 +3703,7 @@ input[type="button"].btn-block {
 .custom-control-label::after {
   position: absolute;
   top: 0.25rem;
-  left: -2.5rem;
+  left: -1.3rem;
   display: block;
   width: 1rem;
   height: 1rem;
@@ -3749,11 +3749,11 @@ input[type="button"].btn-block {
 }
 
 .custom-switch {
-  padding-left: 3.25rem;
+  padding-left: 2.05rem;
 }
 
 .custom-switch .custom-control-label::before {
-  left: -3.25rem;
+  left: -2.05rem;
   width: 1.75rem;
   pointer-events: all;
   border-radius: 0.5rem;
@@ -3761,7 +3761,7 @@ input[type="button"].btn-block {
 
 .custom-switch .custom-control-label::after {
   top: calc(0.25rem + 2px);
-  left: calc(-3.25rem + 2px);
+  left: calc(-2.05rem + 2px);
   width: calc(1rem - 4px);
   height: calc(1rem - 4px);
   background-color: #adb5bd;
