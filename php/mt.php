@@ -11,7 +11,7 @@
 require_once('lib/class.exception.php');
 
 define('VERSION', '7.9');
-define('PRODUCT_VERSION', '7.9.2');
+define('PRODUCT_VERSION', '7.9.4');
 define('DATA_API_DEFAULT_VERSION', '4');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 2;
+    $RELEASE_NUMBER = 4;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -887,7 +887,7 @@ class MT {
     function error_handler($errno, $errstr, $errfile, $errline) {
         $this->_write_error_log($errno, $errstr, $errfile, $errline);
 
-        if ($errno & (E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED)) {
+        if ($errno & (E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED ^ E_USER_NOTICE ^ E_USER_WARNING ^ E_USER_DEPRECATED)) {
             if ( !empty( $this->db ) ) {
                 $errstr = encode_html_entities($errstr, ENT_QUOTES);
                 $errfile = encode_html_entities($errfile, ENT_QUOTES);

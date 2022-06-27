@@ -655,7 +655,37 @@ sub author {
     $self->cache_property(
         'author',
         sub {
-            scalar MT::Author->load( $self->author_id || 0 );
+            my $author_id = $self->author_id or return undef;
+            my $req       = MT::Request->instance;
+            my $cache     = $req->stash('author_cache');
+            my $author    = $cache->{$author_id};
+            unless ($author) {
+                require MT::Author;
+                $author = MT::Author->load($author_id) or return undef;
+                $cache->{$author_id} = $author;
+                $req->stash('author_cache', $cache);
+            }
+            $author;
+        },
+    );
+}
+
+sub modified_author {
+    my $self = shift;
+    $self->cache_property(
+        'modified_author',
+        sub {
+            my $modified_by = $self->modified_by or return undef;
+            my $req         = MT::Request->instance;
+            my $cache       = $req->stash('author_cache');
+            my $author      = $cache->{$modified_by};
+            unless ($author) {
+                require MT::Author;
+                $author = MT::Author->load($modified_by) or return undef;
+                $cache->{$modified_by} = $author;
+                $req->stash('author_cache', $cache);
+            }
+            $author;
         },
     );
 }
@@ -1181,6 +1211,10 @@ sub make_list_props {
             blog_name     => { display => 'none', filter_editable => 0 },
             current_context => { filter_editable => 0 },
             __mobile => { base => 'entry.__mobile', col => 'label' },
+            modified_by => {
+                base  => '__virtual.modified_by',
+                order => $order + 500,
+            },
             %{$field_list_props},
         };
         MT::__merge_hash( $props->{$key}, $common_list_props );
@@ -1215,6 +1249,7 @@ sub _make_label_html {
         : $status == MT::ContentStatus::UNPUBLISH() ? 'Unpublish'
         :                                             '';
     my $lc_status_class = lc $status_class;
+    my $status_class_trans = MT->translate($status_class);
 
     my $status_icon_id
         = $status == MT::ContentStatus::HOLD()      ? 'ic_draft'
@@ -1238,7 +1273,7 @@ sub _make_label_html {
         my $static_uri = MT->static_path;
         $status_img = qq{
           <svg role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
-              <title>$status_class</title>
+              <title>$status_class_trans</title>
               <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
           </svg>
         };

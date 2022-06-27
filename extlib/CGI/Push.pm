@@ -1,12 +1,11 @@
 package CGI::Push;
-use if $] >= 5.019, 'deprecate';
 
 my $appease_cpants_kwalitee = q/
 use strict;
 use warnings;
 #/;
 
-$CGI::Push::VERSION='4.38';
+$CGI::Push::VERSION='4.54';
 use CGI;
 use CGI::Util 'rearrange';
 @ISA = ('CGI');
@@ -286,7 +285,7 @@ NPH script.
 =head1 AUTHOR INFORMATION
 
 The CGI.pm distribution is copyright 1995-2007, Lincoln D. Stein. It is
-distributed under GPL and the Artistic License 2.0. It is currently
+distributed under the Artistic License 2.0. It is currently
 maintained by Lee Johnson with help from many contributors.
 
 Address bug reports and comments to: https://github.com/leejo/CGI.pm/issues

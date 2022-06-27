@@ -15,18 +15,28 @@ use Encode;
 use Sys::Hostname;
 use MT::Util qw(is_valid_email);
 
+my %Sent;
+
+sub sent { \%Sent }
+
 sub send {
     my $class = shift;
     my ($hdrs_arg, $body) = @_;
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
     for my $h (keys %hdrs) {
+        unless (defined $hdrs{$h}) {
+            $hdrs{$h} = '';
+            next;
+        }
         if (ref($hdrs{$h}) eq 'ARRAY') {
             map { y/\n\r/  / } @{ $hdrs{$h} };
         } elsif (!ref($hdrs{$h})) {
             $hdrs{$h} =~ y/\n\r/  /;
         }
     }
+
+    %Sent = defined($hdrs{Subject}) ? (subject => $hdrs{Subject}) : ();
 
     my $conf = MT->config;
 
@@ -191,12 +201,9 @@ sub _send_mt_smtp {
     $smtp->mail(ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From})
         or return $class->smtp_error($smtp);
 
-    for my $h (qw( To Bcc Cc )) {
-        next unless defined $hdrs->{$h};
-        my $addr = $hdrs->{$h};
-        for (ref $addr eq 'ARRAY' ? @$addr : $addr) {
-            $smtp->recipient($_) or return $class->smtp_error($smtp);
-        }
+    $Sent{recipients} = _recipients($hdrs);
+    for (@{$Sent{recipients}}) {
+        $smtp->recipient($_) or return $class->smtp_error($smtp);
     }
 
     delete $hdrs->{Bcc};
@@ -240,11 +247,24 @@ sub _send_mt_sendmail {
             or return $class->error(MT->translate("Exec of sendmail failed: [_1]", "$!"));
     }
 
+    $Sent{recipients} = _recipients($hdrs);
+
     my $msg = $class->render(header => $hdrs, body => $body);
     $msg =~ s{\r\n}{\n}g;
     print $MAIL $msg;
     close $MAIL;
     1;
+}
+
+sub _recipients {
+    my $hdrs = shift;
+    my @ret;
+    for my $h (qw( To Bcc Cc )) {
+        next unless defined $hdrs->{$h};
+        my $addr = $hdrs->{$h};
+        push @ret, $_ for (ref $addr eq 'ARRAY' ? @$addr : $addr);
+    }
+    return \@ret;
 }
 
 sub _can_use {
@@ -262,6 +282,73 @@ sub _can_use {
     }
 
     return 1;
+}
+
+my $Types;
+
+sub prepare_parts {
+    my ($class, $parts, $charset) = @_;
+    my @ret;
+
+    require MT::I18N::default;
+
+    for my $part (@$parts) {
+        if (ref $part) {
+            my ($type, $name, $path, $body, $pcharset) = @{$part}{qw(type name path body charset)};
+            $pcharset ||= $charset;
+            if (defined $body) {
+                $type ||= 'text/plain';
+                $body = MT::I18N::default->encode_text_encode($body, undef, $pcharset);
+                $name = _encword($name, $pcharset) if $name;
+                push @ret, ['attachment', $type, $body, $name, $pcharset];
+            } elsif ($path) {
+                if (!$Types) {
+                    require File::Basename;
+                    require MIME::Types;
+                    $Types = MIME::Types->new;
+                }
+                $name ||= File::Basename::basename($path);
+                unless ($type) {
+                    my $found = $Types->mimeTypeOf($name);
+                    $type = $found ? $found->type() : 'application/octet-stream';
+                }
+                $body = _slurp($path);
+                $name = _encword($name, $pcharset);
+                push @ret, ['attachment', $type, $body, $name, undef];
+            } else {
+                require Carp;
+                Carp::croak 'Multipart property requires either body or path.';
+            }
+        } else {
+            push @ret, [
+                (@ret ? 'attachment' : 'inline'),
+                'text/plain',
+                MT::I18N::default->encode_text_encode($part, undef, $charset),
+                undef,
+                $charset,
+            ];
+        }
+    }
+
+    return \@ret;
+}
+
+sub _encword {
+    my ($word, $charset) = @_;
+    if (defined $word && $word =~ /(?:\P{ASCII}|=\?)/s) {
+        require MIME::EncWords;
+        $word = MIME::EncWords::encode_mimeword(
+            MT::I18N::default->encode_text_encode($word, undef, $charset), 'b', $charset);
+    }
+    return $word;
+}
+
+sub _slurp {
+    my $path = shift;
+    open my $fh, '<', $path or die "$path: $!";
+    binmode $fh;
+    local $/;
+    <$fh>;
 }
 
 1;
@@ -303,9 +390,9 @@ directive.
 =head2 MT::Mail::MIME->send(\%headers, $body)
 
 Sends a mail message with the headers I<\%headers> and the message body
-I<$body>.
+I<$body>. Optionally, you can attach files if your I<MailModule> supports it.
 
-The keys and values in I<\%headers> are passed directly in to the mail
+The keys and values in I<\%headers> are passed directly into the mail
 program or server, so you can use any valid mail header names as keys. If
 you need to supply a list of header values, specify the hash value as a
 reference to a list of the header values. For example:
@@ -314,6 +401,32 @@ reference to a list of the header values. For example:
 
 If you wish the lines in I<$body> to be wrapped, you should do this yourself;
 it will not be done by I<send>.
+
+You can send multipart mail by giving array ref for $body instead of a scalar.
+
+    $body = [ { path => 'path/to/your.png' }, {...}, ... ];
+
+Each file can also contain types and names in case you don't like the auto
+detection.
+
+    push @$body, {
+        path => 'path/to/your.png', 
+        type => 'image/png', 
+        name => 'yourname.png',
+    };
+
+You can also set the file body by string.
+
+    push @$body, { body => 'file content' };
+
+Or, you can attach text/plain part by scalar directly to $body.
+
+    push @$body, 'file content';
+
+If the first part of $body is a scalar, it will be treated as inline instead of
+attachment.
+
+    $body = ['hello', $file1, $file2, ... ];
 
 On success, I<send> returns true; on failure, it returns C<undef>, and the
 error message is in C<MT::Mail::MIME-E<gt>errstr>.

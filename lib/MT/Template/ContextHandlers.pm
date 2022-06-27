@@ -286,6 +286,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Userpic::_hdlr_author_userpic_asset',
             EntryAuthorUserpicAsset =>
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_asset',
+            EntryModifiedAuthorUserpicAsset =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_modified_author_userpic_asset',
             CommenterUserpicAsset => sub {''},
 
             ## Tag
@@ -343,6 +345,8 @@ sub core_tags {
             CalendarIfNoContents => \&slurp,
             ContentAuthorUserpicAsset =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic_asset',
+            ContentModifiedAuthorUserpicAsset =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_userpic_asset',
             ContentCalendar =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_calendar',
             ContentField =>
@@ -658,6 +662,18 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_link',
             EntryAuthorID =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_id',
+            EntryModifiedAuthorDisplayName =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_display_name',
+            EntryModifiedAuthorUsername =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_username',
+            EntryModifiedAuthorEmail =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_email',
+            EntryModifiedAuthorURL =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_url',
+            EntryModifiedAuthorLink =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_link',
+            EntryModifiedAuthorID =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_id',
 
             AuthorEntryCount =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_author_entry_count',
@@ -785,6 +801,14 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Page::_hdlr_page_author_link',
             PageAuthorURL =>
                 '$Core::MT::Template::Tags::Page::_hdlr_page_author_url',
+            PageModifiedAuthorDisplayName =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_display_name',
+            PageModifiedAuthorEmail =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_email',
+            PageModifiedAuthorLink =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_link',
+            PageModifiedAuthorURL =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_url',
             PageExcerpt =>
                 '$Core::MT::Template::Tags::Page::_hdlr_page_excerpt',
             BlogPageCount =>
@@ -848,6 +872,10 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic',
             EntryAuthorUserpicURL =>
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_url',
+            EntryModifiedAuthorUserpic =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_modified_author_userpic',
+            EntryModifiedAuthorUserpicURL =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_modified_author_userpic_url',
             CommenterUserpic    => sub {''},
             CommenterUserpicURL => sub {''},
 
@@ -985,6 +1013,22 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic',
             ContentAuthorUserpicURL =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic_url',
+            ContentModifiedAuthorDisplayName =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_display_name',
+            ContentModifiedAuthorEmail =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_email',
+            ContentModifiedAuthorID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_id',
+            ContentModifiedAuthorLink =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_link',
+            ContentModifiedAuthorURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_url',
+            ContentModifiedAuthorUsername =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_username',
+            ContentModifiedAuthorUserpic =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_userpic',
+            ContentModifiedAuthorUserpicURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_userpic_url',
             ContentCreatedDate =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_created_date',
             ContentDate =>

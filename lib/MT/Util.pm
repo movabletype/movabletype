@@ -452,7 +452,7 @@ our %Languages;
 
 sub format_ts {
     my ( $format, $ts, $blog, $lang, $is_mail ) = @_;
-    return '' unless defined $ts and $ts ne '';
+    return '' unless defined $ts and $ts ne '' and !ref $ts;
     my %f;
     unless ($lang) {
         $lang
@@ -2848,21 +2848,6 @@ sub date_for_listing {
         : MT::Util::format_ts( $date_format, $ts, $blog,
         $app->user ? $app->user->preferred_language
         : undef );
-}
-
-sub update_data_api_disable_site {
-    my ($cfg, $blog_id, $new_value) = @_;
-    my $data_api_disable_site = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my %data_api_disable_site = map { $_ => 1 } (split ',', $data_api_disable_site);
-    if ($new_value) {
-        delete $data_api_disable_site{$blog_id};
-    } else {
-        $data_api_disable_site{$blog_id} = 1;
-    }
-    my $new_data_api_disable_site = join ',',
-        (sort { $a <=> $b } keys %data_api_disable_site);
-    $cfg->DataAPIDisableSite($new_data_api_disable_site, 1);
-    $cfg->save_config;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;

@@ -2,13 +2,13 @@ package LWP::Protocol::http;
 
 use strict;
 
-our $VERSION = '6.31';
+our $VERSION = '6.62';
 
 require HTTP::Response;
 require HTTP::Status;
 require Net::HTTP;
 
-use base qw(LWP::Protocol);
+use parent qw(LWP::Protocol);
 
 our @EXTRA_SOCK_OPTS;
 my $CRLF = "\015\012";
@@ -30,7 +30,7 @@ sub _new_socket
 					Proto    => 'tcp',
 					Timeout  => $timeout,
 					KeepAlive => !!$self->{ua}{conn_cache},
-					SendTE    => 1,
+					SendTE    => $self->{ua}{send_te},
 					$self->_extra_sock_opts($host, $port),
 				       );
 

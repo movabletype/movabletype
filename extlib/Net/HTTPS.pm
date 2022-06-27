@@ -1,10 +1,10 @@
 package Net::HTTPS;
-$Net::HTTPS::VERSION = '6.17';
+our $VERSION = '6.22';
 use strict;
 use warnings;
 
 # Figure out which SSL implementation to use
-use vars qw($SSL_SOCKET_CLASS);
+our $SSL_SOCKET_CLASS;
 if ($SSL_SOCKET_CLASS) {
     # somebody already set it
 }
@@ -90,7 +90,7 @@ Net::HTTPS - Low-level HTTP over SSL/TLS connection (client)
 
 =head1 VERSION
 
-version 6.17
+version 6.22
 
 =head1 DESCRIPTION
 
@@ -122,7 +122,7 @@ Gisle Aas <gisle@activestate.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2001-2017 by Gisle Aas.
+This software is copyright (c) 2001 by Gisle Aas.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

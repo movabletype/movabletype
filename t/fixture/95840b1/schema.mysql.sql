@@ -1,6 +1,6 @@
 --
 -- Created by SQL::Translator::Producer::MySQL
--- Created on Thu Jun 10 13:53:50 2021
+-- Created on Tue Jun 21 12:03:44 2022
 --
 SET foreign_key_checks=0;
 
@@ -240,6 +240,7 @@ CREATE TABLE `mt_blog` (
   `blog_allow_comment_html` tinyint(4) NULL DEFAULT NULL,
   `blog_allow_commenter_regist` tinyint(4) NULL DEFAULT NULL,
   `blog_allow_comments_default` tinyint(4) NULL DEFAULT NULL,
+  `blog_allow_data_api` tinyint(4) NULL DEFAULT NULL,
   `blog_allow_pings` tinyint(4) NULL DEFAULT NULL,
   `blog_allow_pings_default` tinyint(4) NULL DEFAULT NULL,
   `blog_allow_reg_comments` tinyint(4) NULL DEFAULT NULL,
@@ -400,10 +401,8 @@ DROP TABLE IF EXISTS `mt_category_set`;
 --
 CREATE TABLE `mt_category_set` (
   `category_set_blog_id` integer(11) NOT NULL,
-  `category_set_cat_count` integer(11) NOT NULL DEFAULT 0,
   `category_set_created_by` integer(11) NULL DEFAULT NULL,
   `category_set_created_on` datetime NULL DEFAULT NULL,
-  `category_set_ct_count` integer(11) NOT NULL DEFAULT 0,
   `category_set_id` integer(11) NOT NULL auto_increment,
   `category_set_modified_by` integer(11) NULL DEFAULT NULL,
   `category_set_modified_on` datetime NULL DEFAULT NULL,

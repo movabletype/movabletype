@@ -524,11 +524,15 @@ sub fill_in_archive_info {
                 ( @in_paths && @like_paths ? '-or' : () ),
                 @like_paths,
             ]
-        ]
+        ],
+        {sort => 'id', direction => 'descend'},
     );
 
+    my %seen;
     while ( my $fi = $iter->() ) {
-        my $url       = $fi->url;
+        my $url = $fi->url;
+        next if $seen{$url}++;
+
         my $item_list = $items{$url};
         if ( !$item_list ) {
             $url =~ s#\/index\.[^/]+\z#/#g;

@@ -8,7 +8,7 @@ use warnings;
 use File::Spec ();
 
 # ABSTRACT: Get information about a class and its structure
-our $VERSION = '1.32'; # VERSION
+our $VERSION = '1.36'; # VERSION
 
 
 # If Unicode is available, enable it so that the
@@ -16,7 +16,10 @@ our $VERSION = '1.32'; # VERSION
 # We can safely ignore any failure here.
 BEGIN {
   local $@;
-  eval "require utf8; utf8->import";
+  eval {
+    require utf8;
+    utf8->import;
+  };
 }
 
 # Predefine some regexs
@@ -34,12 +37,14 @@ our $UNIX  = !! ( $File::Spec::ISA[0] eq 'File::Spec::Unix'  );
 sub _resolved_inc_handler {
   my $class    = shift;
   my $filename = $class->_inc_filename(shift) or return undef;
-  
+
   foreach my $inc ( @INC ) {
     my $ref = ref $inc;
     if($ref eq 'CODE') {
       my @ret = $inc->($inc, $filename);
-      if(@ret) {
+      if(@ret == 1 && ! defined $ret[0]) {
+        # do nothing.
+      } elsif(@ret) {
         return 1;
       }
     }
@@ -56,7 +61,7 @@ sub _resolved_inc_handler {
       }
     }
   }
-  
+
   '';
 }
 
@@ -221,7 +226,8 @@ sub methods {
   while ( my $cl = shift @queue ) {
     push @path, $cl;
     unshift @queue, grep { ! $seen{$_}++ }
-      map { s/^::/main::/; s/\'/::/g; $_ }
+      map { s/^::/main::/; s/\'/::/g; $_ } ##  no critic
+      map { "$_" }
       ( @{"${cl}::ISA"} );
   }
 
@@ -231,7 +237,7 @@ sub methods {
   foreach my $namespace ( @path ) {
     my @functions = grep { ! $methods{$_} }
       grep { /$RE_IDENTIFIER/o }
-      grep { defined &{"${namespace}::$_"} } 
+      grep { defined &{"${namespace}::$_"} }
       keys %{"${namespace}::"};
     foreach ( @functions ) {
       $methods{$_} = $namespace;
@@ -245,8 +251,8 @@ sub methods {
 
   # Return in the correct format
   @methodlist = map { "$methods{$_}::$_" } @methodlist if $options{full};
-  @methodlist = map { 
-    [ "$methods{$_}::$_", $methods{$_}, $_, \&{"$methods{$_}::$_"} ] 
+  @methodlist = map {
+    [ "$methods{$_}::$_", $methods{$_}, $_, \&{"$methods{$_}::$_"} ]
     } @methodlist if $options{expanded};
 
   \@methodlist;
@@ -297,7 +303,7 @@ sub subclasses {
 sub _subnames {
   my ($class, $name) = @_;
   return sort
-    grep {
+    grep {  ## no critic
       substr($_, -2, 2, '') eq '::'
       and
       /$RE_IDENTIFIER/o
@@ -323,7 +329,7 @@ sub children {
 
   # Find all the Foo:: elements in our symbol table
   no strict 'refs';
-  map { "${name}::$_" } sort grep { s/::$// } keys %{"${name}::"};
+  map { "${name}::$_" } sort grep { s/::$// } keys %{"${name}::"};  ## no critic
 }
 
 # As above, but recursively
@@ -332,14 +338,14 @@ sub recursive_children {
   my $name     = $class->_class(shift) or return ();
   my @children = ( $name );
 
-  # Do the search using a nicer, more memory efficient 
+  # Do the search using a nicer, more memory efficient
   # variant of actual recursion.
   my $i = 0;
   no strict 'refs';
   while ( my $namespace = $children[$i++] ) {
     push @children, map { "${namespace}::$_" }
       grep { ! /^::/ } # Ignore things like ::ISA::CACHE::
-      grep { s/::$// }
+      grep { s/::$// }  ## no critic
       keys %{"${namespace}::"};
   }
 
@@ -404,7 +410,7 @@ Class::Inspector - Get information about a class and its structure
 
 =head1 VERSION
 
-version 1.32
+version 1.36
 
 =head1 SYNOPSIS
 
@@ -432,7 +438,7 @@ version 1.32
 Class::Inspector allows you to get information about a loaded class. Most or
 all of this information can be found in other ways, but they aren't always
 very friendly, and usually involve a relatively high level of Perl wizardry,
-or strange and unusual looking code. Class::Inspector attempts to provide 
+or strange and unusual looking code. Class::Inspector attempts to provide
 an easier, more friendly interface to this information.
 
 =head1 METHODS
@@ -572,7 +578,7 @@ order.
 =item public
 
 The C<public> option will return only 'public' methods, as defined by the Perl
-convention of prepending an underscore to any 'private' methods. The C<public> 
+convention of prepending an underscore to any 'private' methods. The C<public>
 option will effectively remove any methods that start with an underscore.
 
 =item private
@@ -593,12 +599,12 @@ C<[ 'Class::method1', 'AnotherClass::method2', 'Class::method3' ]>.
 
 =item expanded
 
-The C<expanded> option will cause a lot more information about method to be 
+The C<expanded> option will cause a lot more information about method to be
 returned. Instead of just the method name, you will instead get an array
 reference containing the method name as a single combined name, a la C<full>,
 the separate class and method, and a CODE ref to the actual function ( if
-available ). Please note that the function reference is not guaranteed to 
-be available. C<Class::Inspector> is intended at some later time, to work 
+available ). Please note that the function reference is not guaranteed to
+be available. C<Class::Inspector> is intended at some later time, to work
 with modules that have some kind of common run-time loader in place ( e.g
 C<Autoloader> or C<Class::Autouse> for example.
 
@@ -648,7 +654,7 @@ Kivanc Yazan (KYZN)
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2016 by Adam Kennedy.
+This software is copyright (c) 2002-2019 by Adam Kennedy.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

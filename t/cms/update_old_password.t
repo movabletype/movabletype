@@ -15,6 +15,7 @@ BEGIN {
 use MT::Test;
 use MT::Test::App;
 use MT::Util;
+use MT::Util::Log;
 use utf8;
 use Encode;
 
@@ -44,16 +45,25 @@ sub _test_password {
     my ($pass, $prev_pass) = @_;
     note "PREV_PASS: $prev_pass";
 
+    my $log_class = MT->model('log');
+
     for my $ct (0, 1) {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->get_ok({});
+        like $app->header_title => qr/Sign in/, "sign in";
+        $log_class->remove;
         $app->post_form_ok({
             username => $author->name,
             password => encode_utf8($pass),
         });
+        my $logfile = MT::Util::Log->_get_logfile_path;
+        ok -f $logfile, "logfile ($logfile) exists";
         my $log = $test_env->slurp_logfile;
         like $log               => qr/logged in successfully/, "logged in successfully ($ct)";
         like $app->header_title => qr/Dashboard/,              "dashboard ($ct)";
+
+        my @objs = MT::Log->load({class => '*'});
+        ok grep({$_->message => qr/logged in successfully/} @objs), "has a log object";
 
         $test_env->remove_logfile;
         $test_env->clear_mt_cache;

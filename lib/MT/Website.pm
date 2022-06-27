@@ -230,6 +230,33 @@ sub add_blog {
     }
 }
 
+sub system_filters {
+    my %filters;
+    my @filters_to_sort;
+    my $order = 0;
+
+    $filters{parent_site_only} = {
+        label => 'Show only Parent Site',
+        items => [{
+                type => 'parent_website',
+                args => { value => 1, }
+            },
+        ],
+        order => 100,
+    };
+    $filters{child_site_only} = {
+        label => 'Show only Child Site',
+        items => [{
+                type => 'parent_website',
+                args => { value => 0, }
+            },
+        ],
+        order => 200,
+    };
+
+    return \%filters;
+}
+
 1;
 __END__
 
