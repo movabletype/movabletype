@@ -8,6 +8,12 @@
 require_once('adodb-exceptions.inc.php');
 require_once('adodb.inc.php');
 if (!defined('ADODB_ASSOC_CASE')) define('ADODB_ASSOC_CASE', ADODB_ASSOC_CASE_LOWER);
+
+# XXX Test Oracle
+# XXX See how ADODB interface fixed at https://github.com/ADOdb/ADOdb/issues/721
+global $ADODB_QUOTE_FIELDNAMES;
+$ADODB_QUOTE_FIELDNAMES = 'LOWER';
+
 require_once('adodb-active-record.inc.php');
 
 abstract class MTDatabase {
