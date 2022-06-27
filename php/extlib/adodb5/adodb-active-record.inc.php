@@ -1161,7 +1161,6 @@ global $_ADODB_ACTIVE_DBS;
 		$qry .= ' WHERE '.$whereOrderBy;
 	}
 	if(isset($extra['limit'])) {
-		$rows = false;
 		if(isset($extra['offset'])) {
 			$rs = $db->SelectLimit($qry, $extra['limit'], $extra['offset'],$bindarr);
 		} else {
@@ -1180,7 +1179,7 @@ global $_ADODB_ACTIVE_DBS;
 
 	$false = false;
 
-	if ($rows === false) {
+	if (!isset($rows) || !is_array($rows)) {
 		return $false;
 	}
 
