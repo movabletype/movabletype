@@ -175,6 +175,10 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v4::CategorySet::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::CategorySet::updatable_fields',
             },
+            {   version          => 5,
+                fields           => "${pkg}v5::CategorySet::fields",
+                updatable_fields => "${pkg}v5::CategorySet::updatable_fields",
+            },
         ],
         'content_type' => [{
                 version          => 4,
