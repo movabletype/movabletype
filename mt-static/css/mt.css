@@ -11922,4 +11922,13 @@ ul.asset-list li img.list-image {
   background-color: #666666;
   border-radius: 3px;
 }
+
+.panel-description .view-site-link {
+  float: right;
+  margin: 4px 2px 0 4px;
+}
+
+.panel-description .view-site-link img {
+  background-image: url(../images/status_icons/view.gif);
+}
 /*# sourceMappingURL=mt.css.map */

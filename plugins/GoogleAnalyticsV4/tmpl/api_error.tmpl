@@ -1,0 +1,32 @@
+<mt:setvarblock name="page_title"><__trans phrase="API error" /></mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+
+<mtapp:statusmsg
+   id="generic-error"
+   class="error"
+   can_close="0">
+  <mt:var name="error">
+</mtapp:statusmsg>
+
+<div class="actions-bar">
+  <button
+     type="submit"
+     accesskey="x"
+     class="action button mt-close-dialog"
+     title="<__trans phrase="Close (x)">">
+    <__trans phrase="Close">
+  </button>
+</div>
+
+<script type="text/javascript">
+jQuery(function($) {
+    var $p = parent.jQuery;
+<mt:If name="retry">
+    $p($p.find('#ga4_configured_client_id')).val('');
+    $p($p.find('#ga4_configured_client_secret')).val('');
+    $p($p.find('#ga4_select_profile')).trigger('click');
+    $p.fn.mtDialog.close();
+</mt:If>
+});
+</script>
+<mt:include name="dialog/footer.tmpl">

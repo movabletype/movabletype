@@ -1,0 +1,169 @@
+<mtapp:settinggroup id="google-analytics-settings">
+<legend class="h3"><__trans phrase="Google Analytics 4"></legend>
+
+<mt:If name="missing_modules">
+<p><mt:Var name="missing_modules" /></p>
+<mt:Else>
+
+<div id="ga4_use-parent-client" style="<mt:Unless name="parent_client">display: none</mt:Unless>">
+<mtapp:setting
+   id="ga4_setup_own_client_id"
+   label="<__trans phrase="OAuth2 settings">">
+<__trans phrase="This [_2] is using the settings of [_1]." params="<mt:If name="has_parent_client_permission"><a href="<mt:Var name="mt_url">?__mode=cfg_web_services&amp;_type=blog<mt:If name="parent_client_blog_id">&amp;blog_id=<mt:Var name="parent_client_blog_id" /></mt:If>"></mt:If><mt:If name="parent_client_blog_id"><mt:Var name="parent_client_blog_name" /><mt:Else><__trans phrase="System" /></mt:If><mt:If name="has_parent_client_permission"></a></mt:If>%%<mt:var name="scope_label" escape="html">" />
+<a href="#" id="ga4_setup_own_client_id" class="button"><__trans phrase="Other Google account" /></a>
+<input type="hidden" id="ga4_parent_client_id" value="<mt:Var name="parent_client_id" encode_html="1" />" />
+</mtapp:setting>
+</div>
+
+<div id="ga4_use-own-client" style="<mt:If name="parent_client">display: none</mt:If>">
+<mt:SetVarBlock name="hint"><__trans phrase="Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> before selecting profile." /></mt:SetVarBlock>
+<mtapp:setting
+   id="ga4_redirect_uri"
+   label="<__trans phrase="Redirect URI of the OAuth2 application">"
+   hint="$hint"
+   show_hint="1">
+  <div>
+    <span id="ga4_redirect_uri_text"></span>
+    <input type="hidden" id="ga4_redirect_uri" value="<mt:Var name="redirect_uri" encode_html="1" />" />
+  </div>
+</mtapp:setting>
+
+<mtapp:setting
+   id="ga4_client_id"
+   label="<__trans phrase="Client ID of the OAuth2 application">"
+   label_for="ga4_client_id">
+    <input type="text" id="ga4_client_id" class="form-control" name="ga4_client_id" value="<mt:Var name="ga4_client_id" encode_html="1" />" />
+</mtapp:setting>
+
+<mtapp:setting
+   id="ga4_client_secret"
+   label="<__trans phrase="Client secret of the OAuth2 application">"
+   label_for="ga4_client_secret">
+    <input type="text" id="ga4_client_secret" class="form-control" name="ga4_client_secret" value="<mt:Var name="ga4_client_secret" encode_html="1" />" />
+</mtapp:setting>
+</div>
+
+<mtapp:setting
+   id="ga4_profile"
+   label="<__trans phrase="Google Analytics profile">">
+    <span id="ga4_profile" class="items"></span>
+<input type="hidden" id="ga4_profile_id" name="ga4_profile_id" value="<mt:Var name="ga4_profile_id" encode_html="1" />" />
+<button id="ga4_select_profile" class="button btn btn-default">
+  <__trans phrase="Select Google Analytics profile" />
+</button>
+</mtapp:setting>
+
+
+<input type="hidden" id="ga4_dialog_url" value="<mt:Var name="dialog_url" encode_html="1" />" />
+<input type="hidden" id="ga4_configured_client_id" value="<mt:Var name="configured_client_id" encode_html="1" />" />
+<input type="hidden" id="ga4_configured_client_secret" value="<mt:Var name="configured_client_secret" encode_html="1" />" />
+<input type="hidden" id="ga4_profile_name" name="ga4_profile_name" value="<mt:Var name="ga4_profile_name" encode_html="1" />" />
+<input type="hidden" id="ga4_profile_web_property_id" name="ga4_profile_web_property_id" value="<mt:Var name="ga4_profile_web_property_id" encode_html="1" />" />
+<input type="hidden" id="ga4_measurement_id" name="ga4_measurement_id" value="<mt:Var name="ga4_measurement_id" />" />
+<input type="hidden" id="ga4_parent_profile_name" value="<mt:Var name="parent_profile_name" />" />
+<input type="hidden" id="ga4_parent_profile_web_property_id" value="<mt:Var name="parent_profile_web_property_id" />" />
+<script type="text/javascript">
+jQuery(function($) {
+    var redirectUri = $('#ga4_redirect_uri').val();
+    if (! redirectUri.match(/^https?:\/\//)) {
+        redirectUri =
+            redirectUri.replace(/^\/?/, location.protocol + '//' + location.host + '/');
+        $('#ga4_redirect_uri').val(redirectUri);
+        $('#ga4_redirect_uri_text').text(redirectUri);
+    }
+
+
+    function updateProfile() {
+        var $profile     = $('#ga4_profile');
+        var $name        = $('#ga4_profile_name');
+        var $parent_name = $('#ga4_parent_profile_name');
+
+        $profile.empty();
+        if ($name.val() == '') {
+            if ($parent_name.val()) {
+                $profile.text(
+                    $parent_name.val() + ' (' + $('#ga4_parent_profile_web_property_id').val() + ')'
+                );
+            }
+            else {
+                $profile.text('<__trans phrase="(No profile selected)" encode_js="1">');
+            }
+        }
+        else {
+            var $label = $('<span class="sticky-label selected-item" />');
+            $label.append($('<span />').text(
+                $name.val() + ' (' + $('#ga4_profile_web_property_id').val() + ')'
+            ));
+            $label.append('&nbsp;<span class="remove clickable">x</span></span>');
+            $label.find('span.remove').on('click', function() {
+                $('#ga4_profile_name, #ga4_profile_web_property_id, #ga4_profile_id')
+                    .val('');
+                updateProfile();
+            });
+            $profile.append($label);
+        }
+    }
+    updateProfile();
+    $(window).on('dialogDisposed', updateProfile);
+
+
+    $('#ga4_client_id, #ga4_client_secret')
+        .on('input click keyup change', function() {
+            if (
+                ($('#ga4_client_id').val() && $('#ga4_client_secret').val()) ||
+                ($('#ga4_use-parent-client:visible').length === 1)
+            ) {
+                $('#ga4_select_profile').prop('disabled', false);
+            }
+            else {
+                $('#ga4_select_profile').attr('disabled', 'disabled');
+            }
+        })
+        .triggerHandler('input');
+
+    $('#ga4_select_profile').on('click', function() {
+        var clientId     = $('#ga4_client_id').val() || $('#ga4_parent_client_id').val();
+
+        if (! clientId) {
+            return false;
+        }
+
+        var url = '<mt:Var name="authorize_url" encode_js="1" />'
+            .replace('__client_id__', clientId)
+            .replace('__redirect_uri__', redirectUri);
+        window.open(
+            url, 'google_analytics_authorize',
+            'width=700, height=500, menubar=no, toolbar=no, scrollbars=yes'
+        );
+
+        return false;
+    });
+
+    $($('#ga4_client_id').get(0).form).on('submit', function() {
+        var clientId     = $('#ga4_client_id').val();
+        var clientSecret = $('#ga4_client_secret').val();
+        if (
+            (clientId && clientId !== $('#ga4_configured_client_id').val()) ||
+            (clientSecret && clientSecret !== $('#ga4_configured_client_secret').val())
+        ) {
+            return window.confirm('<__trans phrase="Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?" escape="js">');
+        }
+    });
+
+    $('#ga4_setup_own_client_id').on('click', function() {
+        $('#ga4_use-parent-client').hide();
+        $('#ga4_use-own-client').show();
+        $(
+            '#ga4_parent_client_id,' +
+            '#ga4_profile_name, #ga4_profile_web_property_id, #ga4_profile_id,' +
+            '#ga4_parent_profile_name, #ga4_parent_profile_web_property_id'
+        ).val('');
+        updateProfile();
+        $('#ga4_client_id').triggerHandler('input');
+        return false;
+    });
+});
+</script>
+
+</mt:If>
+</mtapp:settinggroup>
