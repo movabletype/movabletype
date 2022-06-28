@@ -181,10 +181,6 @@ sub test_data_api {
             }
         }
 
-        # Since ContentPublisher avoids rewriting files with mtime >= start_time, we should make sure the existing 
-        # files created by ->prepare_fixture or previous tests are old enough for publish tests.
-        sleep 1 if (split(qr{/}, $path))[2] eq 'publish';
-
         %callbacks = ();
         _run_app(
             'MT::App::DataAPI',
