@@ -1670,6 +1670,7 @@ fieldset.form-group{
 .modal-description{
   @extend .d-flex, .justify-content-between;
   padding: 1rem 1rem 0 1rem;
+
 }
 .modal-label{
   margin: 0;
@@ -1719,6 +1720,7 @@ fieldset.form-group{
   text-decoration: underline;
   vertical-align: middle;
 }
+
 
 /* Alert */
 .alert{
@@ -2052,4 +2054,14 @@ ul.asset-list li img.list-image {
 .custom-control .custom-control-label input[type=text] {
   padding-top: 0;
   padding-bottom: 0;
+}
+
+.panel-description {
+  .view-site-link {
+    float: right;
+    margin: 4px 2px 0 4px;
+    img {
+      background-image: url(../images/status_icons/view.gif);
+    }
+  }
 }

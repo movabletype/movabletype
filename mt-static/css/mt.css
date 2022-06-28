@@ -11927,4 +11927,13 @@ ul.asset-list li img.list-image {
   padding-top: 0;
   padding-bottom: 0;
 }
+
+.panel-description .view-site-link {
+  float: right;
+  margin: 4px 2px 0 4px;
+}
+
+.panel-description .view-site-link img {
+  background-image: url(../images/status_icons/view.gif);
+}
 /*# sourceMappingURL=mt.css.map */

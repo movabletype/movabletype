@@ -309,10 +309,10 @@ sub load_core_l10n {
 
 sub find_phrases {
     my ($self, $name) = @_;
-    $name .= ".pack" if $self->is_addons;
 
     my @dirs;
     if ($self->has_l10n($name)) {
+        $name .= '.pack' if $self->is_addons;
         @dirs = (
             $self->extra_path($name),
             $self->extra_static_path($name),
