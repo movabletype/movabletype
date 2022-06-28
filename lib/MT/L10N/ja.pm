@@ -3200,6 +3200,7 @@ use vars qw( @ISA %Lexicon );
 	'200 rows' => '200件',
 	'25 rows' => '25件',
 	'50 rows' => '50件',
+	'10 rows' => '10件',
 	'Show' => '表示件数',
 
 ## mt-static/js/listing/tag/display-options.tag

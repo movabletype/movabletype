@@ -61,6 +61,7 @@
       value={ store.limit }
       onchange={ changeLimit }
     >
+      <option value="10">{ trans('10 rows') }</option>
       <option value="25">{ trans('25 rows') }</option>
       <option value="50">{ trans('50 rows') }</option>
       <option value="100">{ trans('100 rows') }</option>

@@ -3165,6 +3165,7 @@ use vars qw( @ISA %Lexicon );
 	'200 rows' => '200 lignes',
 	'25 rows' => '25 lignes',
 	'50 rows' => '50 lignes',
+	'10 rows' => '10 lignes',
 	'Show' => 'Afficher',
 
 ## mt-static/js/listing/tag/display-options.tag
