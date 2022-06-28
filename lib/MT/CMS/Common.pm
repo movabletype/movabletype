@@ -989,6 +989,17 @@ sub edit {
     return $app->load_tmpl( $tmpl_file, \%param );
 }
 
+sub _availableRowsOption {
+    my ($given, @options) = @_;
+    $given ||= 0;
+    my $closest = shift @options;
+    for my $cur (@options) {
+        last if abs($cur - $given) > abs($closest - $given);
+        $closest = $cur;
+    }
+    $closest;
+}
+
 sub list {
     my $app     = shift;
     my $type    = $app->param('_type');
@@ -1089,7 +1100,7 @@ sub list {
 
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{ $type . $subtype }{$blog_id} || {};
-    my $rows        = $list_pref->{rows}        || 50;    ## FIXME: Hardcoded
+    my $rows        = $list_pref->{rows}        || MT->config->DefaultListRowsOption;
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $last_items         = $list_pref->{last_items} || [];
@@ -1097,7 +1108,7 @@ sub list {
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
     }
-    $param{ 'limit_' . $rows } = 1;
+    $param{'rows'} = _availableRowsOption($rows, (25, 50, 100, 200));
 
     require MT::ListProperty;
     my $obj_type   = $screen_settings->{object_type} || $type;
@@ -1597,7 +1608,7 @@ sub filtered_list {
             blog_id   => $blog_id || 0,
         }
     );
-    my $limit = $app->param('limit') || 50;    # FIXME: hard coded.
+    my $limit = $app->param('limit') || MT->config->DefaultListRowsOption;
     my $page  = $app->param('page');
     $page = 1 if !$page || $page =~ /\D/;
     my $offset = ( $page - 1 ) * $limit;
@@ -1816,7 +1827,7 @@ sub save_list_prefs {
         = !$blog         ? 'system'
         : $blog->is_blog ? 'blog'
         :                  'website';
-    my $limit      = $app->param('limit')   || 50;    # FIXME: hard coded.
+    my $limit      = $app->param('limit')   || MT->config->DefaultListRowsOption;
     my $cols       = $app->param('columns') || '';
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};

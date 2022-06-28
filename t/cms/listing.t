@@ -22,6 +22,18 @@ $test_env->prepare_fixture('db');
 
 MT::Test::Permission->make_website(name => 'my website & <test1>', description => 'my website & <test2>');
 
+subtest '_availableRowsOption' => sub {
+    require MT::CMS::Common;
+    is(10, MT::CMS::Common::_availableRowsOption(10, 10, 20, 30), 'right option');
+    is(20, MT::CMS::Common::_availableRowsOption(20, 10, 20, 30), 'right option');
+    is(30, MT::CMS::Common::_availableRowsOption(30, 10, 20, 30), 'right option');
+    is(10, MT::CMS::Common::_availableRowsOption(11, 10, 20, 30), 'right option');
+    is(20, MT::CMS::Common::_availableRowsOption(19, 10, 20, 30), 'right option');
+    is(30, MT::CMS::Common::_availableRowsOption(29, 10, 20, 30), 'right option');
+    is(30, MT::CMS::Common::_availableRowsOption(31, 10, 20, 30), 'right option');
+    is(10, MT::CMS::Common::_availableRowsOption(undef, 10, 20, 30), 'right option');
+};
+
 subtest 'move site modal initial' => sub {
     my $app = MT::Test::App->new;
     $app->login(MT::Author->load(1));
