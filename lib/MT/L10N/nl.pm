@@ -3162,7 +3162,7 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
 	'100 rows' => '100 rijen',
-	'200 rows' => '2000 rijen',
+	'200 rows' => '200 rijen',
 	'25 rows' => '25 rijen',
 	'50 rows' => '50 rijen',
 	'Show' => 'Tonen',
