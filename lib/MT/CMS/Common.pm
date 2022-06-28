@@ -1108,7 +1108,9 @@ sub list {
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
     }
-    $param{'rows'} = _availableRowsOption($rows, (10, 25, 50, 100, 200));
+    my @rowsOptions = (10, 25, 50, 100, 200);
+    $param{'rowsOptions'} = join(',', @rowsOptions);
+    $param{'rows'}        = _availableRowsOption($rows, @rowsOptions);
 
     require MT::ListProperty;
     my $obj_type   = $screen_settings->{object_type} || $type;

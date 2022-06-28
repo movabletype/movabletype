@@ -7,6 +7,7 @@
     this.columns = args.columns;
     this.showColumns = [];
     this.limit = args.limit;
+    this.rowsOptions = args.rowsOptions;
     this.page = args.page || this.DefaultPage;
     this.sortBy = args.sortBy;
     this.sortOrder = args.sortOrder;
