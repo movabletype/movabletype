@@ -27,6 +27,11 @@ $author->email('melody@example.com');
 $author->save;
 
 my $blog = $app->model('blog')->load(1);
+
+# Since MT::WeblogPublisher avoids rewriting files with mtime >= start_time, we should make sure the existing 
+# files created by ->prepare_fixture are old enough for publish tests.
+sleep 1;
+
 my $start_time
     = MT::Util::ts2iso( $blog, MT::Util::epoch2ts( $blog, time() ), 1 );
 
