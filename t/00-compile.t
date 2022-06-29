@@ -592,6 +592,8 @@ use_ok('MT::DataAPI::Resource::v3::Blog');
 use_ok('MT::DataAPI::Resource::v3::Website');
 use_ok('MT::DataAPI::Resource::v3::User');
 
+use_ok('MT::DataAPI::Endpoint::v5');
+
 use_ok('MT::App::Search::Common');
 
 SKIP: {
