@@ -56,6 +56,7 @@ sub driver_for_class {
                 ( $Password ? ( password => $Password ) : () ),
             );
             push @drivers, $driver;
+            $driver->configure;
             return $driver;
         },
         $class

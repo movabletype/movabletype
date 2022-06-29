@@ -1000,7 +1000,6 @@ sub init_config_from_db {
     require MT::ObjectDriverFactory;
     if ( MT->config('ObjectDriver') ) {
         my $driver = MT::ObjectDriverFactory->instance;
-        $driver->configure if $driver;
     }
     else {
         MT::ObjectDriverFactory->configure();
