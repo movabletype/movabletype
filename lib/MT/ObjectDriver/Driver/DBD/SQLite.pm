@@ -110,12 +110,16 @@ my $orig_load_iter;
 sub configure {
     my $dbd = shift;
     my ($driver) = @_;
-    no warnings 'redefine';
-    *MT::ObjectDriver::Driver::DBI::count = \&count;
-    eval "use DBD::SQLite 1.14;";
-    if ($@) {
-        $orig_load_iter        = \&MT::Object::load_iter;
-        *MT::Object::load_iter = \&_load_iter;
+    unless ($orig_load_iter) {
+        no warnings 'redefine';
+        *MT::ObjectDriver::Driver::DBI::count = \&count;
+        eval "use DBD::SQLite 1.14;";
+        if ($@) {
+            $orig_load_iter        = \&MT::Object::load_iter;
+            *MT::Object::load_iter = \&_load_iter;
+        } else {
+            $orig_load_iter = 1;
+        }
     }
     $dbd;
 }
