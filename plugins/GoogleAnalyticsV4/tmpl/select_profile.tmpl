@@ -16,18 +16,23 @@ jQuery(function($) {
         var $radio = $('input[name="profile-cb"]:checked');
         if ($radio.length) {
             var $tr = $radio.closest('tr');
-            $p($p.find('#ga_profile_name')).val(
+            $p($p.find('#ga4_profile_name')).val(
                 $tr.find('.panel-label').text().trim()
             );
-            $p($p.find('#ga_profile_web_property_id')).val(
-                $tr.find('.panel-description').text().trim()
+            var description = $tr.find('.panel-description').text().trim();
+            var profile_data = description.split('|');
+            $p($p.find('#ga4_profile_web_property_id')).val(
+                profile_data[0].trim()
             );
-            $p($p.find('#ga_profile_id')).val($radio.val());
+            $p($p.find('#ga4_measurement_id')).val(
+                profile_data[1].trim()
+            );
+            $p($p.find('#ga4_profile_id')).val($radio.val());
 
-            $p($p.find('#ga_configured_client_id'))
-                .val($p($p.find('#ga_client_id')).val());
-            $p($p.find('#ga_configured_client_secret'))
-                .val($p($p.find('#ga_client_secret')).val());
+            $p($p.find('#ga4_configured_client_id'))
+                .val($p($p.find('#ga4_client_id')).val());
+            $p($p.find('#ga4_configured_client_secret'))
+                .val($p($p.find('#ga4_client_secret')).val());
         }
         window.location.href = '<mt:Var name="complete_url" encode_js="1" />';
     });

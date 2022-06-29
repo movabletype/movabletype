@@ -689,10 +689,12 @@ sub cfg_web_services {
                   ref $tmpl eq 'CODE' ? $tmpl->( $plugin, @_ )
                 : $plugin             ? $plugin->load_tmpl($tmpl)
                 :                       $app->load_tmpl($tmpl)
-            )
+            ),
+            order => ($web_services->{$k}{order} || 999),
+            key => $k
             };
     }
-
+    @config_templates = sort { $a->{order} <=> $b->{order} || $a->{key} cmp $b->{key} } @config_templates;
     $app->param( '_type', $app->blog ? $app->blog->class : 'blog' );
     $app->param( 'id', $blog_id );
     $app->forward(
