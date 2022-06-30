@@ -3161,10 +3161,7 @@ use vars qw( @ISA %Lexicon );
 	q{Are you sure you want to remove filter '[_1]'?} => q{Filter '[_1]' wirklich entfernen?},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
-	'100 rows' => '100 Zeilen',
-	'200 rows' => '200 Zeilen',
-	'25 rows' => '25 Zeilen',
-	'50 rows' => '50 Zeilen',
+	'[_1] rows' => '[_1] Zeilen',
 	'Show' => 'Anzeigen',
 
 ## mt-static/js/listing/tag/display-options.tag

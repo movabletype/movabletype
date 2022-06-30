@@ -1097,7 +1097,7 @@ sub list {
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
     }
-    my @limit_options = (25, 50, 100, 200);
+    my @limit_options = (10, 25, 50, 100, 200);
     if (grep { $_ == $limit } @limit_options) {
         $param{'limit'} = $limit;
     } else {
