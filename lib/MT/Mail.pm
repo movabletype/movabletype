@@ -21,6 +21,10 @@ my %SMTPModules = (
     SSLorTLS => [ 'IO::Socket::SSL', 'Net::SSLeay' ],
 );
 
+my %Sent;
+
+sub sent { \%Sent }
+
 sub send {
     my $class = shift;
     my ( $hdrs_arg, $body ) = @_;
@@ -37,6 +41,7 @@ sub send {
             $hdrs{$h} =~ y/\n\r/  / unless ( ref( $hdrs{$h} ) );
         }
     }
+    %Sent = (subject => $hdrs{Subject});
 
     my $mgr  = MT->config;
     my $xfer = $mgr->MailTransfer;
@@ -402,6 +407,7 @@ sub _render_headers {
             $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" unless $hide_bcc && $h eq 'Bcc';
         }
     }
+    $Sent{recipients} = [@recipients];
     return wantarray ? ($hdr, @recipients) : $hdr;
 }
 

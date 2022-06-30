@@ -92,6 +92,10 @@ is( format_ts( '%x', $ts ), 'September  8, 1977' );
 is( format_ts( '%X', $ts ), ' 3:30 PM' );
 is( format_ts( '%y', $ts ), '77' );
 is( format_ts( '%Y', $ts ), '1977' );
+{
+    local $SIG{__WARN__} = sub { fail 'format_ts warning: ' . shift; };
+    is( format_ts( '%Y', {} ), '' );
+}
 
 is( encode_html('<foo>'), '&lt;foo&gt;' );
 is( encode_html('&gt;'),  '&gt;' );

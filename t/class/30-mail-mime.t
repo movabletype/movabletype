@@ -17,17 +17,125 @@ BEGIN {
 }
 
 use MT::Test;
+use MT::Test::Image;
 use MT;
 use MT::Util::Mail;
 use MIME::Base64;
 use MIME::QuotedPrint;
 use MIME::EncWords;
 use Encode;
+use File::Basename;
 
 my $mt = MT->new() or die MT->errstr;
 $mt->config('MailTransfer', 'debug');
 
 isa_ok($mt, 'MT');
+
+subtest 'send_and_log' => sub {
+    $MT::Util::Mail::Module = 'MT::Mail::MIME::Lite';
+    eval { require Test::MockModule } or plan skip_all => 'Test::MockModule is not installed';
+    my $mock = Test::MockModule->new('MT::Mail::MIME::Lite');
+    my %sent;
+    $mock->mock('sent', sub { \%sent });
+
+    my @log;
+    no warnings 'redefine';
+    local *MT::log = sub { unshift @log, $_[1] };
+
+    subtest 'success' => sub {
+        @log = ();
+        $mock->mock('send', sub { 1 });
+        $mt->config('MailLogAlways', 1);
+        MT::Util::Mail->send_and_log();
+        is($log[0]->{message}, MT->translate('Mail was sent successfully'), 'right message');
+        is(@log,               1,                                           'right number of logs');
+
+        @log = ();
+        $mock->mock('send', sub { %sent = (subject => '0'); 1 });
+        MT::Util::Mail->send_and_log();
+        is($log[0]->{metadata}, q{Subject: 0}, 'right metadata');
+        is(@log,                1,             'right number of logs');
+
+        @log = ();
+        $mock->mock('send', sub { %sent = (subject => ''); 1 });
+        MT::Util::Mail->send_and_log();
+        is($log[0]->{metadata}, q{Subject: }, 'right metadata');
+        is(@log,                1,            'right number of logs');
+
+        @log = ();
+        $mock->mock('send', sub { %sent = (); 1 });
+        MT::Util::Mail->send_and_log();
+        ok(!exists $log[0]->{metadata}, 'metadata ommited');
+        is(@log, 1, 'right number of logs');
+
+        @log = ();
+        $mt->config('MailLogAlways', 0);
+        MT::Util::Mail->send_and_log();
+        is(@log, 0, 'right number of logs');
+    };
+
+    subtest 'fail' => sub {
+        @log = ();
+        $mock->mock(
+            'send',
+            sub {
+                %sent = (subject => 'Warning', recipients => ['to1', 'to2']);
+                return $_[0]->error('fail message');
+            });
+        MT::Util::Mail->send_and_log();
+        is($log[0]->{message},  "Error sending mail: fail message\n",    'right message');
+        is($log[0]->{metadata}, "Subject: Warning\nRecipient: to1, to2", 'right metadata');
+        is(@log,                1,                                       'right number of logs');
+
+        @log = ();
+        $mock->mock(
+            'send',
+            sub {
+                %sent = (subject => '');
+                return $_[0]->error('fail message');
+            });
+        MT::Util::Mail->send_and_log();
+        is($log[0]->{metadata}, q{Subject: }, 'right metadata');
+        is(@log,                1,            'right number of logs');
+    };
+
+    subtest 'make sure %sent is initialized' => sub {
+        $mt->config('MailTransfer', 'unknown');
+
+        # send with subject
+        MT::Mail::MIME->send({ Subject => 'hello' }, 'a');
+        is(MT::Mail::MIME->sent->{subject}, 'hello', 'subject is set');
+
+        # send without subject
+        MT::Mail::MIME->send({}, 'a');
+        ok(!exists(MT::Mail::MIME->sent->{subject}), 'previous subject is deleted');
+
+        $mt->config('MailTransfer', 'debug');
+    };
+
+    # It seems to be needed for perl-5.10.1 to unmock send method when closure refers to %sent.
+    undef $mock;
+};
+
+subtest '_encword' => sub {
+    eval { require Email::MIME::Encode }
+        or plan skip_all => 'Email::MIME is not installed';
+
+    my $email_mime_would_do = sub {
+        my ($val, $charset) = @_;
+        return $val unless (Email::MIME::Encode::_needs_mime_encode($val));
+        return Email::MIME::Encode::mime_encode($val, $charset);
+    };
+
+    for my $charset ('iso-8859-1', 'utf-8', 'iso-2022-jp') {
+        for my $val ('a', 'あ', 'aあ', 'a=?=.png') {
+            is(
+                MT::Mail::MIME::_encword($val, $charset),
+                $email_mime_would_do->($val, $charset), 'same as Email::MIME'
+            );
+        }
+    }
+};
 
 subtest 'fix_xfer_enc' => sub {
     my $mail_module = MT::Util::Mail::find_module('Email::MIME');
@@ -114,7 +222,8 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 },
                 {
                     input           => $body_long . 'あ',
-                    expected_header => { 'Content-Transfer-Encoding' => 'base64' },
+                    header          => { Subject => "い" },
+                    expected_header => { 'Content-Transfer-Encoding' => 'base64', Subject => expected_regex('い') },
                 },
                 {
                     input           => $body_short,
@@ -177,7 +286,206 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 }
             }
         };
+
+        for my $setting (['ISO-2022-JP', '8bit'], ['UTF-8', 'quoted-printable']) {
+            my ($mailenc, $xfer_enc) = @$setting;
+            $mt->config->set('MailEncoding',         $mailenc);
+            $mt->config->set('MailTransferEncoding', $xfer_enc);
+            my $charsetl = lc($mailenc);
+            my $desc     = sprintf('MailEncoding=%s, MailTransferEncoding=%s', $mailenc, $xfer_enc);
+
+            subtest 'attach files with ' . $desc => sub {
+                my (undef, $file1) = MT::Test::Image->tempfile(DIR => $test_env->root, SUFFIX => '.gif');
+                my (undef, $file2) = MT::Test::Image->tempfile(DIR => $test_env->root, SUFFIX => '.png');
+
+                subtest 'prepare_parts' => sub {
+                    my $parts = MT::Mail::MIME->prepare_parts([
+                            { name => 'foo.unknown', 'path' => $file1 },
+                        ],
+                        $mailenc
+                    );
+                    is($parts->[0]->[1], 'application/octet-stream', 'right type');
+                };
+
+                subtest 'simple' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => ['日本語', { path => $file1 }, { path => $file2 }],
+                    );
+                    my $exp_name1 = File::Basename::basename($file1);
+                    my $exp_name2 = File::Basename::basename($file2);
+
+                    is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
+                    like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                'right header');
+                    like($ret->[1]->{header}->{'Content-Type'},              qr{text/plain},            'right header');
+                    like($ret->[1]->{header}->{'Content-Type'},              qr{charset="?$charsetl"?}, 'right header');
+                    unlike($ret->[1]->{header}->{'Content-Type'}, qr{name=}, 'right header');
+                    like($ret->[1]->{body},                                  qr{日本語},                     'right body');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},              'right header');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?$exp_name1"?}, 'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{image/gif},               'right header');
+                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                  'right header');
+                    like($ret->[2]->{body},                                  qr{R0lGODlhk},               'right body');
+                    like($ret->[3]->{header}->{'Content-Disposition'},       qr{attachment},              'right header');
+                    like($ret->[3]->{header}->{'Content-Disposition'},       qr{filename="?$exp_name2"?}, 'right header');
+                    like($ret->[3]->{header}->{'Content-Type'},              qr{image/png},               'right header');
+                    like($ret->[3]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                  'right header');
+                    like($ret->[3]->{body},                                  qr{iVBORw0KG},               'right body');
+                    is(scalar @$ret, 4, 'right number of mime parts');
+                };
+
+                subtest 'name and type specified' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => ['日本語', { path => $file1, name => 'my_file.gif', type => 'image/mygif' }],
+                    );
+                    is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
+                    like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
+                    like($ret->[1]->{body},                                  qr{日本語},                       'right body');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?my_file\.gif"?}, 'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{image/mygif},               'right header');
+                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
+                    like($ret->[2]->{body},                                  qr{R0lGODlhk},                 'right body');
+                    is(scalar @$ret, 3, 'right number of mime parts');
+                };
+
+                subtest 'body given' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => ['日本語', { body => "ライン1\nライン2", name => 'my_file.log', type => 'text/plain' }],
+                    );
+
+                    is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
+                    like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
+                    like($ret->[1]->{body},                                  qr{日本語},                       'right body');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{attachment},                'right header');
+                    like($ret->[2]->{header}->{'Content-Disposition'},       qr{filename="?my_file\.log"?}, 'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{text/plain},                'right header');
+                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                    'right header');
+                    like($ret->[2]->{body},                                  qr{\Aライン1\nライン2\z},            'right body');
+                    is(scalar @$ret, 3, 'right number of mime parts');
+                };
+
+                subtest 'multiple part in scalar' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => ['パート1', 'パート2'],
+                    );
+
+                    is($ret->[0]->{header}->{To}, 'to@example.com', 'right header');
+                    like($ret->[0]->{header}->{'Content-Type'},        qr{multipart/mixed}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{inline},          'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                'right header');
+                    like($ret->[1]->{header}->{'Content-Type'},              qr{text/plain},            'right header');
+                    like($ret->[1]->{header}->{'Content-Type'},              qr{charset="?$charsetl"?}, 'right header');
+                    unlike($ret->[2]->{header}->{'Content-Type'}, qr{name=}, 'right header');
+                    like($ret->[1]->{body},                            qr{パート1},       'right body');
+                    like($ret->[2]->{header}->{'Content-Disposition'}, qr{attachment}, 'right header');
+                    unlike($ret->[2]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[2]->{header}->{'Content-Transfer-Encoding'}, qr{base64},                'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{text/plain},            'right header');
+                    like($ret->[2]->{header}->{'Content-Type'},              qr{charset="?$charsetl"?}, 'right header');
+                    unlike($ret->[2]->{header}->{'Content-Type'}, qr{name=}, 'right header');
+                    like($ret->[2]->{body}, qr{パート2}, 'right body');
+                    is(scalar @$ret, 3, 'right number of mime parts');
+                };
+
+                subtest 'part body without name' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => [{ body => "パート", type => 'text/plain' }],
+                    );
+
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{attachment}, 'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Type'}, qr{text/plain}, 'right header');
+                    unlike($ret->[1]->{header}->{'Content-Type'}, qr{name=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64}, 'right header');
+                    like($ret->[1]->{body},                                  qr{パート},    'right body');
+                    is(scalar @$ret, 2, 'right number of mime parts');
+                };
+
+                subtest 'falsy string body' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => [{ body => "0" }],
+                    );
+
+                    like($ret->[1]->{header}->{'Content-Disposition'}, qr{attachment}, 'right header');
+                    unlike($ret->[1]->{header}->{'Content-Disposition'}, qr{filename=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Type'}, qr{text/plain}, 'right header');
+                    unlike($ret->[1]->{header}->{'Content-Type'}, qr{name=}, 'right header');
+                    like($ret->[1]->{header}->{'Content-Transfer-Encoding'}, qr{base64}, 'right header');
+                    like($ret->[1]->{body},                                  qr{0},      'right body');
+                    is(scalar @$ret, 2, 'right number of mime parts');
+                };
+
+                subtest 'overwrite charset' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => [{ body => "あ", charset => 'iso-2022-jp' }],
+                    );
+
+                    like($ret->[1]->{header}->{'Content-Type'}, qr{text/plain},              'right header');
+                    like($ret->[1]->{header}->{'Content-Type'}, qr{charset="?iso-2022-jp"?}, 'right header');
+                    like($ret->[1]->{body},                     qr{あ},                       'right body');
+                    is(scalar @$ret, 2, 'right number of mime parts');
+                };
+
+                subtest 'non-ascii filename' => sub {
+                    my $ret = render_and_parse(
+                        header => { To => 'to@example.com' },
+                        body   => [{ body => "aaa", name => 'アクセス.log' }],
+                    );
+
+                    like($ret->[1]->{header}->{'Content-Type'},        qr{text/plain},             'right header');
+                    like($ret->[1]->{header}->{'Content-Disposition'}, expected_regex('アクセス.log'), 'right header');
+                    is(scalar @$ret, 2, 'right number of mime parts');
+                };
+            };
+        }
     };
+}
+
+sub render_and_parse {
+    my $module  = $MT::Util::Mail::Module;
+    my $encoded = $module->render(@_);
+    note $encoded;
+    my $boundary = ($encoded =~ qr{multipart/mixed;\s*boundary="?([^"\x0d\x0a]+)"?})[0];
+    my @parts    = split(/[\x0d\x0a]+--$boundary-*[\x0d\x0a]+/m, $encoded);
+    my $ret;
+    for my $part (@parts) {
+        my ($header, $body) = split(/\x0d\x0a\x0d\x0a/, $part, 2);
+        my %header_kv;
+        $header =~ s{\x0d\x0a\s}{}g;
+        for my $hl (split(/\x0d\x0a/, $header)) {
+            $hl =~ s{\x0d|\x0a}{}g;
+            my ($key, $value) = split(/: /, $hl);
+            $header_kv{$key} = $value;
+        }
+        if ($header_kv{'Content-Type'} =~ qr{text/}) {
+            my $cb = {
+                'base64'           => sub { MIME::Base64::decode_base64($_[0]) },
+                'quoted-printable' => sub { decode_qp($_[0]) },
+            }->{ $header_kv{'Content-Transfer-Encoding'} };
+            $body = $cb->($body) if $cb;
+            my $charset = ($header_kv{'Content-Type'} =~ qr{charset="?([^";]+)"?})[0];
+            $body = Encode::decode($charset, $body);
+        }
+        push @$ret, { header => \%header_kv, body => $body };
+    }
+    return $ret;
 }
 
 sub send_mail_suite {
@@ -213,7 +521,8 @@ sub send_mail_suite {
 
 sub expected_regex {
     my (@words) = @_;
-    my @regex   = map { quotemeta(MIME::EncWords::encode_mimeword(Encode::encode('utf8', $_), 'b', 'utf-8')) } @words;
+    my $charset = $mt->config('MailEncoding');
+    my @regex   = map { quotemeta(MIME::EncWords::encode_mimeword(Encode::encode($charset, $_), 'b', $charset)) } @words;
     my $join    = join('|', @regex);
     return qr{$join};
 }

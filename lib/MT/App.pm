@@ -2709,20 +2709,7 @@ sub _send_comment_notification {
         ) ? 1 : 0,
     );
     my $body = MT->build_email( 'new-comment.tmpl', \%param );
-    MT::Util::Mail->send( \%head, $body ) or do {
-        $app->log(
-            {   message => $app->translate(
-                    'Error sending mail: [_1]',
-                    MT::Util::Mail->errstr
-                ),
-                level    => MT::Log::ERROR(),
-                class    => 'system',
-                category => 'email'
-            }
-        );
-
-        return $app->error( MT::Util::Mail->errstr() );
-    };
+    MT::Util::Mail->send_and_log( \%head, $body ) or return $app->error( MT::Util::Mail->errstr() );
 }
 
 sub _send_sysadmins_email {
@@ -2771,19 +2758,7 @@ sub _send_sysadmins_email {
         );
         my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
         $head{'Content-Type'} = qq(text/plain; charset="$charset");
-        MT::Util::Mail->send( \%head, $body ) or do {
-            $app->log(
-                {   message => $app->translate(
-                        'Error sending mail: [_1]',
-                        MT::Util::Mail->errstr
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'email'
-                }
-            );
-            last;
-        };
+        MT::Util::Mail->send_and_log( \%head, $body ) or last;
     }
 }
 
@@ -3554,7 +3529,8 @@ sub takedown {
         for qw( cookies perms session trace response_content _blog
         WeblogPublisher init_request );
 
-    MT->clear_cache_of_loaded_models;
+    my $driver = $MT::Object::DRIVER;
+    $driver->clear_cache if $driver && $driver->can('clear_cache');
 
     require MT::Auth;
     MT::Auth->release;
@@ -4610,6 +4586,8 @@ sub DESTROY {
     ## a persistent environment, the object will not go out of scope.
     ## Same with the ConfigMgr object and ObjectDriver.
     MT::Request->finish();
+    undef $MT::Object::DRIVER;
+    undef $MT::Object::DBI_DRIVER;
     undef $MT::ConfigMgr::cfg;
 }
 

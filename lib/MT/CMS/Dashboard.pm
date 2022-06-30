@@ -220,6 +220,7 @@ sub generate_site_stats_data {
     my $time;
     $time = $fmgr->file_mod_time($path) if -f $path;
 
+
     # Get readied provider
     require MT::App::DataAPI;
     my $provider = readied_provider( $app, $blog );
@@ -382,6 +383,7 @@ sub generate_site_stats_data {
     }
 
     delete $param->{provider};
+    $param->{stats_provider} = $provider->id if $provider;
 
     1;
 }
@@ -447,9 +449,10 @@ sub site_stats_widget_pageview_lines {
     ) or return undef;
 
     my @items = @{ $for_date->{items} };
+    my @headers = @{ $for_date->{headers} ? $for_date->{headers} : ['date', 'pageviews'] };
     my %counts;
     foreach my $item (@items) {
-        $counts{ $item->{date} } = $item->{pageviews};
+        $counts{ $item->{$headers[0]} } = $item->{$headers[1]};
     }
     return \%counts;
 }

@@ -4556,7 +4556,7 @@ itte versuchen Sie es später erneut.',
 ## tmpl/cms/edit_content_data.tmpl
 	'(Max length: [_1])' => '(Höchstlänge [_1])',
 	'(Max select: [_1])' => '(Max [_1] wählen',
-	'(Max tags: [_2])' => '(Max [_2] Tags)',
+	'(Max tags: [_1])' => '(Max [_1] Tags)',
 	'(Max: [_1] / Number of decimal places: [_2])' => '(Max [_1], [_2] Dezimalstellen)',
 	'(Max: [_1])' => '(Max [_1])',
 	'(Min length: [_1] / Max length: [_2])' => '(Mindestlänge [_1], Höchstlänge [_2])',

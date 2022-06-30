@@ -78,6 +78,7 @@ __PACKAGE__->install_properties(
             'archive_url'              => 'string(255)',
             'archive_path'             => 'string(255)',
             'content_css'              => 'string(255)',
+            'allow_data_api'           => 'boolean',
             ## Have to keep these around for use in mt-upgrade.cgi.
             'old_style_archive_links' => 'boolean',
             'archive_tmpl_daily'      => 'string(255)',
@@ -181,6 +182,24 @@ sub list_props {
                 my $name = $obj->name;
                 $name = '' if !defined $name;
                 $name =~ s/^\s+|\s+$//g;
+                my $scope_label = '';
+                my $badge_class = '';
+                my $scope_html  = '';
+                my $scope_lc    = '';
+                if(!$app->blog){
+                    if ($obj->is_blog) {
+                        $scope_label = MT->translate('Child Site');
+                        $badge_class = 'badge badge-info ';
+                        $scope_lc    = 'blog';
+                    } else {
+                        $scope_label = MT->translate('Site');
+                        $badge_class = 'badge badge-success ';
+                        $scope_lc    = 'website';
+                    }
+                    $scope_html = qq{
+                        <span class="${badge_class} ${scope_lc} sticky-label">$scope_label</span>
+                    };
+                }
                 my $dashboard_link = $app->uri(
                     mode => 'dashboard',
                     args => { blog_id => $obj->id, },
@@ -189,11 +208,11 @@ sub list_props {
                     my $can_double_encode = 1;
                     $name
                         = MT::Util::encode_html( $name, $can_double_encode );
-                    return qq{<a href="$dashboard_link">$name</a>};
+                    return qq{$scope_html <a href="$dashboard_link"> $name</a>};
                 }
                 else {
                     return MT->translate(
-                        qq{[_1] (<a href="[_2]">id:[_3]</a>)},
+                        qq{[_1] ($scope_html <a href="[_2]">id:[_3]</a>)},
                         'No Name', $dashboard_link, $obj->id, );
                 }
             }
@@ -1020,8 +1039,6 @@ sub file_mgr {
 sub remove {
     my $blog = shift;
     my $blog_id = ref $blog ? $blog->id : undef;
-
-    MT::Util::update_data_api_disable_site(MT->config, $blog_id, 1);
 
     # Load all the models explicitly.
     MT->all_models;
@@ -2231,6 +2248,10 @@ Contain a comma-delimiter list of category ids, ordered
 =item * folder_order
 
 Contain a comma-delimiter list of folder ids, ordered
+
+=item * allow_data_api
+
+A boolean flag specifying whether the website accepts Data API.
 
 =back
 

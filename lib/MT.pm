@@ -37,7 +37,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.9', '7.0052' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.9', '7.0053' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
@@ -247,19 +247,6 @@ sub construct {
             }
         }
         return @matches;
-    }
-
-    sub loaded_models {
-        my $pkg = shift;
-        values %object_types;
-    }
-
-    sub clear_cache_of_loaded_models {
-        my $pkg = shift;
-        for my $model (values %object_types) {
-            my $driver = $model->driver or next;
-            $driver->clear_cache if $driver->can('clear_cache');
-        }
     }
 }
 
