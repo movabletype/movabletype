@@ -1393,7 +1393,6 @@ BEGIN {
             content_data  => '$Core::MT::ContentData::list_props',
             group         => '$Core::MT::Group::list_props',
             group_member  => '$Core::MT::Group::member_list_props',
-            ts_job        => '$Core::MT::TheSchwartz::Job::list_props',
         },
         system_filters => {
             entry        => '$Core::MT::Entry::system_filters',
@@ -1774,22 +1773,6 @@ BEGIN {
                 search_label        => 'User',
                 search_type         => 'author',
             },
-            ts_job => {
-                object_label => 'Job',
-                view         => 'system',
-                id_column    => 'jobid',
-                primary      => 'funcid',
-                condition    => sub {
-                    my $app = shift;
-                    return 1 if MT->config->ShowTsJob;
-                    $app->errtrans(
-                        'View Background Jobs is disabled by system configuration.');
-                },
-                permission       => 'administer',
-                use_filters      => 0,
-                default_sort_key => 'insert_time',
-                screen_label     => 'View Background Jobs',
-            },
         },
         summaries => {
             'author' => {
@@ -2137,7 +2120,6 @@ BEGIN {
             'TransparentProxyIPs'      => { default => 0, },
             'DebugMode'                => { default => 0, },
             'ShowIPInformation'        => { default => 0, },
-            'ShowTsJob'                => { default => 0, },
             'AllowComments'            => { default => 1, },
             'AllowPings'               => { default => 1, },
             'HelpURL'                  => undef,

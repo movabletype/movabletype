@@ -160,9 +160,7 @@ sub install_properties {
 
     $props->{get_driver} ||= sub {
         require MT::ObjectDriverFactory;
-        my $coderef = MT::ObjectDriverFactory->driver_for_class($class);
-        $class->get_driver($coderef);
-        return $coderef->(@_);
+        return MT::ObjectDriverFactory->instance;
     };
 
     $class->SUPER::install_properties($props);
@@ -1258,16 +1256,17 @@ sub set_defaults {
     $obj->{'column_values'} = $defaults ? {%$defaults} : {};
 }
 
-sub __properties { +{} }
+sub __properties { }
+
+our $DRIVER;
 
 sub driver {
     my $class = shift;
-    if (%{$class->properties}) {
-        return $class->SUPER::driver(@_);
-    } else {
-        require MT::ObjectDriverFactory;
-        return MT::ObjectDriverFactory->instance;
-    }
+    require MT::ObjectDriverFactory;
+    return $DRIVER ||= MT::ObjectDriverFactory->instance
+        if UNIVERSAL::isa( $class, 'MT::Object' );
+    my $driver = $class->SUPER::driver(@_);
+    return $driver;
 }
 
 sub dbi_driver {
