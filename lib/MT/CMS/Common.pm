@@ -1603,7 +1603,8 @@ sub filtered_list {
             blog_id   => $blog_id || 0,
         }
     );
-    my $limit = canonicalize_list_limit($app->param('limit'));
+    my $limit = $app->param('limit');
+    $limit = canonicalize_list_limit($limit);
     my $page  = $app->param('page');
     $page = 1 if !$page || $page =~ /\D/;
     my $offset = ( $page - 1 ) * $limit;
@@ -1822,7 +1823,8 @@ sub save_list_prefs {
         = !$blog         ? 'system'
         : $blog->is_blog ? 'blog'
         :                  'website';
-    my $limit      = canonicalize_list_limit($app->param('limit'));
+    my $limit = $app->param('limit');
+    $limit = canonicalize_list_limit($limit);
     my $cols       = $app->param('columns') || '';
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};
