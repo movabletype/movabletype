@@ -993,7 +993,7 @@ my %ListLimitMap = map {$_ => 1} (10, 25, 50, 100, 200);
 
 sub canonicalize_list_limit {
     my $limit = shift || MT->config->DefaultListLimit;
-    $ListLimitMap{$limit} || 50;
+    $ListLimitMap{$limit} ? $limit : 50;
 }
 
 sub list {
