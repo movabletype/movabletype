@@ -225,7 +225,7 @@ ChartAPI.Data.getData = function (obj, $container, callback, that) {
       if (!cloneData) {
         if (typeof data === 'string') {
           cloneData = data.toString();
-        } else if (jQuery.isArray(data)) {
+        } else if (Array.isArray(data)) {
           cloneData = jQuery.map(data, function (v) {
             return jQuery.extend({}, v);
           });
