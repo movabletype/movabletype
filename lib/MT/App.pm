@@ -3144,6 +3144,10 @@ sub do_reboot {
             );
             return 1;
         }
+        if (my $wait = MT->config->WaitAfterReboot) {
+            require Time::HiRes;
+            Time::HiRes::sleep $wait;
+        }
     }
     1;
 }
