@@ -2333,6 +2333,7 @@ BEGIN {
             'HideVersion' => { default => 1 },
             'HideConfigWarnings' => { default => undef },
             'GlobalTemplateMaxRevisions' => { default => 20 },
+            'DisableQuickPost' => { default => 0 },
             'DefaultStatsProvider' => { default => 'GoogleAnalyticsV4' },
         },
         upgrade_functions => \&load_upgrade_fns,
