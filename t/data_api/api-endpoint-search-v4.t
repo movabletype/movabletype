@@ -62,7 +62,6 @@ sub suite {
                 search             => 'text',
                 SearchContentTypes => $ct_id,
                 cdSearch           => 1,
-                content_field      => 'single_line_text',
                 IncludeBlogs       => $blog_id,
                 limit              => 20,
             },
