@@ -951,7 +951,7 @@ sub load_schema_and_fixture {
 sub update_sequences {
     my $self = shift;
 
-    return unless lc $self->driver eq 'oracle';
+    return unless lc($self->driver) =~ /^(oracle|pg)/;
 
     my @classes;
     my $types = MT->registry('object_types');
