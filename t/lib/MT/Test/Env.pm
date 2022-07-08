@@ -358,6 +358,50 @@ sub _connect_info_mysql {
     return %info;
 }
 
+sub _connect_info_pg {
+    my $self = shift;
+
+    my %info = (
+        ObjectDriver => "DBI::Pg",
+        DBHost       => "127.0.0.1",
+        DBUser       => "mt",
+        Database     => "mt_test",
+    );
+
+    if (eval { require Test::PostgreSQL }) {
+        my $pg = $self->{pg} = Test::PostgreSQL->new;
+        my $dsn = $ENV{MT_TEST_DSN} = $pg->dsn;
+        my $dbh = DBI->connect($dsn) or die $DBI::errstr;
+        $self->_prepare_pg_database($dbh);
+        $dsn =~ s/^DBI:Pg://i;
+        my %opts = map { split '=', $_ } split ';', $dsn;
+        $opts{dbname} = $info{Database};
+        if ($opts{host}) {
+            $info{DBHost} = $opts{host};
+        }
+        if ($opts{user}) {
+            $info{DBUser} = $opts{user};
+        }
+        if ($opts{port}) {
+            $info{DBPort} = $opts{port};
+        }
+        if ($opts{password}) {
+            $info{DBPassword} = $opts{password};
+        }
+        $self->{dsn} = "dbi:Pg:" . (join ";", map { "$_=$opts{$_}" } keys %opts);
+    } else {
+        $self->{dsn} = "dbi:Pg:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
+        my $dbh = DBI->connect($self->{dsn});
+        if (!$dbh) {
+            die $DBI::errstr unless $DBI::errstr =~ /Unknown database/;
+            (my $dsn = $self->{dsn}) =~ s/dbname=$info{Database};//;
+            $dbh = DBI->connect($dsn) or die $DBI::errstr;
+        }
+        $self->_prepare_pg_database($dbh);
+    }
+    return %info;
+}
+
 sub _connect_info_sqlite {
     my $self = shift;
 
@@ -469,6 +513,20 @@ sub _prepare_mysql_database {
     my $sql           = <<"END_OF_SQL";
 DROP DATABASE IF EXISTS mt_test;
 CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
+END_OF_SQL
+    for my $statement (split ";\n", $sql) {
+        $dbh->do($statement);
+    }
+}
+
+sub _prepare_pg_database {
+    my ($self, $dbh) = @_;
+    local $dbh->{RaiseError}         = 1;
+    local $dbh->{PrintWarn}          = 0;
+    local $dbh->{ShowErrorStatement} = 1;
+    my $sql           = <<"END_OF_SQL";
+DROP DATABASE IF EXISTS mt_test;
+CREATE DATABASE mt_test;
 END_OF_SQL
     for my $statement (split ";\n", $sql) {
         $dbh->do($statement);
@@ -893,7 +951,7 @@ sub load_schema_and_fixture {
 sub update_sequences {
     my $self = shift;
 
-    return unless lc $self->driver eq 'oracle';
+    return unless lc($self->driver) =~ /^(oracle|pg)/;
 
     my @classes;
     my $types = MT->registry('object_types');
