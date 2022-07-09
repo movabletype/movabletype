@@ -277,7 +277,7 @@ subtest 'content_field => field:needle' => sub {
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, content_field => 'asset_image:1' },
-        complete => expected_labels('cd_multi', 'cd_multi'),
+        complete => expected_labels('cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
