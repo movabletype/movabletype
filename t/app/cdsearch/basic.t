@@ -17,7 +17,6 @@ use MT::Test ();
 use MT::Test::App;
 use MT::Test::Fixture;
 use MT::Test::Fixture::ContentData;
-use Test::Deep qw(cmp_deeply bag);
 
 $test_env->prepare_fixture('db');
 
@@ -91,7 +90,7 @@ subtest 'everything but 0' => sub {
         blog_id => $blog_id,
     });
     my @divs = $app->wq_find('div#results div');
-    cmp_deeply [map { $_->attr('class') } @divs] => bag(qw/cd cd2 cd_multi cd_multi2/);
+    is_deeply [map { $_->attr('class') } @divs] => [qw/cd2 cd_multi cd_multi2 cd/];
 };
 
 subtest 'only ct_multi' => sub {
@@ -102,7 +101,7 @@ subtest 'only ct_multi' => sub {
         SearchContentTypes => $ct_multi_id,
     });
     my @divs = $app->wq_find('div#results div');
-    cmp_deeply [map { $_->attr('class') } @divs] => bag(qw/cd_multi cd_multi2/);
+    is_deeply [map { $_->attr('class') } @divs] => [qw/cd_multi cd_multi2/];
 };
 
 subtest 'not ct_multi' => sub {
@@ -113,7 +112,7 @@ subtest 'not ct_multi' => sub {
         SearchContentTypes => "NOT $ct_multi_id",
     });
     my @divs = $app->wq_find('div#results div');
-    cmp_deeply [map { $_->attr('class') } @divs] => bag(qw/cd cd2/);
+    is_deeply [map { $_->attr('class') } @divs] => [qw/cd2 cd/];
 };
 
 subtest 'ct or ct_multi' => sub {
@@ -124,7 +123,7 @@ subtest 'ct or ct_multi' => sub {
         SearchContentTypes => "$ct_id OR $ct_multi_id",
     });
     my @divs = $app->wq_find('div#results div');
-    cmp_deeply [map { $_->attr('class') } @divs] => bag(qw/cd cd_multi cd_multi2/);
+    is_deeply [map { $_->attr('class') } @divs] => [qw/cd_multi cd_multi2 cd/];
 };
 
 subtest 'not ct and not ct_multi' => sub {
@@ -135,7 +134,7 @@ subtest 'not ct and not ct_multi' => sub {
         SearchContentTypes => "NOT $ct_id AND NOT $ct_multi_id",
     });
     my @divs = $app->wq_find('div#results div');
-    cmp_deeply [map { $_->attr('class') } @divs] => bag(qw/cd2/);
+    is_deeply [map { $_->attr('class') } @divs] => [qw/cd2/];
 };
 
 subtest '(ct or ct_multi)' => sub {
@@ -146,7 +145,7 @@ subtest '(ct or ct_multi)' => sub {
         SearchContentTypes => "($ct_id OR $ct_multi_id)",
     });
     my @divs = $app->wq_find('div#results div');
-    cmp_deeply [map { $_->attr('class') } @divs] => bag(qw/cd cd_multi cd_multi2/);
+    is_deeply [map { $_->attr('class') } @divs] => [qw/cd_multi cd_multi2 cd/];
 };
 
 subtest 'string name' => sub {
@@ -157,7 +156,7 @@ subtest 'string name' => sub {
         SearchContentTypes => qq{"$ct_name"},
     });
     my @divs = $app->wq_find('div#results div');
-    cmp_deeply [map { $_->attr('class') } @divs] => bag(qw/cd/);
+    is_deeply [map { $_->attr('class') } @divs] => [qw/cd/];
 };
 
 subtest 'OR-ed string names' => sub {
@@ -168,7 +167,7 @@ subtest 'OR-ed string names' => sub {
         SearchContentTypes => qq{"$ct_name" OR "$ct_multi_name"},
     });
     my @divs = $app->wq_find('div#results div');
-    cmp_deeply [map { $_->attr('class') } @divs] => bag(qw/cd cd_multi cd_multi2/);
+    is_deeply [map { $_->attr('class') } @divs] => [qw/cd_multi cd_multi2 cd/];
 };
 
 done_testing;
