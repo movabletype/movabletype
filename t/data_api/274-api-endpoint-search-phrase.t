@@ -15,7 +15,6 @@ BEGIN {
 
 use MT::Test::DataAPI;
 use MT::Test::Fixture;
-use Test::Deep qw/cmp_bag/;
 use JSON;
 
 $test_env->prepare_fixture('db');
@@ -102,7 +101,7 @@ sub expected_titles {
         my $json = eval { decode_json($body) };
         ok !$@, 'json is ok';
         my @got_titles = map { $_->{title} } @{ $json->{items} || [] };
-        cmp_bag( \@got_titles, \@expected_titles, 'expected entry titles' );
+        is_deeply( \@got_titles, \@expected_titles, 'expected entry titles' );
     };
 }
 
