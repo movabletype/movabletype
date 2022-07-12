@@ -105,7 +105,7 @@ $app->post_ok({
     blog_id    => 0,
     columns    => 'label,author_name,object_ds,created_on',
     fid        => '_allpass',
-    limit      => scalar @filters,
+    limit      => 200,
 });
 
 my $result = {
