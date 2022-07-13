@@ -1084,16 +1084,16 @@ sub do_search_replace {
                     = $content_type->get_field($date_time_field_id);
                 my $datetime_term;
                 if ( $field_data->{type} eq 'time_only' ) {
-                    $datetime_term
-                        = ( $timefrom gt $timeto )
-                        ? [ "19700101${timeto}", "19700101${timefrom}" ]
-                        : [ "19700101${timefrom}", "19700101${timeto}" ];
+                    my @range = sort { $a gt $b } ($timefrom || '', $timeto || '');
+                    $range[0] = $range[0] ? '19700101'. $range[0] : undef;
+                    $range[1] = $range[1] ? '19700101'. $range[1] : undef;
+                    $datetime_term = \@range;
                 }
                 else {
-                    $datetime_term
-                        = ( $datefrom gt $dateto )
-                        ? [ "${dateto}000000", "${datefrom}235959" ]
-                        : [ "${datefrom}000000", "${dateto}235959" ];
+                    my @range = sort { $a gt $b } ($datefrom || '', $dateto || '');
+                    $range[0] = $range[0] ? $range[0]. '000000' : undef;
+                    $range[1] = $range[1] ? $range[1]. '235959' : undef;
+                    $datetime_term = \@range;
                 }
                 my $join = $app->model('content_field_index')->join_on(
                     undef,
@@ -1108,14 +1108,10 @@ sub do_search_replace {
             }
             else {
                 $args{range_incl}{$date_col} = 1;
-                if ( $datefrom gt $dateto ) {
-                    $terms{$date_col}
-                        = [ $dateto . '000000', $datefrom . '235959' ];
-                }
-                else {
-                    $terms{$date_col}
-                        = [ $datefrom . '000000', $dateto . '235959' ];
-                }
+                my @range = sort { $a gt $b } ($datefrom || '', $dateto || '');
+                $range[0] = $range[0] ? $range[0]. '000000' : undef;
+                $range[1] = $range[1] ? $range[1]. '235959' : undef;
+                $terms{$date_col} = \@range;
             }
         }
         if ( defined $publish_status ) {
