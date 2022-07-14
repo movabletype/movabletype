@@ -1293,13 +1293,13 @@ sub list {
         my $label_for_sort;
         if ( defined $prop->filter_label ) {
             $label_for_sort
-                = ref $prop->filter_label
+                = ref $prop->filter_label eq 'CODE'
                 ? $prop->filter_label->($screen_settings)
                 : $prop->filter_label;
         }
         if ( !defined $label_for_sort ) {
             $label_for_sort
-                = ref $prop->label
+                = ref $prop->label eq 'CODE'
                 ? $prop->label->($screen_settings)
                 : $prop->label;
             $label_for_sort = '' unless defined $label_for_sort;

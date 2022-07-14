@@ -1336,6 +1336,7 @@ sub _make_field_list_props {
     my $props               = {};
     my $content_field_types = MT->registry('content_field_types');
 
+    require MT::Util::BlessedString;
     for my $field_data ( @{ $content_type->fields } ) {
         my $idx_type   = $field_data->{type};
         my $field_key  = 'content_field_' . $field_data->{id};
@@ -1367,6 +1368,7 @@ sub _make_field_list_props {
             if ($parent_field_data) {
                 $label = $parent_field_data->{options}{label} . " ${label}";
             }
+            $label = MT::Util::BlessedString->new($label);
 
             my $prop_key;
             if ( $prop_name eq $idx_type ) {
