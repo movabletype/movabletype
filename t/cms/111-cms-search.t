@@ -17,6 +17,7 @@ BEGIN {
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::App;
+use MT::Test::CMSSearch;
 
 $test_env->prepare_fixture(sub {
     MT::Test->init_db;
@@ -75,203 +76,204 @@ for my $e (MT::Entry->load) {
     $entries{ $e->id } = $e;
 }
 
-subtest 'search_replace' => sub {
-    my @suite = ({
-            params => {
-                is_limited => 0,
-                blog_id    => 1,
-                do_search  => 1,
-                search     => $entries{1}->title,
-            },
-            founds     => [1],
-            not_founds => [2],
-        },
-        {
-            params => {
-                _type      => 'entry',
-                is_limited => 0,
-                blog_id    => 1,
-                do_search  => 1,
-                search     => $entries{1}->title,
-            },
-            founds     => [1],
-            not_founds => [2],
-        },
+subtest 'basic' => sub {
+    my %params = (
+        is_limited => 0,
+        blog_id    => 1,
+        do_search  => 1,
+    );
+    test_search({
+        author => $admin,
+        params => { %params, search => $entries{1}->title },
+        ids    => [1],
+    });
+    test_search({
+        author => $admin,
+        params => { %params, _type => 'entry', search => $entries{1}->title },
+        ids    => [1],
+    });
+    test_search({
+        author => $admin,
+        params => { %params, _type => 'entry', search => 'Verse', },
+        ids    => [8, 7, 6, 5, 4],
+    });
+};
+
+subtest 'dateranged' => sub {
+    my %params = (
+        _type              => 'entry',
+        is_limited         => 0,
+        blog_id            => 1,
+        do_search          => 1,
+        search             => 'Verse',
+        is_dateranged      => 1,
+        date_time_field_id => 0,
+        timefrom           => '',
+        timeto             => '',
+    );
+    test_search({
+        author => $admin,
+        params => { %params, from => '1963-01-01', to => '1964-03-01' },
+        ids    => [7, 6],
+    });
+    test_search({
+        author => $admin,
+        params => { %params, from => '1964-03-01', to => '1963-01-01' },
+        ids    => [7, 6],
+    });
+    test_search({
+        author => $admin,
+        params => { %params },
+        ids    => [],
+    });
+};
+
+subtest 'Column name in each scopes' => sub {
+
+    # child site scope
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode     => 'search_replace',
+        _type      => 'entry',
+        is_limited => 0,
+        blog_id    => $blog->[0]->id,
+        do_search  => 1,
+        search     => 'A Rainy Day',
+    });
+
+    my $no_results = quotemeta 'No entries were found that match the given criteria.';
+    $app->content_unlike(qr/$no_results/, 'There are some search results.');
+
+    my $col_website_blog = quotemeta('<span class="col-label">Website/Blog</span>');
+    $col_website_blog = qr/$col_website_blog/;
+    $app->content_unlike(
+        $col_website_blog,
+        'Does not have a colomn "Website/Blog" in child site scope'
     );
 
-    foreach my $data (@suite) {
-        my $params = $data->{params};
-        my $query  = join(
-            '&',
-            map { $_ . '=' . $params->{$_} } sort keys %$params
-        );
-        subtest $query => sub {
-            my $app = MT::Test::App->new('MT::App::CMS');
-            $app->login($admin);
-            $app->post_ok({
-                __mode => 'search_replace',
-                %$params,
-            });
+    my $col_site_child_site = quotemeta('<span class="col-label">Site/Child Site</span>');
+    $col_site_child_site = qr/$col_site_child_site/;
+    $app->content_unlike(
+        $col_site_child_site,
+        'Does not have a column "Site/Child Site" in child site scope'
+    );
 
-            for my $id (@{ $data->{founds} }) {
-                $app->content_like(qr/name="id" value="$id"/, "Entry#$id is found");
-            }
-            for my $id (@{ $data->{not_founds} }) {
-                $app->content_unlike(
-                    qr/name="id" value="$id"/,
-                    "Entry#$id is not found"
-                );
-            }
-        };
-    }
+    # site scope
+    $app->post_ok({
+        __mode     => 'search_replace',
+        _type      => 'entry',
+        is_limited => 0,
+        blog_id    => $website->id,
+        do_search  => 1,
+        search     => 'A Sunny Day',
+    });
 
-    subtest 'Column name in each scopes' => sub {
+    $app->content_unlike(qr/$no_results/, 'There are some search results.');
 
-        # child site scope
-        my $app = MT::Test::App->new('MT::App::CMS');
-        $app->login($admin);
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => $blog->[0]->id,
-            do_search  => 1,
-            search     => 'A Rainy Day',
-        });
+    $app->content_unlike(
+        $col_website_blog,
+        'Does not have a colomn "Website/Blog" in site scope'
+    );
 
-        my $no_results = quotemeta 'No entries were found that match the given criteria.';
-        $app->content_unlike(qr/$no_results/, 'There are some search results.');
+    $app->content_like(
+        $col_site_child_site,
+        'Has a column "Site/Child Site" in site scope'
+    );
 
-        my $col_website_blog = quotemeta('<span class="col-label">Website/Blog</span>');
-        $col_website_blog = qr/$col_website_blog/;
-        $app->content_unlike(
-            $col_website_blog,
-            'Does not have a colomn "Website/Blog" in child site scope'
-        );
+    # system scope
+    $app->post_ok({
+        __mode     => 'search_replace',
+        _type      => 'entry',
+        is_limited => 0,
+        blog_id    => 0,
+        do_search  => 1,
+        search     => 'A Sunny Day',
+    });
 
-        my $col_site_child_site = quotemeta('<span class="col-label">Site/Child Site</span>');
-        $col_site_child_site = qr/$col_site_child_site/;
-        $app->content_unlike(
-            $col_site_child_site,
-            'Does not have a column "Site/Child Site" in child site scope'
-        );
+    $app->content_unlike(qr/$no_results/, 'There are some search results.');
 
-        # site scope
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => $website->id,
-            do_search  => 1,
-            search     => 'A Sunny Day',
-        });
+    $app->content_unlike(
+        $col_website_blog,
+        'Does not have a colomn "Website/Blog" in system scope'
+    );
+    $app->content_like(
+        $col_site_child_site,
+        'Has a column "Site/Child Site" in system scope'
+    );
+};
 
-        $app->content_unlike(qr/$no_results/, 'There are some search results.');
+subtest 'Search in site scope' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode     => 'search_replace',
+        _type      => 'entry',
+        is_limited => 0,
+        blog_id    => $website->id,
+        do_search  => 1,
+        search     => 'Day',
+    });
 
-        $app->content_unlike(
-            $col_website_blog,
-            'Does not have a colomn "Website/Blog" in site scope'
-        );
+    my $a_sunny_day = quotemeta('<a href="' . $app->_app->mt_uri . '?__mode=view&amp;_type=entry&amp;id=' . $website_entry->id . '&amp;blog_id=' . $website->id . '">' . $website_entry->title . '</a>');
+    $app->content_like(
+        qr/$a_sunny_day/,
+        'Search results have "A Sunny Day" entry by admin'
+    );
 
-        $app->content_like(
-            $col_site_child_site,
-            'Has a column "Site/Child Site" in site scope'
-        );
+    my $blog_entry  = MT::Entry->load(1);
+    my $a_rainy_day = quotemeta('<a href="' . $app->_app->mt_uri . '?__mode=view&amp;_type=entry&amp;id=' . $blog_entry->id . '&amp;blog_id=' . $blog->[0]->id . '">' . $blog_entry->title . '</a>');
+    $app->content_like(
+        qr/$a_rainy_day/,
+        'Search results have "A Rainy Day" entry by admin'
+    );
 
-        # system scope
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => 0,
-            do_search  => 1,
-            search     => 'A Sunny Day',
-        });
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode     => 'search_replace',
+        _type      => 'entry',
+        is_limited => 0,
+        blog_id    => $website->id,
+        do_search  => 1,
+        search     => 'Day',
+    });
+    $app->content_like(
+        qr/$a_sunny_day/,
+        'Search results have "A Sunny Day" entry by permitted user in a site'
+    );
+    $app->content_unlike(
+        qr/$a_rainy_day/,
+        'Search results do not have "A Rainy Day" entry by permitted user in a site'
+    );
 
-        $app->content_unlike(qr/$no_results/, 'There are some search results.');
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode     => 'search_replace',
+        _type      => 'entry',
+        is_limited => 0,
+        blog_id    => $blog->[0]->id,
+        do_search  => 1,
+        search     => 'Day',
+    });
+    $app->content_unlike(
+        qr/$a_sunny_day/,
+        'Search results do not have "A Sunny Day" entry by permitted user in a child site'
+    );
+    $app->content_like(
+        qr/$a_rainy_day/,
+        'Search results have "A Rainy Day" entry by permitted user in a child site'
+    );
 
-        $app->content_unlike(
-            $col_website_blog,
-            'Does not have a colomn "Website/Blog" in system scope'
-        );
-        $app->content_like(
-            $col_site_child_site,
-            'Has a column "Site/Child Site" in system scope'
-        );
-    };
-
-    subtest 'Search in site scope' => sub {
-        my $app = MT::Test::App->new('MT::App::CMS');
-        $app->login($admin);
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => $website->id,
-            do_search  => 1,
-            search     => 'Day',
-        });
-
-        my $a_sunny_day = quotemeta('<a href="' . $app->_app->mt_uri . '?__mode=view&amp;_type=entry&amp;id=' . $website_entry->id . '&amp;blog_id=' . $website->id . '">' . $website_entry->title . '</a>');
-        $app->content_like(
-            qr/$a_sunny_day/,
-            'Search results have "A Sunny Day" entry by admin'
-        );
-
-        my $blog_entry  = MT::Entry->load(1);
-        my $a_rainy_day = quotemeta('<a href="' . $app->_app->mt_uri . '?__mode=view&amp;_type=entry&amp;id=' . $blog_entry->id . '&amp;blog_id=' . $blog->[0]->id . '">' . $blog_entry->title . '</a>');
-        $app->content_like(
-            qr/$a_rainy_day/,
-            'Search results have "A Rainy Day" entry by admin'
-        );
-
-        $app->login($aikawa);
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => $website->id,
-            do_search  => 1,
-            search     => 'Day',
-        });
-        $app->content_like(
-            qr/$a_sunny_day/,
-            'Search results have "A Sunny Day" entry by permitted user in a site'
-        );
-        $app->content_unlike(
-            qr/$a_rainy_day/,
-            'Search results do not have "A Rainy Day" entry by permitted user in a site'
-        );
-
-        $app->login($ichikawa);
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => $blog->[0]->id,
-            do_search  => 1,
-            search     => 'Day',
-        });
-        $app->content_unlike(
-            qr/$a_sunny_day/,
-            'Search results do not have "A Sunny Day" entry by permitted user in a child site'
-        );
-        $app->content_like(
-            qr/$a_rainy_day/,
-            'Search results have "A Rainy Day" entry by permitted user in a child site'
-        );
-
-        $app->login($ukawa);
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => $blog->[0]->id,
-            do_search  => 1,
-            search     => 'Day',
-        });
-        $app->has_permission_error();
-    };
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode     => 'search_replace',
+        _type      => 'entry',
+        is_limited => 0,
+        blog_id    => $blog->[0]->id,
+        do_search  => 1,
+        search     => 'Day',
+    });
+    $app->has_permission_error();
 };
 
 done_testing();
