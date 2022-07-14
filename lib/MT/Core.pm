@@ -2334,6 +2334,7 @@ BEGIN {
             'HideConfigWarnings' => { default => undef },
             'GlobalTemplateMaxRevisions' => { default => 20 },
             'DefaultStatsProvider' => { default => 'GoogleAnalyticsV4' },
+            'DefaultListLimit' => { default => '50' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

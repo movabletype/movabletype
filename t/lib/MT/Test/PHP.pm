@@ -10,6 +10,7 @@ use Test::More ();
 my $PHPVersion;
 
 sub php_version {
+    return if $ENV{MT_TEST_SKIP_PHP};
     return $PHPVersion if defined $PHPVersion;
     my $php_version_string = `php --version 2>&1` or return $PHPVersion = 0;
     ($PHPVersion) = $php_version_string =~ /^PHP (\d+\.\d+)/im;

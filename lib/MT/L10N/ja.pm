@@ -3184,10 +3184,7 @@ use vars qw( @ISA %Lexicon );
 	q{Are you sure you want to remove filter '[_1]'?} => q{フィルタ'[_1]'を削除してよろしいですか?},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
-	'100 rows' => '100件',
-	'200 rows' => '200件',
-	'25 rows' => '25件',
-	'50 rows' => '50件',
+	'[_1] rows' => '[_1]件',
 	'Show' => '表示件数',
 
 ## mt-static/js/listing/tag/display-options.tag
@@ -3895,7 +3892,7 @@ use vars qw( @ISA %Lexicon );
 	'Run [_1]' => '[_1]を起動',
 	'Tag Attributes:' => 'タグの属性: ',
 	'Text Filters' => 'テキストフィルタ',
-	'This plugin has not been upgraded to support Movable Type [_1]. As such, it may not be completely functional.' => 'このプラグインは、 Mvable Type [_1]向けにアップグレードされていません。そのため、動作しない場合があります。',
+	'This plugin has not been upgraded to support Movable Type [_1]. As such, it may not be completely functional.' => 'このプラグインは、 Movable Type [_1]向けにアップグレードされていません。そのため、動作しない場合があります。',
 	'Your plugin settings have been reset.' => 'プラグインの設定をリセットしました。',
 	'Your plugin settings have been saved.' => 'プラグインの設定を保存しました。',
 	'Your plugins have been reconfigured.' => 'プラグインを再設定しました。',

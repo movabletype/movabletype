@@ -3745,9 +3745,6 @@ sub list_pref {
         }
     }
 
-    if ( $list_pref->{rows} ) {
-        $list_pref->{ "limit_" . $list_pref->{rows} } = $list_pref->{rows};
-    }
     if ( $list_pref->{view} ) {
         $list_pref->{ "view_" . $list_pref->{view} } = 1;
     }
