@@ -8,7 +8,6 @@ use strict;
 use warnings;
 use base qw( Exporter );
 use Test::More;
-use Test::Deep qw/cmp_deeply/;
 use URI;
 
 our @EXPORT = qw/ test_search /;
@@ -22,15 +21,15 @@ my $id_getter = {
 sub test_search {
     my ($data) = @_;
     my $params = $data->{params};
-    my $name = $data->{name} || do {
+    my $name   = $data->{name} || do {
         my $uri = URI->new;
         $uri->query_form($params);
-        'right result for '. $uri;
+        'right result for ' . $uri;
     };
     my $author = $data->{author};
     $author = MT::Author->load($data->{author}) unless ref($author);
 
-    my $app    = MT::Test::App->new('MT::App::CMS');
+    my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($author);
     $app->post_ok({ __mode => 'search_replace', %$params });
 

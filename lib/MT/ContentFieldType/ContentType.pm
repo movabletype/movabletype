@@ -313,7 +313,7 @@ sub preview_handler {
 
     my $contents = '';
     for my $v (@$values) {
-        my $cd    = $content_data{$v};
+        my $cd    = $content_data{$v} or next;
         my $id    = $cd->id;
         my $label = $cd->label;
         if ( defined $label && $label ne '' ) {
@@ -324,6 +324,7 @@ sub preview_handler {
             $contents .= "<li>(ID:$id)</li>";
         }
     }
+    return '' unless $contents;
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
