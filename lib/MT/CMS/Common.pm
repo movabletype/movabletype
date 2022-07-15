@@ -1310,8 +1310,7 @@ sub list {
             prop => $prop,
             id   => $prop->id,
             type => $prop->type,
-            label =>
-                MT::Util::encode_html( $prop->filter_label || $prop->label ),
+            label => $prop->filter_label || $prop->label,
             field                 => $prop->filter_tmpl,
             single_select_options => $prop->single_select_options($app),
             verb                  => defined $prop->verb ? $prop->verb

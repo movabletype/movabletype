@@ -264,7 +264,7 @@ jQuery.event.special.listReady = {
     baseType: '<mt:var name="base_type">',
     <mt:if name="editable">editable: true,</mt:if>
     field: '<mt:var name="field" mteval="1" regex_replace="/\n*/g":"">',
-    label: '<mt:var name="label">',
+    label: '<mt:var name="label" encode_js="1" encode_html="1">',
     <mt:if name="singleton">singleton: true,</mt:if>
     type: '<mt:var name="type">'
   });
