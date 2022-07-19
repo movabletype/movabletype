@@ -122,17 +122,27 @@ subtest 'content_data' => sub {
                 $objs->{content_data}{cd_multi2}->id,
             ],
         });
-    SKIP: {
-            skip 'SKIP until the implementation of date range is fixed.';
-            # This test causes the query to be {'authored_on' => ['000000','235959']}
-            # Since the values are illegal date format, the result would be nothing or everything
-            # depending on the environment.
-            test_search({
-                author           => $author,
-                params           => {%params},
-                expected_obj_ids => [],
-            });
-        }
+        test_search({
+            author           => $author,
+            params           => {%params},
+            expected_obj_ids => [
+                $objs->{content_data}{cd_multi}->id,
+                $objs->{content_data}{cd_multi2}->id,
+            ],
+        });
+        test_search({
+            author           => $author,
+            params           => {%params, from => '2017-05-29', to => undef},
+            expected_obj_ids => [
+                $objs->{content_data}{cd_multi}->id,
+                $objs->{content_data}{cd_multi2}->id,
+            ],
+        });
+        test_search({
+            author           => $author,
+            params           => {%params, from => undef, to => '2017-05-29'},
+            expected_obj_ids => [],
+        });
     };
 
     subtest 'dateranged for content fields' => sub {
@@ -151,23 +161,102 @@ subtest 'content_data' => sub {
         subtest 'type of datetime' => sub {
             $params{date_time_field_id} = $objs->{content_type}{ct_multi}{content_field}{cf_datetime}->id;
 
-            # cd_multi:  2017-06-03 18:05:00
-            my $date1 = '2017-06-02';
-            my $date2 = '2017-06-04';
+            subtest 'without time' => sub {
+                # --[Date1]--[cd_multi]--[Date2]--[cd_multi2]--
+                # cd_multi:  2017-06-03 18:05:00
+                # cd_multi2: 2020-06-03 18:05:00
+                my $date1 = '2017-06-02';
+                my $date2 = '2017-06-04';
 
-            test_search({
-                author           => $author,
-                params           => { %params, from => $date1, to => $date2 },
-                expected_obj_ids => [
-                    $objs->{content_data}{cd_multi}->id,
-                ],
-            });
+                test_search({
+                    author           => $author,
+                    params           => { %params, from => $date1, to => $date2 },
+                    expected_obj_ids => [
+                        $objs->{content_data}{cd_multi}->id,
+                    ],
+                });
+                test_search({
+                    author           => $author,
+                    params           => { %params, to => $date1 },
+                    expected_obj_ids => [],
+                });
+                test_search({
+                    author           => $author,
+                    params           => { %params, from => $date1 },
+                    expected_obj_ids => [
+                        $objs->{content_data}{cd_multi}->id,
+                        $objs->{content_data}{cd_multi2}->id,
+                    ],
+                });
+                test_search({
+                    author           => $author,
+                    params           => { %params, to => $date2 },
+                    expected_obj_ids => [
+                        $objs->{content_data}{cd_multi}->id,
+                    ],
+                });
+                test_search({
+                    author           => $author,
+                    params           => { %params, from => $date2 },
+                    expected_obj_ids => [
+                        $objs->{content_data}{cd_multi2}->id,
+                    ],
+                });
+            };
+
+            subtest 'with time' => sub {
+                plan skip_all => 'NOT IMPLEMENTED';
+                # See also https://movabletype.atlassian.net/browse/MTC-27148
+
+                # --[DateTime1]--[cd_multi]--[DateTime2]--[cd_multi2]--
+                # cd_multi:  2017-06-03 18:05:00
+                # cd_multi2: 2020-06-03 18:05:00
+                my ($date1, $time1) = ('2017-06-03', '12:00:00');
+                my ($date2, $time2) = ('2017-06-03', '19:00:00');
+
+                test_search({
+                    author           => $author,
+                    params           => { %params, from => $date1, timefrom => $time1, to => $date2, timeto => $time2 },
+                    expected_obj_ids => [
+                        $objs->{content_data}{cd_multi}->id,
+                    ],
+                });
+                test_search({
+                    author           => $author,
+                    params           => { %params, to => $date1, timeto => $time1 },
+                    expected_obj_ids => [],
+                });
+                test_search({
+                    author           => $author,
+                    params           => { %params, from => $date1, timefrom => $time1 },
+                    expected_obj_ids => [
+                        $objs->{content_data}{cd_multi}->id,
+                        $objs->{content_data}{cd_multi2}->id,
+                    ],
+                });
+                test_search({
+                    author           => $author,
+                    params           => { %params, to => $date2, timeto => $time2 },
+                    expected_obj_ids => [
+                        $objs->{content_data}{cd_multi}->id,
+                    ],
+                });
+                test_search({
+                    author           => $author,
+                    params           => { %params, from => $date2, timefrom => $time2 },
+                    expected_obj_ids => [
+                        $objs->{content_data}{cd_multi2}->id,
+                    ],
+                });
+            };
         };
 
         subtest 'type of date' => sub {
             $params{date_time_field_id} = $objs->{content_type}{ct_multi}{content_field}{cf_date}->id;
 
+            # --[Date1]--[cd_multi]--[Date2]--[cd_multi2]--
             # cd_multi:  2017-06-05
+            # cd_multi2: 2020-06-05
             my $date1 = '2017-06-04';
             my $date2 = '2017-06-06';
 
@@ -178,12 +267,41 @@ subtest 'content_data' => sub {
                     $objs->{content_data}{cd_multi}->id,
                 ],
             });
+            test_search({
+                author           => $author,
+                params           => { %params, to => $date1 },
+                expected_obj_ids => [],
+            });
+            test_search({
+                author           => $author,
+                params           => { %params, from => $date1 },
+                expected_obj_ids => [
+                    $objs->{content_data}{cd_multi}->id,
+                    $objs->{content_data}{cd_multi2}->id,
+                ],
+            });
+            test_search({
+                author           => $author,
+                params           => { %params, to => $date2 },
+                expected_obj_ids => [
+                    $objs->{content_data}{cd_multi}->id,
+                ],
+            });
+            test_search({
+                author           => $author,
+                params           => { %params, from => $date2 },
+                expected_obj_ids => [
+                    $objs->{content_data}{cd_multi2}->id,
+                ],
+            });
         };
 
         subtest 'type of time' => sub {
             $params{date_time_field_id} = $objs->{content_type}{ct_multi}{content_field}{cf_time}->id;
 
+            # --[Time1]--[cd_multi]--[Time2]--[cd_multi2]--
             # cd_multi:  12:34:56
+            # cd_multi2: 15:34:56
             my $time1 = '12:34:55';
             my $time2 = '12:34:57';
 
@@ -194,22 +312,49 @@ subtest 'content_data' => sub {
                     $objs->{content_data}{cd_multi}->id,
                 ],
             });
+            test_search({
+                author           => $author,
+                params           => { %params, timeto => $time1 },
+                expected_obj_ids => [],
+            });
+            test_search({
+                author           => $author,
+                params           => { %params, timefrom => $time1 },
+                expected_obj_ids => [
+                    $objs->{content_data}{cd_multi}->id,
+                    $objs->{content_data}{cd_multi2}->id,
+                ],
+            });
+            test_search({
+                author           => $author,
+                params           => { %params, timeto => $time2 },
+                expected_obj_ids => [
+                    $objs->{content_data}{cd_multi}->id,
+                ],
+            });
+            test_search({
+                author           => $author,
+                params           => { %params, timefrom => $time2 },
+                expected_obj_ids => [
+                    $objs->{content_data}{cd_multi2}->id,
+                ],
+            });
         };
     };
 };
 
 subtest 'template' => sub {
     my %params = (
-        _type       => 'template',
-        blog_id     => $blog_id,
-        do_search   => 1,
-        is_limited  => 1,
-        search_cols => 'name',
+        _type           => 'template',
+        blog_id         => $blog_id,
+        do_search       => 1,
+        is_limited      => 1,
+        search_cols     => 'name',
     );
     test_search({
         author                    => $author,
         params                    => { %params, search => 'author_yearly' },
-        expected_obj_ignore_order => 1,                                        # XXX Fix the app to make search order predictable
+        expected_obj_ignore_order => 1, # XXX Fix the app to make search order predictable
         expected_obj_names        => [
             'tmpl_contenttype_author_yearly_Content Type',
             'tmpl_contenttype_author_yearly_case 0',

@@ -137,17 +137,34 @@ subtest 'dateranged' => sub {
             'Verse 3',
         ],
     });
-    SKIP: {
-        skip 'SKIP until the implementation of date range is fixed.';
-        # This test causes the query to be {'authored_on' => ['000000','235959']}
-        # Since the values are illegal date format, the result would be nothing or everything
-        # depending on the environment.
-        test_search({
-            author           => $admin,
-            params           => {%params},
-            expected_obj_names => [],
-        });
-    }
+    test_search({
+        author           => $admin,
+        params           => {%params},
+        expected_obj_names => [
+            'Verse 5',
+            'Verse 4',
+            'Verse 3',
+            'Verse 2',
+            'Verse 1',
+        ],
+    });
+    test_search({
+        author           => $admin,
+        params           => { %params, from => '1963-01-01', to => undef },
+        expected_obj_names => [
+            'Verse 5',
+            'Verse 4',
+            'Verse 3',
+        ],
+    });
+    test_search({
+        author           => $admin,
+        params           => { %params, from => undef, to => '1963-01-01' },
+        expected_obj_names => [
+            'Verse 2',
+            'Verse 1',
+        ],
+    });
 };
 
 subtest 'Column name in each scopes' => sub {

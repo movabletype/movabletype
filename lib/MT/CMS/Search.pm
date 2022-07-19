@@ -880,7 +880,7 @@ sub do_search_replace {
     $list_pref->{"position_actions_bottom"} = 1;
     $list_pref->{"view"}                    = 'compact';
     $list_pref->{"view_compact"}            = 1;
-    my ( @cols, $datefrom, $dateto, $date_col );
+    my ( @cols, $date_col );
     $do_replace    = 0 unless $search_api->{can_replace};
     $is_dateranged = 0 unless $search_api->{can_search_by_date};
     my @ids;
@@ -939,17 +939,16 @@ sub do_search_replace {
         unshift @cols, 'id';
     }
     if ($is_dateranged) {
-        if ( $from && $to ) {
-            s!\D!!g foreach ( $from, $to );
-            $datefrom = substr( $from, 0, 8 );
-            $dateto   = substr( $to,   0, 8 );
+        for my $date ($from, $to) {
+            next unless $date;
+            $date =~ s!\D!!g;
+            $date = substr($date, 0, 8);
         }
-        if ( $timefrom && $timeto ) {
-            s!\D!!g foreach ( $timefrom, $timeto );
-            $timefrom = substr $timefrom, 0, 6;
-            $timeto   = substr $timeto,   0, 6;
-            $timefrom = "0$timefrom" if length $timefrom == 5;
-            $timeto   = "0$timeto"   if length $timeto == 5;
+        for my $time ($timefrom, $timeto) {
+            next unless $time;
+            $time =~ s!\D!!g;
+            $time = substr $time, 0, 6;
+            $time = "0$time" if length $time == 5;
         }
     }
     my $tab = $app->param('tab') || 'entry';
@@ -1078,19 +1077,21 @@ sub do_search_replace {
             $terms{status} = $publish_status;
             $terms{class}  = $type;
         }
-        if ($is_dateranged) {
+        if ($is_dateranged && ($from || $to || $timefrom || $timeto)) {
             if ($date_time_field_id) {
                 my $field_data
                     = $content_type->get_field($date_time_field_id);
                 my $datetime_term;
                 if ( $field_data->{type} eq 'time_only' ) {
-                    my @range = sort { $a gt $b } ($timefrom || '', $timeto || '');
+                    my @range = ($timefrom, $timeto);
+                    @range = sort { $a gt $b } @range if $timefrom && $timeto;
                     $range[0] = $range[0] ? '19700101'. $range[0] : undef;
                     $range[1] = $range[1] ? '19700101'. $range[1] : undef;
                     $datetime_term = \@range;
                 }
                 else {
-                    my @range = sort { $a gt $b } ($datefrom || '', $dateto || '');
+                    my @range = ($from, $to);
+                    @range = sort { $a gt $b } @range if $from && $to;
                     $range[0] = $range[0] ? $range[0]. '000000' : undef;
                     $range[1] = $range[1] ? $range[1]. '235959' : undef;
                     $datetime_term = \@range;
@@ -1108,7 +1109,8 @@ sub do_search_replace {
             }
             else {
                 $args{range_incl}{$date_col} = 1;
-                my @range = sort { $a gt $b } ($datefrom || '', $dateto || '');
+                my @range = ($from, $to);
+                @range = sort { $a gt $b } @range if $from && $to;
                 $range[0] = $range[0] ? $range[0]. '000000' : undef;
                 $range[1] = $range[1] ? $range[1]. '235959' : undef;
                 $terms{$date_col} = \@range;
@@ -1618,14 +1620,10 @@ sub do_search_replace {
         }
     }
     if ($is_dateranged) {
-        if ($from && $to) {
-            $from =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
-            $to   =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
-        }
-        if ( $timefrom && $timeto ) {
-            $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
-            $timeto =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
-        }
+        $from     =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/ if $from;
+        $to       =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/ if $to;
+        $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/ if $timefrom;
+        $timeto   =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/ if $timeto;
     }
 
     my $error = $app->param('error') || '';
