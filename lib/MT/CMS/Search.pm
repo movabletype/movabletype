@@ -1078,7 +1078,7 @@ sub do_search_replace {
             $terms{class}  = $type;
         }
         if ($is_dateranged && ($from || $to || $timefrom || $timeto)) {
-            if ($date_time_field_id) {
+            if ($content_type && $date_time_field_id) {
                 my $field_data
                     = $content_type->get_field($date_time_field_id);
                 my $datetime_term;

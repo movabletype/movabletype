@@ -165,6 +165,16 @@ subtest 'dateranged' => sub {
             'Verse 1',
         ],
     });
+    subtest 'ignore date_time_field_id on entry search' => sub {
+        test_search({
+            author           => $admin,
+            params           => { %params, from => '1964-03-01', to => '1963-01-01', date_time_field_id => 1 },
+            expected_obj_names => [
+                'Verse 4',
+                'Verse 3',
+            ],
+        });
+    };
 };
 
 subtest 'Column name in each scopes' => sub {
