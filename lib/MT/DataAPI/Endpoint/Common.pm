@@ -577,7 +577,7 @@ sub filtered_list {
             $app, $filter, \%load_options, \@cols );
 
         $objs = $filter->load_objects(%load_options);
-        if ( !defined $objs ) {
+        if ( !defined $objs and $filter->errstr ) {
             return $app->error(
                 MT->translate(
                     "An error occurred while loading objects: [_1]",
