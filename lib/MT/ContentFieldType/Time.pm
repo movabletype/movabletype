@@ -83,7 +83,7 @@ sub filter_tmpl {
     my $prop = shift;
 
     my $tmpl     = 'filter_form_time';
-    my $label    = '<mt:var name="label" encode_js="1" encode_html="1">';
+    my $label    = '<mt:var name="label">';
     my $opts     = '<mt:var name="blank_time_filter_options">';
     my $contents = '<mt:var name="time_filter_contents">';
 
