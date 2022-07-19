@@ -2314,6 +2314,7 @@ BEGIN {
             'AccessOverrides'      => undef,
 
             'JSONCanonicalization' => { default => 1 },
+            'UseMTCommonJSON'      => { default => 1 },
 
             'RequiredUserEmail'       => { default => 1 },
             'DefaultClassParamFilter' => { default => 'all' },
