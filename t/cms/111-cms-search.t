@@ -77,6 +77,23 @@ for my $e (MT::Entry->load) {
     $entries{ $e->id } = $e;
 }
 
+subtest 'unit test for iter_for_replace' => sub {
+    my @entries = MT::Entry->load();
+    my @ids     = map { $_->id } @entries;
+    require MT::CMS::Search;
+
+    for my $capa (1, 2, scalar(@ids) - 1, scalar(@ids) + 1) {
+        subtest 'capacity is ' . $capa => sub {
+            my $iter = MT::CMS::Search::iter_for_replace(MT->model('entry'), [@ids], $capa);
+            my @got;
+            while (my $obj = $iter->()) {
+                push @got, $obj->id;
+            }
+            is_deeply(\@got, [reverse(@ids)], 'all ids included');
+        }
+    }
+};
+
 subtest search => sub {
     subtest basic => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
