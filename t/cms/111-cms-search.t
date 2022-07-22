@@ -16,7 +16,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
-use MT::Test::App;
+use MT::Test::App qw(MT::Test::Role::CMS::Search);
 
 $test_env->prepare_fixture(sub {
     MT::Test->init_db;
@@ -65,8 +65,9 @@ my $aikawa   = MT::Author->load({ name => 'aikawa' });
 my $ichikawa = MT::Author->load({ name => 'ichikawa' });
 my $ukawa    = MT::Author->load({ name => 'ukawa' });
 my $website  = MT::Website->load(2);
-my $blog     = $website->blogs;
+my $blog     = $website->blogs->[0];
 my $admin    = MT::Author->load(1);
+my $blog_id  = $blog->id;
 
 my $website_entry = MT::Entry->load({ title => 'A Sunny Day' });
 
@@ -76,68 +77,28 @@ for my $e (MT::Entry->load) {
 }
 
 subtest 'search_replace' => sub {
-    my @suite = ({
-            params => {
-                is_limited => 0,
-                blog_id    => 1,
-                do_search  => 1,
-                search     => $entries{1}->title,
-            },
-            founds     => [1],
-            not_founds => [2],
-        },
-        {
-            params => {
-                _type      => 'entry',
-                is_limited => 0,
-                blog_id    => 1,
-                do_search  => 1,
-                search     => $entries{1}->title,
-            },
-            founds     => [1],
-            not_founds => [2],
-        },
-    );
-
-    foreach my $data (@suite) {
-        my $params = $data->{params};
-        my $query  = join(
-            '&',
-            map { $_ . '=' . $params->{$_} } sort keys %$params
-        );
-        subtest $query => sub {
-            my $app = MT::Test::App->new('MT::App::CMS');
-            $app->login($admin);
-            $app->post_ok({
-                __mode => 'search_replace',
-                %$params,
-            });
-
-            for my $id (@{ $data->{founds} }) {
-                $app->content_like(qr/name="id" value="$id"/, "Entry#$id is found");
-            }
-            for my $id (@{ $data->{not_founds} }) {
-                $app->content_unlike(
-                    qr/name="id" value="$id"/,
-                    "Entry#$id is not found"
-                );
-            }
-        };
-    }
+    subtest search => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => $blog_id,
+        });
+        $app->search($entries{1}->title);
+        my $ids = $app->found_ids;
+        is_deeply($ids, [1]);
+    };
 
     subtest 'Column name in each scopes' => sub {
 
         # child site scope
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => $blog->[0]->id,
-            do_search  => 1,
-            search     => 'A Rainy Day',
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => $blog_id,
         });
+        $app->search('A Rainy Day');
 
         my $no_results = quotemeta 'No entries were found that match the given criteria.';
         $app->content_unlike(qr/$no_results/, 'There are some search results.');
@@ -157,14 +118,11 @@ subtest 'search_replace' => sub {
         );
 
         # site scope
-        $app->post_ok({
+        $app->get_ok({
             __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
             blog_id    => $website->id,
-            do_search  => 1,
-            search     => 'A Sunny Day',
         });
+        $app->search('A Rainy Day');
 
         $app->content_unlike(qr/$no_results/, 'There are some search results.');
 
@@ -179,14 +137,11 @@ subtest 'search_replace' => sub {
         );
 
         # system scope
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => 0,
-            do_search  => 1,
-            search     => 'A Sunny Day',
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => 0,
         });
+        $app->search('A Sunny Day');
 
         $app->content_unlike(qr/$no_results/, 'There are some search results.');
 
@@ -203,14 +158,11 @@ subtest 'search_replace' => sub {
     subtest 'Search in site scope' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $app->post_ok({
+        $app->get_ok({
             __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
             blog_id    => $website->id,
-            do_search  => 1,
-            search     => 'Day',
         });
+        $app->search('Day');
 
         my $a_sunny_day = quotemeta('<a href="' . $app->_app->mt_uri . '?__mode=view&amp;_type=entry&amp;id=' . $website_entry->id . '&amp;blog_id=' . $website->id . '">' . $website_entry->title . '</a>');
         $app->content_like(
@@ -219,21 +171,18 @@ subtest 'search_replace' => sub {
         );
 
         my $blog_entry  = MT::Entry->load(1);
-        my $a_rainy_day = quotemeta('<a href="' . $app->_app->mt_uri . '?__mode=view&amp;_type=entry&amp;id=' . $blog_entry->id . '&amp;blog_id=' . $blog->[0]->id . '">' . $blog_entry->title . '</a>');
+        my $a_rainy_day = quotemeta('<a href="' . $app->_app->mt_uri . '?__mode=view&amp;_type=entry&amp;id=' . $blog_entry->id . '&amp;blog_id=' . $blog_id . '">' . $blog_entry->title . '</a>');
         $app->content_like(
             qr/$a_rainy_day/,
             'Search results have "A Rainy Day" entry by admin'
         );
 
         $app->login($aikawa);
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => $website->id,
-            do_search  => 1,
-            search     => 'Day',
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => $website->id,
         });
+        $app->search('Day');
         $app->content_like(
             qr/$a_sunny_day/,
             'Search results have "A Sunny Day" entry by permitted user in a site'
@@ -244,14 +193,11 @@ subtest 'search_replace' => sub {
         );
 
         $app->login($ichikawa);
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => $blog->[0]->id,
-            do_search  => 1,
-            search     => 'Day',
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => $blog_id,
         });
+        $app->search('Day');
         $app->content_unlike(
             qr/$a_sunny_day/,
             'Search results do not have "A Sunny Day" entry by permitted user in a child site'
@@ -262,14 +208,11 @@ subtest 'search_replace' => sub {
         );
 
         $app->login($ukawa);
-        $app->post_ok({
-            __mode     => 'search_replace',
-            _type      => 'entry',
-            is_limited => 0,
-            blog_id    => $blog->[0]->id,
-            do_search  => 1,
-            search     => 'Day',
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => $blog_id,
         });
+        $app->search('Day');
         $app->has_permission_error();
     };
 };
