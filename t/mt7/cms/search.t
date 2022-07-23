@@ -230,8 +230,6 @@ subtest 'content_data with daterange' => sub {
 };
 
 subtest q{contaminated date_time_field_id on entry tab is ignored} => sub {
-    plan skip_all => 'XXX MTC-28541';
-
     my $cf_id = $objs->{content_type}{ct_multi}{content_field}{cf_datetime}->id;
     my $app   = MT::Test::App->new('MT::App::CMS');
     $app->login($author);
