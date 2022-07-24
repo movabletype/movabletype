@@ -30,6 +30,8 @@
     "copy-jquery-validation": "cp -rf node_modules/jquery-validation/dist/jquery.validate.* mt-static/jquery/",
     "copy-tinymce": "cp -rf node_modules/tinymce/*.js node_modules/tinymce/themes node_modules/tinymce/skins node_modules/tinymce/plugins node_modules/tinymce/icons node_modules/tinymce/license.txt mt-static/plugins/TinyMCE5/tiny_mce/",
     "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE5/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE5/tiny_mce/langs; cp -rf node_modules/tinymce-i18N/langs5/* mt-static/plugins/TinyMCE5/tiny_mce/langs/",
+    "copy-tinymce6": "cp -rf node_modules/tinymce6/*.js node_modules/tinymce6/themes node_modules/tinymce6/skins node_modules/tinymce6/plugins node_modules/tinymce6/icons node_modules/tinymce6/models node_modules/tinymce6/license.txt mt-static/plugins/TinyMCE6/tiny_mce/",
+    "copy-tinymce6-language": "rm -rf mt-static/plugins/TinyMCE6/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE6/tiny_mce/langs; cp -rf node_modules/tinymce6-i18N/langs6/* mt-static/plugins/TinyMCE6/tiny_mce/langs/",
     "copy-codemirror": "cp -rf node_modules/codemirror/addon node_modules/codemirror/keymap node_modules/codemirror/lib node_modules/codemirror/mode node_modules/codemirror/theme mt-static/codemirror/",
     "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && yarn build-riot && yarn build-ss\" && test `git status -s | wc -l` = 0"
   },
@@ -63,6 +65,8 @@
     "svg4everybody": "^2.1.9",
     "tinymce": "5.10.2",
     "tinymce-i18n": "20.12.25",
+    "tinymce6": "npm:tinymce@^6.1.0",
+    "tinymce6-i18n": "npm:tinymce-i18n@^22.5.2",
     "xpath": "0.0.32"
   }
 }
