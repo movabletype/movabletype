@@ -81,6 +81,29 @@ sub replace {
     $self->post_ok($form->click);
 }
 
+sub dialog_grant_role_search {
+    my ($self, $value, $opts) = @_;
+    my $form   = $self->form('grant') or return note "Failed to find form";
+    my $query  = $self->{cgi}->query_string;
+    my $params = { search => $value, _type => 'user' };
+
+    for my $key (keys %$opts) {
+        next unless exists $params->{$key};
+        $params->{$key} = $opts->{$key};
+    }
+
+    $self->post_ok({
+        %$params,
+        __mode      => $self->{cgi}->param('__mode'),
+        magic_token => $self->{cgi}->param('magic_token'),
+        return_args => $self->{cgi}->param('return_args'),
+        blog_id     => $self->{cgi}->param('blog_id'),
+        type        => $self->{cgi}->param('type'),
+        dialog      => 1,
+        json        => 1,
+    });
+}
+
 sub apply_opts {
     my ($self, $form, $opts) = @_;
     for my $key (%$opts) {
