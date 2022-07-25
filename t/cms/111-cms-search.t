@@ -137,7 +137,6 @@ subtest search => sub {
         cmp_bag($search->($date6, $date2), $date_id_to_title->(1 .. 7), 'negative range');
 
         subtest 'unset or half set daterange' => sub {
-            plan skip_all => 'incomplete daterange';
             cmp_bag($search->('',     $date2), $date_id_to_title->(0 .. 3), 'to only');
             cmp_bag($search->($date2, ''),     $date_id_to_title->(1 .. 8), 'from only');
             cmp_bag($search->('',     $date6), $date_id_to_title->(0 .. 7), 'to only2');
