@@ -2621,10 +2621,7 @@ sub handler_to_coderef {
     my ( $name, $delayed ) = @_;
 
     return $name if ref($name) eq 'CODE';
-    return undef unless defined $name && $name ne '';
-
-    require Scalar::Util;
-    return undef if Scalar::Util::blessed($name);
+    return undef unless defined $name && !ref($name) && $name ne '';
 
     my $code;
     if ( $name !~ m/->/ ) {
