@@ -130,7 +130,7 @@ sub filter_tmpl_multiple {
 </select>
 </mt:setvarblock>
 <__trans phrase="In [_1] column, [_2] [_3]"
-         params="<mt:var name="label" encode_html="1">%%
+         params="<mt:var name="label">%%
                  <select class="custom-select form-control <mt:var name="type">-value">
                  <mt:loop name="single_select_options">
                    <option value="<mt:var name="value" encode_html="1">"><mt:var name="label" encode_html="1" ></option>
