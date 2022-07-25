@@ -108,18 +108,68 @@ sub apply_opts {
     my ($self, $form, $opts) = @_;
     for my $key (%$opts) {
         my @input = $form->find_input($key) or next;
-        $_->disabled('') for @input;
         if ($input[0]->type eq 'checkbox') {
             if (ref($opts->{$key}) eq 'ARRAY') {
                 my %flags = map { $_ => 1 } @{ $opts->{$key} };
-                _change_checkbox($_, $_->value && $flags{ $_->value }) for @input;
+                for my $elem (@input) {
+                    my $val = $elem->value;
+                    if ($elem->disabled) {
+                        next if !$val || !exists $flags{ $val };
+                        next unless _remove_disabled_from_checkbox($self, $opts, $key, $elem);
+                    }
+                    if ($elem->disabled) {
+                        note "Warning: input[name=$key][value=$val] is disabled: ignored";
+                        next;
+                    }
+                    _change_checkbox($elem, $val && $flags{ $val });
+                }
             } else {
                 _change_checkbox($input[0], $opts->{$key});
             }
         } else {
+            next unless _validate($self, $key, $opts);
             $input[0]->value($opts->{$key});
         }
     }
+}
+
+sub _remove_disabled_from_checkbox {
+    my ($self, $opts, $key, $elem) = @_;
+    my $val = $elem->value;
+
+    if ($opts->{content_type_id} && $val && $key eq 'search_cols') {
+        my $ct_id = $opts->{content_type_id};
+        my $checkbox = $self->wq_find(qq{#search_form input[name="search_cols"][value="$val"]});
+        my $li = $checkbox->parent->parent;
+        my $ct_cf_belogs_to = $li->attr('data-mt-content-type');
+        if ($ct_cf_belogs_to != $ct_id) {
+            note "Warning: cf=$val belongs to ct=$ct_cf_belogs_to but ct=$ct_id given: ignored";
+            return;
+        } else {
+            $elem->disabled('');
+            return 1;
+        }
+    }
+
+    return;
+}
+
+sub _validate {
+    my ($self, $key, $opts) = @_;
+
+    if ($key eq 'date_time_field_id') {
+        my $new_val = $opts->{$key};
+        if ($new_val > 0) {
+            my $ct_id = $opts->{content_type_id};
+            my $option = $self->wq_find(qq{#search_form select[name="date_time_field_id"] option[value="$new_val"]});
+            my $ct_cf_belogs_to = $option->attr('data-mt-content-type');
+            if ($ct_cf_belogs_to != $ct_id) {
+                note "Warning: cf=$new_val belongs to ct=$ct_cf_belogs_to but ct=$ct_id given. ignored";
+            }
+        }
+    }
+
+    return 1;
 }
 
 sub result_count {
