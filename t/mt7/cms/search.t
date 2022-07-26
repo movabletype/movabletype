@@ -61,8 +61,21 @@ subtest 'content_data with daterange' => sub {
     my $cf_datetime = $objs->{content_type}{ct_multi}{content_field}{cf_datetime};
     my $cf_date     = $objs->{content_type}{ct_multi}{content_field}{cf_date};
     my $cf_time     = $objs->{content_type}{ct_multi}{content_field}{cf_time};
-    my ($cd1, $cd2) = map {
-        my $date = $_;
+    my @dates       = (
+        '2010-05-15 15:30:30',
+        '2011-06-15 16:20:30',
+        '2011-06-15 16:30:30',    # daterange1
+        '2011-06-15 16:40:30',
+        '2012-07-15 17:30:30',
+        '2013-08-15 18:20:30',
+        '2013-08-15 18:30:30',    # daterange2
+        '2013-08-15 18:40:30',
+        '2014-09-15 19:30:30',
+    );
+    my ($date2, $time2) = split(/ /, $dates[2]);
+    my ($date6, $time6) = split(/ /, $dates[6]);
+    my @cd = map {
+        my $date      = $_;
         my $timestamp = $date;
         $timestamp =~ s{[^\d]}{}g;
         MT::Test::Permission->make_content_data(
@@ -70,14 +83,14 @@ subtest 'content_data with daterange' => sub {
             blog_id         => $blog_id,
             content_type_id => $ct_id,
             identifier      => $date,
-            label           => 'daterangetest-'. $date,
+            label           => 'daterangetest-' . $date,
             data            => {
                 $cf_datetime->id => $timestamp,
                 $cf_date->id     => substr($timestamp, 0, 8),
-                $cf_time->id     => '19700101'. substr($timestamp, 8, 6),
+                $cf_time->id     => '19700101' . substr($timestamp, 8, 6),
             },
         );
-    } ('2017-05-30 16:36:00', '2017-06-01 23:23:23');
+    } @dates;
 
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($author);
@@ -90,7 +103,7 @@ subtest 'content_data with daterange' => sub {
     my $test = sub {
         my ($cf, $from, $timefrom, $to, $timeto, $expected, $skip) = @_;
         subtest $json->encode([$cf ? $cf->name : 'authored_on', $from, $timefrom, $to, $timeto]) => sub {
-            plan skip_all => 'XXX '. $skip if $skip;
+            plan skip_all => 'XXX ' . $skip if $skip;
             $app->search(
                 'daterangetest-', {
                     content_type_id    => $ct_id,
@@ -105,44 +118,40 @@ subtest 'content_data with daterange' => sub {
         };
     };
 
-    # --[Date1]--[cd1]--[Date2]--[cd2]--
-    # Note that $time1 and $time2 are also used alone for 1970-01-01
-    my ($date1, $time1) = ('2017-05-29', '12:00:00');
-    my ($date2, $time2) = ('2017-05-31', '19:00:00');
+    #       cf,           from,   timefrom, to,   timeto, expected,              skip
+    $test->('',           '',     '',     '',     '',     [@cd[reverse(0 .. 8)]], 'imcomplete-daterange');
+    $test->('',           $date2, '',     $date6, '',     [@cd[reverse(1 .. 7)]]);
+    $test->('',           $date6, '',     $date2, '',     [@cd[reverse(1 .. 7)]]);
+    $test->('',           '',     '',     $date2, '',     [@cd[reverse(0 .. 3)]], 'imcomplete-daterange');
+    $test->('',           $date2, '',     '',     '',     [@cd[reverse(1 .. 8)]], 'imcomplete-daterange');
+    $test->('',           '',     '',     $date6, '',     [@cd[reverse(0 .. 7)]], 'imcomplete-daterange');
+    $test->('',           $date6, '',     '',     '',     [@cd[reverse(5 .. 8)]], 'imcomplete-daterange');
+    $test->($cf_datetime, $date2, '',     $date6, '',     [@cd[reverse(1 .. 7)]]);
+    $test->($cf_datetime, $date6, '',     $date2, '',     [@cd[reverse(1 .. 7)]]);
+    $test->($cf_datetime, '',     '',     $date2, '',     [@cd[reverse(0 .. 3)]], 'imcomplete-daterange');
+    $test->($cf_datetime, $date2, '',     '',     '',     [@cd[reverse(1 .. 8)]], 'imcomplete-daterange');
+    $test->($cf_datetime, '',     '',     $date6, '',     [@cd[reverse(0 .. 7)]], 'imcomplete-daterange');
+    $test->($cf_datetime, $date6, '',     '',     '',     [@cd[reverse(5 .. 8)]], 'imcomplete-daterange');
+    $test->($cf_datetime, $date2, $time2, $date6, $time6, [@cd[reverse(2 .. 6)]], 'time-not-implemented');
+    $test->($cf_datetime, $date6, $time6, $date2, $time2, [@cd[reverse(2 .. 6)]], 'time-not-implemented');
+    $test->($cf_datetime, '',     '',     $date2, $time2, [@cd[reverse(0 .. 2)]], 'imcomplete-daterange, time-not-implemented');
+    $test->($cf_datetime, $date2, $time2, '',     '',     [@cd[reverse(2 .. 8)]], 'imcomplete-daterange, time-not-implemented');
+    $test->($cf_datetime, '',     '',     $date6, $time6, [@cd[reverse(0 .. 6)]], 'imcomplete-daterange, time-not-implemented');
+    $test->($cf_datetime, $date6, $time6, '',     '',     [@cd[reverse(6 .. 8)]], 'imcomplete-daterange, time-not-implemented');
+    $test->($cf_date,     $date2, '',     $date6, '',     [@cd[reverse(1 .. 7)]]);
+    $test->($cf_date,     $date6, '',     $date2, '',     [@cd[reverse(1 .. 7)]]);
+    $test->($cf_date,     '',     '',     $date2, '',     [@cd[reverse(0 .. 3)]], 'imcomplete-daterange');
+    $test->($cf_date,     $date2, '',     '',     '',     [@cd[reverse(1 .. 8)]], 'imcomplete-daterange');
+    $test->($cf_date,     '',     '',     $date6, '',     [@cd[reverse(0 .. 7)]], 'imcomplete-daterange');
+    $test->($cf_date,     $date6, '',     '',     '',     [@cd[reverse(5 .. 8)]], 'imcomplete-daterange');
+    $test->($cf_time,     '',     $time2, '',     $time6, [@cd[reverse(2 .. 6)]]);
+    $test->($cf_time,     '',     $time6, '',     $time2, [@cd[reverse(2 .. 6)]]);
+    $test->($cf_time,     '',     '',     '',     $time2, [@cd[reverse(0 .. 2)]], 'imcomplete-daterange');
+    $test->($cf_time,     '',     $time2, '',     '',     [@cd[reverse(2 .. 8)]], 'imcomplete-daterange');
+    $test->($cf_time,     '',     '',     '',     $time6, [@cd[reverse(0 .. 6)]], 'imcomplete-daterange');
+    $test->($cf_time,     '',     $time6, '',     '',     [@cd[reverse(6 .. 8)]], 'imcomplete-daterange');
 
-    #       cf,           from,   timefrom, to,   timeto, expected,     skip
-    $test->('',           $date1, '',     $date2, '',     [$cd1]);
-    $test->('',           $date2, '',     $date1, '',     [$cd1]);
-    $test->('',           '',     '',     '',     '',     [$cd2, $cd1], 'imcomplete-daterange');
-    $test->('',           $date1, '',     '',     '',     [$cd2, $cd1], 'imcomplete-daterange');
-    $test->('',           '',     '',     $date1, '',     [],           'imcomplete-daterange');
-    $test->('',           '',     '',     $date2, '',     [$cd1],       'imcomplete-daterange');
-    $test->('',           $date2, '',     '',     '',     [$cd2],       'imcomplete-daterange');
-    $test->($cf_datetime, $date1, '',     $date2, '',     [$cd1]);
-    $test->($cf_datetime, $date2, '',     $date1, '',     [$cd1]);
-    $test->($cf_datetime, '',     '',     $date1, '',     [],           'imcomplete-daterange');
-    $test->($cf_datetime, $date1, '',     '',     '',     [$cd2, $cd1], 'imcomplete-daterange');
-    $test->($cf_datetime, '',     '',     $date2, '',     [$cd1],       'imcomplete-daterange');
-    $test->($cf_datetime, $date2, '',     '',     '',     [$cd2],       'imcomplete-daterange');
-    $test->($cf_datetime, $date1, $time1, $date2, $time2, [$cd1],       'imcomplete-daterange, time-not-implemented');
-    $test->($cf_datetime, '',     '',     $date1, $time1, [],           'imcomplete-daterange, time-not-implemented');
-    $test->($cf_datetime, $date1, $time1, '',     '',     [$cd2, $cd1], 'imcomplete-daterange, time-not-implemented');
-    $test->($cf_datetime, '',     '',     $date2, $time2, [$cd1],       'imcomplete-daterange, time-not-implemented');
-    $test->($cf_datetime, $date2, $time2, '',     '',     [$cd2],       'imcomplete-daterange, time-not-implemented');
-    $test->($cf_date,     $date1, '',     $date2, '',     [$cd1]);
-    $test->($cf_date,     $date2, '',     $date1, '',     [$cd1]);
-    $test->($cf_date,     '',     '',     $date1, '',     [],           'imcomplete-daterange');
-    $test->($cf_date,     $date1, '',     '',     '',     [$cd2, $cd1], 'imcomplete-daterange');
-    $test->($cf_date,     '',     '',     $date2, '',     [$cd1],       'imcomplete-daterange');
-    $test->($cf_date,     $date2, '',     '',     '',     [$cd2],       'imcomplete-daterange');
-    $test->($cf_time,     '',     $time1, '',     $time2, [$cd1]);
-    $test->($cf_time,     '',     $time2, '',     $time1, [$cd1]);
-    $test->($cf_time,     '',     '',     '',     $time1, [],           'imcomplete-daterange');
-    $test->($cf_time,     '',     $time1, '',     '',     [$cd2, $cd1], 'imcomplete-daterange');
-    $test->($cf_time,     '',     '',     '',     $time2, [$cd1],       'imcomplete-daterange');
-    $test->($cf_time,     '',     $time2, '',     '',     [$cd2],       'imcomplete-daterange');
-
-    $_->remove for ($cd1, $cd2);
+    $_->remove for @cd;
 };
 
 subtest q{contaminated date_time_field_id on entry tab is ignored} => sub {

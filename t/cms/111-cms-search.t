@@ -90,6 +90,60 @@ subtest search => sub {
     };
 
     subtest 'with daterange' => sub {
+        my @dates = (
+            '2010-05-15 15:30:30',
+            '2011-06-15 16:20:30',
+            '2011-06-15 16:30:30',    # daterange1
+            '2011-06-15 16:40:30',
+            '2012-07-15 17:30:30',
+            '2013-08-15 18:20:30',
+            '2013-08-15 18:30:30',    # daterange2
+            '2013-08-15 18:40:30',
+            '2014-09-15 19:30:30',
+        );
+        my ($date2, $time2) = split(/ /, $dates[2]);
+        my ($date6, $time6) = split(/ /, $dates[6]);
+        my @entry = map {
+            my $date      = $_;
+            my $timestamp = $date;
+            $timestamp =~ s{[^\d]}{}g;
+            MT::Test::Permission->make_entry(
+                blog_id     => $website->id,
+                author_id   => $admin->id,
+                authored_on => $timestamp,
+                title       => 'daterangetest-' . $date,
+            );
+        } @dates;
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({ __mode => 'search_replace', blog_id => $website->id });
+
+        require JSON;
+        my $json = JSON->new;
+
+        my $test = sub {
+            my ($from, $to, $expected, $skip) = @_;
+            subtest $json->encode(['authored_on', $from, $to]) => sub {
+                plan skip_all => 'XXX ' . $skip if $skip;
+                $app->search('daterangetest-', { is_dateranged => 1, from => $from, to => $to });
+                is_deeply($app->found_titles, [map { $_->title } @$expected]);
+            };
+        };
+
+        #       from,    to,     expected,                  skip
+        $test->('',     '',     [@entry[reverse(0 .. 8)]], 'imcomplete-daterange');
+        $test->($date2, $date6, [@entry[reverse(1 .. 7)]]);
+        $test->($date6, $date2, [@entry[reverse(1 .. 7)]]);
+        $test->('',     $date2, [@entry[reverse(0 .. 3)]], 'imcomplete-daterange');
+        $test->($date2, '',     [@entry[reverse(1 .. 8)]], 'imcomplete-daterange');
+        $test->('',     $date6, [@entry[reverse(0 .. 7)]], 'imcomplete-daterange');
+        $test->($date6, '',     [@entry[reverse(5 .. 8)]], 'imcomplete-daterange');
+
+        $_->remove for @entry;
+    };
+
+    subtest 'with daterange' => sub {
         my ($entry1, $entry2) = map {
             my $date      = $_;
             my $timestamp = $date;
