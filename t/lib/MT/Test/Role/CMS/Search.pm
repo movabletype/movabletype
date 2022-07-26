@@ -94,11 +94,11 @@ sub dialog_grant_role_search {
 
     $self->post_ok({
         %$params,
-        __mode      => $self->{cgi}->param('__mode'),
-        magic_token => $self->{cgi}->param('magic_token'),
-        return_args => $self->{cgi}->param('return_args'),
-        blog_id     => $self->{cgi}->param('blog_id'),
-        type        => $self->{cgi}->param('type'),
+        __mode      => (scalar $self->{cgi}->param('__mode')),
+        magic_token => (scalar $self->{cgi}->param('magic_token')),
+        return_args => (scalar $self->{cgi}->param('return_args')),
+        blog_id     => (scalar $self->{cgi}->param('blog_id')),
+        type        => (scalar $self->{cgi}->param('type')),
         dialog      => 1,
         json        => 1,
     });
