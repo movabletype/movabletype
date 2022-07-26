@@ -142,51 +142,6 @@ subtest search => sub {
 
         $_->remove for @entry;
     };
-
-    subtest 'with daterange' => sub {
-        my ($entry1, $entry2) = map {
-            my $date      = $_;
-            my $timestamp = $date;
-            $timestamp =~ s{[^\d]}{}g;
-            MT::Test::Permission->make_entry(
-                blog_id     => $website->id,
-                author_id   => $admin->id,
-                authored_on => $timestamp,
-                title       => 'daterangetest-' . $date,
-            );
-        } ('2017-05-30 16:36:00', '2017-06-01 23:23:23');
-
-        my $app = MT::Test::App->new('MT::App::CMS');
-        $app->login($admin);
-        $app->get_ok({ __mode => 'search_replace', blog_id => $website->id });
-
-        require JSON;
-        my $json = JSON->new;
-
-        my $test = sub {
-            my ($from, $to, $expected, $skip) = @_;
-            subtest $json->encode([$from, $to]) => sub {
-                plan skip_all => 'XXX ' . $skip if $skip;
-                $app->search('daterangetest-', { is_dateranged => 1, from => $from, to => $to });
-                is_deeply($app->found_titles, [map { $_->title } @$expected]);
-            };
-        };
-
-        # --[Date1]--[entry1]--[Date2]--[entry2]--
-        my $date1 = '2017-05-29';
-        my $date2 = '2017-05-31';
-
-        #       from,   to,     expected,           skip
-        $test->($date1, $date2, [$entry1]);
-        $test->($date2, $date1, [$entry1]);
-        $test->('',     '',     [$entry2, $entry1], 'imcomplete-daterange');
-        $test->($date1, '',     [$entry2, $entry1], 'imcomplete-daterange');
-        $test->('',     $date1, [],                 'imcomplete-daterange');
-        $test->('',     $date2, [$entry1],          'imcomplete-daterange');
-        $test->($date2, '',     [$entry2],          'imcomplete-daterange');
-
-        $_->remove for ($entry1, $entry2);
-    };
 };
 
 subtest 'Column name in each scopes' => sub {
