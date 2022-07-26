@@ -54,6 +54,20 @@ subtest 'content_data' => sub {
 
         $app->search('text2', { %params, search_cols => ['__field:' . $cf_id2] });
         is_deeply($app->found_titles, ['cd_multi2']);
+
+        subtest 'change content_type_id' => sub {
+            my $ct_id3 = $objs->{content_type}{ct}{content_type}->id;
+            my $cf_id3 = $objs->{content_type}{ct}{content_field}{cf_multi_line_text}->id;
+
+            $app->search('text', { content_type_id => $ct_id3, search_cols => ['__field:' . $cf_id3] });
+            is_deeply($app->found_titles, ['cd']);
+
+            subtest 'illigal cf set (for testing test class)' => sub {
+                $app->search('text', { search_cols => ['__field:' . $cf_id2] });
+                unlike($app->{cgi}->query_string, qr/search_cols=/, 'illigal search_col is ignored');
+                is_deeply($app->found_titles, ['cd']);
+            };
+        };
     };
 };
 

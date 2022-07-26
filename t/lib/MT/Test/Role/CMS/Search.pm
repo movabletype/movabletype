@@ -48,14 +48,6 @@ sub change_tab {
     $self->post_ok($form->click);
 }
 
-# This should be implemented in HTML::Form?
-sub _change_checkbox {
-    my ($checkbox, $on) = @_;
-    my $menu = $on ? 1 : 0;
-    $checkbox->{current} = $menu;
-    $checkbox->{menu}[$menu]{seen}++;
-}
-
 sub search {
     my ($self, $value, $opts) = @_;
     my $form = $self->form('search_form') or return note "Failed to find form";
@@ -104,6 +96,19 @@ sub dialog_grant_role_search {
     });
 }
 
+# This should be implemented in HTML::Form?
+sub _change_checkbox {
+    my ($checkbox, $on) = @_;
+    my $menu = $on ? 1 : 0;
+    $checkbox->{current} = $menu;
+    $checkbox->{menu}[$menu]{seen}++;
+}
+
+sub _checkbox_attr_value {
+    my ($checkbox) = @_;
+    $checkbox->{menu}[1]->{value};
+}
+
 sub apply_opts {
     my ($self, $form, $opts) = @_;
     for my $key (%$opts) {
@@ -112,10 +117,9 @@ sub apply_opts {
             if (ref($opts->{$key}) eq 'ARRAY') {
                 my %flags = map { $_ => 1 } @{ $opts->{$key} };
                 for my $elem (@input) {
-                    my $val = $elem->value;
-                    if ($elem->disabled) {
-                        next if !$val || !exists $flags{ $val };
-                        next unless _remove_disabled_from_checkbox($self, $opts, $key, $elem);
+                    my $val = _checkbox_attr_value($elem);
+                    if ($key eq 'search_cols') {
+                        next unless _search_cols_available($self, $form, $opts, $key, $elem, $val, \%flags);
                     }
                     _change_checkbox($elem, $val && $flags{ $val });
                 }
@@ -129,25 +133,30 @@ sub apply_opts {
     }
 }
 
-sub _remove_disabled_from_checkbox {
-    my ($self, $opts, $key, $elem) = @_;
-    my $val = $elem->value;
+sub _search_cols_available {
+    my ($self, $form, $opts, $key, $elem, $val, $flags) = @_;
 
-    if ($opts->{content_type_id} && $val && $key eq 'search_cols') {
-        my $ct_id = $opts->{content_type_id};
-        my $checkbox = $self->wq_find(qq{#search_form input[name="search_cols"][value="$val"]});
-        my $li = $checkbox->parent->parent;
-        my $ct_cf_belogs_to = $li->attr('data-mt-content-type');
-        if ($ct_cf_belogs_to != $ct_id) {
-            note "Warning: cf=$val belongs to ct=$ct_cf_belogs_to but ct=$ct_id given: ignored";
-            return;
-        } else {
-            $elem->disabled('');
-            return 1;
+    my $ct_id = $opts->{content_type_id};
+    unless ($ct_id) {
+        if (my $ct_id_field = $form->find_input('content_type_id')) {
+            $ct_id = $ct_id_field->value;
         }
     }
 
-    return;
+    if ($ct_id) {
+        if ($val =~ /^__field:/) {
+            my $checkbox = $self->wq_find(qq{#search_form input[name="search_cols"][value="$val"]});
+            my $li = $checkbox->parent->parent;
+            my $ct_cf_belogs_to = $li->attr('data-mt-content-type');
+            if (exists $flags->{ $val } && $ct_cf_belogs_to != $ct_id) {
+                note "Warning: cf=$val belongs to ct=$ct_cf_belogs_to but ct=$ct_id given: ignored";
+                return;
+            }
+        }
+        $elem->disabled('') if $elem->disabled;
+    }
+
+    return 1;
 }
 
 sub _validate {
