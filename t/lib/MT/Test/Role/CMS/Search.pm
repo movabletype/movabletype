@@ -117,10 +117,6 @@ sub apply_opts {
                         next if !$val || !exists $flags{ $val };
                         next unless _remove_disabled_from_checkbox($self, $opts, $key, $elem);
                     }
-                    if ($elem->disabled) {
-                        note "Warning: input[name=$key][value=$val] is disabled: ignored";
-                        next;
-                    }
                     _change_checkbox($elem, $val && $flags{ $val });
                 }
             } else {
@@ -164,7 +160,7 @@ sub _validate {
             my $option = $self->wq_find(qq{#search_form select[name="date_time_field_id"] option[value="$new_val"]});
             my $ct_cf_belogs_to = $option->attr('data-mt-content-type');
             if ($ct_cf_belogs_to != $ct_id) {
-                note "Warning: cf=$new_val belongs to ct=$ct_cf_belogs_to but ct=$ct_id given. ignored";
+                note "Warning: cf=$new_val belongs to ct=$ct_cf_belogs_to but ct=$ct_id given: continue";
             }
         }
     }
