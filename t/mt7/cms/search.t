@@ -29,12 +29,13 @@ subtest 'content_data' => sub {
     $app->login($author);
     $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
     $app->change_tab('content_data');
+    $app->change_content_type($ct_id);
 
     subtest 'basic' => sub {
-        $app->search('text', { content_type_id => $ct_id });
+        $app->search('text', {});
         is_deeply($app->found_titles, ['cd_multi2', 'cd_multi']);
 
-        $app->search('single line text', { content_type_id => $ct_id });
+        $app->search('single line text', {});
         is_deeply($app->found_titles, ['cd_multi2', 'cd_multi']);
     };
 
@@ -42,7 +43,7 @@ subtest 'content_data' => sub {
         my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_single_line_text}->id;
         my $cf_id2 = $objs->{content_type}{ct_multi}{content_field}{cf_multi_line_text}->id;
 
-        my %params = (content_type_id => $ct_id, is_limited => 1,);
+        my %params = (is_limited => 1);
         $app->search('text', { %params, search_cols => ['__field:' . $cf_id1] });
         is_deeply($app->found_titles, ['cd_multi2', 'cd_multi']);
 
@@ -58,8 +59,8 @@ subtest 'content_data' => sub {
         subtest 'change content_type_id' => sub {
             my $ct_id3 = $objs->{content_type}{ct}{content_type}->id;
             my $cf_id3 = $objs->{content_type}{ct}{content_field}{cf_multi_line_text}->id;
-
-            $app->search('text', { content_type_id => $ct_id3, search_cols => ['__field:' . $cf_id3] });
+            $app->change_content_type($ct_id3);
+            $app->search('text', { search_cols => ['__field:' . $cf_id3] });
             is_deeply($app->found_titles, ['cd']);
 
             subtest 'illigal cf set (for testing test class)' => sub {
@@ -110,6 +111,7 @@ subtest 'content_data with daterange' => sub {
     $app->login($author);
     $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
     $app->change_tab('content_data');
+    $app->change_content_type($ct_id);
 
     require JSON;
     my $json = JSON->new;
@@ -120,7 +122,6 @@ subtest 'content_data with daterange' => sub {
             plan skip_all => 'XXX ' . $skip if $skip;
             $app->search(
                 'daterangetest-', {
-                    content_type_id    => $ct_id,
                     is_dateranged      => 1,
                     date_time_field_id => ($cf ? $cf->id : 0),
                     from               => $from,
@@ -265,7 +266,8 @@ subtest 'content_data replace' => sub {
     subtest 'basic' => sub {
         $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
         $app->change_tab('content_data');
-        $app->search('ReplaceTest', { content_type_id => $ct_id });
+        $app->change_content_type($ct_id);
+        $app->search('ReplaceTest', {});
         is_deeply($app->found_ids, [@cd_ids[0, 1, 2]], 'found all');
         $app->replace('ReplaceTest-mod', [@cd_ids[0, 1]]);
         is_deeply($app->found_ids, [@cd_ids[1, 0]], 'selected ones are replaced');
@@ -287,7 +289,7 @@ subtest 'content_data replace' => sub {
     };
 
     subtest 'do it again' => sub {
-        $app->search('ReplaceTest', { content_type_id => $ct_id });
+        $app->search('ReplaceTest', {});
         is_deeply($app->found_ids, [@cd_ids[0, 1, 2]], 'found all');
         $app->replace('ReplaceTest-mod', [@cd_ids[0, 1]]);
         is_deeply($app->found_ids, [@cd_ids[1, 0]], 'selected ones are replaced');
