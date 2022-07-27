@@ -326,17 +326,17 @@ subtest 'word boundary' => sub {
     $app->search('wordboundaryテスト', {%params});
     cmp_bag($app->found_titles, ['wordboundaryテスト']);
     $app->search('wordboundary', {%params});
-    cmp_bag($app->found_titles, ['wordboundaryテスト', 'wordboundary/test']);
+    cmp_bag($app->found_titles, ['wordboundary/test']);
     $app->search('boundaryテスト', {%params});
-    cmp_bag($app->found_titles, ['wordboundaryテスト']);
-    $app->search('boundary', { %params, word_boundary => 1 });
     cmp_bag($app->found_titles, []);
-    $app->search('wordboundaryテスト', { %params, word_boundary => 1 });
+    $app->search('boundary', { %params, word_boundary => 0 });
+    cmp_bag($app->found_titles, ['wordboundary/test', 'wordboundarytest', 'wordboundaryテスト']);
+    $app->search('wordboundaryテスト', { %params, word_boundary => 0 });
     cmp_bag($app->found_titles, ['wordboundaryテスト']);
-    $app->search('wordboundary', { %params, word_boundary => 1 });
-    cmp_bag($app->found_titles, ['wordboundaryテスト', 'wordboundary/test']);
-    $app->search('boundaryテスト', { %params, word_boundary => 1 });
-    cmp_bag($app->found_titles, []);
+    $app->search('wordboundary', { %params, word_boundary => 0 });
+    cmp_bag($app->found_titles, ['wordboundarytest', 'wordboundaryテスト', 'wordboundary/test']);
+    $app->search('boundaryテスト', { %params, word_boundary => 0 });
+    cmp_bag($app->found_titles, ['wordboundaryテスト']);
 };
 
 subtest 'replace' => sub {

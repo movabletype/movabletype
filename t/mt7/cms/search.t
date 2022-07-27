@@ -52,8 +52,8 @@ subtest 'content_data' => sub {
         $app->search('multi1', { %params, search_cols => ['__field:' . $cf_id1] });
         is_deeply($app->found_titles, ['cd_multi']);
 
-        $app->search('text', { %params, search_cols => ['__field:' . $cf_id2] });
-        is_deeply($app->found_titles, ['cd_multi']);
+        $app->search('text', { %params, search_cols => ['__field:' . $cf_id2], word_boundary => 0 });
+        is_deeply($app->found_titles, ['cd_multi2', 'cd_multi']);
 
         $app->search('text2', { %params, search_cols => ['__field:' . $cf_id2] });
         is_deeply($app->found_titles, ['cd_multi2']);
@@ -260,13 +260,17 @@ subtest 'template' => sub {
     $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
     $app->change_tab('template');
 
-    $app->search('tmpl_author_yearly', { is_limited => 1, search_cols => 'name' });
+    $app->search('author_yearly', { word_boundary => 0, is_limited => 1, search_cols => 'name' });
 
     # XXX Fix the app to make search order predictable. We ignore the order for now.
     is_deeply(
         [sort @{ $app->found_titles }],
         [
             sort @{ [
+                'tmpl_contenttype_author_yearly_Content Type',
+                'tmpl_contenttype_author_yearly_case 0',
+                'tmpl_contenttype_author_yearly_test content data',
+                'tmpl_contenttype_author_yearly_test multiple content data',
                 'tmpl_author_yearly',
             ] }
         ],
@@ -303,7 +307,7 @@ subtest 'website' => sub {
     $app->get_ok({ __mode => 'search_replace', blog_id => 0 });
     ok $app->tab_exists('website'), 'blog tab is available';
     $app->change_tab('website');
-    $app->search('website', { is_limited => 1, search_cols => 'name' });
+    $app->search('site', { word_boundary => 0, is_limited => 1, search_cols => 'name' });
     is_deeply($app->found_titles, ['First Website']);
 };
 
@@ -401,13 +405,13 @@ subtest 'dialog_grant_role' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($author);
 
-    $app->get_ok({ __mode => 'dialog_grant_role', blog_id => $blog_id });
-    $app->dialog_grant_role_search('author');
-    $expected->($app, ['author'], { limit => 25, listTotal => 1, offset => 0, rows => 1 });
+    $app->get_ok({ __mode => 'dialog_grant_role', blog_id => $blog_id, word_boundary => 0 });
+    $app->dialog_grant_role_search('o');
+    $expected->($app, ['author', 'Melody'], { limit => 25, listTotal => 2, offset => 0, rows => 2 });
 
-    $app->get_ok({ __mode => 'dialog_grant_role', blog_id => 0 });
-    $app->dialog_grant_role_search('author');
-    $expected->($app, ['author'], { limit => 25, listTotal => 1, offset => 0, rows => 1 });
+    $app->get_ok({ __mode => 'dialog_grant_role', blog_id => 0, word_boundary => 0 });
+    $app->dialog_grant_role_search('o');
+    $expected->($app, ['author', 'Melody'], { limit => 25, listTotal => 2, offset => 0, rows => 2 });
 };
 
 done_testing;

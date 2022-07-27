@@ -952,11 +952,7 @@ sub do_search_replace {
     if ( defined $search && $search ne '' ) {
         unless ($is_regex) {
             $search = quotemeta($search);
-            if ($word_boundary || $search !~ qr{\W}a) {
-                $search =~ s{^(?=\w)}{\\b}a;
-                $search =~ s{(?<=\w)$}{\\b}a;
-                $search = '(?a)'. $search;
-            }
+            $search = '\b'. $search. '\b' if $word_boundary;
         }
         $search = '(?i)' . $search   unless $case;
     }
@@ -1673,6 +1669,7 @@ sub do_search_replace {
         "tab_$tab"         => 1,
         filter             => $filter,
         filter_val         => $filter_val,
+        word_boundary      => defined $word_boundary ? $word_boundary : 1,
         %param
     );
     $res{'tab_junk'} = 1 if $is_junk;
