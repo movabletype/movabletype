@@ -1279,7 +1279,7 @@ sub _make_label_html {
         };
     }
 
-    my $label = $obj->label || MT->translate('No Label');
+    my $label = MT::Util::encode_html($obj->label || MT->translate('No Label'), 1);
     my $edit_link;
     if ( $app->user->permissions( $obj->blog_id )
         ->can_edit_content_data( $obj, $app->user ) )
