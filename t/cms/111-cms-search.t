@@ -17,6 +17,7 @@ BEGIN {
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::App qw(MT::Test::Role::CMS::Search);
+use Test::Deep 'cmp_bag';
 
 $test_env->prepare_fixture(sub {
     MT::Test->init_db;
@@ -107,7 +108,7 @@ subtest search => sub {
             my $date      = $_;
             my $timestamp = $date;
             $timestamp =~ s{[^\d]}{}g;
-            my $entry = MT::Test::Permission->make_entry(            
+            my $entry = MT::Test::Permission->make_entry(
                 blog_id     => $website->id,
                 author_id   => $admin->id,
                 authored_on => $timestamp,
@@ -122,26 +123,27 @@ subtest search => sub {
         $app->login($admin);
         $app->get_ok({ __mode => 'search_replace', blog_id => $website->id });
 
-        require JSON;
-        my $json = JSON->new;
-
-        my $test = sub {
-            my ($from, $to, $expected, $skip) = @_;
-            subtest $json->encode(['authored_on', $from, $to]) => sub {
-                plan skip_all => 'XXX ' . $skip if $skip;
-                $app->search('daterangetest-', { is_dateranged => 1, from => $from, to => $to });
-                is_deeply($app->found_titles, [map { $_->title } @$expected]);
-            };
+        my $search = sub {
+            my ($from, $to) = @_;
+            note join(', ', $from, $to);
+            $app->search('daterangetest-', { is_dateranged => 1, from => $from, to => $to });
+            return $app->found_titles;
+        };
+        my $date_id_to_title = sub {
+            return [map { $_->title } @entries{ @dates[@_] }];
         };
 
-        #       from,    to,     expected,                         skip
-        $test->('',     '',     [@entries{ @dates[reverse(0 .. 8)] }], 'imcomplete-daterange');
-        $test->($date2, $date6, [@entries{ @dates[reverse(1 .. 7)] }]);
-        $test->($date6, $date2, [@entries{ @dates[reverse(1 .. 7)] }]);
-        $test->('',     $date2, [@entries{ @dates[reverse(0 .. 3)] }], 'imcomplete-daterange');
-        $test->($date2, '',     [@entries{ @dates[reverse(1 .. 8)] }], 'imcomplete-daterange');
-        $test->('',     $date6, [@entries{ @dates[reverse(0 .. 7)] }], 'imcomplete-daterange');
-        $test->($date6, '',     [@entries{ @dates[reverse(5 .. 8)] }], 'imcomplete-daterange');
+        cmp_bag($search->($date2, $date6), $date_id_to_title->(1 .. 7), 'normal');
+        cmp_bag($search->($date6, $date2), $date_id_to_title->(1 .. 7), 'negative range');
+
+        subtest 'unset or half set daterange' => sub {
+            plan skip_all => 'incomplete daterange';
+            cmp_bag($search->('',     $date2), $date_id_to_title->(0 .. 3), 'to only');
+            cmp_bag($search->($date2, ''),     $date_id_to_title->(1 .. 8), 'from only');
+            cmp_bag($search->('',     $date6), $date_id_to_title->(0 .. 7), 'to only2');
+            cmp_bag($search->($date6, ''),     $date_id_to_title->(5 .. 8), 'from only2');
+            cmp_bag($search->('',     ''),     $date_id_to_title->(0 .. 8), 'no params');
+        };
 
         $_->remove for values %entries;
     };
