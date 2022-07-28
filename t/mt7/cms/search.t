@@ -224,6 +224,54 @@ subtest 'content_data with daterange' => sub {
     }
 };
 
+subtest 'cf_time param normalization' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+    $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+    $app->change_tab('content_data');
+    $app->change_content_type($ct_id);
+    my %params = (
+        is_dateranged      => 1, 
+        date_time_field_id => $objs->{content_type}{ct_multi}{content_field}{cf_time}->id,
+    );
+
+    subtest 'normal time value retrieved' => sub {
+        subtest 'with colon' => sub {
+            $app->search('a', { %params, timefrom => '12:34:56', timeto => '13:45:59' });
+            my $form = $app->find_searchform('search_form');
+            is $form->find_input('timefrom')->value, '12:34:56', 'timefrom normal';
+            is $form->find_input('timeto')->value, '13:45:59', 'timeto normal';
+        };
+        subtest 'without colon' => sub {
+            $app->search('a', { %params, timefrom => '123456', timeto => '134559' });
+            my $form = $app->find_searchform('search_form');
+            is $form->find_input('timefrom')->value, '12:34:56', 'timefrom normal';
+            is $form->find_input('timeto')->value, '13:45:59', 'timeto normal';
+        };
+    };
+    subtest '1 digit values retrieved with padding' => sub {
+        subtest 'with colon' => sub {
+            $app->search('a', { %params, timefrom => '2:34:56', timeto => '3:45:59' });
+            my $form = $app->find_searchform('search_form');
+            is $form->find_input('timefrom')->value, '02:34:56', 'timefrom normal';
+            is $form->find_input('timeto')->value, '03:45:59', 'timeto normal';
+
+            subtest 'zero pad as much as possible' => sub {
+                $app->search('a', { %params, timefrom => '2:4:6', timeto => '3:5:9' });
+                my $form = $app->find_searchform('search_form');
+                is $form->find_input('timefrom')->value, '02:04:06', 'timefrom normal';
+                is $form->find_input('timeto')->value, '03:05:09', 'timeto normal';
+            };
+        };
+        subtest 'without colon' => sub {
+            $app->search('a', { %params, timefrom => '23456', timeto => '34559' });
+            my $form = $app->find_searchform('search_form');
+            is $form->find_input('timefrom')->value, '02:34:56', 'timefrom normal';
+            is $form->find_input('timeto')->value, '03:45:59', 'timeto normal';
+        };
+    };
+};
+
 subtest q{contaminated date_time_field_id on entry tab is ignored} => sub {
     my $entry = MT::Test::Permission->make_entry(
         blog_id     => $blog_id,

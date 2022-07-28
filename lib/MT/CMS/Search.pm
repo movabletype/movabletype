@@ -946,9 +946,14 @@ sub do_search_replace {
         }
         for my $time ($timefrom, $timeto) {
             next unless $time;
-            $time =~ s!\D!!g;
-            $time = substr $time, 0, 6;
-            $time = "0$time" if length $time == 5;
+            my @part = split(/:/, $time);
+            if (scalar @part == 3) {
+                $time = join '', map { sprintf('%02d', $_) } @part;
+            } else {
+                $time =~ s!\D!!g;
+                $time = substr $time, 0, 6;
+                $time = "0$time" if length $time == 5;
+            }
         }
     }
     my $tab = $app->param('tab') || 'entry';
