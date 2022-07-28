@@ -146,9 +146,14 @@ function toggleContentTypeDateTimeInputs() {
   var $dateTo = jQuery('#dateto').parents('.form-group');
   var $timeFrom = jQuery('#timefrom').parents('.form-group');
   var $timeTo = jQuery('#timeto').parents('.form-group');
-  if ($selectedOptgroup.attr('label') == 'Time') {
+  if ($selectedOptgroup.attr('id') == 'optgroup_time') {
     $dateFrom.hide();
     $dateTo.hide();
+    $timeFrom.show();
+    $timeTo.show();
+  } else if ($selectedOptgroup.attr('id') == 'optgroup_date_and_time') {
+    $dateFrom.show();
+    $dateTo.show();
     $timeFrom.show();
     $timeTo.show();
   } else {
@@ -347,17 +352,17 @@ function toggleContentTypeDateTimeInputs() {
               <label for="datefrom"><__trans phrase="_DATE_FROM">:</label>
               <input placeholder="YYYY-MM-DD" type="text" name="from" id="datefrom" class="form-control text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
             </div>
-            <div class="form-group mx-3"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
+    <mt:if name="object_type" eq="content_data">
+            <div class="form-group ml-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
+              <input placeholder="HH:mm:ss" type="text" name="timefrom" id="timefrom" class="form-control text-time text time" value="<mt:if name="timefrom"><mt:var name="timefrom" escape="html"></mt:if>">
+            </div>
+    </mt:if>
+            <div class="form-group ml-3"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
               <label for="dateto"><__trans phrase="_DATE_TO">:</label>
               <input placeholder="YYYY-MM-DD" type="text" name="to" id="dateto" class="form-control text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
             </div>
     <mt:if name="object_type" eq="content_data">
-            <div class="form-group"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
-              <label for="timefrom"><__trans phrase="_TIME_FROM">:</label>
-              <input placeholder="HH:mm:ss" type="text" name="timefrom" id="timefrom" class="form-control text-time text time" value="<mt:if name="timefrom"><mt:var name="timefrom" escape="html"></mt:if>">
-            </div>
-            <div class="form-group mx-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
-              <label for="timeto"><__trans phrase="_TIME_TO">:</label>
+            <div class="form-group ml-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
               <input placeholder="HH:mm:ss" type="text" name="timeto" id="timeto" class="form-control text-time text time" value="<mt:if name="timeto"><mt:var name="timeto" escape="html"></mt:if>">
             </div>
     </mt:if>
