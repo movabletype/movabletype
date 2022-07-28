@@ -103,17 +103,20 @@ subtest search => sub {
         );
         my ($date2, $time2) = split(/ /, $dates[2]);
         my ($date6, $time6) = split(/ /, $dates[6]);
-        my @entry = map {
+        my %entries = map {
             my $date      = $_;
             my $timestamp = $date;
             $timestamp =~ s{[^\d]}{}g;
-            MT::Test::Permission->make_entry(
+            my $entry = MT::Test::Permission->make_entry(            
                 blog_id     => $website->id,
                 author_id   => $admin->id,
                 authored_on => $timestamp,
+                created_on  => '20300101232323',
+                modified_on => '20300101232323',
                 title       => 'daterangetest-' . $date,
             );
-        } @dates;
+            ($date => $entry);
+        } List::Util::shuffle @dates;
 
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
@@ -131,16 +134,16 @@ subtest search => sub {
             };
         };
 
-        #       from,    to,     expected,                  skip
-        $test->('',     '',     [@entry[reverse(0 .. 8)]], 'imcomplete-daterange');
-        $test->($date2, $date6, [@entry[reverse(1 .. 7)]]);
-        $test->($date6, $date2, [@entry[reverse(1 .. 7)]]);
-        $test->('',     $date2, [@entry[reverse(0 .. 3)]], 'imcomplete-daterange');
-        $test->($date2, '',     [@entry[reverse(1 .. 8)]], 'imcomplete-daterange');
-        $test->('',     $date6, [@entry[reverse(0 .. 7)]], 'imcomplete-daterange');
-        $test->($date6, '',     [@entry[reverse(5 .. 8)]], 'imcomplete-daterange');
+        #       from,    to,     expected,                         skip
+        $test->('',     '',     [@entries{ @dates[reverse(0 .. 8)] }], 'imcomplete-daterange');
+        $test->($date2, $date6, [@entries{ @dates[reverse(1 .. 7)] }]);
+        $test->($date6, $date2, [@entries{ @dates[reverse(1 .. 7)] }]);
+        $test->('',     $date2, [@entries{ @dates[reverse(0 .. 3)] }], 'imcomplete-daterange');
+        $test->($date2, '',     [@entries{ @dates[reverse(1 .. 8)] }], 'imcomplete-daterange');
+        $test->('',     $date6, [@entries{ @dates[reverse(0 .. 7)] }], 'imcomplete-daterange');
+        $test->($date6, '',     [@entries{ @dates[reverse(5 .. 8)] }], 'imcomplete-daterange');
 
-        $_->remove for @entry;
+        $_->remove for values %entries;
     };
 };
 
