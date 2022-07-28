@@ -1090,10 +1090,15 @@ sub do_search_replace {
                     $datetime_term = \@range;
                 }
                 else {
-                    my @range = ($from, $to);
-                    @range = sort { $a gt $b } @range if $from && $to;
-                    $range[0] = $range[0] ? $range[0]. '000000' : undef;
-                    $range[1] = $range[1] ? $range[1]. '235959' : undef;
+                    my @range = (
+                        [$from, $field_data->{type} eq 'date_and_time' && $timefrom ? $timefrom : undef],
+                        [$to,   $field_data->{type} eq 'date_and_time' && $timeto   ? $timeto   : undef],
+                    );
+                    if ($from && $to) {
+                        @range = sort { ($a->[0] . ($a->[1] || '000000')) gt ($b->[0] . ($b->[1] || '000000')) } @range;
+                    }
+                    $range[0]      = $range[0][0] ? $range[0][0] . ($range[0][1] || '000000') : undef;
+                    $range[1]      = $range[1][0] ? $range[1][0] . ($range[1][1] || '235959') : undef;
                     $datetime_term = \@range;
                 }
                 my $join = $app->model('content_field_index')->join_on(
