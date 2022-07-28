@@ -74,8 +74,8 @@ subtest 'content_data' => sub {
 };
 
 subtest 'content_data with daterange' => sub {
-    my $cfs = $objs->{content_type}{ct_multi}{content_field};
-    my @dates       = (
+    my $cfs   = $objs->{content_type}{ct_multi}{content_field};
+    my @dates = (
         '2010-05-15 10:30:30',
         '2011-06-15 11:20:30',
         '2011-06-15 11:30:30',    # daterange1
@@ -127,93 +127,104 @@ subtest 'content_data with daterange' => sub {
 
     my ($date2, $time2) = split(/ /, $dates[2]);
     my ($date6, $time6) = split(/ /, $dates[6]);
-    
-    for my $field ('authored_on', 'cf_datetime', 'cf_date', 'cf_time') {
-        my $fcds   = $cds{$field};
-        my $search = sub {
-            my ($from, $timefrom, $to, $timeto) = @_;
-            note join(', ', $from, $timefrom, $to, $timeto);
-            $app->search(
-                $field . '-daterangetest-', {
-                    is_dateranged      => 1,
-                    date_time_field_id => ($cfs->{$field} ? $cfs->{$field}->id : 0),
-                    from               => $from,
-                    timefrom           => $timefrom,
-                    to                 => $to,
-                    timeto             => $timeto,
-                });
-            return $app->found_titles;
+    my ($field, $fcds);
+    my $search = sub {
+        my ($from, $timefrom, $to, $timeto) = @_;
+        note join(', ', $from, $timefrom, $to, $timeto);
+        $app->search(
+            $field . '-daterangetest-', {
+                is_dateranged      => 1,
+                date_time_field_id => ($cfs->{$field} ? $cfs->{$field}->id : 0),
+                from               => $from,
+                timefrom           => $timefrom,
+                to                 => $to,
+                timeto             => $timeto,
+            });
+        return $app->found_titles;
+    };
+    my $date_id_to_label = sub {
+        return [map { $_->label } @$fcds{ @dates[@_] }];
+    };
+
+    subtest 'authored_on' => sub {
+        $field = 'authored_on';
+        $fcds  = $cds{$field};
+        cmp_bag($search->($date2, '', $date6, ''), $date_id_to_label->(1 .. 7), 'normal');
+        cmp_bag($search->($date6, '', $date2, ''), $date_id_to_label->(1 .. 7), 'negative range');
+
+        subtest 'unset or half set daterange' => sub {
+            plan skip_all => 'incomplete daterange';
+            cmp_bag($search->('',     '', $date2, ''), $date_id_to_label->(0 .. 3), 'to only');
+            cmp_bag($search->($date2, '', '',     ''), $date_id_to_label->(1 .. 8), 'from only');
+            cmp_bag($search->('',     '', $date6, ''), $date_id_to_label->(0 .. 7), 'to only2');
+            cmp_bag($search->($date6, '', '',     ''), $date_id_to_label->(5 .. 8), 'from only2');
+            cmp_bag($search->('',     '', '',     ''), $date_id_to_label->(0 .. 8), 'no params');
         };
-        my $date_id_to_label = sub {
-            return [map { $_->label } @$fcds{ @dates[@_] }];
+    };
+
+    subtest 'cf_datetime' => sub {
+        $field = 'cf_datetime';
+        $fcds  = $cds{$field};
+        cmp_bag($search->($date2, '', $date6, ''), $date_id_to_label->(1 .. 7), 'normal');
+        cmp_bag($search->($date6, '', $date2, ''), $date_id_to_label->(1 .. 7), 'negative range');
+
+        subtest 'unset or half set daterange' => sub {
+            plan skip_all => 'incomplete daterange';
+            cmp_bag($search->('',     '', $date2, ''), $date_id_to_label->(0 .. 3), 'to only');
+            cmp_bag($search->($date2, '', '',     ''), $date_id_to_label->(1 .. 8), 'from only');
+            cmp_bag($search->('',     '', $date6, ''), $date_id_to_label->(0 .. 7), 'to only2');
+            cmp_bag($search->($date6, '', '',     ''), $date_id_to_label->(5 .. 8), 'from only2');
+
+            subtest 'with time' => sub {
+                plan skip_all => 'mot implemented';
+                cmp_bag($search->($date2, $time2, $date6, $time6), $date_id_to_label->(2 .. 6), 'normal');
+                cmp_bag($search->($date6, $time6, $date2, $time2), $date_id_to_label->(2 .. 6), 'negative range');
+                cmp_bag($search->('',     '',     $date2, $time2), $date_id_to_label->(0 .. 2), 'to only');
+                cmp_bag($search->($date2, $time2, '',     ''),     $date_id_to_label->(2 .. 8), 'from only');
+                cmp_bag($search->('',     '',     $date6, $time6), $date_id_to_label->(0 .. 6), 'to only2');
+                cmp_bag($search->($date6, $time6, '',     ''),     $date_id_to_label->(6 .. 8), 'from only2');
+            };
+
+            subtest 'eccentric cases' => sub {
+                cmp_bag($search->($date6, '',     $date6, $time6), $date_id_to_label->(5 .. 6), 'within a day');
+                cmp_bag($search->($date6, $time6, $date6, ''),     $date_id_to_label->(5 .. 6), 'within a day');
+                cmp_bag($search->($date6, '',     '',     $time6), $date_id_to_label->(5 .. 8), 'within a day');
+                cmp_bag($search->('',     $time6, $date6, ''),     $date_id_to_label->(0 .. 7), 'within a day');
+            };
         };
-        if ($field eq 'authored_on') {
-            cmp_bag($search->($date2, '', $date6, ''), $date_id_to_label->(1 .. 7), 'normal');
-            cmp_bag($search->($date6, '', $date2, ''), $date_id_to_label->(1 .. 7), 'negative range');
+    };
 
-            subtest 'unset or half set daterange' => sub {
-                plan skip_all => 'incomplete daterange';
-                cmp_bag($search->('',     '', $date2, ''), $date_id_to_label->(0 .. 3), 'to only');
-                cmp_bag($search->($date2, '', '',     ''), $date_id_to_label->(1 .. 8), 'from only');
-                cmp_bag($search->('',     '', $date6, ''), $date_id_to_label->(0 .. 7), 'to only2');
-                cmp_bag($search->($date6, '', '',     ''), $date_id_to_label->(5 .. 8), 'from only2');
-                cmp_bag($search->('',     '', '',     ''), $date_id_to_label->(0 .. 8), 'no params');
-            };
-        }
-        if ($field eq 'cf_datetime') {
-            cmp_bag($search->($date2, '', $date6, ''), $date_id_to_label->(1 .. 7), 'normal');
-            cmp_bag($search->($date6, '', $date2, ''), $date_id_to_label->(1 .. 7), 'negative range');
+    subtest 'cf_date' => sub {
+        $field = 'cf_date';
+        $fcds  = $cds{$field};
+        cmp_bag($search->($date2, '', $date6, ''), $date_id_to_label->(1 .. 7), 'normal');
+        cmp_bag($search->($date6, '', $date2, ''), $date_id_to_label->(1 .. 7), 'negative range');
 
-            subtest 'unset or half set daterange' => sub {
-                plan skip_all => 'incomplete daterange';
-                cmp_bag($search->('',     '', $date2, ''), $date_id_to_label->(0 .. 3), 'to only');
-                cmp_bag($search->($date2, '', '',     ''), $date_id_to_label->(1 .. 8), 'from only');
-                cmp_bag($search->('',     '', $date6, ''), $date_id_to_label->(0 .. 7), 'to only2');
-                cmp_bag($search->($date6, '', '',     ''), $date_id_to_label->(5 .. 8), 'from only2');
+        subtest 'unset or half set daterange' => sub {
+            plan skip_all => 'incomplete daterange';
+            cmp_bag($search->('',     '', $date2, ''), $date_id_to_label->(0 .. 3), 'to only');
+            cmp_bag($search->($date2, '', '',     ''), $date_id_to_label->(1 .. 8), 'from only');
+            cmp_bag($search->('',     '', $date6, ''), $date_id_to_label->(0 .. 7), 'to only2');
+            cmp_bag($search->($date6, '', '',     ''), $date_id_to_label->(5 .. 8), 'from only2');
+        };
+    };
 
-                subtest 'with time' => sub {
-                    plan skip_all => 'mot implemented';
-                    cmp_bag($search->($date2, $time2, $date6, $time6), $date_id_to_label->(2 .. 6), 'normal');
-                    cmp_bag($search->($date6, $time6, $date2, $time2), $date_id_to_label->(2 .. 6), 'negative range');
-                    cmp_bag($search->('',     '',     $date2, $time2), $date_id_to_label->(0 .. 2), 'to only');
-                    cmp_bag($search->($date2, $time2, '',     ''),     $date_id_to_label->(2 .. 8), 'from only');
-                    cmp_bag($search->('',     '',     $date6, $time6), $date_id_to_label->(0 .. 6), 'to only2');
-                    cmp_bag($search->($date6, $time6, '',     ''),     $date_id_to_label->(6 .. 8), 'from only2');
-                };
+    subtest 'cf_time' => sub {
+        $field = 'cf_time';
+        $fcds  = $cds{$field};
+        cmp_bag($search->('', $time2, '', $time6), $date_id_to_label->(2 .. 6), 'normal');
+        cmp_bag($search->('', $time6, '', $time2), $date_id_to_label->(2 .. 6), 'negative range');
 
-                subtest 'eccentric cases' => sub {
-                    cmp_bag($search->($date6, '',     $date6, $time6), $date_id_to_label->(5 .. 6), 'within a day');
-                    cmp_bag($search->($date6, $time6, $date6, ''),     $date_id_to_label->(5 .. 6), 'within a day');
-                    cmp_bag($search->($date6, '',     '',     $time6), $date_id_to_label->(5 .. 8), 'within a day');
-                    cmp_bag($search->('',     $time6, $date6, ''),     $date_id_to_label->(0 .. 7), 'within a day');
-                };
-            };
-        }
-        if ($field eq 'cf_date') {
-            cmp_bag($search->($date2, '', $date6, ''), $date_id_to_label->(1 .. 7), 'normal');
-            cmp_bag($search->($date6, '', $date2, ''), $date_id_to_label->(1 .. 7), 'negative range');
+        subtest 'unset or half set daterange' => sub {
+            plan skip_all => 'incomplete daterange';
+            cmp_bag($search->('', '',     '', $time2), $date_id_to_label->(0 .. 2), 'to only');
+            cmp_bag($search->('', $time2, '', ''),     $date_id_to_label->(2 .. 8), 'from only');
+            cmp_bag($search->('', '',     '', $time6), $date_id_to_label->(0 .. 6), 'to only2');
+            cmp_bag($search->('', $time6, '', ''),     $date_id_to_label->(6 .. 8), 'from only2');
+        };
+    };
 
-            subtest 'unset or half set daterange' => sub {
-                plan skip_all => 'incomplete daterange';
-                cmp_bag($search->('',     '', $date2, ''), $date_id_to_label->(0 .. 3), 'to only');
-                cmp_bag($search->($date2, '', '',     ''), $date_id_to_label->(1 .. 8), 'from only');
-                cmp_bag($search->('',     '', $date6, ''), $date_id_to_label->(0 .. 7), 'to only2');
-                cmp_bag($search->($date6, '', '',     ''), $date_id_to_label->(5 .. 8), 'from only2');
-            };
-        }
-        if ($field eq 'cf_time') {
-            cmp_bag($search->('', $time2, '', $time6), $date_id_to_label->(2 .. 6), 'normal');
-            cmp_bag($search->('', $time6, '', $time2), $date_id_to_label->(2 .. 6), 'negative range');
-
-            subtest 'unset or half set daterange' => sub {
-                plan skip_all => 'incomplete daterange';
-                cmp_bag($search->('', '',     '', $time2), $date_id_to_label->(0 .. 2), 'to only');
-                cmp_bag($search->('', $time2, '', ''),     $date_id_to_label->(2 .. 8), 'from only');
-                cmp_bag($search->('', '',     '', $time6), $date_id_to_label->(0 .. 6), 'to only2');
-                cmp_bag($search->('', $time6, '', ''),     $date_id_to_label->(6 .. 8), 'from only2');
-            };
-        }
-
+    for my $fcds (values %cds) {
         $_->remove for values %$fcds;
     }
 };
