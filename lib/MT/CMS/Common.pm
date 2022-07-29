@@ -1266,7 +1266,7 @@ sub list {
             {
             id                 => $prop->id,
             type               => $prop->type,
-            label              => MT::Util::encode_html( $prop->label ),
+            label              => MT::Util::encode_html( $prop->label, 1 ),
             primary            => $primary_col{$id} ? 1 : 0,
             col_class          => $prop->col_class,
             sortable           => $prop->can_sort($scope),
@@ -1293,13 +1293,13 @@ sub list {
         my $label_for_sort;
         if ( defined $prop->filter_label ) {
             $label_for_sort
-                = ref $prop->filter_label
+                = ref $prop->filter_label eq 'CODE'
                 ? $prop->filter_label->($screen_settings)
                 : $prop->filter_label;
         }
         if ( !defined $label_for_sort ) {
             $label_for_sort
-                = ref $prop->label
+                = ref $prop->label eq 'CODE'
                 ? $prop->label->($screen_settings)
                 : $prop->label;
             $label_for_sort = '' unless defined $label_for_sort;
@@ -1310,8 +1310,7 @@ sub list {
             prop => $prop,
             id   => $prop->id,
             type => $prop->type,
-            label =>
-                MT::Util::encode_html( $prop->filter_label || $prop->label ),
+            label => $prop->filter_label || $prop->label,
             field                 => $prop->filter_tmpl,
             single_select_options => $prop->single_select_options($app),
             verb                  => defined $prop->verb ? $prop->verb

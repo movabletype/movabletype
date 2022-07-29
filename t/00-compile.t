@@ -198,6 +198,7 @@ use_ok('MT::DataAPI::Resource::v4::Website');
 use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
+use_ok('MT::Util::BlessedString');
 use_ok('MT::Util::ContentType');
 use_ok('MT::Util::Deprecated');
 use_ok('MT::Util::Digest::MD5');
