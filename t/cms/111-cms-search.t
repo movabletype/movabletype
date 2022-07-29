@@ -83,8 +83,9 @@ subtest 'unit test for iter_for_replace' => sub {
     require MT::CMS::Search;
 
     for my $capa (1, 2, scalar(@ids) - 1, scalar(@ids) + 1) {
+        MT->config('BulkLoadMetaObjectsLimit', $capa);
         subtest 'capacity is ' . $capa => sub {
-            my $iter = MT::CMS::Search::iter_for_replace(MT->model('entry'), [@ids], $capa);
+            my $iter = MT::CMS::Search::iter_for_replace(MT->model('entry'), [@ids]);
             my @got;
             while (my $obj = $iter->()) {
                 push @got, $obj->id;

@@ -1800,17 +1800,17 @@ sub do_search_replace {
 
 sub iter_for_replace {
     require MT::Meta::Proxy;
-    my ($class, $ids, $capacity) = @_;
-    my (@stock_ids, @objs);
-    $capacity ||= 100;
+    my ($class, $ids) = @_;
+    my @objs;
+    my $capacity = MT->config->BulkLoadMetaObjectsLimit;
     my %idx = map { $ids->[$_] => $_ } 0 .. scalar(@$ids) - 1;
     return sub {
         unless (@objs) {
-            @stock_ids = ();
-            push(@stock_ids, pop @$ids) for (0 .. $capacity);
+            my $len = @$ids or return;
+            my @stock_ids = splice @$ids, $len > $capacity ? -$capacity : -$len;
             @objs = $class->load({ id => \@stock_ids });
             @objs = sort { $idx{ $b->id } <=> $idx{ $a->id } } @objs;
-            MT::Meta::Proxy->bulk_load_meta_objects(\@objs) if @objs && @objs[0]->has_meta;
+            MT::Meta::Proxy->bulk_load_meta_objects(\@objs) if @objs && $objs[0]->has_meta;
         }
         return shift(@objs);
     };
