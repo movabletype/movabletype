@@ -230,15 +230,27 @@ subtest 'content_data with daterange' => sub {
 };
 
 subtest q{contaminated date_time_field_id on entry tab is ignored} => sub {
+    my $entry = MT::Test::Permission->make_entry(
+        blog_id     => $blog_id,
+        author_id   => $author->id,
+        title       => 'contamination-test',
+        authored_on => '20010101120000',
+    );
     my $cf_id = $objs->{content_type}{ct_multi}{content_field}{cf_datetime}->id;
     my $app   = MT::Test::App->new('MT::App::CMS');
     $app->login($author);
     $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
     $app->change_tab('content_data');
-    $app->search('a', { is_dateranged => 1, from => '1964-03-01', to => '1963-01-01', date_time_field_id => $cf_id });
+    $app->change_content_type($ct_id);
+    $app->search('a', { is_dateranged => 1, from => '2001-01-01', to => '2001-01-01', date_time_field_id => $cf_id });
     $app->change_tab('entry');
-    $app->search('Verse', {});
     ok !$app->generic_error, 'no error';
+    is_deeply($app->found_titles, ['contamination-test'], 'search result is also good');
+    $app->search('contamination-test', {});
+    ok !$app->generic_error, 'no error';
+    is_deeply($app->found_titles, ['contamination-test'], 'search result is also good');
+
+    $entry->remove;
 };
 
 subtest 'template' => sub {
