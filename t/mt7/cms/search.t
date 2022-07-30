@@ -25,6 +25,96 @@ my $author  = MT->model('author')->load(1);
 my $blog_id = $objs->{blog_id};
 my $ct_id   = $objs->{content_type}{ct_multi}{content_type}->id;
 
+subtest 'compile_daterange' => sub {
+    require MT::CMS::Search;
+    my $type;
+    my $code = sub {
+        my $cf_type = $type eq 'authored_on' ? undef : $type;
+        my ($range, $from, $timefrom, $to,$timeto) = MT::CMS::Search::compile_daterange(@_, $cf_type);
+        return [$from, $timefrom, $to, $timeto, $range];
+    };
+    for ('authored_on', 'date_only', 'date_and_time') {
+        $type = $_;
+        subtest $type => sub {
+            is_deeply(
+                $code->('2001-01-01', '', '2001-01-02', ''),
+                ['2001-01-01', '', '2001-01-02', '', ['20010101000000', '20010102235959']]);
+            is_deeply(
+                $code->('2001-01-02', '', '2001-01-01', ''),
+                ['2001-01-02', '', '2001-01-01', '', ['20010101000000', '20010102235959']]);
+            is_deeply(
+                $code->('2001-01-01', '', '', ''),
+                ['2001-01-01', '', '', '', ['20010101000000', undef]]);
+            is_deeply(
+                $code->('', '', '2001-01-02', ''),
+                ['', '', '2001-01-02', '', [undef, '20010102235959']]);
+        };
+    }
+
+    subtest 'date_and_time' => sub {
+        $type = 'date_and_time';
+        is_deeply(
+            $code->('2001-01-01', '12:00:00', '2001-01-02', '13:00:00'),
+            ['2001-01-01', '12:00:00', '2001-01-02', '13:00:00', ['20010101120000', '20010102130000']]);
+        is_deeply(
+            $code->('2001-01-02', '13:00:00', '2001-01-01', '12:00:00'),
+            ['2001-01-02', '13:00:00', '2001-01-01', '12:00:00', ['20010101120000', '20010102130000']]);
+        is_deeply(
+            $code->('2001-01-01', '12:00:00', '', ''),
+            ['2001-01-01', '12:00:00', '', '', ['20010101120000', undef]]);
+        is_deeply(
+            $code->('', '', '2001-01-02', '13:00:00'),
+            ['', '', '2001-01-02', '13:00:00', [undef, '20010102130000']]);
+    };
+
+    subtest 'unused params are retrieved as is' => sub {
+        for ('authored_on', 'date_only') {
+            $type = $_;
+            subtest $type => sub {
+                is_deeply(
+                    $code->('2001-01-01', '12:00:00', '2001-01-02', '13:00:00'),
+                    ['2001-01-01', '12:00:00', '2001-01-02', '13:00:00', ['20010101000000', '20010102235959']]);
+                is_deeply(
+                    $code->('2001-01-01', '12:00:00', '2001-01-02', ''),
+                    ['2001-01-01', '12:00:00', '2001-01-02', '', ['20010101000000', '20010102235959']]);
+                is_deeply(
+                    $code->('2001-01-01', '', '2001-01-02', '13:00:00'),
+                    ['2001-01-01', '', '2001-01-02', '13:00:00', ['20010101000000', '20010102235959']]);
+            };
+        }
+
+        subtest 'time_only' => sub {
+            $type = 'time_only';
+            is_deeply(
+                $code->('2001-01-01', '12:00:00', '2001-01-02', '13:00:00'),
+                ['2001-01-01', '12:00:00', '2001-01-02', '13:00:00', ['19700101120000', '19700101130000']]);
+            is_deeply(
+                $code->('2001-01-01', '12:00:00', '', '13:00:00'),
+                ['2001-01-01', '12:00:00', '', '13:00:00', ['19700101120000', '19700101130000']]);
+            is_deeply(
+                $code->('', '12:00:00', '2001-01-02', '13:00:00'),
+                ['', '12:00:00', '2001-01-02', '13:00:00', ['19700101120000', '19700101130000']]);
+        };
+    };
+
+    subtest 'normalized times appear in fixed params' => sub {
+        $type = 'time_only';
+        is_deeply(
+            $code->('', '1:2:3', '', '4:5:6'),
+            ['', '01:02:03', '', '04:05:06', ['19700101010203', '19700101040506']]);
+        is_deeply(
+            $code->('', '10203', '', '40506'),
+            ['', '01:02:03', '', '04:05:06', ['19700101010203', '19700101040506']]);
+    };
+
+    subtest 'fails to compile' => sub {
+        $type = 'authored_on';
+        is_deeply(
+            $code->('', '12:00:00', '', '13:00:00'),
+            ['', '12:00:00', '', '13:00:00', undef]);
+    };
+};
+
 subtest 'content_data' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($author);
@@ -224,7 +314,7 @@ subtest 'content_data with daterange' => sub {
     }
 };
 
-subtest 'cf_time param normalization' => sub {
+subtest 'params retrieved after search' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($author);
     $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
@@ -235,40 +325,11 @@ subtest 'cf_time param normalization' => sub {
         date_time_field_id => $objs->{content_type}{ct_multi}{content_field}{cf_time}->id,
     );
 
-    subtest 'normal time value retrieved' => sub {
-        subtest 'with colon' => sub {
-            $app->search('a', { %params, timefrom => '12:34:56', timeto => '13:45:59' });
-            my $form = $app->find_searchform('search_form');
-            is $form->find_input('timefrom')->value, '12:34:56', 'timefrom normal';
-            is $form->find_input('timeto')->value, '13:45:59', 'timeto normal';
-        };
-        subtest 'without colon' => sub {
-            $app->search('a', { %params, timefrom => '123456', timeto => '134559' });
-            my $form = $app->find_searchform('search_form');
-            is $form->find_input('timefrom')->value, '12:34:56', 'timefrom normal';
-            is $form->find_input('timeto')->value, '13:45:59', 'timeto normal';
-        };
-    };
-    subtest '1 digit values retrieved with padding' => sub {
-        subtest 'with colon' => sub {
-            $app->search('a', { %params, timefrom => '2:34:56', timeto => '3:45:59' });
-            my $form = $app->find_searchform('search_form');
-            is $form->find_input('timefrom')->value, '02:34:56', 'timefrom normal';
-            is $form->find_input('timeto')->value, '03:45:59', 'timeto normal';
-
-            subtest 'zero pad as much as possible' => sub {
-                $app->search('a', { %params, timefrom => '2:4:6', timeto => '3:5:9' });
-                my $form = $app->find_searchform('search_form');
-                is $form->find_input('timefrom')->value, '02:04:06', 'timefrom normal';
-                is $form->find_input('timeto')->value, '03:05:09', 'timeto normal';
-            };
-        };
-        subtest 'without colon' => sub {
-            $app->search('a', { %params, timefrom => '23456', timeto => '34559' });
-            my $form = $app->find_searchform('search_form');
-            is $form->find_input('timefrom')->value, '02:34:56', 'timefrom normal';
-            is $form->find_input('timeto')->value, '03:45:59', 'timeto normal';
-        };
+    subtest 'time_only' => sub {
+        $app->search('a', { %params, timefrom => '12:34:56', timeto => '13:45:59' });
+        my $form = $app->find_searchform('search_form');
+        is $form->find_input('timefrom')->value, '12:34:56', 'timefrom normal';
+        is $form->find_input('timeto')->value, '13:45:59', 'timeto normal';
     };
 };
 

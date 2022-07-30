@@ -938,24 +938,17 @@ sub do_search_replace {
         $quicksearch_id = $search;
         unshift @cols, 'id';
     }
+    
+    my $datetime_term;
     if ($is_dateranged) {
-        for my $date ($from, $to) {
-            next unless $date;
-            $date =~ s!\D!!g;
-            $date = substr($date, 0, 8);
+        my $cf_type;
+        if ($content_type && $date_time_field_id) {
+            my $field_data = $content_type->get_field($date_time_field_id);
+            $cf_type = $field_data->{type};
         }
-        for my $time ($timefrom, $timeto) {
-            next unless $time;
-            my @part = split(/:/, $time);
-            if (scalar @part == 3) {
-                $time = join '', map { sprintf('%02d', $_) } @part;
-            } else {
-                $time =~ s!\D!!g;
-                $time = substr $time, 0, 6;
-                $time = "0$time" if length $time == 5;
-            }
-        }
+        ($datetime_term, $from, $timefrom, $to, $timeto) = compile_daterange($from, $timefrom, $to, $timeto, $cf_type);
     }
+
     my $tab = $app->param('tab') || 'entry';
     ## Sometimes we need to pass in the search columns like 'title,text', so
     ## we look for a comma (not a valid character in a column name) and split
@@ -1082,30 +1075,8 @@ sub do_search_replace {
             $terms{status} = $publish_status;
             $terms{class}  = $type;
         }
-        if ($is_dateranged && ($from || $to || $timefrom || $timeto)) {
+        if ($datetime_term) {
             if ($date_time_field_id) {
-                my $field_data
-                    = $content_type->get_field($date_time_field_id);
-                my $datetime_term;
-                if ( $field_data->{type} eq 'time_only' ) {
-                    my @range = ($timefrom, $timeto);
-                    @range = sort { $a gt $b } @range if $timefrom && $timeto;
-                    $range[0] = $range[0] ? '19700101'. $range[0] : undef;
-                    $range[1] = $range[1] ? '19700101'. $range[1] : undef;
-                    $datetime_term = \@range;
-                }
-                else {
-                    my @range = (
-                        [$from, $field_data->{type} eq 'date_and_time' && $timefrom ? $timefrom : undef],
-                        [$to,   $field_data->{type} eq 'date_and_time' && $timeto   ? $timeto   : undef],
-                    );
-                    if ($from && $to) {
-                        @range = sort { ($a->[0] . ($a->[1] || '000000')) gt ($b->[0] . ($b->[1] || '000000')) } @range;
-                    }
-                    $range[0]      = $range[0][0] ? $range[0][0] . ($range[0][1] || '000000') : undef;
-                    $range[1]      = $range[1][0] ? $range[1][0] . ($range[1][1] || '235959') : undef;
-                    $datetime_term = \@range;
-                }
                 my $join = $app->model('content_field_index')->join_on(
                     undef,
                     {   content_data_id  => \'= cd_id',
@@ -1116,14 +1087,9 @@ sub do_search_replace {
                 );
                 $args{joins} ||= [];
                 push @{ $args{joins} }, $join;
-            }
-            else {
+            } else {
                 $args{range_incl}{$date_col} = 1;
-                my @range = ($from, $to);
-                @range = sort { $a gt $b } @range if $from && $to;
-                $range[0] = $range[0] ? $range[0]. '000000' : undef;
-                $range[1] = $range[1] ? $range[1]. '235959' : undef;
-                $terms{$date_col} = \@range;
+                $terms{$date_col} = $datetime_term;
             }
         }
         if ( defined $publish_status ) {
@@ -1629,12 +1595,6 @@ sub do_search_replace {
                 lc $class->class_label_plural );
         }
     }
-    if ($is_dateranged) {
-        $from     =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/ if $from;
-        $to       =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/ if $to;
-        $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/ if $timefrom;
-        $timeto   =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/ if $timeto;
-    }
 
     my $error = $app->param('error') || '';
     my $res_search
@@ -1749,6 +1709,63 @@ sub do_search_replace {
     $res{search_options} = $search_options;
 
     \%res;
+}
+
+sub compile_daterange {
+    my ($from, $timefrom, $to, $timeto, $cf_type) = @_;
+
+    for my $date ($from, $to) {
+        next unless $date;
+        $date =~ s!\D!!g;
+        $date = substr($date, 0, 8);
+    }
+    for my $time ($timefrom, $timeto) {
+        next unless $time;
+        my @part = split(/:/, $time);
+        if (scalar @part == 3) {
+            $time = join '', map { sprintf('%02d', $_) } @part;
+        } else {
+            $time =~ s!\D!!g;
+            $time = substr $time, 0, 6;
+            $time = "0$time" if length $time == 5;
+        }
+    }
+    my $term;
+    if ($from || $to || $timefrom || $timeto) {
+        if ($cf_type) {
+            if ($cf_type eq 'time_only') {
+                my @range = ($timefrom, $timeto);
+                @range    = sort { $a gt $b } @range if $timefrom && $timeto;
+                $range[0] = $range[0] ? '19700101' . $range[0] : undef;
+                $range[1] = $range[1] ? '19700101' . $range[1] : undef;
+                $term     = \@range;
+            } else {
+                my @range = (
+                    [$from, $cf_type eq 'date_and_time' && $timefrom ? $timefrom : undef],
+                    [$to,   $cf_type eq 'date_and_time' && $timeto   ? $timeto   : undef],
+                );
+                if ($from && $to) {
+                    @range = sort { ($a->[0] . ($a->[1] || '000000')) gt($b->[0] . ($b->[1] || '000000')) } @range;
+                }
+                $range[0] = $range[0][0] ? $range[0][0] . ($range[0][1] || '000000') : undef;
+                $range[1] = $range[1][0] ? $range[1][0] . ($range[1][1] || '235959') : undef;
+                $term     = \@range;
+            }
+        } else {
+            my @range = ($from, $to);
+            @range    = sort { $a gt $b } @range if $from && $to;
+            $range[0] = $range[0] ? $range[0] . '000000' : undef;
+            $range[1] = $range[1] ? $range[1] . '235959' : undef;
+            $term     = \@range;
+        }
+        $term = undef unless defined($term->[0]) || defined($term->[1]);
+    }
+    $from     =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/ if $from;
+    $to       =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/ if $to;
+    $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/ if $timefrom;
+    $timeto   =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/ if $timeto;
+
+    return $term, $from, $timefrom, $to, $timeto;
 }
 
 sub _default_results_table_template {
