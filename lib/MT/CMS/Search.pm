@@ -1731,35 +1731,28 @@ sub compile_daterange {
         }
     }
     my $term;
-    if ($from || $to || $timefrom || $timeto) {
-        if ($cf_type) {
-            if ($cf_type eq 'time_only') {
-                my @range = ($timefrom, $timeto);
-                @range    = sort { $a gt $b } @range if $timefrom && $timeto;
-                $range[0] = $range[0] ? '19700101' . $range[0] : undef;
-                $range[1] = $range[1] ? '19700101' . $range[1] : undef;
-                $term     = \@range;
-            } else {
-                my @range = (
-                    [$from, $cf_type eq 'date_and_time' && $timefrom ? $timefrom : undef],
-                    [$to,   $cf_type eq 'date_and_time' && $timeto   ? $timeto   : undef],
-                );
-                if ($from && $to) {
-                    @range = sort { ($a->[0] . ($a->[1] || '000000')) gt($b->[0] . ($b->[1] || '000000')) } @range;
-                }
-                $range[0] = $range[0][0] ? $range[0][0] . ($range[0][1] || '000000') : undef;
-                $range[1] = $range[1][0] ? $range[1][0] . ($range[1][1] || '235959') : undef;
-                $term     = \@range;
-            }
-        } else {
-            my @range = ($from, $to);
-            @range    = sort { $a gt $b } @range if $from && $to;
-            $range[0] = $range[0] ? $range[0] . '000000' : undef;
-            $range[1] = $range[1] ? $range[1] . '235959' : undef;
-            $term     = \@range;
-        }
-        $term = undef unless defined($term->[0]) || defined($term->[1]);
+    if (!$cf_type || $cf_type eq 'date_only') {
+        $term = $from && $to && $from > $to ? [$to, $from] : [$from, $to];
+        $term->[0] = $term->[0] ? $term->[0] . '000000' : undef;
+        $term->[1] = $term->[1] ? $term->[1] . '235959' : undef;
+    } elsif ($cf_type eq 'time_only') {
+        $term = $timefrom && $timeto && $timefrom > $timeto ? [$timeto, $timefrom] : [$timefrom, $timeto];
+        $term->[0] = $term->[0] ? '19700101' . $term->[0] : undef;
+        $term->[1] = $term->[1] ? '19700101' . $term->[1] : undef;
+    } elsif ($cf_type eq 'date_and_time') {
+        my @range = ([$from, $timefrom ? $timefrom : undef], [$to, $timeto ? $timeto : undef]);
+        @range = reverse @range
+            if $from
+            && $to
+            && ($range[0][0] . ($range[0][1] || '000000')) > ($range[1][0] . ($range[1][1] || '000000'));
+        $range[0] = $range[0][0] ? $range[0][0] . ($range[0][1] || '000000') : undef;
+        $range[1] = $range[1][0] ? $range[1][0] . ($range[1][1] || '235959') : undef;
+        $term = \@range;
+    } else {
+        die 'Failed to compile date range.';
     }
+    $term = undef unless defined($term->[0]) || defined($term->[1]);
+
     $from     =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/ if $from;
     $to       =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/ if $to;
     $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/ if $timefrom;
