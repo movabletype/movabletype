@@ -927,7 +927,7 @@ function bulkUpdateCategories() {
   </mt:if>
       blog_id: <mt:var name="blog_id">,
       checksum: checksum,
-      objects: JSON.stringify(items),
+      objects: <mt:if name-"use_jquery_json">jQuery.toJSON(items)<mt:else>JSON.stringify(items)</mt:if>,
       magic_token: jQuery('input[name="magic_token"]').val()
     },
     success: function(data) {

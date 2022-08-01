@@ -2314,6 +2314,7 @@ BEGIN {
             'AccessOverrides'      => undef,
 
             'JSONCanonicalization' => { default => 1 },
+            'UseJQueryJSON'        => { default => 0 },
 
             'RequiredUserEmail'       => { default => 1 },
             'DefaultClassParamFilter' => { default => 'all' },
