@@ -80,7 +80,7 @@ class MTDatabasemysql extends MTDatabase {
         
         $ret = $this->Execute('show variables like "character_set_database"');
         $val = $ret->fields[1];
-        if (isset($val) && !empty($val) && ($val != 'latin1')) {
+        if (!empty($val) && ($val != 'latin1')) {
             // MySQL 4.1+ and non-latin1(database) == needs SET NAMES call.
             $Charset = array(
                 'utf-8' => $val === 'utf8mb4' ? 'utf8mb4' : 'utf8',
