@@ -12,7 +12,7 @@ require_once('lib/class.exception.php');
 
 define('VERSION', '7.9');
 define('PRODUCT_VERSION', '7.9.4');
-define('DATA_API_DEFAULT_VERSION', '4');
+define('DATA_API_DEFAULT_VERSION', '5');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
