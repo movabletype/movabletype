@@ -989,6 +989,13 @@ sub edit {
     return $app->load_tmpl( $tmpl_file, \%param );
 }
 
+my %ListLimitMap = map {$_ => 1} (10, 25, 50, 100, 200);
+
+sub canonicalize_list_limit {
+    my $limit = shift || MT->config->DefaultListLimit;
+    $ListLimitMap{$limit} ? $limit : 50;
+}
+
 sub list {
     my $app     = shift;
     my $type    = $app->param('_type');
@@ -1089,7 +1096,6 @@ sub list {
 
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{ $type . $subtype }{$blog_id} || {};
-    my $rows        = $list_pref->{rows}        || 50;    ## FIXME: Hardcoded
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $last_items         = $list_pref->{last_items} || [];
@@ -1097,7 +1103,7 @@ sub list {
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
     }
-    $param{ 'limit_' . $rows } = 1;
+    $param{'limit'} = canonicalize_list_limit($list_pref->{rows});
 
     require MT::ListProperty;
     my $obj_type   = $screen_settings->{object_type} || $type;
@@ -1597,7 +1603,8 @@ sub filtered_list {
             blog_id   => $blog_id || 0,
         }
     );
-    my $limit = $app->param('limit') || 50;    # FIXME: hard coded.
+    my $limit = $app->param('limit');
+    $limit = canonicalize_list_limit($limit);
     my $page  = $app->param('page');
     $page = 1 if !$page || $page =~ /\D/;
     my $offset = ( $page - 1 ) * $limit;
@@ -1816,11 +1823,11 @@ sub save_list_prefs {
         = !$blog         ? 'system'
         : $blog->is_blog ? 'blog'
         :                  'website';
-    my $limit      = $app->param('limit')   || 50;    # FIXME: hard coded.
     my $cols       = $app->param('columns') || '';
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};
-    $list_pref->{rows}    = $limit;
+    my $limit = $app->param('limit');
+    $list_pref->{rows}    = canonicalize_list_limit($limit);
     $list_pref->{columns} = [ split ',', $cols ];
 
 #$list_pref->{last_filter} = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
@@ -2040,12 +2047,6 @@ sub delete {
                 );
             if ($used_in_categories_field) {
                 push @not_deleted, $obj->id;
-                next;
-            }
-        }
-        elsif ($type eq 'ts_job') {
-            if ($obj->grabbed_until) {
-                push @not_deleted, $obj->jobid;
                 next;
             }
         }

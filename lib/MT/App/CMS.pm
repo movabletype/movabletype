@@ -1559,17 +1559,7 @@ sub core_list_actions {
                 },
             },
         },
-        'ts_job' => {
-            'delete' => {
-                label      => 'Delete',
-                code       => "${pkg}Common::delete",
-                mode       => 'delete',
-                order      => 110,
-                js_message => 'delete',
-                button     => 1,
-                mobile     => 1,
-            },
-        }
+
     };
 }
 
@@ -2331,18 +2321,6 @@ sub core_menus {
             },
             view => [qw( system website blog )],
         },
-        'tools:ts_job' => {
-            label     => "Background Job",
-            order     => 700,
-            mode      => 'list',
-            args      => { _type => 'ts_job' },
-            condition => sub {
-                return 0 unless $app->config->ShowTsJob;
-                return 1 if $app->user->is_superuser;
-                return 0;
-            },
-            view => ['system'],
-        },
 
         'category_set:manage' => {
             label      => 'Manage',
@@ -2586,8 +2564,7 @@ sub core_enable_object_methods {
         group => {
             delete => 1,
             save   => 1,
-        },
-        ts_job => { delete => 1 },
+        }
     };
 }
 
@@ -3768,9 +3745,6 @@ sub list_pref {
         }
     }
 
-    if ( $list_pref->{rows} ) {
-        $list_pref->{ "limit_" . $list_pref->{rows} } = $list_pref->{rows};
-    }
     if ( $list_pref->{view} ) {
         $list_pref->{ "view_" . $list_pref->{view} } = 1;
     }
