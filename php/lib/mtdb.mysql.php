@@ -90,11 +90,6 @@ class MTDatabasemysql extends MTDatabase {
             if ($lang) {
                 $this->Execute("SET NAMES '$lang'");
             }
-            if (!isset($conf)) {
-                $mt->config('sqlsetnames', 1);
-            }
-         } else {
-            $mt->config('sqlsetnames', 0);
         }
     }
 
