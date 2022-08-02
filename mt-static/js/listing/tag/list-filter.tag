@@ -645,7 +645,7 @@
     }
 
     removeFilter(e) {
-      var filterData = e.target.parentElement.parentElement.parentElement.parentElement.dataset
+      var filterData = e.target.closest('[data-mt-list-filter-label]').dataset
       var message = trans(
         "Are you sure you want to remove filter '[_1]'?",
         filterData.mtListFilterLabel
