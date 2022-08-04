@@ -1076,7 +1076,7 @@ sub do_search_replace {
             $terms{class}  = $type;
         }
         if ($datetime_term) {
-            if ($date_time_field_id) {
+            if ($content_type && $date_time_field_id) {
                 my $join = $app->model('content_field_index')->join_on(
                     undef,
                     {   content_data_id  => \'= cd_id',
@@ -1731,25 +1731,14 @@ sub compile_daterange {
         }
     }
     my $term;
-    if (!$cf_type || $cf_type eq 'date_only') {
-        $term = $from && $to && $from > $to ? [$to, $from] : [$from, $to];
-        $term->[0] = $term->[0] ? $term->[0] . '000000' : undef;
-        $term->[1] = $term->[1] ? $term->[1] . '235959' : undef;
-    } elsif ($cf_type eq 'time_only') {
+    if ($cf_type && $cf_type eq 'time_only') {
         $term = $timefrom && $timeto && $timefrom > $timeto ? [$timeto, $timefrom] : [$timefrom, $timeto];
         $term->[0] = $term->[0] ? '19700101' . $term->[0] : undef;
         $term->[1] = $term->[1] ? '19700101' . $term->[1] : undef;
-    } elsif ($cf_type eq 'date_and_time') {
-        my @range = ([$from, $timefrom ? $timefrom : undef], [$to, $timeto ? $timeto : undef]);
-        @range = reverse @range
-            if $from
-            && $to
-            && ($range[0][0] . ($range[0][1] || '000000')) > ($range[1][0] . ($range[1][1] || '000000'));
-        $range[0] = $range[0][0] ? $range[0][0] . ($range[0][1] || '000000') : undef;
-        $range[1] = $range[1][0] ? $range[1][0] . ($range[1][1] || '235959') : undef;
-        $term = \@range;
     } else {
-        die 'Failed to compile date range.';
+        $term = $from && $to && $from > $to ? [$to, $from] : [$from, $to];
+        $term->[0] = $term->[0] ? $term->[0] . '000000' : undef;
+        $term->[1] = $term->[1] ? $term->[1] . '235959' : undef;
     }
     $term = undef unless defined($term->[0]) || defined($term->[1]);
 

@@ -51,22 +51,6 @@ subtest 'compile_daterange' => sub {
         };
     }
 
-    subtest 'date_and_time' => sub {
-        $type = 'date_and_time';
-        is_deeply(
-            $code->('2001-01-01', '12:00:00', '2001-01-02', '13:00:00'),
-            ['2001-01-01', '12:00:00', '2001-01-02', '13:00:00', ['20010101120000', '20010102130000']]);
-        is_deeply(
-            $code->('2001-01-02', '13:00:00', '2001-01-01', '12:00:00'),
-            ['2001-01-02', '13:00:00', '2001-01-01', '12:00:00', ['20010101120000', '20010102130000']]);
-        is_deeply(
-            $code->('2001-01-01', '12:00:00', '', ''),
-            ['2001-01-01', '12:00:00', '', '', ['20010101120000', undef]]);
-        is_deeply(
-            $code->('', '', '2001-01-02', '13:00:00'),
-            ['', '', '2001-01-02', '13:00:00', [undef, '20010102130000']]);
-    };
-
     subtest 'unused params are retrieved as is' => sub {
         for ('authored_on', 'date_only') {
             $type = $_;
@@ -262,22 +246,6 @@ subtest 'content_data with daterange' => sub {
             cmp_bag($search->($date2, '', '',     ''), $date_id_to_label->(1 .. 8), 'from only');
             cmp_bag($search->('',     '', $date6, ''), $date_id_to_label->(0 .. 7), 'to only2');
             cmp_bag($search->($date6, '', '',     ''), $date_id_to_label->(5 .. 8), 'from only2');
-
-            subtest 'with time' => sub {
-                cmp_bag($search->($date2, $time2, $date6, $time6), $date_id_to_label->(2 .. 6), 'normal');
-                cmp_bag($search->($date6, $time6, $date2, $time2), $date_id_to_label->(2 .. 6), 'negative range');
-                cmp_bag($search->('',     '',     $date2, $time2), $date_id_to_label->(0 .. 2), 'to only');
-                cmp_bag($search->($date2, $time2, '',     ''),     $date_id_to_label->(2 .. 8), 'from only');
-                cmp_bag($search->('',     '',     $date6, $time6), $date_id_to_label->(0 .. 6), 'to only2');
-                cmp_bag($search->($date6, $time6, '',     ''),     $date_id_to_label->(6 .. 8), 'from only2');
-            };
-
-            subtest 'eccentric cases' => sub {
-                cmp_bag($search->($date6, '',     $date6, $time6), $date_id_to_label->(5 .. 6), 'within a day');
-                cmp_bag($search->($date6, $time6, $date6, ''),     $date_id_to_label->(5 .. 6), 'within a day');
-                cmp_bag($search->($date6, '',     '',     $time6), $date_id_to_label->(5 .. 8), 'within a day');
-                cmp_bag($search->('',     $time6, $date6, ''),     $date_id_to_label->(0 .. 7), 'within a day');
-            };
         };
     };
 
