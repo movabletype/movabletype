@@ -96,25 +96,27 @@ sub post_contents_bulk_save {
     my $self = shift;
     my ($cb, $app, $contents) = @_;
     for my $content (@$contents) {
-        post_content_save($self, $cb, $app, $content->{current});
+        post_content_save($self, $cb, $app, $content->{current}, $content->{original});
     }
 }
 
 sub post_content_save {
     my $self = shift;
-    my ($cb, $app, $content) = @_;
+    my ($cb, $app, $content, $original) = @_;
     my $blog_id = $content->blog_id;
 
     my $code = sub {
         my ($d) = @_;
-        while (my ($id, $a) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_SAVE() } })) {
-            next if $id == $blog_id;
-            for my $action (keys %$a) {
-                perform_mb_action($app, $id, $action) if $a->{$action}->{$content->content_type_id};
+        require MT::ContentStatus;
+        if (($content->status || 0) == MT::ContentStatus::RELEASE() or ($original->status || 0) == MT::ContentStatus::RELEASE()) {
+            while (my ($id, $actions) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_SAVE() } })) {
+                next if $id == $blog_id;
+                for my $action (keys %$a) {
+                    perform_mb_action($app, $id, $action) if $a->{$action}->{$content->content_type_id};
+                }
             }
         }
 
-        require MT::ContentStatus;
         if (($content->status || 0) == MT::ContentStatus::RELEASE()) {
             while (my ($id, $a) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_PUBLISH() } })) {
                 next if $id == $blog_id;
@@ -320,23 +322,25 @@ sub post_entries_bulk_save {
     my $self = shift;
     my ($cb, $app, $entries) = @_;
     for my $entry (@$entries) {
-        &post_entry_save($self, $cb, $app, $entry->{current});
+        &post_entry_save($self, $cb, $app, $entry->{current}, $entry->{original});
     }
 }
 
 sub post_entry_save {
     my $self = shift;
-    my ($cb, $app, $entry) = @_;
+    my ($cb, $app, $entry, $original) = @_;
     my $blog_id = $entry->blog_id;
 
     my $code = sub {
         my ($d) = @_;
-        while (my ($id, $a) = each(%{ $d->{ TYPE_ENTRY_OR_PAGE() }->{ EVENT_SAVE() } })) {
-            next if $id == $blog_id;
-            perform_mb_action($app, $id, $_) for keys %$a;
+        require MT::Entry;
+        if (($entry->status || 0) == MT::Entry::RELEASE() or ($original->status || 0) == MT::Entry::RELEASE()) {
+            while (my ($id, $a) = each(%{ $d->{ TYPE_ENTRY_OR_PAGE() }->{ EVENT_SAVE() } })) {
+                next if $id == $blog_id;
+                perform_mb_action($app, $id, $_) for keys %$a;
+            }
         }
 
-        require MT::Entry;
         if (($entry->status || 0) == MT::Entry::RELEASE()) {
             while (my ($id, $a) = each(%{ $d->{ TYPE_ENTRY_OR_PAGE() }->{ EVENT_PUBLISH() } })) {
                 next if $id == $blog_id;
