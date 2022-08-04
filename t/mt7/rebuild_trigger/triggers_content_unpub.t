@@ -1,11 +1,9 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../../lib";
 use File::Spec;
-use MT::RebuildTrigger ':constants';
 
-$ENV{MT_TEST_REBUILD_TRIGGER_EVENT_TYPE} = EVENT_UNPUBLISH;
+$ENV{MT_TEST_REBUILD_TRIGGER_EVENT_TYPE} = 3; # EVENT_UNPUBLISH;
 push @INC, "." unless $INC[-1] eq ".";
 
 my $file = File::Spec->canonpath("$FindBin::Bin/triggers_content_save.t");
