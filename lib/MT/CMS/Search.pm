@@ -1732,13 +1732,17 @@ sub compile_daterange {
     }
     my $term;
     if ($cf_type && $cf_type eq 'time_only') {
-        $term = $timefrom && $timeto && $timefrom > $timeto ? [$timeto, $timefrom] : [$timefrom, $timeto];
-        $term->[0] = $term->[0] ? '19700101' . $term->[0] : undef;
-        $term->[1] = $term->[1] ? '19700101' . $term->[1] : undef;
+        ($timefrom, $timeto) = ($timeto, $timefrom) if $term = $timefrom && $timeto && $timefrom > $timeto;
+        $term = [
+            $timefrom ? '19700101' . $timefrom : undef,
+            $timeto   ? '19700101' . $timeto   : undef,
+        ];
     } else {
-        $term = $from && $to && $from > $to ? [$to, $from] : [$from, $to];
-        $term->[0] = $term->[0] ? $term->[0] . '000000' : undef;
-        $term->[1] = $term->[1] ? $term->[1] . '235959' : undef;
+        ($from, $to) = ($to, $from) if $term = $from && $to && $from > $to;
+        $term = [
+            $from ? $from . '000000' : undef,
+            $to   ? $to . '235959'   : undef,
+        ];
     }
     $term = undef unless defined($term->[0]) || defined($term->[1]);
 
