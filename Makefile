@@ -15,7 +15,6 @@ local_js = mt-static/mt_en_us.js \
         mt-static/mt_es.js
 
 core_js = mt-static/js/common/Core.js \
-          mt-static/js/common/JSON.js \
           mt-static/js/common/Timer.js \
           mt-static/js/common/Cookie.js \
           mt-static/js/common/DOM.js \

@@ -73,23 +73,39 @@ class MTDatabasemysql extends MTDatabase {
         return $sql;
     }
 
+    protected $private_set_names;
+
     function set_names($mt) {
+        if (isset($this->private_set_names)) {
+            return;
+        }
+        $this->private_set_names = 1;
         $conf = $mt->config('sqlsetnames');
         if (isset($conf) && empty($conf))
             return;
-
+        
         $ret = $this->Execute('show variables like "character_set_database"');
         $val = $ret->fields[1];
         if (!empty($val) && ($val != 'latin1')) {
             // MySQL 4.1+ and non-latin1(database) == needs SET NAMES call.
             $Charset = array(
-                'utf-8' => 'utf8',
+                'utf-8' => $val === 'utf8mb4' ? 'utf8mb4' : 'utf8',
                 'shift_jis' => 'sjis',
                 'euc-jp' => 'ujis');
             $lang = $Charset[strtolower($mt->config('publishcharset'))];
             if ($lang) {
                 $this->Execute("SET NAMES '$lang'");
             }
+            if (!isset($conf)) {
+               # SQLSetNames has never been assigned; we had a successful
+               # 'SET NAMES' command, so it's safe to SET NAMES in the future.
+               $mt->config('sqlsetnames', 1);
+            }
+        } else {
+            # 'set names' command isn't working for this verison of mysql,
+            # assign SQLSetNames to 0 to prevent further errors.
+            $mt->config('sqlsetnames', 0);
+            return;
         }
     }
 
