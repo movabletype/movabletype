@@ -28,9 +28,10 @@ my $ct_id   = $objs->{content_type}{ct_multi}{content_type}->id;
 subtest 'compile_daterange' => sub {
     require MT::CMS::Search;
     my $type;
+    my $app = MT::Test::App->new('MT::App::CMS');
     my $code = sub {
         my $cf_type = $type eq 'authored_on' ? undef : $type;
-        my ($range, $from, $timefrom, $to,$timeto) = MT::CMS::Search::compile_daterange(@_, $cf_type);
+        my ($range, $from, $timefrom, $to,$timeto) = MT::CMS::Search::compile_daterange($app, @_, $cf_type);
         return [$from, $timefrom, $to, $timeto, $range];
     };
     for ('authored_on', 'date_only', 'date_and_time') {
@@ -87,8 +88,8 @@ subtest 'compile_daterange' => sub {
             $code->('', '1:2:3', '', '4:5:6'),
             ['', '01:02:03', '', '04:05:06', ['19700101010203', '19700101040506']]);
         is_deeply(
-            $code->('', '10203', '', '40506'),
-            ['', '01:02:03', '', '04:05:06', ['19700101010203', '19700101040506']]);
+            $code->('', '1:2', '', '03:04'),
+            ['', '01:02:00', '', '03:04:00', ['19700101010200', '19700101030400']]);
     };
 
     subtest 'fails to compile' => sub {

@@ -7,7 +7,7 @@ package MT::CMS::Search;
 
 use strict;
 use warnings;
-use MT::Util qw( is_valid_date encode_html first_n_words );
+use MT::Util qw( valid_date_time2ts encode_html first_n_words );
 
 sub core_search_apis {
     my $app = shift;
@@ -939,16 +939,6 @@ sub do_search_replace {
         unshift @cols, 'id';
     }
     
-    my $datetime_term;
-    if ($is_dateranged) {
-        my $cf_type;
-        if ($content_type && $date_time_field_id) {
-            my $field_data = $content_type->get_field($date_time_field_id);
-            $cf_type = $field_data->{type};
-        }
-        ($datetime_term, $from, $timefrom, $to, $timeto) = compile_daterange($from, $timefrom, $to, $timeto, $cf_type);
-    }
-
     my $tab = $app->param('tab') || 'entry';
     ## Sometimes we need to pass in the search columns like 'title,text', so
     ## we look for a comma (not a valid character in a column name) and split
@@ -963,6 +953,18 @@ sub do_search_replace {
     my $class = $app->model( $api->{object_type} || $type );
     my %param = %$list_pref;
     my $limit;
+
+    my $datetime_term;
+    if ($is_dateranged) {
+        my $cf_type;
+        if ($content_type && $date_time_field_id) {
+            my $field_data = $content_type->get_field($date_time_field_id);
+            $cf_type = $field_data->{type};
+        }
+        ($datetime_term, $from, $timefrom, $to, $timeto) = 
+            compile_daterange($app,$from, $timefrom, $to, $timeto, $cf_type);
+        $param{error} = $app->errstr if $app->errstr;
+    }
 
     # type-specific directives override global CMSSearchLimit
     my $directive = 'CMSSearchLimit' . ucfirst($type);
@@ -1712,23 +1714,21 @@ sub do_search_replace {
 }
 
 sub compile_daterange {
-    my ($from, $timefrom, $to, $timeto, $cf_type) = @_;
+    my ($app, $from, $timefrom, $to, $timeto, $cf_type) = @_;
 
     for my $date ($from, $to) {
         next unless $date;
-        $date =~ s!\D!!g;
-        $date = substr($date, 0, 8);
+        my $org = $date;
+        $date = valid_date_time2ts($date . ' 00:00:00')
+            or return $app->error($app->translate('Invalid date: [_1]', $org));
+        $date =~ s{000000$}{};
     }
     for my $time ($timefrom, $timeto) {
         next unless $time;
-        my @part = split(/:/, $time);
-        if (scalar @part == 3) {
-            $time = join '', map { sprintf('%02d', $_) } @part;
-        } else {
-            $time =~ s!\D!!g;
-            $time = substr $time, 0, 6;
-            $time = "0$time" if length $time == 5;
-        }
+        my $org = $time;
+        $time = valid_date_time2ts('1970-01-01 ' . $time)
+            or return $app->error($app->translate('Invalid time: [_1]', $org));
+        $time =~ s{^19700101}{};
     }
     my $term;
     if ($cf_type && $cf_type eq 'time_only') {
