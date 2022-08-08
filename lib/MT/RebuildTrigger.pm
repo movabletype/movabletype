@@ -140,7 +140,7 @@ sub post_content_pub {
 
         require MT::ContentStatus;
         if (($content->status || 0) == MT::ContentStatus::RELEASE()) {
-            while (my ($id, $actions) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_SAVE() } })) {
+            while (my ($id, $actions) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_PUBLISH() } })) {
                 next if $id == $blog_id;
                 for my $action (keys %$actions) {
                     perform_mb_action($app, $id, $action) if $actions->{$action}->{$content->content_type_id};
