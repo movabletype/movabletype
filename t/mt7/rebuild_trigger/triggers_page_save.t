@@ -271,6 +271,52 @@ subtest 'single edit, page, parent to child' => sub {
         $page->save or die $page->errstr;
         MT->publisher->rebuild(BlogID => $child->id);
     };
+    subtest 'If a scheduled page for the future in the parent turns into public' => sub {
+        my $page = $objs->{page}{test_page};
+        is $page->status => MT::EntryStatus::RELEASE(), "page is public";
+
+        my $app = MT::Test::App->new;
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'page',
+            blog_id => $parent->id,
+            id      => $page->id,
+        });
+
+        # public page should become draft first to remove the published ones
+        $app->post_form_ok({
+            text   => $page->text . ' draft',
+            status => MT::EntryStatus::HOLD(),
+        });
+
+        $app->post_form_ok({
+            text   => $page->text . ' scheduled',
+            status => MT::EntryStatus::FUTURE(),
+        });
+
+        $page->refresh;
+        is $page->status => MT::EntryStatus::FUTURE(), "page is scheduled to be public";
+
+        my $custom_index = path($test_env->path('site/child/custom_index.html'));
+        my $mtime        = $custom_index->stat->mtime;
+        my $html         = $custom_index->slurp;
+
+        sleep 1 while $mtime + 1 > time;
+
+        MT->publisher->publish_future_posts;    # instead of _run_rpt for consistency
+
+        $page->refresh;
+        is $page->status => MT::EntryStatus::RELEASE(), "page is public now";
+
+        my $new_mtime = $custom_index->stat->mtime;
+        my $new_html  = $custom_index->slurp;
+        if ($EventType == EVENT_PUBLISH) {
+            ok $mtime < $new_mtime && $html ne $new_html, "custom_index in the child has been rebuilt by the trigger";
+        } else {
+            ok $mtime == $new_mtime && $html eq $new_html, "custom_index in the child remains the same";
+        }
+    };
 };
 
 sub _get_client_param {
@@ -717,6 +763,52 @@ subtest 'single edit, page, child to parent' => sub {
         $page->status(MT::EntryStatus::RELEASE());
         $page->save or die $page->errstr;
         MT->publisher->rebuild(BlogID => $child->id);
+    };
+    subtest 'If a scheduled page for the future in the child turns into public' => sub {
+        my $page = $objs->{page}{test_child_page};
+        is $page->status => MT::EntryStatus::RELEASE(), "page is public";
+
+        my $app = MT::Test::App->new;
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'page',
+            blog_id => $child->id,
+            id      => $page->id,
+        });
+
+        # public page should become draft first to remove the published ones
+        $app->post_form_ok({
+            text   => $page->text . ' draft',
+            status => MT::EntryStatus::HOLD(),
+        });
+
+        $app->post_form_ok({
+            text   => $page->text . ' scheduled',
+            status => MT::EntryStatus::FUTURE(),
+        });
+
+        $page->refresh;
+        is $page->status => MT::EntryStatus::FUTURE(), "page is scheduled to be public";
+
+        my $custom_index = path($test_env->path('site/custom_index.html'));
+        my $mtime        = $custom_index->stat->mtime;
+        my $html         = $custom_index->slurp;
+
+        sleep 1 while $mtime + 1 > time;
+
+        MT->publisher->publish_future_posts;    # instead of _run_rpt for consistency
+
+        $page->refresh;
+        is $page->status => MT::EntryStatus::RELEASE(), "page is public now";
+
+        my $new_mtime = $custom_index->stat->mtime;
+        my $new_html  = $custom_index->slurp;
+        if ($EventType == EVENT_PUBLISH) {
+            ok $mtime < $new_mtime && $html ne $new_html, "custom_index in the parent has been rebuilt by the trigger";
+        } else {
+            ok $mtime == $new_mtime && $html eq $new_html, "custom_index in the parent remains the same";
+        }
     };
 };
 

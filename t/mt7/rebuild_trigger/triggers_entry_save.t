@@ -271,6 +271,53 @@ subtest 'single edit, entry, parent to child' => sub {
         $entry->save or die $entry->errstr;
         MT->publisher->rebuild(BlogID => $child->id);
     };
+
+    subtest 'If a scheduled entry for the future in the parent turns into public' => sub {
+        my $entry = $objs->{entry}{test_entry};
+        is $entry->status => MT::EntryStatus::RELEASE(), "entry is public";
+
+        my $app = MT::Test::App->new;
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $parent->id,
+            id      => $entry->id,
+        });
+
+        # public entry should become draft first to remove the published ones
+        $app->post_form_ok({
+            text   => $entry->text . ' draft',
+            status => MT::EntryStatus::HOLD(),
+        });
+
+        $app->post_form_ok({
+            text   => $entry->text . ' scheduled',
+            status => MT::EntryStatus::FUTURE(),
+        });
+
+        $entry->refresh;
+        is $entry->status => MT::EntryStatus::FUTURE(), "entry is scheduled to be public";
+
+        my $custom_index = path($test_env->path('site/child/custom_index.html'));
+        my $mtime        = $custom_index->stat->mtime;
+        my $html         = $custom_index->slurp;
+
+        sleep 1 while $mtime + 1 > time;
+
+        MT->publisher->publish_future_posts;    # instead of _run_rpt for consistency
+
+        $entry->refresh;
+        is $entry->status => MT::EntryStatus::RELEASE(), "entry is public now";
+
+        my $new_mtime = $custom_index->stat->mtime;
+        my $new_html  = $custom_index->slurp;
+        if ($EventType == EVENT_PUBLISH) {
+            ok $mtime < $new_mtime && $html ne $new_html, "custom_index in the child has been rebuilt by the trigger";
+        } else {
+            ok $mtime == $new_mtime && $html eq $new_html, "custom_index in the child remains the same";
+        }
+    };
 };
 
 sub _get_client_param {
@@ -683,6 +730,53 @@ subtest 'single edit, entry, child to parent' => sub {
         $entry->status(MT::EntryStatus::RELEASE());
         $entry->save or die $entry->errstr;
         MT->publisher->rebuild(BlogID => $parent->id);
+    };
+
+    subtest 'If a scheduled entry for the future in the child turns into public' => sub {
+        my $entry = $objs->{entry}{test_child_entry};
+        is $entry->status => MT::EntryStatus::RELEASE(), "entry is public";
+
+        my $app = MT::Test::App->new;
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $child->id,
+            id      => $entry->id,
+        });
+
+        # public entry should become draft first to remove the published ones
+        $app->post_form_ok({
+            text   => $entry->text . ' draft',
+            status => MT::EntryStatus::HOLD(),
+        });
+
+        $app->post_form_ok({
+            text   => $entry->text . ' scheduled',
+            status => MT::EntryStatus::FUTURE(),
+        });
+
+        $entry->refresh;
+        is $entry->status => MT::EntryStatus::FUTURE(), "entry is scheduled to be public";
+
+        my $custom_index = path($test_env->path('site/custom_index.html'));
+        my $mtime        = $custom_index->stat->mtime;
+        my $html         = $custom_index->slurp;
+
+        sleep 1 while $mtime + 1 > time;
+
+        MT->publisher->publish_future_posts;    # instead of _run_rpt for consistency
+
+        $entry->refresh;
+        is $entry->status => MT::EntryStatus::RELEASE(), "entry is public now";
+
+        my $new_mtime = $custom_index->stat->mtime;
+        my $new_html  = $custom_index->slurp;
+        if ($EventType == EVENT_PUBLISH) {
+            ok $mtime < $new_mtime && $html ne $new_html, "custom_index in the parent has been rebuilt by the trigger";
+        } else {
+            ok $mtime == $new_mtime && $html eq $new_html, "custom_index in the parent remains the same";
+        }
     };
 };
 

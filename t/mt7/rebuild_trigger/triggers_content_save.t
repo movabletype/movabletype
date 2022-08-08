@@ -337,6 +337,62 @@ subtest 'single edit, content data, parent to child' => sub {
         $cd->save or die $cd->errstr;
         MT->publisher->rebuild(BlogID => $child->id);
     };
+
+    subtest 'If a piece of scheduled content data for the future in the parent turns into public' => sub {
+        my $cd = $objs->{content_data}{cd};
+        my $cf = $objs->{content_type}{ct}{content_field}{cf_single_line_text};
+        is $cd->status => MT::ContentStatus::RELEASE(), "content data is public";
+
+        my $app = MT::Test::App->new;
+        $app->login($admin);
+        $app->get_ok({
+            __mode          => 'view',
+            _type           => 'content_data',
+            blog_id         => $parent->id,
+            id              => $cd->id,
+            content_type_id => $cd->content_type_id,
+        });
+
+        # public content data should become draft first to remove the published ones
+        my $form  = $app->form;
+        my $input = $form->find_input('content-field-' . $cf->id);
+        $input->value($input->value . ' draft');
+        $form->value(status => MT::ContentStatus::HOLD());
+
+        $app->post_ok($form->click);
+
+        $form  = $app->form;
+        $input = $form->find_input('content-field-' . $cf->id);
+        $input->value($input->value . ' scheduled');
+        $form->value(status => MT::ContentStatus::FUTURE());
+
+        $app->post_ok($form->click);
+
+        $cd->refresh;
+        is $cd->status => MT::ContentStatus::FUTURE(), "content data is scheduled to be public";
+
+        my $custom_index = path($test_env->path('site/child/custom_index.html'));
+        my $mtime        = $custom_index->stat->mtime;
+        my $html         = $custom_index->slurp;
+
+        sleep 1 while $mtime + 1 > time;
+
+        MT->publisher->publish_future_contents;    # instead of _run_rpt for consistency
+
+        $cd->refresh;
+        is $cd->status => MT::ContentStatus::RELEASE(), "content data is public now";
+
+        my $new_mtime = $custom_index->stat->mtime;
+        my $new_html  = $custom_index->slurp;
+        if ($EventType == EVENT_PUBLISH) {
+            ok $mtime < $new_mtime && $html ne $new_html, "custom_index in the child has been rebuilt by the trigger" or do {
+                ok $mtime < $new_mtime, "mtime is ok";
+                ok $html ne $new_html, "html is ok";
+            };
+        } else {
+            ok $mtime == $new_mtime && $html eq $new_html, "custom_index in the child remains the same";
+        }
+    };
 };
 
 subtest 'single edit, content data, child to parent' => sub {
@@ -529,6 +585,62 @@ subtest 'single edit, content data, child to parent' => sub {
         $cd->status(MT::ContentStatus::RELEASE());
         $cd->save or die $cd->errstr;
         MT->publisher->rebuild(BlogID => $parent->id);
+    };
+
+    subtest 'If a piece of scheduled content data for the future in the child turns into public' => sub {
+        my $cd = $objs->{content_data}{child_cd};
+        my $cf = $objs->{content_type}{child_ct}{content_field}{cf_single_line_text};
+        is $cd->status => MT::ContentStatus::RELEASE(), "content data is public";
+
+        my $app = MT::Test::App->new;
+        $app->login($admin);
+        $app->get_ok({
+            __mode          => 'view',
+            _type           => 'content_data',
+            blog_id         => $child->id,
+            id              => $cd->id,
+            content_type_id => $cd->content_type_id,
+        });
+
+        # public content data should become draft first to remove the published ones
+        my $form  = $app->form;
+        my $input = $form->find_input('content-field-' . $cf->id);
+        $input->value($input->value . ' draft');
+        $form->value(status => MT::ContentStatus::HOLD());
+
+        $app->post_ok($form->click);
+
+        $form  = $app->form;
+        $input = $form->find_input('content-field-' . $cf->id);
+        $input->value($input->value . ' scheduled');
+        $form->value(status => MT::ContentStatus::FUTURE());
+
+        $app->post_ok($form->click);
+
+        $cd->refresh;
+        is $cd->status => MT::ContentStatus::FUTURE(), "content data is scheduled to be public";
+
+        my $custom_index = path($test_env->path('site/custom_index.html'));
+        my $mtime        = $custom_index->stat->mtime;
+        my $html         = $custom_index->slurp;
+
+        sleep 1 while $mtime + 1 > time;
+
+        MT->publisher->publish_future_contents;    # instead of _run_rpt for consistency
+
+        $cd->refresh;
+        is $cd->status => MT::ContentStatus::RELEASE(), "content data is public now";
+
+        my $new_mtime = $custom_index->stat->mtime;
+        my $new_html  = $custom_index->slurp;
+        if ($EventType == EVENT_PUBLISH) {
+            ok $mtime < $new_mtime && $html ne $new_html, "custom_index in the parent has been rebuilt by the trigger" or do {
+                ok $mtime < $new_mtime, "mtime is ok";
+                ok $html ne $new_html, "html is ok";
+            };
+        } else {
+            ok $mtime == $new_mtime && $html eq $new_html, "custom_index in the parent remains the same";
+        }
     };
 };
 
