@@ -166,12 +166,12 @@ subtest 'config' => sub {
 
     my $script;
     $app->get_ok({ __mode => 'cfg_rebuild_trigger', blog_id => $site->id });
-    $script = $app->wq_find("head script:not([src])")->filter(sub { $_->as_html =~ /testct_a/ ? 1 : 0 })->first->as_html;
+    $script = $app->wq_find("head script[data-rebuildtrigger]")->as_html;
     like($script, qr/testct_a/, 'right html');
     unlike($script, qr/testct_c/, 'right html');
 
     $app->get_ok({ __mode => 'cfg_rebuild_trigger', blog_id => $blog->id });
-    $script = $app->wq_find("head script:not([src])")->filter(sub { $_->as_html =~ /testct_b/ ? 1 : 0 })->first->as_html;
+    $script = $app->wq_find("head script[data-rebuildtrigger]")->as_html;
     like($script, qr/testct_b/, 'right html');
     unlike($script, qr/testct_a/, 'right html');
 
