@@ -11,7 +11,7 @@
 
 <script type="text/javascript">
 (function() {
-    var code = '<mt:Var name="code" />';
+    var code = '<mt:Var name="code" encode_js="1" />';
 
     if (code) {
         var $ = window.opener.jQuery;
@@ -28,7 +28,7 @@
             '&client_id=' + clientId +
             '&client_secret=' + clientSecret +
             '&redirect_uri=' + redirectUri +
-            '&code=<mt:Var name="code" />' +
+            '&code=' + code +
             '&magic_token=' + magicToken,
             { large: true }
         );
