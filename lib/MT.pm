@@ -2089,6 +2089,8 @@ sub set_default_tmpl_params {
     $param->{language_tag}          = substr( $mt->current_language, 0, 2 );
     $param->{language_encoding}     = $mt->charset;
     $param->{optimize_ui}           = $mt->build_id && !$MT::DebugMode;
+    $param->{use_mt_common_json}    = $mt->config->UseMTCommonJSON;
+    $param->{use_svg4everybody}     = $mt->config->UseSVGForEverybody;
     $param->{use_jquery_json}       = $mt->config->UseJQueryJSON;
 
     if ( $mt->isa('MT::App') ) {
