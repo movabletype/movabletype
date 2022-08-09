@@ -2090,6 +2090,7 @@ sub set_default_tmpl_params {
     $param->{language_encoding}     = $mt->charset;
     $param->{optimize_ui}           = $mt->build_id && !$MT::DebugMode;
     $param->{use_mt_common_json}    = $mt->config->UseMTCommonJSON;
+    $param->{use_svg4everybody}     = $mt->config->UseSVGForEverybody;
 
     if ( $mt->isa('MT::App') ) {
         if ( my $author = $mt->user ) {
