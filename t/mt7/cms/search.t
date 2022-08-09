@@ -25,6 +25,81 @@ my $author  = MT->model('author')->load(1);
 my $blog_id = $objs->{blog_id};
 my $ct_id   = $objs->{content_type}{ct_multi}{content_type}->id;
 
+subtest 'compile_daterange' => sub {
+    require MT::CMS::Search;
+    my $type;
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $code = sub {
+        my $cf_type = $type eq 'authored_on' ? undef : $type;
+        my ($range, $from, $timefrom, $to,$timeto) = MT::CMS::Search::compile_daterange($app, @_, $cf_type);
+        return [$from, $timefrom, $to, $timeto, $range];
+    };
+    for ('authored_on', 'date_only', 'date_and_time') {
+        $type = $_;
+        subtest $type => sub {
+            is_deeply(
+                $code->('2001-01-01', '', '2001-01-02', ''),
+                ['2001-01-01', '', '2001-01-02', '', ['20010101000000', '20010102235959']]);
+            is_deeply(
+                $code->('2001-01-02', '', '2001-01-01', ''),
+                ['2001-01-01', '', '2001-01-02', '', ['20010101000000', '20010102235959']]);
+            is_deeply(
+                $code->('2001-01-01', '', '', ''),
+                ['2001-01-01', '', '', '', ['20010101000000', undef]]);
+            is_deeply(
+                $code->('', '', '2001-01-02', ''),
+                ['', '', '2001-01-02', '', [undef, '20010102235959']]);
+        };
+    }
+
+    subtest 'unused params are retrieved as is' => sub {
+        for ('authored_on', 'date_only') {
+            $type = $_;
+            subtest $type => sub {
+                is_deeply(
+                    $code->('2001-01-01', '13:00:00', '2001-01-02', '12:00:00'),
+                    ['2001-01-01', '13:00:00', '2001-01-02', '12:00:00', ['20010101000000', '20010102235959']]);
+                is_deeply(
+                    $code->('2001-01-01', '12:00:00', '2001-01-02', ''),
+                    ['2001-01-01', '12:00:00', '2001-01-02', '', ['20010101000000', '20010102235959']]);
+                is_deeply(
+                    $code->('2001-01-01', '', '2001-01-02', '13:00:00'),
+                    ['2001-01-01', '', '2001-01-02', '13:00:00', ['20010101000000', '20010102235959']]);
+            };
+        }
+
+        subtest 'time_only' => sub {
+            $type = 'time_only';
+            is_deeply(
+                $code->('2001-01-02', '12:00:00', '2001-01-01', '13:00:00'),
+                ['2001-01-02', '12:00:00', '2001-01-01', '13:00:00', ['19700101120000', '19700101130000']]);
+            is_deeply(
+                $code->('2001-01-01', '12:00:00', '', '13:00:00'),
+                ['2001-01-01', '12:00:00', '', '13:00:00', ['19700101120000', '19700101130000']]);
+            is_deeply(
+                $code->('', '12:00:00', '2001-01-02', '13:00:00'),
+                ['', '12:00:00', '2001-01-02', '13:00:00', ['19700101120000', '19700101130000']]);
+        };
+    };
+
+    subtest 'normalized times appear in fixed params' => sub {
+        $type = 'time_only';
+        is_deeply(
+            $code->('', '1:2:3', '', '4:5:6'),
+            ['', '01:02:03', '', '04:05:06', ['19700101010203', '19700101040506']]);
+        is_deeply(
+            $code->('', '1:2', '', '03:04'),
+            ['', '01:02:00', '', '03:04:00', ['19700101010200', '19700101030400']]);
+    };
+
+    subtest 'fails to compile' => sub {
+        $type = 'authored_on';
+        is_deeply(
+            $code->('', '12:00:00', '', '13:00:00'),
+            ['', '12:00:00', '', '13:00:00', undef]);
+    };
+};
+
 subtest 'content_data' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($author);
@@ -153,7 +228,6 @@ subtest 'content_data with daterange' => sub {
         cmp_bag($search->($date6, '', $date2, ''), $date_id_to_label->(1 .. 7), 'negative range');
 
         subtest 'unset or half set daterange' => sub {
-            plan skip_all => 'incomplete daterange';
             cmp_bag($search->('',     '', $date2, ''), $date_id_to_label->(0 .. 3), 'to only');
             cmp_bag($search->($date2, '', '',     ''), $date_id_to_label->(1 .. 8), 'from only');
             cmp_bag($search->('',     '', $date6, ''), $date_id_to_label->(0 .. 7), 'to only2');
@@ -169,28 +243,10 @@ subtest 'content_data with daterange' => sub {
         cmp_bag($search->($date6, '', $date2, ''), $date_id_to_label->(1 .. 7), 'negative range');
 
         subtest 'unset or half set daterange' => sub {
-            plan skip_all => 'incomplete daterange';
             cmp_bag($search->('',     '', $date2, ''), $date_id_to_label->(0 .. 3), 'to only');
             cmp_bag($search->($date2, '', '',     ''), $date_id_to_label->(1 .. 8), 'from only');
             cmp_bag($search->('',     '', $date6, ''), $date_id_to_label->(0 .. 7), 'to only2');
             cmp_bag($search->($date6, '', '',     ''), $date_id_to_label->(5 .. 8), 'from only2');
-
-            subtest 'with time' => sub {
-                plan skip_all => 'mot implemented';
-                cmp_bag($search->($date2, $time2, $date6, $time6), $date_id_to_label->(2 .. 6), 'normal');
-                cmp_bag($search->($date6, $time6, $date2, $time2), $date_id_to_label->(2 .. 6), 'negative range');
-                cmp_bag($search->('',     '',     $date2, $time2), $date_id_to_label->(0 .. 2), 'to only');
-                cmp_bag($search->($date2, $time2, '',     ''),     $date_id_to_label->(2 .. 8), 'from only');
-                cmp_bag($search->('',     '',     $date6, $time6), $date_id_to_label->(0 .. 6), 'to only2');
-                cmp_bag($search->($date6, $time6, '',     ''),     $date_id_to_label->(6 .. 8), 'from only2');
-            };
-
-            subtest 'eccentric cases' => sub {
-                cmp_bag($search->($date6, '',     $date6, $time6), $date_id_to_label->(5 .. 6), 'within a day');
-                cmp_bag($search->($date6, $time6, $date6, ''),     $date_id_to_label->(5 .. 6), 'within a day');
-                cmp_bag($search->($date6, '',     '',     $time6), $date_id_to_label->(5 .. 8), 'within a day');
-                cmp_bag($search->('',     $time6, $date6, ''),     $date_id_to_label->(0 .. 7), 'within a day');
-            };
         };
     };
 
@@ -201,7 +257,6 @@ subtest 'content_data with daterange' => sub {
         cmp_bag($search->($date6, '', $date2, ''), $date_id_to_label->(1 .. 7), 'negative range');
 
         subtest 'unset or half set daterange' => sub {
-            plan skip_all => 'incomplete daterange';
             cmp_bag($search->('',     '', $date2, ''), $date_id_to_label->(0 .. 3), 'to only');
             cmp_bag($search->($date2, '', '',     ''), $date_id_to_label->(1 .. 8), 'from only');
             cmp_bag($search->('',     '', $date6, ''), $date_id_to_label->(0 .. 7), 'to only2');
@@ -216,7 +271,6 @@ subtest 'content_data with daterange' => sub {
         cmp_bag($search->('', $time6, '', $time2), $date_id_to_label->(2 .. 6), 'negative range');
 
         subtest 'unset or half set daterange' => sub {
-            plan skip_all => 'incomplete daterange';
             cmp_bag($search->('', '',     '', $time2), $date_id_to_label->(0 .. 2), 'to only');
             cmp_bag($search->('', $time2, '', ''),     $date_id_to_label->(2 .. 8), 'from only');
             cmp_bag($search->('', '',     '', $time6), $date_id_to_label->(0 .. 6), 'to only2');
@@ -227,6 +281,25 @@ subtest 'content_data with daterange' => sub {
     for my $fcds (values %cds) {
         $_->remove for values %$fcds;
     }
+};
+
+subtest 'params retrieved after search' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+    $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+    $app->change_tab('content_data');
+    $app->change_content_type($ct_id);
+    my %params = (
+        is_dateranged      => 1, 
+        date_time_field_id => $objs->{content_type}{ct_multi}{content_field}{cf_time}->id,
+    );
+
+    subtest 'time_only' => sub {
+        $app->search('a', { %params, timefrom => '12:34:56', timeto => '13:45:59' });
+        my $form = $app->find_searchform('search_form');
+        is $form->find_input('timefrom')->value, '12:34:56', 'timefrom normal';
+        is $form->find_input('timeto')->value, '13:45:59', 'timeto normal';
+    };
 };
 
 subtest q{contaminated date_time_field_id on entry tab is ignored} => sub {

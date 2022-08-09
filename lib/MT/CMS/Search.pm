@@ -7,7 +7,7 @@ package MT::CMS::Search;
 
 use strict;
 use warnings;
-use MT::Util qw( is_valid_date encode_html first_n_words );
+use MT::Util qw( valid_date_time2ts encode_html first_n_words );
 
 sub core_search_apis {
     my $app = shift;
@@ -834,16 +834,14 @@ sub do_search_replace {
     my ($search,       $replace,            $do_replace,
         $case,         $is_regex,           $is_limited,
         $type,         $is_junk,            $is_dateranged,
-        $ids,          $datefrom_year,      $datefrom_month,
-        $datefrom_day, $dateto_year,        $dateto_month,
-        $dateto_day,   $date_time_field_id, $from,
+        $ids,          $date_time_field_id, $from,
         $to,           $timefrom,           $timeto,
         $show_all,     $do_search,          $orig_search,
         $quicksearch,  $publish_status,     $my_posts,
         $search_type,  $filter,             $filter_val
         )
         = map scalar $app->param($_),
-        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
+        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
 
     # trim 'search' parameter
     $search = '' unless defined($search);
@@ -882,7 +880,7 @@ sub do_search_replace {
     $list_pref->{"position_actions_bottom"} = 1;
     $list_pref->{"view"}                    = 'compact';
     $list_pref->{"view_compact"}            = 1;
-    my ( @cols, $datefrom, $dateto, $date_col );
+    my ( @cols, $date_col );
     $do_replace    = 0 unless $search_api->{can_replace};
     $is_dateranged = 0 unless $search_api->{can_search_by_date};
     my @ids;
@@ -940,46 +938,7 @@ sub do_search_replace {
         $quicksearch_id = $search;
         unshift @cols, 'id';
     }
-    foreach (
-        $datefrom_year, $datefrom_month, $datefrom_day,
-        $dateto_year,   $dateto_month,   $dateto_day
-        )
-    {
-        s!\D!!g if $_;
-    }
-    if ( $is_dateranged && $datefrom_year ) {
-        $datefrom = sprintf( "%04d%02d%02d",
-            $datefrom_year, $datefrom_month, $datefrom_day );
-        $dateto = sprintf( "%04d%02d%02d",
-            $dateto_year, $dateto_month, $dateto_day );
-        if ( ( $datefrom eq '00000000' ) && ( $dateto eq '00000000' ) ) {
-            $is_dateranged = 0;
-        }
-        else {
-            if (   !is_valid_date( $datefrom . '000000' )
-                || !is_valid_date( $dateto . '000000' ) )
-            {
-                return $app->error(
-                    $app->translate(
-                        "Invalid date(s) specified for date range.")
-                );
-            }
-        }
-    }
-    elsif ($is_dateranged) {
-        if ( $from && $to ) {
-            s!\D!!g foreach ( $from, $to );
-            $datefrom = substr( $from, 0, 8 );
-            $dateto   = substr( $to,   0, 8 );
-        }
-        if ( $timefrom && $timeto ) {
-            s!\D!!g foreach ( $timefrom, $timeto );
-            $timefrom = substr $timefrom, 0, 6;
-            $timeto   = substr $timeto,   0, 6;
-            $timefrom = "0$timefrom" if length $timefrom == 5;
-            $timeto   = "0$timeto"   if length $timeto == 5;
-        }
-    }
+    
     my $tab = $app->param('tab') || 'entry';
     ## Sometimes we need to pass in the search columns like 'title,text', so
     ## we look for a comma (not a valid character in a column name) and split
@@ -994,6 +953,18 @@ sub do_search_replace {
     my $class = $app->model( $api->{object_type} || $type );
     my %param = %$list_pref;
     my $limit;
+
+    my $datetime_term;
+    if ($is_dateranged) {
+        my $cf_type;
+        if ($content_type && $date_time_field_id) {
+            my $field_data = $content_type->get_field($date_time_field_id);
+            $cf_type = $field_data->{type};
+        }
+        ($datetime_term, $from, $timefrom, $to, $timeto) = 
+            compile_daterange($app,$from, $timefrom, $to, $timeto, $cf_type);
+        $param{error} = $app->errstr if $app->errstr;
+    }
 
     # type-specific directives override global CMSSearchLimit
     my $directive = 'CMSSearchLimit' . ucfirst($type);
@@ -1106,23 +1077,8 @@ sub do_search_replace {
             $terms{status} = $publish_status;
             $terms{class}  = $type;
         }
-        if ($is_dateranged) {
+        if ($datetime_term) {
             if ($content_type && $date_time_field_id) {
-                my $field_data
-                    = $content_type->get_field($date_time_field_id);
-                my $datetime_term;
-                if ( $field_data->{type} eq 'time_only' ) {
-                    $datetime_term
-                        = ( $timefrom gt $timeto )
-                        ? [ "19700101${timeto}", "19700101${timefrom}" ]
-                        : [ "19700101${timefrom}", "19700101${timeto}" ];
-                }
-                else {
-                    $datetime_term
-                        = ( $datefrom gt $dateto )
-                        ? [ "${dateto}000000", "${datefrom}235959" ]
-                        : [ "${datefrom}000000", "${dateto}235959" ];
-                }
                 my $join = $app->model('content_field_index')->join_on(
                     undef,
                     {   content_data_id  => \'= cd_id',
@@ -1133,17 +1089,9 @@ sub do_search_replace {
                 );
                 $args{joins} ||= [];
                 push @{ $args{joins} }, $join;
-            }
-            else {
+            } else {
                 $args{range_incl}{$date_col} = 1;
-                if ( $datefrom gt $dateto ) {
-                    $terms{$date_col}
-                        = [ $dateto . '000000', $datefrom . '235959' ];
-                }
-                else {
-                    $terms{$date_col}
-                        = [ $datefrom . '000000', $dateto . '235959' ];
-                }
+                $terms{$date_col} = $datetime_term;
             }
         }
         if ( defined $publish_status ) {
@@ -1649,22 +1597,6 @@ sub do_search_replace {
                 lc $class->class_label_plural );
         }
     }
-    if ($is_dateranged) {
-        if ( $from && $to ) {
-            ( $datefrom_year, $datefrom_month, $datefrom_day )
-                = $datefrom =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
-            ( $dateto_year, $dateto_month, $dateto_day )
-                = $dateto =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
-            $from = sprintf "%s-%s-%s", $datefrom_year, $datefrom_month,
-                $datefrom_day;
-            $to = sprintf "%s-%s-%s", $dateto_year, $dateto_month,
-                $dateto_day;
-        }
-        if ( $timefrom && $timeto ) {
-            $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
-            $timeto =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
-        }
-    }
 
     my $error = $app->param('error') || '';
     my $res_search
@@ -1698,16 +1630,10 @@ sub do_search_replace {
         do_replace         => $do_replace,
         case               => $case,
         from               => $from,
-        datefrom_year      => $datefrom_year,
-        datefrom_month     => $datefrom_month,
-        datefrom_day       => $datefrom_day,
         to                 => $to,
         date_time_field_id => $date_time_field_id,
         timefrom           => $timefrom,
         timeto             => $timeto,
-        dateto_year        => $dateto_year,
-        dateto_month       => $dateto_month,
-        dateto_day         => $dateto_day,
         is_regex           => $is_regex,
         is_limited         => $is_limited,
         is_dateranged      => $is_dateranged,
@@ -1776,21 +1702,6 @@ sub do_search_replace {
     $search_options .= '&amp;is_dateranged=' . encode_html($is_dateranged)
         if defined $is_dateranged;
 
-    if ($is_dateranged) {
-        $search_options .= '&amp;datefrom_year=' . encode_html($datefrom_year)
-            if defined $datefrom_year;
-        $search_options
-            .= '&amp;datefrom_month=' . encode_html($datefrom_month)
-            if defined $datefrom_month;
-        $search_options .= '&amp;datefrom_day=' . encode_html($datefrom_day)
-            if defined $datefrom_day;
-        $search_options .= '&amp;dateto_year=' . encode_html($dateto_year)
-            if defined $dateto_year;
-        $search_options .= '&amp;dateto_month=' . encode_html($dateto_month)
-            if defined $dateto_month;
-        $search_options .= '&amp;dateto_day=' . encode_html($dateto_day)
-            if defined $dateto_day;
-    }
     if ($is_limited) {
         foreach (@cols) {
             $search_options .= '&amp;search_cols=' . encode_html($_);
@@ -1800,6 +1711,47 @@ sub do_search_replace {
     $res{search_options} = $search_options;
 
     \%res;
+}
+
+sub compile_daterange {
+    my ($app, $from, $timefrom, $to, $timeto, $cf_type) = @_;
+
+    for my $date ($from, $to) {
+        next unless $date;
+        my $org = $date;
+        $date = valid_date_time2ts($date . ' 00:00:00')
+            or return $app->error($app->translate('Invalid date: [_1]', $org));
+        $date =~ s{000000$}{};
+    }
+    for my $time ($timefrom, $timeto) {
+        next unless $time;
+        my $org = $time;
+        $time = valid_date_time2ts('1970-01-01 ' . $time)
+            or return $app->error($app->translate('Invalid time: [_1]', $org));
+        $time =~ s{^19700101}{};
+    }
+    my $term;
+    if ($cf_type && $cf_type eq 'time_only') {
+        ($timefrom, $timeto) = ($timeto, $timefrom) if $timefrom && $timeto && $timefrom > $timeto;
+        $term = [
+            $timefrom ? '19700101' . $timefrom : undef,
+            $timeto   ? '19700101' . $timeto   : undef,
+        ];
+    } else {
+        ($from, $to) = ($to, $from) if $from && $to && $from > $to;
+        $term = [
+            $from ? $from . '000000' : undef,
+            $to   ? $to . '235959'   : undef,
+        ];
+    }
+    $term = undef unless defined($term->[0]) || defined($term->[1]);
+
+    $from     =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/ if $from;
+    $to       =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/ if $to;
+    $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/ if $timefrom;
+    $timeto   =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/ if $timeto;
+
+    return $term, $from, $timefrom, $to, $timeto;
 }
 
 sub _default_results_table_template {
