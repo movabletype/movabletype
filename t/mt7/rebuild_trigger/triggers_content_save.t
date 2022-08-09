@@ -385,10 +385,7 @@ subtest 'single edit, content data, parent to child' => sub {
         my $new_mtime = $custom_index->stat->mtime;
         my $new_html  = $custom_index->slurp;
         if ($EventType == EVENT_PUBLISH) {
-            ok $mtime < $new_mtime && $html ne $new_html, "custom_index in the child has been rebuilt by the trigger" or do {
-                ok $mtime < $new_mtime, "mtime is ok";
-                ok $html ne $new_html, "html is ok";
-            };
+            ok $mtime < $new_mtime && $html ne $new_html, "custom_index in the child has been rebuilt by the trigger";
         } else {
             ok $mtime == $new_mtime && $html eq $new_html, "custom_index in the child remains the same";
         }
@@ -634,10 +631,7 @@ subtest 'single edit, content data, child to parent' => sub {
         my $new_mtime = $custom_index->stat->mtime;
         my $new_html  = $custom_index->slurp;
         if ($EventType == EVENT_PUBLISH) {
-            ok $mtime < $new_mtime && $html ne $new_html, "custom_index in the parent has been rebuilt by the trigger" or do {
-                ok $mtime < $new_mtime, "mtime is ok";
-                ok $html ne $new_html, "html is ok";
-            };
+            ok $mtime < $new_mtime && $html ne $new_html, "custom_index in the parent has been rebuilt by the trigger";
         } else {
             ok $mtime == $new_mtime && $html eq $new_html, "custom_index in the parent remains the same";
         }
