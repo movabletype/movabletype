@@ -6,10 +6,14 @@
 
 <mt:SetVarBlock name="js_include" append="1">
 <mt:unless name="optimize_ui">
+<mt:if name-"use_jquery_json">
 <script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:if>
 <script type="text/javascript" src="<mt:var name="static_uri">data-api/v4/js/mt-data-api.js?v=<mt:var name="mt_version_id" escape="url">">"></script>
 <mt:else>
+<mt:if name-"use_jquery_json">
 <script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:if>
 <script type="text/javascript" src="<mt:var name="static_uri">data-api/v4/js/mt-data-api.min.js?v=<mt:var name="mt_version_id" escape="url">">"></script>
 </mt:unless>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js-cookie-2.1.4/js.cookie.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
@@ -67,7 +71,7 @@ jQuery(function($) {
                 redirectWithOneTimeToken(data.oneTimeToken);
             }
             else {
-                redirectWithCookie($.toJSON(data));
+                redirectWithCookie(<mt:if name-"use_jquery_json">$.toJSON(data)<mt:else>JSON.stringify(data)</mt:if>);
             }
         }).fail(function(data) {
             if (data.status === 401) {

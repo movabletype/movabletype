@@ -2316,6 +2316,7 @@ BEGIN {
             'JSONCanonicalization' => { default => 1 },
             'UseMTCommonJSON'      => { default => 0 },
             'UseSVGForEverybody'   => { default => 0 },
+            'UseJQueryJSON'        => { default => 0 },
 
             'RequiredUserEmail'       => { default => 1 },
             'DefaultClassParamFilter' => { default => 'all' },

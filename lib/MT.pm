@@ -2091,6 +2091,7 @@ sub set_default_tmpl_params {
     $param->{optimize_ui}           = $mt->build_id && !$MT::DebugMode;
     $param->{use_mt_common_json}    = $mt->config->UseMTCommonJSON;
     $param->{use_svg4everybody}     = $mt->config->UseSVGForEverybody;
+    $param->{use_jquery_json}       = $mt->config->UseJQueryJSON;
 
     if ( $mt->isa('MT::App') ) {
         if ( my $author = $mt->user ) {
