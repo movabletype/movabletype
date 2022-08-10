@@ -9,11 +9,6 @@ require_once('adodb-exceptions.inc.php');
 require_once('adodb.inc.php');
 if (!defined('ADODB_ASSOC_CASE')) define('ADODB_ASSOC_CASE', ADODB_ASSOC_CASE_LOWER);
 
-# XXX Test Oracle
-# XXX See how ADODB interface fixed at https://github.com/ADOdb/ADOdb/issues/721
-global $ADODB_QUOTE_FIELDNAMES;
-$ADODB_QUOTE_FIELDNAMES = 'LOWER';
-
 require_once('adodb-active-record.inc.php');
 
 abstract class MTDatabase {
@@ -49,6 +44,8 @@ abstract class MTDatabase {
 
     // Construction
     public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
+        global $ADODB_QUOTE_FIELDNAMES;
+        $ADODB_QUOTE_FIELDNAMES = (get_class($this) === 'MTDatabaseoracle') ? 'UPPER' : 'NATIVE';
         $this->id = md5(uniqid('MTDatabase',true));
         $retry_cnt = 0;
         while ( ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) && $retry_cnt++ < $retry ) {
