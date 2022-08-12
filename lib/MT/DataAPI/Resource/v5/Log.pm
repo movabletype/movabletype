@@ -12,6 +12,17 @@ use warnings;
 sub fields {
     [
         {
+            name => 'by',
+            schema => {
+                type       => 'object',
+                properties => {
+                    id          => { type => 'integer' },
+                    displayName => { type => 'string' },
+                    userpicUrl  => { type => 'string' },
+                },
+            },
+        },
+        {
             name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },

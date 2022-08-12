@@ -96,4 +96,8 @@ for my $prop (qw/memberCount permissionCount/) {
     is($json{v5}{components}{schemas}{group}{properties}{$prop}{type}, 'integer', "group $prop is integer type in v5");
 }
 
+# log
+is($json{v4}{components}{schemas}{log}{properties}{by}{properties}{id}{type}, 'string', "log by/id is string type in v4");
+is($json{v5}{components}{schemas}{log}{properties}{by}{properties}{id}{type}, 'integer', "log by/id is integer type in v5");
+
 done_testing;
