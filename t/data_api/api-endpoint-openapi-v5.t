@@ -62,4 +62,8 @@ for my $component (qw/category folder/) {
     is($json{v5}{components}{schemas}{$component}{properties}{parent}{type}, 'integer', "$component parent is integer type in v5");
 }
 
+# category_set
+is($json{v4}{components}{schemas}{category_set}{properties}{categories}{items}{properties}{parent}{type}, 'string', "category_set categories/items/parent/id is string type in v4");
+is($json{v5}{components}{schemas}{category_set}{properties}{categories}{items}{properties}{parent}{type}, 'integer', "category_set categories/items/parent/id is integer type in v5");
+
 done_testing;
