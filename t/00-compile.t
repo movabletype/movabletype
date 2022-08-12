@@ -599,6 +599,7 @@ use_ok('MT::DataAPI::Resource::v5::Category');
 use_ok('MT::DataAPI::Resource::v5::ContentField');
 use_ok('MT::DataAPI::Resource::v5::ContentType');
 use_ok('MT::DataAPI::Resource::v5::Entry');
+use_ok('MT::DataAPI::Resource::v5::Folder');
 use_ok('MT::DataAPI::Resource::v5::Group');
 use_ok('MT::DataAPI::Resource::v5::Log');
 use_ok('MT::DataAPI::Resource::v5::Page');

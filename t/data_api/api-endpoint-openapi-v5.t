@@ -50,8 +50,10 @@ for my $component (qw/entry page/) {
     is($json{v5}{components}{schemas}{$component}{properties}{author}{properties}{id}{type}, 'integer', "$component author/id is integer type in v5");
 }
 
-# category
-is($json{v4}{components}{schemas}{category}{properties}{parent}{type}, 'string', "category parent is string type in v4");
-is($json{v5}{components}{schemas}{category}{properties}{parent}{type}, 'integer', "category parent is integer type in v5");
+# category / folder
+for my $component (qw/category folder/) {
+    is($json{v4}{components}{schemas}{$component}{properties}{parent}{type}, 'string', "$component parent is string type in v4");
+    is($json{v5}{components}{schemas}{$component}{properties}{parent}{type}, 'integer', "$component parent is integer type in v5");
+}
 
 done_testing;
