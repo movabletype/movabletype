@@ -4542,6 +4542,9 @@ abstract class MTDatabase {
                     $extras['join'][$join_table] = array('condition' => $join_condition, 'type' => 'left');
 
                     $sort_field = "$alias.cf_idx_value_$data_type";
+                    if ($data_type == 'text' && get_class($this) === 'MTDatabaseoracle') {
+                        $sort_field = "dbms_lob.substr($sort_field, 1000, 1)";
+                    }
                     $no_resort = 1;
                 }
                 if (!isset($sort_field) && isset($args['sort_by'])) {
