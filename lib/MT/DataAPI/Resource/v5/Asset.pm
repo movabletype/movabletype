@@ -15,6 +15,10 @@ sub fields {
             name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
+        {
+            name => 'parent',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
     ];
 }
 

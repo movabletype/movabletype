@@ -44,6 +44,10 @@ for my $name (qw/asset blog cf content_type group log permission template templa
     is($json{v5}{components}{schemas}{$name}{properties}{id}{type}, 'integer', "$name id is integer type in v5");
 }
 
+# asset
+is($json{v4}{components}{schemas}{asset}{properties}{parent}{type}, 'string', "asset parent is string type in v4");
+is($json{v5}{components}{schemas}{asset}{properties}{parent}{type}, 'integer', "asset parent is integer type in v5");
+
 # association
 for my $prop (qw/user role/) {
     is($json{v4}{components}{schemas}{association}{properties}{$prop}{properties}{id}{type}, 'string', "association $prop/id is string type in v4");
