@@ -158,6 +158,10 @@ sub core_resources {
                 fields           => "${pkg}v2::Association::fields",
                 updatable_fields => "${pkg}v2::Association::updatable_fields",
             },
+            {   version          => 5,
+                fields           => "${pkg}v5::Association::fields",
+                updatable_fields => "${pkg}v5::Association::updatable_fields",
+            },
         ],
         'role' => [
             {   version          => 2,

@@ -594,6 +594,7 @@ use_ok('MT::DataAPI::Resource::v3::User');
 
 use_ok('MT::DataAPI::Endpoint::v5');
 use_ok('MT::DataAPI::Resource::v5::Asset');
+use_ok('MT::DataAPI::Resource::v5::Association');
 use_ok('MT::DataAPI::Resource::v5::Blog');
 use_ok('MT::DataAPI::Resource::v5::Category');
 use_ok('MT::DataAPI::Resource::v5::ContentField');
