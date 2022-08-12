@@ -54,6 +54,16 @@ for my $prop (qw/user role/) {
     is($json{v5}{components}{schemas}{association}{properties}{$prop}{properties}{id}{type}, 'integer', "association $prop/id is integer type in v5");
 }
 
+# blog / website
+for my $component (qw/blog website/) {
+    for my $prop (qw/basenameLimit junkFolderExpiry junkScoreThreshold listOnIndex maxRevisionsEntry maxRevisionsTemplate smartReplace wordsInExcerpt/) {
+        is($json{v4}{components}{schemas}{$component}{properties}{$prop}{type}, 'string', "$component $prop is string type in v4");
+        is($json{v5}{components}{schemas}{$component}{properties}{$prop}{type}, 'integer', "$component $prop is integer type in v5");
+    }
+    is($json{v4}{components}{schemas}{$component}{properties}{parent}{properties}{id}{type}, 'string', "$component parent/id is string type in v4");
+    is($json{v5}{components}{schemas}{$component}{properties}{parent}{properties}{id}{type}, 'integer', "$component parent/id is integer type in v5");
+}
+
 # entry / page
 for my $component (qw/entry page/) {
     is($json{v4}{components}{schemas}{$component}{properties}{author}{properties}{id}{type}, 'string', "$component author/id is string type in v4");

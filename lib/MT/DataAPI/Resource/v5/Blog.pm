@@ -15,6 +15,48 @@ sub fields {
             name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
+        {
+            name => 'basenameLimit',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
+        {
+            name => 'junkFolderExpiry',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
+        {
+            name => 'junkScoreThreshold',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
+        {
+            name => 'listOnIndex',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
+        {
+            name => 'maxRevisionsEntry',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
+        {
+            name => 'maxRevisionsTemplate',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
+        {
+            name => 'parent',
+            schema => {
+                type       => 'object',
+                properties => {
+                    id   => { type => 'integer' },
+                    name => { type => 'string' },
+                },
+            },
+        },
+        {
+            name => 'smartReplace',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
+        {
+            name => 'wordsInExcerpt',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
     ];
 }
 
