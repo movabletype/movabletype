@@ -47,6 +47,10 @@ sub core_resources {
                 fields           => "${pkg}v2::Category::fields",
                 updatable_fields => "${pkg}v2::Category::updatable_fields",
             },
+            {   version          => 5,
+                fields           => "${pkg}v5::Category::fields",
+                updatable_fields => "${pkg}v5::Category::updatable_fields",
+            },
         ],
         'folder' => [
             {   version          => 2,
