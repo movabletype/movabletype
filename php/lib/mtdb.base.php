@@ -4757,7 +4757,11 @@ abstract class MTDatabase {
                     $extras['join'][$join_table] = array('condition' => $join_condition);
 
                     $quote = $data_type == 'integer' || $data_type == 'double' ? '' : '\'';
-                    $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
+                    if ($data_type == 'text') {
+                        $field_filter .= " and $alias.cf_idx_value_$data_type like $quote$value$quote\n";
+                    } else {
+                        $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
+                    }
                 }
             }
         }
