@@ -15,6 +15,14 @@ sub fields {
             name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
+        {
+            name => 'memberCount',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
+        {
+            name => 'permissionCount',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
     ];
 }
 

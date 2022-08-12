@@ -90,4 +90,10 @@ for my $prop (qw/author data/) {
 is($json{v4}{components}{schemas}{content_type}{properties}{contentFields}{items}{properties}{id}{type}, 'string', "content_type contentFields/items/id is string type in v4");
 is($json{v5}{components}{schemas}{content_type}{properties}{contentFields}{items}{properties}{id}{type}, 'integer', "content_type contentFields/items/id is integer type in v5");
 
+# group
+for my $prop (qw/memberCount permissionCount/) {
+    is($json{v4}{components}{schemas}{group}{properties}{$prop}{type}, 'string', "group $prop is string type in v4");
+    is($json{v5}{components}{schemas}{group}{properties}{$prop}{type}, 'integer', "group $prop is integer type in v5");
+}
+
 done_testing;
