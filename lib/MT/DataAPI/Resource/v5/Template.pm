@@ -15,6 +15,15 @@ sub fields {
             name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
+        {
+            name   => 'contentType',
+            schema => {
+                type       => 'object',
+                properties => {
+                    id => { type => 'integer' },
+                },
+            },
+        },
     ];
 }
 

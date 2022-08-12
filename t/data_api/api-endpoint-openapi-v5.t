@@ -106,4 +106,8 @@ for my $prop (qw/user roles/) {
     is($json{v5}{components}{schemas}{permission}{properties}{$prop}{properties}{id}{type}, 'integer', "permission $prop/id is integer type in v5");
 }
 
+# template
+is($json{v4}{components}{schemas}{template}{properties}{contentType}{properties}{id}{type}, 'string', "template contentType/id is string type in v4");
+is($json{v5}{components}{schemas}{template}{properties}{contentType}{properties}{id}{type}, 'integer', "template contentType/id is integer type in v5");
+
 done_testing;
