@@ -18,6 +18,16 @@ with qw(
 
 my %Initialized;
 
+sub import {
+    my ($class, @roles) = @_;
+    Role::Tiny->apply_roles_to_package($class, @roles) if @roles;
+}
+
+sub apply_role {
+    my ($self, @roles) = @_;
+    Role::Tiny->apply_roles_to_object($self, @roles);
+}
+
 sub init {
     my ($class, $app_class) = @_;
 
@@ -365,9 +375,7 @@ sub _create_cgi_object {
 
 sub _clear_cache {
     my $self = shift;
-    for my $model (MT->loaded_models) {
-        $model->driver->clear_cache;
-    }
+    MT::Object->driver->clear_cache;
     MT->instance->request->reset;
 }
 

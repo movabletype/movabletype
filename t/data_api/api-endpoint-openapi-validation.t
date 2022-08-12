@@ -20,7 +20,7 @@ use MT::Test::DataAPI;
 
 $test_env->prepare_fixture('db_data');
 
-for my $version (qw/1 2 3 4/) {
+for my $version (qw/1 2 3 4 5/) {
     my $suite = suite($version);
     test_data_api($suite);
 }

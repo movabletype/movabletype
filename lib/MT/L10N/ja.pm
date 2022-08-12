@@ -560,7 +560,6 @@ use vars qw( @ISA %Lexicon );
 	'Asset' => 'アセット',
 	'Assets' => 'アセット',
 	'Associations' => '関連付け',
-	'Background Job' => 'バックグラウンドジョブ',
 	'Batch Edit Entries' => '記事の一括編集',
 	'Batch Edit Pages' => 'ウェブページの一括編集',
 	'Blog' => 'ブログ',
@@ -1970,7 +1969,6 @@ use vars qw( @ISA %Lexicon );
 	'If/Else Block' => 'If/Else条件ブロック',
 	'Include Template File' => 'テンプレートファイルのインクルード',
 	'Include Template Module' => 'テンプレートモジュールのインクルード',
-	'Job' => 'ジョブ',
 	'Junk Folder Expiration' => 'スパムコメント/トラックバックの廃棄',
 	'Legacy Quick Filter' => 'クイックフィルタ',
 	'Log' => 'ログ',
@@ -2034,8 +2032,6 @@ use vars qw( @ISA %Lexicon );
 	'Unpublish Past Entries' => '公開期限が過ぎた記事の公開を終了',
 	'Upload File' => 'ファイルアップロード',
 	'View Activity Log' => 'ログの閲覧',
-	'View Background Jobs is disabled by system configuration.' => 'バックグラウンドジョブの管理は環境変数で無効になっています。',
-	'View Background Jobs' => 'バックグラウンドジョブの管理',
 	'View System Activity Log' => 'システムログの閲覧',
 	'Widget Set' => 'ウィジェットセット',
 	'[_1] [_2] between [_3] and [_4]' => '[_2]が[_3]から[_4]の期間内の[_1]',
@@ -2708,15 +2704,7 @@ use vars qw( @ISA %Lexicon );
 	'Job Function' => 'ジョブファンクション',
 
 ## lib/MT/TheSchwartz/Job.pm
-	'Coalesce' => 'グループ名',
-	'Insert Time' => '作成日時',
-	'IsRunning' => '状態',
-	'Job Arg' => 'ジョブの引数',
-	'Priority' => '優先度',
-	'Running from [_1]' => '[_1]から実行中',
-	'Running' => '実行中',
-	'Unique Key' => 'ユニークキー',
-	'Worker' => 'ワーカー名',
+	'Job' => 'ジョブ',
 
 ## lib/MT/Theme.pm
 	'A fatal error occurred while applying element [_1]: [_2].' => '項目「[_1]」を適用する際に、重大なエラーが発生しました: [_2]',
@@ -3196,10 +3184,7 @@ use vars qw( @ISA %Lexicon );
 	q{Are you sure you want to remove filter '[_1]'?} => q{フィルタ'[_1]'を削除してよろしいですか?},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
-	'100 rows' => '100件',
-	'200 rows' => '200件',
-	'25 rows' => '25件',
-	'50 rows' => '50件',
+	'[_1] rows' => '[_1]件',
 	'Show' => '表示件数',
 
 ## mt-static/js/listing/tag/display-options.tag
@@ -3907,7 +3892,7 @@ use vars qw( @ISA %Lexicon );
 	'Run [_1]' => '[_1]を起動',
 	'Tag Attributes:' => 'タグの属性: ',
 	'Text Filters' => 'テキストフィルタ',
-	'This plugin has not been upgraded to support Movable Type [_1]. As such, it may not be completely functional.' => 'このプラグインは、 Mvable Type [_1]向けにアップグレードされていません。そのため、動作しない場合があります。',
+	'This plugin has not been upgraded to support Movable Type [_1]. As such, it may not be completely functional.' => 'このプラグインは、 Movable Type [_1]向けにアップグレードされていません。そのため、動作しない場合があります。',
 	'Your plugin settings have been reset.' => 'プラグインの設定をリセットしました。',
 	'Your plugin settings have been saved.' => 'プラグインの設定を保存しました。',
 	'Your plugins have been reconfigured.' => 'プラグインを再設定しました。',
@@ -5503,10 +5488,6 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully deleted the selected tags.' => '選択したタグを削除しました。',
 	'Your tag changes and additions have been made.' => 'タグの変更と追加が完了しました。',
 	q{The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all blogs?} => q{タグ「[_2]」は既に存在します。すべてのブログで「[_1]」を「[_2]」にマージしてもよろしいですか?},
-
-## tmpl/cms/listing/ts_job_list_header.tmpl
-	'The job(s) has been deleted from the database.' => 'ジョブをデータベースから削除しました。',
-	q{You can't delete running job(s). (ID: [_1])} => q{実行中のジョブは削除できません(ID: [_1])},
 
 ## tmpl/cms/login.tmpl
 	'Forgot your password?' => 'パスワードをお忘れですか?',
