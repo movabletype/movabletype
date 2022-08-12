@@ -39,7 +39,7 @@ test_data_api({
     },
 );
 
-for my $name (qw/asset blog cf content_type group log permission template templatemap user website/) {
+for my $name (qw/asset blog cf content_type group log permission tag template templatemap user website/) {
     is($json{v4}{components}{schemas}{$name}{properties}{id}{type}, 'string', "$name id is string type in v4");
     is($json{v5}{components}{schemas}{$name}{properties}{id}{type}, 'integer', "$name id is integer type in v5");
 }
@@ -104,6 +104,12 @@ is($json{v5}{components}{schemas}{log}{properties}{by}{properties}{id}{type}, 'i
 for my $prop (qw/user roles/) {
     is($json{v4}{components}{schemas}{permission}{properties}{$prop}{properties}{id}{type}, 'string', "permission $prop/id is string type in v4");
     is($json{v5}{components}{schemas}{permission}{properties}{$prop}{properties}{id}{type}, 'integer', "permission $prop/id is integer type in v5");
+}
+
+# tag
+for my $prop (qw/assetCount entryCount pageCount/) {
+    is($json{v4}{components}{schemas}{tag}{properties}{$prop}{type}, 'string', "tag $prop is string type in v4");
+    is($json{v5}{components}{schemas}{tag}{properties}{$prop}{type}, 'integer', "tag $prop is integer type in v5");
 }
 
 # template
