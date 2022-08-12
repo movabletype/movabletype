@@ -598,6 +598,7 @@ use_ok('MT::DataAPI::Resource::v5::Association');
 use_ok('MT::DataAPI::Resource::v5::Blog');
 use_ok('MT::DataAPI::Resource::v5::Category');
 use_ok('MT::DataAPI::Resource::v5::CategorySet');
+use_ok('MT::DataAPI::Resource::v5::ContentData');
 use_ok('MT::DataAPI::Resource::v5::ContentField');
 use_ok('MT::DataAPI::Resource::v5::ContentType');
 use_ok('MT::DataAPI::Resource::v5::Entry');

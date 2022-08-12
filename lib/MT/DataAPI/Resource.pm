@@ -252,6 +252,10 @@ sub core_resources {
                 fields           => "${pkg}v4::ContentData::fields",
                 updatable_fields => "${pkg}v4::ContentData::updatable_fields",
             },
+            {   version          => 5,
+                fields           => "${pkg}v5::ContentData::fields",
+                updatable_fields => "${pkg}v5::ContentData::updatable_fields",
+            },
         ],
         'content_data' => 'cd',
         'group'        => [

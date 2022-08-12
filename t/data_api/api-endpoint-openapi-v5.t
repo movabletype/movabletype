@@ -66,4 +66,10 @@ for my $component (qw/category folder/) {
 is($json{v4}{components}{schemas}{category_set}{properties}{categories}{items}{properties}{parent}{type}, 'string', "category_set categories/items/parent/id is string type in v4");
 is($json{v5}{components}{schemas}{category_set}{properties}{categories}{items}{properties}{parent}{type}, 'integer', "category_set categories/items/parent/id is integer type in v5");
 
+# content_data
+for my $prop (qw/author data/) {
+    is($json{v4}{components}{schemas}{cd}{properties}{$prop}{properties}{id}{type}, 'string', "cd $prop/id is string type in v4");
+    is($json{v5}{components}{schemas}{cd}{properties}{$prop}{properties}{id}{type}, 'integer', "cd $prop/id is integer type in v5");
+}
+
 done_testing;
