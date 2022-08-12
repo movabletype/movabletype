@@ -44,4 +44,10 @@ for my $name (qw/asset blog cf content_type group log permission template templa
     is($json{v5}{components}{schemas}{$name}{properties}{id}{type}, 'integer', "$name id is integer type in v5");
 }
 
+# entry / page
+for my $component (qw/entry page/) {
+    is($json{v4}{components}{schemas}{$component}{properties}{author}{properties}{id}{type}, 'string', "$component author/id is string type in v4");
+    is($json{v5}{components}{schemas}{$component}{properties}{author}{properties}{id}{type}, 'integer', "$component author/id is integer type in v5");
+}
+
 done_testing;
