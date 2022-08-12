@@ -100,4 +100,10 @@ for my $prop (qw/memberCount permissionCount/) {
 is($json{v4}{components}{schemas}{log}{properties}{by}{properties}{id}{type}, 'string', "log by/id is string type in v4");
 is($json{v5}{components}{schemas}{log}{properties}{by}{properties}{id}{type}, 'integer', "log by/id is integer type in v5");
 
+# permission
+for my $prop (qw/user roles/) {
+    is($json{v4}{components}{schemas}{permission}{properties}{$prop}{properties}{id}{type}, 'string', "permission $prop/id is string type in v4");
+    is($json{v5}{components}{schemas}{permission}{properties}{$prop}{properties}{id}{type}, 'integer', "permission $prop/id is integer type in v5");
+}
+
 done_testing;

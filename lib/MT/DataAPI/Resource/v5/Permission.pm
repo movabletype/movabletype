@@ -15,6 +15,27 @@ sub fields {
             name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
+        {
+            name   => 'roles',
+            schema => {
+                type       => 'object',
+                properties => {
+                    id   => { type => 'integer' },
+                    name => { type => 'string' },
+                },
+            },
+        },
+        {
+            name   => 'user',
+            schema => {
+                type       => 'object',
+                properties => {
+                    id          => { type => 'integer' },
+                    displayName => { type => 'string' },
+                    userpicUrl  => { type => 'string' },
+                },
+            },
+        },
     ];
 }
 
