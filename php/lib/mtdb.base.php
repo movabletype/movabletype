@@ -5042,13 +5042,13 @@ abstract class MTDatabase {
         $joins = '';
         if (!empty($cat_field_id)) {
             if (isset($category_id)) {
-                $joins .= "join mt_cf_idx as cat_cf_idx";
+                $joins .= "join mt_cf_idx cat_cf_idx";
                 $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
                 $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
                 $joins .= " and cat_cf_idx.cf_idx_value_integer = '$category_id'";
             }
             else {
-                $joins .= "left join mt_cf_idx as cat_cf_idx";
+                $joins .= "left join mt_cf_idx cat_cf_idx";
                 $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
                 $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
                 $joins .= " and cat_cf_idx.cf_idx_value_integer IS NULL";
@@ -5060,7 +5060,7 @@ abstract class MTDatabase {
             $op   = $next ? '>'   : '<';
 
             if (!empty($joins)) $joins .= ' ';
-            $joins .= "join mt_cf_idx as dt_cf_idx";
+            $joins .= "join mt_cf_idx dt_cf_idx";
             $joins .= " on dt_cf_idx.cf_idx_content_data_id = cd_id";
             $joins .= " and dt_cf_idx.cf_idx_content_field_id = '$dt_field_id'";
             $joins .= " and dt_cf_idx.cf_idx_value_datetime $op '$date_field_value'";
