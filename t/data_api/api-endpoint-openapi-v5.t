@@ -86,4 +86,8 @@ for my $prop (qw/author data/) {
     is($json{v5}{components}{schemas}{cd}{properties}{$prop}{properties}{id}{type}, 'integer', "cd $prop/id is integer type in v5");
 }
 
+# content_type
+is($json{v4}{components}{schemas}{content_type}{properties}{contentFields}{items}{properties}{id}{type}, 'string', "content_type contentFields/items/id is string type in v4");
+is($json{v5}{components}{schemas}{content_type}{properties}{contentFields}{items}{properties}{id}{type}, 'integer', "content_type contentFields/items/id is integer type in v5");
+
 done_testing;
