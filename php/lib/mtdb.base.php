@@ -1367,6 +1367,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $e = new Entry;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $e->$key = $result->fields($key);
             }
@@ -4237,6 +4238,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $ct = new ContentType;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $ct->$key = $result->fields($key);
             }
@@ -4543,6 +4545,9 @@ abstract class MTDatabase {
                     $extras['join'][$join_table] = array('condition' => $join_condition, 'type' => 'left');
 
                     $sort_field = "$alias.cf_idx_value_$data_type";
+                    if ($data_type == 'text' && get_class($this) === 'MTDatabaseoracle') {
+                        $sort_field = "dbms_lob.substr($sort_field, 1000, 1)";
+                    }
                     $no_resort = 1;
                 }
                 if (!isset($sort_field) && isset($args['sort_by'])) {
@@ -4758,7 +4763,11 @@ abstract class MTDatabase {
                     $extras['join'][$join_table] = array('condition' => $join_condition);
 
                     $quote = $data_type == 'integer' || $data_type == 'double' ? '' : '\'';
-                    $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
+                    if ($data_type == 'text') {
+                        $field_filter .= " and $alias.cf_idx_value_$data_type like $quote$value$quote\n";
+                    } else {
+                        $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
+                    }
                 }
             }
         }
@@ -4826,6 +4835,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $cd = new ContentData;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $cd->$key = $result->fields($key);
             }
@@ -5042,13 +5052,13 @@ abstract class MTDatabase {
         $joins = '';
         if (!empty($cat_field_id)) {
             if (isset($category_id)) {
-                $joins .= "join mt_cf_idx as cat_cf_idx";
+                $joins .= "join mt_cf_idx cat_cf_idx";
                 $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
                 $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
                 $joins .= " and cat_cf_idx.cf_idx_value_integer = '$category_id'";
             }
             else {
-                $joins .= "left join mt_cf_idx as cat_cf_idx";
+                $joins .= "left join mt_cf_idx cat_cf_idx";
                 $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
                 $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
                 $joins .= " and cat_cf_idx.cf_idx_value_integer IS NULL";
@@ -5060,7 +5070,7 @@ abstract class MTDatabase {
             $op   = $next ? '>'   : '<';
 
             if (!empty($joins)) $joins .= ' ';
-            $joins .= "join mt_cf_idx as dt_cf_idx";
+            $joins .= "join mt_cf_idx dt_cf_idx";
             $joins .= " on dt_cf_idx.cf_idx_content_data_id = cd_id";
             $joins .= " and dt_cf_idx.cf_idx_content_field_id = '$dt_field_id'";
             $joins .= " and dt_cf_idx.cf_idx_value_datetime $op '$date_field_value'";
@@ -5107,6 +5117,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $cd = new ContentData;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $cd->$key = $result->fields($key);
             }
@@ -5198,7 +5209,8 @@ abstract class MTDatabase {
             require_once('class.mt_content_field.php');
             $cf = new ContentField;
             foreach($field_names as $key) {
-  	        $key = strtolower($key);
+                if (is_numeric($key)) continue;
+      	        $key = strtolower($key);
                 $cf->$key = $result->fields($key);
             }
             $result->MoveNext();
