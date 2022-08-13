@@ -1364,6 +1364,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $e = new Entry;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $e->$key = $result->fields($key);
             }
@@ -4234,6 +4235,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $ct = new ContentType;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $ct->$key = $result->fields($key);
             }
@@ -4823,6 +4825,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $cd = new ContentData;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $cd->$key = $result->fields($key);
             }
@@ -5104,6 +5107,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $cd = new ContentData;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $cd->$key = $result->fields($key);
             }
@@ -5195,7 +5199,8 @@ abstract class MTDatabase {
             require_once('class.mt_content_field.php');
             $cf = new ContentField;
             foreach($field_names as $key) {
-  	        $key = strtolower($key);
+                if (is_numeric($key)) continue;
+      	        $key = strtolower($key);
                 $cf->$key = $result->fields($key);
             }
             $result->MoveNext();
