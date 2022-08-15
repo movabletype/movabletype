@@ -40,12 +40,13 @@ abstract class MTDatabase {
     protected $_category_set_id_cache = array();
     protected $_rebuild_trigger_cache = array();
     protected $_content_link_cache = array();
+    protected $_adodb_quote_fieldnames = 'NATIVE';
 
 
     // Construction
     public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
         global $ADODB_QUOTE_FIELDNAMES;
-        $ADODB_QUOTE_FIELDNAMES = (get_class($this) === 'MTDatabaseoracle') ? 'UPPER' : 'NATIVE';
+        $ADODB_QUOTE_FIELDNAMES = $this->_adodb_quote_fieldnames;
         $this->id = md5(uniqid('MTDatabase',true));
         $retry_cnt = 0;
         while ( ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) && $retry_cnt++ < $retry ) {
