@@ -33,6 +33,14 @@ sub endpoints {
             },
             requires_login => 0,
         },
+        {
+            id              => 'list_text_filters',
+            route           => '/textFilters',
+            version         => 5,
+            handler         => '$Core::MT::DataAPI::Endpoint::v5::TextFilter::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v5::TextFilter::list_openapi_spec',
+            requires_login  => 0,
+        },
     ];
 }
 
