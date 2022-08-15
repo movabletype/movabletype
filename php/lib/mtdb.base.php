@@ -4545,8 +4545,8 @@ abstract class MTDatabase {
                     $extras['join'][$join_table] = array('condition' => $join_condition, 'type' => 'left');
 
                     $sort_field = "$alias.cf_idx_value_$data_type";
-                    if ($data_type == 'text' && get_class($this) === 'MTDatabaseoracle') {
-                        $sort_field = "dbms_lob.substr($sort_field, 1000, 1)";
+                    if ($data_type == 'text') {
+                        $sort_field = $this->decorate_column($sort_field);
                     }
                     $no_resort = 1;
                 }
@@ -4764,7 +4764,9 @@ abstract class MTDatabase {
 
                     $quote = $data_type == 'integer' || $data_type == 'double' ? '' : '\'';
                     if ($data_type == 'text') {
-                        $field_filter .= " and $alias.cf_idx_value_$data_type like $quote$value$quote\n";
+                        $field = "$alias.cf_idx_value_$data_type";
+                        $field = $this->decorate_column($field);
+                        $field_filter .= " and $field = $quote$value$quote\n";
                     } else {
                         $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
                     }
