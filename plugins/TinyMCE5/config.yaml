@@ -15,6 +15,7 @@ editors:
 callbacks:
     MT::Upgrade::upgrade_end: |
         sub {
+            my ( $cb, $self, %param ) = @_;
             # explicitly enabled or disabled
             return 1 if do {
                 my $cfg = MT->model('config')->load(1);
@@ -23,7 +24,10 @@ callbacks:
                     && $cfg->data =~ /PluginSwitch TinyMCE5=/i;
             };
 
-            # disable by default
+            # enabled by upgrade
+            return 1 if $param{from};
+
+            # disable by install
             my $cfg = MT->config;
             $cfg->PluginSwitch( 'TinyMCE5=0', 1 );
             $cfg->PluginSwitch( 'FormattedTextForTinyMCE5=0', 1 );
