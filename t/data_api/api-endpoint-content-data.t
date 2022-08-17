@@ -766,7 +766,7 @@ sub normal_tests_for_create {
                         limit     => 1,
                     },
                 );
-                is( $cd->unpublished_on => '20200101000000' );
+                is( int($cd->unpublished_on) => '20200101000000' );
             },
         }
     );
@@ -1997,7 +1997,7 @@ sub normal_tests_for_update {
             },
             complete => sub {
                 $cd = MT->model('content_data')->load( $cd->id );
-                is( $cd->unpublished_on => '20200101000000' );
+                is( int($cd->unpublished_on) => '20200101000000' );
             },
         }
     );
