@@ -22,7 +22,7 @@ sub endpoints {
             default_params => {
                 limit        => 25,
                 offset       => 0,
-                sortBy       => 'id',
+                sortBy       => 'name',
                 sortOrder    => 'ascend',
                 searchFields => 'name',
             },
