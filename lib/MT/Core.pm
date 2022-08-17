@@ -2314,6 +2314,9 @@ BEGIN {
             'AccessOverrides'      => undef,
 
             'JSONCanonicalization' => { default => 1 },
+            'UseMTCommonJSON'      => { default => 0 },
+            'UseSVGForEverybody'   => { default => 0 },
+            'UseJQueryJSON'        => { default => 0 },
 
             'RequiredUserEmail'       => { default => 1 },
             'DefaultClassParamFilter' => { default => 'all' },
@@ -2334,6 +2337,7 @@ BEGIN {
             'HideConfigWarnings' => { default => undef },
             'GlobalTemplateMaxRevisions' => { default => 20 },
             'DefaultStatsProvider' => { default => 'GoogleAnalyticsV4' },
+            'DefaultListLimit' => { default => '50' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

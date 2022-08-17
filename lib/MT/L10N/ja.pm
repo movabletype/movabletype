@@ -3184,10 +3184,7 @@ use vars qw( @ISA %Lexicon );
 	q{Are you sure you want to remove filter '[_1]'?} => q{フィルタ'[_1]'を削除してよろしいですか?},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
-	'100 rows' => '100件',
-	'200 rows' => '200件',
-	'25 rows' => '25件',
-	'50 rows' => '50件',
+	'[_1] rows' => '[_1]件',
 	'Show' => '表示件数',
 
 ## mt-static/js/listing/tag/display-options.tag

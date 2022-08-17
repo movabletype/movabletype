@@ -22,7 +22,7 @@ ChartAPI.Data.getData = function (obj, $container, callback, that) {
       if (!cloneData) {
         if (typeof data === 'string') {
           cloneData = data.toString();
-        } else if (jQuery.isArray(data)) {
+        } else if (Array.isArray(data)) {
           cloneData = jQuery.map(data, function (v) {
             return jQuery.extend({}, v);
           });
@@ -1824,7 +1824,7 @@ ChartAPI.Slider = function (config, range, $dataRangeTarget, updateTarget, amoun
    * @return {jQuery} return jQuery object for chaining
    */
   this.$sliderContainer.on('ADD_EVENT_LIST', function (e, type, $targets) {
-    $targets = $.isArray($targets) ? $targets : [$targets];
+    $targets = Array.isArray($targets) ? $targets : [$targets];
     $.each($targets, function (i, $target) {
       that.eventTargetList[type].add($target);
     });
@@ -1838,7 +1838,7 @@ ChartAPI.Slider = function (config, range, $dataRangeTarget, updateTarget, amoun
    * @return {jQuery} return jQuery object for chaining
    */
   this.$sliderContainer.on('REMOVE_EVENT_LIST', function (e, type, $targets) {
-    $targets = $.isArray($targets) ? $targets : [$targets];
+    $targets = Array.isArray($targets) ? $targets : [$targets];
     $.each($targets, function (i, $target) {
       that.eventTargetList[type].remove($target);
     });

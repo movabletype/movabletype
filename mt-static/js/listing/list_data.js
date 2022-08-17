@@ -6,7 +6,7 @@
 
     this.columns = args.columns;
     this.showColumns = [];
-    this.limit = args.limit || this.DefautlLimit;
+    this.limit = args.limit;
     this.page = args.page || this.DefaultPage;
     this.sortBy = args.sortBy;
     this.sortOrder = args.sortOrder;
@@ -28,7 +28,6 @@
     this.disableUserDispOption = args.disableUserDispOption;
   };
 
-  ListData.prototype.DefaultLimit = 50;
   ListData.prototype.DefaultPage = 1;
 
   ListData.prototype.addFilterItem = function (filterItem) {
