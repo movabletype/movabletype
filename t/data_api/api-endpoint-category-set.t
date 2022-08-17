@@ -505,6 +505,71 @@ sub normal_tests_for_list_category_sets {
             },
         }
     );
+    test_data_api(
+        {   note      => 'not logged in',
+            path      => "/v5/sites/$site_id/categorySets",
+            method    => 'GET',
+            author_id => 0,
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.category_set',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                +{  totalResults => 2,
+                    items        => MT::DataAPI::Resource->from_object(
+                        [   MT->model('category_set')
+                                ->load( { blog_id => $site_id }, { sort => 'name', direction => 'ascend', } )
+                        ],
+                        [   qw( blog categories createdBy createdDate id modifiedBy modifiedDate name updatable )
+                        ],
+                    ),
+                };
+            },
+
+        }
+    );
+    test_data_api(
+        {   note      => 'non superuser',
+            path      => "/v5/sites/$site_id/categorySets",
+            method    => 'GET',
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.category_set',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                +{  totalResults => 2,
+                    items        => MT::DataAPI::Resource->from_object(
+                        [   MT->model('category_set')
+                                ->load( { blog_id => $site_id }, { sort => 'name', direction => 'ascend', } )
+                        ]
+                    ),
+                };
+            },
+        }
+    );
+    test_data_api(
+        {   note         => 'superuser',
+            path         => "/v5/sites/$site_id/categorySets",
+            method       => 'GET',
+            is_superuser => 1,
+            callbacks    => [
+                {   name  => 'data_api_pre_load_filtered_list.category_set',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                +{  totalResults => 2,
+                    items        => MT::DataAPI::Resource->from_object(
+                        [   MT->model('category_set')
+                                ->load( { blog_id => $site_id }, { sort => 'name', direction => 'ascend', } )
+                        ]
+                    ),
+                };
+            },
+        }
+    );
 }
 
 sub irregular_tests_for_delete_category_sets {
