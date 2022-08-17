@@ -398,6 +398,7 @@ sub _connect_info_pg {
             $dbh = DBI->connect($dsn) or die $DBI::errstr;
         }
         $self->_prepare_pg_database($dbh);
+        $self->_oracle_increase_open_cursors($dbh);
     }
     return %info;
 }
@@ -461,6 +462,12 @@ sub show_mysql_db_variables {
         my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
         Test::More::note join ': ', @$_ for @$rows;
     }
+}
+
+sub _oracle_increase_open_cursors {
+    my ($self, $dbh) = @_;
+    return unless $self->driver eq 'oracle';
+    $dbh->do('ALTER SYSTEM SET OPEN_CURSORS = 1000 SCOPE=BOTH') or die $dbh->errstr;
 }
 
 sub mysql_session_variable {
