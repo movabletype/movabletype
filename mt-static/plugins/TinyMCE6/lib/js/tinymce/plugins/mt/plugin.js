@@ -96,8 +96,6 @@
                 editor.options.set('quickbars_selection_toolbar', config[p])
                 buttonRows[k][index - 1] = 1
                 index++
-                console.log(editor.options.get('quickbars_insert_toolbar'))
-                console.log(editor.options.get('quickbars_selection_toolbar'))
             })
         } else {
             $.each(['common', 'source', 'wysiwyg'], function (i, k) {
@@ -451,10 +449,6 @@
             register_commands(editor)
             register_buttons(editor)
             setUpEditor(editor)
-            editor.on('beforeExecCommand', function (e) {
-                console.log(e.command)
-                console.log(e.value)
-            })
             return {}
         })
     }
