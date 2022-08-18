@@ -78,4 +78,9 @@ INI
     return $result;
 }
 
+sub supports_gd {
+    my $result = shift->run('<?php phpinfo(); ?>');
+    $result =~ /GD Support\s*=>\s*enabled/ ? 1 : 0;
+}
+
 1;
