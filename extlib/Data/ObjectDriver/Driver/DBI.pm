@@ -171,15 +171,16 @@ sub fetch {
 
     my @bind;
     my $map = $stmt->select_map;
-    for my $col (@{ $stmt->select }) {
-        push @bind, \$rec->{ $map->{$col} };
-    }
-
     my $dbh = $driver->r_handle($class->properties->{db});
     $driver->start_query($sql, $stmt->{bind});
 
     my $sth = $orig_args->{no_cached_prepare} ? $dbh->prepare($sql) : $driver->_prepare_cached($dbh, $sql);
     $sth->execute(@{ $stmt->{bind} });
+
+    for my $idx (0.. $sth->{NUM_OF_FIELDS} - 1) {
+        my $col = $stmt->select->[$idx];
+        push @bind, $col ? \$rec->{ $map->{$col} } : undef;
+    }
     $sth->bind_columns(undef, @bind);
 
     # need to slurp 'offset' rows for DBs that cannot do it themselves

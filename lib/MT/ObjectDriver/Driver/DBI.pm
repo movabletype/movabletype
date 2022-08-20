@@ -323,9 +323,7 @@ sub _do_group_by {
     $sth->execute( @{ $stmt->bind } );
 
     my @bindvars;
-    my $col_count = scalar @{ $stmt->select };
-    $col_count--;
-    for ( 1 .. $col_count ) {
+    for my $idx (0.. $sth->{NUM_OF_FIELDS} - 2) {
         push @bindvars, \my ($var);
     }
     $sth->bind_columns( undef, \my ($count), @bindvars );
