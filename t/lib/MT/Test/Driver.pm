@@ -471,8 +471,6 @@ sub count_with_joins : Tests(2) {
 }
 
 sub count_group_by_with_joins : Tests(3) {
-    return 'skip oracle for now' if $ENV{MT_TEST_BACKEND} && $ENV{MT_TEST_BACKEND} =~ m/oracle/i;
-
     my $self = shift;
     make_objects(
         {   __class => 'Foo',
