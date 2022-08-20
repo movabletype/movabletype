@@ -398,7 +398,6 @@ sub _connect_info_pg {
             $dbh = DBI->connect($dsn) or die $DBI::errstr;
         }
         $self->_prepare_pg_database($dbh);
-        $self->_oracle_increase_open_cursors($dbh);
     }
     return %info;
 }
@@ -437,6 +436,11 @@ sub _connect_info_oracle {
     $ENV{NLS_NCHAR} = $ENV{MT_TEST_NLS_NCHAR} || 'AL32UTF8';
     $ENV{NLS_COMP}  = $ENV{MT_TEST_NLS_COMP}  || 'LINGUISTIC';
     $ENV{NLS_SORT}  = $ENV{MT_TEST_NLS_SORT}  || 'AMERICAN_AMERICA';
+
+    my $dsn = sprintf('dbi:Oracle:host=%s;sid=%s;port=%s',
+        $connect_info{DBHost}, $connect_info{Database}, $connect_info{DBPort});
+    my $dbh = DBI->connect($dsn, $connect_info{DBUser}, $connect_info{DBPassword});
+    $self->_oracle_increase_open_cursors($dbh);
 
     %connect_info;
 }
