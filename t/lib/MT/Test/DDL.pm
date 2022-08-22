@@ -208,6 +208,8 @@ sub _03_create_sequence : Tests(2) {
     my $dbh       = $driver->rw_handle;
     my $ddl_class = $driver->dbd->ddl_class;
 
+    $ddl_class->drop_sequence('Ddltest');
+
     $ddl_class->create_sequence('Ddltest');
     pass('Created Ddltest sequence without dying');
 
@@ -418,11 +420,14 @@ sub table_defs : Tests(26) {
     my $defs = MT::Object->driver->dbd->ddl_class->column_defs('Ddltest');
     ok( $defs, 'Ddltest table DDL settings are defined' );
 
+    {
+    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
     is_def(
         $defs->{id},
         _def( 1, 'integer', auto => 1, key => 1 ),
         'Ddltest id column def is correct'
     );
+    }
 
     is_def(
         $defs->{string_25},
@@ -659,8 +664,11 @@ sub invalid_type : Tests(3) {
         'Ddltest::InvalidType table has no column defs'
     );
 
+    {
+    local $TODO = 'oracle' if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
     ok( !eval { $ddl_class->create_table_sql('Ddltest::InvalidType') },
         'Ddltest::InvalidType cannot make creation sql' );
+    }
 }
 
 sub short_index : Tests(4) {
@@ -704,6 +712,8 @@ SKIP: {
 }
 
 sub fixable : Tests(12) {
+    return 'oracle' if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
+
     my $self = shift;
 
     my $driver    = MT::Object->dbi_driver;
