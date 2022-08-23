@@ -677,7 +677,9 @@ abstract class MTDatabase {
             }
 
             $ts = $this->db2ts($entry->entry_authored_on);
-            if (preg_match('/Monthly$/', $at)) {
+            if ($ts === '') {
+                // DO NOTHING
+            } elseif (preg_match('/Monthly$/', $at)) {
                 $ts = substr($ts, 0, 6) . '01000000';
             } elseif (preg_match('/Daily$/', $at)) {
                 $ts = substr($ts, 0, 8) . '000000';
@@ -5467,7 +5469,9 @@ abstract class MTDatabase {
             $content = $this->fetch_content($cid);
 
             $ts = $this->db2ts($content->authored_on);
-            if (preg_match('/Monthly$/', $at)) {
+            if ($ts === '') {
+                // DO NOTHING
+            } elseif (preg_match('/Monthly$/', $at)) {
                 $ts = substr($ts, 0, 6) . '01000000';
             } elseif (preg_match('/Daily$/', $at)) {
                 $ts = substr($ts, 0, 8) . '000000';
