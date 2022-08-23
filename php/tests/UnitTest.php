@@ -142,6 +142,22 @@ class UnitTest extends TestCase {
             $this->assertEquals(31, $ret); // Jan 1970
         }
     }
+
+    public function testdb2ts() {
+        include_once("php/mt.php");
+        include_once("php/lib/MTUtil.php");
+    
+        $cfg_file =  realpath( "t/mysql-test.cfg" );
+        $mt       =  MT::get_instance(1, $cfg_file);
+        $ctx      =& $mt->context();
+    
+        $db = $mt->db();
+        $this->assertEquals('20120101080808', $db->db2ts('2012-01-01 08:08:08'), 'basic');
+        $this->assertEquals('20120101080808', $db->db2ts('20120101080808'), 'double converted');
+        $this->assertEquals('20120101080808', $db->db2ts('2012-01-01 08:08:08.1234'), 'hires');
+        $this->assertEquals('', $db->db2ts(''), 'empty');
+        $this->assertEquals('', $db->db2ts(null), 'null');
+    }
 }
 
 class MyCaptchaProvider implements CaptchaProvider { 

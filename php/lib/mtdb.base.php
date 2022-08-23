@@ -297,8 +297,9 @@ abstract class MTDatabase {
     }
 
     public function db2ts($dbts) {
-        $dbts = preg_replace('/[^0-9]/', '', $dbts ?? '');
-        return $dbts;
+        $dbts = preg_replace('/[\- :]/', '', $dbts ?? '');
+        preg_match('/^(\d{14})(?:[\.]?\d+)?$/', $dbts, $matches);
+        return $matches[1] ?? '';
     }
 
     public function ts2db($ts) {
