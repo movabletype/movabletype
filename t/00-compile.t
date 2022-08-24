@@ -179,6 +179,7 @@ use_ok('MT::DataAPI::Callback::CategorySet');
 use_ok('MT::DataAPI::Callback::ContentData');
 use_ok('MT::DataAPI::Callback::ContentField');
 use_ok('MT::DataAPI::Callback::ContentType');
+use_ok('MT::DataAPI::Endpoint::v4');
 use_ok('MT::DataAPI::Endpoint::v4::Category');
 use_ok('MT::DataAPI::Endpoint::v4::CategorySet');
 use_ok('MT::DataAPI::Endpoint::v4::ContentData');
@@ -505,6 +506,7 @@ use_ok('MT::DataAPI::Endpoint::Stats');
 use_ok('MT::DataAPI::Endpoint::User');
 use_ok('MT::DataAPI::Endpoint::Util');
 use_ok('MT::DataAPI::Endpoint::Version');
+use_ok('MT::DataAPI::Endpoint::v1');
 use_ok('MT::DataAPI::Format');
 use_ok('MT::DataAPI::Format::JSON');
 use_ok('MT::DataAPI::Resource');
@@ -562,6 +564,7 @@ use_ok('MT::DataAPI::Resource::v2::WidgetSet');
 
 use_ok('MT::DataAPI::Resource::Util');
 
+use_ok('MT::DataAPI::Endpoint::v2');
 use_ok('MT::DataAPI::Endpoint::v2::Widget');
 use_ok('MT::DataAPI::Endpoint::v2::Asset');
 use_ok('MT::DataAPI::Endpoint::v2::Template');
@@ -583,6 +586,7 @@ use_ok('MT::DataAPI::Endpoint::v2::Plugin');
 use_ok('MT::DataAPI::Endpoint::v2::User');
 use_ok('MT::DataAPI::Endpoint::v2::Group');
 
+use_ok('MT::DataAPI::Endpoint::v3');
 use_ok('MT::DataAPI::Endpoint::v3::Auth');
 use_ok('MT::DataAPI::Endpoint::v3::Asset');
 use_ok('MT::DataAPI::Endpoint::v3::Entry');
