@@ -3,6 +3,7 @@ use warnings;
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
+use Test::Deep qw/cmp_bag/;
 use Test::More;
 use MT::Test::Env;
 
@@ -32,7 +33,7 @@ test_data_api({
         }
         my $filters = $app->all_text_filters();
         is(scalar(keys(%$filters)) + 1, $got->{totalResults}, 'Count text filters');
-        is_deeply(['0', keys(%$filters)], \@got_keys, 'Compare filter keys');
+        cmp_bag(['0', keys(%$filters)], \@got_keys, 'Compare filter keys');
     },
 });
 
