@@ -10,7 +10,7 @@ use warnings;
 
 sub list_openapi_spec {
     +{
-        tags      => ['Common API'],
+        tags      => ['System'],
         summary   => 'Retrieve a list of text filters',
         responses => {
             200 => {
