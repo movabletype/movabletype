@@ -407,9 +407,11 @@ sub dialog_insert_asset {
 
     # Parse JSON.
     my $prefs = $app->param('prefs_json');
-    $prefs =~ s/^"|"$//g;
-    $prefs =~ s/\\"/"/g;
-    $prefs =~ s/\\\\/\\/g;
+    if (MT->config->UseMTCommonJSON) {
+        $prefs =~ s/^"|"$//g;
+        $prefs =~ s/\\"/"/g;
+        $prefs =~ s/\\\\/\\/g;
+    }
     $prefs = eval { MT::Util::from_json($prefs) };
     if ( !$prefs ) {
         return $app->errtrans('Invalid request.');

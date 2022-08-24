@@ -622,7 +622,7 @@ riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter
     }.bind(this)
 
     this.removeFilter = function(e) {
-      var filterData = e.target.parentElement.parentElement.dataset
+      var filterData = e.target.closest('[data-mt-list-filter-label]').dataset
       var message = trans(
         "Are you sure you want to remove filter '[_1]'?",
         filterData.mtListFilterLabel

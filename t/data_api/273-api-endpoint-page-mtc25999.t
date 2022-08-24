@@ -44,7 +44,7 @@ sub suite {
                         status => MT::Entry::RELEASE(),
                     }
                 );
-                is( $page->unpublished_on => '20200101000000' );
+                is( int($page->unpublished_on) => '20200101000000' );
             },
         },
         {   path   => '/v2/sites/1/pages',
@@ -74,7 +74,7 @@ sub suite {
             },
             complete => sub {
                 my ( $data, $body ) = @_;
-                is( MT->model('page')->load(26)->unpublished_on => '20380101000000' );
+                is( int(MT->model('page')->load(26)->unpublished_on) => '20380101000000' );
             },
         },
         {   path   => '/v2/sites/1/pages/26',

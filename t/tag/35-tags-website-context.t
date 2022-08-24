@@ -16,6 +16,7 @@ BEGIN {
 }
 
 use MT::Test::Tag;
+use MT::Test::PHP;
 plan tests => (1 + 2) * blocks;
 
 use MT;
@@ -33,9 +34,26 @@ delete $app->{__static_file_path};
 
 my $blog_id       = 1;                                        # First Website
 
+my $php_supports_gd = MT::Test::PHP->supports_gd;
+
+my $vars = {
+    no_php_gd => !$php_supports_gd,
+};
+
+sub var {
+    for my $line (@_) {
+        for my $key (keys %{$vars}) {
+            my $replace = quotemeta "[% ${key} %]";
+            my $value   = $vars->{$key};
+            $line =~ s/$replace/$value/g;
+        }
+    }
+    @_;
+}
+
 filters {
-    template => [qw( chomp )],
-    expected => [qw( chomp )],
+    template => [qw( var chomp )],
+    expected => [qw( var chomp )],
 };
 
 $test_env->prepare_fixture(sub {
@@ -2193,6 +2211,8 @@ Userpic
 <img src="/mt-static/support/assets_c/userpics/userpic-1-100x100.png?1" width="25" height="25" alt="" />
 
 === mt:EntryAuthorUserpicURL
+--- skip_php
+[% no_php_gd %]
 --- template _mt_websites
 <mt:Entries><mt:EntryAuthorUserpicURL>
 </mt:Entries>
@@ -2232,7 +2252,7 @@ Website Entry 1
 
 === mt:EntryScoreHigh
 --- template _mt_websites
-<mt:Entries><mt:EntryScoreHigh namespace="test_namespace">
+<mt:Entries><mt:EntryScoreHigh namespace="test_namespace" sprintf="%d">
 </mt:Entries>
 --- expected
 0
@@ -2244,7 +2264,7 @@ Website Entry 1
 
 === mt:EntryScoreLow
 --- template _mt_websites
-<mt:Entries><mt:EntryScoreLow namespace="test_namespace">
+<mt:Entries><mt:EntryScoreLow namespace="test_namespace" sprintf="%d">
 </mt:Entries>
 --- expected
 0
