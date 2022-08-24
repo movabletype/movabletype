@@ -10,6 +10,8 @@ use strict;
 
 sub endpoints {
     [{
+            # The difference between v4 and v5 is that v5 has default_params property.
+            # There is no difference in other properties. Therefore handlers use v4 endpoint.
             id              => 'list_category_sets',
             route           => '/sites/:site_id/categorySets',
             version         => 5,
