@@ -36,8 +36,8 @@ for my $driver ( $test_env->image_drivers ) {
 
         ok( -s $tempfile, 'JPEG file exists.' );
 
-        # JPEG file does not have 'Keywords' tag.
-        my $tag  = 'Keywords';
+        # JPEG file does not have 'Comment' tag.
+        my $tag  = 'Comment';
         my $exif = Image::ExifTool->new;
         $exif->ExtractInfo($tempfile);
         ok( !$exif->GetValue($tag), qq{JPEG file does not have $tag tag.} );

@@ -970,9 +970,9 @@ sub _hdlr_content_status {
     _check_and_invoke( 'entrystatus', @_ );
 }
 
-=head2 ContentAuthorDisplayName
+=head2 ContentAuthorDisplayName, ContentModifiedAuthorDisplayName
 
-Outputs the display name of the author for the current content in context.
+Outputs the display name of the (last modified) author for the current content in context.
 If the author has not provided a display name for publishing, this tag
 will output an empty string.
 
@@ -982,9 +982,13 @@ sub _hdlr_content_author_display_name {
     _check_and_invoke( 'entryauthordisplayname', @_ );
 }
 
-=head2 ContentAuthorEmail
+sub _hdlr_content_modified_author_display_name {
+    _check_and_invoke( 'entrymodifiedauthordisplayname', @_ );
+}
 
-Outputs the email address of the author for the current content in context.
+=head2 ContentAuthorEmail, ContentModifiedAuthorEmail
+
+Outputs the email address of the (last modified) author for the current content in context.
 B<NOTE: it is not recommended to publish e-mail addresses for MT users.>
 
 B<Attributes:>
@@ -1005,9 +1009,13 @@ sub _hdlr_content_author_email {
     _check_and_invoke( 'entryauthoremail', @_ );
 }
 
-=head2 ContentAuthorID
+sub _hdlr_content_modified_author_email {
+    _check_and_invoke( 'entrymodifiedauthoremail', @_ );
+}
 
-Outputs the numeric ID of the author for the current content in context.
+=head2 ContentAuthorID, ContentModifiedAuthorID
+
+Outputs the numeric ID of the (last modified) author for the current content in context.
 
 =cut
 
@@ -1015,9 +1023,13 @@ sub _hdlr_content_author_id {
     _check_and_invoke( 'entryauthorid', @_ );
 }
 
-=head2 ContentAuthorLink
+sub _hdlr_content_modified_author_id {
+    _check_and_invoke( 'entrymodifiedauthorid', @_ );
+}
 
-Outputs a linked author name suitable for publishing in the 'byline'
+=head2 ContentAuthorLink, ContentModifiedAuthorLink
+
+Outputs a linked (last modified) author name suitable for publishing in the 'byline'
 of a content.
 
 B<Attributes:>
@@ -1058,15 +1070,28 @@ sub _hdlr_content_author_link {
     my ( $ctx, $args, $cond ) = @_;
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
-    my $a = $cd->author;
-    return '' unless $a;
+    my $author = $cd->author;
+    return '' unless $author;
+    __hdlr_content_author_link($ctx, $args, $cond, $author);
+}
 
+sub _hdlr_content_modified_author_link {
+    my ( $ctx, $args, $cond ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    my $author = $cd->modified_author;
+    return '' unless $author;
+    __hdlr_content_author_link($ctx, $args, $cond, $author);
+}
+
+sub __hdlr_content_author_link {
+    my ( $ctx, $args, $cond, $author ) = @_;
     my $type = $args->{type} || '';
 
     if ( $type && $type eq 'archive' ) {
         require MT::Author;
-        if ( $a->type == MT::Author::AUTHOR() ) {
-            local $ctx->{__stash}{author} = $a;
+        if ( $author->type == MT::Author::AUTHOR() ) {
+            local $ctx->{__stash}{author} = $author;
             local $ctx->{current_archive_type} = undef;
             if (my $link = $ctx->invoke_handler(
                     'archivelink', { type => 'ContentType-Author' },
@@ -1076,19 +1101,19 @@ sub _hdlr_content_author_link {
             {
                 my $target = $args->{new_window} ? ' target="_blank"' : '';
                 my $displayname
-                    = encode_html( remove_html( $a->nickname || '' ) );
+                    = encode_html( remove_html( $author->nickname || '' ) );
                 return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
                     $displayname;
             }
         }
     }
 
-    return MT::Template::Tags::Common::hdlr_author_link( @_, $a );
+    return MT::Template::Tags::Common::hdlr_author_link( @_, $author );
 }
 
-=head2 ContentAuthorURL
+=head2 ContentAuthorURL, ContentModifiedAuthorURL
 
-Outputs the Site URL field from the author's profile for the
+Outputs the Site URL field from the (last modified) author's profile for the
 current content in context.
 
 =cut
@@ -1097,9 +1122,13 @@ sub _hdlr_content_author_url {
     _check_and_invoke( 'entryauthorurl', @_ );
 }
 
-=head2 ContentAuthorUsername
+sub _hdlr_content_modified_author_url {
+    _check_and_invoke( 'entrymodifiedauthorurl', @_ );
+}
 
-Outputs the username of the author for the content currently in context.
+=head2 ContentAuthorUsername, ContentModifiedAuthorUsername
+
+Outputs the username of the (last modified) author for the content currently in context.
 B<NOTE: it is not recommended to publish MT usernames.>
 
 =cut
@@ -1108,9 +1137,13 @@ sub _hdlr_content_author_username {
     _check_and_invoke( 'entryauthorusername', @_ );
 }
 
-=head2 ContentAuthorUserpic
+sub _hdlr_content_modified_author_username {
+    _check_and_invoke( 'entrymodifiedauthorusername', @_ );
+}
 
-Outputs the HTML for the userpic of the author for the current content
+=head2 ContentAuthorUserpic, ContentModifiedAuthorUserpic
+
+Outputs the HTML for the userpic of the (last modified) author for the current content
 in context.
 
 =cut
@@ -1119,15 +1152,23 @@ sub _hdlr_content_author_userpic {
     _check_and_invoke( 'entryauthoruserpic', @_ );
 }
 
-=head2 ContentAuthorUserpicURL
+sub _hdlr_content_modified_author_userpic {
+    _check_and_invoke( 'entrymodifiedauthoruserpic', @_ );
+}
 
-Outputs the URL for the userpic image of the author for the current content
+=head2 ContentAuthorUserpicURL, ContentModifiedAuthorUserpicURL
+
+Outputs the URL for the userpic image of the (last modified) author for the current content
 in context.
 
 =cut
 
 sub _hdlr_content_author_userpic_url {
     _check_and_invoke( 'entryauthoruserpicurl', @_ );
+}
+
+sub _hdlr_content_modified_author_userpic_url {
+    _check_and_invoke( 'entrymodifiedauthoruserpicurl', @_ );
 }
 
 =head2 ContentSiteDescription
@@ -1197,10 +1238,10 @@ sub _hdlr_content_site_url {
     _check_and_invoke( 'entryblogurl', @_ );
 }
 
-=head2 ContentAuthorUserpicAsset
+=head2 ContentAuthorUserpicAsset, ContentModifiedAuthorUserpicAsset
 
 A block tag providing an asset context for the userpic of the
-author for the current content in context. See the L<Assets> tag
+(last modified) author for the current content in context. See the L<Assets> tag
 for more information about publishing assets.
 
 =cut
@@ -1210,6 +1251,22 @@ sub _hdlr_content_author_userpic_asset {
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
     my $author = $cd->author;
+    return '' unless $author;
+
+    my $asset = $author->userpic or return '';
+
+    my $tok     = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+
+    local $ctx->{__stash}{asset} = $asset;
+    return $builder->build( $ctx, $tok, {%$cond} );
+}
+
+sub _hdlr_content_modified_author_userpic_asset {
+    my ( $ctx, $args, $cond ) = @_;
+    my $cd = $ctx->stash('content')
+        or return $ctx->_no_content_error();
+    my $author = $cd->modified_author;
     return '' unless $author;
 
     my $asset = $author->userpic or return '';

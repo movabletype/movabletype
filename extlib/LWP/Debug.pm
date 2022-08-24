@@ -1,6 +1,6 @@
 package LWP::Debug;    # legacy
 
-our $VERSION = '6.31';
+our $VERSION = '6.62';
 
 require Exporter;
 our @ISA       = qw(Exporter);
@@ -70,6 +70,9 @@ LWP::Debug - deprecated
 
 =head1 DESCRIPTION
 
+This module has been deprecated.  Please see L<LWP::ConsoleLogger> for your
+debugging needs.
+
 LWP::Debug is used to provide tracing facilities, but these are not used
 by LWP any more.  The code in this module is kept around
 (undocumented) so that 3rd party code that happens to use the old
@@ -104,6 +107,6 @@ request and response objects that pass through LWP:
 
 =head1 SEE ALSO
 
-L<LWP::UserAgent>
+L<LWP::ConsoleLogger>, L<LWP::ConsoleLogger::Everywhere>, L<LWP::UserAgent>
 
 =cut

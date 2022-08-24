@@ -40,7 +40,7 @@ use vars qw( @ISA %Lexicon );
 	'type' => '種類',
 	'website and the system' => 'ウェブサイトとシステム',
 	'website' => 'ウェブサイト',
-	q{Invalid date '[_1]'; dates must be in the format YYYY-MM-DD HH:MM:SS.} => q{日時が不正です。日時はYYYY-MM-DD HH:MM:SSの形式で入力してください。},
+	q{Invalid date '[_1]'; dates must be in the format YYYY-MM-DD HH:MM:SS.} => q{'[_1]'は不正な日時です。日時はYYYY-MM-DD HH:MM:SSの形式で入力してください。},
 	q{Please enter some value for required '[_1]' field.} => q{「[_1]」は必須です。値を入力してください。},
 	q{The basename '[_1]' is already in use. It must be unique within this [_2].} => q{[_1]というベースネームはすでに使われています。[_2]内で重複しない値を入力してください。},
 	q{The template tag '[_1]' is already in use.} => q{[_1]というタグは既に存在します。},
@@ -56,7 +56,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Commercial.pack/lib/CustomFields/DataAPI/Callback.pm
 	'Please enter valid option for the [_1] field: [_2]' => '名前: [_2] (種類: [_1] ) のオプションを選択してください。',
-	q{Invalid date '[_1]'; dates should be real dates.} => q{日時が不正です。},
+	q{Invalid date '[_1]'; dates should be real dates.} => q{日時が不正です: [_1]},
 
 ## addons/Commercial.pack/lib/CustomFields/DataAPI/Callback/Field.pm
 	'A parameter "[_1]" is required.' => '"[_1]" パラメータは必須です。',
@@ -121,7 +121,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Enterprise.pack/lib/MT/Enterprise/CMS.pm
 	'(no reason given)' => '(原因は不明)',
 	'A user cannot change his/her own username in this environment.' => '自分のユーザー名を変えることはこの構成ではできません。',
-	'An error occurred when enabling this user.' => 'ユーザーを有効化するときにエラーが発生しました: [_1]',
+	'An error occurred when enabling this user.' => 'ユーザーを有効化するときにエラーが発生しました',
 	'Bulk author export cannot be used under external user management.' => 'ExternalUserManagement環境ではユーザーの一括出力はできません。',
 	'Bulk import cannot be used under external user management.' => 'ExternalUserManagement環境ではユーザーの一括編集はできません。',
 	'Bulk management' => '一括管理',
@@ -212,7 +212,7 @@ use vars qw( @ISA %Lexicon );
 	q{An error occurred while attempting to connect to the FTP server '[_1]': [_2]} => q{FTPサーバー '[_1]' への接続中にエラーが発生しました: [_2]},
 	q{An error occurred while attempting to retrieve the current directory from '[_1]': [_2]} => q{FTPサーバー '[_1]' のカレントディレクトリが取得できませんでした: [_2]},
 	q{An error occurred while attempting to retrieve the list of directories from '[_1]': [_2]} => q{FTPサーバー '[_1]' からディレクトリの一覧が取得できませんでした: [_2]},
-	q{Error saving Sync Setting. No response from FTP server '[_1]'.} => q{サーバー配信の設定を保存できません。FTPサーバーからの応答がありません。},
+	q{Error saving Sync Setting. No response from FTP server '[_1]'.} => q{サーバー配信の設定を保存できません。FTPサーバー '[_1]' からの応答がありません。},
 	q{Sync setting '[_1]' (ID: [_2]) deleted by [_3].} => q{[_3] が、サーバー配信の設定 '[_1]' (ID: [_2]) を削除しました。},
 	q{Sync setting '[_1]' (ID: [_2]) edited by [_3].} => q{[_3] が、サーバー配信の設定 '[_1]' (ID: [_2]) を保存しました。},
 
@@ -380,7 +380,7 @@ use vars qw( @ISA %Lexicon );
 	'View entry:' => '表示する',
 	'View page:' => '表示する',
 	'You are receiving this email either because you have elected to receive notifications about new content on [_1], or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:' => 'このメールは[_1]で新規に作成されたコンテンツに関する通知を送るように設定されているか、またはコンテンツの著者が選択したユーザーに送信されています。このメールを受信したくない場合は、次のユーザーに連絡してください:',
-	'[_1] Title: [_2]' => 'タイトル: [_2]',
+	'[_1] Title: [_2]' => '[_1] タイトル: [_2]',
 	q{A new [lc,_3] entitled '[_1]' has been published to [_2].} => q{新しい[_3]「[_1]」を[_2]で公開しました。},
 
 ## default_templates/openid.mtml
@@ -488,8 +488,8 @@ use vars qw( @ISA %Lexicon );
 	'Email Address' => '電子メール',
 	'Error sending mail: [_1]' => 'メールを送信できませんでした: [_1]',
 	'Failed login attempt by anonymous user' => '無名のユーザーがサインインしようとしました。',
-	'Failed to open pid file [_1]: [_2]' => 'PIDファイルを開くことができません。',
-	'Failed to send reboot signal: [_1]' => 'プロセス再起動シグナルを送信することができませんでした。',
+	'Failed to open pid file [_1]: [_2]' => 'PIDファイル[_1]を開くことができません: [_2]',
+	'Failed to send reboot signal: [_1]' => 'プロセス再起動シグナルを送信することができませんでした: [_1]',
 	'Internal Error: Login user is not initialized.' => '内部エラー: ユーザーが初期化されていません。',
 	'Invalid login.' => 'サインインできませんでした。',
 	'Invalid request' => '不正な要求です。',
@@ -708,53 +708,74 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/App/Wizard.pm
 	'An error occurred while trying to connect to the database.  Check the settings and try again.' => 'データベースに接続できませんでした。設定を見直してもう一度接続してください。',
 	'CGI is required for all Movable Type application functionality.' => 'CGIは、Movable Type のすべてのアプリケーションの動作に必須です。',
-	'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan via OpenID.' => 'Cache::Fileのインストールは必須ではありません。Yahoo! Japanによるコメント投稿者のOpenID認証を許可する場合に必要となります。',
+	'CGI::Cookie is required for cookie authentication.' => 'CGI::Cookieはcookie 認証のために必要です。',
+	'Cache::Memcached and a memcached server are optional. They are used to cache in-memory objects.' => 'Cache::Memcachedやmemcachedサーバはオブジェクトをメモリにキャッシュしておくのに使えます。',
 	'DBI is required to work with most supported databases.' => 'DBIはデータベースにアクセスするために必要です。',
 	'Digest::SHA is required in order to provide enhanced protection of user passwords.' => 'Digest::SHAはパスワードの高度な保護のために必要です。',
+	'Encode is required to handle multibyte characters correctly.' => 'Encodeはマルチバイト文字を適切に扱うのに必要です。',
 	'File::Spec is required to work with file system path information on all supported operating systems.' => 'File::Specはオペレーティングシステムでパスの操作を行うために必要です。',
+	'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.' => 'File::Tempのインストールは必須ではありません。ファイルのアップロードを行う際に上書きを行う場合は必要となります。',
 	'HTML::Entities is required by CGI.pm' => 'HTML::Entitiesは、CGI.pm の動作に必要です。',
-	'HTML::Parser is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'HTML::Parserのインストールは必須ではありません。トラックバック機能や更新通知機能を利用する場合に必要となります。',
-	'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.' => 'IO::Socket::SSL のインストールは必須ではありませんが、Google Analytics との連携や SMTP 認証を SSL/TLS で行う場合など、外部と SSL/TLS通信をするために必要になります。',
-	'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.' => 'LWP::UserAgentは構成ウィザードの実行に必要です。',
-	'List::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'List::Utilのインストールは必須ではありません。再構築キューを利用する場合に必要となります。',
-	'Net::SMTP is required in order to send mail using an SMTP server.' => 'メールの送信にSMTPを利用する場合に必要になります。',
-	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeayはSMTP認証にSSLまたは、STARTTLSコマンドを利用する場合に必要となります。',
+	'IO::Compress::Gzip is required in order to compress files during a backup operation.' => 'IO::Compress::Gzipはバックアップ中にファイルを圧縮するのに必要です。',
+	'IO::Uncompress::Gunzip is required in order to decompress files during a restore operation.' => 'IO::Uncompress::Gunzipは復元中にファイルを展開するのに必要です。',
+	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'IPC::Runのインストールは必須ではありません。MTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
+	'Image::ExifTool is used to manipulate image metadata.' => 'Image::ExifToolは画像のメタデータを操作するのに使われます。',
+	'Image::Size is sometimes required to determine the size of images in different formats.' => 'Image::Sizeはさまざまな形式の画像の大きさを調べるのに必要になることがあります。',
+	'JSON is required to use DataAPI, Content Type, and listing framework.' => 'JSONはDataAPIやコンテンツタイプ、リスティングフレームワークの利用に必要です。',
+	'JSON::PP is used internally to process JSON by default.' => 'JSON::PPはJSONの処理をする際に内部で通常使われるモジュールです。',
+	'JSON::XS accelerates JSON processing.' => 'JSON::XSはJSONの処理を高速化します。',
+	'LWP::Protocol::https is optional. It provides https support for LWP::UserAgent.' => 'LWP::Protocol::httpsは、あればLWP::UserAgentのhttps対応に使われます。',
+	'LWP::UserAgent is optional. It is used to fetch information from local and external servers.' => 'LWP::UserAgentは、あればローカルおよび外部のサーバーから情報を取得するのに使われます。',
+	'LWPx::ParanoidAgent is an alternative to LWP::UserAgent.' => 'LWPx::ParanoidAgentはLWP::UserAgentの代替になるものです。',
+	'List::Util is required to manipulate a list of numbers.' => 'List::Utilは数値のリストを操作するのに必要です。',
+	'MIME::Base64 is required to send mail and handle blobs during backup/restore operations.' => 'MIME::Base64はメールの送信やバックアップのバイナリオブジェクトを扱うときに必要です。',
+	'MIME::Lite is an alternative module to create mail.' => 'MIME::Liteはメール作成の際に使われる代替モジュールのひとつです。',
+	'Net::SMTP is required in order to send mail via an SMTP server.' => 'Net::SMTPはSMTPサーバーを通じてメール送信する場合に必要です。',
 	'Please select a database from the list of available databases and try again.' => 'データベースのリストからデータベースを選択して、やり直してください。',
 	'SMTP Server' => 'SMTPサーバー',
-	'Scalar::Util is required for initializing Movable Type application.' => 'Scalar::UtilはMovable Type の動作に必要です。',
+	'Scalar::Util is required to avoid memory leaks.' => 'Scalar::Utilはメモリリークを避けるために必要です。',
 	'Sendmail' => 'Sendmail',
+	'Storable is required to make deep-copy of complicated data structures.' => 'Storableは複雑なデータ構造をコピーするのに必要です。',
 	'Test email from Movable Type Configuration Wizard' => 'Movable Type構成ウィザードからのテスト送信',
 	'The [_1] database driver is required to use [_2].' => '[_2]を使うには[_1]のデータベースドライバが必要です。',
 	'The [_1] driver is required to use [_2].' => '[_2]を使うには[_1]のドライバが必要です。',
 	'This is the test email sent by your new installation of Movable Type.' => 'Movable Typeのインストール中に送信されたテストメールです。',
-	'This module accelerates comment registration sign-ins.' => 'コメント投稿時のサインインが高速になります。',
-	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'LiveJournal、あるいはOpenIDでコメント投稿者を認証するために必要になります。',
-	'This module and its dependencies are required in order to restore from a backup.' => '復元の機能を利用する場合に必要となります。',
+	'This module and its dependencies are optional. It is an alternative module to create mail.' => 'このモジュールと依存モジュールは標準のメール作成機能を置き換えるのに使えます。',
 	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Authen::SASLとその依存モジュールはCRAM-MD5、DIGEST-MD5又はLOGINをSASLメカニズムとして利用する場合に必要となります。',
-	'This module and its dependencies are required to run Movable Type under psgi.' => 'PSGI環境下でmt.psgiを実行する場合に必要となります。',
-	'This module enables the use of the Atom API.' => 'Atom APIを利用する場合に必要となります。',
-	'This module is needed if you want to use the MT XML-RPC server implementation.' => 'XML-RPC による作業を行う場合に必要となります。',
-	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成する場合に必要となります。',
-	'This module is needed if you would like to be able to overwrite existing files when you upload.' => 'ファイルのアップロードを行う際に上書きを行う場合は必要となります。',
-	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'MTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
-	'This module is needed to enable comment registration. Also required in order to send mail via an SMTP Server.' => 'コメントの認証機能を利用する場合やメール送信にSMTPを利用する場合に必要となります。',
-	'This module is required by certain MT plugins available from third parties.' => '外部プラグインの利用の際に必要となる場合があります。',
-	'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Perl 5.8以下の環境で、mt-search.cgiを利用するときに必要です。',
+	'This module and its dependencies are required to run Movable Type under FastCGI.' => 'FastCGI環境でMovable Typeを実行する場合に必要となります。',
+	'This module and its dependencies are required to run Movable Type under psgi.' => 'PSGI環境下でMovable Typeを実行する場合に必要となります。',
+	'This module is one of the image processors that you can use to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成するときに使われる画像処理モジュールのひとつです。',
+	'This module is optional. It enhances performance of Authen::SASL.' => 'このモジュールは、あればAuthen::SASLを高速化します。',
+	'This module is optional. It is used to allow commenters to be authenticated by OpenID.' => 'このモジュールは、あればOpenID認証の際に使われます。',
+	'This module is optional. It is used to customize the logging behavior.' => 'このモジュールは、あればログの挙動をカスタマイズするのに使えます。',
+	'This module is optional. It is used to download assets from a website.' => 'このモジュールは、あればウェブサイトからアセットをダウンロードするのに使われます。',
+	'This module is optional. It is used to know the encoding of the terminal to log.' => 'このモジュールは、あればログを出力する端末のエンコーディングを調べるのに使われます。',
+	'This module is optional. It is used to manipulate files during backup and restore operations.' => 'このモジュールは、あればバックアップ中のファイル操作に使われます。',
+	'This module is optional. It is used to manipulate files via FTP(S).' => 'このモジュールは、あればFTP(S)でファイルを操作するのに使われます。',
+	'This module is optional. It is used to manipulate files via FTPS.' => 'このモジュールは、あればFTPSでファイルを操作するのに使われます。',
+	'This module is optional. It is used to manipulate files via SFTP.' => 'このモジュールは、あればSFTPでファイルを操作するのに使われます。',
+	'This module is optional. It is used to manipulate files via WebDAV.' => 'このモジュールは、あればWebDAVでファイルを操作するのに使われます。',
+	'This module is optional. It is used to manipulate log files.' => 'このモジュールは、あればログファイルを操作するのに使われます。',
+	'This module is optional. It is used to parse date in log files.' => 'このモジュールは、あればログファイルの日時を解釈するのに使われます。',
+	'This module is optional. It is used to see if swap memory is enough while processing background jobs.' => 'このモジュールは、あればバックグラウンドジョブの処理中に十分なスワップメモリーがあるか確認するのに使われます。',
+	'This module is optional. It is used to see if the disk is full while backing up.' => 'このモジュールは、あればバックアップ中にディスク容量が残っているかを確認するのに使われます。',
+	'This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'このモジュールは、バックアップを復元するときに必要となるモジュールのひとつです。',
 	'This module is required for Google Analytics site statistics and for verification of SSL certificates.' => 'このモジュールは、Google Analytics などで SSL 証明書の検証に必要です。',
 	'This module is required for XML-RPC API.' => 'XML-RPC APIを利用するために必要です。',
-	'This module is required for cookie authentication.' => 'cookie 認証のために必要です。',
-	'This module is required for executing run-periodic-tasks.' => 'このモジュールは、run-periodic-tasks を実行するために必要です。',
-	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'ファイルのアップロードを行うために必要です。各種のファイル形式に対応して画像のサイズを取得します。',
-	'This module is required in order to archive files in backup/restore operation.' => 'バックアップと復元で圧縮の機能を利用する場合に必要となります。',
-	'This module is required in order to compress files in backup/restore operation.' => 'バックアップと復元で圧縮の機能を利用する場合に必要となります。',
-	'This module is required in order to decompress files in backup/restore operation.' => 'バックアップと復元で圧縮の機能を利用する場合に必要となります。',
-	'This module is required in order to use memcached as caching mechanism by Movable Type.' => 'キャッシング機能としてmemcachedを利用する場合に必要となります。',
-	'This module is used by the Markdown text filter.' => 'Markdown形式を利用するために必要です。',
+	'This module is required for profiling.' => 'このモジュールはプロファイリングの際に必要となります。',
+	'This module is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.' => 'このモジュールはGoogle AnalyticsやSSL/TLS経由のSMTP認証など、あらゆるSSL/TLS接続の際に必要となります。',
+	'This module is required to run background jobs.' => 'このモジュールはバックグラウンドジョブの実行に必要です。',
+	'This module is sometimes used to parse URI.' => 'このモジュールはURIのパースに使うことがあります。',
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'MT:Ifタグの機能で使われます。',
-	'XML::LibXML::SAX is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::LibXML::SAXのインストールは必須ではありません。バックアップデータの復元に必要となります。',
-	'XML::SAX::Expat is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::SAX::Expatのインストールは必須ではありません。バックアップデータの復元に必要となります。',
-	'XML::SAX::ExpatXS is optional; It is one of the modules required to restore a backup created in a backup/restore operation.' => 'XML::SAX::ExpatXSのインストールは必須ではありません。バックアップデータの復元に必要となります。',
+	'This module is used to make checksums.' => 'このモジュールはチェックサムの作成に使われます。',
+	'XML::Atom is required in order to use the Atom API.' => 'XML::AtomはAtom APIを利用する場合に必要となります。',
+	'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.' => 'XML::SAXは復元の機能を利用する場合に必要となります。',
+	'XML::Simple is optional. It is used to parse configuration file of the IIS.' => 'XML::Simpleは、あればIISの設定ファイルを解析するのに使われます。',
+	'XML::XPath is required if you want to use the Atom API.' => 'XML::XPathはAtom APIを利用する際に必要となります。',
+	'XMLRPC::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.' => 'XMLRPC::Liteは、XML-RPCサーバーを利用する際に必要となります。',
 	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::Syckのインストールは必須ではありません。YAML::Tinyよりも、軽量で高速に動作します。',
+	'YAML::Tiny is the default YAML parser.' => 'YAML::TinyはデフォルトのYAMLパーサーです。',
+	'local::lib is optional. It is used to load modules from different locations.' => 'local::libは、あれば標準とは異なる場所からモジュールを読み込むのに使えます。',
 
 ## lib/MT/ArchiveType/Author.pm
 	'AUTHOR_ADV' => 'ユーザー',
@@ -1040,9 +1061,9 @@ use vars qw( @ISA %Lexicon );
 	'Importing url of the assets in page ( [_1] )...' => 'ウェブページに含まれるアセットのURLを復元しています... ( [_1] )',
 	'Manifest file [_1] was not a valid Movable Type backup manifest file.' => '[_1]はMovable Typeバックアップで作成された正しいマニフェストファイルではありません。',
 	'Manifest file: [_1]' => 'マニフェストファイル: [_1]',
-	'No manifest file could be found in your import directory [_1].' => 'importディレクトリにマニフェストファイルがありません。',
+	'No manifest file could be found in your import directory [_1].' => 'importディレクトリ[_1]にマニフェストファイルがありません。',
 	'Path was not found for the file, [_1].' => 'ファイル([_1])のパスが見つかりませんでした。',
-	'Rebuilding permissions ... ( [_1] )' => '権限を再構築しています...',
+	'Rebuilding permissions ... ( [_1] )' => '権限を再構築しています... ([_1])',
 	'The file ([_1]) was not imported.' => 'ファイル([_1])はインポートされませんでした。',
 	'There were no [_1] records to be exported.' => 'エクスポート対象となる[_1]のレコードはありません。',
 	'[_1] is not writable.' => '[_1]には書き込めません。',
@@ -1071,7 +1092,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/BackupRestore/BackupFileScanner.pm
 	'Cannot import requested file because a site was not found in either the existing Movable Type system or the exported data. A site must be created first.' => 'サイトのデータが含まれていないため、このファイルをインポートすることができません。サイトを先に作成してください。',
-	'Cannot import requested file because doing so requires the Digest::SHA Perl module. Please contact your Movable Type system administrator.' => 'Digest::SHAがインストールされていないため、このファイルをインポートすることができません。システム管理者問い合わせてください。',
+	'Cannot import requested file because doing so requires the Digest::SHA Perl module. Please contact your Movable Type system administrator.' => 'Digest::SHAがインストールされていないため、このファイルをインポートすることができません。システム管理者に問い合わせてください。',
 
 ## lib/MT/BasicAuthor.pm
 	'authors' => 'ユーザー',
@@ -1099,9 +1120,9 @@ use vars qw( @ISA %Lexicon );
 	'Theme' => 'テーマ',
 	'__ASSET_COUNT' => 'アセット数',
 	'__PAGE_COUNT' => 'ウェブページ数',
-	q{Invalid archive_type '[_1]' in Archive Mapping '[_2]'} => q{'[_1]'は無効なアーカイブタイプです},
-	q{Invalid category_field '[_1]' in Archive Mapping '[_2]'} => q{'[_1]'は無効なカテゴリフィールドです},
-	q{Invalid datetime_field '[_1]' in Archive Mapping '[_2]'} => q{'[_1]'は無効な日付と時刻フィールドです},
+	q{Invalid archive_type '[_1]' in Archive Mapping '[_2]'} => q{アーカイブマッピング'[_2]'の'[_1]'は無効なアーカイブタイプです},
+	q{Invalid category_field '[_1]' in Archive Mapping '[_2]'} => q{アーカイブマッピング'[_2]'の'[_1]'は無効なカテゴリフィールドです},
+	q{Invalid datetime_field '[_1]' in Archive Mapping '[_2]'} => q{アーカイブマッピング'[_2]'の'[_1]'は無効な日付と時刻フィールドです},
 	q{archive_type is needed in Archive Mapping '[_1]'} => q{アーカイブマッピング '[_1]' にはアーカイブタイプが必要です},
 	q{category_field is required in Archive Mapping '[_1]'} => q{アーカイブマッピング '[_1]' にはカテゴリフィールドが必要です},
 
@@ -1166,7 +1187,7 @@ use vars qw( @ISA %Lexicon );
 	q{File with name '[_1]' already exists. Upload has been cancelled.} => q{'[_1]'という名前のファイルが既に存在します。アップロードはキャンセルされました。},
 	q{File with name '[_1]' already exists.} => q{'[_1]'という名前のファイルが既に存在します。},
 	q{File with name '[_1]' already exists; Tried to write to a tempfile, but the webserver could not open it: [_2]} => q{'[_1]'という名前のファイルが既に存在します。テンポラリファイルに書き込むこともできませんでした: [_2]},
-	q{Invalid extra path '[_1]'} => q{追加パスが不正です。},
+	q{Invalid extra path '[_1]'} => q{追加パス'[_1]'が不正です。},
 	q{Invalid filename '[_1]'} => q{ファイル名'[_1]'が不正です。},
 	q{Invalid temp file name '[_1]'} => q{テンポラリファイルの名前'[_1]'が不正です。},
 
@@ -1211,7 +1232,7 @@ use vars qw( @ISA %Lexicon );
 	q{'[_1]' (ID:[_2]) has been copied as '[_3]' (ID:[_4]) by '[_5]' (ID:[_6]).} => q{'[_1]' (ID:[_2]) が '[_3]' (ID:[_4]) として '[_5]' (ID: [_6]) によって複製されました。},
 	q{Blog '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])を削除しました。},
 	q{Cloning child site '[_1]'...} => q{サイト「[_1]」を複製しています...},
-	q{The '[_1]' provided below is not writable by the web server. Change the directory ownership or permissions and try again.} => q{[_1]にウェブサーバーから書き込めません。[_1]の書き込み権限を確認してから、もう一度実行してください。},
+	q{The '[_1]' provided below is not writable by the web server. Change the directory ownership or permissions and try again.} => q{ウェブサーバーから書き込めません。[_1]の書き込み権限を確認してから、もう一度実行してください。},
 	q{[_1] '[_2]' (ID:[_3]) created by '[_4]'} => q{[_4]によって[_1]の「[_2]」(ID:[_3])が作成されました},
 	q{[_1] '[_2]'} => q{[_1]「[_2]」},
 	q{index template '[_1]'} => q{インデックステンプレート「[_1]」},
@@ -1244,11 +1265,11 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'すべての[_1]',
-	'An error occurred while counting objects: [_1]' => 'オブジェクトのカウント中にエラーが発生しました。',
-	'An error occurred while loading objects: [_1]' => 'オブジェクトのロード中にエラーが発生しました。',
+	'An error occurred while counting objects: [_1]' => 'オブジェクトのカウント中にエラーが発生しました: [_1]',
+	'An error occurred while loading objects: [_1]' => 'オブジェクトのロード中にエラーが発生しました: [_1]',
 	'Error occurred during permission check: [_1]' => '権限チェックの実行中にエラーが発生しました: [_1]',
 	'Invalid ID [_1]' => 'ID [_1]は不正です。',
-	'Invalid filter terms: [_1]' => '不正なフィルタ条件です。',
+	'Invalid filter terms: [_1]' => '不正なフィルタ条件です: [_1]',
 	'Invalid filter: [_1]' => '無効なフィルターです: [_1]',
 	'Invalid type [_1]' => 'type [_1]は不正です。',
 	'New Filter' => '新しいフィルタ',
@@ -1286,8 +1307,8 @@ use vars qw( @ISA %Lexicon );
 	'[_1] (ID:[_2]) status changed from [_3] to [_4]' => '[_1] (ID:[_2])の公開状態を[_3]から[_4]に変更しました',
 	q{Invalid date '[_1]'; 'Published on' dates must be in the format YYYY-MM-DD HH:MM:SS.} => q{公開日: '[_1]'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。},
 	q{Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.} => q{公開終了日: '[_1]'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。},
-	q{Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.} => q{公開終了日は、未来の日時を指定してください。},
-	q{Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.} => q{公開終了日は、公開日より未来の日時を指定してください。},
+	q{Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.} => q{公開終了日: '[_1]'は不正な日付です。未来の日時を指定してください。},
+	q{Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.} => q{公開終了日: '[_1]'は不正な日付です。公開日より未来の日時を指定してください。},
 	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_3]が新しい[_1] '[_4]' (ID[_2])を追加しました},
 	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を削除しました},
 	q{[_1] '[_4]' (ID:[_2]) edited by user '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を変更しました},
@@ -1301,18 +1322,18 @@ use vars qw( @ISA %Lexicon );
 	'Create new content type' => '新しいコンテンツタイプの作成',
 	'Manage Content Type Boilerplates' => 'コンテンツタイプのひな形の管理',
 	'Saving content field failed: [_1]' => 'コンテンツフィールドを保存できません: [_1]',
-	'Saving content type failed: [_1]' => 'コンテンツタイプを保存できません: [1]',
+	'Saving content type failed: [_1]' => 'コンテンツタイプを保存できません: [_1]',
 	'Some content fields were deleted: ([_1])' => 'いくつかのコンテンツフィールドが削除されました: [_1]',
 	'The content type name is required.' => 'コンテンツタイプ名は必須です。',
 	'The content type name must be shorter than 255 characters.' => 'コンテンツタイプ名は255文字までです。',
 	'content_type' => 'コンテンツタイプ',
-	q{A content field '[_1]' ([_2]) was added} => q{コンテンツフィールド '[_1]'が追加されました},
-	q{A content field options of '[_1]' ([_2]) was changed} => q{コンテンツフィールド '[_1]'の設定が変更されました},
+	q{A content field '[_1]' ([_2]) was added} => q{コンテンツフィールド '[_1]' ([_2]) が追加されました},
+	q{A content field options of '[_1]' ([_2]) was changed} => q{コンテンツフィールド '[_1]' ([_2]) の設定が変更されました},
 	q{A description for content field of '[_1]' should be shorter than 255 characters.} => q{コンテンツフィールド '[_1]'の説明は255文字までです。},
 	q{A label for content field of '[_1]' is required.} => q{コンテンツフィールド '[_1]'のラベルが入力されていません。},
 	q{A label for content field of '[_1]' should be shorter than 255 characters.} => q{コンテンツフィールド '[_1]'のラベルは255文字までです。},
 	q{Content Type '[_1]' (ID:[_2]) added by user '[_3]'} => q{[_3]がコンテンツタイプ '[_1]' (ID: [_2]) を追加しました},
-	q{Content Type '[_1]' (ID:[_2]) deleted by '[_3]'} => q{[_3]がコンテンツタイプ '[_2]' (ID: [_2])を削除しました},
+	q{Content Type '[_1]' (ID:[_2]) deleted by '[_3]'} => q{[_3]がコンテンツタイプ '[_1]' (ID: [_2])を削除しました},
 	q{Content Type '[_1]' (ID:[_2]) edited by user '[_3]'} => q{[_3]がコンテンツタイプ '[_1]' (ID: [_2]) を変更しました},
 	q{Field '[_1]' and '[_2]' must not coexist within the same content type.} => q{コンテンツフィールド'[_1]'と'[_2]'を同じコンテンツタイプ内で同時に利用することはできません},
 	q{Field '[_1]' must be unique in this content type.} => q{コンテンツフィールド'[_1]'が重複しています},
@@ -1351,7 +1372,7 @@ use vars qw( @ISA %Lexicon );
 	'modified on' => '更新日',
 	q{<a href="[_1]">QuickPost to [_2]</a> - Drag this bookmarklet to your browser's toolbar, then click it when you are visiting a site that you want to blog about.} => q{<a href="[_1]">クイック投稿</a>: このリンクをブラウザのツールバーにドラッグし、興味のあるウェブページでクリックすると、ブログへ簡単に投稿できます。},
 	q{Invalid date '[_1]'; 'Published on' dates should be earlier than the corresponding 'Unpublished on' date '[_2]'.} => q{公開日: '[_1]'は、公開終了日: '[_2]'より前の日時を指定してください},
-	q{Invalid date '[_1]'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.} => q{'[_1]'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。},
+	q{Invalid date '[_1]'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.} => q{[_2]: '[_1]'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。},
 	q{Saving entry '[_1]' failed: [_2]} => q{記事「[_1]」を保存できませんでした: [_2]},
 	q{[_1] '[_2]' (ID:[_3]) edited and its status changed from [_4] to [_5] by user '[_6]'} => q{[_6]が[_1]「[_2]」(ID:[_3])を更新し、公開の状態を[_4]から[_5]に変更しました。},
 	q{[_1] '[_2]' (ID:[_3]) edited by user '[_4]'} => q{[_4]が[_1]「[_2]」(ID:[_3])を更新しました。},
@@ -1386,7 +1407,7 @@ use vars qw( @ISA %Lexicon );
 	'Create Group' => 'グループの作成',
 	'Each group must have a name.' => 'グループには名前が必要です。',
 	'Group Name' => 'グループ名',
-	'Group load failed: [_1]' => '[_5]がユーザー「[_1](ID:[_2])」をグループ「[_3](ID:[_4])」から削除しました。',
+	'Group load failed: [_1]' => 'グループのロードに失敗しました: [_1]',
 	'Groups Selected' => '選択されたグループ',
 	'Search Groups' => 'グループを検索',
 	'Search Users' => 'ユーザーを検索',
@@ -1425,7 +1446,7 @@ use vars qw( @ISA %Lexicon );
 	q{Plugin '[_1]' is enabled by [_2]} => q{[_2]が[_1]プラグインを有効にしました},
 
 ## lib/MT/CMS/RebuildTrigger.pm
-	'(All child sites in this site)' => 'このサイトの全ての子サイト',
+	'(All child sites in this site)' => 'このサイトのすべての子サイト',
 	'(All sites and child sites in this system)' => 'システム内のすべてのサイトと子サイト',
 	'Comment' => 'コメント',
 	'Create Rebuild Trigger' => '再構築トリガーを作成',
@@ -1446,7 +1467,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => '"[_1]"フィールドは入力必須です。',
-	'"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]' => '"[_1]"は、コンテンツタイプ "[_3]"の"[_2]"フィールドの入力として無効です: [_5]',
+	'"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]' => '"[_1]"は、コンテンツタイプ "[_3]" (ID:[_4])の"[_2]"フィールドの入力として無効です: [_5]',
 	'Basename' => '出力ファイル名',
 	'Data Label' => 'データ識別ラベル',
 	'Entry Body' => '本文',
@@ -1468,10 +1489,10 @@ use vars qw( @ISA %Lexicon );
 	'Templates' => 'テンプレート',
 	'Text' => '本文',
 	'Title' => 'タイトル',
-	'replace_handler of [_1] field is invalid' => '無効なreplace_handlerです',
-	'ss_validator of [_1] field is invalid' => '無効なss_validatorです',
+	'replace_handler of [_1] field is invalid' => '[_1]フィールドのreplace_handlerは不正です',
+	'ss_validator of [_1] field is invalid' => '[_1]フィールドのss_validatorは不正です',
 	q{Searched for: '[_1]' Replaced with: '[_2]'} => q{検索ワード「[_1]」を「[_2]」で置換しました},
-	q{[_1] '[_2]' (ID:[_3]) updated by user '[_4]' using Search & Replace.} => q{[_1] '[_1]' (ID:[_3]) がユーザー '[_4]' の検索/置換によって変更されました。},
+	q{[_1] '[_2]' (ID:[_3]) updated by user '[_4]' using Search & Replace.} => q{[_1] '[_2]' (ID:[_3]) がユーザー '[_4]' の検索/置換によって変更されました。},
 
 ## lib/MT/CMS/Tag.pm
 	'A new name for the tag must be specified.' => 'タグの名前を指定してください。',
@@ -1683,7 +1704,7 @@ use vars qw( @ISA %Lexicon );
 	'You cannot delete your own association.' => '自分の関連付けは削除できません。',
 	'You have no permission to delete the user [_1].' => '[_1]を削除する権限がありません。',
 	'represents a user who will be created afterwards' => '今後新しく作成されるユーザー',
-	q{User '[_1]' (ID:[_2]) could not be re-enabled by '[_3]'} => q{ユーザー '[_1]' (ID:[_2])を有効にできません},
+	q{User '[_1]' (ID:[_2]) could not be re-enabled by '[_3]'} => q{'[_3]'がユーザー '[_1]' (ID:[_2])を有効にできませんでした},
 	q{User '[_1]' (ID:[_2]) created by '[_3]'} => q{'[_3]'がユーザー'[_1]'(ID:[_2])を作成しました。},
 	q{User '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がユーザー'[_1]'(ID:[_2])を削除しました。},
 	q{[_1]'s Associations} => q{[_1]の権限},
@@ -1695,7 +1716,7 @@ use vars qw( @ISA %Lexicon );
 	'This action cannot move a top-level site.' => 'このアクションでは親サイトの移動はできません。',
 	'Type a site name to filter the choices below.' => '以下の選択によって抽出されたサイト名を入力',
 	'Type a website name to filter the choices below.' => '以下の選択によって抽出されたウェブサイト名を入力',
-	q{Blog '[_1]' (ID:[_2]) moved from '[_3]' to '[_4]' by '[_5]'} => q{ブログ「[_1]」(ID:[_2])を[_3]から[_4]に移しました},
+	q{Blog '[_1]' (ID:[_2]) moved from '[_3]' to '[_4]' by '[_5]'} => q{'[_5]'がブログ「[_1]」(ID:[_2])を[_3]から[_4]に移しました},
 	q{Website '[_1]' (ID:[_2]) deleted by '[_3]'} => q{[_3]によってウェブサイト「[_1]」(ID:[_2])が削除されました},
 
 ## lib/MT/Category.pm
@@ -1715,7 +1736,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Comment.pm
 	q{Loading blog '[_1]' failed: [_2]} => q{ブログ '[_1]'をロードできません: [_2]},
-	q{Loading entry '[_1]' failed: [_2]} => q{記事'[_1]'をロードできませんでした: [_1]},
+	q{Loading entry '[_1]' failed: [_2]} => q{記事'[_1]'をロードできませんでした: [_2]},
 
 ## lib/MT/Compat/v3.pm
 	'No executable code' => '実行できるコードがありません。',
@@ -1809,7 +1830,7 @@ use vars qw( @ISA %Lexicon );
 	'"[_1]" field value must be less than or equal to [_2].' => '"[_1]"フィールドは[_2]以下である必要があります。',
 	'In [_1] column, [_2] [_3]' => '[_1]フィールドで [_2] [_3]',
 	'Invalid [_1] in "[_2]" field.' => '"[_2]"フィールドの値は不正な[_1]です。',
-	'Invalid values in "[_1]" field: [_2]' => '"[_2]"フィールドの値が不正です。',
+	'Invalid values in "[_1]" field: [_2]' => '"[_1]"フィールドの値が不正です: [_2]',
 	'Only 1 [_1] can be selected in "[_2]" field.' => '"[_2]”フィールドはひとつだけ選択できます',
 	'[_1] greater than or equal to [_2] must be selected in "[_3]" field.' => '"[_3]"フィールドの[_1]は[_2]個以下である必要があります。',
 	'[_1] less than or equal to [_2] must be selected in "[_3]" field.' => '"[_3]"フィールドの[_1]は[_2]個以下である必要があります。',
@@ -1838,7 +1859,7 @@ use vars qw( @ISA %Lexicon );
 	'A minimum value must be an integer, or must be set with decimal places to use decimal value.' => '最小値は整数である必要があります。小数を利用する場合は、小数点以下の桁数を指定してください。',
 	'An initial value must be an integer and between [_1] and [_2]' => '初期値は[_1]から[_2]の範囲で指定します。',
 	'An initial value must be an integer, or must be set with decimal places to use decimal value.' => '初期値は整数である必要があります。小数を利用する場合は、小数点以下の桁数を指定してください。',
-	'Number of decimal places must be a positive integer and between 0 and [_1].' => '小数点以下の桁数は0以上の整数である必要があります。',
+	'Number of decimal places must be a positive integer and between 0 and [_1].' => '小数点以下の桁数は0から[_1]までの整数である必要があります。',
 	'Number of decimal places must be a positive integer.' => '小数点以下の桁数は0以上の整数である必要があります。',
 
 ## lib/MT/ContentFieldType/RadioButton.pm
@@ -1850,15 +1871,15 @@ use vars qw( @ISA %Lexicon );
 	'"[_1]" field is too short.' => '"[_1]"フィールドの値は短すぎます。',
 	q{A maximum length number for '[_1]' ([_2]) must be a positive integer between 1 and [_3].} => q{'[_1]'フィールド ([_2]) の最大文字数は1以上、[_3]以下の整数である必要があります。},
 	q{A minimum length number for '[_1]' ([_2]) must be a positive integer between 0 and [_3].} => q{'[_1]'フィールド ([_2]) の最小文字数は0以上、[_3]以下の整数である必要があります。},
-	q{An initial value for '[_1]' ([_2]) must be shorter than [_3] characters} => q{'[_1]'フィールド ([_2]) の初期値は短すぎます。},
+	q{An initial value for '[_1]' ([_2]) must be shorter than [_3] characters} => q{'[_1]'フィールド ([_2]) の初期値は[_3]文字以下である必要があります。},
 
 ## lib/MT/ContentFieldType/Table.pm
-	q{Initial number of columns for '[_1]' ([_2]) must be a positive integer.} => q{初期列数は1以上の整数である必要があります。},
-	q{Initial number of rows for '[_1]' ([_2]) must be a positive integer.} => q{初期行数は1以上の整数である必要があります。},
+	q{Initial number of columns for '[_1]' ([_2]) must be a positive integer.} => q{'[_1]' ([_2]) の初期列数は1以上の整数である必要があります。},
+	q{Initial number of rows for '[_1]' ([_2]) must be a positive integer.} => q{'[_1]' ([_2]) の初期行数は1以上の整数である必要があります。},
 
 ## lib/MT/ContentFieldType/Tags.pm
 	'Cannot create tag "[_1]": [_2]' => 'タグ "[_1]" を作成できません: [_2]',
-	q{An initial value for '[_1]' ([_2]) must be an shorter than 255 characters} => q{初期値は255文字以下である必要があります。},
+	q{An initial value for '[_1]' ([_2]) must be an shorter than 255 characters} => q{'[_1]'フィールド ([_2]) の初期値は255文字以下である必要があります。},
 	q{Cannot create tags [_1] in "[_2]" field.} => q{"[_2]"のタグ'[_1]'を作成できません。},
 
 ## lib/MT/ContentFieldType/Time.pm
@@ -1932,8 +1953,8 @@ use vars qw( @ISA %Lexicon );
 	'Entry Link' => 'リンク',
 	'Entry Title' => 'タイトル',
 	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive. [_2]' => 'パフォーマンスログを出力するディレクトリ「[_1]」を作成できませんでした。ディレクトリを書き込み可能に設定するか、または書き込みできる場所をPerformanceLoggingPathディレクティブで指定してください。: [_2]',
-	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable. [_1]' => 'パフォーマンスをログを出力できませんでした。PerformanceLoggingPathにディレクトリがありますが、書き込みできません。',
-	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file. [_1]' => 'パフォーマンスログを出力できませんでした。PerformanceLoggingPathにはファイルではなくディレクトリへのパスを指定してください。',
+	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable. [_1]' => 'パフォーマンスをログを出力できませんでした。PerformanceLoggingPathにディレクトリがありますが、書き込みできません。[_1]',
+	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file. [_1]' => 'パフォーマンスログを出力できませんでした。PerformanceLoggingPathにはファイルではなくディレクトリへのパスを指定してください。[_1]',
 	'Filter' => 'フィルタ',
 	'Folder' => 'フォルダ',
 	'Get Variable' => '変数のGet',
@@ -1973,6 +1994,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Website' => 'ウェブサイトの管理',
 	'Member' => 'メンバー',
 	'Members' => 'メンバー',
+	'Modified by' => '更新者',
 	'Movable Type Default' => 'Movable Type 既定',
 	'My Items' => '私のアセット',
 	'My [_1]' => '自分の[_1]',
@@ -2071,7 +2093,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/Common.pm
 	'Invalid dateFrom parameter: [_1]' => 'dateFrom パラメータに無効な値が指定されました: [_1]',
-	'Invalid dateTo parameter: [_1]' => 'dateTo パラメータに無効な値が指定されました: [_2]',
+	'Invalid dateTo parameter: [_1]' => 'dateTo パラメータに無効な値が指定されました: [_1]',
 
 ## lib/MT/DataAPI/Endpoint/v2/Asset.pm
 	'Invalid height: [_1]' => '不正な高さが指定されました: [_1]',
@@ -2164,7 +2186,7 @@ use vars qw( @ISA %Lexicon );
 	'theme_id may only contain letters, numbers, and the dash or underscore character. The theme_id must begin with a letter.' => 'テーマIDには、アルファベット、数字、ダッシュ(-)、アンダースコア(_)のみ利用可能です。また、かならずアルファベットで始めてください。',
 	'theme_version may only contain letters, numbers, and the dash or underscore character.' => 'バージョンにはアルファベット、数字、ダッシュ(-)、アンダースコア(_)が利用できます。',
 	q{Cannot install new theme with existing (and protected) theme's basename: [_1]} => q{保護されたテーマがすでに存在するため、新しいテーマをインストールできません: [_1]},
-	q{Export theme folder already exists '[_1]'. You can overwrite an existing theme with 'overwrite_yes=1' parameter, or change the Basename.} => q{エクスポート先のフォルダがすでに存在します。既存のフォルダを上書きする場合は、'overwrite_yes'パラメータに1を指定するか、ベースネームを変えてください。},
+	q{Export theme folder already exists '[_1]'. You can overwrite an existing theme with 'overwrite_yes=1' parameter, or change the Basename.} => q{エクスポート先のフォルダ'[_1]'がすでに存在します。既存のフォルダを上書きする場合は、'overwrite_yes'パラメータに1を指定するか、ベースネームを変えてください。},
 
 ## lib/MT/DataAPI/Endpoint/v2/User.pm
 	'An email with a link to reset your password has been sent to your email address ([_1]).' => '「[_1]」にパスワードをリセットするためのリンクを含むメールを送信しました。',
@@ -2291,8 +2313,8 @@ use vars qw( @ISA %Lexicon );
 	'Saving [_1] failed: Invalid image file format.' => '[_1]を保存できませんでした: 画像ファイルフォーマットが不正です。',
 
 ## lib/MT/Image/GD.pm
-	'Cannot load GD: [_1]' => 'GDをロードできませんでした。',
-	'Reading image failed: [_1]' => '画像を読み取れませんでした。',
+	'Cannot load GD: [_1]' => 'GDをロードできませんでした: [_1]',
+	'Reading image failed: [_1]' => '画像を読み取れませんでした: [_1]',
 	'Rotate (degrees: [_1]) is not supported' => '画像を回転([_1]度)させる事が出来ません。',
 	'Unsupported image file type: [_1]' => '[_1]は画像タイプとしてサポートされていません。',
 	q{Reading file '[_1]' failed: [_2]} => q{ファイル '[_1]' を読み取れませんでした: [_2]},
@@ -2305,14 +2327,14 @@ use vars qw( @ISA %Lexicon );
 	'Flip vertical failed: [_1]' => '画像を垂直反転させることができませんでした: [_1]',
 	'Outputting image failed: [_1]' => '画像を出力できませんでした: [_1]',
 	'Rotate (degrees: [_1]) failed: [_2]' => '画像を回転([_1]度)させることができませんでした: [_2]',
-	'Scaling to [_1]x[_2] failed: [_3]' => 'サイズを[_1]x[_2]に変更できませんでした。',
+	'Scaling to [_1]x[_2] failed: [_3]' => 'サイズを[_1]x[_2]に変更できませんでした: [_3]',
 
 ## lib/MT/Image/Imager.pm
 	'Cannot load Imager: [_1]' => 'Imagerをロードできません: [_1]',
 
 ## lib/MT/Image/NetPBM.pm
 	'Cannot load IPC::Run: [_1]' => 'IPC::Runをロードできません: [_1]',
-	'Cropping to [_1]x[_2] failed: [_3]' => '[_1]x[_2] にトリミングできませんでした: [_1]',
+	'Cropping to [_1]x[_2] failed: [_3]' => '[_1]x[_2] にトリミングできませんでした: [_3]',
 	'Reading alpha channel of image failed: [_1]' => 'アルファチャンネルを読み込めませんでした: [_1]',
 	'You do not have a valid path to the NetPBM tools on your machine.' => 'NetPBMツールへのパスが正しく設定されていません。',
 
@@ -2337,8 +2359,8 @@ use vars qw( @ISA %Lexicon );
 	q{Creating new user ('[_1]')...} => q{ユーザー([_1])を作成しています...},
 	q{Export failed on entry '[_1]': [_2]} => q{エクスポートに失敗しました。記事'[_1]': [_2]},
 	q{Importing into existing entry [_1] ('[_2]')} => q{既存の記事[_1]([_2])にインポートしています。},
-	q{Invalid allow pings value '[_1]'} => q{トラックバックの受信設定が不正です。},
-	q{Invalid date format '[_1]'; must be 'MM/DD/YYYY HH:MM:SS AM|PM' (AM|PM is optional)} => q{日付の形式が正しくありません。'MM/DD/YYYY HH:MM:SS AM|PM' (AM|PMは任意)でなければなりません。},
+	q{Invalid allow pings value '[_1]'} => q{トラックバックの受信設定の値'[_1]'が不正です。},
+	q{Invalid date format '[_1]'; must be 'MM/DD/YYYY HH:MM:SS AM|PM' (AM|PM is optional)} => q{日付の形式'[_1]'が正しくありません。'MM/DD/YYYY HH:MM:SS AM|PM' (AM|PMは任意)でなければなりません。},
 	q{Invalid status value '[_1]'} => q{状態[_1]は正しくありません},
 	q{Saving entry ('[_1]')...} => q{記事([_1])を保存しています...},
 
@@ -2351,8 +2373,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ListProperty.pm
 	'Cannot initialize list property [_1].[_2].' => '初期化に失敗しました。[_1].[_2]',
-	'Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'リストプロパティの初期化に失敗しました: [_3]というカラムは見つかりません。',
-	'Failed to initialize auto list property [_1].[_2]: unsupported column type.' => 'リストプロパティの初期化に失敗しました: 未サポートのカラム型です。',
+	'Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'リストプロパティ[_1].[_2]の初期化に失敗しました: [_3]というカラムは見つかりません。',
+	'Failed to initialize auto list property [_1].[_2]: unsupported column type.' => 'リストプロパティ[_1].[_2]の初期化に失敗しました: 未サポートのカラム型です。',
 	'[_1] (id:[_2])' => '[_1] (ID:[_2])',
 
 ## lib/MT/Lockout.pm
@@ -2476,7 +2498,7 @@ use vars qw( @ISA %Lexicon );
 	'Did not get two [_1]' => '二つの[_1]を取得できませんでした。',
 	'Revision Number' => '更新履歴番号',
 	'Revision not found: [_1]' => '更新履歴がありません: [_1]',
-	'There are not the same types of objects, expecting two [_1]' => '同じ種類のオブジェクトではありません。両者とも[_2]である必要があります。',
+	'There are not the same types of objects, expecting two [_1]' => '同じ種類のオブジェクトではありません。両者とも[_1]である必要があります。',
 	'Unknown method [_1]' => '不正な比較メソッド([_1])です。',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{リビジョンドライバー([_1])の設定が正しくありません: [_2]},
 
@@ -2634,10 +2656,10 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/Tags/Author.pm
 	'You used an [_1] without a author context set up.' => '[_1]をユーザーのコンテキスト外部で利用しようとしました。',
-	q{The '[_2]' attribute will only accept an integer: [_1]} => q{[_2]属性は整数以外は無効です。},
+	q{The '[_2]' attribute will only accept an integer: [_1]} => q{[_2]属性は整数以外は無効です: [_1]},
 
 ## lib/MT/Template/Tags/Blog.pm
-	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'mode属性が不正です。loopまたはcontextを指定してください。',
+	'Unknown "mode" attribute value: [_1]. Valid values are "loop" and "context".' => 'mode属性[_1]が不正です。loopまたはcontextを指定してください。',
 
 ## lib/MT/Template/Tags/Calendar.pm
 	'Invalid month format: must be YYYYMM' => 'YYYYMM形式でなければなりません。',
@@ -2646,20 +2668,20 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/Tags/Category.pm
 	'Cannot find package [_1]: [_2]' => '[_1]というパッケージが見つかりませんでした: [_2]',
-	'Cannot use sort_by and sort_method together in [_1]' => 'sort_byとsort_methodは同時に利用できません。',
+	'Cannot use sort_by and sort_method together in [_1]' => '[_1]ではsort_byとsort_methodは同時に利用できません。',
 	'Error sorting [_2]: [_1]' => '[_2]の並べ替えでエラーが発生しました: [_1]',
 	'MT[_1] must be used in a [_2] context' => 'MT[_1]は[_2]のコンテキスト外部では利用できません。',
-	'[_1] cannot be used without publishing [_2] archive.' => '[_1]アーカイブを公開していないので[_1]は使えません。',
+	'[_1] cannot be used without publishing [_2] archive.' => '[_2]アーカイブを公開していないので[_1]は使えません。',
 	'[_1] used outside of [_2]' => '[_1]を[_2]の外部で利用しようとしました。',
 
 ## lib/MT/Template/Tags/ContentType.pm
 	'Content Type was not found. Blog ID: [_1]' => 'サイト (ID: [_1]) でコンテンツタイプが見つかりません。',
-	'Invalid field_value_handler of [_1].' => '不正な field_value_handler です。',
-	'Invalid tag_handler of [_1].' => '不正な tag_handler です。',
+	'Invalid field_value_handler of [_1].' => '[_1] の field_value_handler は不正です。',
+	'Invalid tag_handler of [_1].' => '[_1] の tag_handler は不正です。',
 	'No Content Field Type could be found.' => 'コンテンツフィールドタイプが見つかりません。',
 
 ## lib/MT/Template/Tags/Entry.pm
-	'Could not create atom id for entry [_1]' => '記事のAtom IDを作成できませんでした。',
+	'Could not create atom id for entry [_1]' => '記事 [_1] のAtom IDを作成できませんでした。',
 	'You used <$MTEntryFlag$> without a flag.' => '<$MTEntryFlag$>をフラグなしで利用しようとしました。',
 
 ## lib/MT/Template/Tags/Misc.pm
@@ -2712,11 +2734,11 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Theme/ContentData.pm
 	'Failed to find content type: [_1]' => 'コンテンツタイプが見つかりません: [_1]',
-	'Invalid theme_data_import_handler of [_1].' => '不正な theme_data_import_handler です',
+	'Invalid theme_data_import_handler of [_1].' => '[_1] のtheme_data_import_handler は不正です',
 	'[_1] content data.' => '[_1]コンテンツデータ',
 
 ## lib/MT/Theme/ContentType.pm
-	'Invalid theme_import_handler of [_1].' => '不正な theme_import_handler です',
+	'Invalid theme_import_handler of [_1].' => '[_1] のtheme_import_handler は不正です',
 	'[_1] content types.' => '[_1]コンテンツタイプ',
 	'some content field in this theme has invalid type.' => '不正なコンテンツフィールドタイプが指定されています。',
 	'some content type in this theme have been installed already.' => 'いくつかのコンテンツタイプはすでに存在します。',
@@ -2916,6 +2938,7 @@ use vars qw( @ISA %Lexicon );
 	'Error removing records: [_1]' => 'レコードの削除中にエラーが発生しました: [_1]',
 	'Error saving record (ID:[_1]): [_2].' => 'レコード (ID:[_1]) の保存中にエラーが発生しました: [_2]',
 	'Error saving record: [_1]' => 'レコードの保存中にエラーが発生しました: [_1]',
+	'Migrating DataAPIDisableSite...' => 'DataAPIDisableSiteを移行しています...',
 	'Migrating Max Length option of Single Line Text fields...' => 'テキスト型のコンテンツフィールドの最大値を修正しています...',
 	'Migrating MultiBlog settings...' => 'マルチブログの設定を移行しています...',
 	'Migrating create child site permissions...' => '子サイトの作成権限を移行しています...',
@@ -3027,6 +3050,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Website.pm
 	'Child Site Count' => '子サイト数',
 	'First Website' => 'First Website',
+	'Show only Parent Site' => '親サイトだけを表示',
+	'Show only Child Site' => '子サイトだけを表示',
 
 ## lib/MT/Worker/Publish.pm
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- 完了 ([_1]ファイル - [_2]秒)',
@@ -3062,13 +3087,7 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-check.cgi
 	'(Probably) running under cgiwrap or suexec' => 'cgiwrapまたはsuexec環境下で動作していると思われます。',
-	'Archive::Tar is required in order to manipulate files during backup and restore operations.' => 'Archive::Tarのインストールは必須ではありません。バックアップと復元で圧縮の機能を利用する場合に必要となります。',
-	'Archive::Zip is required in order to manipulate files during backup and restore operations.' => 'Archive::Zipのインストールは必須ではありません。バックアップと復元で圧縮の機能を利用する場合に必要となります。',
-	'CGI::Cookie is required for cookie authentication.' => 'CGI::Cookieはcookie 認証のために必要です。',
-	'Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.' => 'Cache::Fileのインストールは必須ではありません。Yahoo! Japanによるコメント投稿者のOpenID認証を許可する場合に必要となります。',
-	'Cache::Memcached and a memcached server are required to use in-memory object caching on the servers where Movable Type is deployed.' => 'Cache::Memcachedのインストールは必須ではありません。Movable Type のキャッシング機能として memcached サーバーを利用する場合に必要となります。',
 	'Checking for' => '確認中',
-	'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSAのインストールは必須ではありません。インストールされていると、コメント投稿時のサインインが高速になります。',
 	'Current working directory:' => '現在のディレクトリ',
 	'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'データを保存するデータベースとして PostgreSQL を利用する場合、DBIと DBD::Pgが必要です。',
 	'DBI and DBD::SQLite are required if you want to use the SQLite database backend.' => 'データを保存するデータベースとして SQLite を利用する場合、DBIと DBD::SQLiteが必要です。',
@@ -3077,45 +3096,30 @@ use vars qw( @ISA %Lexicon );
 	'DBI is required to store data in database.' => 'DBIはデータベースにアクセスするために必要です。',
 	'Data Storage' => 'データストレージ',
 	'Details' => '詳細',
-	'Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'Digest::SHA1のインストールは必須ではありませんが、LiveJournal、あるいはOpenIDでコメント投稿者を認証するために必要になります。',
-	'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.' => 'File::Tempのインストールは必須ではありません。ファイルのアップロードを行う際に上書きを行う場合は必要となります。',
-	'IO::Compress::Gzip is required in order to compress files during backup operations.' => 'IO::Compress::Gzipのインストールは必須ではありません。バックアップと復元で圧縮の機能を利用する場合に必要となります。',
-	'IO::Uncompress::Gunzip is required in order to decompress files during restore operation.' => 'IO::Uncompress::Gunzipのインストールは必須ではありません。バックアップと復元で圧縮の機能を利用する場合に必要となります。',
-	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'IPC::Runのインストールは必須ではありません。MTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
-	'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Image::Sizeはファイルのアップロードを行うために必要です。各種のファイル形式に対応して画像のサイズを取得します。',
 	'Installed' => 'インストール済み',
-	'MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.' => 'MIME::Base64のインストールは必須ではありません。コメントの認証機能を利用する場合やメール送信にSMTPを利用する場合に必要となります。',
 	'MT home directory:' => 'MTディレクトリ',
 	'Movable Type System Check Successful' => 'システムのチェックを完了しました。',
 	'Movable Type System Check' => 'Movable Type システムチェック',
 	'Movable Type version:' => 'Movable Type バージョン',
-	'Net::SMTP is required in order to send mail via an SMTP Server.' => 'メールの送信にSMTPを利用する場合に必要になります。',
 	'Operating system:' => 'オペレーティングシステム',
 	'Perl include path:' => 'Perl の インクルードパス',
 	'Perl version:' => 'Perl のバージョン',
 	'Please consult the installation instructions for help in installing [_1].' => '[_1]のインストールはインストールマニュアルに沿って行ってください。',
-	'SOAP::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.' => 'SOAP::Liteのインストールは必須ではありません。XML-RPC による作業を行う場合に必要となります。',
-	'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.' => 'Storableは必須ではありません。外部プラグインの利用の際に必要となる場合があります。',
 	'Supported format: [_1]' => '対応している形式: [_1]',
 	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'お使いのサーバーにインストールされている DBD::mysqlのバージョンは、Movable Type と互換性がありません。CPAN に公開されている最新バージョンをインストールしてください。',
 	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1]はインストールされていますが、新しいDBIが必要です。上記を参考に必要なDBIを確認してください。',
 	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.' => 'これらのモジュールのインストールは<strong>任意</strong>です。お使いのサーバーにこれらのモジュールがインストールされていない場合でも、Movable Type の基本機能は動作します。これらのモジュールの機能が必要となった場合にはインストールを行ってください。',
 	'The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly.' => 'これらのモジュールは、Movable Type がデータを保存するために必要なモジュールです。DBIと、1つ以上のデータベース用のモジュールをインストールする必要があります。',
-	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされている Perl [_1] は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlをアップグレードしてください。',
+	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステム([_1])にインストールされているPerlは、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlを[_2]以上にアップグレードしてください。',
 	'This module and its dependencies are required in order to operate Movable Type under psgi.' => 'PSGI環境下でmt.psgiを実行する場合に必要となります。',
 	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Perl 5.8以下の環境で、mt-search.cgiを利用するときに必要です。',
 	'This module required for action streams.' => 'アクションストリームに必要です',
 	'Web server:' => 'ウェブサーバー',
-	'XML::Atom is required in order to use the Atom API.' => 'XML::Atomのインストールは必須ではありません。Atom APIを利用する場合に必要となります。',
-	'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.' => 'XML::SAXは復元の機能を利用する場合に必要となります。',
 	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'サーバーに [_1]か、[_1]の動作に必要な他のモジュールがインストールされていません。',
 	'Your server has [_1] installed (version [_2]).' => 'サーバーに [_1] がインストールされています(バージョン [_2])。',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'お使いのサーバーには、Movable Type の動作に必要なすべてのモジュールがインストールされています。モジュールを追加インストール作業は必要はありません。マニュアルに従い、インストールを続けてください。',
 	'[_1] [_2] Modules' => '[_1]: [_2]モジュール',
-	'[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => '[_1]のインストールは必須ではありません。YAML::Tinyよりも、軽量で高速に動作します。',
-	'[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.' => '[_1]のインストールは必須ではありません。アップロードした画像のサムネイルを作成する場合に必要となります。',
-	'[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation' => '[_1]のインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'unknown' => '不明',
 	q{The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)} => q{構成ファイル(mt-config.cgi)がすでに存在するため、'mt-check.cgi' スクリプトは無効になっています。},
 	q{The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type.} => q{mt-check.cgiはシステムの構成を確認し、Movable Typeを実行するために必要なコンポーネントがそろっていることを確認するためのスクリプトです。},
@@ -3166,7 +3170,6 @@ use vars qw( @ISA %Lexicon );
 	'(None)' => '(なし)',
 
 ## mt-static/js/listing/list_data.js
-	'Unknown Filter' => '無名のフィルタ',
 	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
 
 ## mt-static/js/listing/listing.js
@@ -3174,8 +3177,8 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => '[_1]件の[_2]を[_3]してよろしいですか?',
 	'Label "[_1]" is already in use.' => '"[_1]というラベルは既に使用されています。"',
 	'One or more fields in the filter item are not filled in properly.' => '1つ以上のフィルター項目が正しく入力されていません。',
-	'You can only act upon a maximum of [_1] [_2].' => '最大で[_1]件しか選択できません。',
-	'You can only act upon a minimum of [_1] [_2].' => '最低でも[_1]を選択してください。',
+	'You can only act upon a maximum of [_1] [_2].' => '[_2]は最大で[_1]件しか選択できません。',
+	'You can only act upon a minimum of [_1] [_2].' => '[_2]は最低でも[_1]件選択してください。',
 	'You did not select any [_1] to [_2].' => '[_2]する[_1]が選択されていません。',
 	'act upon' => '対象に',
 	q{Are you sure you want to remove filter '[_1]'?} => q{フィルタ'[_1]'を削除してよろしいですか?},
@@ -3215,7 +3218,7 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/js/listing/tag/list-table.tag
 	'All [_1] items are selected' => '全[_1]件が選択されています',
-	'All' => '全て',
+	'All' => 'すべて',
 	'Loading...' => 'ロード中...',
 	'Select All' => 'すべて選択',
 	'Select all [_1] items' => '全[_1]件を選択する',
@@ -3363,7 +3366,7 @@ use vars qw( @ISA %Lexicon );
 	'file' => 'ファイル',
 
 ## php/lib/mtdb.base.php
-	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'include_blogs属性で指定されたブログがexclude_blogs属性で全て除外されています。',
+	'When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them.' => 'include_blogs属性で指定されたブログがexclude_blogs属性ですべて除外されています。',
 
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
@@ -3441,7 +3444,7 @@ use vars qw( @ISA %Lexicon );
 	'_THROTTLED_COMMENT' => '短い期間にコメントを大量に送りすぎです。しばらくたってからやり直してください。',
 	q{Comment on "[_1]" by [_2].} => q{[_2]が'[_1]'にコメントしました。},
 	q{Commenter '[_1]' (ID:[_2]) has been successfully registered.} => q{コメント投稿者'[_1]'(ID:[_2])が登録されました。},
-	q{Error assigning commenting rights to user '[_1] (ID: [_2])' for weblog '[_3] (ID: [_4])'. No suitable commenting role was found.} => q{'[_1]' (ID:[_2])にブログ'[_3]'(ID:[_2])へのコメント権限を与えられませんでした。コメント権限を与えるためのロールが見つかりません。},
+	q{Error assigning commenting rights to user '[_1] (ID: [_2])' for weblog '[_3] (ID: [_4])'. No suitable commenting role was found.} => q{'[_1]' (ID:[_2])にブログ'[_3]'(ID:[_4])へのコメント権限を与えられませんでした。コメント権限を与えるためのロールが見つかりません。},
 	q{Failed comment attempt by pending registrant '[_1]'} => q{まだ登録を完了していないユーザー'[_1]'がコメントしようとしました。},
 	q{Invalid URL '[_1]'} => q{不正なURL '[_1]'},
 	q{Login failed: password was wrong for user '[_1]'} => q{サインインに失敗しました。[_1]のパスワードが誤っています。},
@@ -3462,7 +3465,7 @@ use vars qw( @ISA %Lexicon );
 	'You cannot reply to unpublished comment.' => '公開されていないコメントには返信できません。',
 	'You do not have permission to approve this comment.' => 'このコメントを承認する権限がありません。',
 	'You do not have permission to approve this trackback.' => 'このトラックバックを承認する権限がありません。',
-	q{Comment (ID:[_1]) by '[_2]' deleted by '[_3]' from entry '[_4]'} => q{'[_3]'がコメント'[_1]'(ID:[_2])を削除しました。},
+	q{Comment (ID:[_1]) by '[_2]' deleted by '[_3]' from entry '[_4]'} => q{'[_3]'が記事'[_4]'のコメント'[_1]'(ID:[_2])を削除しました。},
 	q{User '[_1]' banned commenter '[_2]'.} => q{'[_1]'がコメント投稿者'[_2]'を禁止しました。},
 	q{User '[_1]' trusted commenter '[_2]'.} => q{'[_1]'がコメント投稿者'[_2]'を承認しました。},
 	q{User '[_1]' unbanned commenter '[_2]'.} => q{'[_1]'がコメント投稿者'[_2]'を保留にしました。},
@@ -3542,7 +3545,7 @@ use vars qw( @ISA %Lexicon );
 	q{New TrackBack ping to '[_1]'} => q{'[_1]'に新しいトラックバックがありました},
 	q{New TrackBack ping to category '[_1]'} => q{カテゴリ'[_1]'にの新しいトラックバックがありました},
 	q{TrackBack on "[_1]" from "[_2]".} => q{[_2]から'[_1]'にトラックバックがありました。},
-	q{TrackBack on category '[_1]' (ID:[_2]).} => q{カテゴリ'[_1]'にトラックバックがありました。},
+	q{TrackBack on category '[_1]' (ID:[_2]).} => q{カテゴリ'[_1]' (ID:[_2])にトラックバックがありました。},
 
 ## plugins/Trackback/lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(無名カテゴリ)',
@@ -3552,7 +3555,7 @@ use vars qw( @ISA %Lexicon );
 	'Orphaned TrackBack' => '対応する記事のないトラックバック',
 	'category' => 'カテゴリ',
 	q{Ping (ID:[_1]) from '[_2]' deleted by '[_3]' from category '[_4]'} => q{'[_3]'が'[_2]'のトラックバック(ID:[_1])をカテゴリ'[_4]'から削除しました。},
-	q{Ping (ID:[_1]) from '[_2]' deleted by '[_3]' from entry '[_4]'} => q{'[_3]'が'[_2]'のトラックバック(ID:[_1])を削除しました。},
+	q{Ping (ID:[_1]) from '[_2]' deleted by '[_3]' from entry '[_4]'} => q{'[_3]'が'[_2]'のトラックバック(ID:[_1])を記事'[_4]'から削除しました。},
 
 ## plugins/Trackback/lib/MT/Template/Tags/Ping.pm
 	q{<\$MTCategoryTrackbackLink\$> must be used in the context of a category, or with the 'category' attribute to the tag.} => q{<\$MTCategoryTrackbackLink\$>はカテゴリのコンテキストかまたはcategory属性とともに利用してください。},
@@ -3808,7 +3811,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/cfg_feedback.tmpl
 	'([_1])' => '([_1])',
-	'Accept TrackBacks from any source.' => '全てのトラックバックを許可する',
+	'Accept TrackBacks from any source.' => 'すべてのトラックバックを許可する',
 	'Accept comments according to the policies shown below.' => 'コメントポリシーを設定し、コメントを受け付ける',
 	'Allow HTML' => 'HTMLを許可',
 	'Allow commenters to include a limited set of HTML tags in their comments. Otherwise all HTML will be stripped out.' => 'コメントの内容に特定のHTMLタグの利用を許可する (許可しない場合は、すべてのHTMLタグが利用できなくなります)',
@@ -4299,7 +4302,7 @@ use vars qw( @ISA %Lexicon );
 	'No roles exist in this installation. [_1]Create a role</a>' => 'ロールがありません。[_1]ロールを作成する</a>',
 	'No sites exist in this installation. [_1]Create a site</a>' => 'サイトがありません。[_1]サイトを作成する</a>',
 	'No users exist in this installation. [_1]Create a user</a>' => 'ユーザーが存在しません。[_1]ユーザーを作成する</a>',
-	'all' => '全て',
+	'all' => 'すべて',
 
 ## tmpl/cms/dialog/create_trigger.tmpl
 	'Event' => 'イベント',
@@ -4579,7 +4582,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_content_data.tmpl
 	'(Max length: [_1])' => '(最大文字数: [_1])',
 	'(Max select: [_1])' => '(最大: [_1])',
-	'(Max tags: [_2])' => '(最大: [_1])',
+	'(Max tags: [_1])' => '(最大: [_1])',
 	'(Max: [_1] / Number of decimal places: [_2])' => '(最大: [_1] / 小数点以下の桁数: [_2])',
 	'(Max: [_1])' => '(最大: [_1])',
 	'(Min length: [_1] / Max length: [_2])' => '(最小文字数: [_1] / 最大文字数: [_2])',
@@ -4756,11 +4759,11 @@ use vars qw( @ISA %Lexicon );
 	'The TrackBack has been approved.' => 'トラックバックを公開しました。',
 	'This trackback was classified as spam.' => 'このトラックバックはスパムと判定されました。',
 	'TrackBack Text' => 'トラックバックの本文',
-	'View all TrackBacks created on this day' => 'この日のトラックバックを全て見る',
-	'View all TrackBacks from this IP address' => 'このIPアドレスからのトラックバックを全て見る',
-	'View all TrackBacks on this category' => 'このカテゴリの全てのトラックバックを見る',
-	'View all TrackBacks on this entry' => 'この記事で受信した全てのトラックバックを見る',
-	'View all TrackBacks with this status' => 'このステータスのトラックバックを全て表示',
+	'View all TrackBacks created on this day' => 'この日のトラックバックをすべて見る',
+	'View all TrackBacks from this IP address' => 'このIPアドレスからのトラックバックをすべて見る',
+	'View all TrackBacks on this category' => 'このカテゴリのすべてのトラックバックを見る',
+	'View all TrackBacks on this entry' => 'この記事で受信したすべてのトラックバックを見る',
+	'View all TrackBacks with this status' => 'このステータスのトラックバックをすべて表示',
 
 ## tmpl/cms/edit_role.tmpl
 	'Administration' => '管理',
@@ -5021,7 +5024,7 @@ use vars qw( @ISA %Lexicon );
 	q{Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.} => q{ファイルのアップロードは可能ですが、'[_1]'への書き込みが行えないため、画像ファイルのサムネイルを作成する事ができません。},
 
 ## tmpl/cms/include/async_asset_list.tmpl
-	'All Types' => '全てのアセット',
+	'All Types' => 'すべてのアセット',
 	'Asset Type: ' => 'アセット種類',
 	'label' => '名前',
 
@@ -5390,11 +5393,11 @@ use vars qw( @ISA %Lexicon );
 	'Theme [_1] has been applied.' => 'テーマ "[_1]"を適用しました。',
 	'Theme [_1] has been uninstalled.' => 'テーマ "[_1]"をアンインストールしました。',
 	'Themes in Use' => '利用しているテーマ',
-	'This theme cannot be applied to the child site due to [_1] errors' => '次の理由により、テーマを適用できませんでした。',
+	'This theme cannot be applied to the child site due to [_1] errors' => '次の理由により、テーマを適用できませんでした',
 	'This theme cannot be applied to the site due to [_1] errors' => '次の理由により、テーマを適用できませんでした。',
 	'Uninstall' => 'アンインストール',
 	'Warnings' => '警告',
-	'[quant,_1,warning,warnings]' => '警告: [quant,_1,,,]',
+	'[quant,_1,warning,warnings]' => '[quant,_1,,,]件の警告',
 	'_THEME_DIRECTORY_URL' => 'https://plugins.movabletype.jp/',
 
 ## tmpl/cms/listing/asset_list_header.tmpl
@@ -5872,7 +5875,7 @@ use vars qw( @ISA %Lexicon );
 	'This wizard will help you configure the basic settings needed to run Movable Type.' => 'このウィザードでは、Movable Typeを利用するために必要となる基本的な環境設定を行います。',
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 	q{<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.} => q{エラー: '[_1]'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。},
-	q{The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).} => q{[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、その場所にはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。},
+	q{The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).} => q{[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、[_1]ディレクトリにはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。},
 );
 
 1;

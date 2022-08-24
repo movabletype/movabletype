@@ -99,6 +99,7 @@
          "blog_allow_comment_html",
          "blog_allow_commenter_regist",
          "blog_allow_comments_default",
+         "blog_allow_data_api",
          "blog_allow_pings",
          "blog_allow_pings_default",
          "blog_allow_reg_comments",
@@ -170,6 +171,7 @@
       "rows" : [
          [
             null,
+            1,
             1,
             1,
             1,
@@ -430,7 +432,7 @@
             null,
             null,
             "single_line_text",
-            "efc9b9f0a63f19af263205f98044d28f33e3e0bc"
+            "aea230dfe615358cf5836be492197413a2fc9277"
          ],
          [
             1,
@@ -447,7 +449,7 @@
             null,
             null,
             "multi_line_text",
-            "318e9c1cbb32e7dbb1bd91c6b14598b96cb4ffeb"
+            "6ee3423ab8fcbe146e020425f5e0dc4d0163866f"
          ],
          [
             1,
@@ -464,7 +466,7 @@
             null,
             null,
             "number",
-            "463df639422c09cbc878ad9b3a2b3f935f3dbfd0"
+            "ae65316b227d86103e2bb25cd18b936a895bbfd1"
          ],
          [
             1,
@@ -481,7 +483,7 @@
             null,
             null,
             "url",
-            "60e2c8bc776592d33e26cd837026d12300a578b3"
+            "51afafbce67031faf110b703204e05eb218f0f4f"
          ],
          [
             1,
@@ -498,7 +500,7 @@
             null,
             null,
             "embedded_text",
-            "ca1f565ef3a8b4cd623ec8e64faba004aba71e3d"
+            "8c3f4355629753f582ba1423245a2e4b57a68b83"
          ],
          [
             1,
@@ -515,7 +517,7 @@
             null,
             null,
             "date_and_time",
-            "8f066af910e2fe0feef718b0d0250e3e09597125"
+            "01ac5095fe41675343cb563cf03abc80d6972e85"
          ],
          [
             1,
@@ -532,7 +534,7 @@
             null,
             null,
             "date_only",
-            "55613efc5d94ab82588a381c075fceef6f15a2dc"
+            "c6da42cc80819d3fb10380f4a903584ff854a0ed"
          ],
          [
             1,
@@ -549,7 +551,7 @@
             null,
             null,
             "time_only",
-            "a737dd86145443c3379081e851b59a0eae7f383d"
+            "e9633e6ce463b08e15b05c052bfb4a748d9d9bde"
          ],
          [
             1,
@@ -566,7 +568,7 @@
             null,
             null,
             "select_box",
-            "ab0fa6b0fb7c0ade6891d0b8500b26b551ac68d4"
+            "19bfdf511122bdbd59e01592dc956cc01177e746"
          ],
          [
             1,
@@ -583,7 +585,7 @@
             null,
             null,
             "radio_button",
-            "0398301fa9d7c705978ed6b0c8748f1ae4969041"
+            "ce8fa132478b7bd8bfa5d964575c94c4cc664eb5"
          ],
          [
             1,
@@ -600,7 +602,7 @@
             null,
             null,
             "checkboxes",
-            "00d964a5d8d8a8941d1e9a93521595725b7ef1ae"
+            "ddc1200475552072d8f80c8c282a74e378c005fc"
          ],
          [
             1,
@@ -617,7 +619,7 @@
             null,
             null,
             "list",
-            "d36faf44ac207abc13f72c9fe4836940e22845f9"
+            "ce98eb103c7d8b7494f547b3ba12297d892f4d73"
          ],
          [
             1,
@@ -634,7 +636,7 @@
             null,
             null,
             "tables",
-            "fa54117b9c58ea4f38b8e5bb2c3c703c3d4b55f1"
+            "fd2b816cc93decf749946912a998b8d2ba32639c"
          ],
          [
             1,
@@ -651,7 +653,7 @@
             null,
             null,
             "tags",
-            "25222585f7d9df3154426ae8f77fe06a7fada22b"
+            "dd63ac40dd68cb449893b6d38687027ddbd5d2ef"
          ],
          [
             1,
@@ -668,7 +670,7 @@
             null,
             null,
             "categories",
-            "5e0e51c19f219b67c649fe9d8ad26b7bf5698a12"
+            "1538b854bb7eb2c50ea6dc24be9d62651fb35be3"
          ],
          [
             1,
@@ -685,7 +687,7 @@
             null,
             null,
             "asset_image",
-            "0b785d66587a2dd417a0ca1161ff8918ae447736"
+            "50a70f89217d9116ebf5c8de29767f0d9355e3aa"
          ],
          [
             1,
@@ -702,7 +704,7 @@
             null,
             null,
             "content_type",
-            "4be022bd3881be75a31952f9274b6d6034db5f2f"
+            "555ea2123c056dfd5e0689bb77d34e7478138e42"
          ]
       ]
    },
@@ -713,7 +715,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0052\n",
+            "DataAPIDisableSite 0\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0053\n",
             1
          ]
       ]
@@ -741,12 +743,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0010single line text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(efc9b9f0a63f19af263205f98044d28f33e3e0bc\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\finput_format-\u0000\u0000\u0000\brichtext\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u000fmulti line text\u0000\u0000\u0000\u000efull_rich_text-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000fmulti_line_text\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(318e9c1cbb32e7dbb1bd91c6b14598b96cb4ffeb\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0006number\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(463df639422c09cbc878ad9b3a2b3f935f3dbfd0\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006numberH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0003url\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(60e2c8bc776592d33e26cd837026d12300a578b3\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003url\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(ca1f565ef3a8b4cd623ec8e64faba004aba71e3d\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rembedded_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rembedded textH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(8f066af910e2fe0feef718b0d0250e3e09597125\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00016\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00016H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(55613efc5d94ab82588a381c075fceef6f15a2dc\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\tdate_only\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00017\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\tdate_only\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00017H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00018\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ttime_only\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00018\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ttime_only\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(a737dd86145443c3379081e851b59a0eae7f383dH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00019\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\nselect_box\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(ab0fa6b0fb7c0ade6891d0b8500b26b551ac68d4\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00019\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003abc\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003def\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00012H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003ghi\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\nselect boxH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000210\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003abc\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003def\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00012H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003ghi\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\fradio button\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000210\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(0398301fa9d7c705978ed6b0c8748f1ae4969041\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\fradio_buttonH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(00d964a5d8d8a8941d1e9a93521595725b7ef1ae\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncheckboxes\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000211\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003abcH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003defH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003ghi\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncheckboxes\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000211H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0004list\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000212\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004list\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000212H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\finitial_cols-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006tables\u0000\u0000\u0000\finitial_rows-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000213\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0006tables\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000213H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000214\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000214H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000216\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_image\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000216\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u000basset_image\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0006source-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\fcontent type\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000217\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\fcontent_type\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000217",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(aea230dfe615358cf5836be492197413a2fc9277\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0010single line textH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000fmulti_line_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\finput_format-\u0000\u0000\u0000\brichtext\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u000fmulti line text\u0000\u0000\u0000\u000efull_rich_text-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(6ee3423ab8fcbe146e020425f5e0dc4d0163866f\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006number\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(ae65316b227d86103e2bb25cd18b936a895bbfd1\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0006numberH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(51afafbce67031faf110b703204e05eb218f0f4f\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003url\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0003urlH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rembedded_text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(8c3f4355629753f582ba1423245a2e4b57a68b83\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rembedded textH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00016\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(01ac5095fe41675343cb563cf03abc80d6972e85\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00016H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(c6da42cc80819d3fb10380f4a903584ff854a0ed\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\tdate_only\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00017\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00017\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\tdate_onlyH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ttime_only\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00018\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00018\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(e9633e6ce463b08e15b05c052bfb4a748d9d9bde\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ttime_onlyH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(19bfdf511122bdbd59e01592dc956cc01177e746\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003abc\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003defH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003ghi\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\nselect box\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00019\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00019\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\nselect_boxH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\fradio button\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003abc\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003def\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00012H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003ghi\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(ce8fa132478b7bd8bfa5d964575c94c4cc664eb5\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000210\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000210\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\fradio_buttonH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(ddc1200475552072d8f80c8c282a74e378c005fc\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000211\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0003H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003abcH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003defH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0003ghi\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncheckboxes\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncheckboxes\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000211H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004list\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000212\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000212\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0004listH\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006tables\u0000\u0000\u0000\finitial_cols-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\finitial_rows-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000213\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0006tables\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000213H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000214\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0004\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000214H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategoriesH\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000216\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0004\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u000basset_image\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000216\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u000basset_imageH\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000217\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\fcontent type\u0000\u0000\u0000\u0006source-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\fcontent_type\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u000217",
             1,
             null,
             "__NOW__",
             "test content data",
-            "420405f08020063fd8f03472035878545941a1ab",
+            "1ad96e81f63f36277724338b1861b062957ae5a6",
             null,
             null
          ],
@@ -761,7 +763,7 @@
             null,
             "__NOW__",
             "test child content data",
-            "39fe1c1e8be44de4d4bf21a52de6bdb9c5265d2a",
+            "fb200a9bcc4c9e5badb20182dd0d977f609a7823",
             null,
             null
          ]
@@ -1117,5 +1119,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0052; formattedtext 1.00; tinymce 1"
+   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0053; formattedtext 1.00; tinymce 1"
 }

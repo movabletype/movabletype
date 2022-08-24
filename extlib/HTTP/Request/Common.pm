@@ -3,17 +3,18 @@ package HTTP::Request::Common;
 use strict;
 use warnings;
 
-our $VERSION = '6.14';
+our $VERSION = '6.36';
 
 our $DYNAMIC_FILE_UPLOAD ||= 0;  # make it defined (don't know why)
 
 use Exporter 5.57 'import';
 
-our @EXPORT =qw(GET HEAD PUT PATCH POST);
+our @EXPORT =qw(GET HEAD PUT PATCH POST OPTIONS);
 our @EXPORT_OK = qw($DYNAMIC_FILE_UPLOAD DELETE);
 
 require HTTP::Request;
 use Carp();
+use File::Spec;
 
 my $CRLF = "\015\012";   # "\r\n" is not portable
 
@@ -23,6 +24,7 @@ sub DELETE { _simple_req('DELETE', @_); }
 sub PATCH { request_type_with_data('PATCH', @_); }
 sub POST { request_type_with_data('POST', @_); }
 sub PUT { request_type_with_data('PUT', @_); }
+sub OPTIONS { request_type_with_data('OPTIONS', @_); }
 
 sub request_type_with_data
 {
@@ -142,7 +144,7 @@ sub form_data   # RFC1867
 	    my($file, $usename, @headers) = @$v;
 	    unless (defined $usename) {
 		$usename = $file;
-		$usename =~ s,.*/,, if defined($usename);
+		$usename = (File::Spec->splitpath($usename))[-1] if defined($usename);
 	    }
             $k =~ s/([\\\"])/\\$1/g;
 	    my $disp = qq(form-data; name="$k");
@@ -312,16 +314,17 @@ HTTP::Request::Common - Construct common HTTP::Request objects
 
 =head1 VERSION
 
-version 6.14
+version 6.36
 
 =head1 SYNOPSIS
 
   use HTTP::Request::Common;
   $ua = LWP::UserAgent->new;
   $ua->request(GET 'http://www.sn.no/');
-  $ua->request(POST 'http://somewhere/foo', [foo => bar, bar => foo]);
-  $ua->request(PATCH 'http://somewhere/foo', [foo => bar, bar => foo]);
-  $ua->request(PUT 'http://somewhere/foo', [foo => bar, bar => foo]);
+  $ua->request(POST 'http://somewhere/foo', foo => bar, bar => foo);
+  $ua->request(PATCH 'http://somewhere/foo', foo => bar, bar => foo);
+  $ua->request(PUT 'http://somewhere/foo', foo => bar, bar => foo);
+  $ua->request(OPTIONS 'http://somewhere/foo', foo => bar, bar => foo);
 
 =head1 DESCRIPTION
 
@@ -397,6 +400,18 @@ The same as C<POST> below, but the method in the request is C<PATCH>.
 =item PUT $url, Header => Value,..., Content => $content
 
 The same as C<POST> below, but the method in the request is C<PUT>
+
+=item OPTIONS $url
+
+=item OPTIONS $url, Header => Value,...
+
+=item OPTIONS $url, $form_ref, Header => Value,...
+
+=item OPTIONS $url, Header => Value,..., Content => $form_ref
+
+=item OPTIONS $url, Header => Value,..., Content => $content
+
+The same as C<POST> below, but the method in the request is C<OPTIONS>
 
 =item POST $url
 
@@ -547,7 +562,7 @@ Gisle Aas <gisle@activestate.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 1994-2017 by Gisle Aas.
+This software is copyright (c) 1994 by Gisle Aas.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

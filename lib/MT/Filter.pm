@@ -427,6 +427,8 @@ sub load_objects {
         @objs = @objs[ $offset .. $max ];
     }
 
+    @objs = grep defined $_, @objs;
+
     return \@objs;
 }
 

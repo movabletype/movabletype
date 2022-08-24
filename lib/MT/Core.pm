@@ -858,6 +858,70 @@ BEGIN {
                         } @$objs;
                     },
                 },
+                modified_by => {
+                    label        => 'Modified by',
+                    filter_label => 'Modified by',
+                    display      => 'optional',
+                    base         => '__virtual.string',
+                    raw          => sub {
+                        my ( $prop, $obj ) = @_;
+
+                        # If there's no value in the column then no voter ID was
+                        # recorded.
+                        return '' if !$obj->modified_by;
+
+                        my $author = MT->model('author')->load( $obj->modified_by );
+                        return $author
+                            ? ( $author->nickname || $author->name )
+                            : MT->translate('*User deleted*');
+                    },
+                    terms => sub {
+                        my $prop = shift;
+                        my ( $args, $load_terms, $load_args ) = @_;
+                        my $driver  = $prop->datasource->driver;
+                        my $colname = $driver->dbd->db_column_name(
+                            $prop->datasource->datasource, 'modified_by' );
+                        $prop->{col} = 'name';
+                        my $name_query = $prop->super(@_);
+                        $prop->{col} = 'nickname';
+                        my $nick_query = $prop->super(@_);
+                        $load_args->{joins} ||= [];
+                        push @{ $load_args->{joins} },
+                            MT->model('author')->join_on(
+                            undef,
+                            [   { id => \"= $colname" },
+                                '-and',
+                                [   $name_query,
+                                    (   $args->{'option'} eq 'not_contains'
+                                        ? '-and'
+                                        : '-or'
+                                    ),
+                                    $nick_query,
+                                ]
+                            ],
+                            {}
+                            );
+                    },
+                    bulk_sort => sub {
+                        my $prop = shift;
+                        my ($objs) = @_;
+                        my %author_id
+                            = map { ( $_->modified_by ) ? ( $_->modified_by => 1 ) : () }
+                            @$objs;
+                        my @authors = MT->model('author')
+                            ->load( { id => [ keys %author_id ] } );
+                        my %nickname = map {
+                                  $_->id => defined $_->nickname
+                                ? $_->nickname
+                                : ''
+                        } @authors;
+                        $nickname{0} = '';    # fallback
+                        return sort {
+                            $nickname{ $a->modified_by || 0 }
+                                cmp $nickname{ $b->modified_by || 0 }
+                        } @$objs;
+                    },
+                },
                 tag => {
                     base    => '__virtual.string',
                     label   => 'Tag',
@@ -1341,7 +1405,7 @@ BEGIN {
             association  => '$Core::MT::Association::system_filters',
             group        => '$Core::MT::Group::system_filters',
             group_member => '$Core::MT::Group::member_system_filters',
-
+            website      => '$Core::MT::Website::system_filters',
         },
         listing_screens => {
             website => {
@@ -1858,6 +1922,7 @@ BEGIN {
             'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
             'MailTransferEncoding'  => undef,
+            'MailLogAlways'         => undef,
             'SMTPServer'            => { default => 'localhost', },
             'SMTPAuth'              => { default => 0, },
             'SMTPUser'              => undef,
@@ -2264,8 +2329,11 @@ BEGIN {
             'ForceExifRemoval' => { default => 1 },
             'TemporaryFileExpiration' => { default => 60 * 60 },
             'PSGIStreaming' => { default => 1 },
+            'PSGIServeStatic' => { default => 1 },
             'HideVersion' => { default => 1 },
             'HideConfigWarnings' => { default => undef },
+            'GlobalTemplateMaxRevisions' => { default => 20 },
+            'DefaultStatsProvider' => { default => 'GoogleAnalyticsV4' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

@@ -144,6 +144,7 @@ sub write_config {
         MTReleaseNumber        => MT->release_number,
         LoggerModule           => 'Test',
         LoggerPath             => 'TEST_ROOT/log',
+        LoggerFileName         => 'TEST_ROOT/.test.log',
         LoggerLevel            => 'DEBUG',
         MailTransfer           => 'debug',
         MailTransferEncoding   => '8bit',

@@ -4555,7 +4555,7 @@ r, inténtelo más tarde.',
 ## tmpl/cms/edit_content_data.tmpl
 	'(Max length: [_1])' => '(Longitud max: [_1])',
 	'(Max select: [_1])' => '(Selección max: [_1])',
-	'(Max tags: [_2])' => '(Etiquetas max: [_2])',
+	'(Max tags: [_1])' => '(Etiquetas max: [_1])',
 	'(Max: [_1] / Number of decimal places: [_2])' => '(Max: [_1] / Número de decimales: [_2])',
 	'(Max: [_1])' => '(Max: [_1])',
 	'(Min length: [_1] / Max length: [_2])' => '(Longitud min: [_1] / Longitud max: [_2])',

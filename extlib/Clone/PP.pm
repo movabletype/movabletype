@@ -6,7 +6,7 @@ use warnings;
 use vars qw($VERSION @EXPORT_OK);
 use Exporter;
 
-$VERSION = 1.07;
+$VERSION = 1.08;
 
 @EXPORT_OK = qw( clone );
 sub import { goto &Exporter::import } # lazy Exporter
