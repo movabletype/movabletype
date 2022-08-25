@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::StatisticsDate;
+package MT::DataAPI::Resource::v1::StatisticsDate;
 
 use strict;
 use warnings;
@@ -40,7 +40,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::StatisticsDate - Resources definitions of the statistics API.
+MT::DataAPI::Resource::v1::StatisticsDate - Resources definitions of the statistics API.
 
 =head1 AUTHOR & COPYRIGHT
 

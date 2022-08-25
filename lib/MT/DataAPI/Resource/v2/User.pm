@@ -14,7 +14,7 @@ use boolean ();
 use MT::Author;
 use MT::Permission;
 use MT::DataAPI::Resource::Common;
-use MT::DataAPI::Resource::User;
+use MT::DataAPI::Resource::v1::User;
 
 sub updatable_fields {
     [   qw(
@@ -35,7 +35,7 @@ sub fields {
     [   status => {
             name => 'status',
             bulk_from_object =>
-                MT::DataAPI::Resource::User::_private_bulk_from_object(
+                MT::DataAPI::Resource::v1::User::_private_bulk_from_object(
                 'status', 'get_status_text'
                 ),
             to_object => sub {
@@ -72,14 +72,14 @@ sub fields {
         {   name  => 'dateFormat',
             alias => 'date_format',
             bulk_from_object =>
-                MT::DataAPI::Resource::User::_private_bulk_from_object(
+                MT::DataAPI::Resource::v1::User::_private_bulk_from_object(
                 'dateFormat', 'date_format'
                 ),
         },
         {   name  => 'textFormat',
             alias => 'text_format',
             bulk_from_object =>
-                MT::DataAPI::Resource::User::_private_bulk_from_object(
+                MT::DataAPI::Resource::v1::User::_private_bulk_from_object(
                 'textFormat', 'text_format'
                 ),
         },

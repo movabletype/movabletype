@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::User;
+package MT::DataAPI::Resource::v1::User;
 
 use strict;
 use warnings;
@@ -89,7 +89,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::User - Movable Type class for resources definitions of the MT::Authror.
+MT::DataAPI::Resource::v1::User - Movable Type class for resources definitions of the MT::Authror.
 
 =head1 AUTHOR & COPYRIGHT
 

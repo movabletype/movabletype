@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::StatisticsPath;
+package MT::DataAPI::Resource::v1::StatisticsPath;
 
 use strict;
 use warnings;
@@ -86,7 +86,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::StatisticsPath - Resources definitions of the statistics API.
+MT::DataAPI::Resource::v1::StatisticsPath - Resources definitions of the statistics API.
 
 =head1 AUTHOR & COPYRIGHT
 

@@ -4,19 +4,21 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Website;
+package MT::DataAPI::Resource::v1::Blog;
 
 use strict;
 use warnings;
 
-use base qw(MT::DataAPI::Resource::Blog);
-
-sub fields {
-    $_[0]->SUPER::fields();
+sub updatable_fields {
+    [];
 }
 
-sub updatable_fields {
-    $_[0]->SUPER::updatable_fields();
+sub fields {
+    [   qw(id class name description archiveUrl),
+        {   name  => 'url',
+            alias => 'site_url',
+        },
+    ];
 }
 
 1;
@@ -25,7 +27,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Website - Movable Type class for resources definitions of the MT::Website.
+MT::DataAPI::Resource::v1::Blog - Movable Type class for resources definitions of the MT::Blog.
 
 =head1 AUTHOR & COPYRIGHT
 

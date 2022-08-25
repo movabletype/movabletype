@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Permission;
+package MT::DataAPI::Resource::v1::Permission;
 
 use strict;
 use warnings;
@@ -49,7 +49,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Permission - Movable Type class for resources definitions of the MT::Permission.
+MT::DataAPI::Resource::v1::Permission - Movable Type class for resources definitions of the MT::Permission.
 
 =head1 AUTHOR & COPYRIGHT
 

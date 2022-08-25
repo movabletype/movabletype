@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Category;
+package MT::DataAPI::Resource::v1::Category;
 
 use strict;
 use warnings;
@@ -38,7 +38,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Category - Movable Type class for resources definitions of the MT::Category.
+MT::DataAPI::Resource::v1::Category - Movable Type class for resources definitions of the MT::Category.
 
 =head1 AUTHOR & COPYRIGHT
 

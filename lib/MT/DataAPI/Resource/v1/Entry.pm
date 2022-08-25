@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Entry;
+package MT::DataAPI::Resource::v1::Entry;
 
 use strict;
 use warnings;
@@ -173,7 +173,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Entry - Movable Type class for resources definitions of the MT::Entry.
+MT::DataAPI::Resource::v1::Entry - Movable Type class for resources definitions of the MT::Entry.
 
 =head1 AUTHOR & COPYRIGHT
 
