@@ -3,7 +3,7 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Publish;
+package MT::DataAPI::Endpoint::v1::Publish;
 
 use warnings;
 use strict;
@@ -194,7 +194,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Publish - Movable Type class for endpoint definitions about rebuilding static archive.
+MT::DataAPI::Endpoint::v1::Publish - Movable Type class for endpoint definitions about rebuilding static archive.
 
 =head1 AUTHOR & COPYRIGHT
 

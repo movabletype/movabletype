@@ -3,7 +3,7 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Asset;
+package MT::DataAPI::Endpoint::v1::Asset;
 
 use warnings;
 use strict;
@@ -196,7 +196,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Asset - Movable Type class for endpoint definitions about the MT::Asset.
+MT::DataAPI::Endpoint::v1::Asset - Movable Type class for endpoint definitions about the MT::Asset.
 
 =head1 AUTHOR & COPYRIGHT
 

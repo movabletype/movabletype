@@ -3,7 +3,7 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Entry;
+package MT::DataAPI::Endpoint::v1::Entry;
 
 use warnings;
 use strict;
@@ -640,7 +640,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Entry - Movable Type class for endpoint definitions about the MT::Entry.
+MT::DataAPI::Endpoint::v1::Entry - Movable Type class for endpoint definitions about the MT::Entry.
 
 =head1 AUTHOR & COPYRIGHT
 

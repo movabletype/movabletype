@@ -463,8 +463,8 @@ sub endpoints {
             route           => '/sites/:site_id/assets/upload',
             verb            => 'POST',
             version         => 2,
-            handler         => '$Core::MT::DataAPI::Endpoint::Asset::upload',
-            openapi_handler => '$Core::MT::DataAPI::Endpoint::Asset::upload_v2_openapi_spec',
+            handler         => '$Core::MT::DataAPI::Endpoint::v1::Asset::upload',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v1::Asset::upload_v2_openapi_spec',
             default_params  => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
@@ -902,8 +902,8 @@ sub endpoints {
             id              => 'get_blog',
             route           => '/sites/:site_id',
             version         => 2,
-            handler         => '$Core::MT::DataAPI::Endpoint::Blog::get',
-            openapi_handler => '$Core::MT::DataAPI::Endpoint::Blog::get_openapi_spec',
+            handler         => '$Core::MT::DataAPI::Endpoint::v1::Blog::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v1::Blog::get_openapi_spec',
             openapi_options => {
                 can_use_access_token => 1,
             },
@@ -916,8 +916,8 @@ sub endpoints {
             id              => 'list_blogs_for_user',
             route           => '/users/:user_id/sites',
             version         => 2,
-            handler         => '$Core::MT::DataAPI::Endpoint::Blog::list',
-            openapi_handler => '$Core::MT::DataAPI::Endpoint::Blog::list_openapi_spec',
+            handler         => '$Core::MT::DataAPI::Endpoint::v1::Blog::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v1::Blog::list_openapi_spec',
             openapi_options => {
                 can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'site,sites',

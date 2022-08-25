@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Endpoint::Auth;
+package MT::DataAPI::Endpoint::v1::Auth;
 
 use strict;
 use warnings;
@@ -558,7 +558,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Auth - Movable Type class for endpoint definitions about authentication.
+MT::DataAPI::Endpoint::v1::Auth - Movable Type class for endpoint definitions about authentication.
 
 =head1 AUTHOR & COPYRIGHT
 
