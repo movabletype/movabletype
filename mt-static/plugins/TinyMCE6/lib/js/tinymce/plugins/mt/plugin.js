@@ -34,7 +34,7 @@
                 }
                 ed.fire('onMTSourceButtonClick', e)
             }
-            for (k in funcs) {
+            for (var k in funcs) {
                 modes[k] = 1
             }
         } else {
@@ -91,7 +91,7 @@
                 buttonRows[k][index - 1] = 1
                 index++
 
-                var p = 'plugin_mt_' + k + '_selection_toolbar'
+                p = 'plugin_mt_' + k + '_selection_toolbar'
                 buttonSettings += (buttonSettings ? ',' : '') + config[p]
                 editor.options.set('quickbars_selection_toolbar', config[p])
                 buttonRows[k][index - 1] = 1
