@@ -288,8 +288,6 @@ sub max_group_by : Tests(7) {
 
 sub clean_db : Test(teardown) {
     reset_table_for(qw( Foo Bar ));
-    require MT::ObjectDriver::Driver::Cache::RAM;
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 }
 
 package Test::Joins;
@@ -407,8 +405,6 @@ sub make_pc_data {
 }
 
 sub joins : Tests(1) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -471,8 +467,6 @@ sub count_with_joins : Tests(2) {
 }
 
 sub count_group_by_with_joins : Tests(3) {
-    return 'skip oracle for now' if $ENV{MT_TEST_BACKEND} && $ENV{MT_TEST_BACKEND} =~ m/oracle/i;
-
     my $self = shift;
     make_objects(
         {   __class => 'Foo',
@@ -542,8 +536,6 @@ sub count_group_by_with_joins : Tests(3) {
 }
 
 sub joins_with_join : Tests(1) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -576,8 +568,6 @@ sub joins_with_join : Tests(1) {
 }
 
 sub only_join : Tests(1) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -610,8 +600,6 @@ sub only_join : Tests(1) {
 
 sub clean_db : Test(teardown) {
     reset_table_for(qw( Foo Bar Baz ));
-    require MT::ObjectDriver::Driver::Cache::RAM;
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 }
 
 package Test::Search;
@@ -694,8 +682,6 @@ sub make_pc_data {
 }
 
 sub basic : Tests(5) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_basic_data();
 
@@ -714,8 +700,6 @@ sub basic : Tests(5) {
 }
 
 sub sorting : Tests(6) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_basic_data();
 
@@ -789,8 +773,6 @@ sub sorting : Tests(6) {
 }
 
 sub ranges : Tests(9) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_basic_data();
 
@@ -874,8 +856,6 @@ sub ranges : Tests(9) {
 }
 
 sub alias : Tests(3) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -936,8 +916,6 @@ sub alias : Tests(3) {
 }
 
 sub conjunctions : Tests(5) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
     my @foos = map { Foo->load($_) } ( 1 .. 5 );    # not a search
@@ -989,8 +967,6 @@ sub conjunctions : Tests(5) {
 }
 
 sub early_ending_iterators : Tests(4) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -1128,8 +1104,6 @@ sub null_column_join : Tests(2) {
 
 sub clean_db : Test(teardown) {
     reset_table_for(qw( Foo Bar ));
-    require MT::ObjectDriver::Driver::Cache::RAM;
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 }
 
 package Test::Classy;
@@ -1469,8 +1443,6 @@ sub sock_array_class_terms : Tests(12) {
 
 sub clean_db : Test(teardown) {
     reset_table_for(qw( Sock ));
-    require MT::ObjectDriver::Driver::Cache::RAM;
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 }
 
 package Test::TypedJoin;
@@ -1559,8 +1531,6 @@ sub make_pc_data {
 }
 
 sub left_join : Tests(1) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -1582,8 +1552,6 @@ sub left_join : Tests(1) {
 }
 
 sub left_join_hashed_condition : Tests(1) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -1605,8 +1573,6 @@ sub left_join_hashed_condition : Tests(1) {
 }
 
 sub left_join_hashed_scalar_condition : Tests(1) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -1631,8 +1597,6 @@ sub left_join_hashed_scalar_condition : Tests(1) {
 }
 
 sub left_join_complex_condition : Tests(1) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -1661,8 +1625,6 @@ sub left_join_complex_condition : Tests(1) {
 }
 
 sub left_join_multi : Tests(1) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -1695,8 +1657,6 @@ sub left_join_multi : Tests(1) {
 }
 
 sub left_join_multi_joins : Tests(2) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -1748,8 +1708,6 @@ sub left_join_multi_joins : Tests(2) {
 }
 
 sub left_join_inner_join : Tests(1) {
-    local ($TODO, $MT::Test::DriverUtil::TODO) = ('oracle') x 2 if ($ENV{MT_TEST_BACKEND} || '') =~ m/oracle/i;
-
     my $self = shift;
     $self->make_pc_data();
 
@@ -1775,8 +1733,6 @@ sub left_join_inner_join : Tests(1) {
 
 sub clean_db : Test(teardown) {
     reset_table_for(qw( Foo Bar Baz ));
-    require MT::ObjectDriver::Driver::Cache::RAM;
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 }
 
 package Test::DriverBasic;
@@ -1791,8 +1747,6 @@ sub reset_db : Test(setup) {
 
 sub clean_db : Test(teardown) {
     reset_table_for(qw( Foo Bar Baz ));
-    require MT::ObjectDriver::Driver::Cache::RAM;
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 }
 
 sub basic : Test(137) {
