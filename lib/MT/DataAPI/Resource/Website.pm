@@ -4,21 +4,25 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Util;
+package MT::DataAPI::Resource::Website;
 
 use strict;
 use warnings;
 
-sub int_param {
-    my ( $app, $key ) = @_;
+use base qw(MT::DataAPI::Resource::Blog);
 
+sub fields {
     require MT::Util::Deprecated;
     MT::Util::Deprecated::warning(since => '7.9');
 
-    return undef unless $app->can('param');
+    $_[0]->SUPER::fields();
+}
 
-    my $value = $app->param($key);
-    ( defined($value) && $value =~ m/^\d+$/ ) ? int($value) : undef;
+sub updatable_fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
+    $_[0]->SUPER::updatable_fields();
 }
 
 1;
@@ -27,7 +31,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Util - Movable Type class for utility resource.
+MT::DataAPI::Resource::Website - Movable Type class for resources definitions of the MT::Website.
 
 =head1 AUTHOR & COPYRIGHT
 
