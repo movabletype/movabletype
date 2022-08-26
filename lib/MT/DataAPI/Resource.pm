@@ -16,8 +16,8 @@ sub core_resources {
     return {
         'entry' => [
             {   version          => 1,
-                fields           => "${pkg}Entry::fields",
-                updatable_fields => "${pkg}Entry::updatable_fields",
+                fields           => "${pkg}v1::Entry::fields",
+                updatable_fields => "${pkg}v1::Entry::updatable_fields",
             },
             {   version          => 2,
                 fields           => "${pkg}v2::Entry::fields",
@@ -32,8 +32,8 @@ sub core_resources {
         ],
         'category' => [
             {   version          => 1,
-                fields           => "${pkg}Category::fields",
-                updatable_fields => "${pkg}Category::updatable_fields",
+                fields           => "${pkg}v1::Category::fields",
+                updatable_fields => "${pkg}v1::Category::updatable_fields",
             },
             {   version          => 2,
                 fields           => "${pkg}v2::Category::fields",
@@ -48,8 +48,8 @@ sub core_resources {
         ],
         'user' => [
             {   version          => 1,
-                fields           => "${pkg}User::fields",
-                updatable_fields => "${pkg}User::updatable_fields",
+                fields           => "${pkg}v1::User::fields",
+                updatable_fields => "${pkg}v1::User::updatable_fields",
             },
             {   version          => 2,
                 fields           => "${pkg}v2::User::fields",
@@ -63,8 +63,8 @@ sub core_resources {
         'author' => 'user',
         'blog'   => [
             {   version          => 1,
-                fields           => "${pkg}Blog::fields",
-                updatable_fields => "${pkg}Blog::updatable_fields",
+                fields           => "${pkg}v1::Blog::fields",
+                updatable_fields => "${pkg}v1::Blog::updatable_fields",
             },
             {   version          => 2,
                 fields           => "${pkg}v2::Blog::fields",
@@ -81,8 +81,8 @@ sub core_resources {
         ],
         'website' => [
             {   version          => 1,
-                fields           => "${pkg}Website::fields",
-                updatable_fields => "${pkg}Website::updatable_fields",
+                fields           => "${pkg}v1::Website::fields",
+                updatable_fields => "${pkg}v1::Website::updatable_fields",
             },
             {   version          => 2,
                 fields           => "${pkg}v2::Website::fields",
@@ -99,8 +99,8 @@ sub core_resources {
         ],
         'asset' => [
             {   version          => 1,
-                fields           => "${pkg}Asset::fields",
-                updatable_fields => "${pkg}Asset::updatable_fields",
+                fields           => "${pkg}v1::Asset::fields",
+                updatable_fields => "${pkg}v1::Asset::updatable_fields",
             },
             {   version          => 2,
                 fields           => "${pkg}v2::Asset::fields",
@@ -109,8 +109,8 @@ sub core_resources {
         ],
         'permission' => [
             {   version          => 1,
-                fields           => "${pkg}Permission::fields",
-                updatable_fields => "${pkg}Permission::updatable_fields",
+                fields           => "${pkg}v1::Permission::fields",
+                updatable_fields => "${pkg}v1::Permission::updatable_fields",
             },
             {   version          => 2,
                 fields           => "${pkg}v2::Permission::fields",
@@ -200,13 +200,13 @@ sub core_resources {
         statisticsdate => [
             {
                 version => 1,
-                fields => "${pkg}StatisticsDate::fields",
+                fields => "${pkg}v1::StatisticsDate::fields",
             },
         ],
         statisticspath => [
             {
                 version => 1,
-                fields => "${pkg}StatisticsPath::fields",
+                fields => "${pkg}v1::StatisticsPath::fields",
             },
         ],
         theme => [
