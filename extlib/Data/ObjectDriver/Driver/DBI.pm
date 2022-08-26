@@ -179,7 +179,7 @@ sub fetch {
 
     for my $idx (0.. $sth->{NUM_OF_FIELDS} - 1) {
         my $col = $stmt->select->[$idx];
-        push @bind, $col ? \$rec->{ $map->{$col} } : undef;
+        push @bind, $col ? \$rec->{ $map->{$col} } : \my $var;
     }
     $sth->bind_columns(undef, @bind);
 
