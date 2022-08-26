@@ -13,211 +13,218 @@ our %resources = ();
 
 sub core_resources {
     return {
-        'entry' => [
-            {   version          => 1,
+        'entry' => [{
+                version          => 1,
                 fields           => '$Core::MT::DataAPI::Resource::v1::Entry::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v1::Entry::updatable_fields',
             },
-            {   version          => 2,
+            {
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Entry::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Entry::updatable_fields',
             },
         ],
-        'page' => [
-            {   version          => 2,
+        'page' => [{
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Page::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Page::updatable_fields',
             },
         ],
-        'category' => [
-            {   version          => 1,
+        'category' => [{
+                version          => 1,
                 fields           => '$Core::MT::DataAPI::Resource::v1::Category::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v1::Category::updatable_fields',
             },
-            {   version          => 2,
+            {
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Category::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Category::updatable_fields',
             },
         ],
-        'folder' => [
-            {   version          => 2,
+        'folder' => [{
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Folder::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Folder::updatable_fields',
             },
         ],
-        'user' => [
-            {   version          => 1,
+        'user' => [{
+                version          => 1,
                 fields           => '$Core::MT::DataAPI::Resource::v1::User::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v1::User::updatable_fields',
             },
-            {   version          => 2,
+            {
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::User::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::User::updatable_fields',
             },
-            {   version          => 3,
+            {
+                version          => 3,
                 fields           => '$Core::MT::DataAPI::Resource::v3::User::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v3::User::updatable_fields',
             }
         ],
         'author' => 'user',
-        'blog'   => [
-            {   version          => 1,
+        'blog'   => [{
+                version          => 1,
                 fields           => '$Core::MT::DataAPI::Resource::v1::Blog::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v1::Blog::updatable_fields',
             },
-            {   version          => 2,
+            {
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Blog::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Blog::updatable_fields',
             },
-            {   version          => 3,
+            {
+                version          => 3,
                 fields           => '$Core::MT::DataAPI::Resource::v3::Blog::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v3::Blog::updatable_fields',
             },
-            {   version          => 4,
+            {
+                version          => 4,
                 fields           => '$Core::MT::DataAPI::Resource::v4::Blog::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::Blog::updatable_fields',
             },
         ],
-        'website' => [
-            {   version          => 1,
+        'website' => [{
+                version          => 1,
                 fields           => '$Core::MT::DataAPI::Resource::v1::Website::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v1::Website::updatable_fields',
             },
-            {   version          => 2,
+            {
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Website::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Website::updatable_fields',
             },
-            {   version          => 3,
+            {
+                version          => 3,
                 fields           => '$Core::MT::DataAPI::Resource::v3::Website::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v3::Website::updatable_fields',
             },
-            {   version          => 4,
+            {
+                version          => 4,
                 fields           => '$Core::MT::DataAPI::Resource::v4::Website::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::Website::updatable_fields',
             },
         ],
-        'asset' => [
-            {   version          => 1,
+        'asset' => [{
+                version          => 1,
                 fields           => '$Core::MT::DataAPI::Resource::v1::Asset::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v1::Asset::updatable_fields',
             },
-            {   version          => 2,
+            {
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Asset::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Asset::updatable_fields',
             },
         ],
-        'permission' => [
-            {   version          => 1,
+        'permission' => [{
+                version          => 1,
                 fields           => '$Core::MT::DataAPI::Resource::v1::Permission::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v1::Permission::updatable_fields',
             },
-            {   version          => 2,
+            {
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Permission::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Permission::updatable_fields',
             },
         ],
-        'association' => [
-            {   version          => 2,
+        'association' => [{
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Association::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Association::updatable_fields',
             },
         ],
-        'role' => [
-            {   version          => 2,
+        'role' => [{
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Role::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Role::updatable_fields',
             },
         ],
-        'log' => [
-            {   version          => 2,
+        'log' => [{
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Log::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Log::updatable_fields',
             },
         ],
-        'tag' => [
-            {   version          => 2,
+        'tag' => [{
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Tag::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Tag::updatable_fields',
             },
         ],
-        'template' => [
-            {   version          => 2,
+        'template' => [{
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Template::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Template::updatable_fields',
             },
-            {   version          => 4,
+            {
+                version          => 4,
                 fields           => '$Core::MT::DataAPI::Resource::v4::Template::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::Template::updatable_fields',
             },
         ],
         'widget'      => 'template',
-        'templatemap' => [
-            {   version          => 2,
+        'templatemap' => [{
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::TemplateMap::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::TemplateMap::updatable_fields',
             },
         ],
-        'category_set' => [
-            {   version          => 4,
+        'category_set' => [{
+                version          => 4,
                 fields           => '$Core::MT::DataAPI::Resource::v4::CategorySet::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::CategorySet::updatable_fields',
             },
         ],
-        'content_type' => [
-            {   version          => 4,
+        'content_type' => [{
+                version          => 4,
                 fields           => '$Core::MT::DataAPI::Resource::v4::ContentType::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::ContentType::updatable_fields',
             },
         ],
-        'cf' => [
-            {   version => 4,
-                fields  => '$Core::MT::DataAPI::Resource::v4::ContentField::fields',
-                updatable_fields =>
-                    '$Core::MT::DataAPI::Resource::v4::ContentField::updatable_fields',
+        'cf' => [{
+                version          => 4,
+                fields           => '$Core::MT::DataAPI::Resource::v4::ContentField::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v4::ContentField::updatable_fields',
             },
         ],
         'content_field' => 'cf',
-        'cd'            => [
-            {   version          => 4,
+        'cd'            => [{
+                version          => 4,
                 fields           => '$Core::MT::DataAPI::Resource::v4::ContentData::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::ContentData::updatable_fields',
             },
         ],
         'content_data' => 'cd',
-        'group'        => [
-            {   version          => 2,
+        'group'        => [{
+                version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Group::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Group::updatable_fields',
             },
         ],
-        'endpoint' => [
-            {
+        'endpoint' => [{
                 version => 1,
-                fields => '$Core::MT::DataAPI::Resource::Endpoint::fields',
+                fields  => '$Core::MT::DataAPI::Resource::Endpoint::fields',
             },
         ],
-        statisticsdate => [
-            {
+        statisticsdate => [{
                 version => 1,
-                fields => '$Core::MT::DataAPI::Resource::v1::StatisticsDate::fields',
+                fields  => '$Core::MT::DataAPI::Resource::v1::StatisticsDate::fields',
             },
         ],
-        statisticspath => [
-            {
+        statisticspath => [{
                 version => 1,
-                fields => '$Core::MT::DataAPI::Resource::v1::StatisticsPath::fields',
+                fields  => '$Core::MT::DataAPI::Resource::v1::StatisticsPath::fields',
             },
         ],
-        theme => [
-            {
+        theme => [{
                 version => 2,
-                fields => '$Core::MT::DataAPI::Resource::v2::Theme::fields',
+                fields  => '$Core::MT::DataAPI::Resource::v2::Theme::fields',
             },
         ],
-        plugin => [
-            {
+        plugin => [{
                 version => 2,
-                fields => '$Core::MT::DataAPI::Resource::v2::Plugin::fields',
+                fields  => '$Core::MT::DataAPI::Resource::v2::Plugin::fields',
             },
         ],
     };
