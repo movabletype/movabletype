@@ -97,6 +97,7 @@
                 buttonRows[k][index - 1] = 1
                 index++
             })
+            editor.options.set('toolbar', '')
         } else {
             $.each(['common', 'source', 'wysiwyg'], function (i, k) {
                 var p = 'plugin_mt_' + k + '_buttons'
