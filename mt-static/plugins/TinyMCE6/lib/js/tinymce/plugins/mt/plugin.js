@@ -8,14 +8,6 @@
 ;(function ($) {
     'use strict'
 
-    var savedBookmark = null
-    var $container
-    var hiddenControls = []
-    var supportedButtonsCache = {}
-    var buttonRows = {}
-
-    var buttonSettings = ''
-
     tinymce.Editor.prototype.addMTButton = function (name, opts) {
         var ed = this
 
@@ -81,22 +73,22 @@
     var initButtonSettings = function (editor) {
         var index = 1
         var config = MT.Editor.TinyMCE.config
-        buttonRows = {
+        editor.buttonRows = {
             source: {},
             wysiwyg: {}
         }
         if (editor.inline) {
             $.each(['wysiwyg'], function (i, k) {
                 var p = 'plugin_mt_' + k + '_insert_toolbar'
-                buttonSettings += (buttonSettings ? ',' : '') + config[p]
+                editor.buttonSettings += (editor.buttonSettings ? ',' : '') + config[p]
                 editor.options.set('quickbars_insert_toolbar', config[p])
-                buttonRows[k][index - 1] = 1
+                editor.buttonRows[k][index - 1] = 1
                 index++
 
                 p = 'plugin_mt_' + k + '_selection_toolbar'
-                buttonSettings += (buttonSettings ? ',' : '') + config[p]
+                editor.buttonSettings += (editor.buttonSettings ? ',' : '') + config[p]
                 editor.options.set('quickbars_selection_toolbar', config[p])
-                buttonRows[k][index - 1] = 1
+                editor.buttonRows[k][index - 1] = 1
                 index++
             })
             editor.options.set('toolbar', '')
@@ -104,58 +96,57 @@
             $.each(['common', 'source', 'wysiwyg'], function (i, k) {
                 var p = 'plugin_mt_' + k + '_buttons'
                 for (var j = 1; config[p + j]; j++) {
-                    buttonSettings += (buttonSettings ? ',' : '') + config[p + j]
+                    editor.buttonSettings += (editor.buttonSettings ? ',' : '') + config[p + j]
                     editor.options.set('toolbar' + index, config[p + j])
 
                     if (k == 'common') {
-                        buttonRows['source'][index - 1] = buttonRows['wysiwyg'][index - 1] = 1
+                        editor.buttonRows['source'][index - 1] = editor.buttonRows['wysiwyg'][index - 1] = 1
                     } else {
-                        buttonRows[k][index - 1] = 1
+                        editor.buttonRows[k][index - 1] = 1
                     }
                     index++
                 }
             })
         }
-        return buttonRows
     }
     var supportedButtons = function (editor, mode, format) {
         var k = mode + '-' + format
-        if (!supportedButtonsCache[k]) {
-            supportedButtonsCache[k] = {}
+        if (!editor.supportedButtonsCache[k]) {
+            editor.supportedButtonsCache[k] = {}
             $.each(editor.mtButtons, function (name, button) {
                 if (button.isSupported(mode, format)) {
-                    supportedButtonsCache[k][name] = button
+                    editor.supportedButtonsCache[k][name] = button
                 }
             })
         }
-        return supportedButtonsCache[k]
+        return editor.supportedButtonsCache[k]
     }
 
     var updateButtonVisibility = function (editor) {
         var s = editor.mtEditorStatus
-        $.each(hiddenControls, function (i, k) {
+        $.each(editor.hiddenControls, function (i, k) {
             var label = tinymce.util.I18n.translate(editor.mtButtons[k].tooltip)
-            $container
+            $(editor.getContainer())
                 .find('button[title="' + label + '"]')
                 .css({
                     display: ''
                 })
                 .removeClass('mce_mt_button_hidden')
         })
-        hiddenControls = []
+        editor.hiddenControls = []
 
         var supporteds = supportedButtons(editor, s.mode, s.format)
 
         function update(key) {
             if (!supporteds[key]) {
                 var label = tinymce.util.I18n.translate(editor.mtButtons[key].tooltip)
-                $container
+                $(editor.getContainer())
                     .find('button[title="' + label + '"]')
                     .css({
                         display: 'none'
                     })
                     .addClass('mce_mt_button_hidden')
-                hiddenControls.push(key)
+                editor.hiddenControls.push(key)
             }
         }
 
@@ -168,7 +159,7 @@
         $(editor.editorContainer)
             .find('.tox-toolbar-overlord .tox-toolbar')
             .each(function (i) {
-                if (buttonRows[s.mode][i]) {
+                if (editor.buttonRows[s.mode][i]) {
                     $(this).show()
                 } else {
                     $(this).hide()
@@ -186,9 +177,9 @@
             format: 'richtext'
         }
         editor.mtProxies = {}
+        editor.supportedButtonsCache = {}
         initButtonSettings(editor)
         editor.on('init', function () {
-            $container = $(editor.getContainer())
             updateButtonVisibility(editor)
         })
 
@@ -209,22 +200,22 @@
     var register_commands = function (editor) {
         editor.addCommand('mtRestoreBookmark', function (bookmark) {
             if (!bookmark) {
-                bookmark = savedBookmark
+                bookmark = editor.savedBookmark
             }
             if (bookmark) {
-                editor.selection.moveToBookmark(savedBookmark)
+                editor.selection.moveToBookmark(editor.savedBookmark)
             }
         })
 
         editor.addQueryValueHandler('mtSaveBookmark', function () {
-            return (savedBookmark = editor.selection.getBookmark())
+            return (editor.savedBookmark = editor.selection.getBookmark())
         })
 
         $(window).on('dialogDisposed', function () {
-            if (savedBookmark) {
-                editor.selection.moveToBookmark(savedBookmark)
+            if (editor.savedBookmark) {
+                editor.selection.moveToBookmark(editor.savedBookmark)
             }
-            savedBookmark = null
+            editor.savedBookmark = null
         })
 
         editor.addQueryValueHandler('mtGetProxies', function () {
