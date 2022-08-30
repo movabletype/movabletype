@@ -12,10 +12,8 @@
     var $container
     var hiddenControls = []
     var supportedButtonsCache = {}
-    var buttonRows = {
-        source: {},
-        wysiwyg: {}
-    }
+    var buttonRows = {}
+
     var buttonSettings = ''
 
     tinymce.Editor.prototype.addMTButton = function (name, opts) {
@@ -83,6 +81,10 @@
     var initButtonSettings = function (editor) {
         var index = 1
         var config = MT.Editor.TinyMCE.config
+        buttonRows = {
+            source: {},
+            wysiwyg: {}
+        }
         if (editor.inline) {
             $.each(['wysiwyg'], function (i, k) {
                 var p = 'plugin_mt_' + k + '_insert_toolbar'
