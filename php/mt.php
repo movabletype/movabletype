@@ -475,6 +475,8 @@ class MT {
             $cfg['dbretryinterval'] = 1;
         isset($cfg['dataapiscript']) or
             $cfg['dataapiscript'] = 'mt-data-api.cgi';
+        isset($cfg['dynamictemplateallowphp']) or
+            $cfg['dynamictemplateallowphp'] = 1;
     }
 
     function configure_paths($blog_site_path) {
