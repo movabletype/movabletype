@@ -1641,11 +1641,6 @@ isstream@~0.1.2:
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
   integrity sha512-Yljz7ffyPbrLpLngrMtZ7NduUgVvi6wG9RJ9IUcyCd59YQ911PBJphODUcbOVbqYfxe1wuYf/LJ8PauMRwsM/g==
 
-jquery-json@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/jquery-json/-/jquery-json-2.6.0.tgz#14e60ba6586f9e59505a30b69399c20bd7d5d98c"
-  integrity sha512-6/Br2V9q8tD3+k973kiYLXL7tl/ilqJffWdebJ7snOo5k5h3vxh73QcUQ6ZH/44jWd8qdrWcsn4s3P7f/QThfg==
-
 jquery-migrate@^3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/jquery-migrate/-/jquery-migrate-3.4.0.tgz#915d6e914c76bd7410a58c86d20fec0052784af9"
@@ -1661,10 +1656,10 @@ jquery-validation@^1.19.5:
   resolved "https://registry.yarnpkg.com/jquery-validation/-/jquery-validation-1.19.5.tgz#557495b7cad79716897057c4447ad3cd76fda811"
   integrity sha512-X2SmnPq1mRiDecVYL8edWx+yTBZDyC8ohWXFhXdtqFHgU9Wd4KHkvcbCoIZ0JaSaumzS8s2gXSkP8F7ivg/8ZQ==
 
-jquery@^3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.0.tgz#c72a09f15c1bdce142f49dbf1170bdf8adac2470"
-  integrity sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==
+jquery@^3.6.1:
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.1.tgz#fab0408f8b45fc19f956205773b62b292c147a16"
+  integrity sha512-opJeO4nCucVnsjiXOE+/PcCgYw9Gwpvs/a6B1LL/lQhwWwpbVEVYDZ1FokFr8PRc7ghYlrFPuyHuiiDNTQxmcw==
 
 js-base64@^2.4.3:
   version "2.6.4"
