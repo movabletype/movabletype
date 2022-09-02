@@ -65,10 +65,6 @@ $MT::MT_DIR            = undef;
 %MT::Plugins           = @MT::Components = %MT::Components = ();
 MT->instance->init;
 
-require MT::DefaultTemplates;
-ok !grep( { $_->{identifier} eq 'test_email' } @{ MT::DefaultTemplates->templates } ),
-    "no test_email";
-
 my $res = $app->post_ok(
     {   __mode                 => 'itemset_action',
         _type                  => 'template',
@@ -80,9 +76,8 @@ my $res = $app->post_ok(
     }
 );
 
-$app->content_unlike("Skipping template 'Test email' since it has not been changed.");
 $app->content_unlike("Refreshing template <strong>Test email</strong>");
-$app->content_like("Skipping template 'Test email' since it appears to be a custom template.");
+$app->content_like(qr/Skipping template 'Test email' since it (?:appears to be a custom template|has not been changed)./);
 
 template_is_ok();
 
