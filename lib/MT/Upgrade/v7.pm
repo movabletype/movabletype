@@ -252,6 +252,11 @@ sub upgrade_functions {
             priority      => 3.2,
             code          => \&_v7_migrate_data_api_disable_site,
         },
+        'v7_fill_with_missing_system_templates' => {
+            version_limit => '7.0054',
+            priority      => 3.2,
+            code          => \&_v7_fill_with_missing_system_templates,
+        },
     };
 }
 
@@ -1615,6 +1620,39 @@ sub _v7_migrate_data_api_disable_site {
             }
         }
         MT->config->save_config;
+    }
+}
+
+sub _v7_fill_with_missing_system_templates {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Filling missing system templates...'));
+
+    my %tmpls;
+    require MT::DefaultTemplates;
+    MT::DefaultTemplates->fill_with_missing_system_templates(\%tmpls);
+
+    my @blog_ids = map { $_->id } MT->model('site')->load({ class => '*' }, { fetchonly => ['id'] });
+
+    my @templates = MT->model('template')->load({ type => [keys %tmpls] }, { fetchonly => ['blog_id', 'type'] });
+    my %map       = map { $_->blog_id . ':' . $_->type . ':' . $_->type => 1 } @templates;
+
+    require MT::Template;
+    for my $blog_id (@blog_ids) {
+        for my $key (keys %tmpls) {
+            next if $map{"$blog_id:$key:$key"};
+            my $tmpl = $tmpls{$key};
+            my $p    = $tmpl->{plugin} || 'MT';
+            $tmpl->{text} = $p->translate_templatized($tmpl->{text}) if defined $tmpl->{text};
+            my $obj = MT::Template->new(
+                blog_id       => $blog_id,
+                build_dynamic => 0,
+            );
+            for my $col (keys %$tmpl) {
+                $obj->column($col, $tmpl->{$col}) if $obj->has_column($col);
+            }
+            $obj->save;
+        }
     }
 }
 
