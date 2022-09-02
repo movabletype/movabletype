@@ -101,6 +101,10 @@ BEGIN {
                 label             => 'Search Results',
                 description_label => 'Displays results of a search.',
             },
+            'cd_search_results' => {
+                label             => 'Search Results for Content Data',
+                description_label => 'Displays results of a search for content data.',
+            },
         },
         'module' => {
             'banner_header' => { label => 'Banner Header', },
