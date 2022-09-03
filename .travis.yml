@@ -84,8 +84,6 @@ jobs:
       env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
-      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="phpunit php/tests/*Test.php && make test-php-lint"
 
     - # 5.10 / PHP 5.5 / MySQL 5.1
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
@@ -104,8 +102,6 @@ jobs:
       env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
-      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="phpunit php/tests/*Test.php && make test-php-lint"
 
     - # Perl 5.32 / PHP 7.4 / MariaDB 10.5
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
