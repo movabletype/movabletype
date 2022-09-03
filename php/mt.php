@@ -333,7 +333,7 @@ class MT {
         $driver = preg_replace('/^DB[ID]::/', '', $driver);
         $driver or $driver = 'mysql';
         $cfg['dbdriver'] = strtolower($driver);
-        if ((strlen($cfg['database'])<1 || strlen($cfg['dbuser'])<1)) {
+        if ((strlen($cfg['database'])<1 || !isset($cfg['dbuser']) || strlen($cfg['dbuser'])<1)) {
             if (($cfg['dbdriver'] != 'sqlite') && ($cfg['dbdriver'] != 'mssqlserver') && ($cfg['dbdriver'] != 'umssqlserver')) {
                 die("Unable to read database or username");
             }
@@ -686,13 +686,13 @@ class MT {
                 $ctx->stash('content_type', $ct);
                 $ctx->stash('current_timestamp', $cd->cd_authored_on);
             }
-            if (preg_match('/^ContentType/', $at) && !$ctx->stash('content_type') && $tmpl && $tmpl->content_type_id) {
+            if (isset($at) && preg_match('/^ContentType/', $at) && !$ctx->stash('content_type') && $tmpl && $tmpl->content_type_id) {
                 $ct = $mtdb->fetch_content_type($tmpl->content_type_id);
                 if ($ct) {
                     $ctx->stash('content_type', $ct);
                 }
             }
-            if(preg_match('/ContentType-Category/', $at)){
+            if(isset($at) && preg_match('/ContentType-Category/', $at)){
                 if($archive_category){
                     $category_set = $ctx->mt->db()->fetch_category_set($archive_category->category_category_set_id);
                     if($category_set)
