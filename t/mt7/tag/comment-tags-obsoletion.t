@@ -101,7 +101,7 @@ __DATA__
 
 
 === comment/trackback functions and blocks (no php implementation)
---- SKIP_PHP
+--- skip_php
 --- template
 <mt:AuthorCommentCount>
 <mt:CommentParent>1</mt:CommentParent>

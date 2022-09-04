@@ -318,11 +318,16 @@ sub _update_config {
 }
 
 sub _check_skip_php {
-    my $block = shift;
-    if (my $skip_php = $block->skip_php) {
-        return eval(_filter_vars( $skip_php ));
+    my $block    = shift;
+    my $skip_php = $block->skip_php // $block->SKIP_PHP;
+    if (defined($skip_php)) {
+        if (length($skip_php)) {
+            return eval(_filter_vars($skip_php));
+        } else {
+            return 1;
+        }
     }
-    return defined($block->SKIP_PHP);
+    return;
 }
 
 1;

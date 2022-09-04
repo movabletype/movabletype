@@ -451,7 +451,7 @@ No such user 'Nobody'
 Invalid scored by filter: Nobody
 
 === MTPageAssets[namespace][scored_by] for score=0
---- SKIP_PHP
+--- skip_php
 --- template
 <mt:Assets namespace="baz" scored_by="AUTHOR_NAME">a</mt:Assets>
 --- expected
