@@ -21,6 +21,7 @@ use MT::Test::Tag;
 use MT::Test::PHP;
 
 my $php_supports_gd = MT::Test::PHP->supports_gd;
+MT::Test::Tag->vars->{no_php_gd} = !$php_supports_gd;
 
 plan tests => (1 + 2) * blocks;
 
@@ -137,7 +138,6 @@ my $vars = {
     foobar_id   => $objs->{author}{foobar}->id,
     userpic_id  => $userpic->id,
     userpic2_id => $userpic2->id,
-    no_php_gd   => !$php_supports_gd,
 };
 
 sub var {

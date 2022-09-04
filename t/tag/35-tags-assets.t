@@ -148,6 +148,7 @@ my ($scaled_thumbnail) = $asset->thumbnail_file(Scale => 50);
 ok -f $scaled_thumbnail, "scaled thumbnail exists now";
 
 my $php_supports_gd = MT::Test::PHP->supports_gd;
+MT::Test::Tag->vars->{no_php_gd} = !$php_supports_gd;
 
 my %vars = (
     AUTHOR_NAME       => $author->name,
@@ -158,7 +159,6 @@ my %vars = (
     PAGE_ID           => $page->id,
     YEAR              => $year,
     MONTH             => $month,
-    no_php_gd         => !$php_supports_gd,
 );
 
 sub var {

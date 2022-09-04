@@ -35,25 +35,11 @@ delete $app->{__static_file_path};
 my $blog_id       = 1;                                        # First Website
 
 my $php_supports_gd = MT::Test::PHP->supports_gd;
-
-my $vars = {
-    no_php_gd => !$php_supports_gd,
-};
-
-sub var {
-    for my $line (@_) {
-        for my $key (keys %{$vars}) {
-            my $replace = quotemeta "[% ${key} %]";
-            my $value   = $vars->{$key};
-            $line =~ s/$replace/$value/g;
-        }
-    }
-    @_;
-}
+MT::Test::Tag->vars->{no_php_gd} = !$php_supports_gd;
 
 filters {
-    template => [qw( var chomp )],
-    expected => [qw( var chomp )],
+    template => [qw( chomp )],
+    expected => [qw( chomp )],
 };
 
 $test_env->prepare_fixture(sub {
