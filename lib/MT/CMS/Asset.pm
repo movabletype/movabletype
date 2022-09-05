@@ -1556,7 +1556,7 @@ sub _upload_file_compat {
                 return $eh->(
                     $app, %param,
                     error => $app->translate(
-                        "Invalid extra path '[_1]'",
+                        "Invalid upload path '[_1]'",
                         $relative_path
                     )
                 );
@@ -2130,7 +2130,7 @@ sub _upload_file {
                 return $eh->(
                     $app, %param,
                     error => $app->translate(
-                        "Invalid extra path '[_1]'", $extra_path
+                        "Invalid upload path '[_1]'", $extra_path
                     )
                 );
             }
