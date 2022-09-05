@@ -47,6 +47,7 @@ MT::Entry->driver->rw_handle->do('UPDATE mt_entry SET entry_modified_by = ?', un
 $test_env->clear_mt_cache;
 
 my $php_supports_gd = MT::Test::PHP->supports_gd;
+MT::Test::Tag->vars->{no_php_gd} = !$php_supports_gd;
 
 my %vars = (
     CFG_FILE => MT->instance->{cfg_file},
@@ -59,7 +60,6 @@ my %vars = (
     STATIC_FILE_PATH => MT->instance->static_file_path . '/',
     THREE_DAYS_AGO => epoch2ts($blog, time() - int(3.5 * 86400)),
     TEST_ROOT => $test_env->root,
-    no_php_gd => !$php_supports_gd,
 );
 
 sub var {

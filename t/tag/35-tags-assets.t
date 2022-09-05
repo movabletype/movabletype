@@ -148,6 +148,7 @@ my ($scaled_thumbnail) = $asset->thumbnail_file(Scale => 50);
 ok -f $scaled_thumbnail, "scaled thumbnail exists now";
 
 my $php_supports_gd = MT::Test::PHP->supports_gd;
+MT::Test::Tag->vars->{no_php_gd} = !$php_supports_gd;
 
 my %vars = (
     AUTHOR_NAME       => $author->name,
@@ -158,7 +159,6 @@ my %vars = (
     PAGE_ID           => $page->id,
     YEAR              => $year,
     MONTH             => $month,
-    no_php_gd         => !$php_supports_gd,
 );
 
 sub var {
@@ -451,7 +451,7 @@ No such user 'Nobody'
 Invalid scored by filter: Nobody
 
 === MTPageAssets[namespace][scored_by] for score=0
---- SKIP_PHP
+--- skip_php
 --- template
 <mt:Assets namespace="baz" scored_by="AUTHOR_NAME">a</mt:Assets>
 --- expected
