@@ -27,6 +27,10 @@ function smarty_function_mtauthorentriescount($args, &$ctx) {
 
     $row = $conn->getRow($handle, $bindVars);
 
-    return $ctx->count_format($row[0], $args);
+    // Where mysql driver would return ['count(*)' => 3, 0 => 3],
+    // mssqlserver driver returns ['' => 3]
+    $count = isset($row[0]) ? $row[0] : $row[''];
+
+    return $ctx->count_format($count, $args);
 }
 ?>
