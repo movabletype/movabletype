@@ -1639,8 +1639,8 @@ sub _v7_fill_with_missing_system_templates {
 
     require MT::Template;
     for my $blog_id (@blog_ids) {
-        for my $key (keys %tmpls) {
-            next if $map{"$blog_id:$key:$key"};
+        for my $key (keys %tmpls) {    # $key = $type:$type (= $tmpl_id:$tmpl_id)
+            next if $map{"$blog_id:$key"};
             my $tmpl = $tmpls{$key};
             my $p    = $tmpl->{plugin} || 'MT';
             $tmpl->{text} = $p->translate_templatized($tmpl->{text}) if defined $tmpl->{text};
