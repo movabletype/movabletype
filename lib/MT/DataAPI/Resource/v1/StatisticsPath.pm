@@ -4,15 +4,12 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::StatisticsPath;
+package MT::DataAPI::Resource::v1::StatisticsPath;
 
 use strict;
 use warnings;
 
 sub fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     return [{
             name   => 'path',
             schema => {
@@ -89,7 +86,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::StatisticsPath - Resources definitions of the statistics API.
+MT::DataAPI::Resource::v1::StatisticsPath - Resources definitions of the statistics API.
 
 =head1 AUTHOR & COPYRIGHT
 

@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Endpoint::Auth;
+package MT::DataAPI::Endpoint::v1::Auth;
 
 use strict;
 use warnings;
@@ -88,9 +88,6 @@ sub authorization_openapi_spec {
 
 sub authorization {
     my ($app) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
 
     my $token = $app->make_magic_token;
 
@@ -208,10 +205,6 @@ sub authentication_openapi_spec {
 
 sub authentication {
     my ($app) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     _authentication( $app, sub { $_[0]->login } );
 }
 
@@ -424,9 +417,6 @@ DESCRIPTION
 sub token {
     my ($app) = @_;
 
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     if ( my ($response) = _load_token_by_ott($app) ) {
         return $response || $app->error(401);
     }
@@ -495,9 +485,6 @@ DESCRIPTION
 sub revoke_authentication {
     my ($app) = @_;
 
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     my $session
         = $app->session || _current_session_from_authorization_data($app)
         or return $app->error(401);
@@ -557,9 +544,6 @@ DESCRIPTION
 sub revoke_token {
     my ($app) = @_;
 
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     if ( my $data = $app->mt_authorization_data ) {
         $app->model('accesstoken')
             ->remove( { id => $data->{MTAuth}{accessToken} } );
@@ -574,7 +558,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Auth - Movable Type class for endpoint definitions about authentication.
+MT::DataAPI::Endpoint::v1::Auth - Movable Type class for endpoint definitions about authentication.
 
 =head1 AUTHOR & COPYRIGHT
 

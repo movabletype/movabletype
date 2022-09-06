@@ -4,24 +4,18 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Website;
+package MT::DataAPI::Resource::v1::Website;
 
 use strict;
 use warnings;
 
-use base qw(MT::DataAPI::Resource::Blog);
+use base qw(MT::DataAPI::Resource::v1::Blog);
 
 sub fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     $_[0]->SUPER::fields();
 }
 
 sub updatable_fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     $_[0]->SUPER::updatable_fields();
 }
 
@@ -31,7 +25,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Website - Movable Type class for resources definitions of the MT::Website.
+MT::DataAPI::Resource::v1::Website - Movable Type class for resources definitions of the MT::Website.
 
 =head1 AUTHOR & COPYRIGHT
 

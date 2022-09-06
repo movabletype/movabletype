@@ -4,15 +4,12 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::User;
+package MT::DataAPI::Resource::v1::User;
 
 use strict;
 use warnings;
 
 sub updatable_fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [qw(displayName email url)];
 }
 
@@ -34,9 +31,6 @@ sub _private_bulk_from_object {
 }
 
 sub fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [   {   name             => 'id',
             bulk_from_object => _private_bulk_from_object( 'id', 'id' ),
         },
@@ -95,7 +89,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::User - Movable Type class for resources definitions of the MT::Authror.
+MT::DataAPI::Resource::v1::User - Movable Type class for resources definitions of the MT::Authror.
 
 =head1 AUTHOR & COPYRIGHT
 

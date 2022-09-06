@@ -11,7 +11,7 @@ use warnings;
 
 use MT::Entry;
 use MT::DataAPI::Endpoint::Common;
-use MT::DataAPI::Endpoint::Entry;
+use MT::DataAPI::Endpoint::v1::Entry;
 use MT::DataAPI::Endpoint::v2::Entry;
 use MT::DataAPI::Resource;
 
@@ -63,7 +63,7 @@ sub create {
     MT::Util::translate_naughty_words($new_entry);
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $blog,
+        = MT::DataAPI::Endpoint::v1::Entry::build_post_save_sub( $app, $blog,
         $new_entry, $orig_entry );
 
     # Check whether or not assets can attach.
@@ -163,7 +163,7 @@ sub update {
         or return;
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $blog,
+        = MT::DataAPI::Endpoint::v1::Entry::build_post_save_sub( $app, $blog,
         $new_entry, $orig_entry );
 
     # Check whether or not assets can attach/detach.

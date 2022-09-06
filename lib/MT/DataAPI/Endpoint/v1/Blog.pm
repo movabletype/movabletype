@@ -3,7 +3,7 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Blog;
+package MT::DataAPI::Endpoint::v1::Blog;
 
 use warnings;
 use strict;
@@ -131,9 +131,6 @@ DESCRIPTION
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     my $user = get_target_user(@_)
         or return;
 
@@ -187,9 +184,6 @@ sub get_openapi_spec {
 sub get {
     my ( $app, $endpoint ) = @_;
 
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     my ($blog) = context_objects(@_);
     return unless $blog && $blog->id;
 
@@ -206,7 +200,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Blog - Movable Type class for endpoint definitions about the MT::Blog.
+MT::DataAPI::Endpoint::v1::Blog - Movable Type class for endpoint definitions about the MT::Blog.
 
 =head1 AUTHOR & COPYRIGHT
 

@@ -3,7 +3,7 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::Entry;
+package MT::DataAPI::Endpoint::v1::Entry;
 
 use warnings;
 use strict;
@@ -303,9 +303,6 @@ DESCRIPTION
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     my $res = filtered_list( $app, $endpoint, 'entry' ) or return;
 
     +{  totalResults => $res->{count} + 0,
@@ -364,9 +361,6 @@ DESCRIPTION
 
 sub create {
     my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
 
     my ($blog) = context_objects(@_);
     return unless $blog && $blog->id;
@@ -469,9 +463,6 @@ DESCRIPTION
 sub get {
     my ( $app, $endpoint ) = @_;
 
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
@@ -533,9 +524,6 @@ DESCRIPTION
 
 sub update {
     my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
 
     my ( $blog, $orig_entry ) = context_objects(@_)
         or return;
@@ -600,10 +588,6 @@ DESCRIPTION
 
 sub delete {
     my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     my %recipe = ();
 
     my ( $blog, $entry ) = context_objects(@_)
@@ -656,7 +640,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Entry - Movable Type class for endpoint definitions about the MT::Entry.
+MT::DataAPI::Endpoint::v1::Entry - Movable Type class for endpoint definitions about the MT::Entry.
 
 =head1 AUTHOR & COPYRIGHT
 

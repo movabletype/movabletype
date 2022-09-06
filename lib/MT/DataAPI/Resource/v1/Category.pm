@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Category;
+package MT::DataAPI::Resource::v1::Category;
 
 use strict;
 use warnings;
@@ -12,9 +12,6 @@ use warnings;
 use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [   qw(
             label
             description
@@ -24,9 +21,6 @@ sub updatable_fields {
 }
 
 sub fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [   $MT::DataAPI::Resource::Common::fields{blog},
         {   name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',
@@ -44,7 +38,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Category - Movable Type class for resources definitions of the MT::Category.
+MT::DataAPI::Resource::v1::Category - Movable Type class for resources definitions of the MT::Category.
 
 =head1 AUTHOR & COPYRIGHT
 

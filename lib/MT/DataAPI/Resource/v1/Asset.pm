@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Asset;
+package MT::DataAPI::Resource::v1::Asset;
 
 use strict;
 use warnings;
@@ -12,9 +12,6 @@ use warnings;
 use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [   qw(
             label
             description
@@ -24,9 +21,6 @@ sub updatable_fields {
 }
 
 sub fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [   qw(
             id
             label
@@ -47,7 +41,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Asset - Movable Type class for resources definitions of the MT::Asset.
+MT::DataAPI::Resource::v1::Asset - Movable Type class for resources definitions of the MT::Asset.
 
 =head1 AUTHOR & COPYRIGHT
 

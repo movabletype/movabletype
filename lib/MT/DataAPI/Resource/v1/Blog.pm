@@ -4,22 +4,16 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Blog;
+package MT::DataAPI::Resource::v1::Blog;
 
 use strict;
 use warnings;
 
 sub updatable_fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [];
 }
 
 sub fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [   qw(id class name description archiveUrl),
         {   name  => 'url',
             alias => 'site_url',
@@ -33,7 +27,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Blog - Movable Type class for resources definitions of the MT::Blog.
+MT::DataAPI::Resource::v1::Blog - Movable Type class for resources definitions of the MT::Blog.
 
 =head1 AUTHOR & COPYRIGHT
 

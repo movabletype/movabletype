@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Endpoint::Stats;
+package MT::DataAPI::Endpoint::v1::Stats;
 
 use strict;
 use warnings;
@@ -52,9 +52,6 @@ DESCRIPTION
 
 sub provider {
     my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
 
     readied_provider( $app, $app->blog ) || { id => undef };
 }
@@ -190,10 +187,6 @@ DESCRIPTION
 
 sub pageviews_for_path {
     my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     _maybe_raw( fill_in_archive_info( _invoke(@_), $app->blog ) );
 }
 
@@ -288,10 +281,6 @@ DESCRIPTION
 
 sub visits_for_path {
     my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     _maybe_raw( fill_in_archive_info( _invoke(@_), $app->blog ) );
 }
 
@@ -394,9 +383,6 @@ DESCRIPTION
 }
 
 sub pageviews_for_date {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     _maybe_raw( _invoke(@_) );
 }
 
@@ -491,9 +477,6 @@ DESCRIPTION
 }
 
 sub visits_for_date {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     _maybe_raw( _invoke(@_) );
 }
 
@@ -584,7 +567,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::Stats - Movable Type class for endpoint definitions about access stats.
+MT::DataAPI::Endpoint::v1::Stats - Movable Type class for endpoint definitions about access stats.
 
 =head1 AUTHOR & COPYRIGHT
 

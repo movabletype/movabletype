@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Permission;
+package MT::DataAPI::Resource::v1::Permission;
 
 use strict;
 use warnings;
@@ -12,16 +12,10 @@ use warnings;
 use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [];
 }
 
 sub fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [   $MT::DataAPI::Resource::Common::fields{blog},
         {   name             => 'permissions',
             bulk_from_object => sub {
@@ -55,7 +49,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Permission - Movable Type class for resources definitions of the MT::Permission.
+MT::DataAPI::Resource::v1::Permission - Movable Type class for resources definitions of the MT::Permission.
 
 =head1 AUTHOR & COPYRIGHT
 

@@ -3,7 +3,7 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-package MT::DataAPI::Endpoint::User;
+package MT::DataAPI::Endpoint::v1::User;
 
 use warnings;
 use strict;
@@ -53,9 +53,6 @@ DESCRIPTION
 
 sub get {
     my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
 
     my $user = get_target_user(@_)
         or return;
@@ -118,9 +115,6 @@ DESCRIPTION
 sub update {
     my ( $app, $endpoint ) = @_;
 
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     my $user = get_target_user(@_)
         or return;
 
@@ -139,7 +133,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Endpoint::User - Movable Type class for endpoint definitions about the MT::Author.
+MT::DataAPI::Endpoint::v1::User - Movable Type class for endpoint definitions about the MT::Author.
 
 =head1 AUTHOR & COPYRIGHT
 

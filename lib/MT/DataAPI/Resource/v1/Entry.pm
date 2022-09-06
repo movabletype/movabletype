@@ -4,18 +4,14 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Entry;
+package MT::DataAPI::Resource::v1::Entry;
 
 use strict;
 use warnings;
 
 use MT::DataAPI::Resource::Common;
-use MT::DataAPI::Resource::Util;
 
 sub updatable_fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [   qw(
             status
             title
@@ -39,9 +35,6 @@ sub updatable_fields {
 }
 
 sub fields {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     [   {   name   => 'author',
             fields => [qw(id displayName userpicUrl)],
             type   => 'MT::DataAPI::Resource::DataType::Object',
@@ -179,7 +172,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Entry - Movable Type class for resources definitions of the MT::Entry.
+MT::DataAPI::Resource::v1::Entry - Movable Type class for resources definitions of the MT::Entry.
 
 =head1 AUTHOR & COPYRIGHT
 
