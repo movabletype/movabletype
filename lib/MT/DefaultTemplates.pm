@@ -374,8 +374,9 @@ sub fill_with_missing_system_templates {
 
     my $system_default_templates = MT->registry('default_templates')->{system};
 
+    require File::Basename;
     my $weblog_templates_path = MT->config('WeblogTemplatesPath');
-    my ($basename) = $weblog_templates_path =~ /(\w+)$/;
+    my $basename = File::Basename::basename($weblog_templates_path);  # "default_templates" by default
     my $plugins_with_default_templates;
     for my $tmpl_id (keys %$system_default_templates) {
         next if $tmpl_id eq 'plugin';
