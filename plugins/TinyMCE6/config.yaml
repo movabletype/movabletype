@@ -5,14 +5,19 @@ author_link: http://www.movabletype.org/
 author_name: Six Apart Ltd.
 description: <MT_TRANS phrase="Default WYSIWYG editor.">
 l10n_class: TinyMCE6::L10N
+system_config_template: 
+    code: $TinyMCE6::TinyMCE6::system_config_template
 schema_version: 1
 
 editors:
     tinymce:
         label: TinyMCE
         template: editor.tmpl
+        # extension: extension.tmpl
 
 callbacks:
+    MT::App::CMS::template_param.edit_entry: $TinyMCE6::TinyMCE6::App::param_edit_entry_cd
+    MT::App::CMS::template_param.edit_content_data: $TinyMCE6::TinyMCE6::App::param_edit_entry_cd
     MT::Upgrade::upgrade_end: |
         sub {
             my ( $cb, $self, %param ) = @_;
@@ -28,3 +33,7 @@ callbacks:
             $cfg->save_config;
 
         }
+
+settings:
+    tinymce6_config:
+        default: ''

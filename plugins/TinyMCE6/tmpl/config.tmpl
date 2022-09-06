@@ -1,0 +1,111 @@
+<mtapp:setting
+  id="tinymce6_config_toolbar_buttons"
+  label="<__trans phrase="TinyMCE6 toolbar_buttons config">">
+
+  <p class="mt-1 mb-0"><__trans phrase="First row toolbar"></p>
+  <div class="mt-draggable__area toolbar_buttons_1" style="min-height:60px;">
+  </div>
+  <p class="mt-1 mb-0"><__trans phrase="second row toolbar"></p>
+  <div class="mt-draggable__area toolbar_buttons_2" style="min-height:60px;">
+  </div>
+  <p class="mt-1 mb-0"><__trans phrase="third row toolbar"></p>
+  <div class="mt-draggable__area toolbar_buttons_3" style="min-height:60px;">
+  </div>
+
+  <p class="mt-5"><__trans phrase="Unused buttons"></p>
+  <div class="mt-draggable__area toolbar_buttons_nouse" style="min-height:60px;">
+    
+    <mt:setvar name="index" value="0">
+    <mt:Loop name="settings" key="toolbar_buttons">
+      <div class="mt-draggable toolbar-button" draggable="true" aria-grabbed="false" id="buttons-<mt:var name="__value__">">
+        <div class="col-auto"><svg role="img" class="mt-icon"><title>移動可能</title><use xlink:href="<$mt:var name="static_uri"$>/images/sprite.svg#ic_move" /></svg></div>
+        <div class="col">
+          <svg role="img" class="mt-icon--secondary"><title>移動可能</title><use xlink:href="<$mt:var name="static_uri"$>/images/sprite.svg#ic_<mt:var name="__value__">" /></svg>
+          <__trans phrase="<mt:var name="__value__" capitalize="1">">
+        </div>
+      </div>
+      <mt:setvar name="index" op="++">
+    </mt:Loop>
+  </div>
+  <input: type="hidden" name="toolbar1" value="">
+  <input: type="hidden" name="toolbar2" value="">
+  <input: type="hidden" name="toolbar3" value="">
+</mtapp:setting>
+
+<style>
+#tinymce6_config_toolbar_buttons-field .mt-draggable__area {
+  display: flex;
+  flex-wrap: wrap;
+}
+</style>
+<script>
+jQuery(function(){
+  jQuery('.mt-draggable').on('dragstart', function(event){
+    event.originalEvent.dataTransfer.setData('text/plain', event.target.id);
+  });
+  jQuery('.mt-draggable__area')
+    .on('dragover dragenter', false)
+    .on('drop', function(event){
+      const id = event.originalEvent.dataTransfer.getData('text/plain');
+      jQuery('#' + id).appendTo(event.currentTarget);
+
+      for (let i = 1; i < 4; i++) {
+        if(jQuery(event.currentTarget).hasClass('toolbar_buttons_' + i)){
+          let toolbar_buttons = '';
+          jQuery(event.currentTarget).children().map(function(index, elm){
+            if(toolbar_buttons) toolbar_buttons += ' ';
+            toolbar_buttons += elm.id.replace(/buttons-/, '');
+          });
+          jQuery('[name="toolbar' + i + '"]').value(toolbar_buttons);
+        }
+      }
+      return false;
+    })
+});
+</script>
+
+
+<mtapp:setting
+  id="tinymce6_config_newline_behavior"
+  label="<__trans phrase="TinyMCE6 newline_behavior config">">
+
+  <div class="custom-control custom-radio">
+    <input type="radio" name="newline_behavior" id="newline_behavior_default" class="custom-control-input" value="default"<mt:unless name="newline_behavior"> checked="checked"</mt:unless>>
+    <label class="custom-control-label" for="newline_behavior_default">
+      <__trans phrase="inserts a block (defined by forced_root_block) on Enter, and a br tag on Shift+Enter.">
+      <a href="https://www.tiny.cloud/docs/tinymce/6/content-behavior-options/#newline_behavior" target="_blank">
+      (document)
+      </a>
+    </label>
+  </div>
+
+  <div class="custom-control custom-radio">
+    <input type="radio" name="newline_behavior" id="newline_behavior_block" class="custom-control-input" value="block"<mt:if name="newline_behavior" eq="block"> checked="checked"</mt:if>>
+    <label class="custom-control-label" for="newline_behavior_block">
+      <__trans phrase="forces the above Enter behavior in all cases.">
+      <a href="https://www.tiny.cloud/docs/tinymce/6/content-behavior-options/#newline_behavior" target="_blank">
+      (document)
+      </a>
+    </label>
+  </div>
+  <div class="custom-control custom-radio">
+    <input type="radio" name="newline_behavior" id="newline_behavior_linebreak" class="custom-control-input" value="linebreak"<mt:if name="newline_behavior" eq="linebreak"> checked="checked"</mt:if>>
+    <label class="custom-control-label" for="newline_behavior_linebreak">
+      <__trans phrase="forces the above Shift+Enter behavior in all cases.">
+      <a href="https://www.tiny.cloud/docs/tinymce/6/content-behavior-options/#newline_behavior" target="_blank">
+      (document)
+      </a>
+    </label>
+  </div>
+  <div class="custom-control custom-radio">
+    <input type="radio" name="newline_behavior" id="newline_behavior_invert" class="custom-control-input" value="invert"<mt:if name="newline_behavior" eq="invert"> checked="checked"</mt:if>>
+    <label class="custom-control-label" for="newline_behavior_invert">
+      <__trans phrase="swaps Enter and Shift+Enter behaviors.">
+      <a href="https://www.tiny.cloud/docs/tinymce/6/content-behavior-options/#newline_behavior" target="_blank">
+      (document)
+      </a>
+    </label>
+  </div>
+
+
+</mtapp:setting>

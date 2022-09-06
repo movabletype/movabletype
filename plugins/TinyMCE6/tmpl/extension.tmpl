@@ -1,0 +1,29 @@
+<mt:setvarblock name="js_include" append="1">
+<script>
+(function($) {
+/*
+  $.extend(MT.Editor.TinyMCE.config, {
+      <mt:var name="tinymce6_config" encode_json="1">
+    }
+  );
+*/
+
+  MT.Editor.TinyMCE.config.setup = function(ed){
+    console.log(ed.id);
+    if(ed.id != 'editor-input-content-field-2') return;
+    let add_config = {<mt:var name="tinymce6_config" encode_json="1">};
+    for (let key in add_config) {
+      if(!MT.Editor.TinyMCE.config['add_config']){
+        MT.Editor.TinyMCE.config['add_config'] = {
+          [ed.id]: {}
+        };
+      }
+      MT.Editor.TinyMCE.config['add_config'][ed.id][key] = add_config[key];
+    }
+    console.log(MT.Editor.TinyMCE.config);
+  };
+
+})(jQuery);
+console.log({<mt:var name="tinymce6_config" encode_json="1">});
+</script>
+</mt:setvarblock>
