@@ -28,6 +28,18 @@ sub updatable_fields {
                 }
             },
         },
+        {
+            name   => 'assets',
+            schema => {
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        id => { type => 'integer' },
+                    },
+                }
+            },
+        },
         {   name      => 'unpublishedDate',
             condition => sub {
                 MT->instance->can_do('edit_entry_unpublished_on');
@@ -105,6 +117,22 @@ sub fields {
             from_object         => sub {
                 my ($obj) = @_;
                 return _from_object_text( $obj, 'text_more' );
+            },
+        },
+        {   name        => 'assets',
+            from_object => sub {
+                my ($obj) = @_;
+                MT::DataAPI::Resource->from_object( $obj->assets );
+            },
+            to_object => sub {
+                # See MT::DataAPI::Resource->to_object
+                my ($hash, $obj, $field, $stash) = @_;
+                return unless $obj->id;
+                return ($hash->{ $field->{name} });
+            },
+            schema => {
+                type  => 'array',
+                items => { '$ref' => '#/components/schemas/asset' },
             },
         },
     ];
