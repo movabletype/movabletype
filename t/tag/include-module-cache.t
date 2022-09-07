@@ -36,6 +36,8 @@ my $template = MT::Test::Permission->make_template(
     text    => 'MODULE-CONTENT'
 );
 
+MT::Test::Tag->vars->{no_php_memcached} = !MT::Test::PHP->supports_memcached;
+
 _teardown();
 MT::Test::Tag->run_perl_tests($blog->id, sub { setup(1) });
 _teardown();
@@ -103,6 +105,8 @@ MODULE-CONTENT2
 MODULE-CONTENT4
 
 === include module cache with memcached 2
+--- skip_php
+[% no_php_memcached %]
 --- mt_config memcached_filter
 {MemcachedServers => 'MEMCACHED_SERVER'}
 --- template
@@ -111,6 +115,8 @@ MODULE-CONTENT4
 MODULE-CONTENT5
 
 === include module cache with memcached 3
+--- skip_php
+[% no_php_memcached %]
 --- mt_config memcached_filter
 {MemcachedServers => 'MEMCACHED_SERVER'}
 --- template

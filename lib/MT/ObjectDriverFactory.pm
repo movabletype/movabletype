@@ -63,10 +63,10 @@ sub driver_for_class {
     return $driver_code;
 }
 
-our $dbd_class;
+our $DbdClass;
 
 sub dbd_class {
-    return $dbd_class if defined $dbd_class;
+    return $DbdClass if defined $DbdClass;
     my $pkg = shift;
 
     my ($type) = @_;
@@ -101,7 +101,7 @@ sub dbd_class {
     eval "use $dbd_class;";
     die "Unsupported driver $type: $@" if $@;
 
-    return $dbd_class;
+    return $DbdClass = $dbd_class;
 }
 
 sub configure {

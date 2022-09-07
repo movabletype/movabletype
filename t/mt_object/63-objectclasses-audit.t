@@ -74,19 +74,19 @@ mock_time sub {
                     $blog->save;
                     my ($e, $rev) = create_entry();
                     is(
-                        $e->created_on, $d->{timestamp},
+                        int($e->created_on), $d->{timestamp},
                         'An entry\'s created_on has been assigned correctly'
                     );
                     is(
-                        $e->modified_on, $d->{timestamp},
+                        int($e->modified_on), $d->{timestamp},
                         'An entry\'s modified_on has been assigned correctly'
                     );
                     is(
-                        $rev->created_on, $d->{timestamp},
+                        int($rev->created_on), $d->{timestamp},
                         'An revision object\'s created_on has been assigned correctly'
                     );
                     is(
-                        $rev->modified_on, $d->{timestamp},
+                        int($rev->modified_on), $d->{timestamp},
                         'An revision object\'s modified_on has been assigned correctly'
                     );
                 };
@@ -104,12 +104,12 @@ mock_time sub {
                 $w->save or die $w->errstr;
 
                 is(
-                    $w->created_on,
+                    int($w->created_on),
                     $suite[0]->{timestamp},
                     'A website\'s created_on has been assigned correctly'
                 );
                 is(
-                    $w->modified_on,
+                    int($w->modified_on),
                     $suite[0]->{timestamp},
                     'A website\'s modified_on has been assigned correctly'
                 );
@@ -121,12 +121,12 @@ mock_time sub {
                 $w->save or die $w->errstr;
 
                 is(
-                    $w->created_on,
+                    int($w->created_on),
                     $suite[0]->{timestamp},
                     'A website\'s created_on has been assigned correctly'
                 );
                 is(
-                    $w->modified_on,
+                    int($w->modified_on),
                     $suite[1]->{timestamp},
                     'A website\'s modified_on has been assigned correctly'
                 );
@@ -145,12 +145,12 @@ mock_time sub {
                 $b->save or die $b->errstr;
 
                 is(
-                    $b->created_on,
+                    int($b->created_on),
                     $suite[1]->{timestamp},
                     'A blog\'s created_on has been assigned correctly'
                 );
                 is(
-                    $b->modified_on,
+                    int($b->modified_on),
                     $suite[1]->{timestamp},
                     'A blog\'s modified_on has been assigned correctly'
                 );
@@ -162,12 +162,12 @@ mock_time sub {
                 $b->save or die $b->errstr;
 
                 is(
-                    $b->created_on,
+                    int($b->created_on),
                     $suite[1]->{timestamp},
                     'A blog\'s created_on has been assigned correctly'
                 );
                 is(
-                    $b->modified_on,
+                    int($b->modified_on),
                     $suite[2]->{timestamp},
                     'A blog\'s modified_on has been assigned correctly'
                 );
