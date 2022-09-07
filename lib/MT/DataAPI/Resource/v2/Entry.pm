@@ -16,6 +16,18 @@ sub updatable_fields {
     [   qw(
             format
             ),
+        {
+            name   => 'categories',
+            schema => {
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        id => { type => 'integer' },
+                    },
+                }
+            },
+        },
         {   name      => 'unpublishedDate',
             condition => sub {
                 MT->instance->can_do('edit_entry_unpublished_on');
