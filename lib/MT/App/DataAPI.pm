@@ -371,6 +371,11 @@ sub fields_to_schema {
             if (exists $schema->{properties}{$field_name}) {
                 $updatable_schema->{properties}{$field_name} = $schema->{properties}{$field_name};
             }
+            if ($f->{schema}) {
+                $updatable_schema->{properties}{ $field_name } = {
+                    %{ $f->{schema} },
+                };
+            }
         }
     }
     return ($schema, $updatable_schema);
