@@ -23,6 +23,11 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v2::Entry::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Entry::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Entry::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Entry::updatable_fields',
+            },
         ],
         'page' => [{
                 version          => 2,
