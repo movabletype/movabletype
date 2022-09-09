@@ -19,19 +19,19 @@ $test_env->prepare_fixture('db');
 
 my %json;
 test_data_api({
-        path     => "/v2/",
+        path     => "/v5/",
         method   => 'GET',
         code     => 200,
         complete => sub {
             my ($data, $body, $headers) = @_;
-            $json{v2} = MT::Util::from_json($body);
+            $json{v5} = MT::Util::from_json($body);
         },
     },
 );
 
 for my $prop (qw/assets categories/) {
     is_deeply(
-        $json{v2}{components}{schemas}{entry_updatable}{properties}{$prop},
+        $json{v5}{components}{schemas}{entry_updatable}{properties}{$prop},
         {
             type  => 'array',
             items => {
@@ -43,7 +43,7 @@ for my $prop (qw/assets categories/) {
         },
         "entry_updatable has $prop property"
     );
-    ok(!exists $json{v2}{components}{schemas}{page_updatable}{properties}{$prop}, "page_updatable does not have $prop property");
+    ok(!exists $json{v5}{components}{schemas}{page_updatable}{properties}{$prop}, "page_updatable does not have $prop property");
 }
 
 done_testing;
