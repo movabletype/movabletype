@@ -12,20 +12,9 @@ use MT::DataAPI::Resource;
 use MT::DataAPI::Resource::v1::Entry;
 use MT::DataAPI::Resource::v2::Entry;
 
-sub _filter_fields {
-    my ($field) = @_;
-    if (!ref($field)) {
-        $field = { name => $field };
-    }
-    if ($field->{name} eq 'categories' || $field->{name} eq 'assets') {
-        return;
-    }
-    return 1;
-}
-
 sub updatable_fields {
     [   @{ MT::DataAPI::Resource::v1::Entry::updatable_fields() },
-        grep { $_ if _filter_fields($_) } @{ MT::DataAPI::Resource::v2::Entry::updatable_fields() },
+        @{ MT::DataAPI::Resource::v2::Entry::updatable_fields() },
     ];
 }
 
