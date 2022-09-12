@@ -15,6 +15,7 @@ sub fields {
     [
         {
             name      => 'contentTypeCount',
+            alias     => 'content_type_count',
             bulk_from_object => sub {
                 my ($objs, $hashes, $field) = @_;
                 my $app      = MT->instance;
