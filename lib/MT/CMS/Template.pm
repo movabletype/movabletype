@@ -1141,6 +1141,8 @@ sub list {
         $scope = 'global:system';
     }
 
+    my @system_default_templates = grep !/plugin/, keys %{ MT->registry('default_templates')->{system} || {} };
+
     my $sys_tmpl = $set->{$scope};
     my @tmpl_loop;
     my %types;
@@ -1171,7 +1173,7 @@ sub list {
                 },
                 'system' => {
                     label => $app->translate("System Templates"),
-                    type  => [ keys %$sys_tmpl ],
+                    type  => [ (keys %$sys_tmpl), @system_default_templates ],
                     order => 500,
                 },
             );
