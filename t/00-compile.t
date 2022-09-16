@@ -618,6 +618,8 @@ use_ok('MT::DataAPI::Endpoint::v5');
 use_ok('MT::DataAPI::Endpoint::v5::TextFilter');
 use_ok('MT::DataAPI::Resource::v5::Entry');
 
+use_ok('MT::DataAPI::Resource::v5::CategorySet');
+
 use_ok('MT::App::Search::Common');
 
 SKIP: {

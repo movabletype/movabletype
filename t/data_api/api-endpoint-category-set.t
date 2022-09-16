@@ -243,6 +243,58 @@ sub normal_tests_for_get_category_set {
         }
     );
     test_data_api(
+        {   note => 'contentTypeCount by superuser',
+            path => "/v4/sites/$site_id/categorySets/" . $category_set->id,
+            params       => { fields => 'content_type_count' },
+            is_superuser => 1,
+            method       => 'GET',
+            complete     => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is($got->{content_type_count}, 0, 'content_type_count');
+            },
+        }
+    );
+    test_data_api(
+        {   note => 'contentTypeCount by superuser',
+            path => "/v5/sites/$site_id/categorySets/" . $category_set->id,
+            params       => { fields => 'contentTypeCount' },
+            is_superuser => 1,
+            method       => 'GET',
+            complete     => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is($got->{contentTypeCount}, 0, 'contentTypeCount');
+            },
+        }
+    );
+    test_data_api(
+        {   note => 'contentTypeCount by superuser',
+            path => "/v5/sites/$site_id/categorySets/" . $category_set->id,
+            params       => { fields => 'content_type_count' },
+            is_superuser => 1,
+            method       => 'GET',
+            complete     => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is($got->{contentTypeCount}, 0, 'contentTypeCount');
+            },
+        }
+    );
+    test_data_api(
+        {   note => 'contentTypeCount only',
+            path => "/v5/sites/$site_id/categorySets/" . $category_set->id,
+            is_superuser => 1,
+            method       => 'GET',
+            complete     => sub {
+                my ($data, $body) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                ok(exists $got->{contentTypeCount}, 'exists contentTypeCount');
+                ok(!exists $got->{content_type_count}, 'not exists content_type_count');
+            },
+        }
+    );
+    test_data_api(
         {   note         => 'search',
             path         => "/v4/sites/$site_id/categorySets",
             method       => 'GET',

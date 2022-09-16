@@ -180,6 +180,10 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v4::CategorySet::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::CategorySet::updatable_fields',
             },
+            {   version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::CategorySet::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::CategorySet::updatable_fields',
+            },
         ],
         'content_type' => [{
                 version          => 4,
@@ -354,6 +358,7 @@ sub resource {
         $res->{fields} = [];
         {
             my %fields = ();
+            my %alias;
 
             for my $f ( @{ $tmp_res{fields} } ) {
                 my $ref = ref $f;
@@ -399,6 +404,9 @@ sub resource {
                     }
                 }
 
+                if ($f->{alias} && $f->{alias} ne $f->{name}) {
+                    $alias{$f->{alias}} = $f->{name};
+                }
                 if ( my $hash = $fields{ $f->{name} } ) {
                     for my $k ( keys %$f ) {
                         $hash->{$k} = $f->{$k};
@@ -409,6 +417,7 @@ sub resource {
                     push @{ $res->{fields} }, $f;
                 }
             }
+            @{$res->{fields}} = grep {!$alias{$_->{name}}} @{$res->{fields}};
         }
         $res->{field_name_map}
             = +{ map { $_->{name} => $_->{alias} || $_->{name} }
@@ -477,7 +486,7 @@ sub from_object {
     my @fields = grep { _is_condition_ok($_) } do {
         if ($fields_specified) {
             my %keys = map { $_ => 1 } @$fields_specified;
-            grep { $keys{ $_->{name} } } @{ $resource_data->{fields} };
+            grep { $keys{ $_->{name} } or $keys{ $_->{alias} || '' } } @{ $resource_data->{fields} };
         }
         else {
             @{ $resource_data->{fields} };
