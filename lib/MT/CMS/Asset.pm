@@ -1556,7 +1556,7 @@ sub _upload_file_compat {
                 return $eh->(
                     $app, %param,
                     error => $app->translate(
-                        "Invalid extra path '[_1]'",
+                        "Invalid upload path '[_1]'",
                         $relative_path
                     )
                 );
@@ -2122,18 +2122,18 @@ sub _upload_file {
 
         # Make directory if not exists
         $extra_path = $app->param('extra_path') || '';
+        if ( $dest ne '' ) {
+            $extra_path = File::Spec->catdir( $dest, $extra_path );
+        }
         if ($extra_path) {
             if ( $extra_path =~ m!\.\.|\0|\|! ) {
                 return $eh->(
                     $app, %param,
                     error => $app->translate(
-                        "Invalid extra path '[_1]'", $extra_path
+                        "Invalid upload path '[_1]'", $extra_path
                     )
                 );
             }
-        }
-        if ( $dest ne '' ) {
-            $extra_path = File::Spec->catdir( $dest, $extra_path );
         }
 
         my $path = File::Spec->catdir( $root_path, $extra_path );

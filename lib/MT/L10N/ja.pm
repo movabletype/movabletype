@@ -1187,7 +1187,7 @@ use vars qw( @ISA %Lexicon );
 	q{File with name '[_1]' already exists. Upload has been cancelled.} => q{'[_1]'という名前のファイルが既に存在します。アップロードはキャンセルされました。},
 	q{File with name '[_1]' already exists.} => q{'[_1]'という名前のファイルが既に存在します。},
 	q{File with name '[_1]' already exists; Tried to write to a tempfile, but the webserver could not open it: [_2]} => q{'[_1]'という名前のファイルが既に存在します。テンポラリファイルに書き込むこともできませんでした: [_2]},
-	q{Invalid extra path '[_1]'} => q{追加パス'[_1]'が不正です。},
+	q{Invalid upload path '[_1]'} => q{アップロード先'[_1]'が不正です。},
 	q{Invalid filename '[_1]'} => q{ファイル名'[_1]'が不正です。},
 	q{Invalid temp file name '[_1]'} => q{テンポラリファイルの名前'[_1]'が不正です。},
 
