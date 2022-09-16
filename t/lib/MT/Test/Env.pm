@@ -18,6 +18,7 @@ use Digest::SHA;
 use String::CamelCase qw/decamelize camelize/;
 use Mock::MonkeyPatch;
 use Sub::Name;
+use Time::HiRes qw/time/;
 
 our $MT_HOME;
 
@@ -35,9 +36,11 @@ use Term::Encoding qw(term_encoding);
 my $enc = term_encoding() || 'utf8';
 
 my $builder = Test::More->builder;
-binmode $builder->output,         ":encoding($enc)";
-binmode $builder->failure_output, ":encoding($enc)";
-binmode $builder->todo_output,    ":encoding($enc)";
+unless ($^O eq 'MSWin32') {
+    binmode $builder->output,         ":encoding($enc)";
+    binmode $builder->failure_output, ":encoding($enc)";
+    binmode $builder->todo_output,    ":encoding($enc)";
+}
 
 sub new {
     my ($class, %extra_config) = @_;
@@ -54,6 +57,7 @@ sub new {
         root   => $root,
         driver => _driver(),
         config => \%extra_config,
+        start  => [Time::HiRes::gettimeofday],
     }, $class;
 
     $self->write_config(\%extra_config);
@@ -1406,6 +1410,11 @@ sub DESTROY {
         for my $name (@disabled) {
             $self->enable_plugin($name);
         }
+    }
+    if ($ENV{MT_TEST_PERFORMANCE}) {
+        undef $Test::MockTime::fixed;
+        open my $fh, '>>', 'mt_test_performance.log';
+        printf $fh "%f\t%s\n", Time::HiRes::tv_interval($self->{start}), $0;
     }
 }
 

@@ -18,6 +18,10 @@ BEGIN {
 use utf8;
 
 use MT::Test::Tag;
+use MT::Test::PHP;
+
+my $php_supports_gd = MT::Test::PHP->supports_gd;
+MT::Test::Tag->vars->{no_php_gd} = !$php_supports_gd;
 
 plan tests => (1 + 2) * blocks;
 
@@ -257,12 +261,16 @@ Abby
 [% userpic_id %]
 
 === MT::ContentAuthorUserpicURL
+--- skip_php
+[% no_php_gd %]
 --- template
 <mt:Contents content_type="ct"><mt:ContentAuthorUserpicURL></mt:Contents>
 --- expected
 /cgi-bin/mt-static/support/assets_c/userpics/userpic-1-100x100.png
 
 === MT::ContentAuthorUserpicURL
+--- skip_php
+[% no_php_gd %]
 --- template
 <mt:Contents content_type="ct"><mt:ContentAuthorUserpicURL></mt:Contents>
 --- expected
@@ -367,12 +375,16 @@ foobar
 [% userpic2_id %]
 
 === MT::ContentModifiedAuthorUserpic
+--- skip_php
+[% no_php_gd %]
 --- template
 <mt:Contents content_type="ct"><mt:ContentModifiedAuthorUserpic></mt:Contents>
 --- expected
 <img src="/cgi-bin/mt-static/support/assets_c/userpics/userpic-[% foobar_id %]-100x100.png?2" width="100" height="100" alt="Userpic" />
 
 === MT::ContentModifiedAuthorUserpicURL
+--- skip_php
+[% no_php_gd %]
 --- template
 <mt:Contents content_type="ct"><mt:ContentModifiedAuthorUserpicURL></mt:Contents>
 --- expected
