@@ -17,6 +17,7 @@ use MT::Test;
 use MT::Test::Fixture;
 use MT::Test::App qw(MT::Test::Role::CMS::Search);
 use Test::Deep 'cmp_bag';
+use MT::Test::Fixture::SearchReplace;
 
 $test_env->prepare_fixture('search_replace');
 
