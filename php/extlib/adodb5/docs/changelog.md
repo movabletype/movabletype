@@ -14,6 +14,39 @@ Older changelogs:
 
 --------------------------------------------------------------------------------
 
+## [5.22.3] - 2022-09-06
+
+### Fixed
+
+- alterColumnSql() and changeTableSQL() produce different SQL
+  [#383](https://github.com/ADOdb/ADOdb/issues/383)
+  [#865](https://github.com/ADOdb/ADOdb/issues/865)
+- Fix PHP 8.1 deprecated warning in GetUpdateSQL()
+  [#844](https://github.com/ADOdb/ADOdb/issues/844)
+- Fix PHP 8.1 deprecated warning in tohtml.inc.php
+  [#850](https://github.com/ADOdb/ADOdb/issues/850)
+- Fix str_repeat() error in _adodb_backtrace()
+  [#852](https://github.com/ADOdb/ADOdb/issues/852)
+- firebird/ibase: Fix uncaught TypeError
+  [#858](https://github.com/ADOdb/ADOdb/issues/858)
+- mssql: Fix undefined variable when closing connection
+  [#835](https://github.com/ADOdb/ADOdb/issues/835)
+- mssql: insert_id returns false if value is out of range
+  [#853](https://github.com/ADOdb/ADOdb/issues/853)
+- mysql: Fix regression with portable bind arrays
+  [#838](https://github.com/ADOdb/ADOdb/issues/838)
+- mysql: Fix errorMsg() / errorNo() on MySQL 8
+  [#842](https://github.com/ADOdb/ADOdb/issues/842)
+- oci8po: Replace deprecated functions aliases
+  [#862](https://github.com/ADOdb/ADOdb/issues/862)
+- pdo: Fix uncaught TypeError on PHP 8 
+  [#840](https://github.com/ADOdb/ADOdb/issues/840)
+- pgsql: check for dummy query Id before closing recordset
+  [#848](https://github.com/ADOdb/ADOdb/issues/848)
+- active record: fix changing case of class properties in Native mode
+  [#837](https://github.com/ADOdb/ADOdb/issues/837)
+
+
 ## [5.22.2] - 2022-05-08
 
 ### Fixed
@@ -1279,6 +1312,7 @@ Released together with [v4.95](changelog_v4.x.md#495---17-may-2007)
 - Adodb5 version,more error checking code now will use exceptions if available.
 
 
+[5.22.3]: https://github.com/adodb/adodb/compare/v5.22.2...v5.22.3
 [5.22.2]: https://github.com/adodb/adodb/compare/v5.22.1...v5.22.2
 [5.22.1]: https://github.com/adodb/adodb/compare/v5.22.0...v5.22.1
 [5.22.0]: https://github.com/adodb/adodb/compare/v5.21.4...v5.22.0

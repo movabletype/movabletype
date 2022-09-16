@@ -102,7 +102,6 @@ class ADODB_mssqlnative extends ADOConnection {
 
 	var $sequences = false;
 	var $mssql_version = '';
-	var $is_utf = false;
 
 	function __construct()
 	{
@@ -152,7 +151,7 @@ class ADODB_mssqlnative extends ADOConnection {
 
 		$arrServerInfo = sqlsrv_server_info($this->_connectionID);
 		$ADODB_FETCH_MODE = $savem;
-
+		
 		$arr = array();
 		$arr['description'] = $arrServerInfo['SQLServerName'].' connected to '.$arrServerInfo['CurrentDatabase'];
 		$arr['version'] = $arrServerInfo['SQLServerVersion'];//ADOConnection::_findvers($arr['description']);
@@ -514,8 +513,6 @@ class ADODB_mssqlnative extends ADOConnection {
 				ADOConnection::outp('No userid or password supplied, attempting connection with Windows Authentication');
 		}
 
-		if ( $this->is_utf )
-			$connectionInfo['CharacterSet'] = 'UTF-8';
 
 		/*
 		* Now merge in the passed connection parameters setting
@@ -648,13 +645,6 @@ class ADODB_mssqlnative extends ADOConnection {
 			$rez = sqlsrv_query($this->_connectionID, $sql);
 		}
 
-		if ($this->debug) {
-			ADOConnection::outp("<hr>running query: " . var_export($sql, true)
-				. "<hr>input array: " . var_export($inputarr, true)
-				. "<hr>result: " . var_export($rez, true)
-			);
-		}
-
 		$this->lastInsID = false;
 		if (!$rez) {
 			$rez = false;
@@ -664,23 +654,27 @@ class ADODB_mssqlnative extends ADOConnection {
 			// e.g. if triggers are involved (see #41)
 			while (sqlsrv_next_result($rez)) {
 				sqlsrv_fetch($rez);
-				$this->lastInsID = sqlsrv_get_field($rez, 0, SQLSRV_PHPTYPE_INT);
+				$this->lastInsID = sqlsrv_get_field($rez, 0);
 			}
 		}
 		return $rez;
 	}
 
-	// returns true or false
+	/**
+	 * Rolls back pending transactions and closes the connection.
+	 *
+	 * @return bool True, unless the connection id is invalid
+	 */
 	function _close()
 	{
 		if ($this->transCnt) {
 			$this->RollbackTrans();
 		}
-		if($this->_connectionID) {
-			$rez = sqlsrv_close($this->_connectionID);
+		if ($this->_connectionID) {
+			return sqlsrv_close($this->_connectionID);
 		}
 		$this->_connectionID = false;
-		return $rez;
+		return true;
 	}
 
 
@@ -1045,11 +1039,6 @@ class ADODB_mssqlnative extends ADOConnection {
 
 	}
 
-	function Execute($sql,$inputarr=false) {
-		if ( $this->is_utf )
-			$sql = preg_replace( '/(\'.*\')/', 'N$1', $sql);
-		return parent::Execute( $sql, $inputarr );
-	}
 }
 
 /*--------------------------------------------------------------------------------------
