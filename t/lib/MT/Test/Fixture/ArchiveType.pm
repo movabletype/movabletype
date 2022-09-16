@@ -476,12 +476,25 @@ sub load_objs {
 
     my @content_type_labels = keys %{ $spec->{content_type} };
     my %content_type_name_mapping;
+    my %content_field_name_mapping;
     for my $label (@content_type_labels) {
+        my @fields;
+        my $ct_name = $label;
         if (ref $spec->{content_type}{$label} eq 'HASH') {
-            my $key = $spec->{content_type}{$label}{name} // $label;
-            $content_type_name_mapping{$key} = $label;
+            $ct_name = $spec->{content_type}{$label}{name} // $label;
+            $content_type_name_mapping{$ct_name} = $label;
+            @fields = @{$spec->{content_type}{$label}{fields}};
         } else {
-            $content_type_name_mapping{$label} = $label;
+            $content_type_name_mapping{$ct_name} = $label;
+            @fields = @{$spec->{content_type}{$label}};
+        }
+        while(my ($cf_name, $cf_spec) = splice @fields, 0, 2) {
+            if (ref $cf_spec eq 'HASH') {
+                my $key = $cf_spec->{name} // $cf_name;
+                $content_field_name_mapping{$ct_name}{$key} = $cf_name;
+            } else {
+                $content_field_name_mapping{$ct_name}{$cf_name} = $cf_name;
+            }
         }
     }
     my @content_type_names = keys %content_type_name_mapping;
@@ -490,7 +503,8 @@ sub load_objs {
             name    => \@content_type_names,
         }
     );
-    my @content_type_ids = map { $_->id => $_ } @content_types;
+    my %content_type_names = map { $_->id => $_->name } @content_types;
+    my @content_type_ids = keys %content_type_names;
 
     my @content_fields = MT::ContentField->load(
         {   blog_id         => $blog_id,
@@ -500,7 +514,9 @@ sub load_objs {
 
     my %content_field_map;
     for my $cf (@content_fields) {
-        $content_field_map{ $cf->content_type_id }{ $cf->name } = $cf;
+        my $ct_name = $content_type_names{$cf->content_type_id};
+        my $cf_name = $content_field_name_mapping{$ct_name}{$cf->name};
+        $content_field_map{ $cf->content_type_id }{ $cf_name } = $cf;
     }
 
     for my $ct (@content_types) {
