@@ -1297,8 +1297,7 @@ sub clone_all {
     my ($param) = @_;
     my $clone   = $obj->SUPER::clone_all();
     if ( $clone->properties->{meta_installed} ) {
-        $clone->init_meta();
-        $clone->meta( $obj->meta );
+        $clone->deep_copy_meta($obj);
         if (   !$param
             || !ref($param)
             || ( ref($param) ne 'HASH' )
@@ -1312,6 +1311,16 @@ sub clone_all {
         }
     }
     return $clone;
+}
+
+sub deep_copy_meta {
+    my ($obj, $org) = @_;
+    require MT::Util;
+    my %meta_org = %{$org->{__meta}};
+    my $meta = MT::Util::deep_copy(\%meta_org);
+    my $objs = $meta->{__objects};
+    $objs->{$_} = $objs->{$_}->clone_all for keys %$objs;
+    $obj->{__meta} = bless $meta, ref($org->{__meta});
 }
 
 sub clone {
