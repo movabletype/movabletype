@@ -3909,7 +3909,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             if ($cd = $this->get_categorized_content($ts, $blog_id, $cat_field, $category->category_id, $at, $order)) {
                 $helper = $this->get_helper($at);
                 $ctx->stash('contents', array($cd));
-                if (preg_match('/^[0-9]+$/', $dt_field_id) && $dt_field_id) {
+                if (preg_match('/^[0-9]+$/', $dt_field_id ?? '') && $dt_field_id) {
                     $data = $cd->data();
                     $ts = $data[$dt_field_id];
                 }

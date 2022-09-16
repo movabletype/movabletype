@@ -441,6 +441,11 @@ sub _connect_info_oracle {
     $ENV{NLS_COMP}  = $ENV{MT_TEST_NLS_COMP}  || 'LINGUISTIC';
     $ENV{NLS_SORT}  = $ENV{MT_TEST_NLS_SORT}  || 'AMERICAN_AMERICA';
 
+    my $dsn = sprintf('dbi:Oracle:host=%s;sid=%s;port=%s',
+        $connect_info{DBHost}, $connect_info{Database}, $connect_info{DBPort});
+    my $dbh = DBI->connect($dsn, $connect_info{DBUser}, $connect_info{DBPassword});
+    $self->_oracle_increase_open_cursors($dbh);
+
     %connect_info;
 }
 
@@ -465,6 +470,12 @@ sub show_mysql_db_variables {
         my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
         Test::More::note join ': ', @$_ for @$rows;
     }
+}
+
+sub _oracle_increase_open_cursors {
+    my ($self, $dbh) = @_;
+    return unless $self->driver eq 'oracle';
+    $dbh->do('ALTER SYSTEM SET OPEN_CURSORS = 1000 SCOPE=BOTH') or die $dbh->errstr;
 }
 
 sub mysql_session_variable {
