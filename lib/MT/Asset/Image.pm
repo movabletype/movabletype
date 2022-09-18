@@ -1131,6 +1131,17 @@ sub _set_mandatory_exif_tags {
     @MandatoryExifTags;
 }
 
+sub remove {
+    my $asset = shift;
+
+    # Since MT::Asset::Image image_(width|height) accessors autosave the meta fields on calculation, it could happen
+    # that meta access on post trigger unexpectedly re-insert the record again. DataAPI delete endpoint is one of
+    # the cases. Loading meta before removal prevents this.
+    $asset->meta if ref($asset);
+
+    return $asset->SUPER::remove(@_);
+}
+
 sub remove_gps_metadata {
     my ($asset) = @_;
 
