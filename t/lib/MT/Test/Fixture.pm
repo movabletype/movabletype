@@ -983,14 +983,34 @@ sub load_objs {
     }
 
     if ($spec->{entry}) {
-        my @entry_names = map { $_->{basename} } @{ $spec->{entry} };
-        my @entries     = MT->model('entry')->load({ basename => \@entry_names });
+        my (@entry_titles, @entry_basenames);
+        for my $item (@{ $spec->{entry} }) {
+            if (ref $item) {
+                push @entry_titles,    $item->{title} // '(no title)';
+                push @entry_basenames, $item->{basename} if $item->{basename};
+            } else {
+                push @entry_titles, $item;
+            }
+        }
+        my @terms = [{ title => \@entry_titles }];
+        push @terms, '-or', { basename => \@entry_basenames } if @entry_basenames;
+        my @entries = MT->model('entry')->load(\@terms);
         $objs{entry} = { map { $_->basename => $_ } @entries };
     }
 
     if ($spec->{page}) {
-        my @page_names = map { $_->{basename} } @{ $spec->{page} };
-        my @pages      = MT->model('page')->load({ basename => \@page_names });
+        my (@page_titles, @page_basenames);
+        for my $item (@{ $spec->{page} }) {
+            if (ref $item) {
+                push @page_titles,    $item->{title} // '(no title)';
+                push @page_basenames, $item->{basename} if $item->{basename};
+            } else {
+                push @page_titles, $item;
+            }
+        }
+        my @terms = [{ title => \@page_titles }];
+        push @terms, '-or', { basename => \@page_basenames } if @page_basenames;
+        my @pages = MT->model('page')->load(\@terms);
         $objs{page} = { map { $_->basename => $_ } @pages };
     }
 
