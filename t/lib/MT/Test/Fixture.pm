@@ -163,8 +163,8 @@ sub prepare_image {
             my $item = $spec->{image}{$name};
             if (ref $item eq 'HASH') {
                 my $blog_id = _find_blog_id($objs, $item);
-                my $file = "$image_dir/$name";
-                my $dir  = File::Basename::dirname($file);
+                my $file    = "$image_dir/$name";
+                my $dir     = File::Basename::dirname($file);
                 File::Path::mkpath($dir) unless -d $dir;
                 MT::Test::Image->write(file => $file);
                 my $info = Image::ExifTool::ImageInfo($file);
@@ -690,8 +690,7 @@ sub prepare_content_data {
                             }
                         }
                         $data{ $cf->id } = \@asset_ids;
-                    }
-                    elsif ( $cf_type eq 'multi_line_text' ) {
+                    } elsif ($cf_type eq 'multi_line_text') {
                         $arg{convert_breaks}{$cf_name} ||= '__default__';
                         $data{ $cf->id } = $cf_arg;
                     } else {
@@ -942,164 +941,153 @@ sub load_objs {
 
     my %objs;
     if ($spec->{author}) {
-    my @author_names = @{ $spec->{author} };
-    my @authors = MT::Author->load( { name => \@author_names } );
-    $objs{author} = { map { $_->name => $_ } @authors };
-    $objs{author_id} = $authors[0]->id if @authors == 1;
+        my @author_names = @{ $spec->{author} };
+        my @authors      = MT::Author->load({ name => \@author_names });
+        $objs{author}    = { map { $_->name => $_ } @authors };
+        $objs{author_id} = $authors[0]->id if @authors == 1;
     }
 
     if ($spec->{website}) {
-    my @site_names = map { $_->{name} } @{ $spec->{website} };
-    my @sites = MT::Website->load( { name => \@site_names } );
-    $objs{website} = { map { $_->name => $_ } @sites };
+        my @site_names = map { $_->{name} } @{ $spec->{website} };
+        my @sites      = MT::Website->load({ name => \@site_names });
+        $objs{website} = { map { $_->name => $_ } @sites };
     }
 
     if ($spec->{blog}) {
-    my @blog_names = map { $_->{name} } @{ $spec->{blog} };
-    my @blogs = MT::Blog->load( { name => \@blog_names } );
-    $objs{blog} = { map { $_->name => $_ } @blogs };
+        my @blog_names = map { $_->{name} } @{ $spec->{blog} };
+        my @blogs      = MT::Blog->load({ name => \@blog_names });
+        $objs{blog} = { map { $_->name => $_ } @blogs };
     }
 
-    my @all_sites = ( @sites, @blogs );
+    my @all_sites = (@sites, @blogs);
     $objs{blog_id} = $all_sites[0]->id if @all_sites == 1;
 
     my $blog_id = $objs{blog_id};
 
     if ($spec->{category}) {
-    my @category_labels
-        = map { ref $_ ? $_->{label} : $_ } @{ $spec->{category} };
-    my @entry_categories = MT::Category->load(
-        {   blog_id => $blog_id,
+        my @category_labels  = map { ref $_ ? $_->{label} : $_ } @{ $spec->{category} };
+        my @entry_categories = MT::Category->load({
+            blog_id => $blog_id,
             label   => \@category_labels,
+        });
+        for my $category (@entry_categories) {
+            $objs{category}{ $category->label }{ $category->blog_id } = $category;
         }
-    );
-    for my $category (@entry_categories) {
-        $objs{category}{$category->label}{$category->blog_id} = $category;
-    }
     }
 
     if ($spec->{folder}) {
-    my @folder_labels
-        = map { ref $_ ? $_->{label} : $_ } @{ $spec->{folder} };
-    my @folders = MT::Folder->load(
-        {   blog_id => $blog_id,
+        my @folder_labels = map { ref $_ ? $_->{label} : $_ } @{ $spec->{folder} };
+        my @folders       = MT::Folder->load({
+            blog_id => $blog_id,
             label   => \@folder_labels,
+        });
+        for my $folder (@folders) {
+            $objs{folder}{ $folder->label }{ $folder->blog_id } = $folder;
         }
-    );
-    for my $folder (@folders) {
-        $objs{folder}{$folder->label}{$folder->blog_id} = $folder;
-    }
     }
 
     if ($spec->{entry}) {
-    my @entry_names = map { $_->{basename} } @{ $spec->{entry} };
-    my @entries = MT::Entry->load(
-        {   blog_id  => $blog_id,
+        my @entry_names = map { $_->{basename} } @{ $spec->{entry} };
+        my @entries     = MT::Entry->load({
+            blog_id  => $blog_id,
             basename => \@entry_names,
-        }
-    );
-    $objs{entry} = { map { $_->basename => $_ } @entries };
+        });
+        $objs{entry} = { map { $_->basename => $_ } @entries };
     }
 
     if ($spec->{page}) {
-    my @page_names = map { $_->{basename} } @{ $spec->{page} };
-    my @pages = MT::Page->load(
-        {   blog_id  => $blog_id,
+        my @page_names = map { $_->{basename} } @{ $spec->{page} };
+        my @pages      = MT::Page->load({
+            blog_id  => $blog_id,
             basename => \@page_names,
-        }
-    );
-    $objs{page} = { map { $_->basename => $_ } @pages };
+        });
+        $objs{page} = { map { $_->basename => $_ } @pages };
     }
 
     if ($spec->{category_set}) {
-    my @category_set_names = keys %{ $spec->{category_set} };
-    my @category_sets      = MT::CategorySet->load(
-        {   blog_id => $blog_id,
+        my @category_set_names = keys %{ $spec->{category_set} };
+        my @category_sets      = MT::CategorySet->load({
+            blog_id => $blog_id,
             name    => \@category_set_names,
+        });
+
+        my %category_set_map = map { $_->id => $_->name } @category_sets;
+        my @categories       = MT::Category->load({
+            blog_id         => $blog_id,
+            category_set_id => [keys %category_set_map],
+        });
+
+        my %category_map;
+        for my $cat (@categories) {
+            $category_map{ $cat->category_set_id }{ $cat->label } = $cat;
         }
-    );
 
-    my %category_set_map = map { $_->id => $_->name } @category_sets;
-    my @categories = MT::Category->load(
-        {   blog_id         => $blog_id,
-            category_set_id => [ keys %category_set_map ],
+        for my $set (@category_sets) {
+            $objs{category_set}{ $set->name } = {
+                category_set => $set,
+                category     => $category_map{ $set->id },
+            };
         }
-    );
-
-    my %category_map;
-    for my $cat (@categories) {
-        $category_map{ $cat->category_set_id }{ $cat->label } = $cat;
-    }
-
-    for my $set (@category_sets) {
-        $objs{category_set}{ $set->name } = {
-            category_set => $set,
-            category     => $category_map{ $set->id },
-        };
-    }
     }
 
     if ($spec->{content_type}) {
-    my @content_type_labels = keys %{ $spec->{content_type} };
-    my %content_type_name_mapping;
-    my %content_field_name_mapping;
-    for my $label (@content_type_labels) {
-        my @fields;
-        my $ct_name = $label;
-        if (ref $spec->{content_type}{$label} eq 'HASH') {
-            $ct_name = $spec->{content_type}{$label}{name} // $label;
-            $content_type_name_mapping{$ct_name} = $label;
-            @fields = @{$spec->{content_type}{$label}{fields}};
-        } else {
-            $content_type_name_mapping{$ct_name} = $label;
-            @fields = @{$spec->{content_type}{$label}};
-        }
-        while(my ($cf_name, $cf_spec) = splice @fields, 0, 2) {
-            if (ref $cf_spec eq 'HASH') {
-                my $key = $cf_spec->{name} // $cf_name;
-                $content_field_name_mapping{$ct_name}{$key} = $cf_name;
+        my @content_type_labels = keys %{ $spec->{content_type} };
+        my %content_type_name_mapping;
+        my %content_field_name_mapping;
+        for my $label (@content_type_labels) {
+            my @fields;
+            my $ct_name = $label;
+            if (ref $spec->{content_type}{$label} eq 'HASH') {
+                $ct_name                             = $spec->{content_type}{$label}{name} // $label;
+                $content_type_name_mapping{$ct_name} = $label;
+                @fields                              = @{ $spec->{content_type}{$label}{fields} };
             } else {
-                $content_field_name_mapping{$ct_name}{$cf_name} = $cf_name;
+                $content_type_name_mapping{$ct_name} = $label;
+                @fields = @{ $spec->{content_type}{$label} };
+            }
+            while (my ($cf_name, $cf_spec) = splice @fields, 0, 2) {
+                if (ref $cf_spec eq 'HASH') {
+                    my $key = $cf_spec->{name} // $cf_name;
+                    $content_field_name_mapping{$ct_name}{$key} = $cf_name;
+                } else {
+                    $content_field_name_mapping{$ct_name}{$cf_name} = $cf_name;
+                }
             }
         }
-    }
-    my @content_type_names = keys %content_type_name_mapping;
-    my @content_types      = MT::ContentType->load(
-        {   blog_id => $blog_id,
+        my @content_type_names = keys %content_type_name_mapping;
+        my @content_types      = MT::ContentType->load({
+            blog_id => $blog_id,
             name    => \@content_type_names,
-        }
-    );
-    my %content_type_names = map { $_->id => $_->name } @content_types;
-    my @content_type_ids = keys %content_type_names;
+        });
+        my %content_type_names = map { $_->id => $_->name } @content_types;
+        my @content_type_ids   = keys %content_type_names;
 
-    my @content_fields = MT::ContentField->load(
-        {   blog_id         => $blog_id,
+        my @content_fields = MT::ContentField->load({
+            blog_id         => $blog_id,
             content_type_id => \@content_type_ids,
+        });
+
+        my %content_field_map;
+        for my $cf (@content_fields) {
+            my $ct_name = $content_type_names{ $cf->content_type_id };
+            my $cf_name = $content_field_name_mapping{$ct_name}{ $cf->name };
+            $content_field_map{ $cf->content_type_id }{$cf_name} = $cf;
         }
-    );
 
-    my %content_field_map;
-    for my $cf (@content_fields) {
-        my $ct_name = $content_type_names{$cf->content_type_id};
-        my $cf_name = $content_field_name_mapping{$ct_name}{$cf->name};
-        $content_field_map{ $cf->content_type_id }{ $cf_name } = $cf;
-    }
-
-    for my $ct (@content_types) {
-        $objs{content_type}{ $content_type_name_mapping{$ct->name} } = {
-            content_type  => $ct,
-            content_field => $content_field_map{ $ct->id },
-        };
-    }
+        for my $ct (@content_types) {
+            $objs{content_type}{ $content_type_name_mapping{ $ct->name } } = {
+                content_type  => $ct,
+                content_field => $content_field_map{ $ct->id },
+            };
+        }
     }
 
     if ($spec->{content_data}) {
-    my @content_data = MT::ContentData->load(
-        {   blog_id         => $blog_id,
+        my @content_data = MT::ContentData->load({
+            blog_id         => $blog_id,
             content_type_id => \@content_type_ids,
-        }
-    );
-    $objs{content_data} = { map { $_->label => $_ } @content_data };
+        });
+        $objs{content_data} = { map { $_->label => $_ } @content_data };
     }
 
     \%objs;
