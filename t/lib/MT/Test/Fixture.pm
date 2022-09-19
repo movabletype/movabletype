@@ -1222,7 +1222,6 @@ sub load_objs {
             push @{ $objs{templatemap}{ $tmpl->name } ||= [] }, $map;
         }
     }
-+
     \%objs;
 }
 
