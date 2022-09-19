@@ -26,7 +26,7 @@ sub prepare {
         },
     );
 
-    my %objs ||= { __first_time => 1 };
+    $objs ||= { __first_time => 1 };
     $class->prepare_author($spec, $objs);
     $class->prepare_website($spec, $objs);
     $class->prepare_blog($spec, $objs);
