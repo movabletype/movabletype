@@ -888,7 +888,7 @@ sub prepare_template {
 
                 my $tmpl_map = MT::Test::Permission->make_templatemap(%$map);
 
-                $objs->{templatemap}{ $tmpl_map->file_template } = $tmpl_map;
+                push @{ $objs->{templatemap}{ $tmpl->name } ||= [] }, $tmpl_map;
 
                 $preferred = 0;
             }
