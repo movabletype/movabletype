@@ -949,19 +949,21 @@ sub load_objs {
         $objs{author_id} = 1;
     }
 
+    my @all_sites;
     if ($spec->{website}) {
         my @site_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{website} };
         my @sites      = MT->model('website')->load({ name => \@site_names });
         $objs{website} = { map { $_->name => $_ } @sites };
+        push @all_sites, @sites;
     }
 
     if ($spec->{blog}) {
         my @blog_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{blog} };
         my @blogs      = MT->model('blog')->load({ name => \@blog_names });
         $objs{blog} = { map { $_->name => $_ } @blogs };
+        push @all_sites, @blogs;
     }
 
-    my @all_sites = (@sites, @blogs);
     $objs{blog_id} = $all_sites[0]->id if @all_sites == 1;
 
     if ($spec->{category}) {
