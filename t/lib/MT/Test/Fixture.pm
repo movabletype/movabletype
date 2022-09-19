@@ -562,11 +562,12 @@ sub prepare_content_type {
     my ($class, $spec, $objs) = @_;
     return unless $spec->{content_type};
 
+    my %retry;
     if (ref $spec->{content_type} eq 'HASH') {
         my @names = sort keys %{ $spec->{content_type} };
     CT:
         while (my $ct_name = shift @names) {
-            if ($objs->{content_type}{$ct_name}{content_type}) {
+            if (!$retry{$ct_name} and $objs->{content_type}{$ct_name}{content_type}) {
                 _note_or_croak("content_type: $ct_name already exists");
                 next;
             }
@@ -624,6 +625,7 @@ sub prepare_content_type {
                     if (!$source) {
                         if (@names) {
                             push @names, $ct_name;
+                            $retry{$ct_name} = 1;
                             next CT;
                         }
                         croak "unknown content_type: $source_name";
