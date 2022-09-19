@@ -10,6 +10,8 @@ use Data::Visitor::Tiny;
 use List::Util qw(uniq);
 use File::Basename;
 
+our @CARP_NOT;
+
 sub prepare {
     my ($class, $spec, $objs) = @_;
 
