@@ -945,6 +945,8 @@ sub load_objs {
         my @authors      = MT->model('author')->load({ name => \@author_names });
         $objs{author}    = { map { $_->name => $_ } @authors };
         $objs{author_id} = $authors[0]->id if @authors == 1;
+    } else {
+        $objs{author_id} = 1;
     }
 
     if ($spec->{website}) {
