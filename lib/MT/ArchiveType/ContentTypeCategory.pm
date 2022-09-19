@@ -254,14 +254,18 @@ sub does_publish_file {
     }
     return 0 unless $params{Category};
 
-    if ($params{Blog}->publish_empty_archive and $params{ContentData}) {
-        my $cat_id = $params{Category}->id;
-        my $target_category_ids = $obj->target_category_ids($params{ContentData}, $params{TemplateMap});
-        for my $id (@$target_category_ids) {
-            return 1 if $id == $cat_id;
-        }
-        return 0;
+    if ($params{Blog}->publish_empty_archive and $params{TemplateMap}) {
+        my $cat_id       = $params{Category}->id                   or return;
+        my $cat_field_id = $params{TemplateMap}->cat_field_id      or return;
+        my $tmpl_id      = $params{TemplateMap}->template_id       or return;
+        my $tmpl         = MT->model('template')->load($tmpl_id)   or return;
+        my $ct_id        = $tmpl->content_type_id                  or return;
+        my $ct           = MT->model('content_type')->load($ct_id) or return;
+        my $field        = $ct->get_field($cat_field_id)           or return;
+        my $catset_id    = $field->{options}{category_set}         or return;
+        return MT->model('category')->exist({ id => $cat_id, category_set_id => $catset_id }) ? 1 : 0;
     }
+
 
     MT::ArchiveType::archive_contents_count( $obj, \%params );
 }
