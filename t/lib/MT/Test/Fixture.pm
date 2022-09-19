@@ -8,6 +8,7 @@ use MT::Serialize;
 use MT::Association;
 use Data::Visitor::Tiny;
 use List::Util qw(uniq);
+use File::Basename;
 
 sub prepare {
     my ($class, $spec) = @_;
@@ -175,7 +176,6 @@ sub prepare_image {
     require MT::Test::Image;
     require Image::ExifTool;
     require File::Path;
-    require File::Basename;
 
     my $image_dir = "$ENV{MT_TEST_ROOT}/images";
     File::Path::mkpath($image_dir) unless -d $image_dir;
