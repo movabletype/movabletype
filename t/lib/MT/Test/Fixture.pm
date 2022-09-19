@@ -966,6 +966,26 @@ sub load_objs {
 
     $objs{blog_id} = $all_sites[0]->id if @all_sites == 1;
 
+    if ($spec->{image}) {
+        my $image_dir  = "$ENV{MT_TEST_ROOT}/images";
+        my @file_paths = map { "$image_dir/$_" } keys %{ $spec->{image} };
+        my @images     = MT->model('image')->load({ file_path => \@file_paths });
+        $objs{image}{ basename($_->file_path) } = $_ for @images;
+    }
+
+    if ($spec->{asset}) {
+        my $asset_dir  = "$ENV{MT_TEST_ROOT}/assets";
+        my @file_paths = map { "$asset_dir/$_" } keys %{ $spec->{asset} };
+        my @assets     = MT->model('asset')->load({ file_path => \@file_paths });
+        $objs{ $_->class }{ basename($_->file_path) } = $_ for @assets;
+    }
+
+    if ($spec->{tag}) {
+        my @tag_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{tag} };
+        my @tags      = MT->model('tag')->load({ name => \@tag_names });
+        $objs{tag}{ $_->name } = $_ for @tags;
+    }
+
     if ($spec->{category}) {
         my @category_labels  = map { ref $_ ? $_->{label} : $_ } @{ $spec->{category} };
         my @entry_categories = MT->model('category')->load({ label => \@category_labels });
@@ -980,6 +1000,12 @@ sub load_objs {
         for my $folder (@folders) {
             $objs{folder}{ $folder->label }{ $folder->blog_id } = $folder;
         }
+    }
+
+    if ($spec->{customfield}) {
+        my @customfield_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{customfield} };
+        my @customfields      = MT->model('customfield')->load({ name => \@customfield_names });
+        $objs{customfield}{ $_->name } = $_ for @customfields;
     }
 
     if ($spec->{entry}) {
@@ -1085,6 +1111,38 @@ sub load_objs {
         $objs{content_data} = { map { $_->label => $_ } @content_data };
     }
 
+    if ($spec->{role}) {
+        my @role_names = keys %{ $spec->{role} };
+        my @roles      = MT->model('role')->load({ name => \@role_names });
+        $objs{role}{ $_->name } = $_ for @roles;
+    }
+
+    if ($spec->{template}) {
+        my @template_names;
+        for my $item (@{ $spec->{template} }) {
+            if (ref $item) {
+                if ($item->{name}) {
+                    push @template_names, $item->{name};
+                    next;
+                }
+                (my $archive_type_name = $item->{archive_type}) =~ tr/A-Z-/a-z_/;
+                push @template_names, "tmpl_$archive_type_name";
+            } else {
+                (my $archive_type_name = $item) =~ tr/A-Z-/a-z_/;
+                push @template_names, "tmpl_$archive_type_name";
+            }
+        }
+        my @templates = MT->model('template')->load({ name => \@template_names });
+        $objs{template}{ $_->name } = $_ for @templates;
+
+        my %template_mapping = map { $_->id => $_ } @templates;
+        my @template_maps    = MT->model('templatemap')->load({ template_id => [keys %template_mapping] });
+        for my $map (@template_maps) {
+            my $tmpl = $template_mapping{ $map->template_id };
+            push @{ $objs{templatemap}{ $tmpl->name } ||= [] }, $map;
+        }
+    }
++
     \%objs;
 }
 
