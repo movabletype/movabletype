@@ -11,7 +11,7 @@ use List::Util qw(uniq);
 use File::Basename;
 
 sub prepare {
-    my ($class, $spec) = @_;
+    my ($class, $spec, $objs) = @_;
 
     local $ENV{MT_TEST_ROOT} = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
 
@@ -21,27 +21,33 @@ sub prepare {
             my ($key, $valueref) = @_;
             $$valueref =~ s/TEST_ROOT/$ENV{MT_TEST_ROOT}/g;
             $$valueref =~ s/MT_HOME/$ENV{MT_HOME}/g;
-        });
+        },
+    );
 
-    my %objs;
-    $class->prepare_author($spec, \%objs);
-    $class->prepare_website($spec, \%objs);
-    $class->prepare_blog($spec, \%objs);
-    $class->prepare_asset($spec, \%objs);
-    $class->prepare_image($spec, \%objs);
-    $class->prepare_tag($spec, \%objs);
-    $class->prepare_category($spec, \%objs);
-    $class->prepare_customfield($spec, \%objs);
-    $class->prepare_entry($spec, \%objs);
-    $class->prepare_folder($spec, \%objs);
-    $class->prepare_page($spec, \%objs);
-    $class->prepare_category_set($spec, \%objs);
-    $class->prepare_content_type($spec, \%objs);
-    $class->prepare_content_data($spec, \%objs);
-    $class->prepare_role($spec, \%objs);
-    $class->prepare_template($spec, \%objs);
+    my %objs ||= {};
+    $class->prepare_author($spec, $objs);
+    $class->prepare_website($spec, $objs);
+    $class->prepare_blog($spec, $objs);
+    $class->prepare_asset($spec, $objs);
+    $class->prepare_image($spec, $objs);
+    $class->prepare_tag($spec, $objs);
+    $class->prepare_category($spec, $objs);
+    $class->prepare_customfield($spec, $objs);
+    $class->prepare_entry($spec, $objs);
+    $class->prepare_folder($spec, $objs);
+    $class->prepare_page($spec, $objs);
+    $class->prepare_category_set($spec, $objs);
+    $class->prepare_content_type($spec, $objs);
+    $class->prepare_content_data($spec, $objs);
+    $class->prepare_role($spec, $objs);
+    $class->prepare_template($spec, $objs);
 
-    \%objs;
+    $objs;
+}
+
+sub add {
+    my ($class, $objs, $spec) = @_;
+    $class->prepare($spec, $objs);
 }
 
 # TODO: support more variations
