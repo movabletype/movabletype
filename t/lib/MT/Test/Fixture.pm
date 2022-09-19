@@ -45,6 +45,14 @@ sub prepare {
 
 # TODO: support more variations
 
+sub _note_or_croak {
+    if ( $ENV{MT_TEST_FIXTURE_CROAK} ) {
+        croak(@_);
+    } else {
+        Test::More::note(@_);
+    }
+}
+
 sub prepare_author {
     my ($class, $spec, $objs) = @_;
     if (!$spec->{author}) {
@@ -57,6 +65,10 @@ sub prepare_author {
     if (ref $spec->{author} eq 'ARRAY') {
         for my $item (@{ $spec->{author} }) {
             my %arg = ref $item eq 'HASH' ? %$item : (name => $item);
+            if (exists $objs->{author}{ $arg{name} }) {
+                _note_or_croak("author: $arg{name} already exists");
+                next;
+            }
             $arg{nickname} ||= $arg{name};
             delete $arg{roles};    ## not for now
             my $permissions = delete $arg{permissions};
@@ -87,7 +99,12 @@ sub prepare_website {
     my @site_names;
     if (ref $spec->{website} eq 'ARRAY') {
         for my $item (@{ $spec->{website} }) {
-            my %arg     = ref $item eq 'HASH' ? %$item : (name => $item);
+            my %arg = ref $item eq 'HASH' ? %$item : (name => $item);
+            if (exists $objs->{website}{ $arg{name} }) {
+                _note_or_croak("website: $arg{name} already exists");
+                next;
+            }
+
             my $authors = delete $arg{authors};
 
             my $site = MT::Test::Permission->make_website(%arg);
@@ -119,7 +136,12 @@ sub prepare_blog {
     my @blog_names;
     if (ref $spec->{blog} eq 'ARRAY') {
         for my $item (@{ $spec->{blog} }) {
-            my %arg     = ref $item eq 'HASH' ? %$item : (name => $item);
+            my %arg = ref $item eq 'HASH' ? %$item : (name => $item);
+            if (exists $objs->{blog}{ $arg{name} }) {
+                _note_or_croak("blog: $arg{name} already exists");
+                next;
+            }
+
             my $authors = delete $arg{authors};
 
             if (my $parent_name = delete $arg{parent}) {
@@ -160,6 +182,10 @@ sub prepare_image {
 
     if (ref $spec->{image} eq 'HASH') {
         for my $name (sort keys %{ $spec->{image} }) {
+            if (exists $objs->{image}{$name}) {
+                _note_or_croak("image: $name already exists");
+                next;
+            }
             my $item = $spec->{image}{$name};
             if (ref $item eq 'HASH') {
                 my $blog_id = _find_blog_id($objs, $item);
@@ -211,8 +237,13 @@ sub prepare_asset {
                 my $blog_id = _find_blog_id($objs, $item)
                     or croak "blog_id is required: asset";
                 my $asset_class = delete $item->{class} || _get_asset_class($name);
-                my $file        = "$asset_dir/$name";
-                my ($ext)       = $name =~ /(\.[^.]*)\z/;
+                if (exists $objs->{$asset_class}{$name}) {
+                    _note_or_croak("$asset_class: $name already exists");
+                    next;
+                }
+
+                my $file = "$asset_dir/$name";
+                my ($ext) = $name =~ /(\.[^.]*)\z/;
                 if ($asset_class eq 'image' && !$item->{body}) {
                     require MT::Test::Image;
                     MT::Test::Image->write(file => $file);
@@ -261,6 +292,10 @@ sub prepare_tag {
             } else {
                 %arg = (name => $item);
             }
+            if (exists $objs->{tag}{ $arg{name} }) {
+                _note_or_croak("tag: $arg{name} already exists");
+                next;
+            }
             my $tag = MT::Test::Permission->make_tag(%arg);
             $objs->{tag}{ $tag->name } = $tag;
         }
@@ -281,6 +316,10 @@ sub prepare_category {
             }
             my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: category";
+            if (exists $objs->{category}{ $arg{label} } && exists $objs->{category}{ $arg{label} }{$blog_id}) {
+                _note_or_croak("category: $arg{label} already exists for site $blog_id");
+                next;
+            }
             if (my $parent_name = $arg{parent}) {
                 my $parent = $objs->{category}{$parent_name}{$blog_id}
                     or croak "unknown parent category: $parent_name";
@@ -306,6 +345,10 @@ sub prepare_folder {
             }
             my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: folder";
+            if (exists $objs->{folder}{ $arg{label} } && exists $objs->{folder}{ $arg{label} }{$blog_id}) {
+                _note_or_croak("folder: $arg{label} already exists for site $blog_id");
+                next;
+            }
             if (my $parent_name = $arg{parent}) {
                 my $parent = $objs->{folder}{$parent_name}{$blog_id}
                     or croak "unknown parent folder: $parent_name";
@@ -334,6 +377,10 @@ sub prepare_customfield {
                     basename => $item,
                     tag      => $item,
                 );
+            }
+            if (exists $objs->{customfield}{ $arg{name} }) {
+                _note_or_croak("customfield: $arg{name} already exists");
+                next;
             }
             $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: customfield";
@@ -374,6 +421,11 @@ sub prepare_entry {
                 author_id => $author_id,
                 %arg,
             );
+            if (exists $objs->{entry}{ $entry->basename }) {
+                _note_or_croak("entry: " . $entry->basename . " already exists");
+                $entry->remove;
+                next;
+            }
             $objs->{entry}{ $entry->basename } = $entry;
 
             for my $cat_name (@cat_names) {
@@ -430,6 +482,11 @@ sub prepare_page {
                 author_id => $author_id,
                 %arg,
             );
+            if (exists $objs->{page}{ $page->basename }) {
+                _note_or_croak("page: " . $page->basename . " already exists");
+                $page->remove;
+                next;
+            }
             $objs->{page}{ $page->basename } = $page;
 
             if ($folder_name) {
@@ -461,6 +518,10 @@ sub prepare_category_set {
 
     if (ref $spec->{category_set} eq 'HASH') {
         for my $name (sort keys %{ $spec->{category_set} }) {
+            if (exists $objs->{category_set}{$name}) {
+                _note_or_croak("category_set: $name already exists");
+                next;
+            }
             my $items = $spec->{category_set}{$name};
             if (ref $items eq 'ARRAY') {
                 my $blog_id = $objs->{blog_id}
@@ -505,6 +566,10 @@ sub prepare_content_type {
         my @names = sort keys %{ $spec->{content_type} };
     CT:
         while (my $ct_name = shift @names) {
+            if ($objs->{content_type}{$ct_name}{content_type}) {
+                _note_or_croak("content_type: $ct_name already exists");
+                next;
+            }
             my $item = $spec->{content_type}{$ct_name};
 
             my %ct_arg;
@@ -625,6 +690,10 @@ sub prepare_content_data {
                 my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                     or croak "blog_id is required: content_data: $name";
                 $arg{label} = $name unless defined $arg{label};
+                if (exists $objs->{content_data}{ $arg{label} }) {
+                    _note_or_croak("content_data: $arg{label} already exists");
+                    next;
+                }
 
                 my %data;
                 for my $cf_name (keys %{ $arg{data} }) {
@@ -727,6 +796,10 @@ sub prepare_role {
     return unless $spec->{role};
     if (ref $spec->{role} eq 'HASH') {
         for my $name (keys %{ $spec->{role} }) {
+            if (exists $objs->{role}{$name}) {
+                _note_or_croak("role: $name already exists");
+                next;
+            }
             my @perms;
             my @role_perms;
             if (ref $spec->{role}{$name} eq 'HASH') {
@@ -842,6 +915,10 @@ sub prepare_template {
             if (!$arg{name}) {
                 (my $archive_type_name = $archive_type) =~ tr/A-Z-/a-z_/;
                 $arg{name} = "tmpl_$archive_type_name";
+            }
+            if (exists $objs->{template}{ $arg{name} }) {
+                _note_or_croak("template: $arg{name} already exists");
+                next;
             }
 
             my $mapping = delete $arg{mapping};
