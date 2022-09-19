@@ -942,20 +942,20 @@ sub load_objs {
     my %objs;
     if ($spec->{author}) {
         my @author_names = @{ $spec->{author} };
-        my @authors      = MT::Author->load({ name => \@author_names });
+        my @authors      = MT->model('author')->load({ name => \@author_names });
         $objs{author}    = { map { $_->name => $_ } @authors };
         $objs{author_id} = $authors[0]->id if @authors == 1;
     }
 
     if ($spec->{website}) {
         my @site_names = map { $_->{name} } @{ $spec->{website} };
-        my @sites      = MT::Website->load({ name => \@site_names });
+        my @sites      = MT->model('website')->load({ name => \@site_names });
         $objs{website} = { map { $_->name => $_ } @sites };
     }
 
     if ($spec->{blog}) {
         my @blog_names = map { $_->{name} } @{ $spec->{blog} };
-        my @blogs      = MT::Blog->load({ name => \@blog_names });
+        my @blogs      = MT->model('blog')->load({ name => \@blog_names });
         $objs{blog} = { map { $_->name => $_ } @blogs };
     }
 
@@ -966,7 +966,7 @@ sub load_objs {
 
     if ($spec->{category}) {
         my @category_labels  = map { ref $_ ? $_->{label} : $_ } @{ $spec->{category} };
-        my @entry_categories = MT::Category->load({
+        my @entry_categories = MT->model('category')->load({
             blog_id => $blog_id,
             label   => \@category_labels,
         });
@@ -977,7 +977,7 @@ sub load_objs {
 
     if ($spec->{folder}) {
         my @folder_labels = map { ref $_ ? $_->{label} : $_ } @{ $spec->{folder} };
-        my @folders       = MT::Folder->load({
+        my @folders       = MT->model('folder')->load({
             blog_id => $blog_id,
             label   => \@folder_labels,
         });
@@ -988,7 +988,7 @@ sub load_objs {
 
     if ($spec->{entry}) {
         my @entry_names = map { $_->{basename} } @{ $spec->{entry} };
-        my @entries     = MT::Entry->load({
+        my @entries     = MT->model('entry')->load({
             blog_id  => $blog_id,
             basename => \@entry_names,
         });
@@ -997,7 +997,7 @@ sub load_objs {
 
     if ($spec->{page}) {
         my @page_names = map { $_->{basename} } @{ $spec->{page} };
-        my @pages      = MT::Page->load({
+        my @pages      = MT->model('page')->load({
             blog_id  => $blog_id,
             basename => \@page_names,
         });
@@ -1006,13 +1006,13 @@ sub load_objs {
 
     if ($spec->{category_set}) {
         my @category_set_names = keys %{ $spec->{category_set} };
-        my @category_sets      = MT::CategorySet->load({
+        my @category_sets      = MT->model('category_set')->load({
             blog_id => $blog_id,
             name    => \@category_set_names,
         });
 
         my %category_set_map = map { $_->id => $_->name } @category_sets;
-        my @categories       = MT::Category->load({
+        my @categories       = MT->model('category')->load({
             blog_id         => $blog_id,
             category_set_id => [keys %category_set_map],
         });
@@ -1055,14 +1055,14 @@ sub load_objs {
             }
         }
         my @content_type_names = keys %content_type_name_mapping;
-        my @content_types      = MT::ContentType->load({
+        my @content_types      = MT->model('content_type')->load({
             blog_id => $blog_id,
             name    => \@content_type_names,
         });
         my %content_type_names = map { $_->id => $_->name } @content_types;
         my @content_type_ids   = keys %content_type_names;
 
-        my @content_fields = MT::ContentField->load({
+        my @content_fields = MT->model('content_field')->load({
             blog_id         => $blog_id,
             content_type_id => \@content_type_ids,
         });
@@ -1083,7 +1083,7 @@ sub load_objs {
     }
 
     if ($spec->{content_data}) {
-        my @content_data = MT::ContentData->load({
+        my @content_data = MT->model('content_data')->load({
             blog_id         => $blog_id,
             content_type_id => \@content_type_ids,
         });
