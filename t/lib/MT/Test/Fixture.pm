@@ -1107,7 +1107,8 @@ sub load_objs {
     }
 
     if ($spec->{content_data}) {
-        my @content_data = MT->model('content_data')->load({ content_type_id => \@content_type_ids });
+        my @content_data_labels = map { $spec->{content_data}{$_}{label} || $_ } keys %{ $spec->{content_data} };
+        my @content_data        = MT->model('content_data')->load({ label => \@content_data_labels });
         $objs{content_data} = { map { $_->label => $_ } @content_data };
     }
 
