@@ -941,20 +941,20 @@ sub load_objs {
 
     my %objs;
     if ($spec->{author}) {
-        my @author_names = @{ $spec->{author} };
+        my @author_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{author} };
         my @authors      = MT->model('author')->load({ name => \@author_names });
         $objs{author}    = { map { $_->name => $_ } @authors };
         $objs{author_id} = $authors[0]->id if @authors == 1;
     }
 
     if ($spec->{website}) {
-        my @site_names = map { $_->{name} } @{ $spec->{website} };
+        my @site_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{website} };
         my @sites      = MT->model('website')->load({ name => \@site_names });
         $objs{website} = { map { $_->name => $_ } @sites };
     }
 
     if ($spec->{blog}) {
-        my @blog_names = map { $_->{name} } @{ $spec->{blog} };
+        my @blog_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{blog} };
         my @blogs      = MT->model('blog')->load({ name => \@blog_names });
         $objs{blog} = { map { $_->name => $_ } @blogs };
     }
