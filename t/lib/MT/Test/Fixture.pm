@@ -24,7 +24,7 @@ sub prepare {
         },
     );
 
-    my %objs ||= {};
+    my %objs ||= { __first_time => 1 };
     $class->prepare_author($spec, $objs);
     $class->prepare_website($spec, $objs);
     $class->prepare_blog($spec, $objs);
@@ -41,6 +41,8 @@ sub prepare {
     $class->prepare_content_data($spec, $objs);
     $class->prepare_role($spec, $objs);
     $class->prepare_template($spec, $objs);
+
+    delete $objs->{__first_time};
 
     $objs;
 }
@@ -63,8 +65,10 @@ sub _note_or_croak {
 sub prepare_author {
     my ($class, $spec, $objs) = @_;
     if (!$spec->{author}) {
-        my $author = MT::Author->load(1) or croak "No author";
-        $objs->{author_id} = $author->id;
+        if ($objs->{__first_time}) {
+            my $author = MT::Author->load(1) or croak "No author";
+            $objs->{author_id} = $author->id;
+        }
         return;
     }
 
@@ -94,7 +98,7 @@ sub prepare_author {
             }
         }
     }
-    if (@author_names == 1) {
+    if ($objs->{__first_time} and @author_names == 1) {
         $objs->{author_id} = $objs->{author}{ $author_names[0] }->id;
     }
 }
@@ -126,7 +130,7 @@ sub prepare_website {
             }
         }
     }
-    if (@site_names == 1) {
+    if ($objs->{__first_time} and @site_names == 1) {
         $objs->{blog_id} = $objs->{website}{ $site_names[0] }->id;
     }
 }
@@ -168,10 +172,12 @@ sub prepare_blog {
             }
         }
     }
-    if ($objs->{blog_id} && @blog_names) {
-        delete $objs->{blog_id};
-    } elsif (@blog_names == 1) {
-        $objs->{blog_id} = $objs->{blog}{ $blog_names[0] }->id;
+    if ($objs->{__first_time}) {
+        if ($objs->{blog_id} && @blog_names) {
+            delete $objs->{blog_id};
+        } elsif (@blog_names == 1) {
+            $objs->{blog_id} = $objs->{blog}{ $blog_names[0] }->id;
+        }
     }
 }
 
