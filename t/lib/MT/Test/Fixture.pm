@@ -57,7 +57,7 @@ sub add {
 # TODO: support more variations
 
 sub _note_or_croak {
-    if ( $ENV{MT_TEST_FIXTURE_CROAK} ) {
+    if ($ENV{MT_TEST_FIXTURE_CROAK}) {
         croak(@_);
     } else {
         Test::More::note(@_);
