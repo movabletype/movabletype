@@ -941,24 +941,31 @@ sub load_objs {
     my ($class, $spec) = @_;
 
     my %objs;
+    if ($spec->{author}) {
     my @author_names = @{ $spec->{author} };
     my @authors = MT::Author->load( { name => \@author_names } );
     $objs{author} = { map { $_->name => $_ } @authors };
     $objs{author_id} = $authors[0]->id if @authors == 1;
+    }
 
+    if ($spec->{website}) {
     my @site_names = map { $_->{name} } @{ $spec->{website} };
     my @sites = MT::Website->load( { name => \@site_names } );
     $objs{website} = { map { $_->name => $_ } @sites };
+    }
 
+    if ($spec->{blog}) {
     my @blog_names = map { $_->{name} } @{ $spec->{blog} };
     my @blogs = MT::Blog->load( { name => \@blog_names } );
     $objs{blog} = { map { $_->name => $_ } @blogs };
+    }
 
     my @all_sites = ( @sites, @blogs );
     $objs{blog_id} = $all_sites[0]->id if @all_sites == 1;
 
     my $blog_id = $objs{blog_id};
 
+    if ($spec->{category}) {
     my @category_labels
         = map { ref $_ ? $_->{label} : $_ } @{ $spec->{category} };
     my @entry_categories = MT::Category->load(
@@ -969,7 +976,9 @@ sub load_objs {
     for my $category (@entry_categories) {
         $objs{category}{$category->label}{$category->blog_id} = $category;
     }
+    }
 
+    if ($spec->{folder}) {
     my @folder_labels
         = map { ref $_ ? $_->{label} : $_ } @{ $spec->{folder} };
     my @folders = MT::Folder->load(
@@ -980,7 +989,9 @@ sub load_objs {
     for my $folder (@folders) {
         $objs{folder}{$folder->label}{$folder->blog_id} = $folder;
     }
+    }
 
+    if ($spec->{entry}) {
     my @entry_names = map { $_->{basename} } @{ $spec->{entry} };
     my @entries = MT::Entry->load(
         {   blog_id  => $blog_id,
@@ -988,7 +999,9 @@ sub load_objs {
         }
     );
     $objs{entry} = { map { $_->basename => $_ } @entries };
+    }
 
+    if ($spec->{page}) {
     my @page_names = map { $_->{basename} } @{ $spec->{page} };
     my @pages = MT::Page->load(
         {   blog_id  => $blog_id,
@@ -996,7 +1009,9 @@ sub load_objs {
         }
     );
     $objs{page} = { map { $_->basename => $_ } @pages };
+    }
 
+    if ($spec->{category_set}) {
     my @category_set_names = keys %{ $spec->{category_set} };
     my @category_sets      = MT::CategorySet->load(
         {   blog_id => $blog_id,
@@ -1022,7 +1037,9 @@ sub load_objs {
             category     => $category_map{ $set->id },
         };
     }
+    }
 
+    if ($spec->{content_type}) {
     my @content_type_labels = keys %{ $spec->{content_type} };
     my %content_type_name_mapping;
     my %content_field_name_mapping;
@@ -1074,13 +1091,16 @@ sub load_objs {
             content_field => $content_field_map{ $ct->id },
         };
     }
+    }
 
+    if ($spec->{content_data}) {
     my @content_data = MT::ContentData->load(
         {   blog_id         => $blog_id,
             content_type_id => \@content_type_ids,
         }
     );
     $objs{content_data} = { map { $_->label => $_ } @content_data };
+    }
 
     \%objs;
 }
