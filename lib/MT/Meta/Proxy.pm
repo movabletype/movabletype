@@ -397,7 +397,6 @@ sub bulk_load_meta_objects {
                 = { not => [ keys %{ $proxy->{__loaded} } ] };
         }
         $proxy->{__loaded_all_objects} = 1;
-        $proxy->{__objects} ||= {};
     }
 
     if ( MT::Memcached->is_available ) {
