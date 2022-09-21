@@ -1196,11 +1196,7 @@ sub do_search_replace {
         $args{limit} = $limit + 1 if $limit ne 'all';
         my $iter;
         if ($do_replace) {
-            $iter = sub {
-                if ( my $id = pop @ids ) {
-                    $class->load($id);
-                }
-            };
+            $iter = iter_for_replace($class, \@ids);
         }
         else {
             my $terms = $param->{terms};
@@ -1800,6 +1796,24 @@ sub do_search_replace {
     $res{search_options} = $search_options;
 
     \%res;
+}
+
+sub iter_for_replace {
+    require MT::Meta::Proxy;
+    my ($class, $ids) = @_;
+    my @objs;
+    my $capacity = MT->config->BulkLoadMetaObjectsLimit;
+    my %idx = map { $ids->[$_] => $_ } 0 .. scalar(@$ids) - 1;
+    return sub {
+        unless (@objs) {
+            my $len = @$ids or return;
+            my @stock_ids = splice @$ids, $len > $capacity ? -$capacity : -$len;
+            @objs = $class->load({ id => \@stock_ids });
+            @objs = sort { $idx{ $b->id } <=> $idx{ $a->id } } @objs;
+            MT::Meta::Proxy->bulk_load_meta_objects(\@objs) if @objs && $objs[0]->has_meta;
+        }
+        return shift(@objs);
+    };
 }
 
 sub _default_results_table_template {
