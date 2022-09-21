@@ -203,6 +203,11 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v4::ContentData::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::ContentData::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::ContentData::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::ContentData::updatable_fields',
+            },
         ],
         'content_data' => 'cd',
         'group'        => [{
