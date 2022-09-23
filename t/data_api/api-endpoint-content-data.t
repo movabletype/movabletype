@@ -1160,7 +1160,11 @@ sub normal_tests_for_create {
                 label => 'Multi line text',
                 data  => [{
                         id     => $multi_line_text_field->id,
-                        data   => '1. foo bar baz',
+                        data   => <<'TEXT',
+ただいま試験中
+
+1. 本日は晴天なり
+TEXT
                         format => 'markdown',
                     },
                 ],
@@ -1311,9 +1315,22 @@ sub normal_tests_for_list {
         author_id => 0,
         complete  => sub {
             my ($data, $body, $header) = @_;
-            my $obj = MT::Util::from_json($body);
-            my $cd  = MT->model('cd')->load($obj->{items}[0]{id});
-            isnt($obj->{items}[0]{data}[0]{data}, $cd->data->{ $multi_line_text_field->id });
+            my $obj       = MT::Util::from_json($body);
+            my $cd        = MT->model('cd')->load($obj->{items}[0]{id});
+            my $body_text = $obj->{items}[0]{data}[0]{data};
+            my $expected  = Encode::decode_utf8(<<'HTML');
+<p>ただいま試験中</p>
+
+<ol start='1'>
+<li>本日は晴天なり</li>
+</ol>
+HTML
+            my $trim = sub {
+                my ($str) = @_;
+                $str =~ s/\A(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                return $str;
+            };
+            is($trim->($body_text), $trim->($expected));
             ok(!exists $obj->{items}[0]{data}[0]{format});
         },
     });
@@ -1324,9 +1341,22 @@ sub normal_tests_for_list {
         method   => 'GET',
         complete => sub {
             my ($data, $body, $header) = @_;
-            my $obj = MT::Util::from_json($body);
-            my $cd  = MT->model('cd')->load($obj->{items}[0]{id});
-            isnt($obj->{items}[0]{data}[0]{data}, $cd->data->{ $multi_line_text_field->id });
+            my $obj                 = MT::Util::from_json($body);
+            my $cd                  = MT->model('cd')->load($obj->{items}[0]{id});
+            my $body_text = $obj->{items}[0]{data}[0]{data};
+            my $expected  = Encode::decode_utf8(<<'HTML');
+<p>ただいま試験中</p>
+
+<ol start='1'>
+<li>本日は晴天なり</li>
+</ol>
+HTML
+            my $trim = sub {
+                my ($str) = @_;
+                $str =~ s/\A(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                return $str;
+            };
+            is($trim->($body_text), $trim->($expected));
             ok(exists $obj->{items}[0]{data}[0]{format});
         },
     });
