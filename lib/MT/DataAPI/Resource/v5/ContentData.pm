@@ -112,7 +112,7 @@ sub fields {
                         }
                     }
                     $obj->data($obj_data);
-                    if (keys %$field_convert_breaks) {
+                    if ($field_convert_breaks) {
                         $obj->convert_breaks(MT::Serialize->serialize(\$field_convert_breaks));
                     }
                 }
