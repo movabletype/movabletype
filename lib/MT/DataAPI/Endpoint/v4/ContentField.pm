@@ -33,17 +33,13 @@ DESCRIPTION
                 schema => {
                     type => 'string',
                     enum => [
-                        'name',
-                        'dataLabel',
-                        'uniqueID',
+                        'label',
                         'modified_on',
                     ],
                 },
                 description => <<'DESCRIPTION',
 The field name for sort. You can specify one of following values.
-- name
-- dataLabel
-- uniqueID
+- label
 - modified_on
 DESCRIPTION
             },

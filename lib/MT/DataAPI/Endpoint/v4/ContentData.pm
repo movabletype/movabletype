@@ -36,7 +36,6 @@ DESCRIPTION
                     type => 'string',
                     enum => [
                         'id',
-                        'uniqueID',
                         'authored_on',
                         'created_on',
                         'modified_on',
@@ -46,7 +45,6 @@ DESCRIPTION
                 description => <<'DESCRIPTION',
 The field name for sort. You can specify one of following values.
 - id
-- uniqueID
 - authored_on
 - created_on
 - modified_on
