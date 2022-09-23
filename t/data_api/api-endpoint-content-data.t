@@ -189,14 +189,13 @@ my $multi_line_text_field   = MT::Test::Permission->make_content_field(
     name            => 'Editor',
     type            => 'multi_line_text',
 );
-my $fields = [{
+$ct_with_multi_line_text->fields([{
     id        => $multi_line_text_field->id,
     order     => 1,
     type      => $multi_line_text_field->type,
     options   => { label => $multi_line_text_field->name },
     unique_id => $multi_line_text_field->unique_id,
-}];
-$ct_with_multi_line_text->fields($fields);
+}]);
 $ct_with_multi_line_text->save;
 
 $user->permissions(0)->rebuild;
