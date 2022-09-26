@@ -412,6 +412,32 @@ __BODY__
                 is( $got->{body}, $expected->text );
             },
         },
+        {    # noTextFilter = 1
+            path      => '/v5/sites/1/pages/23',
+            method    => 'GET',
+            params    => { noTextFilter => 1 },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_view_permission_filter.page',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                $app->model('page')->load(
+                    {   id    => 23,
+                        class => 'page',
+                    }
+                );
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $got      = $app->current_format->{unserialize}->($body);
+                my $expected = $app->model('page')->load(23);
+
+                is( $got->{body}, $expected->text );
+            },
+        },
 
         # create_page - irregular tests
         {    # No resource.
