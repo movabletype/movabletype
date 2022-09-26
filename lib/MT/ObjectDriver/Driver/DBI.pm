@@ -24,7 +24,8 @@ sub init {
     require MT;
     my $mt  = MT->instance;
     my $cfg = $mt->config;
-    $opts->{RaiseError} = $cfg->DBIRaiseError;
+    $opts->{RaiseError}         = $cfg->DBIRaiseError;
+    $opts->{ShowErrorStatement} = $cfg->DBIShowErrorStatement;
 
     $driver->connect_options($opts);
     $driver;
