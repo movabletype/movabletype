@@ -1846,6 +1846,7 @@ BEGIN {
             'DBRetryInterval'              => { default => 1 },
             'PIDFilePath'                  => undef,
             'DefaultLanguage'              => { default => 'en_US', },
+            'DefaultSupportedLanguages'    => undef,
             'LocalPreviews'                => { default => 0 },
             'EnableAutoRewriteOnIIS'       => { default => 1 },
             'IISFastCGIMonitoringFilePath' => undef,

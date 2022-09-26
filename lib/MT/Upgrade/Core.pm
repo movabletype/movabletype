@@ -252,6 +252,7 @@ sub seed_database {
 
     $cfg->set(DisableQuickPost => 1, 1);
     $cfg->set(DisableNotificationPings => 1, 1);
+    $cfg->set(DefaultSupportedLanguages => 'en_us,ja', 1);
 
     $cfg->save;
 
