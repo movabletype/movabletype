@@ -2338,6 +2338,7 @@ BEGIN {
             'HideConfigWarnings' => { default => undef },
             'GlobalTemplateMaxRevisions' => { default => 20 },
             'DisableQuickPost' => { default => 0 },
+            'DisableActivityFeeds' => { default => 0 },
             'DefaultStatsProvider' => { default => 'GoogleAnalyticsV4' },
             'DefaultListLimit' => { default => '50' },
             'DynamicTemplateAllowPHP' => { default => 1 },
