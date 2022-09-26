@@ -2571,6 +2571,11 @@ sub core_enable_object_methods {
 sub permission_denied {
     my $app = shift;
 
+    my $method_info = MT->request('method_info') || {};
+    if ( $app->param('xhr') or ( ( $method_info->{app_mode} || '' ) eq 'JSON' ) ) {
+        return $app->errtrans('Permission denied');
+    }
+
     $app->return_to_dashboard( permission => 1, );
 }
 
