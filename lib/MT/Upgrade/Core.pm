@@ -235,6 +235,8 @@ sub seed_database {
     my @plugins_to_disable = qw(
         Trackback OpenID FacebookCommenters
         spamlookup/spamlookup.pl spamlookup/spamlookup_urls.pl spamlookup/spamlookup_words.pl
+        Textile/textile2.pl
+        WidgetManager/WidgetManager.pl
     );
     my $switch = $cfg->PluginSwitch;
     for my $plugin (@plugins_to_disable) {
