@@ -25,7 +25,7 @@ sub init {
     my $mt  = MT->instance;
     my $cfg = $mt->config;
     $opts->{RaiseError}         = $cfg->DBIRaiseError;
-    $opts->{ShowErrorStatement} = $cfg->DBIShowErrorStatement;
+    $opts->{ShowErrorStatement} = $cfg->DBIShowErrorStatement if $MT::DebugMode;
 
     $driver->connect_options($opts);
     $driver;
