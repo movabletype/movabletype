@@ -77,23 +77,17 @@ class CacheMemcached extends BaseCache {
     }
 
     public function add ($key, $val, $ttl = null) {
-        $expire = empty($ttl)
-            ? $this->ttl
-            : $ttl;
+        $expire = $ttl ?? $this->_ttl ?? 0;
         return self::$_server->add($key, $val, false, $expire);
     }
 
     public function replace ($key, $val, $ttl = null) {
-        $expire = empty($ttl)
-            ? $this->ttl
-            : $ttl;
+        $expire = $ttl ?? $this->_ttl ?? 0;
         return self::$_server->replace($key, $val, false, $expire);
     }
 
     public function set ($key, $val, $ttl = null) {
-        $expire = empty($ttl)
-            ? (isset($this->ttl) ? $this->ttl : null)
-            : $ttl;
+        $expire = $ttl ?? $this->_ttl ?? 0;
         return self::$_server->set($key, $val, false, $expire);
     }
 

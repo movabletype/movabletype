@@ -156,7 +156,7 @@ function smarty_function_mtvar($args, &$ctx) {
                     return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", array($value, $op, $rvalue)));
             }}
         }
-        if ( !is_array($return_val) && preg_match('/^smarty_fun_[a-f0-9]+$/', $return_val) ) {
+        if ( !is_array($return_val) && preg_match('/^smarty_fun_[a-f0-9]+$/', $return_val ?? '') ) {
             if (function_exists($return_val)) {
                 ob_start();
                 $return_val($ctx, array());

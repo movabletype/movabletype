@@ -2938,6 +2938,7 @@ use vars qw( @ISA %Lexicon );
 	'Error removing records: [_1]' => 'レコードの削除中にエラーが発生しました: [_1]',
 	'Error saving record (ID:[_1]): [_2].' => 'レコード (ID:[_1]) の保存中にエラーが発生しました: [_2]',
 	'Error saving record: [_1]' => 'レコードの保存中にエラーが発生しました: [_1]',
+	'Filling missing system templates...' => '不足していたシステムテンプレートを補充しています...',
 	'Migrating DataAPIDisableSite...' => 'DataAPIDisableSiteを移行しています...',
 	'Migrating Max Length option of Single Line Text fields...' => 'テキスト型のコンテンツフィールドの最大値を修正しています...',
 	'Migrating MultiBlog settings...' => 'マルチブログの設定を移行しています...',
@@ -3184,10 +3185,7 @@ use vars qw( @ISA %Lexicon );
 	q{Are you sure you want to remove filter '[_1]'?} => q{フィルタ'[_1]'を削除してよろしいですか?},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
-	'100 rows' => '100件',
-	'200 rows' => '200件',
-	'25 rows' => '25件',
-	'50 rows' => '50件',
+	'[_1] rows' => '[_1]件',
 	'Show' => '表示件数',
 
 ## mt-static/js/listing/tag/display-options.tag
@@ -3939,9 +3937,9 @@ use vars qw( @ISA %Lexicon );
 	'Overwrite existing file' => '既存のファイルを上書きする',
 	'PHP Includes' => 'PHPのインクルード',
 	'Preferred Archive' => '優先アーカイブタイプ',
-	'Publish With No Entries' => '記事がないアーカイブの公開',
+	'Publish With No Entries/Content Data' => '記事やコンテンツデータがないアーカイブの公開',
 	'Publish archives outside of Site Root' => 'アーカイブパスをサイトパスとは別のパスで公開する',
-	'Publish category archive without entries' => '記事が含まれない場合でも、カテゴリアーカイブを公開する',
+	'Publish category archive without entries/content data' => '記事やコンテンツデータが含まれない場合でも、カテゴリアーカイブを公開する',
 	'Publishing Paths' => '公開パス',
 	'Remove license' => 'ライセンスの削除',
 	'Rename filename' => 'ファイル名の変更',

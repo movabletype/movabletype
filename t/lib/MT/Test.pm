@@ -1484,7 +1484,7 @@ sub init_data {
         $map->save;
     }
 
-    if (lc($ENV{MT_TEST_BACKEND} // '') eq 'oracle') {
+    if (lc($ENV{MT_TEST_BACKEND} // '') =~ /^(oracle|pg)/) {
         MT::Test::Env->update_sequences;
     }
 

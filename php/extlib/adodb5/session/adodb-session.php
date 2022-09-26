@@ -1,16 +1,24 @@
 <?php
-
-
-/*
-@version   v5.20.20  01-Feb-2021
-@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
-@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
-         Contributed by Ross Smith (adodb@netebb.com).
-  Released under both BSD license and Lesser GPL library license.
-  Whenever there is any discrepancy between the two licenses,
-  the BSD license will take precedence.
-	  Set tabs to 4 for best viewing.
-*/
+/**
+ * ADOdb Session Management
+ *
+ * This file is part of ADOdb, a Database Abstraction Layer library for PHP.
+ *
+ * @package ADOdb
+ * @link https://adodb.org Project's web site and documentation
+ * @link https://github.com/ADOdb/ADOdb Source code and issue tracker
+ *
+ * The ADOdb Library is dual-licensed, released under both the BSD 3-Clause
+ * and the GNU Lesser General Public Licence (LGPL) v2.1 or, at your option,
+ * any later version. This means you can use it in proprietary products.
+ * See the LICENSE.md file distributed with this source code for details.
+ * @license BSD-3-Clause
+ * @license LGPL-2.1-or-later
+ *
+ * @copyright 2000-2013 John Lim
+ * @copyright 2014 Damien Regad, Mark Newnham and the ADOdb community
+ * @author Ross Smith <adodb@netebb.com>
+ */
 
 /*
 	You may want to rename the 'data' field to 'session_data' as
@@ -70,7 +78,7 @@ function adodb_session_regenerate_id()
 	} else {
 		session_id(md5(uniqid(rand(), true)));
 		$ck = session_get_cookie_params();
-		setcookie(session_name(), session_id(), false, $ck['path'], $ck['domain'], $ck['secure']);
+		setcookie(session_name(), session_id(), false, $ck['path'], $ck['domain'], $ck['secure'], $ck['httponly']);
 		//@session_start();
 	}
 	$new_id = session_id();
@@ -80,7 +88,7 @@ function adodb_session_regenerate_id()
 	if (!$ok) {
 		session_id($old_id);
 		if (empty($ck)) $ck = session_get_cookie_params();
-		setcookie(session_name(), session_id(), false, $ck['path'], $ck['domain'], $ck['secure']);
+		setcookie(session_name(), session_id(), false, $ck['path'], $ck['domain'], $ck['secure'], $ck['httponly']);
 		return false;
 	}
 
@@ -599,7 +607,7 @@ class ADODB_Session {
 
 		$sql = "SELECT $data FROM $table WHERE sesskey = $binary $qkey AND expiry >= " . time();
 		/* Lock code does not work as it needs to hold transaction within whole page, and we don't know if
-		  developer has commited elsewhere... :(
+		  developer has committed elsewhere... :(
 		 */
 		#if (ADODB_Session::Lock())
 		#	$rs = $conn->RowLock($table, "$binary sesskey = $qkey AND expiry >= " . time(), $data);
@@ -921,12 +929,12 @@ ADODB_Session::_init();
 if (empty($ADODB_SESSION_READONLY))
 	register_shutdown_function('session_write_close');
 
-// for backwards compatability only
+// for backwards compatibility only
 function adodb_sess_open($save_path, $session_name, $persist = true) {
 	return ADODB_Session::open($save_path, $session_name, $persist);
 }
 
-// for backwards compatability only
+// for backwards compatibility only
 function adodb_sess_gc($t)
 {
 	return ADODB_Session::gc($t);
