@@ -561,6 +561,8 @@ sub cfg_feedback {
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
+    my $junk_filters = $app->registry('junk_filters');
+    $app->param('has_junk_filters', 1) if %{$junk_filters || {}};
     $app->param( '_type', $app->blog ? $app->blog->class : 'blog' );
     $app->param( 'id', $blog_id );
     $app->forward(
