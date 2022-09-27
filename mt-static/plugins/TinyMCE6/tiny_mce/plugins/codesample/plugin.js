@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.1.0 (2022-06-29)
+ * TinyMCE version 6.2.0 (2022-09-08)
  */
 
 (function () {
@@ -111,8 +111,6 @@
 
     const get$1 = (xs, i) => i >= 0 && i < xs.length ? Optional.some(xs[i]) : Optional.none();
     const head = xs => get$1(xs, 0);
-
-    const someIf = (b, a) => b ? Optional.some(a) : Optional.none();
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
@@ -2206,12 +2204,12 @@
     const get = editor => Global.Prism && useGlobalPrismJS(editor) ? Global.Prism : prismjs;
 
     const isCodeSample = elm => {
-      return elm && elm.nodeName === 'PRE' && elm.className.indexOf('language-') !== -1;
+      return isNonNullable(elm) && elm.nodeName === 'PRE' && elm.className.indexOf('language-') !== -1;
     };
 
     const getSelectedCodeSample = editor => {
       const node = editor.selection ? editor.selection.getNode() : null;
-      return someIf(isCodeSample(node), node);
+      return isCodeSample(node) ? Optional.some(node) : Optional.none();
     };
     const insertCodeSample = (editor, language, code) => {
       const dom = editor.dom;
@@ -2233,7 +2231,7 @@
     };
     const getCurrentCode = editor => {
       const node = getSelectedCodeSample(editor);
-      return node.fold(constant(''), n => n.textContent);
+      return node.bind(n => Optional.from(n.textContent)).getOr('');
     };
 
     const getLanguages = editor => {
@@ -2363,6 +2361,7 @@
           const code = elm.textContent;
           dom.setAttrib(elm, 'class', trim(dom.getAttrib(elm, 'class')));
           dom.setAttrib(elm, 'contentEditable', null);
+          dom.setAttrib(elm, 'data-mce-highlighted', null);
           let child;
           while (child = elm.firstChild) {
             elm.removeChild(child);
@@ -2374,21 +2373,35 @@
       editor.on('SetContent', () => {
         const dom = editor.dom;
         const unprocessedCodeSamples = global.grep(dom.select('pre'), elm => {
-          return isCodeSample(elm) && elm.contentEditable !== 'false';
+          return isCodeSample(elm) && dom.getAttrib(elm, 'data-mce-highlighted') !== 'true';
         });
         if (unprocessedCodeSamples.length) {
           editor.undoManager.transact(() => {
             global.each(unprocessedCodeSamples, elm => {
+              var _a;
               global.each(dom.select('br', elm), elm => {
-                elm.parentNode.replaceChild(editor.getDoc().createTextNode('\n'), elm);
+                dom.replace(editor.getDoc().createTextNode('\n'), elm);
               });
-              elm.contentEditable = 'false';
-              elm.innerHTML = dom.encode(elm.textContent);
+              elm.innerHTML = dom.encode((_a = elm.textContent) !== null && _a !== void 0 ? _a : '');
               get(editor).highlightElement(elm);
+              dom.setAttrib(elm, 'data-mce-highlighted', true);
               elm.className = trim(elm.className);
             });
           });
         }
+      });
+      editor.on('PreInit', () => {
+        editor.parser.addNodeFilter('pre', nodes => {
+          var _a;
+          for (let i = 0, l = nodes.length; i < l; i++) {
+            const node = nodes[i];
+            const isCodeSample = ((_a = node.attr('class')) !== null && _a !== void 0 ? _a : '').indexOf('language-') !== -1;
+            if (isCodeSample) {
+              node.attr('contenteditable', 'false');
+              node.attr('data-mce-highlighted', 'false');
+            }
+          }
+        });
       });
     };
 
