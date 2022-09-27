@@ -3806,6 +3806,7 @@ use vars qw( @ISA %Lexicon );
 	'pixels' => 'ピクセル',
 	'width:' => '幅:',
 	q{ASCII equivalents (&quot;, ', ..., -, --)} => q{対応するASCII文字 (&quot;、'、...、-、--)},
+	q{'Popup image' template does not exist or is empty and cannot be selected.} => q{'ポップアップ画像' テンプレートが存在しない、もしくは空のため選択できません。},
 
 ## tmpl/cms/cfg_feedback.tmpl
 	'([_1])' => '([_1])',
