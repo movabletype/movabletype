@@ -221,8 +221,8 @@ SKIP:
 
     SKIP:
         {
-            skip $block->skip, 'skip_dynamic', 1
-                if $block->skip || $block->skip_dynamic;
+            require MT::Test::Tag;
+            skip 'skip php test', 1 if MT::Test::Tag->_check_skip_php($block);
 
             # Access overrides
             my $overrides
@@ -617,7 +617,7 @@ A Rainy Day,Verse 5,Verse 4,Verse 3,Verse 2,Verse 1
 <mt:MultiBlog blog_ids="2" mode="loop">
 <mt:Entries limit="1"><mt:EntryTitle /></mt:Entries>
 </mt:MultiBlog>
---- skip_dynamic
+--- skip_php
 1
 --- expected
 --- ctx_stash
@@ -631,7 +631,7 @@ A Rainy Day,Verse 5,Verse 4,Verse 3,Verse 2,Verse 1
 <mt:MultiBlog blog_ids="2" mode="loop">
 <mt:InvokeEntries limit="1"><mt:EntryTitle /></mt:InvokeEntries>
 </mt:MultiBlog>
---- skip_dynamic
+--- skip_php
 1
 --- expected
 A Rainy Day
