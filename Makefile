@@ -51,6 +51,10 @@ tinymce5_plugin_mt_js = mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plu
 
 tinymce5_plugin_mt_fullscreen_js = mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.js
 
+tinymce6_plugin_mt_js = mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.js
+
+tinymce6_plugin_mt_fullscreen_js = mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.js
+
 main_css = mt-static/css/reset.css \
 	mt-static/css/structure.css \
 	mt-static/css/form.css \
@@ -98,6 +102,14 @@ mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js: $
 	cat $(tinymce5_plugin_mt_fullscreen_js) > mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js
 	./build/minifier.pl mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js
 
+mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js: $(tinymce6_plugin_mt_js)
+	cat $(tinymce6_plugin_mt_js) > mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js
+	./build/minifier.pl mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js
+
+mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js: $(tinymce6_plugin_mt_fullscreen_js)
+	cat $(tinymce6_plugin_mt_fullscreen_js) > mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js
+	./build/minifier.pl mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js
+
 mt-static/css/main.css: $(main_css)
 	cat $(main_css) > mt-static/css/main.css
 	./build/minifier.pl mt-static/css/main.css
@@ -116,6 +128,8 @@ code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js \
         mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js \
         mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js \
+        mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js \
+        mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js \
         mt-static/css/main.css \
         mt-static/css/simple.css
 
@@ -198,6 +212,8 @@ clean:
 	-rm -f mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js
 	-rm -f mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js
 	-rm -f mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js
+	-rm -f mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js
+	-rm -f mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
