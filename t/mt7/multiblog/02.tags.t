@@ -22,6 +22,7 @@ BEGIN {
 use Test::Base;
 use MT;
 use MT::Test::Tag;
+use MT::Test::Permission;
 
 plan tests => (1 + 2) * blocks;
 
@@ -29,19 +30,26 @@ my $app = MT->instance;
 
 $test_env->prepare_fixture('db_data');
 
+my $blog_id = 2;
+
 # Remove objects in website (blog_id = 2).
 $app->model('page')->remove( { id => 24 } );
 
+my $entry = MT::Test::Permission->make_entry(
+    blog_id => $blog_id,
+    status  => MT::Entry::RELEASE(),
+);
+$entry->tags('anemones');
+$entry->save() or die "Couldn't save entry record 3: " . $entry->errstr;
+
 {
     my $tmpl = $app->model('template')->new;
-    $tmpl->blog_id(2);
+    $tmpl->blog_id($blog_id);
     $tmpl->name('template-module');
     $tmpl->text('template-module:2');
     $tmpl->type('custom');
     $tmpl->save or die "Couldn't save template record: " . $tmpl->errstr;
 }
-
-my $blog_id = 2;
 
 $app->config( 'DefaultAccessAllowed', 0, 1 );
 $app->config->save_config;
@@ -197,7 +205,7 @@ A Rainy Day,Verse 5
 <mt:EntryID />
 </mt:Entries>
 --- expected
-
+25
 
 === mt:Categories
 --- template
@@ -257,7 +265,7 @@ A Rainy Day,Verse 5
 <mt:AuthorID />
 </mt:Authors>
 --- expected
-
+1
 
 === mt:Tags
 --- template
@@ -265,7 +273,7 @@ A Rainy Day,Verse 5
 <mt:TagName />
 </mt:Tags>
 --- expected
-
+anemones
 
 === mt:Include outside MultiBlog
 --- template
@@ -324,14 +332,14 @@ template-module:2
 --- template
 <mt:BlogEntryCount include_blogs="1,2,3" />
 --- expected
-0
+1
 
 
 === mt:BlogEntryCount
 --- template
 <mt:BlogEntryCount include_sites="1,2,3" />
 --- expected
-0
+1
 
 
 === mt:TagSearchLink
@@ -351,7 +359,7 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=anemones&amp;limit
 --- template
 <mt:MultiBlog blog_ids="all" mode="loop" trim="1"><mt:BlogID />,<mt:EntriesCount />:</mt:MultiBlog>
 --- expected
-1,6:2,0:
+1,6:2,1:
 --- access_overrides
 { 1 => 2 }
 
@@ -360,7 +368,7 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=anemones&amp;limit
 --- template
 <mt:MultiBlog blog_ids="all" mode="context" trim="1"><mt:BlogID />:<mt:Entries glue="," sort_by="id" sort_order="ascend"><mt:EntryID /></mt:Entries></mt:MultiBlog>
 --- expected
-2:1,4,5,6,7,8
+2:1,4,5,6,7,8,25
 --- access_overrides
 { 1 => 2 }
 
@@ -378,7 +386,7 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=anemones&amp;limit
 --- template
 <mt:MultiBlog include_sites="all" mode="context" trim="1"><mt:BlogID />:<mt:Entries glue="," sort_by="id" sort_order="ascend"><mt:EntryID /></mt:Entries></mt:MultiBlog>
 --- expected
-2:1,4,5,6,7,8
+2:1,4,5,6,7,8,25
 --- access_overrides
 { 1 => 2 }
 
@@ -528,6 +536,7 @@ A Rainy Day,Verse 5,Verse 4,Verse 3,Verse 2,Verse 1
 --- skip_php
 1
 --- expected
+A Rainy Day
 --- ctx_stash
 { entries => [1] }
 --- access_overrides
