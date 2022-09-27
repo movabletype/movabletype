@@ -67,6 +67,32 @@ sub endpoints {
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v5::TextFilter::list_openapi_spec',
             requires_login  => 0,
         },
+        {
+            # The difference between v1 and v5 is that v5 has new openapi_handler property.
+            # There is no difference in other properties. Therefore handlers use v1 endpoint.
+            id              => 'list_entries',
+            route           => '/sites/:site_id/entries',
+            verb            => 'GET',
+            version         => 5,
+            handler         => '$Core::MT::DataAPI::Endpoint::v1::Entry::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v5::Entry::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'entry,entries',
+            },
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'authored_on',
+                sortOrder    => 'descend',
+                searchFields => 'title,body,more,keywords,excerpt,basename',
+                filterKeys   => 'status',
+            },
+            error_codes => {
+                403 => 'Do not have permission to retrieve the requested entries.',
+            },
+            requires_login => 0,
+        },
     ];
 }
 

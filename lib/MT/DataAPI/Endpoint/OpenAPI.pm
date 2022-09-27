@@ -367,17 +367,31 @@ The field name for sort. You can specify one of following values
 - modified_on
 DESCRIPTION
         };
-        $parameter_template->{"${singular}_no_text_filter"} = {
-            in     => 'query',
-            name   => 'no_text_filter',
-            schema => {
-                type => 'integer',
-                enum => [0, 1],
-            },
+        if ($app->current_api_version >= 5) {
+            $parameter_template->{"${singular}_no_text_filter"} = {
+                in     => 'query',
+                name   => 'noTextFilter',
+                schema => {
+                    type => 'integer',
+                    enum => [0, 1],
+                },
             description => <<'DESCRIPTION',
 If you want to fetch the raw text, set to '1'. New in v2
 DESCRIPTION
-        };
+            };
+        } else {
+            $parameter_template->{"${singular}_no_text_filter"} = {
+                in     => 'query',
+                name   => 'no_text_filter',
+                schema => {
+                    type => 'integer',
+                    enum => [0, 1],
+                },
+            description => <<'DESCRIPTION',
+If you want to fetch the raw text, set to '1'. New in v2
+DESCRIPTION
+            };
+        }
     } elsif ($singular eq 'site' || $singular eq 'blog') {
         $parameter_template->{"${singular}_sortBy"} = {
             in     => 'query',
