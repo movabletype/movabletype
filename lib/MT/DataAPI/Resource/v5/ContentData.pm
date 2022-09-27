@@ -118,17 +118,20 @@ sub fields {
                 }
             },
             schema => {
-                type       => 'object',
-                properties => {
-                    data => {
-                        'oneOf' => [
-                            { type => 'string' },
-                            { type => 'array', items => { type => 'string' } },
-                        ],
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        data => {
+                            'oneOf' => [
+                                { type => 'string' },
+                                { type => 'array', items => { type => 'string' } },
+                            ],
+                        },
+                        id    => { type => 'string' },
+                        label => { type => 'string' },
+                        type  => { type => 'string' },
                     },
-                    id    => { type => 'string' },
-                    label => { type => 'string' },
-                    type  => { type => 'string' },
                 },
             },
         },
