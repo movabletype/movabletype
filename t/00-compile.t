@@ -671,7 +671,7 @@ sub _internal_collect_modules {
 
 sub _read_compile_test {
     my %modules;
-    open my $fh, "<" . File::Spec->catfile( $FindBin::Bin, "00-compile.t" )
+    open my $fh, "<", File::Spec->catfile( $FindBin::Bin, "00-compile.t" )
         or die "can not open 00-compile.t file";
     while ( my $line = <$fh> ) {
         chomp $line;

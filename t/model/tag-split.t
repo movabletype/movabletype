@@ -15,11 +15,11 @@ use MT::Test;
 use JSON;
 use MT::Tag;
 
-my $file = '<t/model/tag-split.dat';
-open TEST, $file or die "Can't open $file: $!";
+my $file = 't/model/tag-split.dat';
+open my $TEST, "<", $file or die "Can't open $file: $!";
 local $/ = undef;
-my $test_data = <TEST>;
-close TEST;
+my $test_data = <$TEST>;
+close $TEST;
 my $tests = JSON::from_json($test_data);
 plan tests => scalar(keys %$tests) * 2;
 
