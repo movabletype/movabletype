@@ -20,10 +20,9 @@ BEGIN {
 }
 
 use MT;
-use MT::Test 'has_php';
-use MT::Test::PHP;
+use MT::Test::Tag;
 
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 my $app = MT->instance;
 
@@ -47,6 +46,18 @@ filters {
 
 sub undef_to_empty_string {
     defined( $_[0] ) ? $_[0] : '';
+}
+
+sub set_access_overrides {
+    my $block = shift;
+    my $overrides = $block->access_overrides ? eval $block->access_overrides : $default_access_overrides;
+    $app->config( 'AccessOverrides', MT::Util::to_json($overrides), 1 );
+
+    my $allowed = defined( $block->default_access_allowed ) ? $block->default_access_allowed : $default_access_allowed;
+    chomp($allowed);
+    $app->config( 'DefaultAccessAllowed', $allowed, 1 );
+
+    $app->config->save_config;
 }
 
 sub register_3rd_blog {
@@ -131,129 +142,16 @@ sub register_3rd_blog {
 }
 &register_3rd_blog();
 
-run {
+MT::Test::Tag->run_perl_tests( $blog_id, sub {
+    my ($ctx, $block) = @_;
+    set_access_overrides($block);
+});
+
+MT::Test::Tag->run_php_tests( $blog_id, sub {
     my $block = shift;
-
-SKIP:
-    {
-        skip $block->skip, 1 if $block->skip;
-
-        my $overrides
-            = $block->access_overrides
-            ? eval $block->access_overrides
-            : $default_access_overrides;
-        $app->config( 'AccessOverrides', MT::Util::to_json($overrides), 1 );
-
-        my $allowed
-            = defined( $block->default_access_allowed )
-            ? $block->default_access_allowed
-            : $default_access_allowed;
-        chomp($allowed);
-        $app->config( 'DefaultAccessAllowed', $allowed, 1 );
-
-        $app->config->save_config;
-
-        my $tmpl = $app->model('template')->new;
-        $tmpl->text( $block->template );
-        my $ctx = $tmpl->context;
-
-        my $blog = MT::Blog->load( $block->blog_id || $blog_id );
-        $ctx->stash( 'blog',          $blog );
-        $ctx->stash( 'blog_id',       $blog->id );
-        $ctx->stash( 'local_blog_id', $blog->id );
-        $ctx->stash( 'builder',       MT::Builder->new );
-
-        my $result = $tmpl->build;
-        $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-        is( $result, $block->expected, $block->name );
-    }
-};
-
-sub php_test_script {
-    my ( $template, $blog_id, $text ) = @_;
-    $text ||= '';
-
-    my $test_script = <<PHP;
-<?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
-\$MT_CONFIG = '@{[ $app->find_config ]}';
-\$blog_id   = '$blog_id';
-\$tmpl = <<<__TMPL__
-$template
-__TMPL__
-;
-\$text = <<<__TMPL__
-$text
-__TMPL__
-;
-PHP
-    $test_script .= <<'PHP';
-include_once($MT_HOME . '/php/mt.php');
-include_once($MT_HOME . '/php/lib/MTUtil.php');
-
-$mt = MT::get_instance(1, $MT_CONFIG);
-$mt->init_plugins();
-
-$db = $mt->db();
-$ctx =& $mt->context();
-
-$ctx->stash('blog_id', $blog_id);
-$ctx->stash('local_blog_id', $blog_id);
-$blog = $db->fetch_blog($blog_id);
-$ctx->stash('blog', $blog);
-
-if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
-} else {
-    print('Error compiling template module.');
-}
-
-?>
-PHP
-}
-
-SKIP:
-{
-    unless ( has_php() ) {
-        skip "Can't find executable file: php", 1 * blocks;
-    }
-
-    run {
-        my $block = shift;
-
-    SKIP:
-        {
-            skip $block->skip, 1 if $block->skip;
-
-            my $overrides
-                = $block->access_overrides
-                ? eval $block->access_overrides
-                : $default_access_overrides;
-            $app->config( 'AccessOverrides', MT::Util::to_json($overrides),
-                1 );
-
-            my $allowed
-                = defined( $block->default_access_allowed )
-                ? $block->default_access_allowed
-                : $default_access_allowed;
-            chomp($allowed);
-            $app->config( 'DefaultAccessAllowed', $allowed, 1 );
-
-            $app->config->save_config;
-
-            my $php_script = php_test_script(
-                $block->template,
-                $block->blog_id || $blog_id,
-                $block->text,
-            );
-            my $php_result = MT::Test::PHP->run($php_script);
-
-            my $name = $block->name . ' - dynamic';
-            is( $php_result, $block->expected, $name );
-        }
-    };
-}
+    set_access_overrides($block);
+    return;
+} );
 
 __END__
 

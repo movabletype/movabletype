@@ -20,12 +20,10 @@ BEGIN {
 }
 
 use Test::Base;
-
 use MT;
-use MT::Test 'has_php';
-use MT::Test::PHP;
+use MT::Test::Tag;
 
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 my $app = MT->instance;
 
@@ -68,123 +66,81 @@ sub undef_to_empty_string {
     defined( $_[0] ) ? $_[0] : '';
 }
 
-run {
+sub set_access_overrides {
+    my $block = shift;
+    my $overrides = $block->access_overrides ? eval $block->access_overrides : $default_access_overrides;
+    $app->config( 'AccessOverrides', MT::Util::to_json($overrides), 1 );
+    $app->config->save_config;
+}
+
+MT::Test::Tag->run_perl_tests( $blog_id, sub {
+    my ($ctx, $block) = @_;
+
+    set_access_overrides($block);
+
+    {
+        require MT::Template::Handler;
+        $ctx->{__handlers}{ lc('InvokeEntries') }
+            = MT::Template::Handler->new(
+            sub {
+                my $ctx = shift;
+                $ctx->invoke_handler( 'entries', @_ );
+            },
+            1,
+            undef
+            );
+    }
+
+    if ( $block->ctx_stash ) {
+        my $ctx_stash = eval $block->ctx_stash;
+        for my $k ( keys %$ctx_stash ) {
+            my $v = $ctx_stash->{$k};
+            if ( $k eq 'archive_category' || $k eq 'category' ) {
+                $v = $app->model('category')->load($v);
+            }
+            elsif ( $k eq 'entries' ) {
+                my @entries = $app->model('entry')->load( { id => $v } );
+                $v = [
+                    map {
+                        my $id = $_;
+                        grep { $_->id == $id } @entries;
+                    } ( ref $v ? @$v : $v )
+                ];
+            }
+            $ctx->stash( $k, $v );
+        }
+    }
+
+    if ( $block->ctx_values ) {
+        my $ctx_values = eval $block->ctx_values;
+        for my $k ( keys %$ctx_values ) {
+            $ctx->{$k} = $ctx_values->{$k};
+        }
+    }
+});
+
+MT::Test::Tag->run_php_tests( $blog_id, sub {
     my $block = shift;
 
-SKIP:
-    {
-        skip $block->skip, 'skip_static', 1
-            if $block->skip || $block->skip_static;
+    set_access_overrides($block);
 
-        # Access overrides
-        my $overrides
-            = $block->access_overrides
-            ? eval $block->access_overrides
-            : $default_access_overrides;
-        $app->config( 'AccessOverrides', MT::Util::to_json($overrides), 1 );
-        $app->config->save_config;
+    my $ctx_stash = {
+        $block->ctx_values ? %{ eval($block->ctx_values) } : (),
+        $block->ctx_stash  ? %{ eval($block->ctx_stash) }  : (),
+    };
 
-        my $tmpl = $app->model('template')->new;
-        $tmpl->text( $block->template );
-        my $ctx = $tmpl->context;
-
-        {
-            require MT::Template::Handler;
-            $ctx->{__handlers}{ lc('InvokeEntries') }
-                = MT::Template::Handler->new(
-                sub {
-                    my $ctx = shift;
-                    $ctx->invoke_handler( 'entries', @_ );
-                },
-                1,
-                undef
-                );
-        }
-
-        if ( $block->ctx_stash ) {
-            my $ctx_stash = eval $block->ctx_stash;
-            for my $k ( keys %$ctx_stash ) {
-                my $v = $ctx_stash->{$k};
-                if ( $k eq 'archive_category' || $k eq 'category' ) {
-                    $v = $app->model('category')->load($v);
-                }
-                elsif ( $k eq 'entries' ) {
-                    my @entries = $app->model('entry')->load( { id => $v } );
-                    $v = [
-                        map {
-                            my $id = $_;
-                            grep { $_->id == $id } @entries;
-                        } ( ref $v ? @$v : $v )
-                    ];
-                }
-                $ctx->stash( $k, $v );
-            }
-        }
-
-        if ( $block->ctx_values ) {
-            my $ctx_values = eval $block->ctx_values;
-            for my $k ( keys %$ctx_values ) {
-                $ctx->{$k} = $ctx_values->{$k};
-            }
-        }
-
-        my $blog = MT::Blog->load($blog_id);
-        $ctx->stash( 'blog',          $blog );
-        $ctx->stash( 'blog_id',       $blog->id );
-        $ctx->stash( 'local_blog_id', $blog->id );
-        $ctx->stash( 'builder',       MT::Builder->new );
-
-        my $result = $tmpl->build;
-        die $tmpl->errstr unless defined $result;
-
-        $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-        is( $result, $block->expected, $block->name );
-    }
-};
-
-sub php_test_script {
-    my ( $template, $text, $ctx_values, $ctx_stash ) = @_;
-    $text ||= '';
-
-    $ctx_stash = { %{ eval( $ctx_values || '{}' ) },
-        %{ eval( $ctx_stash || '{}' ) }, };
-
-    my $test_script = <<PHP;
-<?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
-\$MT_CONFIG = '@{[ $app->find_config ]}';
-\$blog_id   = '$blog_id';
+    my $test_script = <<"PHP";
 \$ctx_stash = unserialize('@{[ PHP::Serialization::serialize($ctx_stash) ]}');
-\$tmpl = <<<__TMPL__
-$template
-__TMPL__
-;
-\$text = <<<__TMPL__
-$text
-__TMPL__
-;
 PHP
+
     $test_script .= <<'PHP';
-include_once($MT_HOME . '/php/mt.php');
-include_once($MT_HOME . '/php/lib/MTUtil.php');
-
-$mt = MT::get_instance($blog_id, $MT_CONFIG);
-$mt->init_plugins();
-
-$db = $mt->db();
-$ctx =& $mt->context();
-
-$ctx->stash('blog_id', $blog_id);
-$ctx->stash('local_blog_id', $blog_id);
-$blog = $db->fetch_blog($blog_id);
-$ctx->stash('blog', $blog);
 foreach($ctx_stash as $k => $v) {
     if ($k == 'archive_category' || $k == 'category') {
         require_once('class.mt_category.php');
         $cat = new Category;
         $cat->Load($v);
         $v = $cat;
+        if ($v) $ctx->stash($k, $v);
     }
     if ($k == 'entries') {
         require_once('class.mt_entry.php');
@@ -195,62 +151,14 @@ foreach($ctx_stash as $k => $v) {
             $entries[] = $e;
         }
         $v = $entries;
+        if ($v) $ctx->stash($k, $v);
     }
     $ctx->stash($k, $v);
-    $ctx->stash('category', $v);
 }
-
-if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
-} else {
-    print('Error compiling template module.');
-}
-
-?>
 PHP
-}
 
-SKIP:
-{
-    unless ( has_php() ) {
-        skip "Can't find executable file: php", 1 * blocks;
-    }
-
-    run {
-        my $block = shift;
-
-    SKIP:
-        {
-            require MT::Test::Tag;
-            skip 'skip php test', 1 if MT::Test::Tag->_check_skip_php($block);
-
-            # Access overrides
-            my $overrides
-                = $block->access_overrides
-                ? eval $block->access_overrides
-                : $default_access_overrides;
-            $app->config( 'AccessOverrides', MT::Util::to_json($overrides),
-                1 );
-            $app->config->save_config;
-
-            my $php_script = php_test_script(
-                $block->template,
-                $block->text       || undef,
-                $block->ctx_values || undef,
-                $block->ctx_stash  || undef
-            );
-            my $php_result = MT::Test::PHP->run($php_script);
-            my $expected = $block->expected;
-
-            # for Smarty 3.1.32+
-            $php_result =~ s/\n//g;
-            $expected =~ s/\n//g;
-
-            my $name = $block->name . ' - dynamic';
-            is( $php_result, $expected, $name );
-        }
-    };
-}
+    return $test_script;
+} );
 
 __END__
 
