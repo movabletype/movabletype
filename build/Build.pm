@@ -530,9 +530,9 @@ sub stage_distro {
     $self->verbose("Change to $stage_root");
 
 # Make sure there is a user-style so we don't barf unneccessarily into the error_log.
-    open STYLE, "> user_styles.css"
+    open my $STYLE, ">", "user_styles.css"
         or die("ERROR: Can't touch user_styles.css $@");
-    close STYLE;
+    close $STYLE;
 
 # Our database is named the same as the distribution (but with _'s) except for LDAP.
     ( my $db = $stage_dir ) =~ s/[.-]/_/g;

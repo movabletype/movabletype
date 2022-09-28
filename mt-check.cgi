@@ -56,9 +56,9 @@ for my $cfg_candidate (@cfg_candidates) {
 
 if ($cfg_path) {
     $cfg_exist = 1;
-    my $file_handle = open( CFG, $cfg_path );
+    my $file_handle = open( my $CFG, "<", $cfg_path );
     my $line;
-    while ( $line = <CFG> ) {
+    while ( $line = <$CFG> ) {
         next if $line !~ /\S/ || $line =~ /^#/;
         if ( $line =~ s/StaticWebPath[\s]*([^\n]*)/$1/ ) {
             $mt_static_path = $line;
@@ -1015,9 +1015,8 @@ if ( $server !~ m/psgi/i ) {
 ## isn't a perfect test for running under cgiwrap/suexec, but it
 ## is a pretty good test.
     my $TMP = "test$$.tmp";
-    local *FH;
-    if ( open( FH, ">$TMP" ) ) {
-        close FH;
+    if ( open( my $FH, ">", $TMP ) ) {
+        close $FH;
         unlink($TMP);
         print_encode(
             trans_templ(

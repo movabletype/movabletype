@@ -531,7 +531,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             }
 
             my $name = 't/images/test.gif';
-            open my $fh, $name or die $!;
+            open my $fh, "<", $name or die $!;
             binmode $fh;
             my $data = do { local $/; <$fh> };
             close $fh;
