@@ -133,7 +133,7 @@ sub edit {
             typeLabel => $typeLabel,
             label     => $f->{options}->{label},
             (     ( defined $f->{id} )
-                ? ( id => $f->{id} )
+                ? ( id => $f->{id}, realId => $f->{id} )
                 : ( id => $random_id->() )
             ),
             order   => $f->{order},
