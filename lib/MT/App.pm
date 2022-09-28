@@ -3144,6 +3144,17 @@ sub do_reboot {
             );
             return 1;
         }
+        if (my $wait = MT->config->WaitAfterReboot) {
+            require Time::HiRes;
+            if (MT->config->DisableMetaRefresh) {
+                my $until = Time::HiRes::time() + $wait;
+                while ((my $sleep = $until - Time::HiRes::time()) > 0) {
+                    Time::HiRes::sleep($sleep);
+                }
+            } else {
+                Time::HiRes::sleep $wait;
+            }
+        }
     }
     1;
 }
@@ -3363,11 +3374,9 @@ sub run {
     }
 
     if ( my $url = $app->{redirect} ) {
-        if ( $app->{redirect_use_meta} ) {
+        if ( !MT->config->DisableMetaRefresh and $app->{redirect_use_meta} ) {
             $app->send_http_header();
-            $app->print( '<meta http-equiv="refresh" content="0;url='
-                    . encode_html( $app->{redirect} )
-                    . '">' );
+            $app->print( '<meta http-equiv="refresh" content="' . encode_html(MT->config->WaitAfterReboot). ';url=' . encode_html($url) . '">' );
         }
         else {
             if ( MT::Util::is_mod_perl1() ) {

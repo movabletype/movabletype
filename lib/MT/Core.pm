@@ -2339,6 +2339,8 @@ BEGIN {
             'GlobalTemplateMaxRevisions' => { default => 20 },
             'DefaultStatsProvider' => { default => 'GoogleAnalyticsV4' },
             'DefaultListLimit' => { default => '50' },
+            'WaitAfterReboot' => { default => '1.0' },
+            'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
