@@ -12,9 +12,6 @@ use warnings;
 sub int_param {
     my ( $app, $key ) = @_;
 
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
     return undef unless $app->can('param');
 
     my $value = $app->param($key);
