@@ -2932,8 +2932,10 @@ sub build_blog_selector {
 
     # Load favorites blogs
     my @fav_blogs = @{ $auth->favorite_blogs || [] };
-    if ( scalar @fav_blogs > 5 ) {
-        @fav_blogs = @fav_blogs[ 0 .. 4 ];
+    my $max_fav_sites = MT->config->MaxFavoriteSites || 5;
+    my $max_load = $max_fav_sites + 1;
+    if ( scalar @fav_blogs > $max_fav_sites ) {
+        @fav_blogs = @fav_blogs[ 0 .. $max_fav_sites - 1 ];
     }
 
     # How many blogs that the user can access?
@@ -2947,12 +2949,12 @@ sub build_blog_selector {
         && !$auth->permissions(0)->can_do('access_to_website_list');
     $terms{class}     = 'blog';
     $terms{parent_id} = \">0";    # FOR-EDITOR";
-    $args{limit}      = 6;        # Don't load over 6 blogs
+    $args{limit}      = $max_load;        # Don't load over 6 blogs
     my @blogs = $blog_class->load( \%terms, \%args );
 
 # Special case. If this user can access 5 blogs or smaller then load those blogs.
     $param->{selector_hide_blog_chooser} = 1;
-    if ( @blogs && scalar @blogs == 6 ) {
+    if ( @blogs && scalar @blogs == $max_load ) {
 
         # This user can access over 6 blogs.
         if (@fav_blogs) {
@@ -2967,14 +2969,13 @@ sub build_blog_selector {
 
     # Load favorites or all websites
     my @fav_websites = @{ $auth->favorite_websites || [] };
-    if ( scalar @fav_websites > 5 ) {
-        @fav_websites = @fav_websites[ 0 .. 4 ];
+    if ( scalar @fav_websites > $max_fav_sites ) {
+        @fav_websites = @fav_websites[ 0 .. $max_fav_sites - 1 ];
     }
     my @websites;
     @websites = $website_class->load( { id => \@fav_websites } )
         if scalar @fav_websites;
 
-    my $max_load = 6;
     if ( scalar @fav_websites < $max_load ) {
 
         # Load more accessible websites
@@ -3011,7 +3012,7 @@ sub build_blog_selector {
 
 # Special case. If this user can access 3 websites or smaller then load those websites.
     $param->{selector_hide_website_chooser} = 1;
-    if ( @websites && scalar @websites == 6 ) {
+    if ( @websites && scalar @websites == $max_load ) {
         pop @websites;
         $param->{selector_hide_website_chooser} = 0;
     }
