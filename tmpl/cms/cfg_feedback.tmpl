@@ -89,6 +89,7 @@
       </mtapp:setting>
     </div>
 
+    <mt:if name="has_junk_filters">
     <mtapp:setting
        id="junk_score_threshold"
        label="<__trans phrase="Spam Score Threshold">"
@@ -111,6 +112,7 @@
         </div>
       </div>
     </mtapp:setting>
+    </mt:if>
 
     <mtapp:setting
        id="nofollow_urls"

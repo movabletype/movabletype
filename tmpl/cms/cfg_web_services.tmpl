@@ -68,6 +68,7 @@
   </mtapp:settinggroup>
 
   <mt:if name="blog_id">
+    <mt:unless name="system_disabled_notify_pings">
     <mtapp:settinggroup id="system-feedback-controls">
       <legend class="h3"><__trans phrase="External Notifications"></legend>
       <mt:if name="enabled_plugins{Trackback}">
@@ -105,6 +106,7 @@
       </mt:if>
 
     </mtapp:settinggroup>
+    </mt:unless>
   </mt:if>
 
   <mt:loop name="config_templates">
