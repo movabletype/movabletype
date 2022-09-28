@@ -303,6 +303,9 @@ DESCRIPTION
 sub list {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my $res = filtered_list( $app, $endpoint, 'entry' ) or return;
 
     +{  totalResults => $res->{count} + 0,
@@ -361,6 +364,9 @@ DESCRIPTION
 
 sub create {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my ($blog) = context_objects(@_);
     return unless $blog && $blog->id;
@@ -463,6 +469,9 @@ DESCRIPTION
 sub get {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my ( $blog, $entry ) = context_objects(@_)
         or return;
 
@@ -524,6 +533,9 @@ DESCRIPTION
 
 sub update {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my ( $blog, $orig_entry ) = context_objects(@_)
         or return;
@@ -588,6 +600,10 @@ DESCRIPTION
 
 sub delete {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my %recipe = ();
 
     my ( $blog, $entry ) = context_objects(@_)

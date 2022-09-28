@@ -12,290 +12,314 @@ use warnings;
 our %resources = ();
 
 sub core_resources {
-    my $pkg = '$Core::MT::DataAPI::Resource::';
     return {
-        'entry' => [
-            {   version          => 1,
-                fields           => "${pkg}Entry::fields",
-                updatable_fields => "${pkg}Entry::updatable_fields",
+        'entry' => [{
+                version          => 1,
+                fields           => '$Core::MT::DataAPI::Resource::v1::Entry::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v1::Entry::updatable_fields',
             },
-            {   version          => 2,
-                fields           => "${pkg}v2::Entry::fields",
-                updatable_fields => "${pkg}v2::Entry::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Entry::fields",
-                updatable_fields => "${pkg}v5::Entry::updatable_fields",
-            },
-        ],
-        'page' => [
-            {   version          => 2,
-                fields           => "${pkg}v2::Page::fields",
-                updatable_fields => "${pkg}v2::Page::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Page::fields",
-                updatable_fields => "${pkg}v5::Page::updatable_fields",
-            },
-        ],
-        'category' => [
-            {   version          => 1,
-                fields           => "${pkg}Category::fields",
-                updatable_fields => "${pkg}Category::updatable_fields",
-            },
-            {   version          => 2,
-                fields           => "${pkg}v2::Category::fields",
-                updatable_fields => "${pkg}v2::Category::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Category::fields",
-                updatable_fields => "${pkg}v5::Category::updatable_fields",
-            },
-        ],
-        'folder' => [
-            {   version          => 2,
-                fields           => "${pkg}v2::Folder::fields",
-                updatable_fields => "${pkg}v2::Folder::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Folder::fields",
-                updatable_fields => "${pkg}v5::Folder::updatable_fields",
-            },
-        ],
-        'user' => [
-            {   version          => 1,
-                fields           => "${pkg}User::fields",
-                updatable_fields => "${pkg}User::updatable_fields",
-            },
-            {   version          => 2,
-                fields           => "${pkg}v2::User::fields",
-                updatable_fields => "${pkg}v2::User::updatable_fields",
-            },
-            {   version          => 3,
-                fields           => "${pkg}v3::User::fields",
-                updatable_fields => "${pkg}v3::User::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::User::fields",
-                updatable_fields => "${pkg}v5::User::updatable_fields",
-            },
-        ],
-        'author' => 'user',
-        'blog'   => [
-            {   version          => 1,
-                fields           => "${pkg}Blog::fields",
-                updatable_fields => "${pkg}Blog::updatable_fields",
-            },
-            {   version          => 2,
-                fields           => "${pkg}v2::Blog::fields",
-                updatable_fields => "${pkg}v2::Blog::updatable_fields",
-            },
-            {   version          => 3,
-                fields           => "${pkg}v3::Blog::fields",
-                updatable_fields => "${pkg}v3::Blog::updatable_fields",
-            },
-            {   version          => 4,
-                fields           => "${pkg}v4::Blog::fields",
-                updatable_fields => "${pkg}v4::Blog::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Blog::fields",
-                updatable_fields => "${pkg}v5::Blog::updatable_fields",
-            },
-        ],
-        'website' => [
-            {   version          => 1,
-                fields           => "${pkg}Website::fields",
-                updatable_fields => "${pkg}Website::updatable_fields",
-            },
-            {   version          => 2,
-                fields           => "${pkg}v2::Website::fields",
-                updatable_fields => "${pkg}v2::Website::updatable_fields",
-            },
-            {   version          => 3,
-                fields           => "${pkg}v3::Website::fields",
-                updatable_fields => "${pkg}v3::Website::updatable_fields",
-            },
-            {   version          => 4,
-                fields           => "${pkg}v4::Website::fields",
-                updatable_fields => "${pkg}v4::Website::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Website::fields",
-                updatable_fields => "${pkg}v5::Website::updatable_fields",
-            },
-        ],
-        'asset' => [
-            {   version          => 1,
-                fields           => "${pkg}Asset::fields",
-                updatable_fields => "${pkg}Asset::updatable_fields",
-            },
-            {   version          => 2,
-                fields           => "${pkg}v2::Asset::fields",
-                updatable_fields => "${pkg}v2::Asset::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Asset::fields",
-                updatable_fields => "${pkg}v5::Asset::updatable_fields",
-            },
-        ],
-        'permission' => [
-            {   version          => 1,
-                fields           => "${pkg}Permission::fields",
-                updatable_fields => "${pkg}Permission::updatable_fields",
-            },
-            {   version          => 2,
-                fields           => "${pkg}v2::Permission::fields",
-                updatable_fields => "${pkg}v2::Permission::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Permission::fields",
-                updatable_fields => "${pkg}v5::Permission::updatable_fields",
-            },
-        ],
-        'association' => [
-            {   version          => 2,
-                fields           => "${pkg}v2::Association::fields",
-                updatable_fields => "${pkg}v2::Association::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Association::fields",
-                updatable_fields => "${pkg}v5::Association::updatable_fields",
-            },
-        ],
-        'role' => [
-            {   version          => 2,
-                fields           => "${pkg}v2::Role::fields",
-                updatable_fields => "${pkg}v2::Role::updatable_fields",
-            },
-        ],
-        'log' => [
-            {   version          => 2,
-                fields           => "${pkg}v2::Log::fields",
-                updatable_fields => "${pkg}v2::Log::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Log::fields",
-                updatable_fields => "${pkg}v5::Log::updatable_fields",
-            },
-        ],
-        'tag' => [
-            {   version          => 2,
-                fields           => "${pkg}v2::Tag::fields",
-                updatable_fields => "${pkg}v2::Tag::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Tag::fields",
-            },
-        ],
-        'template' => [
-            {   version          => 2,
-                fields           => "${pkg}v2::Template::fields",
-                updatable_fields => "${pkg}v2::Template::updatable_fields",
-            },
-            {   version          => 4,
-                fields           => "${pkg}v4::Template::fields",
-                updatable_fields => "${pkg}v4::Template::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::Template::fields",
-                updatable_fields => "${pkg}v5::Template::updatable_fields",
-            },
-        ],
-        'widget'      => 'template',
-        'templatemap' => [
-            {   version          => 2,
-                fields           => "${pkg}v2::TemplateMap::fields",
-                updatable_fields => "${pkg}v2::TemplateMap::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::TemplateMap::fields",
-                updatable_fields => "${pkg}v5::TemplateMap::updatable_fields",
-            },
-        ],
-        'category_set' => [
-            {   version          => 4,
-                fields           => "${pkg}v4::CategorySet::fields",
-                updatable_fields => "${pkg}v4::CategorySet::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::CategorySet::fields",
-                updatable_fields => "${pkg}v5::CategorySet::updatable_fields",
-            },
-        ],
-        'content_type' => [
-            {   version          => 4,
-                fields           => "${pkg}v4::ContentType::fields",
-                updatable_fields => "${pkg}v4::ContentType::updatable_fields",
-            },
-            {   version          => 5,
-                fields           => "${pkg}v5::ContentType::fields",
-                updatable_fields => "${pkg}v5::ContentType::updatable_fields",
-            },
-        ],
-        'cf' => [
-            {   version => 4,
-                fields  => "${pkg}v4::ContentField::fields",
-                updatable_fields =>
-                    "${pkg}v4::ContentField::updatable_fields",
+            {
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Entry::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Entry::updatable_fields',
             },
             {
                 version          => 5,
-                fields           => "${pkg}v5::ContentField::fields",
-                updatable_fields => "${pkg}v5::ContentField::updatable_fields",
+                fields           => '$Core::MT::DataAPI::Resource::v5::Entry::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Entry::updatable_fields',
+            },
+        ],
+        'page' => [{
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Page::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Page::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Page::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Page::updatable_fields',
+            },
+        ],
+        'category' => [{
+                version          => 1,
+                fields           => '$Core::MT::DataAPI::Resource::v1::Category::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v1::Category::updatable_fields',
+            },
+            {
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Category::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Category::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Category::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Category::updatable_fields',
+            },
+        ],
+        'folder' => [{
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Folder::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Folder::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Folder::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Folder::updatable_fields',
+            },
+        ],
+        'user' => [{
+                version          => 1,
+                fields           => '$Core::MT::DataAPI::Resource::v1::User::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v1::User::updatable_fields',
+            },
+            {
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::User::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::User::updatable_fields',
+            },
+            {
+                version          => 3,
+                fields           => '$Core::MT::DataAPI::Resource::v3::User::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v3::User::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::User::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::User::updatable_fields',
+            },
+        ],
+        'author' => 'user',
+        'blog'   => [{
+                version          => 1,
+                fields           => '$Core::MT::DataAPI::Resource::v1::Blog::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v1::Blog::updatable_fields',
+            },
+            {
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Blog::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Blog::updatable_fields',
+            },
+            {
+                version          => 3,
+                fields           => '$Core::MT::DataAPI::Resource::v3::Blog::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v3::Blog::updatable_fields',
+            },
+            {
+                version          => 4,
+                fields           => '$Core::MT::DataAPI::Resource::v4::Blog::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v4::Blog::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Blog::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Blog::updatable_fields',
+            },
+        ],
+        'website' => [{
+                version          => 1,
+                fields           => '$Core::MT::DataAPI::Resource::v1::Website::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v1::Website::updatable_fields',
+            },
+            {
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Website::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Website::updatable_fields',
+            },
+            {
+                version          => 3,
+                fields           => '$Core::MT::DataAPI::Resource::v3::Website::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v3::Website::updatable_fields',
+            },
+            {
+                version          => 4,
+                fields           => '$Core::MT::DataAPI::Resource::v4::Website::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v4::Website::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Website::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Website::updatable_fields',
+            },
+        ],
+        'asset' => [{
+                version          => 1,
+                fields           => '$Core::MT::DataAPI::Resource::v1::Asset::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v1::Asset::updatable_fields',
+            },
+            {
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Asset::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Asset::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Asset::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Asset::updatable_fields',
+            },
+        ],
+        'permission' => [{
+                version          => 1,
+                fields           => '$Core::MT::DataAPI::Resource::v1::Permission::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v1::Permission::updatable_fields',
+            },
+            {
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Permission::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Permission::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Permission::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Permission::updatable_fields',
+            },
+        ],
+        'association' => [{
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Association::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Association::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Association::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Association::updatable_fields',
+            },
+        ],
+        'role' => [{
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Role::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Role::updatable_fields',
+            },
+        ],
+        'log' => [{
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Log::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Log::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Log::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Log::updatable_fields',
+            },
+        ],
+        'tag' => [{
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Tag::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Tag::updatable_fields',
+            },
+            {
+                version => 5,
+                fields  => '$Core::MT::DataAPI::Resource::v5::Tag::fields',
+            },
+        ],
+        'template' => [{
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Template::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Template::updatable_fields',
+            },
+            {
+                version          => 4,
+                fields           => '$Core::MT::DataAPI::Resource::v4::Template::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v4::Template::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Template::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Template::updatable_fields',
+            },
+        ],
+        'widget'      => 'template',
+        'templatemap' => [{
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::TemplateMap::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::TemplateMap::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::TemplateMap::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::TemplateMap::updatable_fields',
+            },
+        ],
+        'category_set' => [{
+                version          => 4,
+                fields           => '$Core::MT::DataAPI::Resource::v4::CategorySet::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v4::CategorySet::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::CategorySet::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::CategorySet::updatable_fields',
+            },
+        ],
+        'content_type' => [{
+                version          => 4,
+                fields           => '$Core::MT::DataAPI::Resource::v4::ContentType::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v4::ContentType::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::ContentType::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::ContentType::updatable_fields',
+            },
+        ],
+        'cf' => [{
+                version          => 4,
+                fields           => '$Core::MT::DataAPI::Resource::v4::ContentField::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v4::ContentField::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::ContentField::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::ContentField::updatable_fields',
             },
 
         ],
         'content_field' => 'cf',
-        'cd'            => [
-            {   version          => 4,
-                fields           => "${pkg}v4::ContentData::fields",
-                updatable_fields => "${pkg}v4::ContentData::updatable_fields",
+        'cd'            => [{
+                version          => 4,
+                fields           => '$Core::MT::DataAPI::Resource::v4::ContentData::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v4::ContentData::updatable_fields',
             },
-            {   version          => 5,
-                fields           => "${pkg}v5::ContentData::fields",
-                updatable_fields => "${pkg}v5::ContentData::updatable_fields",
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::ContentData::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::ContentData::updatable_fields',
             },
         ],
         'content_data' => 'cd',
-        'group'        => [
-            {   version          => 2,
-                fields           => "${pkg}v2::Group::fields",
-                updatable_fields => "${pkg}v2::Group::updatable_fields",
+        'group'        => [{
+                version          => 2,
+                fields           => '$Core::MT::DataAPI::Resource::v2::Group::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v2::Group::updatable_fields',
             },
-            {   version          => 5,
-                fields           => "${pkg}v5::Group::fields",
-                updatable_fields => "${pkg}v5::Group::updatable_fields",
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Group::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Group::updatable_fields',
             },
         ],
-        'endpoint' => [
-            {
+        'endpoint' => [{
                 version => 1,
-                fields => "${pkg}Endpoint::fields",
+                fields  => '$Core::MT::DataAPI::Resource::Endpoint::fields',
             },
         ],
-        statisticsdate => [
-            {
+        statisticsdate => [{
                 version => 1,
-                fields => "${pkg}StatisticsDate::fields",
+                fields  => '$Core::MT::DataAPI::Resource::v1::StatisticsDate::fields',
             },
         ],
-        statisticspath => [
-            {
+        statisticspath => [{
                 version => 1,
-                fields => "${pkg}StatisticsPath::fields",
+                fields  => '$Core::MT::DataAPI::Resource::v1::StatisticsPath::fields',
             },
         ],
-        theme => [
-            {
+        theme => [{
                 version => 2,
-                fields => "${pkg}v2::Theme::fields",
+                fields  => '$Core::MT::DataAPI::Resource::v2::Theme::fields',
             },
         ],
-        plugin => [
-            {
+        plugin => [{
                 version => 2,
-                fields => "${pkg}v2::Plugin::fields",
+                fields  => '$Core::MT::DataAPI::Resource::v2::Plugin::fields',
             },
         ],
     };
@@ -420,6 +444,7 @@ sub resource {
         $res->{fields} = [];
         {
             my %fields = ();
+            my %alias;
 
             for my $f ( @{ $tmp_res{fields} } ) {
                 my $ref = ref $f;
@@ -465,6 +490,9 @@ sub resource {
                     }
                 }
 
+                if ($f->{alias} && $f->{alias} ne $f->{name}) {
+                    $alias{$f->{alias}} = $f->{name};
+                }
                 if ( my $hash = $fields{ $f->{name} } ) {
                     for my $k ( keys %$f ) {
                         $hash->{$k} = $f->{$k};
@@ -475,6 +503,7 @@ sub resource {
                     push @{ $res->{fields} }, $f;
                 }
             }
+            @{$res->{fields}} = grep {!$alias{$_->{name}}} @{$res->{fields}};
         }
         $res->{field_name_map}
             = +{ map { $_->{name} => $_->{alias} || $_->{name} }
@@ -543,7 +572,7 @@ sub from_object {
     my @fields = grep { _is_condition_ok($_) } do {
         if ($fields_specified) {
             my %keys = map { $_ => 1 } @$fields_specified;
-            grep { $keys{ $_->{name} } } @{ $resource_data->{fields} };
+            grep { $keys{ $_->{name} } or $keys{ $_->{alias} || '' } } @{ $resource_data->{fields} };
         }
         else {
             @{ $resource_data->{fields} };

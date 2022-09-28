@@ -149,7 +149,7 @@ SKIP: {
             my $block = shift;
         SKIP: {
                 skip $block->skip, 2 if $block->skip;
-                skip 'skip php test', 2 if defined($block->skip_php // $block->SKIP_PHP);
+                skip 'skip php test', 2 if $block->skip_php // defined($block->SKIP_PHP);
 
                 my $prev_config = __PACKAGE__->_update_config($block->mt_config);
 

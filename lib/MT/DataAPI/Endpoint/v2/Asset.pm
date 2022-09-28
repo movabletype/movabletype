@@ -9,7 +9,7 @@ package MT::DataAPI::Endpoint::v2::Asset;
 use strict;
 use warnings;
 
-use MT::DataAPI::Endpoint::Asset;
+use MT::DataAPI::Endpoint::v1::Asset;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Endpoint::v2::Tag;
 use MT::DataAPI::Resource;
@@ -876,7 +876,7 @@ sub upload {
     my $site = MT->model('blog')->load($site_id);
     $app->blog($site);
 
-    MT::DataAPI::Endpoint::Asset::upload( $app, $endpoint );
+    MT::DataAPI::Endpoint::v1::Asset::upload( $app, $endpoint );
 }
 
 1;

@@ -13,6 +13,9 @@ use MT::DataAPI::Resource::Common;
 use MT::DataAPI::Resource::Util;
 
 sub updatable_fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     [   qw(
             status
             title
@@ -36,6 +39,9 @@ sub updatable_fields {
 }
 
 sub fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     [   {   name   => 'author',
             fields => [qw(id displayName userpicUrl)],
             type   => 'MT::DataAPI::Resource::DataType::Object',

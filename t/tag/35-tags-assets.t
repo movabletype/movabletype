@@ -12,7 +12,7 @@ BEGIN {
 }
 
 use MT::Test::Tag;
-
+use MT::Test::PHP;
 use MT::Test;
 use MT::Test::Fixture;
 use MT::Test::Image;
@@ -147,6 +147,8 @@ ok -f $squared_thumbnail, "squared thumbnail exists now";
 my ($scaled_thumbnail) = $asset->thumbnail_file(Scale => 50);
 ok -f $scaled_thumbnail, "scaled thumbnail exists now";
 
+my $php_supports_gd = MT::Test::PHP->supports_gd;
+
 my %vars = (
     AUTHOR_NAME       => $author->name,
     EXISTING_ASSET_ID => $asset->id,
@@ -156,6 +158,7 @@ my %vars = (
     PAGE_ID           => $page->id,
     YEAR              => $year,
     MONTH             => $month,
+    no_php_gd         => !$php_supports_gd,
 );
 
 sub var {
@@ -200,6 +203,8 @@ done_testing;
 __END__
 
 === MTAssetThumbnailURL for ordinary image (no scale)
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAsset id="EXISTING_ASSET_ID">
 <$MTAssetURL$>: <$MTAssetThumbnailURL _default="blank"$>
@@ -208,6 +213,8 @@ __END__
 http://example.com/blog/test.jpg: http://example.com/blog/assets_c/YEAR/MONTH/test-thumb-640x480-1.jpg
 
 === MTAssetThumbnailURL for ordinary image (scale 50)
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAsset id="EXISTING_ASSET_ID">
 <$MTAssetURL$>: <$MTAssetThumbnailURL scale="50" _default="blank"$>
@@ -216,6 +223,8 @@ http://example.com/blog/test.jpg: http://example.com/blog/assets_c/YEAR/MONTH/te
 http://example.com/blog/test.jpg: http://example.com/blog/assets_c/YEAR/MONTH/test-thumb-320x240-1.jpg
 
 === MTAssetThumbnailURL for ordinary image (square size 50)
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAsset id="EXISTING_ASSET_ID">
 <$MTAssetURL$>: <$MTAssetThumbnailURL square="1" height="50" _default="blank"$>
@@ -224,6 +233,8 @@ http://example.com/blog/test.jpg: http://example.com/blog/assets_c/YEAR/MONTH/te
 http://example.com/blog/test.jpg: http://example.com/blog/assets_c/YEAR/MONTH/test-thumb-50x50-1.jpg
 
 === MTAssetThumbnailURL for removed file (no reading image even with the scale attribute)
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAsset id="REMOVED_ASSET_ID">
 <$MTAssetURL$>: <$MTAssetThumbnailURL scale="75" _default="blank"$>
@@ -440,7 +451,7 @@ No such user 'Nobody'
 Invalid scored by filter: Nobody
 
 === MTPageAssets[namespace][scored_by] for score=0
---- skip_php
+--- SKIP_PHP
 --- template
 <mt:Assets namespace="baz" scored_by="AUTHOR_NAME">a</mt:Assets>
 --- expected

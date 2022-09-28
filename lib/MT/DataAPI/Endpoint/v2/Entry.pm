@@ -18,11 +18,11 @@ use MT::Util;
 use MT::CMS::Import;
 use MT::CMS::Export;
 use MT::DataAPI::Endpoint::Common;
-use MT::DataAPI::Endpoint::Entry;
+use MT::DataAPI::Endpoint::v1::Entry;
 use MT::DataAPI::Resource;
 
 sub create_openapi_spec {
-    my $spec = MT::DataAPI::Endpoint::Entry::create_openapi_spec();
+    my $spec = MT::DataAPI::Endpoint::v1::Entry::create_openapi_spec();
     $spec->{description} = <<'DESCRIPTION';
 - Authorization is required.
 
@@ -76,7 +76,7 @@ sub create {
     MT::Util::translate_naughty_words($new_entry);
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $blog,
+        = MT::DataAPI::Endpoint::v1::Entry::build_post_save_sub( $app, $blog,
         $new_entry, $orig_entry );
 
     # Check whether or not assets can attach.
@@ -156,7 +156,7 @@ sub create {
 }
 
 sub update_openapi_spec {
-    my $spec = MT::DataAPI::Endpoint::Entry::update_openapi_spec();
+    my $spec = MT::DataAPI::Endpoint::v1::Entry::update_openapi_spec();
     $spec->{sumamry} = 'Update an existing entry';
     $spec->{description} = <<'DESCRIPTION';
 - Authorization is required.
@@ -183,7 +183,7 @@ sub update {
         or return;
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $blog,
+        = MT::DataAPI::Endpoint::v1::Entry::build_post_save_sub( $app, $blog,
         $new_entry, $orig_entry );
 
     # Check whether or not assets can attach/detach.

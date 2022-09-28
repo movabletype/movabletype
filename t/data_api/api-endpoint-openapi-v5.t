@@ -15,7 +15,7 @@ BEGIN {
 
 use MT::Test::DataAPI;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my %json;
 test_data_api({
@@ -28,6 +28,7 @@ test_data_api({
         },
     },
 );
+
 test_data_api({
         path     => "/v5/",
         method   => 'GET',
@@ -42,6 +43,23 @@ test_data_api({
 for my $name (qw/asset blog cf content_type group log permission tag template templatemap user website/) {
     is($json{v4}{components}{schemas}{$name}{properties}{id}{type}, 'string', "$name id is string type in v4");
     is($json{v5}{components}{schemas}{$name}{properties}{id}{type}, 'integer', "$name id is integer type in v5");
+}
+
+for my $prop (qw/assets categories/) {
+    is_deeply(
+        $json{v5}{components}{schemas}{entry_updatable}{properties}{$prop},
+        {
+            type  => 'array',
+            items => {
+                type       => 'object',
+                properties => {
+                    id => { type => 'integer' },
+                },
+            },
+        },
+        "entry_updatable has $prop property"
+    );
+    ok(!exists $json{v5}{components}{schemas}{page_updatable}{properties}{$prop}, "page_updatable does not have $prop property");
 }
 
 # asset
