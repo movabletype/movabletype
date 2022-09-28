@@ -34,6 +34,32 @@ sub endpoints {
             requires_login => 0,
         },
         {
+            # The difference between v4 and v5 is that v5 has new openapi_handler property.
+            # There is no difference in other properties. Therefore handler uses v4 endpoint.
+            id              => 'list_content_data',
+            route           => '/sites/:site_id/contentTypes/:content_type_id/data',
+            verb            => 'GET',
+            version         => 5,
+            handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::v5::ContentData::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'content_data,content_data',
+            },
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'modified_on',
+                sortOrder    => 'descend',
+                searchFields => 'identifier',
+                filterKeys   => 'status',
+            },
+            error_codes => {
+                403 => 'Do not have permission to retrieve the list of content data.',
+            },
+            requires_login => 0,
+        },
+        {
             id              => 'list_text_filters',
             route           => '/textFilters',
             version         => 5,
