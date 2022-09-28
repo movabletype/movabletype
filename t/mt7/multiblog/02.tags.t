@@ -556,3 +556,32 @@ A Rainy Day
 { entries => [1] }
 --- access_overrides
 { 1 => 2 }
+
+=== MTC-28585 MTInclude after MTTags does not cause php warnings
+--- template
+<MTTags glue=','><MTTagName> <MTTagRank></MTTags>
+<mt:Include module="template-module">
+--- expected
+anemones 6
+template-module:2
+
+=== MTC-28585 mt:MultiBlogIfLocalBlog never be TRUE in context mode
+--- SKIP
+--- template
+<mt:MultiBlog mode="context"><mt:MultiBlogLocalBlog><MTTags glue=','>[<mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog>]</MTTags></mt:MultiBlogLocalBlog></mt:MultiBlog>
+--- expected
+[]
+--- access_overrides
+{ 1 => 2, 2 => 2 }
+
+=== MTC-28585 mt:MultiBlogIfLocalBlog never be TRUE  in loop mode
+--- SKIP
+--- skip_php
+--- template
+<mt:MultiBlog mode="loop"><mt:MultiBlogLocalBlog><MTTags glue=','>[<mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog>]</MTTags></mt:MultiBlogLocalBlog>
+</mt:MultiBlog>
+--- expected
+[]
+[]
+--- access_overrides
+{ 1 => 2, 2 => 2 }
