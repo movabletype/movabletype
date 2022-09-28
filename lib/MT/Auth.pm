@@ -74,26 +74,24 @@ BEGIN {
 
 sub validate_credentials {
     my $class = shift;
-    my ($ctx) = @_;
-    my $app   = MT->instance;
+    my ($ctx, $opts) = @_;
+    my $app = MT->instance;
 
-    my $res = _handle( 'validate_credentials', @_ );
+    my %param = (
+        result => _handle('validate_credentials', @_),
+    );
 
-    if ( $res != MT::Auth::SUCCESS() ) {
+    if ($param{result} != MT::Auth::SUCCESS()) {
         require MT::Lockout;
-        my $user = $ctx->{username};
-
-        if ( MT::Lockout->is_locked_out( $app, $app->remote_ip, $user ) ) {
-            return MT::Auth::LOCKED_OUT();
-        }
-
-        MT::Lockout->process_login_result( $app, $app->remote_ip, $user,
-            $res );
+        return MT::Auth::LOCKED_OUT()
+            if MT::Lockout->is_locked_out($app, $app->remote_ip, $ctx->{username});
     }
 
-    $app->run_callbacks( 'post_signin.app', $app, $res, $ctx );
+    unless ((ref $opts || '') eq 'HASH' && $opts->{skip_callbacks}) {
+        $app->run_callbacks('validate_credentials', $app, \%param, $ctx);
+    }
 
-    $res;
+    $param{result};
 }
 
 sub task_synchronize {

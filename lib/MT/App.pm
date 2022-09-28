@@ -1080,6 +1080,20 @@ sub run_callbacks {
         };
         MT->add_callback( 'post_save',   0, $app, \&_cb_mark_blog );
         MT->add_callback( 'post_remove', 0, $app, \&_cb_mark_blog );
+        MT->add_callback( 'validate_credentials', 5, $app, sub {
+            my ($cb, $app, $param, $ctx) = @_;
+
+            if ($param->{result} == MT::Auth::SUCCESS()) {
+                return 1;
+            }
+
+            require MT::Lockout;
+            MT::Lockout->process_login_result(
+                $app, $app->remote_ip, $ctx->{username},
+                $param->{result});
+
+            1;
+        });
         MT->add_callback( 'MT::Blog::post_remove', 0, $app,
             \&_cb_unmark_blog );
         MT->add_callback( 'MT::Config::post_save', 0, $app,
@@ -2156,6 +2170,9 @@ sub login {
     }
 
     my $res = MT::Auth->validate_credentials($ctx) || MT::Auth::UNKNOWN();
+    $app->run_callbacks('post_signin.app', $app, $res, $ctx)
+        unless $res == MT::Auth::LOCKED_OUT();
+
     my $user = $ctx->{username};
 
     if ( $res == MT::Auth::UNKNOWN() ) {
