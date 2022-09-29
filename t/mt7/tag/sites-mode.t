@@ -15,8 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-# plan tests => (1 + 2) * blocks;
-plan tests => 1 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
@@ -230,7 +229,7 @@ $vars->{blog_02_id}    = $blog_02->id;
 
 MT::Test::Tag->run_perl_tests( $site_01->id );
 
-# MT::Test::Tag->run_php_tests($site_01->id);
+MT::Test::Tag->run_php_tests($site_01->id);
 
 __END__
 
