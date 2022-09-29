@@ -232,10 +232,11 @@ sub edit {
             $param->{ 'nwc_smart_replace_' . ($blog->smart_replace || 0) } = 1;
             $param->{'nwc_replace_none'} = ($blog->smart_replace || 0) == 2;
 
+            $param->{disabled_popup}                                      = MT->config('DisableImagePopup') ? 1 : 0;
             $param->{can_popup}                                           = $blog->can_popup_image();
-            $param->{popup}                                               = $blog->image_default_popup ? 1                         : 0;
-            $param->{popup_link}                                          = $param->{can_popup}        ? $blog->image_default_link : 2;
-            $param->{make_thumb}                                          = $blog->image_default_thumb ? 1                         : 0;
+            $param->{popup}                                               = $blog->image_default_popup                       ? 1                         : 0;
+            $param->{popup_link}                                          = $param->{can_popup} && $blog->image_default_link ? $blog->image_default_link : 2;
+            $param->{make_thumb}                                          = $blog->image_default_thumb                       ? 1                         : 0;
             $param->{ 'align_' . ($blog->image_default_align || 'none') } = 1;
             $param->{thumb_width}                                         = $blog->image_default_width || 0;
 
