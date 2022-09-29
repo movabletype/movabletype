@@ -566,7 +566,6 @@ anemones 6
 template-module:2
 
 === MTC-28598 mt:MultiBlogIfLocalBlog never be TRUE in context mode
---- SKIP
 --- template
 <mt:MultiBlog mode="context">:<MTTags glue=','><mt:BlogID><mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog></MTTags></mt:MultiBlog>
 --- expected
@@ -575,7 +574,6 @@ template-module:2
 { 1 => 2, 2 => 2 }
 
 === MTC-28598 mt:MultiBlogIfLocalBlog never be TRUE  in loop mode
---- SKIP
 --- skip_php
 --- template
 <mt:MultiBlog mode="loop">:<MTTags glue=','><mt:BlogID><mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog></MTTags></mt:MultiBlog>

@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
-    $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count', 'all_tag_count', 'include_blogs', 'exclude_blogs', 'blog_ids', '__out'), common_loop_vars());
+    $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count', 'all_tag_count', 'include_blogs', 'exclude_blogs', 'blog_ids', '__out', 'local_blog_id'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
 
@@ -18,6 +18,10 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
 
         require_once('multiblog.php');
         multiblog_block_wrapper($args, $content, $ctx, $repeat);
+
+        # Fix for MTMultiBlogIfLocalBlog which should never return
+        # true with MTTags block because tags are cross-blog
+        $ctx->stash('local_blog_id', 0);
 
         $ctx->stash('include_blogs', isset($args['include_blogs']) ? $args['include_blogs'] : null);
         $ctx->stash('exclude_blogs', isset($args['exclude_blogs']) ? $args['exclude_blogs'] : null);
