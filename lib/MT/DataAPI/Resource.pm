@@ -765,6 +765,31 @@ sub schema {
     };
 }
 
+package MT::DataAPI::Resource::DataType::Float;
+
+sub from_object {
+    my ( $objs, $hashs, $f ) = @_;
+    my $name = $f->{name};
+    foreach my $h (@$hashs) {
+        $h->{$name} = $h->{$name} if defined $h->{$name};
+    }
+}
+
+sub to_object {
+    my ( $hashs, $objs, $f ) = @_;
+    my $name = $f->{alias} || $f->{name};
+    foreach my $o (@$objs) {
+        $o->$name( $o->$name ) if defined $o->$name;
+    }
+}
+
+sub schema {
+    return +{
+        type   => 'number',
+        format => 'float',
+    };
+}
+
 package MT::DataAPI::Resource::DataType::Boolean;
 
 use boolean ();
@@ -964,6 +989,11 @@ If this package is specified to the type, the value will be converted by L<MT::D
 =item MT::DataAPI::Resource::DataType::Integer
 
 If this package is specified to the type, the value will be converted to an integer.
+If C<field> was given, this value passed to L<MT::DataAPI::Resource-E<gt>from_object> as a second argument.
+
+=item MT::DataAPI::Resource::DataType::Float
+
+If this package is specified to the type, the value will be converted to a float.
 If C<field> was given, this value passed to L<MT::DataAPI::Resource-E<gt>from_object> as a second argument.
 
 =item MT::DataAPI::Resource::DataType::Boolean
