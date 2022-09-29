@@ -11,6 +11,10 @@ use warnings;
 use MT::DataAPI::Resource;
 use MT::DataAPI::Resource::Common;
 
+sub updatable_fields {
+    [];    # Nothing. Same as v4.
+}
+
 sub fields {
     [
         {

@@ -9,6 +9,10 @@ package MT::DataAPI::Resource::v5::Blog;
 use strict;
 use warnings;
 
+sub updatable_fields {
+    [];    # Nothing. Same as v4.
+}
+
 sub fields {
     [
         {

@@ -8,6 +8,10 @@ package MT::DataAPI::Resource::v5::ContentData;
 use strict;
 use warnings;
 
+sub updatable_fields {
+    [];    # Nothing. Same as v4.
+}
+
 sub fields {
     [
         {
