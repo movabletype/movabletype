@@ -74,10 +74,13 @@ for my $prop (qw/user role/) {
 
 # blog / website
 for my $component (qw/blog website/) {
-    for my $prop (qw/basenameLimit junkFolderExpiry junkScoreThreshold listOnIndex maxRevisionsEntry maxRevisionsTemplate smartReplace wordsInExcerpt/) {
+    for my $prop (qw/basenameLimit junkFolderExpiry listOnIndex maxRevisionsEntry maxRevisionsTemplate smartReplace wordsInExcerpt/) {
         is($json{v4}{components}{schemas}{$component}{properties}{$prop}{type}, 'string', "$component $prop is string type in v4");
         is($json{v5}{components}{schemas}{$component}{properties}{$prop}{type}, 'integer', "$component $prop is integer type in v5");
     }
+    is($json{v4}{components}{schemas}{$component}{properties}{junkScoreThreshold}{type}, 'string', "$component junkScoreThreshold is string type in v4");
+    is($json{v5}{components}{schemas}{$component}{properties}{junkScoreThreshold}{type}, 'number', "$component junkScoreThreshold is number type in v5");
+    is($json{v5}{components}{schemas}{$component}{properties}{junkScoreThreshold}{format}, 'float', "$component junkScoreThreshold is float format in v5");
     is($json{v4}{components}{schemas}{$component}{properties}{parent}{properties}{id}{type}, 'string', "$component parent/id is string type in v4");
     is($json{v5}{components}{schemas}{$component}{properties}{parent}{properties}{id}{type}, 'integer', "$component parent/id is integer type in v5");
 }

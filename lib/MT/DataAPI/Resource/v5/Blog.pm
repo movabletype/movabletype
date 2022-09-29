@@ -25,7 +25,7 @@ sub fields {
         },
         {
             name => 'junkScoreThreshold',
-            type => 'MT::DataAPI::Resource::DataType::Integer',
+            type => 'MT::DataAPI::Resource::DataType::Float',
         },
         {
             name => 'listOnIndex',
