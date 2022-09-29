@@ -116,6 +116,8 @@ my @suite = ({
 
 my $json_encoder = JSON->new->canonical;
 
+my $org_spec = $app->config->GlobalSanitizeSpec;
+
 for my $type (qw(entry page)) {
     subtest '_type:' . $type => sub {
         for my $data (@suite) {
@@ -124,8 +126,6 @@ for my $type (qw(entry page)) {
                 ($data->{config} ? (config => $data->{config}) : ()),
             });
             subtest $p => sub {
-                my $org_spec = $app->config->GlobalSanitizeSpec;
-                local $app->config->{__var}{ lc('GlobalSanitizeSpec') } = $org_spec;
                 if (exists $data->{config} && exists $data->{config}{GlobalSanitizeSpec}) {
                     my $data_spec = $data->{config}{GlobalSanitizeSpec};
                     $test_env->update_config(GlobalSanitizeSpec => $data_spec);
@@ -148,6 +148,7 @@ for my $type (qw(entry page)) {
                 if ($data->{unlike}) {
                     $app->content_unlike($data->{unlike}, 'not contains');
                 }
+                $test_env->update_config(GlobalSanitizeSpec => $org_spec);
             };
         }
     };
