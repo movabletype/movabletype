@@ -634,6 +634,7 @@ use_ok('MT::DataAPI::Resource::v5::Template');
 use_ok('MT::DataAPI::Resource::v5::TemplateMap');
 use_ok('MT::DataAPI::Resource::v5::User');
 use_ok('MT::DataAPI::Resource::v5::Website');
+use_ok('MT::DataAPI::Endpoint::v5::ContentData');
 use_ok('MT::DataAPI::Endpoint::v5::Entry');
 use_ok('MT::DataAPI::Endpoint::v5::TextFilter');
 
