@@ -583,7 +583,6 @@ template-module:2
 { 1 => 2, 2 => 2 }
 
 === MTC-28598 mt:MultiBlogLocalBlog inside mt:Tags
---- skip_php
 --- template
 <mt:MultiBlog mode="context">:<MTTags glue=','><mt:BlogID>:<mt:MultiBlogLocalBlog><mt:BlogID></mt:MultiBlogLocalBlog></MTTags></mt:MultiBlog>
 --- expected
