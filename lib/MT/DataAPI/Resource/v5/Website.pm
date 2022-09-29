@@ -11,6 +11,10 @@ use warnings;
 
 use base qw(MT::DataAPI::Resource::v5::Blog);
 
+sub fields {
+    $_[0]->SUPER::fields();
+}
+
 1;
 
 __END__
