@@ -2932,7 +2932,7 @@ sub build_blog_selector {
 
     # Load favorites blogs
     my @fav_blogs = @{ $auth->favorite_blogs || [] };
-    my $max_fav_sites = MT->config->MaxFavoriteSiteShortcuts || 5;
+    my $max_fav_sites = MT->config->MaxFavoriteSites || 5;
     my $max_load = $max_fav_sites + 1;
     if ( scalar @fav_blogs > $max_fav_sites ) {
         @fav_blogs = @fav_blogs[ 0 .. $max_fav_sites - 1 ];
@@ -4290,11 +4290,11 @@ sub add_to_favorite_sites {
     my @current = @{ $user->favorite_sites || [] };
 
     return if @current && ( $current[0] == $fav );
-    my $max_fav_sites = (MT->config->MaxFavoriteSites || 10) * 2;
+    my $max_fav_sites_to_remember = (MT->config->MaxFavoriteSites || 5) * 2 * 2;
     @current = grep { $_ != $fav } @current;
     unshift @current, $fav;
-    @current = @current[ 0 .. $max_fav_sites - 1 ]
-        if @current > $max_fav_sites;
+    @current = @current[ 0 .. $max_fav_sites_to_remember - 1 ]
+        if @current > $max_fav_sites_to_remember;
 
     $user->favorite_sites( \@current );
     $user->save;
@@ -4322,11 +4322,11 @@ sub add_to_favorite_blogs {
     my @current = @{ $auth->favorite_blogs || [] };
 
     return if @current && ( $current[0] == $fav );
-    my $max_fav_sites = MT->config->MaxFavoriteSites || 10;
+    my $max_fav_sites_to_remember = (MT->config->MaxFavoriteSites || 5) * 2;
     @current = grep { $_ != $fav } @current;
     unshift @current, $fav;
-    @current = @current[ 0 .. $max_fav_sites - 1 ]
-        if @current > $max_fav_sites;
+    @current = @current[ 0 .. $max_fav_sites_to_remember - 1 ]
+        if @current > $max_fav_sites_to_remember;
 
     $auth->favorite_blogs( \@current );
     $auth->save;
@@ -4367,11 +4367,11 @@ sub add_to_favorite_websites {
     my @current = @{ $auth->favorite_websites || [] };
 
     return if @current && ( $current[0] == $fav );
-    my $max_fav_sites = MT->config->MaxFavoriteSites || 10;
+    my $max_fav_sites_to_remember = (MT->config->MaxFavoriteSites || 5) * 2;
     @current = grep { $_ != $fav } @current;
     unshift @current, $fav;
-    @current = @current[ 0 .. $max_fav_sites - 1 ]
-        if @current > $max_fav_sites;
+    @current = @current[ 0 .. $max_fav_sites_to_remember - 1 ]
+        if @current > $max_fav_sites_to_remember;
 
     $auth->favorite_websites( \@current );
     $auth->save;
