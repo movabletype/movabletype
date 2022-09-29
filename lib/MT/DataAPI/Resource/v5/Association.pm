@@ -45,7 +45,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::v2::Association - Movable Type class for resources definitions of the MT::Association.
+MT::DataAPI::Resource::v5::Association - Movable Type class for resources definitions of the MT::Association.
 
 =head1 AUTHOR & COPYRIGHT
 
