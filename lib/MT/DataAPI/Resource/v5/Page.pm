@@ -8,13 +8,7 @@ package MT::DataAPI::Resource::v5::Page;
 use strict;
 use warnings;
 
-use MT::DataAPI::Resource::v5::Entry;
-
-sub fields {
-    [
-        @{ MT::DataAPI::Resource::v5::Entry::fields() },
-    ];
-}
+use base qw(MT::DataAPI::Resource::v5::Entry);
 
 1;
 
