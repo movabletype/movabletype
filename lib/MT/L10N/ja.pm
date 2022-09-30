@@ -486,7 +486,6 @@ use vars qw( @ISA %Lexicon );
 	'Email Address is invalid.' => '不正なメールアドレスです。',
 	'Email Address is required for password reset.' => 'メールアドレスはパスワードをリセットするために必要です。',
 	'Email Address' => '電子メール',
-	'Error sending mail: [_1]' => 'メールを送信できませんでした: [_1]',
 	'Failed login attempt by anonymous user' => '無名のユーザーがサインインしようとしました。',
 	'Failed to open pid file [_1]: [_2]' => 'PIDファイル[_1]を開くことができません: [_2]',
 	'Failed to send reboot signal: [_1]' => 'プロセス再起動シグナルを送信することができませんでした: [_1]',
@@ -608,6 +607,7 @@ use vars qw( @ISA %Lexicon );
 	'None' => 'なし',
 	'Notification Dashboard' => 'Notification Dashboard',
 	'Page' => 'ウェブページ',
+	'Permission denied' => '権限がありません。',
 	'Permissions' => '権限',
 	'Plugins' => 'プラグイン',
 	'Profile' => 'ユーザー情報',
@@ -1119,6 +1119,8 @@ use vars qw( @ISA %Lexicon );
 	'Parent Site' => '親サイト',
 	'Theme' => 'テーマ',
 	'__ASSET_COUNT' => 'アセット数',
+	'__INTEGER_FILTER_EQUAL' => 'である',
+	'__INTEGER_FILTER_NOT_EQUAL' => 'ではない',
 	'__PAGE_COUNT' => 'ウェブページ数',
 	q{Invalid archive_type '[_1]' in Archive Mapping '[_2]'} => q{アーカイブマッピング'[_2]'の'[_1]'は無効なアーカイブタイプです},
 	q{Invalid category_field '[_1]' in Archive Mapping '[_2]'} => q{アーカイブマッピング'[_2]'の'[_1]'は無効なカテゴリフィールドです},
@@ -1391,7 +1393,6 @@ use vars qw( @ISA %Lexicon );
 	'Failed to save filter: Label is required.' => 'フィルタの保存に失敗しました。ラベルは必須です。',
 	'Failed to save filter: [_1]' => 'フィルタの保存に失敗しました:[_1]',
 	'No such filter' => 'フィルタが見つかりません。',
-	'Permission denied' => '権限がありません。',
 	'Removed [_1] filters successfully.' => '[_1]件のフィルタを削除しました。',
 	'[_1] ( created by [_2] )' => '作成:[_2] - [_1]',
 
@@ -1670,6 +1671,7 @@ use vars qw( @ISA %Lexicon );
 	q{Removing Site Path for the site '[_1]' (ID:[_2])...} => q{'[_1]'(ID:[_2])のサイトパスを消去しています...},
 	q{Site(s) (ID:[_1]) was/were successfully exported by user '[_2]'} => q{'[_2]'がサイト(ID:[_1])をエクスポートしました。},
 	q{Successfully imported objects to Movable Type system by user '[_1]'} => q{'[_1]'がMovable Typeシステムにデータをインポートしました。},
+	q{The password for the user '[_1]' has been recovered.} => q{ユーザー「[_1]」のパスワードが再設定されました。},
 	q{User '[_1]' (user #[_2]) does not have email address} => q{ユーザー'[_1]'(ID:[_2])はメールアドレスがありません},
 
 ## lib/MT/CMS/User.pm
@@ -3035,6 +3037,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Util/Mail.pm
 	'Error loading mail module: [_1].' => 'メールモジュールのロードに失敗しました: [_1]',
+	'Error sending mail: [_1]' => 'メールを送信できませんでした: [_1]',
 
 ## lib/MT/Util/YAML.pm
 	'Cannot load YAML module: [_1]' => 'YAMLモジュールをロードできません: [_1]',
@@ -3419,6 +3422,7 @@ use vars qw( @ISA %Lexicon );
 ## plugins/Comments/lib/MT/App/Comments.pm
 	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">元のページに戻る</a>',
 	'All required fields must be populated.' => '必須フィールドのすべてに正しい値を設定してください。',
+	'An error occurred.' => 'エラーが発生しました。',
 	'Comment save failed with [_1]' => 'コメントを保存できませんでした: [_1]',
 	'Comment text is required.' => 'コメントを入力していません。',
 	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のユーザー情報を更新できませんでした: [_1]',
@@ -4237,7 +4241,6 @@ use vars qw( @ISA %Lexicon );
 	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{新しくインデックスファイルを公開するパスを入力して下さい。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog or C:\www\public_html\blog},
 
 ## tmpl/cms/dialog/asset_edit.tmpl
-	'An error occurred.' => 'エラーが発生しました。',
 	'Close (x)' => '閉じる (x)',
 	'Edit Asset' => 'アセットの編集',
 	'Edit Image' => '画像を編集',
@@ -4358,7 +4361,6 @@ use vars qw( @ISA %Lexicon );
 	'Confirm New Password' => '新しいパスワード確認',
 	'Enter the new password.' => '新しいパスワードを入力してください。',
 	'New Password' => '新しいパスワード',
-	'The password for the user \'[_1]\' has been recovered.' => 'ユーザー「[_1]」のパスワードが再設定されました。',
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Queue.' => 'すべてのテンプレートを公開キュー経由でスタティックパブリッシングします。',
@@ -5065,8 +5067,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1] hours' => 'が[_1]',
 	'_FILTER_DATE_DAYS' => 'が[_1]',
 	'__FILTER_DATE_ORIGIN' => 'が[_1]',
-	'__INTEGER_FILTER_EQUAL' => 'である',
-	'__INTEGER_FILTER_NOT_EQUAL' => 'ではない',
 	'__STRING_FILTER_EQUAL' => 'である',
 	'__TIME_FILTER_HOURS' => '時間以内',
 	'contains' => 'を含む',
