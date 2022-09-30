@@ -14,8 +14,8 @@ use vars qw( %Lexicon );
 
 %Lexicon = (
 
-## plugins/GoogleAnalytics/config.yaml
-	'Site statistics plugin using Google Analytics.' => 'Google Analyticsからアクセス統計データを取得します。',
+## plugins/GoogleAnalyticsV4/config.yaml
+	'Site statistics plugin using Google Analytics for V4.' => 'Google Analytics V4からアクセス統計データを取得します。',
 
 ## plugins/GoogleAnalyticsV4/lib/GoogleAnalyticsV4/App.pm
 	'A Perl module required for using Google Analytics API is missing: [_1].' => 'Google アナリティクス APIを利用するのに必要なPerlモジュールのうちいくつかがありません: [_1]',
@@ -43,11 +43,11 @@ use vars qw( %Lexicon );
 	'Select profile' => 'プロファイルを選択してください',
 
 ## plugins/GoogleAnalyticsV4/tmpl/web_service_config.tmpl
-	'Google Analytics' => 'Google Analytics',
 	'(No profile selected)' => '（プロファイルが選択されていません）',
 	'Client ID of the OAuth2 application' => 'クライアント ID',
 	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'Client IDあるいはClient secretが更新されていますが、プロファイルを選択し直していません。設定を保存してもよろしいですか？',
 	'Client secret of the OAuth2 application' => 'クライアント シークレット',
+	'Google Analytics 4' => 'Google Analytics 4',
 	'Google Analytics profile' => '使用するGoogle Analyticsのプロファイル',
 	'OAuth2 settings' => 'OAuth2の設定',
 	'Other Google account' => '別のアカウントを利用する',

@@ -3037,6 +3037,10 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Util/Mail.pm
 	'Error loading mail module: [_1].' => 'メールモジュールのロードに失敗しました: [_1]',
 	'Error sending mail: [_1]' => 'メールを送信できませんでした: [_1]',
+	'Mail was sent successfully' => 'メールが正常に送信されました',
+	'Recipient: [_1]' => '送信先: [_1]',
+	'Subject: [_1]' => '件名: [_1]',
+	q{MT::Mail doesn't support file attachments. Please change MailModule setting.} => q{MT::Mail は添付ファイルをサポートしていません。MailModule の設定を変更してください。},
 
 ## lib/MT/Util/YAML.pm
 	'Cannot load YAML module: [_1]' => 'YAMLモジュールをロードできません: [_1]',
@@ -3510,6 +3514,9 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/GoogleAnalytics/lib/GoogleAnalytics/Provider.pm
 	'An error occurred when retrieving statistics data: [_1]: [_2]' => '統計データの取得ができません: [_1]: [_2]',
+
+## plugins/GoogleAnalyticsV4/lib/GoogleAnalyticsV4/App.pm
+	'The resource name of the property | The measurement id of the WebStreamData' => 'プロパティのリソース名 | データストリームのID',
 
 ## plugins/OpenID/lib/MT/Auth/GoogleOpenId.pm
 	'A Perl module required for Google ID commenter authentication is missing: [_1].' => 'Google ID認証を利用するのに必要なPerlモジュールのうちいくつがありません: [_1]',
