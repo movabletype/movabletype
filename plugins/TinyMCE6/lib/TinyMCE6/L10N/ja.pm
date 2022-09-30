@@ -16,9 +16,6 @@ use vars qw( %Lexicon );
 
 %Lexicon = (
 
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/autosave/plugin.js
-	'You have unsaved changes are you sure you want to navigate away?' => '保存していない変更があります。移動してもよろしいですか？',
-
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/autosave/plugin.min.js
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/compat3x/utils/editable_selects.js
@@ -68,7 +65,10 @@ use vars qw( %Lexicon );
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => '全画面表示',
 
-## plugins/TinyMCE/config.yaml
+## mt-static/plugins/TinyMCE6/tiny_mce/plugins/autosave/plugin.js
+	'You have unsaved changes are you sure you want to navigate away?' => '保存していない変更があります。移動してもよろしいですか？',
+
+## plugins/TinyMCE6/config.yaml
 	'Default WYSIWYG editor.' => '既定のWYSIWYGエディタ',
 	'TinyMCE' => 'TinyMCE',
 

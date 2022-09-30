@@ -3051,8 +3051,8 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Website.pm
 	'Child Site Count' => '子サイト数',
 	'First Website' => 'First Website',
-	'Show only Parent Site' => '親サイトだけを表示',
 	'Show only Child Site' => '子サイトだけを表示',
+	'Show only Parent Site' => '親サイトだけを表示',
 
 ## lib/MT/Worker/Publish.pm
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- 完了 ([_1]ファイル - [_2]秒)',
@@ -3152,11 +3152,13 @@ use vars qw( @ISA %Lexicon );
 	'File Name' => 'ファイル名',
 	'No Preview Available.' => 'プレビューは利用できません。',
 
+## mt-static/js/contenttype/contenttype.js
+	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
+	'Duplicate' => '複製',
+
 ## mt-static/js/contenttype/tag/content-field.tag
 	'ContentField' => 'コンテンツフィールド',
 	'Move' => '移動',
-	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
-	'Duplicate' => '複製',
 
 ## mt-static/js/contenttype/tag/content-fields.tag
 	'Allow users to change the display and sort of fields by display option' => 'ユーザーにフィールドの並び替えや表示非表示の変更を許可する',
@@ -3185,8 +3187,8 @@ use vars qw( @ISA %Lexicon );
 	q{Are you sure you want to remove filter '[_1]'?} => q{フィルタ'[_1]'を削除してよろしいですか?},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
-	'[_1] rows' => '[_1]件',
 	'Show' => '表示件数',
+	'[_1] rows' => '[_1]件',
 
 ## mt-static/js/listing/tag/display-options.tag
 	'Column' => '表示項目',
@@ -3733,8 +3735,8 @@ use vars qw( @ISA %Lexicon );
 	'Everything' => 'すべて',
 	'Export (e)' => 'エクスポート',
 	'No size limit' => '分割しない',
-	'Reset' => 'リセット',
 	'Not all the tables are exported. If you need to back up everything (including config, session values, logs, and so on), consider using a database utility. You can also download public logs from the <a href="[_1]">Log</a> menu.' => 'エクスポートには含まれない情報もあります。設定やセッション情報、ログなども含めた完全なバックアップが必要な場合はデータベース付属のユーティリティの利用を検討してください。管理画面から確認できるログについては<a href="[_1]">ログ</a>メニューからもダウンロードできます。',
+	'Reset' => 'リセット',
 	'Target File Size' => '出力ファイルのサイズ',
 	'What to Export' => 'エクスポート対象',
 	q{Don't compress} => q{圧縮しない},

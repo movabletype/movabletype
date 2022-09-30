@@ -24,8 +24,8 @@ use vars qw( %Lexicon );
 	'Please enter the embed code here.' => '埋め込みコードを入力してください',
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/header.js
-	'Heading' => '見出し',
 	'Heading Level' => '見出し',
+	'Heading' => '見出し',
 	'Please enter the Header Text here.' => '見出しを入力してください。',
 
 ## mt-static/plugins/BlockEditor/lib/js/fields/horizon.js
@@ -42,8 +42,8 @@ use vars qw( %Lexicon );
 ## mt-static/plugins/BlockEditor/lib/js/modal_window.js
 
 ## plugins/BlockEditor/config.yaml
-	'Block Editor.' => 'ブロックエディタ',
 	'Block Editor' => 'ブロックエディタ',
+	'Block Editor.' => 'ブロックエディタ',
 
 ## plugins/BlockEditor/lib/BlockEditor/App.pm
 
@@ -57,12 +57,10 @@ use vars qw( %Lexicon );
 ## plugins/BlockEditor/tmpl/cms/dialog/multi_asset_options.tmpl
 
 ## plugins/BlockEditor/tmpl/cms/field_html/field_html_multi_line_text.tmpl
-	'Sort' => '並び替え',
-	'No block in this field.' => 'ブロックがありません。',
-	'Changing to plain text is not possible to return to the block edit.' => '他の入力フォーマットへ変換すると、ブロック構造が失われます。',
 	'Changing to block editor is not possible to result return to your current document.' => 'ブロックエディタに変換すると、現在のHTML構造に戻れない可能性があります。',
-
-## plugins/BlockEditor/tmpl/cms/include/async_asset_list.tmpl
+	'Changing to plain text is not possible to return to the block edit.' => '他の入力フォーマットへ変換すると、ブロック構造が失われます。',
+	'No block in this field.' => 'ブロックがありません。',
+	'Sort' => '並び替え',
 
 ## plugins/BlockEditor/tmpl/cms/include/insert_options.tmpl
 	'Alt' => '代替テキスト',
