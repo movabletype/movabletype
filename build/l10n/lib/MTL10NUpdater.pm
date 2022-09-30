@@ -9,6 +9,9 @@ use File::Basename;
 use Encode;
 use YAML::Tiny;
 use Regexp::Trie;
+use Storable;
+
+my %CoreLexicon;
 
 sub new {
     my ($class, %args) = @_;
@@ -293,6 +296,7 @@ sub load_current_l10n {
 
 sub load_core_l10n {
     my ($self, $lang) = @_;
+    return Storable::dclone($CoreLexicon{$lang}) if $CoreLexicon{$lang};
     my $file = $self->core_l10n_file($lang);
     if (!-f $file) {
         warn "Core l10n file is missing: $file";
@@ -304,7 +308,7 @@ sub load_core_l10n {
     eval $module or die "Failed to load core l10n module $lang: $@";
     no strict 'refs';
     my %lexicon = %{"$package\::Lexicon"};
-    \%lexicon;
+    $CoreLexicon{$lang} = \%lexicon;
 }
 
 sub find_phrases {
