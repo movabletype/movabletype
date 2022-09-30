@@ -4132,7 +4132,6 @@ use vars qw( @ISA %Lexicon );
 	'Note: This option is currently ignored because outbound notification pings are disabled system-wide.' => '備考: システム外部ping通知がシステムレベルで無効のため、このオプションは現在無効となっています。',
 	'Notify ping services of [_1] updates' => 'サイト更新pingサービス通知',
 	'Others:' => 'その他:',
-	'Google Analytics 4 (GA4) is not supported.' => 'Google Analytics 4（GA4) には対応していません',
 
 ## tmpl/cms/content_data/select_list.tmpl
 	'No Content Type.' => 'コンテンツタイプがありません',
@@ -4784,8 +4783,6 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to remove this template map?' => 'テンプレートマップを削除してよろしいですか?',
 	'Category Field' => 'カテゴリフィールド',
 	'Code Highlight' => 'コードハイライト',
-	'Content field' => 'コンテンツフィールド',
-	'Copy Unique ID' => 'ユニークIDのコピー',
 	'Create Archive Mapping' => '新しいアーカイブマッピングを作成',
 	'Create Content Type Archive Template' => 'コンテンツタイプアーカイブテンプレートの作成',
 	'Create Content Type Listing Archive Template' => 'コンテンツタイプリストアーカイブテンプレートの作成',
@@ -4794,7 +4791,6 @@ use vars qw( @ISA %Lexicon );
 	'Create Index Template' => 'インデックステンプレートの作成',
 	'Create Page Archive Template' => 'ウェブページアーカイブテンプレートの作成',
 	'Create Template Module' => 'テンプレートモジュールの作成',
-	'Create a new Content Type?' => 'コンテンツタイプを作成する',
 	'Custom Index Template' => 'カスタムインデックステンプレート',
 	'Date & Time Field' => '日付と時刻フィールド',
 	'Disabled (<a href="[_1]">change publishing settings</a>)' => '無効(<a href="[_1]">変更する</a>)',
@@ -4824,7 +4820,6 @@ use vars qw( @ISA %Lexicon );
 	'Save &amp; Publish' => '保存と再構築',
 	'Save Changes (s)' => '変更を保存 (s)',
 	'Save and Publish this template (r)' => 'このテンプレートを保存して再構築 (r)',
-	'Select Content Field' => 'コンテンツフィールドを選択',
 	'Server Side Include' => 'サーバーサイドインクルード',
 	'Statically (default)' => 'スタティック(既定)',
 	'Template Body' => 'テンプレートの内容',
