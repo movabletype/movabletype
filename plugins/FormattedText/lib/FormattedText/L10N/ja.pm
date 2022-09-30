@@ -35,7 +35,6 @@ use vars qw( %Lexicon );
 ## plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl
 	'Edit Boilerplate' => '定型文の編集',
 	'Save changes to this boilerplate (s)' => '定型文への変更を保存 (s)',
-	q{The boilerplate '[_1]' is already in use in this blog.} => q{[_1]という定型文は既にこのブログに存在しています。},
 	'This boilerplate has been saved.' => '定型文を保存しました。',
 
 ## plugins/FormattedText/tmpl/cms/list_formatted_text.tmpl
