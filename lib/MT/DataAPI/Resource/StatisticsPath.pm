@@ -10,6 +10,9 @@ use strict;
 use warnings;
 
 sub fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     return [{
             name   => 'path',
             schema => {

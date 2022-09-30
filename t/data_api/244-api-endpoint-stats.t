@@ -22,7 +22,7 @@ BEGIN {
 
 use MT::Test;
 use MT::App::DataAPI;
-use MT::DataAPI::Endpoint::Stats;
+use MT::DataAPI::Endpoint::v1::Stats;
 
 $test_env->prepare_fixture('db_data');
 
@@ -47,7 +47,7 @@ subtest 'fill_in_archive_info' => sub {
         for my $data (@$suite) {
             subtest $data->{note} => sub {
                 my $result
-                    = MT::DataAPI::Endpoint::Stats::fill_in_archive_info(
+                    = MT::DataAPI::Endpoint::v1::Stats::fill_in_archive_info(
                     $data->{input}, $blog );
                 is_deeply( $result, $data->{output}, 'filled' );
                 done_testing();

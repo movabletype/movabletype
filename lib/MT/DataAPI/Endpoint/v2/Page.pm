@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use MT::Util;
-use MT::DataAPI::Endpoint::Entry;
+use MT::DataAPI::Endpoint::v1::Entry;
 use MT::DataAPI::Endpoint::v2::Entry;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
@@ -448,7 +448,7 @@ sub create {
     MT::Util::translate_naughty_words($new_page);
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $site,
+        = MT::DataAPI::Endpoint::v1::Entry::build_post_save_sub( $app, $site,
         $new_page, $orig_page );
 
     # Check whether or not folder and assets can attach.
@@ -584,7 +584,7 @@ sub update {
         or return;
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $site,
+        = MT::DataAPI::Endpoint::v1::Entry::build_post_save_sub( $app, $site,
         $new_page, $orig_page );
 
     # Check whether or not folder and assets can attach/detach.

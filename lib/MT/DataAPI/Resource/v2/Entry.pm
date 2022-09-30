@@ -103,7 +103,7 @@ sub _from_object_text {
     my $app  = MT->instance;
     my $user = $app->user;
 
-    if ( $user && $user->id && $app->param('no_text_filter') ) {
+    if ( $user && $user->id && ($app->param('no_text_filter') || $app->param('noTextFilter')) ) {
         return $obj->$col;
     }
     else {

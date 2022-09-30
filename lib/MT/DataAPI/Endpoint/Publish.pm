@@ -113,6 +113,10 @@ DESCRIPTION
 
 sub entries {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     publish_common( $app, $endpoint, \&MT::App::CMS::rebuild_these );
 }
 

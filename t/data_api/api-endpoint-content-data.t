@@ -182,6 +182,22 @@ $ct_with_asset->fields([{
 }]);
 $ct_with_asset->save;
 
+my $ct_with_multi_line_text = MT::Test::Permission->make_content_type(blog_id => $site_id);
+my $multi_line_text_field   = MT::Test::Permission->make_content_field(
+    blog_id         => $site_id,
+    content_type_id => $ct_with_multi_line_text->id,
+    name            => 'Editor',
+    type            => 'multi_line_text',
+);
+$ct_with_multi_line_text->fields([{
+    id        => $multi_line_text_field->id,
+    order     => 1,
+    type      => $multi_line_text_field->type,
+    options   => { label => $multi_line_text_field->name },
+    unique_id => $multi_line_text_field->unique_id,
+}]);
+$ct_with_multi_line_text->save;
+
 $user->permissions(0)->rebuild;
 $user->permissions($site_id)->rebuild;
 
@@ -1133,6 +1149,36 @@ sub normal_tests_for_create {
             $cd;
         },
     });
+
+    test_data_api({
+        note         => 'Retrieve convert_breaks as format field (MTC-26477)',
+        path         => "/v5/sites/$site_id/contentTypes/@{[$ct_with_multi_line_text->id]}/data",
+        method       => 'POST',
+        is_superuser => 1,
+        params       => {
+            content_data => {
+                label => 'Multi line text',
+                data  => [{
+                        id     => $multi_line_text_field->id,
+                        data   => <<'TEXT',
+ただいま試験中
+
+1. 本日は晴天なり
+TEXT
+                        format => 'markdown',
+                    },
+                ],
+            },
+        },
+        complete => sub {
+            my ($data, $body, $header) = @_;
+            my $obj = MT::Util::from_json($body);
+            is($obj->{data}[0]{format}, 'markdown', 'Check format field in the response.');
+            my $cd             = MT->model('cd')->load($obj->{id});
+            my $convert_breaks = MT::Serialize->unserialize($cd->convert_breaks);
+            is($$convert_breaks->{ $multi_line_text_field->id }, 'markdown', 'Check format value in DB.');
+        },
+    });
 }
 
 sub irregular_tests_for_list {
@@ -1261,6 +1307,73 @@ sub normal_tests_for_list {
             },
         }
     );
+
+    test_data_api({
+        note      => 'Retrieve format field by not logged in user (MTC-27955)',
+        path      => "/v5/sites/$site_id/contentTypes/@{[$ct_with_multi_line_text->id]}/data",
+        method    => 'GET',
+        author_id => 0,
+        complete  => sub {
+            my ($data, $body, $header) = @_;
+            my $obj       = MT::Util::from_json($body);
+            my $cd        = MT->model('cd')->load($obj->{items}[0]{id});
+            my $body_text = $obj->{items}[0]{data}[0]{data};
+            my $expected  = Encode::decode_utf8(<<'HTML');
+<p>ただいま試験中</p>
+
+<ol start='1'>
+<li>本日は晴天なり</li>
+</ol>
+HTML
+            my $trim = sub {
+                my ($str) = @_;
+                $str =~ s/\A(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                return $str;
+            };
+            is($trim->($body_text), $trim->($expected));
+            ok(!exists $obj->{items}[0]{data}[0]{format});
+        },
+    });
+
+    test_data_api({
+        note     => 'Retrieve format field by logged in user (MTC-27955)',
+        path     => "/v5/sites/$site_id/contentTypes/@{[$ct_with_multi_line_text->id]}/data",
+        method   => 'GET',
+        complete => sub {
+            my ($data, $body, $header) = @_;
+            my $obj                 = MT::Util::from_json($body);
+            my $cd                  = MT->model('cd')->load($obj->{items}[0]{id});
+            my $body_text = $obj->{items}[0]{data}[0]{data};
+            my $expected  = Encode::decode_utf8(<<'HTML');
+<p>ただいま試験中</p>
+
+<ol start='1'>
+<li>本日は晴天なり</li>
+</ol>
+HTML
+            my $trim = sub {
+                my ($str) = @_;
+                $str =~ s/\A(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                return $str;
+            };
+            is($trim->($body_text), $trim->($expected));
+            ok(exists $obj->{items}[0]{data}[0]{format});
+        },
+    });
+
+    test_data_api({
+        note     => 'noTextFilter=1 with logged in user (MTC-27955)',
+        path     => "/v5/sites/$site_id/contentTypes/@{[$ct_with_multi_line_text->id]}/data",
+        method   => 'GET',
+        params   => { noTextFilter => 1 },
+        complete => sub {
+            my ($data, $body, $header) = @_;
+            my $obj = MT::Util::from_json($body);
+            my $cd  = MT->model('cd')->load($obj->{items}[0]{id});
+            is($obj->{items}[0]{data}[0]{data}, $cd->data->{ $multi_line_text_field->id });
+            ok(exists $obj->{items}[0]{data}[0]{format});
+        },
+    });
 }
 
 sub irregular_tests_for_get {

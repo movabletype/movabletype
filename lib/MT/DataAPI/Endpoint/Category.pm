@@ -101,6 +101,9 @@ DESCRIPTION
 sub list {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my $res
         = filtered_list( $app, $endpoint, 'category',
         { category_set_id => 0 } )
