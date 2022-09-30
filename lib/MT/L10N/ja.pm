@@ -5195,7 +5195,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/mobile_global_menu.tmpl
 	'PC View' => 'PC表示',
-	'Select another child site...' => '他の子サイトを選択',
+	'Select another child site...' => '他の子サイトを選択...',
 	'Select another site...' => '他のサイトを選択...',
 
 ## tmpl/cms/include/notification_table.tmpl

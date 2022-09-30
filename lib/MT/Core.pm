@@ -2330,6 +2330,7 @@ BEGIN {
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
 
+            'MaxFavoriteSites' => { default => 5 },
             'DisableImagePopup' => undef,
             'ForceExifRemoval' => { default => 1 },
             'TemporaryFileExpiration' => { default => 60 * 60 },
