@@ -168,7 +168,6 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
 	'Cannot load template.' => 'テンプレートをロードできませんでした。',
-	'Error sending mail ([_1]); try another MailTransfer setting?' => 'メールを送信できませんでした。MailTransferの設定を見直してください: [_1]',
 	q{Cannot find author for id '[_1]'} => q{ID:[_1]のユーザーが見つかりませんでした。},
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
@@ -1645,7 +1644,6 @@ use vars qw( @ISA %Lexicon );
 	'System Settings Changes Took Place' => 'システム設定が変更されました',
 	'Temporary directory needs to be writable for export to work correctly.  Please check (Export)TempDir configuration directive.' => 'エクスポートするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
 	'Temporary directory needs to be writable for import to work correctly.  Please check (Export)TempDir configuration directive.' => 'インポートするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
-	'Test e-mail was successfully sent to [_1]' => '[_1]へのテストメールは正しく送信されました。',
 	'Test email from Movable Type' => 'Movable Typeからのテストメール',
 	'That action ([_1]) is apparently not implemented!' => 'アクション([_1])が実装されていません。',
 	'This is the test email sent by Movable Type.' => 'このメールはMovable Typeから送信されたテストメールです。',
@@ -2622,7 +2620,6 @@ use vars qw( @ISA %Lexicon );
 	'You used a [_1] tag without a valid name attribute.' => '[_1]タグではname属性は必須です。',
 	'You used an [_1] tag without a date context set up.' => '[_1]を日付コンテキストの外部で利用しようとしました。',
 	'You used an [_1] tag without a valid [_2] attribute.' => '[_1]タグでは[_2]属性は必須です。',
-	'[_1] [_2]' => '[_1] [_2]',
 	'[_1] is not a hash.' => '[_1]はハッシュではありません。',
 	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '変更を反映するために、対象の[_3]を[_1]再構築[_2]してください。',
 	'[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing.' => 'ダイナミック・パブリッシングを利用している場合でも、設定を反映するために[_1]再構築[_2]してください。',
@@ -3117,9 +3114,6 @@ use vars qw( @ISA %Lexicon );
 	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.' => 'これらのモジュールのインストールは<strong>任意</strong>です。お使いのサーバーにこれらのモジュールがインストールされていない場合でも、Movable Type の基本機能は動作します。これらのモジュールの機能が必要となった場合にはインストールを行ってください。',
 	'The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly.' => 'これらのモジュールは、Movable Type がデータを保存するために必要なモジュールです。DBIと、1つ以上のデータベース用のモジュールをインストールする必要があります。',
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステム([_1])にインストールされているPerlは、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlを[_2]以上にアップグレードしてください。',
-	'This module and its dependencies are required in order to operate Movable Type under psgi.' => 'PSGI環境下でmt.psgiを実行する場合に必要となります。',
-	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Perl 5.8以下の環境で、mt-search.cgiを利用するときに必要です。',
-	'This module required for action streams.' => 'アクションストリームに必要です',
 	'Web server:' => 'ウェブサーバー',
 	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'サーバーに [_1]か、[_1]の動作に必要な他のモジュールがインストールされていません。',
@@ -3294,10 +3288,6 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/compat3x/utils/editable_selects.js
 	'value' => 'value',
-
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/insertdatetime/plugin.js
-	'%H:%M:%S' => '%H:%M:%S',
-	'%Y-%m-%d' => '%Y-%m-%d',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/plugin.js
 	'Align Center' => '中央揃え',
@@ -3829,7 +3819,6 @@ use vars qw( @ISA %Lexicon );
 	'Comment Display Settings' => 'コメント表示設定',
 	'Comment Order' => 'コメントの表示順',
 	'Comment Settings' => 'コメント設定',
-	'Comment authentication is not available because at least one of the required Perl modules, MIME::Base64 and LWP::UserAgent, are not installed. Install the missing modules and reload this page to configure comment authentication.' => '必要なPerlモジュール(MIME::Base64とLWP::UserAgent)がインストールされていないため、コメント認証は無効となっています。必要なモジュールをインストールしてから、このページで再設定してください。',
 	'Commenting Policy' => 'コメントポリシー',
 	'Delete Spam After' => 'スパムを削除する',
 	'E-mail Notification' => 'メール通知',
@@ -4038,7 +4027,6 @@ use vars qw( @ISA %Lexicon );
 	'Rebuild Triggers' => '再構築トリガー',
 	'Site/Child Site' => 'サイト',
 	'Use system default' => 'システムの既定値を使用',
-	'When' => ' ',
 	'You have not defined any rebuild triggers.' => '再構築トリガーを設定していません。',
 	q{Enables use of the MTSites tag without include_sites/exclude_sites attributes. Comma-separated SiteIDs or 'all' (include_sites only) are acceptable values.} => q{include_sites/exclude_sites属性なしでMTSitesタグを使用できるようにします。カンマで区切ったサイトID、または「all」(include_sites のみ)が指定できます。},
 
@@ -4882,7 +4870,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/export.tmpl
 	'Export [_1] Entries' => '[_1]の記事をエクスポート',
-	'Export [_1]' => '[_1]をエクスポート',
 	'[_1] to Export' => 'エクスポートする[_1]',
 	'_USAGE_EXPORT_1' => 'Movable Typeから記事をエクスポートして、基本的なデータ(記事、コメント、トラックバック)を保存できます。',
 
@@ -5811,7 +5798,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/wizard/optional.tmpl
 	'Address of your SMTP Server.' => 'SMTPサーバーのアドレスを指定します。',
 	'An error occurred while attempting to send mail: ' => 'メール送信の過程でエラーが発生しました。',
-	'Cannot use [_1].' => '[_1] は利用できません。',
 	'Check your email to confirm receipt of a test email from Movable Type and then proceed to the next step.' => 'Movable Typeからのテストメールを受信したことを確認して、次のステップへ進んでください。',
 	'Do not use SSL' => 'SSL接続を行わない',
 	'Mail Configuration' => 'メール設定',
