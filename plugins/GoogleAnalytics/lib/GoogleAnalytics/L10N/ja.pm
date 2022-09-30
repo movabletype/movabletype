@@ -19,6 +19,7 @@ use vars qw( %Lexicon );
 
 ## plugins/GoogleAnalytics/lib/GoogleAnalytics/App.pm
 	'A Perl module required for using Google Analytics API is missing: [_1].' => 'Google アナリティクス APIを利用するのに必要なPerlモジュールのうちいくつかがありません: [_1]',
+	'Removing stats cache failed.' => 'アクセス統計データのキャッシュを削除できませんでした。',
 	'The name of the profile' => 'プロファイル名',
 	'The web property ID of the profile' => 'ウェブ プロパティ ID',
 	'You did not specify a client ID.' => 'Client IDが指定されていません。',
@@ -35,6 +36,8 @@ use vars qw( %Lexicon );
 
 ## plugins/GoogleAnalytics/tmpl/api_error.tmpl
 	'API error' => 'APIエラー',
+	'Close (x)' => '閉じる (x)',
+	'Close' => '閉じる',
 
 ## plugins/GoogleAnalytics/tmpl/select_profile.tmpl
 	'Select profile' => 'プロファイルを選択してください',
@@ -44,12 +47,14 @@ use vars qw( %Lexicon );
 	'Client ID of the OAuth2 application' => 'クライアント ID',
 	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'Client IDあるいはClient secretが更新されていますが、プロファイルを選択し直していません。設定を保存してもよろしいですか？',
 	'Client secret of the OAuth2 application' => 'クライアント シークレット',
+	'Google Analytics 4 (GA4) is not supported.' => 'Google Analytics 4（GA4) には対応していません',
 	'Google Analytics profile' => '使用するGoogle Analyticsのプロファイル',
 	'Google Analytics' => 'Google Analytics',
 	'OAuth2 settings' => 'OAuth2の設定',
 	'Other Google account' => '別のアカウントを利用する',
 	'Redirect URI of the OAuth2 application' => '承認済みのリダイレクト URI',
 	'Select Google Analytics profile' => 'Google Analyticsのプロファイルを選択する',
+	'System' => 'システム',
 	'This [_2] is using the settings of [_1].' => 'この[_2]は、[_1]の設定を利用しています。',
 	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> before selecting profile.} => q{プロファイルを選択するために、<a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a>でウェブアプリケーション向けのClient IDを作成してください。},
 );

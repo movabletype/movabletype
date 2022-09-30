@@ -17,8 +17,9 @@ use vars qw( %Lexicon );
 ## plugins/GoogleAnalytics/config.yaml
 	'Site statistics plugin using Google Analytics.' => 'Google Analyticsからアクセス統計データを取得します。',
 
-## plugins/GoogleAnalytics/lib/GoogleAnalytics/App.pm
+## plugins/GoogleAnalyticsV4/lib/GoogleAnalyticsV4/App.pm
 	'A Perl module required for using Google Analytics API is missing: [_1].' => 'Google アナリティクス APIを利用するのに必要なPerlモジュールのうちいくつかがありません: [_1]',
+	'Removing stats cache failed.' => 'アクセス統計データのキャッシュを削除できませんでした。',
 	'The name of the profile' => 'プロファイル名',
 	'The resource name of the property | The measurement id of the WebStreamData' => 'プロパティのリソース名 | 測定ID',
 	'You did not specify a client ID.' => 'Client IDが指定されていません。',
@@ -30,13 +31,15 @@ use vars qw( %Lexicon );
 	'An error occurred when getting token: [_1]: [_2]' => 'トークンが取得できません: [_1]: [_2]',
 	'An error occurred when refreshing access token: [_1]: [_2]' => 'リフレッシュトークンが取得できません: [_1]: [_2]',
 
-## plugins/GoogleAnalytics/lib/GoogleAnalytics/Provider.pm
+## plugins/GoogleAnalyticsV4/lib/GoogleAnalyticsV4/Provider.pm
 	'An error occurred when retrieving statistics data: [_1]: [_2]' => '統計データの取得ができません: [_1]: [_2]',
 
-## plugins/GoogleAnalytics/tmpl/api_error.tmpl
+## plugins/GoogleAnalyticsV4/tmpl/api_error.tmpl
 	'API error' => 'APIエラー',
+	'Close (x)' => '閉じる (x)',
+	'Close' => '閉じる',
 
-## plugins/GoogleAnalytics/tmpl/select_profile.tmpl
+## plugins/GoogleAnalyticsV4/tmpl/select_profile.tmpl
 	'Select profile' => 'プロファイルを選択してください',
 
 ## plugins/GoogleAnalyticsV4/tmpl/web_service_config.tmpl
@@ -50,6 +53,7 @@ use vars qw( %Lexicon );
 	'Other Google account' => '別のアカウントを利用する',
 	'Redirect URI of the OAuth2 application' => '承認済みのリダイレクト URI',
 	'Select Google Analytics profile' => 'Google Analyticsのプロファイルを選択する',
+	'System' => 'システム',
 	'This [_2] is using the settings of [_1].' => 'この[_2]は、[_1]の設定を利用しています。',
 	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> before selecting profile.} => q{プロファイルを選択するために、<a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a>でウェブアプリケーション向けのClient IDを作成してください。},
 );
