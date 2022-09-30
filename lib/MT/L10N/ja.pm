@@ -1778,6 +1778,7 @@ use vars qw( @ISA %Lexicon );
 	'Saving object tag failed: [_1]' => 'コンテンツデータとタグのリンクを作成できません: [_1]',
 	'Tags fields' => 'いずれかのタグのフィールド',
 	'Unpublish Date' => '公開終了日',
+	'View Content Data' => 'コンテンツデータを見る',
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) が見つかりません。',
 	'basename is too long.' => '出力ファイルが長すぎます。',
 	'record does not exist.' => 'ブログがありません。',
@@ -2224,6 +2225,7 @@ use vars qw( @ISA %Lexicon );
 	'Date-Based Category Archives' => '日付ベースのカテゴリアーカイブ',
 	'Displays errors for dynamically-published templates.' => 'ダイナミックパブリッシングのエラーを表示します。',
 	'Displays image when user clicks a popup-linked image.' => 'ポップアップ画像を表示します。',
+	'Displays results of a search for content data.' => '検索結果を表示します。',
 	'Displays results of a search.' => '検索結果を表示します。',
 	'Dynamic Error' => 'ダイナミックパブリッシングエラー',
 	'Entry Notify' => '記事の共有',
@@ -3713,7 +3715,6 @@ use vars qw( @ISA %Lexicon );
 	'A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layouts. Best for use in standard blog publishing applications.' => 'たくさんの2カラムや3カラムレイアウトをもつ一般的なブログ用デザインです。全ブログユーザーに最適です。',
 	'Displays error, pending or confirmation message for comments.' => 'コメントのエラー、保留、確認メッセージを表示します。',
 	'Displays preview of comment.' => 'コメントのプレビューを表示します。',
-	'Displays results of a search for content data.' => '検索結果を表示します。',
 	'Improved listing of comments.' => 'コメント表示を改善します。',
 
 ## themes/classic_website/templates/about_this_page.mtml
@@ -5117,7 +5118,6 @@ use vars qw( @ISA %Lexicon );
 	'Created' => '作成',
 	'Republish selected [_1] (r)' => '選択した[_1]の再構築',
 	'Unpublish' => '公開取り消し',
-	'View Content Data' => 'コンテンツデータを見る',
 
 ## tmpl/cms/include/copyright.tmpl
 	'Copyright &copy; 2001 Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001 Six Apart. All Rights Reserved.',
