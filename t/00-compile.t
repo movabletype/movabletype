@@ -615,12 +615,28 @@ use_ok('MT::DataAPI::Resource::v3::Website');
 use_ok('MT::DataAPI::Resource::v3::User');
 
 use_ok('MT::DataAPI::Endpoint::v5');
+use_ok('MT::DataAPI::Resource::v5::Asset');
+use_ok('MT::DataAPI::Resource::v5::Association');
+use_ok('MT::DataAPI::Resource::v5::Blog');
+use_ok('MT::DataAPI::Resource::v5::Category');
+use_ok('MT::DataAPI::Resource::v5::CategorySet');
+use_ok('MT::DataAPI::Resource::v5::ContentData');
+use_ok('MT::DataAPI::Resource::v5::ContentField');
+use_ok('MT::DataAPI::Resource::v5::ContentType');
+use_ok('MT::DataAPI::Resource::v5::Entry');
+use_ok('MT::DataAPI::Resource::v5::Folder');
+use_ok('MT::DataAPI::Resource::v5::Group');
+use_ok('MT::DataAPI::Resource::v5::Log');
+use_ok('MT::DataAPI::Resource::v5::Page');
+use_ok('MT::DataAPI::Resource::v5::Permission');
+use_ok('MT::DataAPI::Resource::v5::Tag');
+use_ok('MT::DataAPI::Resource::v5::Template');
+use_ok('MT::DataAPI::Resource::v5::TemplateMap');
+use_ok('MT::DataAPI::Resource::v5::User');
+use_ok('MT::DataAPI::Resource::v5::Website');
 use_ok('MT::DataAPI::Endpoint::v5::ContentData');
 use_ok('MT::DataAPI::Endpoint::v5::Entry');
 use_ok('MT::DataAPI::Endpoint::v5::TextFilter');
-use_ok('MT::DataAPI::Resource::v5::CategorySet');
-use_ok('MT::DataAPI::Resource::v5::ContentData');
-use_ok('MT::DataAPI::Resource::v5::Entry');
 
 use_ok('MT::App::Search::Common');
 

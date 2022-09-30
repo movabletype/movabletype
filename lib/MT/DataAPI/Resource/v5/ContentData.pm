@@ -13,10 +13,22 @@ use MT::DataAPI::Resource;
 use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
+    [];    # Nothing. Same as v4.
 }
 
 sub fields {
     [
+        {
+            name   => 'author',
+            schema => {
+                type       => 'object',
+                properties => {
+                    id          => { type => 'integer' },
+                    displayName => { type => 'string' },
+                    userpicUrl  => { type => 'string' },
+                },
+            },
+        },
         {
             name        => 'data',
             from_object => sub {
@@ -28,7 +40,7 @@ sub fields {
                     my $field = $content_type->get_field($fid) || {};
                     my $options = $field->{options} || {};
                     my $chunk = +{
-                        id    => $fid,
+                        id    => $fid + 0,
                         data  => $obj->data->{$fid},
                         label => $options->{label},
                         type  => $field->{type},
@@ -128,7 +140,7 @@ sub fields {
                                 { type => 'array', items => { type => 'string' } },
                             ],
                         },
-                        id    => { type => 'string' },
+                        id    => { type => 'integer' },
                         label => { type => 'string' },
                         type  => { type => 'string' },
                     },
@@ -152,3 +164,14 @@ sub _apply_text_filters {
 
 1;
 
+__END__
+
+=head1 NAME
+
+MT::DataAPI::Resource::v5::ContentData - Movable Type class for resources definitions of the MT::ContentData.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see the I<MT> manpage for author, copyright, and license information.
+
+=cut

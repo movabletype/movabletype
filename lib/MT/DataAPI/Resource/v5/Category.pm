@@ -4,18 +4,22 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Util;
+package MT::DataAPI::Resource::v5::Category;
 
 use strict;
 use warnings;
 
-sub int_param {
-    my ( $app, $key ) = @_;
+sub updatable_fields {
+    [];    # Nothing. Same as v2.
+}
 
-    return undef unless $app->can('param');
-
-    my $value = $app->param($key);
-    ( defined($value) && $value =~ m/^\d+$/ ) ? int($value) : undef;
+sub fields {
+    [
+        {
+            name => 'parent',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
+    ];
 }
 
 1;
@@ -24,7 +28,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Util - Movable Type class for utility resource.
+MT::DataAPI::Resource::v5::Category - Movable Type class for resources definitions of the MT::Category.
 
 =head1 AUTHOR & COPYRIGHT
 

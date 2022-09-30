@@ -4,18 +4,15 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Util;
+package MT::DataAPI::Resource::v5::Website;
 
 use strict;
 use warnings;
 
-sub int_param {
-    my ( $app, $key ) = @_;
+use base qw(MT::DataAPI::Resource::v5::Blog);
 
-    return undef unless $app->can('param');
-
-    my $value = $app->param($key);
-    ( defined($value) && $value =~ m/^\d+$/ ) ? int($value) : undef;
+sub fields {
+    $_[0]->SUPER::fields();
 }
 
 1;
@@ -24,7 +21,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Util - Movable Type class for utility resource.
+MT::DataAPI::Resource::v5::Website - Movable Type class for resources definitions of the MT::Website.
 
 =head1 AUTHOR & COPYRIGHT
 

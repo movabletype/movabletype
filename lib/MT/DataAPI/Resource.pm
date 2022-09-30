@@ -34,6 +34,11 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v2::Page::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Page::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Page::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Page::updatable_fields',
+            },
         ],
         'category' => [{
                 version          => 1,
@@ -45,11 +50,21 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v2::Category::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Category::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Category::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Category::updatable_fields',
+            },
         ],
         'folder' => [{
                 version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Folder::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Folder::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Folder::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Folder::updatable_fields',
             },
         ],
         'user' => [{
@@ -66,7 +81,12 @@ sub core_resources {
                 version          => 3,
                 fields           => '$Core::MT::DataAPI::Resource::v3::User::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v3::User::updatable_fields',
-            }
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::User::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::User::updatable_fields',
+            },
         ],
         'author' => 'user',
         'blog'   => [{
@@ -89,6 +109,11 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v4::Blog::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::Blog::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Blog::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Blog::updatable_fields',
+            },
         ],
         'website' => [{
                 version          => 1,
@@ -110,6 +135,11 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v4::Website::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::Website::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Website::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Website::updatable_fields',
+            },
         ],
         'asset' => [{
                 version          => 1,
@@ -120,6 +150,11 @@ sub core_resources {
                 version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Asset::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Asset::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Asset::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Asset::updatable_fields',
             },
         ],
         'permission' => [{
@@ -132,11 +167,21 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v2::Permission::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Permission::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Permission::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Permission::updatable_fields',
+            },
         ],
         'association' => [{
                 version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Association::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Association::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Association::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Association::updatable_fields',
             },
         ],
         'role' => [{
@@ -150,11 +195,20 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v2::Log::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Log::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Log::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Log::updatable_fields',
+            },
         ],
         'tag' => [{
                 version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Tag::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Tag::updatable_fields',
+            },
+            {
+                version => 5,
+                fields  => '$Core::MT::DataAPI::Resource::v5::Tag::fields',
             },
         ],
         'template' => [{
@@ -167,6 +221,11 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v4::Template::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::Template::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Template::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Template::updatable_fields',
+            },
         ],
         'widget'      => 'template',
         'templatemap' => [{
@@ -174,13 +233,19 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v2::TemplateMap::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::TemplateMap::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::TemplateMap::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::TemplateMap::updatable_fields',
+            },
         ],
         'category_set' => [{
                 version          => 4,
                 fields           => '$Core::MT::DataAPI::Resource::v4::CategorySet::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::CategorySet::updatable_fields',
             },
-            {   version          => 5,
+            {
+                version          => 5,
                 fields           => '$Core::MT::DataAPI::Resource::v5::CategorySet::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v5::CategorySet::updatable_fields',
             },
@@ -190,12 +255,23 @@ sub core_resources {
                 fields           => '$Core::MT::DataAPI::Resource::v4::ContentType::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::ContentType::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::ContentType::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::ContentType::updatable_fields',
+            },
         ],
         'cf' => [{
                 version          => 4,
                 fields           => '$Core::MT::DataAPI::Resource::v4::ContentField::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v4::ContentField::updatable_fields',
             },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::ContentField::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::ContentField::updatable_fields',
+            },
+
         ],
         'content_field' => 'cf',
         'cd'            => [{
@@ -214,6 +290,11 @@ sub core_resources {
                 version          => 2,
                 fields           => '$Core::MT::DataAPI::Resource::v2::Group::fields',
                 updatable_fields => '$Core::MT::DataAPI::Resource::v2::Group::updatable_fields',
+            },
+            {
+                version          => 5,
+                fields           => '$Core::MT::DataAPI::Resource::v5::Group::fields',
+                updatable_fields => '$Core::MT::DataAPI::Resource::v5::Group::updatable_fields',
             },
         ],
         'endpoint' => [{
@@ -684,6 +765,31 @@ sub schema {
     };
 }
 
+package MT::DataAPI::Resource::DataType::Float;
+
+sub from_object {
+    my ( $objs, $hashs, $f ) = @_;
+    my $name = $f->{name};
+    foreach my $h (@$hashs) {
+        $h->{$name} = $h->{$name} if defined $h->{$name};
+    }
+}
+
+sub to_object {
+    my ( $hashs, $objs, $f ) = @_;
+    my $name = $f->{alias} || $f->{name};
+    foreach my $o (@$objs) {
+        $o->$name( $o->$name ) if defined $o->$name;
+    }
+}
+
+sub schema {
+    return +{
+        type   => 'number',
+        format => 'float',
+    };
+}
+
 package MT::DataAPI::Resource::DataType::Boolean;
 
 use boolean ();
@@ -883,6 +989,11 @@ If this package is specified to the type, the value will be converted by L<MT::D
 =item MT::DataAPI::Resource::DataType::Integer
 
 If this package is specified to the type, the value will be converted to an integer.
+If C<field> was given, this value passed to L<MT::DataAPI::Resource-E<gt>from_object> as a second argument.
+
+=item MT::DataAPI::Resource::DataType::Float
+
+If this package is specified to the type, the value will be converted to a float.
 If C<field> was given, this value passed to L<MT::DataAPI::Resource-E<gt>from_object> as a second argument.
 
 =item MT::DataAPI::Resource::DataType::Boolean

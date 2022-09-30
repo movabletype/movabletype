@@ -11,8 +11,27 @@ use warnings;
 use MT::DataAPI::Resource;
 use MT::DataAPI::Resource::Common;
 
+sub updatable_fields {
+    [];    # Nothing. Same as v4.
+}
+
 sub fields {
     [
+        {
+            name => 'categories',
+            schema => {
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        id       => { type => 'integer' },
+                        parent   => { type => 'integer' },
+                        label    => { type => 'string' },
+                        basename => { type => 'string' },
+                    },
+                },
+            },
+        },
         {
             name      => 'contentTypeCount',
             alias     => 'content_type_count',

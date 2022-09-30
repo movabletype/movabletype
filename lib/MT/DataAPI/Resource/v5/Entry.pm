@@ -3,6 +3,7 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
+
 package MT::DataAPI::Resource::v5::Entry;
 
 use strict;
@@ -56,6 +57,17 @@ sub fields {
             schema => {
                 type  => 'array',
                 items => { '$ref' => '#/components/schemas/asset' },
+            },
+        },
+        {
+            name   => 'author',
+            schema => {
+                type       => 'object',
+                properties => {
+                    id          => { type => 'integer' },
+                    displayName => { type => 'string' },
+                    userpicUrl  => { type => 'string' },
+                },
             },
         },
     ];

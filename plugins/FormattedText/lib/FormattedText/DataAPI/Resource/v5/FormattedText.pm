@@ -4,18 +4,17 @@
 #
 # $Id$
 
-package MT::DataAPI::Resource::Util;
+package FormattedText::DataAPI::Resource::v5::FormattedText;
 
 use strict;
 use warnings;
 
-sub int_param {
-    my ( $app, $key ) = @_;
-
-    return undef unless $app->can('param');
-
-    my $value = $app->param($key);
-    ( defined($value) && $value =~ m/^\d+$/ ) ? int($value) : undef;
+sub fields {
+    [{
+            name => 'id',
+            type => 'MT::DataAPI::Resource::DataType::Integer',
+        },
+    ];
 }
 
 1;
@@ -24,7 +23,7 @@ __END__
 
 =head1 NAME
 
-MT::DataAPI::Resource::Util - Movable Type class for utility resource.
+FormattedText::DataAPI::Resource::v5::FormattedText - Movable Type class for resources definitions of the FormattedText::FormattedText.
 
 =head1 AUTHOR & COPYRIGHT
 
