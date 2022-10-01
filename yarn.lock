@@ -3215,15 +3215,10 @@ tinymce-i18n@20.12.25:
   dependencies:
     js-beautify "^1.14.3"
 
-"tinymce6@npm:tinymce@^6.2.0":
+"tinymce6@npm:tinymce@^6.2.0", tinymce@6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-6.2.0.tgz#473aa38af03bf772916f3e1730e6b8d3471203f0"
   integrity sha512-zLjbFrg0hbtJ6PxmZUjQY6zyIOM/mLrWGTvhBec7XwYwoW1E0xXMQzy2tgMTh3OvJpsclgqf2ZMjmwcv4Cludw==
-
-tinymce@5.10.2:
-  version "5.10.2"
-  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-5.10.2.tgz#cf1ff01025909be26c64348509e6de8e70d58e1d"
-  integrity sha512-5QhnZ6c8F28fYucLLc00MM37fZoAZ4g7QCYzwIl38i5TwJR5xGqzOv6YMideyLM4tytCzLCRwJoQen2LI66p5A==
 
 to-object-path@^0.3.0:
   version "0.3.0"
