@@ -40,10 +40,31 @@ sub _find_smarty_version {
 
 sub run {
     my ( $class, $script, $stderr ) = @_;
+    my $command = _make_php_ini();
+    IPC::Run3::run3 $command, \$script, \my $result, $stderr, { binmode_stdin => 1 } or die $?;
+    $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+    Encode::decode_utf8($result);
+
+    return $result;
+}
+
+sub supports_gd {
+    my $result = shift->run('<?php phpinfo(); ?>');
+    $result =~ /GD Support\s*=>\s*enabled/ ? 1 : 0;
+}
+
+sub supports_memcached {
+    my $result = shift->run('<?php phpinfo(); ?>');
+    $result =~ /memcache support\s*=>\s*enabled/ ? 1 : 0;
+}
+
+my ($INI_FILE, $command);
+
+sub _make_php_ini {
+    return $command if $INI_FILE;
 
     my $dir = $ENV{MT_TEST_ROOT} || '.';
-
-    my ( $fh, $ini_file ) = tempfile(
+    ( my $fh, $INI_FILE ) = tempfile(
         DIR    => $dir,
         SUFFIX => '.ini',
     );
@@ -58,34 +79,19 @@ opcache.jit_buffer_size = 100M;
 INI
     close $fh;
 
-    my @args;
     my $ini_setting = `php --ini`;
     if ($ini_setting =~ /Scan for additional .ini files in: \(none\)/) {
         $ENV{PHP_INI_SCAN_DIR} = $dir;
-        @args = ();
+        $command = ['php'];
     }
     else {
-        @args = ( '--php-ini', $ini_file );
+        $command = ['php', '--php-ini', $INI_FILE];
     }
-
-
-    IPC::Run3::run3 [ 'php', @args ], \$script, \my $result, $stderr, { binmode_stdin => 1 } or die $?;
-    $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-    Encode::decode_utf8($result);
-
-    unlink $ini_file;
-
-    return $result;
+    return $command;
 }
 
-sub supports_gd {
-    my $result = shift->run('<?php phpinfo(); ?>');
-    $result =~ /GD Support\s*=>\s*enabled/ ? 1 : 0;
-}
-
-sub supports_memcached {
-    my $result = shift->run('<?php phpinfo(); ?>');
-    $result =~ /memcache support\s*=>\s*enabled/ ? 1 : 0;
+sub END {
+    unlink $INI_FILE if $INI_FILE;
 }
 
 1;

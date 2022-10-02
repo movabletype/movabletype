@@ -237,6 +237,8 @@ sub MT::Test::Tag::_filter_vars {
     $str;
 }
 
+my $FIND_CONFIG;
+
 sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
     my ( $block_name, $blog_id, $template, $text, $log, $extra ) = @_;
     $text ||= '';
@@ -246,10 +248,12 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
     $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
     $template =~ s/\$/\\\$/g;
 
+    $FIND_CONFIG ||= MT->instance->find_config;
+
     my $test_script = <<PHP;
 <?php
 \$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
-\$MT_CONFIG = '@{[ MT->instance->find_config ]}';
+\$MT_CONFIG = '$FIND_CONFIG';
 \$blog_id   = '$blog_id';
 \$log = '$log';
 \$tmpl = <<<__TMPL__
