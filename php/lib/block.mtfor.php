@@ -59,8 +59,10 @@ function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
     } else {
         if (isset($args['glue']) && $out && !empty($content))
             $content = $args['glue'] . $content;
-        $ctx->restore($localvars);
         $repeat = false;
+    }
+    if (!$repeat) {
+        $ctx->restore($localvars);
     }
 
     return $content;
