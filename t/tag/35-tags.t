@@ -2864,12 +2864,14 @@ Content
 <ul><li>download</li><li>info</li><li>nightly</li></ul>
 
 === test 536
+--- skip_php
 --- template
 <MTFolders show_empty='1' glue=','><MTFolderLabel>-<MTFolderNext show_empty='1'><MTFolderLabel></MTFolderNext></MTFolders>
 --- expected
 download-info,info-,nightly-
 
 === test 537
+--- skip_php
 --- template
 <MTFolders show_empty='1' glue=','><MTFolderLabel>-<MTFolderPrevious show_empty='1'><MTFolderLabel></MTFolderPrevious></MTFolders>
 --- expected
@@ -2888,6 +2890,7 @@ download-,info-download,nightly-
 
 
 === test 540
+--- skip_php
 --- template
 <MTIfAuthor>HasAuthor:Outside</MTIfAuthor><MTAuthors lastn='1'><MTIfAuthor>HasAuthor:Inside</MTIfAuthor></MTAuthors>
 --- expected
