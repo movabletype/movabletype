@@ -30,6 +30,7 @@ function smarty_block_mtloop($args, $content, &$ctx, &$repeat) {
         }
         if ( !is_array($value) || (0 == count($value)) ) {
             $repeat = false;
+            $ctx->restore($localvars);
             return '';
         }
         $sort = isset($args['sort_by']) ? $args['sort_by'] : null;

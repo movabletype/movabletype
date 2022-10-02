@@ -35,6 +35,9 @@ function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
         } else {
             $repeat = false;
         }
+        if (!$repeat) {
+            $ctx->restore(array('author'));
+        }
     } else {
         $ctx->restore(array('author'));
     }

@@ -26,6 +26,7 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
             $cs = $ctx->mt->db()->fetch_category_set($args['id']);
             if (!$cs) {
                 $repeat = false;
+                $ctx->restore($localvars);
                 return $ctx->error($ctx->mt->translate('No Category Set could be found.'));
             }
             $category_sets = array($cs);
@@ -37,12 +38,14 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
             ));
             if (!$category_sets || count($category_sets) == 0) {
                 $repeat = false;
+                $ctx->restore($localvars);
                 return $ctx->error($ctx->mt->translate('No Category Set could be found.'));
             }
         } else { 
             if( isset($args['content_type']) && !empty($args['content_type']) ) {
                 if(!$content_type) {
                     $repeat = false;
+                    $ctx->restore($localvars);
                     return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
                 }
             }

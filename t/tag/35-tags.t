@@ -2888,7 +2888,6 @@ download-,info-download,nightly-
 
 
 === test 540
---- skip_php
 --- template
 <MTIfAuthor>HasAuthor:Outside</MTIfAuthor><MTAuthors lastn='1'><MTIfAuthor>HasAuthor:Inside</MTIfAuthor></MTAuthors>
 --- expected
