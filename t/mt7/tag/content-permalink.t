@@ -360,7 +360,6 @@ __END__
 /test/archives/2017/09/mtcontentpermalink-test-data-02/
 
 === MT::ContentPermalink ContentType 02 with index
---- skip_php
 --- template
 <mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink with_index="1"></mt:Contents>
 --- expected
