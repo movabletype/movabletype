@@ -507,28 +507,26 @@ function createUploadBlock () {
   }
 
   this.setThumbnail = function(asset) {
-    var url = asset.thumbnail;
+    var thumbnail_url = asset.thumbnail;
     var type = asset.thumbnail_type;
     var fname = asset.filename;
+    var url = asset.url;
     var id = asset.id;
     var msg = asset.message;
 
-    var data = '';
-
-    if (url) {
-      data = '<img class="img-thumbnail" width="60" height="60" src="' + url + '">';
+    var thumbnail = jQuery('<img class="img-thumbnail" width="60" height="60">');
+    if (thumbnail_url) {
+      thumbnail.attr('src', thumbnail_url);
     } else {
-      data = '<img src="<mt:var name="static_uri">images/file-'+type+'.svg" width="60" height="60">';
+      thumbnail.attr('src', '<mt:var name="static_uri">images/file-' + type + '.svg');
     }
-
-    data += '&nbsp;<span class="filename">' + fname;
-    if ( msg ) {
-      data += ' <span class="bg-warning msg-warning" style="padding:0.5em">' + msg + '</span>';
-    }
-    data += '</span>';
 
     this.filename.hide();
-    jQuery(data).appendTo(this.thumbnail);
+    jQuery(thumbnail).appendTo(this.thumbnail);
+    jQuery('<a></a>').text(fname).attr('href', url).appendTo(' <span class="filename"></span>').appendTo(this.thumbnail);
+    if ( msg ) {
+      jQuery(' <span class="bg-warning msg-warning" style="padding:0.5em"></span>').text(msg).appendTo(this.thumbnail);
+    }
     this.thumbnail.parents('.upload-status-block').attr('data-asset-id', id);
   }
 
