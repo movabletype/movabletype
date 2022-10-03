@@ -5529,5 +5529,9 @@ abstract class MTDatabase {
 
         return $url;
     }
+
+    public function flush_cache() {
+        $this->_blog_id_cache = array();
+    }
 }
 ?>

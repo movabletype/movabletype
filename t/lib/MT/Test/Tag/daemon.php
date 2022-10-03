@@ -35,6 +35,10 @@ while ($remote = stream_socket_accept($socket)) {
     $stream = stream_get_contents($remote);
     if (!$stream) continue;
 
+    // $mt->cache_driver()->flush_all();
+    $db->flush_cache();
+    $_REQUEST = [];
+
     $mt->configure_from_db();
 
     list($blog_id, $tmpl, $extra) = json_decode($stream);
