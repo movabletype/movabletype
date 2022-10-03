@@ -254,6 +254,7 @@ sub MT::Test::Tag::_php_daemon {
                 '--port', $port,
                 '--mt_home', ($ENV{MT_HOME} ? $ENV{MT_HOME} : '.'),
                 '--mt_config', $config,
+                '--init_blog_id', $blog_id,
                 $log ? ('--log', $log) : (),
             );
             exec join(' ', @$command, @opts);

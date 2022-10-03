@@ -1,13 +1,14 @@
 <?php
 
-$opts = getopt('', ['port:', 'mt_home:', 'mt_config:', 'log:']);
+$opts = getopt('', ['port:', 'mt_home:', 'mt_config:', 'log:', 'init_blog_id:']);
 
 $socket = stream_socket_server("tcp://127.0.0.1:". $opts['port']);
 
 include_once($opts['mt_home'] . '/php/mt.php');
 include_once($opts['mt_home'] . '/php/lib/MTUtil.php');
 
-$mt = MT::get_instance(null, $opts['mt_config']);
+# use the first blog_id for $mt->init because some test depends on the blog language setting.
+$mt = MT::get_instance($opts['init_blog_id'], $opts['mt_config']);
 $mt->config('PHPErrorLogFilePath', $opts['log'] ?? null);
 $mt->init_plugins();
 $db = $mt->db();
