@@ -67,9 +67,8 @@ sub run_tasks {
     }
 
     my @completed;
+    my $app = MT->instance;
     eval {
-        my $app = MT->instance;
-
         $app->run_callbacks('PeriodicTask');
 
         require MT::Log;
