@@ -48,7 +48,7 @@ $disabled_user->can_sign_in_data_api(0);
 $disabled_user->save()
     or die "Couldn't save author record 99: " . $disabled_user->errstr;
 
-use MT::DataAPI::Endpoint::Auth;
+use MT::DataAPI::Endpoint::v1::Auth;
 use MT::AccessToken;
 
 {
@@ -151,7 +151,7 @@ sub suite {
             author_id => 2,
             params    => {
                 clientId      => 'test',
-                redirect_type => MT::DataAPI::Endpoint::Auth::BLOG_HOST(),
+                redirect_type => MT::DataAPI::Endpoint::v1::Auth::BLOG_HOST(),
             },
             setup => sub {
                 $mock_app_api->mock(

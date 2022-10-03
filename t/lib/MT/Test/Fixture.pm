@@ -8,9 +8,12 @@ use MT::Serialize;
 use MT::Association;
 use Data::Visitor::Tiny;
 use List::Util qw(uniq);
+use File::Basename;
+
+our @CARP_NOT;
 
 sub prepare {
-    my ($class, $spec) = @_;
+    my ($class, $spec, $objs) = @_;
 
     local $ENV{MT_TEST_ROOT} = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
 
@@ -20,36 +23,54 @@ sub prepare {
             my ($key, $valueref) = @_;
             $$valueref =~ s/TEST_ROOT/$ENV{MT_TEST_ROOT}/g;
             $$valueref =~ s/MT_HOME/$ENV{MT_HOME}/g;
-        });
+        },
+    );
 
-    my %objs;
-    $class->prepare_author($spec, \%objs);
-    $class->prepare_website($spec, \%objs);
-    $class->prepare_blog($spec, \%objs);
-    $class->prepare_asset($spec, \%objs);
-    $class->prepare_image($spec, \%objs);
-    $class->prepare_tag($spec, \%objs);
-    $class->prepare_category($spec, \%objs);
-    $class->prepare_customfield($spec, \%objs);
-    $class->prepare_entry($spec, \%objs);
-    $class->prepare_folder($spec, \%objs);
-    $class->prepare_page($spec, \%objs);
-    $class->prepare_category_set($spec, \%objs);
-    $class->prepare_content_type($spec, \%objs);
-    $class->prepare_content_data($spec, \%objs);
-    $class->prepare_role($spec, \%objs);
-    $class->prepare_template($spec, \%objs);
+    $objs ||= { __first_time => 1 };
+    $class->prepare_author($spec, $objs);
+    $class->prepare_website($spec, $objs);
+    $class->prepare_blog($spec, $objs);
+    $class->prepare_asset($spec, $objs);
+    $class->prepare_image($spec, $objs);
+    $class->prepare_tag($spec, $objs);
+    $class->prepare_category($spec, $objs);
+    $class->prepare_customfield($spec, $objs);
+    $class->prepare_entry($spec, $objs);
+    $class->prepare_folder($spec, $objs);
+    $class->prepare_page($spec, $objs);
+    $class->prepare_category_set($spec, $objs);
+    $class->prepare_content_type($spec, $objs);
+    $class->prepare_content_data($spec, $objs);
+    $class->prepare_role($spec, $objs);
+    $class->prepare_template($spec, $objs);
 
-    \%objs;
+    delete $objs->{__first_time};
+
+    $objs;
+}
+
+sub add {
+    my ($class, $objs, $spec) = @_;
+    $class->prepare($spec, $objs);
 }
 
 # TODO: support more variations
 
+sub _note_or_croak {
+    if ($ENV{MT_TEST_FIXTURE_CROAK}) {
+        croak(@_);
+    } else {
+        Test::More::note(@_);
+    }
+}
+
 sub prepare_author {
     my ($class, $spec, $objs) = @_;
     if (!$spec->{author}) {
-        my $author = MT::Author->load(1) or croak "No author";
-        $objs->{author_id} = $author->id;
+        if ($objs->{__first_time}) {
+            my $author = MT::Author->load(1) or croak "No author";
+            $objs->{author_id} = $author->id;
+        }
         return;
     }
 
@@ -57,6 +78,10 @@ sub prepare_author {
     if (ref $spec->{author} eq 'ARRAY') {
         for my $item (@{ $spec->{author} }) {
             my %arg = ref $item eq 'HASH' ? %$item : (name => $item);
+            if (exists $objs->{author}{ $arg{name} }) {
+                _note_or_croak("author: $arg{name} already exists");
+                next;
+            }
             $arg{nickname} ||= $arg{name};
             delete $arg{roles};    ## not for now
             my $permissions = delete $arg{permissions};
@@ -75,7 +100,7 @@ sub prepare_author {
             }
         }
     }
-    if (@author_names == 1) {
+    if ($objs->{__first_time} and @author_names == 1) {
         $objs->{author_id} = $objs->{author}{ $author_names[0] }->id;
     }
 }
@@ -87,7 +112,12 @@ sub prepare_website {
     my @site_names;
     if (ref $spec->{website} eq 'ARRAY') {
         for my $item (@{ $spec->{website} }) {
-            my %arg     = ref $item eq 'HASH' ? %$item : (name => $item);
+            my %arg = ref $item eq 'HASH' ? %$item : (name => $item);
+            if (exists $objs->{website}{ $arg{name} }) {
+                _note_or_croak("website: $arg{name} already exists");
+                next;
+            }
+
             my $authors = delete $arg{authors};
 
             my $site = MT::Test::Permission->make_website(%arg);
@@ -102,7 +132,7 @@ sub prepare_website {
             }
         }
     }
-    if (@site_names == 1) {
+    if ($objs->{__first_time} and @site_names == 1) {
         $objs->{blog_id} = $objs->{website}{ $site_names[0] }->id;
     }
 }
@@ -119,7 +149,12 @@ sub prepare_blog {
     my @blog_names;
     if (ref $spec->{blog} eq 'ARRAY') {
         for my $item (@{ $spec->{blog} }) {
-            my %arg     = ref $item eq 'HASH' ? %$item : (name => $item);
+            my %arg = ref $item eq 'HASH' ? %$item : (name => $item);
+            if (exists $objs->{blog}{ $arg{name} }) {
+                _note_or_croak("blog: $arg{name} already exists");
+                next;
+            }
+
             my $authors = delete $arg{authors};
 
             if (my $parent_name = delete $arg{parent}) {
@@ -139,10 +174,12 @@ sub prepare_blog {
             }
         }
     }
-    if ($objs->{blog_id} && @blog_names) {
-        delete $objs->{blog_id};
-    } elsif (@blog_names == 1) {
-        $objs->{blog_id} = $objs->{blog}{ $blog_names[0] }->id;
+    if ($objs->{__first_time}) {
+        if ($objs->{blog_id} && @blog_names) {
+            delete $objs->{blog_id};
+        } elsif (@blog_names == 1) {
+            $objs->{blog_id} = $objs->{blog}{ $blog_names[0] }->id;
+        }
     }
 }
 
@@ -153,18 +190,21 @@ sub prepare_image {
     require MT::Test::Image;
     require Image::ExifTool;
     require File::Path;
-    require File::Basename;
 
     my $image_dir = "$ENV{MT_TEST_ROOT}/images";
     File::Path::mkpath($image_dir) unless -d $image_dir;
 
     if (ref $spec->{image} eq 'HASH') {
         for my $name (sort keys %{ $spec->{image} }) {
+            if (exists $objs->{image}{$name}) {
+                _note_or_croak("image: $name already exists");
+                next;
+            }
             my $item = $spec->{image}{$name};
             if (ref $item eq 'HASH') {
                 my $blog_id = _find_blog_id($objs, $item);
-                my $file = "$image_dir/$name";
-                my $dir  = File::Basename::dirname($file);
+                my $file    = "$image_dir/$name";
+                my $dir     = File::Basename::dirname($file);
                 File::Path::mkpath($dir) unless -d $dir;
                 MT::Test::Image->write(file => $file);
                 my $info = Image::ExifTool::ImageInfo($file);
@@ -211,8 +251,13 @@ sub prepare_asset {
                 my $blog_id = _find_blog_id($objs, $item)
                     or croak "blog_id is required: asset";
                 my $asset_class = delete $item->{class} || _get_asset_class($name);
-                my $file        = "$asset_dir/$name";
-                my ($ext)       = $name =~ /(\.[^.]*)\z/;
+                if (exists $objs->{$asset_class}{$name}) {
+                    _note_or_croak("$asset_class: $name already exists");
+                    next;
+                }
+
+                my $file = "$asset_dir/$name";
+                my ($ext) = $name =~ /(\.[^.]*)\z/;
                 if ($asset_class eq 'image' && !$item->{body}) {
                     require MT::Test::Image;
                     MT::Test::Image->write(file => $file);
@@ -261,6 +306,10 @@ sub prepare_tag {
             } else {
                 %arg = (name => $item);
             }
+            if (exists $objs->{tag}{ $arg{name} }) {
+                _note_or_croak("tag: $arg{name} already exists");
+                next;
+            }
             my $tag = MT::Test::Permission->make_tag(%arg);
             $objs->{tag}{ $tag->name } = $tag;
         }
@@ -281,6 +330,10 @@ sub prepare_category {
             }
             my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: category";
+            if (exists $objs->{category}{ $arg{label} } && exists $objs->{category}{ $arg{label} }{$blog_id}) {
+                _note_or_croak("category: $arg{label} already exists for site $blog_id");
+                next;
+            }
             if (my $parent_name = $arg{parent}) {
                 my $parent = $objs->{category}{$parent_name}{$blog_id}
                     or croak "unknown parent category: $parent_name";
@@ -306,6 +359,10 @@ sub prepare_folder {
             }
             my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: folder";
+            if (exists $objs->{folder}{ $arg{label} } && exists $objs->{folder}{ $arg{label} }{$blog_id}) {
+                _note_or_croak("folder: $arg{label} already exists for site $blog_id");
+                next;
+            }
             if (my $parent_name = $arg{parent}) {
                 my $parent = $objs->{folder}{$parent_name}{$blog_id}
                     or croak "unknown parent folder: $parent_name";
@@ -334,6 +391,10 @@ sub prepare_customfield {
                     basename => $item,
                     tag      => $item,
                 );
+            }
+            if (exists $objs->{customfield}{ $arg{name} }) {
+                _note_or_croak("customfield: $arg{name} already exists");
+                next;
             }
             $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: customfield";
@@ -374,6 +435,11 @@ sub prepare_entry {
                 author_id => $author_id,
                 %arg,
             );
+            if (exists $objs->{entry}{ $entry->basename }) {
+                _note_or_croak("entry: " . $entry->basename . " already exists");
+                $entry->remove;
+                next;
+            }
             $objs->{entry}{ $entry->basename } = $entry;
 
             for my $cat_name (@cat_names) {
@@ -430,6 +496,11 @@ sub prepare_page {
                 author_id => $author_id,
                 %arg,
             );
+            if (exists $objs->{page}{ $page->basename }) {
+                _note_or_croak("page: " . $page->basename . " already exists");
+                $page->remove;
+                next;
+            }
             $objs->{page}{ $page->basename } = $page;
 
             if ($folder_name) {
@@ -461,6 +532,10 @@ sub prepare_category_set {
 
     if (ref $spec->{category_set} eq 'HASH') {
         for my $name (sort keys %{ $spec->{category_set} }) {
+            if (exists $objs->{category_set}{$name}) {
+                _note_or_croak("category_set: $name already exists");
+                next;
+            }
             my $items = $spec->{category_set}{$name};
             if (ref $items eq 'ARRAY') {
                 my $blog_id = $objs->{blog_id}
@@ -501,10 +576,15 @@ sub prepare_content_type {
     my ($class, $spec, $objs) = @_;
     return unless $spec->{content_type};
 
+    my %retry;
     if (ref $spec->{content_type} eq 'HASH') {
         my @names = sort keys %{ $spec->{content_type} };
     CT:
         while (my $ct_name = shift @names) {
+            if (!$retry{$ct_name} and $objs->{content_type}{$ct_name}{content_type}) {
+                _note_or_croak("content_type: $ct_name already exists");
+                next;
+            }
             my $item = $spec->{content_type}{$ct_name};
 
             my %ct_arg;
@@ -559,6 +639,7 @@ sub prepare_content_type {
                     if (!$source) {
                         if (@names) {
                             push @names, $ct_name;
+                            $retry{$ct_name} = 1;
                             next CT;
                         }
                         croak "unknown content_type: $source_name";
@@ -625,6 +706,10 @@ sub prepare_content_data {
                 my $blog_id = $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                     or croak "blog_id is required: content_data: $name";
                 $arg{label} = $name unless defined $arg{label};
+                if (exists $objs->{content_data}{ $arg{label} }) {
+                    _note_or_croak("content_data: $arg{label} already exists");
+                    next;
+                }
 
                 my %data;
                 for my $cf_name (keys %{ $arg{data} }) {
@@ -690,8 +775,7 @@ sub prepare_content_data {
                             }
                         }
                         $data{ $cf->id } = \@asset_ids;
-                    }
-                    elsif ( $cf_type eq 'multi_line_text' ) {
+                    } elsif ($cf_type eq 'multi_line_text') {
                         $arg{convert_breaks}{$cf_name} ||= '__default__';
                         $data{ $cf->id } = $cf_arg;
                     } else {
@@ -728,6 +812,10 @@ sub prepare_role {
     return unless $spec->{role};
     if (ref $spec->{role} eq 'HASH') {
         for my $name (keys %{ $spec->{role} }) {
+            if (exists $objs->{role}{$name}) {
+                _note_or_croak("role: $name already exists");
+                next;
+            }
             my @perms;
             my @role_perms;
             if (ref $spec->{role}{$name} eq 'HASH') {
@@ -844,6 +932,10 @@ sub prepare_template {
                 (my $archive_type_name = $archive_type) =~ tr/A-Z-/a-z_/;
                 $arg{name} = "tmpl_$archive_type_name";
             }
+            if (exists $objs->{template}{ $arg{name} }) {
+                _note_or_croak("template: $arg{name} already exists");
+                next;
+            }
 
             my $mapping = delete $arg{mapping};
 
@@ -889,7 +981,7 @@ sub prepare_template {
 
                 my $tmpl_map = MT::Test::Permission->make_templatemap(%$map);
 
-                $objs->{templatemap}{ $tmpl_map->file_template } = $tmpl_map;
+                push @{ $objs->{templatemap}{ $tmpl->name } ||= [] }, $tmpl_map;
 
                 $preferred = 0;
             }
@@ -935,6 +1027,216 @@ sub _find_author_id {
         return $author->id;
     }
     $arg->{author_id} || $objs->{author_id};
+}
+
+sub load_objs {
+    my ($class, $spec) = @_;
+
+    my %objs;
+    if ($spec->{author}) {
+        my @author_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{author} };
+        my @authors      = MT->model('author')->load({ name => \@author_names });
+        $objs{author}    = { map { $_->name => $_ } @authors };
+        $objs{author_id} = $authors[0]->id if @authors == 1;
+    } else {
+        $objs{author_id} = 1;
+    }
+
+    my @all_sites;
+    if ($spec->{website}) {
+        my @site_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{website} };
+        my @sites      = MT->model('website')->load({ name => \@site_names });
+        $objs{website} = { map { $_->name => $_ } @sites };
+        push @all_sites, @sites;
+    }
+
+    if ($spec->{blog}) {
+        my @blog_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{blog} };
+        my @blogs      = MT->model('blog')->load({ name => \@blog_names });
+        $objs{blog} = { map { $_->name => $_ } @blogs };
+        push @all_sites, @blogs;
+    }
+
+    $objs{blog_id} = $all_sites[0]->id if @all_sites == 1;
+
+    if ($spec->{image}) {
+        my $image_dir  = "$ENV{MT_TEST_ROOT}/images";
+        my @file_paths = map { "$image_dir/$_" } keys %{ $spec->{image} };
+        my @images     = MT->model('image')->load({ file_path => \@file_paths });
+        $objs{image}{ basename($_->file_path) } = $_ for @images;
+    }
+
+    if ($spec->{asset}) {
+        my $asset_dir  = "$ENV{MT_TEST_ROOT}/assets";
+        my @file_paths = map { "$asset_dir/$_" } keys %{ $spec->{asset} };
+        my @assets     = MT->model('asset')->load({ file_path => \@file_paths });
+        $objs{ $_->class }{ basename($_->file_path) } = $_ for @assets;
+    }
+
+    if ($spec->{tag}) {
+        my @tag_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{tag} };
+        my @tags      = MT->model('tag')->load({ name => \@tag_names });
+        $objs{tag}{ $_->name } = $_ for @tags;
+    }
+
+    if ($spec->{category}) {
+        my @category_labels  = map { ref $_ ? $_->{label} : $_ } @{ $spec->{category} };
+        my @entry_categories = MT->model('category')->load({ label => \@category_labels });
+        for my $category (@entry_categories) {
+            $objs{category}{ $category->label }{ $category->blog_id } = $category;
+        }
+    }
+
+    if ($spec->{folder}) {
+        my @folder_labels = map { ref $_ ? $_->{label} : $_ } @{ $spec->{folder} };
+        my @folders       = MT->model('folder')->load({ label => \@folder_labels });
+        for my $folder (@folders) {
+            $objs{folder}{ $folder->label }{ $folder->blog_id } = $folder;
+        }
+    }
+
+    if ($spec->{customfield}) {
+        my @customfield_names = map { ref $_ ? $_->{name} : $_ } @{ $spec->{customfield} };
+        my @customfields      = MT->model('customfield')->load({ name => \@customfield_names });
+        $objs{customfield}{ $_->name } = $_ for @customfields;
+    }
+
+    if ($spec->{entry}) {
+        my (@entry_titles, @entry_basenames);
+        for my $item (@{ $spec->{entry} }) {
+            if (ref $item) {
+                push @entry_titles,    $item->{title} // '(no title)';
+                push @entry_basenames, $item->{basename} if $item->{basename};
+            } else {
+                push @entry_titles, $item;
+            }
+        }
+        my @terms = [{ title => \@entry_titles }];
+        push @terms, '-or', { basename => \@entry_basenames } if @entry_basenames;
+        my @entries = MT->model('entry')->load(\@terms);
+        $objs{entry} = { map { $_->basename => $_ } @entries };
+    }
+
+    if ($spec->{page}) {
+        my (@page_titles, @page_basenames);
+        for my $item (@{ $spec->{page} }) {
+            if (ref $item) {
+                push @page_titles,    $item->{title} // '(no title)';
+                push @page_basenames, $item->{basename} if $item->{basename};
+            } else {
+                push @page_titles, $item;
+            }
+        }
+        my @terms = [{ title => \@page_titles }];
+        push @terms, '-or', { basename => \@page_basenames } if @page_basenames;
+        my @pages = MT->model('page')->load(\@terms);
+        $objs{page} = { map { $_->basename => $_ } @pages };
+    }
+
+    if ($spec->{category_set}) {
+        my @category_set_names = keys %{ $spec->{category_set} };
+        my @category_sets      = MT->model('category_set')->load({ name => \@category_set_names });
+
+        my %category_set_map = map { $_->id => $_->name } @category_sets;
+        my @categories       = MT->model('category')->load({ category_set_id => [keys %category_set_map] });
+
+        my %category_map;
+        for my $cat (@categories) {
+            $category_map{ $cat->category_set_id }{ $cat->label } = $cat;
+        }
+
+        for my $set (@category_sets) {
+            $objs{category_set}{ $set->name } = {
+                category_set => $set,
+                category     => $category_map{ $set->id },
+            };
+        }
+    }
+
+    if ($spec->{content_type}) {
+        my @content_type_labels = keys %{ $spec->{content_type} };
+        my %content_type_name_mapping;
+        my %content_field_name_mapping;
+        for my $label (@content_type_labels) {
+            my @fields;
+            my $ct_name = $label;
+            if (ref $spec->{content_type}{$label} eq 'HASH') {
+                $ct_name                             = $spec->{content_type}{$label}{name} // $label;
+                $content_type_name_mapping{$ct_name} = $label;
+                @fields                              = @{ $spec->{content_type}{$label}{fields} };
+            } else {
+                $content_type_name_mapping{$ct_name} = $label;
+                @fields = @{ $spec->{content_type}{$label} };
+            }
+            while (my ($cf_name, $cf_spec) = splice @fields, 0, 2) {
+                if (ref $cf_spec eq 'HASH') {
+                    my $key = $cf_spec->{name} // $cf_name;
+                    $content_field_name_mapping{$ct_name}{$key} = $cf_name;
+                } else {
+                    $content_field_name_mapping{$ct_name}{$cf_name} = $cf_name;
+                }
+            }
+        }
+        my @content_type_names = keys %content_type_name_mapping;
+        my @content_types      = MT->model('content_type')->load({ name => \@content_type_names });
+        my %content_type_names = map { $_->id => $_->name } @content_types;
+        my @content_type_ids   = keys %content_type_names;
+
+        my @content_fields = MT->model('content_field')->load({ content_type_id => \@content_type_ids });
+
+        my %content_field_map;
+        for my $cf (@content_fields) {
+            my $ct_name = $content_type_names{ $cf->content_type_id };
+            my $cf_name = $content_field_name_mapping{$ct_name}{ $cf->name };
+            $content_field_map{ $cf->content_type_id }{$cf_name} = $cf;
+        }
+
+        for my $ct (@content_types) {
+            $objs{content_type}{ $content_type_name_mapping{ $ct->name } } = {
+                content_type  => $ct,
+                content_field => $content_field_map{ $ct->id },
+            };
+        }
+    }
+
+    if ($spec->{content_data}) {
+        my @content_data_labels = map { $spec->{content_data}{$_}{label} || $_ } keys %{ $spec->{content_data} };
+        my @content_data        = MT->model('content_data')->load({ label => \@content_data_labels });
+        $objs{content_data} = { map { $_->label => $_ } @content_data };
+    }
+
+    if ($spec->{role}) {
+        my @role_names = keys %{ $spec->{role} };
+        my @roles      = MT->model('role')->load({ name => \@role_names });
+        $objs{role}{ $_->name } = $_ for @roles;
+    }
+
+    if ($spec->{template}) {
+        my @template_names;
+        for my $item (@{ $spec->{template} }) {
+            if (ref $item) {
+                if ($item->{name}) {
+                    push @template_names, $item->{name};
+                    next;
+                }
+                (my $archive_type_name = $item->{archive_type}) =~ tr/A-Z-/a-z_/;
+                push @template_names, "tmpl_$archive_type_name";
+            } else {
+                (my $archive_type_name = $item) =~ tr/A-Z-/a-z_/;
+                push @template_names, "tmpl_$archive_type_name";
+            }
+        }
+        my @templates = MT->model('template')->load({ name => \@template_names });
+        $objs{template}{ $_->name } = $_ for @templates;
+
+        my %template_mapping = map { $_->id => $_ } @templates;
+        my @template_maps    = MT->model('templatemap')->load({ template_id => [keys %template_mapping] });
+        for my $map (@template_maps) {
+            my $tmpl = $template_mapping{ $map->template_id };
+            push @{ $objs{templatemap}{ $tmpl->name } ||= [] }, $map;
+        }
+    }
+    \%objs;
 }
 
 1;

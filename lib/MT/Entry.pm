@@ -951,10 +951,11 @@ sub modified_author {
 
 sub __load_category_data {
     my $entry = shift;
+    return unless $entry->id;
     my $t     = MT->get_timer;
     $t->pause_partial if $t;
     my $cache  = MT::Memcached->instance;
-    my $memkey = $entry->cache_key('categories');
+    my $memkey = $entry->cache_key($entry->id, 'categories');
     my $rows;
     unless ( $rows = $cache->get($memkey) ) {
         require MT::Placement;

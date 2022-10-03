@@ -122,8 +122,8 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
         } else {
             list($start, $end) = $ar->get_range($grp);
         }
-        $start = preg_replace('/[^0-9]/', '', $start);
-        $end = preg_replace('/[^0-9]/', '', $end);
+        $start = preg_replace('/[^0-9]/', '', $start ?? '');
+        $end = preg_replace('/[^0-9]/', '', $end ?? '');
         $ctx->stash('current_timestamp', $start);
         $ctx->stash('current_timestamp_end', $end);
         $ctx->stash('archive_count', $cnt);

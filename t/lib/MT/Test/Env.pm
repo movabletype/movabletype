@@ -18,6 +18,7 @@ use Digest::SHA;
 use String::CamelCase qw/decamelize camelize/;
 use Mock::MonkeyPatch;
 use Sub::Name;
+use Time::HiRes qw/time/;
 
 our $MT_HOME;
 
@@ -56,6 +57,7 @@ sub new {
         root   => $root,
         driver => _driver(),
         config => \%extra_config,
+        start  => [Time::HiRes::gettimeofday],
     }, $class;
 
     $self->write_config(\%extra_config);
@@ -226,7 +228,9 @@ sub update_config {
     for my $key (keys %extra_config) {
         $self->{_config}{$key} = $extra_config{$key};
         MT->config($key, $extra_config{$key});
+        MT->config($key, $extra_config{$key}, 1);
     }
+    MT->config->save_config;
     $self->_write_config;
 }
 
@@ -439,6 +443,11 @@ sub _connect_info_oracle {
     $ENV{NLS_COMP}  = $ENV{MT_TEST_NLS_COMP}  || 'LINGUISTIC';
     $ENV{NLS_SORT}  = $ENV{MT_TEST_NLS_SORT}  || 'AMERICAN_AMERICA';
 
+    my $dsn = sprintf('dbi:Oracle:host=%s;sid=%s;port=%s',
+        $connect_info{DBHost}, $connect_info{Database}, $connect_info{DBPort});
+    my $dbh = DBI->connect($dsn, $connect_info{DBUser}, $connect_info{DBPassword});
+    $self->_oracle_increase_open_cursors($dbh);
+
     %connect_info;
 }
 
@@ -463,6 +472,12 @@ sub show_mysql_db_variables {
         my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
         Test::More::note join ': ', @$_ for @$rows;
     }
+}
+
+sub _oracle_increase_open_cursors {
+    my ($self, $dbh) = @_;
+    return unless $self->driver eq 'oracle';
+    $dbh->do('ALTER SYSTEM SET OPEN_CURSORS = 1000 SCOPE=BOTH') or die $dbh->errstr;
 }
 
 sub mysql_session_variable {
@@ -1408,6 +1423,11 @@ sub DESTROY {
         for my $name (@disabled) {
             $self->enable_plugin($name);
         }
+    }
+    if ($ENV{MT_TEST_PERFORMANCE}) {
+        undef $Test::MockTime::fixed;
+        open my $fh, '>>', 'mt_test_performance.log';
+        printf $fh "%f\t%s\n", Time::HiRes::tv_interval($self->{start}), $0;
     }
 }
 

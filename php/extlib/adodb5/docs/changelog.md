@@ -1,7 +1,7 @@
 # ADOdb Changelog - v5.x
 
 All notable changes to this project will be documented in this file.
-As of version 5.20.1, its format is based on 
+As of version 5.20.1, its format is based on
 [Keep a Changelog](https://keepachangelog.com/).
 
 This project adheres to the [Semantic Versioning](https://semver.org/)
@@ -14,12 +14,274 @@ Older changelogs:
 
 --------------------------------------------------------------------------------
 
-## [5.20.20] - 31-Jan-2021
+## [5.22.2] - 2022-05-08
+
+### Fixed
+
+- mssql: Automatic conversion of false to array is deprecated in PHP 8.1
+  [#829](https://github.com/ADOdb/ADOdb/issues/829)
+- mysql: Affected_Rows() not returning correct value
+  [#820](https://github.com/ADOdb/ADOdb/issues/820)
+- mysql: uncaught ValueError exception calling execute() with an empty array
+  [#832](https://github.com/ADOdb/ADOdb/issues/832)
+- pgsql: Affected_Rows() always returns false on PHP 8.1
+  [#833](https://github.com/ADOdb/ADOdb/issues/833)
+
+
+## [5.22.1] - 2022-03-30
+
+### Removed
+
+- Legacy mysql, mysqlpo and mysqlt drivers
+  [#804](https://github.com/ADOdb/ADOdb/issues/804)
+
+### Fixed
+
+- firebird: undefined offset PHP notice in _fetchField()
+  [#808](https://github.com/ADOdb/ADOdb/issues/808)
+- firebird: PHP deprecation warning in _blobDecode()
+  [#811](https://github.com/ADOdb/ADOdb/issues/811)
+- firebird: PHP notice when executing query with empty array
+  [#812](https://github.com/ADOdb/ADOdb/issues/812)
+- firebird: undefined array key with uppercase columns
+  [#813](https://github.com/ADOdb/ADOdb/issues/813)
+- mysql: regression on setConnectionParameter()
+  [#803](https://github.com/ADOdb/ADOdb/issues/803)
+- mysql: regression on bulk binding
+  [#806](https://github.com/ADOdb/ADOdb/issues/806)
+- oci8: fix PHP 8.1 array deprecation warning
+  [#817](https://github.com/ADOdb/ADOdb/issues/817)
+- memcache: weighted servers not connecting
+  [#807](https://github.com/ADOdb/ADOdb/issues/807)
+- memcache: $memCacheCompress option ignored by memcached
+  [#823](https://github.com/ADOdb/ADOdb/issues/823)
+- memcache: use default port in server controller template
+  [#824](https://github.com/ADOdb/ADOdb/issues/824)
+- xml PHP Notice in dbData::create()
+  [#822](https://github.com/ADOdb/ADOdb/issues/822)
+
+
+## [5.22.0] - 2022-02-08
+
+### Added
+
+- Support for custom MetaTypes, e.g. JSON or GEOMETRY
+  [#602](https://github.com/ADOdb/ADOdb/issues/602)
+  [#626](https://github.com/ADOdb/ADOdb/issues/626)
+  [#649](https://github.com/ADOdb/ADOdb/issues/649)
+- Use of weighted server groups with Memcached
+  [#676](https://github.com/ADOdb/ADOdb/issues/676)
+- mssql: implement offsetDate() method
+  [#698](https://github.com/ADOdb/ADOdb/issues/698)
+- oci8: new ADOConnection::releaseStatement() method
+  [#770](https://github.com/ADOdb/ADOdb/issues/770)
+- sqlite3 performance monitor stub
+  [#661](https://github.com/ADOdb/ADOdb/issues/661)
+- sqlite: support blob handling
+  [#702](https://github.com/ADOdb/ADOdb/issues/702)
+
+### Changed
+
+- firebird: complete overhaul to support latest PHP drivers
+  [#710](https://github.com/ADOdb/ADOdb/issues/710)
+- mssql: Refactor _fetchField() method 
+  [#725](https://github.com/ADOdb/ADOdb/issues/725)
+- mysql: Support bound variable statements
+  [#655](https://github.com/ADOdb/ADOdb/issues/655)
+- pgsql: missing standard datatypes
+  [#782](https://github.com/ADOdb/ADOdb/issues/782)
+- xml: add field comments
+  [#732](https://github.com/ADOdb/ADOdb/issues/732)
+- loadbalancer: support calling a function upon connection
+  [#784](https://github.com/ADOdb/ADOdb/issues/784)
+- Code cleanup: PHPDoc, code style, whitespace, PHPStan errors, etc.
+  [#774](https://github.com/ADOdb/ADOdb/issues/774)
+
+### Deprecated
+
+- Compatibility with PHP < 7.2
+  [#797](https://github.com/ADOdb/ADOdb/issues/797)
+- Database Replication add-on
+  [#780](https://github.com/ADOdb/ADOdb/issues/780)
+
+### Removed
+
+- Compatibility with PHP 5.x
+  [#797](https://github.com/ADOdb/ADOdb/issues/797)
+- Transpose() function and assorted sub-functions
+  [#586](https://github.com/ADOdb/ADOdb/issues/586)
+- "proxy" server and client scripts
+  [#680](https://github.com/ADOdb/ADOdb/issues/680)
+
+### Fixed
+
+- metaIndexes does not return primary key correctly
+  [#656](https://github.com/ADOdb/ADOdb/issues/656)
+- Uniformize ADOrecordSet::__construct() parameters
+  [#772](https://github.com/ADOdb/ADOdb/issues/772)
+- Prevent PHP warning when throwing exception with P1 or P2 parameter as array
+  [#783](https://github.com/ADOdb/ADOdb/issues/783)
+- $dsnType property not defined before use
+  [#789](https://github.com/ADOdb/ADOdb/issues/789)
+- mysql: Update socket and client flags for ssl
+  [#622](https://github.com/ADOdb/ADOdb/issues/622)
+- mysql: Handle tables that are reserved words
+- [#759](https://github.com/ADOdb/ADOdb/issues/759)
+- pgsql: prevent AddColumnSQL() from updating existing values when default is changed
+  [#635](https://github.com/ADOdb/ADOdb/issues/635)
+- pgsql: Refactored _fixblobs() and replaced it with new _prepFields() method
+  [#767](https://github.com/ADOdb/ADOdb/issues/767)
+- pgsql: Incorrect pg_execute() api calls
+  [#768](https://github.com/ADOdb/ADOdb/issues/768)
+- pgsql: blobDelete() could silently fail with multiple connections
+  [#769](https://github.com/ADOdb/ADOdb/issues/769)
+- pdo: ensure bound statements are correctly formatted
+  [#695](https://github.com/ADOdb/ADOdb/issues/695)
+- perf: fix invalid SQL
+  [#753](https://github.com/ADOdb/ADOdb/issues/753)
+- sqlite: driver returns incorrect time when using $sysTimeStamp
+  [#697](https://github.com/ADOdb/ADOdb/issues/697)
+- sqlite: undeclared connection property
+  [#713](https://github.com/ADOdb/ADOdb/issues/713)
+- xml: Undefined array key error
+  [#775](https://github.com/ADOdb/ADOdb/issues/775)
+- memcache: library does not initialize correctly
+  [#788](https://github.com/ADOdb/ADOdb/issues/788)
+
+
+## [5.21.4] and [5.20.21] - 2022-01-22
+
+### Fixed
+
+- Methods return E_DEPRECATED with PHP8.1
+  [#771](https://github.com/ADOdb/ADOdb/issues/771)
+
+### Security
+
+- pgsql: authentication bypass in connect functions (CVE-2021-3850)
+  [#793](https://github.com/ADOdb/ADOdb/issues/793)
+
+
+## [5.21.3] - 2021-10-31
+
+### Fixed
+
+- core: Ensure temp $ADODB_COUNTRECS changes really are temporary
+  [#761](https://github.com/ADOdb/ADOdb/issues/761)
+- mysqli: force error reporting mode to OFF (PHP 8.1 compatibility) 
+  [#755](https://github.com/ADOdb/ADOdb/issues/755)
+- pdo: fix metaIndexes declaration to match parent
+  [#717](https://github.com/ADOdb/ADOdb/issues/717)
+
+
+## [5.21.2] - 2021-08-22
+
+### Fixed
+
+- Fix syntax error in toexport.inc.php
+  [#749](https://github.com/ADOdb/ADOdb/issues/749)
+- pgsql: fix fetchField() parameter naming
+  [#752](https://github.com/ADOdb/ADOdb/issues/752)
+
+
+## [5.21.1] - 2021-08-15
+
+### Changed
+
+- Standardized source code file headers
+  [#728](https://github.com/ADOdb/ADOdb/issues/728)
+- Code cleanup: PHPDoc, code style, whitespace, etc.
+  [#691](https://github.com/ADOdb/ADOdb/issues/691) 
+  (and others)
+
+### Fixed
+
+- Caching in FieldTypesArray() causes problems
+  [#687](https://github.com/ADOdb/ADOdb/issues/687)
+- setConnectionParameter() method should not be final
+  [#694](https://github.com/ADOdb/ADOdb/issues/694)
+- Final private methods throw warning (PHP 8)
+  [#711](https://github.com/ADOdb/ADOdb/issues/711)
+- Fix record count when executing SQL with subqueries
+  [#715](https://github.com/ADOdb/ADOdb/issues/715)
+- Incorrect handling of $ADODB_QUOTE_FIELDNAMES = true
+  [#721](https://github.com/ADOdb/ADOdb/issues/721)
+- array to string conversion in adodb_debug_execute()
+  [#737](https://github.com/ADOdb/ADOdb/issues/737)
+- db2: fix columns always returned in lowercase
+  [#719](https://github.com/ADOdb/ADOdb/issues/719)
+- PDO: Bind parameters fail if sent in associative array
+  [#705](https://github.com/ADOdb/ADOdb/issues/705)
+- mssql: _insertid() doesn't work anymore  
+  [#692](https://github.com/ADOdb/ADOdb/issues/692)
+- mssql: PHP warnings in dropColumnSQL()
+  [#696](https://github.com/ADOdb/ADOdb/issues/696)
+- mssql: duplicate key in SQLDate convert formats
+  [#748](https://github.com/ADOdb/ADOdb/issues/748)
+- mysql: affected_rows() returns number instead of false
+  [#604](https://github.com/ADOdb/ADOdb/issues/604)
+- mysql: TypeError when calling get/setChangeSet on unset connection (PHP 8)
+  [#686](https://github.com/ADOdb/ADOdb/issues/686)
+- mysql: TypeError when calling setConnectionParameter() with non-numeric value (PHP 8)
+  [#693](https://github.com/ADOdb/ADOdb/issues/693)
+- pdo: Affected_Rows() throws Notice and returns 0 when rows affected
+  [#733](https://github.com/ADOdb/ADOdb/issues/733)
+- pgsql: sub-selects require aliasing
+  [#736](https://github.com/ADOdb/ADOdb/issues/736)
+- xml: Invalid SQL in extractSchema()
+  [#707](https://github.com/ADOdb/ADOdb/issues/707)
+
+### Removed
+
+- Use of _ADODB_COUNT as workaround for counting in complex queries
+  (introduced in [#88](https://github.com/ADOdb/ADOdb/issues/88))
+  [#715](https://github.com/ADOdb/ADOdb/issues/715)
+
+
+
+## [5.21.0] - 2021-02-27
+
+### Fixed
+
+- pgsql: param(0) returns invalid `$0` placeholder
+  [#682](https://github.com/ADOdb/ADOdb/issues/682)
+
+
+## [5.21.0-rc.1] - 2021-02-02
+
+Includes all fixes from 5.20.20.
+
+### Added
+
+- Explicit support for PHP 8 with Composer
+
+### Fixed
+
+- Replace adodb_str_replace() calls with str_replace()
+  [#646](https://github.com/ADOdb/ADOdb/issues/646)
+- pgsql: override ADODB_DataDict::ChangeTableSQL()
+  [#634](https://github.com/ADOdb/ADOdb/issues/634)
+- sqlite: fix metaIndexes does not return primary key correctly
+  [#656](https://github.com/ADOdb/ADOdb/issues/656)
+- xmlschema: PHP8 compatibility
+  [#658](https://github.com/ADOdb/ADOdb/issues/658)
+
+### Removed
+
+- Support for PHP < 5.5.9
+  [#654](https://github.com/ADOdb/ADOdb/issues/654)
+- XML-RPC Interface
+  [#671](https://github.com/ADOdb/ADOdb/issues/671)
+- Magic quotes related code
+  [#674](https://github.com/ADOdb/ADOdb/issues/674)
+
+
+## [5.20.20] - 2021-01-31
 
 ### Fixed
 
 - Fix usage of get_magic_* functions
-  [#619](https://github.com/ADOdb/ADOdb/issues/657)
+  [#619](https://github.com/ADOdb/ADOdb/issues/619)
   [#657](https://github.com/ADOdb/ADOdb/issues/657)
 - Fix PHP warning in _rs2rs() function
   [#679](https://github.com/ADOdb/ADOdb/issues/679)
@@ -35,7 +297,217 @@ Older changelogs:
   [#668](https://github.com/ADOdb/ADOdb/issues/668)
 
 
-## [5.20.19] - 13-Dec-2020
+## [5.21.0-beta.1] - 2020-12-20
+
+Includes all fixes from 5.20.19.
+
+### Added
+
+- adodb: New helper methods: day(), month(), year()
+  [#225](https://github.com/ADOdb/ADOdb/issues/225)
+- adodb: add Occitan ([#285](https://github.com/ADOdb/ADOdb/issues/285))
+  and Indonesian ([#293](https://github.com/ADOdb/ADOdb/issues/293)) translations.
+- adodb: add control over BLOB data dictionary feature (NOT NULL, DEFAULT)
+  [#292](https://github.com/ADOdb/ADOdb/issues/292)
+  [#478](https://github.com/ADOdb/ADOdb/issues/478)
+- mssql: support Windows authentication
+  [#353](https://github.com/ADOdb/ADOdb/issues/353)
+- mysqli: support SSL connections
+  [#415](https://github.com/ADOdb/ADOdb/issues/415)
+- pdo/dblib: new driver
+  [#496](https://github.com/ADOdb/ADOdb/issues/496)
+- pdo/firebird: new driver
+  [#378](https://github.com/ADOdb/ADOdb/issues/378)
+- loadbalancer: read/write splitting and load balancing across multiple connections, thanks to Mike Benoit
+  [#111](https://github.com/ADOdb/ADOdb/issues/111)
+
+### Changed
+
+- adodb: addColumnSQL datadict function now supports ENUM data types
+  [#26](https://github.com/ADOdb/ADOdb/issues/26)
+- adodb: introduce user-defined default Metatype
+  [#165](https://github.com/ADOdb/ADOdb/issues/165)
+- adodb: AutoExecute validates empty fields array
+  [#154](https://github.com/ADOdb/ADOdb/issues/154)
+- adodb: Add new value defaulting mode for getInsertSQL()
+  [#214](https://github.com/ADOdb/ADOdb/issues/214)
+- adodb: Added portable substring method
+  [#219](https://github.com/ADOdb/ADOdb/issues/219)
+- adodb: Optimize FieldTypesArray with static variable
+  [#367](https://github.com/ADOdb/ADOdb/issues/367)
+- adodb: Allow output handler to be callable
+  [#312](https://github.com/ADOdb/ADOdb/issues/312)
+- adodb-time: Add 'W' (week of year) format support in adodb_date()
+  [#223](https://github.com/ADOdb/ADOdb/issues/223)
+- db2: full driver rewrite
+  [#442](https://github.com/ADOdb/ADOdb/issues/442)
+- firebird: updated driver, thanks to Lester Caine
+  [#201](https://github.com/ADOdb/ADOdb/issues/201)
+- mssql: Add Convert on SQLDate Method
+  [#304](https://github.com/ADOdb/ADOdb/issues/304)
+- mssql: support alternative port in connect
+  [#314](https://github.com/ADOdb/ADOdb/issues/314)
+- mssql: MetaForeignKeys() not returning all FKs
+  [#486](https://github.com/ADOdb/ADOdb/issues/486)
+- mssql: support for T-SQL-style square brackets
+  [#246](https://github.com/ADOdb/ADOdb/issues/246)
+- mssqlnative: add support for 'l' (day of week) format in sqlDate()
+  [#232](https://github.com/ADOdb/ADOdb/issues/232)
+- mssqlnative: support metaProcedures() method
+  [#578](https://github.com/ADOdb/ADOdb/issues/578)
+- setConnectionParameter() now allows multiple parameters with the same key value
+  [#187](https://github.com/ADOdb/ADOdb/issues/187)
+- mysqli: Insert_ID() did not return correct value after executing stored procedure
+  [#166](https://github.com/ADOdb/ADOdb/issues/166)
+- mysqli: method failed if $associative set true
+  [#181](https://github.com/ADOdb/ADOdb/issues/181)
+- oci8: provide option to create compact trigger/sequence names
+  [#565](https://github.com/ADOdb/ADOdb/issues/565)
+- odbc/mssql: fix null strings concatenation issue with SQL server 2012
+  [#148](https://github.com/ADOdb/ADOdb/issues/148)
+- odbc/mssql: add missing Concat() method
+  [#402](https://github.com/ADOdb/ADOdb/issues/402)
+- pdo: add setConnectionParameter support
+  [#247](https://github.com/ADOdb/ADOdb/issues/247)
+- pdo: add meta extension points
+  [#475](https://github.com/ADOdb/ADOdb/issues/475)
+- pdo/mysql: add genID() and createSequence() support
+  [#465](https://github.com/ADOdb/ADOdb/issues/465)
+- pdo/pgsql: Add support for transactions
+  [#363](https://github.com/ADOdb/ADOdb/issues/363)
+- pdo/sqlsrv: add SetTransactionMode() method
+  [#362](https://github.com/ADOdb/ADOdb/issues/362)
+- pgsql: optimize version check
+  [#334](https://github.com/ADOdb/ADOdb/issues/334)
+- pgsql: use postgres9 driver by default
+  [#474](https://github.com/ADOdb/ADOdb/issues/474)
+- sqlite: Fix Metataypes mapping
+  [#177](https://github.com/ADOdb/ADOdb/issues/177)
+- sqlite: driver did not support metaForeignKeys
+  [#179](https://github.com/ADOdb/ADOdb/issues/179)
+- memcache: add support for memcached PECL library
+  [#322](https://github.com/ADOdb/ADOdb/issues/322)
+- xml: support table 'opt' attribute with mysqli
+  [#267](https://github.com/ADOdb/ADOdb/issues/267)
+- xml: add support for 'DESCR' tags for tables/fields
+  [#265](https://github.com/ADOdb/ADOdb/issues/265)
+
+### Deprecated
+
+- mysqli: Deprecate $optionFlags property in favor of standard setConnectionParameter() method
+  [#188](https://github.com/ADOdb/ADOdb/issues/188)
+- proxy: the client driver and server.php script are deprecated
+  [#444](https://github.com/ADOdb/ADOdb/issues/444)
+
+### Removed
+
+- adodb: Remove references to obsolete ADOdb Extension
+  [#270](https://github.com/ADOdb/ADOdb/issues/270)
+- adodb: Remove unneeded ADODB_str_replace function
+  [#582](https://github.com/ADOdb/ADOdb/issues/582)
+- adodb: Remove useless PHP 4 and 5 version checks
+  [#583](https://github.com/ADOdb/ADOdb/issues/583)
+  [#584](https://github.com/ADOdb/ADOdb/issues/584)
+- adodb: replace _array_change_key_case() by internal PHP function
+  [#587](https://github.com/ADOdb/ADOdb/issues/587)
+
+### Fixed
+
+- adodb: Remove useless constructors 
+  [#171](https://github.com/ADOdb/ADOdb/issues/171)
+- adodb: Define default constructor in ADOConnection base class 
+  [#172](https://github.com/ADOdb/ADOdb/issues/172)
+- adodb: Reimplement base methods charMax() and textMax() 
+  [#183](https://github.com/ADOdb/ADOdb/issues/183)
+  [#220](https://github.com/ADOdb/ADOdb/issues/220)
+- adodb: fix getAssoc() 
+  [#189](https://github.com/ADOdb/ADOdb/issues/189) 
+  [#198](https://github.com/ADOdb/ADOdb/issues/198) 
+  [#204](https://github.com/ADOdb/ADOdb/issues/204)
+- adodb: Improve array identification in ADOrecordset::getAssoc() 
+  [#101](https://github.com/ADOdb/ADOdb/issues/101)
+- adodb: MetaColumns() consistently returns Actual Type by default in all drivers 
+  [#184](https://github.com/ADOdb/ADOdb/issues/184) 
+  [#133](https://github.com/ADOdb/ADOdb/issues/133)
+- adodb: getAssoc() should not change case of result set's outermost key
+  [#335](https://github.com/ADOdb/ADOdb/issues/335)
+- adodb: getAssoc() fix fetch mode
+  [#350](https://github.com/ADOdb/ADOdb/issues/350)
+- adodb: Replace each() with foreach (PHP 7.2 compatibility)
+  [#373](https://github.com/ADOdb/ADOdb/issues/373)
+- adodb: fix ADORecordSet constructor signature
+  [#278](https://github.com/ADOdb/ADOdb/issues/278)
+- adodb: support use of spaces and reserved keywords in replace function
+  [#390](https://github.com/ADOdb/ADOdb/issues/390)
+- adodb: fix adodb_strip_order_by() to only remove the last order by statement
+  [#549](https://github.com/ADOdb/ADOdb/issues/549)
+- adodb: fix field names quoting when setting value to null
+  [#572](https://github.com/ADOdb/ADOdb/issues/572)
+- adodb: fix getAssoc returning key as value column with ADODB_FETCH_BOTH mode
+  [#600](https://github.com/ADOdb/ADOdb/issues/600)
+- adodb-time: Fix 'Q' (quarter of year) format in adodb_date()
+  [#222](https://github.com/ADOdb/ADOdb/issues/222)
+- active record: honor column and table name quoting
+  [#309](https://github.com/ADOdb/ADOdb/issues/309)
+- db2: fix ChangeTableSQL() signature
+  [#338](https://github.com/ADOdb/ADOdb/issues/338)
+- mssqlnative: Query not returning id
+  [#185](https://github.com/ADOdb/ADOdb/issues/185)
+- mssqlnative: fix invalid return value for ErrorNo()
+  [#298](https://github.com/ADOdb/ADOdb/issues/298)
+- mssqlnative: ensure that the bind array is numeric
+  [#336](https://github.com/ADOdb/ADOdb/issues/336)
+- mssqlnative: fix crash with driver version 5.6 on queries returning no data
+  [#492](https://github.com/ADOdb/ADOdb/issues/492)
+- mysql: prevent use of driver with PHP >= 7.0
+  [#310](https://github.com/ADOdb/ADOdb/issues/310)
+- mysqli: return fields as ADOFieldObject objects
+  [#175](https://github.com/ADOdb/ADOdb/issues/175)
+- mysqli (perf): tables() method definition inconsistent with parent
+  [#435](https://github.com/ADOdb/ADOdb/issues/435)
+- mysql: genId() not returning next sequence value
+  [#493](https://github.com/ADOdb/ADOdb/issues/493)
+- oci8: fix syntax error preventing sequence creation
+  [#540](https://github.com/ADOdb/ADOdb/issues/540)
+- oci8: remove use of curly braces in string offsets (deprecated in PHP 7.4)
+  [#570](https://github.com/ADOdb/ADOdb/issues/570)
+- odbc: MetaColumns() can optionally be set to return MetaType for backwards compatibility
+  [#184](https://github.com/ADOdb/ADOdb/issues/184)
+- pdo: allow loading of subclassed recordset
+  [#245](https://github.com/ADOdb/ADOdb/issues/245)
+- pdo: fix PHP notice
+  [#248](https://github.com/ADOdb/ADOdb/issues/248)
+- pdo: fix ADORecordSet class loading
+  [#250](https://github.com/ADOdb/ADOdb/issues/250)
+- pdo/sqlsrv: fix fetchField() method
+  [#251](https://github.com/ADOdb/ADOdb/issues/251)
+  [#234](https://github.com/ADOdb/ADOdb/issues/234)
+- pgsql: add CIDR data type to MetaType()
+  [#281](https://github.com/ADOdb/ADOdb/issues/281)
+- pgsql: fix param number reset with param(false)
+  [#380](https://github.com/ADOdb/ADOdb/issues/380)
+- pgsql: specialized casts for _recreate_copy_table()
+  [#207](https://github.com/ADOdb/ADOdb/issues/207)
+- sqlite: _createSuffix is now compatible with parent
+  [#178](https://github.com/ADOdb/ADOdb/issues/178)
+- sqlite: metaIndexes could not locate indexes on uppercase table name
+  [#176](https://github.com/ADOdb/ADOdb/issues/176)
+- sqlite: metaIndexes() returns column as array instead of CSV
+  [#567](https://github.com/ADOdb/ADOdb/issues/567)
+- session: string parameters for `assert` are deprecated in PHP 7.2
+  [#438](https://github.com/ADOdb/ADOdb/issues/438)
+- xml: fix invalid xmlschema03.dtd and descr tag in session schema XML
+  [#595](https://github.com/ADOdb/ADOdb/issues/595)
+
+### Security
+
+- adodb: prevent SQL injection in SelectLimit() 
+  [#311](https://github.com/ADOdb/ADOdb/issues/311)
+- session: add 'httponly' flag to cookie
+  [#190](https://github.com/ADOdb/ADOdb/issues/190)
+
+
+## [5.20.19] - 2020-12-13
 
 ### Changed
 
@@ -807,6 +1279,19 @@ Released together with [v4.95](changelog_v4.x.md#495---17-may-2007)
 - Adodb5 version,more error checking code now will use exceptions if available.
 
 
+[5.22.2]: https://github.com/adodb/adodb/compare/v5.22.1...v5.22.2
+[5.22.1]: https://github.com/adodb/adodb/compare/v5.22.0...v5.22.1
+[5.22.0]: https://github.com/adodb/adodb/compare/v5.21.4...v5.22.0
+
+[5.21.4]: https://github.com/adodb/adodb/compare/v5.21.3...v5.21.4
+[5.21.3]: https://github.com/adodb/adodb/compare/v5.21.2...v5.21.3
+[5.21.2]: https://github.com/adodb/adodb/compare/v5.21.1...v5.21.2
+[5.21.1]: https://github.com/adodb/adodb/compare/v5.21.0...v5.21.1
+[5.21.0]: https://github.com/adodb/adodb/compare/v5.21.0-rc.1...v5.21.0
+[5.21.0-rc.1]: https://github.com/adodb/adodb/compare/v5.21.0-beta.1...v5.21.0-rc.1
+[5.21.0-beta.1]: https://github.com/adodb/adodb/compare/v5.20.20...v5.21.0-beta.1
+
+[5.20.21]: https://github.com/adodb/adodb/compare/v5.20.20...v5.20.21
 [5.20.20]: https://github.com/adodb/adodb/compare/v5.20.19...v5.20.20
 [5.20.19]: https://github.com/adodb/adodb/compare/v5.20.18...v5.20.19
 [5.20.18]: https://github.com/adodb/adodb/compare/v5.20.17...v5.20.18

@@ -10,6 +10,9 @@ use strict;
 use warnings;
 
 sub updatable_fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     [qw(displayName email url)];
 }
 
@@ -31,6 +34,9 @@ sub _private_bulk_from_object {
 }
 
 sub fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     [   {   name             => 'id',
             bulk_from_object => _private_bulk_from_object( 'id', 'id' ),
         },

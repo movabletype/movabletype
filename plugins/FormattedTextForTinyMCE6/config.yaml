@@ -1,0 +1,19 @@
+id: FormattedTextForTinyMCE6
+name: FormattedTextForTinyMCE6
+version: 6.0.1
+author_link: http://www.movabletype.org/
+author_name: Six Apart Ltd.
+description: <MT_TRANS phrase='Add the "Insert Boilerplate" button to the TinyMCE.'>
+l10n_class: FormattedTextForTinyMCE5::L10N
+
+editors:
+    tinymce:
+        formatted_text:
+            enabled: true
+        extension: extension.tmpl
+
+applications:
+    cms:
+        methods:
+            tiny_mce_view_formatted_text_text:
+                code: $FormattedTextForTinyMCE6::FormattedTextForTinyMCE6::App::view_text

@@ -85,7 +85,7 @@ sub wanted {
     my $file = $File::Find::name;
     return unless $file =~ /\.(tmpl|pl|cgi\.pre)$/;
     print "\n    ## $file\n";
-    open my $fh, $_ or die "Can't open $_: $!";
+    open my $fh, "<", $_ or die "Can't open $_: $!";
     local $_ = do { local $/; <$fh> };
     close $fh;
     while (/<MT_TRANS ([^>]+)>/g) {
@@ -107,7 +107,7 @@ sub wanted_app {
     my $file = $File::Find::name;
     return unless $file =~ m!/mt\.js$! || $file =~ /\.(pm|pl|cgi\.pre)$/;
     print "\n    ## $file\n";
-    open my $fh, $_ or die "Can't open $_: $!";
+    open my $fh, "<", $_ or die "Can't open $_: $!";
     local $_ = do { local $/; <$fh> };
     close $fh;
     if ($file =~ m/\.js/) {

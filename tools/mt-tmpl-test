@@ -101,9 +101,9 @@ sub load_template {
     elsif (defined $template_name) {
         if ( -f $template_name ) {
             local $/ = undef;
-            open FIN, "<$template_name";
-            $template = <FIN>;
-            close FIN;
+            open my $FIN, "<", $template_name;
+            $template = <$FIN>;
+            close $FIN;
         }
         else {
             $template_obj = MT::Template->load({

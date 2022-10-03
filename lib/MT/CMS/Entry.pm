@@ -687,7 +687,9 @@ sub edit {
         } @ordered
     ];
 
-    $param->{quickpost_js} = MT::CMS::Entry::quickpost_js( $app, $type );
+    unless (MT->config->DisableQuickPost) {
+        $param->{quickpost_js} = MT::CMS::Entry::quickpost_js( $app, $type );
+    }
     $param->{object_label_plural} = $param->{search_label}
         = $class->class_label_plural;
     if ( 'page' eq $type ) {

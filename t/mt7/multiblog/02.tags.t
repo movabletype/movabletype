@@ -30,6 +30,7 @@ plan tests => 2 * blocks;
 my $app = MT->instance;
 
 $test_env->prepare_fixture('db_data');
+$test_env->update_config( PluginSwitch => 'Trackback=1' );
 
 # Remove objects in website (blog_id = 2).
 $app->model('page')->remove( { id => 24 } );

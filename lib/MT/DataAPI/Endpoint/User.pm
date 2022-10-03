@@ -54,6 +54,9 @@ DESCRIPTION
 sub get {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my $user = get_target_user(@_)
         or return;
 
@@ -114,6 +117,9 @@ DESCRIPTION
 
 sub update {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my $user = get_target_user(@_)
         or return;

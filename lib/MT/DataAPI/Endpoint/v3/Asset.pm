@@ -9,7 +9,7 @@ package MT::DataAPI::Endpoint::v3::Asset;
 use strict;
 use warnings;
 
-use MT::DataAPI::Endpoint::Asset;
+use MT::DataAPI::Endpoint::v1::Asset;
 use MT::DataAPI::Endpoint::v2::Asset;
 
 sub upload_openapi_spec {
@@ -23,7 +23,7 @@ sub upload_openapi_spec {
 }
 
 sub upload_deprecated_openapi_spec {
-    my $spec = MT::DataAPI::Endpoint::Asset::upload_v2_openapi_spec();
+    my $spec = MT::DataAPI::Endpoint::v1::Asset::upload_v2_openapi_spec();
     $spec->{description} = <<'DESCRIPTION';
 This endpoint is marked as deprecated in v2.0.
 
@@ -82,7 +82,7 @@ sub upload {
         $app->param( 'auto_rename_non_ascii', $autoRenameNonAscii );
     }
 
-    MT::DataAPI::Endpoint::Asset::upload( $app, $endpoint );
+    MT::DataAPI::Endpoint::v1::Asset::upload( $app, $endpoint );
 }
 
 1;

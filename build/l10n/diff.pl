@@ -21,8 +21,8 @@ GetOptions( 'old:s' => \$file1,
 # print "## old: $file1 new: $file2 \n";
 print "\n\t## phrases from previous version.\n";
 
-open FH, $file1;
-while (<FH>) {
+open my $FH1, "<", $file1;
+while (<$FH1>) {
     next if (/^\s*#/);
     if ($_ =~ /^\s*(['"])(.+)\1\s*=>\s*(['"])(.+)\3,/) {
 	    # print STDERR $2, "\n";
@@ -30,12 +30,12 @@ while (<FH>) {
 	    $conv1_lc{lc $2} = $4;
     }
 }
-close FH;
+close $FH1;
 
 open my $n, '>', $file3;
 
-open FH, $file2;
-while (<FH>) {
+open my $FH2, "<", $file2;
+while (<$FH2>) {
     if (/^\s*#/) {
         print $n "\n$_";
         next;
@@ -49,7 +49,7 @@ while (<FH>) {
         }
     }
 }
-close FH;
+close $FH2;
 
 close $n;
 

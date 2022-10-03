@@ -12,7 +12,7 @@ require_once('lib/class.exception.php');
 
 define('VERSION', '7.9');
 define('PRODUCT_VERSION', '7.9.5');
-define('DATA_API_DEFAULT_VERSION', '4');
+define('DATA_API_DEFAULT_VERSION', '5');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -333,7 +333,7 @@ class MT {
         $driver = preg_replace('/^DB[ID]::/', '', $driver);
         $driver or $driver = 'mysql';
         $cfg['dbdriver'] = strtolower($driver);
-        if ((strlen($cfg['database'])<1 || strlen($cfg['dbuser'])<1)) {
+        if ((strlen($cfg['database'])<1 || !isset($cfg['dbuser']) || strlen($cfg['dbuser'])<1)) {
             if (($cfg['dbdriver'] != 'sqlite') && ($cfg['dbdriver'] != 'mssqlserver') && ($cfg['dbdriver'] != 'umssqlserver')) {
                 die("Unable to read database or username");
             }
@@ -475,6 +475,8 @@ class MT {
             $cfg['dbretryinterval'] = 1;
         isset($cfg['dataapiscript']) or
             $cfg['dataapiscript'] = 'mt-data-api.cgi';
+        isset($cfg['dynamictemplateallowphp']) or
+            $cfg['dynamictemplateallowphp'] = 1;
     }
 
     function configure_paths($blog_site_path) {
@@ -635,7 +637,7 @@ class MT {
         }
 
         $cache_id = $blog_id.';'.$fi_path;
-        if (!$ctx->is_cached('mt:'.$tpl_id, $cache_id)) {
+        if (!$ctx->isCached('mt:'.$tpl_id, $cache_id)) {
             if (isset($at) && $at) {
                 require_once("archive_lib.php");
                 try {
@@ -684,13 +686,13 @@ class MT {
                 $ctx->stash('content_type', $ct);
                 $ctx->stash('current_timestamp', $cd->cd_authored_on);
             }
-            if (preg_match('/^ContentType/', $at) && !$ctx->stash('content_type') && $tmpl && $tmpl->content_type_id) {
+            if (isset($at) && preg_match('/^ContentType/', $at) && !$ctx->stash('content_type') && $tmpl && $tmpl->content_type_id) {
                 $ct = $mtdb->fetch_content_type($tmpl->content_type_id);
                 if ($ct) {
                     $ctx->stash('content_type', $ct);
                 }
             }
-            if(preg_match('/ContentType-Category/', $at)){
+            if(isset($at) && preg_match('/ContentType-Category/', $at)){
                 if($archive_category){
                     $category_set = $ctx->mt->db()->fetch_category_set($archive_category->category_category_set_id);
                     if($category_set)

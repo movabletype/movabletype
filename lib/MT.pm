@@ -37,7 +37,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.9', '7.0053' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.9', '7.0054' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
@@ -1800,6 +1800,18 @@ sub update_ping_list {return}
 
 sub supported_languages {
     my $mt = shift;
+
+    my %default_supported_languages;
+    if (my $default = MT->config->DefaultSupportedLanguages) {
+        for my $tag (split ',', $default) {
+            $tag =~ tr/A-Z-/a-z_/;
+            $default_supported_languages{$tag} = 1;
+        }
+        # just in case
+        $default_supported_languages{MT->config->DefaultLanguage} = 1;
+        $default_supported_languages{MT->current_language} = 1;
+    }
+
     require MT::L10N;
     require File::Basename;
     ## Determine full path to lib/MT/L10N directory...
@@ -1819,6 +1831,7 @@ sub supported_languages {
         for my $f ( readdir $DH ) {
             my ($tag) = $f =~ /^(\w+)\.pm$/;
             next unless $tag;
+            next if %default_supported_languages && !$default_supported_languages{$tag};
             my $lh = MT::L10N->get_handle($tag);
             $langs{ $lh->language_tag } = $lh->language_name;
         }

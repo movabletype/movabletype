@@ -120,6 +120,9 @@ DESCRIPTION
 sub upload {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     return $app->error(403) unless $app->can_do('upload');
 
     $app->param( 'site_path', 1 )
