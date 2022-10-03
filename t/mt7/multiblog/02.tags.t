@@ -574,7 +574,6 @@ template-module:2
 { 1 => 2, 2 => 2 }
 
 === MTC-28598 mt:MultiBlogIfLocalBlog never be TRUE  in loop mode
---- skip_php
 --- template
 <mt:MultiBlog mode="loop">:<MTTags glue=','><mt:BlogID><mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog></MTTags></mt:MultiBlog>
 --- expected

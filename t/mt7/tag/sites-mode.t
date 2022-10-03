@@ -36,9 +36,10 @@ sub var {
 }
 
 filters {
-    template => [qw( var chomp )],
-    expected => [qw( var chomp )],
-    error    => [qw( chomp )],
+    template               => [qw( var chomp )],
+    expected               => [qw( var chomp )],
+    error                  => [qw( chomp )],
+    default_mt_sites_sites => [qw( var chomp )],
 };
 
 $test_env->prepare_fixture(
@@ -227,9 +228,32 @@ $vars->{site_02_id}    = $site_02->id;
 $vars->{blog_01_id}    = $blog_01->id;
 $vars->{blog_02_id}    = $blog_02->id;
 
-MT::Test::Tag->run_perl_tests( $site_01->id );
+MT::Test::Tag->run_perl_tests($site_01->id, sub { set_default_mt_sites_sites($_[1]) });
 
-MT::Test::Tag->run_php_tests($site_01->id);
+MT::Test::Tag->run_php_tests($site_01->id, sub { set_default_mt_sites_sites($_[0]) });
+
+my %default_mt_sites_sites_reset_backup;
+
+sub set_default_mt_sites_sites {
+    my $block = shift;
+    my $blogs = $block->default_mt_sites_sites ? eval($block->default_mt_sites_sites) : {};
+
+    for my $blog_id (keys %default_mt_sites_sites_reset_backup) {
+        next if exists($blogs->{$blog_id});
+        my $blog = MT->model('blog')->load($blog_id);
+        $blog->default_mt_sites_sites(delete $default_mt_sites_sites_reset_backup{$blog_id});
+        $blog->save;
+    }
+
+    for my $blog_id (keys %$blogs) {
+        my $blog = MT->model('blog')->load($blog_id);
+        unless (exists($default_mt_sites_sites_reset_backup{$blog_id})) {
+            $default_mt_sites_sites_reset_backup{$blog_id} = $blog->default_mt_sites_sites;
+        }
+        $blog->default_mt_sites_sites($blogs->{$blog_id});
+        $blog->save;
+    }
+}
 
 __END__
 
@@ -370,6 +394,22 @@ test single line text 1
 <mt:Sites mode="loop">:id=<mt:BlogID></mt:Sites>
 --- expected
 :id=[% site_01_id %]:id=[% site_02_id %]
+
+=== MTC-28598 default_mt_sites_sites works
+--- template
+<mt:MultiBlog mode="loop">:id=<mt:BlogID></mt:MultiBlog>
+--- expected
+:id=[% site_01_id %]:id=[% site_02_id %]
+--- default_mt_sites_sites
+{[% site_01_id %] => '[% site_01_id %],[% site_02_id %]'}
+
+=== MTC-28598 default_mt_sites_sites avoids MTSite mode override
+--- template
+<mt:Sites mode="loop">:id=<mt:BlogID></mt:Sites>
+--- expected
+:id=[% site_01_id %]:id=[% site_02_id %]
+--- default_mt_sites_sites
+{[% site_01_id %] => '[% site_01_id %],[% site_02_id %]'}
 
 === mt:ChildSites in mt:Sites no mode
 --- template
