@@ -4338,6 +4338,7 @@ use vars qw( @ISA %Lexicon );
 	'Recipients' => 'あて先',
 	'Send a Notification' => '通知の送信',
 	'Send notification (s)' => '通知を送信 (s)',
+	'Subject' => '件名',
 	'You must specify at least one recipient.' => '少なくとも一人の受信者を指定する必要があります。',
 	q{Your [_1]'s name, title, and a link to view it will be sent in the notification. Additionally, you can add a message, include an excerpt and/or send the entire body.} => q{[_1]名、タイトル、およびパーマリンクが送られます。メッセージを追加したり、概要や本文を送ることもできます。},
 

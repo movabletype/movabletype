@@ -31,6 +31,7 @@ sub entry_notify {
         if $blog->id != $entry->blog_id;
     my $param = {};
     $param->{entry_id} = $entry_id;
+    $param->{subject}  = $app->translate( "[_1] Update: [_2]", $blog->name, $entry->title );
     return $app->load_tmpl( "dialog/entry_notify.tmpl", $param );
 }
 
@@ -40,6 +41,7 @@ sub send_notify {
 
     $app->validate_param({
         entry_id           => [qw/ID/],
+        subject            => [qw/MAYBE_STRING/],
         message            => [qw/MAYBE_STRING/],
         send_body          => [qw/MAYBE_STRING/],
         send_excerpt       => [qw/MAYBE_STRING/],
@@ -131,8 +133,7 @@ sub send_notify {
     my $body = $app->build_email( 'notify-entry.tmpl', \%params )
         or return;
 
-    my $subj
-        = $app->translate( "[_1] Update: [_2]", $blog->name, $entry->title );
+    my $subj = $app->param('subject') || $app->translate( "[_1] Update: [_2]", $blog->name, $entry->title );
     if ( $app->current_language ne 'ja' ) {   # FIXME perhaps move to MT::I18N
         $subj =~ s![\x80-\xFF]!!g;
     }
