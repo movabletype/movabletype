@@ -163,6 +163,14 @@ sub plugin_control {
                     level    => MT::Log::INFO()
                 }
             );
+
+            if (my $object = $MT::Plugins{$plugin_sig}{object}) {
+                if ($object->name ne $plugin_sig) {
+                    my $alias = $cfg->PluginAlias || {};
+                    $alias->{$object->name} = $plugin_sig;
+                    $cfg->PluginAlias($alias, 1);
+                }
+            }
         }
     }
     $cfg->save_config;
