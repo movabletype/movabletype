@@ -2781,6 +2781,12 @@ sub remove_temporary_files {
     my @ids;
     foreach my $f (@files) {
         if ( $fmgr->delete( $f->name ) ) {
+            # MTC-26474
+            require File::Basename;
+            my $dir = File::Basename::dirname($f->name);
+            if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
+                rmdir($dir);
+            }
             push @ids, $f->id;
         }
     }
