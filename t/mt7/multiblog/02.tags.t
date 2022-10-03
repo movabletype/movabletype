@@ -578,7 +578,7 @@ template-module:2
 --- template
 <mt:MultiBlog mode="loop">:<MTTags glue=','><mt:BlogID><mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog></MTTags></mt:MultiBlog>
 --- expected
-:1,1,1,1,1:2
+:2
 --- access_overrides
 { 1 => 2, 2 => 2 }
 

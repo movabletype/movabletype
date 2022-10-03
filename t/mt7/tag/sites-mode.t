@@ -359,6 +359,18 @@ test single line text 1
 --- expected
 [% site_01_id %]
 
+=== MTC-28598 MTMultiBlog mode is overridden
+--- template
+<mt:MultiBlog mode="loop">:id=<mt:BlogID></mt:MultiBlog>
+--- expected
+:id=[% site_01_id %]
+
+=== MTC-28598 MTSites mode with is not overridden
+--- template
+<mt:Sites mode="loop">:id=<mt:BlogID></mt:Sites>
+--- expected
+:id=[% site_01_id %]:id=[% site_02_id %]
+
 === mt:ChildSites in mt:Sites no mode
 --- template
 <mt:Sites><mt:ChildSites><mt:Contents content_type="test content data">
@@ -610,4 +622,3 @@ test single line text 19
 test single line text 18
 test single line text 17
 test single line text 16
-
