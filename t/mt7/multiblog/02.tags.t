@@ -565,23 +565,30 @@ A Rainy Day
 anemones 6
 template-module:2
 
-=== MTC-28585 mt:MultiBlogIfLocalBlog never be TRUE in context mode
+=== MTC-28598 mt:MultiBlogIfLocalBlog never be TRUE in context mode
 --- SKIP
 --- template
-<mt:MultiBlog mode="context"><mt:MultiBlogLocalBlog><MTTags glue=','>[<mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog>]</MTTags></mt:MultiBlogLocalBlog></mt:MultiBlog>
+<mt:MultiBlog mode="context">:<MTTags glue=','><mt:BlogID><mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog></MTTags></mt:MultiBlog>
 --- expected
-[]
+:2
 --- access_overrides
 { 1 => 2, 2 => 2 }
 
-=== MTC-28585 mt:MultiBlogIfLocalBlog never be TRUE  in loop mode
+=== MTC-28598 mt:MultiBlogIfLocalBlog never be TRUE  in loop mode
 --- SKIP
 --- skip_php
 --- template
-<mt:MultiBlog mode="loop"><mt:MultiBlogLocalBlog><MTTags glue=','>[<mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog>]</MTTags></mt:MultiBlogLocalBlog>
-</mt:MultiBlog>
+<mt:MultiBlog mode="loop">:<MTTags glue=','><mt:BlogID><mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog></MTTags></mt:MultiBlog>
 --- expected
-[]
-[]
+:1,1,1,1,1:2
+--- access_overrides
+{ 1 => 2, 2 => 2 }
+
+=== MTC-28598 mt:MultiBlogLocalBlog inside mt:Tags
+--- skip_php
+--- template
+<mt:MultiBlog mode="context">:<MTTags glue=','><mt:BlogID>:<mt:MultiBlogLocalBlog><mt:BlogID></mt:MultiBlogLocalBlog></MTTags></mt:MultiBlog>
+--- expected
+:2:2
 --- access_overrides
 { 1 => 2, 2 => 2 }
