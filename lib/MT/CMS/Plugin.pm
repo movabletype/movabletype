@@ -180,6 +180,9 @@ sub build_plugin_table {
     my $cfg   = $app->config;
     my $data  = [];
 
+    my $plugin_alias = $app->config->PluginAlias || {};
+    my %alias_map    = map {$plugin_alias->{$_} => $_} keys %$plugin_alias;
+
     # we have to sort the plugin list in an odd fashion...
     #   PLUGINS
     #     (those at the top of the plugins directory and those
@@ -432,7 +435,7 @@ sub build_plugin_table {
                 first           => $next_is_first,
                 plugin_major    => $fld ? 0 : 1,
                 plugin_icon     => $icon,
-                plugin_name     => $plugin_sig,
+                plugin_name     => $alias_map{$plugin_sig} || $plugin_sig,
                 plugin_sig      => $plugin_sig,
                 plugin_error    => $profile->{error},
                 plugin_disabled => $profile->{enabled} ? 0 : 1,
