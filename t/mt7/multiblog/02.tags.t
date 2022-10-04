@@ -570,21 +570,23 @@ template-module:2
 <mt:MultiBlog mode="context">:<MTTags glue=','><mt:BlogID><mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog></MTTags></mt:MultiBlog>
 --- expected
 :2
---- access_overrides
-{ 1 => 2, 2 => 2 }
 
 === MTC-28598 mt:MultiBlogIfLocalBlog never be TRUE  in loop mode
 --- template
 <mt:MultiBlog mode="loop">:<MTTags glue=','><mt:BlogID><mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog></MTTags></mt:MultiBlog>
 --- expected
 :2
+
+=== mt:MultiBlogLocalBlog mode="loop"
+--- template
+<mt:MultiBlog blog_ids="1,2-3" mode="loop">:<MTTags glue=','><mt:BlogName><mt:MultiBlogIfLocalBlog>NEVER-VISIBLE</mt:MultiBlogIfLocalBlog></MTTags></mt:MultiBlog>
+--- expected
+:none,none,none,none,none:Test site
 --- access_overrides
-{ 1 => 2, 2 => 2 }
+{ 1 => 2 }
 
 === MTC-28598 mt:MultiBlogLocalBlog inside mt:Tags
 --- template
 <mt:MultiBlog mode="context">:<MTTags glue=','><mt:BlogID>:<mt:MultiBlogLocalBlog><mt:BlogID></mt:MultiBlogLocalBlog></MTTags></mt:MultiBlog>
 --- expected
 :2:2
---- access_overrides
-{ 1 => 2, 2 => 2 }
