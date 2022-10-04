@@ -130,7 +130,8 @@ sub _hdlr_websites {
 
         # No blog-level config set
         # Set mode to context as this will mimic no MTMultiBlog tag
-        elsif ( $tag_name eq 'mtmultiblog' ) {
+        # See also MTC-24985
+        elsif ( lc($tag_name) eq 'multiblog' ) {
             $args->{'mode'} = 'context';    # Override 'loop' mode
         }
     }

@@ -342,6 +342,10 @@ sub _hdlr_tags {
         @slice_tags = @slice_tags[ 0 .. $limit - 1 ];
     }
 
+    # Remove local blog ID from MTTags since it is cross-blog
+    # and hence MTMultiBlogIfLocalBlog doesn't make sense there.
+    local $ctx->{__stash}{local_blog_id} = 0;
+
     local $ctx->{__stash}{include_blogs} = $args->{include_blogs};
     local $ctx->{__stash}{exclude_blogs} = $args->{exclude_blogs};
     local $ctx->{__stash}{blog_ids}      = $args->{blog_ids};

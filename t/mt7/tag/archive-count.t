@@ -14,7 +14,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 1 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
@@ -177,6 +177,7 @@ my $content_type_01 = MT::ContentType->load( { name => 'test content type 01' } 
 $vars->{content_type_01_unique_id} = $content_type_01->unique_id;
 
 MT::Test::Tag->run_perl_tests( $blog->id );
+MT::Test::Tag->run_php_tests( $blog->id );
 
 __END__
 
