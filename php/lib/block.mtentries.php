@@ -147,7 +147,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
 
     if ($lastn ? ($counter < $lastn) : ($counter < count($entries))) {
         $blog_id = $ctx->stash('blog_id');
-        $entry = $entries[$counter];
+        $entry = isset($entries[$counter]) ? $entries[$counter] : null;
         if (!empty($entry)) {
             if ($blog_id != $entry->entry_blog_id) {
                 $blog_id = $entry->entry_blog_id;

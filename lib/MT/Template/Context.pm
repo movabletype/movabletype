@@ -1039,10 +1039,6 @@ sub _preprocess_multiblog {
         $args->{exclude_blogs} = $ctx->stash('sites_exclude_blog_ids')
             if $ctx->stash('sites_exclude_blog_ids');
     }
-
-    # Remove local blog ID from MTTags since it is cross-blog
-    # and hence MTMultiBlogIfLocalBlog doesn't make sense there.
-    local $ctx->{__stash}{local_blog_id} = 0 if $tag eq 'tags';
 }
 
 sub _no_author_error {

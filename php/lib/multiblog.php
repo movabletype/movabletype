@@ -38,12 +38,10 @@ function multiblog_MTInclude(&$args, &$_smarty_tpl) {
             }
             else if (! empty($args['local'])) {
                 $args['blog_id'] = $ctx->stash('local_blog_id');
-                $args['blog_id'] or $args['blog_id'] = $ctx->mt->blog->id;
             }
         }
         else {
             $args['blog_id'] = $ctx->stash('local_blog_id');
-            $args['blog_id'] or $args['blog_id'] = $ctx->mt->blog->id;
         }
     }
 }
@@ -144,11 +142,6 @@ function multiblog_block_wrapper(&$args, $content, &$_smarty_tpl, &$repeat) {
             elseif ( !empty($acl) && !empty($acl['deny']) )
                 $args['denies'] = $acl['deny'];
         }
-
-        # Fix for MTMultiBlogIfLocalBlog which should never return
-        # true with MTTags block because tags are cross-blog
-        if ($ctx->this_tag() == 'mttags')
-            $ctx->stash('local_blog_id', 0);
     }
 }
 
