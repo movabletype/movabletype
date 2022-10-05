@@ -18,6 +18,8 @@ use constant HasANSIColor => eval {
     1;
 };
 
+my $IIS = ($ENV{SERVER_SOFTWARE} || '') =~ /IIS/;
+
 sub new {
     my ( $self, $logger_level, $log_file ) = @_;
 
@@ -58,26 +60,31 @@ sub maybe_colored {
 
 sub debug {
     my ( $class, $msg ) = @_;
+    return if $IIS;
     print STDERR maybe_colored("$msg\n", "blue");
 }
 
 sub info {
     my ( $class, $msg ) = @_;
+    return if $IIS;
     print STDERR maybe_colored("$msg\n", "green");
 }
 
 sub notice {
     my ( $class, $msg ) = @_;
+    return if $IIS;
     print STDERR maybe_colored("$msg\n", "green");
 }
 
 sub warn {
     my ( $class, $msg ) = @_;
+    return if $IIS;
     print STDERR maybe_colored("$msg\n", "yellow");
 }
 
 sub error {
     my ( $class, $msg ) = @_;
+    return if $IIS;
     print STDERR maybe_colored("$msg\n", "red");
 }
 
