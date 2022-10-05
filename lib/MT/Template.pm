@@ -965,7 +965,9 @@ sub published_url {
     else {
         my $site_path = $blog->site_path || '';
         my $tmpl_path = File::Spec->catfile( $site_path, $tmpl->outfile );
-        if ( -f $tmpl_path ) {
+        require MT::FileMgr;
+        my $fmgr = MT::FileMgr->new('Local');
+        if ($fmgr->exists($tmpl_path)) {
             return $url;
         }
     }
