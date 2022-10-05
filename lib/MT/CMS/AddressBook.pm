@@ -137,6 +137,7 @@ sub send_notify {
     if ( $app->current_language ne 'ja' ) {   # FIXME perhaps move to MT::I18N
         $subj =~ s![\x80-\xFF]!!g;
     }
+    $subj =~ s/[[:cntrl:]]//g;
     my %head = (
         id      => 'notify_entry',
         To      => $address,
