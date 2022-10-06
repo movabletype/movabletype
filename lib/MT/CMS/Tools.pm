@@ -211,7 +211,7 @@ sub recover_password {
             my $body    = $app->build_email(
                 'recover-password',
                 {         link_to_login => $app->base
-                        . $app->uri
+                        . $app->mt_uri
                         . "?__mode=new_pw&token=$token&email="
                         . encode_url($email)
                         . ( $blog_id ? "&blog_id=$blog_id" : '' ),
