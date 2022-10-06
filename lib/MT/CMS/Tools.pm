@@ -207,11 +207,19 @@ sub recover_password {
             my $mail_enc = uc( $app->config('MailEncoding') || $charset );
             $head{'Content-Type'} = qq(text/plain; charset="$mail_enc");
 
+            my $app_uri;
+            if (ref $app eq "MT::App::CMS") {
+                $app_uri = $app->uri;
+            } else {
+                require MT::App::CMS;
+                my $cms = MT::App::CMS->new;
+                $app_uri = $cms->uri;
+            }
             my $blog_id = $app->param('blog_id');
             my $body    = $app->build_email(
                 'recover-password',
                 {         link_to_login => $app->base
-                        . $app->uri
+                        . $app_uri
                         . "?__mode=new_pw&token=$token&email="
                         . encode_url($email)
                         . ( $blog_id ? "&blog_id=$blog_id" : '' ),
