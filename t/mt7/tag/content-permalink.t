@@ -481,105 +481,105 @@ __END__
 <mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/#000001
+/test/archives/author/melody/#000001
 
 === MT::ContentPermalink archive_type="ContentType-Author" ContentType 02
 --- template
 <mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/#000002
+/test/archives/author/melody/#000002
 
 === MT::ContentPermalink archive_type="ContentType-Author" ContentType 03
 --- template
 <mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/#000003
+/test/archives/author/melody/#000003
 
 === MT::ContentPermalink archive_type="ContentType-Author-Daily" ContentType 01
 --- template
 <mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Daily">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/09/27/#000001
+/test/archives/author/melody/2017/09/27/#000001
 
 === MT::ContentPermalink archive_type="ContentType-Author-Daily" ContentType 02
 --- template
 <mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Daily">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/09/27/#000002
+/test/archives/author/melody/2017/09/27/#000002
 
 === MT::ContentPermalink archive_type="ContentType-Author-Daily" ContentType 03
 --- template
 <mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Daily">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/09/27/#000003
+/test/archives/author/melody/2017/09/27/#000003
 
 === MT::ContentPermalink archive_type="ContentType-Author-Weekly" ContentType 01
 --- template
 <mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Weekly">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/09/24-week/#000001
+/test/archives/author/melody/2017/09/24-week/#000001
 
 === MT::ContentPermalink archive_type="ContentType-Author-Weekly" ContentType 02
 --- template
 <mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Weekly">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/09/24-week/#000002
+/test/archives/author/melody/2017/09/24-week/#000002
 
 === MT::ContentPermalink archive_type="ContentType-Author-Weekly" ContentType 03
 --- template
 <mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Weekly">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/09/24-week/#000003
+/test/archives/author/melody/2017/09/24-week/#000003
 
 === MT::ContentPermalink archive_type="ContentType-Author-Monthly" ContentType 01
 --- template
 <mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Monthly">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/09/#000001
+/test/archives/author/melody/2017/09/#000001
 
 === MT::ContentPermalink archive_type="ContentType-Author-Monthly" ContentType 02
 --- template
 <mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Monthly">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/09/#000002
+/test/archives/author/melody/2017/09/#000002
 
 === MT::ContentPermalink archive_type="ContentType-Author-Monthly" ContentType 03
 --- template
 <mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Monthly">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/09/#000003
+/test/archives/author/melody/2017/09/#000003
 
 === MT::ContentPermalink archive_type="ContentType-Author-Yearly" ContentType 01
 --- template
 <mt:Contents content_type="[% content_type_01_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Yearly">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/#000001
+/test/archives/author/melody/2017/#000001
 
 === MT::ContentPermalink archive_type="ContentType-Author-Yearly" ContentType 02
 --- template
 <mt:Contents content_type="[% content_type_02_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Yearly">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/#000002
+/test/archives/author/melody/2017/#000002
 
 === MT::ContentPermalink archive_type="ContentType-Author-Yearly" ContentType 03
 --- template
 <mt:Contents content_type="[% content_type_03_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Yearly">
 </mt:Contents>
 --- expected
-/test/archives/author/authorce2f3/2017/#000003
+/test/archives/author/melody/2017/#000003
 
 === MT::ContentPermalink archive_type="ContentType-Category"
 --- template
@@ -656,35 +656,35 @@ https://localhost/2017/#000004
 <mt:Sites include_sites="[% website_id %]"><mt:Contents content_type="[% content_type_04_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author">
 </mt:Contents></mt:Sites>
 --- expected
-https://localhost/author/authorce2f3/#000004
+https://localhost/author/melody/#000004
 
 === MT::ContentPermalink archive_type="ContentType-Author-Daily" ContentType 04
 --- template
 <mt:Sites include_sites="[% website_id %]"><mt:Contents content_type="[% content_type_04_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Daily">
 </mt:Contents></mt:Sites>
 --- expected
-https://localhost/author/authorce2f3/2017/09/27/#000004
+https://localhost/author/melody/2017/09/27/#000004
 
 === MT::ContentPermalink archive_type="ContentType-Author-Weekly" ContentType 04
 --- template
 <mt:Sites include_sites="[% website_id %]"><mt:Contents content_type="[% content_type_04_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Weekly">
 </mt:Contents></mt:Sites>
 --- expected
-https://localhost/author/authorce2f3/2017/09/24-week/#000004
+https://localhost/author/melody/2017/09/24-week/#000004
 
 === MT::ContentPermalink archive_type="ContentType-Author-Monthly" ContentType 04
 --- template
 <mt:Sites include_sites="[% website_id %]"><mt:Contents content_type="[% content_type_04_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Monthly">
 </mt:Contents></mt:Sites>
 --- expected
-https://localhost/author/authorce2f3/2017/09/#000004
+https://localhost/author/melody/2017/09/#000004
 
 === MT::ContentPermalink archive_type="ContentType-Author-Yearly" ContentType 04
 --- template
 <mt:Sites include_sites="[% website_id %]"><mt:Contents content_type="[% content_type_04_unique_id %]"><mt:ContentPermalink archive_type="ContentType-Author-Yearly">
 </mt:Contents></mt:Sites>
 --- expected
-https://localhost/author/authorce2f3/2017/#000004
+https://localhost/author/melody/2017/#000004
 
 === MT::ContentPermalink archive_type="ContentType-Category" ContentType 04
 --- template

@@ -63,13 +63,13 @@
          [
             "__API_PASS__",
             "MT",
-            "authorce2f3",
+            "melody",
             null,
             null,
             1,
             "__NOW__",
             "relative",
-            "",
+            "test@localhost.localdomain",
             null,
             null,
             null,
@@ -79,7 +79,7 @@
             null,
             "__NOW__",
             "Melody",
-            "",
+            "Melody",
             "__AUTHOR_PASS__",
             "en_US",
             null,
@@ -445,17 +445,17 @@
             1,
             null,
             "__NOW__",
-            "d86fd17c1d7a1277d8e9805e91aa817cca0e505a",
+            "6caade08125c0de5f3d1641f3e292fb669cf0126",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0003-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u00013",
             1,
-            "157e03692d3a9f9db58a56530d4fd62af28570c7",
+            "cef21e40bd91859a43f88d5a5223792b6c36319f",
             null,
             null,
             "__NOW__",
-            0,
+            7,
             2,
-            "157e03692d3a9f9db58a56530d4fd62af28570c7",
+            "cef21e40bd91859a43f88d5a5223792b6c36319f",
             null,
             201722
          ]
@@ -495,7 +495,7 @@
             null,
             null,
             "categories",
-            "2d313d8b5a7cb7a1e0cef86c339e90f02cddd0aa"
+            "c00d013c9fc89680cb0b7013ea22763c1d03cb9a"
          ]
       ]
    },
@@ -606,12 +606,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\nuniuque_id-\u0000\u0000\u0000(2d313d8b5a7cb7a1e0cef86c339e90f02cddd0aa\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\nuniuque_id-\u0000\u0000\u0000(c00d013c9fc89680cb0b7013ea22763c1d03cb9a",
             1,
             null,
             "__NOW__",
             "Sample Content Type 0",
-            "d86fd17c1d7a1277d8e9805e91aa817cca0e505a",
+            "6caade08125c0de5f3d1641f3e292fb669cf0126",
             null,
             null
          ]

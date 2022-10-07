@@ -25,8 +25,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 1",
             "jpg",
-            "xdvL0DemGt.jpg",
-            "__TEST_ROOT__/xdvL0DemGt.jpg",
+            "0esLpp_sVh.jpg",
+            "__TEST_ROOT__/0esLpp_sVh.jpg",
             1,
             "Sample Image 1",
             "text/plain",
@@ -42,8 +42,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 2",
             "jpg",
-            "xdvL0DemGt.jpg",
-            "__TEST_ROOT__/xdvL0DemGt.jpg",
+            "0esLpp_sVh.jpg",
+            "__TEST_ROOT__/0esLpp_sVh.jpg",
             2,
             "Sample Image 2",
             "text/plain",
@@ -118,13 +118,13 @@
          [
             "__API_PASS__",
             "MT",
-            "authorce2f3",
+            "melody",
             null,
             null,
             1,
             "__NOW__",
             "relative",
-            "",
+            "test@localhost.localdomain",
             null,
             null,
             null,
@@ -134,7 +134,7 @@
             null,
             "__NOW__",
             "Melody",
-            "",
+            "Melody",
             "__AUTHOR_PASS__",
             "en_US",
             null,
@@ -556,7 +556,7 @@
             null,
             null,
             "asset_image",
-            "cfef5ab635dae09de2e030e31edce6eefdef4d7d"
+            "12bdcd5a3dd830abfdcaa76e53eca6493a8076d4"
          ]
       ]
    },
@@ -600,7 +600,7 @@
             null,
             "__NOW__",
             "content type 1",
-            "48a4b96282755bf5b37f7b54c2c3454f3edae5e6",
+            "fad31681bd7706804e11f0399b0fe5b1ebf819c4",
             null,
             null
          ]

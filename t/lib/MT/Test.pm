@@ -261,7 +261,12 @@ sub init_upgrade {
     MT::Upgrade->do_upgrade(
         Install => 1,
         App     => __PACKAGE__,
-        User    => {},
+        User    => {
+            user_name     => 'Melody',
+            user_password => 'Nelson',
+            user_nickname => 'Melody',
+            user_email    => 'test@localhost.localdomain',
+        },
         Blog    => {}
     );
     eval {
