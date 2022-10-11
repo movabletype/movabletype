@@ -293,7 +293,6 @@ test category set 01
 test category set 02
 
 === mt:CategorySets without contents
---- ONLY
 --- template
 <mt:CategorySets name="test category set 01"><mt:CategorySetName>
 <mt:Categories><mt:CategoryLabel>
