@@ -3,7 +3,10 @@ package URI;
 use strict;
 use warnings;
 
-our $VERSION = '5.10';
+our $VERSION = '5.14';
+
+# 1=version 5.10 and earlier; 0=version 5.11 and later
+use constant HAS_RESERVED_SQUARE_BRACKETS => $ENV{URI_HAS_RESERVED_SQUARE_BRACKETS} ? 1 : 0;
 
 our ($ABS_REMOTE_LEADING_DOTS, $ABS_ALLOW_RELATIVE_SCHEME, $DEFAULT_QUERY_FORM_DELIMITER);
 
@@ -11,12 +14,28 @@ my %implements;  # mapping from scheme to implementor class
 
 # Some "official" character classes
 
-our $reserved   = q(;/?:@&=+$,[]);
+our $reserved   = HAS_RESERVED_SQUARE_BRACKETS ? q(;/?:@&=+$,[]) : q(;/?:@&=+$,);
 our $mark       = q(-_.!~*'());                                    #'; emacs
 our $unreserved = "A-Za-z0-9\Q$mark\E";
 our $uric       = quotemeta($reserved) . $unreserved . "%";
+our $uric4host  = $uric . ( HAS_RESERVED_SQUARE_BRACKETS ? '' : quotemeta( q([]) ) );
+our $uric4user  = quotemeta( q{!$'()*,;:._~%-+=%&} ) . "A-Za-z0-9" . ( HAS_RESERVED_SQUARE_BRACKETS ? quotemeta( q([]) ) : '' ); # RFC-3987: iuserinfo w/o UTF
 
 our $scheme_re  = '[a-zA-Z][a-zA-Z0-9.+\-]*';
+
+# These schemes don't have an IPv6+ address part.
+our $schemes_without_host_part_re = 'data|ldapi|urn|sqlite|sqlite3';
+
+# These schemes can have an IPv6+ authority part:
+#     file, ftp, gopher, http, https, ldap, ldaps, mms, news, nntp, nntps, pop, rlogin, rtsp, rtspu, rsync, sip, sips, snews,
+#     telnet, tn3270, ssh, sftp
+#     (all DB URIs, i.e. cassandra, couch, couchdb, etc.), except 'sqlite:', 'sqlite3:'. Others?
+#MAINT: URI has no test coverage for DB schemes
+#MAINT: decoupling - perhaps let each class decide itself by defining a member function 'scheme_has_authority_part()'?
+
+#MAINT: 'mailto:' needs special treatment for IPv* addresses / RFC 5321 (4.1.3). Until then: restore all '[', ']'
+# These schemes need fallback to previous (<= 5.10) encoding until a specific handler is available.
+our $fallback_schemes_re = 'mailto';
 
 use Carp ();
 use URI::Escape ();
@@ -86,10 +105,42 @@ sub _init
 }
 
 
+#-- Version: 5.11+
+#   Since the complete URI will be percent-encoded including '[' and ']',
+#   we selectively unescape square brackets from the authority/host part of the URI.
+#   Derived modules that implement _uric_escape() should take this into account
+#   if they do not rely on URI::_uric_escape().
+#   No unescaping is performed for the userinfo@ part of the authority part.
+sub _fix_uric_escape_for_host_part {
+  return if HAS_RESERVED_SQUARE_BRACKETS;
+  return if $_[0] !~ /%/;
+  return if $_[0] =~ m{^(?:$URI::schemes_without_host_part_re):}os;
+
+  # until a scheme specific handler is available, fall back to previous behavior of v5.10 (i.e. 'mailto:')
+  if ($_[0] =~ m{^(?:$URI::fallback_schemes_re):}os) {
+    $_[0]    =~ s/\%5B/[/gi;
+    $_[0]    =~ s/\%5D/]/gi;
+    return;
+  }
+
+  if ($_[0] =~ m{^((?:$URI::scheme_re:)?)//([^/?\#]+)(.*)$}os) {
+    my $orig          = $2;
+    my ($user, $host) = $orig =~ /^(.*@)?([^@]*)$/;
+    $user  ||= '';
+    my $port = $host =~ s/(:\d+)$// ? $1 : '';
+    #MAINT: die() here if scheme indicates TCP/UDP and port is out of range [0..65535] ?
+    $host    =~ s/\%5B/[/gi;
+    $host    =~ s/\%5D/]/gi;
+    $_[0]    =~ s/\Q$orig\E/$user$host$port/;
+  }
+}
+
+
 sub _uric_escape
 {
     my($class, $str) = @_;
     $str =~ s*([^$uric\#])* URI::Escape::escape_char($1) *ego;
+    _fix_uric_escape_for_host_part( $str );
     utf8::downgrade($str);
     return $str;
 }
@@ -1084,6 +1135,34 @@ examples:
 
 This value can be set to ";" to have the query form C<key=value> pairs
 delimited by ";" instead of "&" which is the default.
+
+=back
+
+=head1 ENVIRONMENT VARIABLES
+
+=over 4
+
+=item URI_HAS_RESERVED_SQUARE_BRACKETS
+
+Before version 5.11, URI treated square brackets as reserved characters
+throughout the whole URI string. However, these brackets are reserved
+only within the authority/host part of the URI and nowhere else (RFC 3986).
+
+Starting with version 5.11, URI takes this distinction into account.
+Setting the environment variable C<URI_HAS_RESERVED_SQUARE_BRACKETS>
+(programmatically or via the shell), restores the old behavior.
+
+  #-- restore 5.10 behavior programmatically
+  BEGIN {
+    $ENV{URI_HAS_RESERVED_SQUARE_BRACKETS} = 1;
+  }
+  use URI ();
+
+I<Note>: This environment variable is just used during initialization and has to be set
+      I<before> module URI is used/required. Changing it at run time has no effect.
+
+Its value can be checked programmatically by accessing the constant
+C<URI::HAS_RESERVED_SQUARE_BRACKETS>.
 
 =back
 

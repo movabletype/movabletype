@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use parent 'URI::_generic';
-our $VERSION = '5.10';
+our $VERSION = '5.14';
 
 use URI::Escape qw(uri_unescape);
 
@@ -113,13 +113,13 @@ URI::file - URI that maps to local file names
 =head1 SYNOPSIS
 
  use URI::file;
- 
+
  $u1 = URI->new("file:/foo/bar");
  $u2 = URI->new("foo/bar", "file");
- 
+
  $u3 = URI::file->new($path);
  $u4 = URI::file->new("c:\\windows\\", "win32");
- 
+
  $u1->file;
  $u1->file("mac");
 
@@ -301,11 +301,11 @@ If there is no mapping then the "Unix" implementation is used.
 
 =item $URI::file::DEFAULT_AUTHORITY
 
-This determine what "authority" string to include in absolute file
+This determines what "authority" string to include in absolute file
 URIs.  It defaults to "".  If you prefer verbose URIs you might set it
 to be "localhost".
 
-Setting this value to C<undef> force behaviour compatible to URI v1.31
+Setting this value to C<undef> forces behaviour compatible to URI v1.31
 and earlier.  In this mode host names in UNC paths and drive letters
 are mapped to the authority component on Windows, while we produce
 authority-less URIs on Unix.

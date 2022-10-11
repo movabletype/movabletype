@@ -1,6 +1,6 @@
 package URI::Fetch;
-$URI::Fetch::VERSION = '0.13';
-use 5.008_001;
+$URI::Fetch::VERSION = '0.15';
+use 5.008001;
 use strict;
 use warnings;
 

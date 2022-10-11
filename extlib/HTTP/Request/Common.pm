@@ -3,7 +3,7 @@ package HTTP::Request::Common;
 use strict;
 use warnings;
 
-our $VERSION = '6.36';
+our $VERSION = '6.39';
 
 our $DYNAMIC_FILE_UPLOAD ||= 0;  # make it defined (don't know why)
 
@@ -314,7 +314,7 @@ HTTP::Request::Common - Construct common HTTP::Request objects
 
 =head1 VERSION
 
-version 6.36
+version 6.39
 
 =head1 SYNOPSIS
 
@@ -412,6 +412,10 @@ The same as C<POST> below, but the method in the request is C<PUT>
 =item OPTIONS $url, Header => Value,..., Content => $content
 
 The same as C<POST> below, but the method in the request is C<OPTIONS>
+
+This was added in version 6.21, so you should require that in your code:
+
+ use HTTP::Request::Common 6.21;
 
 =item POST $url
 

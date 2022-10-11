@@ -34,7 +34,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::Minolta;
 
-$VERSION = '3.44';
+$VERSION = '3.50';
 
 sub ProcessSRF($$$);
 sub ProcessSR2($$$);
@@ -154,6 +154,7 @@ sub PrintInvLensSpec($;$$);
     32866 => 'Sony FE 24mm F2.8 G', #IB
     32867 => 'Sony FE 40mm F2.5 G', #IB
     32868 => 'Sony FE 50mm F2.5 G', #IB
+    32874 => 'Sony FE 70-200mm F2.8 GM OSS II', #IB
 
   # (comment this out so LensID will report the LensModel, which is more useful)
   # 32952 => 'Metabones Canon EF Speed Booster Ultra', #JR (corresponds to 184, but 'Advanced' mode, LensMount reported as E-mount)
@@ -196,6 +197,9 @@ sub PrintInvLensSpec($;$$);
     49465 => 'Tamron 17-70mm F2.8 Di III-A VC RXD', #JR (Model B070)
     49466 => 'Tamron 150-500mm F5-6.7 Di III VC VXD', #JR (Model A057)
     49467 => 'Tamron 11-20mm F2.8 Di III-A RXD', #JR (Model B060)
+    49468 => 'Tamron 18-300mm F3.5-6.3 Di III-A VC VXD', #JR (Model B061)
+    49469 => 'Tamron 35-150mm F2-F2.8 Di III VXD', #JR (Model A058)
+    49470 => 'Tamron 28-75mm F2.8 Di III VXD G2', #JR (Model A063)
 
     49473 => 'Tokina atx-m 85mm F1.8 FE or Viltrox lens', #JR
     49473.1 => 'Viltrox 23mm F1.4 E', #JR
@@ -237,6 +241,10 @@ sub PrintInvLensSpec($;$$);
     50526 => 'Sigma 28-70mm F2.8 DG DN | C', #JR (021)
     50527 => 'Sigma 150-600mm F5-6.3 DG DN OS | S', #JR (021)
     50528 => 'Sigma 35mm F1.4 DG DN | A', #IB/JR (021)
+    50529 => 'Sigma 90mm F2.8 DG DN | C', #JR (021)
+    50530 => 'Sigma 24mm F2 DG DN | C', #JR (021)
+    50531 => 'Sigma 18-50mm F2.8 DC DN | C', #IB/JR (021)
+    50532 => 'Sigma 20mm F2 DG DN | C', #JR (022)
 
     50992 => 'Voigtlander SUPER WIDE-HELIAR 15mm F4.5 III', #JR
     50993 => 'Voigtlander HELIAR-HYPER WIDE 10mm F5.6', #IB
@@ -266,7 +274,12 @@ sub PrintInvLensSpec($;$$);
     51510 => 'Samyang AF 18mm F2.8 or Samyang AF 35mm F1.8', #JR
     51510.1 => 'Samyang AF 35mm F1.8', #JR
     51512 => 'Samyang AF 75mm F1.8', #IB/JR
+    51513 => 'Samyang AF 35mm F1.8', #JR
     51514 => 'Samyang AF 24mm F1.8', #IB
+    51515 => 'Samyang AF 12mm F2.0', #JR
+    51516 => 'Samyang AF 24-70mm F2.8', #JR
+    51517 => 'Samyang AF 50mm F1.4 II', #JR
+    51518 => 'Samyang AF 135mm F1.8', #JR
 );
 
 # ExposureProgram values (ref PH, mainly decoded from A200)
@@ -1576,6 +1589,7 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
             65535 => 'n/a',
         },
     },
+# 0x203a - 0x2041: first seen October 2021 for ILCE-7M4
     0x3000 => {
         Name => 'ShotInfo',
         SubDirectory => { TagTable => 'Image::ExifTool::Sony::ShotInfo' },
@@ -1604,7 +1618,7 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
     # from mid-2015: ILCE-7RM2/7SM2/6300 and newer models use different offsets
     {
         Name => 'Tag9050a',
-        Condition => '$$self{Model} !~ /^(DSC-|Stellar|ILCE-(1|6100|6300|6400|6500|6600|7C|7M3|7RM2|7RM3A?|7RM4A?|7SM2|7SM3|9|9M2)|ILCA-99M2|ILME-FX3|ZV-)/',
+        Condition => '$$self{Model} !~ /^(DSC-|Stellar|ILCE-(1|6100|6300|6400|6500|6600|7C|7M3|7M4|7RM2|7RM3A?|7RM4A?|7SM2|7SM3|9|9M2)|ILCA-99M2|ILME-FX3|ZV-)/',
         SubDirectory => {
             TagTable => 'Image::ExifTool::Sony::Tag9050a',
             ByteOrder => 'LittleEndian',
@@ -1618,7 +1632,7 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
         },
     },{
         Name => 'Tag9050c',
-        Condition => '$$self{Model} =~ /^(ILCE-(1|7SM3)|ILME-FX3)/',
+        Condition => '$$self{Model} =~ /^(ILCE-(1|7M4|7SM3)|ILME-FX3)/',
         SubDirectory => {
             TagTable => 'Image::ExifTool::Sony::Tag9050c',
             ByteOrder => 'LittleEndian',
@@ -1778,7 +1792,7 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
     # 15  0   35  2  2     ILCA-68/77M2, ILCE-5000/5100/6000/7/7R/7S/7M2/QX1, DSC-HX60V/HX350/HX400V/QX30/RX10/RX100M3/WX220/WX350
     # 16  0   85  2  2     DSC-HX80/HX90V/WX500
     # 17  0  232  1  2     DSC-RX0/RX0M2/RX1RM2/RX10M2/RX10M3/RX10M4/RX100M4/RX100M5/RX100M5A/RX100M6/RX100M7/HX99, ILCE-6100/6300/6400/6500/6600/7C/7M3/7RM2/7RM3/7RM4/7SM2/9/9M2, ILCA-99M2, ZV-1
-    # 18  0   20  0 164    ILCE-7SM3 
+    # 18  0   20  0 164    ILCE-7SM3
     # other values for Panorama images and several other models
     0x9404 => [{
         Name => 'Tag9404a',
@@ -2026,7 +2040,9 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
             383 => 'ILCE-7SM3',
             384 => 'ILCE-1', #PH
             385 => 'ILME-FX3', #JR
+            386 => 'ILCE-7RM3A', #JR
             387 => 'ILCE-7RM4A', #forum12542
+            388 => 'ILCE-7M4', #IB/JR
         },
     },
     0xb020 => { #2
@@ -7949,7 +7965,7 @@ my %isoSetting2010 = (
     },
     0x0088 => {
         Name => 'InternalSerialNumber', #(NC)
-        Condition => '$$self{Model} =~ /^(ILCE-7SM3|ILME-FX3)/',
+        Condition => '$$self{Model} =~ /^(ILCE-(7M4|7SM3)|ILME-FX3)/',
         Format => 'int8u[6]',
         PrintConv => 'unpack "H*", pack "C*", split " ", $val',
     },
@@ -8187,7 +8203,7 @@ my %isoSetting2010 = (
     },
     0x002a => [{
         Name => 'Quality2',
-        Condition => '$$self{Model} !~ /^(ILCE-(1|7SM3)|ILME-FX3)\b/',
+        Condition => '$$self{Model} !~ /^(ILCE-(1|7M4|7SM3)|ILME-FX3)\b/',
         PrintConv => {
             0 => 'JPEG',
             1 => 'RAW',
@@ -8196,7 +8212,7 @@ my %isoSetting2010 = (
         },
     },{
         Name => 'Quality2',
-        Condition => '$$self{Model} =~ /^(ILCE-(1|7SM3)|ILME-FX3)\b/',
+        Condition => '$$self{Model} =~ /^(ILCE-(1|7M4|7SM3)|ILME-FX3)\b/',
         PrintConv => {
             1 => 'JPEG',
             2 => 'RAW',
@@ -8207,13 +8223,13 @@ my %isoSetting2010 = (
     }],
     0x0047 => {
         Name => 'SonyImageHeight',
-        Condition => '$$self{Model} !~ /^(ILCE-(1|7SM3)|ILME-FX3)\b/',
+        Condition => '$$self{Model} !~ /^(ILCE-(1|7M4|7SM3)|ILME-FX3)\b/',
         Format => 'int16u',
         PrintConv => '$val > 0 ? 8*$val : "n.a."',
     },
     0x0053 => {
         Name => 'ModelReleaseYear',
-        Condition => '$$self{Model} !~ /^(ILCE-(1|7SM3)|ILME-FX3)\b/',
+        Condition => '$$self{Model} !~ /^(ILCE-(1|7M4|7SM3)|ILME-FX3)\b/',
         Format => 'int8u',
         PrintConv => 'sprintf("20%.2d", $val)',
     },
@@ -8228,10 +8244,11 @@ my %isoSetting2010 = (
     FIRST_ENTRY => 0,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
     DATAMEMBER => [ 0 ],
-    IS_SUBDIR => [ 0x0498, 0x04a1, 0x04a2, 0x059d, 0x0634, 0x0636, 0x064c, 0x0653, 0x0678, 0x06b8, 0x06de, 0x06e7 ],
+    IS_SUBDIR => [ 0x0498, 0x049d, 0x04a1, 0x04a2, 0x059d, 0x0634, 0x0636, 0x064c, 0x0653, 0x0678, 0x06b8, 0x06de, 0x06e7 ],
     0x0000 => { Name => 'Ver9401', Hidden => 1, RawConv => '$$self{Ver9401} = $val; $$self{OPTIONS}{Unknown}<2 ? undef : $val' },
 
     0x0498 => { Name => 'ISOInfo', Condition => '$$self{Ver9401} == 148',          Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
+    0x049d => { Name => 'ISOInfo', Condition => '$$self{Ver9401} == 167',          Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
     0x04a1 => { Name => 'ISOInfo', Condition => '$$self{Ver9401} =~ /^(160|164)/', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
     0x04a2 => { Name => 'ISOInfo', Condition => '$$self{Ver9401} =~ /^(152|154|155)/', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
     0x059d => { Name => 'ISOInfo', Condition => '$$self{Ver9401} =~ /^(144|146)/', Format => 'int8u[5]', SubDirectory => { TagTable => 'Image::ExifTool::Sony::ISOInfo' } },
@@ -8370,8 +8387,8 @@ my %isoSetting2010 = (
     GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
     DATAMEMBER => [ 0x04 ],
     0x04 => {
-        # seen values 0,2,3,18,32,49,50,83,148
-        # CameraTemperature is valid for all values except 0,148
+        # seen values 0,2,3,18,19,32,49,50,83,130,132,148,213,229,255
+        # CameraTemperature is valid for all values above except ==0 and >=130
         Name => 'TempTest2',
         DataMember => 'TempTest2',
         Hidden => 1,
@@ -9500,7 +9517,7 @@ my %isoSetting2010 = (
     WRITE_PROC => \&WriteEnciphered,
     CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
     FORMAT => 'int8u',
-    NOTES => 'Valid for the ILCE-1/7SM3, ILME-FX3.',
+    NOTES => 'Valid for the ILCE-1/7M4/7SM3, ILME-FX3.',
     FIRST_ENTRY => 0,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
     0x0000 => { Name => 'Tag9416_0000', PrintConv => 'sprintf("%3d",$val)', RawConv => '$$self{TagVersion} = $val' },
@@ -9627,10 +9644,22 @@ my %isoSetting2010 = (
     },
     0x088f => {
         Name => 'VignettingCorrParams',
+        Condition => '$$self{Model} !~ /^(ILCE-7M4)/',
+        Format => 'int16s[16]',
+    },
+    0x0891 => {
+        Name => 'VignettingCorrParams',
+        Condition => '$$self{Model} =~ /^(ILCE-7M4)/',
         Format => 'int16s[16]',
     },
     0x0914 => {
         Name => 'ChromaticAberrationCorrParams',
+        Condition => '$$self{Model} !~ /^(ILCE-7M4)/',
+        Format => 'int16s[32]',
+    },
+    0x0916 => {
+        Name => 'ChromaticAberrationCorrParams',
+        Condition => '$$self{Model} =~ /^(ILCE-7M4)/',
         Format => 'int16s[32]',
     },
 );
@@ -10319,6 +10348,26 @@ my %isoSetting2010 = (
         },
         ValueConv => '"$val[0] $val[1]Z"',
         PrintConv => '$self->ConvertDateTime($val)',
+    },
+    GPSLatitude => {
+        SubDoc => 1,    # generate for all sub-documents
+        Groups => { 2 => 'Location' },
+        Require => {
+            0 => 'Sony:GPSLatitude',
+            1 => 'Sony:GPSLatitudeRef',
+        },
+        ValueConv => '$val[1] =~ /^S/i ? -$val[0] : $val[0]',
+        PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "N")',
+    },
+    GPSLongitude => {
+        SubDoc => 1,    # generate for all sub-documents
+        Groups => { 2 => 'Location' },
+        Require => {
+            0 => 'Sony:GPSLongitude',
+            1 => 'Sony:GPSLongitudeRef',
+        },
+        ValueConv => '$val[1] =~ /^W/i ? -$val[0] : $val[0]',
+        PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "E")',
     },
 );
 
@@ -11240,7 +11289,7 @@ Minolta.
 
 =head1 AUTHOR
 
-Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

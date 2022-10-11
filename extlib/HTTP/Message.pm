@@ -3,7 +3,7 @@ package HTTP::Message;
 use strict;
 use warnings;
 
-our $VERSION = '6.36';
+our $VERSION = '6.39';
 
 require HTTP::Headers;
 require Carp;
@@ -302,6 +302,14 @@ sub decoded_content
 		    $content_ref = \$output;
 		    $content_ref_iscopy++;
 		}
+		elsif ($ce eq 'br') {
+		    require IO::Uncompress::Brotli;
+		    my $bro = IO::Uncompress::Brotli->create;
+		    my $output = eval { $bro->decompress($$content_ref) };
+		    $@ and die "Can't unbrotli content: $@";
+		    $content_ref = \$output;
+		    $content_ref_iscopy++;
+		}
 		elsif ($ce eq "x-bzip2" or $ce eq "bzip2") {
 		    require IO::Uncompress::Bunzip2;
 		    my $output;
@@ -433,6 +441,10 @@ sub decodable
         require IO::Uncompress::Bunzip2;
         push(@enc, "x-bzip2", "bzip2");
     };
+    eval {
+        require IO::Uncompress::Brotli;
+        push(@enc, 'br');
+    };
     # we don't care about announcing the 'identity', 'base64' and
     # 'quoted-printable' stuff
     return wantarray ? @enc : join(", ", @enc);
@@ -490,6 +502,13 @@ sub encode
 	    IO::Compress::Bzip2::bzip2(\$content, \$output)
 		or die "Can't bzip2 content: $IO::Compress::Bzip2::Bzip2Error";
 	    $content = $output;
+	}
+	elsif ($encoding eq "br") {
+		require IO::Compress::Brotli;
+		my $output;
+		eval { $output = IO::Compress::Brotli::bro($content) }
+		or die "Can't brotli content: $@";
+		$content = $output;
 	}
 	elsif ($encoding eq "rot13") {  # for the fun of it
 	    $content =~ tr/A-Za-z/N-ZA-Mn-za-m/;
@@ -801,11 +820,11 @@ HTTP::Message - HTTP style message (base class)
 
 =head1 VERSION
 
-version 6.36
+version 6.39
 
 =head1 SYNOPSIS
 
- use base 'HTTP::Message';
+ use parent 'HTTP::Message';
 
 =head1 DESCRIPTION
 
@@ -986,7 +1005,7 @@ want to process its content as a string.
 Apply the given encodings to the content of the message.  Returns TRUE
 if successful. The "identity" (non-)encoding is always supported; other
 currently supported encodings, subject to availability of required
-additional modules, are "gzip", "deflate", "x-bzip2" and "base64".
+additional modules, are "gzip", "deflate", "x-bzip2", "base64" and "br".
 
 A successful call to this function will set the C<Content-Encoding>
 header.

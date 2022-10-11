@@ -1,5 +1,5 @@
 package URI::Fetch::Response;
-$URI::Fetch::Response::VERSION = '0.13';
+$URI::Fetch::Response::VERSION = '0.15';
 use strict;
 use warnings;
 
