@@ -26,6 +26,39 @@ my $author  = MT->model('author')->load(1);
 my $blog_id = $objs->{blog_id};
 my $ct_id   = $objs->{content_type}{ct_multi}{content_type}->id;
 
+subtest 'searchable are replaceable' => sub {
+    require MT::ContentType;
+    require MT::ContentFieldType;
+    my %searchable = map { $_ => 1 } qw(
+        list
+        number
+        single_line_text
+        multi_line_text
+        url
+        embedded_text
+    );
+    my %todos = map { $_ => 1 } qw(
+        select_box
+        checkboxes
+        radio_button
+        content_type
+        tags
+        categories
+        asset
+        asset_audio
+        asset_video
+        asset_image
+    );
+    for my $type (keys %{MT->registry('content_field_types')}) {
+        next if $todos{$type};
+        my $searchable = MT::ContentType->_is_searchable_field_type($type) ? 1 : 0;
+        is $searchable, $searchable{$type} || 0, $type. ($searchable ? ' is searchable' : ' is not searchable');
+        my $registry = MT->registry( 'content_field_types', $type );
+        my $replaceable = ($registry->{replaceable} || $registry->{replace_handler}) ? 1 : 0;
+        is $replaceable, $searchable, $type. ($replaceable ? ' is replaceable' : ' is not replaceable');
+    }
+};
+
 subtest 'content_data' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($author);
