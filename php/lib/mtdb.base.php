@@ -4519,7 +4519,7 @@ abstract class MTDatabase {
             if (isset($args['sort_by']) || $map && $map[0]->dt_field_id) {
                 if (!isset($args['sort_by'])) {
                     $cf = $map[0]->dt_field();
-                } else if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
+                } else if (preg_match('/^field:(.+)$/', $args['sort_by'], $m)) {
                     $key= $m[1];
                     $cfs = $this->fetch_content_fields(array(
                         'blog_id' => $blog_id,
