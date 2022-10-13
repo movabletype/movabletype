@@ -770,6 +770,9 @@ sub _hdlr_contents {
             else {
                 @contents = @$archive_contents;
             }
+            if ($args->{limit}) {
+                @contents = splice @contents, 0, $args->{limit};
+            }
         }
     }
 
