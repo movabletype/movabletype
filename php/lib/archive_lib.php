@@ -3961,7 +3961,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         $array['category_set_based_archive']   = 1;
         $array['archive_template']             = 1;
         $array['archive_listing']              = 1;
-        $array['content_type_archive_listing'] = 1;
+        $array['contenttype_archive_listing']  = 1;
         return $array;
     }
 

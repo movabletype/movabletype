@@ -73,12 +73,6 @@ PHP
 __END__
 
 === Some ArchiveTypes with type
---- skip
-1
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26073
-https://movabletype.atlassian.net/browse/MTC-26074
-https://movabletype.atlassian.net/browse/MTC-26075
 --- template
 <mt:Archives type="[% archive_type %]">
 <mt:ArchiveType>
