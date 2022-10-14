@@ -4634,7 +4634,14 @@ sub remove_preview_file {
         {
             my $file = $tf->name;
             my $fmgr = $app->blog->file_mgr;
-            $fmgr->delete($file);
+            if ($fmgr->delete($file)) {
+                require File::Basename;
+                my $dir = File::Basename::dirname($file);
+                # MTC-26474
+                if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
+                    rmdir($dir);
+                }
+            }
             $tf->remove;
         }
     }
