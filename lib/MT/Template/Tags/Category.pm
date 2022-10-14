@@ -277,7 +277,7 @@ sub _hdlr_categories {
     ## Otherwise, counts are collected on an as-needed basis, using the
     ## 'entry_count' method in MT::Category.
     my $counts_fetched   = 0;
-    my $content_count_of = !$args->{category_set_id}
+    my $content_count_of = !($args->{category_set_id} || $ctx->stash('category_set'))
         ? sub {
         my $cat = shift;
         return delay( sub { $cat->entry_count } )
