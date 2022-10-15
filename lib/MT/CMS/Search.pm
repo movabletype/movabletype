@@ -1343,7 +1343,7 @@ sub do_search_replace {
                     else {
                         $text = $obj->column($col);
                     }
-                    $text = '' unless defined $text;
+                    next unless defined $text;
                     my $replaced_text;
                     if ($do_replace) {
                         my $replaced;
