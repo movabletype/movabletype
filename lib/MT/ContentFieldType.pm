@@ -55,8 +55,12 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::ContentType::preview_handler',
+        search_class   => 'content_data',
+        replace_column => 'label',
         search_handler =>
-            '$Core::MT::ContentFieldType::ContentType::search_handler',
+            '$Core::MT::ContentFieldType::Common::search_handler_reference',
+        replace_handler =>
+            '$Core::MT::ContentFieldType::Common::replace_handler_reference',
         site_data_import_handler =>
             '$Core::MT::ContentFieldType::ContentType::site_data_import_handler',
         site_import_handler =>
@@ -410,6 +414,8 @@ sub _select_box_registry {
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_multiple',
+        replace_handler =>
+            '$Core::MT::ContentFieldType::Common::replace_handler_multiple',
         list_props => {
             select_box => {
                 filter_tmpl =>
@@ -459,6 +465,8 @@ sub _radio_button_registry {
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_multiple',
+        replace_handler =>
+            '$Core::MT::ContentFieldType::Common::replace_handler_multiple',
         list_props => {
             radio_button => {
                 filter_tmpl =>
@@ -507,6 +515,8 @@ sub _checkboxes_registry {
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_multiple',
+        replace_handler =>
+            '$Core::MT::ContentFieldType::Common::replace_handler_multiple',
         list_props => {
             checkboxes => {
                 filter_tmpl =>
@@ -561,8 +571,11 @@ sub _asset_registry {
             '$Core::MT::ContentFieldType::Asset::preview_handler',
         search_class   => 'asset',
         search_columns => [qw( description file_name label )],
+        replace_column => 'label',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_reference',
+        replace_handler =>
+            '$Core::MT::ContentFieldType::Common::replace_handler_reference',
         site_data_import_handler =>
             '$Core::MT::ContentFieldType::Asset::site_data_import_handler',
         list_props => {
@@ -676,10 +689,13 @@ sub _audio_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
-        search_class   => 'asset',
+        search_class   => 'asset.audio',
         search_columns => [qw( description file_name label )],
+        replace_column => 'label',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_reference',
+        replace_handler =>
+            '$Core::MT::ContentFieldType::Common::replace_handler_reference',
         site_data_import_handler =>
             '$Core::MT::ContentFieldType::Asset::site_data_import_handler',
         list_props => {
@@ -791,10 +807,13 @@ sub _video_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
-        search_class   => 'asset',
+        search_class   => 'asset.video',
         search_columns => [qw( description file_name label )],
+        replace_column => 'label',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_reference',
+        replace_handler =>
+            '$Core::MT::ContentFieldType::Common::replace_handler_reference',
         site_data_import_handler =>
             '$Core::MT::ContentFieldType::Asset::site_data_import_handler',
         list_props => {
@@ -907,10 +926,13 @@ sub _image_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
-        search_class   => 'asset',
+        search_class   => 'asset.image',
         search_columns => [qw( description file_name label )],
+        replace_column => 'label',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_reference',
+        replace_handler =>
+            '$Core::MT::ContentFieldType::Common::replace_handler_reference',
         site_data_import_handler =>
             '$Core::MT::ContentFieldType::Asset::site_data_import_handler',
         list_props => {
@@ -1067,8 +1089,11 @@ sub _categories_registry {
             '$Core::MT::ContentFieldType::Categories::preview_handler',
         search_class   => 'category',
         search_columns => [qw( basename description label )],
+        replace_column => 'label',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_reference',
+        replace_handler =>
+            '$Core::MT::ContentFieldType::Common::replace_handler_reference',
         site_data_import_handler =>
             '$Core::MT::ContentFieldType::Categories::site_data_import_handler',
         site_import_handler =>
@@ -1128,8 +1153,11 @@ sub _tags_registry {
             '$Core::MT::ContentFieldType::Tags::preview_handler',
         search_class   => 'tag',
         search_columns => [qw( name )],
+        replace_column => 'name',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_reference',
+        replace_handler =>
+            '$Core::MT::ContentFieldType::Common::replace_handler_reference',
         site_data_import_handler =>
             '$Core::MT::ContentFieldType::Tags::site_data_import_handler',
         ss_validator => '$Core::MT::ContentFieldType::Tags::ss_validator',

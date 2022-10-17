@@ -276,6 +276,11 @@ our %FixtureSpec = (
                     type   => 'content_type',
                     name   => 'content type',
                     source => 'ct2',
+                    options => {
+                        multiple => 1,
+                        max      => 5,
+                        min      => 1,
+                    },
                 },
             ],
         },

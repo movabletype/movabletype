@@ -511,39 +511,98 @@ sub preview_handler_multiple {
 }
 
 sub search_handler_multiple {
-    my ( $search_regex, $field_data, $values, $content_data ) = @_;
-    $values = ''        unless defined $values;
-    $values = [$values] unless ref $values eq 'ARRAY';
-    my %value_label_hash = map { $_->{value} => $_->{label} }
-        @{ $field_data->{options}{values} || [] };
+    my ($search_regex, $field_data, $values, $content_data, $search) = @_;
+    return 0            unless defined($search);
+    $values = [$values] unless ref $values;
+    return 0            unless @$values;
+
+    my %labels = map { $_->{value} => $_->{label} } @{ $field_data->{options}->{values} };
     for my $value (@$values) {
-        $value = '' unless defined $value;
-        my $label = $value_label_hash{$value};
-        $label = '' unless defined $label;
-        return 1 if $value =~ /$search_regex/ || $label =~ /$search_regex/;
+        return 1 if defined $value && defined($labels{$value}) && $labels{$value} eq $search;
     }
-    0;
+    return 0;
+}
+
+sub replace_handler_multiple {
+    my ($search_regex, $replace_string, $field_data, $values, $content_data, $search) = @_;
+    return 0            unless defined($search);
+    $values = [$values] unless ref $values;
+    return 0            unless @$values;
+
+    my (%labels, $replace_with);
+    for (@{ $field_data->{options}->{values} }) {
+        $labels{ $_->{value} } = $_->{label};
+        $replace_with = $_->{value} if $_->{label} eq $replace_string;
+    }
+    return 0 unless defined $replace_with;
+
+    my $replaced   = 0;
+    my @new_values = @$values;
+    for my $value (@new_values) {
+        if (defined $value && defined($labels{$value}) && $labels{$value} eq $search) {
+            $value = $replace_with;
+            $replaced++;
+        }
+    }
+    return 0 unless $replaced;
+    my %seen;
+    @new_values = grep !$seen{$_}++, @new_values;
+    my $error = ss_validator_multiple(MT->app, $field_data, \@new_values);
+
+    return $error ? 0 : ($replaced, \@new_values);
 }
 
 sub search_handler_reference {
-    my ( $search_regex, $field_data, $raw_object_ids, $content_data ) = @_;
-    return 0 unless $raw_object_ids;
-    my @object_ids
-        = ref $raw_object_ids eq 'ARRAY'
-        ? @$raw_object_ids
-        : ($raw_object_ids);
-    return 0 unless @object_ids;
-    my $field_registry
-        = MT->registry( 'content_field_types', $field_data->{type} );
-    my $iter = MT->model( $field_registry->{search_class} )
-        ->load_iter( { id => \@object_ids } );
-    while ( my $obj = $iter->() ) {
-        for my $col ( @{ $field_registry->{search_columns} } ) {
-            my $text = defined $obj->$col ? $obj->$col : '';
-            return 1 if $text =~ /$search_regex/;
+    my ($search_regex, $field_data, $values, $content_data, $search) = @_;
+    return 0            unless defined $search;
+    $values = [$values] unless ref $values;
+    return 0            unless @$values;
+
+    my $registry = MT->registry('content_field_types', $field_data->{type});
+    my $iter     = MT->model($registry->{search_class})->load_iter({ id => $values });
+    while (my $obj = $iter->()) {
+        my $col  = $registry->{replace_column};
+        my $text = defined $obj->$col ? $obj->$col : '';
+        return 1 if $text eq $search;
+    }
+    return 0;
+}
+
+sub replace_handler_reference {
+    my ($search_regex, $replace_string, $field_data, $values, $content_data, $search) = @_;
+    return 0            unless defined($search);
+    $values = [$values] unless ref $values;
+    return 0            unless @$values;
+
+    my $registry   = MT->registry('content_field_types', $field_data->{type});
+    my $model      = MT->model($registry->{search_class});
+    my $col        = $registry->{replace_column};
+    my $dest_obj    = $model->load({ $col => $replace_string }) || return 0;
+    my $dest_id    = $dest_obj->id;
+    my @cds        = $model->load({ id => $values, $col => $search }, { fetchonly => { id => 1 } });
+    my %ids        = map { $_->id => 1 } @cds;
+    my $replaced   = 0;
+    my @new_values = @$values;
+
+    for my $value (@new_values) {
+        next unless defined $value && defined($ids{$value});
+        $value = $dest_id;
+        $replaced++;
+    }
+    return 0 unless $replaced;
+
+    if (my $ss_validator = $registry->{ss_validator}) {
+        if (!ref $ss_validator) {
+            $ss_validator = MT->handler_to_coderef($ss_validator);
+        }
+        if ('CODE' eq ref $ss_validator) {
+            if (my $error = $ss_validator->(MT->app, $field_data, \@new_values)) {
+                return 0;
+            }
         }
     }
-    0;
+
+    return ($replaced, \@new_values);
 }
 
 1;
