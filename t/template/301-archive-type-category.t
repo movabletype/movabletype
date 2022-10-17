@@ -20,7 +20,7 @@ use File::Basename;
 use MT::WeblogPublisher;
 
 my $mt        = MT->instance;
-my $publisher = MT::WeblogPublisher->new( start_time => time() + 10 );
+my $publisher = MT::WeblogPublisher->new;
 my $map       = $mt->model('templatemap')->new;
 $map->file_template('publish_empty_archive_test/%C/index.html');
 
@@ -64,6 +64,9 @@ for my $at (
     note( 'ArchiveType: ' . $at );
     for my $d (@suite) {
         my $cat = $d->{category};
+
+        sleep 1;
+        $publisher->start_time(time());
 
         note(
             (   $cat->entry_count
@@ -116,6 +119,11 @@ for my $at (
             print {$fh} "test";
             close $fh;
         }
+        
+        # file must not meet the condition mod_time >= start_time
+        sleep 1;
+        $publisher->start_time(time());
+
         $mt->request->reset;
         $publisher->_rebuild_entry_archive_type(
             Blog        => $blog,
