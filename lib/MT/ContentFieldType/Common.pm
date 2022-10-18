@@ -512,7 +512,7 @@ sub preview_handler_multiple {
 
 sub search_handler_multiple {
     my ($search_regex, $field_data, $values, $content_data, $search) = @_;
-    return 0            unless defined($search);
+    return 0            if !defined($search) || $values eq '';
     $values = [$values] unless ref $values;
     return 0            unless @$values;
 
@@ -525,7 +525,7 @@ sub search_handler_multiple {
 
 sub replace_handler_multiple {
     my ($search_regex, $replace_string, $field_data, $values, $content_data, $search) = @_;
-    return 0            unless defined($search);
+    return 0            if !defined($search) || $values eq '';
     $values = [$values] unless ref $values;
     return 0            unless @$values;
 
@@ -554,7 +554,7 @@ sub replace_handler_multiple {
 
 sub search_handler_reference {
     my ($search_regex, $field_data, $values, $content_data, $search) = @_;
-    return 0            unless defined $search;
+    return 0            if !defined($search) || $values eq '';
     $values = [$values] unless ref $values;
     return 0            unless @$values;
 
@@ -570,7 +570,7 @@ sub search_handler_reference {
 
 sub replace_handler_reference {
     my ($search_regex, $replace_string, $field_data, $values, $content_data, $search) = @_;
-    return 0            unless defined($search);
+    return 0            if !defined($search) || $values eq '';
     $values = [$values] unless ref $values;
     return 0            unless @$values;
 
