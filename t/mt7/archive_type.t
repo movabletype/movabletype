@@ -200,7 +200,7 @@ my $tmpl = MT::Template->load( { name => 'ContentType Test' } );
 my $tmpl_archive
     = MT::Template->load( { name => 'ContentType Archive Test' } );
 
-my $publisher = MT::ContentPublisher->new( start_time => time() + 10 );
+my $publisher = MT::ContentPublisher->new;
 
 my $contents_html = {
     content_type => "\n\"3\"",
@@ -340,6 +340,9 @@ for my $s (@suite) {
     my $template = $s->{Template};
     my $map      = $s->{TemplateMap};
 
+    sleep 1;
+    $publisher->start_time(time());
+
     note( 'ArchiveType: ' . $at );
 
     $blog->archive_type($at);
@@ -433,6 +436,11 @@ for my $s (@suite) {
         print {$fh} "test";
         close $fh;
     }
+    
+    # file must not meet the condition mod_time >= start_time
+    sleep 1;
+    $publisher->start_time(time());
+
     $mt->request->reset;
     if ( $archiver->contenttype_category_based ) {
         $publisher->_rebuild_content_archive_type(
