@@ -1,6 +1,7 @@
 package MT::Test::Role::Wight;
 
 use Role::Tiny;
+use Test::More ();
 
 # The following methods are just to keep compatibility with Test::Wight
 
@@ -16,6 +17,7 @@ sub visit {
 sub find {
     my ( $self, $selector ) = @_;
     my $element = eval { $self->driver->find_element($selector); };
+    Test::More::diag $@ if $@;
     $self->{_element} = $element;
     $self;
 }
