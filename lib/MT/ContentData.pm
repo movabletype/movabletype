@@ -1180,6 +1180,7 @@ sub make_list_props {
             modified_on => {
                 base  => '__virtual.modified_on',
                 order => $order + 300,
+                display => 'default',
             },
             unpublished_on => {
                 auto    => 1,
