@@ -40,7 +40,8 @@ SENDMAIL
 }
 
 sub last_sent_mail {
-    return do { open my $fh, '<', _last_mail_file() or return; local $/; <$fh> }
+    my $file = _last_mail_file();
+    return do { open my $fh, '<', $file or die "Last sent mail $file not found: $!"; local $/; <$fh> }
 }
 
 sub _last_mail_file { "$ENV{MT_TEST_ROOT}/mail" }
