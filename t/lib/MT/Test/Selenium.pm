@@ -392,6 +392,7 @@ sub get_browser_error_log {
 }
 
 sub screenshot {
+    return unless $ENV{MT_TEST_CAPTURE_SCREENSHOT};
     # TODO consider zero padding for index numbers
     my ($self, $id) = @_;
     state $index = 1;
@@ -403,6 +404,7 @@ sub screenshot {
 }
 
 sub screenshot_full {
+    return unless $ENV{MT_TEST_CAPTURE_SCREENSHOT};
     my ($self, $id, $width, $height) = @_;
     my $size_org = $self->driver->get_window_size();
     $width  = $width  || $self->driver->execute_script('return document.body.scrollWidth / (top === self ? 1 : 0.8)');
