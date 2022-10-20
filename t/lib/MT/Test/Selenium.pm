@@ -23,7 +23,7 @@ use LWP::UserAgent;
 use URI;
 use URI::QueryParam;
 use MT::PSGI;
-use constant DEBUG => $ENV{MT_TEST_SELENIUM_DEBUG} ? 1 : 0;
+use constant DEBUG => $ENV{MT_TEST_SELENIUM_DEBUG} ? 1 : $ENV{TRAVIS} ? 1 : 0;
 use constant MY_HOST => $ENV{TRAVIS} ? $ENV{HOSTNAME} : '127.0.0.1';
 
 with qw(
