@@ -45,7 +45,6 @@ $author->save or die $author->errstr;
 
 describe 'On Pref Blog Screen (blog_id = 1)' => sub {
     my $selenium = MT::Test::Selenium->new($test_env, { rebootable => 1 });
-    use Data::Dumper;
     context 'not save archive path' => sub {
         before all => sub {
             my $blog = MT->model('blog')->load(1) or die MT->model('blog')->errstr;
@@ -57,24 +56,32 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
         };
         describe 'select archive path' => sub {
             it 'option is hidden' => sub {
-                my $elem1 = $selenium->find('select#upload_destination');
-                my $child = $elem1->{_element}->children("option");
-                foreach my $c(@$child){
-                  if( $c->get_attribute('data-archive') ){
-                    is( $c->get_attribute('hidden'), 'true' );
-                  }
+                $selenium->find('select#upload_destination');
+                if (my $elem = $selenium->element) {
+                    my $child = $elem->children("option");
+                    foreach my $c(@$child){
+                        if( $c->get_attribute('data-archive') ){
+                            is( $c->get_attribute('hidden'), 'true' );
+                        }
+                    }
+                } else {
+                    fail "select#upload_destination is not found";
                 }
             };
         };
         describe 'archive path click' => sub {
             it 'option is shown' => sub {
                 $selenium->driver->execute_script('jQuery("#enable_archive_paths").prop("checked", true).trigger("change")');
-                my $elem1 = $selenium->find('select#upload_destination');
-                my $child = $elem1->{_element}->children("option");
-                foreach my $c(@$child){
-                  if( $c->get_attribute('data-archive') ){
-                    is( $c->get_attribute('hidden'), undef );
-                  }
+                $selenium->find('select#upload_destination');
+                if (my $elem = $selenium->element) {
+                    my $child = $elem->children("option");
+                    foreach my $c(@$child){
+                        if( $c->get_attribute('data-archive') ){
+                            is( $c->get_attribute('hidden'), undef );
+                        }
+                    }
+                } else {
+                    fail "select#upload_destination is not found";
                 }
             };
 
@@ -91,12 +98,16 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
         };
         describe 'select archive path' => sub {
             it 'option is shown' => sub {
-                my $elem1 = $selenium->find('select#upload_destination');
-                my $child = $elem1->{_element}->children("option");
-                foreach my $c(@$child){
-                  if( $c->get_attribute('data-archive') ){
-                    is( $c->get_attribute('hidden'), undef );
-                  }
+                $selenium->find('select#upload_destination');
+                if (my $elem = $selenium->element) {
+                    my $child = $elem->children("option");
+                    foreach my $c(@$child){
+                        if( $c->get_attribute('data-archive') ){
+                            is( $c->get_attribute('hidden'), undef );
+                        }
+                    }
+                } else {
+                    fail "select#upload_destination is not found";
                 }
             };
         };
@@ -105,12 +116,16 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
                 $selenium->screenshot_full;
                 $selenium->driver->execute_script('jQuery("#enable_archive_paths").prop("checked", false).trigger("change")');
                 $selenium->screenshot_full;
-                my $elem1 = $selenium->find('select#upload_destination');
-                my $child = $elem1->{_element}->children("option");
-                foreach my $c(@$child){
-                  if( $c->get_attribute('data-archive') ){
-                    is( $c->get_attribute('hidden'), 'true' );
-                  }
+                $selenium->find('select#upload_destination');
+                if (my $elem = $selenium->element) {
+                    my $child = $elem->children("option");
+                    foreach my $c(@$child){
+                        if( $c->get_attribute('data-archive') ){
+                            is( $c->get_attribute('hidden'), 'true' );
+                        }
+                    }
+                } else {
+                    fail "select#upload_destination is not found";
                 }
             };
         }
