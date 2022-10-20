@@ -23,6 +23,7 @@ use LWP::UserAgent;
 use URI;
 use URI::QueryParam;
 use MT::PSGI;
+use Selenium::Waiter;
 use constant DEBUG => $ENV{MT_TEST_SELENIUM_DEBUG} ? 1 : $ENV{TRAVIS} ? 1 : 0;
 use constant MY_HOST => $ENV{TRAVIS} ? $ENV{HOSTNAME} : '127.0.0.1';
 
@@ -242,7 +243,7 @@ sub _post_form {
 sub _find_by_input {
     my ( $self, $input ) = @_;
     if ( $input->id ) {
-        return $self->driver->find_element_by_id( $input->id );
+        return wait_until { $self->driver->find_element_by_id( $input->id ) };
     }
     elsif ( $input->name ) {
         my $type = $input->type;
@@ -253,11 +254,18 @@ sub _find_by_input {
             Carp::croak "not implemented";
         }
         else {
-            return $self->driver->find_element(
-                'input[name=' . $input->name . ']' );
+            return wait_until { $self->driver->find_element('input[name=' . $input->name . ']' ) };
         }
     }
     Carp::croak "Can't find elem from input";
+}
+
+sub find {
+    my ( $self, $selector ) = @_;
+    my $element = wait_until { $self->driver->find_element($selector); };
+    Test::More::diag $@ if $@;
+    $self->{_element} = $element;
+    $self;
 }
 
 sub mt_url {
@@ -281,7 +289,7 @@ sub request {
         $request_url = $self->mt_url;
         my $submit;
         for my $key ( keys %$params ) {
-            my $input = eval { $self->driver->find_element_by_name($key) };
+            my $input = wait_until { $self->driver->find_element_by_name($key) };
             if ($input) {
                 my $tag = lc $input->get_tag_name;
                 if ( !$input->is_enabled or $input->is_hidden ) {
@@ -319,7 +327,7 @@ sub request {
             $submit->click;
         }
         else {
-            $submit = $self->driver->find_element_by_class('btn-primary');
+            $submit = wait_until { $self->driver->find_element_by_class('btn-primary') };
             $submit->click;
         }
     }

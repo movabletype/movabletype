@@ -14,14 +14,6 @@ sub visit {
     $self;
 }
 
-sub find {
-    my ( $self, $selector ) = @_;
-    my $element = eval { $self->driver->find_element($selector); };
-    Test::More::diag $@ if $@;
-    $self->{_element} = $element;
-    $self;
-}
-
 sub value {
     my $self = shift;
     my $element = $self->{_element} or return;
