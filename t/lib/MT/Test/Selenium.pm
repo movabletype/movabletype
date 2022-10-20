@@ -206,6 +206,9 @@ sub base_url {
     $self->{base_url}->clone;
 }
 
+sub element { shift->{_element} }
+sub content { shift->{content} }
+
 sub login {
     my ( $self, $user ) = @_;
     my $url = $self->base_url;
