@@ -201,7 +201,8 @@ sub export_template {
             checked    => $saved ? $checked{ $tmpl->id } : 1,
         };
         if ( $template_type =~ /index/ ) {
-            $obj->{outfile} = $tmpl->outfile;
+            $obj->{outfile}       = $tmpl->outfile;
+            $obj->{published_url} = $tmpl->published_url;
         }
         if ( $template_type eq 'archive' || $template_type eq 'ct' ) {
             $obj->{archive_types}
