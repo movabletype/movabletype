@@ -36,6 +36,7 @@ BEGIN {
 use MT::Test;
 use MT;
 use MT::Test::Selenium;
+use Selenium::Waiter;
 
 $test_env->prepare_fixture('db_data');
 
@@ -49,6 +50,7 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
         before all => sub {
             my $blog = MT->model('blog')->load(1) or die MT->model('blog')->errstr;
             $blog->archive_path('');
+            $blog->archive_url('');
             $blog->save or die $blog->errstr;
             $selenium->visit(
                 '/cgi-bin/mt.cgi?__mode=cfg_prefs&_type=website&blog_id=1&id=1&username=Melody&password=Nelson'
@@ -56,32 +58,50 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
         };
         describe 'select archive path' => sub {
             it 'option is hidden' => sub {
+                $selenium->find('#enable_archive_paths');
+                if (my $elem = $selenium->element) {
+                    my $selected = $elem->is_selected;
+                    ok !$selected, "checkbox is not selected yet";
+                }
                 $selenium->find('select#upload_destination');
                 if (my $elem = $selenium->element) {
                     my $child = $elem->children("option");
                     foreach my $c(@$child){
+                        my $text = $c->get_text;
                         if( $c->get_attribute('data-archive') ){
-                            is( $c->get_attribute('hidden'), 'true' );
+                            is( $c->get_attribute('hidden'), 'true', "option $text is hidden" );
                         }
                     }
                 } else {
                     fail "select#upload_destination is not found";
+                    note $selenium->content;
                 }
             };
         };
         describe 'archive path click' => sub {
             it 'option is shown' => sub {
-                $selenium->driver->execute_script('jQuery("#enable_archive_paths").prop("checked", true).trigger("change")');
+                $selenium->find('#enable_archive_paths');
+                if (my $elem = $selenium->element) {
+                    my $selected = $elem->is_selected;
+                    ok !$selected, "checkbox is not selected yet";
+                }
+                $selenium->find('label[for=enable_archive_paths]');
+                if (my $elem = $selenium->element) {
+                    $elem->toggle;
+                    wait_until { $selenium->find('#enable_archive_paths')->element->is_selected };
+                }
                 $selenium->find('select#upload_destination');
                 if (my $elem = $selenium->element) {
                     my $child = $elem->children("option");
                     foreach my $c(@$child){
+                        my $text = $c->get_text;
                         if( $c->get_attribute('data-archive') ){
-                            is( $c->get_attribute('hidden'), undef );
+                            is( $c->get_attribute('hidden'), undef, "option $text is not hidden now" );
                         }
                     }
                 } else {
                     fail "select#upload_destination is not found";
+                    note $selenium->content;
                 }
             };
 
@@ -98,34 +118,50 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
         };
         describe 'select archive path' => sub {
             it 'option is shown' => sub {
+                $selenium->find('#enable_archive_paths');
+                if (my $elem = $selenium->element) {
+                    my $selected = $elem->is_selected;
+                    ok $selected, "checkbox is selected now";
+                }
                 $selenium->find('select#upload_destination');
                 if (my $elem = $selenium->element) {
                     my $child = $elem->children("option");
                     foreach my $c(@$child){
+                        my $text = $c->get_text;
                         if( $c->get_attribute('data-archive') ){
-                            is( $c->get_attribute('hidden'), undef );
+                            is( $c->get_attribute('hidden'), undef, "option $text is not hidden yet" );
                         }
                     }
                 } else {
                     fail "select#upload_destination is not found";
+                    note $selenium->content;
                 }
             };
         };
         describe 'archive path click' => sub {
             it 'option is shown' => sub {
-                $selenium->screenshot_full;
-                $selenium->driver->execute_script('jQuery("#enable_archive_paths").prop("checked", false).trigger("change")');
-                $selenium->screenshot_full;
+                $selenium->find('#enable_archive_paths');
+                if (my $elem = $selenium->element) {
+                    my $selected = $elem->is_selected;
+                    ok $selected, "checkbox is still selected";
+                }
+                $selenium->find('label[for=enable_archive_paths]');
+                if (my $elem = $selenium->element) {
+                    $elem->toggle;
+                    wait_until { !$selenium->find('#enable_archive_paths')->element->is_selected };
+                }
                 $selenium->find('select#upload_destination');
                 if (my $elem = $selenium->element) {
                     my $child = $elem->children("option");
                     foreach my $c(@$child){
+                        my $text = $c->get_text;
                         if( $c->get_attribute('data-archive') ){
-                            is( $c->get_attribute('hidden'), 'true' );
+                            is( $c->get_attribute('hidden'), 'true', "option $text is hidden now" );
                         }
                     }
                 } else {
                     fail "select#upload_destination is not found";
+                    note $selenium->content;
                 }
             };
         }
