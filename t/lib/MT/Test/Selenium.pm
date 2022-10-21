@@ -134,7 +134,7 @@ sub new {
 
             if ($args->{rebootable} && 
                     eval { require Server::Starter; require Net::Server::SS::PreFork; require Starman; 1 }) {
-                my @options = qw(-s Starman --workers 2);
+                my @options = qw(-s Starman);
                 push @options, '--env', (DEBUG ? 'development' : 'production');
                 Server::Starter::start_server(
                     port     => "$host:$port",
