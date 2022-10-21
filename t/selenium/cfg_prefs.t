@@ -66,6 +66,7 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
                     }
                 } else {
                     fail "select#upload_destination is not found";
+                    note $selenium->content;
                 }
             };
         };
@@ -82,6 +83,7 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
                     }
                 } else {
                     fail "select#upload_destination is not found";
+                    note $selenium->content;
                 }
             };
 
@@ -108,6 +110,7 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
                     }
                 } else {
                     fail "select#upload_destination is not found";
+                    note $selenium->content;
                 }
             };
         };
@@ -126,6 +129,7 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
                     }
                 } else {
                     fail "select#upload_destination is not found";
+                    note $selenium->content;
                 }
             };
         }
