@@ -73,6 +73,7 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
         describe 'archive path click' => sub {
             it 'option is shown' => sub {
                 $selenium->driver->execute_script('jQuery("#enable_archive_paths").prop("checked", true).trigger("change")');
+                sleep 1;
                 $selenium->find('select#upload_destination');
                 if (my $elem = $selenium->element) {
                     my $child = $elem->children("option");
@@ -118,6 +119,7 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
             it 'option is shown' => sub {
                 $selenium->screenshot_full;
                 $selenium->driver->execute_script('jQuery("#enable_archive_paths").prop("checked", false).trigger("change")');
+                sleep 1;
                 $selenium->screenshot_full;
                 $selenium->find('select#upload_destination');
                 if (my $elem = $selenium->element) {
