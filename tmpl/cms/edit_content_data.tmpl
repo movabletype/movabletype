@@ -809,6 +809,13 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
   jQuery('#edit-content-type-data-form').on('submit', function(event) {
     var $form = jQuery(this);
+    if ($form.attr("mt:once")) {
+        if ($form.get(0).submitted) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return false;
+        }
+    }
 
     if ($form.children('input[name=__mode]').val() == 'preview_content_data') {
 <mt:if name="has_multi_line_text_field">
