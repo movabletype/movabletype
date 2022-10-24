@@ -121,7 +121,7 @@ sub run_tasks {
                 );
             }
             else {
-                push @completed, $name
+                push @completed, { name => $name, key => $task->key }
                     if ( defined $status )
                     && ( $status ne '' )
                     && ( $status > 0 );
@@ -142,12 +142,12 @@ sub run_tasks {
                         . $app->translate("The following tasks were run:")
                         . ' '
                         . join ", ",
-                    @completed
+                    map { $_->{name} } @completed
                 }
             );
         }
     };
-    $app->run_callbacks('PeriodicTaskEnd', $app, \@completed);
+    $app->run_callbacks('PeriodicTaskEnd', $app, [map { $_->{key} } @completed]);
 
     $unlock->();
 }
