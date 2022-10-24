@@ -4553,7 +4553,6 @@ use vars qw( @ISA %Lexicon );
 	'View all comments with this status' => 'このステータスのすべてのコメントを見る',
 	'View this commenter detail' => 'コメント投稿者の詳細を見る',
 	'[_1] no longer exists' => '[_1]が存在しません',
-	'_external_link_target' => '_blank',
 	'comment' => 'コメント',
 	'comments' => 'コメント',
 

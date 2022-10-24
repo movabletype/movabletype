@@ -27,7 +27,7 @@
     <mt:setvar name="delete_button_title" value="<__trans phrase="Delete this page (x)" escape="html">">
   <mt:if name="status_publish">
     <mt:if name="entry_permalink">
-      <mt:setvarblock name="view_link"><a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View Page"></a></mt:setvarblock>
+      <mt:setvarblock name="view_link"><a href="<$mt:var name="entry_permalink"$>" target="_blank"><__trans phrase="View Page"></a></mt:setvarblock>
     </mt:if>
   </mt:if>
 <mt:else>
@@ -51,7 +51,7 @@
   <mt:setvar name="delete_button_title" value="<__trans phrase="Delete this entry (x)" escape="html">">
   <mt:if name="status_publish">
     <mt:if name="entry_permalink">
-      <mt:setvarblock name="view_link"><a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View Entry"></a></mt:setvarblock>
+      <mt:setvarblock name="view_link"><a href="<$mt:var name="entry_permalink"$>" target="_blank"><__trans phrase="View Entry"></a></mt:setvarblock>
     </mt:if>
   </mt:if>
 </mt:if>
@@ -1606,7 +1606,7 @@ div.mce-notification-error {
         <strong><__trans phrase="Permalink:"></strong> <mt:var name="entry_permalink">
           <mt:if name="status_publish">
             <mt:if name="entry_permalink">
-          <a class="btn btn-default button" href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">">
+          <a class="btn btn-default button" href="<$mt:var name="entry_permalink"$>" target="_blank">
             <__trans phrase="View">
           </a>
             </mt:if>

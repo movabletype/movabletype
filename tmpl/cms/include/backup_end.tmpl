@@ -20,7 +20,7 @@ if (progress) {
 <mt:loop name="files_loop">
   <li class="list-item">
   <mt:if name="url">
-    <a href="<mt:var name="url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="Download This File">">
+    <a href="<mt:var name="url">" target="_blank" title="<__trans phrase="Download This File">">
       <__trans phrase="Download: [_1]" params="<mt:var name="filename">">
     </a>
   <mt:else>
