@@ -3614,6 +3614,7 @@ sub can_view_blog_list {
 sub data_api_is_enabled {
     my ( $app, $blog_id, $blog ) = @_;
 
+    $blog_id ||= 0;
     my $cfg = $app->config;
     my @disable_sites = split ',', defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
     if ($cfg->is_readonly('DataAPIDisableSite')) {
