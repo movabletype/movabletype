@@ -551,7 +551,7 @@ my @CORE_DATA = ([
 
     [
         'DBD::SQLite',
-        0, 0,
+        1.20, 0,
         translate('DBI and DBD::SQLite are required if you want to use the SQLite database backend.')
     ],
 
