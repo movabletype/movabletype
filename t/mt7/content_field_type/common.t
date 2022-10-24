@@ -43,13 +43,16 @@ subtest 'options_pre_save_handler_multiple' => sub {
         is_deeply([map { $_->{valueId} } @{ $options->{values} }], [1, 2], 'right valueId assigned');
     };
 
-    subtest 'existing valueId is bigger than 1' => sub {
+    subtest 'valueId exists sparsely' => sub {
         $options->{values} = [
-            { %$value_elem, valueId => 2 },
             {%$value_elem},
+            { %$value_elem, valueId => 3 },
+            {%$value_elem},
+            { %$value_elem, valueId => 5 },
+            { %$value_elem},
         ];
         $code->($app, 'checkboxes', undef, $options);
-        is_deeply([map { $_->{valueId} } @{ $options->{values} }], [2, 3], 'right valueId assigned');
+        is_deeply([map { $_->{valueId} } @{ $options->{values} }], [1, 3, 4, 5, 6], 'right valueId assigned');
     };
 };
 
