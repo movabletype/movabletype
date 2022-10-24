@@ -475,7 +475,6 @@ sub init_core_registry {
                     'SELECT datname FROM pg_database ORDER BY datname;'
             },
             'sqlite'  => { options => { path_required => 1, }, },
-            'sqlite2' => { options => { path_required => 1, }, },
         },
         image_drivers => {
             graphicsmagick => {
@@ -835,9 +834,6 @@ sub configure {
         elsif ( $_->{module} eq 'DBD::SQLite' ) {
             $_->{id} = 'sqlite';
         }
-        elsif ( $_->{module} eq 'DBD::SQLite2' ) {
-            $_->{id} = 'sqlite2';
-        }
         if ( $param{dbtype} && ( $param{dbtype} eq $_->{id} ) ) {
             $_->{selected} = 1;
         }
@@ -890,7 +886,7 @@ sub configure {
             $cfg->PublishCharset( $param{publish_charset} )
                 if $param{publish_charset};
 
-            if ( $dbtype eq 'sqlite' || $dbtype eq 'sqlite2' ) {
+            if ( $dbtype eq 'sqlite' ) {
                 require File::Spec;
                 my $db_file = $param{dbpath};
                 if ( !File::Spec->file_name_is_absolute($db_file) ) {
@@ -899,9 +895,6 @@ sub configure {
                 }
                 $cfg->Database($db_file) if $db_file;
                 $param{dbpath} = $db_file if $db_file;
-                if ( $dbtype eq 'sqlite2' ) {
-                    $cfg->UseSQLite2(1);
-                }
             }
 
             # test loading of object driver with these parameters...
@@ -1240,12 +1233,6 @@ sub seed {
     if ( my $dbtype = $param{dbtype} ) {
         if ( $dbtype eq 'sqlite' ) {
             $param{use_dbms}      = 1;
-            $param{object_driver} = 'DBI::sqlite';
-            $param{database_name} = $param{dbpath};
-        }
-        elsif ( $dbtype eq 'sqlite2' ) {
-            $param{use_dbms}      = 1;
-            $param{use_sqlite2}   = 1;
             $param{object_driver} = 'DBI::sqlite';
             $param{database_name} = $param{dbpath};
         }

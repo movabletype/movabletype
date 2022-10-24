@@ -554,13 +554,6 @@ my @CORE_DATA = ([
         1.20, 0,
         translate('DBI and DBD::SQLite are required if you want to use the SQLite database backend.')
     ],
-
-    [
-        'DBD::SQLite2',
-        0, 0,
-        translate('DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.')
-    ],
-
 );
 
 my @CORE_OPT = ([

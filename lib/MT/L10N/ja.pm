@@ -3098,7 +3098,6 @@ use vars qw( @ISA %Lexicon );
 	'Current working directory:' => '現在のディレクトリ',
 	'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'データを保存するデータベースとして PostgreSQL を利用する場合、DBIと DBD::Pgが必要です。',
 	'DBI and DBD::SQLite are required if you want to use the SQLite database backend.' => 'データを保存するデータベースとして SQLite を利用する場合、DBIと DBD::SQLiteが必要です。',
-	'DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.' => 'データを保存するデータベースとして SQLite2.x を利用する場合、DBIと DBD::SQLite2が必要です。',
 	'DBI and DBD::mysql are required if you want to use the MySQL database backend.' => 'データを保存するデータベースとして MySQL を利用する場合、DBIと DBD::mysqlが必要です。',
 	'DBI is required to store data in database.' => 'DBIはデータベースにアクセスするために必要です。',
 	'Data Storage' => 'データストレージ',

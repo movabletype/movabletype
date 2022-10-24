@@ -51,12 +51,6 @@ BEGIN {
                 config_package => 'DBI::sqlite',
                 display        => ['dbpath'],
             },
-            'sqlite2' => {
-                label          => 'SQLite Database (v2)',
-                dbd_package    => 'DBD::SQLite2',
-                config_package => 'DBI::sqlite',
-                display        => ['dbpath'],
-            },
         },
         db_form_data => {
             dbserver => {
