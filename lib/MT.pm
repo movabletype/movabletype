@@ -248,6 +248,19 @@ sub construct {
         }
         return @matches;
     }
+
+    sub loaded_models {
+        my $pkg = shift;
+        values %object_types;
+    }
+
+    sub clear_cache_of_loaded_models {
+        my $pkg = shift;
+        for my $model (values %object_types) {
+            my $driver = $model->driver or next;
+            $driver->clear_cache if $driver->can('clear_cache');
+        }
+    }
 }
 
 sub all_models {
