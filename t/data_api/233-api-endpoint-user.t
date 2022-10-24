@@ -29,8 +29,6 @@ my $app = MT::App::DataAPI->new;
 
 use MT::Lockout;
 
-$app->config( 'MailTransfer', 'debug', 1 );
-
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
