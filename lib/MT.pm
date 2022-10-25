@@ -257,7 +257,9 @@ sub construct {
     sub clear_cache_of_loaded_models {
         my $pkg = shift;
         for my $model (values %object_types) {
-            my $driver = $model->driver or next;
+            # avoid loading a new driver here
+            my $props = $model->properties or next;
+            my $driver = $props->{driver} or next;
             $driver->clear_cache if $driver->can('clear_cache');
         }
     }
