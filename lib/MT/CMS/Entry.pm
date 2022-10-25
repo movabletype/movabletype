@@ -160,8 +160,6 @@ sub edit {
         {
             build_junk_table( $app, param => $param, object => $obj );
         }
-        $param->{ "allow_comments_"
-                . ( $allow_comments || $obj->allow_comments || 0 ) } = 1;
         $param->{'authored_on_date'} = $app->param('authored_on_date')
             || format_ts( "%Y-%m-%d", $obj->authored_on, $blog,
             $preferred_language );
@@ -294,7 +292,6 @@ sub edit {
                 $def_status = $param->{status};
                 $def_status =~ s/\D//g;
                 $param->{status} = $def_status;
-                $param->{ 'allow_comments_' . $allow_comments } = 1;
                 $param->{allow_comments} = $allow_comments;
                 $param->{allow_pings}    = $app->param('allow_pings');
             }
@@ -302,8 +299,6 @@ sub edit {
 
                 # new edit
                 $def_status = $blog->status_default;
-                $param->{ 'allow_comments_' . $blog->allow_comments_default }
-                    = 1;
                 $param->{allow_comments} = $blog->allow_comments_default;
                 $param->{allow_pings}    = $blog->allow_pings_default;
             }
