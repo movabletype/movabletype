@@ -2018,7 +2018,6 @@ use vars qw( @ISA %Lexicon );
 	'Remove Temporary Files' => 'テンポラリファイルの削除',
 	'Remove expired lockout data' => '古いサインインの失敗レコードの消去',
 	'Rich Text' => 'リッチテキスト',
-	'SQLite Database (v2)' => 'SQLite(v2)データベース',
 	'SQLite Database' => 'SQLiteデータベース',
 	'Send Notifications' => '通知の送信',
 	'Set Publishing Paths' => '公開パスの設定',

@@ -79,10 +79,7 @@ sub dsn_from_config {
         #return $driver->error(MT->translate(
         #    "Your database directory ('[_1]') is not writable.", $dir));
     }
-    my $dsn = 'dbi:';
-    $dsn .= $cfg->UseSQLite2 ? 'SQLite2' : 'SQLite';
-    $dsn .= ':dbname=' . $cfg->Database;
-    $dsn;
+    'dbi:SQLite:dbname=' . $cfg->Database;
 }
 
 sub init_dbh {
