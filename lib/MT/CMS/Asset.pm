@@ -603,6 +603,7 @@ sub js_upload_file {
         id             => $asset->id,
         filename       => $asset->file_name,
         blog_id        => $asset->blog_id,
+        url            => $asset->url,
         thumbnail_type => $thumb_type,
         $thumb_url ? ( thumbnail => $thumb_url ) : (),
         ( $extension_message ? ( message => $extension_message ) : () ),
