@@ -1996,13 +1996,11 @@ sub start_background_task {
             open STDERR, ">", "/dev/null" or die $!;
 
             MT::Object->driver;    # This inititalizes driver
-            MT::ObjectDriverFactory->configure();
             $func->();
             CORE::exit(0) if defined($pid) && !$pid;
         }
         else {
             MT::Object->driver;    # This inititalizes driver
-            MT::ObjectDriverFactory->configure();
             return 1;
         }
     }
