@@ -1319,7 +1319,10 @@ sub deep_copy_meta {
     my %meta_org = %{$org->{__meta}};
     my $meta = MT::Util::deep_copy(\%meta_org);
     my $objs = $meta->{__objects};
-    $objs->{$_} = $objs->{$_}->clone_all for keys %$objs;
+    for my $key (keys %$objs) {
+        next unless $objs->{$key} && $objs->{$key}->isa('MT::Object');
+        $objs->{$key} = $objs->{$key}->clone_all;
+    }
     $obj->{__meta} = bless $meta, ref($org->{__meta});
 }
 
