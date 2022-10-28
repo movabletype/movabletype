@@ -1136,7 +1136,8 @@ sub build_asset_table {
     for my $obj (@objs) {
         my $row = $obj->get_values;
         $hasher->( $obj, $row );
-        $row->{object} = $obj;
+        $row->{object}      = $obj;
+        $row->{asset_class} = $app->translate($obj->class_type);
         push @data, $row;
     }
 
