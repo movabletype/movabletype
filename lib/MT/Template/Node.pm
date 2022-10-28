@@ -23,6 +23,7 @@ sub NODE_BLOCK ()    {2}
 sub NODE_FUNCTION () {3}
 
 use MT::Util qw( weaken );
+use MT::Util::Encode;
 
 sub mk_wref_accessor {
     my ( $class, $field, $index ) = @_;
@@ -256,8 +257,8 @@ sub upgrade {
 sub _upgrade {
     my $ref = ref $_[0];
     if ( !$ref ) {
-        Encode::_utf8_on( $_[0] )
-            if !Encode::is_utf8( $_[0] );
+        MT::Util::Encode::_utf8_on( $_[0] )
+            if !MT::Util::Encode::is_utf8( $_[0] );
     }
     elsif ( $ref eq 'HASH' ) {
         for my $v ( values %{ $_[0] } ) {
@@ -270,8 +271,8 @@ sub _upgrade {
         }
     }
     elsif ( $ref eq 'SCALAR' ) {
-        Encode::_utf8_on( ${ $_[0] } )
-            if !Encode::is_utf8( ${ $_[0] } );
+        MT::Util::Encode::_utf8_on( ${ $_[0] } )
+            if !MT::Util::Encode::is_utf8( ${ $_[0] } );
     }
     elsif ( $ref eq 'MT::Template::Node' ) {
         $_[0]->upgrade;

@@ -8,6 +8,7 @@ package MT::Author;
 
 use strict;
 use warnings;
+use MT::Util::Encode;
 
 use MT::Summary;    # Holds MT::Summarizable
 use base qw( MT::Object MT::Scorable MT::Summarizable );
@@ -705,7 +706,7 @@ sub set_password {
         $crypt_sha
             = '$6$'
             . $salt . '$'
-            . MT::Util::Digest::SHA::sha512_base64( $salt . Encode::encode_utf8($pass) );
+            . MT::Util::Digest::SHA::sha512_base64( $salt . MT::Util::Encode::encode_utf8($pass) );
     }
     else {
 

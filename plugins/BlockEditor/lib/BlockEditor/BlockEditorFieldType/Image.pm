@@ -13,6 +13,7 @@ use warnings;
 use BlockEditor;
 use MT::CMS::Asset;
 use MT::Util;
+use MT::Util::Encode;
 my $default_thumbnail_size = 60;
 my $limit = 9;
 
@@ -365,9 +366,8 @@ sub dialog_insert_options {
         if ( defined $app->param('options') ) {
             my $options_json = $app->param('options');
             my $options;
-            require Encode;
             require JSON;
-            if ( Encode::is_utf8($options_json) ) {
+            if ( MT::Util::Encode::is_utf8($options_json) ) {
                 $options = eval { JSON::from_json($options_json) } || {};
             }
             else {

@@ -7,7 +7,7 @@ package MT::ContentType::UniqueID;
 use strict;
 use warnings;
 
-use Encode qw( encode_utf8 );
+use MT::Util::Encode qw( encode_utf8 );
 
 use MT;
 use MT::Util qw( perl_sha1_digest_hex );

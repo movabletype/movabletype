@@ -15,6 +15,7 @@ use MT::Util qw( start_end_day start_end_week
     encode_html encode_js remove_html wday_from_ts days_in
     spam_protect encode_php encode_url decode_html encode_xml
     decode_xml relative_date asset_cleanup );
+use MT::Util::Encode;
 use MT::Request;
 use Time::Local qw( timegm timelocal );
 use MT::Promise qw( delay );
@@ -173,7 +174,7 @@ sub _fltr_nofollowfy {
             $rel = 'rel="nofollow"';
         }
         @attr = grep { !/^rel\s*=/i } @attr;
-        @attr = map { Encode::is_utf8( $_ ) ? $_ : Encode::decode_utf8($_) } @attr;
+        @attr = map { MT::Util::Encode::decode_utf8_unless_flagged($_) } @attr;
         '<a ' . (join ' ', @attr) . ' ' . $rel . '>';
     #xieg;
     $str;

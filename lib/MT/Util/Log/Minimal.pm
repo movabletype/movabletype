@@ -9,7 +9,7 @@ use warnings;
 use MT;
 use base qw(MT::Util::Log);
 use Log::Minimal;
-use Encode;
+use MT::Util::Encode;
 
 sub new {
     my ( $self, $logger_level, $log_file ) = @_;
@@ -28,7 +28,7 @@ sub new {
 
     $Log::Minimal::PRINT = sub {
         my ( $time, $type, $message, $trace, $raw_message ) = @_;
-        print $fh encode_utf8("$message\n");
+        print $fh MT::Util::Encode::encode_utf8("$message\n");
     };
 
     my $level = $logger_level || MT->config->Loggerlevel;

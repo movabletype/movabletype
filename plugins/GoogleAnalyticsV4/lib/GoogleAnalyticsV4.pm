@@ -11,6 +11,7 @@ use warnings;
 
 our @EXPORT = qw( plugin translate new_ua );
 use base qw(Exporter);
+use MT::Util::Encode;
 
 sub translate {
     MT->component('GoogleAnalyticsV4')->translate(@_);
@@ -124,7 +125,7 @@ sub current_plugindata {
 sub extract_response_error {
     my ($res) = @_;
 
-    my $message = eval { MT::Util::from_json(Encode::decode('utf-8', $res->content)); };
+    my $message = eval { MT::Util::from_json(MT::Util::Encode::decode('utf-8', $res->content)); };
     if (ref $message) {
         $message = $message->{error};
     }

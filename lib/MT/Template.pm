@@ -12,6 +12,7 @@ use utf8;
 use open ':utf8';
 use base qw( MT::Object MT::Revisable );
 use MT::Util qw( weaken );
+use MT::Util::Encode;
 
 use MT::Template::Node;
 sub NODE () {'MT::Template::Node'}
@@ -831,7 +832,7 @@ sub _sync_to_disk {
             MT->translate(
                 "Opening linked file '[_1]' failed: [_2]",
                 $lfile,
-                ( Encode::is_utf8($!) ? "$!" : Encode::decode_utf8($!) )
+                MT::Util::Encode::decode_utf8_unless_flagged("$!")
             )
             );
         print $fh $text;
@@ -1116,9 +1117,8 @@ sub appendChild {
 sub get_cache_key {
     my $self = shift;
     require MT::Util::Digest::MD5;
-    require Encode;
     my $cache_key = MT::Util::Digest::MD5::md5_hex(
-        Encode::encode_utf8(
+        MT::Util::Encode::encode_utf8(
                   'blog::'
                 . $self->blog_id
                 . '::template_'

@@ -8,6 +8,7 @@ package MT::CMS::AddressBook;
 use strict;
 use warnings;
 use MT::Util qw( is_valid_email is_url dirify );
+use MT::Util::Encode;
 use MT::I18N qw( wrap_text );
 
 sub entry_notify {
@@ -222,7 +223,7 @@ sub export {
     );
 
     while ( my $note = $iter->() ) {
-        $app->print( Encode::encode( $enc, $note->email . "\n" ) );
+        $app->print( MT::Util::Encode::encode( $enc, $note->email . "\n" ) );
     }
 }
 
