@@ -110,7 +110,6 @@ __PACKAGE__->install_properties(
 );
 __PACKAGE__->add_trigger( 'pre_remove' => \&pre_remove_children );
 
-use MT::Builder;
 use MT::Blog;
 use File::Spec;
 
@@ -380,7 +379,7 @@ sub build {
         );
     }
 
-    my $build = $ctx->{__stash}{builder} || MT::Builder->new;
+    my $build = $ctx->{__stash}{builder} || MT->builder;
     my $page_layout;
     if ( my $blog_id = $tmpl->blog_id ) {
         $ctx->stash( 'blog_id',       $blog_id );
@@ -876,8 +875,7 @@ sub rescan {
 
 sub compile {
     my $tmpl = shift;
-    require MT::Builder;
-    my $b = new MT::Builder;
+    my $b = MT->builder;
     $b->compile($tmpl) or return $tmpl->error( $b->errstr );
     return $tmpl->{__tokens};
 }
