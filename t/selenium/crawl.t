@@ -77,7 +77,10 @@ sub add_queue {
     my @referrer = $job ? (@{$job->referrer}, $job->url) : ();
     for my $url (@$urls) {
         next if $url =~ /^http/ && $url !~ /^$baseurl/;
-        my $id = generate_id($url);
+        my $query = URI->new($url)->query_form_hash;
+        next if $query->{__mode} && $query->{__mode} =~ /^(?:apply_theme|delete)$/;
+        delete $query->{magic_token};
+        my $id = $encoder->encode($query);
         $url =~ s{^$baseurl}{};
         $url = (split(/#/, $url))[0];
         next if exists($once_queued{$id}) || $url =~ /__mode=logout/;
@@ -86,13 +89,6 @@ sub add_queue {
         $once_queued{$id} = 1;
         shift(@queue) if $max && scalar(@queue) > $max;
     }
-}
-
-sub generate_id {
-    my $url = shift;
-    my $query = URI->new($url)->query_form_hash;
-    delete $query->{magic_token};
-    $encoder->encode($query);
 }
 
 sub assert_no_errors {
