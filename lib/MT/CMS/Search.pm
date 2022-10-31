@@ -691,6 +691,8 @@ sub search_replace {
     $param->{search_tabs} = $app->search_apis( $blog_id ? 'blog' : 'system' );
     $param->{entry_type}  = $app->param('entry_type');
 
+    return $app->permission_denied() unless @{$param->{search_tabs} || []};
+
     if (   $app->param('_type')
         && $app->param('_type') =~ /entry|page|comment|ping|template/ )
     {
