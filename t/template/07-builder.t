@@ -25,8 +25,7 @@ my $mt = MT->new;
 
 my ( $tokens, $out );
 
-use MT::Builder;
-my $builder = MT::Builder->new;
+my $builder = MT->builder;
 ok( $builder, "Builder constructed okay" );
 
 my $ctx = My::Context->new;

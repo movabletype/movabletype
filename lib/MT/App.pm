@@ -1764,9 +1764,8 @@ sub bake_commenter_cookie {
 
     my $build = sub {
         my $tag = shift;
-        require MT::Builder;
         require MT::Template::Context;
-        my $builder = MT::Builder->new;
+        my $builder = MT->builder;
         my $ctx     = MT::Template::Context->new;
         $ctx->stash( blog    => $blog );
         $ctx->stash( blog_id => $blog_id );
@@ -1868,9 +1867,8 @@ sub _invalidate_commenter_session {
     my $blog_id = $blog ? $blog->id : '0';
     my $build   = sub {
         my $tag = shift;
-        require MT::Builder;
         require MT::Template::Context;
-        my $builder = MT::Builder->new;
+        my $builder = MT->builder;
         my $ctx     = MT::Template::Context->new;
         $ctx->stash( blog    => $blog );
         $ctx->stash( blog_id => $blog_id );

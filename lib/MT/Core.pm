@@ -2348,6 +2348,7 @@ BEGIN {
             'PSGIStreaming' => { default => 1 },
             'PSGIServeStatic' => { default => 1 },
             'HideVersion' => { default => 1 },
+            'BuilderModule' => { default => 'MT::Builder' },
             'HideConfigWarnings' => { default => undef },
             'GlobalTemplateMaxRevisions' => { default => 20 },
             'DisableQuickPost' => { default => 0 },

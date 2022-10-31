@@ -210,8 +210,7 @@ sub innerHTML {
     if (@_) {
         my ($text) = @_;
         $node->nodeValue($text);
-        require MT::Builder;
-        my $builder = new MT::Builder;
+        my $builder = MT->builder;
         require MT::Template::Context;
         my $ctx = MT::Template::Context->new;
         $node->childNodes( $builder->compile( $ctx, $text ) );

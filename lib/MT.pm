@@ -24,7 +24,8 @@ our ( $MT_DIR, $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX );
 our (
     $plugin_sig, $plugin_envelope, $plugin_registry,
     %Plugins,    @Components,      %Components,
-    $DebugMode,  $mt_inst,         %mt_inst
+    $DebugMode,  $mt_inst,         %mt_inst,
+    $Builder,
 );
 my %Text_filters;
 
@@ -1650,6 +1651,25 @@ sub publisher {
     require MT::ContentPublisher;
     $mt->request('ContentPublisher')
         || $mt->request( 'ContentPublisher', new MT::ContentPublisher() );
+}
+
+sub builder {
+    my $mt = shift;
+    if (!$Builder) {
+        $mt = $mt->instance unless ref $mt;
+        for my $builder ($mt->config->BuilderModule, 'MT::Builder') {
+            if (eval "require $builder; 1") {
+                $Builder = $builder;
+                last;
+            }
+            if ($@) {
+                require MT::Util::Log;
+                MT::Util::Log::init();
+                MT::Util::Log->error($@);
+            }
+        }
+    }
+    $Builder->new;
 }
 
 sub rebuild {

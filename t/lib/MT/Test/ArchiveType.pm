@@ -123,7 +123,7 @@ sub _run_perl_test {
             $ctx->stash( blog          => $blog );
             $ctx->stash( blog_id       => $blog->id );
             $ctx->stash( local_blog_id => $blog->id );
-            $ctx->stash( builder       => MT::Builder->new );
+            $ctx->stash( builder       => MT->builder );
 
             my ( $stash, $skip )
                 = $self->_set_stash( $block, $map, $tmpl, $archiver, $objs );
