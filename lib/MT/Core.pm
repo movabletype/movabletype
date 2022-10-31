@@ -51,12 +51,6 @@ BEGIN {
                 config_package => 'DBI::sqlite',
                 display        => ['dbpath'],
             },
-            'sqlite2' => {
-                label          => 'SQLite Database (v2)',
-                dbd_package    => 'DBD::SQLite2',
-                config_package => 'DBI::sqlite',
-                display        => ['dbpath'],
-            },
         },
         db_form_data => {
             dbserver => {
@@ -2159,7 +2153,6 @@ BEGIN {
             'ActivityFeedsRunTasks'    => { default => 1, },
             'ExportEncoding'           => { default => 'utf-8', },
             'SQLSetNames'              => undef,
-            'UseSQLite2'               => { default => 0, },
 
             #'UseJcodeModule'  => { default => 0, },
             'DefaultTimezone'    => { default => '0', },
