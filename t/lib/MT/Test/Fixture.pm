@@ -887,14 +887,14 @@ sub prepare_role {
                         my $role_obj = $objs->{role}{$role_name} or croak "unknown role: $role_name";
 
                         my @site_objs;
-                        if (my $website_names = delete $role_arg{website}) {
+                        if (my $website_names = $role_arg{website}) {
                             $website_names = [$website_names] unless ref $website_names eq 'ARRAY';
                             for my $website_name (@$website_names) {
                                 my $site_obj = $objs->{website}{$website_name} or croak "unknown website: $website_name";
                                 push @site_objs, $site_obj;
                             }
                         }
-                        if (my $blog_names = delete $role_arg{blog}) {
+                        if (my $blog_names = $role_arg{blog}) {
                             $blog_names = [$blog_names] unless ref $blog_names eq 'ARRAY';
                             for my $blog_name (@$blog_names) {
                                 my $site_obj = $objs->{blog}{$blog_name} or croak "unknown blog: $blog_name";
