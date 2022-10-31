@@ -15,6 +15,7 @@ use MT::Util qw( start_end_day start_end_week
     encode_html encode_js remove_html wday_from_ts days_in
     spam_protect encode_php encode_url decode_html encode_xml
     decode_xml relative_date asset_cleanup );
+use MT::Util::Encode;
 use MT::Request;
 use Time::Local qw( timegm timelocal );
 use MT::Promise qw( delay );
@@ -207,7 +208,7 @@ sub _hdlr_widget_manager {
         local $ctx->{__stash}{tag} = 'include';
         for my $widget (@widgets) {
             my $name     = $widget->name;
-            my $stash_id = Encode::encode_utf8(
+            my $stash_id = MT::Util::Encode::encode_utf8(
                 join( '::', 'template_widget', $blog_id, $name ) );
             my $req = MT::Request->instance;
             my $tokens = $ctx->stash('builder')->compile( $ctx, $widget );

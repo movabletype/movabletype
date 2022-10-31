@@ -13,22 +13,19 @@ use MT::FileMgr;
 
 use Symbol;
 use Fcntl qw( :DEFAULT :flock );
+use MT::Util::Encode;
 
 sub _local {
     ## TBD: does it needed to escape backslashs?
-    return $^O eq 'MSWin32' ? Encode::encode( 'cp932', $_[0] ) : $_[0];
+    return $^O eq 'MSWin32' ? MT::Util::Encode::encode( 'cp932', $_[0] ) : $_[0];
 }
 
 sub _syserr {
     if ( $^O eq 'MSWin32' ) {
-        return Encode::is_utf8( $_[0] )
-            ? $_[0]
-            : Encode::decode( 'cp932', $_[0] );
+        return MT::Util::Encode::decode_unless_flagged( 'cp932', $_[0] );
     }
     else {
-        return Encode::is_utf8( $_[0] )
-            ? $_[0]
-            : Encode::decode_utf8( $_[0] );
+        return MT::Util::Encode::decode_utf8_unless_flagged( $_[0] );
     }
 }
 
@@ -58,9 +55,7 @@ sub get_data {
     { local $/; $data = <$fh>; }
     close $fh if !$is_handle;
     if ( !$type || $type ne 'upload' ) {
-        require Encode;
-        $data = Encode::decode_utf8($data)
-            unless Encode::is_utf8($data);
+        $data = MT::Util::Encode::decode_utf8_unless_flagged($data);
     }
     $data;
 }
@@ -134,7 +129,7 @@ sub _write_file {
     }
     else {
         my $enc = $cfg->PublishCharset || 'utf8';
-        $from = Encode::encode( $enc, $from ) if Encode::is_utf8($from);
+        $from = MT::Util::Encode::encode_if_flagged( $enc, $from );
         print FH $from;
         $bytes = length($from);
     }
@@ -218,18 +213,8 @@ sub content_is_updated {
         my $ctx = MT::Util::Digest::MD5->new;
         $ctx->addfile($fh);
         close $fh;
-        my $data;
-        if ( $] >= 5.007003 ) {
-            require Encode;
-            $data = $$content;
-            Encode::_utf8_off($data);
-        }
-        elsif ( $] >= 5.006001 ) {
-            $data = pack 'C0A*', $$content;
-        }
-        else {
-            $data = $$content;
-        }
+        my $data = $$content;
+        MT::Util::Encode::_utf8_off($data);
         return $ctx->digest ne MT::Util::Digest::MD5::md5($data);
     }
     else {

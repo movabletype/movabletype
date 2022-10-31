@@ -8,6 +8,7 @@ package MT::Serialize;
 
 use strict;
 use warnings;
+use MT::Util::Encode;
 our $VERSION            = '5';
 our $SERIALIZER_VERSION = '2';
 
@@ -202,7 +203,7 @@ sub _freeze_mt_5 {
     local *no_utf8 = sub {
         for (@_) {
             next if ref;
-            $_ = Encode::encode( $enc, $_ ) if Encode::is_utf8($_);
+            $_ = MT::Util::Encode::encode( $enc, $_ ) if MT::Util::Encode::is_utf8($_);
         }
     };
     _freeze_mt_2(@_);
@@ -255,7 +256,7 @@ sub _macrowave {
     my $len  = length $frozen;
     my ( @stack, $value );
     my $encoding = MT->app->config('PublishCharset') || 'UTF-8';
-    my $enc = Encode::find_encoding($encoding)
+    my $enc = MT::Util::Encode::find_encoding($encoding)
         or die "unknown encoding: $encoding";
 
     while ( $pos < $len ) {
@@ -284,7 +285,7 @@ sub _macrowave {
             my $slen = unpack 'N', substr( $frozen, $pos, 4 );
             my $col_val = substr( $frozen, $pos + 4, $slen );
             $col_val = $enc->decode($col_val)
-                if !( Encode::is_utf8($col_val) );
+                if !( MT::Util::Encode::is_utf8($col_val) );
             $pos += 4 + $slen;
             push @$refs, \$col_val;
             \$col_val;
@@ -299,7 +300,7 @@ sub _macrowave {
             my $slen = unpack 'N', substr( $frozen, $pos, 4 );
             my $col_val = substr( $frozen, $pos + 4, $slen );
             $col_val = $enc->decode($col_val)
-                if !( Encode::is_utf8($col_val) );
+                if !( MT::Util::Encode::is_utf8($col_val) );
             $pos += 4 + $slen;
             $col_val;
             }

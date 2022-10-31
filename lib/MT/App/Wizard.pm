@@ -933,8 +933,8 @@ sub configure {
                     $enc = 'utf8';
                 }
                 if ($enc) {
-                    require Encode;
-                    $err = Encode::decode( $enc, $err );
+                    require MT::Util::Encode;
+                    $err = MT::Util::Encode::decode( $enc, $err );
                 }
                 $err_more = $err;
             }

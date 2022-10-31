@@ -8,6 +8,7 @@ package MT::Upgrade::v4;
 
 use strict;
 use warnings;
+use MT::Util::Encode;
 
 sub upgrade_functions {
     return {
@@ -867,7 +868,7 @@ sub core_populate_author_auth_type {
         if ( $u->name =~ m(^openid\n(.*)$) ) {
             my $url = $1;
             if ( eval { require MT::Util::Digest::MD5; 1; } ) {
-                $url = MT::Util::Digest::MD5::md5_hex( Encode::encode_utf8($url) );
+                $url = MT::Util::Digest::MD5::md5_hex( MT::Util::Encode::encode_utf8($url) );
             }
             else {
                 $url = substr $url, 0, 255;
