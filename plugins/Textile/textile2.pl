@@ -101,7 +101,7 @@ sub textile_2 {
 
     if ( ( defined $ctx ) && ( ref($ctx) eq 'MT::Template::Context' ) ) {
         my $entry = $ctx->stash('entry');
-        if ( $entry && $entry->id ) {
+        if ( $entry && $entry->id && $entry->permalink_is_generated ) {
             my $link = $entry->permalink;
             $link =~ s/#.+$//;
             $str =~ s/(<a .*?(?<=[ ])href=")(#fn(?:\d)+".*?>)/$1$link$2/g;
