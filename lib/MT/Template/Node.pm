@@ -58,7 +58,7 @@ sub new {
         : [
         delete $param->{tag},
         delete $param->{attributes},
-        delete $param->{childNodes},
+        delete $param->{childNodes} || [],
         delete $param->{nodeValue},
         delete $param->{attribute_list},
         delete $param->{parentNode},
