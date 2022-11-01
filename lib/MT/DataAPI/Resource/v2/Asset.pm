@@ -38,8 +38,6 @@ sub fields {
                 require MT::FileMgr;
                 my $fmgr = MT::FileMgr->new('Local');
 
-                require MT::Meta::Proxy;
-                MT::Meta::Proxy->bulk_load_meta_objects($objs);
                 for my $i ( 0 .. ( scalar(@$objs) - 1 ) ) {
                     my $obj  = $objs->[$i];
                     my $hash = $hashes->[$i];
@@ -50,11 +48,11 @@ sub fields {
                     }
 
                     $hash->{meta} = +{
-                        width => $obj->has_meta('image_width') && defined $obj->meta('image_width')
-                        ? $obj->meta('image_width') + 0
+                        width => $obj->has_meta('image_width')
+                        ? $obj->image_width + 0
                         : undef,
-                        height => $obj->has_meta('image_height') && defined $obj->meta('image_height')
-                        ? $obj->meta('image_height') + 0
+                        height => $obj->has_meta('image_height')
+                        ? $obj->image_height + 0
                         : undef,
                         fileSize => $size,
                     };
