@@ -1053,7 +1053,7 @@ sub insertAfter {
     if ($node2) {
         for ( my $i = 0; $i < scalar @{$parent_array || []}; $i++ ) {
             if ( $parent_array->[$i] eq $node2 ) {
-                $node1->parentNode($parent_node);
+                MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
                 splice( @$parent_array, $i + 1, 0, $node1 );
                 return 1;
             }
@@ -1061,7 +1061,7 @@ sub insertAfter {
         return 0;
     }
     else {
-        $node1->parentNode($parent_node);
+        MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
         push @$parent_array, $node1;
         return 1;
     }
@@ -1077,7 +1077,7 @@ sub insertBefore {
     if ($node2) {
         for ( my $i = 0; $i < scalar @{$parent_array || []}; $i++ ) {
             if ( $parent_array->[$i] eq $node2 ) {
-                $node1->parentNode($parent_node);
+                MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
                 splice( @$parent_array, $i, 0, $node1 );
                 return 1;
             }
@@ -1085,7 +1085,7 @@ sub insertBefore {
         return 0;
     }
     else {
-        $node1->parentNode($parent_node);
+        MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
         unshift @$parent_array, $node1;
         return 1;
     }
