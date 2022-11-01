@@ -1052,7 +1052,7 @@ sub insertAfter {
     my $parent_array = $parent_node->childNodes;
     if ($node2) {
         for ( my $i = 0; $i < scalar @{$parent_array || []}; $i++ ) {
-            if ( $parent_array->[$i] == $node2 ) {
+            if ( $parent_array->[$i] eq $node2 ) {
                 $node1->parentNode($parent_node);
                 splice( @$parent_array, $i + 1, 0, $node1 );
                 return 1;
@@ -1076,7 +1076,7 @@ sub insertBefore {
     my $parent_array = $parent_node->childNodes;
     if ($node2) {
         for ( my $i = 0; $i < scalar @{$parent_array || []}; $i++ ) {
-            if ( $parent_array->[$i] == $node2 ) {
+            if ( $parent_array->[$i] eq $node2 ) {
                 $node1->parentNode($parent_node);
                 splice( @$parent_array, $i, 0, $node1 );
                 return 1;
