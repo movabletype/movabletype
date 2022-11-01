@@ -1091,7 +1091,8 @@ sub archive_url {
 
 sub permalink {
     my $entry = shift;
-    return $entry->{_permalink} if $entry->{_permalink};
+    my $at = $_[0] || '';
+    return $entry->{_permalink}{$at} if $entry->{_permalink}{$at};
 
     my $blog  = $entry->blog() || return;
     my $url   = $entry->archive_url( $_[0] );
@@ -1103,10 +1104,10 @@ sub permalink {
         . sprintf( "%06d", $entry->id )
         unless ( $effective_archive_type eq 'Individual'
         || $_[1]->{no_anchor} );
-    $entry->{_permalink} = $url;
+    $entry->{_permalink}{$at} = $url;
 }
 
-sub permalink_is_generated { $_[0]->{_permalink} }
+sub permalink_is_generated { $_[0]->{_permalink}{$_[1] || ''} }
 
 sub all_permalinks {
     my $entry = shift;
