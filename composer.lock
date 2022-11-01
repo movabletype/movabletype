@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "91bd77dc22c51171e892693392812218",
+    "content-hash": "588aeab2d34e7504e97129c68729bc97",
     "packages": [
         {
             "name": "adodb/adodb-php",
-            "version": "v5.22.2",
+            "version": "v5.22.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "876bc2287171ea96a571f84c23845e44a759d9a0"
+                "reference": "bb87e83338c99038986878ac78f680becf9e8091"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/876bc2287171ea96a571f84c23845e44a759d9a0",
-                "reference": "876bc2287171ea96a571f84c23845e44a759d9a0",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/bb87e83338c99038986878ac78f680becf9e8091",
+                "reference": "bb87e83338c99038986878ac78f680becf9e8091",
                 "shasum": ""
             },
             "require": {
@@ -65,7 +65,7 @@
                 "issues": "https://github.com/ADOdb/ADOdb/issues",
                 "source": "https://github.com/ADOdb/ADOdb"
             },
-            "time": "2022-05-08T10:01:41+00:00"
+            "time": "2022-10-28T17:34:17+00:00"
         },
         {
             "name": "smarty/smarty",
