@@ -53,6 +53,7 @@ MT::Test::Tag->run_perl_tests(
         my ($ctx, $block) = @_;
         $site->archive_type_preferred($block->preferred_archive_type) if $block->can('preferred_archive_type');
         $site->save;
+        $test_env->clear_mt_cache;
         return;
     });
 MT::Test::Tag->run_php_tests(
@@ -61,6 +62,7 @@ MT::Test::Tag->run_php_tests(
         my ($block) = @_;
         $site->archive_type_preferred($block->preferred_archive_type) if $block->can('preferred_archive_type');
         $site->save;
+        $test_env->clear_mt_cache;
         return;
     });
 
