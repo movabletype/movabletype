@@ -8,6 +8,7 @@ package MT::Template::Node;
 
 use strict;
 use warnings;
+use Exporter 'import';
 
 sub EL_NODE_NAME ()     {0}
 sub EL_NODE_TEXT ()     {1}
@@ -21,6 +22,12 @@ sub EL_NODE_TEMPLATE () {6}
 sub NODE_TEXT ()     {1}
 sub NODE_BLOCK ()    {2}
 sub NODE_FUNCTION () {3}
+
+our @EXPORT_OK = qw(
+    EL_NODE_NAME EL_NODE_ATTR EL_NODE_CHILDREN EL_NODE_VALUE
+    EL_NODE_ATTRLIST EL_NODE_PARENT EL_NODE_TEMPLATE
+);
+our %EXPORT_TAGS = (constants => \@EXPORT_OK);
 
 use MT::Util qw( weaken );
 use MT::Util::Encode;
