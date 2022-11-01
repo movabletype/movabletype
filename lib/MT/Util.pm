@@ -450,6 +450,7 @@ sub relative_date {
 }
 
 our %Languages;
+my %TsFormatCache;
 
 sub format_ts {
     my ( $format, $ts, $blog, $lang, $is_mail ) = @_;
@@ -467,14 +468,33 @@ sub format_ts {
     unless ( defined $format ) {
         $format = $Languages{$lang}[3] || "%B %e, %Y %l:%M %p";
     }
-    my $cache = MT->request->cache('formats');
-    unless ($cache) {
-        MT::Request->instance->cache( 'formats', $cache = {} );
+    my $str;
+    if (exists $TsFormatCache{$lang}{$format}) {
+        $str = $TsFormatCache{$lang}{$format};
+    } else {
+        my $org = $format;
+        my $date_format = $Languages{$lang}->[4] || "%B %e, %Y";
+        my $time_format = $Languages{$lang}->[5] || "%l:%M %p";
+        $format =~ s!%x!$date_format!g;
+        $format =~ s!%X!$time_format!g;
+        ## This is a dreadful hack. I can't think of a good format specifier
+        ## for "%B %Y" (which is used for monthly archives, for example) so
+        ## I'll just hardcode this, for Japanese dates.
+        if ( $lang eq 'ja' ) {
+            $format =~ s!%B %Y!$Languages{$lang}->[6]!g;
+            $format =~ s!%B %E,? %Y!$Languages{$lang}->[4]!ig;
+            $format =~ s!%b. %e, %Y!$Languages{$lang}->[4]!ig;
+            $format =~ s!%B %E!$Languages{$lang}->[7]!ig;
+        }
+        elsif ( $lang eq 'it' ) {
+            ## Hack for the Italian dates
+            ## In Italian, the date always come before the month.
+            $format =~ s!%b %e!%e %b!g;
+        }
+        $str = $TsFormatCache{$lang}{$org} = $format;
     }
-    if ( my $f_ref = $cache->{ $ts . $lang } ) {
-        %f = %$f_ref;
-    }
-    else {
+    $format = $str;
+    {
         my $L  = $Languages{$lang};
         my @ts = @f{qw( Y m d H M S )}
             = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
@@ -511,25 +531,6 @@ sub format_ts {
         ( $f{l} = $f{I} ) =~ s!^0! !;
         $f{j}                   = sprintf "%03d", $f{j};
         $f{Z}                   = '';
-        $cache->{ $ts . $lang } = \%f;
-    }
-    my $date_format = $Languages{$lang}->[4] || "%B %e, %Y";
-    my $time_format = $Languages{$lang}->[5] || "%l:%M %p";
-    $format =~ s!%x!$date_format!g;
-    $format =~ s!%X!$time_format!g;
-    ## This is a dreadful hack. I can't think of a good format specifier
-    ## for "%B %Y" (which is used for monthly archives, for example) so
-    ## I'll just hardcode this, for Japanese dates.
-    if ( $lang eq 'ja' ) {
-        $format =~ s!%B %Y!$Languages{$lang}->[6]!g;
-        $format =~ s!%B %E,? %Y!$Languages{$lang}->[4]!ig;
-        $format =~ s!%b. %e, %Y!$Languages{$lang}->[4]!ig;
-        $format =~ s!%B %E!$Languages{$lang}->[7]!ig;
-    }
-    elsif ( $lang eq 'it' ) {
-        ## Hack for the Italian dates
-        ## In Italian, the date always come before the month.
-        $format =~ s!%b %e!%e %b!g;
     }
     $format =~ s!%(\w)!$f{$1}!g if defined $format;
 
