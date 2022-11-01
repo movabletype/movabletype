@@ -494,53 +494,41 @@ sub format_ts {
         $str = $TsFormatCache{$lang}{$org} = $format;
     }
     $format = $str;
-    {
-        my $L  = $Languages{$lang};
-        my @ts = @f{qw( Y m d H M S )}
-            = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
-        $f{w} = wday_from_ts( @ts[ 0 .. 2 ] );
-        $f{j} = yday_from_ts( @ts[ 0 .. 2 ] );
-        $f{'y'} = substr $f{Y}, 2;
-        $f{b} = substr_wref $L->[1][ $f{'m'} - 1 ] || '', 0, 3;
-        $f{B} = $L->[1][ $f{'m'} - 1 ];
-        if ( $lang eq 'ja' ) {
-            $f{a} = substr $L->[0][ $f{w} ] || '', 0, 1;
+    my $L = $Languages{$lang};
+    my @t = unpack 'A4A2A2A2A2A2', $ts;
+    $str =~ s{%([A-Za-z])}{
+        my $n = $1;
+        if ($n eq 'Y') { $t[0] }
+        elsif ($n eq 'm') { $t[1] }
+        elsif ($n eq 'd') { $t[2] }
+        elsif ($n eq 'H') { $t[3] || 0 }
+        elsif ($n eq 'M') { $t[4] || 0 }
+        elsif ($n eq 'S') { $t[5] || 0 }
+        elsif ($n eq 'Z') { '' }
+        elsif ($n eq 'B') { $L->[1][$t[1] - 1] }
+        elsif ($n eq 'e') { my $d = $t[2]; $d =~ s|^0| |; $d }
+        elsif ($n eq 'k') { my $h = $t[3]; $h =~ s|^0| |; $h }
+        elsif ($n eq 'l') { my $i = $t[3] || 0; if ($i > 12) { $i -= 12 } elsif ($i == 0) { $i = 12 } sprintf '%2d', $i }
+        elsif ($n eq 'I') { my $i = $t[3] || 0; if ($i > 12) { $i -= 12 } elsif ($i == 0) { $i = 12 } sprintf '%02d', $i }
+        elsif ($n eq 'p') {($t[3] || 0) >= 12 ? $L->[2][1] : $L->[2][0] }
+        elsif ($n eq 'b') { substr_wref $L->[1][$t[1] - 1] || '', 0, 3 }
+        elsif ($n eq 'w') { wday_from_ts(@t[0..2]) }
+        elsif ($n eq 'j') { sprintf '%03d', yday_from_ts(@t[0..2]) }
+        elsif ($n eq 'y') { substr($t[0], 2) }
+        elsif ($n eq 'a') {
+            if ($lang eq 'ja') { substr $L->[0][ wday_from_ts(@t[0..2]) ] || '', 0, 1 }
+            else { substr_wref $L->[0][ wday_from_ts(@t[0..2]) ] || '', 0, 3 }
         }
-        else {
-            $f{a} = substr_wref $L->[0][ $f{w} ] || '', 0, 3;
-        }
-        $f{A} = $L->[0][ $f{w} ];
-        ( $f{e} = $f{d} ) =~ s!^0! !;
-        $f{I} = $f{H};
-        if ( $f{I} > 12 ) {
-            $f{I} -= 12;
-            $f{p} = $L->[2][1];
-        }
-        elsif ( $f{I} == 0 ) {
-            $f{I} = 12;
-            $f{p} = $L->[2][0];
-        }
-        elsif ( $f{I} == 12 ) {
-            $f{p} = $L->[2][1];
-        }
-        else {
-            $f{p} = $L->[2][0];
-        }
-        $f{I} = sprintf "%02d", $f{I};
-        ( $f{k} = $f{H} ) =~ s!^0! !;
-        ( $f{l} = $f{I} ) =~ s!^0! !;
-        $f{j}                   = sprintf "%03d", $f{j};
-        $f{Z}                   = '';
-    }
-    $format =~ s!%(\w)!$f{$1}!g if defined $format;
+        elsif ($n eq 'A') { $L->[0][ wday_from_ts(@t[0..2]) ] }
+    }gex;
 
     ## FIXME: This block must go away after Languages hash
     ## removes all of the character references
     if ($is_mail) {
-        $format =~ s!&#([0-9]+);!chr($1)!ge;
-        $format =~ s!&#[xX]([0-9A-Fa-f]+);!chr(hex $1)!ge;
+        $str =~ s!&#([0-9]+);!chr($1)!ge;
+        $str =~ s!&#[xX]([0-9A-Fa-f]+);!chr(hex $1)!ge;
     }
-    $format;
+    $str;
 }
 
 {
