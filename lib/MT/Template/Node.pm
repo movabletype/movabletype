@@ -130,24 +130,24 @@ sub setAttribute {
 sub getAttribute {
     my $node = shift;
     my ($attr) = @_;
-    ( $node->attributes )->{$attr};
+    $node->[EL_NODE_ATTR]->{$attr};
 }
 
 sub firstChild {
     my $node     = shift;
-    my $children = $node->childNodes;
+    my $children = $node->[EL_NODE_CHILDREN];
     @$children ? $children->[0] : undef;
 }
 
 sub lastChild {
     my $node     = shift;
-    my $children = $node->childNodes;
+    my $children = $node->[EL_NODE_CHILDREN];
     @$children ? $children->[ scalar @$children - 1 ] : undef;
 }
 
 sub nextSibling {
     my $node     = shift;
-    my $siblings = $node->parentNode->childNodes;
+    my $siblings = $node->[EL_NODE_PARENT][EL_NODE_CHILDREN];
     my $max      = ( scalar @$siblings ) - 1;
     return undef unless $max;
     my $last = $siblings->[0];
@@ -161,7 +161,7 @@ sub nextSibling {
 
 sub previousSibling {
     my $node     = shift;
-    my $siblings = $node->parentNode->childNodes;
+    my $siblings = $node->[EL_NODE_PARENT][EL_NODE_CHILDREN];
     my $last;
     foreach my $n (@$siblings) {
         return $last if $node == $n;
@@ -172,18 +172,18 @@ sub previousSibling {
 
 sub ownerDocument {    #template
     my $node = shift;
-    return $node->template;
+    return $node->[EL_NODE_TEMPLATE];
 }
 
 sub hasChildNodes {
     my $node     = shift;
-    my $children = $node->childNodes;
+    my $children = $node->[EL_NODE_CHILDREN];
     $children && (@$children) ? 1 : 0;
 }
 
 sub nodeType {
     my $node = shift;
-    if ( $node->tag eq 'TEXT' ) {
+    if ( $node->[EL_NODE_NAME] eq 'TEXT' ) {
         return NODE_TEXT();
     }
     elsif ( defined $node->childNodes ) {
@@ -196,7 +196,7 @@ sub nodeType {
 
 sub nodeName {
     my $node = shift;
-    my $tag  = $node->tag;
+    my $tag  = $node->[EL_NODE_NAME];
     if ( $tag eq 'TEXT' ) {
         return undef;
     }
@@ -215,28 +215,28 @@ sub innerHTML {
     my $node = shift;
     if (@_) {
         my ($text) = @_;
-        $node->nodeValue($text);
+        $node->[EL_NODE_VALUE] = $text;
         my $builder = MT->builder;
         require MT::Template::Context;
         my $ctx = MT::Template::Context->new;
-        $node->childNodes( $builder->compile( $ctx, $text ) );
-        my $tmpl = $node->ownerDocument;
+        $node->[EL_NODE_CHILDREN] = $builder->compile( $ctx, $text ) || [];
+        my $tmpl = $node->[EL_NODE_TEMPLATE];
 
         if ($tmpl) {
             $tmpl->reset_markers;
             $tmpl->{reflow_flag} = 1;
         }
     }
-    return $node->nodeValue;
+    return $node->[EL_NODE_VALUE];
 }
 
 # TBD: what about new nodes that are added with id elements?
 sub appendChild {
     my $node       = shift;
     my ($new_node) = @_;
-    my $nodes      = $node->childNodes;
+    my $nodes      = $node->[EL_NODE_CHILDREN];
     push @$nodes, $new_node;
-    my $tmpl = $node->ownerDocument;
+    my $tmpl = $node->[EL_NODE_TEMPLATE];
     if ($tmpl) {
         $tmpl->{reflow_flag} = 1;
     }
