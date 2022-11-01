@@ -11,7 +11,6 @@ use warnings;
 use Exporter 'import';
 
 sub EL_NODE_NAME ()     {0}
-sub EL_NODE_TEXT ()     {1}
 sub EL_NODE_ATTR ()     {1}
 sub EL_NODE_CHILDREN () {2}
 sub EL_NODE_VALUE ()    {3}
@@ -49,9 +48,9 @@ sub new {
     my $self = $param->{tag} eq 'TEXT'
         ? [
         'TEXT',
-        delete $param->{nodeValue},
-        undef,    # unused for TEXT nodes
         undef,
+        undef,
+        delete $param->{nodeValue},
         undef,
         delete $param->{parentNode},
         delete $param->{template},
@@ -73,9 +72,8 @@ sub new {
 
 sub nodeValue {
     my $node = shift;
-    my $index = $node->[0] eq 'TEXT' ? EL_NODE_TEXT : EL_NODE_VALUE;
-    $node->[$index] = shift if @_;
-    $node->[$index];
+    $node->[EL_NODE_VALUE] = shift if @_;
+    $node->[EL_NODE_VALUE];
 }
 
 sub childNodes {
