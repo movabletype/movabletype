@@ -8,6 +8,7 @@ package MT::Upgrade::Core;
 
 use strict;
 use warnings;
+use MT::Util::Encode;
 
 MT->add_callback( 'MT::Upgrade::seed_database', 5, undef, \&seed_database );
 MT->add_callback( 'MT::Upgrade::upgrade_end', 5, undef,
@@ -405,8 +406,7 @@ sub _uri_unescape_utf8 {
         use URI::Escape;
         $text = uri_unescape($text);
     }
-    return Encode::decode_utf8($text)
-        unless Encode::is_utf8($text);
+    return MT::Util::Encode::decode_utf8_unless_flagged($text);
 }
 
 1;

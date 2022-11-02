@@ -15,6 +15,7 @@ use MT::Category;
 use base qw( MT::ErrorHandler );
 use MT::I18N qw( const guess_encoding );
 use MT::Util qw( encode_html first_n_words );
+use MT::Util::Encode;
 
 use vars qw( $SEP $SUB_SEP );
 $SEP     = ( '-' x 8 );
@@ -95,7 +96,7 @@ sub import_contents {
                         else {
                             $guessed_encoding = $encoding;
                         }
-                        $_ = Encode::decode( $guessed_encoding, $_ );
+                        $_ = MT::Util::Encode::decode( $guessed_encoding, $_ );
                     }
                     my ( $meta, @pieces ) = split /^$SUB_SEP$/m;
                     next unless $meta && @pieces;

@@ -9,6 +9,7 @@ package MT::I18N::default;
 use strict;
 use warnings;
 use base qw( MT::ErrorHandler );
+use MT::Util::Encode;
 
 sub DEFAULT_LENGTH_ENTRY_EXCERPT ()                    {40}
 sub LENGTH_ENTRY_TITLE_FROM_TEXT ()                    {5}
@@ -152,8 +153,7 @@ sub encode_text_encode {
                 && ( $from =~ m/^utf-?8/ig )
                 )
             {
-                $text = Encode::decode_utf8($text)
-                    unless Encode::is_utf8($text);
+                $text = MT::Util::Encode::decode_utf8_unless_flagged($text);
 
                 #FULLWIDTH TILDE to WAVE DASH
                 $text =~ s/\x{ff5e}/\x{301c}/g;
@@ -172,11 +172,11 @@ sub encode_text_encode {
 
                 #FULLWIDTH NOT SIGN to NOT SIGN
                 $text =~ s/\x{ffe2}/\x{00ac}/g;
-                $text = Encode::encode( $to, $text );
+                $text = MT::Util::Encode::encode( $to, $text );
             }
             else {
-                $text = Encode::encode_utf8($text) if Encode::is_utf8($text);
-                Encode::from_to( $text, $from, $to );
+                $text = MT::Util::Encode::encode_utf8_if_flagged($text);
+                MT::Util::Encode::from_to( $text, $from, $to );
             }
         };
         if ( my $err = $@ ) {
@@ -184,7 +184,7 @@ sub encode_text_encode {
         }
     }
     else {
-        $text = Encode::encode_utf8($text) if Encode::is_utf8($text);
+        $text = MT::Util::Encode::encode_utf8_if_flagged($text);
     }
 
     $text;

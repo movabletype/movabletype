@@ -604,10 +604,10 @@ sub _remove_objects {
                 $data ? $$data : {};
             }
             else {
-                require Encode;
+                require MT::Util::Encode;
                 require JSON;
                 my $data;
-                if ( Encode::is_utf8($raw_data) ) {
+                if ( MT::Util::Encode::is_utf8($raw_data) ) {
                     $data = eval { JSON::from_json($raw_data) } || {};
                 }
                 else {

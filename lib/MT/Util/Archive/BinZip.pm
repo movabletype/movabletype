@@ -17,7 +17,7 @@ use File::Copy     ();
 use File::Temp     ();
 use File::Path     ();
 use File::Basename ();
-use Encode;
+use MT::Util::Encode;
 use IPC::Run3 ();
 
 our $BinZipPath;
@@ -205,8 +205,7 @@ sub add_file {
     return $obj->error(MT->translate('Cannot write to the object'))
         if 'r' eq $obj->{_mode};
     my $filename = File::Spec->catfile($path, $file_path);
-    $file_path = Encode::encode('Shift_JIS', $file_path)
-        if Encode::is_utf8($file_path);
+    $file_path = MT::Util::Encode::encode_if_flagged('Shift_JIS', $file_path);
     my $tmpfile = File::Spec->catfile($obj->{_tmpdir}, $file_path);
     my $dir     = File::Basename::dirname($tmpfile);
     File::Path::mkpath($dir) unless -d $dir;
@@ -221,8 +220,7 @@ sub add_string {
         if 'r' eq $obj->{_mode};
     return $obj->error(MT->translate('Both data and file name must be specified.'))
         unless $string && $file_name;
-    $file_name = Encode::encode('Shift_JIS', $file_name)
-        if Encode::is_utf8($file_name);
+    $file_name = MT::Util::Encode::encode_if_flagged('Shift_JIS', $file_name);
     my $tmpfile = File::Spec->catfile($obj->{_tmpdir}, $file_name);
     my $dir     = File::Basename::dirname($tmpfile);
     File::Path::mkpath($dir) unless -d $dir;

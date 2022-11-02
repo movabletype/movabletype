@@ -12,6 +12,7 @@ use XML::SAX::Base;
 use MIME::Base64;
 use File::Basename;
 use File::Spec;
+use MT::Util::Encode;
 
 use MT::BackupRestore::ContentTypePermission;
 
@@ -751,8 +752,7 @@ sub end_document {
 sub _decode {
     my ($str) = @_;
 
-    $str = Encode::decode_utf8($str) unless Encode::is_utf8($str);
-    return $str;
+    return MT::Util::Encode::decode_utf8_unless_flagged($str);
 }
 
 1;

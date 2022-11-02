@@ -18,6 +18,7 @@ use MT::Util::Deprecated qw(
     bin2dec dec2bin dsa_verify
     perl_sha1_digest perl_sha1_digest_hex perl_sha1_digest_base64
 );
+use MT::Util::Encode;
 
 our @EXPORT_OK
     = qw( start_end_day start_end_week start_end_month start_end_year
@@ -772,7 +773,7 @@ sub encode_js {
     $str =~ s!\f!\\f!g;
     $str =~ s!\r!\\r!g;
     $str =~ s!\t!\\t!g;
-    Encode::is_utf8($str) ? $str : Encode::decode_utf8($str);
+    MT::Util::Encode::decode_utf8_unless_flagged($str);
 }
 
 sub decode_js {
@@ -819,7 +820,7 @@ sub encode_phphere {
 sub encode_url {
     my ( $str, $enc ) = @_;
     $enc ||= MT->config->PublishCharset;
-    my $encoded = Encode::encode( $enc, $str );
+    my $encoded = MT::Util::Encode::encode( $enc, $str );
     $encoded =~ s!([^a-zA-Z0-9_.~-])!uc sprintf "%%%02x", ord($1)!eg;
     $encoded;
 }
@@ -828,9 +829,9 @@ sub decode_url {
     my ( $str, $enc ) = @_;
     $enc ||= MT->config->PublishCharset;
     my $from_enc = MT::I18N::guess_encoding($str) || 'utf8';
-    $str = Encode::encode( $from_enc, $str );
+    $str = MT::Util::Encode::encode( $from_enc, $str );
     $str =~ s!%([0-9a-fA-F][0-9a-fA-F])!pack("H*",$1)!eg;
-    Encode::decode( $enc, $str );
+    MT::Util::Encode::decode( $enc, $str );
 }
 
 {
@@ -966,13 +967,12 @@ sub decode_url {
 sub remove_html {
     my ($text) = @_;
     return '' if !defined $text;    # suppress warnings
-    $text = Encode::encode_utf8($text);
+    $text = MT::Util::Encode::encode_utf8($text);
     $text =~ s/(<\!\[CDATA\[(.*?)\]\]>)|(<[^>]+>)/
         defined $1 ? $1 : ''
         /geisx;
     $text =~ s/<(?!\!\[CDATA\[)/&lt;/gis;
-    $text = Encode::decode_utf8($text)
-        unless Encode::is_utf8($text);
+    $text = MT::Util::Encode::decode_utf8_unless_flagged($text);
     return $text;
 }
 
@@ -1025,7 +1025,7 @@ sub convert_high_ascii {
 
 sub xliterate_utf8 {
     my ($str) = @_;
-    $str = Encode::encode_utf8($str);
+    $str = MT::Util::Encode::encode_utf8($str);
     my %utf8_table = (
         "\xc3\x80" => 'A',     # A`
         "\xc3\xa0" => 'a',     # a`
@@ -1220,8 +1220,7 @@ sub xliterate_utf8 {
     );
 
     $str =~ s/([\200-\377]{2})/$utf8_table{$1}||''/ge;
-    $str = Encode::decode_utf8($str)
-        unless Encode::is_utf8($str);
+    $str = MT::Util::Encode::decode_utf8_unless_flagged($str);
     $str;
 }
 
@@ -1324,7 +1323,7 @@ sub make_unique_author_basename {
             require MT::Util::Digest::MD5;
             $name = "author"
                 . substr(
-                MT::Util::Digest::MD5::md5_hex( Encode::encode_utf8( $author->name ) ),
+                MT::Util::Digest::MD5::md5_hex( MT::Util::Encode::encode_utf8( $author->name ) ),
                 0, 5
                 );
         }
@@ -2079,8 +2078,8 @@ sub escape_unicode {
                    (?:[\xf1-\xf3][\x80-\xbf])|
                    (?:\xf4[\x80-\x8f])[\x80-\xbf]{2}))/
                        my $s;
-                       $s = Encode::decode_utf8( $1 ) unless Encode::is_utf8( $1 );
-                '&#'.hex(unpack("H*", Encode::encode('ucs2', $s))).';'
+                       $s = MT::Util::Encode::decode_utf8_unless_flagged( $1 );
+                '&#'.hex(unpack("H*", MT::Util::Encode::encode('ucs2', $s))).';'
             /egx;
     $text;
 }
@@ -2088,7 +2087,7 @@ sub escape_unicode {
 sub unescape_unicode {
     my $text = shift;
     $text =~ s/\&\#(\d+);/pack("H*", sprintf("%X",$1))/egx;
-    $text = Encode::decode( 'ucs2', $text );
+    $text = MT::Util::Encode::decode( 'ucs2', $text );
 }
 
 {
@@ -2263,8 +2262,7 @@ sub get_newsbox_html {
     my $last_available_news = '';
     if ($news_object) {
         $last_available_news = $news_object->data();
-        $last_available_news = Encode::decode( $enc, $last_available_news )
-            unless Encode::is_utf8($last_available_news);
+        $last_available_news = MT::Util::Encode::decode_unless_flagged( $enc, $last_available_news );
     }
     return $last_available_news unless $refresh_news || !$news_object;
     return q() if $cached_only;
@@ -2277,8 +2275,7 @@ sub get_newsbox_html {
     my $req    = new HTTP::Request( GET => $newsbox_url );
     my $resp   = $ua->request($req);
     my $result = $resp->content();
-    $result = Encode::decode_utf8($result) ## news pages are written in UTF-8.
-        unless Encode::is_utf8($result);
+    $result = MT::Util::Encode::decode_utf8_unless_flagged($result); ## news pages are written in UTF-8.
     if ( !$resp->is_success() || !$result ) {
 
         # failure; either timeout or worse
@@ -2312,7 +2309,7 @@ sub get_newsbox_html {
         {   id    => $kind,
             kind  => $kind,
             start => time(),
-            data  => Encode::encode( $enc, $result ),
+            data  => MT::Util::Encode::encode( $enc, $result ),
         }
     );
     $news_object->save();

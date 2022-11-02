@@ -12,6 +12,7 @@ use base qw( Data::ObjectDriver::BaseObject MT::ErrorHandler );
 
 use MT;
 use MT::Util qw(offset_time_list);
+use MT::Util::Encode;
 
 my ( @PRE_INIT_PROPS, @PRE_INIT_META );
 
@@ -322,8 +323,7 @@ sub install_properties {
 
             my $data = $obj->get_values;
             foreach ( keys %$data ) {
-                $data->{$_} = Encode::encode( $enc, $data->{$_} )
-                    if Encode::is_utf8( $data->{$_} );
+                $data->{$_} = MT::Util::Encode::encode_if_flagged( $enc, $data->{$_} );
             }
             $obj->set_values( $data, { no_changed_flag => 1 } );
         },
@@ -367,8 +367,8 @@ sub install_properties {
             }
             foreach ( keys %$data ) {
                 my $v = $data->{$_};
-                if ( !( Encode::is_utf8( $data->{$_} ) ) && !$is_blob{$_} ) {
-                    $data->{$_} = Encode::decode( $enc, $v );
+                if ( !( MT::Util::Encode::is_utf8( $data->{$_} ) ) && !$is_blob{$_} ) {
+                    $data->{$_} = MT::Util::Encode::decode( $enc, $v );
                 }
             }
             $obj->{__core_final_post_load_mark} = 1;
@@ -383,8 +383,8 @@ sub _encode_terms {
     my $enc = MT->config->PublishCharset || 'UTF-8';
 
     if ( 'SCALAR' eq ref($value) ) {
-        return $value unless Encode::is_utf8($$value);
-        my $val = Encode::encode( $enc, $$value );
+        return $value unless MT::Util::Encode::is_utf8($$value);
+        my $val = MT::Util::Encode::encode( $enc, $$value );
         return \$val;
     }
     elsif ( 'HASH' eq ref($value) ) {
@@ -401,8 +401,7 @@ sub _encode_terms {
         return \@values;
     }
     elsif ( !ref($value) ) {
-        return $value unless Encode::is_utf8($value);
-        return Encode::encode( $enc, $value );
+        return MT::Util::Encode::encode_if_flagged( $enc, $value );
     }
 }
 
@@ -1298,7 +1297,8 @@ sub clone_all {
     my ($param) = @_;
     my $clone   = $obj->SUPER::clone_all();
     if ( $clone->properties->{meta_installed} ) {
-        $clone->deep_copy_meta($obj);
+        $clone->init_meta();
+        $clone->meta( $obj->meta );
         if (   !$param
             || !ref($param)
             || ( ref($param) ne 'HASH' )
@@ -1312,16 +1312,6 @@ sub clone_all {
         }
     }
     return $clone;
-}
-
-sub deep_copy_meta {
-    my ($obj, $org) = @_;
-    require MT::Util;
-    my %meta_org = %{$org->{__meta}};
-    my $meta = MT::Util::deep_copy(\%meta_org);
-    my $objs = $meta->{__objects};
-    $objs->{$_} = $objs->{$_}->clone_all for keys %$objs;
-    $obj->{__meta} = bless $meta, ref($org->{__meta});
 }
 
 sub clone {

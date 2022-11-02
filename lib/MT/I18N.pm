@@ -8,7 +8,7 @@ package MT::I18N;
 
 use strict;
 use warnings;
-use Encode;
+use MT::Util::Encode;
 use MT::I18N::default;
 use Exporter;
 use vars qw(@ISA @EXPORT_OK);
@@ -109,17 +109,17 @@ sub convert_high_ascii {
 
 #sub decode_utf8 {
 #    my $class = shift;
-#    Encode::decode_utf8(@_);
+#    MT::Util::Encode::decode_utf8(@_);
 #}
 
 sub is_utf8 {
     my ($text) = @_;
-    Encode::is_utf8($text);
+    MT::Util::Encode::is_utf8($text);
 }
 
 sub utf8_off {
     my ($text) = @_;
-    Encode::_utf8_off($text);
+    MT::Util::Encode::_utf8_off($text);
     return $text;
 }
 

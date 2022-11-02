@@ -15,6 +15,7 @@ use MT::Request;
 use MT::Util qw( encode_html offset_time_list decode_html encode_url
     is_valid_email is_url escape_unicode extract_url_path);
 use MT::I18N qw( wrap_text );
+use MT::Util::Encode;
 
 my $COOKIE_NAME = 'mt_user';
 sub COMMENTER_COOKIE_NAME () {"mt_commenter"}
@@ -968,7 +969,7 @@ sub print_encode {
     if ($restype =~ m!/json$!) {
         $enc = 'UTF-8';
     }
-    $app->print( Encode::encode( $enc, $_[0] ) );
+    $app->print( MT::Util::Encode::encode( $enc, $_[0] ) );
 }
 
 sub handler ($$) {
@@ -1174,15 +1175,9 @@ sub init_query {
 }
 
 {
-    my $has_encode;
-
     sub validate_request_params {
         my $app = shift;
         my ($options) = @_;
-
-        $has_encode = eval { require Encode; 1 } ? 1 : 0
-            unless defined $has_encode;
-        return 1 unless $has_encode;
 
         my $q = $app->param;
 
@@ -1191,7 +1186,6 @@ sub init_query {
 
         # use specific charset if the application method forces it
         my $charset = $options->{charset} || $app->charset;
-        require Encode;
         require MT::I18N::default;
         $charset = 'utf-8' if $charset =~ m/utf-?8/i;
         my $request_charset = $charset;
@@ -1226,8 +1220,7 @@ sub init_query {
                     if $transcode;
                 unless ( UNIVERSAL::isa( $d, 'Fh' ) ) {
                     eval {
-                        $d = Encode::decode( $charset, $d, 1 )
-                            unless Encode::is_utf8($d);
+                        $d = MT::Util::Encode::decode_unless_flagged( $charset, $d, 1 );
                     };
                     return $app->errtrans(
                         "Problem with this request: corrupt character data for character set [_1]",
@@ -1764,9 +1757,8 @@ sub bake_commenter_cookie {
 
     my $build = sub {
         my $tag = shift;
-        require MT::Builder;
         require MT::Template::Context;
-        my $builder = MT::Builder->new;
+        my $builder = MT->builder;
         my $ctx     = MT::Template::Context->new;
         $ctx->stash( blog    => $blog );
         $ctx->stash( blog_id => $blog_id );
@@ -1868,9 +1860,8 @@ sub _invalidate_commenter_session {
     my $blog_id = $blog ? $blog->id : '0';
     my $build   = sub {
         my $tag = shift;
-        require MT::Builder;
         require MT::Template::Context;
-        my $builder = MT::Builder->new;
+        my $builder = MT->builder;
         my $ctx     = MT::Template::Context->new;
         $ctx->stash( blog    => $blog );
         $ctx->stash( blog_id => $blog_id );
@@ -1907,7 +1898,7 @@ sub start_session {
     my $session = make_session( $author, $remember );
     my %arg = (
         -name  => $app->user_cookie,
-        -value => Encode::encode(
+        -value => MT::Util::Encode::encode(
             $app->charset,
             join( '::', $author->name, $session->id, $remember )
         ),

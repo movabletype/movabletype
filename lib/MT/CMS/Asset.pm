@@ -10,6 +10,7 @@ use warnings;
 use Symbol;
 use MT::Util
     qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex);
+use MT::Util::Encode;
 
 my $default_thumbnail_size = 60;
 
@@ -1447,9 +1448,9 @@ sub _upload_file_compat {
     }
 
     $basename
-        = Encode::is_utf8($basename)
+        = MT::Util::Encode::is_utf8($basename)
         ? $basename
-        : Encode::decode( $app->charset,
+        : MT::Util::Encode::decode( $app->charset,
         File::Basename::basename($basename) );
 
     if ( my $asset_type = $upload_param{require_type} ) {
@@ -2026,9 +2027,9 @@ sub _upload_file {
         );
     }
     $basename
-        = Encode::is_utf8($basename)
+        = MT::Util::Encode::is_utf8($basename)
         ? $basename
-        : Encode::decode( $upload_param{js} ? 'utf-8' : $app->charset,
+        : MT::Util::Encode::decode( $upload_param{js} ? 'utf-8' : $app->charset,
         File::Basename::basename($basename) );
 
     # Change to real file extension
