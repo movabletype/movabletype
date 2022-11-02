@@ -1,12 +1,11 @@
 package CGI::Util;
-use base 'Exporter';
+use parent 'Exporter';
 require 5.008001;
 use strict;
-use if $] >= 5.019, 'deprecate';
 our @EXPORT_OK = qw(rearrange rearrange_header make_attributes unescape escape
         expires ebcdic2ascii ascii2ebcdic);
 
-our $VERSION = '4.38';
+our $VERSION = '4.54';
 
 our $_EBCDIC = "\t" ne "\011";
 
@@ -332,7 +331,7 @@ no public subroutines
 =head1 AUTHOR INFORMATION
 
 The CGI.pm distribution is copyright 1995-2007, Lincoln D. Stein. It is
-distributed under GPL and the Artistic License 2.0. It is currently
+distributed under the Artistic License 2.0. It is currently
 maintained by Lee Johnson with help from many contributors.
 
 Address bug reports and comments to: https://github.com/leejo/CGI.pm/issues

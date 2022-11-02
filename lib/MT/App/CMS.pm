@@ -1559,7 +1559,17 @@ sub core_list_actions {
                 },
             },
         },
-
+        'ts_job' => {
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+                mobile     => 1,
+            },
+        }
     };
 }
 
@@ -2321,6 +2331,18 @@ sub core_menus {
             },
             view => [qw( system website blog )],
         },
+        'tools:ts_job' => {
+            label     => "Background Job",
+            order     => 700,
+            mode      => 'list',
+            args      => { _type => 'ts_job' },
+            condition => sub {
+                return 0 unless $app->config->ShowTsJob;
+                return 1 if $app->user->is_superuser;
+                return 0;
+            },
+            view => ['system'],
+        },
 
         'category_set:manage' => {
             label      => 'Manage',
@@ -2564,12 +2586,18 @@ sub core_enable_object_methods {
         group => {
             delete => 1,
             save   => 1,
-        }
+        },
+        ts_job => { delete => 1 },
     };
 }
 
 sub permission_denied {
     my $app = shift;
+
+    my $method_info = MT->request('method_info') || {};
+    if ( $app->param('xhr') or ( ( $method_info->{app_mode} || '' ) eq 'JSON' ) ) {
+        return $app->errtrans('Permission denied');
+    }
 
     $app->return_to_dashboard( permission => 1, );
 }
@@ -2927,8 +2955,10 @@ sub build_blog_selector {
 
     # Load favorites blogs
     my @fav_blogs = @{ $auth->favorite_blogs || [] };
-    if ( scalar @fav_blogs > 5 ) {
-        @fav_blogs = @fav_blogs[ 0 .. 4 ];
+    my $max_fav_sites = MT->config->MaxFavoriteSites || 5;
+    my $max_load = $max_fav_sites + 1;
+    if ( scalar @fav_blogs > $max_fav_sites ) {
+        @fav_blogs = @fav_blogs[ 0 .. $max_fav_sites - 1 ];
     }
 
     # How many blogs that the user can access?
@@ -2942,12 +2972,12 @@ sub build_blog_selector {
         && !$auth->permissions(0)->can_do('access_to_website_list');
     $terms{class}     = 'blog';
     $terms{parent_id} = \">0";    # FOR-EDITOR";
-    $args{limit}      = 6;        # Don't load over 6 blogs
+    $args{limit}      = $max_load;        # Don't load over 6 blogs
     my @blogs = $blog_class->load( \%terms, \%args );
 
 # Special case. If this user can access 5 blogs or smaller then load those blogs.
     $param->{selector_hide_blog_chooser} = 1;
-    if ( @blogs && scalar @blogs == 6 ) {
+    if ( @blogs && scalar @blogs == $max_load ) {
 
         # This user can access over 6 blogs.
         if (@fav_blogs) {
@@ -2962,14 +2992,13 @@ sub build_blog_selector {
 
     # Load favorites or all websites
     my @fav_websites = @{ $auth->favorite_websites || [] };
-    if ( scalar @fav_websites > 5 ) {
-        @fav_websites = @fav_websites[ 0 .. 4 ];
+    if ( scalar @fav_websites > $max_fav_sites ) {
+        @fav_websites = @fav_websites[ 0 .. $max_fav_sites - 1 ];
     }
     my @websites;
     @websites = $website_class->load( { id => \@fav_websites } )
         if scalar @fav_websites;
 
-    my $max_load = 6;
     if ( scalar @fav_websites < $max_load ) {
 
         # Load more accessible websites
@@ -3006,7 +3035,7 @@ sub build_blog_selector {
 
 # Special case. If this user can access 3 websites or smaller then load those websites.
     $param->{selector_hide_website_chooser} = 1;
-    if ( @websites && scalar @websites == 6 ) {
+    if ( @websites && scalar @websites == $max_load ) {
         pop @websites;
         $param->{selector_hide_website_chooser} = 0;
     }
@@ -3745,9 +3774,6 @@ sub list_pref {
         }
     }
 
-    if ( $list_pref->{rows} ) {
-        $list_pref->{ "limit_" . $list_pref->{rows} } = $list_pref->{rows};
-    }
     if ( $list_pref->{view} ) {
         $list_pref->{ "view_" . $list_pref->{view} } = 1;
     }
@@ -4110,6 +4136,35 @@ sub _translate_naughty_words {
     return MT::Util::translate_naughty_words($entry);
 }
 
+sub user_who_is_also_editing_the_same_stuff {
+    my ($app, $obj) = @_;
+    my $type  = $app->param('_type') or return;
+    my $id    = $app->param('id') or return;
+    my $ident = 'autosave:user=%:type=' . $type . ':id=' . $id;
+    my $blog  = $app->blog;
+    if ($blog) {
+        $ident .= ':blog_id=' . $blog->id;
+    }
+    if ( $type eq 'content_data' ) {
+        my $content_type_id = $app->param('content_type_id') or return;
+        $ident .= ':content_type_id=' . $content_type_id;
+    }
+    require MT::Session;
+    my $sess_obj = MT::Session->load(
+        { id    => { like  => $ident }, kind => 'AS',    start     => [time - MT->config->AutosaveSessionTimeout - 1] },
+        { range => { start => 1 },      sort => 'start', direction => 'descend' }) or return;
+    my ($user_id) = $sess_obj->id =~ /:user=([0-9]+)/;
+    if ($user_id != $app->user->id && MT::Util::epoch2ts($blog, $sess_obj->start) > $obj->modified_on) {
+        my $user = $app->model('author')->load($user_id);
+        require MT::Util;
+        return {
+            name => $user->nickname || $user->name,
+            time => MT::Util::format_ts('%Y-%m-%d %H:%M:%S', MT::Util::epoch2ts($blog, $sess_obj->start), $blog),
+        } if $user;
+    }
+    return;
+}
+
 sub autosave_session_obj {
     my $app           = shift;
     my ($or_make_one) = @_;
@@ -4258,10 +4313,11 @@ sub add_to_favorite_sites {
     my @current = @{ $user->favorite_sites || [] };
 
     return if @current && ( $current[0] == $fav );
+    my $max_fav_sites_to_remember = (MT->config->MaxFavoriteSites || 5) * 2 * 2;
     @current = grep { $_ != $fav } @current;
     unshift @current, $fav;
-    @current = @current[ 0 .. 19 ]
-        if @current > 20;
+    @current = @current[ 0 .. $max_fav_sites_to_remember - 1 ]
+        if @current > $max_fav_sites_to_remember;
 
     $user->favorite_sites( \@current );
     $user->save;
@@ -4289,10 +4345,11 @@ sub add_to_favorite_blogs {
     my @current = @{ $auth->favorite_blogs || [] };
 
     return if @current && ( $current[0] == $fav );
+    my $max_fav_sites_to_remember = (MT->config->MaxFavoriteSites || 5) * 2;
     @current = grep { $_ != $fav } @current;
     unshift @current, $fav;
-    @current = @current[ 0 .. 9 ]
-        if @current > 10;
+    @current = @current[ 0 .. $max_fav_sites_to_remember - 1 ]
+        if @current > $max_fav_sites_to_remember;
 
     $auth->favorite_blogs( \@current );
     $auth->save;
@@ -4333,10 +4390,11 @@ sub add_to_favorite_websites {
     my @current = @{ $auth->favorite_websites || [] };
 
     return if @current && ( $current[0] == $fav );
+    my $max_fav_sites_to_remember = (MT->config->MaxFavoriteSites || 5) * 2;
     @current = grep { $_ != $fav } @current;
     unshift @current, $fav;
-    @current = @current[ 0 .. 9 ]
-        if @current > 10;
+    @current = @current[ 0 .. $max_fav_sites_to_remember - 1 ]
+        if @current > $max_fav_sites_to_remember;
 
     $auth->favorite_websites( \@current );
     $auth->save;
@@ -4599,7 +4657,14 @@ sub remove_preview_file {
         {
             my $file = $tf->name;
             my $fmgr = $app->blog->file_mgr;
-            $fmgr->delete($file);
+            if ($fmgr->delete($file)) {
+                require File::Basename;
+                my $dir = File::Basename::dirname($file);
+                # MTC-26474
+                if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
+                    rmdir($dir);
+                }
+            }
             $tf->remove;
         }
     }
@@ -4852,7 +4917,7 @@ sub setup_filtered_ids {
     my $filteritems;
     ## TBD: use decode_js or something for decode js_string generated by jQuery.json.
     if ( my $items = $app->param('items') ) {
-        if ( $items =~ /^".*"$/ ) {
+        if ( $items =~ /^".*"$/ && MT->config->UseMTCommonJSON ) {
             $items =~ s/^"//;
             $items =~ s/"$//;
             $items =~ s/\\"/"/g;

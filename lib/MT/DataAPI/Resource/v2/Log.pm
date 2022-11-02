@@ -119,6 +119,14 @@ sub fields {
                     }
                 }
             },
+            schema => {
+                type       => 'object',
+                properties => {
+                    id          => { type => 'string' },
+                    displayName => { type => 'string' },
+                    userpicUrl  => { type => 'string' },
+                },
+            },
         },
         {   name  => 'date',
             alias => 'created_on',

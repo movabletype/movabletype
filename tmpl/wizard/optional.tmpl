@@ -111,7 +111,7 @@
           </mtapp:setting>
 
       <!-- SMTPAuth -->
-          <mt:if name="has_net_smtp_auth">
+          <mt:if name="has_auth_modules">
             <p>
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" name="smtp_auth" id="smtp_auth" class="custom-control-input cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
@@ -144,34 +144,18 @@
               </mtapp:setting>
 
       <!-- SSL -->
-              <mtapp:setting
-                 id="smtp_ssl"
-                 label="<__trans phrase="SSL Connection">"
-                 label_class="top-label">
-              <mt:unless name="has_net_smtp_ssl">
-                <mtapp:statusmsg
-                   id="no_smtp_auth_ssl"
-                   class="info"
-                   can_close="0">
-                  <__trans phrase="Cannot use [_1]." params="SSL"> <mt:var name="has_net_smtp_ssl_msg" escape="html">
-                </mtapp:statusmsg>
-              </mt:unless>
-              <mt:unless name="has_net_smtp_tls">
-                <mtapp:statusmsg
-                   id="no_smtp_auth_tls"
-                   class="info"
-                   can_close="0">
-                  <__trans phrase="Cannot use [_1]." params="STARTTLS"> <mt:var name="has_net_smtp_tls_msg" escape="html">
-                </mtapp:statusmsg>
-              </mt:unless>
-              <mt:if name="can_use_ssl">
-                <select id="smtp_ssl" class="custom-select form-control" name="smtp_ssl">
+              <mt:if name="has_ssl_modules">
+                <mtapp:setting
+                  id="smtp_ssl"
+                  label="<__trans phrase="SSL Connection">"
+                  label_class="top-label">
+                  <select id="smtp_ssl" class="custom-select form-control" name="smtp_ssl">
                     <option value="0"<mt:if name="smtp_ssl" eq="0"> selected="selected"</mt:if>><__trans phrase="Do not use SSL"></option>
-                    <mt:if name="has_net_smtp_ssl"><option value="ssl"<mt:if name="smtp_ssl" eq="ssl"> selected="selected"</mt:if>><__trans phrase="Use SSL"></option></mt:if>
-                    <mt:if name="has_net_smtp_tls"><option value="tls"<mt:if name="smtp_ssl" eq="tls"> selected="selected"</mt:if>><__trans phrase="Use STARTTLS"></option></mt:if>
-                </select>
-                </mt:if>
-              </mtapp:setting>
+                    <option value="ssl"<mt:if name="smtp_ssl" eq="ssl"> selected="selected"</mt:if>><__trans phrase="Use SSL"></option>
+                    <option value="tls"<mt:if name="smtp_ssl" eq="tls"> selected="selected"</mt:if>><__trans phrase="Use STARTTLS"></option>
+                  </select>
+                </mtapp:setting>
+              </mt:if>
             </div>
           </mt:if>
         </div>

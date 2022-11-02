@@ -9,17 +9,17 @@ use strict;
 use warnings;
 
 use MT::DataAPI::Resource;
-use MT::DataAPI::Resource::Entry;
+use MT::DataAPI::Resource::v1::Entry;
 use MT::DataAPI::Resource::v2::Entry;
 
 sub updatable_fields {
-    [   @{ MT::DataAPI::Resource::Entry::updatable_fields() },
+    [   @{ MT::DataAPI::Resource::v1::Entry::updatable_fields() },
         @{ MT::DataAPI::Resource::v2::Entry::updatable_fields() },
     ];
 }
 
 sub fields {
-    [   @{ MT::DataAPI::Resource::Entry::fields() },
+    [   @{ MT::DataAPI::Resource::v1::Entry::fields() },
         @{ MT::DataAPI::Resource::v2::Entry::fields() },
         {   name        => 'categories',
             from_object => sub { },        # Do nothing.
@@ -34,6 +34,14 @@ sub fields {
                 else {
                     return undef;
                 }
+            },
+            schema => {
+                type       => 'object',
+                properties => {
+                    id     => { type => 'integer' },
+                    label  => { type => 'string' },
+                    parent => { type => 'string' },
+                },
             },
         },
     ];

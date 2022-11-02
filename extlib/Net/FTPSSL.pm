@@ -1,7 +1,7 @@
 # File    : Net::FTPSSL
 # Author  : cleach <cleach at cpan dot org>
 # Created : 01 March 2005
-# Version : 0.40
+# Version : 0.42
 # Revision: -Id: FTPSSL.pm,v 1.24 2005/10/23 14:37:12 cleach Exp -
 
 package Net::FTPSSL;
@@ -88,7 +88,7 @@ my $debug_log_msg;  # Used if Debug is turned on
 
 
 BEGIN {
-    $VERSION = "0.40";              # The version of this module!
+    $VERSION = "0.42";              # The version of this module!
 
     my $type = "IO::Socket::SSL";
     $ipv6 = 0;                      # Assume IPv4 only ...
@@ -221,7 +221,7 @@ sub new {
                                  : ($arg->{DataProtLevel} || DATA_PROT_PRIVATE);
   my $die          = $arg->{Croak}  || $arg->{Die};
   my $pres_ts      = $arg->{PreserveTimestamp} || 0;
-  my $use_ssl      = $arg->{useSSL} || 0;       # Being depreciated.
+  my $use__ssl     = $arg->{useSSL} || 0;       # Being depreciated.
 
   my ($use_logfile, $use_glob) = (0, 0);
   if ( $debug && defined $arg->{DebugLogFile} ) {
@@ -269,6 +269,8 @@ sub new {
      open ( $FTPS_ERROR, "$open_mode $f" ) or
                _croak_or_return (undef, 1, 0,
                                  "Can't create debug logfile: $f ($!)");
+
+     $FTPS_ERROR->autoflush (1);
 
      $debug = 2;        # Save the file handle & later close it ...
 
@@ -397,15 +399,17 @@ sub new {
      # applied to the SSL_Client_Certificate functionality.
      # ------------------------------------------------------------------------
      my $mode;
+     my $use_ssl_flag;
      if (defined $ssl_args{SSL_version}) {
         $mode = $ssl_args{SSL_version};             # Mode was overridden.
-        # Reset use_ssl flag in case it conflicts ...
-        $use_ssl = ( $mode =~ m/^SSLv/i );          # Bug ID 115296
-     } elsif ( $use_ssl ) {
+        $use_ssl_flag = ( $mode =~ m/^SSLv/i );     # Bug ID 115296
+     } elsif ( $use__ssl ) {
         $mode = $ssl_args{SSL_version} = "SSLv23";  # SSL per override
+        $use_ssl_flag = 1;
         warn ("Option useSSL has been depreciated.  Use option SSL_version instead.\n");
      } else {
         $mode = $ssl_args{SSL_version} = "TLSv12";  # TLS v1.2 per defaults
+        $use_ssl_flag = 0;
      }
      $ssl_args{Timeout} = $timeout  unless (exists $ssl_args{Timeout});
 
@@ -431,7 +435,7 @@ sub new {
         return _croak_or_return ($socket) unless (response ($socket) == CMD_OK);
 
         # In explicit mode FTPSSL sends an AUTH TLS/SSL command, catch the msgs
-        command( $socket, "AUTH", ($use_ssl ? "SSL" : "TLS") );
+        command( $socket, "AUTH", ($use_ssl_flag ? "SSL" : "TLS") );
         return _croak_or_return ($socket) unless (response ($socket) == CMD_OK);
      }
 
@@ -479,7 +483,6 @@ sub new {
         }
      } elsif ( $fixHelp == -1 ) {
        $ftpssl_args{removeHELP} = 1;     # Uses FEAT to list commands supported!
-       delete $ftpssl_args{OverrideHELP};
      } elsif ( $fixHelp ) {
        $ftpssl_args{OverrideHELP} = 1;   # All FTP commands supported ...
      }
@@ -488,8 +491,10 @@ sub new {
      $ftpssl_args{help_cmds_found} = \%helpHash;
      $ftpssl_args{help_cmds_msg} = "214 HELP Command Overridden by request.";
 
-     # Causes direct calls to _help($cmd) to skip the server hit.
+     # Causes direct calls to _help($cmd) to skip the server hit. (HELP $cmd)
      $ftpssl_args{help_cmds_no_syntax_available} = 1;
+
+     # When you get here, OverrideHELP is either "0" or "1"!
   }
   # --------------------------------------
   # End overriding "_help()" ...
@@ -594,8 +599,14 @@ sub login {
 
      $arg->{debug} = $save;  # Re-enabled again!
 
+     # Printing to the log for info purposes only.
      if ( $arg->{debug} && $arg->{debug_extra} ) {
-        my $hlp = join ("), (", sort keys %{$self->_help ()});
+        my %h = %{$self->_help ()};
+        foreach ( sort keys %h ) {
+           $h{$_} = sprintf ("%s[%s]", $_,  $h{$_});
+        }
+        my $hlp = join ("), (", sort values %h);
+
         if ( $hlp eq "" ) {
            my $msg = ( $arg->{OverrideHELP} ) ? "All" : "No";
            $self->_print_LOG ("HELP: () --> $msg FTP Commands.\n");
@@ -773,7 +784,7 @@ sub _open_data_channel {
   my $host = shift;
   my $port = shift;
 
-  # Warning: also called by t/10-complex.t func check_for_pasv_issue(),
+  # Warning: also called by t/06-login.t func check_for_pasv_issue(),
   # so verify still works there if any significant changes are made here.
 
   # We don't care about any context features here, only in _get_data_channel().
@@ -850,10 +861,10 @@ sub _get_data_channel {
       my %ssl_opts = %{$ftps_ref->{myContext}};
       my $mode = ${*$self}{_SSL_arguments}->{SSL_version};
 
-     # Can we use SNI?
-     if ( $self->can ("can_client_sni") && $self->can_client_sni () ) {
-        $ssl_opts{SSL_hostname} = $ftps_ref->{data_host};
-     }
+      # Can we use SNI?
+      if ( $self->can ("can_client_sni") && $self->can_client_sni () ) {
+         $ssl_opts{SSL_hostname} = $ftps_ref->{data_host};
+      }
 
       $io = IO::Socket::SSL->start_SSL ( $ftps_ref->{data_ch}, \%ssl_opts )
                or return $self->_croak_or_return ( 0,
@@ -909,30 +920,150 @@ sub _my_close {
    return;
 }
 
-sub nlst {
-  my $self = shift;
+# The Shell wild cards are "*" & "?" only.
+# So want to convert a shell pattern into its equivalent RegExp.
+# Which means disabling all RegExp chars with special meaning and
+# converting shell wild cards into its RegExp wild equivalent.
+# Handles them all even if they are not legal in a file's name.
+sub _convert_shell_pattern_to_regexp
+{
+  my $self         = shift;
+  my $pattern      = shift;
+  my $disable_star = shift;
 
-  return ( $self->list (@_) );
+  if ( $pattern ) {
+     # There are 8 problem chars with special meaning in a RegExp ...
+     # Chars:  . + ^ | $ \ * ?
+     # But want to drop "*" & "?" since they are shell wild cards as well.
+     $pattern =~ s/([.+^|\$\\])/\\$1/g;     # Ex: '.' to '\.'
+
+     # As do these 3 types of brackets: (), {}, []
+     $pattern =~ s/([(){}[\]])/\\$1/g;
+
+     # Now convert the "?" into it's equivalent RegExp value ...
+     $pattern =~ s/[?]/./g;          # All '?' to '.'.
+
+     # Now convert the "*" into it's equivalent RegExp value ...
+     unless ( $disable_star ) {
+        $pattern =~ s/[*]/.*/g;     # All '*' to '.*'.
+     }
+  }
+
+  return ( $pattern );
 }
 
-# Returns an empty array on failure ...
+
+sub nlst {
+  my $self    = shift;
+  my $pattern = $_[1];
+
+  if ( $pattern ) {
+     $pattern = $self->_convert_shell_pattern_to_regexp ( $pattern, 1 );
+
+     if ( $pattern =~ m/[*]/ ) {
+        # Don't allow path separators in the string ...
+        # Can't do this with regular expressions ...
+        $pattern = join ( "[^\\\\/]*", split (/\*/, $pattern . "XXX") );
+        $pattern =~ s/XXX$//;
+     }
+     $pattern = '(^|[\\\\/])' . $pattern . '$';
+  }
+
+  return ( $self->_common_list ("NLST", $pattern, @_) );
+}
 
 sub list {
+  my $self    = shift;
+  my $pattern = $_[1];
+
+  if ( $pattern ) {
+     $pattern = $self->_convert_shell_pattern_to_regexp ( $pattern, 1 );
+
+     $pattern =~ s/[*]/\\S*/g;       # No spaces in file's name is allowed!
+     $pattern = '\s+(' . $pattern . ')($|\s+->\s+)';   # -> is symbolic link!
+  }
+
+  return ( $self->_common_list ("LIST", $pattern, @_) );
+}
+
+# Get List details ...
+sub mlsd {
+  my $self    = shift;
+  my $pattern = $_[1];
+
+  if ( $pattern ) {
+     $pattern = $self->_convert_shell_pattern_to_regexp ( $pattern, 0 );
+     $pattern = '; ' . $pattern . '$';
+  }
+
+  return ( $self->_common_list ("MLSD", $pattern, @_) );
+}
+
+# Get file details ...
+sub mlst {
   my $self = shift;
-  my $path = shift || undef;     # Causes "" to be treated as "."!
-  my $pattern = shift || undef;  # Only wild cards are * and ? (same as ls cmd)
+  my $file = shift;
+
+  my $info;
+  if ( $self->command ( "MLST", $file, @_ )->response () == CMD_OK ) {
+     my @lines = split ("\n", $self->last_message ());
+     $info = $lines[1];
+     $info =~ s/^\s+//;
+  }
+
+  return ( $self->_test_croak ($info) );
+}
+
+
+sub parse_mlsx {
+  my $self      = shift;
+  my $features  = shift;    # Fmt: tag=val;tag=val;tag=val;...; file
+  my $lowercase = shift || 0;
+
+  my $empty;   # The return value on error ...
+  return ( $empty ) unless ( $features );
+
+  my ($feat_lst, $file) = split (/; /, $features, 2);
+  return ( $empty )  unless ( defined $feat_lst && defined $file && $file );
+
+  $feat_lst = lc ($feat_lst)  if ( $lowercase );
+
+  # Now that we know it parses, lets grab the data.
+  my %data;
+  $data{";file;"} = $file;
+  foreach ( split (/;/, $feat_lst) ) {
+     return ( $empty )  unless ( $_ =~ m/=/ );   # tag=val format?
+
+     my ($tag, $val) = split (/=/, $_, 2);
+     return ( $empty )   unless ( $tag );        # Missing tag?
+
+     $data{$tag} = (defined $val) ? $val : "";
+  }
+
+  return ( \%data );     # The parse worked!
+}
+
+
+# Returns an empty array on failure ...
+sub _common_list {
+  my $self      = shift;
+  # ----- The Calculated Arguments -------------------------
+  my $lst_cmd   = shift;           # LIST, NLST, or MLSD.
+  my $pattern   = shift || "";     # The corrected pattern as a perl regular expression.
+  # ----- The Forwarded Arguments --------------------------
+  my $path      = shift || undef;  # Causes "" to be treated as "."!
+  my $orig_ptrn = shift || undef;  # Only wild cards are * and ? (same as ls cmd)
+  my $ftype     = shift || 0;      # Only used for MLSD!
 
   my $dati = "";
 
-  # "(caller(1))[3]" returns undef if not called by another Net::FTPSSL method!
-  my $c = (caller(1))[3];
-  my $nlst_flg = ( defined $c && $c eq "Net::FTPSSL::nlst" );
-
-  unless ( $self->prep_data_channel( $nlst_flg ? "NLST" : "LIST" ) ) {
+  # Open the data channel before issuing the appropriate list command ...
+  unless ( $self->prep_data_channel( $lst_cmd ) ) {
     return ();    # Already decided not to call croak if you get here!
   }
 
-  unless ( $nlst_flg ? $self->_nlst($path) : $self->_list($path) ) {
+  # Run the requested list type command ...
+  unless ( $self->command ( $lst_cmd, $path )->response () == CMD_INFO ) {
      $self->_croak_or_return ();
      return ();
   }
@@ -949,7 +1080,7 @@ sub list {
   while ( my $len = sysread $io, $tmp, $size ) {
     unless ( defined $len ) {
       next if $! == EINTR;
-      my $type = $nlst_flg ? 'nlst()' : 'list()';
+      my $type = lc ($lst_cmd) . "()";
       $self->_croak_or_return (0, "System read error on read while $type: $!");
       _my_close ($io);    # Old way $io->close();
       return ();
@@ -974,59 +1105,110 @@ sub list {
   # Another reason to strip it out is that it's the total block size,
   # not the total number of files.  Which gets confusing.
   # Works no matter where the total is in the string ...
-  unless ( $nlst_flg ) {
+  if ( $lst_cmd eq "LIST" ) {
      $dati =~ s/^\n//s   if ( $dati =~ s/^\s*total\s+\d+\s*$//mi );
      $dati =~ s/\n\n/\n/s;    # In case total not 1st line ...
   }
 
   # What if we asked to use patterns to limit the listing returned ?
-  if ( defined $pattern ) {
-     my $p = $pattern;   # So can display original pattern later on.
-
-     # Convert from shell wild cards into a perl regular expression ...
-     $pattern =~ s/([.+])/\\$1/g;
-     $pattern =~ s/[?]/./g;
-
-     if ( $nlst_flg ) {
-        if ( $pattern =~ m/[*]/ ) {
-           # Don't allow path separators in the string ...
-           # Can't do this with regular expressions ...
-           $pattern = join ( "[^\\\\/]*", split (/\*/, $pattern . "XXX") );
-           $pattern =~ s/XXX$//;
-        }
-        $pattern = '(^|[\\\\/])' . $pattern . '$';
-
-     } else {
-        $pattern =~ s/[*]/\\S*/g;    # No spaces in file's name is allowed!
-        $pattern = '\s+(' . $pattern . ')($|\s+->\s+)';
-     }
-
-     $self->_print_DBG ( "PATTERN: <- $p => $pattern ->\n" );
+  if ( $pattern ) {
+     $self->_print_DBG ( "MAKE PATTERN: <- $orig_ptrn => $pattern ->\n" );
 
      # Now only keep those files that match the pattern.
-     my @res;
-     foreach ( split ( /\n/, $dati ) ) {
-        push (@res, $_)  if ( $_ =~ m/$pattern/i );
-     }
-     $dati = join ("\n", @res);
+     $dati = $self->_apply_list_pattern ($dati, $pattern);
   }
 
+  my $mlsd_flg =( $lst_cmd eq "MLSD" && $ftype != 0 );
+  $dati = $self->_apply_ftype_filter ($dati, $ftype)  if ($mlsd_flg);
+
   my $len = length ($dati);
-  my $lvl = $nlst_flg ? 2 : 1;
+  my $cblvl = 2;       # Offset to the calling function.
   my $total = 0;
 
   if ( $len > 0 ) {
-     $total = $self->_call_callback ($lvl, \$dati, \$len, 0);
+     my $cb;
+     ($total, $cb) = $self->_call_callback ($cblvl, \$dati, \$len, 0);
+     if ( $cb ) {
+        $dati = $self->_apply_list_pattern ($dati, $pattern);
+        $dati = $self->_apply_ftype_filter ($dati, $ftype)  if ($mlsd_flg);
+     }
   }
 
   # Process trailing call back info if present.
   my $trail;
-  ($trail, $len, $total) = $self->_end_callback ($lvl, $total);
+  ($trail, $len, $total) = $self->_end_callback ($cblvl, $total);
+  $trail = $self->_apply_list_pattern ($trail, $pattern);
+  $trail = $self->_apply_ftype_filter ($$trail, $ftype)  if ($mlsd_flg);
   if ( $trail ) {
      $dati .= $trail;
   }
 
   return $dati ? split( /\n/, $dati ) : ();
+}
+
+# Filter the results based on the given pattern ...
+sub _apply_list_pattern {
+   my $self    = shift;
+   my $data    = shift;
+   my $pattern = shift;
+
+   if ( $data && $pattern ) {
+     $self->_print_DBG ( " USE PATTERN: $pattern\n" );
+      my @res;
+      foreach ( split ( /\n/, $data ) ) {
+         push (@res, $_)  if ( $_ =~ m/$pattern/i );
+      }
+      $data = join ("\n", @res);
+      $data .= "\n"   if ( $data );
+   }
+
+   return ($data);
+}
+
+# Filter the results based on the file type ... (MLSD only)
+sub _apply_ftype_filter {
+   my $self  = shift;
+   my $data  = shift;
+   my $ftype = shift;
+
+   if ( $data && $ftype ) {
+      my @types = qw / ALL REGULAR_DIRECTORY REGULAR_FILE SPECIAL_FILE SPECIAL_DIRECTORY /;
+      $self->_print_DBG ( " FILE TYPE FILTER: $types[$ftype]\n" );
+      my $type_active = 0;    # Assume the "type" attribute wasn't returned!
+      my @res;
+
+      # For each row that has a type attribute returned ...
+      foreach ( split ( /\n/, $data ) ) {
+         if ( $_ =~ m/(^|;)type=([^;]*);/i ) {
+            my $t = lc ( $2 );
+            $type_active = 1;    # The "type" attribute was returned!
+
+            my $isSpecialDir = ( $t eq "cdir" || $t eq "pdir" );
+            my $isRegDir = ( $t eq "dir" );
+            my $isDir = ( $isRegDir || $isSpecialDir );
+            my $isFile = ( $t eq "file" );
+
+            if ( $ftype == 1 && $isRegDir ) {
+               push (@res, $_);    # It's a regular directory ...
+            } elsif ( $ftype == 2 && $isFile ) {
+               push (@res, $_);    # It's a regular file ...
+            } elsif ( $ftype == 3 && (! $isDir) && (! $isFile) ) {
+               push (@res, $_);    # It's a special file ...
+            } elsif ( $ftype == 4 && $isSpecialDir ) {
+               push (@res, $_);    # It's a special directory ...
+            }
+         }
+      }
+
+      unless ( $type_active ) {
+         warn ("Turn on TYPE feature with OPTS before filtering on file type!\n");
+      }
+
+      $data = join ("\n", @res);
+      $data .= "\n"   if ( $data );
+   }
+
+   return ($data);
 }
 
 sub _get_local_file_size {
@@ -1396,9 +1578,11 @@ sub uput {              # Unique put (STOU command)
   if ( $resp ) {
     # The file name may appear in either message returned.  (The 150 or 226 msg)
     # So lets check both messages merged together!
-    # Assumes no spaces are in the new file's name!
     my $msg = $msg1 . "\n" . $msg2;
 
+    # -------------------------------------------------------
+    # *** Assumes no spaces are in the new file's name! ***
+    # -------------------------------------------------------
     if ( $msg =~ m/(FILE|name):\s*([^\s)]+)($|[\s)])/im ) {
        $requested_file_name = $2;   # We found an actual name to use ...
 
@@ -1412,6 +1596,9 @@ sub uput {              # Unique put (STOU command)
        # So we don't know what the remote server used for a filename
        # if it didn't appear in either of the message formats!
        $requested_file_name = "?";
+
+    } else {
+       $tm = undef;    # Disable's PreserveTimestamp if using default guess ...
     }
 
     # TODO: Figure out other uput variants to check for besides the ones above.
@@ -1429,8 +1616,7 @@ sub uput {              # Unique put (STOU command)
 
        # Fix done in v0.25
        # Some servers returned the full path to the file.  But that sometimes
-       # causes issues.  So always strip off the path information.  If there
-       # was a path in the source file, then the caller knows where it was!
+       # causes issues.  So always strip off the path information.
        $requested_file_name = basename ($requested_file_name);
     }
 
@@ -1439,6 +1625,49 @@ sub uput {              # Unique put (STOU command)
 
   return ( undef );        # Fatal error & Croak is turned off.
 }
+
+
+sub uput2 {             # Unique put (STOU command)
+   my $self     = shift;
+   my $file_loc = $_[0];
+
+   my %before;
+   foreach ( $self->nlst () ) { $before{$_} = 1; }
+   return (undef)  if ($self->last_status_code () != CMD_OK);
+
+   my $found_file;
+   {
+      # Temporarily disable timestamps ...
+      local ${*$self}{_FTPSSL_arguments}->{FixPutTs} = 0;
+      $found_file = $self->put (@_);
+   }
+
+   if ( defined $found_file ) {
+      my @after;
+      foreach ( $self->nlst () ) {
+         push ( @after, $_ )  unless ( $before{$_} );
+      }
+
+      # Did we find only one possible answer?
+      my $cnt = @after;
+      if ( $cnt == 1 ) {
+         $found_file = $after[0];     # Yes!
+      } else {
+         $found_file = $self->_croak_or_return ("?", "Can't determine what the file was called.  Found '${cnt}' candidates!");
+      }
+
+      # Do we update the timestamp on the uploaded file ?
+      if ( $cnt == 1 &&
+           ${*$self}{_FTPSSL_arguments}->{FixPutTs} &&
+           ! $self->_isa_glob ($file_loc) ) {
+         my $tm = (stat ($file_loc))[9];   # Get's the local file's timestamp!
+         $self->_mfmt ($tm, $found_file);
+      }
+   }
+
+   return ( $found_file );
+}
+
 
 # Makes sure the scratch file name generated appears in the same directory as
 # the real file unless you provide a prefix with a directory as part of it.
@@ -2190,8 +2419,10 @@ sub supported {
    my $help = $self->_help ();
 
    # Only finds exact matches, no abbreviations like some FTP servers allow.
-   if ( $arg->{OverrideHELP} || exists $help->{$cmd} ) {
-      $result = 1;           # Was a valid FTP command
+   if ( exists $arg->{OverrideHELP} && $cmd eq "HELP" ) {
+      $arg->{last_ftp_msg} = "503 Unsupported command $cmd.";
+   } elsif ( $arg->{OverrideHELP} || $help->{$cmd} ) {
+      $result = 1;           # It is a valid FTP command
       $arg->{last_ftp_msg} = "214 The $cmd command is supported.";
    } else {
       $arg->{last_ftp_msg} = "502 Unknown command $cmd.";
@@ -2200,7 +2431,7 @@ sub supported {
    # Are we validating a SITE sub-command?
    if ($result && $cmd eq "SITE" && $sub_cmd ne "") {
       my $help2 = $self->_help ($cmd);
-      if ( exists $help2->{$sub_cmd} ) {
+      if ( $help2->{$sub_cmd} ) {
          $arg->{last_ftp_msg} = "214 The SITE sub-command $sub_cmd is supported.";
       } elsif ( scalar (keys %{$help2}) > 0 ) {
          $arg->{last_ftp_msg} = "502 Unknown SITE sub-command - $sub_cmd.";
@@ -2212,6 +2443,8 @@ sub supported {
    }
 
    # Are we validating a FEAT sub-command?
+   # Everything in the hash is a valid command.  But it's value is frequently "".
+   # So must use "exists $fest2->{$cmd}" for all tests!
    if ($result && $cmd eq "FEAT" && $sub_cmd ne "") {
       my $feat2 = $self->_feat ();
       if ( exists $feat2->{$sub_cmd} ) {
@@ -2226,6 +2459,7 @@ sub supported {
    }
 
    # Are we validating a OPTS sub-command?
+   # It's a special case of FEAT!
    if ($result && $cmd eq "OPTS" && $sub_cmd ne "") {
       my $feat3 = $self->_feat ();
       if ( exists $feat3->{OPTS} && exists $feat3->{OPTS}->{$sub_cmd} ) {
@@ -2328,6 +2562,9 @@ sub ccc {
    # Save before stop_SSL() removes the bless.
    my $bless_type = ref ($self);
 
+   # Give the command channel a chance to stabalize again.
+   sleep (1);
+
    # -------------------------------------------------------------------------
    # Stop SSL, but leave the socket open!
    # Converts $self to IO::Socket::INET object instead of Net::FTPSSL
@@ -2342,6 +2579,9 @@ sub ccc {
    bless ( $self, $bless_type );
    ${*$self}{_SSL_opened} = 0;      # To get rid of warning on quit ...
 
+   # Give the command channel a chance to stabalize again.
+   sleep (1);
+
    # -------------------------------------------------------------------------
    # This is a hack, but it seems to resolve the command channel corruption
    # problem where the 1st command or two afer CCC may fail or look strange ...
@@ -2351,7 +2591,10 @@ sub ccc {
    my $ok = CMD_ERROR;
    foreach ( 1..4 ) {
       $ok = $self->command ($ccc_fix_cmd)->response (1);   # This "1" is a hack!
-      last  if ( $ok eq CMD_OK );   # Do char compare since not always a number.
+
+      # Do char compare since not always a number.
+      last  if ( defined $ok && $ok eq CMD_OK );
+      $ok = CMD_ERROR;
    }
 
    if ( $ok == CMD_OK ) {
@@ -2716,50 +2959,101 @@ sub _mdtm {
 }
 
 sub size {
-  my $self = shift;
-  my $file = shift;
+   my $self = shift;
+   my $file = shift;
+   my $skip_mlst = shift || 0;   # Not in POD on purpose!
 
-  if ( $self->supported ("SIZE") ) {
-     if ( $self->command ("SIZE", $file, @_)->response () == CMD_OK &&
-          $self->message () =~ m/\d+\s+(\d+)($|\D)/ ) {
-        return ( $1 );      # The size in bytes!  May be zero!
-     }
+   # The expected option ...
+   if ( $self->supported ("SIZE") ) {
+      if ( $self->command ("SIZE", $file, @_)->response () == CMD_OK &&
+           $self->message () =~ m/\d+\s+(\d+)($|\D)/ ) {
+         return ( $1 );      # The size in bytes!  May be zero!
+      }
+   }
 
-  # Note: If $file is in fact a directory, STAT will return the directory's
-  # contents!  Which can be very slow if there are tons of files in the dir!
-  } elsif ( $self->supported ("STAT") ) {
-     if ( $self->command ("STAT", $file, @_)->response () == CMD_OK ) {
-        my @msg = split ("\n", $self->message ());
-        my $cnt = @msg;
-        my $rFile = $self->_mask_regex_chars ( basename ($file) );
+   # Will only set to 1 if we know the file is really a directory!
+   my $skip_stat = 0;
 
-        # ... Size Filename
-        if ( $cnt == 3 && $msg[1] =~ m/\s(\d+)\s+${rFile}/ ) {
-           return ( $1 );     # The size in bytes!  May be zero!
-        }
-        # ... Size Month Day HH:MM Filename
-        if ( $cnt == 3 && $msg[1] =~ m/\s(\d+)\s+(\S+)\s+(\d+)\s+(\d+:\d+)\s+${rFile}/ ) {
-           return ( $1 );     # The size in bytes!  May be zero!
-        }
-     }
+   # Not implemented on many FTPS servers ...
+   # But is the most reliable way if it is ...
+   # It returns the size for all file types, not just regular files!
+   if ( $self->supported ("MLST") && ! $skip_mlst ) {
+      # Must use "OPTS MLST SIZE" if the size feature is currently disabled.
+      my $data = $self->parse_mlsx ( $self->mlst ($file), 1 );
+      if ( $data ) {
+         if ( exists $data->{size} ) {
+            return ( $data->{size} );  # The size in bypes!  May be zero!
 
-  # Can be less accurate than the other two methods ...
-  } elsif ( $self->all_supported ("MLST", "OPTS") ) {
-     # On the todo list ...
-     # Must use "OPTS MLST SIZE" if the size fact is currently disabled.
-  }
+         # Is it a directory?  If so, we'd like to skip executing "STAT".
+         } elsif ( exists $data->{type} ) {
+            my $t = $data->{type};
+            $skip_stat = 1  if ( $t eq "dir" || $t eq "cdir" || $t eq "pdir" );
+         }
 
-  return ( $self->_test_croak (undef) );   # It's not a regular file!
+         warn ("Turn on SIZE feature with OPTS before using this function!\n");
+      }
+   }
+
+   # Note: If $file is in fact a directory, STAT will return the directory's
+   # contents!  Which can be very slow if there are tons of files in the dir!
+   if ( $self->supported ("STAT") && ! $skip_stat ) {
+      if ( $self->command ("STAT", $file, @_)->response () == CMD_OK ) {
+         my @msg = split ("\n", $self->message ());
+         my $cnt = @msg;
+         my $rFile = $self->_mask_regex_chars ( basename ($file) );
+
+         # ... Size Filename
+         if ( $cnt == 3 && $msg[1] =~ m/\s(\d+)\s+${rFile}/ ) {
+            return ( $1 );     # The size in bytes!  May be zero!
+         }
+         # ... Size Month Day HH:MM Filename
+         if ( $cnt == 3 && $msg[1] =~ m/\s(\d+)\s+(\S+)\s+(\d+)\s+(\d+:\d+)\s+${rFile}/ ) {
+            return ( $1 );     # The size in bytes!  May be zero!
+         }
+      }
+   }
+
+   return ( $self->_test_croak (undef) );   # It's not a regular file!
+}
+
+sub ls {
+   my $self = shift;
+   return ( $self->nlst (@_) );
+}
+
+sub dir {
+   my $self = shift;
+   return ( $self->list (@_) );
 }
 
 sub is_file {
    my $self = shift;
    my $file = shift;
 
+   my $isFile = 0;    # Assume not a regular file ...
+
    # Now let's disable Croak so we can't die during this test ...
    my $die = $self->set_croak (0);
 
-   my $size = $self->size ( $file );
+   # Not implemented on many FTPS servers ...
+   # But it's the most reliable way if it is ...
+   if ( $self->supported ("MLST") ) {
+      # Must use "OPTS MLST TYPE" if the type feature is currently disabled.
+      my $data = $self->parse_mlsx ( $self->mlst ($file), 1 );
+
+      # We now know something was found, but we don't yet know what it is!
+      if ( $data ) {
+         if ( exists $data->{type} ) {
+            my $t = $data->{type};
+            $isFile = ( $t eq "file" ) ? 1 : 0;
+            $self->set_croak ( $die );           # Restore the croak settings!
+            return ( $isFile );
+         }
+         warn ("Turn on TYPE feature with OPTS before using this function!\n");
+      }
+   }
+
+   my $size = $self->size ( $file, 1 );
 
    $self->set_croak ( $die );              # Restore the croak settings!
 
@@ -2781,6 +3075,24 @@ sub is_dir {
 
    # Now let's disable Croak so we can't die during this test ...
    my $die = $self->set_croak (0);
+
+   # Not implemented on many FTPS servers ...
+   # But it's the most reliable way if it is ...
+   if ( $self->supported ("MLST") ) {
+      # Must use "OPTS MLST TYPE" if the type feature is currently disabled.
+      my $data = $self->parse_mlsx ( $self->mlst ($dir), 1 );
+
+      # We now know something was found, but we don't yet know what it is!
+      if ( $data ) {
+         if ( exists $data->{type} ) {
+            my $t = $data->{type};
+            $isDir = ( $t eq "dir" || $t eq "cdir" || $t eq "pdir" ) ? 1 : 0;
+            $self->set_croak ( $die );           # Restore the croak settings!
+            return ( $isDir );
+         }
+         warn ("Turn on TYPE feature with OPTS before using this function!\n");
+      }
+   }
 
    # Check if it's a directory we have access to ...
    if ( $self->cwd ( $dir ) ) {
@@ -2903,8 +3215,12 @@ sub set_dc_from_hash {
 #  The caller is free to modify the returned hash refrence.
 #  It's just a copy of what's been cached, not the original!
 #-----------------------------------------------------------------------
+#  The returned hash may contain both active & disabled FTP commands.
+#  If disabled, the command's value will be 0.  Otherwise it will
+#  contain a non-zero value.  So testing using "exists" is BAD form now.
+#-----------------------------------------------------------------------
 #  Please remember that when OverrideHELP=>1 is used, it will always
-#  return the empty hash!!!
+#  return an empty hash!!!
 #-----------------------------------------------------------------------
 
 sub _help {
@@ -2927,20 +3243,15 @@ sub _help {
    # Use FEAT instead of HELP to populate the supported hash!
    # Assuming the HELP command itself is broken!  "via OverrideHELP=>-1"
    if ( exists $arg->{removeHELP} && $arg->{removeHELP} == 1 ) {
-      $arg->{help_cmds_no_syntax_available} = 1;
-
       my $ft = $self->_feat ();
       $ft->{FEAT} = 2  if (scalar (keys %{$ft}) > 0);
       foreach ( keys %{$ft} ) { $ft->{$_} = 2; }  # So always TRUE
 
       $arg->{help_cmds_found} = $ft;
       $arg->{help_cmds_msg}   = $self->last_message ();
+
       $self->_site_help ( $arg->{help_cmds_found} );
       $arg->{removeHELP} = 2;     # So won't execute again ...
-
-   # For the other supported variants to OverrideHELP!
-   } elsif ( exists $arg->{OverrideHELP} ) {
-      $arg->{help_cmds_no_syntax_available} = 1;
    }
 
    # Now see if we've cached any results previously ...
@@ -2991,15 +3302,16 @@ sub _help {
 
    # HELP ...
    if ( $all_cmds ) {
-      %help = %{$self->_help_parse ()};
+      %help = %{$self->_help_parse (0)};
 
-      # If we don't find anything, it's a problem.  So don't cache if false ...
+      # If we don't find anything for HELP, it's a problem.
+      # So don't cache if false ...
       if (scalar (keys %help) > 0) {
          if ($help{FEAT}) {
-            # Now put any features into the help response as well ...
+            # Now put any new features into the help response as well ...
             my $feat = $self->_feat ();
             foreach (keys %{$feat}) {
-               $help{$_} = 2  unless ($help{$_});
+               $help{$_} = 2  unless (exists $help{$_});
             }
          }
 
@@ -3045,7 +3357,7 @@ sub _help {
 sub _site_help
 {
    my $self = shift;
-   my $help = shift;
+   my $help = shift;     # Parent help hash
    my $msg  = shift;     # Optional override message.
 
    my $arg = ${*$self}{_FTPSSL_arguments};
@@ -3077,10 +3389,15 @@ sub _site_help
 
 #---------------------------------------------------------------------------
 # Handles the parsing of the "HELP", "HELP SITE" & "SITE HELP" commands ...
+# Not all servers return a list of commands for the 2nd two items.
 #---------------------------------------------------------------------------
 sub _help_parse {
    my $self     = shift;
-   my $site_cmd = shift;
+   my $site_cmd = shift;      # Only 0 for HELP.
+
+   # This value is used to distinguish which call set the hash entry.
+   # No logic is based on it.  Just done to ease debugging later on!
+   my $flag = ($site_cmd) ? -2 : 1;
 
    my $helpmsg = $self->last_message ();
    my @lines = split (/\n/, $helpmsg);
@@ -3112,7 +3429,12 @@ sub _help_parse {
       # Commands ending in "*" are currently turned off.
       elsif ( $line !~ m/[a-z()]/ ) {
          foreach (@lst) {
-            $help{$_} = 1   if ($_ !~ m/[*]$/);
+            # $help{$_} = 1   if ($_ !~ m/[*]$/);
+            if ($_ !~ m/^(.+)[*]$/) {
+               $help{$_} = $flag;   # Record enabled for all options ...
+            } elsif ( $site_cmd == 0 ) {
+               $help{$1} = 0;       # Record command is disabled for HELP.
+            }
          }
       }
    }
@@ -3154,6 +3476,7 @@ sub _feat {
 #-----------------------------------------------------------------------
 # The FEAT command returns one line per command, with optional behaviors.
 # If the command ends in "*", the command isn't supported by FEAT!
+# And if not supported it won't show up in the hash!
 #   Format:  CMD [behavior]
 #-----------------------------------------------------------------------
 # If one or more commands have behaviors, then it's possible for the
@@ -3162,6 +3485,11 @@ sub _feat {
 # So if even one command has a behavior, there will be a server hit
 # to see if the FEAT results changed.  It will also add OPTS to the hash!
 # Otherwise the results are cached!
+#-----------------------------------------------------------------------
+# Note: {help_FEAT_found2} & {help_FEAT_msg2} are used here since it's
+#       possible that {help_FEAT_found} & {help_FEAT_msg} can be auto
+#       generated via "HELP FEAT"  [during a call to _help("FEAT").]
+#       These special vars are only used in feat() & _feat().
 #-----------------------------------------------------------------------
 sub feat {
    my $self = shift;
@@ -3867,7 +4195,7 @@ sub last_message {
 #-----------------------------------------------------------------------
 sub trapWarn {
    my $self  = shift;
-   my $force = shift || 0;   # Only used by t/10-compelx.t & t/20-certificate.t
+   my $force = shift || 0;   # Only used by some of the t/*.t test cases!
                              # Do not use the $force parameter otherwise!
                              # You've been warned!
 
@@ -4060,12 +4388,13 @@ sub _end_callback {
 }
 
 sub _call_callback {
-   my $self = shift;
+   my $self   = shift;
    my $offset = shift;   # Always >= 1.  Index to original function called.
-
-   my $data_ref = shift;
+   my $data_ref     = shift;
    my $data_len_ref = shift;
-   my $total_len = shift;
+   my $total_len    = shift;
+
+   my $cb_flag = 0;
 
    # Is there is a callback function to use ?
    if ( defined ${*$self}{_FTPSSL_arguments}->{callback_func} ) {
@@ -4074,11 +4403,15 @@ sub _call_callback {
       &{${*$self}{_FTPSSL_arguments}->{callback_func}} ( (caller($offset))[3],
                                     $data_ref, $data_len_ref, $total_len,
                                     ${*$self}{_FTPSSL_arguments}->{callback_data} );
+      $cb_flag = 1;
    }
 
    # Calculate the new total length to use for next time ...
    $total_len += (defined $data_len_ref ? ${$data_len_ref} : 0);
 
+   if ( wantarray ) {
+      return ($total_len, $cb_flag);
+   }
    return ($total_len);
 }
 
@@ -4328,7 +4661,7 @@ __END__
 
 Net::FTPSSL - A FTP over TLS/SSL class
 
-=head1 VERSION 0.40
+=head1 VERSION 0.42
 
 Z<>
 
@@ -4518,7 +4851,7 @@ command itself and you need to trigger some of the conditional logic.
 
 B<useSSL> - This option is being depreciated in favor of L<IO::Socket::SSL>'s
 B<SSL_version> option.  It's just a quick and dirty way to downgrade your
-connection from B<TLS> to B<SSL> which is no longer recomended.
+connection from B<TLS> to B<SSL> which is no longer recommended.
 
 =back
 
@@ -4566,12 +4899,13 @@ Provided in case the I<Croak> option proves to be too restrictive in some cases.
 
 =item list( [DIRECTORY [, PATTERN]] )
 
-This method returns a list of files in a format similar to this: (Server Specific)
+This method returns a list of files in a format similar to this: (Server
+Specific)
 
  drwxrwx--- 1 owner group          512 May 31 11:16 .
  drwxrwx--- 1 owner group          512 May 31 11:16 ..
- drwxrwx--- 1 owner group          512 Oct 27  2004 foo
- drwxrwx--- 1 owner group          512 Oct 27  2004 pub
+ -rwxrwx--- 1 owner group          512 Oct 27  2004 foo
+ -rwxrwx--- 1 owner group          512 Oct 27  2004 pub
  drwxrwx--- 1 owner group          512 Mar 29 12:09 bar
 
 If I<DIRECTORY> is omitted, the method will return the list of the current
@@ -4581,7 +4915,7 @@ If I<PATTERN> is provided, it would limit the result similar to the unix I<ls>
 command or the Windows I<dir> command.  The only wild cards supported are
 B<*> and B<?>.  (Match 0 or more chars.  Or any one char.) So a pattern of
 I<f*>, I<?Oo> or I<FOO> would find just I<foo> from the list above.  Files with
-spaces in their name can cause strange results when searching for a pattern.
+spaces in their name can cause strange results when searching with a pattern.
 
 =item nlst( [DIRECTORY [, PATTERN]] )
 
@@ -4594,6 +4928,61 @@ Same as C<list> but returns the list in this format:
 Spaces in the filename do not cause problems with the I<PATTERN> with C<nlst>.
 Personally, I suggest using nlst instead of list.
 
+=item mlsd( [DIRECTORY [, PATTERN [, FTYPE]]] )
+
+Returns a list of files/directories in a standardized machine readable format
+designed for easy parsing.  Where the list of features about each file/directory
+is defined by your FTPS server and may be modifiable by you.
+
+ modify=20041027194930;type=file;size=28194; foo
+ modify=20041027194932;type=file;size=3201931; pub
+ modify=20180329120944;type=dir;size=256; bar
+
+Spaces in the filename do not cause problems with the I<PATTERN> with C<mlsd>.
+
+If I<FTYPE> is provided, it does additional filtering based on type of file.
+If the I<type> attribute isn't returned, and I<FTYPE> is non-zero, it will
+filter out everything!
+  0 - All file types. (default)
+  1 - Regular Directories only.
+  2 - Regular Files only.
+  3 - Special Files only.
+  4 - Special Directories only.
+
+=item mlst( FILE )
+
+Requests the FTPS server return the feature set for the requested I<FILE>.
+Where I<FILE> may be any type of file or directory exactly matching the given
+name.
+
+If the requested file/directory doesn't exist it will return B<undef> or croak.
+If it exists it will return the features about the file the same way I<mlsd>
+does, but the returned filename may contain path info.  Where I<dir> is the
+current directory name.
+
+For example if we were looking for file B<pub> again:
+  modify=20041027194932;type=file;size=3201931; /dir/pub
+
+=item parse_mlsx( VALUE [, LOWER_CASE_FLAG] )
+
+Takes the I<VALUE> returned by I<mlst> or one of the array values from I<mlsd>
+and converts it into a hash.  Where key "B<;file;>" is the filename and anything
+else was a feature describing the file.
+
+It returns a hash reference containing the data.  If the I<LINE> isn't in the
+proper format, it returns B<undef>.  The only key that's guarenteed to exist
+in the hash after a successsful parse is "B<;file;>".  All other keys/features
+returned are based on how your FTPS server has been configured.
+
+For example:
+  Type=File;Size=3201931; Pub
+  would return (Type=>File, Size=>3201931, ;file;=>Pub)
+
+But if I<LOWER_CASE_FLAG> was set to a non-zero value, it would then convert
+everything B<I<except>> the file's name into lower case.
+  Type=File;Size=3201931; Pub
+  would return (type=>file, size=>3201931, ;file;=>Pub)
+
 =item ascii()
 
 Sets the file transfer mode to ASCII.  I<CR LF> transformations will be done.
@@ -4605,12 +4994,12 @@ Sets the file transfer mode to binary. No I<CR LF> transformation will be done.
 
 =item mixedModeAI()
 
-Mixture of ASCII & binary mode.  The server does I<CR LF> transfernations while
+Mixture of ASCII & binary mode.  The server does I<CR LF> transformations while
 the client side does not.  (For a really weird server)
 
 =item mixedModeIA()
 
-Mixture of binary & ASCII mode.  The client does I<CR LF> transfernations while
+Mixture of binary & ASCII mode.  The client does I<CR LF> transformations while
 the server side does not.  (For a really weird server)
 
 =item put( LOCAL_FILE [, REMOTE_FILE [, OFFSET]] )
@@ -4661,25 +5050,55 @@ I<LOCAL_FILE>.
 
 =item uput( LOCAL_FILE, [REMOTE_FILE] )
 
-Stores the I<LOCAL_FILE> onto the remote ftps server. I<LOCAL_FILE> may be a
-open I<IO::Handle> or GLOB, but in this case I<REMOTE_FILE> is required.  If
-I<REMOTE_FILE> already exists on the ftps server, a unique name is calculated
-by the server for use instead.  But on some servers, the remote server won't
-take the hint and will always generate a unique name instead.
+Stores the I<LOCAL_FILE> onto the remote FTPS server. I<LOCAL_FILE> may be an
+open I<IO::Handle> or GLOB, but in this case I<REMOTE_FILE> is required.  Do
+not put any path info in I<REMOTE_FILE>!  Its default is I<LOCAL_FILE>.
+
+This command can be implemented differently on different FTPS servers.  On some
+servers it ignores I<REMOTE_FILE> and just assigns it a unique name.  On other
+servers it uses I<REMOTE_FILE> as a starting point.  In either case sometimes
+it returns the final file name used and on other servers it keeps it a secret.
+
+So if your FTPS server honors the I<REMOTE_FILE> it may use that name on the
+upload if it doesn't already exist.  But if it already exists, then it will
+generate a unique name instead.
 
 If the file transfer succeeds, this function will try to return the actual
-name used on the remote ftps server.  If it can't figure that out, it will
-return what was used for I<REMOTE_FILE>.  On failure this method will return
-B<undef>.  If the remote server won't take the hint and we can't figure out
-the name it used, we'll return a string containing a single B<?> instead.  In
-this case the request worked, but this command has no way to figure out what
-name was generated on the remote ftps server.  And we want to return a printable
-value that will evaluate to B<true>!
+name used on the remote FTPS server.  If the server accepts the I<REMOTE_FILE>
+hint and doesn't return the filename, it will assume I<REMOTE_FILE>.  If it
+doesn't accept I<REMOTE_FILE> and doesn't return the name used, we'll return a
+single 'B<?>' instead.  In this case the request worked, but this command has no
+way to figure out what name was generated on the remote FTPS server and we know
+I<REMOTE_FILE> is wrong!  So we want to return a printable value that will
+evaluate to B<true> for success but still tell you the actual name used is
+unknown!
+
+Just be aware that spaces in the filename used on the FTPS server could mean an
+incomplete filename is returned by this method.
 
 If the option I<PreserveTimestamp> was used, and the FTPS server supports it,
 it will attempt to reset the timestamp on the remote file using the file name
 being returned by this function to the timestamp on I<LOCAL_FILE>.  So if the
-wrong name is being returned, the wrong file could get it's timestamp updated.
+wrong name is being returned, the wrong file could get its timestamp updated.
+
+=item uput2( LOCAL_FILE, [REMOTE_FILE] )
+
+A much, much slower version of I<uput>.  Only useful when regular I<uput> can't
+determine the actual filename used for the upload to your FTPS server or it
+returns the wrong answer for that server.  And you really, really need the
+right filename!
+
+It gets the right answer by calling I<nlst>, I<uput>, and then I<nlst> again.
+And as long as there is only one new file returned in the 2nd I<nlst> call, we
+have the actual filename used on the FTPS server.  So having spaces in this
+filename causes no issues.
+
+This function assumes you are uploading to the FTPS server's current directory.
+Since the I<uput> command doesn't always honor I<REMOTE_FILE> on all servers.
+
+It returns B<undef> if the upload fails.  It retuns 'B<?>' if it still can't
+figure out what the FTPS server called the file after the upload (very rare and
+unusual).  Otherwise it's the name of the file on the FTPS server.
 
 =item xput( LOCAL_FILE, [REMOTE_FILE, [PREFIX, [POSTFIX, [BODY]]]] )
 
@@ -4867,7 +5286,17 @@ This issue depends on what OS the FTPS server is running under.  Should they
 be different, the I<ASCII> size will be the I<BINARY> size plus the number of
 lines in the file.
 
-Finally if the file isn't a regular file, it will return I<undef>.
+Finally if the file isn't a regular file, it may in some cases return I<undef>.
+Depending on which FTP command was available to calculate the file's size with.
+
+=item dir( [DIRECTORY [, PATTERN]] )
+
+This is an alias to B<list>.  Returns an array of filenames in the long detailed
+format.
+
+=item ls( [DIRECTORY [, PATTERN]] )
+
+This is an alias to B<nlst>.  Returns an array of filenames in name only format.
 
 =item last_message() or message()
 
@@ -5012,17 +5441,26 @@ This I<OFFSET> will be automatically zeroed out after the 1st time it is used.
 
 =item is_file( FILE )
 
-Returns true if the passed I<name> is recognized as a regular file on the remote
-server.  It's assumed a regular file if the I<size> function works!
-(I<IE. returns a size E<gt>= 0 Bytes>.)
+Returns true if the passed I<FILE> name is recognized as a regular file on the
+remote FTPS server.  Otherwise it returns false.
+
+If the I<MLST> command is supported with the B<TYPE> feature turned on we
+can get a definitive answer.  Otherwise it's assumed a regular file if the
+I<size> function works! (I<IE. returns a size E<gt>= 0 Bytes>.)
 
 =item is_dir( DIRECTORY )
 
-Returns true if the passed I<name> is recognized as a directory on the remote
-server.  It's assumed a directory if you can I<cwd> into it.
+Returns true if the passed I<DIRECTORY> name is recognized as a directory on
+the remote FTPS server.  It returns false if it can't prove it or it's not a
+directory.
 
-If you don't have permission to I<cwd> into that directory, this function
-B<will not> recognize it as a directory, even if it really is one!
+If the I<MLST> command is supported with the B<TYPE> feature turned on we
+can get a definitive answer.  Otherwise it's assumed a directory if you can
+I<cwd> into it.
+
+But if it's using this backup method and your login doesn't have permission
+to I<cwd> into that directory, this function B<will not> recognize it as a
+directory, even if it really is one!
 
 =item set_callback( [cb_func_ref, end_cb_func_ref [, cb_data_ref]] )
 
@@ -5216,14 +5654,13 @@ collection of modules (libnet).
 
 Please report any bugs with a FTPS log file created via options B<Debug=E<gt>1>
 and B<DebugLogFile=E<gt>"file.txt"> along with your sample code at
-L<http://search.cpan.org/~cleach/Net-FTPSSL-0.40/FTPSSL.pm> or
 L<https://metacpan.org/pod/Net::FTPSSL>.
 
 Patches are appreciated when a log file and sample code are also provided.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009 - 2018 Curtis Leach. All rights reserved.
+Copyright (c) 2009 - 2019 Curtis Leach. All rights reserved.
 
 Copyright (c) 2005 Marco Dalla Stella. All rights reserved.
 

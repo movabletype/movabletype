@@ -92,6 +92,10 @@ is( format_ts( '%x', $ts ), 'September  8, 1977' );
 is( format_ts( '%X', $ts ), ' 3:30 PM' );
 is( format_ts( '%y', $ts ), '77' );
 is( format_ts( '%Y', $ts ), '1977' );
+{
+    local $SIG{__WARN__} = sub { fail 'format_ts warning: ' . shift; };
+    is( format_ts( '%Y', {} ), '' );
+}
 
 is( encode_html('<foo>'), '&lt;foo&gt;' );
 is( encode_html('&gt;'),  '&gt;' );
@@ -603,7 +607,11 @@ my %accept_languages = qw(
     nl-nl nl
 );
 
+my %default_supported_languages = map {$_ => 1} split ',', MT->config->DefaultSupportedLanguages;
+
 while ( my ( $env, $expected ) = each(%accept_languages) ) {
+    (my $lang = $expected) =~ tr/-/_/;
+    next unless $default_supported_languages{$lang};
     $ENV{HTTP_ACCEPT_LANGUAGE} = $env;
     is( browser_language(), $expected, "browser_language() for \"$env\"" );
 }

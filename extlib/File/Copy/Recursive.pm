@@ -23,7 +23,7 @@ require Exporter;
 @ISA       = qw(Exporter);
 @EXPORT_OK = qw(fcopy rcopy dircopy fmove rmove dirmove pathmk pathrm pathempty pathrmdir rcopy_glob rmove_glob);
 
-$VERSION = '0.40';
+$VERSION = '0.45';
 
 $MaxDepth = 0;
 $KeepMode = 1;
@@ -167,7 +167,11 @@ sub fcopy {
         unlink $new if -l $new;
         symlink( $target, $new ) or return;
     }
+    elsif ( -d $_[0] && -f $_[1] ) {
+        return;
+    }
     else {
+        return if -d $_[0];                # address File::Copy::copy() bug outlined in https://rt.perl.org/Public/Bug/Display.html?id=132866
         copy(@_) or return;
 
         my @base_file = File::Spec->splitpath( $_[0] );
@@ -273,7 +277,6 @@ sub dircopy {
                 my $rc;
                 if ( !-w $org && $KeepMode ) {
                     local $KeepMode = 0;
-                    carp "Copying readonly directory ($org); mode of its contents may not be preserved.";
                     $rc = $recurs->( $org, $new, $buf ) if defined $buf;
                     $rc = $recurs->( $org, $new ) if !defined $buf;
                     chmod scalar( ( stat($org) )[2] ), $new;
@@ -367,7 +370,7 @@ sub pathempty {
     my $pth = shift;
 
     my ( $orig_dev, $orig_ino ) = ( lstat $pth )[ 0, 1 ];
-    return 2 if !-d _ || !$orig_dev || !$orig_ino;
+    return 2 if !-d _ || !defined($orig_dev) || ( $^O ne 'MSWin32' && !$orig_ino );    #stat.inode is 0 on Windows
 
     my $starting_point = Cwd::cwd();
     my ( $starting_dev, $starting_ino ) = ( lstat $starting_point )[ 0, 1 ];
@@ -417,7 +420,13 @@ sub pathrm {
     my ( $path, $force, $nofail ) = @_;
 
     my ( $orig_dev, $orig_ino ) = ( lstat $path )[ 0, 1 ];
-    return 2 if !-d _ || !$orig_dev || !$orig_ino;
+    return 2 if !-d _ || !defined($orig_dev) || !$orig_ino;
+
+    # Manual test (I hate this function :/):
+    #    sudo mkdir /foo && perl -MFile::Copy::Recursive=pathrm -le 'print pathrm("/foo",1)' && sudo rm -rf /foo
+    if ( $force && File::Spec->file_name_is_absolute($path) ) {
+        Carp::croak("pathrm() w/ force on abspath is not allowed");
+    }
 
     my @pth = File::Spec->splitdir($path);
 
@@ -461,7 +470,7 @@ sub pathrmdir {
     }
 
     my ( $orig_dev, $orig_ino ) = ( lstat $dir )[ 0, 1 ];
-    return 2 if !$orig_dev || !$orig_ino;
+    return 2 if !defined($orig_dev) || ( $^O ne 'MSWin32' && !$orig_ino );
 
     pathempty($dir) or return;
     _bail_if_changed( $dir, $orig_dev, $orig_ino );

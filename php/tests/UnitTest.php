@@ -4,7 +4,22 @@ use PHPUnit\Framework\TestCase;
 
 include_once("php/lib/captcha_lib.php");
 
-class ApiTest extends TestCase {
+class UnitTest extends TestCase {
+
+    public function testWdayFromTs() {
+        include_once("php/lib/MTUtil.php");
+        // leap year
+        $this->assertEquals(6, wday_from_ts(2000,1,1), 'right wday');
+        $this->assertEquals(4, wday_from_ts(2000,1,6), 'right wday');
+        $this->assertEquals(2, wday_from_ts(2000,2,29), 'right wday');
+        $this->assertEquals(3, wday_from_ts(2000,3,1), 'right wday');
+        $this->assertEquals(0, wday_from_ts(2000,4,30), 'right wday');
+        $this->assertEquals(1, wday_from_ts(2000,5,1), 'right wday');
+        // normal year
+        $this->assertEquals(3, wday_from_ts(2001,2,28), 'right wday');
+        $this->assertEquals(4, wday_from_ts(2001,3,1), 'right wday');
+    }
+
     public function testFetchPermission() {
         include_once("php/mt.php");
         include_once("php/lib/MTUtil.php");
@@ -68,6 +83,64 @@ class ApiTest extends TestCase {
     public function testCC() {
         include_once("php/lib/cc_lib.php");
         $this->assertEquals(cc_name('by'), 'Attribution');
+    }
+
+    public function testDatetimeToTimestamp() {
+        include_once("php/lib/MTUtil.php");
+
+        $ret = datetime_to_timestamp('2005-12-30 23:23:59');
+        $this->assertEquals(1135952639, $ret);
+
+        // 13th month is next Jan
+        $ret = datetime_to_timestamp('2005-13-30 23:23:59');
+        $this->assertEquals(1138631039, $ret);
+
+        // Too long is acceptable
+        $ret = datetime_to_timestamp('2005-13-30 23:23:591');
+        $this->assertEquals(1138631039, $ret);
+        
+        if (PHP_VERSION_ID > 506000) {
+
+            // empty
+            $ret = datetime_to_timestamp('');
+            $this->assertTrue(false === $ret);
+
+            // Too short
+            $ret = datetime_to_timestamp('2005');
+            $this->assertTrue(false === $ret);
+        }
+    }
+
+    public function testDaysIn() {
+
+        $ret = days_in('12', '2000');
+        $this->assertEquals(31, $ret);
+
+        $ret = days_in('11', '2000');
+        $this->assertEquals(30, $ret);
+
+        $ret = days_in('2', '2000');
+        $this->assertEquals(29, $ret);
+
+        $ret = days_in('14', '1999'); // Feb 2000
+        $this->assertEquals(29, $ret);
+
+        $ret = days_in('2', '2001');
+        $this->assertEquals(28, $ret);
+
+        $ret = days_in(0, 0);
+        $this->assertEquals(31, $ret); // Jan 1970
+        
+        if (PHP_VERSION_ID > 506000) {
+
+            // Empty string for an argument
+            $ret = days_in('12', '');
+            $this->assertEquals(31, $ret); // Jan 1970
+
+            // Empty string for an argument
+            $ret = days_in('', '2005');
+            $this->assertEquals(31, $ret); // Jan 1970
+        }
     }
 }
 

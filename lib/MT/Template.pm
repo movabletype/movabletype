@@ -12,6 +12,7 @@ use utf8;
 use open ':utf8';
 use base qw( MT::Object MT::Revisable );
 use MT::Util qw( weaken );
+use MT::Util::Encode;
 
 use MT::Template::Node;
 sub NODE () {'MT::Template::Node'}
@@ -110,7 +111,6 @@ __PACKAGE__->install_properties(
 );
 __PACKAGE__->add_trigger( 'pre_remove' => \&pre_remove_children );
 
-use MT::Builder;
 use MT::Blog;
 use File::Spec;
 
@@ -380,7 +380,7 @@ sub build {
         );
     }
 
-    my $build = $ctx->{__stash}{builder} || MT::Builder->new;
+    my $build = $ctx->{__stash}{builder} || MT->builder;
     my $page_layout;
     if ( my $blog_id = $tmpl->blog_id ) {
         $ctx->stash( 'blog_id',       $blog_id );
@@ -745,7 +745,8 @@ sub _sync_from_disk {
         else {
 
             # use MT path to base relative paths
-            $lfile = File::Spec->catfile( MT->instance->server_path, $lfile );
+            my $base_path = MT->config->BaseTemplatePath || MT->instance->server_path;
+            $lfile = File::Spec->catfile( $base_path, $lfile );
         }
     }
     return unless -e $lfile && -w _;
@@ -791,7 +792,8 @@ sub _sync_to_disk {
             $lfile = File::Spec->catfile( $blog->site_path, $lfile );
         }
         else {
-            $lfile = File::Spec->catfile( MT->instance->server_path, $lfile );
+            my $base_path = MT->config->BaseTemplatePath || MT->instance->server_path;
+            $lfile = File::Spec->catfile( $base_path, $lfile );
         }
     }
     ## If the linked file already exists, and there is no template text
@@ -805,6 +807,19 @@ sub _sync_to_disk {
         close $fh;
     }
     else {
+        my ($vol, $dir) = File::Spec->splitpath($lfile);
+        $dir = File::Spec->catpath($vol, $dir);
+        unless (-d $dir) {
+            require File::Path;
+            eval { File::Path::mkpath($dir) } or return $tmpl->error(
+                MT->translate(
+                    "Opening linked file '[_1]' failed: [_2]",
+                    $lfile,
+                    ( Encode::is_utf8($!) ? "$!" : Encode::decode_utf8($!) )
+                )
+            );
+        }
+
         my $umask = oct $cfg->HTMLUmask;
         my $old   = umask($umask);
         ## Untaint. We assume that the user knows what he/she is doing,
@@ -816,7 +831,7 @@ sub _sync_to_disk {
             MT->translate(
                 "Opening linked file '[_1]' failed: [_2]",
                 $lfile,
-                ( Encode::is_utf8($!) ? "$!" : Encode::decode_utf8($!) )
+                MT::Util::Encode::decode_utf8_unless_flagged("$!")
             )
             );
         print $fh $text;
@@ -861,8 +876,7 @@ sub rescan {
 
 sub compile {
     my $tmpl = shift;
-    require MT::Builder;
-    my $b = new MT::Builder;
+    my $b = MT->builder;
     $b->compile($tmpl) or return $tmpl->error( $b->errstr );
     return $tmpl->{__tokens};
 }
@@ -950,7 +964,9 @@ sub published_url {
     else {
         my $site_path = $blog->site_path || '';
         my $tmpl_path = File::Spec->catfile( $site_path, $tmpl->outfile );
-        if ( -f $tmpl_path ) {
+        require MT::FileMgr;
+        my $fmgr = MT::FileMgr->new('Local');
+        if ($fmgr->exists($tmpl_path)) {
             return $url;
         }
     }
@@ -1099,9 +1115,8 @@ sub appendChild {
 sub get_cache_key {
     my $self = shift;
     require MT::Util::Digest::MD5;
-    require Encode;
     my $cache_key = MT::Util::Digest::MD5::md5_hex(
-        Encode::encode_utf8(
+        MT::Util::Encode::encode_utf8(
                   'blog::'
                 . $self->blog_id
                 . '::template_'

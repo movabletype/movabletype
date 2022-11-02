@@ -7,6 +7,7 @@
 package MT::Meta::Proxy;
 use strict;
 use warnings;
+use MT::Util::Encode;
 
 sub META_CLASS {'MT::Meta'}
 
@@ -215,8 +216,7 @@ sub save {
         $data = $utf8_data = $meta_obj->$type;
         unless ( ref $data ) {
             my $dbd = $meta_obj->driver->dbd;
-            $data = Encode::encode( $enc, $data )
-                if Encode::is_utf8($data) && $dbd->need_encode;
+            $data = MT::Util::Encode::encode_if_flagged( $enc, $data ) if $dbd->need_encode;
         }
         $meta_obj->$type( $data, { no_changed_flag => 1 } );
 
@@ -378,8 +378,7 @@ sub bulk_load_meta_objects {
                 my $enc = MT->config->PublishCharset || 'UTF-8';
                 my $data = $meta_obj->$type;
                 unless ( ref $data ) {
-                    $data = Encode::decode( $enc, $data )
-                        unless Encode::is_utf8($data);
+                    $data = MT::Util::Encode::decode_unless_flagged( $enc, $data );
                 }
                 $meta_obj->$type( $data, { no_changed_flag => 1 } );
             }
@@ -437,8 +436,7 @@ sub prepare_objects {
             my $enc = MT->config->PublishCharset || 'UTF-8';
             my $data = $meta_obj->$type;
             unless ( ref $data ) {
-                $data = Encode::decode( $enc, $data )
-                    unless Encode::is_utf8($data);
+                $data = MT::Util::Encode::decode_unless_flagged( $enc, $data );
             }
             $meta_obj->$type( $data, { no_changed_flag => 1 } );
         }
@@ -515,8 +513,7 @@ sub do_unserialization {
     }
     elsif ( $prefix eq 'ASC' ) {
         my $enc = MT->config('PublishCharset');
-        $$dataref = Encode::decode( $enc, $$dataref )
-            unless Encode::is_utf8($$dataref);
+        $$dataref = MT::Util::Encode::decode_unless_flagged( $enc, $$dataref );
         return $dataref;
     }
     else {

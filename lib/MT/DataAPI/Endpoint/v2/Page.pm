@@ -10,10 +10,75 @@ use strict;
 use warnings;
 
 use MT::Util;
-use MT::DataAPI::Endpoint::Entry;
+use MT::DataAPI::Endpoint::v1::Entry;
 use MT::DataAPI::Endpoint::v2::Entry;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
+
+sub list_openapi_spec {
+    +{
+        tags        => ['Pages'],
+        summary     => 'Retrieve a list of pages in the specified site',
+        description => <<'DESCRIPTION',
+- Authorization is required to include unpublished pages.
+
+#### Permissions
+
+- manage_pages
+  - to retrieve unpublished page
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/page_search' },
+            { '$ref' => '#/components/parameters/page_searchFields' },
+            { '$ref' => '#/components/parameters/page_limit' },
+            { '$ref' => '#/components/parameters/page_offset' },
+            { '$ref' => '#/components/parameters/page_sortBy' },
+            { '$ref' => '#/components/parameters/page_sortOrder' },
+            { '$ref' => '#/components/parameters/page_fields' },
+            { '$ref' => '#/components/parameters/page_includeIds' },
+            { '$ref' => '#/components/parameters/page_excludeIds' },
+            { '$ref' => '#/components/parameters/page_status' },
+            { '$ref' => '#/components/parameters/page_maxComments' },
+            { '$ref' => '#/components/parameters/page_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/page_no_text_filter' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of pages.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of page resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/page',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
 
 sub list {
     my ( $app, $endpoint ) = @_;
@@ -27,10 +92,140 @@ sub list {
     };
 }
 
+sub list_for_folder_openapi_spec {
+    +{
+        tags        => ['Pages', 'Folders'],
+        summary     => 'Retrieve a list of pages by specific folder',
+        description => <<'DESCRIPTION',
+- Authorization is required to include unpublished pages.
+
+#### Permissions
+
+- manage_pages
+  - to retrieve unpublished page
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/page_search' },
+            { '$ref' => '#/components/parameters/page_searchFields' },
+            { '$ref' => '#/components/parameters/page_limit' },
+            { '$ref' => '#/components/parameters/page_offset' },
+            { '$ref' => '#/components/parameters/page_sortBy' },
+            { '$ref' => '#/components/parameters/page_sortOrder' },
+            { '$ref' => '#/components/parameters/page_fields' },
+            { '$ref' => '#/components/parameters/page_includeIds' },
+            { '$ref' => '#/components/parameters/page_excludeIds' },
+            { '$ref' => '#/components/parameters/page_status' },
+            { '$ref' => '#/components/parameters/page_maxComments' },
+            { '$ref' => '#/components/parameters/page_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/page_no_text_filter' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of pages.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of page resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/page',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Folder not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list_for_folder {
     my ( $app, $endpoint ) = @_;
     MT::DataAPI::Endpoint::v2::Entry::list_for_category_common( $app,
         $endpoint, 'page' );
+}
+
+sub list_for_asset_openapi_spec {
+    +{
+        tags        => ['Pages', 'Assets'],
+        summary     => 'Retrieve a list of pages that related with specific asset',
+        description => <<'DESCRIPTION',
+- Authorization is required to include unpublished pages.
+
+#### Permissions
+
+- manage_pages
+  - to retrieve unpublished page
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/page_search' },
+            { '$ref' => '#/components/parameters/page_searchFields' },
+            { '$ref' => '#/components/parameters/page_limit' },
+            { '$ref' => '#/components/parameters/page_offset' },
+            { '$ref' => '#/components/parameters/page_sortBy' },
+            { '$ref' => '#/components/parameters/page_sortOrder' },
+            { '$ref' => '#/components/parameters/page_fields' },
+            { '$ref' => '#/components/parameters/page_includeIds' },
+            { '$ref' => '#/components/parameters/page_excludeIds' },
+            { '$ref' => '#/components/parameters/page_status' },
+            { '$ref' => '#/components/parameters/page_maxComments' },
+            { '$ref' => '#/components/parameters/page_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/page_no_text_filter' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of pages.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of page resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/page',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Asset not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub list_for_asset {
@@ -41,14 +236,118 @@ sub list_for_asset {
 
 sub list_for_tag {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     MT::DataAPI::Endpoint::v2::Entry::list_for_tag_common( $app, $endpoint,
         'page' );
+}
+
+sub list_for_site_and_tag_openapi_spec {
+    +{
+        tags        => ['Pages', 'Tags'],
+        summary     => 'Retrieve a list of pages that related with specific tag.',
+        description => <<'DESCRIPTION',
+- Authorization is required to include unpublished pages.
+
+#### Permissions
+
+- manage_pages
+  - to retrieve unpublished page
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/page_search' },
+            { '$ref' => '#/components/parameters/page_searchFields' },
+            { '$ref' => '#/components/parameters/page_limit' },
+            { '$ref' => '#/components/parameters/page_offset' },
+            { '$ref' => '#/components/parameters/page_sortBy' },
+            { '$ref' => '#/components/parameters/page_sortOrder' },
+            { '$ref' => '#/components/parameters/page_fields' },
+            { '$ref' => '#/components/parameters/page_includeIds' },
+            { '$ref' => '#/components/parameters/page_excludeIds' },
+            { '$ref' => '#/components/parameters/page_status' },
+            { '$ref' => '#/components/parameters/page_maxComments' },
+            { '$ref' => '#/components/parameters/page_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/page_no_text_filter' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of pages.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of page resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/page',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Tag not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub list_for_site_and_tag {
     my ( $app, $endpoint ) = @_;
     MT::DataAPI::Endpoint::v2::Entry::list_for_site_and_tag_common( $app,
         $endpoint, 'page' );
+}
+
+sub get_openapi_spec {
+    +{
+        tags        => ['Pages'],
+        summary     => 'Retrieve a single page by its ID',
+        description => <<'DESCRIPTION',
+- Authorization is required if the page status is "unpublished". If the page status is "published", then this method can be called without authorization.
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/page_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/page',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Page not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub get {
@@ -61,6 +360,60 @@ sub get {
         or return;
 
     return $page;
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Pages'],
+        summary     => 'Create a new page',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+
+#### Update in v2.0
+
+- You can attach folder and assets in one request.
+
+#### Permissions
+
+- manage_post
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            page => {
+                                '$ref' => '#/components/schemas/page_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/page',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub create {
@@ -95,7 +448,7 @@ sub create {
     MT::Util::translate_naughty_words($new_page);
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $site,
+        = MT::DataAPI::Endpoint::v1::Entry::build_post_save_sub( $app, $site,
         $new_page, $orig_page );
 
     # Check whether or not folder and assets can attach.
@@ -168,6 +521,60 @@ sub create {
     return $new_page;
 }
 
+sub update_openapi_spec {
+    +{
+        tags        => ['Pages'],
+        summary     => 'Update an existing page',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+
+#### Update in v2.0
+
+- You can attach/detach folder and assets in one request.
+
+#### Permissions
+
+- manage_pages
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            page => {
+                                '$ref' => '#/components/schemas/page_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/page',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Page not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
@@ -177,7 +584,7 @@ sub update {
         or return;
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $site,
+        = MT::DataAPI::Endpoint::v1::Entry::build_post_save_sub( $app, $site,
         $new_page, $orig_page );
 
     # Check whether or not folder and assets can attach/detach.
@@ -262,6 +669,42 @@ sub update {
     return $new_page;
 }
 
+sub delete_openapi_spec {
+    +{
+        tags        => ['Pages'],
+        summary     => 'Delete an existing page',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+
+#### Permissions
+
+- edit_entry
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/page',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Page not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub delete {
     my ( $app, $endpoint ) = @_;
 
@@ -293,6 +736,87 @@ sub delete {
     $app->run_callbacks( 'rebuild', $site );
 
     return $page;
+}
+
+sub preview_by_id_openapi_spec {
+    +{
+        tags        => ['Pages'],
+        summary     => 'Make a preview for a page with existing data',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- **This endpoint has been available since Movable Type 6.1.2.**
+- **page** parameter is required. If you just want to get preview page from existing data, you should provide page parameter with empty json.
+
+#### Permissions
+
+- manage_post
+DESCRIPTION
+        parameters => [{
+                in     => 'query',
+                name   => 'raw',
+                schema => {
+                    type    => 'integer',
+                    enum    => [0, 1],
+                    default => 0,
+                },
+                description => 'If specify "1", will be returned preview contents.',
+            },
+        ],
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            page => {
+                                '$ref' => '#/components/schemas/page',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status  => { type => 'string' },
+                                preview => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Page not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
+sub preview_openapi_spec {
+    my $spec = __PACKAGE__->preview_by_id_openapi_spec();
+    $spec->{summary} = 'Make a preview for a page';
+    $spec->{description} = <<'DESCRIPTION';
+- Authorization is required.
+- **This endpoint has been available since Movable Type 6.1.2.**
+
+#### Permissions
+
+- manage_pages
+DESCRIPTION
+    return $spec;
 }
 
 sub preview {

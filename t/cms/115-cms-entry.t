@@ -403,7 +403,6 @@ subtest 'Test in website scope' => sub {
             blog_id => $website->id,
         });
 
-        $app->content_like(qr/Entry Feed/, 'Entry Feed in website scope exists');
         my $column = quotemeta('<span class="col-label">Website/Blog Name</span>');
         $column = qr/$column/;
     SKIP: {

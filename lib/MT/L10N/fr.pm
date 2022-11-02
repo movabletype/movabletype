@@ -3161,10 +3161,7 @@ use vars qw( @ISA %Lexicon );
 	q{You did not select any [_1] to [_2].} => q{Vous n'avez pas sélectionné de [_1] à [_2].},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
-	'100 rows' => '100 lignes',
-	'200 rows' => '200 lignes',
-	'25 rows' => '25 lignes',
-	'50 rows' => '50 lignes',
+	'[_1] rows' => '[_1] lignes',
 	'Show' => 'Afficher',
 
 ## mt-static/js/listing/tag/display-options.tag
@@ -4555,7 +4552,7 @@ réessayer plus tard.',
 ## tmpl/cms/edit_content_data.tmpl
 	'(Max length: [_1])' => '(Longueur max : [_1])',
 	'(Max select: [_1])' => '(Sélection max : [_1])',
-	'(Max tags: [_2])' => '(Tags max : [_2])',
+	'(Max tags: [_1])' => '(Tags max : [_1])',
 	'(Max: [_1] / Number of decimal places: [_2])' => '(Max : [_1] / Nombre de décimales : [_2])',
 	'(Max: [_1])' => '(Max : [_1])',
 	'(Min length: [_1] / Max length: [_2])' => '(Longueur min : [_1] / Longueur max : [_2])',

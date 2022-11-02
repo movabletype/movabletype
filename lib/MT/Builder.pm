@@ -11,6 +11,7 @@ use warnings;
 use base qw( MT::ErrorHandler );
 use MT::Template::Node;
 use MT::Template::Handler;
+use MT::Util::Encode;
 
 sub NODE () {'MT::Template::Node'}
 
@@ -48,8 +49,8 @@ sub compile {
     }
 
     return [] unless defined $text;
-    if ( $depth <= 0 && $text && Encode::is_utf8($text) ) {
-        Encode::_utf8_off($text);
+    if ( $depth <= 0 && $text && MT::Util::Encode::is_utf8($text) ) {
+        MT::Util::Encode::_utf8_off($text);
     }
 
     my $mods;
@@ -195,7 +196,7 @@ sub compile {
                 {
                 message => MT->translate(
                     "<[_1]> at line [_2] is unrecognized.",
-                    Encode::decode_utf8( $prefix . $tag ),
+                    MT::Util::Encode::decode_utf8( $prefix . $tag ),
                     $opt->{line}
                 ),
                 line => $opt->{line}
@@ -309,8 +310,8 @@ sub compile {
         for my $t ( @{ $state->{tokens} } ) {
             $t->upgrade;
         }
-        Encode::_utf8_on($text)
-            if !Encode::is_utf8($text);
+        MT::Util::Encode::_utf8_on($text)
+            if !MT::Util::Encode::is_utf8($text);
     }
     return $state->{tokens};
 }

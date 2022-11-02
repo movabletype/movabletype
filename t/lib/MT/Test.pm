@@ -21,6 +21,7 @@ use File::Spec;
 use File::Basename;
 use MT;
 use MT::Mail;
+use MT::Mail::MIME;
 
 use Cwd qw( abs_path );
 use URI;
@@ -87,6 +88,7 @@ BEGIN {
 unless ( $ENV{MT_TEST_MAIL} ) {
     no warnings 'redefine';
     *MT::Mail::_send_mt_debug = sub {1};
+    *MT::Mail::MIME::_send_mt_debug = sub {1};
 }
 
 sub import {
@@ -259,7 +261,12 @@ sub init_upgrade {
     MT::Upgrade->do_upgrade(
         Install => 1,
         App     => __PACKAGE__,
-        User    => {},
+        User    => {
+            user_name     => 'Melody',
+            user_password => 'Nelson',
+            user_nickname => 'Melody',
+            user_email    => 'test@localhost.localdomain',
+        },
         Blog    => {}
     );
     eval {
@@ -272,6 +279,7 @@ sub init_upgrade {
         unless ( $args{not_create_website} ) {
             my $website
                 = MT::Website->create_default_website('First Website');
+            $website->allow_data_api(1);
             $website->save;
             my $author = MT::Author->load;
             my ($website_admin_role)
@@ -323,6 +331,7 @@ sub init_data {
             description              => "Narnia None Test Website",
             custom_dynamic_templates => 'custom',
             convert_paras            => 1,
+            allow_data_api           => 1,
             allow_reg_comments       => 1,
             allow_unreg_comments     => 0,
             allow_pings              => 1,
@@ -364,6 +373,7 @@ sub init_data {
             description              => "Narnia None Test Blog",
             custom_dynamic_templates => 'custom',
             convert_paras            => 1,
+            allow_data_api           => 1,
             allow_reg_comments       => 1,
             allow_unreg_comments     => 0,
             allow_pings              => 1,
@@ -1479,7 +1489,7 @@ sub init_data {
         $map->save;
     }
 
-    if (lc($ENV{MT_TEST_BACKEND} // '') eq 'oracle') {
+    if (lc($ENV{MT_TEST_BACKEND} // '') =~ /^(oracle|pg)/) {
         MT::Test::Env->update_sequences;
     }
 
@@ -1547,7 +1557,7 @@ sub _run_app {
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
         [ abs_path( $app->config->SearchTemplatePath ) ] );
-    $app->config( 'MailTransfer', 'debug' );
+    $app->config( 'MailTransfer', 'debug' ) unless $ENV{MT_TEST_MAIL};
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be
@@ -1653,30 +1663,9 @@ sub query_param_contains {
     ok !$fail, $message;
 }
 
-my $HasPHP;
-
 sub has_php {
-    return $HasPHP if defined $HasPHP;
-    my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
-    my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
-    $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
-    if (MT->config->ObjectDriver =~ /u?mssqlserver/i) {
-        my $phpinfo = `php -i 2>&1` or return $HasPHP = 0;
-        $HasPHP = 0 if $phpinfo =~ /\-\-without\-(?:pdo\-)?mssql/;
-    }
-    my $smarty_major_version = _find_smarty_version();
-    if ($smarty_major_version > 3) {
-        return $HasPHP = 0 if $php_version < 7.1;
-    }
-    $HasPHP;
-}
-
-sub _find_smarty_version {
-    open my $fh, '<', "$ENV{MT_HOME}/php/extlib/smarty/libs/Smarty.class.php";
-    read($fh, my $buf, 8192) or return;
-    my ($smarty_version) = $buf =~ /SMARTY_VERSION\s*=\s*'([0-9.]+)';/;
-    my ($major, $minor, $patch) = split /\./, $smarty_version;
-    return wantarray ? ($major, $minor, $patch) : $major;
+    require MT::Test::PHP;
+    MT::Test::PHP->php_version ? 1 : 0;
 }
 
 sub validate_param { return [] }

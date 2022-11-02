@@ -46,8 +46,6 @@ sub edit {
 
         $param->{system_allow_comments} = $cfg->AllowComments;
         $param->{system_allow_pings}    = $cfg->AllowPings;
-        $param->{tk_available}          = eval { require MIME::Base64; 1; }
-            && eval { require LWP::UserAgent; 1 };
         $param->{'auto_approve_commenters'}
             = !$obj->manual_approve_commenters;
         $param->{"moderate_comments"} = $obj->moderate_unreg_comments;
@@ -234,10 +232,11 @@ sub edit {
             $param->{ 'nwc_smart_replace_' . ($blog->smart_replace || 0) } = 1;
             $param->{'nwc_replace_none'} = ($blog->smart_replace || 0) == 2;
 
+            $param->{disabled_popup}                                      = MT->config('DisableImagePopup') ? 1 : 0;
             $param->{can_popup}                                           = $blog->can_popup_image();
-            $param->{popup}                                               = $blog->image_default_popup ? 1                         : 0;
-            $param->{popup_link}                                          = $param->{can_popup}        ? $blog->image_default_link : 2;
-            $param->{make_thumb}                                          = $blog->image_default_thumb ? 1                         : 0;
+            $param->{popup}                                               = $blog->image_default_popup                       ? 1                         : 0;
+            $param->{popup_link}                                          = $param->{can_popup} && $blog->image_default_link ? $blog->image_default_link : 2;
+            $param->{make_thumb}                                          = $blog->image_default_thumb                       ? 1                         : 0;
             $param->{ 'align_' . ($blog->image_default_align || 'none') } = 1;
             $param->{thumb_width}                                         = $blog->image_default_width || 0;
 
@@ -260,7 +259,7 @@ sub edit {
                 } foreach keys %$pings;
             $param->{pings_loop} = \@pings;
 
-            $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
+            $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
 
             if ( $cfg->is_readonly('DataAPIDisableSite') ) {
                 $param->{'data_api_disable_site_readonly'} = 1;
@@ -355,7 +354,8 @@ sub edit {
     elsif ( $param->{output} && $param->{output} eq 'cfg_web_services.tmpl' )
     {
         # System level web services settings.
-        $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
+        $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
+
         if ( $app->config->is_readonly('DataAPIDisableSite') ) {
             $param->{'data_api_disable_site_readonly'} = 1;
             $param->{config_warning} = $app->translate(
@@ -562,6 +562,8 @@ sub cfg_feedback {
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
+    my $junk_filters = $app->registry('junk_filters');
+    $app->param('has_junk_filters', 1) if %{$junk_filters || {}};
     $app->param( '_type', $app->blog ? $app->blog->class : 'blog' );
     $app->param( 'id', $blog_id );
     $app->forward(
@@ -690,10 +692,12 @@ sub cfg_web_services {
                   ref $tmpl eq 'CODE' ? $tmpl->( $plugin, @_ )
                 : $plugin             ? $plugin->load_tmpl($tmpl)
                 :                       $app->load_tmpl($tmpl)
-            )
+            ),
+            order => ($web_services->{$k}{order} || 999),
+            key => $k
             };
     }
-
+    @config_templates = sort { $a->{order} <=> $b->{order} || $a->{key} cmp $b->{key} } @config_templates;
     $app->param( '_type', $app->blog ? $app->blog->class : 'blog' );
     $app->param( 'id', $blog_id );
     $app->forward(
@@ -1464,8 +1468,9 @@ sub save_favorite_blogs {
     elsif ( $blog && !$blog->is_blog ) {
         $app->add_to_favorite_websites($fav);
     }
+    $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript+json");
-    return 'true';
+    $app->print_encode("true");
 }
 
 sub cc_return {
@@ -2063,7 +2068,7 @@ sub post_save {
         my $auth = $app->user;
 
         # disable data api by default
-        save_data_api_settings( $app, $obj->id, 0 );
+        $obj->allow_data_api(0);
 
         # Grant permission
         my $assoc_class = $app->model('association');
@@ -3607,12 +3612,20 @@ sub can_view_blog_list {
 }
 
 sub data_api_is_enabled {
-    my ( $app, $blog_id ) = @_;
-    my $cfg = $app->config;
+    my ( $app, $blog_id, $blog ) = @_;
 
-    my @disable_site = split ',',
-        defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    return ( grep { $blog_id == $_ } @disable_site ) ? 0 : 1;
+    $blog_id ||= 0;
+    my $cfg = $app->config;
+    my @disable_sites = split ',', defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
+    if ($cfg->is_readonly('DataAPIDisableSite')) {
+        return ( grep { $blog_id == $_ } @disable_sites ) ? 0 : 1;
+    } else {
+        if ($blog_id == 0) {
+            return ( grep { $blog_id == $_ } @disable_sites ) ? 0 : 1;
+        } else {
+            return $blog->allow_data_api;
+        }
+    }
 }
 
 sub save_data_api_settings {
@@ -3621,23 +3634,20 @@ sub save_data_api_settings {
     $blog_id   = $app->param('id') || 0         unless defined $blog_id;
     $new_value = $app->param('enable_data_api') unless defined $new_value;
 
-    my $cfg = $app->config;
-
-    my $data_api_disable_site
-        = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my %data_api_disable_site
-        = map { $_ => 1 } ( split ',', $data_api_disable_site );
-    if ($new_value) {
-        delete $data_api_disable_site{$blog_id};
+    if ($blog_id == 0) {
+        my $cfg = $app->config;
+        $cfg->DataAPIDisableSite($new_value ? '' : $blog_id, 1);
+        $cfg->save_config;
+    } else {
+        my $blog;
+        if ($app->blog && $app->blog->id == $blog_id) {
+            $blog = $app->blog;
+        } else {
+            $blog = MT->model('blog')->load($blog_id);
+        }
+        $blog->allow_data_api($new_value ? 1 : 0);
+        $blog->save;
     }
-    else {
-        $data_api_disable_site{$blog_id} = 1;
-    }
-    my $new_data_api_disable_site = join ',',
-        ( sort { $a <=> $b } keys %data_api_disable_site );
-    $cfg->DataAPIDisableSite( $new_data_api_disable_site, 1 );
-
-    $cfg->save_config;
 
     return 1;
 }

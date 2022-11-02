@@ -6,7 +6,7 @@
 
     this.columns = args.columns;
     this.showColumns = [];
-    this.limit = args.limit || this.DefautlLimit;
+    this.limit = args.limit;
     this.page = args.page || this.DefaultPage;
     this.sortBy = args.sortBy;
     this.sortOrder = args.sortOrder;
@@ -28,12 +28,11 @@
     this.disableUserDispOption = args.disableUserDispOption;
   };
 
-  ListData.prototype.DefaultLimit = 50;
   ListData.prototype.DefaultPage = 1;
 
   ListData.prototype.addFilterItem = function (filterItem) {
     if (this.currentFilter.id == this.allpassFilter.id) {
-      this.createNewFilter(trans('Unknown Filter'));
+      this.createNewFilter(trans('New Filter'));
     }
     this.currentFilter.items.push({ type: filterItem });
   };

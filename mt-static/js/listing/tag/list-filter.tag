@@ -51,7 +51,7 @@
 
     addFilterItem(filterType) {
       if (this.isAllpassFilter()) {
-        this.createNewFilter(trans('Unknown Filter'))
+        this.createNewFilter(trans('New Filter'))
       }
       this.currentFilter.items.push({ type: filterType, args: {} })
       this.update()
@@ -645,7 +645,7 @@
     }
 
     removeFilter(e) {
-      var filterData = e.target.parentElement.parentElement.dataset
+      var filterData = e.target.closest('[data-mt-list-filter-label]').dataset
       var message = trans(
         "Are you sure you want to remove filter '[_1]'?",
         filterData.mtListFilterLabel

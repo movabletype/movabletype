@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use MT::Util qw( format_ts relative_date );
+use MT::Util::Encode;
 use Time::Local qw( timelocal );
 
 sub init_default_handlers { }
@@ -286,6 +287,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Userpic::_hdlr_author_userpic_asset',
             EntryAuthorUserpicAsset =>
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_asset',
+            EntryModifiedAuthorUserpicAsset =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_modified_author_userpic_asset',
             CommenterUserpicAsset => sub {''},
 
             ## Tag
@@ -343,6 +346,8 @@ sub core_tags {
             CalendarIfNoContents => \&slurp,
             ContentAuthorUserpicAsset =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic_asset',
+            ContentModifiedAuthorUserpicAsset =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_userpic_asset',
             ContentCalendar =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_calendar',
             ContentField =>
@@ -658,6 +663,18 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_link',
             EntryAuthorID =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_id',
+            EntryModifiedAuthorDisplayName =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_display_name',
+            EntryModifiedAuthorUsername =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_username',
+            EntryModifiedAuthorEmail =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_email',
+            EntryModifiedAuthorURL =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_url',
+            EntryModifiedAuthorLink =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_link',
+            EntryModifiedAuthorID =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_id',
 
             AuthorEntryCount =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_author_entry_count',
@@ -785,6 +802,14 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Page::_hdlr_page_author_link',
             PageAuthorURL =>
                 '$Core::MT::Template::Tags::Page::_hdlr_page_author_url',
+            PageModifiedAuthorDisplayName =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_display_name',
+            PageModifiedAuthorEmail =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_email',
+            PageModifiedAuthorLink =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_link',
+            PageModifiedAuthorURL =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_url',
             PageExcerpt =>
                 '$Core::MT::Template::Tags::Page::_hdlr_page_excerpt',
             BlogPageCount =>
@@ -848,6 +873,10 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic',
             EntryAuthorUserpicURL =>
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_url',
+            EntryModifiedAuthorUserpic =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_modified_author_userpic',
+            EntryModifiedAuthorUserpicURL =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_modified_author_userpic_url',
             CommenterUserpic    => sub {''},
             CommenterUserpicURL => sub {''},
 
@@ -985,6 +1014,22 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic',
             ContentAuthorUserpicURL =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic_url',
+            ContentModifiedAuthorDisplayName =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_display_name',
+            ContentModifiedAuthorEmail =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_email',
+            ContentModifiedAuthorID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_id',
+            ContentModifiedAuthorLink =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_link',
+            ContentModifiedAuthorURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_url',
+            ContentModifiedAuthorUsername =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_username',
+            ContentModifiedAuthorUserpic =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_userpic',
+            ContentModifiedAuthorUserpicURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_userpic_url',
             ContentCreatedDate =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_created_date',
             ContentDate =>
@@ -4701,7 +4746,7 @@ B<Example:> Passing Parameters to a Template Module
         }
 
         ## Don't know why but hash key has to be encoded
-        my $stash_id = Encode::encode_utf8(
+        my $stash_id = MT::Util::Encode::encode_utf8(
             'template_' . $type . '::' . $blog_id . '::' . $tmpl_name );
         return $ctx->error(
             MT->translate(
@@ -4861,7 +4906,7 @@ B<Example:> Passing Parameters to a Template Module
                 expirable => 1
             );
             my $cache_value = $cache_driver->get($cache_key);
-            $cache_value = Encode::decode( $enc, $cache_value );
+            $cache_value = MT::Util::Encode::decode( $enc, $cache_value );
             if ($cache_value) {
                 return $cache_value if !$use_ssi;
 
@@ -4902,7 +4947,7 @@ B<Example:> Passing Parameters to a Template Module
         }
 
         if ($cache_enabled) {
-            $cache_driver->set( $cache_key, Encode::encode( $enc, $ret ),
+            $cache_driver->set( $cache_key, MT::Util::Encode::encode( $enc, $ret ),
                 $ttl_for_set );
         }
 
@@ -5176,7 +5221,7 @@ sub _hdlr_section {
                 ## need to decode by hand for blob typed column.
                 my $data = $sess->data();
                 $data = MT::I18N::utf8_off($data) if MT::I18N::is_utf8($data);
-                my $out = Encode::decode( $enc, $data );
+                my $out = MT::Util::Encode::decode( $enc, $data );
                 if ($out) {
                     if ( my $wrap_tag = $args->{html_tag} ) {
                         my $id = $args->{id};
@@ -5209,7 +5254,7 @@ sub _hdlr_section {
             {   id    => $cache_id,
                 kind  => 'CO',
                 start => time,
-                data  => Encode::encode( $enc, $out )
+                data  => MT::Util::Encode::encode( $enc, $out )
             }
         );
         $sess->save();
@@ -5959,9 +6004,9 @@ for the MTOS edition, this would output:
 sub _hdlr_product_name {
     my ( $ctx, $args, $cond ) = @_;
     require MT;
-    my $short_name = MT->translate( MT->product_name );
+    my $short_name = MT->product_name;
     if ( $args->{version} && !MT->config('HideVersion') ) {
-        return MT->translate( "[_1] [_2]", $short_name, MT->version_id );
+        return join ' ', $short_name, MT->version_id;
     }
     else {
         return $short_name;

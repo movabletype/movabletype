@@ -446,9 +446,9 @@ sub _hdlr_page_permalink {
 
 ###########################################################################
 
-=head2 PageAuthorDisplayName
+=head2 PageAuthorDisplayName, PageModifiedAuthorDisplayName
 
-The display name of the author of the page in context. If no display name is
+The display name of the (last modified) author of the page in context. If no display name is
 specified, returns an empty string, and no name is displayed.
 
 B<Example:>
@@ -464,11 +464,16 @@ sub _hdlr_page_author_display_name {
     shift->invoke_handler( 'entryauthordisplayname', @_ );
 }
 
+sub _hdlr_page_modified_author_display_name {
+    return undef unless $_[0]->check_page;
+    shift->invoke_handler( 'entrymodifiedauthordisplayname', @_ );
+}
+
 ###########################################################################
 
-=head2 PageAuthorEmail
+=head2 PageAuthorEmail, PageModifiedAuthorEmail
 
-The email address of the page's author.
+The email address of the page's (last modified) author.
 
 B<Note:> It is not recommended to publish email addresses.
 
@@ -485,11 +490,16 @@ sub _hdlr_page_author_email {
     shift->invoke_handler( 'entryauthoremail', @_ );
 }
 
+sub _hdlr_page_modified_author_email {
+    return undef unless $_[0]->check_page;
+    shift->invoke_handler( 'entrymodifiedauthoremail', @_ );
+}
+
 ###########################################################################
 
-=head2 PageAuthorLink
+=head2 PageAuthorLink, PageModifiedAuthorLink
 
-A linked version of the author's user name, using the author URL if provided
+A linked version of the (last modified) author's user name, using the author URL if provided
 in the author's profile. Otherwise, the author name is unlinked. This tag uses
 the author URL if available and the author email otherwise. If neither are on
 record the author name is unlinked.
@@ -528,11 +538,16 @@ sub _hdlr_page_author_link {
     shift->invoke_handler( 'entryauthorlink', @_ );
 }
 
+sub _hdlr_page_modified_author_link {
+    return undef unless $_[0]->check_page;
+    shift->invoke_handler( 'entrymodifiedauthorlink', @_ );
+}
+
 ###########################################################################
 
-=head2 PageAuthorURL
+=head2 PageAuthorURL, PageModifiedAuthorURL
 
-The URL of the page's author.
+The URL of the page's (last modified) author.
 
 B<Example:>
 
@@ -543,6 +558,11 @@ B<Example:>
 sub _hdlr_page_author_url {
     return undef unless $_[0]->check_page;
     shift->invoke_handler( 'entryauthorurl', @_ );
+}
+
+sub _hdlr_page_modified_author_url {
+    return undef unless $_[0]->check_page;
+    shift->invoke_handler( 'entrymodifiedauthorurl', @_ );
 }
 
 ###########################################################################

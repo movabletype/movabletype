@@ -10,8 +10,52 @@ use strict;
 
 use MT::DataAPI::Endpoint::Common;
 
+sub get_openapi_spec {
+    +{
+        tags        => ['Users'],
+        summary     => 'Retrieve a single user by its ID',
+        description => <<'DESCRIPTION',
+Retrieve a single user by its ID.
+
+Authorization is required if you want to retrieve private properties.
+DESCRIPTION
+        parameters => [{
+                'in'        => 'query',
+                name        => 'fields',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The field list to retrieve as part of the Users resource. This list should be separated by comma. If this parameter is not specified, All fields will be returned.',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/user',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my $user = get_target_user(@_)
         or return;
@@ -23,8 +67,59 @@ sub get {
     $user;
 }
 
+sub update_openapi_spec {
+    +{
+        tags        => ['Users'],
+        summary     => 'Update user data',
+        description => <<'DESCRIPTION',
+Update user data.
+
+Authorization is required.
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            user => {
+                                '$ref' => '#/components/schemas/user_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/user',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my $user = get_target_user(@_)
         or return;

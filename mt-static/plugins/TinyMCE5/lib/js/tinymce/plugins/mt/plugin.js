@@ -230,35 +230,34 @@
           function updateButtonVisibility() {
               var s = ed.mtEditorStatus;
               $.each(hiddenControls, function(i, k) {
-                  $container
-                      .find('.mce_' + k)
-                      .css({
-                          display: ''
-                      })
-                      .removeClass('mce_mt_button_hidden');
+                  var label = tinymce.util.I18n.translate(ed.mtButtons[k].tooltip);
+                  $container.find('button[title="' + label + '"]')
+                  .css({
+                    display: ''
+                  })
+                  .removeClass('mce_mt_button_hidden');
               });
               hiddenControls = [];
               
               var supporteds = supportedButtons(s.mode, s.format);
-              
+
               function update(key) {
-                  if (! supporteds[key]) {
-                      $container.find('.mce_' + key)
+                if (! supporteds[key]) {
+                      var label = tinymce.util.I18n.translate(ed.mtButtons[key].tooltip);
+                      $container.find('button[title="' + label + '"]')
                           .css({
                               display: 'none'
                           })
                           .addClass('mce_mt_button_hidden');
                       hiddenControls.push(key);
                   }
-              }
+                }
               
               if (s.mode == 'source') {
                   proxies.source.setFormat(s.format);
-              }
-              else {
                   $.each(ed.mtButtons, function(name, button) {
-                      update(name);
-                  });
+                    update(name);
+                });
               }
               $(ed.editorContainer).find('.tox-toolbar-overlord .tox-toolbar').each(function(i) {
                   if (buttonRows[s.mode][i]) {
@@ -605,13 +604,13 @@
 
           let _before_insert_content = function(){
             ed.off('beforeExecCommand', _insertContent);
-            ed.once('beforeExecCommand', _insertContent);
+            ed.on('beforeExecCommand', _insertContent);
           }
           let _insertContent = function(e) {
               if (e.command == 'mceInsertContent' && e.value) {
                   ed.mtProxies.source.editor.insertContent(e.value);
+                  ed.off('beforeExecCommand', _insertContent);
               }
-              ed.off('beforeExecCommand', _insertContent);
           };
 
           ed.addMTButton('mt_source_link', {
@@ -619,8 +618,32 @@
               tooltip : 'insert_link',
               onclickFunctions : {
                   source: function(cmd, ui, val) {
+                      ed.once('OpenWindow', function(dialog){
+                        var s = ed.mtEditorStatus;
+                        if( s.mode == 'source' && (s.format != '0' && s.format != '__default__')){
+                            jQuery('.tox-dialog__body .tox-listbox.tox-listbox--select').attr('disabled', 'disabled');
+                        }
+                        jQuery('.tox-dialog__header button.tox-button--naked, .tox-dialog__footer button.tox-button--secondary').on('click', function(){
+                            ed.off('CloseWindow');
+                        });
+                      });
                       ed.execCommand('mceLink');
-                      _before_insert_content()
+                      ed.once('CloseWindow', function(dialog){
+                        var data = dialog.dialog.getData();
+                        if(data.url.value)
+                        ed.mtProxies['source']
+                        .execCommand(
+                            'createLink',
+                            null,
+                            data.url.value,
+                            {
+                                'target': data.target,
+                                'title': data.title,
+                                'text': data.text,
+                            }
+                        );
+                        dialog.dialog.setData({});
+                    });
                   }
               }
           });

@@ -1,6 +1,7 @@
 package MT::Test::Role::Wight;
 
 use Role::Tiny;
+use Test::More ();
 
 # The following methods are just to keep compatibility with Test::Wight
 
@@ -9,13 +10,7 @@ sub visit {
     my $url = $self->{base_url}->clone;
     $url->path_query($path_query);
     $self->driver->get( $url->as_string );
-    $self;
-}
-
-sub find {
-    my ( $self, $selector ) = @_;
-    my $element = eval { $self->driver->find_element($selector); };
-    $self->{_element} = $element;
+    $self->{content} = $self->driver->get_page_source;
     $self;
 }
 

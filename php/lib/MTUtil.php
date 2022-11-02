@@ -8,6 +8,16 @@
 function datetime_to_timestamp($dt, $type = 'local') {
     $mktime = (isset($type) && $type == 'gmt') ? 'gmmktime' : 'mktime';
     $dt = preg_replace('/[^0-9]/', '', $dt);
+
+    // mktime on php7.x have returned FALSE when any of args were an empty string.
+    // Since php8.0 it throws an exception on the same condition.
+    // We preserve the old behavior for backward compatibility.
+    // XXX Use intval instead since the next major version
+    if (strlen($dt) < 14) {
+        trigger_error('Arguments for datetime_to_timestamp must be valid format.', E_USER_DEPRECATED);
+        return false;
+    }
+
     $ts = $mktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
     return $ts;
 }
@@ -37,6 +47,15 @@ function start_end_month($ts) {
 }
 
 function days_in($m, $y) {
+
+    // date($format, false) have returned epoch on php7.x and since php8.0 it's current time.
+    // We preserve the old behavior for backward compatibility.
+    // XXX Use intval instead since the next major version
+    if ($m === '' || $y === '') {
+        trigger_error('Arguments for days_in must not be empty strings.', E_USER_DEPRECATED);
+        return 31; // Jan 1970
+    }
+
     return date('t', mktime(0, 0, 0, $m, 1, $y));
 }
 
@@ -154,7 +173,7 @@ function wday_from_ts($y, $m, $d) {
     $days = $y * 365;
     $days += $y >>= 2;
     $days -= intval($y /= 25);
-    $days += $y >> 2;
+    $days += intval($y) >> 2;
     $days += $In_Year[$leap][$m-1] + $d;
     return $days % 7;
 }
@@ -901,7 +920,7 @@ function strip_hyphen($s) {
 }
 
 function first_n_words($text, $n) {
-    $text = strip_tags($text);
+    $text = strip_tags($text ?? '');
     $words = preg_split('/\s+/', $text);
     $max = count($words) > $n ? $n : count($words);
     return join(' ', array_slice($words, 0, $max));
@@ -981,7 +1000,7 @@ function get_content_type_context(&$ctx, $args) {
     $blog         = $ctx->stash('blog');
     $content_type = $ctx->stash('content_type');
     $blog_id      = (!empty($args['blog_id']) ? $args['blog_id'] : ($blog->id || ''));
-    if ($str = $args['content_type']) {
+    if (isset($args['content_type']) && $str = $args['content_type']) {
         ## If $str points to $content_type, just return it
         if ($content_type && ((preg_match('/^[0-9]+$/', $str) && $content_type->id === $str) ||
             ($str === $content_type->unique_id) || ($str === $content_type->name && $content_type->blog_id === $blog_id))) {
@@ -1223,7 +1242,7 @@ function create_cat_expr_function($expr, &$cats, $datasource, $param) {
     $expr = preg_replace('/\bNOT\b/i', '!', $expr);
 
     # replace any other 'thing' with '(0)' since it's a category that doesn't even exist.
-    $cat_expr = preg_split("/($regexp)/", $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $cat_expr = preg_split("/($regexp)/", $expr, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $new_cat_expr = array();
     foreach ($cat_expr as $token) {
         if (preg_match("/^(\s+|$regexp)$/", $token, $matches)) {
@@ -1323,7 +1342,7 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     foreach ($tags as $tag) {
         $tags_dict[$tag->tag_name] = $tag;
     }
-    $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $result = '';
     foreach ($tokens as $t) {
         $upperToken = strtoupper( $t );

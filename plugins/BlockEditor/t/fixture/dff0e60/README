@@ -1,0 +1,16 @@
+plugins/BlockEditor
+plugins/ContentInfoWidget
+plugins/FormattedText
+plugins/FormattedTextForTinyMCE
+plugins/FormattedTextForTinyMCE5
+plugins/FormattedTextForTinyMCE6
+plugins/GoogleAnalytics
+plugins/GoogleAnalyticsV4
+plugins/Markdown
+plugins/Textile
+plugins/TinyMCE
+plugins/TinyMCE5
+plugins/TinyMCE6
+plugins/WXRImporter
+plugins/WidgetManager
+plugins/spamlookup

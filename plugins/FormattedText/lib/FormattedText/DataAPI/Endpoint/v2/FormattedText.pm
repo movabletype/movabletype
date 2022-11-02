@@ -12,14 +12,99 @@ use warnings;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list_openapi_spec {
+    +{
+        tags       => ['FormattedText'],
+        summary    => 'Retrieve a list of formatted_texts in the specified site',
+        parameters => [
+            { '$ref' => '#/components/parameters/formatted_text_search' },
+            { '$ref' => '#/components/parameters/formatted_text_searchFields' },
+            { '$ref' => '#/components/parameters/formatted_text_limit' },
+            { '$ref' => '#/components/parameters/formatted_text_offset' },
+            { '$ref' => '#/components/parameters/formatted_text_sortBy' },
+            { '$ref' => '#/components/parameters/formatted_text_sortOrder' },
+            { '$ref' => '#/components/parameters/formatted_text_fields' },
+            { '$ref' => '#/components/parameters/formatted_text_includeIds' },
+            { '$ref' => '#/components/parameters/formatted_text_excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of formatted_texts found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of formatted_texts resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/formatted_text',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
     my $res = filtered_list( $app, $endpoint, 'formatted_text' ) or return;
 
-    +{  totalResults => $res->{count},
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub get_openapi_spec {
+    +{
+        tags       => ['FormattedText'],
+        summary    => 'Retrieve single formatted_text by its ID',
+        parameters => [
+            { '$ref' => '#/components/parameters/formatted_text_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/formatted_text',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or FormattedText not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -34,6 +119,49 @@ sub get {
         or return;
 
     $ft;
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['FormattedText'],
+        summary     => 'Create a new formatted_text',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            formatted_text => {
+                                '$ref' => '#/components/schemas/formatted_text_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/formatted_text',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub create {
@@ -56,6 +184,49 @@ sub create {
     $new_ft;
 }
 
+sub update_openapi_spec {
+    +{
+        tags        => ['FormattedText'],
+        summary     => 'Update a formatted_text',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            formatted_text => {
+                                '$ref' => '#/components/schemas/formatted_text_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/formatted_text',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or FormattedText not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
@@ -76,6 +247,35 @@ sub update {
     ) or return;
 
     $new_ft;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags      => ['FormattedText'],
+        summary   => 'Delete a formatted_text',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/formatted_text',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or FormattedText not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {

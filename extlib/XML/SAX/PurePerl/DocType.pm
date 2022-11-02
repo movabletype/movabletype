@@ -97,7 +97,7 @@ sub SystemLiteral {
     my $data = $reader->data;
     my $systemid = '';
     while (1) {
-        $self->parser_error("EOF found while looking for end of Sytem Literal", $reader)
+        $self->parser_error("EOF found while looking for end of System Literal", $reader)
             unless length($data);
         if ($data =~ /^([^$quote]*)$quote/) {
             $systemid .= $1;

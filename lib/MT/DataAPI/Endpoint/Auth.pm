@@ -15,6 +15,7 @@ use URI;
 use boolean ();
 use MT::Session;
 use MT::Util;
+use MT::Util::Encode;
 
 sub APP_HOST ()  {'app'}
 sub BLOG_HOST () {'blog'}
@@ -53,8 +54,44 @@ sub check_redirect_url {
     return undef;
 }
 
+sub authorization_openapi_spec {
+    +{
+        tags        => ['Authentication'],
+        summary     => 'Return authorization(login) form as HTML',
+        description => 'Return authorization(login) form as HTML.',
+        parameters  => [{
+                'in'        => 'query',
+                name        => 'redirectUrl',
+                schema      => { type => 'string' },
+                description => 'This is required. When you succeed in login, you are redirected to the redirectUrl with "#_login". ',
+                required    => JSON::true,
+            },
+            {
+                'in'        => 'query',
+                name        => 'clientId',
+                schema      => { type => 'string' },
+                description => 'This is required. the client ID of the application.',
+                required    => JSON::true,
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'text/html' => {
+                        schema => { type => 'string' },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub authorization {
     my ($app) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my $token = $app->make_magic_token;
 
@@ -98,8 +135,84 @@ sub authorization {
     $app->show_login( \%param );
 }
 
+sub authentication_openapi_spec {
+    +{
+        tags        => ['Authentication'],
+        summary     => 'Create new session and access token. This is like login',
+        description => 'Create new session and access token. This is like login.',
+        requestBody => {
+            required => JSON::true,
+            content  => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            username => {
+                                type        => 'string',
+                                description => 'The username to authenticate.',
+                            },
+                            password => {
+                                type        => 'string',
+                                format      => 'password',
+                                description => 'The password of the user.',
+                            },
+                            clientId => {
+                                type        => 'string',
+                                description => 'This is not required if you specify session id via "X-MT-Authorization" request header. You can create new access token if you have a session id related to this clientId, although you do not have an access token. ',
+                            },
+                            remember => {
+                                type        => 'integer',
+                                description => 'If true (generally, "1" is specified.), a new session will be created as a persistent session. If you want to specify false, you can pass "" or "0" to this parameter.',
+                                enum => [0, 1],
+                            },
+                            mtDataApiLoginMagicToken => {
+                                type        => 'string',
+                                description => 'This is not required if you authenticate except via browser. If this parameter is passed and valid the MT will set cookie in order to start a session. ',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                sessionId => {
+                                    type        => 'string',
+                                    description => 'Session ID. This value is included only when mtDataApiLoginMagicToken is not passed. If mtDataApiLoginMagicToken is passed (and is valid value), sessionId is stored in httponly-cookie.',
+                                },
+                                accessToken => {
+                                    type        => 'string',
+                                    description => 'Access token',
+                                },
+                                expiresIn => {
+                                    type        => 'integer',
+                                    description => 'This access token will be invalidated automatically after the number of seconds specified here.',
+                                },
+                                remember => {
+                                    type        => 'boolean',
+                                    description => 'If true, a new session has been created as a persistent session.',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub authentication {
     my ($app) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     _authentication( $app, sub { $_[0]->login } );
 }
 
@@ -159,7 +272,7 @@ sub _authentication {
         my $remember = $session->get('remember') || '';
         my %arg = (
             -name  => $app->user_cookie,
-            -value => Encode::encode(
+            -value => MT::Util::Encode::encode(
                 $app->charset,
                 join( '::', $author->name, $session->id, $remember )
             ),
@@ -256,8 +369,64 @@ sub _current_session {
     }
 }
 
+sub token_openapi_spec {
+    +{
+        tags        => ['Authentication'],
+        summary     => 'Create new access token related to current session',
+        description => <<'DESCRIPTION',
+Create new access token related to current session.
+
+In order to create new access token, in the case of a web browser, it is necessary to create session via authentication endpoints beforehand.
+
+In the case of other than a browser, it is necessary to send a sessionId that is retrieved via authentication endpoints in MTAuth request header.
+
+`MTAuth sessionId={retrieved sessionId}`
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            clientId => {
+                                type        => 'string',
+                                description => 'This is not required if you specify session id via "X-MT-Authorization" request header. You can create new access token if you have a session id related to this clientId, although you do not have an access token. ',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                accessToken => {
+                                    type        => 'string',
+                                    description => 'Access token',
+                                },
+                                expiresIn => {
+                                    type        => 'integer',
+                                    description => 'This access token will be invalidated automatically after the number of seconds specified here.',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub token {
     my ($app) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     if ( my ($response) = _load_token_by_ott($app) ) {
         return $response || $app->error(401);
@@ -273,8 +442,62 @@ sub token {
     };
 }
 
+sub revoke_authentication_openapi_spec {
+    +{
+        tags        => ['Authentication'],
+        summary     => 'Invalidate current access token. This is not logout',
+        description => <<'DESCRIPTION',
+Invalidate current session. This is like logout. All access tokens related to that session are invalidated too.
+
+Authorization is required. but if there is an effective session, user can revoke by the following methods.
+
+In the case of a web browser, can be authorized by httponly-cookie.
+
+In the case of other than a browser, can be authorized by sending a sessionId that is retrieved via authentication endpoints in MTAuth request header.
+
+`MTAuth sessionId={retrieved sessionId}`
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            clientId => {
+                                type        => 'string',
+                                description => 'This is not required if you specify session id via "X-MT-Authorization" request header. You can create new access token if you have a session id related to this clientId, although you do not have an access token. ',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => {
+                                    type        => 'string',
+                                    description => 'The value of this parameter is always "success".',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub revoke_authentication {
     my ($app) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my $session
         = $app->session || _current_session_from_authorization_data($app)
@@ -302,8 +525,41 @@ sub revoke_authentication {
     +{ status => 'success' };
 }
 
+sub revoke_token_openapi_spec {
+    +{
+        tags        => ['Authentication'],
+        summary     => 'Invalidate current session. This is like logout',
+        description => <<'DESCRIPTION',
+Invalidate current access token. This is not logout. If the browser has active session id, new access token can be obtained easily.
+
+Authorization is required.
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => {
+                                    type        => 'string',
+                                    description => 'The value of this parameter is always "success".',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub revoke_token {
     my ($app) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     if ( my $data = $app->mt_authorization_data ) {
         $app->model('accesstoken')

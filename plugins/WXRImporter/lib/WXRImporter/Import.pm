@@ -11,6 +11,7 @@ use warnings;
 use base qw(MT::ErrorHandler);
 
 use MT::I18N qw( guess_encoding );
+use MT::Util::Encode;
 
 sub import_contents {
     my $class = shift;
@@ -95,7 +96,7 @@ sub start_import {
         if ( my $encoding = $param{Encoding} ) {
             my $guess_encoding
                 = $encoding eq 'guess' ? guess_encoding($str) : $encoding;
-            $str = Encode::decode( $guess_encoding, $str );
+            $str = MT::Util::Encode::decode( $guess_encoding, $str );
         }
         $str;
         }

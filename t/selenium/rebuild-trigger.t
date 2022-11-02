@@ -296,7 +296,6 @@ sub process_scenarios {
             $s->driver->refresh();
             wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
         },
-        limit => 5,
     );
 
     # make sure switch to frame succeeded

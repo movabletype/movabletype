@@ -3161,10 +3161,7 @@ use vars qw( @ISA %Lexicon );
 	q{Are you sure you want to remove filter '[_1]'?} => q{Bent u zeker dat u de filter '[_1]' wenst te verwijderen?},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
-	'100 rows' => '100 rijen',
-	'200 rows' => '2000 rijen',
-	'25 rows' => '25 rijen',
-	'50 rows' => '50 rijen',
+	'[_1] rows' => '[_1] rijen',
 	'Show' => 'Tonen',
 
 ## mt-static/js/listing/tag/display-options.tag
@@ -4556,7 +4553,7 @@ ter opnieuw te proberen.',
 ## tmpl/cms/edit_content_data.tmpl
 	'(Max length: [_1])' => '(Max lengte: [_1])',
 	'(Max select: [_1])' => '(Max selectie: [_1])',
-	'(Max tags: [_2])' => '(Max tags: [_2])',
+	'(Max tags: [_1])' => '(Max tags: [_1])',
 	'(Max: [_1] / Number of decimal places: [_2])' => '(Max: [_1] / Aantal decimalen: [_2])',
 	'(Max: [_1])' => '(Max: [_1])',
 	'(Min length: [_1] / Max length: [_2])' => '(Min lengte: [_1] / Max lengte: [_2])',

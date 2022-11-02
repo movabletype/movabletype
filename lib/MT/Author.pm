@@ -8,6 +8,7 @@ package MT::Author;
 
 use strict;
 use warnings;
+use MT::Util::Encode;
 
 use MT::Summary;    # Holds MT::Summarizable
 use base qw( MT::Object MT::Scorable MT::Summarizable );
@@ -705,7 +706,7 @@ sub set_password {
         $crypt_sha
             = '$6$'
             . $salt . '$'
-            . MT::Util::Digest::SHA::sha512_base64( $salt . Encode::encode_utf8($pass) );
+            . MT::Util::Digest::SHA::sha512_base64( $salt . MT::Util::Encode::encode_utf8($pass) );
     }
     else {
 
@@ -1501,10 +1502,11 @@ sub userpic_html {
     my ( $thumb_url, $w, $h ) = $author->userpic_url(%param) or return;
     return unless $thumb_url;
     my $asset = $author->userpic(@_);
+    my $lazy = $param{Lazy} ? 'loading="lazy" decoding="async" ' : '';
     my $format
         = $param{Ts}
-        ? q{<img src="%s&%d" width="%d" height="%d" alt="%s" loading="lazy" decoding="async" />}
-        : q{<img src="%s?%d" width="%d" height="%d" alt="%s" loading="lazy" decoding="async" />};
+        ? qq{<img src="%s&%d" width="%d" height="%d" alt="%s" $lazy/>}
+        : qq{<img src="%s?%d" width="%d" height="%d" alt="%s" $lazy/>};
     sprintf $format,
         MT::Util::encode_html($thumb_url), $asset->id, $w, $h,
         MT::Util::encode_html( $asset->label );

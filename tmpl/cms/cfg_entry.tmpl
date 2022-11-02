@@ -392,7 +392,7 @@
         <div class="form-check form-check-inline">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" value="1" name="nwc_keywords" id="nwc_keywords"<mt:if name="nwc_keywords"> checked="checked"</mt:if> class="custom-control-input cb"/>
-            <label class="custom-control-label" for="nex_keywords"><__trans phrase="Keywords"></label>
+            <label class="custom-control-label" for="nwc_keywords"><__trans phrase="Keywords"></label>
           </div>
         </div>
         <div class="form-check form-check-inline">
@@ -475,18 +475,19 @@
           <input type="checkbox" name="image_default_popup" id="image_default_popup" class="custom-control-input" value="1" <mt:if name="popup">checked="checked" </mt:if>/>
           <label class="custom-control-label" for="image_default_popup"><__trans phrase="Link to original image"></label>
         </div>
-        <mt:if name="can_popup">
+        <mt:unless name="disabled_popup">
         <div style="margin-left:2.5rem;">
-          <div class="custom-control custom-radio">
-            <input type="radio" value="1" name="image_default_link" class="custom-control-input" id="image_default_link_popup" <mt:if name="popup_link" lt="2">checked="checked"</mt:if> />
-            <label class="custom-control-label" for="image_default_link_popup"><__trans phrase="Display in popup"></label>
-          </div>
           <div class="custom-control custom-radio">
             <input type="radio" value="2" name="image_default_link" class="custom-control-input" id="image_default_link_new_tab" <mt:if name="popup_link" eq="2">checked="checked"</mt:if> />
             <label class="custom-control-label" for="image_default_link_new_tab"><__trans phrase="Display on the same screen"></label>
           </div>
+          <div class="custom-control custom-radio">
+            <input type="radio" value="1" name="image_default_link" class="custom-control-input" id="image_default_link_popup" <mt:if name="popup_link" lt="2">checked="checked"</mt:if><mt:unless name="can_popup"> disabled="disabled"</mt:unless> />
+            <label class="custom-control-label" for="image_default_link_popup"><__trans phrase="Display in popup"></label>
+            <mt:unless name="can_popup"><p class="alert alert-warning" role="alert"><__trans phrase="'Popup image' template does not exist or is empty and cannot be selected."></p></mt:unless>
+          </div>
         </div>
-        </mt:if>
+        </mt:unless>
       </div>
     </mtapp:setting>
   </mtapp:settinggroup>

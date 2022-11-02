@@ -97,6 +97,7 @@ TC.Client.call = function( param )
         }
         c.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8' );
     }
+    c.setRequestHeader( 'X-Requested-With', 'XMLHttpRequest' );
     c.send( contents );
     return c;
 }

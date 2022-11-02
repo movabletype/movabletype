@@ -11,7 +11,6 @@ use warnings;
 
 use MT;
 use base qw( MT::ErrorHandler );
-use Encode;
 use Sys::Hostname;
 our $MAX_LINE_OCTET = 998;
 
@@ -20,6 +19,10 @@ my %SMTPModules = (
     Auth     => ['Authen::SASL'],
     SSLorTLS => [ 'IO::Socket::SSL', 'Net::SSLeay' ],
 );
+
+my %Sent;
+
+sub sent { \%Sent }
 
 sub send {
     my $class = shift;
@@ -37,6 +40,7 @@ sub send {
             $hdrs{$h} =~ y/\n\r/  / unless ( ref( $hdrs{$h} ) );
         }
     }
+    %Sent = (subject => $hdrs{Subject});
 
     my $mgr  = MT->config;
     my $xfer = $mgr->MailTransfer;
@@ -402,6 +406,7 @@ sub _render_headers {
             $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" unless $hide_bcc && $h eq 'Bcc';
         }
     }
+    $Sent{recipients} = [@recipients];
     return wantarray ? ($hdr, @recipients) : $hdr;
 }
 

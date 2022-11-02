@@ -1,9 +1,9 @@
 <list-actions>
   <div data-is="list-actions-for-pc"
-    class="col d-none d-md-block"
+    class="d-none d-md-block"
   ></div>
   <div data-is="list-actions-for-mobile"
-    class="col d-md-none"
+    class="d-md-none"
   ></div>
 
   <script>

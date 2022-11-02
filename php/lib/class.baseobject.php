@@ -10,6 +10,7 @@
  */
 require_once('adodb.inc.php');
 if (!defined('ADODB_ASSOC_CASE')) define('ADODB_ASSOC_CASE', ADODB_ASSOC_CASE_LOWER);
+
 require_once('adodb-active-record.inc.php');
 require_once('adodb-exceptions.inc.php');
 
@@ -418,6 +419,7 @@ abstract class BaseObject extends ADOdb_Active_Record
                 }
 
                 $obj->$meta_name = $value;
+                $obj->_original or $obj->_original = [];
                 $obj->_original[] = $value;
             }
         }
@@ -497,6 +499,24 @@ abstract class BaseObject extends ADOdb_Active_Record
 
     public function author () {
         $col_name = $this->_prefix . "author_id";
+        $author = null;
+        if (isset($this->$col_name) && is_numeric($this->$col_name)) {
+            $author_id = $this->$col_name;
+
+            $author = $this->load_cache($this->_prefix . ":" . $this->id . ":author:" . $author_id);
+            if (empty($author)) {
+                require_once('class.mt_author.php');
+                $author = new Author;
+                $author->Load("author_id = $author_id");
+                $this->cache($this->_prefix . ":" . $this->id . ":author:" . $author->id, $author);
+            }
+        }
+
+        return $author;
+    }
+
+    public function modified_author () {
+        $col_name = $this->_prefix . "modified_by";
         $author = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
             $author_id = $this->$col_name;

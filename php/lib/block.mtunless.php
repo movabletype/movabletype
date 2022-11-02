@@ -11,7 +11,7 @@ function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
         if (isset($args['var'])) {
             $val = $ctx->__stash['vars'][$args['var']];
         } elseif (isset($args['name'])) {
-            $val = $ctx->__stash['vars'][$args['name']];
+            $val = $ctx->__stash['vars'][$args['name']] ?? null;
         } elseif (isset($args['tag'])) {
             $tag = $args['tag'];
             $tag = preg_replace('/^mt:?/i', '', $tag);

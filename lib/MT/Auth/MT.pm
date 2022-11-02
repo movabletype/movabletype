@@ -10,6 +10,7 @@ use warnings;
 
 use base 'MT::ErrorHandler';
 use MT::Author qw( AUTHOR );
+use MT::Util::Encode;
 
 sub sanity_check {
     my $auth = shift;
@@ -61,7 +62,7 @@ sub is_valid_password {
         my ( $salt, $value ) = ( $1, $2 );
         if ( eval { require MT::Util::Digest::SHA } ) {
             return $value eq MT::Util::Digest::SHA::sha512_base64(
-                $salt . Encode::encode_utf8($pass) );
+                $salt . MT::Util::Encode::encode_utf8($pass) );
         }
         else {
             die MT->translate('Missing required module') . ' Digest::SHA';
@@ -70,9 +71,11 @@ sub is_valid_password {
     elsif ( $real_pass =~ m/^{SHA}(.*)\$(.*)/ ) {
         my ( $salt, $value ) = ( $1, $2 );
         if ($value eq MT::Util::perl_sha1_digest_hex( $salt . $pass )) {
-            unless ( $pass =~ /[^\x20-\x7E]/ ) {
-                $author->set_password($pass);
-                $author->save;
+            if (MT->config->SchemaVersion > 5.0025) {
+                unless ( $pass =~ /[^\x20-\x7E]/ ) {
+                    $author->set_password($pass);
+                    $author->save;
+                }
             }
             return 1;
         }
@@ -81,9 +84,11 @@ sub is_valid_password {
     else {
         # the password is stored using the old hashing method
         if (crypt( $pass, $real_pass ) eq $real_pass) {
-            unless ( $pass =~ /[^\x20-\x7E]/ ) {
-                $author->set_password($pass);
-                $author->save;
+            if (MT->config->SchemaVersion > 5.0025) {
+                unless ( $pass =~ /[^\x20-\x7E]/ ) {
+                    $author->set_password($pass);
+                    $author->save;
+                }
             }
             return 1;
         }
@@ -132,8 +137,7 @@ sub session_credentials {
     my $cookies = $app->cookies;
     if ( $cookies->{ $app->user_cookie } ) {
         my $cookie = $cookies->{ $app->user_cookie }->value;
-        $cookie = Encode::decode( $app->charset, $cookie )
-            unless Encode::is_utf8($cookie);
+        $cookie = MT::Util::Encode::decode_unless_flagged( $app->charset, $cookie );
         my ( $user, $session_id, $remember ) = split /::/, $cookie;
         return {
             %$ctx,

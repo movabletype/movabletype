@@ -20,15 +20,35 @@ use Plack::Builder;
 use Plack::Request;
 use Plack::App::URLMap;
 use Plack::App::WrapCGI;
-use Plack::App::Directory;
-use Plack::App::File;
 use IPC::Open3;
 use IO::Select;
 use Symbol qw( gensym );
-use XMLRPC::Transport::HTTP::Plack;
 
 use constant DEBUG => $ENV{MT_PSGI_DEBUG} || 0;
 our $mt = MT->new();
+
+my $streaming = $mt->config->PSGIStreaming;
+my $serve_static = $mt->config->PSGIServeStatic;
+
+sub _prepare_psgi_headers {
+    my ($app, $type) = @_;
+    $type ||= $app->{response_content_type} || 'text/html';
+    if (my $charset = $app->charset) {
+        $type .= "; charset=$charset"
+            if ($type =~ m!^text/! || $type =~ m!\+xml$!)
+            && $type !~ /\bcharset\b/;
+    }
+
+    if (my $location = delete $app->{redirect}) {
+        $app->{cgi_headers}{-status}   = 302;
+        $app->{cgi_headers}{-location} = $location;
+    } else {
+        $app->{cgi_headers}{-status} = ($app->response_code || 200) . ($app->{response_message} ? ' ' . $app->{response_message} : '');
+    }
+
+    $app->{cgi_headers}{-type} = $type;
+    my ($status, $headers) = $app->{query}->psgi_header(%{ $app->{cgi_headers} });
+}
 
 my $mt_app = sub {
     my $app_class = shift;
@@ -37,50 +57,78 @@ my $mt_app = sub {
         eval "require $app_class";
         my $cgi = CGI::PSGI->new($env);
         local *ENV = { %ENV, %$env };    # some MT::App method needs this
-        my $app = $app_class->new( CGIObject => $cgi );
+        my $app = $app_class->new(CGIObject => $cgi);
         delete $app->{init_request};
         MT->set_instance($app);
 
         # Cheap hack to get the output
-        my ( $header_sent, $body );
+        my ($header_sent, $body);
         no warnings qw(redefine);
         local *MT::App::send_http_header = sub {
             my $self = shift;
             $self->{response_content_type} = $_[0] if $_[0];
             $header_sent++;
         };
-        local *MT::App::print
-            = sub { my $self = shift; $body .= "@_" if $header_sent };
+        local *MT::App::print = sub { my $self = shift; $body .= "@_" if $header_sent };
 
-        $app->init_request( CGIObject => $cgi );
+        $app->init_request(CGIObject => $cgi);
         $app->{cookies} = do { $cgi->cookie; $cgi->{'.cookies'} };    # wtf
         $app->run;
 
-        # copied from MT::App::send_http_header
-        my $type = $app->{response_content_type} || 'text/html';
-        if ( my $charset = $app->charset ) {
-            $type .= "; charset=$charset"
-                if ( $type =~ m!^text/! || $type =~ m!\+xml$! )
-                && $type !~ /\bcharset\b/;
-        }
+        my ($status, $headers) = _prepare_psgi_headers($app);
+        return [$status, $headers, (defined $body ? [$body] : [])];
+    };
+};
 
-        if ( $app->{redirect} ) {
-            $app->{cgi_headers}{-status}   = 302;
-            $app->{cgi_headers}{-location} = $app->{redirect};
-        }
-        else {
-            $app->{cgi_headers}{-status} = ( $app->response_code || 200 )
-                . (
-                $app->{response_message}
-                ? ' ' . $app->{response_message}
-                : ''
-                );
-        }
+my $mt_app_streaming = sub {
+    my $app_class = shift;
+    return sub {
+        my $env = shift;
+        eval "require $app_class";
+        my $cgi = CGI::PSGI->new($env);
+        local *ENV = { %ENV, %$env };    # some MT::App method needs this
+        my $app = $app_class->new(CGIObject => $cgi);
+        delete $app->{init_request};
+        MT->set_instance($app);
 
-        $app->{cgi_headers}{-type} = $type;
-        my ( $status, $headers )
-            = $app->{query}->psgi_header( %{ $app->{cgi_headers} } );
-        return [ $status, $headers, (defined $body ? [$body] : []) ];
+        return sub {
+            my $responder = shift;
+            local *ENV = { %ENV, %$env };    # (again)
+            my $writer;
+            my $body = '';
+            no warnings 'redefine';
+            local *MT::App::send_http_header = sub {
+                my $self = shift;
+                my ($type) = @_;
+                my ($status, $headers) = _prepare_psgi_headers($app, $type);
+                $writer = $responder->([$status, $headers]);
+            };
+            local *MT::App::print = sub {
+                my $self = shift;
+                if ($writer) {
+                    if (defined $body) {
+                        $writer->write($body);
+                        undef $body;
+                    }
+                    $writer->write(@_);
+                } else {
+                    $body .= "@_";
+                }
+            };
+            $app->init_request(CGIObject => $cgi);
+            $app->{cookies} = do { $cgi->cookie; $cgi->{'.cookies'} };    # wtf
+            $app->run;
+
+            if (!$writer) {
+                my ($status, $headers) = _prepare_psgi_headers($app);
+                $writer = $responder->([$status, $headers]);
+            }
+            if (defined $body) {
+                $writer->write($body);
+            }
+
+            $writer->close;
+        };
     };
 };
 
@@ -225,6 +273,7 @@ sub make_app {
     elsif ( $type eq 'xmlrpc' ) {
         my $handler = $app->{handler};
         my $server;
+        require XMLRPC::Transport::HTTP::Plack;
         $server = XMLRPC::Transport::HTTP::Plack->new;
         $server->dispatch_with( {
             'mt'         => 'MT::XMLRPCServer',
@@ -232,14 +281,27 @@ sub make_app {
             'metaWeblog' => 'metaWeblog',
             'wp'         => 'wp',
         } );
+        $server->on_action(sub {
+            my ($action, $method_uri, $method_name) = @_;
+
+            my $class =
+                   $server->dispatch_with->{$method_uri}
+                || $server->dispatch_with->{ $action || '' }
+                || defined($action) && $action =~ /^"(.+)"$/ && $server->dispatch_with->{$1};
+
+            die "Denied access to method ($method_name)\n"
+                unless $class && $class->can($method_name);
+        });
         $psgi_app = sub {
             eval "require $handler";
             my $env = shift;
             my $req = Plack::Request->new($env);
             $server->handle($req);
         };
-    }
-    else {
+    } elsif ($streaming and $type eq 'psgi_streaming') {
+        my $handler = $app->{handler};
+        $psgi_app = $mt_app_streaming->($handler);
+    } else {
         my $handler = $app->{handler};
         $psgi_app = $mt_app->($handler);
     }
@@ -274,26 +336,31 @@ sub mount_applications {
         $urlmap->map( $url, $psgi_app );
     }
 
-    ## Mount mt-static directory
-    my $staticurl = $mt->static_path();
-    $staticurl =~ s!^https?://[^/]*!!;
-    my $staticpath = $mt->static_file_path();
-    $urlmap->map( $staticurl,
-        Plack::App::Directory->new( { root => $staticpath } )->to_app );
+    if ($serve_static) {
+        require Plack::App::Directory;
+        require Plack::App::File;
 
-    ## Mount support directory
-    my $supporturl = MT->config->SupportURL;
-    $supporturl =~ s!^https?://[^/]*!!;
-    my $supportpath = MT->config->SupportDirectoryPath;
-    $urlmap->map( $supporturl,
-        Plack::App::Directory->new( { root => $supportpath } )->to_app );
+        ## Mount mt-static directory
+        my $staticurl = $mt->static_path();
+        $staticurl =~ s!^https?://[^/]*!!;
+        my $staticpath = $mt->static_file_path();
+        $urlmap->map( $staticurl,
+            Plack::App::Directory->new( { root => $staticpath } )->to_app );
 
-    ## Mount favicon.ico
-    my $static = $staticpath;
-    $static .= '/' unless $static =~ m!/$!;
-    my $favicon = $static . 'images/favicon.ico';
-    $urlmap->map( '/favicon.ico' =>
-            Plack::App::File->new( { file => $favicon } )->to_app );
+        ## Mount support directory
+        my $supporturl = MT->config->SupportURL;
+        $supporturl =~ s!^https?://[^/]*!!;
+        my $supportpath = MT->config->SupportDirectoryPath;
+        $urlmap->map( $supporturl,
+            Plack::App::Directory->new( { root => $supportpath } )->to_app );
+
+        ## Mount favicon.ico
+        my $static = $staticpath;
+        $static .= '/' unless $static =~ m!/$!;
+        my $favicon = $static . 'images/favicon.ico';
+        $urlmap->map( '/favicon.ico' =>
+                Plack::App::File->new( { file => $favicon } )->to_app );
+    }
 
     $self->_app( $urlmap->to_app );
 }

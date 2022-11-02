@@ -7,6 +7,7 @@ package MT::CMS::Category;
 
 use strict;
 use warnings;
+use MT::Util::Encode;
 
 sub edit {
     my $cb = shift;
@@ -300,7 +301,7 @@ sub bulk_update {
             join( ':',
                 $_->id,
                 ( $_->parent || '0' ),
-                Encode::encode_utf8( $_->label ),
+                MT::Util::Encode::encode_utf8( $_->label ),
                 )
             }
             sort { $a->id <=> $b->id } @old_objects
@@ -976,7 +977,7 @@ sub filtered_list_param {
         ':',
         $sort_order,
         map {
-            join( ':', $_->id, $_->parent, Encode::encode_utf8( $_->label ), )
+            join( ':', $_->id, $_->parent, MT::Util::Encode::encode_utf8( $_->label ), )
             }
             sort { $a->id <=> $b->id } @{ $objs || [] }
     );

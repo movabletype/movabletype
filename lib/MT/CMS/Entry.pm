@@ -160,8 +160,6 @@ sub edit {
         {
             build_junk_table( $app, param => $param, object => $obj );
         }
-        $param->{ "allow_comments_"
-                . ( $allow_comments || $obj->allow_comments || 0 ) } = 1;
         $param->{'authored_on_date'} = $app->param('authored_on_date')
             || format_ts( "%Y-%m-%d", $obj->authored_on, $blog,
             $preferred_language );
@@ -294,7 +292,6 @@ sub edit {
                 $def_status = $param->{status};
                 $def_status =~ s/\D//g;
                 $param->{status} = $def_status;
-                $param->{ 'allow_comments_' . $allow_comments } = 1;
                 $param->{allow_comments} = $allow_comments;
                 $param->{allow_pings}    = $app->param('allow_pings');
             }
@@ -302,8 +299,6 @@ sub edit {
 
                 # new edit
                 $def_status = $blog->status_default;
-                $param->{ 'allow_comments_' . $blog->allow_comments_default }
-                    = 1;
                 $param->{allow_comments} = $blog->allow_comments_default;
                 $param->{allow_pings}    = $blog->allow_pings_default;
             }
@@ -687,7 +682,9 @@ sub edit {
         } @ordered
     ];
 
-    $param->{quickpost_js} = MT::CMS::Entry::quickpost_js( $app, $type );
+    unless (MT->config->DisableQuickPost) {
+        $param->{quickpost_js} = MT::CMS::Entry::quickpost_js( $app, $type );
+    }
     $param->{object_label_plural} = $param->{search_label}
         = $class->class_label_plural;
     if ( 'page' eq $type ) {
@@ -955,11 +952,17 @@ sub _build_entry_preview {
     my $archive_file;
     my $orig_file;
     my $file_ext;
+    my $archive_url;
     if ($tmpl_map) {
         $tmpl = MT::Template->load( $tmpl_map->template_id );
         MT::Request->instance->cache( 'build_template', $tmpl );
         $file_ext = $blog->file_extension || '';
         $archive_file = $entry->archive_file;
+        my $base_url = $blog->archive_url;
+        $base_url = $blog->site_url if $type eq 'page';
+        $base_url .= '/' unless $base_url =~ m|/$|;
+        $archive_url = $base_url . $archive_file;
+        $archive_url =~ s{(?<!:)//+}{/}g;
 
         my $blog_path
             = $type eq 'page'
@@ -986,6 +989,7 @@ sub _build_entry_preview {
     $ctx->{current_timestamp}    = $ao_ts;
     $ctx->{current_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
+    $ctx->stash('current_mapping_url', $archive_url);
 
     my $archiver = MT->publisher->archiver($at);
     if ( my $params = $archiver->template_params ) {
@@ -1722,19 +1726,6 @@ sub save {
 
     $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $orig_obj );
 
-    # Delete old archive files.
-    if ( $app->config('DeleteFilesAtRebuild') && $id ) {
-        $app->request->cache( 'file', {} );    # clear cache
-        my $file = archive_file_for( $obj, $blog, $archive_type );
-        if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() ) {
-            $app->publisher->remove_entry_archive_file(
-                Entry       => $orig_obj,
-                ArchiveType => $archive_type,
-                Category    => $primary_category_old,
-            );
-        }
-    }
-
     ## If the saved status is RELEASE, or if the *previous* status was
     ## RELEASE, then rebuild entry archives, indexes, and send the
     ## XML-RPC ping(s). Otherwise the status was and is HOLD, and we
@@ -1742,6 +1733,19 @@ sub save {
     if ( ( $obj->status || 0 ) == MT::Entry::RELEASE()
         || $status_old == MT::Entry::RELEASE() )
     {
+        # Delete old archive files.
+        if ( $app->config('DeleteFilesAtRebuild') && $id ) {
+            $app->request->cache( 'file', {} );    # clear cache
+            my $file = archive_file_for( $obj, $blog, $archive_type );
+            if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() ) {
+                $app->publisher->remove_entry_archive_file(
+                    Entry       => $orig_obj,
+                    ArchiveType => $archive_type,
+                    Category    => $primary_category_old,
+                );
+            }
+        }
+
         # If there are no static pages, just rebuild indexes.
         if ( $blog->count_static_templates($archive_type) == 0
             || MT::Util->launch_background_tasks() )

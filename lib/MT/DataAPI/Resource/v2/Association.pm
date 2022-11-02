@@ -35,6 +35,10 @@ sub fields {
                 $_ =~ s/'([^']+)'/$1/ for @perms;
                 return \@perms;
             },
+            schema => {
+                type  => 'array',
+                items => { type => 'string' },
+            },
         },
     ];
 }

@@ -18,6 +18,16 @@ with qw(
 
 my %Initialized;
 
+sub import {
+    my ($class, @roles) = @_;
+    Role::Tiny->apply_roles_to_package($class, @roles) if @roles;
+}
+
+sub apply_role {
+    my ($self, @roles) = @_;
+    Role::Tiny->apply_roles_to_object($self, @roles);
+}
+
 sub init {
     my ($class, $app_class) = @_;
 
@@ -62,6 +72,7 @@ sub new {
 
     if ($ENV{MT_TEST_RUN_APP_AS_CGI}) {
         $args{server} = $class->launch_server($args{app_class});
+        $class->init($args{app_class});
     } else {
         $class->init($args{app_class});
     }
@@ -166,13 +177,22 @@ sub request {
 
 sub _request_locally {
     my ($self, $params) = @_;
+    CGI::initialize_globals();
+    $self->_clear_cache;
 
     my $app_params = $self->_app_params($params);
+    my $cgi        = $self->_create_cgi_object($params);
+    my $app        = $self->{app_class}->new(CGIObject => $cgi);
     my $url        = URI->new($self->base_url);
     if ($app_params->{__path_info}) {
         $url->path($app_params->{__path_info});
     }
     my $method = uc($app_params->{request_method} || 'GET');
+
+    MT->set_instance($app);
+    $app->{init_request} = 0;
+    $app->init_request(CGIObject => $cgi);
+    $self->{_app} = $app;
 
     $self->_clear_cache;
 
@@ -355,7 +375,9 @@ sub _create_cgi_object {
 
 sub _clear_cache {
     my $self = shift;
-    MT::Object->driver->clear_cache;
+    for my $model (MT->loaded_models) {
+        $model->driver->clear_cache;
+    }
     MT->instance->request->reset;
 }
 

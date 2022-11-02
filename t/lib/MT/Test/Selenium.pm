@@ -23,7 +23,8 @@ use LWP::UserAgent;
 use URI;
 use URI::QueryParam;
 use MT::PSGI;
-use constant DEBUG => $ENV{MT_TEST_SELENIUM_DEBUG} ? 1 : 0;
+use Selenium::Waiter;
+use constant DEBUG => $ENV{MT_TEST_SELENIUM_DEBUG} ? 1 : $ENV{TRAVIS} ? 1 : 0;
 use constant MY_HOST => $ENV{TRAVIS} ? $ENV{HOSTNAME} : '127.0.0.1';
 
 with qw(
@@ -80,7 +81,9 @@ our %EXTRA = (
 );
 
 sub new {
-    my ( $class, $env ) = @_;
+    my ( $class, $env, $args ) = @_;
+
+    plan skip_all => "Selenium testing is skipped by env" if $ENV{MT_TEST_SKIP_SELENIUM};
 
     my $driver_class = $ENV{MT_TEST_SELENIUM_DRIVER} || 'Selenium::Chrome';
     eval "require $driver_class" or plan skip_all => "No $driver_class";
@@ -119,10 +122,27 @@ sub new {
         code => sub {
             my $port = shift;
 
-            my $host  = MY_HOST;
-            my %extra = ( CGIPath => "http://$host:$port/cgi-bin/" );
+            my $pid_file = "$ENV{MT_TEST_ROOT}/.server.pid";
+            my $host     = MY_HOST;
+            my %extra    = (
+                CGIPath        => "http://$host:$port/cgi-bin/",
+                StaticWebPath  => "http://$host:$port/mt-static/",
+                StaticFilePath => "$ENV{MT_HOME}/mt-static",
+                PIDFilePath    => $pid_file,
+            );
             $env->update_config(%extra);
 
+            if ($args->{rebootable} && 
+                    eval { require Server::Starter; require Net::Server::SS::PreFork; require Starman; 1 }) {
+                my @options = qw(-s Starman --workers 1);
+                push @options, '--env', (DEBUG ? 'development' : 'production');
+                Server::Starter::start_server(
+                    port     => "$host:$port",
+                    pid_file => $pid_file,
+                    exec     => ['plackup', @options, "$ENV{MT_HOME}/mt.psgi"],
+                );
+                exit(0);
+            }
             my $app        = MT::PSGI->new->to_app;
             my $static_app = Plack::App::Directory->new(
                 root => "$ENV{MT_HOME}/mt-static" );
@@ -179,12 +199,16 @@ sub DESTROY {
     }
     my $driver = $self->{driver} or return;
     $driver->quit;
+    $self->{server}->stop;
 }
 
 sub base_url {
     my $self = shift;
     $self->{base_url}->clone;
 }
+
+sub element { shift->{_element} }
+sub content { shift->{content} }
 
 sub login {
     my ( $self, $user ) = @_;
@@ -219,7 +243,7 @@ sub _post_form {
 sub _find_by_input {
     my ( $self, $input ) = @_;
     if ( $input->id ) {
-        return $self->driver->find_element_by_id( $input->id );
+        return wait_until { $self->driver->find_element_by_id( $input->id ) };
     }
     elsif ( $input->name ) {
         my $type = $input->type;
@@ -230,11 +254,18 @@ sub _find_by_input {
             Carp::croak "not implemented";
         }
         else {
-            return $self->driver->find_element(
-                'input[name=' . $input->name . ']' );
+            return wait_until { $self->driver->find_element('input[name=' . $input->name . ']' ) };
         }
     }
     Carp::croak "Can't find elem from input";
+}
+
+sub find {
+    my ( $self, $selector ) = @_;
+    my $element = wait_until { $self->driver->find_element($selector); };
+    Test::More::diag $@ if $@;
+    $self->{_element} = $element;
+    $self;
 }
 
 sub mt_url {
@@ -258,7 +289,7 @@ sub request {
         $request_url = $self->mt_url;
         my $submit;
         for my $key ( keys %$params ) {
-            my $input = eval { $self->driver->find_element_by_name($key) };
+            my $input = wait_until { $self->driver->find_element_by_name($key) };
             if ($input) {
                 my $tag = lc $input->get_tag_name;
                 if ( !$input->is_enabled or $input->is_hidden ) {
@@ -296,7 +327,7 @@ sub request {
             $submit->click;
         }
         else {
-            $submit = $self->driver->find_element_by_class('btn-primary');
+            $submit = wait_until { $self->driver->find_element_by_class('btn-primary') };
             $submit->click;
         }
     }
@@ -372,6 +403,7 @@ sub get_browser_error_log {
 }
 
 sub screenshot {
+    return unless $ENV{MT_TEST_CAPTURE_SCREENSHOT};
     # TODO consider zero padding for index numbers
     my ($self, $id) = @_;
     state $index = 1;
@@ -383,6 +415,7 @@ sub screenshot {
 }
 
 sub screenshot_full {
+    return unless $ENV{MT_TEST_CAPTURE_SCREENSHOT};
     my ($self, $id, $width, $height) = @_;
     my $size_org = $self->driver->get_window_size();
     $width  = $width  || $self->driver->execute_script('return document.body.scrollWidth / (top === self ? 1 : 0.8)');
@@ -395,14 +428,15 @@ sub screenshot_full {
 
 sub retry_until_success {
     my $self = shift;
-    my $args = { limit => 5, task => sub { }, teardown => sub { }, @_ };
+    my $args = { limit => $ENV{MT_TEST_SELENIUM_MAX_RETRY} || 1, task => sub { }, teardown => sub { }, @_ };
     for my $i (1 .. $args->{'limit'}) {
         my $exception;
         my $ret = try {
             return $args->{'task'}->();
         } catch {
             $exception = $_;
-            diag($exception . ': ' . ($i == $args->{'limit'} ? 'Aborting' : 'Retrying'));
+            $exception =~ s{ at \S+ line \d+.*}{}s;
+            diag(($i == $args->{'limit'} ? 'Aborting' : 'Retrying'). ': '. $exception);
             $args->{'teardown'}->();
         };
         return $ret unless defined($exception);

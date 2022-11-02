@@ -8,6 +8,7 @@ package MT::Upgrade::Core;
 
 use strict;
 use warnings;
+use MT::Util::Encode;
 
 MT->add_callback( 'MT::Upgrade::seed_database', 5, undef, \&seed_database );
 MT->add_callback( 'MT::Upgrade::upgrade_end', 5, undef,
@@ -226,11 +227,36 @@ sub seed_database {
         );
     $author->save;
 
+    my $cfg = MT->config;
     if ( $param{use_system_email} ) {
-        my $cfg = MT->config;
         $cfg->EmailAddressMain( _uri_unescape_utf8( $param{user_email} ), 1 );
-        $cfg->save;
     }
+
+    # for next major release
+    my @plugins_to_disable = qw(
+        Trackback OpenID FacebookCommenters
+        spamlookup/spamlookup.pl spamlookup/spamlookup_urls.pl spamlookup/spamlookup_words.pl
+        Textile/textile2.pl
+        WidgetManager/WidgetManager.pl
+    );
+    my $switch = $cfg->PluginSwitch;
+    for my $plugin (@plugins_to_disable) {
+        next unless $switch->{$plugin};
+        $switch->{$plugin} = 0;
+    }
+    $cfg->PluginSwitch($switch, 1);
+
+    my %seen_apps;
+    my @restricted_apps = $cfg->get('RestrictedPSGIApp');
+    @restricted_apps = grep {!$seen_apps{$_}++} @restricted_apps, qw(xmlrpc atom feeds ft_search);
+    $cfg->set(RestrictedPSGIApp => \@restricted_apps, 1);
+
+    $cfg->set(DisableQuickPost => 1, 1);
+    $cfg->set(DisableActivityFeeds => 1, 1);
+    $cfg->set(DisableNotificationPings => 1, 1);
+    $cfg->set(DefaultSupportedLanguages => 'en_us,ja', 1);
+
+    $cfg->save;
 
     1;
 }
@@ -380,8 +406,7 @@ sub _uri_unescape_utf8 {
         use URI::Escape;
         $text = uri_unescape($text);
     }
-    return Encode::decode_utf8($text)
-        unless Encode::is_utf8($text);
+    return MT::Util::Encode::decode_utf8_unless_flagged($text);
 }
 
 1;

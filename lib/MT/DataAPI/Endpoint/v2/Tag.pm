@@ -15,13 +15,67 @@ use MT::DataAPI::Resource;
 sub list {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my $res = filtered_list( $app, $endpoint, 'tag' )
         or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub list_for_site_openapi_spec {
+    +{
+        tags       => ['Tags'],
+        summary    => 'Retrieve a list of tags that related with specific site',
+        parameters => [
+            { '$ref' => '#/components/parameters/tag_search' },
+            { '$ref' => '#/components/parameters/tag_searchFields' },
+            { '$ref' => '#/components/parameters/tag_limit' },
+            { '$ref' => '#/components/parameters/tag_offset' },
+            { '$ref' => '#/components/parameters/tag_sortBy' },
+            { '$ref' => '#/components/parameters/tag_sortOrder' },
+            { '$ref' => '#/components/parameters/tag_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of tags.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of tag resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/tag',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -36,7 +90,7 @@ sub list_for_site {
         or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
@@ -45,6 +99,9 @@ sub list_for_site {
 sub get {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my $tag = _retrieve_tag($app) or return;
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
@@ -52,6 +109,38 @@ sub get {
         or return;
 
     return $tag;
+}
+
+sub get_for_site_openapi_spec {
+    +{
+        tags       => ['Tags'],
+        summary    => 'Retrieve a single tag by its ID',
+        parameters => [
+            { '$ref' => '#/components/parameters/tag_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/tag',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Tag not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub get_for_site {
@@ -68,6 +157,9 @@ sub get_for_site {
 
 sub rename {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my ($orig_tag) = _retrieve_tag($app) or return;
 
@@ -102,6 +194,49 @@ sub rename {
         save_object( $app, 'tag', $new_tag, $orig_tag, ) or return;
         return $new_tag;
     }
+}
+
+sub rename_for_site_openapi_spec {
+    +{
+        tags        => ['Tags'],
+        summary     => 'Update an existing tag',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            tag => {
+                                '$ref' => '#/components/schemas/tag_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/tag',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Tag not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub rename_for_site {
@@ -148,6 +283,9 @@ sub rename_for_site {
 sub delete {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my ($tag) = _retrieve_tag($app) or return;
 
     run_permission_filter( $app, 'data_api_delete_permission_filter',
@@ -180,6 +318,35 @@ sub delete {
     $app->run_callbacks( 'data_api_post_delete.tag', $app, $tag );
 
     return $tag;
+}
+
+sub delete_for_site_openapi_spec {
+    +{
+        tags      => ['Tags'],
+        summary   => 'Delete an existing tag',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/tag',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Tag not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete_for_site {

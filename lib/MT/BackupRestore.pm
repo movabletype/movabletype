@@ -11,6 +11,7 @@ use warnings;
 use MT::BackupRestore::ContentTypePermission;
 use MT::Serialize;
 use MT::Util qw( encode_url );
+use MT::Util::Encode;
 use Symbol;
 use base qw( MT::ErrorHandler );
 
@@ -90,6 +91,7 @@ sub core_backup_instructions {
         'accesstoken'         => { 'skip' => 1 },
         'cf_idx'              => { 'skip' => 1 },
         'content_field_index' => { 'skip' => 1 },
+        'log'                 => { 'skip' => 1 },
     };
 }
 
@@ -615,7 +617,7 @@ sub restore_directory {
     for my $f ( readdir $dh ) {
         next if $f !~ /^.+\.manifest$/i;
         $manifest = File::Spec->catfile( $dir,
-            Encode::decode( MT->config->PublishCharset, $f ) );
+            MT::Util::Encode::decode( MT->config->PublishCharset, $f ) );
         last;
     }
     closedir $dh;
@@ -1322,7 +1324,7 @@ sub to_xml {
         else {
             $xml .= "<$blob_col>"
                 . MIME::Base64::encode_base64(
-                Encode::encode( MT->config->PublishCharset, $val ), '' )
+                MT::Util::Encode::encode( MT->config->PublishCharset, $val ), '' )
                 . "</$blob_col>";
         }
     }

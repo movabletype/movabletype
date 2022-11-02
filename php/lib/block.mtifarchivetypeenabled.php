@@ -9,8 +9,7 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
     # status: complete
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
-        $at = $args['type'];
-        $at or $at = $args['archive_type'];
+        $at = $args['type'] ?? $args['archive_type'] ?? null;
         $at = preg_quote($at);
         if (preg_match('/ContentType/i', $at) && empty($args['content_type'])) {
             $repeat = false;

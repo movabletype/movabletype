@@ -17,10 +17,10 @@ jQuery(function($) {
         if ($radio.length) {
             var $tr = $radio.closest('tr');
             $p($p.find('#ga_profile_name')).val(
-                $.trim($tr.find('.panel-label').text())
+                $tr.find('.panel-label').text().trim()
             );
             $p($p.find('#ga_profile_web_property_id')).val(
-                $.trim($tr.find('.panel-description').text())
+                $tr.find('.panel-description').text().trim()
             );
             $p($p.find('#ga_profile_id')).val($radio.val());
 

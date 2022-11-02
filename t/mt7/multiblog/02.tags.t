@@ -30,6 +30,7 @@ plan tests => 2 * blocks;
 my $app = MT->instance;
 
 $test_env->prepare_fixture('db_data');
+$test_env->update_config( PluginSwitch => 'Trackback=1' );
 
 # Remove objects in website (blog_id = 2).
 $app->model('page')->remove( { id => 24 } );
@@ -132,7 +133,7 @@ SKIP:
         $ctx->stash( 'blog',          $blog );
         $ctx->stash( 'blog_id',       $blog->id );
         $ctx->stash( 'local_blog_id', $blog->id );
-        $ctx->stash( 'builder',       MT::Builder->new );
+        $ctx->stash( 'builder',       MT->builder );
 
         my $result = $tmpl->build;
         die $tmpl->errstr unless defined $result;

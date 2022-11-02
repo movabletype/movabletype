@@ -136,10 +136,10 @@ foreach my $c ( sort keys %$components ) {
                 next unless -e $file_path;
 
                 note("Reading module $file_path");
-                open DOC, "< $file_path"
+                open my $DOC, "<", $file_path
                     or die "Can't read file $file_path: " . $!;
-                $all_docs .= <DOC>;
-                close DOC;
+                $all_docs .= <$DOC>;
+                close $DOC;
                 next FILE;
             }
             die "Could not locate $file!";
@@ -148,7 +148,7 @@ foreach my $c ( sort keys %$components ) {
 
     # Determine if the core tags have adequate documentation or not.
     my $doc_names = {};
-    while ( $all_docs =~ m/\n=head2[ ]+([\w:]+)[ ]*\n(.*?)?\n=cut[ ]*\n/gs ) {
+    while ( $all_docs =~ m/\n=head2[ ]+([\w:, ]+)[ ]*\n(.*?)?\n=cut[ ]*\n/gs ) {
         my $tag = $1;
         my $docs = defined $2 ? $2 : '';
         $docs =~ s/\r//g;    # for windows newlines
@@ -167,7 +167,9 @@ foreach my $c ( sort keys %$components ) {
 
   # if documentation block doesn't have anything left, the tag is undocumented
         next if $docs eq '';
-        $doc_names->{$tag} = 1;
+        for my $t (split /,\s*/, $tag) {
+            $doc_names->{$t} = 1;
+        }
     }
 
     foreach my $tag ( sort keys %{ $tags->{function} } ) {

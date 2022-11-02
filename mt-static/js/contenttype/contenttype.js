@@ -1,4 +1,4 @@
-riot.tag2('content-field', '<div class="mt-collapse__container"> <div class="col-auto"><ss title="{trans(\'Move\')}" class="mt-icon" href="{StaticURI}/images/sprite.svg#ic_move"></ss></div> <div class="col text-wrap"><ss title="{trans(\'ContentField\')}" class="mt-icon--secondary" href="{StaticURI}images/sprite.svg#ic_contentstype"></ss>{label} ({typeLabel})</div> <div class="col-auto"> <a href="javascript:void(0)" onclick="{duplicateField}" class="d-inline-block duplicate-content-field"><ss title="{trans(\'Duplicate\')}" class="mt-icon--secondary" href="{StaticURI}images/sprite.svg#ic_duplicate"></ss></a> <a href="javascript:void(0)" onclick="{deleteField}" class="d-inline-block delete-content-field"><ss title="{trans(\'Delete\')}" class="mt-icon--secondary" href="{StaticURI}images/sprite.svg#ic_trash"></ss></a> <a data-toggle="collapse" href="#field-options-{id}" aria-expanded="{isShow == \'show\' ? \'true\' : \'false\'}" aria-controls="field-options-{id}" class="d-inline-block"><ss title="{trans(\'Edit\')}" class="mt-icon--secondary" href="{StaticURI}images/sprite.svg#ic_collapse"></ss></a> </div> </div> <div data-is="{type}" class="collapse mt-collapse__content {isShow}" id="{\'field-options-\' + id}" fieldid="{id}" options="{this.options}" isnew="{isNew}"></div>', '', 'id="content-field-block-{id}"', function(opts) {
+riot.tag2('content-field', '<div class="mt-collapse__container"> <div class="col-auto"><ss title="{trans(\'Move\')}" class="mt-icon" href="{StaticURI}/images/sprite.svg#ic_move"></ss></div> <div class="col text-wrap"><ss title="{trans(\'ContentField\')}" class="mt-icon--secondary" href="{StaticURI}images/sprite.svg#ic_contentstype"></ss>{label} ({typeLabel}) <span if="{realId}">(ID: {realId})</span></div> <div class="col-auto"> <a href="javascript:void(0)" onclick="{duplicateField}" class="d-inline-block duplicate-content-field"><ss title="{trans(\'Duplicate\')}" class="mt-icon--secondary" href="{StaticURI}images/sprite.svg#ic_duplicate"></ss></a> <a href="javascript:void(0)" onclick="{deleteField}" class="d-inline-block delete-content-field"><ss title="{trans(\'Delete\')}" class="mt-icon--secondary" href="{StaticURI}images/sprite.svg#ic_trash"></ss></a> <a data-toggle="collapse" href="#field-options-{id}" aria-expanded="{isShow == \'show\' ? \'true\' : \'false\'}" aria-controls="field-options-{id}" class="d-inline-block"><ss title="{trans(\'Edit\')}" class="mt-icon--secondary" href="{StaticURI}images/sprite.svg#ic_collapse"></ss></a> </div> </div> <div data-is="{type}" class="collapse mt-collapse__content {isShow}" id="{\'field-options-\' + id}" fieldid="{id}" options="{this.options}" isnew="{isNew}"></div>', '', 'id="content-field-block-{id}"', function(opts) {
     this.deleteField = function(e) {
       item = e.item
       var label = item.label ? item.label : trans('No Name');
@@ -15,7 +15,7 @@ riot.tag2('content-field', '<div class="mt-collapse__container"> <div class="col
     }.bind(this)
     this.duplicateField = function(e) {
       var index = this.parent.fields.indexOf(e.item)
-      var newItem = { ...this.parent.fields[index] }
+      var newItem = jQuery.extend({},this.parent.fields[index])
       var field = this.parent.tags['content-field'][index].tags[newItem.type]
       var options = field.gatheringData()
       newItem.options = options
@@ -27,7 +27,7 @@ riot.tag2('content-field', '<div class="mt-collapse__container"> <div class="col
           label = trans('No Name')
         }
       }
-      newItem.label = `${trans('Duplicate')} - ${label}`
+      newItem.label = trans('Duplicate') + '-' + label
       newItem.options.label = newItem.label
       newItem.order = this.parent.fields.length+1
       newItem.isNew = true

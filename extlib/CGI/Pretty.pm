@@ -3,10 +3,9 @@ package CGI::Pretty;
 use strict;
 use warnings;
 
-use if $] >= 5.019, 'deprecate';
 use CGI ();
 
-$CGI::Pretty::VERSION = '4.38';
+$CGI::Pretty::VERSION = '4.54';
 $CGI::DefaultClass = __PACKAGE__;
 @CGI::Pretty::ISA = qw( CGI );
 

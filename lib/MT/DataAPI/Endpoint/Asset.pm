@@ -12,8 +12,116 @@ use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 use MT::CMS::Asset;
 
+sub upload_openapi_spec {
+    +{
+        tags        => ['Assets'],
+        summary     => 'Upload a file',
+        description => <<'DESCRIPTION',
+Upload a file.
+
+Authorization is required.
+DESCRIPTION
+        requestBody => {
+            required => JSON::true,
+            content  => {
+                'multipart/form-data' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            path => {
+                                type        => 'string',
+                                description => 'The upload destination. You can specify the path to the under the site path.',
+                            },
+                            file => {
+                                type        => 'string',
+                                format      => 'binary',
+                                description => 'The actual file data',
+                            },
+                            autoRenameIfExists => {
+                                type        => 'integer',
+                                description => 'If this value is "1" and the file with the same filename exists, the uploaded file is automatically renamed to the random generated name. Default is "0".',
+                                enum => [0, 1],
+                            },
+                            normalizeOrientation => {
+                                type        => 'integer',
+                                description => 'If this value is "1" and the uploaded file has a orientation information in Exif, this file\'s orientation is automatically normalized. Default is "1".',
+                                enum => [0, 1],
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/asset',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+            409 => {
+                description => 'Conflict',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                error => {
+                                    type       => 'object',
+                                    properties => {
+                                        code    => { type => 'integer' },
+                                        message => { type => 'string' },
+                                        data    => {
+                                            type       => 'object',
+                                            properties => {
+                                                fileName => { type => 'string' },
+                                                path     => { type => 'string' },
+                                                temp     => { type => 'string' },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
+sub upload_v2_openapi_spec {
+    my $spec = __PACKAGE__->upload_openapi_spec;
+    $spec->{description} = <<'DESCRIPTION';
+This endpoint is marked as deprecated in v2.0.
+
+#### Permissions
+
+- upload
+DESCRIPTION
+    $spec->{deprecated} = JSON::true;
+    return $spec;
+}
+
 sub upload {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     return $app->error(403) unless $app->can_do('upload');
 
@@ -30,7 +138,8 @@ sub upload {
         normalizeOrientation => 'normalize_orientation',
     );
     for my $k ( keys %keys ) {
-        if ( my $v = $app->param($k) ) {
+        my $v = $app->param($k);
+        if (defined $v && $v ne '') {
             $app->param( $keys{$k}, $v );
         }
     }

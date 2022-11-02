@@ -179,6 +179,7 @@ use_ok('MT::DataAPI::Callback::CategorySet');
 use_ok('MT::DataAPI::Callback::ContentData');
 use_ok('MT::DataAPI::Callback::ContentField');
 use_ok('MT::DataAPI::Callback::ContentType');
+use_ok('MT::DataAPI::Endpoint::v4');
 use_ok('MT::DataAPI::Endpoint::v4::Category');
 use_ok('MT::DataAPI::Endpoint::v4::CategorySet');
 use_ok('MT::DataAPI::Endpoint::v4::ContentData');
@@ -202,7 +203,9 @@ use_ok('MT::Util::ContentType');
 use_ok('MT::Util::Deprecated');
 use_ok('MT::Util::Digest::MD5');
 use_ok('MT::Util::Digest::SHA');
+use_ok('MT::Util::Encode');
 use_ok('MT::Util::UniqueID');
+use_ok('MT::Util::Mail');
 use_ok('MT::Template::Tags::Common');
 use_ok('MT::version');
 
@@ -241,6 +244,9 @@ use_ok('MT::ImportExport');
 use_ok('MT::Import');
 use_ok('MT::JunkFilter');
 use_ok('MT::Mail');
+use_ok('MT::Mail::MIME');
+use_ok('MT::Mail::MIME::Lite');
+use_ok('MT::Mail::Email::MIME');
 use_ok('MT::Promise');
 use_ok('MT::Request');
 use_ok('MT::Sanitize');
@@ -494,11 +500,23 @@ use_ok('MT::DataAPI::Endpoint::Blog');
 use_ok('MT::DataAPI::Endpoint::Category');
 use_ok('MT::DataAPI::Endpoint::Common');
 use_ok('MT::DataAPI::Endpoint::Entry');
+use_ok('MT::DataAPI::Endpoint::OpenAPI');
 use_ok('MT::DataAPI::Endpoint::Permission');
 use_ok('MT::DataAPI::Endpoint::Publish');
 use_ok('MT::DataAPI::Endpoint::Stats');
 use_ok('MT::DataAPI::Endpoint::User');
 use_ok('MT::DataAPI::Endpoint::Util');
+use_ok('MT::DataAPI::Endpoint::Version');
+use_ok('MT::DataAPI::Endpoint::v1');
+use_ok('MT::DataAPI::Endpoint::v1::Asset');
+use_ok('MT::DataAPI::Endpoint::v1::Auth');
+use_ok('MT::DataAPI::Endpoint::v1::Blog');
+use_ok('MT::DataAPI::Endpoint::v1::Category');
+use_ok('MT::DataAPI::Endpoint::v1::Entry');
+use_ok('MT::DataAPI::Endpoint::v1::Permission');
+use_ok('MT::DataAPI::Endpoint::v1::Publish');
+use_ok('MT::DataAPI::Endpoint::v1::Stats');
+use_ok('MT::DataAPI::Endpoint::v1::User');
 use_ok('MT::DataAPI::Format');
 use_ok('MT::DataAPI::Format::JSON');
 use_ok('MT::DataAPI::Resource');
@@ -506,10 +524,22 @@ use_ok('MT::DataAPI::Resource::Asset');
 use_ok('MT::DataAPI::Resource::Blog');
 use_ok('MT::DataAPI::Resource::Category');
 use_ok('MT::DataAPI::Resource::Common');
+use_ok('MT::DataAPI::Resource::Endpoint');
 use_ok('MT::DataAPI::Resource::Entry');
 use_ok('MT::DataAPI::Resource::Permission');
+use_ok('MT::DataAPI::Resource::StatisticsDate');
+use_ok('MT::DataAPI::Resource::StatisticsPath');
 use_ok('MT::DataAPI::Resource::User');
 use_ok('MT::DataAPI::Resource::Website');
+use_ok('MT::DataAPI::Resource::v1::Asset');
+use_ok('MT::DataAPI::Resource::v1::Blog');
+use_ok('MT::DataAPI::Resource::v1::Category');
+use_ok('MT::DataAPI::Resource::v1::Entry');
+use_ok('MT::DataAPI::Resource::v1::Permission');
+use_ok('MT::DataAPI::Resource::v1::StatisticsDate');
+use_ok('MT::DataAPI::Resource::v1::StatisticsPath');
+use_ok('MT::DataAPI::Resource::v1::User');
+use_ok('MT::DataAPI::Resource::v1::Website');
 use_ok('MT::AccessToken');
 use_ok('MT::Stats');
 use_ok('MT::Stats::Provider');
@@ -547,9 +577,13 @@ use_ok('MT::DataAPI::Resource::v2::Log');
 use_ok('MT::DataAPI::Resource::v2::Website');
 use_ok('MT::DataAPI::Resource::v2::User');
 use_ok('MT::DataAPI::Resource::v2::Group');
+use_ok('MT::DataAPI::Resource::v2::Plugin');
+use_ok('MT::DataAPI::Resource::v2::Theme');
+use_ok('MT::DataAPI::Resource::v2::WidgetSet');
 
 use_ok('MT::DataAPI::Resource::Util');
 
+use_ok('MT::DataAPI::Endpoint::v2');
 use_ok('MT::DataAPI::Endpoint::v2::Widget');
 use_ok('MT::DataAPI::Endpoint::v2::Asset');
 use_ok('MT::DataAPI::Endpoint::v2::Template');
@@ -571,6 +605,7 @@ use_ok('MT::DataAPI::Endpoint::v2::Plugin');
 use_ok('MT::DataAPI::Endpoint::v2::User');
 use_ok('MT::DataAPI::Endpoint::v2::Group');
 
+use_ok('MT::DataAPI::Endpoint::v3');
 use_ok('MT::DataAPI::Endpoint::v3::Auth');
 use_ok('MT::DataAPI::Endpoint::v3::Asset');
 use_ok('MT::DataAPI::Endpoint::v3::Entry');
@@ -579,6 +614,30 @@ use_ok('MT::DataAPI::Endpoint::v3::Page');
 use_ok('MT::DataAPI::Resource::v3::Blog');
 use_ok('MT::DataAPI::Resource::v3::Website');
 use_ok('MT::DataAPI::Resource::v3::User');
+
+use_ok('MT::DataAPI::Endpoint::v5');
+use_ok('MT::DataAPI::Resource::v5::Asset');
+use_ok('MT::DataAPI::Resource::v5::Association');
+use_ok('MT::DataAPI::Resource::v5::Blog');
+use_ok('MT::DataAPI::Resource::v5::Category');
+use_ok('MT::DataAPI::Resource::v5::CategorySet');
+use_ok('MT::DataAPI::Resource::v5::ContentData');
+use_ok('MT::DataAPI::Resource::v5::ContentField');
+use_ok('MT::DataAPI::Resource::v5::ContentType');
+use_ok('MT::DataAPI::Resource::v5::Entry');
+use_ok('MT::DataAPI::Resource::v5::Folder');
+use_ok('MT::DataAPI::Resource::v5::Group');
+use_ok('MT::DataAPI::Resource::v5::Log');
+use_ok('MT::DataAPI::Resource::v5::Page');
+use_ok('MT::DataAPI::Resource::v5::Permission');
+use_ok('MT::DataAPI::Resource::v5::Tag');
+use_ok('MT::DataAPI::Resource::v5::Template');
+use_ok('MT::DataAPI::Resource::v5::TemplateMap');
+use_ok('MT::DataAPI::Resource::v5::User');
+use_ok('MT::DataAPI::Resource::v5::Website');
+use_ok('MT::DataAPI::Endpoint::v5::ContentData');
+use_ok('MT::DataAPI::Endpoint::v5::Entry');
+use_ok('MT::DataAPI::Endpoint::v5::TextFilter');
 
 use_ok('MT::App::Search::Common');
 
@@ -659,7 +718,7 @@ sub _internal_collect_modules {
 
 sub _read_compile_test {
     my %modules;
-    open my $fh, "<" . File::Spec->catfile( $FindBin::Bin, "00-compile.t" )
+    open my $fh, "<", File::Spec->catfile( $FindBin::Bin, "00-compile.t" )
         or die "can not open 00-compile.t file";
     while ( my $line = <$fh> ) {
         chomp $line;

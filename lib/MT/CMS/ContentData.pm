@@ -124,6 +124,12 @@ sub edit {
             $param->{'recovered_failed'} = 1;
         }
     }
+    elsif ( $app->param('_discard') && !$app->param('reedit') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        if ($sess_obj) {
+            $sess_obj->remove;
+        }
+    }
 
     if ( $app->param('reedit') ) {
         $data = $app->param('serialized_data');
@@ -193,6 +199,14 @@ sub edit {
                 $content_data->modified_on,
                 $blog, $app->user ? $app->user->preferred_language : undef
             );
+        }
+
+        if (my $other_user = $app->user_who_is_also_editing_the_same_stuff($content_data)) {
+            $param->{is_also_edited_by} = $other_user->{name};
+            $param->{is_also_edited_at} = $other_user->{time};
+        }
+        if ($param->{autosaved_object_ts} && $param->{autosaved_object_ts} < $content_data->modified_on) {
+            $param->{autosaved_object_is_outdated} = 1;
         }
 
         $param->{identifier}
@@ -349,6 +363,9 @@ sub edit {
             else {
                 $field->{value} = $field->{options}{initial_value};
             }
+        }
+        if ($field->{type} eq 'multi_line_text') {
+            $field->{options}{full_rich_text} = 1 unless defined $field->{options}{full_rich_text};
         }
 
         my $content_field_type = $content_field_types->{ $field->{type} };
@@ -874,41 +891,41 @@ sub save {
     $app->run_callbacks( 'cms_post_save.content_data',
         $app, $content_data, $orig );
 
-    # Delete old archive files.
-    if ( $app->config('DeleteFilesAtRebuild') && $content_data_id ) {
-        $app->request->cache( 'file', {} );    # clear cache
-        my $file = MT::Util::archive_file_for( $content_data, $blog,
-            $archive_type );
-        if (   $file ne $orig_file
-            || $content_data->status != MT::ContentStatus::RELEASE() )
-        {
-            $app->publisher->remove_content_data_archive_file(
-                ContentData => $orig,
-                ArchiveType => $archive_type,
-            );
-        }
-        MT::Util::Log::init();
-        for my $param (@old_archive_params) {
-            my $orig = $param->{ContentData};
-            next if $orig->status != MT::ContentStatus::RELEASE();
-            my $fi = $param->{FileInfo};
-            if ( MT->config('DeleteFilesAfterRebuild') ) {
-                $fi->mark_to_remove;
-                MT::Util::Log->debug( 'Marked to remove ' . $fi->file_path );
-            }
-            else {
-                $fi->remove;
-                $app->publisher->_delete_archive_file(%$param);
-            }
-        }
-    }
-
     ## If the saved status is RELEASE, or if the *previous* status was
     ## RELEASE, then rebuild content data archives and indexes.
     ## Otherwise the status was and is HOLD, and we don't have to do anything.
     if ( ( $content_data->status || 0 ) == MT::ContentStatus::RELEASE()
         || $status_old == MT::ContentStatus::RELEASE() )
     {
+        # Delete old archive files.
+        if ( $app->config('DeleteFilesAtRebuild') && $content_data_id ) {
+            $app->request->cache( 'file', {} );    # clear cache
+            my $file = MT::Util::archive_file_for( $content_data, $blog,
+                $archive_type );
+            if (   $file ne $orig_file
+                || $content_data->status != MT::ContentStatus::RELEASE() )
+            {
+                $app->publisher->remove_content_data_archive_file(
+                    ContentData => $orig,
+                    ArchiveType => $archive_type,
+                );
+            }
+            MT::Util::Log::init();
+            for my $param (@old_archive_params) {
+                my $orig = $param->{ContentData};
+                next if $orig->status != MT::ContentStatus::RELEASE();
+                my $fi = $param->{FileInfo};
+                if ( MT->config('DeleteFilesAfterRebuild') ) {
+                    $fi->mark_to_remove;
+                    MT::Util::Log->debug( 'Marked to remove ' . $fi->file_path );
+                }
+                else {
+                    $fi->remove;
+                    $app->publisher->_delete_archive_file(%$param);
+                }
+            }
+        }
+
         my $old_categories
             = %categories_old
             ? MT::Util::to_json( \%categories_old )
@@ -1713,10 +1730,15 @@ sub _build_content_data_preview {
     my $archive_file = '';
     my $orig_file    = '';
     my $file_ext     = '';
+    my $archive_url;
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
         $file_ext     = $blog->file_extension || '';
         $archive_file = $content_data->archive_file;
+        my $base_url = $blog->archive_url;
+        $base_url .= '/' unless $base_url =~ m|/$|;
+        $archive_url = $base_url . $archive_file;
+        $archive_url =~ s{(?<!:)//+}{/}g;
 
         my $blog_path = $blog->archive_path || $blog->site_path;
         $archive_file = File::Spec->catfile( $blog_path, $archive_file );
@@ -1741,6 +1763,7 @@ sub _build_content_data_preview {
     $ctx->{current_timestamp}    = $content_data->authored_on;
     $ctx->{curernt_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
+    $ctx->stash('current_mapping_url', $archive_url);
 
     my $archiver = MT->publisher->archiver($at);
     if ( my $params = $archiver->template_params ) {

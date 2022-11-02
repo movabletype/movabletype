@@ -1,3 +1,4 @@
+<__trans_section component="contentinfowidget">
 <mt:if name="ct_selects">
 <mtapp:widget
    id="content-type-info"
@@ -6,7 +7,7 @@
 
     <div id="ct_selects-field" class="form-group">
       <label for="content_type_sel" id="content_type_sel-label" class="sr-only first-child"><__trans phrase="Select Content Type"></label>
-      <select name="content_type_sel" id="content_type_sel" tabindex="13" class="custom-select form-control">
+      <select name="content_type_sel" id="content_type_sel" class="custom-select form-control">
       <mt:loop name="ct_selects">
       <option value="<mt:var name="id" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
       </mt:loop>
@@ -42,11 +43,11 @@
 <mtapp:widget
    id="content-field-info"
    hidden="1"
-   label="<__trans phrase="Content field">">
+   label="<__trans phrase="Content Field">">
 
     <div id="content_field_sel-field" class="form-group">
       <label for="content_field_sel" id="content_field_sel-label" class="sr-only font-weight-bold"><__trans phrase="Select Content Field"></label>
-      <select name="content_field_sel" id="content_field_sel" tabindex="13" class="custom-select form-control">
+      <select name="content_field_sel" id="content_field_sel" class="custom-select form-control">
       </select>
     </div>
 
@@ -88,3 +89,4 @@
 <mt:if name="can_create_new_content_type"><a href="<mt:var name="script_url">?__mode=view&_type=content_type&blog_id=<mt:var name="blog_id">"><__trans phrase="Create a new Content Type?"></a></mt:if>
 </mtapp:widget>
 </mt:if>
+</__trans_section>

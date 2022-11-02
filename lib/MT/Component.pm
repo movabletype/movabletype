@@ -10,6 +10,7 @@ use strict;
 use warnings;
 use base qw( Class::Accessor::Fast MT::ErrorHandler );
 use MT::Util qw( encode_js weaken );
+use MT::Util::Encode;
 
 __PACKAGE__->mk_accessors(qw( id path envelope version schema_version ));
 
@@ -157,7 +158,6 @@ sub load_registry {
     my $y = eval { MT::Util::YAML::LoadFile($path) }
         or die "Error reading $path: "
         . ( MT::Util::YAML->errstr || $@ || $! );
-    __deep_codify_string_sub($c, $y);
     return $y;
 }
 
@@ -583,15 +583,14 @@ sub translate_templatized {
     #  * decode the strings captured by regexp
     #  * encode the translated string from translate()
     #  * decode again for return
-    $text = Encode::encode( 'utf8', $text )
-        if Encode::is_utf8($text);
+    $text = MT::Util::Encode::encode_utf8_if_flagged($text);
     my @cstack;
     while (1) {
         $text
             =~ s!(<(/)?(?:_|MT)_TRANS(_SECTION)?(?:(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\5]+?)*?\5))+?\s*/?)?>)!
         my($msg, $close, $section, %args) = ($1, $2, $3);
         while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\2])*?)?\2/g) {  #"
-            $args{$1} = Encode::is_utf8($3) ? $3 : Encode::decode_utf8($3);
+            $args{$1} = MT::Util::Encode::decode_utf8_unless_flagged($3);
         }
         if ($section) {
             if ($close) {
@@ -611,7 +610,7 @@ sub translate_templatized {
             my @p = split /\s*%%\s*/, $args{params}, -1;
             @p = ('') unless @p;
             my $phrase = $args{phrase};
-            $phrase = Encode::decode_utf8($phrase) unless Encode::is_utf8($phrase);
+            $phrase = MT::Util::Encode::decode_utf8_unless_flagged($phrase);
             my $translation = $c->translate($phrase, @p);
             if (exists $args{escape}) {
                 if (lc($args{escape}) eq 'html') {
@@ -623,14 +622,11 @@ sub translate_templatized {
                     $translation = encode_js($translation);
                 }
             }
-            $translation = Encode::encode('utf8', $translation)
-                if Encode::is_utf8($translation);
-            $translation;
+            $translation = MT::Util::Encode::encode_utf8_if_flagged($translation);
         }
         !igem or last;
     }
-    $text = Encode::decode_utf8($text) unless Encode::is_utf8($text);
-    return $text;
+    return MT::Util::Encode::decode_utf8_unless_flagged($text);
 }
 
 sub l10n_filter { $_[0]->translate_templatized( $_[1] ) }
@@ -685,8 +681,8 @@ sub registry {
                                 or die "Error reading $f: "
                                 . ( MT::Util::YAML->errstr || $@ || $! );
                             if ($y) {
-                                __deep_codify_string_sub( $c, $y );
-                                __deep_localize_labels( $c, $y ) if ref $y eq 'HASH';
+                                __deep_localize_labels( $c, $y )
+                                    if ref $y eq 'HASH';
                                 $r->{$p} = $y;
                             }
                         }
@@ -739,18 +735,6 @@ sub registry {
         }
         return @list ? \@list : undef;
     }
-}
-
-sub __deep_codify_string_sub {
-    my ($c, $data) = @_;
-    require Data::Visitor::Tiny;
-    Data::Visitor::Tiny::visit($data, sub {
-        my ($key, $valueref) = @_;
-        if ($$valueref && $$valueref =~ /sub\s*\{/s) {
-            my $code = MT->handler_to_coderef($$valueref, undef, 1);
-            $$valueref = $code if $code;
-        }
-    });
 }
 
 sub __deep_localize_labels {

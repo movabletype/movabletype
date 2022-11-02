@@ -95,7 +95,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         if (isset($args['id'])) {
             $args['entry_id'] = $args['id'];
         }
-        if (!preg_match('/^ContentType/', $at)) {
+        if (!preg_match('/^ContentType/', $at ?? '')) {
             $ts = $ctx->stash('current_timestamp');
             $tse = $ctx->stash('current_timestamp_end');
             if ($ts && $tse) {

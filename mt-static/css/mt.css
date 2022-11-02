@@ -1964,7 +1964,7 @@ textarea.form-control, textarea.mt-contentblock__textarea {
   display: inline-flex;
   align-items: center;
   padding-left: 0;
-  margin-right: 0.75rem;
+  margin-right: 1.5rem;
 }
 
 .form-check-inline .form-check-input {
@@ -3639,7 +3639,7 @@ input[type="button"].btn-block {
   position: relative;
   display: block;
   min-height: 1.5rem;
-  padding-left: 2.5rem;
+  padding-left: 1.3rem;
 }
 
 .custom-control-inline {
@@ -3690,7 +3690,7 @@ input[type="button"].btn-block {
 .custom-control-label::before {
   position: absolute;
   top: 0.25rem;
-  left: -2.5rem;
+  left: -1.3rem;
   display: block;
   width: 1rem;
   height: 1rem;
@@ -3703,7 +3703,7 @@ input[type="button"].btn-block {
 .custom-control-label::after {
   position: absolute;
   top: 0.25rem;
-  left: -2.5rem;
+  left: -1.3rem;
   display: block;
   width: 1rem;
   height: 1rem;
@@ -3749,11 +3749,11 @@ input[type="button"].btn-block {
 }
 
 .custom-switch {
-  padding-left: 3.25rem;
+  padding-left: 2.05rem;
 }
 
 .custom-switch .custom-control-label::before {
-  left: -3.25rem;
+  left: -2.05rem;
   width: 1.75rem;
   pointer-events: all;
   border-radius: 0.5rem;
@@ -3761,7 +3761,7 @@ input[type="button"].btn-block {
 
 .custom-switch .custom-control-label::after {
   top: calc(0.25rem + 2px);
-  left: calc(-3.25rem + 2px);
+  left: calc(-2.05rem + 2px);
   width: calc(1rem - 4px);
   height: calc(1rem - 4px);
   background-color: #adb5bd;
@@ -11199,8 +11199,16 @@ fieldset.form-group {
   border-radius: 0.25rem;
 }
 
-.mt-draggable[draggable="true"], .mt-draggable--entryField[draggable="true"], .mt-draggable[aria-grabbed], .mt-draggable--entryField[aria-grabbed] {
+.mt-draggable[draggable="true"] .ui-sortable-handle, .mt-draggable--entryField[draggable="true"] .ui-sortable-handle, .mt-draggable[aria-grabbed] .ui-sortable-handle, .mt-draggable--entryField[aria-grabbed] .ui-sortable-handle {
   cursor: move;
+}
+
+.mt-draggable[draggable="true"] .ui-sortable-handle label, .mt-draggable--entryField[draggable="true"] .ui-sortable-handle label, .mt-draggable[aria-grabbed] .ui-sortable-handle label, .mt-draggable--entryField[aria-grabbed] .ui-sortable-handle label {
+  cursor: move;
+}
+
+.mt-draggable[draggable="true"] .mt-draggable__content, .mt-draggable--entryField[draggable="true"] .mt-draggable__content, .mt-draggable[aria-grabbed] .mt-draggable__content, .mt-draggable--entryField[aria-grabbed] .mt-draggable__content {
+  cursor: default;
 }
 
 .mt-draggable .mt-icon, .mt-draggable--entryField .mt-icon, .mt-draggable .mt-icon--primary, .mt-draggable--entryField .mt-icon--primary, .mt-draggable .mt-icon--secondary, .mt-draggable--entryField .mt-icon--secondary, .mt-draggable .mt-icon--success, .mt-draggable--entryField .mt-icon--success, .mt-draggable .mt-icon--info, .mt-draggable--entryField .mt-icon--info, .mt-draggable .mt-icon--warning, .mt-draggable--entryField .mt-icon--warning, .mt-draggable .mt-icon--danger, .mt-draggable--entryField .mt-icon--danger, .mt-draggable .mt-icon--inverse, .mt-draggable--entryField .mt-icon--inverse, .mt-draggable .mt-icon--secondary, .mt-draggable--entryField .mt-icon--secondary {
@@ -11901,5 +11909,31 @@ a:hover .mt-icon--secondary {
 /* Adjustments */
 .nav-tabs .nav-link.active {
   border-color: #ddd #ddd #FFFFFF;
+}
+
+/* edit entry image popup */
+ul#asset-list li img.list-image,
+ul.asset-list li img.list-image {
+  position: absolute;
+  z-index: 100;
+  left: -115px;
+  top: -5px;
+  padding: 5px;
+  background-color: #666666;
+  border-radius: 3px;
+}
+
+.custom-control .custom-control-label input[type=text] {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.panel-description .view-site-link {
+  float: right;
+  margin: 4px 2px 0 4px;
+}
+
+.panel-description .view-site-link img {
+  background-image: url(../images/status_icons/view.gif);
 }
 /*# sourceMappingURL=mt.css.map */

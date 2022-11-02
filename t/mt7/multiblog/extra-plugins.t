@@ -27,31 +27,34 @@ MT::Test->init_db;
 my $app = MT->instance;
 
 subtest 'add param basic' => sub {
-    my $a = MT::CMS::RebuildTrigger::object_type_loop_plugin_reduced($app);
-    note explain($a);
+    my $loop = MT::CMS::RebuildTrigger::object_type_loop_plugin_reduced($app);
+    note explain($loop);
     my $cwd = cwd();
     my $expected = 3;
     if (-e "$cwd/addons/Cloud.pack") {
         # Comments plugins is automatically disabled if Cloud.pack exists
         $expected--;
     }
-    if (-e "$cwd/plugins/Trackback") {
+    if (-e "$cwd/plugins/Trackback" && $app->config->PluginSwitch->{Trackback}) {
         $expected++;
     }
-    is(@$a, $expected, 'right number of loop');
+    is(@$loop, $expected, 'right number of loop');
 };
 
 subtest 'add param plugin disabled' => sub {
     my $cwd = cwd();
     my $expected = 2;
-    if (-e "$cwd/plugins/Trackback") {
+    if (-e "$cwd/plugins/Trackback" && $app->config->PluginSwitch->{Trackback}) {
         $expected++;
     }
-    $app->config->PluginSwitch->{Comments} = 0;
-    my $a = MT::CMS::RebuildTrigger::object_type_loop_plugin_reduced($app);
-    note explain($a);
-    is(@$a, $expected, 'right number of loop');
-    delete $app->config->PluginSwitch->{Comments};
+    my $switch = $app->config->PluginSwitch;
+    $switch->{Comments} = 0;
+    $app->config->PluginSwitch($switch, 1);
+    my $loop = MT::CMS::RebuildTrigger::object_type_loop_plugin_reduced($app);
+    note explain($loop);
+    is(@$loop, $expected, 'right number of loop');
+    delete $switch->{Comments};
+    $app->config->PluginSwitch($switch, 1);
 };
 
 done_testing;

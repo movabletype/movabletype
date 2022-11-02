@@ -12,6 +12,8 @@ BEGIN {
 }
 
 use MT::Test::Tag;
+use MT::Test::PHP;
+use MT::Test::Permission;
 use MT::Util qw(ts2epoch epoch2ts);
 
 $test_env->prepare_fixture('db_data');
@@ -29,6 +31,23 @@ my ($year, $month) = unpack 'A4A2', $asset->created_on;
 # entry we want to capture is dated: 19780131074500
 my $tsdiff = time - ts2epoch($blog, '19780131074500');
 my $daysdiff = int($tsdiff / (60 * 60 * 24));
+
+my $asset3 = MT::Asset->load(3);
+
+my $modified_by = MT::Test::Permission->make_author(
+    name             => 'Foo Bar',
+    nickname         => 'foobar',
+    email            => 'foobar@localhost',
+    url              => 'https://foobar.com',
+    userpic_asset_id => $asset3->id,
+);
+
+# use driver directly not to auto-update modified_at
+MT::Entry->driver->rw_handle->do('UPDATE mt_entry SET entry_modified_by = ?', undef, $modified_by->id);
+$test_env->clear_mt_cache;
+
+my $php_supports_gd = MT::Test::PHP->supports_gd;
+MT::Test::Tag->vars->{no_php_gd} = !$php_supports_gd;
 
 my %vars = (
     CFG_FILE => MT->instance->{cfg_file},
@@ -1417,18 +1436,24 @@ This is a test photo.
 jpg
 
 === test 273
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailURL width='160'$></MTAssets>
 --- expected
 http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto-1.jpg
 
 === test 274
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailURL height='240'$></MTAssets>
 --- expected
 http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox240-1.jpg
 
 === test 275
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailURL scale='75'$></MTAssets>
 --- expected
@@ -1441,58 +1466,76 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x360-1.j
 <a href="http://narnia.na/nana/images/test.jpg">test.jpg</a>
 
 === test 277
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 278
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink width='160'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto-1.jpg" width="160" height="120" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto-1.jpg" width="160" height="120" alt="" /></a>
 
 === test 279
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink height='240'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox240-1.jpg" width="320" height="240" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox240-1.jpg" width="320" height="240" alt="" /></a>
 
 === test 280
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink scale='100'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 281
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetLink new_window='1'$></MTAssets>
 --- expected
 <a href="http://narnia.na/nana/images/test.jpg" target="_blank">test.jpg</a>
 
 === test 282
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 283
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' width='160'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto-1.jpg" width="160" height="120" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-160xauto-1.jpg" width="160" height="120" alt="" /></a>
 
 === test 284
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' scale='100'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 285
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink new_window='1' scale='100'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg" target="_blank"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 286
 --- template
@@ -2583,10 +2626,12 @@ Bob D
 
 
 === test 491
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAuthors lastn="1"><MTAuthorUserpic></MTAuthors>
 --- expected
-<img src="/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3" width="100" height="100" alt="Image photo" loading="lazy" decoding="async" />
+<img src="/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3" width="100" height="100" alt="Image photo" />
 
 === test 492
 --- template
@@ -2595,6 +2640,8 @@ Bob D
 test.jpg
 
 === test 493
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAuthors lastn="1"><MTAuthorUserpicURL></MTAuthors>
 --- expected
@@ -2913,10 +2960,12 @@ Header:January 31, 1978  7:45 AM,Footer:January 31, 1978  7:45 AM,Header:January
 2
 
 === test 556
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTEntries lastn="1"><MTEntryAuthorUserpic></MTEntries>
 --- expected
-<img src="/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3" width="100" height="100" alt="Image photo" loading="lazy" decoding="async" />
+<img src="/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3" width="100" height="100" alt="Image photo" />
 
 === test 557
 --- template
@@ -2925,6 +2974,8 @@ Header:January 31, 1978  7:45 AM,Footer:January 31, 1978  7:45 AM,Header:January
 test.jpg
 
 === test 558
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTEntries lastn="1"><MTEntryAuthorUserpicURL></MTEntries>
 --- expected
@@ -3983,7 +4034,7 @@ mt-data-api.cgi
 --- template
 <mt:DataAPIVersion>
 --- expected
-4
+5
 
 === test 739
 --- template
@@ -4502,72 +4553,96 @@ entry
 7654321
 
 === test 830
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailURL width='1280'$></MTAssets>
 --- expected
 http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg
 
 === test 831
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailURL width='1280' force='1'$></MTAssets>
 --- expected
 http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-1280xauto-1.jpg
 
 === test 832
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailURL height='960'$></MTAssets>
 --- expected
 http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg
 
 === test 833
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailURL height='960' force='1'$></MTAssets>
 --- expected
 http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox960-1.jpg
 
 === test 834
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink width='1280'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 835
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink width='1280' force='1'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-1280xauto-1.jpg" width="1280" height="960" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-1280xauto-1.jpg" width="1280" height="960" alt="" /></a>
 
 === test 836
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink height='960'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg" width="640" height="480" alt="" /></a>
 
 === test 837
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailLink height='960' force='1'$></MTAssets>
 --- expected
-<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox960-1.jpg" width="1280" height="960" alt="" loading="lazy" decoding="async" /></a>
+<a href="http://narnia.na/nana/images/test.jpg"><img src="http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-autox960-1.jpg" width="1280" height="960" alt="" /></a>
 
 === test 838
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailURL width='1280' square='1'$></MTAssets>
 --- expected
 http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x480-1.jpg
 
 === test 839
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailURL height='960' square='1'$></MTAssets>
 --- expected
 http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-480x480-1.jpg
 
 === test 840
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailURL width='1280' square='1' force='1'$></MTAssets>
 --- expected
 http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-1280x1280-1.jpg
 
 === test 841
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets lastn='1'><$MTAssetThumbnailURL height='960' square='1' force='1'$></MTAssets>
 --- expected
@@ -4586,6 +4661,8 @@ http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-960x960-1.j
 <a class="fn email" href="mailto:chuckd@example.com">Chucky Dee</a>
 
 === test 844
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets include_blogs="1" limit="1"><mt:AssetThumbnailURL></MTAssets>
 --- expected
@@ -4720,6 +4797,8 @@ page
 entry
 
 === test 868
+--- skip_php
+[% no_php_gd %]
 --- template
 <MTAssets include_sites="1" limit="1"><mt:AssetThumbnailURL></MTAssets>
 --- expected
@@ -4833,7 +4912,7 @@ left File include is disabled by "AllowFileInclude" config directive. right
 --- expected regexp=s
 function verify_password.+mypassfield.+myusernamefield
 
-=== test if elsif else1
+=== test 887: test if elsif else1
 --- template
 <MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3<MTElse>4</MTIf>
 <MTVar name='idx' value='3'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3<MTElse>4</MTIf>
@@ -4843,7 +4922,7 @@ function verify_password.+mypassfield.+myusernamefield
 3
 4
 
-=== test  if elsif else2
+=== test 888: test  if elsif else2
 --- template
 <MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse>4</MTIf>
 <MTVar name='idx' value='5'><MTIf name='idx' eq='2'>2<MTElse>4</MTIf>
@@ -4851,7 +4930,7 @@ function verify_password.+mypassfield.+myusernamefield
 2
 4
 
-=== test  if elsif else3
+=== test 889: test  if elsif else3
 --- template
 <MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3</MTIf>
 <MTVar name='idx' value='3'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3</MTIf>
@@ -4859,3 +4938,85 @@ function verify_password.+mypassfield.+myusernamefield
 --- expected
 2
 3
+
+=== test 890
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorDisplayName></MTEntries>
+--- expected
+foobar
+
+=== test 891
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorUsername></MTEntries>
+--- expected
+Foo Bar
+
+=== test 892
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorEmail></MTEntries>
+--- expected
+foobar@localhost
+
+=== test 893
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorURL></MTEntries>
+--- expected
+https://foobar.com
+
+=== test 894
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorLink></MTEntries>
+--- expected
+<a href="https://foobar.com">foobar</a>
+
+=== test 895
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorID></MTEntries>
+--- expected
+6
+
+=== test 896
+--- template
+<MTPages lastn="1"><MTPageModifiedAuthorDisplayName></MTPages>
+--- expected
+foobar
+
+=== test 897
+--- template
+<MTPages lastn="1"><MTPageModifiedAuthorEmail></MTPages>
+--- expected
+foobar@localhost
+
+=== test 898
+--- template
+<MTPages lastn="1"><MTPageModifiedAuthorLink></MTPages>
+--- expected
+<a href="https://foobar.com">foobar</a>
+
+=== test 899
+--- template
+<MTPages lastn="1"><MTPageModifiedAuthorURL></MTPages>
+--- expected
+https://foobar.com
+
+=== test 900
+--- skip_php
+[% no_php_gd %]
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorUserpic></MTEntries>
+--- expected
+<img src="/mt-static/support/assets_c/userpics/userpic-6-100x100.png?3" width="100" height="100" alt="Image photo" />
+
+=== test 901
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorUserpicAsset><MTAssetFilename></MTEntryModifiedAuthorUserpicAsset></MTEntries>
+--- expected
+test.jpg
+
+=== test 902
+--- skip_php
+[% no_php_gd %]
+--- template
+<MTEntries lastn="1"><MTEntryModifiedAuthorUserpicURL></MTEntries>
+--- expected
+/mt-static/support/assets_c/userpics/userpic-6-100x100.png

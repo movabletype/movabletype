@@ -10,10 +10,16 @@ use strict;
 use warnings;
 
 sub updatable_fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     [];
 }
 
 sub fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     [   qw(id class name description archiveUrl),
         {   name  => 'url',
             alias => 'site_url',

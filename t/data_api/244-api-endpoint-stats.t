@@ -22,9 +22,17 @@ BEGIN {
 
 use MT::Test;
 use MT::App::DataAPI;
-use MT::DataAPI::Endpoint::Stats;
+use MT::DataAPI::Endpoint::v1::Stats;
 
 $test_env->prepare_fixture('db_data');
+
+# tweak for MTC-25052
+my $finfo = MT->model('fileinfo')->load({url => '/nana/archives/1978/01/a-rainy-day.html'});
+my $clone = $finfo->clone;
+$clone->id(undef);
+$clone->save;
+$finfo->entry_id(21);
+$finfo->save;
 
 my $app  = MT::App::DataAPI->new;
 my $blog = $app->model('blog')->load(1);
@@ -39,7 +47,7 @@ subtest 'fill_in_archive_info' => sub {
         for my $data (@$suite) {
             subtest $data->{note} => sub {
                 my $result
-                    = MT::DataAPI::Endpoint::Stats::fill_in_archive_info(
+                    = MT::DataAPI::Endpoint::v1::Stats::fill_in_archive_info(
                     $data->{input}, $blog );
                 is_deeply( $result, $data->{output}, 'filled' );
                 done_testing();

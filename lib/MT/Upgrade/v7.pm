@@ -181,6 +181,7 @@ sub upgrade_functions {
         'v7_reorder_warning_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type  => 'log',
                 label => 'Reorder WARNING level',
@@ -190,6 +191,7 @@ sub upgrade_functions {
         'v7_reorder_security_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type   => 'log',
                 label => 'Reorder SECURITY level',
@@ -199,10 +201,41 @@ sub upgrade_functions {
         'v7_reorder_debug_level' => {
             version_limit => '7.0050',
             priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
             updater       => {
                 type   => 'log',
                 label => 'Reorder DEBUG level',
                 sql   => 'UPDATE mt_log SET log_level = 0 WHERE log_level = 16',
+            },
+        },
+        'v7_migrate_filters_for_log_level' => {
+            version_limit => '7.0050',
+            priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
+            updater       => {
+                type  => 'filter',
+                label => 'Migrating filters that have conditions on the log level...',
+                terms => { object_ds => 'log' },
+                code  => do {
+                    my %map = (
+                        2  => 3,
+                        8  => 5,
+                        16 => 0,
+                    );
+                    sub {
+                        my $self  = shift;
+                        my $items = $self->items
+                            or return;
+                        for my $item (@$items) {
+                            if ($item->{type} eq 'level') {
+                                if (defined(my $new_value = $map{ $item->{args}{value} })) {
+                                    $item->{args}{value} = $new_value;
+                                    $self->items($items);
+                                }
+                            }
+                        }
+                    };
+                },
             },
         },
         'v7_remove_image_metadata' => {
@@ -213,6 +246,16 @@ sub upgrade_functions {
                 label => 'Remove image metadata',
                 sql   => q{DELETE FROM mt_asset_meta WHERE asset_meta_type = 'image_metadata'},
             },
+        },
+        'v7_migrate_data_api_disable_site' => {
+            version_limit => '7.0053',
+            priority      => 3.2,
+            code          => \&_v7_migrate_data_api_disable_site,
+        },
+        'v7_fill_with_missing_system_templates' => {
+            version_limit => '7.0054',
+            priority      => 3.2,
+            code          => \&_v7_fill_with_missing_system_templates,
         },
     };
 }
@@ -1518,6 +1561,99 @@ sub _v7_remove_sql_set_names {
     my $cfg       = MT->config;
     $cfg->SQLSetNames( undef, 1 );
     $cfg->save_config;
+}
+
+sub _v7_reorder_log_level_condition {
+    my ( $self, %param ) = @_;
+    my $from = $param{from};
+
+    return unless $from;
+    return if $from >= 6.0026 && $from < 7;
+
+    1;
+}
+
+sub _v7_migrate_data_api_disable_site {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Migrating DataAPIDisableSite...'));
+
+    # Load from DB directly. Do not refer to mt-config.cgi.
+    my ($config) = MT->model('config')->search;
+    if ($config) {
+        my $data = $config->data;
+        my $data_api_disable_site;
+        if ($data =~ /DataAPIDisableSite\s(.*)/) {
+            $data_api_disable_site = $1;
+        }
+        my %data_api_disable_site = map { $_ => 1 } split /,/, $data_api_disable_site || '';
+
+        my @sites = MT->model('website')->load({
+                class => '*',
+            },
+            {
+                fetchonly => { id => 1 },
+            },
+        );
+        my $from = int( MT->config->SchemaVersion || 0 );
+        for my $site (@sites) {
+            if ($from < 6) {
+                $site->allow_data_api(0);
+            } else {
+                if ($data_api_disable_site{$site->id}) {
+                    $site->allow_data_api(0);
+                } else {
+                    $site->allow_data_api(1);
+                }
+            }
+            $site->save;
+        }
+
+        # Clean up
+        if ($from < 6) {
+            MT->config->DataAPIDisableSite('0', 1);
+        } else {
+            if ($data_api_disable_site{0}) {
+                MT->config->DataAPIDisableSite('0', 1);
+            } else {
+                MT->config->DataAPIDisableSite('', 1);
+            }
+        }
+        MT->config->save_config;
+    }
+}
+
+sub _v7_fill_with_missing_system_templates {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Filling missing system templates...'));
+
+    my %tmpls;
+    require MT::DefaultTemplates;
+    MT::DefaultTemplates->fill_with_missing_system_templates(\%tmpls);
+
+    my @blog_ids = map { $_->id } MT->model('site')->load({ class => '*' }, { fetchonly => ['id'] });
+
+    my @templates = MT->model('template')->load({ type => [keys %tmpls] }, { fetchonly => ['blog_id', 'type'] });
+    my %map       = map { $_->blog_id . ':' . $_->type . ':' . $_->type => 1 } @templates;
+
+    require MT::Template;
+    for my $blog_id (@blog_ids) {
+        for my $key (keys %tmpls) {    # $key = $type:$type (= $tmpl_id:$tmpl_id)
+            next if $map{"$blog_id:$key"};
+            my $tmpl = $tmpls{$key};
+            my $p    = $tmpl->{plugin} || 'MT';
+            $tmpl->{text} = $p->translate_templatized($tmpl->{text}) if defined $tmpl->{text};
+            my $obj = MT::Template->new(
+                blog_id       => $blog_id,
+                build_dynamic => 0,
+            );
+            for my $col (keys %$tmpl) {
+                $obj->column($col, $tmpl->{$col}) if $obj->has_column($col);
+            }
+            $obj->save;
+        }
+    }
 }
 
 1;

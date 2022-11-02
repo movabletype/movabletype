@@ -62,7 +62,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '3.96';
+$VERSION = '3.99';
 
 sub LensIDConv($$$);
 sub ProcessNikonAVI($$$);
@@ -272,6 +272,7 @@ sub GetAFPointGrid($$;$);
     '9F 58 44 44 14 14 A1 06' => 'AF-S DX Nikkor 35mm f/1.8G', #27
     'A0 54 50 50 0C 0C A2 06' => 'AF-S Nikkor 50mm f/1.4G',
     'A1 40 18 37 2C 34 A3 06' => 'AF-S DX Nikkor 10-24mm f/3.5-4.5G ED',
+    'A1 40 2D 53 2C 3C CB 86' => 'AF-P DX Nikkor 18-55mm f/3.5-5.6G', #30
     'A2 48 5C 80 24 24 A4 0E' => 'AF-S Nikkor 70-200mm f/2.8G ED VR II',
     'A3 3C 29 44 30 30 A5 0E' => 'AF-S Nikkor 16-35mm f/4G ED VR',
     'A4 54 37 37 0C 0C A6 06' => 'AF-S Nikkor 24mm f/1.4G ED',
@@ -495,6 +496,7 @@ sub GetAFPointGrid($$;$);
     '02 46 5C 82 25 25 02 00' => 'Sigma 70-210mm F2.8 APO', #JD
     '02 40 5C 82 2C 35 02 00' => 'Sigma APO 70-210mm F3.5-4.5',
     '26 3C 5C 82 30 3C 1C 02' => 'Sigma 70-210mm F4-5.6 UC-II',
+    '02 3B 5C 82 30 3C 02 00' => 'Sigma Zoom-K 70-210mm F4-5.6', #30
     '26 3C 5C 8E 30 3C 1C 02' => 'Sigma 70-300mm F4-5.6 DG Macro',
     '56 3C 5C 8E 30 3C 1C 02' => 'Sigma 70-300mm F4-5.6 APO Macro Super II',
     'E0 3C 5C 8E 30 3C 4B 06' => 'Sigma 70-300mm F4-5.6 APO DG Macro HSM', #22
@@ -554,6 +556,7 @@ sub GetAFPointGrid($$;$);
     'F3 54 2B 50 24 24 84 0E' => 'Tamron SP AF 17-50mm f/2.8 XR Di II VC LD Aspherical (IF) (B005)',
     '00 3F 2D 80 2B 40 00 06' => 'Tamron AF 18-200mm f/3.5-6.3 XR Di II LD Aspherical (IF) (A14)',
     '00 3F 2D 80 2C 40 00 06' => 'Tamron AF 18-200mm f/3.5-6.3 XR Di II LD Aspherical (IF) Macro (A14)',
+    'EC 3E 3C 8E 2C 40 DF 0E' => 'Tamron 28-300mm f/3.5-6.3 Di VC PZD A010', #30
     '00 40 2D 80 2C 40 00 06' => 'Tamron AF 18-200mm f/3.5-6.3 XR Di II LD Aspherical (IF) Macro (A14NII)', #NJ
     'FC 40 2D 80 2C 40 DF 06' => 'Tamron AF 18-200mm f/3.5-6.3 XR Di II LD Aspherical (IF) Macro (A14NII)', #PH (NC)
     'E6 40 2D 80 2C 40 DF 0E' => 'Tamron 18-200mm f/3.5-6.3 Di II VC (B018)', #Tanel (removed AF designation, ref 37)
@@ -612,6 +615,7 @@ sub GetAFPointGrid($$;$);
     '7A 48 1C 29 24 24 7E 06' => 'Tokina AT-X 116 PRO DX II (AF 11-16mm f/2.8)',
     '80 48 1C 29 24 24 7A 06' => 'Tokina atx-i 11-16mm F2.8 CF', #exiv2 issue 1078
     '7A 48 1C 30 24 24 7E 06' => 'Tokina AT-X 11-20 F2.8 PRO DX (AF 11-20mm f/2.8)',
+    '8B 48 1C 30 24 24 85 06' => 'Tokina AT-X 11-20 F2.8 PRO DX (AF 11-20mm f/2.8)', #forum12687
     '00 3C 1F 37 30 30 00 06' => 'Tokina AT-X 124 AF PRO DX (AF 12-24mm f/4)',
     '7A 3C 1F 37 30 30 7E 06.2' => 'Tokina AT-X 124 AF PRO DX II (AF 12-24mm f/4)',
     '7A 3C 1F 3C 30 30 7E 06' => 'Tokina AT-X 12-28 PRO DX (AF 12-28mm f/4)',
@@ -718,6 +722,9 @@ sub GetAFPointGrid($$;$);
     '00 40 11 11 2C 2C 00 00' => 'Samyang 8mm f/3.5 Fish-Eye',
     '00 58 64 64 20 20 00 00' => 'Soligor C/D Macro MC 90mm f/2.5',
     '4A 58 30 30 14 0C 4D 02' => 'Rokinon 20mm f/1.8 ED AS UMC', #30
+#
+    'A0 56 44 44 14 14 A2 06' => 'Sony FE 35mm F1.8', #IB (Techart adapter)
+    'A0 37 5C 8E 34 3C A2 06' => 'Sony FE 70-300mm F4.5-5.6 G OSS', #IB (Techart adapter)
 );
 
 # text encoding used in LocationInfo (ref PH)
@@ -4720,6 +4727,9 @@ my %nikonFocalConversions = (
             21 => 'Nikkor Z 50mm f/1.2 S', #IB
             22 => 'Nikkor Z 24-50mm f/4-6.3', #IB
             23 => 'Nikkor Z 14-24mm f/2.8 S', #IB
+            24 => 'Nikkor Z MC 105mm f/2.8 VR S', #IB
+            27 => 'Nikkor Z MC 50mm f/2.8', #IB
+            29 => 'Nikkor Z 28mm f/2.8', #IB
         },
     },
     0x36 => {
@@ -8492,8 +8502,8 @@ my %nikonFocalConversions = (
     # 0x02 - undef[148]
     # 0x03 - undef[284]
     # 0x04 - undef[148,212]
-    # 0x05 - undef[84]
-    # 0x06 - undef[116]
+    # 0x05 - undef[84] (barrel distortion params at offsets 0x14,0x1c,0x24, ref 28)
+    # 0x06 - undef[116] (vignette correction params at offsets 0x24,0x34,0x44, ref 28)
     # 0x07 - undef[104]
     # 0x08 - undef[24]
     # 0x09 - undef[36]

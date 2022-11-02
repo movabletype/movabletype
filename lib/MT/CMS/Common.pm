@@ -744,6 +744,12 @@ sub edit {
             $param{'recovered_failed'} = 1;
         }
     }
+    elsif ( $app->param('_discard') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        if ($sess_obj) {
+            $sess_obj->remove;
+        }
+    }
     elsif ( $app->param('qp') ) {
 
         # dedupe
@@ -933,6 +939,12 @@ sub edit {
                 $param{autosaved_object_exists} = 1;
                 $param{autosaved_object_ts}
                     = MT::Util::epoch2ts( $blog, $sess_obj->start );
+                $param{autosaved_object_is_outdated} = 1
+                    if $obj && $param{autosaved_object_ts} < $obj->modified_on;
+            }
+            if (my $other_user = $app->user_who_is_also_editing_the_same_stuff($obj)) {
+                $param{is_also_edited_by} = $other_user->{name};
+                $param{is_also_edited_at} = $other_user->{time};
             }
         }
     }
@@ -975,6 +987,13 @@ sub edit {
     }
 
     return $app->load_tmpl( $tmpl_file, \%param );
+}
+
+my %ListLimitMap = map {$_ => 1} (10, 25, 50, 100, 200);
+
+sub canonicalize_list_limit {
+    my $limit = shift || MT->config->DefaultListLimit;
+    $ListLimitMap{$limit} ? $limit : 50;
 }
 
 sub list {
@@ -1051,51 +1070,20 @@ sub list {
     if ( defined $screen_settings->{permission}
         && !$app->user->is_superuser() )
     {
-        my $list_permission = $screen_settings->{permission};
-        my $inherit_blogs   = 1;
-        if ( 'HASH' eq ref $list_permission ) {
-            $inherit_blogs = $list_permission->{inherit}
-                if defined $list_permission->{inherit};
-            $list_permission = $list_permission->{permit_action};
-        }
-        my $allowed = 0;
-        my @act;
-        if ( 'CODE' eq ref $list_permission ) {
-            my $code = $list_permission;
-            eval { $list_permission = $code->($app); };
-            return $app->error(
-                $app->translate(
-                    'Error occurred during permission check: [_1]', $@
-                )
-            ) if $@;
-        }
-        elsif ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ )
-        {
-            my $code = $list_permission;
-            $code = MT->handler_to_coderef($code);
-            eval { $list_permission = $code->(); };
-            return $app->error(
-                $app->translate(
-                    'Error occurred during permission check: [_1]', $@
-                )
-            ) if $@;
-        }
+        my ($actions, $inherit_blogs) = eval { $app->parse_filtered_list_permission($screen_settings->{permission}) };
+        my $error = $@;
+        return $app->error($app->translate('Error occurred during permission check: [_1]', $error)) if $error;
 
-        if ( 'ARRAY' eq ref $list_permission ) {
-            @act = @$list_permission;
-        }
-        else {
-            @act = split /\s*,\s*/, $list_permission;
-        }
         my $blog_ids = undef;
         if ($blog_id) {
             push @$blog_ids, $blog_id;
         }
-        foreach my $p (@act) {
+        my $allowed = 0;
+        foreach my $action (@$actions) {
             $allowed = 1,
                 last
                 if $app->user->can_do(
-                $p,
+                $action,
                 at_least_one => 1,
                 ( $blog_ids ? ( blog_id => $blog_ids ) : () )
                 );
@@ -1108,7 +1096,6 @@ sub list {
 
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{ $type . $subtype }{$blog_id} || {};
-    my $rows        = $list_pref->{rows}        || 50;    ## FIXME: Hardcoded
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $last_items         = $list_pref->{last_items} || [];
@@ -1116,7 +1103,7 @@ sub list {
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
     }
-    $param{ 'limit_' . $rows } = 1;
+    $param{'limit'} = canonicalize_list_limit($list_pref->{rows});
 
     require MT::ListProperty;
     my $obj_type   = $screen_settings->{object_type} || $type;
@@ -1237,6 +1224,8 @@ sub list {
         = defined( $screen_settings->{default_sort_key} )
         ? $screen_settings->{default_sort_key}
         : '';
+    my $sort_by    = $list_pref->{sort_by}    || $default_sort;
+    my $sort_order = $list_pref->{sort_order} || 'ascend';
 
     my @list_columns;
     for my $prop ( values %$list_props ) {
@@ -1379,7 +1368,8 @@ sub list {
         $param{allpass_filter} = $encode_filter->($allpass_filter);
     $param{system_messages}   = $json->encode( \@messages );
     $param{filters_raw}       = $filters;
-    $param{default_sort_key}  = $default_sort;
+    $param{sort_by}           = $sort_by;
+    $param{sort_order}        = $sort_order;
     $param{list_columns}      = \@list_columns;
     $param{list_columns_json} = $json->encode( \@list_columns );
     $param{filter_types}      = \@filter_types;
@@ -1446,7 +1436,7 @@ sub list {
     my $feed_link = $screen_settings->{feed_link};
     $feed_link = $feed_link->($app)
         if 'CODE' eq ref $feed_link;
-    if ($feed_link) {
+    if ($feed_link and !MT->config->DisableActivityFeeds) {
         my $view = $subtype ? $app->param('type') : $type;
         $param{feed_url} = $app->make_feed_link( $view,
             $blog_id ? { blog_id => $blog_id } : undef );
@@ -1552,46 +1542,16 @@ sub filtered_list {
     if ( defined $setting->{permission}
         && !$app->user->is_superuser() )
     {
-        my $list_permission = $setting->{permission};
-        my $inherit_blogs   = 1;
-        if ( 'HASH' eq ref $list_permission ) {
-            $inherit_blogs = $list_permission->{inherit}
-                if defined $list_permission->{inherit};
-            $list_permission = $list_permission->{permit_action};
-        }
         my $allowed = 0;
-        my @permissions;
-        if ( 'CODE' eq ref $list_permission ) {
-            eval { $list_permission = $list_permission->($app); };
-            return $app->json_error(
-                $app->translate(
-                    'Error occurred during permission check: [_1]', $@
-                )
-            ) if $@;
-        }
-        elsif ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ )
-        {
-            my $code = $list_permission;
-            $code = MT->handler_to_coderef($code);
-            eval { $list_permission = $code->($app); };
-            return $app->json_error(
-                $app->translate(
-                    'Error occurred during permission check: [_1]', $@
-                )
-            ) if $@;
-        }
+        my ($actions, $inherit_blogs) = eval { $app->parse_filtered_list_permission($setting->{permission}) };
+        my $error = $@;
+        return $app->json_error($app->translate('Error occurred during permission check: [_1]', $error)) if $error;
 
-        if ( 'ARRAY' eq ref $list_permission ) {
-            @permissions = @$list_permission;
-        }
-        else {
-            @permissions = split /\s*,\s*/, $list_permission;
-        }
-        foreach my $p (@permissions) {
+        foreach my $action (@$actions) {
             $allowed = 1,
                 last
                 if $app->user->can_do(
-                $p,
+                $action,
                 at_least_one => 1,
                 ( $blog_ids ? ( blog_id => $blog_ids ) : () )
                 );
@@ -1599,7 +1559,7 @@ sub filtered_list {
         return $app->json_error(
             $app->translate(
                 'Permission denied: [_1]',
-                join( ',', @permissions )
+                join( ',', @$actions )
             )
         ) unless $allowed;
     }
@@ -1646,7 +1606,8 @@ sub filtered_list {
             blog_id   => $blog_id || 0,
         }
     );
-    my $limit = $app->param('limit') || 50;    # FIXME: hard coded.
+    my $limit = $app->param('limit');
+    $limit = canonicalize_list_limit($limit);
     my $page  = $app->param('page');
     $page = 1 if !$page || $page =~ /\D/;
     my $offset = ( $page - 1 ) * $limit;
@@ -1865,12 +1826,14 @@ sub save_list_prefs {
         = !$blog         ? 'system'
         : $blog->is_blog ? 'blog'
         :                  'website';
-    my $limit      = $app->param('limit')   || 50;    # FIXME: hard coded.
     my $cols       = $app->param('columns') || '';
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};
-    $list_pref->{rows}    = $limit;
+    my $limit = $app->param('limit');
+    $list_pref->{rows}    = canonicalize_list_limit($limit);
     $list_pref->{columns} = [ split ',', $cols ];
+    $list_pref->{sort_by}    = $app->param('sort_by') || '';
+    $list_pref->{sort_order} = $app->param('sort_order') || '';
 
 #$list_pref->{last_filter} = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
 #$list_pref->{last_items} = $filteritems;
@@ -2089,6 +2052,12 @@ sub delete {
                 );
             if ($used_in_categories_field) {
                 push @not_deleted, $obj->id;
+                next;
+            }
+        }
+        elsif ($type eq 'ts_job') {
+            if ($obj->grabbed_until) {
+                push @not_deleted, $obj->jobid;
                 next;
             }
         }

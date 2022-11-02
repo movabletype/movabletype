@@ -11,8 +11,19 @@ use warnings;
 
 use MT::Entry;
 use MT::DataAPI::Endpoint::Common;
-use MT::DataAPI::Endpoint::Entry;
+use MT::DataAPI::Endpoint::v1::Entry;
+use MT::DataAPI::Endpoint::v2::Page;
 use MT::DataAPI::Resource;
+
+sub create_openapi_spec {
+    my $spec = MT::DataAPI::Endpoint::v2::Page::create_openapi_spec();
+    $spec->{requestBody}{content}{'application/x-www-form-urlencoded'}{schema}{properties}{publish} = {
+        type        => 'integer',
+        description => 'If this value is "0", the entry is not published',
+        enum        => [0, 1],
+    };
+    return $spec;
+}
 
 sub create {
     my ( $app, $endpoint ) = @_;
@@ -47,7 +58,7 @@ sub create {
     MT::Util::translate_naughty_words($new_page);
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $site,
+        = MT::DataAPI::Endpoint::v1::Entry::build_post_save_sub( $app, $site,
         $new_page, $orig_page );
 
     # Check whether or not assets can attach.
@@ -121,6 +132,16 @@ sub create {
     $new_page;
 }
 
+sub update_openapi_spec {
+    my $spec = MT::DataAPI::Endpoint::v2::Page::update_openapi_spec();
+    $spec->{requestBody}{content}{'application/x-www-form-urlencoded'}{schema}{properties}{publish} = {
+        type        => 'integer',
+        description => 'If this value is "0", the entry is not published',
+        enum        => [0, 1],
+    };
+    return $spec;
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
@@ -130,7 +151,7 @@ sub update {
         or return;
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $site,
+        = MT::DataAPI::Endpoint::v1::Entry::build_post_save_sub( $app, $site,
         $new_page, $orig_page );
 
     # Check whether or not assets can attach/detach.

@@ -12,6 +12,7 @@ use base qw( Data::ObjectDriver::BaseObject MT::ErrorHandler );
 
 use MT;
 use MT::Util qw(offset_time_list);
+use MT::Util::Encode;
 
 my ( @PRE_INIT_PROPS, @PRE_INIT_META );
 
@@ -160,7 +161,9 @@ sub install_properties {
 
     $props->{get_driver} ||= sub {
         require MT::ObjectDriverFactory;
-        return MT::ObjectDriverFactory->instance;
+        my $coderef = MT::ObjectDriverFactory->driver_for_class($class);
+        $class->get_driver($coderef);
+        return $coderef->(@_);
     };
 
     $class->SUPER::install_properties($props);
@@ -320,8 +323,7 @@ sub install_properties {
 
             my $data = $obj->get_values;
             foreach ( keys %$data ) {
-                $data->{$_} = Encode::encode( $enc, $data->{$_} )
-                    if Encode::is_utf8( $data->{$_} );
+                $data->{$_} = MT::Util::Encode::encode_if_flagged( $enc, $data->{$_} );
             }
             $obj->set_values( $data, { no_changed_flag => 1 } );
         },
@@ -365,8 +367,8 @@ sub install_properties {
             }
             foreach ( keys %$data ) {
                 my $v = $data->{$_};
-                if ( !( Encode::is_utf8( $data->{$_} ) ) && !$is_blob{$_} ) {
-                    $data->{$_} = Encode::decode( $enc, $v );
+                if ( !( MT::Util::Encode::is_utf8( $data->{$_} ) ) && !$is_blob{$_} ) {
+                    $data->{$_} = MT::Util::Encode::decode( $enc, $v );
                 }
             }
             $obj->{__core_final_post_load_mark} = 1;
@@ -381,8 +383,8 @@ sub _encode_terms {
     my $enc = MT->config->PublishCharset || 'UTF-8';
 
     if ( 'SCALAR' eq ref($value) ) {
-        return $value unless Encode::is_utf8($$value);
-        my $val = Encode::encode( $enc, $$value );
+        return $value unless MT::Util::Encode::is_utf8($$value);
+        my $val = MT::Util::Encode::encode( $enc, $$value );
         return \$val;
     }
     elsif ( 'HASH' eq ref($value) ) {
@@ -399,8 +401,7 @@ sub _encode_terms {
         return \@values;
     }
     elsif ( !ref($value) ) {
-        return $value unless Encode::is_utf8($value);
-        return Encode::encode( $enc, $value );
+        return MT::Util::Encode::encode_if_flagged( $enc, $value );
     }
 }
 
@@ -1087,7 +1088,10 @@ sub save {
         $obj->SUPER::save(@_);
     };
     if ( my $err = $@ ) {
-        return $obj->error($err);
+        require MT::Util::Log;
+        MT::Util::Log::init();
+        MT::Util::Log->error($err);
+        return $obj->error(MT->translate('An error occurred while saving changes to the database.'));
     }
     delete $obj->{__orig_value};
     return $res;
@@ -1253,17 +1257,16 @@ sub set_defaults {
     $obj->{'column_values'} = $defaults ? {%$defaults} : {};
 }
 
-sub __properties { }
-
-our $DRIVER;
+sub __properties { +{} }
 
 sub driver {
     my $class = shift;
-    require MT::ObjectDriverFactory;
-    return $DRIVER ||= MT::ObjectDriverFactory->instance
-        if UNIVERSAL::isa( $class, 'MT::Object' );
-    my $driver = $class->SUPER::driver(@_);
-    return $driver;
+    if (%{$class->properties}) {
+        return $class->SUPER::driver(@_);
+    } else {
+        require MT::ObjectDriverFactory;
+        return MT::ObjectDriverFactory->instance;
+    }
 }
 
 sub dbi_driver {

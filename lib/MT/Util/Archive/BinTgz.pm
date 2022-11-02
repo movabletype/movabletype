@@ -18,7 +18,7 @@ use File::Copy     ();
 use File::Temp     ();
 use File::Path     ();
 use File::Basename ();
-use Encode;
+use MT::Util::Encode;
 use IPC::Run3 ();
 
 our $BinTarPath;
@@ -169,9 +169,8 @@ sub add_file {
         if 'r' eq $obj->{_mode};
     my $encoded_path = $file_path;
     $encoded_path = MT::FileMgr::Local::_syserr($encoded_path)
-        if !Encode::is_utf8($encoded_path);
-    $encoded_path = Encode::encode_utf8($encoded_path)
-        if Encode::is_utf8($encoded_path);
+        if !MT::Util::Encode::is_utf8($encoded_path);
+    $encoded_path = MT::Util::Encode::encode_utf8_if_flagged($encoded_path);
     my $filename = File::Spec->catfile($path,           $file_path);
     my $tmpfile  = File::Spec->catfile($obj->{_tmpdir}, $file_path);
     my $dir      = File::Basename::dirname($tmpfile);

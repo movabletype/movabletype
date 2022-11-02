@@ -51,12 +51,6 @@ BEGIN {
                 config_package => 'DBI::sqlite',
                 display        => ['dbpath'],
             },
-            'sqlite2' => {
-                label          => 'SQLite Database (v2)',
-                dbd_package    => 'DBD::SQLite2',
-                config_package => 'DBI::sqlite',
-                display        => ['dbpath'],
-            },
         },
         db_form_data => {
             dbserver => {
@@ -858,6 +852,70 @@ BEGIN {
                         } @$objs;
                     },
                 },
+                modified_by => {
+                    label        => 'Modified by',
+                    filter_label => 'Modified by',
+                    display      => 'optional',
+                    base         => '__virtual.string',
+                    raw          => sub {
+                        my ( $prop, $obj ) = @_;
+
+                        # If there's no value in the column then no voter ID was
+                        # recorded.
+                        return '' if !$obj->modified_by;
+
+                        my $author = MT->model('author')->load( $obj->modified_by );
+                        return $author
+                            ? ( $author->nickname || $author->name )
+                            : MT->translate('*User deleted*');
+                    },
+                    terms => sub {
+                        my $prop = shift;
+                        my ( $args, $load_terms, $load_args ) = @_;
+                        my $driver  = $prop->datasource->driver;
+                        my $colname = $driver->dbd->db_column_name(
+                            $prop->datasource->datasource, 'modified_by' );
+                        $prop->{col} = 'name';
+                        my $name_query = $prop->super(@_);
+                        $prop->{col} = 'nickname';
+                        my $nick_query = $prop->super(@_);
+                        $load_args->{joins} ||= [];
+                        push @{ $load_args->{joins} },
+                            MT->model('author')->join_on(
+                            undef,
+                            [   { id => \"= $colname" },
+                                '-and',
+                                [   $name_query,
+                                    (   $args->{'option'} eq 'not_contains'
+                                        ? '-and'
+                                        : '-or'
+                                    ),
+                                    $nick_query,
+                                ]
+                            ],
+                            {}
+                            );
+                    },
+                    bulk_sort => sub {
+                        my $prop = shift;
+                        my ($objs) = @_;
+                        my %author_id
+                            = map { ( $_->modified_by ) ? ( $_->modified_by => 1 ) : () }
+                            @$objs;
+                        my @authors = MT->model('author')
+                            ->load( { id => [ keys %author_id ] } );
+                        my %nickname = map {
+                                  $_->id => defined $_->nickname
+                                ? $_->nickname
+                                : ''
+                        } @authors;
+                        $nickname{0} = '';    # fallback
+                        return sort {
+                            $nickname{ $a->modified_by || 0 }
+                                cmp $nickname{ $b->modified_by || 0 }
+                        } @$objs;
+                    },
+                },
                 tag => {
                     base    => '__virtual.string',
                     label   => 'Tag',
@@ -1329,6 +1387,7 @@ BEGIN {
             content_data  => '$Core::MT::ContentData::list_props',
             group         => '$Core::MT::Group::list_props',
             group_member  => '$Core::MT::Group::member_list_props',
+            ts_job        => '$Core::MT::TheSchwartz::Job::list_props',
         },
         system_filters => {
             entry        => '$Core::MT::Entry::system_filters',
@@ -1341,7 +1400,7 @@ BEGIN {
             association  => '$Core::MT::Association::system_filters',
             group        => '$Core::MT::Group::system_filters',
             group_member => '$Core::MT::Group::member_system_filters',
-
+            website      => '$Core::MT::Website::system_filters',
         },
         listing_screens => {
             website => {
@@ -1709,6 +1768,22 @@ BEGIN {
                 search_label        => 'User',
                 search_type         => 'author',
             },
+            ts_job => {
+                object_label => 'Job',
+                view         => 'system',
+                id_column    => 'jobid',
+                primary      => 'funcid',
+                condition    => sub {
+                    my $app = shift;
+                    return 1 if MT->config->ShowTsJob;
+                    $app->errtrans(
+                        'View Background Jobs is disabled by system configuration.');
+                },
+                permission       => 'administer',
+                use_filters      => 0,
+                default_sort_key => 'insert_time',
+                screen_label     => 'View Background Jobs',
+            },
         },
         summaries => {
             'author' => {
@@ -1782,6 +1857,7 @@ BEGIN {
             'DBRetryInterval'              => { default => 1 },
             'PIDFilePath'                  => undef,
             'DefaultLanguage'              => { default => 'en_US', },
+            'DefaultSupportedLanguages'    => undef,
             'LocalPreviews'                => { default => 0 },
             'EnableAutoRewriteOnIIS'       => { default => 1 },
             'IISFastCGIMonitoringFilePath' => undef,
@@ -1847,14 +1923,18 @@ BEGIN {
                 default => sub { $_[0]->CGIPath }
             },
             'BaseSitePath'                   => undef,
+            'BaseTemplatePath'               => { default => undef },
             'HideBaseSitePath'               => { default => 0, },
             'HidePerformanceLoggingSettings' => { default => 0, },
             'HidePaformanceLoggingSettings' =>
                 { alias => 'HidePerformanceLoggingSettings' },
             'CookieDomain'          => undef,
             'CookiePath'            => undef,
+            'MailModule'            => { default => 'MIME::Lite', },
             'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
+            'MailTransferEncoding'  => undef,
+            'MailLogAlways'         => undef,
             'SMTPServer'            => { default => 'localhost', },
             'SMTPAuth'              => { default => 0, },
             'SMTPUser'              => undef,
@@ -1945,6 +2025,7 @@ BEGIN {
             },
             'GenerateTrackBackRSS'                   => { default => 0, },
             'DBIRaiseError'                          => { default => 0, },
+            'DBIShowErrorStatement'                  => { default => 0, },
             'SearchAlwaysAllowTemplateID'            => { default => 0, },
             'ContentDataSearchAlwaysAllowTemplateID' => {
                 default => sub { $_[0]->SearchAlwaysAllowTemplateID }
@@ -2035,23 +2116,24 @@ BEGIN {
             'NewsboxURL' => {
                 default => 'https://www.movabletype.org/news/newsbox.json',
             },
-            'FeedbackURL' =>
-                { default => 'http://www.movabletype.org/feedback.html', },
+            'FeedbackURL' => { default => 'http://www.movabletype.org/feedback.html', },
 
-            'EmailAddressMain'      => undef,
-            'EmailReplyTo'          => undef,
-            'EmailNotificationBcc'  => { default => 1, },
-            'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
-            'UserSessionTimeout'    => { default => 60 * 60 * 4, },
-            'UserSessionCookieName' => { default => \&UserSessionCookieName },
-            'UserSessionCookieDomain' =>
-                { default => '<$MTBlogHost exclude_port="1"$>' },
-            'UserSessionCookiePath' => { default => \&UserSessionCookiePath },
+            'EmailAddressMain'         => undef,
+            'EmailReplyTo'             => undef,
+            'EmailNotificationBcc'     => { default => 1, },
+            'CommentSessionTimeout'    => { default => 60 * 60 * 24 * 3, },
+            'UserSessionTimeout'       => { default => 60 * 60 * 4, },
+            'AutosaveSessionTimeout'   => { default => 60 * 60 * 24 * 30, },
+            'UserSessionCookieName'    => { default => \&UserSessionCookieName },
+            'UserSessionCookieDomain'  => { default => '<$MTBlogHost exclude_port="1"$>' },
+            'UserSessionCookiePath'    => { default => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
+            'MaxUserSession'           => { default => 10000 },
             'LaunchBackgroundTasks'    => { default => 0 },
             'TransparentProxyIPs'      => { default => 0, },
             'DebugMode'                => { default => 0, },
             'ShowIPInformation'        => { default => 0, },
+            'ShowTsJob'                => { default => 0, },
             'AllowComments'            => { default => 1, },
             'AllowPings'               => { default => 1, },
             'HelpURL'                  => undef,
@@ -2071,7 +2153,6 @@ BEGIN {
             'ActivityFeedsRunTasks'    => { default => 1, },
             'ExportEncoding'           => { default => 'utf-8', },
             'SQLSetNames'              => undef,
-            'UseSQLite2'               => { default => 0, },
 
             #'UseJcodeModule'  => { default => 0, },
             'DefaultTimezone'    => { default => '0', },
@@ -2246,6 +2327,9 @@ BEGIN {
             'AccessOverrides'      => undef,
 
             'JSONCanonicalization' => { default => 1 },
+            'UseMTCommonJSON'      => { default => 0 },
+            'UseSVGForEverybody'   => { default => 0 },
+            'UseJQueryJSON'        => { default => 0 },
 
             'RequiredUserEmail'       => { default => 1 },
             'DefaultClassParamFilter' => { default => 'all' },
@@ -2256,11 +2340,24 @@ BEGIN {
             'BinTarPath' => undef,
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
+
+            'MaxFavoriteSites' => { default => 5 },
             'DisableImagePopup' => undef,
             'ForceExifRemoval' => { default => 1 },
             'TemporaryFileExpiration' => { default => 60 * 60 },
-            'ForceAllowStringSub' => undef,
+            'PSGIStreaming' => { default => 1 },
+            'PSGIServeStatic' => { default => 1 },
             'HideVersion' => { default => 1 },
+            'BuilderModule' => { default => 'MT::Builder' },
+            'HideConfigWarnings' => { default => undef },
+            'GlobalTemplateMaxRevisions' => { default => 20 },
+            'DisableQuickPost' => { default => 0 },
+            'DisableActivityFeeds' => { default => 0 },
+            'DefaultStatsProvider' => { default => 'GoogleAnalyticsV4' },
+            'DefaultListLimit' => { default => '50' },
+            'WaitAfterReboot' => { default => '1.0' },
+            'DisableMetaRefresh' => { default => 1 },
+            'DynamicTemplateAllowPHP' => { default => 1 },
             'AdminThemeId' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
@@ -2320,6 +2417,7 @@ BEGIN {
             },
             'cms' => {
                 handler         => 'MT::App::CMS',
+                type            => 'psgi_streaming',
                 script          => sub { MT->config->AdminScript },
                 cgi_path        => sub { MT->config->AdminCGIPath },
                 cgi_base        => 'mt',
@@ -2696,6 +2794,12 @@ sub remove_temporary_files {
     my @ids;
     foreach my $f (@files) {
         if ( $fmgr->delete( $f->name ) ) {
+            # MTC-26474
+            require File::Basename;
+            my $dir = File::Basename::dirname($f->name);
+            if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
+                rmdir($dir);
+            }
             push @ids, $f->id;
         }
     }
@@ -2733,6 +2837,10 @@ sub purge_session_records {
 
     # remove stale search cache
     MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },
+        { range => { start => 1 } } );
+
+    # remove autosave sessions
+    MT::Session->remove( { kind => 'AS', start => [ undef, time - MT->config->AutosaveSessionTimeout ] },
         { range => { start => 1 } } );
 
     # remove all the other session records

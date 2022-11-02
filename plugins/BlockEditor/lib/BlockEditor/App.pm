@@ -170,7 +170,7 @@ sub replace_handler {
         = $field_data
         ? MT::Serialize->unserialize( $content_data->convert_breaks )
         : undef;
-    if ( $$convert_breaks->{ $field_data->{id} } eq 'blockeditor' ) {
+    if ( $$convert_breaks->{ $field_data->{id} } && $$convert_breaks->{ $field_data->{id} } eq 'blockeditor' ) {
         my $block_editor_data = $content_data->block_editor_data;
         my $data
             = eval { MT::Util::from_json( $content_data->block_editor_data ) };

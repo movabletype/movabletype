@@ -37,6 +37,7 @@ my $user        = MT::Author->load(1);
 my $mock_author = Test::MockModule->new('MT::Author');
 our $is_superuser = 0;
 $mock_author->mock('is_superuser', sub { $is_superuser });
+my $blog = MT::Blog->load(1);
 my $website = MT::Website->load(2);
 is(!!$website->is_blog, '', 'Is a website');
 
@@ -190,6 +191,20 @@ subtest 'Check disable image popup' => sub {
         $test_env->update_config(DisableImagePopup => 0);
     };
 
+    subtest 'empty popup_image template' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        my $tmpl = MT->model('template')->load({
+            blog_id => $website->id,
+            type    => 'popup_image'
+        });
+        $tmpl->text('');
+        $tmpl->save;
+        $app->post_ok(\%params);
+        note $app->_find_text('.custom-control .alert');
+        is($app->_find_text('.custom-control .alert'), q{'Popup image' template does not exist or is empty and cannot be selected.}, 'empty error');
+    };
+
     subtest 'remove popup_image template' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($user);
@@ -198,8 +213,44 @@ subtest 'Check disable image popup' => sub {
             type    => 'popup_image'
         });
         $app->get_ok(\%params);
-        note $app->wq_find("#image_default_link_popup")->as_html;
-        is($app->wq_find("#image_default_link_popup")->size, 0, 'image popup check is hide');
+        note $app->_find_text('.custom-control .alert');
+        is($app->_find_text('.custom-control .alert'), q{'Popup image' template does not exist or is empty and cannot be selected.}, 'empty error');
+    };
+};
+
+subtest 'save_favorite_blogs' => sub {
+    subtest 'Add website' => sub {
+        $user->favorite_sites([]);
+        $user->favorite_blogs([]);
+        $user->save;
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->post_ok({
+            __mode  => 'save_favorite_blogs',
+            id       => $website->id
+        });
+        is $app->content, 'true';
+
+        is_deeply $user->favorite_blogs, [];
+        is_deeply $user->favorite_websites, [$website->id];
+    };
+
+    subtest 'Add blog' => sub {
+        $user->favorite_sites([]);
+        $user->favorite_blogs([]);
+        $user->save;
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->post_ok({
+            __mode  => 'save_favorite_blogs',
+            id       => $blog->id
+        });
+        is $app->content, 'true';
+
+        is_deeply $user->favorite_blogs, [$blog->id];
+        is_deeply $user->favorite_websites, [$website->id];
     };
 };
 

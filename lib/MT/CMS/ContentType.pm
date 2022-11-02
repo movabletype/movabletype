@@ -133,7 +133,7 @@ sub edit {
             typeLabel => $typeLabel,
             label     => $f->{options}->{label},
             (     ( defined $f->{id} )
-                ? ( id => $f->{id} )
+                ? ( id => $f->{id}, realId => $f->{id} )
                 : ( id => $random_id->() )
             ),
             order   => $f->{order},
@@ -894,7 +894,7 @@ sub init_content_type {
     my ( $cb, $app ) = @_;
 
     require MT::Object;
-    my $driver = MT::Object->driver;
+    my $driver = eval { MT::Object->driver };
     return
         unless $driver
         && $driver->table_exists( $app->model('content_type') );
@@ -985,6 +985,7 @@ sub _make_content_data_listing_screens {
                     'access_to_content_data_list',
                 ];
             },
+            data_api_permission => undef,
             feed_link => sub {
 
                 # TODO: fix permission

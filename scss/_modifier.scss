@@ -1386,7 +1386,16 @@ fieldset.form-group{
   border: 1px solid $gray;
   border-radius: $border-radius;
   &[draggable="true"], &[aria-grabbed] {
-      cursor: move;
+      .ui-sortable-handle{
+        cursor: move;
+
+        label{
+          cursor: move;
+        }
+      }
+      .mt-draggable__content{
+        cursor: default;
+      }
   }
   .mt-icon, .mt-icon--secondary{
     margin: 0 .5rem 0 0;
@@ -1661,6 +1670,7 @@ fieldset.form-group{
 .modal-description{
   @extend .d-flex, .justify-content-between;
   padding: 1rem 1rem 0 1rem;
+
 }
 .modal-label{
   margin: 0;
@@ -1710,6 +1720,7 @@ fieldset.form-group{
   text-decoration: underline;
   vertical-align: middle;
 }
+
 
 /* Alert */
 .alert{
@@ -2027,4 +2038,30 @@ a:hover .mt-icon--secondary{
 /* Adjustments */
 .nav-tabs .nav-link.active{
   border-color: $nav-tabs-border-color $nav-tabs-border-color $white;
+}
+
+/* edit entry image popup */
+ul#asset-list li img.list-image,
+ul.asset-list li img.list-image {
+    position: absolute;
+    z-index: 100;
+    left: -115px;
+    top: -5px;
+    padding: 5px;
+    background-color: #666666;
+    border-radius: 3px;
+}
+.custom-control .custom-control-label input[type=text] {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.panel-description {
+  .view-site-link {
+    float: right;
+    margin: 4px 2px 0 4px;
+    img {
+      background-image: url(../images/status_icons/view.gif);
+    }
+  }
 }
