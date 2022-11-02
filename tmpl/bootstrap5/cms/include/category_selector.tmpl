@@ -12,7 +12,7 @@
                     </div>
                 <mt:if name="can_edit_categories">
                     <div class="col-auto d-md-block">
-                        <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="float-end add-category-new-link">
+                        <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="float-right add-category-new-link">
                             <mtapp:svgicon id="ic_add" color="success" title="Add">
                         </a>
                     </div>
@@ -23,10 +23,10 @@
 <mt:if name="object_type" eq="entry">
         [# div.className="add-category-form m-3"; div.style.display = "none" #]
           <div class="form-group row">
-            <div class="col-auto ps-0 pe-0">
+            <div class="col-auto pl-0 pr-0">
               <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link btn"><mtapp:svgicon id="ic_caution" title="Cancel"></a>
             </div>
-            <div class="col ps-0">
+            <div class="col pl-0">
               <div class="input-group">
                 <input id="add-category-input-movable" class="form-control form-control-inline add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" />
                 <div class="input-group-append">
@@ -38,10 +38,10 @@
 <mt:else>
         [# div.className="add-category-form m-3"; div.style.display = "none" #]
           <div class="form-group row">
-            <div class="col-auto ps-0 pe-0">
+            <div class="col-auto pl-0 pr-0">
               <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link btn"><mtapp:svgicon id="ic_caution" title="Cancel"></a>
             </div>
-            <div class="col ps-0">
+            <div class="col pl-0">
               <div class="input-group">
                 <input id="add-category-input-movable" class="form-control fadd-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" />
                 <div class="input-group-append">

@@ -33,10 +33,10 @@
 
 <mt:setvarblock name="list_categories_block">
       <div id="area-action" class="mb-5 mb-md-3 form-inline mod sortable-header">
-        <select id="itemlist" name="itemlist" class="me-2 custom-select form-control disabled" disabled="disabled">
+        <select id="itemlist" name="itemlist" class="mr-2 custom-select form-control disabled" disabled="disabled">
           <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
         </select>
-        <input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="category-label me-2 form-control text short disabled" disabled="disabled" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
+        <input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="category-label mr-2 form-control text short disabled" disabled="disabled" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">">">
         <button type="submit" class="btn btn-default add button disabled" disabled="disabled"><__trans phrase="Add"></button>
       </div>
 
@@ -273,12 +273,12 @@ jQuery('div#area-action input[name=category_label]').on('focus', function() {
 
 // id and parent should be numbers
 function createItem(id, parent, label, basename, number) {
-  var line = '<span class="item-label text-truncate me-2">'+label+'</span>';
+  var line = '<span class="item-label text-truncate mr-2">'+label+'</span>';
   if ( basename )
-    line += '<span class="item-basename text-truncate me-3"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
+    line += '<span class="item-basename text-truncate mr-3"><span class="item-basename-text-container"><span class="item-basename-text">'+basename+'</span></span></span>';
   line += ' <span class="item-ctrl text-truncate"></span>';
   <mt:unless name="is_category_set">
-  line += ' <span class="count float-end d-none d-md-block me-2">'+number+'</span>';
+  line += ' <span class="count float-right d-none d-md-block mr-2">'+number+'</span>';
   </mt:unless>
   var $item = jQuery('<div id="cat-'+id+'" class="pcat-'+parent+' sortable-item mt-draggable" draggable="true" aria-grabbed="false"></div>');
   $item.append('<div class="col-auto"><mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">" strip_linefeeds="1"></div>');
@@ -314,7 +314,7 @@ function initItem($item) {
   jQuery('<span class="item-ctrl text-truncate" />').insertBefore($item.find('.count'));
 </mt:if>
 
-  jQuery('<a href="#" class="item-action edit-link clickable me-2"><__trans phrase="Rename" escape="js"></a>')
+  jQuery('<a href="#" class="item-action edit-link clickable mr-2"><__trans phrase="Rename" escape="js"></a>')
     .appendTo($item.find('.item-ctrl'))
     .on('click', function() {
       fixInteractions({
@@ -327,7 +327,7 @@ function initItem($item) {
       var $form = jQuery('<div class="form-inline edit-form"/>')
         .append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short cat-label mx-2" placeholder="<__trans phrase="Label" escape="js">" />'));
       $form.find('.cat-label').val($label.text());
-      $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="form-control text short basename me-2" placeholder="<__trans phrase="Basename" escape="js">" />'));
+      $form.append(jQuery('<input type="text" name="<mt:var name="object_type" lower_case="1">_basename" class="form-control text short basename mr-2" placeholder="<__trans phrase="Basename" escape="js">" />'));
       $form.find('.basename').val($basename.text());
 <mt:if name="object_type" eq="category">
       jQuery.mtValidateRules['.cat-label'] = function ($e) {
@@ -347,7 +347,7 @@ function initItem($item) {
         return hasDupe(parent, catid, null, $e.val()) ? this.raise('<__trans phrase="Duplicated basename on this level." escape="js">') : true;
       };
 
-      jQuery('<button type="submit" class="btn btn-secondary rename button me-2"><__trans phrase="Rename" escape="js"></button>')
+      jQuery('<button type="submit" class="btn btn-secondary rename button mr-2"><__trans phrase="Rename" escape="js"></button>')
         .on('click', function() {
           if ( !$element.find('input.cat-label, input.basename').mtValidate() ) return false;
           fixInteractions({ closeInlineForms: false });
@@ -386,7 +386,7 @@ function initItem($item) {
       var parent = $element.attr('id').slice(4);
       var $form = jQuery('<div class="mt-draggable form-inline mod add-form" style="cursor: default;"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short mx-2" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
       $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_type" lower_case="1">_label]').trigger('focus');
-      jQuery('<button type="button" class="btn btn-secondary add button me-2"><__trans phrase="Add" escape="js"></button>')
+      jQuery('<button type="button" class="btn btn-secondary add button mr-2"><__trans phrase="Add" escape="js"></button>')
         .on('click', function() {
           var label = jQuery(this).parent('.add-form').find('input').val();
           // sort of hack to do HTML escape.
@@ -927,7 +927,7 @@ function bulkUpdateCategories() {
   </mt:if>
       blog_id: <mt:var name="blog_id">,
       checksum: checksum,
-      objects: jQuery.toJSON(items),
+      objects: <mt:if name-"use_jquery_json">jQuery.toJSON(items)<mt:else>JSON.stringify(items)</mt:if>,
       magic_token: jQuery('input[name="magic_token"]').val()
     },
     success: function(data) {

@@ -21,7 +21,20 @@
   <mtapp:statusmsg
      id="recovered-object"
      class="info">
+    <mt:if name="autosaved_object_is_outdated">
+    <__trans phrase="A saved version of this content data was auto-saved [_2] but it is outdated.<br><a href="[_1]" class="alert-link">Recover auto-saved content</a> / <a href="[_3]" class="alert-link">Discard auto-saved content</a>" params="<mt:var name="script_url">?__mode=view&amp;_type=content_data&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">%%<mt:var name="script_url">?__mode=view&amp;_type=content_data&amp;_discard=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>">
+    <mt:else>
     <__trans phrase="A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=view&amp;_type=content_data&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
+    </mt:if>
+  </mtapp:statusmsg>
+    </mt:unless>
+  </mt:if>
+  <mt:if name="is_also_edited_by">
+    <mt:unless name="error">
+  <mtapp:statusmsg
+     id="someone-is-also-editing"
+     class="warning">
+    <__trans phrase="[_1] is also editing the same data (last updated at [_2])." params="<mt:var name="is_also_edited_by" escape="html">%%<mt:var name="is_also_edited_at" escape="html">">
   </mtapp:statusmsg>
     </mt:unless>
   </mt:if>
@@ -476,7 +489,7 @@
   </div>
 
 <mt:if name="id">
-<div class="text-end delete-action mt-4 d-none d-md-block">
+<div class="text-right delete-action mt-4 d-none d-md-block">
   <a
      href="javascript:void(0)"
      mt:command="do-remove-items"
@@ -626,7 +639,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
      </span>
        <mt:if name="status_publish">
          <mt:if name="content_data_permalink">
-       <a class="btn btn-default button" href="<$mt:var name="content_data_permalink"$>" target="<__trans phrase="_external_link_target">">
+       <a class="btn btn-default button" href="<$mt:var name="content_data_permalink"$>" target="_blank">
          <__trans phrase="View">
        </a>
          </mt:if>
@@ -742,7 +755,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     <__trans phrase="(Min tags: [_1])", params="<mt:var name="options{min}" escape="html">">
             </mt:if>
           <mt:elseif name="options{max}">
-    <__trans phrase="(Max tags: [_2])", params="<mt:var name="options{max}" escape="html">">
+    <__trans phrase="(Max tags: [_1])", params="<mt:var name="options{max}" escape="html">">
           <mt:else>
             <mt:var name="new_line" value="0">
           </mt:if>

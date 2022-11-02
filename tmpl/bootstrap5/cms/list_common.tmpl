@@ -104,7 +104,7 @@
   <script type="text/javascript" src="<mt:var name="static_uri">js/ss/ss.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">js/listing/listing.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
 <mt:else>
-  <script type="riot/tag" src="<mt:var name="static_uri">js/ss/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/ss/tag/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/raw.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -134,17 +134,8 @@ jQuery.event.special.listReady = {
 
 (function () {
   var listColumns = <mt:var name="list_columns_json">;
-  var listSortBy = '<mt:var name="default_sort_key">';
-
-  <mt:if name="limit_25">
-  var listLimit = 25;
-  <mt:elseif name="limit_50">
-  var listLimit = 50;
-  <mt:elseif name="limit_100">
-  var listLimit = 100;
-  <mt:elseif name="limit_200">
-  var listLimit = 200;
-  </mt:if>
+  var listSortBy = '<mt:var name="sort_by">';
+  var listSortOrder = '<mt:var name="sort_order">';
 
   var objectType = '<mt:var name="object_type" escape="js">';
   var objectTypeForTableClass = '<mt:var name="object_type_for_table_class" escape="js">';
@@ -301,9 +292,10 @@ jQuery.event.special.listReady = {
     listClient: listClient,
 
     columns: listColumns,
-    limit: listLimit,
+    limit: <mt:var name="limit" escape="js">,
     page: 1,
     sortBy: listSortBy,
+    sortOrder: listSortOrder,
 
     allpassFilter: allpassFilter,
     currentFilter: initialFilter,

@@ -18,14 +18,16 @@
     <__trans phrase="Your settings have been saved.">
   </mtapp:statusmsg>
 </mt:if>
-<mt:if name="config_warning">
-  <mtapp:statusmsg
-     id="info"
-     class="info"
-     can_close="0">
-    <mt:var name="config_warning">
-  </mtapp:statusmsg>
-</mt:if>
+<mt:unless name="hide_config_warnings">
+  <mt:if name="config_warning">
+    <mtapp:statusmsg
+       id="info"
+       class="info"
+       can_close="0">
+      <mt:var name="config_warning">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:unless>
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">

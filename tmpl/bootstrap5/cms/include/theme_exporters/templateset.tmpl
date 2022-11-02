@@ -1,7 +1,7 @@
 <mt:loop tmpl_groups>
 <div id="template-group-<mt:var name="template_type">" class="template-group">
   <div id="template-group-<mt:var name="template_type">-header" class="template-group-header">
-    <div class="float-end template-group-summary">
+    <div class="float-right template-group-summary">
     <mt:if name="template_type" eq="widgetset">
       <mt:setvar name="tmpl_type_name" value="<__trans phrase="widget sets">">
     <mt:elseif name="template_type" eq="module">
@@ -61,7 +61,7 @@
         <mt:if name="template_type" like="/(index|archive|ct)/">
           <td class="output-file">
           <mt:if name="outfile">
-            <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Published Template">" size="sm"></a></mt:if>
+            <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url">" target="_blank" title="<__trans phrase="View Published Template">"><mtapp:svgicon id="ic_permalink" title="<__trans phrase="View Published Template">" size="sm"></a></mt:if>
           <mt:else name="template_type" like="/(archive|ct)/">
             <ul class="list-unstyled">
             <mt:loop name="archive_types">
