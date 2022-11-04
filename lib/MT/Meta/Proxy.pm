@@ -316,6 +316,7 @@ sub lazier_load_objects {
 }
 
 sub bulk_load_meta_objects {
+    warn '----- bulk_load_meta_objects';
     my $class = shift;
     my ($objs) = @_;
 
