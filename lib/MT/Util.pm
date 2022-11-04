@@ -520,6 +520,7 @@ sub format_ts {
             else { substr_wref $L->[0][ wday_from_ts(@t[0..2]) ] || '', 0, 3 }
         }
         elsif ($n eq 'A') { $L->[0][ wday_from_ts(@t[0..2]) ] }
+        else { '' }
     }gex;
 
     ## FIXME: This block must go away after Languages hash
