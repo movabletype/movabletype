@@ -1733,6 +1733,13 @@ sub _rebuild_content_archive_type {
             : exists $param{Timestamp} ? $param{Timestamp}
             :                            undef;
 
+        if ($content_data && $map->cat_field_id && !$param{Category}) {
+            my $cat = $content_data->data->{$map->cat_field_id};
+            if ($cat && @$cat) {
+                $param{Category} = MT->model('category')->load($cat->[0]);
+            }
+        }
+
         my $file
             = exists $param{File}
             ? $param{File}
