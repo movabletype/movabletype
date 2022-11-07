@@ -7,7 +7,6 @@ use Test::More;
 use MT::Test::Env;
 
 BEGIN {
-    plan skip_all => 'This test is too fragile; just skip for now';
     eval 'use Test::Spec; 1'
         or plan skip_all => 'Test::Spec is not installed';
     eval 'use Imager; 1'
@@ -56,6 +55,7 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
             $selenium->visit(
                 '/cgi-bin/mt.cgi?__mode=cfg_prefs&_type=website&blog_id=1&id=1&username=Melody&password=Nelson'
             );
+            $selenium->wait_until_ready;
         };
         describe 'select archive path' => sub {
             it 'option is hidden' => sub {
@@ -90,7 +90,7 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
                 $selenium->find('label[for=enable_archive_paths]');
                 if (my $elem = $selenium->element) {
                     $elem->toggle;
-                    wait_until { $selenium->find('#enable_archive_paths')->element->is_selected };
+                    $selenium->wait_until_ready;
                 }
                 $selenium->find('select#upload_destination');
                 if (my $elem = $selenium->element) {
@@ -118,6 +118,7 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
             $selenium->visit(
                 '/cgi-bin/mt.cgi?__mode=cfg_prefs&_type=website&blog_id=1&id=1&username=Melody&password=Nelson'
             );
+            $selenium->wait_until_ready;
         };
         describe 'select archive path' => sub {
             it 'option is shown' => sub {
@@ -152,7 +153,7 @@ describe 'On Pref Blog Screen (blog_id = 1)' => sub {
                 $selenium->find('label[for=enable_archive_paths]');
                 if (my $elem = $selenium->element) {
                     $elem->toggle;
-                    wait_until { !$selenium->find('#enable_archive_paths')->element->is_selected };
+                    $selenium->wait_until_ready;
                 }
                 $selenium->find('select#upload_destination');
                 if (my $elem = $selenium->element) {
