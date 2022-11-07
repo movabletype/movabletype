@@ -96,7 +96,8 @@ sub assert_no_errors {
     my @logs = $s->get_browser_error_log();
     @logs = grep {
         $_->{message} !~ /Scripts may close only the windows that were opened by them/ &&
-        $_->{message} !~ /Blocked attempt to show a 'beforeunload' confirmation panel for a frame that never had a user gesture since its load./
+        $_->{message} !~ /Blocked attempt to show a 'beforeunload' confirmation panel for a frame that never had a user gesture since its load./ &&
+        $_->{message} !~ /Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING/
     } @logs;
 
     ok(!scalar(@logs), 'no browser error occurs');
