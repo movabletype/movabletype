@@ -851,6 +851,8 @@ sub prepare_role {
                                 }
                             }
                         }
+                    } else {
+                        push @perms, @$ct_perm;
                     }
                 } elsif (!$reftype) {
                     push @perms, $role_perm;
