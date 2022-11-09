@@ -4,6 +4,8 @@
         "post-update-cmd": [
             "rm -r php/extlib/smarty",
             "cp -r vendor/smarty/smarty php/extlib/smarty",
+            "rm -r php/extlib/adodb5",
+            "cp -r vendor/adodb/adodb-php php/extlib/adodb5",
             "rm -f php/extlib/adodb5/.gitattributes",
             "rm -f php/extlib/adodb5/.gitignore",
             "rm -f php/extlib/adodb5/drivers/adodb-text.inc.php",
@@ -17,7 +19,7 @@
         "phpunit/phpunit": "^9.5.24"
     },
     "require": {
-        "adodb/adodb-php": "5.22.2",
+        "adodb/adodb-php": "5.22.4",
         "smarty/smarty": "^v4.2.0"
     },
     "config": {
