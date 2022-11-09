@@ -20,6 +20,7 @@ use Data::Dumper;
 
 use MT::Test;
 use MT;
+use MT::Template::Node ':constants';
 
 my $mt = MT->new;
 
@@ -44,8 +45,8 @@ $tokens = $builder->compile( $ctx, 'justified and ancient' );
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,             "Created one token" );
-ok( $tokens->[0][0] eq 'TEXT', "Token is textual" );
-ok( $tokens->[0][1] eq 'justified and ancient',
+ok( $tokens->[0][EL_NODE_NAME] eq 'TEXT', "Token is textual" );
+ok( $tokens->[0][EL_NODE_VALUE] eq 'justified and ancient',
     "Token text is what we expect" );
 is( $builder->build( $ctx, $tokens ),
     'justified and ancient',
@@ -57,12 +58,12 @@ $tokens = $builder->compile( $ctx, '<$MTFoo$>' );
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,            "Created one token" );
-ok( $tokens->[0][0] eq 'Foo', "Token is a tag token" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'Foo', "Token is a tag token" );
 ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
-ok( ref( $tokens->[0][1] ) eq 'HASH',
+ok( ref( $tokens->[0][EL_NODE_ATTR] ) eq 'HASH',
     "Element 1 of token object is a hashref"
 );
-is( scalar keys %{ $tokens->[0][1] }, 0, "Has no attributes" );
+is( scalar keys %{ $tokens->[0][EL_NODE_ATTR] }, 0, "Has no attributes" );
 is( $builder->build( $ctx, $tokens ),
     'foo', "Building produces expected result" );
 
@@ -72,11 +73,11 @@ note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,            "Created one token" );
 ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
-ok( $tokens->[0][0] eq 'Foo', "Token is a tag token" );
-ok( ref( $tokens->[0][1] ) eq 'HASH',
+ok( $tokens->[0][EL_NODE_NAME] eq 'Foo', "Token is a tag token" );
+ok( ref( $tokens->[0][EL_NODE_ATTR] ) eq 'HASH',
     "Element 1 of token object is a hashref"
 );
-is( $tokens->[0][1]{no}, 1, "Attribute 'no' is equal to 1" );
+is( $tokens->[0][EL_NODE_ATTR]{no}, 1, "Attribute 'no' is equal to 1" );
 is( $builder->build( $ctx, $tokens ),
     'no foo', "Building produces expected result" );
 
@@ -86,12 +87,12 @@ note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,            "Created one token" );
 ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
-ok( $tokens->[0][0] eq 'Foo', "Token is a tag token" );
-ok( ref( $tokens->[0][1] ) eq 'HASH',
+ok( $tokens->[0][EL_NODE_NAME] eq 'Foo', "Token is a tag token" );
+ok( ref( $tokens->[0][EL_NODE_ATTR] ) eq 'HASH',
     "Element 1 of token object is a hashref"
 );
-is( $tokens->[0][1]{no}, 1, "Attribute 'no' is equal to 1" );
-is( $tokens->[0][1]{yes}, 'foo bar',
+is( $tokens->[0][EL_NODE_ATTR]{no}, 1, "Attribute 'no' is equal to 1" );
+is( $tokens->[0][EL_NODE_ATTR]{yes}, 'foo bar',
     "Attribute 'yes' is equal to 'foo bar'" );
 is( $builder->build( $ctx, $tokens ),
     'no foo', "Building produces expected result" );
@@ -104,11 +105,11 @@ note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,            "Created one token" );
 ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
-ok( $tokens->[0][0] eq 'Foo', "Token is a tag token" );
-ok( ref( $tokens->[0][1] ) eq 'HASH',
+ok( $tokens->[0][EL_NODE_NAME] eq 'Foo', "Token is a tag token" );
+ok( ref( $tokens->[0][EL_NODE_ATTR] ) eq 'HASH',
     "Element 1 of token object is a hashref"
 );
-is( $tokens->[0][1]{yes},
+is( $tokens->[0][EL_NODE_ATTR]{yes},
     'foo\'s bar', "Attribute 'yes' is equal to \"foo's bar\"" );
 
 note("Testing compilation of text + function tag");
@@ -119,12 +120,12 @@ TEXT
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 3,             "Created 3 tokens" );
-ok( $tokens->[0][0] eq 'TEXT', "Token 1 is a text token" );
-ok( $tokens->[0][1] eq "All that glitters is not gold.\n",
+ok( $tokens->[0][EL_NODE_NAME] eq 'TEXT', "Token 1 is a text token" );
+ok( $tokens->[0][EL_NODE_VALUE] eq "All that glitters is not gold.\n",
     "Text is expected value" );
-ok( $tokens->[1][0] eq 'Foo',  "Token 2 is a tag token" );
-ok( $tokens->[2][0] eq 'TEXT', "Token 3 is a text token" );
-ok( $tokens->[2][1] eq "\n",   "Text is expected value" );
+ok( $tokens->[1][EL_NODE_NAME] eq 'Foo',  "Token 2 is a tag token" );
+ok( $tokens->[2][EL_NODE_NAME] eq 'TEXT', "Token 3 is a text token" );
+ok( $tokens->[2][EL_NODE_VALUE] eq "\n",   "Text is expected value" );
 is( $builder->build( $ctx, $tokens ),
     "All that glitters is not gold.\nfoo\n",
     "Building produces expected result"
@@ -167,9 +168,9 @@ $tokens = $builder->compile( $ctx, '<MTBars></MTBars>' );
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,                     "Created 1 token" );
-ok( $tokens->[0][0] eq 'Bars',         "Token is a tag token" );
-ok( ref( $tokens->[0][2] ) eq 'ARRAY', "Token has child token array" );
-ok( @{ $tokens->[0][2] } == 0,         "Child token length is 0" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'Bars',         "Token is a tag token" );
+ok( ref( $tokens->[0][EL_NODE_CHILDREN] ) eq 'ARRAY', "Token has child token array" );
+ok( @{ $tokens->[0][EL_NODE_CHILDREN] } == 0,         "Child token length is 0" );
 is( $builder->build( $ctx, $tokens ),
     'Called without tokens!',
     "Building produces expected result"
@@ -180,11 +181,11 @@ $tokens = $builder->compile( $ctx, '<MTBars>foo</MTBars>' );
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,                     "Created 1 token" );
-ok( $tokens->[0][0] eq 'Bars',         "Token is a tag token" );
-ok( ref( $tokens->[0][2] ) eq 'ARRAY', "Token has child token array" );
-ok( @{ $tokens->[0][2] } == 1,         "Child token length is 1" );
-ok( $tokens->[0][2][0][0] eq 'TEXT',   "Child token is textual" );
-ok( $tokens->[0][2][0][1] eq 'foo',    "Child token value is 'foo'" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'Bars',         "Token is a tag token" );
+ok( ref( $tokens->[0][EL_NODE_CHILDREN] ) eq 'ARRAY', "Token has child token array" );
+ok( @{ $tokens->[0][EL_NODE_CHILDREN] } == 1,         "Child token length is 1" );
+ok( $tokens->[0][EL_NODE_CHILDREN][0][EL_NODE_NAME] eq 'TEXT',   "Child token is textual" );
+ok( $tokens->[0][EL_NODE_CHILDREN][0][EL_NODE_VALUE] eq 'foo',    "Child token value is 'foo'" );
 is( $builder->build( $ctx, $tokens ),
     'foofoo', "Building produces expected result" );
 
@@ -198,15 +199,15 @@ note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 2,                     "Created 2 tokens" );
 ok( $tokens->[0][0] eq 'Bars',         "Token 1 is a tag token" );
-ok( ref( $tokens->[0][2] ) eq 'ARRAY', "Token has child token array" );
-ok( @{ $tokens->[0][2] } == 3,         "Child token array length is 3" );
-ok( $tokens->[0][2][0][0] eq 'TEXT',   "First child token is textual" );
-ok( $tokens->[0][2][0][1] eq "\nfoo:", "First child token text matches" );
-ok( $tokens->[0][2][1][0] eq 'BarBaz', "Second child token is a tag" );
-ok( $tokens->[0][2][2][0] eq 'TEXT',   "Third child token is textual" );
-ok( $tokens->[0][2][2][1] eq "\n",     "Third child token text matches" );
-ok( $tokens->[1][0] eq 'TEXT',         "Second token is textual" );
-ok( $tokens->[1][1] eq "\n",           "Second token text matches" );
+ok( ref( $tokens->[0][EL_NODE_CHILDREN] ) eq 'ARRAY', "Token has child token array" );
+ok( @{ $tokens->[0][EL_NODE_CHILDREN] } == 3,         "Child token array length is 3" );
+ok( $tokens->[0][EL_NODE_CHILDREN][0][EL_NODE_NAME] eq 'TEXT',   "First child token is textual" );
+ok( $tokens->[0][EL_NODE_CHILDREN][0][EL_NODE_VALUE] eq "\nfoo:", "First child token text matches" );
+ok( $tokens->[0][EL_NODE_CHILDREN][1][EL_NODE_NAME] eq 'BarBaz', "Second child token is a tag" );
+ok( $tokens->[0][EL_NODE_CHILDREN][2][EL_NODE_NAME] eq 'TEXT',   "Third child token is textual" );
+ok( $tokens->[0][EL_NODE_CHILDREN][2][EL_NODE_VALUE] eq "\n",     "Third child token text matches" );
+ok( $tokens->[1][EL_NODE_NAME] eq 'TEXT',         "Second token is textual" );
+ok( $tokens->[1][EL_NODE_VALUE] eq "\n",           "Second token text matches" );
 is( $builder->build( $ctx, $tokens ),
     "\nfoo:baz1\n\nfoo:baz2\n\n",
     "Building produces expected result"
@@ -219,9 +220,9 @@ note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,            "Created 1 token" );
 ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
-ok( $tokens->[0][0] eq 'Foo', "Token 1 is a tag token" );
-ok( ref( $tokens->[0][1] ) eq 'HASH', "Token has an attribute hashref" );
-is( $tokens->[0][1]{regex},
+ok( $tokens->[0][EL_NODE_NAME] eq 'Foo', "Token 1 is a tag token" );
+ok( ref( $tokens->[0][EL_NODE_ATTR] ) eq 'HASH', "Token has an attribute hashref" );
+is( $tokens->[0][EL_NODE_ATTR]{regex},
     q[s/(\d+)/$1==0?'None':$1==1?'1 reply':$1.'replies'/e],
     "'regex' attribute is set properly"
 );
@@ -236,25 +237,25 @@ TEXT
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 2,                        "Created 2 tokens" );
-ok( $tokens->[0][0] eq 'Bars',            "Token 1 is a tag token" );
-ok( ref( $tokens->[0][2] ) eq 'ARRAY',    "Token 1 has subtokens" );
-ok( @{ $tokens->[0][2] } == 3,            "Subtoken length is 3" );
-ok( $tokens->[0][2][0][0] eq 'TEXT',      "Subtoken 1 is textual" );
-ok( $tokens->[0][2][0][1] eq "\nBars:\n", "Subtoken 1 is expected value" );
-ok( $tokens->[0][2][1][0] eq 'Bars',      "Subtoken 2 is a tag token" );
-ok( ref( $tokens->[0][2][1][2] ) eq 'ARRAY',
+ok( $tokens->[0][EL_NODE_NAME] eq 'Bars',            "Token 1 is a tag token" );
+ok( ref( $tokens->[0][EL_NODE_CHILDREN] ) eq 'ARRAY',    "Token 1 has subtokens" );
+ok( @{ $tokens->[0][EL_NODE_CHILDREN] } == 3,            "Subtoken length is 3" );
+ok( $tokens->[0][EL_NODE_CHILDREN][0][EL_NODE_NAME] eq 'TEXT',      "Subtoken 1 is textual" );
+ok( $tokens->[0][EL_NODE_CHILDREN][0][EL_NODE_VALUE] eq "\nBars:\n", "Subtoken 1 is expected value" );
+ok( $tokens->[0][EL_NODE_CHILDREN][1][EL_NODE_NAME] eq 'Bars',      "Subtoken 2 is a tag token" );
+ok( ref( $tokens->[0][EL_NODE_CHILDREN][1][EL_NODE_CHILDREN] ) eq 'ARRAY',
     "Subtoken 2 contains subtokens" );
-ok( @{ $tokens->[0][2][1][2] } == 1, "Subtoken 2 has 1 child token" );
-ok( $tokens->[0][2][1][2][0][0] eq 'TEXT',
+ok( @{ $tokens->[0][EL_NODE_CHILDREN][1][EL_NODE_CHILDREN] } == 1, "Subtoken 2 has 1 child token" );
+ok( $tokens->[0][EL_NODE_CHILDREN][1][EL_NODE_CHILDREN][0][EL_NODE_NAME] eq 'TEXT',
     "Subtoken 2's child node is textual"
 );
-ok( $tokens->[0][2][1][2][0][1] eq 'bar',
+ok( $tokens->[0][EL_NODE_CHILDREN][1][EL_NODE_CHILDREN][0][EL_NODE_VALUE] eq 'bar',
     "Subtoken 2's child node is expected value"
 );
-ok( $tokens->[0][2][2][0] eq 'TEXT', "Subtoken 3 is textual" );
-ok( $tokens->[0][2][2][1] eq "\n",   "Subtoken 3 is expected value" );
-ok( $tokens->[1][0] eq 'TEXT',       "Token 2 is textual" );
-ok( $tokens->[1][1] eq "\n",         "Token 2 is expected value" );
+ok( $tokens->[0][EL_NODE_CHILDREN][2][EL_NODE_NAME] eq 'TEXT', "Subtoken 3 is textual" );
+ok( $tokens->[0][EL_NODE_CHILDREN][2][EL_NODE_VALUE] eq "\n",   "Subtoken 3 is expected value" );
+ok( $tokens->[1][EL_NODE_NAME] eq 'TEXT',       "Token 2 is textual" );
+ok( $tokens->[1][EL_NODE_VALUE] eq "\n",         "Token 2 is expected value" );
 is( $builder->build( $ctx, $tokens ),
     "\nBars:\nbarbar\n\nBars:\nbarbar\n\n",
     "Building produces expected result"
@@ -265,8 +266,8 @@ $tokens = $builder->compile( $ctx, "<MTBars/>" );
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,             "Created 1 token" );
-ok( $tokens->[0][0] eq 'Bars', "Token is a tag token" );
-ok( !@{ $tokens->[0][2] || [] }, "Subtoken list is empty" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'Bars', "Token is a tag token" );
+ok( !@{ $tokens->[0][EL_NODE_CHILDREN] || [] }, "Subtoken list is empty" );
 is( $builder->build( $ctx, $tokens ),
     'Called without tokens!',
     "Building produces expected result"
@@ -281,9 +282,9 @@ note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,            "Created 1 token" );
 ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
-ok( $tokens->[0][0] eq 'Foo', "Token 1 is a tag token" );
-ok( ref( $tokens->[0][1] ) eq 'HASH', "Token 1 has an attribute hashref" );
-is( $tokens->[0][1]{no}, "1\n", "Value of 'no' attribute is set properly" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'Foo', "Token 1 is a tag token" );
+ok( ref( $tokens->[0][EL_NODE_ATTR] ) eq 'HASH', "Token 1 has an attribute hashref" );
+is( $tokens->[0][EL_NODE_ATTR]{no}, "1\n", "Value of 'no' attribute is set properly" );
 is( $builder->build( $ctx, $tokens ),
     'no foo', "Building produces expected result" );
 
@@ -320,12 +321,12 @@ $tokens = $builder->compile( $ctx, '<$MtFoO$>' );
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,            "Created one token" );
-ok( $tokens->[0][0] eq 'FoO', "Token is a tag token" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'FoO', "Token is a tag token" );
 ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
-ok( ref( $tokens->[0][1] ) eq 'HASH',
+ok( ref( $tokens->[0][EL_NODE_ATTR] ) eq 'HASH',
     "Element 1 of token object is a hashref"
 );
-is( scalar keys %{ $tokens->[0][1] }, 0, "Has no attributes" );
+is( scalar keys %{ $tokens->[0][EL_NODE_ATTR] }, 0, "Has no attributes" );
 is( $builder->build( $ctx, $tokens ),
     'foo', "Building produces expected result" );
 
@@ -334,12 +335,12 @@ $tokens = $builder->compile( $ctx, '<mtfoo>' );
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,            "Created one token" );
-ok( $tokens->[0][0] eq 'foo', "Token is a tag token" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'foo', "Token is a tag token" );
 ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
-ok( ref( $tokens->[0][1] ) eq 'HASH',
+ok( ref( $tokens->[0][EL_NODE_ATTR] ) eq 'HASH',
     "Element 1 of token object is a hashref"
 );
-is( scalar keys %{ $tokens->[0][1] }, 0, "Has no attributes" );
+is( scalar keys %{ $tokens->[0][EL_NODE_ATTR] }, 0, "Has no attributes" );
 is( $builder->build( $ctx, $tokens ),
     'foo', "Building produces expected result" );
 
@@ -348,12 +349,12 @@ $tokens = $builder->compile( $ctx, '<mt:foo>' );
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 1,            "Created one token" );
-ok( $tokens->[0][0] eq 'foo', "Token is a tag token" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'foo', "Token is a tag token" );
 ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
-ok( ref( $tokens->[0][1] ) eq 'HASH',
+ok( ref( $tokens->[0][EL_NODE_ATTR] ) eq 'HASH',
     "Element 1 of token object is a hashref"
 );
-is( scalar keys %{ $tokens->[0][1] }, 0, "Has no attributes" );
+is( scalar keys %{ $tokens->[0][EL_NODE_ATTR] }, 0, "Has no attributes" );
 is( $builder->build( $ctx, $tokens ),
     'foo', "Building produces expected result" );
 
