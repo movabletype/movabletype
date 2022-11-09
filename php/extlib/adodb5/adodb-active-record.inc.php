@@ -501,7 +501,8 @@ class ADODB_Active_Record {
 			}
 			break;
 		default:
-			foreach($cols as $name => $fldobj) {
+			foreach($cols as $fldobj) {
+				$name = $fldobj->name;
 
 				if ($ADODB_ACTIVE_DEFVALS && isset($fldobj->default_value)) {
 					$this->$name = $fldobj->default_value;
@@ -1155,23 +1156,12 @@ global $_ADODB_ACTIVE_DBS;
 	$save = $db->SetFetchMode(ADODB_FETCH_NUM);
 
 	$qry = "select * from ".$table;
-	// Separate table name if table name was already joined other table.
-	if (preg_match('/^(.+)\sJOIN\s.+ON/i', $table)) {
-		$matches = preg_split('/\s/i', $table);
-		$tblname = trim($matches[0]);
-		$qry = "$tblname.* from ".$table;
-		$table = $tblname;
-	} else
-		$qry = "* from ".$table;
-
-	if (isset($extra['distinct']))
-		$qry = "distinct " . $qry;
-	$qry = "select " . $qry;
 
 	if (!empty($whereOrderBy)) {
 		$qry .= ' WHERE '.$whereOrderBy;
 	}
 	if(isset($extra['limit'])) {
+		$rows = false;
 		if(isset($extra['offset'])) {
 			$rs = $db->SelectLimit($qry, $extra['limit'], $extra['offset'],$bindarr);
 		} else {
@@ -1190,7 +1180,7 @@ global $_ADODB_ACTIVE_DBS;
 
 	$false = false;
 
-	if (!isset($rows) || !is_array($rows)) {
+	if ($rows === false) {
 		return $false;
 	}
 
@@ -1209,19 +1199,7 @@ global $_ADODB_ACTIVE_DBS;
 	foreach($rows as $row) {
 
 		$obj = new $class($table,$primkeyArr,$db);
-
-		$has_error = false;
-		if ($db->databaseType == 'mssqlnative') {
-			if ($obj->ErrorMsg()) {
-				if ($obj->ErrorNo())
-					$has_error = true;
-			}
-		}
-		else {
-			if ($obj->ErrorNo())
-				$has_error = true;
-		}
-		if ($has_error){
+		if ($obj->ErrorNo()){
 			$db->_errorMsg = $obj->ErrorMsg();
 			return $false;
 		}
