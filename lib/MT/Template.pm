@@ -12,8 +12,9 @@ use utf8;
 use open ':utf8';
 use base qw( MT::Object MT::Revisable );
 use MT::Util qw( weaken );
+use MT::Util::Encode;
 
-use MT::Template::Node;
+use MT::Template::Node ':constants';
 sub NODE () {'MT::Template::Node'}
 
 our $DEBUG;
@@ -110,7 +111,6 @@ __PACKAGE__->install_properties(
 );
 __PACKAGE__->add_trigger( 'pre_remove' => \&pre_remove_children );
 
-use MT::Builder;
 use MT::Blog;
 use File::Spec;
 
@@ -380,7 +380,7 @@ sub build {
         );
     }
 
-    my $build = $ctx->{__stash}{builder} || MT::Builder->new;
+    my $build = $ctx->{__stash}{builder} || MT->builder;
     my $page_layout;
     if ( my $blog_id = $tmpl->blog_id ) {
         $ctx->stash( 'blog_id',       $blog_id );
@@ -831,7 +831,7 @@ sub _sync_to_disk {
             MT->translate(
                 "Opening linked file '[_1]' failed: [_2]",
                 $lfile,
-                ( Encode::is_utf8($!) ? "$!" : Encode::decode_utf8($!) )
+                MT::Util::Encode::decode_utf8_unless_flagged("$!")
             )
             );
         print $fh $text;
@@ -858,16 +858,16 @@ sub rescan {
     }
     return unless $tokens;
     foreach my $t (@$tokens) {
-        if ( $t->tag ne 'TEXT' ) {
-            if ( my $id = $t->getAttribute('id') ) {
+        if ( $t->[EL_NODE_NAME] ne 'TEXT' ) {
+            if ( my $id = $t->[EL_NODE_ATTR]{id} ) {
                 my $ids = $tmpl->{__ids} ||= {};
                 $ids->{ lc $id } = $t;
             }
-            elsif ( my $class = $t->getAttribute('class') ) {
+            elsif ( my $class = $t->[EL_NODE_ATTR]{class} ) {
                 my $classes = $tmpl->{__classes} ||= {};
                 push @{ $classes->{ lc $class } ||= [] }, $t;
             }
-            if ( my $childNodes = $t->childNodes ) {
+            if ( my $childNodes = $t->[EL_NODE_CHILDREN] ) {
                 $tmpl->rescan($childNodes);
             }
         }
@@ -876,8 +876,7 @@ sub rescan {
 
 sub compile {
     my $tmpl = shift;
-    require MT::Builder;
-    my $b = new MT::Builder;
+    my $b = MT->builder;
     $b->compile($tmpl) or return $tmpl->error( $b->errstr );
     return $tmpl->{__tokens};
 }
@@ -965,7 +964,9 @@ sub published_url {
     else {
         my $site_path = $blog->site_path || '';
         my $tmpl_path = File::Spec->catfile( $site_path, $tmpl->outfile );
-        if ( -f $tmpl_path ) {
+        require MT::FileMgr;
+        my $fmgr = MT::FileMgr->new('Local');
+        if ($fmgr->exists($tmpl_path)) {
             return $url;
         }
     }
@@ -1047,12 +1048,12 @@ sub insertAfter {
     my $tmpl = shift;
     my ( $node1, $node2 ) = @_;
     my $parent_node
-        = $node2 && $node2->parentNode ? $node2->parentNode : $tmpl;
+        = $node2 && $node2->[EL_NODE_PARENT] ? $node2->[EL_NODE_PARENT] : $tmpl;
     my $parent_array = $parent_node->childNodes;
     if ($node2) {
-        for ( my $i = 0; $i < scalar @$parent_array; $i++ ) {
-            if ( $parent_array->[$i] == $node2 ) {
-                $node1->parentNode($parent_node);
+        for ( my $i = 0; $i < scalar @{$parent_array || []}; $i++ ) {
+            if ( $parent_array->[$i] eq $node2 ) {
+                MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
                 splice( @$parent_array, $i + 1, 0, $node1 );
                 return 1;
             }
@@ -1060,7 +1061,7 @@ sub insertAfter {
         return 0;
     }
     else {
-        $node1->parentNode($parent_node);
+        MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
         push @$parent_array, $node1;
         return 1;
     }
@@ -1071,12 +1072,12 @@ sub insertBefore {
     my $tmpl = shift;
     my ( $node1, $node2 ) = @_;
     my $parent_node
-        = $node2 && $node2->parentNode ? $node2->parentNode : $tmpl;
+        = $node2 && $node2->[EL_NODE_PARENT] ? $node2->[EL_NODE_PARENT] : $tmpl;
     my $parent_array = $parent_node->childNodes;
     if ($node2) {
-        for ( my $i = 0; $i < scalar @$parent_array; $i++ ) {
-            if ( $parent_array->[$i] == $node2 ) {
-                $node1->parentNode($parent_node);
+        for ( my $i = 0; $i < scalar @{$parent_array || []}; $i++ ) {
+            if ( $parent_array->[$i] eq $node2 ) {
+                MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
                 splice( @$parent_array, $i, 0, $node1 );
                 return 1;
             }
@@ -1084,7 +1085,7 @@ sub insertBefore {
         return 0;
     }
     else {
-        $node1->parentNode($parent_node);
+        MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
         unshift @$parent_array, $node1;
         return 1;
     }
@@ -1114,9 +1115,8 @@ sub appendChild {
 sub get_cache_key {
     my $self = shift;
     require MT::Util::Digest::MD5;
-    require Encode;
     my $cache_key = MT::Util::Digest::MD5::md5_hex(
-        Encode::encode_utf8(
+        MT::Util::Encode::encode_utf8(
                   'blog::'
                 . $self->blog_id
                 . '::template_'
@@ -1138,16 +1138,18 @@ sub get_cache_key {
 package MT::Template::Tokens;
 
 use strict;
+use warnings;
+use MT::Template::Node ':constants';
 
 sub getElementsByTagName {
     my ( $tokens, $name ) = @_;
     my @list;
     $name = lc $name;
     foreach my $t (@$tokens) {
-        if ( lc $t->tag eq $name ) {
+        if ( lc $t->[EL_NODE_NAME] eq $name ) {
             push @list, $t;
         }
-        if ( my $childNodes = $t->childNodes ) {
+        if ( my $childNodes = $t->[EL_NODE_CHILDREN] ) {
             my $subt = getElementsByTagName( $childNodes, $name );
             push @list, @$subt if $subt;
         }
@@ -1160,10 +1162,10 @@ sub getElementsByName {
     my @list;
     $name = lc $name;
     foreach my $t (@$tokens) {
-        if ( lc( $t->getAttribute('name') || '' ) eq $name ) {
+        if ( lc( $t->[EL_NODE_ATTR]{name} || '' ) eq $name ) {
             push @list, $t;
         }
-        if ( my $childNodes = $t->childNodes ) {
+        if ( my $childNodes = $t->[EL_NODE_CHILDREN] ) {
             my $subt = getElementsByName( $childNodes, $name );
             push @list, @$subt if $subt;
         }

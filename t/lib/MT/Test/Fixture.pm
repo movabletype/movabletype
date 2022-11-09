@@ -83,10 +83,10 @@ sub prepare_author {
                 next;
             }
             $arg{nickname} ||= $arg{name};
-            delete $arg{roles};    ## not for now
+            my $roles       = delete $arg{roles};                        ## not for now
             my $permissions = delete $arg{permissions};
             my $author      = MT::Test::Permission->make_author(%arg);
-            if (!defined $arg{is_superuser} or $arg{is_superuser}) {
+            if ((!$roles and !$permissions and !defined $arg{is_superuser}) or $arg{is_superuser}) {
                 $author->is_superuser(1);
                 $author->save;
             }
@@ -851,6 +851,8 @@ sub prepare_role {
                                 }
                             }
                         }
+                    } else {
+                        push @perms, @$ct_perm;
                     }
                 } elsif (!$reftype) {
                     push @perms, $role_perm;
@@ -880,26 +882,40 @@ sub prepare_role {
                     } else {
                         %role_arg = (role => $role);
                     }
-                    my $role_name = $role_arg{role}           or croak "role is required";
-                    my $role_obj  = $objs->{role}{$role_name} or croak "unknown role: $role_name";
+                    my $role_names = $role_arg{role} or croak "role is required";
+                    $role_names = [$role_names] unless ref $role_names eq 'ARRAY';
 
-                    my $site_obj;
-                    if (my $website_name = delete $role_arg{website}) {
-                        $site_obj = $objs->{website}{$website_name} or croak "unknown website: $website_name";
-                    }
-                    if (my $blog_name = delete $role_arg{blog}) {
-                        $site_obj = $objs->{blog}{$blog_name} or croak "unknown blog: $blog_name";
-                    }
-                    if (!$site_obj) {
-                        my @sites = (values(%{ $objs->{website} || {} }), values(%{ $objs->{blog} || {} }));
-                        if (@sites == 1) {
-                            $site_obj = $sites[0];
-                        } else {
-                            croak "blog/website is required: $role_name";
+                    for my $role_name (@$role_names) {
+                        my $role_obj = $objs->{role}{$role_name} or croak "unknown role: $role_name";
+
+                        my @site_objs;
+                        if (my $website_names = $role_arg{website}) {
+                            $website_names = [$website_names] unless ref $website_names eq 'ARRAY';
+                            for my $website_name (@$website_names) {
+                                my $site_obj = $objs->{website}{$website_name} or croak "unknown website: $website_name";
+                                push @site_objs, $site_obj;
+                            }
+                        }
+                        if (my $blog_names = $role_arg{blog}) {
+                            $blog_names = [$blog_names] unless ref $blog_names eq 'ARRAY';
+                            for my $blog_name (@$blog_names) {
+                                my $site_obj = $objs->{blog}{$blog_name} or croak "unknown blog: $blog_name";
+                                push @site_objs, $site_obj;
+                            }
+                        }
+                        if (!@site_objs) {
+                            my @sites = (values(%{ $objs->{website} || {} }), values(%{ $objs->{blog} || {} }));
+                            if (@sites == 1) {
+                                @site_objs = $sites[0];
+                            } else {
+                                croak "blog/website is required: $role_name";
+                            }
+                        }
+
+                        for my $site_obj (@site_objs) {
+                            MT::Association->link($target_obj, $role_obj, $site_obj);
                         }
                     }
-
-                    MT::Association->link($target_obj, $role_obj, $site_obj);
                 }
             }
         }

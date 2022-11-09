@@ -261,7 +261,12 @@ sub init_upgrade {
     MT::Upgrade->do_upgrade(
         Install => 1,
         App     => __PACKAGE__,
-        User    => {},
+        User    => {
+            user_name     => 'Melody',
+            user_password => 'Nelson',
+            user_nickname => 'Melody',
+            user_email    => 'test@localhost.localdomain',
+        },
         Blog    => {}
     );
     eval {
@@ -1552,7 +1557,7 @@ sub _run_app {
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
         [ abs_path( $app->config->SearchTemplatePath ) ] );
-    $app->config( 'MailTransfer', 'debug' );
+    $app->config( 'MailTransfer', 'debug' ) unless $ENV{MT_TEST_MAIL};
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be

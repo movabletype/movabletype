@@ -497,13 +497,13 @@
          [
             "__API_PASS__",
             "MT",
-            "authorce2f3",
+            "melody",
             null,
             null,
             1,
             "__NOW__",
             "relative",
-            "",
+            "test@localhost.localdomain",
             null,
             null,
             null,
@@ -513,7 +513,7 @@
             null,
             "__NOW__",
             "Melody",
-            "",
+            "Melody",
             "__AUTHOR_PASS__",
             "en_US",
             null,
@@ -4161,7 +4161,7 @@
             "THIS_IS_A_FAKE_SESSION",
             "UD",
             null,
-            1664341239
+            1665110410
          ]
       ]
    },

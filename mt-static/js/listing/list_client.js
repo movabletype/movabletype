@@ -134,6 +134,8 @@
       __mode: 'save_list_prefs',
       blog_id: this.siteId,
       columns: serializeColumns(args.columns),
+      sort_by: args.sortBy,
+      sort_order: args.sortOrder,
       datasource: this.datasource,
       limit: args.limit
     };

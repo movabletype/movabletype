@@ -109,6 +109,7 @@
     this.on('toggle_sort_column', function (columnId) {
       this.toggleSortColumn(columnId);
       this.movePage(1);
+      this.saveListPrefs();
       this.loadList();
     });
 
@@ -271,6 +272,8 @@
     this.listClient.saveListPrefs({
       columns: self.getCheckedColumnIds(),
       limit: self.limit,
+      sortBy: self.sortBy,
+      sortOrder: self.sortOrder,
       done: function (data, textStatus, jqXHR) {},
       always: function () {
         self.trigger('refresh_view');

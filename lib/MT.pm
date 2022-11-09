@@ -14,6 +14,7 @@ use File::Spec;
 use File::Basename;
 use MT::Util qw( weaken );
 use MT::I18N qw( const );
+use MT::Util::Encode;
 
 our ( $VERSION, $SCHEMA_VERSION );
 our (
@@ -24,7 +25,8 @@ our ( $MT_DIR, $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX );
 our (
     $plugin_sig, $plugin_envelope, $plugin_registry,
     %Plugins,    @Components,      %Components,
-    $DebugMode,  $mt_inst,         %mt_inst
+    $DebugMode,  $mt_inst,         %mt_inst,
+    $Builder,
 );
 my %Text_filters;
 
@@ -247,6 +249,21 @@ sub construct {
             }
         }
         return @matches;
+    }
+
+    sub loaded_models {
+        my $pkg = shift;
+        values %object_types;
+    }
+
+    sub clear_cache_of_loaded_models {
+        my $pkg = shift;
+        for my $model (values %object_types) {
+            # avoid loading a new driver here
+            my $props = $model->properties or next;
+            my $driver = $props->{driver} or next;
+            $driver->clear_cache if $driver->can('clear_cache');
+        }
     }
 }
 
@@ -987,7 +1004,6 @@ sub init_config_from_db {
     require MT::ObjectDriverFactory;
     if ( MT->config('ObjectDriver') ) {
         my $driver = MT::ObjectDriverFactory->instance;
-        $driver->configure if $driver;
     }
     else {
         MT::ObjectDriverFactory->configure();
@@ -1638,6 +1654,25 @@ sub publisher {
         || $mt->request( 'ContentPublisher', new MT::ContentPublisher() );
 }
 
+sub builder {
+    my $mt = shift;
+    if (!$Builder) {
+        $mt = $mt->instance unless ref $mt;
+        for my $builder ($mt->config->BuilderModule, 'MT::Builder') {
+            if (eval "require $builder; 1") {
+                $Builder = $builder;
+                last;
+            }
+            if ($@) {
+                require MT::Util::Log;
+                MT::Util::Log::init();
+                MT::Util::Log->error($@);
+            }
+        }
+    }
+    $Builder->new;
+}
+
 sub rebuild {
     my $mt = shift;
     $mt->publisher->rebuild(@_)
@@ -1732,15 +1767,14 @@ sub update_ping_list {return}
         #  * decode the strings captured by regexp
         #  * encode the translated string from translate()
         #  * decode again for return
-        $text = Encode::encode( 'utf8', $text )
-            if Encode::is_utf8($text);
+        $text = MT::Util::Encode::encode_utf8_if_flagged($text);
         while (1) {
             return '' unless $text;
             $text
                 =~ s!(<(/)?(?:_|MT)_TRANS(_SECTION)?(?:(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\5]+?)*?\5))+?\s*/?)?>)!
             my($msg, $close, $section, %args) = ($1, $2, $3);
             while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\2])*?)?\2/g) {  #"
-                $args{$1} = Encode::decode_utf8($3);
+                $args{$1} = MT::Util::Encode::decode_utf8($3);
             }
             if ($section) {
                 if ($close) {
@@ -1762,8 +1796,7 @@ sub update_ping_list {return}
                 my @p = split /\s*%%\s*/, $args{params}, -1;
                 @p = ('') unless @p;
                 my $phrase = $args{phrase};
-                $phrase = Encode::decode('utf8', $phrase)
-                    unless Encode::is_utf8($phrase);
+                $phrase = MT::Util::Encode::decode_utf8_unless_flagged($phrase);
                 my $translation = $mt->translate($phrase, @p);
                 if (exists $args{escape}) {
                     if (lc($args{escape}) eq 'html') {
@@ -1775,15 +1808,11 @@ sub update_ping_list {return}
                         $translation = MT::Util::encode_js($translation);
                     }
                 }
-                $translation = Encode::encode('utf8', $translation)
-                    if Encode::is_utf8($translation);
-                $translation;
+                $translation = MT::Util::Encode::encode_utf8_if_flagged($translation);
             }
             !igem or last;
         }
-        $text = Encode::decode_utf8($text)
-            unless Encode::is_utf8($text);
-        return $text;
+        return MT::Util::Encode::decode_utf8_unless_flagged($text);
     }
 
     sub current_language { $LH->language_tag }
@@ -1878,9 +1907,7 @@ sub apply_text_filters {
         }
         $str = $code->( $str, @extra );
     }
-    $str = Encode::decode_utf8($str)
-        if !Encode::is_utf8($str);
-    return $str;
+    return MT::Util::Encode::decode_utf8_unless_flagged($str);
 }
 
 sub static_path {

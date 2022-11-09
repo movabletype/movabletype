@@ -12,6 +12,7 @@ use warnings;
 use bytes;
 
 use Digest::MD5 qw(md5_hex);
+use MT::Util::Encode;
 use vars qw($VERSION);
 $VERSION = '1.1';
 
@@ -239,7 +240,7 @@ sub _StripLinkDefinitions {
 }
 
 sub _save_to_hash {
-    my $str = Encode::is_utf8( $_[0] ) ? Encode::encode_utf8( $_[0] ) : $_[0];
+    my $str = MT::Util::Encode::encode_utf8_if_flagged( $_[0] );
     my $key = md5_hex($str);
     $g_html_blocks{$key} = $str;
     return "\n\n$key\n\n";
@@ -283,7 +284,7 @@ sub _HashHTMLBlocks {
                 )
             }{
 
-                my $val = Encode::is_utf8($1) ? Encode::encode_utf8($1) : $1;
+                my $val = MT::Util::Encode::encode_utf8_if_flagged($1);
                 my $key = md5_hex($val);
                 $g_html_blocks{$key} = $1;
                 "\n\n" . $key . "\n\n";

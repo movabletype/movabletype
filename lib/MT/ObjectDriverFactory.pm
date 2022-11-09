@@ -56,6 +56,7 @@ sub driver_for_class {
                 ( $Password ? ( password => $Password ) : () ),
             );
             push @drivers, $driver;
+            $driver->configure;
             return $driver;
         },
         $class
@@ -110,14 +111,13 @@ sub configure {
 }
 
 sub cleanup {
-    if ( my $driver = $MT::Object::DRIVER ) {
+    for my $model (MT->loaded_models) {
+        my $driver = $model->driver or next;
         if ( my $dbh = $driver->dbh ) {
             $dbh->disconnect;
             $driver->dbh->{private_set_names} = undef;
             $driver->dbh(undef);
         }
-        $MT::Object::DRIVER     = undef;
-        $MT::Object::DBI_DRIVER = undef;
     }
     foreach my $driver (@drivers) {
         if ( my $dbh = $driver->dbh ) {

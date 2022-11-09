@@ -558,6 +558,7 @@ use vars qw( @ISA %Lexicon );
 	'Asset' => 'アセット',
 	'Assets' => 'アセット',
 	'Associations' => '関連付け',
+	'Background Job' => 'バックグラウンドジョブ',
 	'Batch Edit Entries' => '記事の一括編集',
 	'Batch Edit Pages' => 'ウェブページの一括編集',
 	'Blog' => 'ブログ',
@@ -1970,6 +1971,7 @@ use vars qw( @ISA %Lexicon );
 	'If/Else Block' => 'If/Else条件ブロック',
 	'Include Template File' => 'テンプレートファイルのインクルード',
 	'Include Template Module' => 'テンプレートモジュールのインクルード',
+	'Job' => 'ジョブ',
 	'Junk Folder Expiration' => 'スパムコメント/トラックバックの廃棄',
 	'Legacy Quick Filter' => 'クイックフィルタ',
 	'Log' => 'ログ',
@@ -2018,7 +2020,6 @@ use vars qw( @ISA %Lexicon );
 	'Remove Temporary Files' => 'テンポラリファイルの削除',
 	'Remove expired lockout data' => '古いサインインの失敗レコードの消去',
 	'Rich Text' => 'リッチテキスト',
-	'SQLite Database (v2)' => 'SQLite(v2)データベース',
 	'SQLite Database' => 'SQLiteデータベース',
 	'Send Notifications' => '通知の送信',
 	'Set Publishing Paths' => '公開パスの設定',
@@ -2033,6 +2034,8 @@ use vars qw( @ISA %Lexicon );
 	'Unpublish Past Entries' => '公開期限が過ぎた記事の公開を終了',
 	'Upload File' => 'ファイルアップロード',
 	'View Activity Log' => 'ログの閲覧',
+	'View Background Jobs is disabled by system configuration.' => 'バックグラウンドジョブの管理は環境変数で無効になっています。',
+	'View Background Jobs' => 'バックグラウンドジョブの管理',
 	'View System Activity Log' => 'システムログの閲覧',
 	'Widget Set' => 'ウィジェットセット',
 	'[_1] [_2] between [_3] and [_4]' => '[_2]が[_3]から[_4]の期間内の[_1]',
@@ -2705,7 +2708,15 @@ use vars qw( @ISA %Lexicon );
 	'Job Function' => 'ジョブファンクション',
 
 ## lib/MT/TheSchwartz/Job.pm
-	'Job' => 'ジョブ',
+	'Coalesce' => 'グループ名',
+	'Insert Time' => '作成日時',
+	'IsRunning' => '状態',
+	'Job Arg' => 'ジョブの引数',
+	'Priority' => '優先度',
+	'Running from [_1]' => '[_1]から実行中',
+	'Running' => '実行中',
+	'Unique Key' => 'ユニークキー',
+	'Worker' => 'ワーカー名',
 
 ## lib/MT/Theme.pm
 	'A fatal error occurred while applying element [_1]: [_2].' => '項目「[_1]」を適用する際に、重大なエラーが発生しました: [_2]',
@@ -3098,7 +3109,6 @@ use vars qw( @ISA %Lexicon );
 	'Current working directory:' => '現在のディレクトリ',
 	'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'データを保存するデータベースとして PostgreSQL を利用する場合、DBIと DBD::Pgが必要です。',
 	'DBI and DBD::SQLite are required if you want to use the SQLite database backend.' => 'データを保存するデータベースとして SQLite を利用する場合、DBIと DBD::SQLiteが必要です。',
-	'DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.' => 'データを保存するデータベースとして SQLite2.x を利用する場合、DBIと DBD::SQLite2が必要です。',
 	'DBI and DBD::mysql are required if you want to use the MySQL database backend.' => 'データを保存するデータベースとして MySQL を利用する場合、DBIと DBD::mysqlが必要です。',
 	'DBI is required to store data in database.' => 'DBIはデータベースにアクセスするために必要です。',
 	'Data Storage' => 'データストレージ',
@@ -4338,6 +4348,7 @@ use vars qw( @ISA %Lexicon );
 	'Recipients' => 'あて先',
 	'Send a Notification' => '通知の送信',
 	'Send notification (s)' => '通知を送信 (s)',
+	'Subject' => '件名',
 	'You must specify at least one recipient.' => '少なくとも一人の受信者を指定する必要があります。',
 	q{Your [_1]'s name, title, and a link to view it will be sent in the notification. Additionally, you can add a message, include an excerpt and/or send the entire body.} => q{[_1]名、タイトル、およびパーマリンクが送られます。メッセージを追加したり、概要や本文を送ることもできます。},
 
@@ -4552,7 +4563,6 @@ use vars qw( @ISA %Lexicon );
 	'View all comments with this status' => 'このステータスのすべてのコメントを見る',
 	'View this commenter detail' => 'コメント投稿者の詳細を見る',
 	'[_1] no longer exists' => '[_1]が存在しません',
-	'_external_link_target' => '_blank',
 	'comment' => 'コメント',
 	'comments' => 'コメント',
 
@@ -5481,6 +5491,10 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully deleted the selected tags.' => '選択したタグを削除しました。',
 	'Your tag changes and additions have been made.' => 'タグの変更と追加が完了しました。',
 	q{The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all blogs?} => q{タグ「[_2]」は既に存在します。すべてのブログで「[_1]」を「[_2]」にマージしてもよろしいですか?},
+
+## tmpl/cms/listing/ts_job_list_header.tmpl
+	'The job(s) has been deleted from the database.' => 'ジョブをデータベースから削除しました。',
+	q{You can't delete running job(s). (ID: [_1])} => q{実行中のジョブは削除できません(ID: [_1])},
 
 ## tmpl/cms/login.tmpl
 	'Forgot your password?' => 'パスワードをお忘れですか?',

@@ -99,7 +99,7 @@ sub textile_2 {
 
     $str = $textile->process($str);
 
-    if ( ( defined $ctx ) && ( ref($ctx) eq 'MT::Template::Context' ) ) {
+    if ( ( defined $ctx ) && ( ref($ctx) eq 'MT::Template::Context' ) && $ctx->{__stash}{template} ) {
         my $entry = $ctx->stash('entry');
         if ( $entry && $entry->id ) {
             my $link = $entry->permalink;

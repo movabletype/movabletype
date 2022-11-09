@@ -17,7 +17,7 @@ use IO::Uncompress::Gunzip;
 use constant ARCHIVE_TYPE => 'tgz';
 
 use MT::FileMgr::Local;
-use Encode;
+use MT::Util::Encode;
 
 sub new {
     my $pkg = shift;
@@ -137,7 +137,7 @@ sub extract {
 
     $path ||= MT->config->TempDir;
     for my $file ($obj->files) {
-        my $file_enc = Encode::is_utf8($file) ? $file : Encode::decode_utf8($file);
+        my $file_enc = MT::Util::Encode::decode_utf8_unless_flagged($file);
         my $f        = File::Spec->catfile($path, $file_enc);
         $obj->{_arc}->extract_file($file, MT::FileMgr::Local::_local($f));
     }
@@ -151,9 +151,8 @@ sub add_file {
         if 'r' eq $obj->{_mode};
     my $encoded_path = $file_path;
     $encoded_path = MT::FileMgr::Local::_syserr($encoded_path)
-        if !Encode::is_utf8($encoded_path);
-    $encoded_path = Encode::encode_utf8($encoded_path)
-        if Encode::is_utf8($encoded_path);
+        if !MT::Util::Encode::is_utf8($encoded_path);
+    $encoded_path = MT::Util::Encode::encode_utf8_if_flagged($encoded_path);
     my $filename  = File::Spec->catfile($path, $file_path);
     my $arc       = $obj->{_arc};
     my @arc_files = $arc->add_files($filename);

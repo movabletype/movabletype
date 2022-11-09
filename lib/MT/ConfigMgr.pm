@@ -370,8 +370,7 @@ sub read_config_db {
 
     $mgr->{__dbvar} = {};
 
-    my $driver = $MT::Object::DRIVER;
-    $driver->clear_cache if $driver && $driver->can('clear_cache');
+    MT->clear_cache_of_loaded_models;
 
     my ($config) = eval { $cfg_class->search };
     if ($config) {

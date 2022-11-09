@@ -112,7 +112,7 @@ subtest 'site context' => sub {
     }
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
-    wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+    $s->wait_until_ready;
     assert_no_browser_errors();
 
     my $added_count = 0;
@@ -127,7 +127,7 @@ subtest 'site context' => sub {
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
         $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
-        wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+        $s->wait_until_ready;
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
         is(scalar @trs2, $added_count, 'trigger added');
@@ -144,7 +144,7 @@ subtest 'duplication' => sub {
     plan tests => 111;
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
-    wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+    $s->wait_until_ready;
     assert_no_browser_errors();
 
     my $added_count = 0;
@@ -162,7 +162,7 @@ subtest 'duplication' => sub {
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
         $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
-        wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+        $s->wait_until_ready;
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
         is(scalar @trs2, 1, 'duplication is not added');
@@ -180,7 +180,7 @@ subtest 'duplication with content type' => sub {
     plan tests => 135;
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
-    wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+    $s->wait_until_ready;
     assert_no_browser_errors();
 
     my $added_count = 0;
@@ -198,7 +198,7 @@ subtest 'duplication with content type' => sub {
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
         $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
-        wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+        $s->wait_until_ready;
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
         is(scalar @trs2, 1, 'duplication is not added');
@@ -216,7 +216,7 @@ subtest 'two cases saved at once' => sub {
     plan tests => 67;
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
-    wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+    $s->wait_until_ready;
     assert_no_browser_errors();
 
     for (my $i = 0; $i < scalar @$scenarios; $i++) {
@@ -230,7 +230,7 @@ subtest 'two cases saved at once' => sub {
     wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
     assert_no_browser_errors();
     $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
-    wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+    $s->wait_until_ready;
     assert_no_browser_errors();
     my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs2, 2, 'triggers are saved');
@@ -246,7 +246,7 @@ subtest 'remove' => sub {
     plan tests => 68;
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
-    wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+    $s->wait_until_ready;
     assert_no_browser_errors();
 
     for (my $i = 0; $i < scalar @$scenarios; $i++) {
@@ -256,7 +256,7 @@ subtest 'remove' => sub {
 
     wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
     $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
-    wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+    $s->wait_until_ready;
     my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs, 2, 'triggers are added');
 
@@ -270,7 +270,7 @@ subtest 'remove' => sub {
     is(scalar @trs2, 0, 'triggers are removed');
     $s->screenshot_full("removed") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
     $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
-    wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+    $s->wait_until_ready;
     my @trs3 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs3, 0, 'triggers are removed and saved');
     $s->screenshot_full("removed-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
@@ -294,7 +294,7 @@ sub process_scenarios {
         teardown => sub {
             # chrome may be hanging up. Except some cases it's harmless to refresh the page.
             $s->driver->refresh();
-            wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
+            $s->wait_until_ready;
         },
     );
 

@@ -1224,6 +1224,8 @@ sub list {
         = defined( $screen_settings->{default_sort_key} )
         ? $screen_settings->{default_sort_key}
         : '';
+    my $sort_by    = $list_pref->{sort_by}    || $default_sort;
+    my $sort_order = $list_pref->{sort_order} || 'ascend';
 
     my @list_columns;
     for my $prop ( values %$list_props ) {
@@ -1365,7 +1367,8 @@ sub list {
         $param{allpass_filter} = $encode_filter->($allpass_filter);
     $param{system_messages}   = $json->encode( \@messages );
     $param{filters_raw}       = $filters;
-    $param{default_sort_key}  = $default_sort;
+    $param{sort_by}           = $sort_by;
+    $param{sort_order}        = $sort_order;
     $param{list_columns}      = \@list_columns;
     $param{list_columns_json} = $json->encode( \@list_columns );
     $param{filter_types}      = \@filter_types;
@@ -1828,6 +1831,8 @@ sub save_list_prefs {
     my $limit = $app->param('limit');
     $list_pref->{rows}    = canonicalize_list_limit($limit);
     $list_pref->{columns} = [ split ',', $cols ];
+    $list_pref->{sort_by}    = $app->param('sort_by') || '';
+    $list_pref->{sort_order} = $app->param('sort_order') || '';
 
 #$list_pref->{last_filter} = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
 #$list_pref->{last_items} = $filteritems;
@@ -2046,6 +2051,12 @@ sub delete {
                 );
             if ($used_in_categories_field) {
                 push @not_deleted, $obj->id;
+                next;
+            }
+        }
+        elsif ($type eq 'ts_job') {
+            if ($obj->grabbed_until) {
+                push @not_deleted, $obj->jobid;
                 next;
             }
         }

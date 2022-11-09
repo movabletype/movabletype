@@ -51,12 +51,6 @@ BEGIN {
                 config_package => 'DBI::sqlite',
                 display        => ['dbpath'],
             },
-            'sqlite2' => {
-                label          => 'SQLite Database (v2)',
-                dbd_package    => 'DBD::SQLite2',
-                config_package => 'DBI::sqlite',
-                display        => ['dbpath'],
-            },
         },
         db_form_data => {
             dbserver => {
@@ -1393,6 +1387,7 @@ BEGIN {
             content_data  => '$Core::MT::ContentData::list_props',
             group         => '$Core::MT::Group::list_props',
             group_member  => '$Core::MT::Group::member_list_props',
+            ts_job        => '$Core::MT::TheSchwartz::Job::list_props',
         },
         system_filters => {
             entry        => '$Core::MT::Entry::system_filters',
@@ -1773,6 +1768,22 @@ BEGIN {
                 search_label        => 'User',
                 search_type         => 'author',
             },
+            ts_job => {
+                object_label => 'Job',
+                view         => 'system',
+                id_column    => 'jobid',
+                primary      => 'funcid',
+                condition    => sub {
+                    my $app = shift;
+                    return 1 if MT->config->ShowTsJob;
+                    $app->errtrans(
+                        'View Background Jobs is disabled by system configuration.');
+                },
+                permission       => 'administer',
+                use_filters      => 0,
+                default_sort_key => 'insert_time',
+                screen_label     => 'View Background Jobs',
+            },
         },
         summaries => {
             'author' => {
@@ -2122,6 +2133,7 @@ BEGIN {
             'TransparentProxyIPs'      => { default => 0, },
             'DebugMode'                => { default => 0, },
             'ShowIPInformation'        => { default => 0, },
+            'ShowTsJob'                => { default => 0, },
             'AllowComments'            => { default => 1, },
             'AllowPings'               => { default => 1, },
             'HelpURL'                  => undef,
@@ -2141,7 +2153,6 @@ BEGIN {
             'ActivityFeedsRunTasks'    => { default => 1, },
             'ExportEncoding'           => { default => 'utf-8', },
             'SQLSetNames'              => undef,
-            'UseSQLite2'               => { default => 0, },
 
             #'UseJcodeModule'  => { default => 0, },
             'DefaultTimezone'    => { default => '0', },
@@ -2337,6 +2348,7 @@ BEGIN {
             'PSGIStreaming' => { default => 1 },
             'PSGIServeStatic' => { default => 1 },
             'HideVersion' => { default => 1 },
+            'BuilderModule' => { default => 'MT::Builder' },
             'HideConfigWarnings' => { default => undef },
             'GlobalTemplateMaxRevisions' => { default => 20 },
             'DisableQuickPost' => { default => 0 },
@@ -2781,6 +2793,12 @@ sub remove_temporary_files {
     my @ids;
     foreach my $f (@files) {
         if ( $fmgr->delete( $f->name ) ) {
+            # MTC-26474
+            require File::Basename;
+            my $dir = File::Basename::dirname($f->name);
+            if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
+                rmdir($dir);
+            }
             push @ids, $f->id;
         }
     }

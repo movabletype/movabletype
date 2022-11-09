@@ -50,8 +50,9 @@ RETRY_CONN:
         require MT::I18N;
         my $from = MT::I18N::guess_encoding($err) || 'utf-8';
         my $to   = $cfg->PublishCharset           || 'utf-8';
-        $err = Encode::encode_utf8($err) if Encode::is_utf8($err);
-        Encode::from_to( $err, $from, $to );
+        require MT::Util::Encode;
+        $err = MT::Util::Encode::encode_utf8_if_flagged($err);
+        MT::Util::Encode::from_to( $err, $from, $to );
 
         if ( $retry++ < $retry_max ) {
             warn $err if $cfg->DebugMode;
@@ -825,6 +826,8 @@ sub search {
     my $driver = shift;
     $driver->SUPER::search(@_);
 }
+
+sub clear_cache {}
 
 1;
 __END__

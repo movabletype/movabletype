@@ -12,6 +12,7 @@ use Symbol;
 use MT::I18N qw( wrap_text );
 use MT::Util
     qw( encode_url encode_html decode_html encode_js trim dir_separator is_valid_email );
+use MT::Util::Encode;
 
 sub system_check {
     my $app = shift;
@@ -86,10 +87,7 @@ sub get_syscheck_content {
         # allowed html
         my $spec
             = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p,textarea';
-        $result = Encode::decode_utf8($result)
-            if !Encode::is_utf8($result)
-            ;    # mt-check.cgi always returns by utf-8
-
+        $result = MT::Util::Encode::decode_utf8_unless_flagged($result);    # mt-check.cgi always returns by utf-8
         $result = MT::Sanitize->sanitize( $result, $spec );
     }
     return $result;
@@ -211,7 +209,7 @@ sub recover_password {
             my $body    = $app->build_email(
                 'recover-password',
                 {         link_to_login => $app->base
-                        . $app->uri
+                        . $app->mt_uri
                         . "?__mode=new_pw&token=$token&email="
                         . encode_url($email)
                         . ( $blog_id ? "&blog_id=$blog_id" : '' ),
@@ -1269,7 +1267,7 @@ sub backup {
                 close $fh;
                 unlink $filepath;
                 my $arc = MT::Util::Archive->new( $archive, $filepath );
-                $arc->add_string( Encode::encode_utf8($arc_buf),
+                $arc->add_string( MT::Util::Encode::encode_utf8($arc_buf),
                     "$file.xml" );
                 $arc->add_string(
                     "<manifest xmlns='"
@@ -1299,8 +1297,7 @@ sub backup {
         $printer = sub {
             require bytes;
             my ($data) = @_;
-            $data = Encode::encode_utf8($data)
-                if Encode::is_utf8($data);
+            $data = MT::Util::Encode::encode_utf8_if_flagged($data);
             print $fh $data;
             return bytes::length($data);
         };
@@ -1402,7 +1399,7 @@ sub backup {
                     $f->{filename}
                         = MT::FileMgr::Local::_syserr( $f->{filename} )
                         if ( $f->{filename}
-                        && !Encode::is_utf8( $f->{filename} ) );
+                        && !MT::Util::Encode::is_utf8( $f->{filename} ) );
                 }
                 $param->{files_loop} = \@files;
                 $param->{tempdir}    = $temp_dir;
@@ -1529,7 +1526,7 @@ sub backup_download {
     else {
         $contenttype = 'application/octet-stream';
         if ( $app->param->user_agent =~ /MSIE/ ) {
-            $newfilename = Encode::encode( 'Shift_JIS', $newfilename );
+            $newfilename = MT::Util::Encode::encode( 'Shift_JIS', $newfilename );
         }
     }
 
@@ -1733,7 +1730,7 @@ sub restore {
             require File::Temp;
             my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
                 DIR => $temp_dir );
-            $tmp = Encode::decode( MT->config->PublishCharset, $tmp );
+            $tmp = MT::Util::Encode::decode( MT->config->PublishCharset, $tmp );
 
             MT::Util::Log->info( '=== Start extract ' . $uploaded_filename );
 
@@ -2224,7 +2221,7 @@ sub adjust_sitepath {
             for my $f ( readdir $dh ) {
                 next if $f !~ /^.+\.manifest$/i;
                 $manifest = File::Spec->catfile( $tmp_dir,
-                    Encode::decode( MT->config->PublishCharset, $f ) );
+                    MT::Util::Encode::decode( MT->config->PublishCharset, $f ) );
                 last;
             }
             closedir $dh;
@@ -2378,10 +2375,7 @@ sub dialog_restore_upload {
                 = $app->translate( "Invalid filename '[_1]'", $uploaded );
             return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );
         }
-        $uploaded
-            = Encode::is_utf8($uploaded)
-            ? $uploaded
-            : Encode::decode( $app->charset, $uploaded );
+        $uploaded = MT::Util::Encode::decode_unless_flagged( $app->charset, $uploaded );
     }
     if ( defined($uploaded) ) {
         if ( $current ne $uploaded ) {

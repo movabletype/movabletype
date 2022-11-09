@@ -12,6 +12,7 @@ use XML::SAX::Base;
 use Time::Local qw( timegm );
 use MT;
 use MT::Util qw( offset_time_list );
+use MT::Util::Encode;
 
 use base qw(XML::SAX::Base);
 
@@ -42,8 +43,7 @@ sub _decoder {
 
     # Fix the broken string passed by XML::SAX::PurePerl.
     utf8::downgrade( $text, 1 );
-    $text = Encode::decode_utf8($text) if !Encode::is_utf8($text);
-    return $text;
+    return MT::Util::Encode::decode_utf8_unless_flagged($text);
 }
 
 sub start_element {
