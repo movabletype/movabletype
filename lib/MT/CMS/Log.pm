@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -421,7 +421,6 @@ PERMCHECK: {
     my $blog_class = $app->model('blog');
     my $iter       = $log_class->load_iter( \%terms,
         { 'sort' => 'created_on', 'direction' => 'ascend' } );
-    my %blogs;
 
     my $file = '';
     $file = dirify( $blog->name ) . '-' if $blog;
@@ -439,11 +438,12 @@ PERMCHECK: {
         : 'text/csv'
     );
 
-    my $csv = "timestamp,ip,weblog,message\n";
+    my %seen;
+    my $csv = "timestamp,ip,weblog,by,message\n";
     while ( my $log = $iter->() ) {
 
         # columns:
-        # date, ip address, weblog, log message
+        # date, ip address, weblog, by, log message
         my @col;
         my $ts = $log->created_on;
         if ($blog_view) {
@@ -469,7 +469,7 @@ PERMCHECK: {
         push @col, $log->ip || '';
         my $blog;
         if ( $log->blog_id ) {
-            $blog = $blogs{ $log->blog_id }
+            $blog = $seen{blogs}{ $log->blog_id }
                 ||= $blog_class->load( $log->blog_id );
         }
         if ($blog) {
@@ -479,6 +479,24 @@ PERMCHECK: {
             push @col, '"' . $name . '"';
         }
         else {
+            push @col, '';
+        }
+        my $author_name;
+        if (my $author_id = $log->author_id) {
+            if (defined $seen{authors}{$author_id}) {
+                $author_name = $seen{authors}{$author_id};
+            } elsif (my $user = MT->model('author')->load($author_id)) {
+                $author_name = $user->name;
+                $seen{authors}{$author_id} = $author_name;
+            } else {
+                $author_name = MT->translate('*User deleted*');
+            }
+        }
+        if (defined $author_name && $author_name ne '') {
+            $author_name =~ s/"/\\"/gs;
+            $author_name =~ s/[\r\n]+/ /gs;
+            push @col, '"' . $author_name . '"';
+        } else {
             push @col, '';
         }
         my $msg = $log->message;

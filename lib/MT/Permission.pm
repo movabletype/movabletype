@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -400,8 +400,7 @@ sub global_perms {
             @list = @{ $list[0] };
         }
         foreach (@list) {
-            my $ref = $Perms{$_};
-            die "invalid permission" unless $ref;
+            my $ref = $Perms{$_} or next;
             next if $pkg->_check_if( $perms, $column, $_ );
             my $val = $perms->$column || '';
             $val .= ',' if $val ne '';
@@ -446,6 +445,14 @@ sub global_perms {
         return 0 unless $cur_perm;
         my $r = ( $cur_perm =~ /'$perm_name'/i ) ? 1 : 0;
         return $r;
+    }
+
+    # only for testing
+    sub reset_permissions {
+        my $pkg = shift;
+        return unless $ENV{TEST_ACTIVE};
+        @Perms = %Perms = ();
+        $pkg->perms();
     }
 }
 
@@ -652,28 +659,29 @@ sub can_edit_content_data {
 
 sub can_republish_content_data {
     my $perms = shift;
-    my ( $content_data, $author ) = @_;
+    my ( $content_data, $author, $content_type_unique_id ) = @_;
+
     die unless $author->isa('MT::Author');
-    return 1 if $author->is_superuser();
-    unless ( ref $content_data ) {
-        require MT::ContentData;
-        $content_data = MT::ContentData->load($content_data)
-            or return;
+    return 1
+        if $author->is_superuser()
+        || $author->can_do('edit_all_content_data');
+
+    return 1 if $perms->can_do('rebuild') || $perms->can_do('edit_all_content_data');
+
+    unless ($content_type_unique_id) {
+        unless ( ref $content_data ) {
+            require MT::ContentData;
+            $content_data = MT::ContentData->load($content_data)
+                or return;
+        }
+        $content_type_unique_id = $content_data->ct_unique_id;
     }
 
-    $perms = $author->permissions( $content_data->blog_id )
-        or return;
-
-    return 1
-        if $perms->can_do('rebuild')
-        || $perms->can_do('edit_all_content_data');
-
-    my $content_type_unique_id = $content_data->ct_unique_id;
     return 1
         if $perms->can_do(
         'edit_all_content_data_' . $content_type_unique_id );
     return 1
-        if $content_data->author_id == $author->id
+        if $content_data && $content_data->author_id == $author->id
         && $perms->can_do(
         'publish_own_content_data_' . $content_type_unique_id );
 

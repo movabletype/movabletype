@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -18,11 +18,32 @@ sub EXPIRE        { 60 * 10 }
 
 use MT::Session;
 
+$ENV{MAGICK_THREAD_LIMIT} ||= 1;
+our $MagickClass;
+
+sub magick_class {
+    my $class = shift;
+    return $MagickClass if defined $MagickClass;
+    if (MT->config->ImageDriver =~ /Magick$/) {
+        $MagickClass = MT->config->ImageDriver;
+        $MagickClass =~ s/Magick/::Magick/;
+        if (eval "require $MagickClass") {
+            return $MagickClass;
+        }
+    }
+    if (eval {require Graphics::Magick}) {
+        return $MagickClass = "Graphics::Magick";
+    }
+    if (eval {require Image::Magick}) {
+        return $MagickClass = "Image::Magick";
+    }
+    $MagickClass = "";
+}
+
 sub check_availability {
     my $class = shift;
 
-    eval "require Image::Magick;";
-    if ($@) {
+    if (!$class->magick_class) {
         return MT->translate(
             'Movable Type default CAPTCHA provider requires Image::Magick.');
     }
@@ -54,6 +75,12 @@ sub form_fields {
     my $cfg     = MT->config;
     my $cgipath = $cfg->CGIPath;
     $cgipath .= '/' if $cgipath !~ m!/$!;
+    my $static = $cfg->StaticWebPath;
+    if (!$static) {
+        $static = $cgipath;
+        $static .= 'mt-static/';
+    }
+    $static .= '/' if $static !~ m!/$!;
     my $commentscript = $cfg->CommentScript;
 
     my $caption = MT->translate('Captcha');
@@ -63,7 +90,7 @@ sub form_fields {
 <div class="label"><label for="captcha_code">$caption:</label></div>
 <div class="field">
 <input type="hidden" name="token" value="$token" />
-<img src="$cgipath$commentscript/captcha/$blog_id/$token" width="150" height="35" /><br />
+<img id="captcha_image" src="$cgipath$commentscript/captcha/$blog_id/$token" width="150" height="35" loading="lazy" decoding="async" /><a href="javascript:void(0)" onclick="var i=document.getElementById('captcha_image');i.src=i.src.replace(/((\\\\?c=\\\\d+)|\\\$)/,'?c='+Date.now());return false;"><img src="${static}images/nav_icons/color/rebuild.gif" alt="refresh captcha" style="margin-bottom:10px" loading="lazy" decoding="async"></a><br />
 <input type="text" name="captcha_code" id="captcha_code" class="text" value="" autocomplete="off" />
 <p>$description</p>
 </div>
@@ -175,25 +202,18 @@ sub _generate_captcha {
         $app->translate('You need to configure CaptchaSourceImageBase.') )
         unless $base;
 
-    require Image::Magick;
-    my $imbase = Image::Magick->new( magick => 'png' )
+    my $magick_class = $self->magick_class or return MT->translate(
+            'Movable Type default CAPTCHA provider requires Image::Magick.');
+    my $imbase = $magick_class->new( magick => 'png' )
         or return $app->error( $app->translate("Image creation failed.") );
 
     # Read the predefined letter PNG for each letter in $code
-    my $x = $imbase->Read(
+    my $error = $imbase->Read(
         map { File::Spec->catfile( $base, $_ . '.png' ) }
             split( //, $code )
     );
-    if ($x) {
-        return $app->error( $app->translate( "Image error: [_1]", $x ) );
-    }
-
-    # Futz with the size and blurriness of each letter
-    foreach my $i ( 0 .. ( $len - 1 ) ) {
-        my $a = int rand int( WIDTH() / 14 );
-        my $b = int rand int( HEIGHT() / 12 );
-
-        $imbase->[$i]->Resize( width => $a, height => $b, blur => rand(3) );
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
     }
 
     # Combine all the individual tiles into one block
@@ -203,49 +223,84 @@ sub _generate_captcha {
         geometry => $geometry_str,
         tile     => $tile_geom
     );
-    $im->Blur();
+    if (!ref $im) {
+        return $app->error( $app->translate( "Image error: [_1]", $im ) );
+    }
+
+    $error = $im->Blur('0.0x1.0');
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
 
     # Add some lines and dots to the image
-    for my $i ( 0 .. ( $len * WIDTH() * HEIGHT() / 14 + 200 - 1 ) ) {
-        my $a     = int rand( $len * WIDTH() );
-        my $b     = int rand HEIGHT();
-        my $c     = int rand( $len * WIDTH() );
-        my $d     = int rand HEIGHT();
-        my $index = $im->Get("pixel[$a, $b]");
+    for my $i ( 0 .. 200 ) {
+        my $x1    = int rand( $len * WIDTH() );
+        my $x2    = int rand( $len * WIDTH() );
+        my $y1    = int rand HEIGHT();
+        my $y2    = int rand HEIGHT();
+        my $index = $im->Get("pixel[$x1, $y1]");
 
-        if ( $i < ( $len * WIDTH() * HEIGHT() / 14 + 200 ) / 100 ) {
-            $im->Draw(
+        my $modified_index = join ",", map { $_ >>= 8 while ($_ > 255 || $_ < 0); $_ } split ",", $index;
+        my $color_name     = "rgba($modified_index)";
+
+        if ( $i < 2 ) {
+            $error = $im->Draw(
                 primitive => 'line',
-                stroke    => $index,
-                points    => "$a, $b, $c, $d"
+                stroke    => "black",  ## seems to be better than $color_name,
+                points    => "$x1, $y1 $x2, $y2"
             );
+            if ($error) {
+                return $app->error( $app->translate( "Image error: [_1]", $error ) );
+            }
         }
-        elsif ( $i < ( $len * WIDTH() * HEIGHT() / 14 + 200 ) / 2 ) {
-            $im->Set( "pixel[$c, $d]" => $index );
+        elsif ( $i < 100 ) {
+            $error = $im->Set( "pixel[$x2, $y2]" => $color_name );
+            if ($error) {
+                return $app->error( $app->translate( "Image error: [_1]", $error ) );
+            }
         }
         else {
-            $im->Set( "pixel[$c, $d]" => "black" );
+            $error = $im->Set( "pixel[$x2, $y2]" => "black" );
+            if ($error) {
+                return $app->error( $app->translate( "Image error: [_1]", $error ) );
+            }
         }
     }
 
     # Read in the background file
-    my $a          = int rand(5) + 1;
-    my $background = Image::Magick->new();
-    $background->Read(
-        File::Spec->catfile( $base, 'background' . $a . '.png' ) );
-    $background->Resize( width => ( $len * WIDTH() ), height => HEIGHT() );
-    $im->Composite(
+    my @bg_ids = (1, 2, 4, 5);  ## 3 is a bit too hard to read
+    my $bg_id  = $bg_ids[int rand(scalar @bg_ids)];
+    my $background = $magick_class->new();
+    $error = $background->Read(
+        File::Spec->catfile( $base, 'background' . $bg_id . '.png' ) );
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
+    $error = $background->Resize( width => ( $len * WIDTH() ), height => HEIGHT() );
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
+    $error = $im->Composite(
         compose => "Bumpmap",
         tile    => 'False',
         image   => $background
     );
-    $im->Modulate( brightness => 105 );
-    $im->Border(
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
+    $error = $im->Modulate( brightness => 105 );
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
+    $error = $im->Border(
         fill     => 'black',
         width    => 1,
         height   => 1,
         geometry => join( 'x', WIDTH() * $len, HEIGHT() )
     );
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
 
     my @blobs = $im->ImageToBlob( magick => $format );
     return $blobs[0];

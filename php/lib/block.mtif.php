@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,7 +9,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $result = 0;
         $name = isset($args['name'])
-          ? $args['name'] : $args['var'];
+          ? $args['name'] : (isset($args['var']) ? $args['var'] : null);
         if (isset($name)) {
             unset($ctx->__stash['__cond_tag__']);
 
@@ -37,12 +37,12 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
                         "You used an [_1] tag without a valid name attribute.", "<MT$tag>" ));
             }
             if (isset($name)) {
-                $value = $ctx->__stash['vars'][$name];
+                $value = isset($ctx->__stash['vars'][$name]) ? $ctx->__stash['vars'][$name] : null;
                 require_once("MTUtil.php");
                 if (is_hash($value)) {
                     if ( isset($key) ) {
                         if ($key != chr(0)) {
-                            $val = $value[$key];
+                            $val = isset($value[$key]) ? $value[$key] : null;
                         } else {
                             unset($value);
                         }
@@ -54,7 +54,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
                 elseif (is_array($value)) {
                     if ( isset($index) ) {
                         if (is_numeric($index)) {
-                            $val = $value[ $index ];
+                            $val = isset($value[ $index ]) ? $value[ $index ] : null;
                         } else {
                             unset($value); # fall through to any 'default'
                         }
@@ -85,8 +85,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
 
             restore_error_handler();
         }
-        if ( !is_array($value)
-          && preg_match('/^smarty_fun_[a-f0-9]+$/', $value) ) {
+        if ( !empty($value) && !is_array($value) && preg_match('/^smarty_fun_[a-f0-9]+$/', $value) ) {
             if (function_exists($val)) {
                 ob_start();
                 $val($ctx, array());
@@ -106,7 +105,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
                 $var_key = $args['var'];
             $ctx->__stash['__cond_name__'] = $var_key;
         }
-        $ctx->__stash['__cond_value__'] = $val;
+        $ctx->__stash['__cond_value__'] = isset($val) ? $val : null;
 
         if ( array_key_exists('op', $args) ) {
             $op = $args['op'];
@@ -120,7 +119,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
         }
         if (array_key_exists('eq', $args)) {
             $val2 = $args['eq'];
-            $result = $val == $val2 ? 1 : 0;
+            $result = isset($val) && $val == $val2 ? 1 : 0;
         } elseif (array_key_exists('ne', $args)) {
             $val2 = $args['ne'];
             $result = $val != $val2 ? 1 : 0;

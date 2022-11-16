@@ -17,7 +17,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
@@ -386,15 +386,15 @@ test1
 
 === MT:ArchiveNext with Category
 --- template
-<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList content_type="[% content_type_unique_id %]"><mt:ArchiveNext><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList content_type="[% content_type_unique_id %]" glue=","><mt:ArchiveNext><mt:ArchiveTitle></mt:ArchiveNext></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
 --- expected
-category2category3
+category2,category3
 
 === MT:ArchivePrevious with Category
 --- template
-<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList content_type="[% content_type_unique_id %]"><mt:ArchivePrevious><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
+<mt:Archives><mt:if name="template_params" key="category_set_based_archive"><mt:CategorySets><mt:ArchiveList content_type="[% content_type_unique_id %]" glue=","><mt:ArchivePrevious><mt:ArchiveTitle></mt:ArchivePrevious></mt:ArchiveList></mt:CategorySets></mt:if></mt:Archives>
 --- expected
-category1category2
+category1,category2
 
 === MT:ArchiveNext with name
 --- template

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,6 +11,86 @@ use warnings;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list_openapi_spec {
+    +{
+        tags        => ['Category Sets'],
+        summary     => 'Category Set Collection',
+        description => <<'DESCRIPTION',
+Retrieve list of category set in the specified site. Authentication required if you want retrieve private field in categorySet resource. Required permissions are as follows.
+
+- Manage Category Set
+- If you use search parameter, you must specify search parameter with searchFields parameter. (This will be fixed in a future release.)
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/category_set_search' },
+            { '$ref' => '#/components/parameters/category_set_searchFields' },
+            { '$ref' => '#/components/parameters/category_set_limit' },
+            { '$ref' => '#/components/parameters/category_set_offset' },
+            {
+                in     => 'query',
+                name   => 'sortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'id',
+                        'name',
+                        'created_on',
+                        'modified_on',
+                        'content_type_count',
+                    ],
+                    default => 'name',
+                },
+                description => <<'DESCRIPTION',
+The field name for sort. You can specify one of following values.
+
+- id
+- name
+- created_on
+- modified_on
+- content_type_count
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/category_set_sortOrder' },
+            { '$ref' => '#/components/parameters/category_set_fields' },
+            { '$ref' => '#/components/parameters/category_set_includeIds' },
+            { '$ref' => '#/components/parameters/category_set_excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type => 'integer',
+                                },
+                                items => {
+                                    type  => 'array',
+                                    items => {
+                                        '$ref' => '#/components/schemas/category_set',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -19,9 +99,63 @@ sub list {
 
     my $res = filtered_list( $app, $endpoint, 'category_set' ) or return;
 
-    +{  totalResults => $res->{count} || 0,
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Category Sets'],
+        summary     => 'Create a new category set',
+        description => <<'DESCRIPTION',
+**Authentication Required**
+
+Create a new category set. This endpoint requires following permissions.
+
+- Manage Category Set
+
+Post form data is following
+
+- category_set (CategorySet) - Single CategorySet resource
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            category_set => {
+                                '$ref' => '#/components/schemas/category_set_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/category_set',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -42,6 +176,43 @@ sub create {
     $new_category_set;
 }
 
+sub get_openapi_spec {
+    +{
+        tags        => ['Category Sets'],
+        summary     => 'Fetch single category set',
+        description => <<'DESCRIPTION',
+Fetch a single category set. Authentication required if you want retrieve private field in categorySet resource. Required permissions are as follows.
+
+- Manage Category Set
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/category_set_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/category_set',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Category_set not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -53,6 +224,56 @@ sub get {
         or return;
 
     $category_set;
+}
+
+sub update_openapi_spec {
+    +{
+        tags        => ['Category Sets'],
+        summary     => 'Update category set',
+        description => <<'DESCRIPTION',
+**Authentication required** Update single category set. This endpoint requires following permissions.
+
+- Manage Category Set
+
+Cannot update/insert/delete categories by this endpoint. If you want to manage categories in category set, please use Categories API.
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            category_set => {
+                                '$ref' => '#/components/schemas/category_set_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/category_set',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Category_set not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub update {
@@ -68,6 +289,40 @@ sub update {
     save_object( $app, 'category_set', $new_category_set ) or return;
 
     $new_category_set;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags        => ['Category Sets'],
+        summary => 'Delete category set',
+        description => <<'DESCRIPTION',
+**Authentication required** Delete a single category set. This endpoint requires following permissions.
+
+- Manage Category Set
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/category_set',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Category_set not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {

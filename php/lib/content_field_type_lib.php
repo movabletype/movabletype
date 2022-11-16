@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -33,7 +33,8 @@ class ContentFieldTypeFactory {
         'categories'       => 'CategoriesRegistry',
         'tags'             => 'TagsRegistry',
         'list'             => 'ListRegistry',
-        'tables'           => 'TablesRegistry'
+        'tables'           => 'TablesRegistry',
+        'text_label'       => 'TextLabelRegistry'
     );
     private static $_types = array();
 
@@ -91,7 +92,7 @@ class ContentFieldTypeTagHandler {
         }
 
         $coounter_max = $ctx->stash('_content_field_counter_max');
-        if (!$counter_max) {
+        if (empty($counter_max)) {
             $counter_max = $ctx->__stash['_content_field_counter_max'] = count($values);
         }
         $counter = $ctx->stash('_content_field_counter');
@@ -135,7 +136,7 @@ class ContentFieldTypeTagHandler {
             }
             $values = array();
             foreach($bind_values as $v) {
-                if ($map[$v]) {
+                if (!empty($map[$v])) {
                     array_push($values, $map[$v]);
                 }
             }
@@ -216,7 +217,7 @@ class ContentTypeRegistry implements ContentFieldType {
             }
             $values = array();
             foreach ($ids as $id) {
-                if ($map[$id]) {
+                if (!empty($map[$id])) {
                     $values[] = $map[$id];
                 }
             }
@@ -256,8 +257,8 @@ class SingleLineEditRegistry implements ContentFieldType {
     }
     public function get_field_value($value, &$ctx, &$args) {
         require_once("MTUtil.php");
-        return $args['words']
-            ? first_n_text($value, $args['words'])
+        return !empty($args['words'])
+            ? first_n_text($value, isset($args['words']) ? $args['words'] : null)
             : $value;
     }
     public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
@@ -576,7 +577,7 @@ class CategoriesRegistry implements ContentFieldType {
                         $sort_by = $ctx->mt->db()->decorate_column($sort_by);
                     }
                     $where = $where . " order by $sort_by";
-                    if (isset($args['sort_order']) && $args['sort_order'] == 'descend') {
+                    if (!empty($args['sort_order']) && $args['sort_order'] == 'descend') {
                         $where = $where . " desc";
                     }
                 }
@@ -593,7 +594,7 @@ class CategoriesRegistry implements ContentFieldType {
                     $map[$cat->id] = $cat;
                 }
                 foreach($bind_values as $v) {
-                    if ($map[$v]) {
+                    if (!empty($map[$v])) {
                         array_push($values, $map[$v]);
                     }
                 }
@@ -665,7 +666,7 @@ class TagsRegistry implements ContentFieldType {
 
             $values = array();
             foreach($bind_values as $v) {
-                $tag = $map[$v];
+                $tag = isset($map[$v]) ? $map[$v] : null;
                 if (!$tag && $is_preview && isset($args['include_private']) && $args['include_private']) {
                     $is_private = preg_match('/^\@/', $v) ? 1 : 0;
                     $tag = new Tag;
@@ -746,6 +747,21 @@ class TablesRegistry implements ContentFieldType {
         $ctx->__stash['vars']['__value__'] = $table;
         $ctx->stash('ContentFieldHeader', 1);
         $ctx->stash('ContentFieldFooter', 1);
+    }
+}
+
+class TextLabelRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Text Display Area';
+    }
+    public function get_data_type($args = null) {
+        return 'varchar';
+    }
+    public function get_field_value($value, &$ctx, &$args) {
+        return '';
+    }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::_default($value, $args, $res, $ctx, $repeat);
     }
 }
 

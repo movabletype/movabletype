@@ -28,7 +28,7 @@ use strict;
 use vars qw($VERSION $AUTOLOAD $iptcDigestInfo);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.64';
+$VERSION = '1.65';
 
 sub ProcessPhotoshop($$$);
 sub WritePhotoshop($$$);
@@ -545,7 +545,7 @@ my %unicodeString = (
         PrintConv => 'sprintf("%d%%",$val)',
     },
     # tags extracted from additional layer information (tag ID's are real)
-    # - must be able to accomodate a blank entry to preserve the list ordering
+    # - must be able to accommodate a blank entry to preserve the list ordering
     luni => {
         Name => 'LayerUnicodeNames',
         List => 1,
@@ -982,10 +982,17 @@ sub ProcessPhotoshop($$$)
             DataPos => $$dirInfo{DataPos},
             Size    => $size,
             Start   => $pos,
+            Base    => $$dirInfo{Base},
             Parent  => $$dirInfo{DirName},
         );
         $size += 1 if $size & 0x01; # size is padded to an even # bytes
         $pos += $size;
+    }
+    # warn about incorrect IPTCDigest
+    if ($$et{VALUE}{IPTCDigest} and $$et{VALUE}{CurrentIPTCDigest} and
+        $$et{VALUE}{IPTCDigest} ne $$et{VALUE}{CurrentIPTCDigest})
+    {
+        $et->WarnOnce('IPTCDigest is not current. XMP may be out of sync');
     }
     delete $$et{LOW_PRIORITY_DIR}{'*'};
     return $success;
@@ -1136,7 +1143,7 @@ be preserved when copying Photoshop information via user-defined tags.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

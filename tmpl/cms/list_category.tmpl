@@ -385,7 +385,7 @@ function initItem($item) {
       var $element = jQuery(this).parent('.item-ctrl').parents('.sortable-item');
       var parent = $element.attr('id').slice(4);
       var $form = jQuery('<div class="mt-draggable form-inline mod add-form" style="cursor: default;"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short mx-2" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
-      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_label" lower_case="1">_label]').trigger('focus');
+      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_type" lower_case="1">_label]').trigger('focus');
       jQuery('<button type="button" class="btn btn-secondary add button mr-2"><__trans phrase="Add" escape="js"></button>')
         .on('click', function() {
           var label = jQuery(this).parent('.add-form').find('input').val();
@@ -404,6 +404,13 @@ function initItem($item) {
             jQuery(this).parent('.add-form').remove();
         })
         .appendTo($form);
+      $form.find('input[name=<mt:var name="object_type" lower_case="1">_label]').on('keypress', function (e) {
+        if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+          $form.find('button.add').trigger('click');
+          return false;
+        }
+      });
+
       jQuery('.button').button();
     });
 
@@ -501,9 +508,9 @@ function addItem(parent, label) {
   return true;
 }
 
-jQuery('#area-action input').on('keypress',function(e){
+DOM.addEventListener( jQuery('div#area-action input[name=category_label]').get(0), "keydown", function(e){
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-        jQuery(this).siblings('button.add').trigger('click');
+        jQuery('div#area-action button.add[type="submit"]').trigger('click');
         return false;
     }
 });
@@ -869,7 +876,7 @@ jQuery('.add').on('click', function() {
   var label = '';
   if ( $focusParent.hasClass('add-form') ) {
     // add a sub category by hitting enter key.
-    parent = $focusParent.prev().children('span.item-ctrl').parent('div').attr('id').slice(4);
+    parent = $focusParent.prev().attr('id').slice(4);
     label = $focusParent.find('input').val();
   } else {
     parent = jQuery(this).parent('#area-action').find('select').val();
@@ -920,7 +927,7 @@ function bulkUpdateCategories() {
   </mt:if>
       blog_id: <mt:var name="blog_id">,
       checksum: checksum,
-      objects: jQuery.toJSON(items),
+      objects: <mt:if name-"use_jquery_json">jQuery.toJSON(items)<mt:else>JSON.stringify(items)</mt:if>,
       magic_token: jQuery('input[name="magic_token"]').val()
     },
     success: function(data) {

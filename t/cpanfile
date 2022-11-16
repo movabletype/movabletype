@@ -51,12 +51,13 @@ requires 'Crypt::DSA';
 #requires 'Cache::File';
 
 requires 'MIME::Base64';
+requires 'Email::MIME';
 requires 'XML::Atom';
 requires 'Cache::Memcached';
 requires 'Archive::Tar';
 requires 'IO::Compress::Gzip';
 requires 'IO::Uncompress::Gunzip';
-requires 'Archive::Zip', '!=1.66, !=1.67';
+requires 'Archive::Zip', '!=1.66, !=1.67, !=1.68';
 requires 'XML::SAX';
 requires 'Digest::SHA1';
 requires 'Net::SMTP';
@@ -84,31 +85,51 @@ requires 'Net::IP';
 
 on 'test' => sub {
     requires 'Acme::RandomEmoji';
+    requires 'AnyEvent::SMTP::Server';
     requires 'App::Prove::Plugin::MySQLPool';
+    requires 'Array::Diff';
+    requires 'Carp::Always';
     requires 'Class::Unload';
+    requires 'Data::Visitor::Tiny';
     requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
+    requires 'Devel::GlobalDestruction';
     requires 'DBD::SQLite';
-    requires 'DBI', '1.635';    # For $dbh->selectall_array
+    requires 'DBI', '1.633';
+    requires 'File::Temp', '0.23';
+    requires 'File::Which';
+    requires 'HTML::Filter::Callbacks';
     requires 'HTML::Form';
     requires 'HTTP::DAV';
+    requires 'HTTP::Request::AsCGI';
     requires 'HTTP::Request::Common';
     requires 'IO::String';
     requires 'IPC::Run3';
     requires 'JSON::XS';  # For speed
+    requires 'JSON::Validator' unless $] < 5.016;
+    requires 'Log::Log4perl';
     requires 'Log::Minimal';
+    requires 'MIME::Head';
+    requires 'Mock::MonkeyPatch';
+    requires 'Mojolicious';
+    requires 'Net::Server::SS::PreFork' unless $^O eq 'MSWin32';
     requires 'Net::SFTP';
     requires 'Parallel::ForkManager';
     requires 'Path::Tiny';
+    requires 'Perl::Critic::Pulp';
+    requires 'Perl::Critic::TooMuchCode';
     requires 'PHP::Serialization';
+    requires 'POSIX::AtFork' unless $^O eq 'MSWin32';
     requires 'Proc::ProcessTable' unless $^O eq 'MSWin32';
-    requires 'pQuery';
     requires 'Role::Tiny';
     requires 'Selenium::Remote::Driver', '1.36';
+    requires 'Server::Starter' unless $^O eq 'MSWin32';
     requires 'SQL::Maker';
-    requires 'SQL::Translator';
+    requires 'SQL::Translator', '1.61';   # changed comment generation
+    requires 'Starman' unless $^O eq 'MSWin32';
     requires 'String::CamelCase';
+    requires 'Sub::Name';
     requires 'Term::Encoding';
     requires 'Test::Base';
     requires 'Test::Base::Less';
@@ -117,8 +138,10 @@ on 'test' => sub {
     requires 'Test::Deep';
     requires 'Test::File';
     requires 'Test::LeakTrace';
+    requires 'Test::Memcached';
     requires 'Test::MockModule';
     requires 'Test::MockObject';
+    requires 'Test::MockTime::HiRes';
     requires 'Test::Perl::Critic';
     requires 'Test::Pod::Coverage';
     requires 'Test::Requires';
@@ -128,4 +151,5 @@ on 'test' => sub {
     requires 'Time::Piece';
     requires 'URI::Escape';
     requires 'Web::Query';
+    requires 'Web::Scraper';
 };

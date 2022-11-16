@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -13,7 +13,7 @@ function smarty_function_mtentrybasename($args, &$ctx) {
     }
     if (!$entry) return '';
     $basename = $entry->entry_basename;
-    if ($sep = $args['separator']) {
+    if ($sep = isset($args['separator']) ? $args['separator'] : null) {
         if ($sep == '-') {
             $basename = preg_replace('/_/', '-', $basename);
         } elseif ($sep == '_') {

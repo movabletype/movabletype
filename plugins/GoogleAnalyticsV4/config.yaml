@@ -1,0 +1,36 @@
+id: GoogleAnalyticsV4
+name: GoogleAnalyticsV4
+version: 1.0
+author_link: http://www.movabletype.org/
+author_name: Six Apart Ltd.
+description: <MT_TRANS phrase="Site statistics plugin using Google Analytics for V4.">
+l10n_class: GoogleAnalyticsV4::L10N
+
+settings:
+    client_id:
+    client_secret:
+    profile_name:
+    profile_web_property_id:
+    measurement_id:
+    profile_id:
+    token_data:
+    parent_client_id:
+
+applications:
+    cms:
+        methods:
+            ga4_oauth2callback: $GoogleAnalyticsV4::GoogleAnalyticsV4::App::oauth2callback
+            ga4_select_profile: $GoogleAnalyticsV4::GoogleAnalyticsV4::App::select_profile
+            ga4_select_profile_complete: $GoogleAnalyticsV4::GoogleAnalyticsV4::App::select_profile_complete
+
+web_services:
+    GoogleAnalyticsV4:
+        config_template:
+            code: $GoogleAnalyticsV4::GoogleAnalyticsV4::App::config_tmpl
+        save_config:
+            code: $GoogleAnalyticsV4::GoogleAnalyticsV4::App::save_config
+        order: 100
+
+stats_providers:
+    GoogleAnalyticsV4:
+        provider: GoogleAnalyticsV4::Provider

@@ -34,7 +34,7 @@ use Cache::Memory::Entry;
 use base qw(Cache);
 use fields qw(namespace);
 
-our $VERSION = '2.04';
+our $VERSION = '2.11';
 
 
 # storage for all data
@@ -79,6 +79,15 @@ available properties that can be set.
 
 =cut
 
+sub _init_ns_heaps {
+    my ($self, $ns) = @_;
+
+    $Age_Heaps{$ns} ||= Heap::Fibonacci->new();
+    $Use_Heaps{$ns} ||= Heap::Fibonacci->new();
+
+    return;
+}
+
 sub new {
     my Cache::Memory $self = shift;
     my $args = $#_? { @_ } : shift;
@@ -89,10 +98,8 @@ sub new {
     my $ns = $args->{namespace} || $DEFAULT_NAMESPACE;
     $self->{namespace} = $ns;
 
-    # init heaps
-    $Age_Heaps{$ns} ||= Heap::Fibonacci->new();
-    $Use_Heaps{$ns} ||= Heap::Fibonacci->new();
-    
+    $self->_init_ns_heaps($ns);
+
     return $self;
 }
 
@@ -169,8 +176,9 @@ sub clear {
     $Store_Sizes{$ns} = 0;
 
     # recreate age and used heaps (thus emptying them)
-    $Age_Heaps{$ns} = Heap::Fibonacci->new();
-    $Use_Heaps{$ns} = Heap::Fibonacci->new();
+    $self->_init_ns_heaps($ns);
+
+    return;
 }
 
 sub count {
@@ -210,6 +218,9 @@ sub namespace {
 sub set_namespace {
     my Cache::Memory $self = shift;
     my ($namespace) = @_;
+
+    $self->_init_ns_heaps($namespace);
+
     $self->{namespace} = $namespace;
 }
 

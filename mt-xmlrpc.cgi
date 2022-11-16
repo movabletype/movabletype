@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -59,6 +59,22 @@ use vars qw($server);
         MT::XMLRPCServer::Util::mt_new;
         XMLRPC::Transport::HTTP::FCGI->new;
         };
-    $server->dispatch_to( 'blogger', 'metaWeblog', 'mt', 'wp' );
+    $server->dispatch_with( {
+        'mt'         => 'MT::XMLRPCServer',
+        'blogger'    => 'blogger',
+        'metaWeblog' => 'metaWeblog',
+        'wp'         => 'wp',
+    } );
+    $server->on_action(sub {
+        my ($action, $method_uri, $method_name) = @_;
+
+        my $class =
+                $server->dispatch_with->{$method_uri}
+            || $server->dispatch_with->{ $action || '' }
+            || defined($action) && $action =~ /^"(.+)"$/ && $server->dispatch_with->{$1};
+
+        die "Denied access to method ($method_name)\n"
+            unless $class && $class->can($method_name);
+    });
     $server->handle;
 }

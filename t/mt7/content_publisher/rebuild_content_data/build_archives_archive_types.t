@@ -19,6 +19,7 @@ BEGIN {
 
 use MT::Test::ArchiveType;
 use MT::Test::Fixture::ArchiveType;
+use File::Path;
 
 use MT;
 use MT::Template::Context;
@@ -28,8 +29,8 @@ $test_env->prepare_fixture('archive_type');
 my $objs    = MT::Test::Fixture::ArchiveType->load_objs;
 my $blog_id = $objs->{blog_id} or die;
 my $blog    = $app->model('blog')->load($blog_id) or die;
-$blog->archive_path( $test_env->root . '/site/archive' );
-$blog->save or die;
+
+rmtree($blog->site_path);
 
 MT::Request->instance->reset;
 MT::ObjectDriver::Driver::Cache::RAM->clear_cache;

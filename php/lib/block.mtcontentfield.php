@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -76,9 +76,9 @@ function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
             }
         }
 
-        if (!$field_data) {
+        if (empty($field_data)) {
             $field_data = $ctx->stash('content_field_data');
-            if (!$field_data && !$args['content_field']) {
+            if (!$field_data && empty($args['content_field'])) {
                 $field_data = $content_fields[0];
             }
             if (!$field_data) {
@@ -96,7 +96,7 @@ function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
         $value = $content_data->data;
         if (isset($value)) {
             $value = $ctx->mt->db()->unserialize($value);
-            $value = $value[$field_data['id']];
+            $value = isset($value[$field_data['id']]) ? $value[$field_data['id']] : null;
         }
 
         $check_value = $value;

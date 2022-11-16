@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -46,6 +46,10 @@ sub class_label_plural {
 
 sub list_props {
     return {
+        id => {
+            base  => '__virtual.id',
+            order => 50,
+        },
         name => {
             auto    => 1,
             label   => 'Name',
@@ -537,6 +541,8 @@ sub clear_cache {
 
 ### DEPRECATED
 sub cache {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
     my $pkg     = shift;
     my (%param) = @_;
     my $user_id = $param{user_id};

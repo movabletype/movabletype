@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,7 +14,7 @@ function smarty_function_mtwebsitelanguage($args, &$ctx) {
     $language = empty($website)
         ? $ctx->mt->config('DefaultLanguage')
         : $website->blog_language;
-    return normalize_language( $language, $args['locale'],
-        $args['ietf'] );
+    return normalize_language( $language, isset($args['locale']) ? $args['locale'] : null,
+        isset($args['ietf']) ? $args['ietf'] : null );
 }
 ?>

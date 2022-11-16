@@ -1305,7 +1305,7 @@ tfoot .col.head{
     margin-top: 10px;
 }
 
-#modal-search {
+[id^="modal-search-"] {
     margin-bottom: 10px;
 }
 .listing.selector {

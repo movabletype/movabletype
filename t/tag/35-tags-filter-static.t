@@ -19,6 +19,8 @@ BEGIN {
 
 plan tests => 1 * blocks;
 
+no Carp::Always;
+
 use MT;
 use MT::Test;
 my $app = MT->instance;

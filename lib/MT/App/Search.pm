@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -226,7 +226,7 @@ sub init_request {
     if ( $app->run_callbacks( 'search_blog_list', $app, $list, \$processed ) )
     {
         if ($processed) {
-            $app->{searchparam}{IncludeBlogs} = [ keys %$list ]
+            $app->{searchparam}{IncludeBlogs} = [ sort keys %$list ]
                 if ( $list && %$list );
         }
         else {
@@ -426,7 +426,7 @@ sub process {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start search process.');
+    MT::Util::Log->debug('--- Start search process.');
 
     my @messages;
     return $app->throttle_response( \@messages )
@@ -435,27 +435,27 @@ sub process {
     my ( $count, $out ) = $app->check_cache();
     if ( defined $out ) {
         $app->run_callbacks( 'search_cache_hit', $count, $out );
-        MT::Util::Log->info('--- End   search process. Use cache.');
+        MT::Util::Log->debug('--- End   search process. Use cache.');
         return $out;
     }
     my $iter;
     if ( grep { $app->param($_) } $app->search_params ) {
-        MT::Util::Log->info(' Start search_terms.');
+        MT::Util::Log->debug(' Start search_terms.');
         my @arguments = $app->search_terms();
-        MT::Util::Log->info(' End   search_terms.');
+        MT::Util::Log->debug(' End   search_terms.');
         return $app->error( $app->errstr ) if $app->errstr;
 
         $count = 0;
         if (@arguments) {
-            MT::Util::Log->info(' Start search_terms.');
+            MT::Util::Log->debug(' Start search_terms.');
             ( $count, $iter ) = $app->execute(@arguments);
-            MT::Util::Log->info(' End   search_terms.');
+            MT::Util::Log->debug(' End   search_terms.');
             return $app->error( $app->errstr ) unless $iter;
 
-            MT::Util::Log->info(' Start callbacks search_post_execute.');
+            MT::Util::Log->debug(' Start callbacks search_post_execute.');
             $app->run_callbacks( 'search_post_execute', $app, \$count,
                 \$iter );
-            MT::Util::Log->info(' End   callbacks search_post_execute.');
+            MT::Util::Log->debug(' End   callbacks search_post_execute.');
         }
     }
 
@@ -474,7 +474,7 @@ sub process {
 
     $out = $app->$method( $count, $iter );
     unless ( defined $out ) {
-        MT::Util::Log->info('--- End   search process. No out.');
+        MT::Util::Log->debug('--- End   search process. No out.');
         $iter->end if $iter;
         return $app->error( $app->errstr );
     }
@@ -491,7 +491,7 @@ sub process {
     }
 
     $app->run_callbacks( 'search_post_render', $app, $count, $result );
-    MT::Util::Log->info('--- End   search process.');
+    MT::Util::Log->debug('--- End   search process.');
     $iter->end if $iter;
     $result;
 }
@@ -522,16 +522,16 @@ sub execute {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('  Start count.');
+    MT::Util::Log->debug('  Start count.');
     my $count = $app->count( $class, $terms, $args );
-    MT::Util::Log->info('  End   count.');
+    MT::Util::Log->debug('  End   count.');
     return $app->errtrans( "Invalid query: [_1]", $app->errstr )
         unless defined $count;
 
-    MT::Util::Log->info('  Start load_iter.');
+    MT::Util::Log->debug('  Start load_iter.');
     my $iter = $class->load_iter( $terms, $args )
         or $app->error( $class->errstr );
-    MT::Util::Log->info('  End   load_iter.');
+    MT::Util::Log->debug('  End   load_iter.');
     ( $count, $iter );
 }
 

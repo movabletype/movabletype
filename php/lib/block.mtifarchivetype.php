@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -8,8 +8,7 @@
 function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
     # status: complete
     if (!isset($content)) {
-        $at = $args['type'];
-        $at or $at = $args['archive_type'];
+        $at = $args['type'] ?? $args['archive_type'] ?? null;
         $cat = $ctx->stash('current_archive_type');
         $cat or $at = $ctx->stash('archive_type');
         $same = ($at && $cat) && ($at == $cat);
@@ -23,7 +22,7 @@ function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
                 $content_type = $ctx->stash('content_type');
                 if (isset($content_type)
                     && (   $args['content_type'] === $content_type->content_type_unique_id
-                        || $args['content_type'] === $content_type->content_type_id
+                        || $args['content_type'] === strval($content_type->content_type_id)
                         || $args['content_type'] === $content_type->content_type_name )
                     )
                 {

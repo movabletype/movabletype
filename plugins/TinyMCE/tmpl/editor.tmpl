@@ -6,43 +6,11 @@
 </mt:if>
 <script type="text/javascript" src="<mt:Var name="static_uri" />plugins/TinyMCE/lib/js/adapter.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript">
-function toggleTinyMCEMenus() {
-  var hasNoMobileButtons = function ($container) {
-    return $container.has('.mce-ico.mce-i-newdocument').length == 0
-      && $container.has('.mce-ico.mce-i-image').length == 0
-      && $container.has('.mce-ico.mce-i-mt_source_template').length == 0;
-  }
-  var $hiddenContainersInMobile = jQuery('.mce-container.mce-flow-layout-item.mce-btn-group').filter(function () {
-    return hasNoMobileButtons(jQuery(this));
-  });
-  var $visibleContainersInMobile = jQuery('.mce-container.mce-flow-layout-item.mce-btn-group').filter(function () {
-    return !hasNoMobileButtons(jQuery(this));
-  });
-  var $hiddenButtonsInMobile = $visibleContainersInMobile.find('.mce-widget.mce-btn').filter(function () {
-    return hasNoMobileButtons(jQuery(this));
-  });
-  if (MT.Util.isMobileView()) {
-    $hiddenContainersInMobile.hide();
-    $hiddenButtonsInMobile.hide();
-
-    $visibleContainersInMobile.addClass('border-left-0');
-  } else {
-    $hiddenContainersInMobile.show();
-    $hiddenButtonsInMobile.show();
-
-    $visibleContainersInMobile.removeClass('border-left-0');
-  }
-}
 MT.Editor.TinyMCE.config.init_instance_callback = function (inst) {
   inst.dom.addStyle('@media (max-width: 767.98px) { body { font-size: 16px!important; } }');
-  toggleTinyMCEMenus();
 };
 jQuery.extend(MT.Editor.TinyMCE.config, <mt:Var name="config" to_json="1" mteval="1" />);
 </script>
-</mt:setvarblock>
-
-<mt:setvarblock name="jq_js_include" append="1">
-jQuery(window).on('resize', toggleTinyMCEMenus);
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">

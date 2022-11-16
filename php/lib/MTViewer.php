@@ -1,12 +1,12 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
 # $Id$
 
-include_once("SmartyBC.class.php");
-class MTViewer extends SmartyBC {
+include_once("Smarty.class.php");
+class MTViewer extends Smarty {
     var $varstack = array();
     var $stash_var_stack = array();
     var $__stash;
@@ -164,7 +164,7 @@ class MTViewer extends SmartyBC {
         $this->register_tag_handler('mtelseif', '','block');
 
         # Unregister the 'core' regex_replace so we can replace it
-        $this->register_modifier('regex_replace', array(&$this, 'regex_replace'));
+        $this->registerPlugin('modifier', 'regex_replace', array(&$this, 'regex_replace'));
 
         $this->setDefaultResourceType('mt');
 
@@ -178,9 +178,10 @@ class MTViewer extends SmartyBC {
     }
 
     function regex_replace($string, $search, $replace) {
+        $limit = 1;
         if (preg_match('!([a-zA-Z\s]+)$!s', $search, $match) && (preg_match('/[eg]/', $match[1]))) {
             if (strpos($match[1], "g") !== false)
-                $global = 1;
+                $limit = -1;
             /* remove eval-modifier from $search */
             $search = substr($search, 0, -strlen($match[1])) . preg_replace('![eg\s]+!', '', $match[1]);
         }
@@ -212,10 +213,10 @@ class MTViewer extends SmartyBC {
                     return $replaced;
                 },
                 $string,
-                $global ? -1 : 1
+                $limit
             );
         } else {
-            return preg_replace($search, $replace, $string, $global ? -1 : 1);
+            return preg_replace($search, $replace, $string, $limit);
         }
     }
 
@@ -233,7 +234,7 @@ class MTViewer extends SmartyBC {
     function add_global_filter($name, $code = null) {
         $this->global_attr[$name] = 1;
         if (isset($code)) {
-            $this->register_modifier($name, $code);
+            $this->registerPlugin('modifier', $name, $code);
         }
     }
 
@@ -321,7 +322,7 @@ class MTViewer extends SmartyBC {
             if ($cond_tag == '1' or $cond_tag == '0') {
                 $ctx->stash('conditional', $cond_tag);
             } else {
-                $ctx->stash('conditional', $ctx->__stash[$cond_tag]);
+                $ctx->stash('conditional', !empty($ctx->__stash[$cond_tag]));
             }
         } else {
             if (!$ctx->__stash['conditional']) {
@@ -349,8 +350,7 @@ class MTViewer extends SmartyBC {
     }
 
     function smarty_block_else($args, $content, &$ctx, &$repeat) {
-        if (isset($ctx->__stash['elseif_content'])
-            or $ctx->__stash['conditional']) {
+        if (isset($ctx->__stash['elseif_content']) or !empty($ctx->__stash['conditional'])) {
             $repeat = false;
             return '';
         }
@@ -377,13 +377,13 @@ class MTViewer extends SmartyBC {
             $args['elseif'] = 1;
             if (!isset($content)) {
                 $out = smarty_block_mtif($args, $content, $ctx, $repeat);
-                if ($ctx->__stash['conditional']) {
+                if (!empty($ctx->__stash['conditional'])) {
                     $ctx->stash('elseif_conditional', 1);
                     unset($ctx->__stash['conditional']);
                 }
             } else {
                 // $out = smarty_block_mtif($args, $content, $ctx, $repeat);
-                if ($ctx->__stash['elseif_conditional']) {
+                if (!empty($ctx->__stash['elseif_conditional'])) {
                     $ctx->stash('elseif_content', $content);
                     $ctx->stash('conditional', 1);
                 }
@@ -391,10 +391,10 @@ class MTViewer extends SmartyBC {
             return '';
         }
         if (!isset($content)) {
-            if ($ctx->__stash['conditional'])
+            if (!empty($ctx->__stash['conditional']))
                 $repeat = false;
         } else {
-            $else_content = $ctx->__stash['else_content'];
+            $else_content = isset($ctx->__stash['else_content']) ? $ctx->__stash['else_content'] : '';
             $else_content .= $content;
             $ctx->stash('else_content', $else_content);
         }
@@ -541,7 +541,7 @@ class MTViewer extends SmartyBC {
         if ($lang === 'jp') {
             $lang = 'ja';
         }
-        $lang_ar = $this->date_languages[$lang];
+        $lang_ar = isset($this->date_languages[$lang]) ? $this->date_languages[$lang] : null;
         if ($lang_ar) {
             if (array_key_exists($phrase, $lang_ar)) {
                 $phrase = $lang_ar[$phrase];
@@ -653,7 +653,7 @@ class MTViewer extends SmartyBC {
             $ts = $args['ts'];
         }
         $ts or $ts = $ctx->stash('current_timestamp');
-        $ts = preg_replace('![^0-9]!', '', $ts);
+        $ts = preg_replace('![^0-9]!', '', $ts ?? '');
         $blog = $ctx->stash('blog');
         if ($ts == '') {
             $t = time();
@@ -684,7 +684,7 @@ class MTViewer extends SmartyBC {
         if (isset($args['format_name'])) {
             if ($format = $args['format_name']) {
                 $tz = 'Z';
-                if (!$args['utc']) {
+                if (empty($args['utc'])) {
                     $blog = $ctx->stash('blog');
                     if (!is_object($blog)) {
                         $blog = $ctx->mt->db()->fetch_blog($blog);
@@ -837,7 +837,9 @@ EOT;
     }
 
     function load_modifier($name) {
-        include_once('modifier.'.$name.'.php');
+        if (stream_resolve_include_path('modifier.'.$name.'.php') !== false) {
+            include_once('modifier.'.$name.'.php');
+        }
         if ( function_exists('smarty_modifier_' . $name) )
             return true;
         else
@@ -860,7 +862,7 @@ EOT;
                 $fn = array($this, 'function_wrapper');
             }
         }
-        $old_handler = $this->_handlers[$tag];
+        $old_handler = isset($this->_handlers[$tag]) ? $this->_handlers[$tag] : null;
         $this->_handlers[$tag] = array( $fn, $type );
         if ($old_handler) {
             $fn = $old_handler[0];
@@ -945,7 +947,7 @@ EOT;
     function count_format($count, $args) {
         $phrase = '';
         if (! empty($args)) {
-            if ($count == 0) {
+            if (intval($count) === 0) {
                 $phrase = array_key_exists('none', $args) ? $args['none'] :
                     (array_key_exists('plural', $args) ? $args['plural'] : '');
             } elseif ($count == 1) {
@@ -998,7 +1000,7 @@ EOT;
             if(isset($ctx->__stash[$value]) && !is_object($ctx->__stash[$value])){
                 $ctx->__stash[$value] = new Smarty_Variable($ctx->__stash[$value]);
             }
-            $_smarty_tpl->tpl_vars[$value] = $ctx->__stash[$value];
+            $_smarty_tpl->tpl_vars[$value] = isset($ctx->__stash[$value]) ? $ctx->__stash[$value] : new Smarty_Variable();
         }
 
 
@@ -1016,13 +1018,13 @@ EOT;
             if ($tag == 'else') {
                 return $content;
             }
-            return $result;
+            return (isset($result) ? $result : null);
         }
 
     }
 
-    function function_wrapper($args, &$_smarty_tpl){
-        $ctx =& $_smarty_tpl->smarty;
+    function function_wrapper($args, $_smarty_tpl){
+        $ctx = $_smarty_tpl->smarty;
         $tag = $ctx->this_tag();
 
         $tag = preg_replace('/^mt:?/i', '', strtolower($tag));

@@ -27,9 +27,9 @@ BEGIN {
 
     # Don't load history if we already have something (probably a db restart)
     if ((scalar @h == 0) and $HAS_HISTORY) {
-        if (open H, '<', HISTORY_FILE()) {
-            chomp(my @h = <H>);
-            close H;
+        if (open my $H, '<', HISTORY_FILE()) {
+            chomp(my @h = <$H>);
+            close $H;
             my %seen;
             $DB::term->SetHistory(grep { /\S/ && !$seen{$_}++ } @h);
         }
@@ -39,10 +39,10 @@ BEGIN {
 }
 
 END {
-    if ($HAS_HISTORY and open(H, '>', HISTORY_FILE())) {
+    if ($HAS_HISTORY and open(my $H, '>', HISTORY_FILE())) {
         my %seen;
-        print H join("\n", grep { /\S/ && !$seen{$_}++ } $DB::term->GetHistory);
-        close H;
+        print $H join("\n", grep { /\S/ && !$seen{$_}++ } $DB::term->GetHistory);
+        close $H;
     }
 }
 

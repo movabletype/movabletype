@@ -8,7 +8,7 @@ package Net::SMTPS;
 
 use vars qw ( $VERSION @ISA );
 
-$VERSION = '0.08';
+$VERSION = '0.10';
 
 use strict;
 use base qw ( Net::SMTP );
@@ -41,10 +41,6 @@ sub new {
   }
   my $ssl = delete $arg{doSSL};
   if ($ssl =~ /ssl/i) {
-      $arg{SSL} = 1;
-  }
-  if (defined($arg{SSL}) && $arg{SSL} > 0) {
-      $ssl = 'ssl';
       $arg{Port} ||= 465;
   }
 
@@ -83,23 +79,11 @@ sub new {
 
   $obj->debug(exists $arg{Debug} ? $arg{Debug} : undef);
 
-# common in SSL
-  my %ssl_args;
-  if ($ssl || defined($arg{SSL}) ) {
-    eval {
-      require IO::Socket::SSL;
-    } or do {
-      $obj->set_status(500, ["Need working IO::Socket::SSL"]);
-      $obj->close;
-      return undef;
-    };
-    %ssl_args = map { +"$_" => $arg{$_} } grep {/^SSL/} keys %arg;
-    $IO::Socket::SSL::DEBUG = (exists $arg{Debug} ? $arg{Debug} : undef); 
-  }
+  ${*$obj}{'net_smtp_arg'} = \%arg;
 
 # OverSSL
   if (defined($ssl) && $ssl =~ /ssl/i) {
-    $obj->ssl_start(\%ssl_args)
+    $obj->ssl_start()
       or do {
 	$obj->set_status(500, ["Cannot start SSL"]);
 	$obj->close;
@@ -112,8 +96,6 @@ sub new {
     return undef;
   }
 
-  ${*$obj}{'net_smtp_arg'} = \%arg;
-  
   ${*$obj}{'net_smtp_exact_addr'} = $arg{ExactAddresses};
   ${*$obj}{'net_smtp_host'}       = $host;
 
@@ -138,11 +120,26 @@ sub new {
 }
 
 sub ssl_start {
-    my ($self, $args) = @_;
+    my $self = shift;
     my $type = ref($self);
+    my %arg = %{ ${*$self}{'net_smtp_arg'} };
+    my %ssl_args = map { +"$_" => $arg{$_} } grep {/^SSL/} keys %arg;
 
+    eval {
+      require IO::Socket::SSL;
+    } or do {
+      $self->set_status(500, ["Need working IO::Socket::SSL"]);
+      $self->close;
+      return undef;
+    };
+
+    my $ssl_debug = (exists $arg{Debug} ? $arg{Debug} : undef);
+    $ssl_debug = (exists $arg{Debug_SSL} ? $arg{Debug_SSL} : $ssl_debug);
+    
+    local $IO::Socket::SSL::DEBUG = $ssl_debug; 
+     
     (unshift @ISA, 'IO::Socket::SSL'
-     and IO::Socket::SSL->start_SSL($self, %$args)
+     and IO::Socket::SSL->start_SSL($self, %ssl_args, @_)
      and $self->isa('IO::Socket::SSL')
      and bless $self, $type     # re-bless 'cause IO::Socket::SSL blesses himself.
     ) or return undef;
@@ -150,11 +147,9 @@ sub ssl_start {
 
 sub starttls {
     my $self = shift;
-    my %arg = %{ ${*$self}{'net_smtp_arg'} };
-    my %ssl_args = map { +"$_" => $arg{$_} } grep {/^SSL/} keys %arg;
     (
      $self->_STARTTLS()
-     and $self->ssl_start(\%ssl_args, @_)
+     and $self->ssl_start(@_)
     ) or do {
 	$self->set_status(500, ["Cannot start SSL session"]);
 	$self->close();
@@ -177,7 +172,7 @@ sub auth {
 	    $self->debug_print(1, "AUTH-server offerred: ". $sv . "\n") if $self->debug;
 
 	    foreach my $i (@cl_mech) {
-		if (index($sv, $i) >= 0 && grep(/$i/i, @matched) == () ) {
+		if (index($sv, $i) >= 0 && !grep(/$i/i, @matched)) {
 		    push @matched, uc($i);
 		}
 	    }
@@ -244,9 +239,6 @@ A few options added to Net::SMTP(2.X).
 B<doSSL> { C<ssl> | C<starttls> | undef } - to specify SSL connection type.
 C<ssl> makes connection wrapped with SSL, C<starttls> uses SMTP command C<STARTTLS>.
 
-B<SSL> { 0 | 1 } - C<1> means the same as B<doSSL> to C<ssl>, C<0> is just initialize
-SSL libraries internally for using C<starttls> later.
-
 =back
 
 =head1 METHODS
@@ -264,12 +256,14 @@ not match the server-offerred AUTH mechanism, authentication negotiation may fai
 
 =item starttls ( SSLARGS )
 
-Upgrade existing plain connection to SSL. If you use this, you must create instance like,
-
-    $smtp = Net::SMTPS->new($host, SSL => 0, ...);
-
+Upgrade existing plain connection to SSL.
 
 =back
+
+=head1 BUGS
+
+Constructor option 'Debug => (N)' (for Net::Cmd) also sets $IO::Socket::SSL::DEBUG when SSL is enabled. You can set 'Debug_SSL => {0-3}' separately.
+
 
 =head1 SEE ALSO
 
@@ -283,7 +277,7 @@ Tomo.M <tomo at cpan.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2017 Tomo.M All rights reserved.
+Copyright (c) 2020 Tomo.M All rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 

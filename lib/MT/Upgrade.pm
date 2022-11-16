@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -53,19 +53,23 @@ sub BEGIN {
             priority => 2,
         },
         'core_add_column' => {
-            code     => sub { shift->core_column_action( 'add', @_ ) },
+            code     => sub { shift->core_column_action( 'add_column', @_ ) },
             priority => 3,
         },
         'core_drop_column' => {
-            code     => sub { shift->core_column_action( 'drop', @_ ) },
+            code     => sub { shift->core_column_action( 'drop_column', @_ ) },
             priority => 3,
         },
         'core_alter_column' => {
-            code     => sub { shift->core_column_action( 'alter', @_ ) },
+            code     => sub { shift->core_column_action( 'alter_column', @_ ) },
             priority => 3,
         },
         'core_index_column' => {
-            code     => sub { shift->core_column_action( 'index', @_ ) },
+            code     => sub { shift->core_column_action( 'index_column', @_ ) },
+            priority => 3.5,
+        },
+        'core_drop_index' => {
+            code     => sub { shift->core_column_action( 'drop_index', @_ ) },
             priority => 3.5,
         },
         'core_seed_database' => {
@@ -352,13 +356,15 @@ sub check_type {
         }
         else {
             $self->add_step( 'core_add_column', type => $type )
-                if $result->{add};
+                if $result->{add_column};
             $self->add_step( 'core_alter_column', type => $type )
-                if $result->{alter};
+                if $result->{alter_column};
             $self->add_step( 'core_drop_column', type => $type )
-                if $result->{drop};
+                if $result->{drop_column};
             $self->add_step( 'core_index_column', type => $type )
-                if $result->{index};
+                if $result->{index_column};
+            $self->add_step( 'core_drop_index', type => $type )
+                if $result->{drop_index};
         }
     }
 
@@ -400,7 +406,7 @@ sub type_diff {
 
     # we're only scanning defined columns; we don't care about
     # columns that are unique to the table.
-    my ( @cols_to_add, @cols_to_alter, @cols_to_drop, @cols_to_index );
+    my ( @cols_to_add, @cols_to_alter, @cols_to_drop, @cols_to_index, @idxs_to_drop );
 
     if ( !$fix_class ) {
         my @def_cols = keys %$defs;
@@ -434,6 +440,11 @@ sub type_diff {
                     push @cols_to_alter, $col;
                 }
             }
+        }
+
+        for my $col (keys %$db_defs) {
+            next if exists $defs->{$col};
+            push @cols_to_drop, $col;
         }
 
         foreach my $key ( keys %$class_idx_defs ) {
@@ -483,20 +494,27 @@ sub type_diff {
                 }
             }
         }
+
+        for my $key (keys %$db_idx_defs) {
+            next if exists $class_idx_defs->{$key};
+            push @idxs_to_drop, $key;
+        }
     }
 
     if (   $fix_class
         || @cols_to_add
         || @cols_to_alter
         || @cols_to_drop
-        || @cols_to_index )
+        || @cols_to_index
+        || @idxs_to_drop )
     {
         my %param;
-        $param{drop}  = \@cols_to_drop  if @cols_to_drop;
-        $param{add}   = \@cols_to_add   if @cols_to_add;
-        $param{alter} = \@cols_to_alter if @cols_to_alter;
-        $param{fix}   = $fix_class;
-        $param{index} = \@cols_to_index if @cols_to_index;
+        $param{drop_column}  = \@cols_to_drop  if @cols_to_drop;
+        $param{add_column}   = \@cols_to_add   if @cols_to_add;
+        $param{alter_column} = \@cols_to_alter if @cols_to_alter;
+        $param{index_column} = \@cols_to_index if @cols_to_index;
+        $param{drop_index}   = \@idxs_to_drop  if @idxs_to_drop;
+        $param{fix}          = $fix_class;
         if (   ( @cols_to_add && !$ddl->can_add_column )
             || ( @cols_to_alter && !$ddl->can_alter_column )
             || ( @cols_to_drop  && !$ddl->can_drop_column ) )
@@ -569,6 +587,8 @@ sub post_drop_column   {1}
 sub pre_add_column     {1}
 sub pre_index_column   {1}
 sub post_index_column  {1}
+sub pre_drop_index     {1}
+sub post_drop_index    {1}
 sub pre_schema_upgrade {1}
 
 # issued last, after all table creation...
@@ -737,10 +757,11 @@ sub core_fix_type {
     return 1 unless $result;
     return 1 unless $result->{fix};
 
-    my $alter = $result->{alter};
-    my $add   = $result->{add};
-    my $drop  = $result->{drop};
-    my $index = $result->{index};
+    my $alter_column = $result->{alter_column};
+    my $add_column   = $result->{add_column};
+    my $drop_column  = $result->{drop_column};
+    my $index_column = $result->{index_column};
+    my $drop_index   = $result->{drop_index};
 
     my $driver = $class->driver;
     my $ddl    = $driver->dbd->ddl_class;
@@ -748,26 +769,32 @@ sub core_fix_type {
     push @stmts, sub { $self->pre_upgrade_class($class) };
     push @stmts, $ddl->upgrade_begin($class);
     push @stmts, sub { $self->pre_create_table($class) };
-    push @stmts, sub { $self->pre_add_column( $class, $add ) }
-        if $add;
-    push @stmts, sub { $self->pre_alter_column( $class, $alter ) }
+    push @stmts, sub { $self->pre_add_column( $class, $add_column ) }
+        if $add_column;
+    push @stmts, sub { $self->pre_alter_column( $class, $alter_column ) }
 
-        if $alter;
-    push @stmts, sub { $self->pre_drop_column( $class, $drop ) }
-        if $drop;
-    push @stmts, sub { $self->pre_index_column( $class, $index ) }
-        if $index;
+        if $alter_column;
+    push @stmts, sub { $self->pre_drop_column( $class, $drop_column ) }
+        if $drop_column;
+    push @stmts, sub { $self->pre_index_column( $class, $index_column ) }
+        if $index_column;
+    push @stmts, sub { $self->pre_drop_index( $class, $drop_index ) }
+        if $drop_index;
     push @stmts, $ddl->fix_class($class);
+    push @stmts, sub { $ddl->drop_index( $class, $drop_index ) }
+        if $drop_index;
     push @stmts, sub { $self->post_create_table($class) };
-    push @stmts, sub { $self->post_add_column( $class, $add ) }
-        if $add;
-    push @stmts, sub { $self->post_alter_column( $class, $alter ) }
+    push @stmts, sub { $self->post_add_column( $class, $add_column ) }
+        if $add_column;
+    push @stmts, sub { $self->post_alter_column( $class, $alter_column ) }
 
-        if $alter;
-    push @stmts, sub { $self->post_drop_column( $class, $drop ) }
-        if $drop;
-    push @stmts, sub { $self->post_index_column( $class, $index ) }
-        if $index;
+        if $alter_column;
+    push @stmts, sub { $self->post_drop_column( $class, $drop_column ) }
+        if $drop_column;
+    push @stmts, sub { $self->post_index_column( $class, $index_column ) }
+        if $index_column;
+    push @stmts, sub { $self->post_drop_index( $class, $drop_index ) }
+        if $drop_index;
     push @stmts, $ddl->upgrade_end($class);
     push @stmts, sub { $self->post_upgrade_class($class) };
     $self->run_statements( $class, @stmts );
@@ -786,9 +813,9 @@ sub core_column_action {
     my $columns = $result->{$action};
     return 1 unless $columns;
 
-    my $pre_method  = "pre_${action}_column";
-    my $post_method = "post_${action}_column";
-    my $method      = "${action}_column";
+    my $pre_method  = "pre_${action}";
+    my $post_method = "post_${action}";
+    my $method      = $action;
 
     my $driver = $class->driver;
     my $ddl    = $driver->dbd->ddl_class;
@@ -906,6 +933,7 @@ sub core_finish {
                         "User '[_1]' upgraded database to version [_2]",
                         $user->name, $cur_schema
                     ),
+                    level    => MT::Log::NOTICE(),
                     category => 'upgrade',
                 }
             );
@@ -937,6 +965,7 @@ sub core_finish {
                             $plugin->version || '-',
                             $ver
                         ),
+                        level    => MT::Log::NOTICE(),
                         category => 'upgrade',
                         class    => 'plugin',
                     }
@@ -959,6 +988,7 @@ sub core_finish {
                             $plugin->version || '-',
                             $ver
                         ),
+                        level    => MT::Log::NOTICE(),
                         category => 'install',
                         class    => 'plugin',
                     }
@@ -971,11 +1001,13 @@ sub core_finish {
         $cfg->PluginSchemaVersion( $plugin_schema, 1 );
     }
 
+    my $version_upgraded;
     my $cur_version = MT->version_number;
     my $cur_rel     = MT->release_number;
     if ( !defined( $cfg->MTVersion ) || ( $cur_version > $cfg->MTVersion ) ) {
         $cfg->MTVersion( $cur_version, 1 );
         $cfg->MTReleaseNumber( $cur_rel, 1 );
+        $version_upgraded = 1;
     }
     elsif (
         !defined( $cfg->MTReleaseNumber )
@@ -984,6 +1016,15 @@ sub core_finish {
         )
     {
         $cfg->MTReleaseNumber( $cur_rel, 1 );
+        $version_upgraded = 1;
+    }
+    if ($cfg->NotifyUpgrade && $version_upgraded) {
+        MT->log({
+            message  => MT->translate("Movable Type has been upgraded to version [_1].", MT->release_version_id),
+            level    => MT::Log::NOTICE(),
+            class    => 'system',
+            category => 'upgrade',
+        });
     }
     $cfg->save_config unless $DryRun;
 

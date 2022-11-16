@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -110,6 +110,20 @@ sub fields {
                     }
                     $obj->data($obj_data);
                 }
+            },
+            schema => {
+                type       => 'object',
+                properties => {
+                    data => {
+                        'oneOf' => [
+                            { type => 'string' },
+                            { type => 'array', items => { type => 'string' } },
+                        ],
+                    },
+                    id    => { type => 'string' },
+                    label => { type => 'string' },
+                    type  => { type => 'string' },
+                },
             },
         },
         {   name  => 'date',

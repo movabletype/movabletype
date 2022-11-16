@@ -19,9 +19,6 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
-use MT::Util qw(archive_file_for);
-use File::Basename qw(dirname);
-use MIME::Base64;
 use Storable qw(dclone);
 
 $test_env->prepare_fixture('db_data');

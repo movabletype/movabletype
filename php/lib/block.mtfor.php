@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -18,7 +18,7 @@ function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
                : 0);
         $end = array_key_exists('end', $args) ? $args['end']
             : (array_key_exists('to', $args) ? $args['to'] : null);
-        $var = $args['var'];
+        $var = isset($args['var']) ? $args['var'] : null;
 
         if ($end === null) {
             $content = '';

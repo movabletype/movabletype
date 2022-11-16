@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -212,15 +212,35 @@ sub archive_contents_count {
 
     return $self->_getset_coderef( 'archive_contents_count', @_ )
         if ref($self) eq __PACKAGE__;
+    my $count = MT->model('content_data')->count( $self->archive_contents_count_params(@_) );
+}
+
+sub alternative_content {
+    my ( $self, $params ) = @_;
+    my ( $terms, $opts ) = $self->archive_contents_count_params($params);
+    my $content_data = $params->{ContentData} or return;
+    $terms->{id} = { op => '!=', value => $content_data->id };
+    $opts->{limit} = 1;
+    my $similar_content_data = MT->model('content_data')->load( $terms, $opts );
+}
+
+sub archive_contents_count_params {
+    my $self = shift;
 
     my ($params)     = @_;
     my $blog         = $params->{Blog};
     my $at           = $params->{ArchiveType};
     my $ts           = $params->{Timestamp};
     my $cat          = $params->{Category};
-    my $auth         = $params->{Author};
+    my $author       = $params->{Author};
     my $map          = $params->{TemplateMap};
     my $content_data = $params->{ContentData};
+
+    my $blog_id   = $blog && ref $blog ? $blog->id : $blog;
+    my $cat_id    = $cat && ref $cat ? $cat->id : $cat;
+    my $author_id = $author && ref $author ? $author->id : $author;
+
+    my $content_type_id = $content_data ? $content_data->content_type_id : undef;
 
     my ( $start, $end );
     if ($ts) {
@@ -238,17 +258,14 @@ sub archive_contents_count {
         && $map ? $map->dt_field_id : '';
 
     require MT::ContentStatus;
-    my $count = MT->model('content_data')->count(
-        {   blog_id => $blog->id,
+    return (
+        {   blog_id => $blog_id,
             status  => MT::ContentStatus::RELEASE(),
-            (   $content_data
-                ? ( content_type_id => $content_data->content_type_id )
-                : ()
-            ),
+            (   $content_type_id ? ( content_type_id => $content_type_id ) : () ),
             (   !$dt_field_id && $ts ? ( authored_on => [ $start, $end ] )
                 : ()
             ),
-            ( $auth ? ( author_id => $auth->id ) : () ),
+            ( $author_id ? ( author_id => $author_id ) : () ),
         },
         {   (   !$dt_field_id && $ts ? ( range_incl => { authored_on => 1 } )
                 : ()
@@ -258,9 +275,9 @@ sub archive_contents_count {
                     ? ( MT::ContentFieldIndex->join_on(
                             'content_data_id',
                             {   content_field_id => $cat_field_id,
-                                value_integer    => $cat->id
+                                value_integer    => $cat_id
                             },
-                            { alias => 'dt_cf_idx' }
+                            { alias => 'cat_cf_idx' }
                         )
                         )
                     : ()
@@ -279,7 +296,7 @@ sub archive_contents_count {
                                     }
                                 ],
                             ],
-                            { alias => 'cat_cf_idx' }
+                            { alias => 'dt_cf_idx' }
                         )
                         )
                     : ()
@@ -287,7 +304,6 @@ sub archive_contents_count {
             ]
         }
     );
-    return $count;
 }
 
 sub does_publish_file {
@@ -319,7 +335,7 @@ sub get_content {
     shift->_getset_coderef( 'get_content', @_ );
 }
 
-sub _get_preferred_map {
+sub get_preferred_map {
     my $self = shift;
     my ($args) = @_;
     $args ||= {};
@@ -329,6 +345,12 @@ sub _get_preferred_map {
     return $map if $self->_is_valid_map( $map, $content_type_id );
 
     return $self->_search_preferred_map($args);
+}
+
+sub _get_preferred_map {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8', alterative => 'get_preferred_map');
+    shift->get_preferred_map(@_);
 }
 
 sub _is_valid_map {
@@ -355,29 +377,37 @@ sub _search_preferred_map {
     my $self = shift;
     my ($args) = @_;
     $args ||= {};
-    my $archive_type    = $args->{archive_type} || $self->name;
-    my $blog_id         = $args->{blog_id};
-    my $content_type_id = $args->{content_type_id};
 
-    my $map_args
-        = ( $self->_is_contenttype_archiver && $content_type_id )
-        ? +{
-        join => MT->model('template')->join_on(
-            undef,
-            {   id              => \'= templatemap_template_id',
-                content_type_id => $content_type_id,
+    my $archive_type = $args->{archive_type} || $self->name;
+    my $blog_id      = $args->{blog_id};
+    my $ct_id        = $args->{content_type_id};
+    require MT::Request;
+    my $cache_map = MT::Request->instance->cache('maps') || MT::Request->instance->cache('maps', {});
+    my $cache_key = join(':', $blog_id, $ct_id ? $ct_id : (), $self->name);
+    my $map       = $cache_map->{$cache_key};
+
+    if (!$map) {
+        my $map_args = ($self->_is_contenttype_archiver && $ct_id)
+            ? +{
+            join => MT->model('template')->join_on(
+                undef,
+                {
+                    id              => \'= templatemap_template_id',
+                    content_type_id => $ct_id,
+                },
+            ),
+            }
+            : undef;
+
+        $map = MT->model('templatemap')->load({
+                archive_type => $archive_type,
+                blog_id      => $blog_id,
+                is_preferred => 1,
             },
-        ),
-        }
-        : undef;
-
-    my $map = MT->model('templatemap')->load(
-        {   archive_type => $archive_type,
-            blog_id      => $blog_id,
-            is_preferred => 1,
-        },
-        $map_args || (),
-    );
+            $map_args || (),
+        );
+        $cache_map->{$cache_key} = $map if $map;
+    }
     return $map;
 }
 

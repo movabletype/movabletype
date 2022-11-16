@@ -1,12 +1,37 @@
-CodeMirror.defineMode("pascal", function(config) {
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror"));
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function(CodeMirror) {
+"use strict";
+
+CodeMirror.defineMode("pascal", function() {
   function words(str) {
     var obj = {}, words = str.split(" ");
     for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
     return obj;
   }
-  var keywords = words("and array begin case const div do downto else end file for forward integer " +
-                       "boolean char function goto if in label mod nil not of or packed procedure " +
-                       "program record repeat set string then to type until var while with");
+  var keywords = words(
+    "absolute and array asm begin case const constructor destructor div do " +
+    "downto else end file for function goto if implementation in inherited " +
+    "inline interface label mod nil not object of operator or packed procedure " +
+    "program record reintroduce repeat self set shl shr string then to type " +
+    "unit until uses var while with xor as class dispinterface except exports " +
+    "finalization finally initialization inline is library on out packed " +
+    "property raise resourcestring threadvar try absolute abstract alias " +
+    "assembler bitpacked break cdecl continue cppdecl cvar default deprecated " +
+    "dynamic enumerator experimental export external far far16 forward generic " +
+    "helper implements index interrupt iocheck local message name near " +
+    "nodefault noreturn nostackframe oldfpccall otherwise overload override " +
+    "pascal platform private protected public published read register " +
+    "reintroduce result safecall saveregisters softfloat specialize static " +
+    "stdcall stored strict unaligned unimplemented varargs virtual write");
   var atoms = {"null": true};
 
   var isOperatorChar = /[+\-*&%=<>!?|\/]/;
@@ -25,8 +50,12 @@ CodeMirror.defineMode("pascal", function(config) {
       state.tokenize = tokenComment;
       return tokenComment(stream, state);
     }
-    if (/[\[\]{}\(\),;\:\.]/.test(ch)) {
-      return null
+    if (ch == "{") {
+      state.tokenize = tokenCommentBraces;
+      return tokenCommentBraces(stream, state);
+    }
+    if (/[\[\]\(\),;\:\.]/.test(ch)) {
+      return null;
     }
     if (/\d/.test(ch)) {
       stream.eatWhile(/[\w\.]/);
@@ -46,7 +75,7 @@ CodeMirror.defineMode("pascal", function(config) {
     var cur = stream.current();
     if (keywords.propertyIsEnumerable(cur)) return "keyword";
     if (atoms.propertyIsEnumerable(cur)) return "atom";
-    return "word";
+    return "variable";
   }
 
   function tokenString(quote) {
@@ -73,10 +102,21 @@ CodeMirror.defineMode("pascal", function(config) {
     return "comment";
   }
 
+  function tokenCommentBraces(stream, state) {
+    var ch;
+    while (ch = stream.next()) {
+      if (ch == "}") {
+        state.tokenize = null;
+        break;
+      }
+    }
+    return "comment";
+  }
+
   // Interface
 
   return {
-    startState: function(basecolumn) {
+    startState: function() {
       return {tokenize: null};
     },
 
@@ -92,3 +132,5 @@ CodeMirror.defineMode("pascal", function(config) {
 });
 
 CodeMirror.defineMIME("text/x-pascal", "pascal");
+
+});

@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -44,9 +44,7 @@ my @cfg_candidates = (
     File::Spec->catfile( $ENV{MT_HOME}, 'mt-config.cgi' ),
     File::Spec->catfile( $ENV{MT_HOME}, 'mt.cfg' ),
 );
-unshift( @cfg_candidates,
-    File::Spec->catfile( $ENV{MT_HOME}, $ENV{MT_CONFIG} ) )
-    if $ENV{MT_CONFIG};
+unshift @cfg_candidates, $ENV{MT_CONFIG} if $ENV{MT_CONFIG};
 
 my $cfg_path;
 for my $cfg_candidate (@cfg_candidates) {
@@ -58,9 +56,9 @@ for my $cfg_candidate (@cfg_candidates) {
 
 if ($cfg_path) {
     $cfg_exist = 1;
-    my $file_handle = open( CFG, $cfg_path );
+    my $file_handle = open( my $CFG, "<", $cfg_path );
     my $line;
-    while ( $line = <CFG> ) {
+    while ( $line = <$CFG> ) {
         next if $line !~ /\S/ || $line =~ /^#/;
         if ( $line =~ s/StaticWebPath[\s]*([^\n]*)/$1/ ) {
             $mt_static_path = $line;
@@ -115,11 +113,11 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '7.3.1';
+    $version = '7.9.6';
 }
 my $release_version = '__RELEASE_VERSION_ID__';
 if ( $release_version eq '__RELEASE' . '_VERSION_ID__' ) {
-    $release_version = 'r.4608';
+    $release_version = 'r.5401';
 }
 
 my ( $mt, $LH );
@@ -209,6 +207,40 @@ sub print_http_header {
         print_encode("Connection: close\n");
     }
     print_encode("Content-Type: text/html; charset=utf-8\r\n\r\n");
+}
+
+sub check_imglib {
+    require Config;
+    my %lib = (
+        avif => 'libavif',
+        gif  => 'libgif',
+        jpeg => 'libjpeg',
+        png  => 'libpng',
+        tiff => 'libtiff',
+        webp => 'libwebp',
+    );
+    my @libpaths = split / /, $Config::Config{libpth};
+
+    my %found;
+    FORMAT:
+    for my $format (keys %lib) {
+        for my $libpath (@libpaths) {
+            for my $ext (qw/so dll a/) {
+                my $lib = "$libpath/$lib{$format}.$ext";
+                if (-f $lib) {
+                    $found{$format} = 1;
+                    next FORMAT;
+                }
+            }
+        }
+    }
+    %found;
+}
+
+sub dedupe_and_sort {
+    my @list = @_;
+    my %seen;
+    grep {!$seen{$_->[0]}++} sort {$a->[0] cmp $b->[0] or $b->[1] <=> $a->[1]} @list;
 }
 
 my $invalid = 0;
@@ -445,363 +477,478 @@ HTML
 }
 
 my $is_good = 1;
-my ( @REQ, @DATA, @OPT );
+my (@REQ, @DATA, @OPT);
 
-my @CORE_REQ = (
-    [   'CGI', 0, 1,
-        translate(
-            'CGI is required for all Movable Type application functionality.')
+my @CORE_REQ = ([
+        'HTML::Entities',
+        3.69, 1,
+        translate('HTML::Entities is required by CGI.pm')
+    ],
+);
+
+# core requirements bundled with MT
+push @CORE_REQ, (
+    # 4.11: HTML::Entities
+    [
+        'CGI', 4.11, 1,
+        translate('CGI is required for all Movable Type application functionality.')
     ],
 
-    [   'Image::Size',
-        0, 1,
-        translate(
-            'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).'
-        )
-    ],
-
-    [   'File::Spec',
-        0.8, 1,
-        translate(
-            'File::Spec is required to work with file system path information on all supported operating systems.'
-        )
-    ],
-
-    [   'CGI::Cookie', 0, 1,
+    [
+        'CGI::Cookie', 0, 1,
         translate('CGI::Cookie is required for cookie authentication.')
     ],
 
-    [   'LWP::UserAgent',
-        0, 0,
-        translate(
-            'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.'
-        )
-    ],
-
-    [   'Scalar::Util',
+    [
+        'JSON',
         0, 1,
-        translate(
-            'Scalar::Util is required for initializing Movable Type application.'
-        )
+        translate('JSON is required to use DataAPI, Content Type, and listing framework.')
     ],
-
-    [   'HTML::Entities',
-        3.69, 1,
-        translate(
-            'HTML::Entities is required by CGI.pm'
-        )
-    ],
-
 );
 
-my @CORE_DATA = (
-    [   'DBI', 1.21, 0,
+# core requirements bundled with the Perl core
+push @CORE_REQ, ([
+        'Encode',
+        0, 1,
+        translate('Encode is required to handle multibyte characters correctly.')
+    ],
+
+    [
+        'File::Spec',
+        0.8, 1,
+        translate('File::Spec is required to work with file system path information on all supported operating systems.')
+    ],
+
+    [
+        'List::Util',
+        0, 1,
+        translate('List::Util is required to manipulate a list of numbers.')
+    ],
+
+    [
+        'Storable',
+        0, 0,
+        translate('Storable is required to make deep-copy of complicated data structures.')
+    ],
+);
+
+my @CORE_DATA = ([
+        'DBI', 1.21, 0,
         translate('DBI is required to work with most supported databases.')
     ],
 
-    [   'DBD::mysql',
+    [
+        'DBD::mysql',
         0, 0,
-        translate(
-            'DBI and DBD::mysql are required if you want to use the MySQL database backend.'
-        )
+        translate('DBI and DBD::mysql are required if you want to use the MySQL database backend.')
     ],
 
-    [   'DBD::Pg',
+    [
+        'DBD::Pg',
         1.32, 0,
-        translate(
-            'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.'
-        )
+        translate('DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.')
     ],
 
-    [   'DBD::SQLite',
+    [
+        'DBD::SQLite',
         0, 0,
-        translate(
-            'DBI and DBD::SQLite are required if you want to use the SQLite database backend.'
-        )
+        translate('DBI and DBD::SQLite are required if you want to use the SQLite database backend.')
     ],
 
-    [   'DBD::SQLite2',
+    [
+        'DBD::SQLite2',
         0, 0,
-        translate(
-            'DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.'
-        )
+        translate('DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.')
     ],
 
 );
 
-my @CORE_OPT = (
-    [   'Digest::SHA',
+my @CORE_OPT = ([
+        'FCGI', 0, 0,
+        translate('This module and its dependencies are required to run Movable Type under FastCGI.')
+    ],
+
+    [
+        'Plack', 0, 0,
+        translate('This module and its dependencies are required to run Movable Type under psgi.')
+    ],
+
+    [
+        'CGI::PSGI',
         0, 0,
-        translate(
-            'Digest::SHA is required in order to provide enhanced protection of user passwords.'
-        )
+        translate('This module and its dependencies are required to run Movable Type under psgi.')
     ],
 
-    [   'Plack', 0, 0,
-        translate(
-            'This module and its dependencies are required in order to operate Movable Type under psgi.'
-        )
-    ],
-
-    [   'CGI::PSGI',
+    [
+        'CGI::Parse::PSGI',
         0, 0,
-        translate(
-            'This module and its dependencies are required to run Movable Type under psgi.'
-        )
+        translate('This module and its dependencies are required to run Movable Type under psgi.')
     ],
 
-    [   'CGI::Parse::PSGI',
+    [
+        'XMLRPC::Transport::HTTP::Plack',
         0, 0,
-        translate(
-            'This module and its dependencies are required to run Movable Type under psgi.'
-        )
+        translate('This module and its dependencies are required to run Movable Type under psgi.')
     ],
 
-    [   'XMLRPC::Transport::HTTP::Plack',
+    [
+        'Image::Magick',
         0, 0,
-        translate(
-            'This module and its dependencies are required to run Movable Type under psgi.'
-        )
+        translate('This module is one of the image processors that you can use to create thumbnails of uploaded images.')
     ],
 
-    [   'HTML::Parser',
+    [
+        'Graphics::Magick',
         0, 0,
-        translate(
-            'HTML::Parser is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.'
-        )
+        translate('This module is one of the image processors that you can use to create thumbnails of uploaded images.')
     ],
 
-    [   'SOAP::Lite',
-        0.50, 0,
-        translate(
-            'SOAP::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.'
-        )
+    [
+        'GD', 0, 0,
+        translate('This module is one of the image processors that you can use to create thumbnails of uploaded images.')
     ],
 
-    [   'File::Temp',
+    [
+        'Imager', 0, 0,
+        translate('This module is one of the image processors that you can use to create thumbnails of uploaded images.')
+    ],
+
+    [
+        'Archive::Zip',
         0, 0,
-        translate(
-            'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.'
-        )
+        translate('This module is optional. It is used to manipulate files during backup and restore operations.')
     ],
 
-    [   'List::Util',
-        0, 1,
-        translate(
-            'List::Util is optional; It is needed if you want to use the Publish Queue feature.'
-        )
-    ],
-
-    [   'Image::Magick',
+    [
+        'Authen::SASL',
         0, 0,
-        translate(
-            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.',
-            'Image::Magick'
-        )
+        translate('This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.')
     ],
 
-    [   'GD', 0, 0,
-        translate(
-            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.',
-            'GD'
-        )
-    ],
-
-    [   'Imager', 0, 0,
-        translate(
-            '[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.',
-            'Imager'
-        )
-    ],
-
-    [   'IPC::Run',
+    [
+        'Authen::SASL::XS',
         0, 0,
-        translate(
-            'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.'
-        )
+        translate('This module is optional. It enhances performance of Authen::SASL.')
     ],
 
-    [   'Storable',
+    [
+        'Cache::File',
         0, 0,
-        translate(
-            'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.'
-        )
+        translate('This module is optional. It is used to allow commenters to be authenticated by OpenID.')
     ],
 
-    [   'Crypt::DSA',
+    [
+        'Cache::Memcached',
         0, 0,
-        translate(
-            'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.'
-        )
+        translate('Cache::Memcached and a memcached server are optional. They are used to cache in-memory objects.')
     ],
 
-    [   'Crypt::SSLeay',
+    [
+        'DateTime',
         0, 0,
-        translate(
-            'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.'
-        )
+        translate('This module is optional. It is used to parse date in log files.')
     ],
 
-    [   'Cache::File',
+    [
+        'Digest::SHA1',
         0, 0,
-        translate(
-            'Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.'
-        )
+        translate('This module is optional. It is used to allow commenters to be authenticated by OpenID.')
     ],
 
-    [   'MIME::Base64',
+    [
+        'Email::MIME',
         0, 0,
-        translate(
-            'MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.'
-        )
+        translate('This module and its dependencies are optional. It is an alternative module to create mail.')
     ],
 
-    [   'XML::Atom', 0, 0,
+    [
+        'Filesys::DfPortable',
+        0, 0,
+        translate('This module is optional. It is used to see if the disk is full while backing up.')
+    ],
+
+    [
+        'HTTP::DAV',
+        0, 0,
+        translate('This module is optional. It is used to manipulate files via WebDAV.')
+    ],
+
+    [
+        'IPC::Run',
+        0, 0,
+        translate('IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.')
+    ],
+
+    [
+        'IO::Socket::SSL',
+        0, 0,
+        translate('This module is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.')
+    ],
+
+    [
+        'JSON::XS',
+        0, 0,
+        translate('JSON::XS accelerates JSON processing.')
+    ],
+
+    [
+        'local::lib',
+        0, 0,
+        translate('local::lib is optional. It is used to load modules from different locations.')
+    ],
+
+    [
+        'Log::Log4perl',
+        0, 0,
+        translate('This module is optional. It is used to customize the logging behavior.')
+    ],
+
+    [
+        'Log::Minimal',
+        0, 0,
+        translate('This module is optional. It is used to customize the logging behavior.')
+    ],
+
+    [
+        'LWPx::ParanoidAgent',
+        0, 0,
+        translate('LWPx::ParanoidAgent is an alternative to LWP::UserAgent.')
+    ],
+
+    [
+        'Mozilla::CA',
+        0, 0,
+        translate('This module is required for Google Analytics site statistics and for verification of SSL certificates.')
+    ],
+
+    [
+        'Net::SSLeay',
+        0, 0,
+        translate('This module is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.')
+    ],
+
+    [
+        'Path::Class',
+        0, 0,
+        translate('This module is optional. It is used to manipulate log files.')
+    ],
+
+    [
+        'Sys::MemInfo',
+        0, 0,
+        translate('This module is optional. It is used to see if swap memory is enough while processing background jobs.')
+    ],
+
+    [
+        'Term::Encoding',
+        0, 0,
+        translate('This module is optional. It is used to know the encoding of the terminal to log.')
+    ],
+
+    [
+        'XML::LibXML::SAX',
+        1.70, 0,
+        translate('This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.')
+    ],
+
+    [
+        'XML::Parser', 0, 0,
+        translate('This module is required for XML-RPC API.')
+    ],
+
+    [
+        'XML::SAX::ExpatXS',
+        1.30, 0,
+        translate('This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.')
+    ],
+
+    [
+        'XML::SAX::Expat',
+        0.37, 0,
+        translate('This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.')
+    ],
+
+    [
+        'YAML::Syck',
+        0, 0,
+        translate('YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.')
+    ],
+);
+
+# optional requirements bundled with MT
+push @CORE_OPT, ([
+        'HTTP::Request',
+        0, 0,
+        translate('This module is optional. It is used to download assets from a website.')
+    ],
+
+    [
+        'Image::ExifTool',
+        0, 0,
+        translate('Image::ExifTool is used to manipulate image metadata.')
+    ],
+
+    [
+        'Image::Size',
+        0, 0,
+        translate('Image::Size is sometimes required to determine the size of images in different formats.')
+    ],
+
+    [
+        'JSON::PP',
+        0, 0,
+        translate('JSON::PP is used internally to process JSON by default.')
+    ],
+
+    [
+        'LWP::Protocol::https',
+        0, 0,
+        translate('LWP::Protocol::https is optional. It provides https support for LWP::UserAgent.')
+    ],
+
+    [
+        'LWP::UserAgent',
+        0, 0,
+        translate('LWP::UserAgent is optional. It is used to fetch information from local and external servers.')
+    ],
+
+    [
+        'MIME::Lite',
+        0, 0,
+        translate('MIME::Lite is an alternative module to create mail.')
+    ],
+
+    [
+        'Net::FTP',
+        0, 0,
+        translate('This module is optional. It is used to manipulate files via FTP(S).')
+    ],
+
+    [
+        'Net::FTPSSL',
+        0, 0,
+        translate('This module is optional. It is used to manipulate files via FTPS.')
+    ],
+
+    [
+        'Net::SFTP',
+        0, 0,
+        translate('This module is optional. It is used to manipulate files via SFTP.')
+    ],
+
+    [
+        'TheSchwartz',
+        0, 0,
+        translate('This module is required to run background jobs.')
+    ],
+
+    [
+        'URI',
+        0, 0,
+        translate('This module is sometimes used to parse URI.')
+    ],
+
+    [
+        'XML::Atom', 0, 0,
         translate('XML::Atom is required in order to use the Atom API.')
     ],
 
-    [   'Cache::Memcached',
+    [
+        'XMLRPC::Lite',
+        0.50, 0,
+        translate('XMLRPC::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.')
+    ],
+
+    [
+        'XML::SAX',
         0, 0,
-        translate(
-            'Cache::Memcached and a memcached server are required to use in-memory object caching on the servers where Movable Type is deployed.'
-        )
+        translate('XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.')
     ],
 
-    [   'Archive::Tar',
+    [
+        'XML::Simple',
         0, 0,
-        translate(
-            'Archive::Tar is required in order to manipulate files during backup and restore operations.'
-        )
+        translate('XML::Simple is optional. It is used to parse configuration file of the IIS.')
     ],
 
-    [   'IO::Compress::Gzip',
+    [
+        'XML::XPath',
         0, 0,
-        translate(
-            'IO::Compress::Gzip is required in order to compress files during backup operations.'
-        )
+        translate('XML::XPath is required if you want to use the Atom API.')
     ],
 
-    [   'IO::Uncompress::Gunzip',
+    [
+        'YAML::Tiny',
         0, 0,
-        translate(
-            'IO::Uncompress::Gunzip is required in order to decompress files during restore operation.'
-        )
+        translate('YAML::Tiny is the default YAML parser.')
     ],
+);
 
-    [   'Archive::Zip',
+# optional requirements bundled with the Perl core
+push @CORE_OPT, ([
+        'Archive::Tar',
         0, 0,
-        translate(
-            'Archive::Zip is required in order to manipulate files during backup and restore operations.'
-        )
+        translate('This module is optional. It is used to manipulate files during backup and restore operations.')
     ],
 
-    [   'XML::SAX',
+    [
+        'Digest::MD5', 0, 0,
+        translate('This module is used to make checksums.')
+    ],
+
+    [
+        'Digest::SHA',
         0, 0,
-        translate(
-            'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.'
-        )
+        translate('Digest::SHA is required in order to provide enhanced protection of user passwords.')
     ],
 
-    [   'Digest::SHA1',
+    [
+        'File::Temp',
         0, 0,
-        translate(
-            'Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.'
-        )
+        translate('File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.')
     ],
 
-    [   'Net::SMTP',
+    [
+        'IO::Compress::Gzip',
         0, 0,
-        translate(
-            'Net::SMTP is required in order to send mail via an SMTP Server.'
-        )
+        translate('IO::Compress::Gzip is required in order to compress files during a backup operation.')
     ],
 
-    [   'Authen::SASL',
+    [
+        'IO::Uncompress::Gunzip',
         0, 0,
-        translate(
-            'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.'
-        )
+        translate('IO::Uncompress::Gunzip is required in order to decompress files during a restore operation.')
     ],
 
-    [   'IO::Socket::SSL',
+    [
+        'MIME::Base64',
         0, 0,
-        translate(
-            'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.'
-        )
+        translate('MIME::Base64 is required to send mail and handle blobs during backup/restore operations.')
     ],
 
-    [   'Net::SSLeay',
+    [
+        'Net::SMTP',
         0, 0,
-        translate(
-            'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.'
-        )
+        translate('Net::SMTP is required in order to send mail via an SMTP server.')
     ],
 
-    [   'Safe', 0, 0,
-        translate(
-            'This module is used in a test attribute for the MTIf conditional tag.'
-        )
+    [
+        'Safe', 0, 0,
+        translate('This module is used in a test attribute for the MTIf conditional tag.')
     ],
 
-    [   'Digest::MD5', 0, 0,
-        translate('This module is used by the Markdown text filter.')
+    # 1.10: looks_like_number
+    [
+        'Scalar::Util',
+        1.10, 0,
+        translate('Scalar::Util is required to avoid memory leaks.')
     ],
 
-    [   'Text::Balanced',
+    [
+        'Time::HiRes',
         0, 0,
-        translate(
-            'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.'
-        )
+        translate('This module is required for profiling.')
     ],
-
-    [   'XML::Parser', 0, 0,
-        translate('This module required for action streams.')
-    ],
-
-    [   'XML::SAX::ExpatXS',
-        1.30, 0,
-        translate(
-            '[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation',
-            'XML::SAX::ExpatXS'
-        )
-    ],
-
-    [   'XML::SAX::Expat',
-        0.37, 0,
-        translate(
-            '[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation',
-            'XML::SAX::Expat'
-        )
-    ],
-
-    [   'XML::LibXML::SAX',
-        1.70, 0,
-        translate(
-            '[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation',
-            'XML::LibXML::SAX'
-        )
-    ],
-
-    [   'Mozilla::CA',
-        0, 0,
-        translate(
-            'This module is required for Google Analytics site statistics and for verification of SSL certificates.'
-        )
-    ],
-    [   'Time::HiRes',
-        0, 0,
-        translate(
-            'This module is required for executing run-periodic-tasks.'
-        )
-    ],
-    [   'YAML::Syck',
-        0, 0,
-        translate(
-            '[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
-            'YAML::Syck'
-        )
-    ],
-
 );
 
 use Cwd;
@@ -836,14 +983,11 @@ print_encode( trans_templ(<<INFO) );
 <h2 id="system-info"><__trans phrase="System Information"></h2>
 $perl_ver_check
 INFO
-if ($version) {
+if ($release_version) {
 
-    # sanitize down to letters numbers dashes and period
-    $version =~ s/[^a-zA-Z0-9\-\.]//g;
-    $version = $cgi->escapeHTML($version);
     print_encode( trans_templ(<<INFO) );
 <ul class="list-unstyled version">
-    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$release_version ($version)</code></li>
+    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$release_version</code></li>
 </ul>
 INFO
 }
@@ -871,9 +1015,8 @@ if ( $server !~ m/psgi/i ) {
 ## isn't a perfect test for running under cgiwrap/suexec, but it
 ## is a pretty good test.
     my $TMP = "test$$.tmp";
-    local *FH;
-    if ( open( FH, ">$TMP" ) ) {
-        close FH;
+    if ( open( my $FH, ">", $TMP ) ) {
+        close $FH;
         unlink($TMP);
         print_encode(
             trans_templ(
@@ -935,6 +1078,39 @@ if ($mt) {
 @REQ  = @CORE_REQ  unless @REQ;
 @DATA = @CORE_DATA unless @DATA;
 @OPT  = @CORE_OPT  unless @OPT;
+
+@REQ  = dedupe_and_sort(@REQ);
+@DATA = dedupe_and_sort(@DATA);
+@OPT  = dedupe_and_sort(@OPT);
+
+my @new_data;
+for (@DATA) {
+    if ($_->[0] eq 'DBI') {
+        unshift @new_data, $_;
+    } else {
+        push @new_data, $_;
+    }
+}
+@DATA = @new_data;
+
+my %imglib = check_imglib();
+my %extra = (
+    'Image::Magick' => sub {
+        require Image::Magick;
+        my $formats = join ", ", map {$imglib{$_} ? "<strong>$_</strong>" : $_} sort Image::Magick->QueryFormat;
+        qq{<__trans phrase="Supported format: [_1]" params="$formats">};
+    },
+    'Graphics::Magick' => sub {
+        require Graphics::Magick;
+        my $formats = join ", ", map {$imglib{$_} ? "<strong>$_</strong>" : $_} sort Graphics::Magick->QueryFormat;
+        qq{<__trans phrase="Supported format: [_1]" params="$formats">};
+    },
+    'Imager' => sub {
+        require Imager;
+        my $formats = join ", ", map {$imglib{$_} ? "<strong>$_</strong>" : $_} sort Imager->read_types;
+        qq{<__trans phrase="Supported format: [_1]" params="$formats">};
+    },
+);
 
 my $i = 0;
 for my $list ( \@REQ, \@DATA, \@OPT ) {
@@ -1057,6 +1233,13 @@ MSG
                         . qq{"></p>\n\n}
                 )
             );
+            if ($extra{$mod} && ref $extra{$mod} eq 'CODE') {
+                if (my $extra_desc = eval { $extra{$mod}->() }) {
+                    print_encode(
+                        trans_templ(qq{<p class="extra">$extra_desc</p>\n\n})
+                    );
+                }
+            }
         }
         print_encode("</div>\n") if $mod =~ m/^DBD::/;
         $i++;

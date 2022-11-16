@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -204,30 +204,11 @@ sub upgrade_functions {
                 label =>
                     'Assigning a language to each blog to help choose appropriate display format for dates...',
                 code => sub {
-                    my @supporteds
-                        = map { $_->{l_tag} } @{ MT::I18N::languages_list() };
+                    my %supported = map { lc($_->{l_tag}) => 1 } @{ MT::I18N::languages_list() };
                     my $language = $_[0]->language;
                     $_[0]->date_language($language);
-                    $_[0]->language(
-                        ( grep { $_ eq $language } @supporteds )
-                        ? $language
-                        : MT->config('DefaultLanguage')
-                    );
+                    $_[0]->language($supported{ lc($language) } ? $language : MT->config('DefaultLanguage'));
                 },
-                sql => <<__SQL__,
-UPDATE mt_blog SET
-    blog_date_language = blog_language,
-    blog_language = CASE
-        WHEN blog_language IN(
-            @{  [   join( ',',
-                        map { "'" . $_->{l_tag} . "'" }
-                            @{ MT::I18N::languages_list() } )
-                ]
-                }
-            )
-            THEN blog_language
-        ELSE '@{[ MT->config('DefaultLanguage') ]}' END;
-__SQL__
             },
         },
         'v5_add_nortification_dashboard_widget' => {

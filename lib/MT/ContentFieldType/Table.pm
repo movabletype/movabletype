@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -44,7 +44,7 @@ sub data_load_handler {
     if ( defined $value && $value ne '' ) {
         my $str = MT::Util::remove_html($value);
         $str =~ s/(\s|\r|\n)//g;
-        $value = undef unless $str;
+        $value = undef unless defined $str && $str ne '';
     }
     else {
         $value = undef;

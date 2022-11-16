@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -62,6 +62,7 @@ sub make_website {
         description              => "Narnia None Test Website",
         custom_dynamic_templates => 'custom',
         convert_paras            => 1,
+        allow_data_api           => 1,
         allow_reg_comments       => 1,
         allow_unreg_comments     => 0,
         allow_pings              => 1,
@@ -120,6 +121,7 @@ sub make_blog {
         description              => "Narnia None Test Blog",
         custom_dynamic_templates => 'custom',
         convert_paras            => 1,
+        allow_data_api           => 1,
         allow_reg_comments       => 1,
         allow_unreg_comments     => 0,
         allow_pings              => 1,
@@ -196,7 +198,6 @@ sub make_entry {
         excerpt        => 'A story of a stroll.',
         keywords       => 'keywords',
         created_on     => '19780131074500',
-        authored_on    => '19780131074500',
         modified_on    => '19780131074600',
         authored_on    => '19780131074500',
         author_id      => 1,
@@ -345,9 +346,9 @@ sub make_page {
     require MT::Page;
     my $values = {
         blog_id     => 1,
-        title       => 'Watching the River Flow',
-        text        => 'What the matter with me,',
-        text_more   => 'I don\'t have much to say,',
+        title       => 'But in ourselves, that we are underlings.',
+        text        => 'Men at some time are masters of their fates:',
+        text_more   => 'The fault, dear Brutus, is not in our stars,',
         keywords    => 'no folder',
         excerpt     => 'excerpt',
         created_on  => '19780131074500',

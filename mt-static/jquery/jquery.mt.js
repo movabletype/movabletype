@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2015 Six Apart Ltd. All Rights Reserved.
+ * Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -1706,7 +1706,7 @@ function getNextIframeId() {
 
 function getIframe() {
   var id = getNextIframeId();
-  var html = '<iframe class="mt-dialog-iframe embed-responsive-item" name="modal-'+id+'"></iframe>';
+  var html = '<iframe id="mt-dialog-iframe" class="embed-responsive-item" name="modal-'+id+'"></iframe>';
   var $iframe = window.top.jQuery(html);
   $iframe.on('load', resizeModal);
   return $iframe;

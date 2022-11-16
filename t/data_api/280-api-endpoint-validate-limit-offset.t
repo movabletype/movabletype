@@ -57,7 +57,8 @@ BEGIN {
 
 use MT::Test::DataAPI;
 use MT::Test::Permission;
-use File::Path 'remove_tree';
+use MT::Placement;
+use Time::Piece;
 
 $test_env->prepare_fixture('db_data');
 
@@ -78,6 +79,53 @@ my $mock_stats = Test::MockModule->new('MT::Stats');
 $mock_stats->mock( 'readied_provider',
     sub {'MT::Test::DataAPI::Stats::Provider'} );
 
+my @extra_permissions;
+if ($test_env->addon_exists('Sync.pack')) {
+    @extra_permissions = qw(manage_content_sync);
+}
+
+for my $i (1..75) {
+    my $epoch = time + 24 * 60 * 60 * ($i - 365);
+    my $date  = Time::Piece->new($epoch)->strftime('%Y%m%d%H%M%S');
+    my $entry = MT::Test::Permission->make_entry(
+        title       => "Extra Entry $i",
+        text        => "Extra Entry Body $i",
+        author_id   => $author->id,
+        blog_id     => $blog->id,
+        authored_on => $date,
+        created_on  => $date,
+        modified_on => $date,
+        status      => MT::Entry::RELEASE(),
+    );
+    $entry->save;
+    my $placement = MT::Placement->new(
+        entry_id    => $entry->id,
+        blog_id     => $blog->id,
+        category_id => $cat->id,
+        is_primary  => 1,
+    );
+    $placement->save;
+
+    my $page = MT::Test::Permission->make_page(
+        title       => "Extra Page $i",
+        text        => "Extra Page Body $i",
+        author_id   => $author->id,
+        blog_id     => $blog->id,
+        authored_on => $date,
+        created_on  => $date,
+        modified_on => $date,
+        status      => MT::Entry::RELEASE(),
+    );
+    $page->save;
+    my $folder_placement = MT::Placement->new(
+        entry_id    => $page->id,
+        blog_id     => $blog->id,
+        category_id => $folder->id,
+        is_primary  => 1,
+    );
+    $folder_placement->save;
+}
+
 my $suite = suite();
 test_data_api($suite);
 
@@ -87,104 +135,67 @@ sub suite {
     return +[
 
         # list_entries_for_category - limit - zero
-        {   path     => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path     => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method   => 'GET',
             params   => { limit => 0, },
             code     => 200,
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
-
-                my @entries = MT->model('entry')->load(
-                    { class => 'entry' },
-                    {   join => MT->model('placement')->join_on(
-                            'entry_id',
-                            {   blog_id     => $cat->blog_id,
-                                category_id => $cat->id,
-                            },
-                        ),
-                    }
-                );
-
-                is( $result->{totalResults},
-                    scalar @entries,
-                    'Category has '
-                        . scalar @entries
-                        . 'entries - limit - one'
-                );
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 50, "hard coded limit (50) is applied" );
+                is $result->{items}[0]{title} => 'Extra Entry 75', "first entry is the latest";
             },
         },
 
         # list_entries_for_category - offset - zero
-        {   path     => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path     => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method   => 'GET',
             params   => { offset => 0, },
             code     => 200,
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
-
-                my @entries = MT->model('entry')->load(
-                    { class => 'entry' },
-                    {   join => MT->model('placement')->join_on(
-                            'entry_id',
-                            {   blog_id     => $cat->blog_id,
-                                category_id => $cat->id,
-                            },
-                        ),
-                        limit  => 50,
-                        offset => 0,
-                    }
-                );
-
-                is( $result->{totalResults},
-                    scalar @entries,
-                    'Category has '
-                        . scalar @entries
-                        . 'entries - limit - one'
-                );
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 10, "default limit (10) is applied" );
+                is $result->{items}[0]{title} => 'Extra Entry 75', "first entry is the latest";
             },
         },
 
         # list_entries_for_category - limit - one
-        {   path     => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path     => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method   => 'GET',
             params   => { limit => 1, },
             code     => 200,
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
-
-                my @entries = MT->model('entry')->load(
-                    { class => 'entry' },
-                    {   join => MT->model('placement')->join_on(
-                            'entry_id',
-                            {   blog_id     => $cat->blog_id,
-                                category_id => $cat->id,
-                            },
-                        ),
-                    }
-                );
-
-                is( $result->{totalResults},
-                    scalar @entries,
-                    'Category has '
-                        . scalar @entries
-                        . 'entries - limit - one'
-                );
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 1, "param limit (1) is applied" );
+                is $result->{items}[0]{title} => 'Extra Entry 75', "first entry is the latest";
             },
         },
 
         # list_entries_for_category - offset - one
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => 1, },
-            code   => 500,
-            error  => qr/An error occurred while loading objects/,
+            code   => 200,
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 10, "default limit (10) is applied" );
+                is $result->{items}[0]{title} => 'Extra Entry 74', "first entry is the latest but one";
+            },
         },
 
         # list_entries_for_category - limit - '1'*100
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { limit => REPEAT_1, },
             code   => 500,
@@ -193,7 +204,7 @@ sub suite {
         },
 
         # list_entries_for_category - offset - '1'*100
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => REPEAT_1, },
             code   => 500,
@@ -202,7 +213,7 @@ sub suite {
         },
 
         # list_entries_for_category - limit - '0-9'*10
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { limit => CYCLE_0_9, },
             code   => 500,
@@ -211,7 +222,7 @@ sub suite {
         },
 
         # list_entries_for_category - offset - '0-9'*10
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => CYCLE_0_9, },
             code   => 500,
@@ -220,7 +231,7 @@ sub suite {
         },
 
         # list_entries_for_category - limit - Int32 Min
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { limit => INT32_MIN, },
             code   => 500,
@@ -228,7 +239,7 @@ sub suite {
         },
 
         # list_entries_for_category - offset - Int32 Min
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => INT32_MIN, },
             code   => 500,
@@ -236,44 +247,36 @@ sub suite {
         },
 
         # list_entries_for_category - limit - Int32 Max
-        {   path     => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path     => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method   => 'GET',
             params   => { limit => INT32_MAX, },
             code     => 200,
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
-
-                my @entries = MT->model('entry')->load(
-                    { class => 'entry' },
-                    {   join => MT->model('placement')->join_on(
-                            'entry_id',
-                            {   blog_id     => $cat->blog_id,
-                                category_id => $cat->id,
-                            },
-                        ),
-                    }
-                );
-
-                is( $result->{totalResults},
-                    scalar @entries,
-                    'Category has '
-                        . scalar @entries
-                        . 'entries - limit - Int32 Max'
-                );
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 76, "everything is returned as the param limit is larger than the total" );
+                is $result->{items}[0]{title} => 'Extra Entry 75', "first entry is the latest";
             },
         },
 
         # list_entries_for_category - offset - Int32 Max
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => INT32_MAX, },
-            code   => 500,
-            error  => qr/An error occurred while loading objects/,
+            code   => 200,
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 0, "no items because of the offset is too large" );
+            },
         },
 
         # list_entries_for_category - limit - Int64 Min
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { limit => INT64_MIN, },
             code   => 500,
@@ -281,7 +284,7 @@ sub suite {
         },
 
         # list_entries_for_category - offset - Int64 Min
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => INT64_MIN, },
             code   => 500,
@@ -289,7 +292,7 @@ sub suite {
         },
 
         # list_entries_for_category - limit - Int64 Max
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { limit => INT64_MAX, },
             code   => 500,
@@ -298,7 +301,7 @@ sub suite {
         },
 
         # list_entries_for_category - offset - Int64 Max
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => INT64_MAX, },
             code   => 500,
@@ -307,7 +310,7 @@ sub suite {
         },
 
         # list_entries_for_category - limit - Decimal
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { limit => 0.6, },
             code   => 500,
@@ -315,7 +318,7 @@ sub suite {
         },
 
         # list_entries_for_category - offset - Decimal
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => 0.6, },
             code   => 500,
@@ -323,7 +326,7 @@ sub suite {
         },
 
         # list_entries_for_category - limit - index
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { limit => '0e0', },
             code   => 500,
@@ -331,7 +334,7 @@ sub suite {
         },
 
         # list_entries_for_category - offset - index
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => '0e0', },
             code   => 500,
@@ -339,7 +342,7 @@ sub suite {
         },
 
         # list_entries_for_category - limit - Infinity
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { limit => 'inf', },
             code   => 500,
@@ -347,7 +350,7 @@ sub suite {
         },
 
         # list_entries_for_category - offset - Infinity
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => 'inf', },
             code   => 500,
@@ -355,7 +358,7 @@ sub suite {
         },
 
         # list_entries_for_category - limit - ascii only
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { limit => 'a', },
             code   => 500,
@@ -363,7 +366,7 @@ sub suite {
         },
 
         # list_entries_for_category - offset - ascii only
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => 'a', },
             code   => 500,
@@ -371,7 +374,7 @@ sub suite {
         },
 
         # list_entries_for_category - limit - number, ascii and symbol
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params =>
                 { limit => ';waerhpawe8y97342;jrn;fkadsu9p84378325p-', },
@@ -380,7 +383,7 @@ sub suite {
         },
 
         # list_entries_for_category - offset - number, ascii and symbol
-        {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
+        {   path   => '/v2/sites/' . $blog->id . '/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => '324978009-2309j;adjfjk90238475	[\'p;a', },
             code   => 500,
@@ -388,99 +391,67 @@ sub suite {
         },
 
         # list_pages_for_folder - limit - zero
-        {   path     => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path     => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method   => 'GET',
             params   => { limit => 0, },
             code     => 200,
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
-
-                my @pages = MT->model('page')->load(
-                    { class => 'page' },
-                    {   join => MT->model('placement')->join_on(
-                            'entry_id',
-                            {   blog_id     => $folder->blog_id,
-                                category_id => $folder->id,
-                            },
-                        ),
-                    },
-                    limit => 50,
-                );
-
-                is( $result->{totalResults},
-                    scalar @pages,
-                    'Folder has ' . scalar @pages . 'pages'
-                );
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 50, "hard coded limit (50) is applied" );
+                is $result->{items}[0]{title} => 'Extra Page 75', "first page is the latest";
             },
         },
 
         # list_pages_for_folder - offset - zero
-        {   path     => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path     => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method   => 'GET',
             params   => { offset => 0, },
             code     => 200,
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
-
-                my @pages = MT->model('page')->load(
-                    { class => 'page' },
-                    {   join => MT->model('placement')->join_on(
-                            'entry_id',
-                            {   blog_id     => $folder->blog_id,
-                                category_id => $folder->id,
-                            },
-                        ),
-                        limit  => 50,
-                        offset => 0,
-                    }
-                );
-
-                is( $result->{totalResults},
-                    scalar @pages,
-                    'Folder has ' . scalar @pages . ' pages'
-                );
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 10, "default limit (10) is applied" );
+                is $result->{items}[0]{title} => 'Extra Page 75', "first page is the latest";
             },
         },
 
         # list_pages_for_folder - limit - one
-        {   path     => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path     => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method   => 'GET',
             params   => { limit => 1, },
             code     => 200,
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
-
-                my @pages = MT->model('page')->load(
-                    { class => 'page' },
-                    {   join => MT->model('placement')->join_on(
-                            'entry_id',
-                            {   blog_id     => $folder->blog_id,
-                                category_id => $folder->id,
-                            },
-                        ),
-                    },
-                );
-
-                is( $result->{totalResults},
-                    scalar @pages,
-                    'Folders has ' . scalar @pages . ' pages - limit - one'
-                );
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 1, "param limit (1) is applied" );
+                is $result->{items}[0]{title} => 'Extra Page 75', "first page is the latest";
             },
         },
 
         # list_pages_for_folder - offset - one
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => 1, },
-            code   => 500,
-            error  => qr/An error occurred while loading objects/,
+            code   => 200,
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 10, "default limit (10) is applied" );
+                is $result->{items}[0]{title} => 'Extra Page 74', "first page is the latest but one";
+            },
         },
 
         # list_pages_for_folder - limit - '1'*100
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { limit => REPEAT_1, },
             code   => 500,
@@ -489,7 +460,7 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - '1'*100
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => REPEAT_1, },
             code   => 500,
@@ -498,7 +469,7 @@ sub suite {
         },
 
         # list_pages_for_folder - limit - '0-9'*10
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { limit => CYCLE_0_9, },
             code   => 500,
@@ -507,7 +478,7 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - '0-9'*10
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => CYCLE_0_9, },
             code   => 500,
@@ -516,7 +487,7 @@ sub suite {
         },
 
         # list_pages_for_folder - limit - Int32 Min
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { limit => INT32_MIN, },
             code   => 500,
@@ -524,7 +495,7 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - Int32 Min
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => INT32_MIN, },
             code   => 500,
@@ -532,45 +503,36 @@ sub suite {
         },
 
         # list_pages_for_folder - limit - Int32 Max
-        {   path     => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path     => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method   => 'GET',
             params   => { limit => INT32_MAX, },
             code     => 200,
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
-
-                my @pages = MT->model('page')->load(
-                    { class => 'page' },
-                    {   join => MT->model('placement')->join_on(
-                            'entry_id',
-                            {   blog_id     => $folder->blog_id,
-                                category_id => $folder->id,
-                            },
-                        ),
-                        limit => INT32_MAX,
-                    }
-                );
-
-                is( $result->{totalResults},
-                    scalar @pages,
-                    'Folder has '
-                        . scalar @pages
-                        . ' pages - limit - Int32 Max'
-                );
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 76, "everything is returned as the param limit is larger than the total" );
+                is $result->{items}[0]{title} => 'Extra Page 75', "first page is the latest";
             },
         },
 
         # list_pages_for_folder - offset - Int32 Max
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => INT32_MAX, },
-            code   => 500,
-            error  => qr/An error occurred while loading objects/,
+            code   => 200,
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+                # note explain [map {$_->{title}} @{$result->{items}}];
+                is( $result->{totalResults} => 76, "total is 76" );
+                is( @{$result->{items}} => 0, "no items because of the offset is too large" );
+            },
         },
 
         # list_pages_for_folder - limit - Int64 Min
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { limit => INT64_MIN, },
             code   => 500,
@@ -578,7 +540,7 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - Int64 Min
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => INT64_MIN, },
             code   => 500,
@@ -586,7 +548,7 @@ sub suite {
         },
 
         # list_pages_for_folder - limit - Int64 Max
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { limit => INT64_MAX, },
             code   => 500,
@@ -595,7 +557,7 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - Int64 Max
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => INT64_MAX, },
             code   => 500,
@@ -604,7 +566,7 @@ sub suite {
         },
 
         # list_pages_for_folder - limit - Decimal
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { limit => 0.6, },
             code   => 500,
@@ -612,7 +574,7 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - Decimal
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => 0.6, },
             code   => 500,
@@ -620,7 +582,7 @@ sub suite {
         },
 
         # list_pages_for_folder - limit - index
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { limit => '0e0', },
             code   => 500,
@@ -628,7 +590,7 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - index
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => '0e0', },
             code   => 500,
@@ -636,7 +598,7 @@ sub suite {
         },
 
         # list_pages_for_folder - limit - Infinity
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { limit => 'inf', },
             code   => 500,
@@ -644,7 +606,7 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - Infinity
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => 'inf', },
             code   => 500,
@@ -652,7 +614,7 @@ sub suite {
         },
 
         # list_pages_for_folder - limit - ascii only
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { limit => 'a', },
             code   => 500,
@@ -660,7 +622,7 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - ascii only
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => 'a', },
             code   => 500,
@@ -668,7 +630,7 @@ sub suite {
         },
 
         # list_pages_for_folder - limit - number, ascii and symbol
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => {
                 limit =>
@@ -679,7 +641,7 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - number, ascii and symbol
-        {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
+        {   path   => '/v2/sites/' . $blog->id . '/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => 'we07452q39400a-sdf[\'l Slkjd', },
             code   => 500,
@@ -715,6 +677,7 @@ sub suite {
                         'blog' => undef
                     },
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -728,11 +691,13 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '1' }
                     },
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -746,7 +711,8 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '2' }
                     }
@@ -786,6 +752,7 @@ sub suite {
                 'totalResults' => 3,
                 'items'        => [
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -799,11 +766,13 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '1' }
                     },
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -817,7 +786,8 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '2' }
                     }
@@ -903,6 +873,7 @@ sub suite {
                         'blog' => undef
                     },
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -916,11 +887,13 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '1' }
                     },
                     {   'permissions' => [
+                            sort
                             'administer_blog',     'administer_site',
                             'administer_website',  'comment',
                             'create_post',         'create_site',
@@ -934,7 +907,8 @@ sub suite {
                             'manage_users',        'publish_post',
                             'rebuild',             'send_notifications',
                             'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'view_blog_log',
+                            @extra_permissions,
                         ],
                         'blog' => { 'id' => '2' }
                     }
@@ -947,8 +921,11 @@ sub suite {
             method       => 'GET',
             is_superuser => 1,
             params       => { offset => INT32_MAX, },
-            code         => 500,
-            error        => qr/An error occurred while loading objects/,
+            code         => 200,
+            result       => +{
+                'totalResults' => 3,
+                'items'        => [],
+            },
         },
 
         # permission - limit - Int64 Min

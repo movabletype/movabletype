@@ -34,7 +34,7 @@
   </mt:setvarblock>
 
   <mt:setvarblock name="js_include" append="1">
-<script src="<mt:var name="static_uri">a-table.js/build/a-table.js?v=<mt:var name="mt_version_id" escape="html">"></script>
+<script src="<mt:var name="static_uri">a-table.js/build/a-table.js?v=<mt:var name="mt_version_id" escape="html">" charset="utf-8"></script>
   </mt:setvarblock>
 
   <mt:setvarblock name="jq_js_include" append="1">
@@ -67,6 +67,28 @@ if (browserIsFirefox) {
           td: false,
           th: false
         }
+      },
+      message: {
+        mergeCells: '<__trans phrase="merge cell" escape="js">',
+        splitCell: '<__trans phrase="split cell" escape="js">',
+        changeToTh: '<__trans phrase="change to th" escape="js">',
+        changeToTd: '<__trans phrase="change to td" escape="js">',
+        alignLeft: '<__trans phrase="align left" escape="js">',
+        alignCenter: '<__trans phrase="align center" escape="js">',
+        alignRight: '<__trans phrase="align right" escape="js">',
+        addColumnLeft: '<__trans phrase="insert column on the left" escape="js">',
+        addColumnRight: '<__trans phrase="insert column on the right" escape="js">',
+        removeColumn: '<__trans phrase="remove column" escape="js">',
+        addRowTop: '<__trans phrase="insert row above" escape="js">',
+        addRowBottom: '<__trans phrase="insert row below" escape="js">',
+        removeRow: '<__trans phrase="remove row" escape="js">',
+        source: '<__trans phrase="Source" escape="js">',
+        mergeCellError1: '<__trans phrase="All possible cells should be selected so to merge cells into one" escape="js">',
+        mergeCellConfirm1: '<__trans phrase="The top left cell's value of the selected range will only be saved. Are you sure you want to continue?" escape="js">',
+        pasteError1: '<__trans phrase="You can't paste here" escape="js">',
+        splitError1: '<__trans phrase="Cell is not selected" escape="js">',
+        splitError2: '<__trans phrase="Only one cell should be selected" escape="js">',
+        splitError3: '<__trans phrase="You can't split the cell anymore" escape="js">',
       }
     }
   );

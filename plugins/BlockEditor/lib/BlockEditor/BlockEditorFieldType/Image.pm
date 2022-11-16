@@ -1,5 +1,5 @@
 
-# Movable Type (r) (C) 2006-2017 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,11 +14,30 @@ use BlockEditor;
 use MT::CMS::Asset;
 use MT::Util;
 my $default_thumbnail_size = 60;
+my $limit = 9;
 
 sub dialog_list_asset {
     my $app = shift;
 
     return dialog_asset_modal( $app, @_ ) unless $app->param('json');
+
+    $app->validate_param({
+        asset_id      => [qw/ID/],
+        blog_id       => [qw/ID/],
+        d             => [qw/MAYBE_STRING/],
+        dialog        => [qw/MAYBE_STRING/],
+        edit          => [qw/MAYBE_STRING/],
+        edit_field    => [qw/MAYBE_STRING/],
+        ext_from      => [qw/MAYBE_STRING/],
+        ext_to        => [qw/MAYBE_STRING/],
+        filter        => [qw/MAYBE_STRING/],
+        filter_val    => [qw/MAYBE_STRING/],
+        json          => [qw/MAYBE_STRING/],
+        no_insert     => [qw/MAYBE_STRING/],
+        offset        => [qw/MAYBE_STRING/],
+        saved_deleted => [qw/MAYBE_STRING/],
+        search        => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $blog_id    = $app->param('blog_id');
     my $blog_class = $app->model('blog');
@@ -32,7 +51,8 @@ sub dialog_list_asset {
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
-    my %args = ( sort => 'created_on', direction => 'descend', limit => 9 );
+    my %args =
+      ( sort => 'created_on', direction => 'descend', limit => $limit );
 
     my $class_filter;
     my $filter = $app->param('filter') || '';
@@ -61,6 +81,7 @@ sub dialog_list_asset {
     else {
         $terms{class} = '*';    # all classes
     }
+    $args{limit} = $asset_class->count( \%terms ) if ( $app->param('search') );
 
     # identifier => name
     my $classes = MT::Asset->class_labels;
@@ -100,12 +121,42 @@ sub dialog_list_asset {
         my $loop = $param->{object_loop};
         my @new_object_loop;
 
-        for my $i ( 0 .. 8 ) {
-            if ( $loop->[$i] ) {
-                $new_object_loop[$i] = $loop->[$i] if $loop->[$i];
+        if ( $app->param('search') ) {
+            my $offset = $app->param('offset') ? $app->param('offset') : 0;
+            $offset += 0;
+            my $d = $app->param('d') || 0;
+            $d =~ s/\D//g;
+            my $row_index = 0;
+            for my $i ( $offset .. ( $offset + $limit - 1 ) ) {
+                if ( $loop->[$i] ) {
+                    $new_object_loop[$row_index] = $loop->[$i] if $loop->[$i];
+                }
+                else {
+                    $new_object_loop[$row_index] = {};
+                }
+                $row_index++;
             }
-            else {
-                $new_object_loop[$i] = {};
+            my $pager = {
+                offset        => $offset,
+                limit         => $limit,
+                rows          => scalar @new_object_loop,
+                d             => $d,
+                listTotal     => scalar @{$loop},
+                chronological => $param->{list_noncron} ? 0 : 1,
+                return_args => MT::Util::encode_html( $app->make_return_args ),
+                method      => $app->request_method,
+            };
+            $param->{object_type} = 'asset';
+            $param->{pager_json}  = $pager;
+        }
+        else {
+            for my $i ( 0 .. ( $limit - 1 ) ) {
+                if ( $loop->[$i] ) {
+                    $new_object_loop[$i] = $loop->[$i] if $loop->[$i];
+                }
+                else {
+                    $new_object_loop[$i] = {};
+                }
             }
         }
         $param->{object_loop} = \@new_object_loop;
@@ -154,6 +205,22 @@ sub dialog_list_asset {
 
 sub dialog_asset_modal {
     my $app = shift;
+
+    $app->validate_param({
+        asset_id     => [qw/ID/],
+        asset_select => [qw/MAYBE_STRING/],
+        blog_id      => [qw/ID/],
+        can_multi    => [qw/MAYBE_STRING/],
+        edit         => [qw/MAYBE_STRING/],
+        edit_field   => [qw/MAYBE_STRING/],
+        filter       => [qw/MAYBE_STRING/],
+        filter_val   => [qw/MAYBE_STRING/],
+        next_mode    => [qw/MAYBE_STRING/],
+        no_insert    => [qw/MAYBE_STRING/],
+        options      => [qw/MAYBE_STRING/],
+        search       => [qw/MAYBE_STRING/],
+        upload_mode  => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $blog_id    = $app->param('blog_id');
     my $blog_class = $app->model('blog');
@@ -236,6 +303,14 @@ sub dialog_insert_options {
     my $app    = shift;
     my (%args) = @_;
     my $assets = $args{assets};
+
+    $app->validate_param({
+        blog_id    => [qw/ID/],
+        edit       => [qw/MAYBE_STRING/],
+        edit_field => [qw/MAYBE_STRING/],
+        id         => [qw/IDS/],
+        options    => [qw/MAYBE_STRING/],
+    }) or return;
 
     if ( !$assets ) {
         my $ids = $app->param('id');
@@ -332,9 +407,11 @@ sub dialog_insert_asset {
 
     # Parse JSON.
     my $prefs = $app->param('prefs_json');
-    $prefs =~ s/^"|"$//g;
-    $prefs =~ s/\\"/"/g;
-    $prefs =~ s/\\\\/\\/g;
+    if (MT->config->UseMTCommonJSON) {
+        $prefs =~ s/^"|"$//g;
+        $prefs =~ s/\\"/"/g;
+        $prefs =~ s/\\\\/\\/g;
+    }
     $prefs = eval { MT::Util::from_json($prefs) };
     if ( !$prefs ) {
         return $app->errtrans('Invalid request.');

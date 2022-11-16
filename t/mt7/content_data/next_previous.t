@@ -69,7 +69,7 @@ $test_env->prepare_fixture(
             blog_id         => $ct->blog_id,
             author_id       => 1,
             content_type_id => $ct->id,
-            data            => { $cf->id => $category1->id },
+            data            => { $cf->id => [ $category1->id ] },
         );
     }
 );

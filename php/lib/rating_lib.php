@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,7 +7,7 @@
 
 function get_score(&$ctx, $obj_id, $datasource, $namespace, $user_id) {
     $score = $ctx->mt->db()->fetch_score($namespace, $obj_id, $user_id, $datasource);
-    return $score->objectscore_score;
+    return isset($score) ? $score->objectscore_score : null;
 }
 
 function score_for(&$ctx, $obj_id, $datasource, $namespace) {
@@ -30,11 +30,17 @@ function score_for(&$ctx, $obj_id, $datasource, $namespace) {
 
 function vote_for(&$ctx, $obj_id, $datasource, $namespace) {
     $scores = $ctx->mt->db()->fetch_scores($namespace, $obj_id, $datasource);
+    if (!isset($scores)) {
+        return 0;
+    }
     return count($scores);
 }
 
 function _score_top(&$ctx, $obj_id, $datasource, $namespace, $sorter) {
     $scores = $ctx->mt->db()->fetch_scores($namespace, $obj_id, $datasource);
+    if (!isset($scores)) {
+        return 0;
+    }
     if (0 == count($scores)) {
         return 0;
     }
@@ -88,7 +94,7 @@ function score_avg(&$ctx, $obj_id, $datasource, $namespace) {
         return 0;
     }
     $sum = score_for($ctx, $obj_id, $datasource, $namespace);
-    if ( isset($sum) && ( $sum == '' ) )
+    if ( isset($sum) && empty($sum) )
         return 0;
     return sprintf("%.2f", ($sum / $count));
 }
@@ -153,7 +159,7 @@ function hdlr_score($ctx, $datasource, $namespace, $default, $args = null) {
         return '';
     }
     $score = score_for($ctx, $object->{$datasource . '_id'}, $datasource, $namespace);
-    if ( !isset($score) || ( $score == '' ) ) {
+    if ( !isset($score) || ( $score === '' ) ) {
         if ( isset($default) )
             return $default;
         else
@@ -208,9 +214,7 @@ function hdlr_score_avg($ctx, $datasource, $namespace, $args = null) {
         return '';
     }
     $avg = score_avg($ctx, $object->{$datasource . '_id'}, $datasource, $namespace);
-    if ( isset($avg) && ( $avg != '') ) 
-        return $ctx->count_format($avg, $args);
-    return $avg;
+    return $ctx->count_format($avg, $args);
 }
 
 function hdlr_score_count($ctx, $datasource, $namespace, $args = null) {
@@ -227,9 +231,7 @@ function hdlr_score_count($ctx, $datasource, $namespace, $args = null) {
         return '';
     }
     $count = score_count($ctx, $object->{$datasource . '_id'}, $datasource, $namespace);
-    if ( isset($count) && ( $count != '') ) 
-        return $ctx->count_format($count, $args);
-    return $count;
+    return $ctx->count_format($count, $args);
 }
 
 function hdlr_rank($ctx, $datasource, $namespace, $max, $filter, $args = null) {

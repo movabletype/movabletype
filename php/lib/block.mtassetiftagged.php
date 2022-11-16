@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,8 +11,8 @@ function smarty_block_mtassetiftagged($args, $content, &$ctx, &$repeat) {
         if ($asset) {
             $asset_id = $asset->asset_id;
             $include_private = empty($args['include_private']) ? 0 : 1;
-            $tag = $args['name'];
-            $tag or $tag = $args['tag'];
+            $tag = isset($args['name']) ? $args['name'] : null;
+            $tag or $tag = isset($args['tag']) ? $args['tag'] : null;
             $targs = array('asset_id' => $asset_id, 'include_private' => $include_private);
             if ($tag) {
                 $targs['tags'] = $tag;

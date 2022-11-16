@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -25,10 +25,10 @@ function smarty_function_mtinclude($args, &$ctx) {
         }
     }
 
-    $blog_id = $args['site_id'];
-    $blog_id or $blog_id = $args['blog_id'];
+    $blog_id = isset($args['site_id']) ? $args['site_id'] : null;
+    $blog_id or $blog_id = isset($args['blog_id']) ? $args['blog_id'] : null;
     $blog_id or $blog_id = $ctx->stash('blog_id');
-    if ($args['local'])
+    if (!empty($args['local']))
         $blog_id = $ctx->stash('local_blog_id');
     $blog = $ctx->mt->db()->fetch_blog($blog_id);
 
@@ -112,7 +112,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     $cache_id = '';
     $cache_key = '';
     $cache_ttl = 0;
-    $cache_expire_type = $tmpl_meta->cache_expire_type;
+    $cache_expire_type = !empty($tmpl_meta) ? $tmpl_meta->cache_expire_type : null;
     if (!empty($load_type) &&
         isset($blog) && $blog->blog_include_cache == 1 &&
         ($cache_expire_type == '1' || $cache_expire_type == '2') ||
@@ -130,9 +130,9 @@ function smarty_function_mtinclude($args, &$ctx) {
                 : md5('blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name));
 
         if (isset($args['ttl']))
-            $cache_ttl = $args['ttl'];
+            $cache_ttl = intval($args['ttl']);
         elseif (isset($cache_expire_type) && $cache_expire_type == '1')
-            $cache_ttl = $tmpl_meta->cache_expire_interval;
+            $cache_ttl = intval($tmpl_meta->cache_expire_interval);
         else
             $cache_ttl = 60 * 60; # default 60 min.
 
@@ -157,7 +157,7 @@ function smarty_function_mtinclude($args, &$ctx) {
         }
 
         $elapsed_time = time() - offset_time( datetime_to_timestamp( $tmpl_meta->template_modified_on, 'gmt' ), $blog, '-' );
-        if ($cache_ttl == 0 || $elapsed_time < $cache_ttl) {
+        if ($cache_ttl === 0 || $elapsed_time < $cache_ttl) {
             $cache_ttl = $elapsed_time;
         }
 
@@ -197,7 +197,7 @@ function smarty_function_mtinclude($args, &$ctx) {
         if (isset($_include_cache[$cache_id])) {
             $_var_compiled = $_include_cache[$cache_id];
         } else {
-            $tmpl = $ctx->mt->db()->get_template_text($ctx, $load_name, $blog_id, $load_type, $args['global']);
+            $tmpl = $ctx->mt->db()->get_template_text($ctx, $load_name, $blog_id, $load_type, isset($args['global']) ? $args['global'] : null);
             if (!$ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
                 _clear_vars($ctx, $ext_args);
                 return $ctx->error("Error compiling template module '$module'");

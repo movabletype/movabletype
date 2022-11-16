@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Movable Type (r) (C) 2001-2017 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -28,6 +28,8 @@ BEGIN {
         DisableObjectCache => 1,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    plan skip_all => 'for MySQL only' unless $test_env->driver eq 'mysql';
 }
 
 $test_env->fix_mysql_create_table_sql;

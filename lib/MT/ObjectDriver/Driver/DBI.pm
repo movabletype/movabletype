@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -24,7 +24,8 @@ sub init {
     require MT;
     my $mt  = MT->instance;
     my $cfg = $mt->config;
-    $opts->{RaiseError} = $cfg->DBIRaiseError;
+    $opts->{RaiseError}         = $cfg->DBIRaiseError;
+    $opts->{ShowErrorStatement} = $cfg->DBIShowErrorStatement if $MT::DebugMode;
 
     $driver->connect_options($opts);
     $driver;

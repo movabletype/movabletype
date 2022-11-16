@@ -17,11 +17,10 @@ use MT::Test;
 use MT::Test::Permission;
 use YAML::Tiny;
 use File::Spec;
-use FindBin qw( $Bin );
 use MT;
 use utf8;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $mt = MT->instance;
 $mt->user( MT::Author->load(1) );

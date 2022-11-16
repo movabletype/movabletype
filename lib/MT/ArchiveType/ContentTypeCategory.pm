@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -144,7 +144,7 @@ sub archive_group_iter {
     );
 
     my $content_type_id = $ctx->stash('content_type')->id;
-    my $map             = $obj->_get_preferred_map(
+    my $map             = $obj->get_preferred_map(
         {   blog_id         => $blog_id,
             content_type_id => $content_type_id,
             map             => $ctx->stash('template_map'),
@@ -215,7 +215,7 @@ sub archive_group_contents {
     my $limit = $param->{limit};
     $limit = 0 if defined $limit && $limit eq 'none';
     my $c = $ctx->stash('archive_category') || $ctx->stash('category');
-    my $map = $obj->_get_preferred_map(
+    my $map = $obj->get_preferred_map(
         {   blog_id         => $ctx->stash('blog')->id,
             content_type_id => $content_type_id,
             map             => $ctx->stash('template_map'),
@@ -254,7 +254,18 @@ sub does_publish_file {
     }
     return 0 unless $params{Category};
 
-    return 1 if $params{Blog}->publish_empty_archive;
+    if ($params{Blog}->publish_empty_archive and $params{TemplateMap}) {
+        my $cat_id       = $params{Category}->id                   or return;
+        my $cat_field_id = $params{TemplateMap}->cat_field_id      or return;
+        my $tmpl_id      = $params{TemplateMap}->template_id       or return;
+        my $tmpl         = MT->model('template')->load($tmpl_id)   or return;
+        my $ct_id        = $tmpl->content_type_id                  or return;
+        my $ct           = MT->model('content_type')->load($ct_id) or return;
+        my $field        = $ct->get_field($cat_field_id)           or return;
+        my $catset_id    = $field->{options}{category_set}         or return;
+        return MT->model('category')->exist({ id => $cat_id, category_set_id => $catset_id }) ? 1 : 0;
+    }
+
 
     MT::ArchiveType::archive_contents_count( $obj, \%params );
 }

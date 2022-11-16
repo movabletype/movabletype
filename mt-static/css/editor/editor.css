@@ -178,9 +178,6 @@
 }
 
 @media (max-width: 767.98px) {
-  .editor-toolbar span:not(.add-enclosure) {
-    display: none;
-  }
   .editor-toolbar .button {
     height: 32px;
     width: 32px;

@@ -43,9 +43,9 @@ my $author = MT->model('author')->load(1) or die MT->model('author')->errstr;
 $author->set_password('Nelson');
 $author->save or die $author->errstr;
 
-my $selenium = MT::Test::Selenium->new($test_env);
-
 describe 'On Edit Image dialog (blog_id = 1, asset_id = 1)' => sub {
+    my $selenium = MT::Test::Selenium->new($test_env);
+
     before all => sub {
         $selenium->visit(
             '/cgi-bin/mt.cgi?__mode=dialog_edit_image&blog_id=1&id=1&username=Melody&password=Nelson'

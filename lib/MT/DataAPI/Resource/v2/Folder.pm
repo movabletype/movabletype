@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,17 +9,17 @@ package MT::DataAPI::Resource::v2::Folder;
 use strict;
 use warnings;
 
-use MT::DataAPI::Resource::Category;
+use MT::DataAPI::Resource::v1::Category;
 use MT::DataAPI::Resource::v2::Category;
 
 sub updatable_fields {
-    [   @{ MT::DataAPI::Resource::Category::updatable_fields() },
+    [   @{ MT::DataAPI::Resource::v1::Category::updatable_fields() },
         @{ MT::DataAPI::Resource::v2::Category::updatable_fields() },
     ];
 }
 
 sub fields {
-    [   @{ MT::DataAPI::Resource::Category::fields() },
+    [   @{ MT::DataAPI::Resource::v1::Category::fields() },
         @{ MT::DataAPI::Resource::v2::Category::fields() },
         {   name        => 'archiveLink',
             from_object => sub {return},    # Do nothing.

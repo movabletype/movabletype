@@ -61,10 +61,11 @@
       value={ store.limit }
       onchange={ changeLimit }
     >
-      <option value="25">{ trans('25 rows') }</option>
-      <option value="50">{ trans('50 rows') }</option>
-      <option value="100">{ trans('100 rows') }</option>
-      <option value="200">{ trans('200 rows') }</option>
+      <option value="10">{ trans('[_1] rows', 10) }</option>
+      <option value="25">{ trans('[_1] rows', 25) }</option>
+      <option value="50">{ trans('[_1] rows', 50) }</option>
+      <option value="100">{ trans('[_1] rows', 100) }</option>
+      <option value="200">{ trans('[_1] rows', 200) }</option>
     </select>
   </div>
 
@@ -95,6 +96,7 @@
               id={ column.id }
               checked={ column.checked }
               onchange={ toggleColumn }
+              disabled={ store.isLoading }
             />
             <label class="custom-control-label" for={ column.id }>
               <raw content={ column.label }></raw>

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -165,6 +165,10 @@ sub test_data_api {
         $note .= ' ' . $data->{method};
         $note .= ' ' . $data->{note} if $data->{note};
         note($note);
+        if ( $data->{skip} ) {
+            note "SKIP";
+            next;
+        }
 
         if ( $data->{config} ) {
             for my $k ( keys %{ $data->{config} } ) {

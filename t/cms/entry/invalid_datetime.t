@@ -21,6 +21,8 @@ $test_env->prepare_fixture('db');
 my $blog_id = MT::Blog->load(1)->id;
 my $admin   = MT::Author->load(1);
 
+no Carp::Always;
+
 subtest 'Empty publish date' => sub {
     my $app = MT::Test::App->new;
     $app->login($admin);

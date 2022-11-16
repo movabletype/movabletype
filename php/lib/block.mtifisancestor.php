@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,7 +9,7 @@ function smarty_block_mtifisancestor($args, $content, &$ctx, &$repeat) {
     $localvars = array('conditional', 'else_content');
     if (!isset($content)) {
        require_once("MTUtil.php");
-       $cat = get_category_context($ctx, $class);
+       $cat = get_category_context($ctx);
        $ctx->localize($localvars);
        $children = $ctx->mt->db()->fetch_categories(array('label' => $args['child'], 'blog_id' => $ctx->stash('blog_id'), 'show_empty' => 1));
        $ret = false;

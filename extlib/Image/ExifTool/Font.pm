@@ -19,7 +19,7 @@ use strict;
 use vars qw($VERSION %ttLang);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.09';
+$VERSION = '1.10';
 
 sub ProcessOTF($$);
 
@@ -80,7 +80,7 @@ my %ttCharset = (
 %ttLang = (
   # Macintosh language codes (also used by QuickTime.pm)
   # oddities:
-  #   49 - Cyrllic version    83 - Roman
+  #   49 - Cyrillic version    83 - Roman
   #   50 - Arabic version     84 - Arabic
   #  146 - with dot above
   Macintosh => {
@@ -117,7 +117,7 @@ my %ttCharset = (
   #  0x048c - no ISO equivalent
   #  0x081a/0x83c - sr-SP
   #  0x0c0a - modern?
-  #  0x2409 - Carribean country code not found in ISO 3166-1
+  #  0x2409 - Caribbean country code not found in ISO 3166-1
   Windows => {
     0x0401 => 'ar-SA', 0x0438 => 'fo',    0x0481 => 'mi',    0x1409 => 'en-NZ',
     0x0402 => 'bg',    0x0439 => 'hi',    0x0482 => 'oc',    0x140a => 'es-CR',
@@ -589,6 +589,11 @@ sub ProcessFont($$)
             $et->HandleTag($tagTablePtr, 'postfont', $2);
         }
         $rtnVal = 1;
+    } elsif ($buff =~ /^(wOF[F2])/) {
+        my $type = $1 eq 'wOFF' ? 'woff' : 'woff2';
+        $et->SetFileType(uc($type), "font/$type");
+        # (don't yet extract metadata from these files)
+        $rtnVal = 1;
     } else {
         $rtnVal = 0;
     }
@@ -611,11 +616,13 @@ This module is used by Image::ExifTool
 
 This module contains the routines required by Image::ExifTool to read meta
 information from various format font files.  Currently recognized font file
-types are OTF, TTF, TTC, DFONT, PFA, PFB, PFM, AFM, ACFM and AMFM.
+types are OTF, TTF, TTC, DFONT, PFA, PFB, PFM, AFM, ACFM and AMFM.  As well,
+WOFF and WOFF2 font files are identified, but metadata is not currently
+extracted from these formats.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

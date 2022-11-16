@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) (C) 2003-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -97,6 +97,7 @@ TC.Client.call = function( param )
         }
         c.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8' );
     }
+    c.setRequestHeader( 'X-Requested-With', 'XMLHttpRequest' );
     c.send( contents );
     return c;
 }

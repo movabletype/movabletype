@@ -56,7 +56,7 @@ use vars qw($VERSION $AUTOLOAD @formatSize @formatName %formatNumber %intFormat
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::MakerNotes;
 
-$VERSION = '4.27';
+$VERSION = '4.36';
 
 sub ProcessExif($$$);
 sub WriteExif($$$);
@@ -264,6 +264,7 @@ sub BINARY_DATA_LIMIT { return 10 * 1024 * 1024; }
     32845 => 'Pixar LogLuv', #3
     32892 => 'Sequential Color Filter', #JR (Sony ARQ)
     34892 => 'Linear Raw', #2
+    51177 => 'Depth Map', # (DNG 1.5)
 );
 
 %orientation = (
@@ -278,7 +279,7 @@ sub BINARY_DATA_LIMIT { return 10 * 1024 * 1024; }
 );
 
 %subfileType = (
-    0 => 'Full-resolution Image',
+    0 => 'Full-resolution image',
     1 => 'Reduced-resolution image',
     2 => 'Single page of multi-page image',
     3 => 'Single page of multi-page reduced-resolution image',
@@ -286,14 +287,17 @@ sub BINARY_DATA_LIMIT { return 10 * 1024 * 1024; }
     5 => 'Transparency mask of reduced-resolution image',
     6 => 'Transparency mask of multi-page image',
     7 => 'Transparency mask of reduced-resolution multi-page image',
+    8 => 'Depth map', # (DNG 1.5)
+    9 => 'Depth map of reduced-resolution image', # (DNG 1.5)
+    16 => 'Enhanced image data', # (DNG 1.5)
     0x10001 => 'Alternate reduced-resolution image', # (DNG 1.2)
     0xffffffff => 'invalid', #(found in E5700 NEF's)
     BITMASK => {
         0 => 'Reduced resolution',
         1 => 'Single page',
         2 => 'Transparency mask',
-        3 => 'TIFF/IT final page', #20
-        4 => 'TIFF-FX mixed raster content', #20
+        3 => 'TIFF/IT final page', #20 (repurposed as DepthMap repurposes by DNG 1.5)
+        4 => 'TIFF-FX mixed raster content', #20 (repurposed as EnhancedImageData by DNG 1.5)
     },
 );
 
@@ -317,6 +321,7 @@ my %utf8StringConv = (
 my %longBin = (
     ValueConv => 'length($val) > 64 ? \$val : $val',
     ValueConvInv => '$val',
+    LongBinary => 1,        # flag to avoid decoding values of a large array
 );
 
 # PrintConv for SampleFormat (0x153)
@@ -433,7 +438,7 @@ my %opcodeInfo = (
         Writable => 'int32u',
         WriteGroup => 'IFD0',
         # Note: priority 0 tags automatically have their priority increased for the
-        # priority direcory (the directory with a SubfileType of "Full-resolution image")
+        # priority directory (the directory with a SubfileType of "Full-resolution image")
         Priority => 0,
     },
     0x101 => {
@@ -850,6 +855,11 @@ my %opcodeInfo = (
         PrintConv => {
             1 => 'None',
             2 => 'Horizontal differencing',
+            3 => 'Floating point', # (DNG 1.5)
+            34892 => 'Horizontal difference X2', # (DNG 1.5)
+            34893 => 'Horizontal difference X4', # (DNG 1.5)
+            34894 => 'Floating point X2', # (DNG 1.5)
+            34895 => 'Floating point X4', # (DNG 1.5)
         },
     },
     0x13e => {
@@ -1368,6 +1378,12 @@ my %opcodeInfo = (
         Count => 6,
         Priority => 0,
     },
+  # 0x220 - int32u: 0 (IFD0, Xaiomi Redmi models)
+  # 0x221 - int32u: 0 (IFD0, Xaiomi Redmi models)
+  # 0x222 - int32u: 0 (IFD0, Xaiomi Redmi models)
+  # 0x223 - int32u: 0 (IFD0, Xaiomi Redmi models)
+  # 0x224 - int32u: 0,1 (IFD0, Xaiomi Redmi models)
+  # 0x225 - string: "" (IFD0, Xaiomi Redmi models)
     0x22f => 'StripRowCounts',
     0x2bc => {
         Name => 'ApplicationNotes', # (writable directory!)
@@ -1437,6 +1453,7 @@ my %opcodeInfo = (
             1 => 'Sony Uncompressed 12-bit RAW', #IB
             2 => 'Sony Compressed RAW', # (lossy, ref IB)
             3 => 'Sony Lossless Compressed RAW', #IB
+            4 => 'Sony Lossless Compressed RAW 2', #JR (ILCE-1)
         },
     },
     # 0x7001 - int16u[1] (in SubIFD of Sony ARW images) - values: 0,1
@@ -1457,6 +1474,7 @@ my %opcodeInfo = (
         PrintConv => {
             256 => 'Off',
             257 => 'Auto',
+            272 => 'Auto (ILCE-1)', #JR
             511 => 'No correction params available',
         },
     },
@@ -1646,7 +1664,7 @@ my %opcodeInfo = (
     0x82aa => 'MDPrepDate', #3
     0x82ab => 'MDPrepTime', #3
     0x82ac => 'MDFileUnits', #3
-    0x830e => { #30
+    0x830e => { #30 (GeoTiff)
         Name => 'PixelScale',
         Writable => 'double',
         WriteGroup => 'IFD0',
@@ -1678,14 +1696,14 @@ my %opcodeInfo = (
     },
     0x847e => 'IntergraphPacketData', #3
     0x847f => 'IntergraphFlagRegisters', #3
-    0x8480 => { #30 (obsolete)
+    0x8480 => { #30 (GeoTiff, obsolete)
         Name => 'IntergraphMatrix',
         Writable => 'double',
         WriteGroup => 'IFD0',
         Count => -1,
     },
     0x8481 => 'INGRReserved', #20
-    0x8482 => { #30
+    0x8482 => { #30 (GeoTiff)
         Name => 'ModelTiePoint',
         Groups => { 2 => 'Location' },
         Writable => 'double',
@@ -1753,7 +1771,7 @@ my %opcodeInfo = (
     },
     0x85b8 => 'PixelMagicJBIGOptions', #20
     0x85d7 => 'JPLCartoIFD', #exifprobe (NC)
-    0x85d8 => { #30
+    0x85d8 => { #30 (GeoTiff)
         Name => 'ModelTransform',
         Groups => { 2 => 'Location' },
         Writable => 'double',
@@ -1989,6 +2007,7 @@ my %opcodeInfo = (
     0x885d => 'FaxSubAddress', #9
     0x885e => 'FaxRecvTime', #9
     0x8871 => 'FedexEDR', #exifprobe (NC)
+  # 0x8889 - string: "portrait" (ExifIFD, Xiaomi POCO F1)
     0x888a => { #PH
         Name => 'LeafSubIFD',
         Format => 'int32u',     # Leaf incorrectly uses 'undef' format!
@@ -1999,6 +2018,10 @@ my %opcodeInfo = (
             Start => '$val',
         },
     },
+  # 0x8891 - int16u: 35 (ExifIFD, Xiaomi POCO F1)
+  # 0x8894 - int16u: 0 (ExifIFD, Xiaomi POCO F1)
+  # 0x8895 - int16u: 0 (ExifIFD, Xiaomi POCO F1)
+  # 0x889a - int16u: 0 (ExifIFD, Xiaomi POCO F1)
   # 0x89ab - seen "11 100 130 16 0 0 0 0" in IFD0 of TIFF image from IR scanner (forum8470)
     0x9000 => {
         Name => 'ExifVersion',
@@ -2359,6 +2382,8 @@ my %opcodeInfo = (
         Name => 'CameraElevationAngle',
         Writable => 'rational64s',
     },
+  # 0x9999 - string: camera settings (ExifIFD, Xiaomi POCO F1)
+  # 0x9aaa - int8u[2176]: ? (ExifIFD, Xiaomi POCO F1)
     0x9c9b => {
         Name => 'XPTitle',
         Format => 'undef',
@@ -2538,6 +2563,7 @@ my %opcodeInfo = (
             5 => 'Color sequential area',
             7 => 'Trilinear',
             8 => 'Color sequential linear',
+            # 15 - used by DJI XT2
         },
     },
     0xa300 => {
@@ -2555,7 +2581,7 @@ my %opcodeInfo = (
     0xa301 => {
         Name => 'SceneType',
         Writable => 'undef',
-        ValueConvInv => 'chr($val)',
+        ValueConvInv => 'chr($val & 0xff)',
         PrintConv => {
             1 => 'Directly photographed',
         },
@@ -3275,7 +3301,7 @@ my %opcodeInfo = (
             Groups => { 1 => 'SR2' },
             Flags => 'SubIFD',
             Format => 'int32u',
-            # some utilites have problems unless this is int8u format:
+            # some utilities have problems unless this is int8u format:
             # - Adobe Camera Raw 5.3 gives an error
             # - Apple Preview 10.5.8 gets the wrong white balance
             FixFormat => 'int8u', # (stupid Sony)
@@ -3593,11 +3619,11 @@ my %opcodeInfo = (
     },
     0xc6fc => {
         Name => 'ProfileToneCurve',
+        %longBin,
         Writable => 'float',
         WriteGroup => 'IFD0',
         Count => -1,
         Protected => 1,
-        Binary => 1,
     },
     0xc6fd => {
         Name => 'ProfileEmbedPolicy',
@@ -3722,11 +3748,11 @@ my %opcodeInfo = (
     },
     0xc726 => {
         Name => 'ProfileLookTableData',
+        %longBin,
         Writable => 'float',
         WriteGroup => 'IFD0',
         Count => -1,
         Protected => 1,
-        Binary => 1,
     },
     0xc740 => { Name => 'OpcodeList1', %opcodeInfo }, # DNG 1.3
     0xc741 => { Name => 'OpcodeList2', %opcodeInfo }, # DNG 1.3
@@ -3964,6 +3990,57 @@ my %opcodeInfo = (
         },
     },
     # 0xc7d6 - int8u: 1 (SubIFD1 of Nikon Z6/Z7 NEF)
+    0xc7e9 => { # DNG 1.5
+        Name => 'DepthFormat',
+        Writable => 'int16u',
+        Notes => 'tags 0xc7e9-0xc7ee added by DNG 1.5.0.0',
+        Protected => 1,
+        WriteGroup => 'IFD0',
+        PrintConv => {
+            0 => 'Unknown',
+            1 => 'Linear',
+            2 => 'Inverse',
+        },
+    },
+    0xc7ea => { # DNG 1.5
+        Name => 'DepthNear',
+        Writable => 'rational64u',
+        Protected => 1,
+        WriteGroup => 'IFD0',
+    },
+    0xc7eb => { # DNG 1.5
+        Name => 'DepthFar',
+        Writable => 'rational64u',
+        Protected => 1,
+        WriteGroup => 'IFD0',
+    },
+    0xc7ec => { # DNG 1.5
+        Name => 'DepthUnits',
+        Writable => 'int16u',
+        Protected => 1,
+        WriteGroup => 'IFD0',
+        PrintConv => {
+            0 => 'Unknown',
+            1 => 'Meters',
+        },
+    },
+    0xc7ed => { # DNG 1.5
+        Name => 'DepthMeasureType',
+        Writable => 'int16u',
+        Protected => 1,
+        WriteGroup => 'IFD0',
+        PrintConv => {
+            0 => 'Unknown',
+            1 => 'Optical Axis',
+            2 => 'Optical Ray',
+        },
+    },
+    0xc7ee => { # DNG 1.5
+        Name => 'EnhanceParams',
+        Writable => 'string',
+        Protected => 1,
+        WriteGroup => 'IFD0',
+    },
     0xea1c => { #13
         Name => 'Padding',
         Binary => 1,
@@ -4008,7 +4085,7 @@ my %opcodeInfo = (
 
     # tags in the range 0xfde8-0xfe58 have been observed in PS7 files
     # generated from RAW images.  They are all strings with the
-    # tag name at the start of the string.  To accomodate these types
+    # tag name at the start of the string.  To accommodate these types
     # of tags, all tags with values above 0xf000 are handled specially
     # by ProcessExif().
     0xfde8 => {
@@ -4668,6 +4745,7 @@ my %subSecConv = (
             9 => 'LensType2',
             10 => 'LensType3',
             11 => 'LensFocalLength', # (for Pentax to check for converter)
+            12 => 'RFLensType',
         },
         Notes => q{
             attempt to identify the actual lens from all lenses with a given LensType.
@@ -4696,6 +4774,12 @@ my %subSecConv = (
                 }
                 $pcv = $$self{TAG_INFO}{LensType2}{PrintConv};
             }
+            # use Canon RFLensType if available
+            if ($val[12]) {
+                $val[0] = $val[12];
+                $prt[0] = $prt[12];
+                $pcv = $$self{TAG_INFO}{RFLensType}{PrintConv};
+            }
             my $lens = Image::ExifTool::Exif::PrintLensID($self, $prt[0], $pcv, $prt[8], @val);
             # check for use of lens converter (Pentax K-3)
             if ($val[11] and $val[1] and $lens) {
@@ -4704,6 +4788,30 @@ my %subSecConv = (
             }
             return $lens;
         },
+    },
+    'LensID-2' => {
+        Name => 'LensID',
+        Groups => { 2 => 'Camera' },
+        Desire => {
+            0 => 'LensModel',
+            1 => 'Lens',
+            2 => 'XMP-aux:LensID',
+            3 => 'Make',
+        },
+        Inhibit => {
+            4 => 'Composite:LensID',
+        },
+        RawConv => q{
+            return undef if defined $val[2] and defined $val[3];
+            return $val if defined $val[0] and $val[0] =~ /(mm|\d\/F)/;
+            return $val if defined $val[1] and $val[1] =~ /(mm|\d\/F)/;
+            return undef;
+        },
+        ValueConv => q{
+            return $val[0] if defined $val[0] and $val[0] =~ /(mm|\d\/F)/;
+            return $val[1];
+        },
+        PrintConv => '$_=$val; s/(\d)\/F/$1mm F/; s/mmF/mm F/; s/(\d) mm/${1}mm/; s/ - /-/; $_',
     },
 );
 
@@ -5691,7 +5799,8 @@ sub ProcessExif($$$)
             $numEntries = Get16u($dataPt, $dirStart);
         } else {
             $et->Warn("Bad $dir directory", $inMakerNotes);
-            return 0 unless $inMakerNotes and $dirLen >= 14;
+            return 0 unless $inMakerNotes and $dirLen >= 14 and $dirStart >= 0 and
+                            $dirStart + $dirLen <= length($$dataPt);
             $dirSize = $dirLen;
             $numEntries = int(($dirSize - 2) / 12); # read what we can
             Set16u($numEntries, $dataPt, $dirStart);
@@ -5756,7 +5865,7 @@ sub ProcessExif($$$)
     $$et{Compression} = $$et{SubfileType} = '';
 
     # loop through all entries in an EXIF directory (IFD)
-    my ($index, $valEnd, $offList, $offHash, $mapFmt);
+    my ($index, $valEnd, $offList, $offHash, $mapFmt, @valPos);
     $mapFmt = $$tagTablePtr{VARS}{MAP_FORMAT} if $$tagTablePtr{VARS};
 
     my ($warnCount, $lastID) = (0, -1);
@@ -5809,24 +5918,30 @@ sub ProcessExif($$$)
         my $size = $count * $formatSize[$format];
         my $readSize = $size;
         if ($size > 4) {
-            if ($size > 0x7fffffff) {
+            if ($size > 0x7fffffff and (not $tagInfo or not $$tagInfo{ReadFromRAF})) {
                 $et->Warn(sprintf("Invalid size (%u) for %s %s",$size,$dir,TagName($tagID,$tagInfo)), $inMakerNotes);
                 ++$warnCount;
                 next;
             }
             $valuePtr = Get32u($dataPt, $valuePtr);
             if ($validate and not $inMakerNotes) {
-                $et->Warn(sprintf('Odd offset for %s %s',$dir,TagName($tagID,$tagInfo)), 1) if $valuePtr & 0x01;
+                my $tagName = TagName($tagID, $tagInfo);
+                $et->Warn("Odd offset for $dir $tagName", 1) if $valuePtr & 0x01;
                 if ($valuePtr < 8 || ($valuePtr + $size > length($$dataPt) and
                                       $valuePtr + $size > $$et{VALUE}{FileSize}))
                 {
-                    $et->Warn(sprintf('Invalid offset for %s %s',$dir,TagName($tagID,$tagInfo)));
+                    $et->Warn("Invalid offset for $dir $tagName");
                     ++$warnCount;
                     next;
                 }
                 if ($valuePtr + $size > $dirStart + $dataPos and $valuePtr < $dirEnd + $dataPos + 4) {
-                    $et->Warn(sprintf('Value for %s %s overlaps IFD', $dir, TagName($tagID,$tagInfo)));
+                    $et->Warn("Value for $dir $tagName overlaps IFD");
                 }
+                foreach (@valPos) {
+                    next if $$_[0] >= $valuePtr + $size or $$_[0] + $$_[1] <= $valuePtr;
+                    $et->Warn("Value for $dir $tagName overlaps $$_[2]");
+                }
+                push @valPos, [ $valuePtr, $size, $tagName ];
             }
             # fix valuePtr if necessary
             if ($$dirInfo{FixOffsets}) {
@@ -6056,17 +6171,30 @@ sub ProcessExif($$$)
         unless ($bad) {
             # limit maximum length of data to reformat
             # (avoids long delays when processing some corrupted files)
+            my $warned;
             if ($count > 100000 and $formatStr !~ /^(undef|string|binary)$/) {
                 my $tagName = $tagInfo ? $$tagInfo{Name} : sprintf('tag 0x%.4x', $tagID);
+                # (count of 196608 is typical for ColorMap)
                 if ($tagName ne 'TransferFunction' or $count != 196608) {
                     my $minor = $count > 2000000 ? 0 : 2;
-                    next if $et->Warn("Ignoring $dirName $tagName with excessive count", $minor);
+                    if ($et->Warn("Ignoring $dirName $tagName with excessive count", $minor)) {
+                        next unless $$et{OPTIONS}{HtmlDump};
+                        $warned = 1;
+                    }
                 }
             }
-            # convert according to specified format
-            $val = ReadValue($valueDataPt,$valuePtr,$formatStr,$count,$readSize,\$rational);
-            # re-code if necessary
-            $val = $et->Decode($val, $strEnc) if $strEnc and $formatStr eq 'string' and defined $val;
+            if ($count > 500 and $formatStr !~ /^(undef|string|binary)$/ and
+                (not $tagInfo or $$tagInfo{LongBinary} or $warned) and not $$et{OPTIONS}{IgnoreMinorErrors})
+            {
+                $et->WarnOnce('Not decoding some large array(s). Ignore minor errors to decode', 2) unless $warned;
+                next if $$et{TAGS_FROM_FILE};   # don't generate bogus value when copying tags
+                $val = "(large array of $count $formatStr values)";
+            } else {
+                # convert according to specified format
+                $val = ReadValue($valueDataPt,$valuePtr,$formatStr,$count,$readSize,\$rational);
+                # re-code if necessary
+                $val = $et->Decode($val, $strEnc) if $strEnc and $formatStr eq 'string' and defined $val;
+            }
         }
 
         if ($verbose) {
@@ -6092,7 +6220,8 @@ sub ProcessExif($$$)
                           "Format: $fstr\nSize: $size bytes\n";
                 if ($size > 4) {
                     my $offPt = Get32u($dataPt,$entry+8);
-                    my $actPt = $valuePtr + $valueDataPos + $base - ($$et{EXIF_POS} || 0);
+                    # (test this with ../pics/{CanonEOS-1D_XMarkIII.hif,PanasonicDC-G9.rw2})
+                    my $actPt = $valuePtr + $valueDataPos + $base - ($$et{EXIF_POS} || 0) + ($$et{BASE_FUDGE} || 0);
                     $tip .= sprintf("Value offset: 0x%.4x\n", $offPt);
                     # highlight tag name (red for bad size)
                     my $style = ($bad or not defined $tval) ? 'V' : 'H';
@@ -6101,6 +6230,9 @@ sub ProcessExif($$$)
                         my $sign = $actPt < $offPt ? '-' : '';
                         $tip .= sprintf("Offset base: ${sign}0x%.4x\n", abs($actPt - $offPt));
                         $style = 'F' if $style eq 'H';  # purple for different offsets
+                    }
+                    if ($$et{EXIF_POS} and not $$et{BASE_FUDGE}) {
+                        $tip .= sprintf("File offset:   0x%.4x\n", $actPt + $$et{EXIF_POS})
                     }
                     $colName = "<span class=$style>$tagName</span>";
                     $colName .= ' <span class=V>(odd)</span>' if $offPt & 0x01;
@@ -6120,7 +6252,7 @@ sub ProcessExif($$$)
                     } elsif ($tagInfo and Image::ExifTool::IsInt($tval)) {
                         if ($$tagInfo{IsOffset} or $$tagInfo{SubIFD}) {
                             $tval = sprintf('0x%.4x', $tval);
-                            my $actPt = $val + $base - ($$et{EXIF_POS} || 0);
+                            my $actPt = $val + $base - ($$et{EXIF_POS} || 0) + ($$et{BASE_FUDGE} || 0);
                             if ($actPt != $val) {
                                 $tval .= sprintf("\nActual offset: 0x%.4x", $actPt);
                                 my $sign = $actPt < $val ? '-' : '';
@@ -6505,7 +6637,7 @@ EXIF and TIFF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

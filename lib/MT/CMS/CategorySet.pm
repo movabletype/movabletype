@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,6 +9,10 @@ use warnings;
 
 sub view {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
 
     my $perm = $app->permissions
         or return $app->permission_denied;
@@ -78,6 +82,17 @@ sub can_delete {
 
     my $blog_id = $set ? $set->blog_id : ( $app->blog ? $app->blog->id : 0 );
     return $author->permissions($blog_id)->can_do('delete_category_set');
+}
+
+sub post_delete {
+    my ($eh, $app, $set) = @_;
+
+    $app->log({
+        message  => $app->translate("Category Set '[_1]' (ID:[_2]) deleted by '[_3]'", $set->name, $set->id, $app->user->name),
+        level    => MT::Log::NOTICE(),
+        class    => 'category_set',
+        category => 'delete'
+    });
 }
 
 1;

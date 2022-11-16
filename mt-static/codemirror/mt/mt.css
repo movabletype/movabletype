@@ -1,6 +1,7 @@
 .CodeMirror {
     border: 1px solid #adadad;
     border-top-color: #a3a3a2;
+    height: 550px;
 }
 
 .CodeMirror pre {

@@ -14,11 +14,12 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::Fixture::Mt7::Tag::Site::Entry;
 
 filters {
     blog_id  => [qw( chomp )],
@@ -27,12 +28,7 @@ filters {
     error    => [qw( chomp )],
 };
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
-    MT::Test->init_data;
-
-    MT::Test::Permission->make_entry( blog_id => 2 );
-});
+$test_env->prepare_fixture('mt7/tag/site/entry');
 
 MT::Test::Tag->run_perl_tests;
 MT::Test::Tag->run_php_tests;
@@ -54,4 +50,3 @@ none
 <mt:Entries limit="1"><mt:EntrySiteName></mt:Entries>
 --- expected
 Test site
-

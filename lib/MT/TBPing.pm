@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -64,8 +64,7 @@ MT::TBPing->add_callback(
     10,
     MT->component('core'),
     sub {
-        MT->model('rebuild_trigger')
-            ->runner( 'post_feedback_save', 'tb_pub', @_ );
+        MT->model('rebuild_trigger')->runner( 'post_feedback_save_tb_pub', @_ );
     }
 );
 

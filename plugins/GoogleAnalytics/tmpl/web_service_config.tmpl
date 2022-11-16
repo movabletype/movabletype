@@ -1,10 +1,9 @@
-<h5><__trans phrase="Google Analytics"></h5>
+<mtapp:settinggroup id="google-analytics-settings">
+<legend class="h3"><__trans phrase="Google Analytics"></legend>
 
 <mt:If name="missing_modules">
 <p><mt:Var name="missing_modules" /></p>
 <mt:Else>
-
-<mtapp:settinggroup id="google-analytics-settings">
 
 <div id="use-parent-client" style="<mt:Unless name="parent_client">display: none</mt:Unless>">
 <mtapp:setting
@@ -52,6 +51,7 @@
 <button id="ga_select_profile" class="button btn btn-default">
   <__trans phrase="Select Google Analytics profile" />
 </button>
+<p class="text-muted"><__trans phrase="Google Analytics 4 (GA4) is not supported." /></p>
 </mtapp:setting>
 
 
@@ -165,5 +165,5 @@ jQuery(function($) {
 });
 </script>
 
-</mtapp:settinggroup>
 </mt:If>
+</mtapp:settinggroup>

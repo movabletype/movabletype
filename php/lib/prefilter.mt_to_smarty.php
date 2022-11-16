@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -76,7 +76,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
             $attrargs = '';
             $modargs = '';
 
-            list($mttag, $args) = preg_split('!\s+!s', $tag, 2);
+            list($mttag, $args) = array_pad(preg_split('!\s+!s', $tag, 2), 2, '');
             $mttag or $mttag = $tag;
             // ignore namespace delimiter, for now
             $mttag = preg_replace('/:/', '', strtolower($mttag));
@@ -109,7 +109,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                         }
                         $quote = '';
                     }
-                    if ($ctx->global_attr[$attr]) {
+                    if (!empty($ctx->global_attr[$attr])) {
                         if( (preg_match('!^MTVar!i', $mttag ) || preg_match('!^MTGetVar!i', $mttag ) )
                             && (
                                 (isset($attrs['name']) && preg_match('/\[.*\]/i', $attrs['name'] ))
@@ -241,11 +241,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
             }
 
             if ($fn_tag) {
-                $smart_source .= $ldelim . 'php' . $rdelim
-                    . '$_smarty_tpl->smarty->_cache[\'_tag_stack\'][] = array("' . $mttag . '"'
-                    // . ', array(' . implode(',', $ctx2->_compile_arg_list(null, null, $attrs, $dummy)) . '));'
-                    . ($var_export ? ', ' . var_export($attrs, true) : '')
-                    . ');' . $ldelim . '/php' . $rdelim;
+                $smart_source .= $ldelim . 'push_ctx_stack mttag="' . $mttag . '" ' . $attrargs . $rdelim;
             }
 
             $smart_source .= $ldelim.$open.
@@ -254,9 +250,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                                   $attrargs.
                                   $rdelim;
             if ($fn_tag) {
-                $smart_source .= $ldelim . 'php' . $rdelim
-                    . 'array_pop($_smarty_tpl->smarty->_cache[\'_tag_stack\']);'
-                    . $ldelim . '/php' . $rdelim;
+                $smart_source .= $ldelim . 'pop_ctx_stack' . $rdelim;
             }
 
             if ($close_mod_args) {
@@ -307,10 +301,21 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
         $smart_source = $tpl_source;
     }
 
+    $php_open = $ldelim.'mtphp'.$rdelim;
+    $php_close = $ldelim.'/mtphp'.$rdelim;
+
     // allow normal php markers to work-- change them to
     // smarty php blocks...
     $smart_source = preg_replace('/<\?php(\s*.*?)\?>/s',
-                                 $ldelim.'php'.$rdelim.'\1'.';'.$ldelim.'/php'.$rdelim, $smart_source);
+        $php_open.'\1;'. $php_close, $smart_source);
+
+    // salvage old smarty php tags
+    $smart_source = preg_replace(
+        ["#{$ldelim}\\s*php\\s*{$rdelim}#", "#{$ldelim}\\s*/\\s*php\\s*{$rdelim}#"],
+        [$php_open, $php_close],
+        $smart_source
+    );
+
 #    echo $smart_source;
     return $smart_source;
 }
@@ -353,7 +358,7 @@ function _parse_modifier($str) {
 }
 
 function _block_handler_exists(&$smarty, $name) {
-    if (!is_null($smarty->smarty->registered_plugins[Smarty::PLUGIN_BLOCK][$name])) return true;
+    if (isset($smarty->smarty->registered_plugins[Smarty::PLUGIN_BLOCK][$name])) return true;
     $_plugin_filename = 'block.' . $name . '.php';
     foreach ($smarty->smarty->plugins_dir as $value) { 
         $filepath = $value .$_plugin_filename; 

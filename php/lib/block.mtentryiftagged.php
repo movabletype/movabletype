@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,10 +11,10 @@ function smarty_block_mtentryiftagged($args, $content, &$ctx, &$repeat) {
         if ($entry) {
             $entry_id = $entry->entry_id;
             $blog_id = $entry->entry_blog_id;
-            $class = $args['class'];
+            $class = isset($args['class']) ? $args['class'] : null;
             $include_private = empty($args['include_private']) ? 0 : 1;
-            $tag = $args['name'];
-            $tag or $tag = $args['tag'];
+            $tag = isset($args['name']) ? $args['name'] : null;
+            $tag or $tag = isset($args['tag']) ? $args['tag'] : null;
             $targs = array('entry_id' => $entry_id, 'blog_id' => $blog_id, 'class' => $class, 'include_private' => $include_private);
             if ($tag) {
                 $targs['tags'] = $tag;

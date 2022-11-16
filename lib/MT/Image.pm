@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -32,6 +32,8 @@ sub new {
 sub init {
     my ( $image, %param ) = @_;
 
+    $image->{param} = \%param;
+
     my $jpeg_quality
         = exists $param{JpegQuality}
         ? $param{JpegQuality}
@@ -50,9 +52,10 @@ sub init {
 sub get_dimensions {
     my $image = shift;
     my %param = @_;
-    my ( $w, $h ) = ( $image->{width}, $image->{height} );
+    my ($w, $h);
     if ( my $pct = $param{Scale} ) {
-        ( $w, $h ) = ( int( $w * $pct / 100 ), int( $h * $pct / 100 ) );
+        $image->_init_image_size;
+        ( $w, $h ) = ( int( $image->{width} * $pct / 100 ), int( $image->{height} * $pct / 100 ) );
         $w = 1 if $w < 1;
         $h = 1 if $h < 1;
     }
@@ -61,6 +64,8 @@ sub get_dimensions {
             ( $w, $h ) = ( $param{Width}, $param{Height} );
         }
         else {
+            $image->_init_image_size;
+            ($w, $h) = ($image->{width}, $image->{height});
             my $x = $param{Width}  || $w;
             my $y = $param{Height} || $h;
             my $w_pct = $x / $w;
@@ -75,6 +80,7 @@ sub get_dimensions {
 sub get_degrees {
     my $image = shift;
     my %param = @_;
+    $image->_init_image_size;
     my ( $w, $h ) = ( $image->{width}, $image->{height} );
     my $degrees = $param{Degrees};
 
@@ -108,6 +114,7 @@ sub inscribe_square {
 
 sub make_square {
     my $image  = shift;
+    $image->_init_image_size;
     my %square = $image->inscribe_square(
         Width  => $image->{width},
         Height => $image->{height},
@@ -143,24 +150,19 @@ sub get_image_info {
     my $class  = shift;
     my %params = @_;
 
-    ## Use Image::Size to check if the uploaded file is an image, and if so,
-    ## record additional image info (width, height).
-    eval { require Image::Size; };
-    return $class->error(
-        MT->translate(
-                  "Perl module Image::Size is required to determine "
-                . "the width and height of uploaded images."
-        )
-    ) if $@;
-
+    require Image::ExifTool;
+    my $info;
     if ( my $fh = $params{Fh} ) {
         seek $fh, 0, 0;
-        Image::Size::imgsize($fh);
+        require File::RandomAccess;
+        $info = Image::ExifTool::ImageInfo(File::RandomAccess->new($fh));
+        seek $fh, 0, 0;
     }
     elsif ( my $filename = $params{Filename} ) {
-        local $Image::Size::NO_CACHE = 1;
-        Image::Size::imgsize($filename);
+        $info = Image::ExifTool::ImageInfo($filename);
     }
+    return unless $info;
+    return int($info->{ImageWidth} || 0), int($info->{ImageHeight} || 0), $info->{FileTypeExtension};
 }
 
 sub get_image_type {
@@ -265,15 +267,21 @@ sub remove_metadata {
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;
     $exif->ExtractInfo($file);
-    if ( $exif->GetValue('Error') || $exif->GetValue('Warning') ) {
+    if ($exif->GetValue('Error')) {
         return 1;
     }
 
     $exif = Image::ExifTool->new;
-    $exif->SetNewValuesFromFile($file);
+    $exif->ExtractInfo($file);
+
+    my $orientation = $exif->GetValue('Orientation');
+
     $exif->SetNewValue('*');
-    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 )
-        if lc($file) =~ /\.jpe?g$/;
+    if (lc($file) =~ /\.jpe?g$/) {
+        $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
+        $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
+        $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
+    }
     $exif->WriteInfo($file)
         or $class->trans_error( 'Writing metadata failed: [_1]',
         $exif->GetValue('Error') );

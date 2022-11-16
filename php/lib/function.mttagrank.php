@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,7 +7,7 @@
 
 function smarty_function_mttagrank($args, &$ctx) {
     $blog_id = $ctx->stash('blog_id');
-    $max_level = $args['max'];
+    $max_level = isset($args['max']) ? $args['max'] : null;
     $max_level or $max_level = 6;
 
     $tag = $ctx->stash('Tag');

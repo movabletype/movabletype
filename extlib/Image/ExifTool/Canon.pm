@@ -88,7 +88,7 @@ sub ProcessCTMD($$$);
 sub ProcessExifInfo($$$);
 sub SwapWords($);
 
-$VERSION = '4.33';
+$VERSION = '4.50';
 
 # Note: Removed 'USM' from 'L' lenses since it is redundant - PH
 # (or is it?  Ref 32 shows 5 non-USM L-type lenses)
@@ -401,7 +401,7 @@ $VERSION = '4.33';
     195 => 'Canon EF 35-105mm f/4.5-5.6 USM', #32
     196 => 'Canon EF 75-300mm f/4-5.6 USM', #15/32
     197 => 'Canon EF 75-300mm f/4-5.6 IS USM or Sigma Lens',
-    197.1 => 'Sigma 18-300mm f/3.5-6.3 DC Macro OS HS', #50
+    197.1 => 'Sigma 18-300mm f/3.5-6.3 DC Macro OS HSM', #50
     198 => 'Canon EF 50mm f/1.4 USM or Other Lens',
     198.1 => 'Zeiss Otus 55mm f/1.4 ZE', #JR (seen only on Sony camera)
     198.2 => 'Zeiss Otus 85mm f/1.4 ZE', #JR (NC)
@@ -473,9 +473,11 @@ $VERSION = '4.33';
     253 => 'Canon EF 70-200mm f/2.8L IS II USM + 2x', #PH (NC)
     253.1 => 'Canon EF 70-200mm f/2.8L IS III USM + 2x', #PH (NC)
     # 253.2 => 'Tamron SP 70-200mm f/2.8 Di VC USD G2 (A025) + 2x', #forum9367
-    254 => 'Canon EF 100mm f/2.8L Macro IS USM', #42
-    255 => 'Sigma 24-105mm f/4 DG OS HSM | A or Other Sigma Lens', #50
+    254 => 'Canon EF 100mm f/2.8L Macro IS USM or Tamron Lens', #42
+    254.1 => 'Tamron SP 90mm f/2.8 Di VC USD 1:1 Macro (F017)', #PH
+    255 => 'Sigma 24-105mm f/4 DG OS HSM | A or Other Lens', #50
     255.1 => 'Sigma 180mm f/2.8 EX DG OS HSM APO Macro', #50
+    255.2 => 'Tamron SP 70-200mm f/2.8 Di VC USD', #exiv issue 1202 (A009)
     368 => 'Sigma 14-24mm f/2.8 DG HSM | A or other Sigma Lens', #IB (A018)
     368.1 => 'Sigma 20mm f/1.4 DG HSM | A', #50 (newer firmware)
     368.2 => 'Sigma 50mm f/1.4 DG HSM | A', #50
@@ -486,7 +488,9 @@ $VERSION = '4.33';
     368.7 => 'Sigma 85mm f/1.4 DG HSM | A', #IB (016)
     368.8 => 'Sigma 105mm f/1.4 DG HSM', #IB (A018)
     368.9 => 'Sigma 14-24mm f/2.8 DG HSM', #IB (A018)
-   '368.10' => 'Sigma 70mm f/2.8 DG Macro', #IB (A018)
+   '368.10' => 'Sigma 35mm f/1.4 DG HSM | A', #PH (012)
+   '368.11' => 'Sigma 70mm f/2.8 DG Macro', #IB (A018)
+   '368.12' => 'Sigma 18-35mm f/1.8 DC HSM | A', #50
     # Note: LensType 488 (0x1e8) is reported as 232 (0xe8) in 7D CameraSettings
     488 => 'Canon EF-S 15-85mm f/3.5-5.6 IS USM', #PH
     489 => 'Canon EF 70-300mm f/4-5.6L IS USM', #Gerald Kapounek
@@ -524,6 +528,7 @@ $VERSION = '4.33';
     749 => 'Tamron 100-400mm f/4.5-6.3 Di VC USD A035E + 2x', #IB
     750 => 'Canon EF 35mm f/1.4L II USM or Tamron Lens', #42
     750.1 => 'Tamron SP 85mm f/1.8 Di VC USD (F016)', #Exiv2#1072
+    750.2 => 'Tamron SP 45mm f/1.8 Di VC USD (F013)', #PH
     751 => 'Canon EF 16-35mm f/2.8L III USM', #42
     752 => 'Canon EF 24-105mm f/4L IS II USM', #42
     753 => 'Canon EF 85mm f/1.4L IS USM', #42
@@ -531,7 +536,7 @@ $VERSION = '4.33';
     757 => 'Canon EF 400mm f/2.8L IS III USM', #IB
     758 => 'Canon EF 600mm f/4L IS III USM', #IB
 
-    1136 => 'Sigma 24-70mm f/2.8 DG OS HSM | Art 017', #IB
+    1136 => 'Sigma 24-70mm f/2.8 DG OS HSM | A', #IB (017)
     # (STM lenses - 0x10xx)
     4142 => 'Canon EF-S 18-135mm f/3.5-5.6 IS STM',
     4143 => 'Canon EF-M 18-55mm f/3.5-5.6 IS STM or Tamron Lens',
@@ -552,7 +557,8 @@ $VERSION = '4.33';
     4158 => 'Canon EF-S 18-55mm f/4-5.6 IS STM', #PH
     4159 => 'Canon EF-M 32mm f/1.4 STM', #42
     4160 => 'Canon EF-S 35mm f/2.8 Macro IS STM', #42
-    4208 => 'Sigma 56mm f/1.4 DC DN | C', #forum10603
+    4208 => 'Sigma 56mm f/1.4 DC DN | C or other Sigma Lens', #forum10603
+    4208.1 => 'Sigma 30mm F1.4 DC DN | C', #git issue#83 (016)
     # (Nano USM lenses - 0x90xx)
     36910 => 'Canon EF 70-300mm f/4-5.6 IS II USM', #42
     36912 => 'Canon EF-S 18-135mm f/3.5-5.6 IS USM', #42
@@ -563,14 +569,30 @@ $VERSION = '4.33';
     61494 => 'Canon CN-E 85mm T1.3 L F', #PH
     61495 => 'Canon CN-E 135mm T2.2 L F', #PH
     61496 => 'Canon CN-E 35mm T1.5 L F', #PH
-    61182 => 'Canon RF 35mm F1.8 Macro IS STM or other Canon RF Lens', #IB
-    61182.1 => 'Canon RF 50mm F1.2 L USM', #IB
-    61182.2 => 'Canon RF 24-105mm F4 L IS USM', #IB
-    61182.3 => 'Canon RF 28-70mm F2 L USM', #IB
-    61182.4 => 'Canon RF 85mm F1.2L USM', #IB
-    61182.5 => 'Canon RF 24-240mm F4-6.3 IS USM', #IB
-    61182.6 => 'Canon RF 24-70mm F2.8 L IS USM', #PH
-    61182.7 => 'Canon RF 15-35mm F2.8 L IS USM', #PH
+    # see RFLensType tag for master list of 61182 RF lenses
+    61182 => 'Canon RF 50mm F1.2L USM or other Canon RF Lens',
+    61182.1 => 'Canon RF 24-105mm F4L IS USM',
+    61182.2 => 'Canon RF 28-70mm F2L USM',
+    61182.3 => 'Canon RF 35mm F1.8 MACRO IS STM',
+    61182.4 => 'Canon RF 85mm F1.2L USM',
+    61182.5 => 'Canon RF 85mm F1.2L USM DS',
+    61182.6 => 'Canon RF 24-70mm F2.8L IS USM',
+    61182.7 => 'Canon RF 15-35mm F2.8L IS USM',
+    61182.8 => 'Canon RF 24-240mm F4-6.3 IS USM',
+    61182.9 => 'Canon RF 70-200mm F2.8L IS USM',
+   '61182.10' => 'Canon RF 85mm F2 MACRO IS STM',
+   '61182.11' => 'Canon RF 600mm F11 IS STM',
+   '61182.12' => 'Canon RF 600mm F11 IS STM + RF1.4x',
+   '61182.13' => 'Canon RF 600mm F11 IS STM + RF2x',
+   '61182.14' => 'Canon RF 800mm F11 IS STM',
+   '61182.15' => 'Canon RF 800mm F11 IS STM + RF1.4x',
+   '61182.16' => 'Canon RF 800mm F11 IS STM + RF2x',
+   '61182.17' => 'Canon RF 24-105mm F4-7.1 IS STM',
+   '61182.18' => 'Canon RF 100-500mm F4.5-7.1L IS USM',
+   '61182.19' => 'Canon RF 100-500mm F4.5-7.1L IS USM + RF1.4x',
+   '61182.20' => 'Canon RF 100-500mm F4.5-7.1L IS USM + RF2x',
+   '61182.21' => 'Canon RF 70-200mm F4L IS USM', #42
+   '61182.22' => 'Canon RF 50mm F1.8 STM', #42
     65535 => 'n/a',
 );
 
@@ -916,13 +938,18 @@ $VERSION = '4.33';
     0x80000406 => 'EOS 6D Mark II', #IB/42
     0x80000408 => 'EOS 77D / 9000D',
     0x80000417 => 'EOS Rebel SL2 / 200D / Kiss X9', #IB/42
+    0x80000421 => 'EOS R5', #PH
     0x80000422 => 'EOS Rebel T100 / 4000D / 3000D', #IB (3000D in China; Kiss? - PH)
     0x80000424 => 'EOS R', #IB
     0x80000428 => 'EOS-1D X Mark III', #IB
     0x80000432 => 'EOS Rebel T7 / 2000D / 1500D / Kiss X90', #IB
     0x80000433 => 'EOS RP',
+    0x80000435 => 'EOS Rebel T8i / 850D / X10i', #JR/PH
     0x80000436 => 'EOS SL3 / 250D / Kiss X10', #25
     0x80000437 => 'EOS 90D', #IB
+    0x80000453 => 'EOS R6', #PH
+    0x80000467 => 'PowerShot ZOOM',
+    0x80000468 => 'EOS M50 Mark II / Kiss M2', #IB
     0x80000520 => 'EOS D2000C', #IB
     0x80000560 => 'EOS D6000C', #PH (guess)
 );
@@ -1796,6 +1823,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         PrintConv => {
             1 => 'sRGB',
             2 => 'Adobe RGB',
+            65535 => 'n/a',
         },
     },
     0xb6 => {
@@ -1877,6 +1905,11 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
             Condition => '$count == 1816 or $count == 1820 or $count == 1824',
             Name => 'ColorData9',
             SubDirectory => { TagTable => 'Image::ExifTool::Canon::ColorData9' },
+        },
+        {   # (int16u[2024|3656]) - 1DXmkIII (2024) ref IB, R5/R6 (3656) ref PH
+            Condition => '$count == 2024 or $count == 3656',
+            Name => 'ColorData10',
+            SubDirectory => { TagTable => 'Image::ExifTool::Canon::ColorData10' },
         },
         {
             Name => 'ColorDataUnknown',
@@ -2059,7 +2092,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
     4 => {
         Name => 'CanonFlashMode',
         PrintConv => {
-            -1 => "n/a", # (PH, EOS M MOV video)
+            -1 => 'n/a', # (PH, EOS M MOV video)
             0 => 'Off',
             1 => 'Auto',
             2 => 'On',
@@ -2100,6 +2133,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
            16 => 'Pan Focus', #PH
            # 137 - Single?
            256 => 'AF + MF', #PH (NC, EOS M)
+           257 => 'Live View', #forum12082
            512 => 'Movie Snap Focus', #48
            519 => 'Movie Servo AF', #PH (NC, EOS M)
         },
@@ -2120,6 +2154,8 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
             11 => 'CRM', #PH (C200 CRM)
             12 => 'CR3', #PH (EOS R)
             13 => 'CR3+JPEG', #PH (EOS R)
+            14 => 'HIF', #PH (NC)
+            15 => 'CR3+HIF', #PH (1DXmkIII)
         },
     },
     10 => {
@@ -4508,6 +4544,16 @@ my %ciMaxFocal = (
             2 => 'Rotate 270 CW',
         },
     },
+    0x3a => { #IB
+        Name => 'CameraOrientation',
+        Condition => '$$self{Model} =~ /\b(1200D|REBEL T5|Kiss X70)\b/',
+        Notes => '1200D only',
+        PrintConv => {
+            0 => 'Horizontal (normal)',
+            1 => 'Rotate 90 CW',
+            2 => 'Rotate 270 CW',
+        },
+    },
     0x55 => {
         Name => 'FocusDistanceUpper',
         Condition => '$$self{Model} =~ /EOS 60D$/',
@@ -4648,7 +4694,7 @@ my %ciMaxFocal = (
     FIRST_ENTRY => 0,
     PRIORITY => 0,
     GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
-    NOTES => 'CameraInfo tags for the EOS 70D.',
+    NOTES => 'CameraInfo tags for the EOS 80D.',
     0x03 => { %ciFNumber },
     0x04 => { %ciExposureTime },
     0x06 => { %ciISO },
@@ -5224,6 +5270,14 @@ my %ciMaxFocal = (
     0x06 => { %ciISO },
     0x1b => { %ciCameraTemperature }, # (700D + 0)
     0x23 => { %ciFocalLength }, # (700D + 0)
+    0x96 => { #IB (700D + 0x19)
+        Name => 'CameraOrientation',
+        PrintConv => {
+            0 => 'Horizontal (normal)',
+            1 => 'Rotate 90 CW',
+            2 => 'Rotate 270 CW',
+        },
+    },
     0xa5 => { # (700D + 0x19)
         Name => 'FocusDistanceUpper',
         %focusDistanceByteSwap,
@@ -5654,6 +5708,13 @@ my %ciMaxFocal = (
         Priority => 0,
         ValueConv => 'unpack("H*",$val)',
         ValueConvInv => 'length($val) < 10 and $val = 0 x (10-length($val)) . $val; pack("H*",$val)',
+    },
+    0x5c1 => {
+        Name => 'FirmwareVersion',
+        Format => 'string[6]',
+        Writable => 0,
+        Condition => '$$valPt =~ /^\d\.\d\.\d\0/',
+        Notes => 'M50', # (firmware 1.0.0)
     },
 );
 
@@ -6671,6 +6732,37 @@ my %ciMaxFocal = (
     25 => { #PH
         Name => 'FlashExposureLock',
         PrintConv => \%offOn,
+    },
+    0x3d => { #IB
+        Name => 'RFLensType',
+        Format => 'int16u',
+        PrintConv => {
+            0 => 'n/a',
+            257 => 'Canon RF 50mm F1.2L USM',
+            258 => 'Canon RF 24-105mm F4L IS USM',
+            259 => 'Canon RF 28-70mm F2L USM',
+            260 => 'Canon RF 35mm F1.8 MACRO IS STM',
+            261 => 'Canon RF 85mm F1.2L USM',
+            262 => 'Canon RF 85mm F1.2L USM DS',
+            263 => 'Canon RF 24-70mm F2.8L IS USM',
+            264 => 'Canon RF 15-35mm F2.8L IS USM',
+            265 => 'Canon RF 24-240mm F4-6.3 IS USM',
+            266 => 'Canon RF 70-200mm F2.8L IS USM',
+            267 => 'Canon RF 85mm F2 MACRO IS STM',
+            268 => 'Canon RF 600mm F11 IS STM',
+            269 => 'Canon RF 600mm F11 IS STM + RF1.4x',
+            270 => 'Canon RF 600mm F11 IS STM + RF2x',
+            271 => 'Canon RF 800mm F11 IS STM',
+            272 => 'Canon RF 800mm F11 IS STM + RF1.4x',
+            273 => 'Canon RF 800mm F11 IS STM + RF2x',
+            274 => 'Canon RF 24-105mm F4-7.1 IS STM',
+            275 => 'Canon RF 100-500mm F4.5-7.1L IS USM',
+            276 => 'Canon RF 100-500mm F4.5-7.1L IS USM + RF1.4x',
+            277 => 'Canon RF 100-500mm F4.5-7.1L IS USM + RF2x',
+            278 => 'Canon RF 70-200mm F4L IS USM', #42
+            280 => 'Canon RF 50mm F1.8 STM', #42
+            # Note: add new RF lenses to %canonLensTypes with ID 61182
+        },
     },
 );
 
@@ -8014,7 +8106,6 @@ my %ciMaxFocal = (
     0x149 => { #IB
         Name => 'PerChannelBlackLevel',
         Format => 'int16u[4]',
-        Notes => '1300D',
     },
     # 0x318 - PerChannelBlackLevel again (ref IB)
     0x31c => { #IB
@@ -8027,6 +8118,128 @@ my %ciMaxFocal = (
         Format => 'int16u',
     },
     0x31e => { #IB
+        Name => 'LinearityUpperMargin',
+        Format => 'int16u',
+    },
+);
+
+# Color data (MakerNotes tag 0x4001, count=2024,3656)
+# (same as ColorData9 but shifted up by 0x0e, ref PH)
+%Image::ExifTool::Canon::ColorData10 = (
+    %binaryDataAttrs,
+    FORMAT => 'int16s',
+    FIRST_ENTRY => 0,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    DATAMEMBER => [ 0 ],
+    IS_SUBDIR => [ 0x118 ],
+    0x00 => {
+        Name => 'ColorDataVersion',
+        DataMember => 'ColorDataVersion',
+        RawConv => '$$self{ColorDataVersion} = $val',
+        PrintConv => {
+            32 => '32 (1DXmkIII)', #IB
+            33 => '33 (R5/R6)',
+        },
+    },
+    0x55 => { Name => 'WB_RGGBLevelsAsShot',     Format => 'int16s[4]' },
+    0x59 => 'ColorTempAsShot',
+    0x5a => { Name => 'WB_RGGBLevelsAuto',       Format => 'int16s[4]' },
+    0x5e => 'ColorTempAuto',
+    0x5f => { Name => 'WB_RGGBLevelsMeasured',   Format => 'int16s[4]' },
+    0x63 => 'ColorTempMeasured',
+    0x64 => { Name => 'WB_RGGBLevelsUnknown',   Format => 'int16s[4]', Unknown => 1 },
+    0x68 => { Name => 'ColorTempUnknown',  Unknown => 1 },
+    0x69 => { Name => 'WB_RGGBLevelsUnknown2',  Format => 'int16s[4]', Unknown => 1 },
+    0x6d => { Name => 'ColorTempUnknown2', Unknown => 1 },
+    0x6e => { Name => 'WB_RGGBLevelsUnknown3',  Format => 'int16s[4]', Unknown => 1 },
+    0x72 => { Name => 'ColorTempUnknown3', Unknown => 1 },
+    0x73 => { Name => 'WB_RGGBLevelsUnknown4',  Format => 'int16s[4]', Unknown => 1 },
+    0x77 => { Name => 'ColorTempUnknown4', Unknown => 1 },
+    0x78 => { Name => 'WB_RGGBLevelsUnknown5',  Format => 'int16s[4]', Unknown => 1 },
+    0x7c => { Name => 'ColorTempUnknown5', Unknown => 1 },
+    0x7d => { Name => 'WB_RGGBLevelsUnknown6',  Format => 'int16s[4]', Unknown => 1 },
+    0x81 => { Name => 'ColorTempUnknown6', Unknown => 1 },
+    0x82 => { Name => 'WB_RGGBLevelsUnknown7',  Format => 'int16s[4]', Unknown => 1 },
+    0x86 => { Name => 'ColorTempUnknown7', Unknown => 1 },
+    0x87 => { Name => 'WB_RGGBLevelsUnknown8',  Format => 'int16s[4]', Unknown => 1 },
+    0x8b => { Name => 'ColorTempUnknown8', Unknown => 1 },
+    0x8c => { Name => 'WB_RGGBLevelsUnknown9',  Format => 'int16s[4]', Unknown => 1 },
+    0x90 => { Name => 'ColorTempUnknown9', Unknown => 1 },
+    0x91 => { Name => 'WB_RGGBLevelsUnknown10',  Format => 'int16s[4]', Unknown => 1 },
+    0x95 => { Name => 'ColorTempUnknown10', Unknown => 1 },
+    0x96 => { Name => 'WB_RGGBLevelsDaylight',   Format => 'int16s[4]' },
+    0x9a => 'ColorTempDaylight',
+    0x9b => { Name => 'WB_RGGBLevelsShade',      Format => 'int16s[4]' },
+    0x9f => 'ColorTempShade',
+    0xa0 => { Name => 'WB_RGGBLevelsCloudy',     Format => 'int16s[4]' },
+    0xa4 => 'ColorTempCloudy',
+    0xa5 => { Name => 'WB_RGGBLevelsTungsten',   Format => 'int16s[4]' },
+    0xa9 => 'ColorTempTungsten',
+    0xaa => { Name => 'WB_RGGBLevelsFluorescent',Format => 'int16s[4]' },
+    0xae => 'ColorTempFluorescent',
+    0xaf => { Name => 'WB_RGGBLevelsKelvin',     Format => 'int16s[4]' },
+    0xb3 => 'ColorTempKelvin',
+    0xb4 => { Name => 'WB_RGGBLevelsFlash',      Format => 'int16s[4]' },
+    0xb8 => 'ColorTempFlash',
+    0xb9 => { Name => 'WB_RGGBLevelsUnknown11',  Format => 'int16s[4]', Unknown => 1 },
+    0xbd => { Name => 'ColorTempUnknown11', Unknown => 1 },
+    0xbe => { Name => 'WB_RGGBLevelsUnknown12',  Format => 'int16s[4]', Unknown => 1 },
+    0xc2 => { Name => 'ColorTempUnknown12', Unknown => 1 },
+    0xc3 => { Name => 'WB_RGGBLevelsUnknown13',  Format => 'int16s[4]', Unknown => 1 },
+    0xc7 => { Name => 'ColorTempUnknown13', Unknown => 1 },
+    0xc8 => { Name => 'WB_RGGBLevelsUnknown14',  Format => 'int16s[4]', Unknown => 1 },
+    0xcc => { Name => 'ColorTempUnknown14', Unknown => 1 },
+    0xcd => { Name => 'WB_RGGBLevelsUnknown15',  Format => 'int16s[4]', Unknown => 1 },
+    0xd1 => { Name => 'ColorTempUnknown15', Unknown => 1 },
+    0xd2 => { Name => 'WB_RGGBLevelsUnknown16',  Format => 'int16s[4]', Unknown => 1 },
+    0xd6 => { Name => 'ColorTempUnknown16', Unknown => 1 },
+    0xd7 => { Name => 'WB_RGGBLevelsUnknown17',  Format => 'int16s[4]', Unknown => 1 },
+    0xdb => { Name => 'ColorTempUnknown17', Unknown => 1 },
+    0xdc => { Name => 'WB_RGGBLevelsUnknown18',  Format => 'int16s[4]', Unknown => 1 },
+    0xe0 => { Name => 'ColorTempUnknown18', Unknown => 1 },
+    0xe1 => { Name => 'WB_RGGBLevelsUnknown19',  Format => 'int16s[4]', Unknown => 1 },
+    0xe5 => { Name => 'ColorTempUnknown19', Unknown => 1 },
+    0xe6 => { Name => 'WB_RGGBLevelsUnknown20',  Format => 'int16s[4]', Unknown => 1 },
+    0xea => { Name => 'ColorTempUnknown20', Unknown => 1 },
+    0xeb => { Name => 'WB_RGGBLevelsUnknown21',  Format => 'int16s[4]', Unknown => 1 },
+    0xef => { Name => 'ColorTempUnknown21', Unknown => 1 },
+    0xf0 => { Name => 'WB_RGGBLevelsUnknown22',  Format => 'int16s[4]', Unknown => 1 },
+    0xf4 => { Name => 'ColorTempUnknown22', Unknown => 1 },
+    0xf5 => { Name => 'WB_RGGBLevelsUnknown23',  Format => 'int16s[4]', Unknown => 1 },
+    0xf9 => { Name => 'ColorTempUnknown23', Unknown => 1 },
+    0xfa => { Name => 'WB_RGGBLevelsUnknown24',  Format => 'int16s[4]', Unknown => 1 },
+    0xfe => { Name => 'ColorTempUnknown24', Unknown => 1 },
+    0xff => { Name => 'WB_RGGBLevelsUnknown25',  Format => 'int16s[4]', Unknown => 1 },
+    0x103=> { Name => 'ColorTempUnknown25', Unknown => 1 },
+    0x104=> { Name => 'WB_RGGBLevelsUnknown26',  Format => 'int16s[4]', Unknown => 1 },
+    0x108=> { Name => 'ColorTempUnknown26', Unknown => 1 },
+    0x109=> { Name => 'WB_RGGBLevelsUnknown27',  Format => 'int16s[4]', Unknown => 1 },
+    0x10d=> { Name => 'ColorTempUnknown27', Unknown => 1 },
+    0x10e=> { Name => 'WB_RGGBLevelsUnknown28',  Format => 'int16s[4]', Unknown => 1 },
+    0x112=> { Name => 'ColorTempUnknown28', Unknown => 1 },
+    0x113=> { Name => 'WB_RGGBLevelsUnknown29',  Format => 'int16s[4]', Unknown => 1 },
+    0x117=> { Name => 'ColorTempUnknown29', Unknown => 1 },
+    0x118 => {
+        Name => 'ColorCalib',
+        Format => 'undef[120]',
+        Unknown => 1,
+        SubDirectory => { TagTable => 'Image::ExifTool::Canon::ColorCalib' }
+    },
+    0x157 => {
+        Name => 'PerChannelBlackLevel',
+        Format => 'int16u[4]',
+    },
+    # 0x326 - PerChannelBlackLevel again
+    0x32a => {
+        Name => 'NormalWhiteLevel',
+        Format => 'int16u',
+        RawConv => '$val || undef',
+    },
+    0x32b => {
+        Name => 'SpecularWhiteLevel',
+        Format => 'int16u',
+    },
+    0x32c => {
         Name => 'LinearityUpperMargin',
         Format => 'int16u',
     },
@@ -8540,7 +8753,7 @@ my %filterConv = (
         Name => 'MakerNoteCanon',
         SubDirectory => {
             TagTable => 'Image::ExifTool::Canon::Main',
-            ProcessProc => \&Image::ExifTool::ProcessTIFF,
+            ProcessProc => \&ProcessCMT3,
             WriteProc => \&Image::ExifTool::WriteTIFF,
         },
     },
@@ -9041,8 +9254,9 @@ sub PrintLensID(@)
                 push @likely, $tclens;
                 if ($maxAperture) {
                     # (not 100% sure that TC affects MaxAperture, but it should!)
-                    next if $maxAperture < $sa * $tc - 0.15;
-                    next if $maxAperture > $la * $tc + 0.15;
+                    # (RF 24-105mm F4L IS USM shows a MaxAperture of 4.177)
+                    next if $maxAperture < $sa * $tc - 0.18;
+                    next if $maxAperture > $la * $tc + 0.18;
                 }
                 push @matches, $tclens;
             }
@@ -9487,6 +9701,33 @@ sub CanonEvInv($)
 }
 
 #------------------------------------------------------------------------------
+# Read CMT3 maker notes from CR3 file
+# Inputs: 0) ExifTool object reference, 1) dirInfo ref, 2) tag table ref
+# Returns: data block (may be empty if no Exif data) or undef on error
+sub ProcessCMT3($$$)
+{
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+
+    # extract the static maker notes to copying to other file types if requested
+    # Note: this won't copy makernotes in the timed metadata since these are stored
+    # separately, but the only records they have that aren't in the static maker notes
+    # (for the M50) are: ColorData9, Flavor, CanonCameraInfoUnknown,
+    # VignettingCorrUnknown1, Canon_0x4033 and Canon_0x402e
+    if (($et->Options('MakerNotes') or $$et{REQ_TAG_LOOKUP}{makernotecanon}) and
+        $$dirInfo{DirLen} > 8)
+    {
+        my $dataPt = $$dirInfo{DataPt};
+        # remove old (unused) trailer
+        $$dataPt =~ s/(II\x2a\0|MM\0\x2a)\0{4,10}$//;
+        # remove TIFF header and append as the Canon makernote trailer
+        # (so offsets will be interpreted correctly)
+        my $val = substr($$dataPt,8) . substr($$dataPt,0,8);
+        $et->FoundTag($Image::ExifTool::Canon::uuid{CMT3}, \$val);
+    }
+    return $et->ProcessTIFF($dirInfo, $tagTablePtr);
+}
+
+#------------------------------------------------------------------------------
 # Process CTMD EXIF information
 # Inputs: 0) ExifTool object ref, 1) dirInfo ref, 2) tag table ref
 # Returns: 1 on success
@@ -9660,7 +9901,7 @@ Canon maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

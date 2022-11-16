@@ -1,0 +1,92 @@
+<__trans_section component="contentinfowidget">
+<mt:if name="ct_selects">
+<mtapp:widget
+   id="content-type-info"
+   hidden="1"
+   label="<__trans phrase="Content Type">">
+
+    <div id="ct_selects-field" class="form-group">
+      <label for="content_type_sel" id="content_type_sel-label" class="sr-only first-child"><__trans phrase="Select Content Type"></label>
+      <select name="content_type_sel" id="content_type_sel" class="custom-select form-control">
+      <mt:loop name="ct_selects">
+      <option value="<mt:var name="id" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+      </mt:loop>
+      </select>
+   </div>
+
+    <div id="ct_label-field" class="form-group">
+      <p id="ct_label-label" class="font-weight-bold"><__trans phrase="Label"></p>
+      <p id="ct_label"></p>
+    </div>
+
+    <div id="ct_id-field" class="form-group">
+      <p id="ct_id-label" class="font-weight-bold"><__trans phrase="ID"></p>
+      <p id="ct_id"></p>
+    </div>
+
+    <div id="ct_unique_id-field" class="form-group">
+      <label for="ct_unique_id" id="ct_unique_id-label" class="font-weight-bold"><__trans phrase="Unique ID"></label>
+      <div class="form-row">
+        <div class="col">
+          <input type="text" id="ct_unique_id" class="form-control id text full" readonly="readonly">
+        </div>
+        <div class="col-auto">
+          <a href="javascript:void(0)" id="copy_ct_unique_id" class="d-inline-block">
+            <mtapp:svgicon id="ic_duplicate" title="<__trans phrase="Copy Unique ID">" size="secondary">
+          </a>
+        </div>
+      </div>
+    </div>
+
+</mtapp:widget>
+
+<mtapp:widget
+   id="content-field-info"
+   hidden="1"
+   label="<__trans phrase="Content Field">">
+
+    <div id="content_field_sel-field" class="form-group">
+      <label for="content_field_sel" id="content_field_sel-label" class="sr-only font-weight-bold"><__trans phrase="Select Content Field"></label>
+      <select name="content_field_sel" id="content_field_sel" class="custom-select form-control">
+      </select>
+    </div>
+
+    <div id="cf_label-field" class="form-group">
+      <p id="cf_label-label" class="font-weight-bold"><__trans phrase="Label"></p>
+      <p id="cf_label"></p>
+    </div>
+
+    <div id="cf_id-field" class="form-group">
+      <p id="cf_id-label" class="font-weight-bold"><__trans phrase="ID"></p>
+      <p id="cf_id"></p>
+    </div>
+
+    <div id="cf_unique_id-field" class="form-group">
+      <label for="cf_unique_id" id="cf_unique_id-label" class="font-weight-bold"><__trans phrase="Unique ID"></label>
+      <div class="form-row">
+        <div class="col">
+          <input type="text" id="cf_unique_id" class="form-control id text full" readonly="readonly">
+        </div>
+        <div class="col-auto">
+          <a href="javascript:void(0)" id="copy_cf_unique_id" class="d-inline-block">
+            <mtapp:svgicon id="ic_duplicate" title="<__trans phrase="Copy Unique ID">" size="secondary">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div id="cf_type-field" class="last-child">
+      <p id="cf_type-label" class="font-weight-bold"><__trans phrase="Type"></p>
+      <p id="cf_type"></p>
+    </div>
+
+</mtapp:widget>
+<mt:else>
+<mtapp:widget
+   id="content-type-info"
+   label="<__trans phrase="Content Type">">
+<__trans phrase="No Content Type could be found.">
+<mt:if name="can_create_new_content_type"><a href="<mt:var name="script_url">?__mode=view&_type=content_type&blog_id=<mt:var name="blog_id">"><__trans phrase="Create a new Content Type?"></a></mt:if>
+</mtapp:widget>
+</mt:if>
+</__trans_section>

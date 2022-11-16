@@ -20,7 +20,7 @@ use MT::Template::Context;
 use MT::Test;
 use MT::Util qw(offset_time_list);
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $mt = MT->new or die MT->errstr;
 
@@ -41,6 +41,7 @@ $include->save;
 
 my $tmpl = MT::Template->new;
 $tmpl->blog_id( $blog->id );
+$tmpl->name('mytemplate');
 $tmpl->text('<mt:include module="Included Template">');
 $tmpl->type('custom');
 my $ctx = MT::Template::Context->new;

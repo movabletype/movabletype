@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+ * Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -242,7 +242,7 @@
                 var s = ed.mtEditorStatus;
                 $.each(hiddenControls, function(i, k) {
                     $container
-                        .find('.mce_' + k)
+                        .find('[aria-label="' + k + '"]')
                         .css({
                             display: ''
                         })
@@ -254,7 +254,7 @@
 
                 function update(key) {
                     if (! supporteds[key]) {
-                        $container.find('.mce_' + key)
+                        $container.find('[aria-label="' + key + '"]')
                             .css({
                                 display: 'none'
                             })
@@ -266,11 +266,9 @@
                 if (s.mode == 'source') {
                     proxies.source.setFormat(s.format);
                 }
-                else {
-                    $.each(ed.mtButtons, function(name, button) {
-                        update(name);
-                    });
-                }
+                $.each(ed.mtButtons, function(name) {
+                    update(name);
+                });
                 $(ed.editorContainer).find(' .mce-toolbar').each(function(i) {
                     if (buttonRows[s.mode][i]) {
                         $(this).show();

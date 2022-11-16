@@ -63,9 +63,11 @@
   </mt:if>
 </mt:loop>
 
+<mt:unless name="system_msg">
 <mt:setvarblock name="system_msg" append="1">
 <div id="msg-block"></div>
 </mt:setvarblock>
+</mt:unless>
 
 <mt:include name="include/basic_filter_forms.tmpl">
 
@@ -97,12 +99,12 @@
 <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_data.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_store.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
-<mt:if name="optimize_ui">
-  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">riot-ss/riot.ss.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/listing/listing.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:unless name="debug_riot">
+  <script type="text/javascript" src="<mt:var name="static_uri">riot/riot.min.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/ss/ss.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/listing/listing.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
 <mt:else>
-  <script type="riot/tag" src="<mt:var name="static_uri">riot-ss/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="riot/tag" src="<mt:var name="static_uri">js/ss/tag/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/raw.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/display-options.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -116,7 +118,12 @@
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-filter.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-</mt:if>
+</mt:unless>
+
+<mt:loop name="filter_types">
+<mt:setvarblock name="label"><mt:var name="label" encode_html="1"></mt:setvarblock>
+<script id="filter_types_field_<mt:var name="type">" type="text/html"><mt:var name="field" mteval="1"></script>
+</mt:loop>
 
 <script>
 var listStore;
@@ -133,16 +140,6 @@ jQuery.event.special.listReady = {
 (function () {
   var listColumns = <mt:var name="list_columns_json">;
   var listSortBy = '<mt:var name="default_sort_key">';
-
-  <mt:if name="limit_25">
-  var listLimit = 25;
-  <mt:elseif name="limit_50">
-  var listLimit = 50;
-  <mt:elseif name="limit_100">
-  var listLimit = 100;
-  <mt:elseif name="limit_200">
-  var listLimit = 200;
-  </mt:if>
 
   var objectType = '<mt:var name="object_type" escape="js">';
   var objectTypeForTableClass = '<mt:var name="object_type_for_table_class" escape="js">';
@@ -271,8 +268,8 @@ jQuery.event.special.listReady = {
   filterTypes.push({
     baseType: '<mt:var name="base_type">',
     <mt:if name="editable">editable: true,</mt:if>
-    field: '<mt:var name="field" mteval="1" regex_replace="/\n*/g":"">',
-    label: '<mt:var name="label">',
+    field: document.getElementById("filter_types_field_<mt:var name="type">").textContent,
+    label: '<mt:var name="label" encode_html="1" encode_js="1">',
     <mt:if name="singleton">singleton: true,</mt:if>
     type: '<mt:var name="type">'
   });
@@ -299,7 +296,7 @@ jQuery.event.special.listReady = {
     listClient: listClient,
 
     columns: listColumns,
-    limit: listLimit,
+    limit: <mt:var name="limit" escape="js">,
     page: 1,
     sortBy: listSortBy,
 

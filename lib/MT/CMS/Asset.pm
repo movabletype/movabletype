@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,6 +16,11 @@ my $default_thumbnail_size = 60;
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     my $user  = $app->user;
     my $perms = $app->permissions
         or return $app->permission_denied();
@@ -181,15 +186,8 @@ sub dialog_list_asset {
     my $blog;
     $blog = $blog_class->load($blog_id) if $blog_id;
 
-    my $edit_field = $app->param('edit_field') || '';
-    if ( $edit_field =~ m/^customfield_.*$/ ) {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            if $blog_id && !$app->can_do('access_to_insert_asset_list');
-    }
+    return $app->permission_denied()
+        if $blog_id && !$app->can_do('access_to_insert_asset_list');
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
@@ -221,7 +219,8 @@ sub dialog_list_asset {
 
     $app->add_breadcrumb( $app->translate("Files") );
 
-    if ($blog_id) {
+    my $content_field_id = $app->param('content_field_id');
+    if ($blog_id && !$content_field_id) {
         my $blog_ids = $app->_load_child_blog_ids($blog_id);
         push @$blog_ids, $blog_id;
         $terms{blog_id} = $blog_ids;
@@ -229,8 +228,9 @@ sub dialog_list_asset {
 
     my $hasher = build_asset_hasher(
         $app,
-        PreviewWidth  => 120,
-        PreviewHeight => 120
+        PreviewWidth     => 120,
+        PreviewHeight    => 120,
+        NoTags           => 1,
     );
 
     if ($class_filter) {
@@ -318,15 +318,8 @@ sub insert {
 
     $app->validate_magic() or return;
 
-    my $edit_field = $app->param('edit_field') || '';
-    if ( $edit_field =~ m/^customfield_.*$/ ) {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            unless $app->can_do('insert_asset');
-    }
+    return $app->permission_denied()
+        unless $app->can_do('insert_asset');
 
     my $text = $app->param('no_insert') ? "" : _process_post_upload($app);
     return unless defined $text;
@@ -340,6 +333,7 @@ sub insert {
     }
     my $tmpl;
 
+    my $edit_field = $app->param('edit_field') || '';
     my $id = $app->param('id') or return $app->errtrans("Invalid request.");
     my $asset = MT->model('asset')->load($id);
     if ($extension_message) {
@@ -372,6 +366,12 @@ sub asset_userpic {
     my ($param) = @_;
 
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        edit_field => [qw/MAYBE_STRING/],
+        id         => [qw/ID/],
+        user_id    => [qw/ID/],
+    }) or return;
 
     my ( $id, $asset );
     if ( $asset = $param->{asset} ) {
@@ -421,8 +421,8 @@ sub asset_userpic {
 
     my $thumb_html
         = $user
-        ? $user->userpic_html( Asset => $asset, Ts => 1 )
-        : $app->model('author')->userpic_html( Asset => $asset, Ts => 1 );
+        ? $user->userpic_html( Asset => $asset, Ts => 1, Lazy => 1 )
+        : $app->model('author')->userpic_html( Asset => $asset, Ts => 1, Lazy => 1 );
 
     $app->load_tmpl(
         'dialog/asset_userpic.tmpl',
@@ -543,6 +543,7 @@ sub js_upload_file {
                 }
             );
         },
+        js => 1,
     );
     return unless $asset;
 
@@ -612,6 +613,9 @@ sub js_upload_file {
 ### DEPRECATED: v6.2
 sub upload_file {
     my $app = shift;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
 
     if ( my $perms = $app->permissions ) {
         return $app->error( $app->translate("Permission denied.") )
@@ -961,7 +965,7 @@ sub post_delete {
                 "File '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->file_name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'asset',
             category => 'delete'
         }
@@ -978,8 +982,9 @@ sub build_asset_hasher {
     my $app = shift;
     my (%param) = @_;
     my ($default_thumb_width,   $default_thumb_height,
-        $default_preview_width, $default_preview_height
-    ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight )};
+        $default_preview_width, $default_preview_height,
+        $no_tags,
+    ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight NoTags )};
 
     require File::Basename;
     require JSON;
@@ -995,7 +1000,7 @@ sub build_asset_hasher {
         $row->{asset_type}        = $obj->class_type;
         $row->{asset_class_label} = $obj->class_label;
         my $file_path = $obj->file_path;    # has to be called to calculate
-        my $meta      = $obj->metadata;
+        my $meta      = $obj->metadata(no_tags => $no_tags);
 
         $row->{file_is_missing} = 0;
 
@@ -1033,21 +1038,16 @@ sub build_asset_hasher {
         if ( $obj->has_thumbnail && $obj->can_create_thumbnail ) {
             $row->{has_thumbnail}  = 1;
             $row->{can_edit_image} = 1;
-            my $height
-                = $thumb_height
-                || $default_thumb_height
-                || $default_thumbnail_size;
-            my $width
-                = $thumb_width
-                || $default_thumb_width
-                || $default_thumbnail_size;
-            my $square = $height == $default_thumbnail_size
-                && $width == $default_thumbnail_size;
+            my $height = $thumb_height || $default_thumb_height || $default_thumbnail_size;
+            my $width  = $thumb_width  || $default_thumb_width  || $default_thumbnail_size;
+            my $square = $height == $default_thumbnail_size && $width == $default_thumbnail_size;
+            my $thumbnail_method = $obj->can('maybe_dynamic_thumbnail_url') || 'thumbnail_url';
             @$meta{qw( thumbnail_url thumbnail_width thumbnail_height )}
-                = $obj->thumbnail_url(
+                = $obj->$thumbnail_method(
                 Height => $height,
                 Width  => $width,
-                Square => $square
+                Square => $square,
+                Ts     => 1,
                 );
 
             $meta->{thumbnail_width_offset}
@@ -1057,9 +1057,10 @@ sub build_asset_hasher {
 
             if ( $default_preview_width && $default_preview_height ) {
                 @$meta{qw( preview_url preview_width preview_height )}
-                    = $obj->thumbnail_url(
+                    = $obj->$thumbnail_method(
                     Height => $default_preview_height,
                     Width  => $default_preview_width,
+                    Ts     => 1,
                     );
                 $meta->{preview_width_offset} = int(
                     ( $default_preview_width - $meta->{preview_width} ) / 2 );
@@ -1119,16 +1120,24 @@ sub build_asset_table {
     }
     return [] unless $iter;
 
-    my @data;
-    my $hasher = build_asset_hasher($app);
+    my @objs;
     while ( my $obj = $iter->() ) {
+        push @objs, $obj;
+        last if $limit and @objs > $limit;
+    }
+    return [] unless @objs;
+
+    require MT::Meta::Proxy;
+    MT::Meta::Proxy->bulk_load_meta_objects(\@objs);
+
+    my @data;
+    my $hasher = build_asset_hasher($app, NoTags => 1);
+    for my $obj (@objs) {
         my $row = $obj->get_values;
         $hasher->( $obj, $row );
         $row->{object} = $obj;
         push @data, $row;
-        last if $limit and @data > $limit;
     }
-    return [] unless @data;
 
     $param->{template_table}[0]              = {%$list_pref};
     $param->{template_table}[0]{object_loop} = \@data;
@@ -1239,38 +1248,45 @@ sub _make_upload_destinations {
         path  => '%s/%y/%m/%d',
         };
 
-    if ( $blog->column('archive_path') ) {
-        $class_label = MT->translate('Archive');
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>', $class_label ),
-            path  => '%a',
-            };
-        push @dest_root,
-            {
-            label => $app->translate(
-                '<[_1] Root>/[_2]',
-                $class_label, $user_basename
-            ),
-            path => '%a/%u',
-            };
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>/[_2]', $class_label, $y ),
-            path  => '%a/%y',
-            };
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>/[_2]', $class_label, $ym ),
-            path  => '%a/%y/%m',
-            };
-        push @dest_root,
-            {
-            label =>
-                $app->translate( '<[_1] Root>/[_2]', $class_label, $ymd ),
-            path => '%a/%y/%m/%d',
-            };
+    my $archive_flg = { 'archive' => 1, 'disabled' => 0};
+    unless ( $blog->column('archive_path') ) {
+        $archive_flg->{disabled} = 1;
     }
+    $class_label = MT->translate('Archive');
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>', $class_label ),
+        path  => '%a',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate(
+            '<[_1] Root>/[_2]',
+            $class_label, $user_basename
+        ),
+        path => '%a/%u',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>/[_2]', $class_label, $y ),
+        path  => '%a/%y',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>/[_2]', $class_label, $ym ),
+        path  => '%a/%y/%m',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label =>
+            $app->translate( '<[_1] Root>/[_2]', $class_label, $ymd ),
+        path => '%a/%y/%m/%d',
+        %$archive_flg
+        };
 
     if ( $blog->upload_destination ) {
         if ( my @selected
@@ -1370,9 +1386,10 @@ sub _set_start_upload_params {
     $param;
 }
 
-### DEPRECATED: v6.2
+### Not used from Web UI since v6.2, but still used by DataAPI endpoints
 sub _upload_file_compat {
     my $app = shift;
+
     my (%upload_param) = @_;
     require MT::Image;
 
@@ -1472,6 +1489,8 @@ sub _upload_file_compat {
                     )[2];
                 if (   $ext_new ne lc($ext_old)
                     && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
+                    && !( lc($ext_old) eq 'ico'  && $ext_new =~ /^(bmp|png|gif)$/ )
+                    && !( lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg' )
                     && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
                 {
                     if ( $basename eq $ext_old ) {
@@ -1537,7 +1556,7 @@ sub _upload_file_compat {
                 return $eh->(
                     $app, %param,
                     error => $app->translate(
-                        "Invalid extra path '[_1]'",
+                        "Invalid upload path '[_1]'",
                         $relative_path
                     )
                 );
@@ -1891,6 +1910,10 @@ sub _upload_file_compat {
         # and ImageQualityPng.
         $asset->change_quality
             if $app->config('AutoChangeImageQuality');
+
+        if ($app->config('ForceExifRemoval')) {
+            $asset->remove_all_metadata;
+        }
     }
 
     $asset->mime_type($mimetype) if $mimetype;
@@ -2003,7 +2026,7 @@ sub _upload_file {
     $basename
         = Encode::is_utf8($basename)
         ? $basename
-        : Encode::decode( $app->charset,
+        : Encode::decode( $upload_param{js} ? 'utf-8' : $app->charset,
         File::Basename::basename($basename) );
 
     # Change to real file extension
@@ -2014,6 +2037,8 @@ sub _upload_file {
 
         if (   $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
+            && !( lc($ext_old) eq 'ico'  && $ext_new =~ /^(?:bmp|png|gif)$/ )
+            && !( lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg' )
             && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
         {
             if ( $basename eq $ext_old ) {
@@ -2097,18 +2122,18 @@ sub _upload_file {
 
         # Make directory if not exists
         $extra_path = $app->param('extra_path') || '';
+        if ( $dest ne '' ) {
+            $extra_path = File::Spec->catdir( $dest, $extra_path );
+        }
         if ($extra_path) {
             if ( $extra_path =~ m!\.\.|\0|\|! ) {
                 return $eh->(
                     $app, %param,
                     error => $app->translate(
-                        "Invalid extra path '[_1]'", $extra_path
+                        "Invalid upload path '[_1]'", $extra_path
                     )
                 );
             }
-        }
-        if ( $dest ne '' ) {
-            $extra_path = File::Spec->catdir( $dest, $extra_path );
         }
 
         my $path = File::Spec->catdir( $root_path, $extra_path );
@@ -2431,6 +2456,10 @@ sub _upload_file {
         # and ImageQualityPng.
         $asset->change_quality
             if $app->config('AutoChangeImageQuality');
+
+        if ($app->config('ForceExifRemoval')) {
+            $asset->remove_all_metadata;
+        }
     }
 
     $asset->mime_type($mimetype) if $mimetype;
@@ -2649,6 +2678,12 @@ sub _check_thumbnail_dir {
 sub dialog_edit_asset {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        id          => [qw/ID/],
+        saved_image => [qw/MAYBE_STRING/],
+    }) or return;
+
     $app->validate_magic() or return;
 
     my $blog_id = $app->param('blog_id');
@@ -2769,6 +2804,13 @@ sub dialog_edit_asset {
 sub js_save_asset {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        description => [qw/MAYBE_STRING/],
+        id          => [qw/ID/],
+        label       => [qw/MAYBE_STRING/],
+    }) or return $app->json_error($app->errstr);
+
     $app->validate_magic()
         or return $app->error(
         $app->json_error( $app->translate("Invalid Request.") ) );
@@ -2829,6 +2871,12 @@ sub js_save_asset {
 
 sub dialog_edit_image {
     my ($app) = @_;
+
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        id          => [qw/ID/],
+        return_args => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $asset;
 
@@ -2891,6 +2939,7 @@ sub thumbnail_image {
     # Thumbnail size on "Edit Image" screen is 240.
     my $width  = $app->param('width')  || 400;
     my $height = $app->param('height') || 400;
+    my $square = $app->param('square');
 
     my $asset;
 
@@ -2904,12 +2953,12 @@ sub thumbnail_image {
     }
 
     # Check permission.
-    if ( !can_view( undef, $app, $id ) ) {
+    if ( !$app->can_do('view_thumbnail_image') ) {
         return $app->permission_denied;
     }
 
     my ($thumbnail)
-        = $asset->thumbnail_file( Width => $width, Height => $height )
+        = $asset->thumbnail_file( Width => $width, Height => $height, Square => $square )
         or return $app->error( $asset->errstr );
 
     require MT::FileMgr;
@@ -2923,6 +2972,14 @@ sub thumbnail_image {
 
 sub transform_image {
     my ($app) = @_;
+
+    $app->validate_param({
+        actions             => [qw/MAYBE_STRING/],
+        id                  => [qw/ID/],
+        remove_all_metadata => [qw/MAYBE_STRING/],
+        remove_gps_metadata => [qw/MAYBE_STRING/],
+        return_args         => [qw/MAYBE_STRING/],
+    }) or return;
 
     if ( !$app->validate_magic ) {
         return;
@@ -2981,6 +3038,21 @@ sub transform_image {
 sub dialog_asset_modal {
     my $app = shift;
 
+    $app->validate_param({
+        asset_select     => [qw/MAYBE_STRING/],
+        blog_id          => [qw/ID/],
+        can_multi        => [qw/MAYBE_STRING/],
+        content_field_id => [qw/ID/],
+        edit_field       => [qw/MAYBE_STRING/],
+        filter           => [qw/MAYBE_STRING/],
+        filter_val       => [qw/MAYBE_STRING/],
+        next_mode        => [qw/MAYBE_STRING/],
+        no_insert        => [qw/MAYBE_STRING/],
+        require_type     => [qw/MAYBE_STRING/],
+        search           => [qw/MAYBE_STRING/],
+        upload_mode      => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $blog_id = $app->param('blog_id');
     my $mode_userpic = $app->param('upload_mode') || '';
     return $app->return_to_dashboard( redirect => 1 )
@@ -2993,16 +3065,8 @@ sub dialog_asset_modal {
     my %param;
     _set_start_upload_params( $app, \%param );
 
-    if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
-    {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            if $blog_id && !$app->can_do('access_to_insert_asset_list');
-    }
+    return $app->permission_denied()
+        if $blog_id && !$app->can_do('access_to_insert_asset_list');
 
     $param{can_multi} = 1
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
@@ -3072,6 +3136,16 @@ sub dialog_insert_options {
     my $app    = shift;
     my (%args) = @_;
     my $assets = $args{assets};
+
+    $app->validate_param({
+        asset_select        => [qw/MAYBE_STRING/],
+        blog_id             => [qw/ID/],
+        content_field_id    => [qw/ID/],
+        direct_asset_insert => [qw/MAYBE_STRING/],
+        edit_field          => [qw/MAYBE_STRING/],
+        id                  => [qw/IDS/],
+        no_insert           => [qw/MAYBE_STRING/],
+    }) or return;
 
     # Validate magic token
     $app->validate_magic() or return;
@@ -3155,15 +3229,18 @@ sub insert_asset {
 
     $app->validate_magic() or return;
 
+    $app->validate_param({
+        content_field_id    => [qw/ID/],
+        direct_asset_insert => [qw/MAYBE_STRING/],
+        edit_field          => [qw/MAYBE_STRING/],
+        new_entry           => [qw/MAYBE_STRING/],
+        no_insert           => [qw/MAYBE_STRING/],
+        prefs_json          => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $edit_field = $app->param('edit_field') || '';
-    if ( $edit_field =~ m/^customfield_.*$/ ) {
-        return $app->permission_denied()
-            unless $app->permissions;
-    }
-    else {
-        return $app->permission_denied()
-            unless $app->can_do('insert_asset');
-    }
+    return $app->permission_denied()
+        unless $app->can_do('insert_asset');
 
     require MT::Asset;
     my $text;
@@ -3190,9 +3267,11 @@ sub insert_asset {
     else {
         # Parse JSON.
         my $prefs = $app->param('prefs_json');
-        $prefs =~ s/^"|"$//g;
-        $prefs =~ s/\\"/"/g;
-        $prefs =~ s/\\\\/\\/g;
+        if (MT->config->UseMTCommonJSON) {
+            $prefs =~ s/^"|"$//g;
+            $prefs =~ s/\\"/"/g;
+            $prefs =~ s/\\\\/\\/g;
+        }
         $prefs = eval { MT::Util::from_json($prefs) };
         if ( !$prefs ) {
             return $app->errtrans('Invalid request.');
@@ -3227,10 +3306,11 @@ sub insert_asset {
 
     my $can_multi;
     my $content_field_id = $app->param('content_field_id');
+    my $options;
     if ($content_field_id) {
         require MT::ContentField;
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
-            my $options = $content_field->options;
+            $options = $content_field->options;
             $can_multi = $options->{multiple} ? 1 : 0;
         }
         else {
@@ -3242,8 +3322,8 @@ sub insert_asset {
         my @assets_data;
         my $hasher = build_asset_hasher(
             $app,
-            PreviewWidth  => 80,
-            PreviewHeight => 80,
+            PreviewWidth  => $options->{preview_width} || 80,
+            PreviewHeight => $options->{preview_height} || 80,
         );
         for my $obj (@$assets) {
             my $row = $obj->get_values;

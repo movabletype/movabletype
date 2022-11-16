@@ -377,7 +377,10 @@ subtest 'MTC-26599: content type' => sub {
         ok $log =~ /ct 'second_cd' \(ID:\d\) deleted/, "deletion log";
 
         my @rebuilt = $log =~ /Rebuilt (\S+)/g;
-        s!^.+/site/archives/!! for @rebuilt;
+        for (@rebuilt) {
+            s|\\|/|g;
+            s!^.+/site/archives/!!;
+        }
         cmp_bag \@rebuilt => [
             qw(
                 ct/author/index.html
@@ -454,7 +457,10 @@ subtest 'MTC-26599: entry' => sub {
         ok $log =~ /Entry 'second entry' \(ID:\d\) deleted/, "deletion log";
 
         my @rebuilt = $log =~ /Rebuilt (\S+)/g;
-        s!^.+/site/archives/!! for @rebuilt;
+        for (@rebuilt) {
+            s|\\|/|g;
+            s!^.+/site/archives/!!;
+        }
         cmp_bag \@rebuilt => [
             qw(
                 entry/author/index.html

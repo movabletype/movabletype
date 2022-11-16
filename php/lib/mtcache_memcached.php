@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -21,7 +21,7 @@ class MTCache_memcached extends MTCacheBase {
                 $this->_connect($server);
             }
         } else
-            $this->_connect($server);
+            $this->_connect($servers);
     }
 
     function get ($key, $ttl = null) {
@@ -29,7 +29,7 @@ class MTCache_memcached extends MTCacheBase {
     }
 
     function get_multi ($keys, $ttl = null) {
-        return $this->_server->get($key);
+        return $this->_server->get($keys);
     }
 
     function delete ($key) {

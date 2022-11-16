@@ -2,14 +2,16 @@ package # This is JSON::backportPP
     JSON::PP::Boolean;
 
 use strict;
-use overload (
+require overload;
+local $^W;
+overload::import('overload',
     "0+"     => sub { ${$_[0]} },
     "++"     => sub { $_[0] = ${$_[0]} + 1 },
     "--"     => sub { $_[0] = ${$_[0]} - 1 },
     fallback => 1,
 );
 
-$JSON::backportPP::Boolean::VERSION = '2.97001';
+$JSON::backportPP::Boolean::VERSION = '4.10';
 
 1;
 
@@ -31,6 +33,11 @@ L<JSON::PP> for more info about this class.
 =head1 AUTHOR
 
 This idea is from L<JSON::XS::Boolean> written by Marc Lehmann <schmorp[at]schmorp.de>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
 
 =cut
 

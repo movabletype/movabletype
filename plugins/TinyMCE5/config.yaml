@@ -1,0 +1,36 @@
+id: TinyMCE5
+name: TinyMCE5
+version: 5.10.2.1
+author_link: http://www.movabletype.org/
+author_name: Six Apart Ltd.
+description: <MT_TRANS phrase="Default WYSIWYG editor.">
+l10n_class: TinyMCE5::L10N
+schema_version: 1
+
+editors:
+    tinymce:
+        label: TinyMCE
+        template: editor.tmpl
+
+callbacks:
+    MT::Upgrade::upgrade_end: |
+        sub {
+            my ( $cb, $self, %param ) = @_;
+            # explicitly enabled or disabled
+            return 1 if do {
+                my $cfg = MT->model('config')->load(1);
+                $cfg
+                    && $cfg->data =~ /PluginSchemaVersion TinyMCE5=/i
+                    && $cfg->data =~ /PluginSwitch TinyMCE5=/i;
+            };
+
+            # enabled by upgrade
+            return 1 if $param{from};
+
+            # disable by install
+            my $cfg = MT->config;
+            $cfg->PluginSwitch( 'TinyMCE5=0', 1 );
+            $cfg->PluginSwitch( 'FormattedTextForTinyMCE5=0', 1 );
+            $cfg->PluginSchemaVersion('tinymce5=1', 1);
+            $cfg->save_config;
+        }

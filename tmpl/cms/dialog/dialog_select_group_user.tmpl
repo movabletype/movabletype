@@ -37,7 +37,7 @@ function init() {
     panel.pager.setState(<mt:var name="pager_json">);
     panels[panels.length] = panel;</mt:loop>
     dialog.setPanels(panels);
-    dialog.open({}, <mt:var name="confirm_js" default="dialog_closed">);
+    dialog.open({}, dialog_closed);
 }
 
 TC.attachLoadEvent(init);
@@ -52,7 +52,7 @@ TC.attachLoadEvent(init);
             id="generic-info"
             class="info"
             can_close="0">
-            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtModal.close("<mt:var name="script_full_url">?__mode=view&amp;_type=group");'>">
+            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtModal.close("<mt:var name="script_full_url">?__mode=view&amp;_type=group");' class='alert-link'>">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_author">
@@ -60,7 +60,7 @@ TC.attachLoadEvent(init);
             id="generic-info"
             class="info"
             can_close="0">
-            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtModal.close("<mt:var name="script_full_url">?__mode=view&amp;_type=author");'>">
+            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtModal.close("<mt:var name="script_full_url">?__mode=view&amp;_type=author");' class='alert-link'>">
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
@@ -70,7 +70,7 @@ TC.attachLoadEvent(init);
         <button
            type="submit"
            accesskey="x"
-           class="btn btn-default cancel action primary button"
+           class="cancel action primary button btn btn-primary"
            title="<__trans phrase="Close (x)">"
            data-mt-modal-close
            ><__trans phrase="Close"></button>

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -105,7 +105,7 @@ sub post_save {
                     "Folder '[_1]' (ID:[_2]) edited by '[_3]'",
                     $obj->label, $obj->id, $app->user->name
                 ),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $obj->class,
                 category => 'edit',
                 metadata => $obj->id,
@@ -133,7 +133,7 @@ sub post_delete {
                 "Folder '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->label, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'folder',
             category => 'delete'
         }

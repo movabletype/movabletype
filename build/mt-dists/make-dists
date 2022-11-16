@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -205,12 +205,12 @@ sub process_file_for_license {
             =~ m! / ( [A-Za-z0-9_.-]+ \. ( pl | php | pm | cgi | js | t ) | [a-z0-9_-] + ) $ !x;
 
     my $content;
-    open FIN, "<$file";
+    open my $FIN, "<", $file;
     {
         local $/;
-        $content = <FIN>;
+        $content = <$FIN>;
     }
-    close FIN;
+    close $FIN;
 
     my $open = quotemeta('# Movable Type (r) Open Source (C)');
 
@@ -234,9 +234,9 @@ EOT
 
         ## print "applying license changes to $file...\n"; return;
 
-        open FOUT, ">$file";
-        print FOUT $content;
-        close FOUT;
+        open my $FOUT, ">", $file;
+        print $FOUT $content;
+        close $FOUT;
     }
 }
 
@@ -262,10 +262,9 @@ sub make_manifest_skip {
 
     my $result = join "\n", @result;
 
-    local *FOUT;
-    open *FOUT, ">$file";
-    print FOUT $result;
-    close FOUT;
+    open my $FOUT, ">", $file;
+    print $FOUT $result;
+    close $FOUT;
 }
 
 sub verbose_command {
@@ -293,16 +292,16 @@ sub update_default_lang {
     my $lang = shift;
     my $config;
 
-    open FH, "<mt-config.cgi-original";
+    open my $FH, "<", "mt-config.cgi-original";
     {
         local $/;
-        $config = <FH>;
+        $config = <$FH>;
     }
-    close FH;
+    close $FH;
 
     $config =~ s/(DefaultLanguage ).*/$1$lang/;
-    open FH, ">mt-config.cgi-original";
-    print FH $config;
-    close FH;
+    open my $FH2, ">", "mt-config.cgi-original";
+    print $FH2 $config;
+    close $FH2;
 }
 

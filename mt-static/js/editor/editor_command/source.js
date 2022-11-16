@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+ * Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -32,6 +32,8 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
 
     execCommand: function( command, userInterface, argument, options ) {
         var text = this.e.getSelectedText();
+        if(options && options['text'])
+            text = options['text'];
         if ( !defined( text ) )
             text = '';
 

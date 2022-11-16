@@ -2,7 +2,7 @@ version: 2
 jobs:
   test_internal:
     docker:
-      - image: movabletype/test:jessie
+      - image: movabletype/test:cloud7
     steps:
       - checkout
       - run: bash /docker-entrypoint.sh echo 'run docker-entrypoint.sh'
@@ -10,7 +10,7 @@ jobs:
 
   coveralls:
     docker:
-      - image: movabletype/test:buster
+      - image: movabletype/test:cloud7
     steps:
       - checkout
       - run: cpm install -g Devel::Cover::Report::Coveralls

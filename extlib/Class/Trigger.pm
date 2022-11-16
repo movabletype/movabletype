@@ -2,7 +2,7 @@ package Class::Trigger;
 use 5.008_001;
 use strict;
 use vars qw($VERSION);
-$VERSION = "0.14";
+$VERSION = "0.15";
 
 use Carp ();
 

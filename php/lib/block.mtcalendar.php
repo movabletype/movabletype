@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -15,7 +15,8 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
         # first iterations:
         $ctx->localize($local_vars);
         $blog_id = $ctx->stash('blog_id');
-        $today = strftime("%Y%m", time());
+        $ts = offset_time_list( time(), $blog_id );
+        $today = sprintf("%04d%02d", $ts[5] + 1900, $ts[4] + 1);
 
         $start_with_offset = 0;
         if (isset($args['weeks_start_with'])) {
@@ -37,7 +38,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
             }
         }
 
-        $prefix = $args['month'];
+        $prefix = isset($args['month']) ? $args['month'] : null;
         if ($prefix) {
             if ($prefix == 'this') {
                 $ts = $ctx->stash('current_timestamp');
@@ -72,7 +73,8 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
 
         // caching isn't necessary since we're not building
         // entire site-- just one page
-        $today .= strftime("%d", time());
+        $ts = offset_time_list( time(), $blog_id );
+        $today .= sprintf("%02d", $ts[3]);
         list($start, $end) = start_end_month($prefix);
         $y = substr($prefix, 0, 4);
         $m = substr($prefix, 4, 2);
@@ -105,7 +107,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
         $today = $ctx->stash('cal_today');
         $cell = $ctx->stash('CalendarCellNumber');
     }
-    $left or $left = array();
+    !empty($left) or $left = array();
     $entries = array();
     if ($day <= $pad_start + $days_in_month + $pad_end) {
         $is_padding = $day < $pad_start + 1 || $day > $pad_start + $days_in_month;

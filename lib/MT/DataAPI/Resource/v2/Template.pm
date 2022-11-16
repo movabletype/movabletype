@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -132,6 +132,10 @@ sub fields {
 
                 return MT::DataAPI::Resource->from_object( \@maps );
             },
+            schema => {
+                type  => 'array',
+                items => { '$ref' => '#/components/schemas/templatemap' },
+            },
         },
         {   name             => 'updatable',
             type             => 'MT::DataAPI::Resource::DataType::Boolean',
@@ -182,6 +186,16 @@ sub fields {
 
                 return MT::DataAPI::Resource->from_object( \@widgets,
                     [qw/ id name /] );
+            },
+            schema => {
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        id   => { type => 'integer' },
+                        name => { type => 'string' },
+                    },
+                },
             },
         },
     ];

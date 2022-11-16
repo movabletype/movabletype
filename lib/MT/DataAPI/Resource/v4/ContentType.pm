@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -30,6 +30,18 @@ sub fields {
                 my ( $obj, $hash ) = @_;
                 MT::DataAPI::Resource->from_object( $obj->field_objs,
                     [ 'id', 'label', 'type', 'uniqueID' ] );
+            },
+            schema => {
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        id       => { type => 'string' },
+                        label    => { type => 'string' },
+                        type     => { type => 'string' },
+                        uniqueID => { type => 'string' },
+                    },
+                },
             },
         },
         {   name  => 'dataLabel',

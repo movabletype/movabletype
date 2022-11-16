@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -168,6 +168,12 @@ sub add_tags_to_entries {
     my $app = shift;
     $app->validate_magic or return;
 
+    $app->validate_param({
+        id                   => [qw/ID MULTI/],
+        itemset_action_input => [qw/MAYBE_STRING/],
+        xhr                  => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $xhr = $app->param('xhr');
     my @id  = $app->multi_param('id');
 
@@ -215,6 +221,11 @@ sub remove_tags_from_entries {
     my $app = shift;
     $app->validate_magic or return;
 
+    $app->validate_param({
+        id                   => [qw/ID MULTI/],
+        itemset_action_input => [qw/MAYBE_STRING/],
+    }) or return;
+
     my @id = $app->multi_param('id');
 
     require MT::Tag;
@@ -246,6 +257,12 @@ sub remove_tags_from_entries {
 sub add_tags_to_assets {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id              => [qw/ID/],
+        id                   => [qw/ID MULTI/],
+        itemset_action_input => [qw/MAYBE_STRING/],
+    }) or return;
 
     my @id      = $app->multi_param('id');
     my $blog_id = $app->param('blog_id');
@@ -293,6 +310,12 @@ sub add_tags_to_assets {
 sub remove_tags_from_assets {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id              => [qw/ID/],
+        id                   => [qw/ID MULTI/],
+        itemset_action_input => [qw/MAYBE_STRING/],
+    }) or return;
 
     my @id      = $app->multi_param('id');
     my $blog_id = $app->param('blog_id');
@@ -354,7 +377,7 @@ sub post_delete {
                 "Tag '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'tag',
             category => 'delete'
         }

@@ -439,7 +439,7 @@ my @apis = (
             is( $entry->keywords,              'Keywords' );
             is( $entry->to_ping_urls,          'http://127.0.0.1/' );
             is( $entry->to_ping_url_list->[0], 'http://127.0.0.1/' );
-            is( $entry->authored_on,           '19770922153000' );
+            is( int($entry->authored_on),      '19770922153000' );
         },
     },
     {   api    => 'metaWeblog.editPost',
@@ -489,7 +489,7 @@ my @apis = (
             is( $entry->keywords,              'Keywords' );
             is( $entry->to_ping_urls,          'http://127.0.0.1/' );
             is( $entry->to_ping_url_list->[0], 'http://127.0.0.1/' );
-            is( $entry->authored_on,           '19770922153000' );
+            is( int($entry->authored_on),      '19770922153000' );
         },
     },
     {   api    => 'metaWeblog.editPost',
@@ -1361,6 +1361,7 @@ my @apis = (
                 'textile_2'                 => 1,
                 'blockeditor'               => 1,
             );
+            delete $tf{textile_2} unless MT->config->PluginSwitch->{"Textile/textile2.pl"};
 
             # __sanitize__ may come from the community pack
             @$result = grep { $_->{key} ne '__sanitize__' } @$result;
@@ -1623,7 +1624,7 @@ my @apis = (
             is( $page->keywords,              'Keywords' );
             is( $page->to_ping_urls,          'http://127.0.0.1/' );
             is( $page->to_ping_url_list->[0], 'http://127.0.0.1/' );
-            is( $page->authored_on,           '19770922153000' );
+            is( int($page->authored_on),      '19770922153000' );
         },
     },
     {   api    => 'wp.editPage',
@@ -1673,7 +1674,7 @@ my @apis = (
             is( $page->keywords,              'Keywords' );
             is( $page->to_ping_urls,          'http://127.0.0.1/' );
             is( $page->to_ping_url_list->[0], 'http://127.0.0.1/' );
-            is( $page->authored_on,           '19770922153000' );
+            is( int($page->authored_on),      '19770922153000' );
         },
     },
     {   api => 'wp.deletePage',

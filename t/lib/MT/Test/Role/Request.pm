@@ -6,12 +6,15 @@ use HTML::Form;
 use HTML::LinkExtor;
 use Scalar::Util qw/blessed/;
 use Test::More;
+use JSON ();
+use HTTP::Request::AsCGI;
 
 requires qw/ request base_url /;
 
 sub _convert_params {
     my $params = shift;
     if ( blessed $params && $params->isa('HTTP::Request') ) {
+        my $c = HTTP::Request::AsCGI->new($params)->setup;
         my $param_method = CGI->VERSION < 4 ? 'param' : 'multi_param';
         my $cgi = CGI->new( $params->content );
         my %hash;
@@ -34,7 +37,10 @@ sub get {
 sub get_ok {
     my ( $self, $params ) = @_;
     my $res = $self->get($params);
-    ok $res->is_success, "get succeeded";
+    ok !$res->is_error, "get succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
+    $res;
 }
 
 sub post {
@@ -47,7 +53,10 @@ sub post {
 sub post_ok {
     my ( $self, $params ) = @_;
     my $res = $self->post($params);
-    ok $res->is_success, "post succeeded";
+    ok !$res->is_error, "post succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
+    $res;
 }
 
 sub post_form_ok {
@@ -56,10 +65,40 @@ sub post_form_ok {
     my $form = $self->form($form_id);
     ok $form, "found form" or return;
 
-    $form->param( $_ => $params->{$_} ) for keys %$params;
+    for my $input ( $form->inputs ) {
+        my $name = $input->name;
+        next unless defined $name;
+        next unless exists $params->{$name};
+        if ( $input->readonly ) {
+            $input->readonly(0);
+            note "Set value to readonly field: $name";
+        }
+    }
+    for my $name (keys %$params) {
+        $form->param( $name => $params->{$name} );
+    }
 
     my $res = $self->post( $form->click );
     ok $res->is_success, "post succeeded";
+    $res;
+}
+
+sub js_get_ok {
+    my ( $self, $params ) = @_;
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+    $self->get_ok($params);
+}
+
+sub js_post_ok {
+    my ( $self, $params ) = @_;
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+    $self->post_ok($params);
+}
+
+sub js_post_form_ok {
+    my ( $self, $params ) = @_;
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+    $self->post_form_ok($params);
 }
 
 sub forms {
@@ -103,21 +142,73 @@ sub status_isnt {
 sub content { shift->{content} // '' }
 
 sub content_like {
-    my ( $self, $pattern ) = @_;
+    my ( $self, $pattern, $message ) = @_;
     $pattern = qr/\Q$pattern\E/ unless ref $pattern;
-    ok $self->content =~ /$pattern/, "content contains $pattern";
+    ok $self->content =~ /$pattern/, $message // "content contains $pattern";
 }
 
 sub content_unlike {
-    my ( $self, $pattern ) = @_;
+    my ( $self, $pattern, $message ) = @_;
     $pattern = qr/\Q$pattern\E/ unless ref $pattern;
-    ok $self->content !~ /$pattern/, "content doesn't contain $pattern";
+    ok $self->content !~ /$pattern/, $message // "content doesn't contain $pattern";
 }
 
 sub content_doesnt_expose {
     my ( $self, $url ) = @_;
     ok $self->content !~ /(<(a|form|meta|link|img|script)\s[^>]+\Q$url\E[^>]+>)/s
         or note "$url is exposed as $1";
+}
+
+sub api_request {
+    my ( $self, $method, $path, $key, $body_params ) = @_;
+    my $params = {};
+    if ( $key && $body_params ) {
+        $params->{$key} = JSON::encode_json($body_params);
+    }
+    $params = _convert_params($params);
+    $params->{__path_info}      = $path;
+    $params->{__request_method} = $method;
+    $self->request($params);
+}
+
+sub api_request_ok {
+    my $self = shift;
+    my $res = $self->api_request(@_);
+    ok $res->is_success, "request succeeded";
+    return JSON::decode_json($res->decoded_content);
+}
+
+sub json {
+    my $self = shift;
+    return unless $self->{res} && $self->{res}->header('Content-Type') =~ qr{^application/json;};
+    return MT::Util::from_json($self->{content});
+}
+
+sub html_content {
+    my $self = shift;
+    my $content = $self->content;
+    $content =~ s/\n(\s*\n)+/\n/gs;
+    require HTML::Filter::Callbacks;
+    my $filter = HTML::Filter::Callbacks->new;
+    $filter->add_callbacks(
+        script => {
+            start => sub { shift->remove_text_and_tag },
+            end   => sub { shift->remove_text_and_tag },
+        },
+    );
+    $self->{html_content} = $filter->process($content);
+}
+
+sub html_content_like {
+    my ( $self, $pattern, $message ) = @_;
+    $pattern = qr/\Q$pattern\E/ unless ref $pattern;
+    ok $self->html_content =~ /$pattern/, $message // "content contains $pattern";
+}
+
+sub html_content_unlike {
+    my ( $self, $pattern, $message ) = @_;
+    $pattern = qr/\Q$pattern\E/ unless ref $pattern;
+    ok $self->html_content !~ /$pattern/, $message // "content doesn't contain $pattern";
 }
 
 1;

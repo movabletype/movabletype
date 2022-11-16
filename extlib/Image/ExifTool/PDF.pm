@@ -21,7 +21,7 @@ use vars qw($VERSION $AUTOLOAD $lastFetched);
 use Image::ExifTool qw(:DataAccess :Utils);
 require Exporter;
 
-$VERSION = '1.49';
+$VERSION = '1.51';
 
 sub FetchObject($$$$);
 sub ExtractObject($$;$$);
@@ -95,7 +95,7 @@ my %supportedFilter = (
     WRITABLE => 'string',
     # set PRIORITY to 0 so most recent Info dictionary takes precedence
     # (Acrobat Pro bug? doesn't use same object/generation number for
-    #  new Info dictionary when doing incrmental update)
+    #  new Info dictionary when doing incremental update)
     PRIORITY => 0,
     NOTES => q{
         As well as the tags listed below, the PDF specification allows for
@@ -703,9 +703,11 @@ sub CheckObject($$$$)
     my $raf = $$et{RAF};
     $raf->Seek($offset+$$et{PDFBase}, 0) or $et->Warn("Bad $tag offset"), return undef;
     # verify that we are reading the expected object
-    $raf->ReadLine($data) or $et->Warn("Error reading $tag data"), return undef;
     ($obj = $ref) =~ s/R/obj/;
-    unless ($data =~ s/^$obj//) {
+    for (;;) {
+        $raf->ReadLine($data) or $et->Warn("Error reading $tag data"), return undef;
+        last if $data =~ s/^$obj//;
+        next if $data =~ /^\s+$/;   # keep reading if this was a blank line
         # handle cases where other whitespace characters are used in the object ID string
         while ($data =~ /^\d+(\s+\d+)?\s*$/) {
             $raf->ReadLine($dat);
@@ -717,6 +719,7 @@ sub CheckObject($$$$)
             $et->Warn("$tag object ($obj) not found at offset $offset");
             return undef;
         }
+        last;
     }
     # read the first line of data from the object (ignoring blank lines and comments)
     for (;;) {
@@ -779,7 +782,7 @@ sub FetchObject($$$$)
             return undef;
         }
         # extract the object at the specified index in the stream
-        # (offsets in table are in sequential order, so we can subract from
+        # (offsets in table are in sequential order, so we can subtract from
         #  the next offset to get the object length)
         $offset = $$table[$i + 1];
         my $len = ($$table[$i + 3] || length($$obj{_stream})) - $offset;
@@ -2161,6 +2164,7 @@ sub ReadPDF($$)
     # set input record separator
     local $/ = $ws =~ /(\x0d\x0a|\x0d|\x0a)/ ? $1 : "\x0a";
     my (%xref, @mainDicts, %loaded, $mainFree);
+    my ($xrefSize, $mainDictSize) = (0, 0);
     # initialize variables to capture when rewriting
     if ($capture) {
         $capture->{startxref} = $xr;
@@ -2203,6 +2207,7 @@ XRef:
                     $raf->Read($buff, 20) == 20 or return -6;
                     $buff =~ /^\s*(\d{10}) (\d{5}) (f|n)/s or return -4;
                     my $num = $start + $i;
+                    $xrefSize = $num if $num > $xrefSize;
                     # locate object to generate entry from stream if necessary
                     # (must do this before we test $xref{$num})
                     LocateAnyObject(\%xref, $num) if $xref{dicts};
@@ -2239,6 +2244,8 @@ XRef:
             $et->Warn('Error loading secondary dictionary');
             next;
         }
+        # keep track of total trailer dictionary Size
+        $mainDictSize = $$mainDict{Size} if $$mainDict{Size} and $$mainDict{Size} > $mainDictSize;
         if ($loadXRefStream) {
             # decode and save our XRef stream from PDF-1.5 file
             # (but parse it later as required to save time)
@@ -2276,6 +2283,10 @@ XRef:
         push @mainDicts, $mainDict, $type;
         # load previous xref table if it exists
         push @xrefOffsets, $$mainDict{Prev}, 'Prev' if $$mainDict{Prev};
+    }
+    if ($xrefSize > $mainDictSize) {
+        my $str = "Objects in xref table ($xrefSize) exceed trailer dictionary Size ($mainDictSize)";
+        $capture ? $et->Error($str) : $et->Warn($str);
     }
 #
 # extract encryption information if necessary
@@ -2378,7 +2389,7 @@ including AESV2 (AES-128) and AESV3 (AES-256).
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

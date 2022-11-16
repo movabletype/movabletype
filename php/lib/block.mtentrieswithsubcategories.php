@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -8,7 +8,7 @@
 function smarty_block_mtentrieswithsubcategories($args, $content, &$ctx, &$repeat) {
     $localvars = array('entries', 'inside_with_subcategories');
     if (!isset($content)) {
-        $cat = $args['category'];
+        $cat = isset($args['category']) ? $args['category'] : null;
         if (!$cat) {
             $cat = $ctx->stash('category');
             if (isset($cat))

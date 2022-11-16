@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -13,11 +13,12 @@ our %LoggerLevels;
 
 BEGIN {
     %LoggerLevels = (
-        DEBUG => 0,
-        INFO  => 1,
-        WARN  => 2,
-        ERROR => 3,
-        NONE  => 99,
+        DEBUG  => 0,
+        INFO   => 1,
+        NOTICE => 2,
+        WARN   => 3,
+        ERROR  => 4,
+        NONE   => 99,
     );
 }
 use constant \%LoggerLevels;
@@ -102,6 +103,38 @@ sub _find_module {
 
     return if $logger_module eq 'MT::Util::Log::Stderr';
 
+    my $config = MT->config('LoggerConfig');
+    if ( $config && $logger_module->can('use_config') ) {
+        if ( !-f $config ) {
+            MT->log(
+                {   class    => 'system',
+                    category => 'logs',
+                    level    => MT::Log::WARNING(),
+                    message  => MT->translate( 'File not found: [_1]', $config ),
+                }
+            );
+            return;
+        }
+
+        $Logger = eval { $logger_module->new($logger_level) };
+        if ($@) {
+            warn $@;
+            MT->log(
+                {   class    => 'system',
+                    category => 'logs',
+                    level    => MT::Log::WARNING(),
+                    message =>
+                        MT->translate(
+                            'Logger configuration for Log module [_1] seems problematic',
+                            MT->config->LoggerModule ),
+                    metadata => $@,
+                }
+            );
+            return;
+        }
+        return 1;
+    }
+
     my $logfile_path = _get_logfile_path() or return;
 
     $Logger = eval { $logger_module->new( $logger_level, $logfile_path ) };
@@ -133,6 +166,12 @@ sub info {
     _write_log( 'info', $msg );
 }
 
+sub notice {
+    my ( $class, $msg ) = @_;
+    return if $LoggerLevel > NOTICE;
+    _write_log( 'notice', $msg );
+}
+
 sub warn {
     my ( $class, $msg ) = @_;
     return if $LoggerLevel > WARN;
@@ -144,6 +183,8 @@ sub error {
     return if $LoggerLevel > ERROR;
     _write_log( 'error', $msg );
 }
+
+sub none { return }
 
 sub _write_log {
     my ( $level, $msg ) = @_;
@@ -159,9 +200,10 @@ sub _get_message {
         $memory = _get_memory();
     }
 
-    my ( $pkg, $filename, $line ) = caller(3);
-    unless ($filename) {
-        ( $pkg, $filename, $line ) = caller(2);
+    my $i = 2;
+    my ( $pkg, $filename, $line ) = caller($i);
+    while ( index( $pkg, "MT::Util::Log" ) == 0 ) {
+        ( $pkg, $filename, $line ) = caller(++$i);
     }
 
     my @time = localtime(time);
@@ -193,18 +235,24 @@ sub _get_memory {
 }
 
 sub _get_logfile_path {
+    require File::Spec;
+    my $file = MT->config('LoggerFileName');
+    if ( $file and File::Spec->file_name_is_absolute($file) ) {
+        return $file;
+    }
     my $dir = MT->config('LoggerPath') or return;
 
-    my @time = localtime(time);
-    my $file = sprintf(
-        "al-%04d%02d%02d.log",
-        $time[5] + 1900,
-        $time[4] + 1,
-        $time[3]
-    );
-    $LoggerPathDate = $time[3];
+    unless ($file) {
+        my @time = localtime(time);
+        $file = sprintf(
+            "al-%04d%02d%02d.log",
+            $time[5] + 1900,
+            $time[4] + 1,
+            $time[3]
+        );
+        $LoggerPathDate = $time[3];
+    }
 
-    require File::Spec;
     return File::Spec->catfile( $dir, $file );
 }
 

@@ -10,142 +10,88 @@ our $test_env;
 
 BEGIN {
     $test_env = MT::Test::Env->new(
-        DefaultLanguage => 'en_US',  ## for now
+        DefaultLanguage => 'en_US',    ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test;
 use MT::Test::Permission;
-
-MT::Test->init_app;
+use MT::Test::Fixture::CmsPermission::Common1;
+use MT::Test::App;
 
 ### Make test data
-$test_env->prepare_fixture(
-    sub {
-        MT::Test->init_db;
+$test_env->prepare_fixture('cms_permission/common1');
 
-        # Website
-        my $website = MT::Test::Permission->make_website();
+my $website = MT::Website->load({ name => 'my website' });
+my $blog    = MT::Blog->load({ name => 'my blog' });
 
-        # Blog
-        my $blog
-            = MT::Test::Permission->make_blog( parent_id => $website->id, );
-
-        # Author
-        my $aikawa = MT::Test::Permission->make_author(
-            name     => 'aikawa',
-            nickname => 'Ichiro Aikawa',
-        );
-
-        my $admin = MT::Author->load(1);
-
-        # Role
-        require MT::Role;
-        my $site_admin = MT::Role->load(
-            { name => MT->translate('Site Administrator') } );
-
-        require MT::Association;
-        MT::Association->link( $aikawa => $site_admin => $blog );
-    }
-);
-
-my $website = MT::Website->load( { name => 'my website' } );
-my $blog = MT::Blog->load( { name => 'my blog' } );
-
-my $aikawa = MT::Author->load( { name => 'aikawa' } );
+my $aikawa = MT::Author->load({ name => 'aikawa' });
 
 my $admin = MT::Author->load(1);
 
-# Run
-my ( $app, $out );
+# XXX: The following tests are to make sure accesstoken items are not exposed by the listing framework
+# Everything should be invalid or unknown
 
 subtest 'mode = save' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'accesstoken',
-            id               => 'abcdefghijklmnopqrstuvwxyz',
-            session_id       => 'abcdefghijklmnopqrstuvwxyz',
-            start            => time,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode     => 'save',
+        _type      => 'accesstoken',
+        id         => 'abcdefghijklmnopqrstuvwxyz',
+        session_id => 'abcdefghijklmnopqrstuvwxyz',
+        start      => time,
+    });
+    $app->has_invalid_request("save by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'accesstoken',
-            id               => 'abcdefghijklmnopqrstuvwxyz',
-            session_id       => 'abcdefghijklmnopqrstuvwxyz',
-            start            => time,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode     => 'save',
+        _type      => 'accesstoken',
+        id         => 'abcdefghijklmnopqrstuvwxyz',
+        session_id => 'abcdefghijklmnopqrstuvwxyz',
+        start      => time,
+    });
+    $app->has_invalid_request("save by non permitted user");
 };
 
 subtest 'mode = edit' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'accesstoken',
-            id               => 'abcdefghijklmnopqrstuvwxyz',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode => 'edit',
+        _type  => 'accesstoken',
+        id     => 'abcdefghijklmnopqrstuvwxyz',
+    });
+    $app->has_invalid_request("edit by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'accesstoken',
-            id               => 'abcdefghijklmnopqrstuvwxyz',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode => 'edit',
+        _type  => 'accesstoken',
+        id     => 'abcdefghijklmnopqrstuvwxyz',
+    });
+    $app->has_invalid_request("edit by non permitted user");
 };
 
 subtest 'mode = delete' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            _type            => 'accesstoken',
-            id               => 'abcdefghijklmnopqrstuvwxyz',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
-    ok( $out =~ m!Invalid request!i, "delete by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode => 'delete',
+        _type  => 'accesstoken',
+        id     => 'abcdefghijklmnopqrstuvwxyz',
+    });
+    $app->has_invalid_request("delete by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            _type            => 'accesstoken',
-            id               => 'abcdefghijklmnopqrstuvwxyz',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
-    ok( $out =~ m!Invalid request!i, "delete by non permitted user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode => 'delete',
+        _type  => 'accesstoken',
+        id     => 'abcdefghijklmnopqrstuvwxyz',
+    });
+    $app->has_invalid_request("delete by non permitted user");
 };
 
 done_testing();

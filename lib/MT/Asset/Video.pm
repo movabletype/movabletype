@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -20,7 +20,7 @@ sub extensions {
     my $pkg = shift;
     return $pkg->SUPER::extensions(
         [   qr/mov/i, qr/avi/i, qr/3gp/i, qr/asf/i, qr/mp4/i, qr/qt/i,
-            qr/wmv/i, qr/asx/i, qr/mpg/i, qr/flv/i, qr/mkv/i, qr/ogm/i
+            qr/wmv/i, qr/asx/i, qr/mpe?g/i, qr/flv/i, qr/mkv/i, qr/ogm/i, qr/webm/i,
         ]
     );
 }

@@ -134,18 +134,11 @@ h1.dialog-title {
 #upload-progress .card {
   min-height: 5rem;
 }
-
-#destination {
-  max-width: 130px;
-}
-@media (min-width: 768px) {
-  #destination {
-    max-width: initial;
+@media (max-width: 768px) {
+  #uploadSettings .upload-extra-path {
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
   }
-}
-
-#extra_path {
-  width: auto;
 }
 </style>
 </mt:setvarblock>
@@ -190,19 +183,26 @@ h1.dialog-title {
        show_label="0"
        label_class="top-label"
        class="form-inline">
+      <div class="row w-100">
       <mt:if name="destination_loop">
-      <select name="destination" id="destination" class="custom-select form-control" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
+      <div class="col-12 col-md-6 pr-0">
+      <select name="destination" id="destination" class="custom-select form-control w-100" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
         <mt:loop name="destination_loop">
         <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>>
           <mt:var name="label" escape="html">
         </option>
         </mt:loop>
       </select>
-      <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" aria-describedby="uploadDestination" />
-      <span class="upload-extra-path">
-        / <input type="text" name="extra_path" id="extra_path" class="form-control d-inline-block text path" value="<mt:var name="extra_path" escape="html">" />
-      </span>
+      </div>
+      <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination w-100 col-12" disabled="disabled" name="destination" value="<mt:var name="destination" escape="html">" style="display: none;" aria-describedby="uploadDestination" />
+      <div class="col-12 col-md-6">
+        <div class="upload-extra-path row">
+          <div class="col-auto h5 mt-auto mb-auto">/</div>
+          <div class="col w-100 ml-0 pl-0"><input type="text" name="extra_path" id="extra_path" class="form-control text path w-100 ml-0" value="<mt:var name="extra_path" escape="html">" /></div>
+        </div>
+      </div>
       </mt:if>
+      </div>
     </mtapp:setting>
     <small id="uploadDestination" class="form-text text-muted"><__trans phrase="_USAGE_UPLOAD"></small>
   <mt:else>
@@ -493,7 +493,6 @@ function createUploadBlock () {
     this.progressbar.find('.progress-bar').css('width', val + '%')
                                           .attr('aria-valuenow', parseInt(val));
     if( parseInt(val) >= 100 ) {
-      this.filename.hide();
       this.cancelUpload.hide();
     }
   }
@@ -528,6 +527,7 @@ function createUploadBlock () {
     }
     data += '</span>';
 
+    this.filename.hide();
     jQuery(data).appendTo(this.thumbnail);
     this.thumbnail.parents('.upload-status-block').attr('data-asset-id', id);
   }
@@ -537,7 +537,7 @@ function createUploadBlock () {
     this.progressbar.hide();
     this.filename.hide();
     jQuery('.upload-status-block-left-content').addClass('full-width');
-    jQuery('<p class="text-danger msg-error">' + err + '</p>').appendTo(this.uploadResult);
+    jQuery('<p class="text-danger msg-error"></p>').text(err).appendTo(this.uploadResult);
   }
 
   this.setCancelResult = function(msg) {
@@ -545,7 +545,7 @@ function createUploadBlock () {
     this.progressbar.hide();
     this.filename.hide();
     jQuery('.upload-status-block-left-content').addClass('full-width');
-    jQuery('<p class="text-warning msg-warning">' + msg+ '</p>').appendTo(this.uploadResult);
+    jQuery('<p class="text-warning msg-warning"></p>').text(msg).appendTo(this.uploadResult);
   }
 
 <mt:unless name="filter" eq="userpic">

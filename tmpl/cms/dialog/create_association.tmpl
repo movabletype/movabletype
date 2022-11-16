@@ -201,22 +201,24 @@ function init() {
             }
         }
     };
-    panel.selectionList.remove = function(name) {
-        var self = this;
-        if(jQuery('#'+name).hasClass('has_child')){
-            jQuery('#'+name).find('.list-unstyled li').each(function(){
-              self.remove.call(self, this.id);
-            });
-        }
-        if (name in this.itemHash) {
-            var pos;
-            for (pos = 0; pos < this.itemList.length; pos++) {
-                if (this.itemList[pos] == name) {
-                    this.itemList.splice(pos, 1);
-                    this.changed(false, name, this.itemHash[name]);
-                    delete this.itemHash[name];
-                    this.render();
-                    return;
+    if (panel.selectionList) {
+        panel.selectionList.remove = function(name) {
+            var self = this;
+            if(jQuery('#'+name).hasClass('has_child')){
+                jQuery('#'+name).find('.list-unstyled li').each(function(){
+                  self.remove.call(self, this.id);
+                });
+            }
+            if (name in this.itemHash) {
+                var pos;
+                for (pos = 0; pos < this.itemList.length; pos++) {
+                    if (this.itemList[pos] == name) {
+                        this.itemList.splice(pos, 1);
+                        this.changed(false, name, this.itemHash[name]);
+                        delete this.itemHash[name];
+                        this.render();
+                        return;
+                    }
                 }
             }
         }
@@ -243,8 +245,11 @@ function init() {
         callback.apply(this,[-1]);
         prev_event.apply(this,arguments);
     };
-    dialog.open({}, <mt:var name="confirm_js" default="dialog_closed">);
-
+<mt:if name="role_selection">
+    dialog.open({}, returnRoleSelection);
+<mt:else>
+    dialog.open({}, dialog_closed);
+</mt:if>
 
 <mt:if name="has_group">
     var panel = panels[dialog.currentPanel];
@@ -267,7 +272,7 @@ function init() {
         var target = jQuery(this).val();
         var search = jQuery('.search-input');
         if(target == 'both' && search.val() == ''){
-            args += '&_type=author';
+            args += '&_type=user';
             panel.searchField.value = "";
             jQuery(panel.searchReset).hide();
             history.pushState(args, '', CMSScriptURI + '?' + args);
@@ -287,7 +292,7 @@ function init() {
             args += '&search=' + escape(search.val());
         }
         if(target == 'both'){
-            args += '&_type=author';
+            args += '&_type=user';
         } else if(target == 'author'){
             args += '&_type=author&link_filter=1';
         }else if(target == 'group'){
@@ -306,8 +311,8 @@ function init() {
         args = args.replace(/&search=\w+/, '');
         history.pushState(args, '', CMSScriptURI + '?' + args);
     });
-    if ( jQuery('#modal-search').length ) {
-      jQuery('#modal-search').prepend(jQuery('.select_assoc_type'));
+    if ( jQuery('#modal-search-author').length ) {
+      jQuery('#modal-search-author').prepend(jQuery('.select_assoc_type'));
       jQuery('.select_assoc_type').trigger('change');
     }
     else {
@@ -367,6 +372,14 @@ TC.attachLoadEvent(init);
             class="info"
             can_close="0">
             <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=author');" class="alert-link">">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_site">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No sites exist in this installation. [_1]Create a site</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=website&amp;blog_id=0');" class="alert-link">">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_blog">

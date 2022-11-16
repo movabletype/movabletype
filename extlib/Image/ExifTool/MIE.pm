@@ -14,7 +14,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '1.48';
+$VERSION = '1.49';
 
 sub ProcessMIE($$);
 sub ProcessMIEGroup($$$);
@@ -393,7 +393,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         ValueConv    => 'Image::ExifTool::GPS::ToDegrees($val, 1)',
         ValueConvInv => 'Image::ExifTool::GPS::ToDMS($self, $val, 0)',
         PrintConv    => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "N")',
-        PrintConvInv => 'Image::ExifTool::GPS::ToDegrees($val, 1)',
+        PrintConvInv => 'Image::ExifTool::GPS::ToDegrees($val, 1, "lat")',
     },
     Longitude => {
         Name => 'GPSLongitude',
@@ -406,7 +406,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         ValueConv    => 'Image::ExifTool::GPS::ToDegrees($val, 1)',
         ValueConvInv => 'Image::ExifTool::GPS::ToDMS($self, $val, 0)',
         PrintConv    => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "E")',
-        PrintConvInv => 'Image::ExifTool::GPS::ToDegrees($val, 1)',
+        PrintConvInv => 'Image::ExifTool::GPS::ToDegrees($val, 1, "lon")',
     },
     MeasureMode => {
         Name => 'GPSMeasureMode',
@@ -1023,6 +1023,7 @@ sub WriteMIEGroup($$$)
             # we are writing the new tag now
             my ($newVal, $writable, $oldVal, $newFormat, $compress);
             my $newTag = shift @editTags;
+            length($newTag) > 255 and $et->Warn('Tag name too long'), next; # (just to be safe)
             my $newInfo = $$editDirs{$newTag};
             if ($newInfo) {
                 # create the new subdirectory or rewrite existing non-MIE directory
@@ -1339,7 +1340,7 @@ sub WriteMIEGroup($$$)
                     $extLen = Set32u($len);
                     $len = 254;
                 } else {
-                    $et->Warn("Can't write $newTag (DataLength > 2GB not yet suppported)");
+                    $et->Warn("Can't write $newTag (DataLength > 2GB not yet supported)");
                     last; # don't write this tag
                 }
                 # write this element (with leading MIE group element if not done already)
@@ -2544,7 +2545,7 @@ tag name.  For example:
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.  The MIE format itself is also

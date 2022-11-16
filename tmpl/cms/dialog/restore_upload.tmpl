@@ -1,5 +1,5 @@
 <$mt:setvar name="page_title" value="<__trans phrase="Restore: Multiple Files">"$>
-<mt:setvarblock name="html_head" append="1">
+<mt:setvarblock name="js_include" append="1">
     <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
     <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 
@@ -49,17 +49,8 @@
     /* ]]> */
     </script>
 </mt:setvarblock>
-<mt:include name="dialog/header.tmpl">
-<mt:if name="error">
-<mtapp:statusmsg
-   id="generic-error"
-   class="error"
-   can_close="0">
-  <mt:var name="error">
-</mtapp:statusmsg>
-</mt:if>
-<div id="<mt:var name="name" escape="html">-panel" class="hidden panel">
 
+<mt:setvarblock name="form_header">
 <form name="restore_form" id="restore_form" method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="dialog_restore_upload" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
@@ -73,6 +64,21 @@
     <input type="hidden" name="overwrite_templates" value="<mt:var name="overwrite_templates" escape="html">" />
     <input type="hidden" name="objects_json" value="<mt:var name="objects_json" escape="html">" />
     <input type="hidden" name="deferred_json" value="<mt:var name="deferred_json" escape="html">" />
+</mt:setvarblock>
+
+<mt:setvarblock name="form_footer">
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+<mt:if name="error">
+<mtapp:statusmsg
+   id="generic-error"
+   class="error"
+   can_close="0">
+  <mt:var name="error">
+</mtapp:statusmsg>
+</mt:if>
 <mt:setvarblock name="restore_file_label">
     <__trans phrase="Please upload the file [_1]" params="<em class="upload-file"><$mt:var name="name" escape="html"$></em>">
 </mt:setvarblock>
@@ -82,23 +88,23 @@
     label_class="top-label">
     <input name="file" id="restore_file" type="file" size="50" />
 </mtapp:setting>
+</mt:setvarblock>
 
 <mt:setvarblock name="action_buttons">
     <button
        type="submit"
        accesskey="s"
        title="<__trans phrase="Continue (s)">"
-       class="action primary button next"
+       class="next continue action button primary for-website btn btn-primary"
        ><__trans phrase="Continue"></button>
     <button
        type="submit"
        accesskey="x"
-       class="cancel action button mt-close-dialog"
+       class="cancel action button mt-close-dialog btn btn-default"
+       data-mt-modal-close
        title="<__trans phrase="Cancel (x)">"
        ><__trans phrase="Cancel"></button>
 </mt:setvarblock>
-<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
-</form>
-</div>
-<mt:include name="dialog/footer.tmpl">
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

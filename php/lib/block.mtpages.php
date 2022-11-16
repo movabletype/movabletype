@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -22,14 +22,14 @@ function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
         $not_folder = '';
         if (isset($folders)) {
             foreach ($folders as $folder) {
-                if ($not_folder == '') {
+                if ($not_folder === '') {
                     $not_folder = $folder->category_label;
                 } else {
                     $not_folder = $not_folder.' OR '.$folder->category_label;
                 }
             }
         }
-        if ($not_folder != '') {
+        if ($not_folder !== '') {
             $args['category'] = "NOT ($not_folder)";
         }
     }

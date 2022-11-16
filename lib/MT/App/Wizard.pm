@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -145,251 +145,321 @@ sub init_core_registry {
             },
         },
         optional_packages => {
-            'Digest::SHA' => {
-                link => 'https://metacpan.org/pod/Digest::SHA',
-                label =>
-                    'Digest::SHA is required in order to provide enhanced protection of user passwords.',
+            'FCGI' => {
+                link  => 'https://metacpan.org/pod/FCGI',
+                label => 'This module and its dependencies are required to run Movable Type under FastCGI.',
             },
             'Plack' => {
-                link => 'https://metacpan.org/pod/Plack',
-                label =>
-                    'This module and its dependencies are required to run Movable Type under psgi.',
+                link  => 'https://metacpan.org/pod/Plack',
+                label => 'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'CGI::PSGI' => {
-                link => 'https://metacpan.org/pod/CGI::PSGI',
-                label =>
-                    'This module and its dependencies are required to run Movable Type under psgi.',
+                link  => 'https://metacpan.org/pod/CGI::PSGI',
+                label => 'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'CGI::Parse::PSGI' => {
-                link => 'https://metacpan.org/pod/CGI::Parse::PSGI',
-                label =>
-                    'This module and its dependencies are required to run Movable Type under psgi.',
+                link  => 'https://metacpan.org/pod/CGI::Parse::PSGI',
+                label => 'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'XMLRPC::Transport::HTTP::Plack' => {
-                link =>
-                    'https://metacpan.org/pod/XMLRPC::Transport::HTTP::Plack',
-                label =>
-                    'This module and its dependencies are required to run Movable Type under psgi.',
-            },
-            'Net::SMTP' => {
-                link => 'https://metacpan.org/pod/Net::SMTP',
-                label =>
-                    'Net::SMTP is required in order to send mail using an SMTP server.',
-            },
-            'Authen::SASL' => {
-                link => 'https://metacpan.org/pod/Authen::SASL',
-                label =>
-                    'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.',
-            },
-            'IO::Socket::SSL' => {
-                link => 'https://metacpan.org/pod/IO::Socket::SSL',
-                label =>
-                    'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.',
-            },
-            'Net::SSLeay' => {
-                link => 'https://metacpan.org/pod/Net::SSLeay',
-                label =>
-                    'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.',
-            },
-            'HTML::Parser' => {
-                link => 'https://metacpan.org/pod/HTML::Parser',
-                label =>
-                    'HTML::Parser is optional; It is needed if you want to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.',
-            },
-            'SOAP::Lite' => {
-                link    => 'https://metacpan.org/pod/SOAP::Lite',
-                version => 0.50,
-                label =>
-                    'This module is needed if you want to use the MT XML-RPC server implementation.',
-            },
-            'File::Temp' => {
-                link => 'https://metacpan.org/pod/File::Temp',
-                label =>
-                    'This module is needed if you would like to be able to overwrite existing files when you upload.',
-            },
-            'List::Util' => {
-                link => 'https://metacpan.org/pod/List::Util',
-                label =>
-                    'List::Util is optional; It is needed if you want to use the Publish Queue feature.',
+                link  => 'https://metacpan.org/pod/XMLRPC::Transport::HTTP::Plack',
+                label => 'This module and its dependencies are required to run Movable Type under psgi.',
             },
             'Image::Magick' => {
-                link => 'http://www.imagemagick.org/script/perl-magick.php',
-                label =>
-                    'This module is needed if you would like to be able to create thumbnails of uploaded images.',
+                link  => 'http://www.imagemagick.org/script/perl-magick.php',
+                label => 'This module is one of the image processors that you can use to create thumbnails of uploaded images.',
+            },
+            'Graphics::Magick' => {
+                link  => 'http://www.graphicsmagick.org/perl.html',
+                label => 'This module is one of the image processors that you can use to create thumbnails of uploaded images.',
             },
             'GD' => {
-                link => 'https://metacpan.org/pod/GD',
-                label =>
-                    'This module is needed if you would like to be able to create thumbnails of uploaded images.',
+                link  => 'https://metacpan.org/pod/GD',
+                label => 'This module is one of the image processors that you can use to create thumbnails of uploaded images.',
             },
             'Imager' => {
-                link => 'https://metacpan.org/pod/Imager',
-                label =>
-                    'This module is needed if you would like to be able to create thumbnails of uploaded images.',
-            },
-            'IPC::Run' => {
-                link => 'https://metacpan.org/pod/IPC::Run',
-                label =>
-                    'This module is needed if you would like to be able to use NetPBM as the image driver for MT.',
-            },
-            'Storable' => {
-
-                link => 'https://metacpan.org/pod/Storable',
-                label =>
-                    'This module is required by certain MT plugins available from third parties.',
-            },
-            'Crypt::DSA' => {
-                link => 'https://metacpan.org/pod/Crypt::DSA',
-                label =>
-                    'This module accelerates comment registration sign-ins.',
-            },
-            'Crypt::SSLeay' => {
-                link => 'https://metacpan.org/pod/Crypt::SSLeay',
-                label =>
-                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.',
-            },
-            'Cache::File' => {
-                link => 'https://metacpan.org/pod/Cache::File',
-                label =>
-                    'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan via OpenID.',
-            },
-            'MIME::Base64' => {
-                link => 'https://metacpan.org/pod/MIME::Base64',
-                label =>
-                    'This module is needed to enable comment registration. Also required in order to send mail via an SMTP Server.',
-            },
-            'XML::Atom' => {
-                link  => 'https://metacpan.org/pod/XML::Atom',
-                label => 'This module enables the use of the Atom API.',
-            },
-            'Cache::Memcached' => {
-                link => 'https://metacpan.org/pod/Cache::Memcached',
-                label =>
-                    'This module is required in order to use memcached as caching mechanism by Movable Type.',
-            },
-            'Archive::Tar' => {
-                link => 'https://metacpan.org/pod/Archive::Tar',
-                label =>
-                    'This module is required in order to archive files in backup/restore operation.',
-            },
-            'IO::Compress::Gzip' => {
-                link => 'https://metacpan.org/pod/IO::Compress::Gzip',
-                label =>
-                    'This module is required in order to compress files in backup/restore operation.',
-            },
-            'IO::Uncompress::Gunzip' => {
-                link => 'https://metacpan.org/pod/IO::Uncompress::Gunzip',
-                label =>
-                    'This module is required in order to decompress files in backup/restore operation.',
+                link  => 'https://metacpan.org/pod/Imager',
+                label => 'This module is one of the image processors that you can use to create thumbnails of uploaded images.',
             },
             'Archive::Zip' => {
-                link => 'https://metacpan.org/pod/Archive::Zip',
-                label =>
-                    'This module is required in order to archive files in backup/restore operation.',
+                link  => 'https://metacpan.org/pod/Archive::Zip',
+                label => 'This module is optional. It is used to manipulate files during backup and restore operations.',
             },
-            'XML::SAX' => {
-                link => 'https://metacpan.org/pod/XML::SAX',
-                label =>
-                    'This module and its dependencies are required in order to restore from a backup.',
+            'Authen::SASL' => {
+                link  => 'https://metacpan.org/pod/Authen::SASL',
+                label => 'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.',
+            },
+            'Authen::SASL::XS' => {
+                link  => 'https://metacpan.org/pod/Authen::SASL::XS',
+                label => 'This module is optional. It enhances performance of Authen::SASL.',
+            },
+            'Cache::File' => {
+                link  => 'https://metacpan.org/pod/Cache::File',
+                label => 'This module is optional. It is used to allow commenters to be authenticated by OpenID.',
+            },
+            'Cache::Memcached' => {
+                link  => 'https://metacpan.org/pod/Cache::Memcached',
+                label => 'Cache::Memcached and a memcached server are optional. They are used to cache in-memory objects.',
+            },
+            'DateTime' => {
+                link  => 'https://metacpan.org/pod/DateTime',
+                label => 'This module is optional. It is used to parse date in log files.',
             },
             'Digest::SHA1' => {
-                link => 'https://metacpan.org/pod/Digest::SHA1',
-                label =>
-                    'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.',
+                link  => 'https://metacpan.org/pod/Digest::SHA1',
+                label => 'This module is optional. It is used to allow commenters to be authenticated by OpenID.',
             },
-            'Safe' => {
-                link => 'https://metacpan.org/pod/Safe',
-                label =>
-                    'This module is used in a test attribute for the MTIf conditional tag.',
+            'Email::MIME' => {
+                link  => 'https://metacpan.org/pod/Email::MIME',
+                label => 'This module and its dependencies are optional. It is an alternative module to create mail.',
             },
-            'Digest::MD5' => {
-                link  => 'https://metacpan.org/pod/Digest::MD5',
-                label => 'This module is used by the Markdown text filter.',
+            'Filesys::DfPortable' => {
+                link  => 'https://metacpan.org/pod/Filesys::DfPortable',
+                label => 'This module is optional. It is used to see if the disk is full while backing up.',
             },
-            'Text::Balanced' => {
-                link => 'https://metacpan.org/pod/Text::Balanced',
-                label =>
-                    'This module is required by mt-search.cgi if you are running Movable Type using a version of Perl older than Perl 5.8.',
+            'HTTP::DAV' => {
+                link  => 'https://metacpan.org/pod/HTTP::DAV',
+                label => 'This module is optional. It is used to manipulate files via WebDAV.',
+            },
+            'IPC::Run' => {
+                link  => 'https://metacpan.org/pod/IPC::Run',
+                label => 'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.',
+            },
+            'IO::Socket::SSL' => {
+                link  => 'https://metacpan.org/pod/IO::Socket::SSL',
+                label => 'This module is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.',
+            },
+            'JSON::XS' => {
+                link  => 'https://metacpan.org/pod/JSON::XS',
+                label => 'JSON::XS accelerates JSON processing.',
+            },
+            'local::lib' => {
+                link  => 'https://metacpan.org/pod/local::lib',
+                label => 'local::lib is optional. It is used to load modules from different locations.',
+            },
+            'Log::Log4perl' => {
+                link  => 'https://metacpan.org/pod/Log::Log4perl',
+                label => 'This module is optional. It is used to customize the logging behavior.',
+            },
+            'Log::Minimal' => {
+                link  => 'https://metacpan.org/pod/Log::Minimal',
+                label => 'This module is optional. It is used to customize the logging behavior.',
+            },
+            'LWPx::ParanoidAgent' => {
+                link  => 'https://metacpan.org/pod/LWPx::ParanoidAgent',
+                label => 'LWPx::ParanoidAgent is an alternative to LWP::UserAgent.',
+            },
+            'Mozilla::CA' => {
+                link  => 'https://metacpan.org/pod/Mozilla::CA',
+                label => 'This module is required for Google Analytics site statistics and for verification of SSL certificates.',
+            },
+            'Net::SSLeay' => {
+                link  => 'https://metacpan.org/pod/Net::SSLeay',
+                label => 'This module is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.',
+            },
+            'Path::Class' => {
+                link  => 'https://metacpan.org/pod/Path::Class',
+                label => 'This module is optional. It is used to manipulate log files.',
+            },
+            'Sys::MemInfo' => {
+                link  => 'https://metacpan.org/pod/Sys::MemInfo',
+                label => 'This module is optional. It is used to see if swap memory is enough while processing background jobs.',
+            },
+            'Term::Encoding' => {
+                link  => 'https://metacpan.org/pod/Term::Encoding',
+                label => 'This module is optional. It is used to know the encoding of the terminal to log.',
+            },
+            'XML::LibXML::SAX' => {
+                link    => 'https://metacpan.org/pod/XML::LibXML::SAX',
+                label   => 'This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
+                version => 1.70,
             },
             'XML::Parser' => {
                 link  => 'https://metacpan.org/pod/XML::Parser',
                 label => 'This module is required for XML-RPC API.',
             },
             'XML::SAX::ExpatXS' => {
-                link => 'https://metacpan.org/pod/XML::SAX::ExpatXS',
-                label =>
-                    'XML::SAX::ExpatXS is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
+                link    => 'https://metacpan.org/pod/XML::SAX::ExpatXS',
+                label   => 'This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
                 version => 1.30,
             },
             'XML::SAX::Expat' => {
-                link => 'https://metacpan.org/pod/XML::SAX::Expat',
-                label =>
-                    'XML::SAX::Expat is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
+                link    => 'https://metacpan.org/pod/XML::SAX::Expat',
+                label   => 'This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
                 version => 0.37,
             },
-            'XML::LibXML::SAX' => {
-                link => 'https://metacpan.org/pod/XML::LibXML::SAX',
-                label =>
-                    'XML::LibXML::SAX is optional; It is one of the modules required to restore a backup created in a backup/restore operation.',
-                version => 1.70,
+            'YAML::Syck' => {
+                link  => 'https://metacpan.org/pod/YAML::Syck',
+                label => 'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
+            },
+
+            # bundled with MT
+
+            'HTTP::Request' => {
+                link  => 'https://metacpan.org/pod/HTTP::Request',
+                label => 'This module is optional. It is used to download assets from a website.',
+            },
+            'Image::ExifTool' => {
+                link  => 'https://metacpan.org/pod/Image::ExifTool',
+                label => 'Image::ExifTool is used to manipulate image metadata.',
+            },
+            'Image::Size' => {
+                link  => 'https://metacpan.org/pod/Image::Size',
+                label => 'Image::Size is sometimes required to determine the size of images in different formats.',
+            },
+            'JSON::PP' => {
+                link  => 'https://metacpan.org/pod/JSON::PP',
+                label => 'JSON::PP is used internally to process JSON by default.',
+            },
+            'LWP::Protocol::https' => {
+                link  => 'https://metacpan.org/pod/LWP::Protocol::https',
+                label => 'LWP::Protocol::https is optional. It provides https support for LWP::UserAgent.',
+            },
+            'LWP::UserAgent' => {
+                link  => 'https://metacpan.org/pod/LWP::UserAgent',
+                label => 'LWP::UserAgent is optional. It is used to fetch information from local and external servers.',
+            },
+            'MIME::Lite' => {
+                link  => 'https://metacpan.org/pod/MIME::Lite',
+                label => 'MIME::Lite is an alternative module to create mail.',
+            },
+            'Net::FTP' => {
+                link  => 'https://metacpan.org/pod/Net::FTP',
+                label => 'This module is optional. It is used to manipulate files via FTP(S).',
+            },
+            'Net::FTPSSL' => {
+                link  => 'https://metacpan.org/pod/Net::FTPSSL',
+                label => 'This module is optional. It is used to manipulate files via FTPS.',
+            },
+            'Net::SFTP' => {
+                link  => 'https://metacpan.org/pod/Net::SFTP',
+                label => 'This module is optional. It is used to manipulate files via SFTP.',
+            },
+            'TheSchwartz' => {
+                link  => 'https://metacpan.org/pod/TheSchwartz',
+                label => 'This module is required to run background jobs.',
+            },
+            'URI' => {
+                link  => 'https://metacpan.org/pod/URI',
+                label => 'This module is sometimes used to parse URI.',
+            },
+            'XML::Atom' => {
+                link  => 'https://metacpan.org/pod/XML::Atom',
+                label => 'XML::Atom is required in order to use the Atom API.',
+            },
+            'XMLRPC::Lite' => {
+                link    => 'https://metacpan.org/pod/XMLRPC::Lite',
+                version => 0.50,
+                label   => 'XMLRPC::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.',
+            },
+            'XML::SAX' => {
+                link  => 'https://metacpan.org/pod/XML::SAX',
+                label => 'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.',
+            },
+            'XML::Simple' => {
+                link  => 'https://metacpan.org/pod/XML::Simple',
+                label => 'XML::Simple is optional. It is used to parse configuration file of the IIS.',
+            },
+            'XML::XPath' => {
+                link  => 'https://metacpan.org/pod/XML::XPath',
+                label => 'XML::XPath is required if you want to use the Atom API.',
+            },
+            'YAML::Tiny' => {
+                link  => 'https://metacpan.org/pod/YAML::Tiny',
+                label => 'YAML::Tiny is the default YAML parser.',
+            },
+
+            # bundled with the Perl core
+            'Archive::Tar' => {
+                link  => 'https://metacpan.org/pod/Archive::Tar',
+                label => 'This module is optional. It is used to manipulate files during backup and restore operations.',
+            },
+            'Digest::MD5' => {
+                link  => 'https://metacpan.org/pod/Digest::MD5',
+                label => 'This module is used to make checksums.',
+            },
+            'Digest::SHA' => {
+                link  => 'https://metacpan.org/pod/Digest::SHA',
+                label => 'Digest::SHA is required in order to provide enhanced protection of user passwords.',
+            },
+            'File::Temp' => {
+                link  => 'https://metacpan.org/pod/File::Temp',
+                label => 'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.',
+            },
+            'IO::Compress::Gzip' => {
+                link  => 'https://metacpan.org/pod/IO::Compress::Gzip',
+                label => 'IO::Compress::Gzip is required in order to compress files during a backup operation.',
+            },
+            'IO::Uncompress::Gunzip' => {
+                link  => 'https://metacpan.org/pod/IO::Uncompress::Gunzip',
+                label => 'IO::Uncompress::Gunzip is required in order to decompress files during a restore operation.',
+            },
+            'MIME::Base64' => {
+                link  => 'https://metacpan.org/pod/MIME::Base64',
+                label => 'MIME::Base64 is required to send mail and handle blobs during backup/restore operations.',
+            },
+            'Net::SMTP' => {
+                link  => 'https://metacpan.org/pod/Net::SMTP',
+                label => 'Net::SMTP is required in order to send mail via an SMTP server.',
+            },
+            'Safe' => {
+                link  => 'https://metacpan.org/pod/Safe',
+                label => 'This module is used in a test attribute for the MTIf conditional tag.',
+            },
+            'Scalar::Util' => {
+                link    => 'https://metacpan.org/pod/Scalar::Util',
+                version => 1.10,
+                label   => 'Scalar::Util is required to avoid memory leaks.',
             },
             'Time::HiRes' => {
-                link => 'https://metacpan.org/pod/Time::HiRes',
-                label =>
-                    'This module is required for executing run-periodic-tasks.',
-            },
-            'Mozilla::CA' => {
-                link => 'https://metacpan.org/pod/Mozilla::CA',
-                label =>
-                    'This module is required for Google Analytics site statistics and for verification of SSL certificates.',
-            },
-            'YAML::Syck' => {
-                link => 'https://metacpan.org/pod/YAML::Syck',
-                label =>
-                    'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.',
+                link  => 'https://metacpan.org/pod/Time::HiRes',
+                label => 'This module is required for profiling.',
             },
         },
         required_packages => {
-            'Image::Size' => {
-                link => 'https://metacpan.org/pod/Image::Size',
-                label =>
-                    'This module is required for file uploads (to determine the size of uploaded images in many different formats).',
-            },
-            'CGI::Cookie' => {
-                link  => 'https://metacpan.org/pod/CGI::Cookie',
-                label => 'This module is required for cookie authentication.',
-            },
-            'DBI' => {
-                link => 'https://metacpan.org/pod/DBI',
-                label =>
-                    'DBI is required to work with most supported databases.',
-                version => 1.21,
-            },
-            'CGI' => {
-                link => 'https://metacpan.org/pod/CGI',
-                label =>
-                    'CGI is required for all Movable Type application functionality.',
-            },
-            'File::Spec' => {
-                link    => 'https://metacpan.org/pod/File::Spec',
-                version => 0.8,
-                label =>
-                    'File::Spec is required to work with file system path information on all supported operating systems.',
-            },
-            'LWP::UserAgent' => {
-                link => 'https://metacpan.org/pod/LWP::UserAgent',
-                label =>
-                    'LWP::UserAgent is required for creating Movable Type configuration files using the installation wizard.',
-            },
-            'Scalar::Util' => {
-                link => 'https://metacpan.org/pod/Scalar::Util',
-                label =>
-                    'Scalar::Util is required for initializing Movable Type application.',
-            },
             'HTML::Entities' => {
                 link    => 'https://metacpan.org/pod/HTML::Entities',
                 version => 3.69,
                 label   => 'HTML::Entities is required by CGI.pm',
+            },
+            'DBI' => {
+                link    => 'https://metacpan.org/pod/DBI',
+                label   => 'DBI is required to work with most supported databases.',
+                version => 1.21,
+            },
+
+            # bundled with MT
+            'CGI' => {
+                link    => 'https://metacpan.org/pod/CGI',
+                version => 4.11,
+                label   => 'CGI is required for all Movable Type application functionality.',
+            },
+            'CGI::Cookie' => {
+                link  => 'https://metacpan.org/pod/CGI::Cookie',
+                label => 'CGI::Cookie is required for cookie authentication.',
+            },
+            'JSON' => {
+                link  => 'https://metacpan.org/pod/JSON',
+                label => 'JSON is required to use DataAPI, Content Type, and listing framework.',
+            },
+
+            # bundled with the Perl core
+            'Encode' => {
+                link  => 'https://metacpan.org/pod/Encode',
+                label => 'Encode is required to handle multibyte characters correctly.',
+            },
+            'File::Spec' => {
+                link    => 'https://metacpan.org/pod/File::Spec',
+                version => 0.8,
+                label   => 'File::Spec is required to work with file system path information on all supported operating systems.',
+            },
+            'List::Util' => {
+                link  => 'https://metacpan.org/pod/List::Util',
+                label => 'List::Util is required to manipulate a list of numbers.',
+            },
+            'Storable' => {
+                link  => 'https://metacpan.org/pod/Storable',
+                label => 'Storable is required to make deep-copy of complicated data structures.',
             },
         },
         database_options => {
@@ -408,21 +478,25 @@ sub init_core_registry {
             'sqlite2' => { options => { path_required => 1, }, },
         },
         image_drivers => {
-            magick => {
+            graphicsmagick => {
                 order  => 100,
+                driver => 'GraphicsMagick',
+            },
+            imagemagick => {
+                order  => 200,
                 driver => 'ImageMagick',
             },
             gd => {
-                order  => 200,
-                driver => 'GD',
-            },
-            netpbm => {
                 order  => 300,
-                driver => 'NetPBM',
+                driver => 'GD',
             },
             imager => {
                 order  => 400,
                 driver => 'Imager',
+            },
+            netpbm => {
+                order  => 500,
+                driver => 'NetPBM',
             },
         },
     };
@@ -615,7 +689,7 @@ sub start {
 
     my ($needed) = $app->module_check( \@REQ );
     if (@$needed) {
-        $param{package_loop} = $needed;
+        $param{package_loop} = _sort_modules($needed);
         $param{required}     = 1;
         return $app->build_page( "packages.tmpl", \%param );
     }
@@ -626,6 +700,7 @@ sub start {
         my $driver = $drivers->{$key};
         my $label  = $driver->{label};
         my $link   = 'https://metacpan.org/pod/' . $driver->{dbd_package};
+        $label     = $label->() if ref $label eq 'CODE';
         push @DATA,
             [
             $driver->{dbd_package},
@@ -635,12 +710,13 @@ sub start {
                 "The [_1] database driver is required to use [_2].",
                 $driver->{dbd_package}, $label
             ),
-            $label, $link
+            $label, $link, undef,
+            lc( $driver->{recommended} ? '_' . $label : $label ),
             ];
     }
     my ($db_missing) = $app->module_check( \@DATA );
     if ( ( scalar @$db_missing ) == ( scalar @DATA ) ) {
-        $param{package_loop}           = $db_missing;
+        $param{package_loop}           = _sort_modules( $db_missing, 'sort' );
         $param{missing_db_or_optional} = 1;
         $param{missing_db}             = 1;
         return $app->build_page( "packages.tmpl", \%param );
@@ -659,7 +735,7 @@ sub start {
     my ($opt_missing) = $app->module_check( \@OPT );
     push @$opt_missing, @$db_missing;
     if (@$opt_missing) {
-        $param{package_loop}           = $opt_missing;
+        $param{package_loop}           = _sort_modules($opt_missing);
         $param{missing_db_or_optional} = 1;
         $param{optional}               = 1;
         return $app->build_page( "packages.tmpl", \%param );
@@ -711,6 +787,7 @@ sub configure {
         my $driver  = $drivers->{$key};
         my $label   = $driver->{label};
         my $display = $driver->{display};
+        $label      = $label->() if ref $label eq 'CODE';
         my @ids;
         foreach my $id (@$display) {
             push @ids, "'" . $id . "'";
@@ -727,6 +804,7 @@ sub configure {
             ),
             $label, $link,
             join( ',', @ids ),
+            lc( $driver->{recommended} ? "_" . $label : $label ),
             ];
         my $form_data = $driver->{db_form_data};
         $app->set_form_fields( $form_data, \@fields, \@advanced );
@@ -735,7 +813,7 @@ sub configure {
     if ( scalar(@$dbmod) == 0 ) {
         $param{missing_db_or_optional} = 1;
         $param{missing_db}             = 1;
-        $param{package_loop}           = $missing;
+        $param{package_loop}           = _sort_modules( $missing, 'sort' );
         return $app->build_page( "packages.tmpl", \%param );
     }
     foreach (@$dbmod) {
@@ -769,7 +847,7 @@ sub configure {
     @advanced = sort { $a->{order} <=> $b->{order} } @advanced;
     $param{advanced_loop} = \@advanced;
 
-    $param{db_loop} = $dbmod;
+    $param{db_loop} = _sort_modules( $dbmod, 'sort' );
     $param{one_db}  = $#$dbmod == 0;    # db module is only one or not
     $param{config} = $app->serialize_config(%param);
 
@@ -1005,10 +1083,11 @@ sub optional {
     $param{smtp_port} = 25
         unless $param{smtp_port};
 
-    my $transfer;
-    push @$transfer, { id => 'smtp', name => $app->translate('SMTP Server') };
-    push @$transfer,
-        { id => 'sendmail', name => $app->translate('Sendmail') };
+    my $transfer = [];
+    if (eval { require Net::SMTPS; 1 }) {
+        push @$transfer, { id => 'smtp', name => $app->translate('SMTP Server') };
+    }
+    push @$transfer, { id => 'sendmail', name => $app->translate('Sendmail') };
 
     foreach (@$transfer) {
         if ( $_->{id} eq $param{mail_transfer} ) {
@@ -1031,15 +1110,8 @@ sub optional {
         };
     }
 
-    require MT::Mail;
-    $param{has_net_smtp}      = MT::Mail->can_use_smtp         ? 1 : 0;
-    $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth     ? 1 : 0;
-    $param{has_net_smtp_ssl}  = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
-    $param{has_net_smtp_ssl_msg} = MT::Mail->errstr;
-    $param{has_net_smtp_tls}     = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
-    $param{has_net_smtp_tls_msg} = MT::Mail->errstr;
-    $param{can_use_ssl}          = $param{has_net_smtp_ssl}
-        || $param{has_net_smtp_tls};
+    $param{has_auth_modules} = eval { require Authen::SASL; require MIME::Base64; 1 } ? 1 : 0;
+    $param{has_ssl_modules}  = eval { require IO::Socket::SSL; require Net::SSLeay; 1 } ? 1 : 0;
 
     my $ok = 1;
     my $err_msg;
@@ -1090,15 +1162,15 @@ sub optional {
                 "This is the test email sent by your new installation of Movable Type."
                 );
 
-            require MT::Mail;
-            $ok = MT::Mail->send( \%head, $body );
+            require MT::Util::Mail;
+            $ok = MT::Util::Mail->send( \%head, $body );
 
             if ($ok) {
                 $param{success} = 1;
                 return $app->build_page( "optional.tmpl", \%param );
             }
             else {
-                $err_msg = MT::Mail->errstr;
+                $err_msg = MT::Util::Mail->errstr;
             }
         }
 
@@ -1346,7 +1418,7 @@ sub module_check {
     my $modules = shift;
     my ( @missing, @ok );
     foreach my $ref (@$modules) {
-        my ( $mod, $ver, $req, $desc, $name, $link, $display ) = @$ref;
+        my ( $mod, $ver, $req, $desc, $name, $link, $display, $sort ) = @$ref;
         if ( 'CODE' eq ref($desc) ) {
             $desc = $desc->();
         }
@@ -1355,6 +1427,7 @@ sub module_check {
         }
         eval( "use $mod" . ( $ver ? " $ver;" : ";" ) );
         $mod .= $ver if $mod eq 'DBD::ODBC';
+        $sort = $mod unless defined $sort;
         if ($@) {
             push @missing,
                 {
@@ -1365,6 +1438,7 @@ sub module_check {
                 label       => $name,
                 link        => $link,
                 display     => $display,
+                sort        => $sort,
                 };
         }
         else {
@@ -1377,6 +1451,7 @@ sub module_check {
                 label       => $name,
                 link        => $link,
                 display     => $display,
+                sort        => $sort,
                 };
         }
     }
@@ -1496,6 +1571,13 @@ sub set_form_fields {
             push @$fields, $field;
         }
     }
+}
+
+sub _sort_modules {
+    my ( $list, $key ) = @_;
+    $key ||= 'module';
+    my @sorted = sort { $a->{$key} cmp $b->{$key} } @$list;
+    \@sorted;
 }
 
 1;

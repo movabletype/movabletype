@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -69,7 +69,7 @@ class CacheMemcached extends BaseCache {
     }
 
     public function get_multi ($keys, $ttl = null) {
-        return self::$_server->get($key);
+        return self::$_server->get($keys);
     }
 
     public function delete ($key) {
@@ -77,23 +77,17 @@ class CacheMemcached extends BaseCache {
     }
 
     public function add ($key, $val, $ttl = null) {
-        $expire = empty($ttl)
-            ? $this->ttl
-            : $ttl;
+        $expire = $ttl ?? $this->_ttl ?? 0;
         return self::$_server->add($key, $val, false, $expire);
     }
 
     public function replace ($key, $val, $ttl = null) {
-        $expire = empty($ttl)
-            ? $this->ttl
-            : $ttl;
+        $expire = $ttl ?? $this->_ttl ?? 0;
         return self::$_server->replace($key, $val, false, $expire);
     }
 
     public function set ($key, $val, $ttl = null) {
-        $expire = empty($ttl)
-            ? $this->ttl
-            : $ttl;
+        $expire = $ttl ?? $this->_ttl ?? 0;
         return self::$_server->set($key, $val, false, $expire);
     }
 

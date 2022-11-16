@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -212,7 +212,7 @@ sub _hdlr_archives {
     return $ctx->invoke_handler( 'categories', $args, $cond )
         if $at eq 'Category';
     if ( $at =~ /^ContentType-Category/ ) {
-        my $map = $archiver->_get_preferred_map(
+        my $map = $archiver->get_preferred_map(
             {   blog_id         => $blog->id,
                 content_type_id => $ctx->stash('content_type')->id,
                 map             => $ctx->stash('template_map'),
@@ -263,8 +263,10 @@ sub _hdlr_archives {
     if ($save_stamps) {
         $save_ts                      = $ctx->{current_timestamp};
         $save_tse                     = $ctx->{current_timestamp_end};
-        $ctx->{current_timestamp}     = undef;
-        $ctx->{current_timestamp_end} = undef;
+        unless ($ctx->{inside_archive_list}) {
+            $ctx->{current_timestamp}     = undef;
+            $ctx->{current_timestamp_end} = undef;
+        }
     }
 
     # Isn't $order used?

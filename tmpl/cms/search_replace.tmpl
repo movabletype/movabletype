@@ -79,7 +79,7 @@ function doReplace() {
         jQuery('#search_form input[name=do_replace]').val(1);
         jQuery('#search_form').trigger('submit');
     } else {
-        alert("<__trans phrase="You must select one or more item to replace.">");
+        alert("<__trans phrase="You must select one or more items to replace." escape="js">");
     }
     return false;
 }
@@ -120,9 +120,9 @@ function toggleContentTypeDateTimeField() {
     }
   });
 
-  var $optgroupDateTime = jQuery('optgroup[label="Date and Time"]');
-  var $optgroupDate = jQuery('optgroup[label=Date]');
-  var $optgroupTime = jQuery('optgroup[label=Time]');
+  var $optgroupDateTime = jQuery('#optgroup_date_and_time');
+  var $optgroupDate = jQuery('#optgroup_date');
+  var $optgroupTime = jQuery('#optgroup_time');
   if ($optgroupDateTime.find('option:enabled').length > 0) {
     $optgroupDateTime.show();
   } else {
@@ -320,21 +320,21 @@ function toggleContentTypeDateTimeInputs() {
                   </option>
       </mt:setvartemplate>
       <mt:if name="date_time_fields">
-                <optgroup label="Date and Time">
+                <optgroup id="optgroup_date_and_time" label="<__trans phrase="Date and Time" escape="html">">
         <mt:loop name="date_time_fields">
                   <mt:var name="date_time_field_options">
         </mt:loop>
                 </optgroup>
       </mt:if>
       <mt:if name="date_fields">
-                <optgroup label="Date">
+                <optgroup id="optgroup_date" label="<__trans phrase="Date" escape="html">">
         <mt:loop name="date_fields">
                   <mt:var name="date_time_field_options">
         </mt:loop>
                 </optgroup>
       </mt:if>
       <mt:if name="time_fields">
-                <optgroup label="Time">
+                <optgroup id="optgroup_time" label="<__trans phrase="Time" escape="html">">
          <mt:loop name="time_fields">
                   <mt:var name="date_time_field_options">
          </mt:loop>
@@ -368,7 +368,7 @@ function toggleContentTypeDateTimeInputs() {
              onclick="doSearch()"
              type="submit"
              accesskey="s"
-             title="<__trans phrase="Submit search (s)">"
+             title="<__trans phrase="Submit search (s)" escape="html">"
              id="search-button"
              class="search action primary button btn btn-primary">
             <__trans phrase="Search">

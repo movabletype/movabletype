@@ -66,7 +66,9 @@
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:if name-"use_jquery_json">
 <script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:if>
 
 <mt:unless name="up_to_date">
     <script type="text/javascript">
@@ -127,6 +129,9 @@
         var lines = text.split(/\r?\n/);
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i];
+            if (line.match(/ at .+ line \d+/)) { // ignore perlish stuff
+                continue;
+            }
             var matches = line.match(/^#([^ ]+?) (.*)/);
             if (matches && matches.length) {
                 var id = matches[1];
@@ -198,7 +203,7 @@
         // reset response_pos so we know where to pull from
         // for any interactive output...
         response_pos = 0;
-        var actions = jQuery.toJSON(actionList);
+        var actions = <mt:if name-"use_jquery_json">jQuery.toJSON(actionList)<mt:else>JSON.stringify(actionList)</mt:if>;
         TC.Client.call({
             'load': actionDone,
             'interactive': actionInteractive,

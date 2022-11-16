@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -33,18 +33,16 @@ sub new {
     }
 }
 
-{
-    my $Is_Available;
+my $Is_Available;
 
-    sub is_available {
-        return if MT->instance->{disable_memcached};
-        return $Is_Available if defined $Is_Available;
-        my $class        = shift;
-        my @servers      = MT->config->MemcachedServers;
-        my $driver_class = MT->config->MemcachedDriver;
-        $Is_Available = @servers > 0 && eval "require $driver_class;" ? 1 : 0;
-        return $Is_Available;
-    }
+sub is_available {
+    return if MT->instance->{disable_memcached};
+    return $Is_Available if defined $Is_Available;
+    my $class        = shift;
+    my @servers      = MT->config->MemcachedServers;
+    my $driver_class = MT->config->MemcachedDriver;
+    $Is_Available = @servers > 0 && eval "require $driver_class;" ? 1 : 0;
+    return $Is_Available;
 }
 
 our $Instance;
@@ -55,6 +53,7 @@ sub instance {
 
 sub cleanup {
     undef $Instance;
+    undef $Is_Available;
     my $driver_class = MT->config->MemcachedDriver;
     if ( $driver_class->can('disconnect_all') ) {
         $driver_class->disconnect_all;

@@ -591,11 +591,11 @@
 
     <mtapp:setting
        id="publish_empty_archive"
-       label="<__trans phrase="Publish With No Entries">">
+       label="<__trans phrase="Publish With No Entries/Content Data">">
       <div class="form-group">
         <div class="custom-control custom-checkbox">
           <input id="publish_empty_archive" class="custom-control-input" type="checkbox" name="publish_empty_archive" value="1"<mt:if name="publish_empty_archive"> checked="checked"</mt:if> />
-          <label class="custom-control-label" for="publish_empty_archive"><__trans phrase="Publish category archive without entries"></label>
+          <label class="custom-control-label" for="publish_empty_archive"><__trans phrase="Publish category archive without entries/content data"></label>
         </div>
       </div>
     </mtapp:setting>
@@ -693,7 +693,7 @@
         <div class="form-inline col">
           <select name="upload_destination" id="upload_destination" class="custom-select form-control" onchange="uploadDestinationSelect(this)">
           <mt:loop name="destination_loop">
-            <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>><mt:var name="label" escape="html"></option>
+            <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif><mt:if name="disabled" eq="1"> hidden</mt:if><mt:if name="archive" eq="1"> data-archive="1"</mt:if>><mt:var name="label" escape="html"></option>
           </mt:loop>
           </select>
           <input type="text" id="upload_destination_custom" class="form-control text path required valid-custom-path upload-destination" disabled="disabled" name="upload_destination" value="<mt:var name="upload_destination" escape="html">" style="display: none;" />
@@ -703,7 +703,7 @@
           </span>
         </div>
       </div>
-      <div class="row">
+      <div class="row mt-3">
         <div class="form-group col">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="custom-control-input cb" />
@@ -914,6 +914,14 @@ jQuery(window).on('load', function () {
     jQuery.mtUseAbsolute();
 </mt:if>
 
+    jQuery('#enable_archive_paths').on('change', function(){
+      if(jQuery(this).prop('checked') == true){
+        jQuery('[data-archive]').prop('hidden', false);
+      } else {
+        jQuery('[data-archive]').prop('hidden', true);
+        jQuery('[data-archive]:selected').prop('selected', false);
+      }
+    });
 });
 
 /* ]]> */

@@ -1,0 +1,91 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Getopt::Long;
+use DBI;
+
+my %dsn_opts;
+GetOptions(
+    'host=s'                => \$dsn_opts{host},
+    'socket|mysql_socket=s' => \$dsn_opts{mysql_socket},
+    'db|dbname=s'           => \$dsn_opts{dbname},
+    'port=s'                => \$dsn_opts{port},
+    'user=s'                => \my $user,
+    'pass=s'                => \my $pass,
+    'collate=s'             => \my $collate,
+    'row_format=s'          => \my $row_format,
+    'force'                 => \my $force,
+    'verbose'               => \my $verbose,
+);
+
+unless ( $user && ( $dsn_opts{host} || $dsn_opts{mysql_socket} ) ) {
+    die "Usage: $0 --host=[host] --mysql_socket=[/path/to/socket] --db=[db] --port=[port] --user=[user] --pass=[pass] --collate=[collate] --row_format=[row_format]\n"
+}
+
+$collate ||= "utf8mb4_general_ci";
+
+my $db = $dsn_opts{dbname};
+
+my $dsn = join ';', map {"$_=$dsn_opts{$_}"}
+                    grep defined $dsn_opts{$_},
+                    keys %dsn_opts;
+
+my $dbh = DBI->connect(
+    "dbi:mysql:$dsn",
+    $user, $pass,
+    {   AutoCommit         => 1,
+        RaiseError         => 1,
+        PrintError         => 0,
+        ShowErrorStatement => 1,
+    }
+);
+
+if ($verbose) {
+    print "Connected to $dsn\n";
+}
+
+my ($charset) = $dbh->selectrow_array("select \@\@character_set_database");
+if ( $charset eq 'utf8mb4' ) {
+    if ($force) {
+        if ($verbose) {
+            print "The database character set is already utf8mb4, but the conversion will continue.\n";
+        }
+    } else {
+        warn "Database character set of '$db' is already utf8mb4.\n";
+        exit;
+    }
+}
+elsif ( $charset ne 'utf8' && $charset ne 'utf8mb3' ) {
+    die "Unsupported character set: $charset\n";
+}
+
+$dbh->do("ALTER DATABASE $db CHARSET utf8mb4 COLLATE $collate");
+
+if ($verbose) {
+    print "Altered character set of '$db' from $charset to utf8mb4, collation to $collate\n";
+}
+
+my $tables = $dbh->selectcol_arrayref("SHOW TABLES");
+for my $table (@$tables) {
+    my @alter_specs;
+    if ($row_format) {
+        push @alter_specs, "ROW_FORMAT=$row_format";
+    }
+
+    ## CONVERT TO CHARSET usually converts mediumtext to longtext.
+    ## However, MT does not recognize it, and mediumtext should be large enough
+    ## even for the converted data.
+    my $cols = $dbh->selectall_arrayref( "SHOW COLUMNS FROM $table WHERE Type = 'mediumtext'", { Slice => +{} } );
+    for my $col (@$cols) {
+        my $modify = "MODIFY $col->{Field} mediumtext CHARSET utf8mb4 COLLATE $collate";
+        $modify .= " NOT NULL" if $col->{Null} eq 'NO';
+        push @alter_specs, $modify;
+    }
+    $dbh->do( "ALTER TABLE $table " . join( ",", @alter_specs ) ) ;
+
+    ## split overall conversion (MariaDB keeps mediumtext, but MySQL converts it to longtext)
+    $dbh->do( "ALTER TABLE $table CONVERT TO CHARSET utf8mb4 COLLATE $collate");
+    if ($verbose) {
+        print "Altered '$table'\n";
+    }
+}

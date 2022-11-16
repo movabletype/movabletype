@@ -1,4 +1,4 @@
-riot.tag2('display-options-for-mobile', '<div class="row d-md-none"> <div class="col-auto mx-auto"> <div class="form-inline"> <label for="row-for-mobile">{trans(\'Show\') + \':\'}</label> <select id="row-for-mobile" class="custom-select form-control" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="25">{trans(\'25 rows\')}</option> <option value="50">{trans(\'50 rows\')}</option> <option value="100">{trans(\'100 rows\')}</option> <option value="200">{trans(\'200 rows\')}</option> </select> </div> </div> </div>', '', '', function(opts) {
+riot.tag2('display-options-for-mobile', '<div class="row d-md-none"> <div class="col-auto mx-auto"> <div class="form-inline"> <label for="row-for-mobile">{trans(\'Show\') + \':\'}</label> <select id="row-for-mobile" class="custom-select form-control" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="10">{trans(\'[_1] rows\', 10)}</option> <option value="25">{trans(\'[_1] rows\', 25)}</option> <option value="50">{trans(\'[_1] rows\', 50)}</option> <option value="100">{trans(\'[_1] rows\', 100)}</option> <option value="200">{trans(\'[_1] rows\', 200)}</option> </select> </div> </div> </div>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('displayOptions')
 });
@@ -14,12 +14,12 @@ riot.tag2('display-options-detail', '<div id="display-options-detail" class="col
     }.bind(this)
 });
 
-riot.tag2('display-options-limit', '<div class="field-header"> <label>{trans(\'Show\')}</label> </div> <div class="field-content"> <select id="row" class="custom-select form-control" style="width: 100px;" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="25">{trans(\'25 rows\')}</option> <option value="50">{trans(\'50 rows\')}</option> <option value="100">{trans(\'100 rows\')}</option> <option value="200">{trans(\'200 rows\')}</option> </select> </div>', '', '', function(opts) {
+riot.tag2('display-options-limit', '<div class="field-header"> <label>{trans(\'Show\')}</label> </div> <div class="field-content"> <select id="row" class="custom-select form-control" style="width: 100px;" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="10">{trans(\'[_1] rows\', 10)}</option> <option value="25">{trans(\'[_1] rows\', 25)}</option> <option value="50">{trans(\'[_1] rows\', 50)}</option> <option value="100">{trans(\'[_1] rows\', 100)}</option> <option value="200">{trans(\'[_1] rows\', 200)}</option> </select> </div>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('displayOptions')
 });
 
-riot.tag2('display-options-columns', '<div class="field-header"> <label>{trans(\'Column\')}</label> </div> <div if="{listTop.opts.disableUserDispOption}" class="alert alert-warning"> {trans(\'User Display Option is disabled now.\')} </div> <div if="{!listTop.opts.disableUserDispOption}" class="field-content"> <ul id="disp_cols" class="list-inline m-0"> <virtual each="{column in store.columns}"> <li hide="{column.force_display}" class="list-inline-item"> <div class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" id="{column.id}" checked="{column.checked}" onchange="{toggleColumn}"> <label class="custom-control-label" for="{column.id}"> <raw content="{column.label}"></raw> </label> </div> </li> <li each="{subField in column.sub_fields}" hide="{subField.force_display}" class="list-inline-item"> <div class="custom-control custom-checkbox"> <input type="checkbox" id="{subField.id}" pid="{subField.parent_id}" class="custom-control-input {subField.class}" disabled="{disabled: !column.checked}" checked="{subField.checked}" onchange="{toggleSubField}"> <label class="custom-control-label" for="{subField.id}">{subField.label}</label> </div> </li> </virtual> </ul> </div>', '', '', function(opts) {
+riot.tag2('display-options-columns', '<div class="field-header"> <label>{trans(\'Column\')}</label> </div> <div if="{listTop.opts.disableUserDispOption}" class="alert alert-warning"> {trans(\'User Display Option is disabled now.\')} </div> <div if="{!listTop.opts.disableUserDispOption}" class="field-content"> <ul id="disp_cols" class="list-inline m-0"> <virtual each="{column in store.columns}"> <li hide="{column.force_display}" class="list-inline-item"> <div class="custom-control custom-checkbox"> <input type="checkbox" class="custom-control-input" id="{column.id}" checked="{column.checked}" onchange="{toggleColumn}" disabled="{store.isLoading}"> <label class="custom-control-label" for="{column.id}"> <raw content="{column.label}"></raw> </label> </div> </li> <li each="{subField in column.sub_fields}" hide="{subField.force_display}" class="list-inline-item"> <div class="custom-control custom-checkbox"> <input type="checkbox" id="{subField.id}" pid="{subField.parent_id}" class="custom-control-input {subField.class}" disabled="{disabled: !column.checked}" checked="{subField.checked}" onchange="{toggleSubField}"> <label class="custom-control-label" for="{subField.id}">{subField.label}</label> </div> </li> </virtual> </ul> </div>', '', '', function(opts) {
     this.mixin('listTop')
 
     this.toggleColumn = function(e) {
@@ -72,7 +72,7 @@ riot.tag2('list-actions-for-pc', '<button each="{action, key in listTop.opts.but
     this.mixin('listActions')
 });
 
-riot.tag2('list-actions', '<div data-is="list-actions-for-pc" class="col d-none d-md-block"></div> <div data-is="list-actions-for-mobile" class="col d-md-none"></div>', '', '', function(opts) {
+riot.tag2('list-actions', '<div data-is="list-actions-for-pc" class="d-none d-md-block"></div> <div data-is="list-actions-for-mobile" class="d-md-none"></div>', '', '', function(opts) {
     this.mixin('listTop')
 
     riot.mixin('listActions', {
@@ -215,6 +215,11 @@ riot.tag2('list-actions', '<div data-is="list-actions-for-pc" class="col d-none 
 });
 
 
+riot.tag2('list-count', '<div> {store.count == 0 ? 0 : (store.limit * (store.page-1) + 1)} - {(store.limit * store.page) > store.count ? store.count : (store.limit * store.page)} / {store.count} </div>', '', '', function(opts) {
+    this.mixin('listTop')
+});
+
+
 riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header"></div> <div id="list-filter-collapse" class="collapse"> <div data-is="list-filter-detail" id="filter-detail" class="card-block p-3"> </div> </div>', '', '', function(opts) {
     riot.mixin('listFilterTop', {
       init: function () {
@@ -260,9 +265,9 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
 
     this.addFilterItem = function(filterType) {
       if (this.isAllpassFilter()) {
-        this.createNewFilter(trans('Unknown Filter'))
+        this.createNewFilter(trans('New Filter'))
       }
-      this.currentFilter.items.push({ type: filterType })
+      this.currentFilter.items.push({ type: filterType, args: {} })
       this.update()
     }.bind(this)
 
@@ -450,7 +455,23 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
     this.addFilterItemContent = function(e) {
       var itemIndex = this.getListItemIndex(e.target)
       var contentIndex = this.getListItemContentIndex(e.target)
+      var item = this.listFilterTop.currentFilter.items[itemIndex]
+      if (item.type == 'pack') {
+        item = item.args.items[contentIndex]
+      }
+      jQuery(e.target).parent().each(function() {
+        jQuery(this).find(':input').each(function() {
+          var re = new RegExp(item.type+'-(\\w+)');
+          jQuery(this).attr('class').match(re);
+            var key = RegExp.$1;
+            if (key && !item.args.hasOwnProperty(key)) {
+            item.args[key] = jQuery(this).val();
+          }
+        });
+      });
       this.listFilterTop.addFilterItemContent(itemIndex, contentIndex)
+      this.initializeDateOption()
+      this.initializeOptionWithBlank()
     }.bind(this)
 
     this.getListItemIndex = function(element) {
@@ -491,7 +512,6 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
         default:
           type = 'range'
         }
-        $node.parents('.item-content').find('input').mtUnvalidate()
         $node.parents('.item-content').find('.date-options span.date-option').hide()
         $node.parents('.item-content').find('.date-option.'+type).show()
       }
@@ -507,11 +527,8 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
         dayNamesMin: this.listFilterTop.opts.localeCalendarHeader,
         monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
         showMonthAfterYear: true,
-        prevText: '&lt;',
-        nextText: '&gt;',
-        onSelect: function( dateText, inst ) {
-          inst.input.mtValid();
-        }
+        prevText: '<',
+        nextText: '>',
       })
     }.bind(this)
 
@@ -605,7 +622,7 @@ riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter
     }.bind(this)
 
     this.removeFilter = function(e) {
-      var filterData = e.target.parentElement.parentElement.dataset
+      var filterData = e.target.closest('[data-mt-list-filter-label]').dataset
       var message = trans(
         "Are you sure you want to remove filter '[_1]'?",
         filterData.mtListFilterLabel
@@ -709,7 +726,7 @@ riot.tag2('list-pagination-for-mobile', '<ul class="pagination__mobile d-md-none
     this.mixin('listPagination')
 });
 
-riot.tag2('list-pagination-for-pc', '<ul class="pagination d-none d-md-flex"> <li class="page-item"> <a href="javascript:void(0);" class="page-link" disabled="{store.page <= 1}" data-page="{store.page - 1}" onclick="{movePage}"> {trans(\'Previous\')} </a> </li> <virtual if="{store.page - 2 >= 1}"> <li class="page-item first-last"> <a href="javascript:void(0);" class="page-link" data-page="{1}" onclick="{movePage}"> 1 </a> </li> <li class="page-item" aria-hidden="true"> ... </li> </virtual> <li if="{store.page - 1 >= 1}" class="{\'page-item\': true, \'first-last\': store.page - 1 == 1}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page - 1}" onclick="{movePage}"> {store.page - 1} </a> </li> <li class="page-item active"> <a class="page-link"> {store.page} <span class="sr-only">(current)</span> </a> </li> <li if="{store.page + 1 <= store.pageMax}" class="{\'page-item\': true, \'first-last\': store.page + 1 == store.pageMax}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page + 1}" onclick="{movePage}"> {store.page + 1} </a> </li> <virtual if="{store.page + 2 <= store.pageMax}"> <li class="page-item" aria-hidden="true"> ... </li> <li class="page-item first-last"> <a href="javascript:void(0);" class="page-link" data-page="{store.pageMax}" onclick="{movePage}"> {store.pageMax} </a> </li> </virtual> <li class="page-item"> <a href="javascript:void(0);" class="page-link" disabled="{store.page >= store.pageMax}" data-page="{store.page + 1}" onclick="{movePage}"> {trans(\'Next\')} </a> </li> </ul>', '', '', function(opts) {
+riot.tag2('list-pagination-for-pc', '<ul class="pagination d-none d-md-flex"> <li class="page-item"> <a href="javascript:void(0);" class="page-link" disabled="{store.page <= 1}" data-page="{store.page - 1}" onclick="{movePage}"> {trans(\'Previous\')} </a> </li> <virtual if="{store.page - 2 >= 1}"> <li class="page-item first-last"> <a href="javascript:void(0);" class="page-link" data-page="{1}" onclick="{movePage}"> 1 </a> </li> </virtual> <virtual if="{store.page - 3 >= 1}"> <li class="page-item" aria-hidden="true"> ... </li> </virtual> <li if="{store.page - 1 >= 1}" class="{\'page-item\': true, \'first-last\': store.page - 1 == 1}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page - 1}" onclick="{movePage}"> {store.page - 1} </a> </li> <li class="page-item active"> <a class="page-link"> {store.page} <span class="sr-only">(current)</span> </a> </li> <li if="{store.page + 1 <= store.pageMax}" class="{\'page-item\': true, \'first-last\': store.page + 1 == store.pageMax}"> <a href="javascript:void(0);" class="page-link" data-page="{store.page + 1}" onclick="{movePage}"> {store.page + 1} </a> </li> <virtual if="{store.page + 3 <= store.pageMax}"> <li class="page-item" aria-hidden="true"> ... </li> </virtual> <virtual if="{store.page + 2 <= store.pageMax}"> <li class="page-item first-last"> <a href="javascript:void(0);" class="page-link" data-page="{store.pageMax}" onclick="{movePage}"> {store.pageMax} </a> </li> </virtual> <li class="page-item"> <a href="javascript:void(0);" class="page-link" disabled="{store.page >= store.pageMax}" data-page="{store.page + 1}" onclick="{movePage}"> {trans(\'Next\')} </a> </li> </ul>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('listPagination')
 });
@@ -842,7 +859,7 @@ riot.tag2('list-table-column', '<virtual></virtual>', '', '', function(opts) {
     this.root.innerHTML = opts.content
 });
 
-riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-options"></div> <div id="actions-bar-top" class="row mb-5 mb-md-3"> <virtual data-is="list-actions" if="{opts.useActions}"></virtual> </div> <div class="row mb-5 mb-md-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <div style="overflow-x: auto"> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <virtual data-is="list-pagination"></virtual> </div> <virtual data-is="display-options-for-mobile"> </virtual>', '', '', function(opts) {
+riot.tag2('list-top', '<div class="d-none d-md-block mb-3" data-is="display-options"></div> <div id="actions-bar-top" class="row mb-5 mb-md-3"> <div class="col"> <virtual data-is="list-actions" if="{opts.useActions}"></virtual> </div> <div class="col-auto align-self-end list-counter"> <virtual data-is="list-count"></virtual> </div> </div> <div class="row mb-5 mb-md-3"> <div class="col-12"> <div class="card"> <virtual data-is="list-filter" if="{opts.useFilters}"> </virtual> <div style="overflow-x: auto"> <table data-is="list-table" id="{opts.objectType}-table" class="table mt-table {tableClass()}"> </table> </div> </div> </div> </div> <div class="row" hide="{opts.store.count == 0}"> <virtual data-is="list-pagination"></virtual> </div> <virtual data-is="display-options-for-mobile"> </virtual>', '', '', function(opts) {
     riot.mixin('listTop', {
       init: function () {
         if (this.__.tagName == 'list-top') {

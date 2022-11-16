@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -191,6 +191,7 @@ sub init_core_callbacks {
                 "${pfx}CategorySet::can_save",
             "${pkg}delete_permission_filter.category_set" =>
                 "${pfx}CategorySet::can_delete",
+            "${pkg}post_delete.category_set" => "${pfx}CategorySet::post_delete",
 
             # entry callbacks
             $pkg . 'edit.entry'                   => "${pfx}Entry::edit",
@@ -299,6 +300,8 @@ sub init_core_callbacks {
             $pkg
                 . 'pre_load_filtered_list.group' =>
                 "${pfx}Group::CMSPreLoadFilteredList_group",
+            $pkg . 'post_save.group' => "${pfx}Group::post_save",
+            $pkg . 'post_delete.group' => "${pfx}Group::post_delete",
 
         }
     );

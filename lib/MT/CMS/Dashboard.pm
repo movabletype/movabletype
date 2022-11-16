@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -220,6 +220,7 @@ sub generate_site_stats_data {
     my $time;
     $time = $fmgr->file_mod_time($path) if -f $path;
 
+
     # Get readied provider
     require MT::App::DataAPI;
     my $provider = readied_provider( $app, $blog );
@@ -382,6 +383,7 @@ sub generate_site_stats_data {
     }
 
     delete $param->{provider};
+    $param->{stats_provider} = $provider->id if $provider;
 
     1;
 }
@@ -447,9 +449,10 @@ sub site_stats_widget_pageview_lines {
     ) or return undef;
 
     my @items = @{ $for_date->{items} };
+    my @headers = @{ $for_date->{headers} ? $for_date->{headers} : ['date', 'pageviews'] };
     my %counts;
     foreach my $item (@items) {
-        $counts{ $item->{date} } = $item->{pageviews};
+        $counts{ $item->{$headers[0]} } = $item->{$headers[1]};
     }
     return \%counts;
 }
@@ -542,7 +545,7 @@ sub notification_widget {
         if ( $user && $user->is_superuser ) {
             $message->{detail}
                 = $app->translate(
-                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
+                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
                 );
         }
         else {
@@ -772,6 +775,7 @@ sub activity_log_widget {
                 ;    # from GMT to Blog( or system ) Timezone
             $ts = epoch2ts( ( $blog || undef ), $epoch, 1 )
                 ;    # back to timestamp
+            $row->{created_on_timestamp} = MT::Util::format_ts( '%Y-%m-%d %H:%M:%S', $ts );
             if ($site_view) {
                 $row->{created_on_formatted}
                     = $is_relative
@@ -789,7 +793,7 @@ sub activity_log_widget {
                     ? MT::Util::relative_date( $ts, time, undef )
                     : format_ts(
                     MT::App::CMS::LISTING_DATETIME_FORMAT(),
-                    epoch2ts( undef, offset_time( ts2epoch( undef, $ts ) ) ),
+                    $ts,
                     undef,
                     $user ? $user->preferred_language : undef
                     );
@@ -819,8 +823,9 @@ sub site_list_widget {
     my $blog = $app->blog || undef;
 
     my $site_builder = sub {
-        my $site = shift;
-        return if !$user->is_superuser and !$user->permissions( $site->id );
+        my $site             = shift;
+        my $user_permissions = $user->permissions($site);
+        return if !$user->is_superuser and !$user_permissions;
 
         my $row;
 
@@ -832,16 +837,33 @@ sub site_list_widget {
         $row->{blog_id}  = $site->id;
 
         # Action link
-        $row->{can_edit_template}
-            = $user->is_superuser ? 1
-            : $user->permissions( $site->id )
-            ->can_do('access_to_template_list') ? 1
-            : 0;
-        $row->{can_edit_config}
-            = $user->is_superuser ? 1
-            : $user->permissions( $site->id )
-            ->can_do('open_blog_config_screen') ? 1
-            : 0;
+        $row->{can_edit_template} =
+            $user->is_superuser                                  ? 1
+          : $user_permissions->can_do('access_to_template_list') ? 1
+          :                                                        0;
+        $row->{can_edit_config} =
+            $user->is_superuser                                  ? 1
+          : $user_permissions->can_do('open_blog_config_screen') ? 1
+          :                                                        0;
+
+        $row->{can_create_post} =
+            $user->is_superuser                      ? 1
+          : $user_permissions->can_do('create_post') ? 1
+          :                                            0;
+        $row->{can_access_to_entry_list} =
+            $user->is_superuser                               ? 1
+          : $user_permissions->can_do('access_to_entry_list') ? 1
+          :                                                     0;
+        $row->{can_manage_pages} =
+            $user->is_superuser                       ? 1
+          : $user_permissions->can_do('manage_pages') ? 1
+          :                                             0;
+
+        if (   $row->{can_create_post} == 1
+            || $row->{can_access_to_entry_list} == 1 )
+        {
+            $row->{permitted_entry} = 1;
+        }
 
         # Recent post
         my $MAX_POSTS = 3;
@@ -970,25 +992,27 @@ sub site_list_widget {
         # Content Type list
         my @content_types;
         my $ct_class = MT->model('content_type');
-        my $ct_iter  = $ct_class->load_iter(
+        my $ct_iter = $ct_class->load_iter(
             { blog_id => $site->id, },
-            {   sort      => 'name',
+            {
+                sort      => 'name',
                 direction => 'ascend',
+                fetchonly => { id => 1, name => 1, unique_id => 1, }
             }
         );
+
         while ( my $ct = $ct_iter->() ) {
-            my $perm = $user->permissions( $site->id );
             my $item;
             $item->{name} = $ct->name;
             $item->{can_create}
-                = $perm->can_do( "create_new_content_data_" . $ct->unique_id )
-                || $perm->can_do('create_new_content_data')
+                = $user_permissions->can_do( "create_new_content_data_" . $ct->unique_id )
+                || $user_permissions->can_do('create_new_content_data')
                 ? 1
                 : 0;
             $item->{can_list}
-                = $perm->can_do(
+                = $user_permissions->can_do(
                 "access_to_content_data_list_" . $ct->unique_id )
-                || $perm->can_do('access_to_content_data_list')
+                || $user_permissions->can_do('access_to_content_data_list')
                 ? 1
                 : 0;
             $item->{type_id}         = 'content_data_' . $ct->id;
@@ -1017,9 +1041,15 @@ sub site_list_widget {
             # Children
             for my $child ( @{ $blog->blogs } ) {
                 next
-                    unless $user->has_perm( $child->id )
-                    || $user->is_superuser
-                    || $user->permissions(0)->can_do('edit_templates');
+                  unless MT::Permission->count(
+                    {
+                        author_id => $user->id,
+                        blog_id   => $child->id,
+                    }
+                  )
+                  || $user->is_superuser
+                  || $user->permissions(0)->can_do('edit_templates');
+
                 my $row = $site_builder->($child);
                 push @sites, $row if $row;
             }
@@ -1030,9 +1060,14 @@ sub site_list_widget {
         if ( my @recent = @{ $user->favorite_sites || [] } ) {
             for my $site_id (@recent) {
                 next
-                    unless $user->has_perm($site_id)
-                    || $user->is_superuser
-                    || $user->permissions(0)->can_do('edit_templates');
+                  unless MT::Permission->count(
+                    {
+                        author_id   => $user->id,
+                        blog_id     => $site_id,
+                    }
+                  )
+                  || $user->is_superuser
+                  || $user->permissions(0)->can_do('edit_templates');
 
                 my $site = MT->model('website')->load($site_id);
                 next unless $site;

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -55,7 +55,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'You should be able to log in to Movable Type using this new password from the URL below. Once you have logged in, you should change your password to something more memorable.',
 
     '_BACKUP_TEMPDIR_WARNING' =>
-        'Requested data has been exported successfully in the [_1] directory.  Make sure that you download and <strong>then delete</strong> files listed above from [_1] <strong>immediately</strong> because exported files contain sensitive information.',
+        'Requested data has been exported successfully in the [_1] directory.  Make sure that you download and <strong>then delete</strong> files listed above from [_1] by clicking each link or with the help of an FTP client.',
     '_BACKUP_DOWNLOAD_MESSAGE' =>
         'Downloading of the exported file will start automatically in a few seconds.  If for some reason it does not, click <a href="javascript:(void)" onclick="submit_form()">here</a> to start downloading manually.  Please note that you can download the exported file only once for a session.',
     '_USAGE_BOOKMARKLET_1' =>
@@ -253,9 +253,9 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'Powered by <a href="https://www.movabletype.org/"><$MTProductName$></a>',
     '_DISPLAY_OPTIONS_SHOW' => 'Show',
     '_WARNING_DELETE_USER_EUM' =>
-        'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)? They will be able to re-create themselves if selected user(s) still exist in your external directory.',
+        'Deleting a user is an irrevocable action which creates orphans of the user\'s entries or content data. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)? They will be able to re-create themselves if selected user(s) still exist in your external directory.',
     '_WARNING_DELETE_USER' =>
-        'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)?',
+        'Deleting a user is an irrevocable action which creates orphans of the user\'s entries or content data. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)?',
     '_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' =>
         'This action will restore the templates in the selected blog(s) to theme default settings. Are you sure you want to refresh templates in the selected blog(s)?',
 
@@ -291,6 +291,10 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '__GROUP_MEMBER_COUNT' => 'Members',
 
     '__LIST_FIELD_LABEL' => 'List',
+
+    '__TEXT_LABEL_TEXT' => 'Text',
+
+    '__UNPUBLISHED' => 'Unpublish',
 );
 
 1;

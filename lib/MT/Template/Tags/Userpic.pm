@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -102,9 +102,9 @@ sub _hdlr_author_userpic_asset {
 
 ###########################################################################
 
-=head2 EntryAuthorUserpic
+=head2 EntryAuthorUserpic, EntryModifiedAuthorUserpic
 
-Outputs the HTML for the userpic of the author for the current entry
+Outputs the HTML for the userpic of the (last modified) author for the current entry
 in context.
 
 =cut
@@ -113,15 +113,23 @@ sub _hdlr_entry_author_userpic {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author or return '';
-    return $a->userpic_html() || '';
+    my $author = $e->author or return '';
+    return $author->userpic_html() || '';
+}
+
+sub _hdlr_entry_modified_author_userpic {
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $author = $e->modified_author or return '';
+    return $author->userpic_html() || '';
 }
 
 ###########################################################################
 
-=head2 EntryAuthorUserpicURL
+=head2 EntryAuthorUserpicURL, EntryModifiedAuthorUserpicURL
 
-Outputs the URL for the userpic image of the author for the current entry
+Outputs the URL for the userpic image of the (last modified) author for the current entry
 in context.
 
 =cut
@@ -130,16 +138,24 @@ sub _hdlr_entry_author_userpic_url {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author or return '';
-    return $a->userpic_url() || '';
+    my $author = $e->author or return '';
+    return $author->userpic_url() || '';
+}
+
+sub _hdlr_entry_modified_author_userpic_url {
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $author = $e->modified_author or return '';
+    return $author->userpic_url() || '';
 }
 
 ###########################################################################
 
-=head2 EntryAuthorUserpicAsset
+=head2 EntryAuthorUserpicAsset, EntryModifiedAuthorUserpicAsset
 
 A block tag providing an asset context for the userpic of the
-author for the current entry in context. See the L<Assets> tag
+(last modified) author for the current entry in context. See the L<Assets> tag
 for more information about publishing assets.
 
 =cut
@@ -149,6 +165,22 @@ sub _hdlr_entry_author_userpic_asset {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $author = $e->author;
+    return '' unless $author;
+
+    my $asset = $author->userpic or return '';
+
+    my $tok     = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+
+    local $ctx->{__stash}{asset} = $asset;
+    return $builder->build( $ctx, $tok, {%$cond} );
+}
+
+sub _hdlr_entry_modified_author_userpic_asset {
+    my ( $ctx, $args, $cond ) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $author = $e->modified_author;
     return '' unless $author;
 
     my $asset = $author->userpic or return '';

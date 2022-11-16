@@ -2,6 +2,8 @@
     "name": "movabletype/movabletype",
     "scripts": {
         "post-update-cmd": [
+            "rm -r php/extlib/smarty",
+            "cp -r vendor/smarty/smarty php/extlib/smarty",
             "rm -f php/extlib/adodb5/.gitattributes",
             "rm -f php/extlib/adodb5/.gitignore",
             "rm -f php/extlib/adodb5/drivers/adodb-text.inc.php",
@@ -11,18 +13,15 @@
         "test": "phpunit"
     },
     "require-dev": {
-        "oomphinc/composer-installers-extender": "^1.1",
-        "phpunit/phpunit": "^4.8.35 || ^5.7.27 || ^6.0"
+        "phpunit/phpunit": "^9.5.24"
     },
     "require": {
-        "adodb/adodb-php": "^5.20",
-        "smarty/smarty": "v3.1.31"
+        "adodb/adodb-php": "5.22.2",
+        "smarty/smarty": "^v4.2.0"
     },
-    "extra": {
-        "installer-types": ["library"],
-        "installer-paths": {
-            "php/extlib/adodb5/": ["adodb/adodb-php"],
-            "php/extlib/smarty/": ["smarty/smarty"]
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
         }
     }
 }

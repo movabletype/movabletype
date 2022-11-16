@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -15,6 +15,7 @@ BEGIN {
 use lib 'plugins/MultiBlog/lib';
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::App;
 
 MT::Test->init_app;
 
@@ -23,7 +24,7 @@ $test_env->prepare_fixture(sub {
     MT::Test->init_db;
 
     # Website
-    my $website        = MT::Test::Permission->make_website(
+    my $website = MT::Test::Permission->make_website(
         name => 'my website',
     );
     my $second_website = MT::Test::Permission->make_website(
@@ -33,11 +34,11 @@ $test_env->prepare_fixture(sub {
     # Blog
     my $blog = MT::Test::Permission->make_blog(
         parent_id => $website->id,
-        name => 'my blog',
+        name      => 'my blog',
     );
     my $second_blog = MT::Test::Permission->make_blog(
         parent_id => $website->id,
-        name => 'second blog',
+        name      => 'second blog',
     );
 
     # Author
@@ -73,109 +74,149 @@ $test_env->prepare_fixture(sub {
         name        => 'Create Post',
         permissions => "'create_post'",
     );
-    my $site_admin
-        = MT::Role->load( { name => MT->translate('Site Administrator') } );
+    my $site_admin = MT::Role->load({ name => MT->translate('Site Administrator') });
 
     require MT::Association;
-    MT::Association->link( $aikawa   => $site_admin  => $blog );
-    MT::Association->link( $ichikawa => $site_admin  => $website );
-    MT::Association->link( $ukawa    => $site_admin  => $second_blog );
-    MT::Association->link( $egawa    => $site_admin  => $second_website );
-    MT::Association->link( $ogawa    => $create_post => $blog );
+    MT::Association->link($aikawa   => $site_admin  => $blog);
+    MT::Association->link($ichikawa => $site_admin  => $website);
+    MT::Association->link($ukawa    => $site_admin  => $second_blog);
+    MT::Association->link($egawa    => $site_admin  => $second_website);
+    MT::Association->link($ogawa    => $create_post => $blog);
 });
 
-my $website = MT::Website->load( { name => 'my website' } );
+my $website = MT::Website->load({ name => 'my website' });
 
-my $blog = MT::Blog->load( { name => 'my blog' } );
+my $blog = MT::Blog->load({ name => 'my blog' });
 
-my $aikawa   = MT::Author->load( { name => 'aikawa' } );
-my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
-my $ukawa    = MT::Author->load( { name => 'ukawa' } );
-my $egawa    = MT::Author->load( { name => 'egawa' } );
-my $ogawa    = MT::Author->load( { name => 'ogawa' } );
+my $aikawa   = MT::Author->load({ name => 'aikawa' });
+my $ichikawa = MT::Author->load({ name => 'ichikawa' });
+my $ukawa    = MT::Author->load({ name => 'ukawa' });
+my $egawa    = MT::Author->load({ name => 'egawa' });
+my $ogawa    = MT::Author->load({ name => 'ogawa' });
 
 my $admin = MT::Author->load(1);
 
-# Run
-my ( $app, $out );
+my $app = MT::Test::App->new('MT::App::CMS');
+
+subtest 'mode = save' => sub {
+
+    my $save_message_regex = qr/Rebuild Trigger settings have been saved/;
+
+    $app->login($admin);
+    $app->post_ok({
+        __mode      => 'save',
+        _type       => 'rebuild_trigger',
+        blog_id     => $blog->id,
+        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
+    });
+    like $app->message_text, $save_message_regex, 'right message by admin';
+    is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
+
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode      => 'save',
+        _type       => 'rebuild_trigger',
+        blog_id     => $blog->id,
+        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
+    });
+    like $app->message_text, $save_message_regex, 'right message by permitted user (child site)';
+    is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
+
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode      => 'save',
+        _type       => 'rebuild_trigger',
+        blog_id     => $website->id,
+        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $website->id,
+    });
+    like $app->message_text, $save_message_regex, 'right message by permitted user (parent site)';
+    is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
+
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode      => 'save',
+        _type       => 'rebuild_trigger',
+        blog_id     => $blog->id,
+        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
+    });
+    $app->has_permission_error('right message by non permitted user (child site)');
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard';
+
+    $app->login($egawa);
+    $app->post_ok({
+        __mode      => 'save',
+        _type       => 'rebuild_trigger',
+        blog_id     => $website->id,
+        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $website->id,
+    });
+    $app->has_permission_error('right message by non permitted user (parent site)');
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard';
+
+    $app->login($ogawa);
+    $app->post_ok({
+        __mode      => 'save',
+        _type       => 'rebuild_trigger',
+        blog_id     => $blog->id,
+        return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
+    });
+    $app->has_permission_error('right message by other permission user');
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard';
+};
 
 subtest 'mode = add_rebuild_trigger' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'add_rebuild_trigger',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                          "Request: add_rebuild_trigger" );
-    ok( $out !~ m!permission=1!i, "add_rebuild_trigger by admin" );
+    $app->login($admin);
+    $app->get_ok({
+        __mode  => 'add_rebuild_trigger',
+        blog_id => $blog->id,
+        dialog  => 1,
+    });
+    is $app->_find_text('.modal-title'), 'Create Rebuild Trigger', 'right title';
+    is $app->locations, undef, 'no redirection';
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'add_rebuild_trigger',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: add_rebuild_trigger" );
-    ok( $out !~ m!permission=1!i,
-        "add_rebuild_trigger by permitted user (blog)" );
+    $app->login($aikawa);
+    $app->get_ok({
+        __mode  => 'add_rebuild_trigger',
+        blog_id => $blog->id,
+        dialog  => 1,
+    });
+    is $app->_find_text('.modal-title'), 'Create Rebuild Trigger', 'right title by permitted user (child site)';
+    is $app->locations, undef, 'no redirection';
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'add_rebuild_trigger',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: add_rebuild_trigger" );
-    ok( $out !~ m!permission=1!i,
-        "add_rebuild_trigger by permitted user (website)" );
+    $app->login($ichikawa);
+    $app->get_ok({
+        __mode  => 'add_rebuild_trigger',
+        blog_id => $website->id,
+        dialog  => 1,
+    });
+    is $app->_find_text('.modal-title'), 'Create Rebuild Trigger', 'right title by permitted user (parent site)';
+    is $app->locations, undef, 'no redirection';
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'add_rebuild_trigger',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: add_rebuild_trigger" );
-    ok( $out =~ m!permission=1!i,
-        "add_rebuild_trigger by non permitted user (blog)" );
+    $app->login($ukawa);
+    $app->get_ok({
+        __mode  => 'add_rebuild_trigger',
+        blog_id => $blog->id,
+        dialog  => 1,
+    });
+    $app->has_permission_error('right message by other permission user');
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard by non permitted user (child site)';
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'add_rebuild_trigger',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: add_rebuild_trigger" );
-    ok( $out =~ m!permission=1!i,
-        "add_rebuild_trigger by non permitted user (website)" );
+    $app->login($egawa);
+    $app->get_ok({
+        __mode  => 'add_rebuild_trigger',
+        blog_id => $website->id,
+        dialog  => 1,
+    });
+    $app->has_permission_error('right message by other permission user');
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard by non permitted user (parent site)';
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'add_rebuild_trigger',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: add_rebuild_trigger" );
-    ok( $out =~ m!permission=1!i,
-        "add_rebuild_trigger by other permission" );
+    $app->login($ogawa);
+    $app->get_ok({
+        __mode  => 'add_rebuild_trigger',
+        blog_id => $blog->id,
+        dialog  => 1,
+    });
+    $app->has_permission_error('right message by other permission user');
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard by other permission';
 };
 
 done_testing();

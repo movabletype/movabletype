@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -58,7 +58,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Email Address:'                                            => '',
     'IP Address:'                                               => '',
     'URL:'                                                      => '',
-    'Comments:'                                                 => '',
     'Previous Comments'                                         => '',
     'Comment Submission Error'                                  => '',
     'Your comment submission failed for the following reasons:' => '',
@@ -438,7 +437,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Edit Entry'                                 => '',
     'Your entry has been saved. You can now make any changes to the entry itself, edit the authored-on date, edit comments, or send a notification.'
         => '',
-    'Your changes have been saved.' => '',
     'Your customization preferences have been saved, and are visible in the form below.'
         => '',
     'Your changes to the comment have been saved.'          => '',
@@ -464,7 +462,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
         => '',
 
     ## Permission/author-adding screen (edit_permissions.tmpl)
-    'Add/Edit Weblog Authors' => '',
     'Edit Permissions'        => '',
     '_USAGE_PERMISSIONS_1'    => '',
     '_USAGE_PERMISSIONS_2'    => '',
@@ -480,19 +477,13 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'General Permissions'                => '',
     'User can create weblogs'            => '',
     'User can view activity log'         => '',
-    'Weblog:'                            => '',
-    'Post'                               => '',
-    'Upload File'                        => '',
     'Edit All Posts'                     => '',
     'Edit Templates'                     => '',
     'Edit Authors & Permissions'         => '',
     'Configure Weblog'                   => '',
-    'Rebuild Files'                      => '',
     'Send Notifications'                 => '',
-    'Edit Categories'                    => '',
     'Edit Address Book'                  => '',
     'Add user to an additional weblog:'  => '',
-    'Select a weblog'                    => '',
     'Add an author'                      => '',
     'This user will be associated with:' => '',
 
@@ -595,7 +586,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'is'                                             => '',
     'or'                                             => '',
     'Reset Filter'                                   => '',
-    'Category'                                       => '',
     'Status'                                         => '',
     'Previous [_1]'                                  => '',
     'Next [_1]'                                      => '',
@@ -614,12 +604,9 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Notification list' => '',
     'You have [quant,_1,user,users,no users] in your notification list.' =>
         '',
-    'URL'    => '',
-    'Delete' => '',
 
     ## List & Edit Templates (list_template.tmpl)
     'You did not select any templates to delete.'            => '',
-    'List Templates'                                         => '',
     '_USAGE_TEMPLATES'                                       => '',
     'You have successfully deleted the checked template(s).' => '',
     'Index templates'                                        => '',
@@ -676,7 +663,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Rebuild [_1] Archives Only' => '',
 
     ## Rebuilding screen (rebuilding.tmpl)
-    'Rebuilding [_1]'            => '',
     'Rebuilding [_1] pages [_2]' => '',
     'Rebuilding [_1] pages'      => '',
 
@@ -702,7 +688,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Search fields:'                                     => '',
     'Extended Entry Body'                                => '',
     'Replace with:'                                      => '',
-    'Search'                                             => '',
     'Replace'                                            => '',
     'Search Results'                                     => '',
     'The following entries match the search string [_1]' => '',
@@ -895,8 +880,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     "File with name '[_1]' already exists; Tried to write to tempfile, but open failed: [_2]"
         => "",
     "Error writing upload to '[_1]': [_2]" => "",
-    "Invalid temp file name '[_1]'"        => "",
-    "Error deleting '[_1]': [_2]"          => "",
     "Perl module Image::Size is required to determine width and height of uploaded images."
         => "",
     "No blog ID"                          => "",

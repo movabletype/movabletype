@@ -15,7 +15,6 @@ BEGIN {
 use MT::Test;
 use YAML::Tiny;
 use File::Spec;
-use FindBin qw( $Bin );
 use MT;
 
 $test_env->prepare_fixture('db_data');

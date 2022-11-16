@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -13,7 +13,7 @@ function smarty_function_mtcontentauthorlink($args, &$ctx) {
 
     $author = $content->author();
 
-    $type = $args['type'];
+    $type = isset($args['type']) ? $args['type'] : null;
     $displayname = encode_html( $author->author_nickname );
     if (isset($args['show_email']))
         $show_email = $args['show_email'];
@@ -26,7 +26,7 @@ function smarty_function_mtcontentauthorlink($args, &$ctx) {
 
     require_once("MTUtil.php");
     # Open the link in a new window if requested (with new_window="1").
-    $target = $args['new_window'] ? ' target="_blank"' : '';
+    $target = !empty($args['new_window']) ? ' target="_blank"' : '';
     if (!$type) {
         if ($show_url && $author->author_url && ($displayname != '')) {
             $type = 'url';
@@ -36,15 +36,15 @@ function smarty_function_mtcontentauthorlink($args, &$ctx) {
     }
     if ($type == 'url') {
         if ($author->author_url && ($displayname != '')) {
-            $hcard = $args['show_hcard'] ? ' class="fn url"' : '';
+            $hcard = !empty($args['show_hcard']) ? ' class="fn url"' : '';
             return sprintf('<a%s href="%s"%s>%s</a>', $hcard, encode_html( $author->author_url ), $target, $displayname);
         }
     } elseif ($type == 'email') {
         if ($author->author_email && ($displayname != '')) {
             $str = "mailto:" . encode_html( $author->author_email );
-            if ($args['spam_protect'])
+            if (!empty($args['spam_protect']))
                 $str = spam_protect($str);
-            $hcard = $args['show_hcard'] ? ' class="fn email"' : '';
+            $hcard = !empty($args['show_hcard']) ? ' class="fn email"' : '';
             return sprintf('<a%s href="%s">%s</a>', $hcard, $str, $displayname);
         }
     } elseif ($type == 'archive') {

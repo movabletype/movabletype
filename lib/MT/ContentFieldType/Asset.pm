@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -35,12 +35,14 @@ sub field_html_params {
     my $type = $field_data->{type};
     $type =~ s/_/\./g if $type =~ /_/;
 
+    my $options = $field_data->{options} || {};
+
     if (@value) {
         require MT::CMS::Asset;
         my $hasher = MT::CMS::Asset::build_asset_hasher(
             $app,
-            PreviewWidth  => 80,
-            PreviewHeight => 80,
+            PreviewWidth  => $options->{preview_width} || 80,
+            PreviewHeight => $options->{preview_height} || 80,
         );
 
         my $iter = $app->model($type)->load_iter( { id => \@value } );
@@ -64,13 +66,11 @@ sub field_html_params {
                 asset_label          => $row->{label},
                 asset_preview_url    => $row->{preview_url},
                 asset_preview_height => $row->{preview_height},
-                asset_preview_width  => $row->{preivew_width},
+                asset_preview_width  => $row->{preview_width},
                 asset_type           => $row->{class},
                 };
         }
     }
-
-    my $options = $field_data->{options} || {};
 
     my $multiple = '';
     if ( $options->{multiple} ) {
@@ -480,7 +480,7 @@ sub ss_validator {
     my $field_type_label = $field_data->{type_label};
 
     my $iter = MT::Asset->load_iter(
-        {   id => @$data ? $data : 0,
+        {   id => @{ $data || [] } ? $data : 0,
             blog_id => $app->blog->id,
         },
         { fetchonly => { id => 1 } }
@@ -607,14 +607,14 @@ sub preview_handler {
             if ($url) {
                 $contents .= qq{
                         <li>
-                            <img class="img-thumbnail p-0" width="60" height="60" src="$url">
+                            <img class="img-thumbnail p-0" width="60" height="60" src="$url" loading="lazy" decoding="async">
                             <span>$encoded_label (ID:$id)</span>
                         </li>
                     };
             }
             else {
                 my $svg
-                    = qq{<img src="${static_uri}images/file-$svg_class.svg" width="60" height="60">};
+                    = qq{<img src="${static_uri}images/file-$svg_class.svg" width="60" height="60" loading="lazy" decoding="async">};
                 $contents .= qq{
                     <li>
                         $svg
@@ -626,7 +626,7 @@ sub preview_handler {
         else {
             my $svg = qq{
               <div class="mt-user">
-                <img src="${static_uri}images/file-$svg_class.svg" width="60" height="60">
+                <img src="${static_uri}images/file-$svg_class.svg" width="60" height="60" loading="lazy" decoding="async">
                 <div class="mt-user__badge--warning">
                   <svg class="mt-icon--inverse mt-icon--sm">
                     <title>Warning</title>

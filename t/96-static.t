@@ -18,7 +18,7 @@ plan tests => 1;
 use MT;
 use MT::Test;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $app = MT::App::CMS->instance();
 

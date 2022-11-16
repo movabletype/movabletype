@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -68,6 +68,12 @@ sub fields {
                         ->content_type_id( $hashes->[$i]{contentType}{id} );
                 }
             }
+        },
+        schema => {
+            type       => 'object',
+            properties => {
+                id => { type => 'string' },
+            },
         },
     };
     $fields;

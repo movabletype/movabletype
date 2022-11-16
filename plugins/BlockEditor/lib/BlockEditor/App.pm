@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2017 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -140,12 +140,9 @@ sub data_load_handler {
             }
         }
         return $html;
-    }
-    elsif ( $convert_breaks eq 'richtext' && !$options->{full_rich_text} ) {
-        return scalar $app->param("editor-input-content-field-$field_id");
-    }
-    else {
-        return scalar $app->param("content-field-multi-$field_id");
+    } else {
+        require MT::ContentFieldType::MultiLineText;
+        return MT::ContentFieldType::MultiLineText::data_load_handler(@_);
     }
 
 }
@@ -173,7 +170,7 @@ sub replace_handler {
         = $field_data
         ? MT::Serialize->unserialize( $content_data->convert_breaks )
         : undef;
-    if ( $$convert_breaks->{ $field_data->{id} } eq 'blockeditor' ) {
+    if ( $$convert_breaks->{ $field_data->{id} } && $$convert_breaks->{ $field_data->{id} } eq 'blockeditor' ) {
         my $block_editor_data = $content_data->block_editor_data;
         my $data
             = eval { MT::Util::from_json( $content_data->block_editor_data ) };
@@ -188,10 +185,70 @@ sub replace_handler {
                 =~ s!$search_regex!$replace_string!g;
             $replaced += $data->{$editor_key}->{$key}->{html}
                 =~ s!$search_regex!$replace_string!g;
+
+            # replace image
+            if ( $data->{$editor_key}->{$key}->{type} eq 'image' ) {
+                $replaced += $data->{$editor_key}->{$key}->{asset_url}
+                    =~ s!$search_regex!$replace_string!g;
+
+                # replace image options
+                my $options = $data->{$editor_key}->{$key}->{options};
+                if ( ref $options eq 'HASH' && %{$options} ) {
+                    $replaced += $options->{alt}
+                        =~ s!$search_regex!$replace_string!g;
+                    $replaced += $options->{caption}
+                        =~ s!$search_regex!$replace_string!g;
+                    $replaced += $options->{title}
+                        =~ s!$search_regex!$replace_string!g;
+                }
+            }
         }
         $content_data->block_editor_data( MT::Util::to_json($data) );
     }
-    return ($replaced > 0, $values);
+    return ( $replaced > 0, $values );
+}
+
+sub search_handler {
+    my ( $search_regex, $field_data, $values, $content_data ) = @_;
+    return 0 unless defined $values;
+
+    my $convert_breaks
+        = $field_data
+        ? MT::Serialize->unserialize( $content_data->convert_breaks )
+        : undef;
+
+    if ( ( $$convert_breaks->{ $field_data->{id} } || '' ) ne 'blockeditor' ) {
+        return $search_regex ne '' ? $values =~ m!$search_regex! : 1;
+    }
+
+    my $block_editor_data = $content_data->block_editor_data;
+    my $data
+        = eval { MT::Util::from_json( $content_data->block_editor_data ) };
+    return 0 unless $data && ref $data eq 'HASH' && %$data;
+
+    my $editor_key
+        = 'editor-input-content-field-' . $field_data->{id} . '-blockeditor';
+    for my $key ( keys %{ $data->{$editor_key} } ) {
+        return 1
+            if $data->{$editor_key}->{$key}->{value} =~ /$search_regex/
+            || $data->{$editor_key}->{$key}->{html}  =~ /$search_regex/;
+
+        # parts image
+        if ( $data->{$editor_key}->{$key}->{type} eq 'image' ) {
+            return 1
+                if $data->{$editor_key}->{$key}->{asset_url} =~ $search_regex;
+
+            # search image options
+            my $options = $data->{$editor_key}->{$key}->{options};
+            if ( ref $options eq 'HASH' && %{$options} ) {
+                return 1
+                    if $options->{alt}     =~ /$search_regex/
+                    || $options->{caption} =~ /$search_regex/
+                    || $options->{title}   =~ /$search_regex/;
+            }
+        }
+    }
+    return 0;
 }
 
 1;

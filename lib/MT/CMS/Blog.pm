@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -46,8 +46,6 @@ sub edit {
 
         $param->{system_allow_comments} = $cfg->AllowComments;
         $param->{system_allow_pings}    = $cfg->AllowPings;
-        $param->{tk_available}          = eval { require MIME::Base64; 1; }
-            && eval { require LWP::UserAgent; 1 };
         $param->{'auto_approve_commenters'}
             = !$obj->manual_approve_commenters;
         $param->{"moderate_comments"} = $obj->moderate_unreg_comments;
@@ -213,38 +211,36 @@ sub edit {
         }
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## load entry preferences for new/edit entry page of the blog
-            my $pref_param = $app->load_entry_prefs( { type => 'entry' } );
-            %$param = ( %$param, %$pref_param );
-            $pref_param = $app->load_entry_prefs( { type => 'page' } );
-            %$param = ( %$param, %$pref_param );
-            $param->{ 'sort_order_posts_' . ( $obj->sort_order_posts || 0 ) }
-                = 1;
-            $param->{ 'status_default_' . $obj->status_default } = 1
+            my $pref_param = $app->load_entry_prefs({ type => 'entry' });
+            %$param                                                         = (%$param, %$pref_param);
+            $pref_param                                                     = $app->load_entry_prefs({ type => 'page' });
+            %$param                                                         = (%$param, %$pref_param);
+            $param->{ 'sort_order_posts_' . ($obj->sort_order_posts || 0) } = 1;
+            $param->{ 'status_default_' . $obj->status_default }            = 1
                 if $obj->status_default;
-            $param->{ 'allow_comments_default_'
-                    . ( $obj->allow_comments_default || 0 ) } = 1;
-            $param->{system_allow_pings}
-                = $cfg->AllowPings && $blog->allow_pings;
-            $param->{system_allow_comments} = $cfg->AllowComments
-                && ( $blog->allow_reg_comments
-                || $blog->allow_unreg_comments );
+            $param->{ 'allow_comments_default_' . ($obj->allow_comments_default || 0) } = 1;
+            $param->{system_allow_pings}                                                = $cfg->AllowPings && $blog->allow_pings;
+            $param->{system_allow_comments}                                             = $cfg->AllowComments
+                && ($blog->allow_reg_comments
+                || $blog->allow_unreg_comments);
             my $replace_fields = $blog->smart_replace_fields || '';
-            my @replace_fields = split( /,/, $replace_fields );
+            my @replace_fields = split(/,/, $replace_fields);
 
             foreach my $fld (@replace_fields) {
                 $param->{ 'nwc_' . $fld } = 1;
             }
-            $param->{ 'nwc_smart_replace_' . ( $blog->smart_replace || 0 ) }
-                = 1;
-            $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
+            $param->{ 'nwc_smart_replace_' . ($blog->smart_replace || 0) } = 1;
+            $param->{'nwc_replace_none'} = ($blog->smart_replace || 0) == 2;
 
-            $param->{popup}      = $blog->image_default_popup ? 1 : 0;
-            $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
-            $param->{ 'align_' . ( $blog->image_default_align || 'none' ) }
-                = 1;
-            $param->{thumb_width} = $blog->image_default_width || 0;
+            $param->{disabled_popup}                                      = MT->config('DisableImagePopup') ? 1 : 0;
+            $param->{can_popup}                                           = $blog->can_popup_image();
+            $param->{popup}                                               = $blog->image_default_popup                       ? 1                         : 0;
+            $param->{popup_link}                                          = $param->{can_popup} && $blog->image_default_link ? $blog->image_default_link : 2;
+            $param->{make_thumb}                                          = $blog->image_default_thumb                       ? 1                         : 0;
+            $param->{ 'align_' . ($blog->image_default_align || 'none') } = 1;
+            $param->{thumb_width}                                         = $blog->image_default_width || 0;
 
-            $app->add_breadcrumb( $app->translate('Compose Settings') );
+            $app->add_breadcrumb($app->translate('Compose Settings'));
         }
         elsif ( $output eq 'cfg_web_services.tmpl' ) {
             $param->{system_disabled_notify_pings}
@@ -263,7 +259,7 @@ sub edit {
                 } foreach keys %$pings;
             $param->{pings_loop} = \@pings;
 
-            $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
+            $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
 
             if ( $cfg->is_readonly('DataAPIDisableSite') ) {
                 $param->{'data_api_disable_site_readonly'} = 1;
@@ -358,7 +354,8 @@ sub edit {
     elsif ( $param->{output} && $param->{output} eq 'cfg_web_services.tmpl' )
     {
         # System level web services settings.
-        $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
+        $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
+
         if ( $app->config->is_readonly('DataAPIDisableSite') ) {
             $param->{'data_api_disable_site_readonly'} = 1;
             $param->{config_warning} = $app->translate(
@@ -456,10 +453,11 @@ sub edit {
     }
     if ( exists $param->{website_url} ) {
         my $website_url = $param->{website_url};
-        my ( $scheme, $domain ) = $website_url =~ m!^(\w+)://(.+)$!;
-        $domain .= '/' if $domain !~ m!/$!;
-        $param->{website_scheme} = $scheme;
-        $param->{website_domain} = $domain;
+        if (my ($scheme, $domain) = $website_url =~ m!^(\w+)://(.+)$!) {
+            $domain .= '/' if $domain !~ m!/$!;
+            $param->{website_scheme} = $scheme;
+            $param->{website_domain} = $domain;
+        }
     }
 
     1;
@@ -564,6 +562,8 @@ sub cfg_feedback {
         unless $blog_id;
     return $app->permission_denied()
         unless $app->can_do('edit_config');
+    my $junk_filters = $app->registry('junk_filters');
+    $app->param('has_junk_filters', 1) if %{$junk_filters || {}};
     $app->param( '_type', $app->blog ? $app->blog->class : 'blog' );
     $app->param( 'id', $blog_id );
     $app->forward(
@@ -692,10 +692,12 @@ sub cfg_web_services {
                   ref $tmpl eq 'CODE' ? $tmpl->( $plugin, @_ )
                 : $plugin             ? $plugin->load_tmpl($tmpl)
                 :                       $app->load_tmpl($tmpl)
-            )
+            ),
+            order => ($web_services->{$k}{order} || 999),
+            key => $k
             };
     }
-
+    @config_templates = sort { $a->{order} <=> $b->{order} || $a->{key} cmp $b->{key} } @config_templates;
     $app->param( '_type', $app->blog ? $app->blog->class : 'blog' );
     $app->param( 'id', $blog_id );
     $app->forward(
@@ -790,6 +792,7 @@ sub rebuild_pages {
     my $template_id    = $app->param('template_id');
     my $map_id         = $app->param('templatemap_id');
     my $fs             = $app->param('fs');
+    my $old_date       = $app->param('old_date');
     my $old_categories = $app->param('old_categories');
     my $old_previous   = $app->param('old_previous');
     my $old_next       = $app->param('old_next');
@@ -881,6 +884,7 @@ sub rebuild_pages {
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
+            OldDate           => $old_date,
             OldCategories     => $old_categories,
             OldPrevious       => $old_previous,
             OldNext           => $old_next
@@ -896,6 +900,7 @@ sub rebuild_pages {
         $app->rebuild_content_data(
             ContentData       => $content_data,
             BuildDependencies => 1,
+            OldDate           => $old_date,
             OldCategories     => $old_categories,
             OldPrevious       => $old_previous,
             OldNext           => $old_next,
@@ -1113,6 +1118,7 @@ sub rebuild_pages {
                 or return $app->error(
                 $app->translate( 'Cannot load blog #[_1].', $entry->blog_id )
                 );
+            $app->publisher->remove_marked_files( $blog, 1 );
             if ( MT->has_plugin('Trackback') ) {
                 require Trackback::CMS::Entry;
                 Trackback::CMS::Entry::ping_continuation(
@@ -1136,6 +1142,7 @@ sub rebuild_pages {
             my $blog = MT::Blog->load( $content_data->blog_id )
                 or return $app->errtrans( 'Cannot load blog #[_1].',
                 $content_data->blog_id );
+            $app->publisher->remove_marked_files( $blog, 1 );
             return $app->redirect(
                 $app->uri(
                     mode => 'view',
@@ -1318,7 +1325,7 @@ sub start_rebuild_pages_directly {
         $param{is_entry}   = 1;
         $param{entry_id}   = $entry_id;
         for my $col (
-            qw( is_new old_status old_next old_previous old_categories ))
+            qw( is_new old_status old_next old_previous old_categories old_date ))
         {
             $param{$col} = $app->param($col);
         }
@@ -1340,7 +1347,7 @@ sub start_rebuild_pages_directly {
         $param{content_type_id} = $content_data->content_type_id;
 
         for my $col (
-            qw( is_new old_status old_next old_previous old_categories ))
+            qw( is_new old_status old_next old_previous old_categories old_date ))
         {
             $param{$col} = $app->param($col);
         }
@@ -1445,6 +1452,11 @@ sub rebuild_confirm {
 
 sub save_favorite_blogs {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     $app->validate_magic() or return;
     my $fav = $app->param('id');
     return unless int($fav) > 0;
@@ -1456,8 +1468,9 @@ sub save_favorite_blogs {
     elsif ( $blog && !$blog->is_blog ) {
         $app->add_to_favorite_websites($fav);
     }
+    $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript+json");
-    return 'true';
+    $app->print_encode("true");
 }
 
 sub cc_return {
@@ -1492,7 +1505,7 @@ sub dialog_select_weblog {
     my $app = shift;
 
     my $favorites = $app->param('select_favorites');
-    my $confirm_js;
+    my $save_favorite;
     my $terms = {};
     my $args  = {};
     my $auth  = $app->user or return;
@@ -1501,7 +1514,7 @@ sub dialog_select_weblog {
 
         # Do not exclude top 5 favorite blogs from
         #   select blog dialog list. bugid:112372
-        $confirm_js = 'saveFavorite';
+        $save_favorite = 1;
     }
     if (   !$auth->is_superuser
         && !$auth->permissions(0)->can_do('access_to_blog_list')
@@ -1547,7 +1560,7 @@ sub dialog_select_weblog {
                 return_url       => $app->base
                     . $app->uri . '?'
                     . '__mode=dashboard',
-                confirm_js  => $confirm_js,
+                save_favorite => $save_favorite,
                 idfield     => ( $app->param('idfield') || '' ),
                 namefield   => ( $app->param('namefield') || '' ),
                 search_type => 'blog',
@@ -1775,10 +1788,12 @@ sub pre_save {
             my $image_default_width = $app->param('image_default_width');
             my $image_default_align = $app->param('image_default_align');
             my $image_default_popup = $app->param('image_default_popup');
+            my $image_default_link = $app->param('image_default_link');
             $obj->image_default_thumb( $image_default_thumb ? 1 : 0 );
             $obj->image_default_width($image_default_width);
             $obj->image_default_align($image_default_align);
             $obj->image_default_popup( $image_default_popup ? 1 : 0 );
+            $obj->image_default_link( $image_default_popup ? $image_default_link : 0);
         }
         if ( $screen eq 'cfg_prefs' ) {
             my $include_system = $app->param('include_system') || '';
@@ -1793,10 +1808,6 @@ sub pre_save {
                 $obj->custom_dynamic_templates($dcty);
             }
         }
-    }
-    else {
-
-       #$obj->is_dynamic(0) unless defined $app->{query}->param('is_dynamic');
     }
 
     # Set parent site ID
@@ -2026,7 +2037,7 @@ sub post_save {
                     "Saved [_1] Changes", $obj->class_label
                 ),
                 metadata => $meta_message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $obj->class,
                 blog_id  => $obj->id,
                 category => 'edit',
@@ -2057,7 +2068,7 @@ sub post_save {
         my $auth = $app->user;
 
         # disable data api by default
-        save_data_api_settings( $app, $obj->id, 0 );
+        $obj->allow_data_api(0);
 
         # Grant permission
         my $assoc_class = $app->model('association');
@@ -2216,7 +2227,7 @@ sub post_delete {
                 "Blog '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'blog',
             category => 'delete'
         }
@@ -3015,6 +3026,29 @@ sub clone {
     my ($param) = {};
     my $user    = $app->user;
 
+    $app->validate_param({
+        archive_path          => [qw/MAYBE_STRING/],
+        archive_path_absolute => [qw/MAYBE_STRING/],
+        archive_url           => [qw/MAYBE_STRING/],
+        archive_url_path      => [qw/MAYBE_STRING/],
+        archive_url_subdomain => [qw/MAYBE_STRING/],
+        blog_id               => [qw/ID/],
+        clone                 => [qw/MAYBE_STRING/],
+        enable_archive_paths  => [qw/MAYBE_STRING/],
+        id                    => [qw/ID MULTI/],
+        new_blog_name         => [qw/MAYBE_STRING/],
+        site_path             => [qw/MAYBE_STRING/],
+        site_path_absolute    => [qw/MAYBE_STRING/],
+        site_url              => [qw/MAYBE_STRING/],
+        site_url_path         => [qw/MAYBE_STRING/],
+        site_url_subdomain    => [qw/MAYBE_STRING/],
+        use_absolute          => [qw/MAYBE_STRING/],
+        use_absolute_archive  => [qw/MAYBE_STRING/],
+        use_archive_subdomain => [qw/MAYBE_STRING/],
+        use_subdomain         => [qw/MAYBE_STRING/],
+        verify                => [qw/MAYBE_STRING/],
+    }) or return;
+
     $app->validate_magic() or return;
 
     $app->{hide_goback_button} = 1;
@@ -3040,10 +3074,10 @@ sub clone {
     my $blog       = $blog_class->load($blog_id)
         or return $app->error( $app->translate("Invalid blog_id") );
     return $app->error( $app->translate("This action cannot clone website.") )
-        unless $blog->is_blog;
+        unless $blog->is_blog && $blog->parent_id;
 
     return $app->permission_denied()
-        unless $app->user->permissions( $blog->website->id )
+        unless $app->user->permissions( $blog->parent_id )
         ->can_do('clone_blog');
 
     $param->{'id'}            = $blog->id;
@@ -3189,7 +3223,7 @@ sub clone {
             $base_url = $raw_site_url[0];
         }
         $param->{site_url} = $base_url;
-        $param->{'use_subdomain'} = defined $param->{site_url_subdomain};
+        $param->{'use_subdomain'} = defined $param->{site_url_subdomain} && $param->{site_url_subdomain};
 
         if ( $param->{enable_archive_paths} ) {
             my $base_archive_url;
@@ -3365,12 +3399,7 @@ HTML
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
         $subdomain =~ s/\.{2,}/\./g;
         my $path = $app->param('site_url_path');
-        if ( $subdomain || $path ) {
-            $new_blog->site_url("$subdomain/::/$path");
-        }
-        else {
-            $new_blog->site_url( $param->{'site_url'} );
-        }
+        $new_blog->site_url("$subdomain/::/$path");
 
         if ( $param->{enable_archive_paths} ) {
             $new_blog->archive_path(
@@ -3384,12 +3413,7 @@ HTML
             $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
             $subdomain =~ s/\.{2,}/\./g;
             my $path = $app->param('archive_url_path');
-            if ( $subdomain || $path ) {
-                $new_blog->archive_url("$subdomain/::/$path");
-            }
-            else {
-                $new_blog->archive_url( $param->{'site_url'} );
-            }
+            $new_blog->archive_url("$subdomain/::/$path");
         }
 
         $new_blog->save();
@@ -3423,7 +3447,7 @@ HTML
             mode => 'list',
             args => {
                 '_type' => $app->blog ? 'blog' : 'website',
-                blog_id => ( $app->blog ? $new_blog->website->id : 0 )
+                blog_id => ( $app->blog ? $new_blog->parent_id : 0 )
             }
             );
         my $setting_url = $app->uri(
@@ -3588,12 +3612,19 @@ sub can_view_blog_list {
 }
 
 sub data_api_is_enabled {
-    my ( $app, $blog_id ) = @_;
-    my $cfg = $app->config;
+    my ( $app, $blog_id, $blog ) = @_;
 
-    my @disable_site = split ',',
-        defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    return ( grep { $blog_id == $_ } @disable_site ) ? 0 : 1;
+    my $cfg = $app->config;
+    my @disable_sites = split ',', defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
+    if ($cfg->is_readonly('DataAPIDisableSite')) {
+        return ( grep { $blog_id == $_ } @disable_sites ) ? 0 : 1;
+    } else {
+        if ($blog_id == 0) {
+            return ( grep { $blog_id == $_ } @disable_sites ) ? 0 : 1;
+        } else {
+            return $blog->allow_data_api;
+        }
+    }
 }
 
 sub save_data_api_settings {
@@ -3602,23 +3633,20 @@ sub save_data_api_settings {
     $blog_id   = $app->param('id') || 0         unless defined $blog_id;
     $new_value = $app->param('enable_data_api') unless defined $new_value;
 
-    my $cfg = $app->config;
-
-    my $data_api_disable_site
-        = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my %data_api_disable_site
-        = map { $_ => 1 } ( split ',', $data_api_disable_site );
-    if ($new_value) {
-        delete $data_api_disable_site{$blog_id};
+    if ($blog_id == 0) {
+        my $cfg = $app->config;
+        $cfg->DataAPIDisableSite($new_value ? '' : $blog_id, 1);
+        $cfg->save_config;
+    } else {
+        my $blog;
+        if ($app->blog && $app->blog->id == $blog_id) {
+            $blog = $app->blog;
+        } else {
+            $blog = MT->model('blog')->load($blog_id);
+        }
+        $blog->allow_data_api($new_value ? 1 : 0);
+        $blog->save;
     }
-    else {
-        $data_api_disable_site{$blog_id} = 1;
-    }
-    my $new_data_api_disable_site = join ',',
-        ( sort { $a <=> $b } keys %data_api_disable_site );
-    $cfg->DataAPIDisableSite( $new_data_api_disable_site, 1 );
-
-    $cfg->save_config;
 
     return 1;
 }

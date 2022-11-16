@@ -119,7 +119,6 @@ foreach my $blog (@blogs) {
             text           => 'You may be eaten by a grue.',
             keywords       => 'keywords',
             created_on     => '19780131074500',
-            authored_on    => '19780131074500',
             modified_on    => '19780131074600',
             authored_on    => '19780131074500',
             author_id      => 1,

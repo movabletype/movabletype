@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,7 +14,7 @@ use boolean ();
 use MT::Author;
 use MT::Permission;
 use MT::DataAPI::Resource::Common;
-use MT::DataAPI::Resource::User;
+use MT::DataAPI::Resource::v1::User;
 
 sub updatable_fields {
     [   qw(
@@ -35,7 +35,7 @@ sub fields {
     [   status => {
             name => 'status',
             bulk_from_object =>
-                MT::DataAPI::Resource::User::_private_bulk_from_object(
+                MT::DataAPI::Resource::v1::User::_private_bulk_from_object(
                 'status', 'get_status_text'
                 ),
             to_object => sub {
@@ -72,14 +72,14 @@ sub fields {
         {   name  => 'dateFormat',
             alias => 'date_format',
             bulk_from_object =>
-                MT::DataAPI::Resource::User::_private_bulk_from_object(
+                MT::DataAPI::Resource::v1::User::_private_bulk_from_object(
                 'dateFormat', 'date_format'
                 ),
         },
         {   name  => 'textFormat',
             alias => 'text_format',
             bulk_from_object =>
-                MT::DataAPI::Resource::User::_private_bulk_from_object(
+                MT::DataAPI::Resource::v1::User::_private_bulk_from_object(
                 'textFormat', 'text_format'
                 ),
         },
@@ -114,6 +114,7 @@ sub fields {
             },
         },
         {   name        => 'isSuperuser',
+            type        => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object => sub {
                 my ($obj) = @_;
                 my $app  = MT->instance or return;
@@ -126,6 +127,7 @@ sub fields {
             },
         },
         {   name        => 'lockedOut',
+            type        => 'MT::DataAPI::Resource::DataType::Boolean',
             from_object => sub {
                 my ($obj) = @_;
                 my $app  = MT->instance or return;
@@ -139,6 +141,12 @@ sub fields {
             bulk_from_object => \&_system_permissions_bulk_from_object,
             to_object => sub { },    # Do nothing.
             type_to_object => \&_system_permissions_type_to_object,
+            schema => {
+                type  => 'array',
+                items => {
+                    type => 'string',
+                },
+            },
         },
         $MT::DataAPI::Resource::Common::fields{createdBy},
         $MT::DataAPI::Resource::Common::fields{modifiedBy},

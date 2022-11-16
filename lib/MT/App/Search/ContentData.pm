@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -506,7 +506,7 @@ sub _parse_search_content_types {
     return
         unless defined $search_content_types && $search_content_types ne '';
 
-    my $can_search_by_id = $search_content_types =~ /^[0-9]+$/ ? 1 : 0;
+    my $can_search_by_id = $search_content_types =~ /^(?:[0-9]+|AND|OR|NOT|[ \(\)])+$/i ? 1 : 0;
 
     my $lucene_struct
         = eval { Lucene::QueryParser::parse_query($search_content_types) };
@@ -623,12 +623,17 @@ sub _get_normal_ids_for_reference_fields {
                 MT->model('content_field_index')->join_on(
                     undef,
                     { content_data_id => \'= cd_id' },
-                    {   join =>
+                    {   joins => [
                             MT->model( $type_registry->{search_class} )
                             ->join_on(
                             undef,
                             [ { id => \'= cf_idx_value_integer' }, \@terms, ],
                             ),
+                            MT->model('content_field')->join_on(
+                                undef,
+                                { id => \'= cf_idx_content_field_id', type => $type },
+                            ),
+                        ],
                     },
                 ),
             ],

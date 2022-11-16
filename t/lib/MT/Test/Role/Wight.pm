@@ -9,6 +9,7 @@ sub visit {
     my $url = $self->{base_url}->clone;
     $url->path_query($path_query);
     $self->driver->get( $url->as_string );
+    $self->{content} = $self->driver->get_page_source;
     $self;
 }
 

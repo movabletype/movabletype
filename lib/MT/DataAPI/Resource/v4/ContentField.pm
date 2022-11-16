@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -30,6 +30,16 @@ sub fields {
                     Storable::dclone($hashes) );
                 $app->request( 'data_api_content_field_hashes_for_save',
                     Storable::dclone($hashes) );
+            },
+            schema => {
+                type        => 'object',
+                description => 'This schema shows only common options',
+                properties  => {
+                    label       => { type => 'string' },
+                    description => { type => 'string' },
+                    required    => { type => 'string' },
+                    display     => { type => 'string' },
+                },
             },
         },
         {   name      => 'type',

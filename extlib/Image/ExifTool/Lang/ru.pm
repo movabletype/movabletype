@@ -811,7 +811,7 @@ $VERSION = '1.08';
    'ColorSpecMethod' => {
       Description => 'Спецификация цвета – Метод',
       PrintConv => {
-        'Any ICC' => 'Любой ICC	',
+        'Any ICC' => 'Любой ICC',
         'Enumerated' => 'Перечислимый',
         'Restricted ICC' => 'Ограниченный ICC',
         'Vendor Color' => 'Цвет поставщика',
@@ -5118,7 +5118,7 @@ $VERSION = '1.08';
       PrintConv => {
         'Alternate reduced-resolution image' => 'Альтернативное изображение с пониженным разрешением',
         'Color IW44' => 'Цветной IW44',
-        'Full-resolution Image' => 'Изображение с полным разрешением',
+        'Full-resolution image' => 'Изображение с полным разрешением',
         'Grayscale IW44' => 'Градация серого IW44',
         'Multi-page document' => 'Многостраничный документ',
         'Reduced-resolution image' => 'Изображение с пониженным разрешением',
@@ -5718,7 +5718,7 @@ and values.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -100,6 +100,10 @@ BEGIN {
             'search_results' => {
                 label             => 'Search Results',
                 description_label => 'Displays results of a search.',
+            },
+            'cd_search_results' => {
+                label             => 'Search Results for Content Data',
+                description_label => 'Displays results of a search for content data.',
             },
         },
         'module' => {
@@ -252,18 +256,17 @@ sub templates {
         else {
             $tmpl_hash = $set ? $def_tmpl->{templates} : $def_tmpl;
         }
-        my $plugin = $tmpl_hash->{plugin};
 
         foreach my $tmpl_set ( keys %$tmpl_hash ) {
             next unless ref( $tmpl_hash->{$tmpl_set} ) eq 'HASH';
             foreach my $tmpl_id ( keys %{ $tmpl_hash->{$tmpl_set} } ) {
                 next if $tmpl_id eq 'plugin';
-                my $p = $tmpl_hash->{plugin}
+                my $plugin = $tmpl_hash->{plugin}
                     || $tmpl_hash->{$tmpl_set}{plugin};
                 my $base_path = $def_tmpl->{base_path}
                     || $tmpl_hash->{$tmpl_set}{base_path};
-                if ( $p && $base_path ) {
-                    $base_path = File::Spec->catdir( $p->path, $base_path );
+                if ( $plugin && $base_path ) {
+                    $base_path = File::Spec->catdir( $plugin->path, $base_path );
                 }
                 elsif ($theme_envelope) {
                     $base_path
@@ -301,6 +304,7 @@ sub templates {
                 $tmpl->{type}       = $type;
                 $tmpl->{key}        = $tmpl_id;
                 $tmpl->{identifier} = $tmpl_id;
+                $tmpl->{plugin}     = $plugin;
 
                 if ( exists $tmpl->{widgets} ) {
                     my $widgets = $tmpl->{widgets};
@@ -345,7 +349,7 @@ sub templates {
                     # allow components/plugins to override core
                     # templates
                     $local_global_tmpls->{$tmpl_key} = $tmpl
-                        if $p && ( $p->id ne 'core' );
+                        if $plugin && ( $plugin->id ne 'core' );
                 }
                 else {
                     $local_global_tmpls->{$tmpl_key} = $tmpl;
@@ -353,6 +357,9 @@ sub templates {
             }
         }
     }
+
+    $pkg->fill_with_missing_system_templates(\%tmpls);
+
     my @tmpls = ( values(%tmpls), values(%global_tmpls) );
 
 # sort widgets to process last, since they rely on the widgets to exist first.
@@ -360,6 +367,69 @@ sub templates {
     MT->run_callbacks( 'DefaultTemplateFilter' . ( $set ? '.' . $set : '' ),
         \@tmpls );
     return \@tmpls;
+}
+
+sub fill_with_missing_system_templates {
+    my ($pkg, $tmpls) = @_;
+
+    my $system_default_templates = MT->registry('default_templates')->{system};
+
+    require File::Basename;
+    my $weblog_templates_path = MT->config('WeblogTemplatesPath');
+    my $basename = File::Basename::basename($weblog_templates_path);  # "default_templates" by default
+    my $plugins_with_default_templates;
+    for my $tmpl_id (keys %$system_default_templates) {
+        next if $tmpl_id eq 'plugin';
+        my $key = "$tmpl_id:$tmpl_id";
+        next if $tmpls->{$key};
+        if (!$plugins_with_default_templates) {
+            $plugins_with_default_templates = { '' => $weblog_templates_path };
+            for my $plugin_sig (keys %MT::Plugins) {
+                next if defined $MT::Plugins{$plugin_sig}{enabled} && !$MT::Plugins{$plugin_sig}{enabled};
+                my $plugin                 = $MT::Plugins{$plugin_sig}{object};
+                my $full_path              = $plugin->path;
+                my $default_templates_path = File::Spec->catdir($full_path, $basename);
+                next unless -d $default_templates_path;
+                $plugins_with_default_templates->{$plugin_sig} = $default_templates_path;
+            }
+        }
+        my ($plugin, $text);
+        for my $plugin_sig (sort keys %$plugins_with_default_templates) {
+            my $default_templates_path = $plugins_with_default_templates->{$plugin_sig};
+            my $file                   = File::Spec->catfile($default_templates_path, "$tmpl_id.mtml");
+
+            if ((-e $file) && (-r $file)) {
+                local $/;
+                open my $fin, '<', $file or die "Couldn't open $file: $!";
+                $text = <$fin>;
+                close $fin;
+                $plugin = $MT::Plugins{$plugin_sig}{object} if $plugin_sig;
+            }
+        }
+
+        my $tmpl = { %{ $system_default_templates->{$tmpl_id} } };
+        $tmpl->{set} = 'system';
+        my $name = $tmpl->{label};
+        if (ref $name eq 'CODE') {
+            $name = $name->();
+        } else {
+            if ($plugin) {
+                $name = $plugin->translate($name);
+            } else {
+                $name = MT->translate($name);
+            }
+        }
+        $tmpl->{name}       = $name;
+        $tmpl->{label}      = $name;
+        $tmpl->{type}       = $tmpl_id;
+        $tmpl->{key}        = $tmpl_id;
+        $tmpl->{identifier} = $tmpl_id;
+        $tmpl->{order} ||= 0;
+        $tmpl->{text}   = defined $text ? $text : '';
+        $tmpl->{plugin} = $plugin;
+
+        $tmpls->{$key} = $tmpl;
+    }
 }
 
 sub _template_sort {

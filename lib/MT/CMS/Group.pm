@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -188,11 +188,6 @@ sub dialog_select_group_user {
         # save the arguments from whence we came...
         $params->{return_args} = $app->return_args;
 
-        if ( $app->param('confirm_js') ) {
-            $params->{confirm_js} = $app->param('confirm_js');
-            $params->{confirm_js} =~ s/\W//g;
-        }
-
         $app->load_tmpl( 'dialog/dialog_select_group_user.tmpl', $params );
     }
 }
@@ -299,6 +294,12 @@ sub delete_group {
 sub view_group {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+        saved   => [qw/MAYBE_STRING/],
+    }) or return;
+
     return $app->return_to_dashboard( redirect => 1 )
         if $app->param('blog_id');
 
@@ -321,7 +322,7 @@ sub view_group {
     $obj = $group_class->load($id) if $id;
     my $user_class = $app->model('user');
     $app->add_breadcrumb( $app->translate("Groups"),
-        $app->uri( mode => 'list', args => { _type => 'group' } ) );
+        $app->uri( mode => 'list', args => { _type => 'group', blog_id => 0, } ) );
     if ($id) {
         %param = %{ $obj->column_values };
         delete $param{external_id};
@@ -446,6 +447,7 @@ sub build_group_table {
 # Handler for removing a member from a group, doesn't remove a group
 sub remove_group {
     my $app       = shift;
+
     my $user      = $app->user;
     my $author_id = $app->param('author_id');
     my @id        = $app->multi_param('id');
@@ -545,6 +547,51 @@ sub edit_role {
     );
     $params->{members} += $group_count;
     $tmpl;
+}
+
+sub post_save {
+    my $eh = shift;
+    my ($app, $obj, $original) = @_;
+
+    if (!$original->id) {
+        $app->log({
+            message => $app->translate(
+                "Group '[_1]' created by '[_2]'.", $obj->name,
+                $app->user->name
+            ),
+            level    => MT::Log::INFO(),
+            class    => 'group',
+            category => 'new',
+        });
+    }
+    else {
+        $app->log({
+            message => $app->translate(
+                "Group '[_1]' (ID:[_2]) edited by '[_3]'",
+                $obj->name, $obj->id, $app->user->name
+            ),
+            level    => MT::Log::NOTICE(),
+            class    => 'group',
+            category => 'edit',
+            metadata => $obj->id,
+        });
+    }
+    1;
+}
+
+sub post_delete {
+    my ($eh, $app, $obj) = @_;
+
+    $app->log({
+        message => $app->translate(
+            "Group '[_1]' (ID:[_2]) deleted by '[_3]'",
+            $obj->name, $obj->id, $app->user->name
+        ),
+        level    => MT::Log::NOTICE(),
+        class    => 'group',
+        category => 'delete'
+    });
+    1;
 }
 
 1;

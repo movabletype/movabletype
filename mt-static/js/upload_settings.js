@@ -61,7 +61,7 @@ function uploadDestinationSelect(sel) {
 
         // Add slash and the value in extra path textbox to custom Upload Destination textbox
         // if extra path textbox has value.
-        var $input_extra_path = jQuery('.upload-extra-path > input');
+        var $input_extra_path = jQuery('.upload-extra-path input');
         if ($input_extra_path.val() !== '') {
             jQuery(edit).val(
                 jQuery(edit).val() + '/' + $input_extra_path.val()

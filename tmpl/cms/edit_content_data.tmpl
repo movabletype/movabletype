@@ -21,7 +21,20 @@
   <mtapp:statusmsg
      id="recovered-object"
      class="info">
+    <mt:if name="autosaved_object_is_outdated">
+    <__trans phrase="A saved version of this content data was auto-saved [_2] but it is outdated.<br><a href="[_1]" class="alert-link">Recover auto-saved content</a> / <a href="[_3]" class="alert-link">Discard auto-saved content</a>" params="<mt:var name="script_url">?__mode=view&amp;_type=content_data&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">%%<mt:var name="script_url">?__mode=view&amp;_type=content_data&amp;_discard=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>">
+    <mt:else>
     <__trans phrase="A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=view&amp;_type=content_data&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="content_type_id">&amp;content_type_id=<mt:var name="content_type_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
+    </mt:if>
+  </mtapp:statusmsg>
+    </mt:unless>
+  </mt:if>
+  <mt:if name="is_also_edited_by">
+    <mt:unless name="error">
+  <mtapp:statusmsg
+     id="someone-is-also-editing"
+     class="warning">
+    <__trans phrase="[_1] is also editing the same data (last updated at [_2])." params="<mt:var name="is_also_edited_by" escape="html">%%<mt:var name="is_also_edited_at" escape="html">">
   </mtapp:statusmsg>
     </mt:unless>
   </mt:if>
@@ -163,7 +176,12 @@
   <mt:unless name="sitepath_configured">
     <input type="hidden" name="status" id="status" value="1" />
     <span><__trans phrase="Unpublished"></span>
-    <span class="alert-warning-inline"><img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" /> <a href="<$mt:var name="script_url"$>?__mode=cfg_archives&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="You must configure this blog before you can publish this content data."></a></span>
+    <span class="alert-warning-inline">
+        <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
+        <a href="<$mt:var name="script_url"$>?__mode=cfg_prefs&amp;blog_id=<$mt:var name="blog_id"$>">
+            <__trans phrase="You must configure this site before you can publish this content data.">
+        </a>
+    </span>
   <mt:else>
     <mt:if name="can_publish_post">
     <select name="status" id="status" class="custom-select form-control full" onchange="highlightSwitch(this)">
@@ -233,7 +251,7 @@
           <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
         </div>
         <div class="form-inline col d-md-none">
-          <input type="number" class="form-control html5-form w-25" name="authored_on_year" value="<mt:var name="authored_on_year">" maxlength="4">
+          <input type="number" class="form-control html5-form w-25" name="authored_on_year" value="<mt:var name="authored_on_year" escape="html">" maxlength="4">
           -
           <select class="custom-control custom-select w-25" name="authored_on_month">
             <option value=""></option>
@@ -336,7 +354,7 @@
              <input type="text" id="unpublished-on-date" class="form-control text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" />
           </div>
           <div class="form-inline col d-md-none">
-            <input type="number" class="form-control html5-form w-25" name="unpublished_on_year" value="<mt:var name="unpublished_on_year">" maxlength="4">
+            <input type="number" class="form-control html5-form w-25" name="unpublished_on_year" value="<mt:var name="unpublished_on_year" escape="html">" maxlength="4">
             -
             <select class="custom-control custom-select w-25" name="unpublished_on_month">
               <option value=""></option>
@@ -506,14 +524,10 @@
 <mt:unless name="sitepath_configured">
   <input type="hidden" name="status" id="status" value="1" />
   <p class="alert-warning-inline">
-    <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
-    <a href="<$mt:var name="script_url"$>?__mode=cfg_prefs&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>">
-  <mt:if name="object_type" eq="entry">
-      <__trans phrase="You must configure this blog before you can publish this entry.">
-  <mt:else>
-      <__trans phrase="You must configure this blog before you can publish this page.">
-    </mt:if>
-    </a>
+      <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
+      <a href="<$mt:var name="script_url"$>?__mode=cfg_prefs&amp;blog_id=<$mt:var name="blog_id"$>">
+          <__trans phrase="You must configure this site before you can publish this content data.">
+      </a>
   </p>
 </mt:unless>
 </mtapp:widget>
@@ -611,27 +625,27 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 <mt:setvarblock name="page_content">
 <mtapp:settinggroup id="content_data">
 
-  <mt:unless name="new_object">
-    <mt:if name="content_data_permalink">
-      <mtapp:setting
-        id="permalink"
-        class="d-none d-md-block"
-        label="Permalink"
-        show_label="0"
-        label_class="no-header"
-        help_page="entries"
-        help_section="permalink">
-       <span style="word-break: break-all;">
-         <strong><__trans phrase="Permalink:"></strong> <mt:var name="content_data_permalink">
-       </span>
-         <mt:if name="status_publish">
-         <a class="btn btn-default button" href="<$mt:var name="content_data_permalink"$>" target="<__trans phrase="_external_link_target">">
-           <__trans phrase="View">
-         </a>
+  <mt:if name="has_archive_mapping">
+    <mtapp:setting
+      id="permalink"
+      class="d-none d-md-block"
+      label="Permalink"
+      show_label="0"
+      label_class="no-header"
+      help_page="entries"
+      help_section="permalink">
+     <span style="word-break: break-all;">
+       <strong><__trans phrase="Permalink:"></strong> <mt:var name="content_data_permalink">
+     </span>
+       <mt:if name="status_publish">
+         <mt:if name="content_data_permalink">
+       <a class="btn btn-default button" href="<$mt:var name="content_data_permalink"$>" target="<__trans phrase="_external_link_target">">
+         <__trans phrase="View">
+       </a>
          </mt:if>
-      </mtapp:setting>
-    </mt:if>
-  </mt:unless>
+       </mt:if>
+    </mtapp:setting>
+  </mt:if>
 
   <mt:if name="can_edit_data_label">
     <mtapp:setting
@@ -660,7 +674,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   <mt:loop name="fields">
     <mt:if name="can_edit">
 <div class="form-group">
-      <mt:if name="type" ne="multi_line_text">
+      <mt:if name="type" like="^(?!(multi_line_text|text_label))">
   <label><mt:var name="options{label}" escape="html"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if></label>
       </mt:if>
 
@@ -741,7 +755,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
     <__trans phrase="(Min tags: [_1])", params="<mt:var name="options{min}" escape="html">">
             </mt:if>
           <mt:elseif name="options{max}">
-    <__trans phrase="(Max tags: [_2])", params="<mt:var name="options{max}" escape="html">">
+    <__trans phrase="(Max tags: [_1])", params="<mt:var name="options{max}" escape="html">">
           <mt:else>
             <mt:var name="new_line" value="0">
           </mt:if>

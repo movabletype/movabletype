@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -114,7 +114,7 @@ sub archive_group_iter {
     my $tsend = $ctx->{current_timestamp_end};
 
     my $content_type_id = $ctx->stash('content_type')->id;
-    my $map             = $obj->_get_preferred_map(
+    my $map             = $obj->get_preferred_map(
         {   blog_id         => $blog->id,
             content_type_id => $content_type_id,
             map             => $ctx->stash('template_map'),

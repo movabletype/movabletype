@@ -16,93 +16,91 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::App;
 
 ### Prepare
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(
-    sub {
-        MT::Test->init_db;
+$test_env->prepare_fixture(sub {
+    MT::Test->init_db;
 
-        # Sites
-        my $site = MT::Test::Permission->make_website( name => 'my website' );
-        my $site2 =
-          MT::Test::Permission->make_website( name => 'my second website' );
+    # Sites
+    my $site  = MT::Test::Permission->make_website(name => 'my website');
+    my $site2 = MT::Test::Permission->make_website(name => 'my second website');
 
-        # Users
-        my $create_user = MT::Test::Permission->make_author(
-            name     => 'aikawa',
-            nickname => 'Ichiro Aikawa',
-        );
+    # Users
+    my $create_user = MT::Test::Permission->make_author(
+        name     => 'aikawa',
+        nickname => 'Ichiro Aikawa',
+    );
 
-        my $create_user2 = MT::Test::Permission->make_author(
-            name     => 'kagawa',
-            nickname => 'Ichiro Kagawa',
-        );
+    my $create_user2 = MT::Test::Permission->make_author(
+        name     => 'kagawa',
+        nickname => 'Ichiro Kagawa',
+    );
 
-        my $edit_user = MT::Test::Permission->make_author(
-            name     => 'ichikawa',
-            nickname => 'Jiro Ichikawa',
-        );
+    my $edit_user = MT::Test::Permission->make_author(
+        name     => 'ichikawa',
+        nickname => 'Jiro Ichikawa',
+    );
 
-        my $edit_user2 = MT::Test::Permission->make_author(
-            name     => 'kikkawa',
-            nickname => 'Jiro Kikkawa',
-        );
+    my $edit_user2 = MT::Test::Permission->make_author(
+        name     => 'kikkawa',
+        nickname => 'Jiro Kikkawa',
+    );
 
-        my $manage_user = MT::Test::Permission->make_author(
-            name     => 'ukawa',
-            nickname => 'Saburo Ukawa',
-        );
+    my $manage_user = MT::Test::Permission->make_author(
+        name     => 'ukawa',
+        nickname => 'Saburo Ukawa',
+    );
 
-        my $manage_user2 = MT::Test::Permission->make_author(
-            name     => 'kumekawa',
-            nickname => 'Saburo Kumekawa',
-        );
+    my $manage_user2 = MT::Test::Permission->make_author(
+        name     => 'kumekawa',
+        nickname => 'Saburo Kumekawa',
+    );
 
-        my $publish_user = MT::Test::Permission->make_author(
-            name     => 'egawa',
-            nickname => 'Shiro Egawa',
-        );
+    my $publish_user = MT::Test::Permission->make_author(
+        name     => 'egawa',
+        nickname => 'Shiro Egawa',
+    );
 
-        my $publish_user2 = MT::Test::Permission->make_author(
-            name     => 'Kemikawa',
-            nickname => 'Shiro Kemikawa',
-        );
+    my $publish_user2 = MT::Test::Permission->make_author(
+        name     => 'Kemikawa',
+        nickname => 'Shiro Kemikawa',
+    );
 
-        my $manage_content_data_user = MT::Test::Permission->make_author(
-            name     => 'ogawa',
-            nickname => 'Goro Ogawa',
-        );
+    my $manage_content_data_user = MT::Test::Permission->make_author(
+        name     => 'ogawa',
+        nickname => 'Goro Ogawa',
+    );
 
-        my $manage_content_data_user2 = MT::Test::Permission->make_author(
-            name     => 'koishikawa',
-            nickname => 'Goro Koishikawa',
-        );
+    my $manage_content_data_user2 = MT::Test::Permission->make_author(
+        name     => 'koishikawa',
+        nickname => 'Goro Koishikawa',
+    );
 
-        my $sys_manage_content_data_user = MT::Test::Permission->make_author(
-            name     => 'sagawa',
-            nickname => 'IChiro Sagawa',
-        );
-    }
-);
+    my $sys_manage_content_data_user = MT::Test::Permission->make_author(
+        name     => 'sagawa',
+        nickname => 'IChiro Sagawa',
+    );
+});
 
 ### Loading test data
-my $site  = MT::Website->load( { name => 'my website' } );
-my $site2 = MT::Website->load( { name => 'my second website' } );
+my $site  = MT::Website->load({ name => 'my website' });
+my $site2 = MT::Website->load({ name => 'my second website' });
 
-my $create_user                  = MT::Author->load( { name => 'aikawa' } );
-my $create_user2                 = MT::Author->load( { name => 'kagawa' } );
-my $edit_user                    = MT::Author->load( { name => 'ichikawa' } );
-my $edit_user2                   = MT::Author->load( { name => 'kikkawa' } );
-my $manage_user                  = MT::Author->load( { name => 'ukawa' } );
-my $manage_user2                 = MT::Author->load( { name => 'kumekawa' } );
-my $publish_user                 = MT::Author->load( { name => 'egawa' } );
-my $publish_user2                = MT::Author->load( { name => 'kemikawa' } );
-my $manage_content_data_user     = MT::Author->load( { name => 'ogawa' } );
-my $manage_content_data_user2    = MT::Author->load( { name => 'koishikawa' } );
-my $sys_manage_content_data_user = MT::Author->load( { name => 'sagawa' } );
+my $create_user                  = MT::Author->load({ name => 'aikawa' });
+my $create_user2                 = MT::Author->load({ name => 'kagawa' });
+my $edit_user                    = MT::Author->load({ name => 'ichikawa' });
+my $edit_user2                   = MT::Author->load({ name => 'kikkawa' });
+my $manage_user                  = MT::Author->load({ name => 'ukawa' });
+my $manage_user2                 = MT::Author->load({ name => 'kumekawa' });
+my $publish_user                 = MT::Author->load({ name => 'egawa' });
+my $publish_user2                = MT::Author->load({ name => 'kemikawa' });
+my $manage_content_data_user     = MT::Author->load({ name => 'ogawa' });
+my $manage_content_data_user2    = MT::Author->load({ name => 'koishikawa' });
+my $sys_manage_content_data_user = MT::Author->load({ name => 'sagawa' });
 
 ### Make test data
 # Content Type & Content Field & Content Data
@@ -119,8 +117,7 @@ my $content_field = MT::Test::Permission->make_content_field(
     type            => 'single_line_text',
 );
 
-my $field_data = [
-    {
+my $field_data = [{
         id        => $content_field->id,
         order     => 1,
         type      => $content_field->type,
@@ -150,8 +147,7 @@ my $content_field2 = MT::Test::Permission->make_content_field(
     type            => 'single_line_text',
 );
 
-my $field_data2 = [
-    {
+my $field_data2 = [{
         id        => $content_field2->id,
         order     => 1,
         type      => $content_field2->type,
@@ -170,16 +166,8 @@ my $cd2 = MT::Test::Permission->make_content_data(
 );
 
 # Permissions
-my $field_priv =
-    'content_type:'
-  . $content_type->unique_id
-  . '-content_field:'
-  . $content_field->unique_id;
-my $field_priv2 =
-    'content_type:'
-  . $content_type2->unique_id
-  . '-content_field:'
-  . $content_field2->unique_id;
+my $field_priv  = 'content_type:' . $content_type->unique_id . '-content_field:' . $content_field->unique_id;
+my $field_priv2 = 'content_type:' . $content_type2->unique_id . '-content_field:' . $content_field2->unique_id;
 
 my $create_priv = 'create_content_data:' . $content_type->unique_id;
 my $create_role = MT::Test::Permission->make_role(
@@ -219,16 +207,14 @@ my $edit_role2 = MT::Test::Permission->make_role(
 
 my $manage_priv = 'manage_content_data:' . $content_type->unique_id;
 my $manage_role = MT::Test::Permission->make_role(
-    name => 'manage_content_data ' . $content_field->name,
-    permissions =>
-"'${manage_priv}','${create_priv}','${publish_priv}','${edit_priv}','${field_priv}'",
+    name        => 'manage_content_data ' . $content_field->name,
+    permissions => "'${manage_priv}','${create_priv}','${publish_priv}','${edit_priv}','${field_priv}'",
 );
 
 my $manage_priv2 = 'manage_content_data:' . $content_type2->unique_id;
 my $manage_role2 = MT::Test::Permission->make_role(
-    name => 'manage_content_data ' . $content_field2->name,
-    permissions =>
-"'${manage_priv2}','${create_priv2}','${publish_priv2}','${edit_priv2}','${field_priv2}'",
+    name        => 'manage_content_data ' . $content_field2->name,
+    permissions => "'${manage_priv2}','${create_priv2}','${publish_priv2}','${edit_priv2}','${field_priv2}'",
 );
 
 my $manage_content_data_role = MT::Test::Permission->make_role(
@@ -237,406 +223,292 @@ my $manage_content_data_role = MT::Test::Permission->make_role(
 );
 
 require MT::Association;
-MT::Association->link( $create_user   => $create_role   => $site );
-MT::Association->link( $create_user2  => $create_role2  => $site2 );
-MT::Association->link( $edit_user     => $edit_role     => $site );
-MT::Association->link( $edit_user2    => $edit_role2    => $site2 );
-MT::Association->link( $manage_user   => $manage_role   => $site );
-MT::Association->link( $manage_user2  => $manage_role2  => $site2 );
-MT::Association->link( $publish_user  => $publish_role  => $site );
-MT::Association->link( $publish_user2 => $publish_role2 => $site2 );
-MT::Association->link(
-    $manage_content_data_user => $manage_content_data_role => $site );
-MT::Association->link(
-    $manage_content_data_user2 => $manage_content_data_role => $site2 );
+MT::Association->link($create_user               => $create_role              => $site);
+MT::Association->link($create_user2              => $create_role2             => $site2);
+MT::Association->link($edit_user                 => $edit_role                => $site);
+MT::Association->link($edit_user2                => $edit_role2               => $site2);
+MT::Association->link($manage_user               => $manage_role              => $site);
+MT::Association->link($manage_user2              => $manage_role2             => $site2);
+MT::Association->link($publish_user              => $publish_role             => $site);
+MT::Association->link($publish_user2             => $publish_role2            => $site2);
+MT::Association->link($manage_content_data_user  => $manage_content_data_role => $site);
+MT::Association->link($manage_content_data_user2 => $manage_content_data_role => $site2);
 
 $sys_manage_content_data_user->can_manage_content_data(1);
 $sys_manage_content_data_user->save;
 
 my $admin = MT::Author->load(1);
 
-### Run
-my ( $app, $out );
-
 # Create new
 subtest 'mode = view (new)' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $admin,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-        },
-    );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by admin' );
+    $app->has_no_permission_error('create by admin');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $create_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-        },
-    );
+    $app->login($create_user);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by permitted user (create)' );
+    $app->has_no_permission_error('create by permitted user (create)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $publish_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-        },
-    );
+    $app->login($publish_user);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by permitted user (publish)' );
+    $app->has_no_permission_error('create by permitted user (publish)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-        },
-    );
+    $app->login($manage_user);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by permitted user (manage)' );
+    $app->has_no_permission_error('create by permitted user (manage)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-        },
-    );
+    $app->login($manage_content_data_user);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by permitted user (manage_all)' );
+    $app->has_no_permission_error('create by permitted user (manage_all)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $sys_manage_content_data_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-        },
-    );
+    $app->login($sys_manage_content_data_user);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'create by permitted user (sys)' );
+    $app->has_no_permission_error('create by permitted user (sys)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $create_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site2->id,
-            content_type_id  => $content_type2->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type2->id,
-        },
-    );
+    $app->login($create_user);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site2->id,
+        content_type_id => $content_type2->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type2->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'create by not permitted user (create)' );
+    $app->has_permission_error('create by not permitted user (create)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $publish_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site2->id,
-            content_type_id  => $content_type2->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type2->id,
-        },
-    );
+    $app->login($publish_user);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site2->id,
+        content_type_id => $content_type2->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type2->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'create by not permitted user (publish)' );
+    $app->has_permission_error('create by not permitted user (publish)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site2->id,
-            content_type_id  => $content_type2->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type2->id,
-        },
-    );
+    $app->login($manage_user);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site2->id,
+        content_type_id => $content_type2->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type2->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'create by not permitted user (manage)' );
+    $app->has_permission_error('create by not permitted user (manage)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site2->id,
-            content_type_id  => $content_type2->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type2->id,
-        },
-    );
+    $app->login($manage_content_data_user);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site2->id,
+        content_type_id => $content_type2->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type2->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'create by non permitted user (manage_all)' );
+    $app->has_permission_error('create by non permitted user (manage_all)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $edit_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-        },
-    );
+    $app->login($edit_user);
+    $app->get_ok({
+        __mode          => 'view',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'create by not permitted user (edit)' );
+    $app->has_permission_error('create by not permitted user (edit)');
 };
 
 # Save new
 subtest 'mode = save (new)' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            data_label       => 'label',
-            status           => 1,
-        },
-    );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode          => 'save',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        data_label      => 'label',
+        status          => 1,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'save new by admin' );
+    $app->has_no_permission_error('save new by admin');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $create_user,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            data_label       => 'label',
-            status           => 1,
-        },
-    );
+    $app->login($create_user);
+    $app->post_ok({
+        __mode          => 'save',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        data_label      => 'label',
+        status          => 1,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'save new by permitted user (create)' );
+    $app->has_no_permission_error('save new by permitted user (create)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $publish_user,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            data_label       => 'label',
-            status           => 1,
-        },
-    );
+    $app->login($publish_user);
+    $app->post_ok({
+        __mode          => 'save',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        data_label      => 'label',
+        status          => 1,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'save new by permitted user (publish)' );
+    $app->has_no_permission_error('save new by permitted user (publish)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_user,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            data_label       => 'label',
-            status           => 1,
-        },
-    );
+    $app->login($manage_user);
+    $app->post_ok({
+        __mode          => 'save',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        data_label      => 'label',
+        status          => 1,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'save new by permitted user (manage)' );
+    $app->has_no_permission_error('save new by permitted user (manage)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            data_label       => 'label',
-            status           => 1,
-        },
-    );
+    $app->login($manage_content_data_user);
+    $app->post_ok({
+        __mode          => 'save',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        data_label      => 'label',
+        status          => 1,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'save new by permitted user (manage_all)' );
+    $app->has_no_permission_error('save new by permitted user (manage_all)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $sys_manage_content_data_user,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            data_label       => 'label',
-            status           => 1,
-        },
-    );
+    $app->login($sys_manage_content_data_user);
+    $app->post_ok({
+        __mode          => 'save',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        data_label      => 'label',
+        status          => 1,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'save new by permitted user (manage_sys)' );
+    $app->has_no_permission_error('save new by permitted user (manage_sys)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $create_user2,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            data_label       => 'label',
-            status           => 1,
-        },
-    );
+    $app->login($create_user2);
+    $app->post_ok({
+        __mode          => 'save',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        data_label      => 'label',
+        status          => 1,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'save new by non permitted user (create)' );
+    $app->has_permission_error('save new by non permitted user (create)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $publish_user2,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            data_label       => 'label',
-            status           => 1,
-        },
-    );
+    $app->login($publish_user2);
+    $app->post_ok({
+        __mode          => 'save',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        data_label      => 'label',
+        status          => 1,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'save new by non permitted user (publish)' );
+    $app->has_permission_error('save new by non permitted user (publish)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_user2,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            data_label       => 'label',
-            status           => 1,
-        },
-    );
+    $app->login($manage_user2);
+    $app->post_ok({
+        __mode          => 'save',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        data_label      => 'label',
+        status          => 1,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'save new by non permitted user (manage)' );
+    $app->has_permission_error('save new by non permitted user (manage)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user2,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            data_label       => 'label',
-            status           => 1,
-        },
-    );
+    $app->login($manage_content_data_user2);
+    $app->post_ok({
+        __mode          => 'save',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        data_label      => 'label',
+        status          => 1,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'save new by non permitted user (manage_all)' );
+    $app->has_permission_error('save new by non permitted user (manage_all)');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $edit_user,
-            __request_method => 'POST',
-            __mode           => 'save',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            data_label       => 'label',
-            status           => 1,
-        },
-    );
+    $app->login($edit_user);
+    $app->post_ok({
+        __mode          => 'save',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        data_label      => 'label',
+        status          => 1,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'save new by non permitted user (edit_all)' );
-
+    $app->has_permission_error('save new by non permitted user (edit_all)');
 };
 
 # delete
@@ -647,22 +519,18 @@ subtest 'mode = delete' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_admin->id,
-        },
-    );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode          => 'delete',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        id              => $cd_admin->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'delete by admin' );
+    $app->has_no_permission_error('delete by admin');
 
     my $cd_create_user = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
@@ -670,22 +538,17 @@ subtest 'mode = delete' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $create_user,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_create_user->id,
-        },
-    );
+    $app->login($create_user);
+    $app->post_ok({
+        __mode          => 'delete',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        id              => $cd_create_user->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'delete by non permitted user (create)' );
+    $app->has_permission_error('delete by non permitted user (create)');
 
     my $cd_publish_user = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
@@ -693,22 +556,17 @@ subtest 'mode = delete' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $publish_user,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_publish_user->id,
-        },
-    );
+    $app->login($publish_user);
+    $app->post_ok({
+        __mode          => 'delete',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        id              => $cd_publish_user->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'delete by non permitted user (publish)' );
+    $app->has_permission_error('delete by non permitted user (publish)');
 
     my $cd_manage_user = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
@@ -716,22 +574,17 @@ subtest 'mode = delete' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_user,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_manage_user->id,
-        },
-    );
+    $app->login($manage_user);
+    $app->post_ok({
+        __mode          => 'delete',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        id              => $cd_manage_user->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'delete by permitted user (manage)' );
+    $app->has_no_permission_error('delete by permitted user (manage)');
 
     my $cd_manage_content_data_user = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
@@ -739,46 +592,35 @@ subtest 'mode = delete' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_manage_content_data_user->id
-        },
-    );
+    $app->login($manage_content_data_user);
+    $app->post_ok({
+        __mode          => 'delete',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        id              => $cd_manage_content_data_user->id
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'delete by permitted user (manage_all)' );
+    $app->has_no_permission_error('delete by permitted user (manage_all)');
 
-    my $cd_sys_manage_content_data_user =
-      MT::Test::Permission->make_content_data(
+    my $cd_sys_manage_content_data_user = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
         author_id       => $admin->id,
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
-      );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $sys_manage_content_data_user,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_sys_manage_content_data_user->id,
-        },
     );
+    $app->login($sys_manage_content_data_user);
+    $app->post_ok({
+        __mode          => 'delete',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        id              => $cd_sys_manage_content_data_user->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'delete by permitted user (manage_sys)' );
+    $app->has_no_permission_error('delete by permitted user (manage_sys)');
 
     my $cd_sys_create_user2 = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
@@ -786,22 +628,17 @@ subtest 'mode = delete' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $create_user2,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_sys_create_user2->id,
-        },
-    );
+    $app->login($create_user2);
+    $app->post_ok({
+        __mode          => 'delete',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        id              => $cd_sys_create_user2->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'delete by non permitted user (create)' );
+    $app->has_permission_error('delete by non permitted user (create)');
 
     my $cd_publish_user2 = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
@@ -809,22 +646,17 @@ subtest 'mode = delete' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $publish_user2,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_publish_user2->id,
-        },
-    );
+    $app->login($publish_user2);
+    $app->post_ok({
+        __mode          => 'delete',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        id              => $cd_publish_user2->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'delete by non permitted user (publish)' );
+    $app->has_permission_error('delete by non permitted user (publish)');
 
     my $cd_manage_user2 = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
@@ -832,22 +664,17 @@ subtest 'mode = delete' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_user2,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_manage_user2->id,
-        },
-    );
+    $app->login($manage_user2);
+    $app->post_ok({
+        __mode          => 'delete',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        id              => $cd_manage_user2->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'delete by non permitted user (manage)' );
+    $app->has_permission_error('delete by non permitted user (manage)');
 
     my $cd_manage_content_data_user2 = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
@@ -855,22 +682,17 @@ subtest 'mode = delete' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user2,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_manage_content_data_user2->id,
-        },
-    );
+    $app->login($manage_content_data_user2);
+    $app->post_ok({
+        __mode          => 'delete',
+        blog_id         => $site->id,
+        content_type_id => $content_type->id,
+        _type           => 'content_data',
+        type            => 'content_data_' . $content_type->id,
+        id              => $cd_manage_content_data_user2->id,
+    });
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'delete by non permitted user (manage_all)' );
+    $app->has_permission_error('delete by non permitted user (manage_all)');
 
     my $cd_edit_user = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
@@ -878,22 +700,58 @@ subtest 'mode = delete' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $edit_user,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_edit_user->id
+    $app->login($edit_user);
+    $app->post_ok({
+            __mode          => 'delete',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+            id              => $cd_edit_user->id
         },
     );
+    $app->has_no_permission_error('delete by non permitted user (edit_all)');
 
-    $out = delete $app->{__test_output};
-    ok( $out !~ /permission=1/, 'delete by non permitted user (edit_all)' );
+};
+
+# list
+subtest 'mode = list' => sub {
+    my $app = MT::Test::App->new;
+
+    my $test_users = [{
+            user       => $create_user,
+            permission => 1,
+        },
+        {
+            user       => $edit_user,
+            permission => 0
+        },
+        {
+            user       => $manage_user,
+            permission => 1,
+        },
+        {
+            user       => $publish_user,
+            permission => 1
+        }];
+
+    foreach my $test_user (@$test_users) {
+        $app->login($test_user->{user});
+        $app->get_ok({
+            __mode          => 'list',
+            _type           => 'content_data',
+            content_type_id => $content_type->id,
+            blog_id         => $site->id,
+            type            => 'content_data_' . $content_type->id,
+        });
+
+        note $app->wq_find("#content-actions a.icon-create")->as_html;
+        note $app->wq_find("#content-actions a.icon-create")->size;
+        ok(
+            $app->wq_find("#content-actions a.icon-create")->size == $test_user->{permission},
+            $test_user->{user}->name
+        );
+    }
 
 };
 

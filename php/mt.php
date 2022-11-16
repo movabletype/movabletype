@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2004-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -10,9 +10,9 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '7.3');
-define('PRODUCT_VERSION', '7.3.1');
-define('DATA_API_DEFAULT_VERSION', '4');
+define('VERSION', '7.9');
+define('PRODUCT_VERSION', '7.9.6');
+define('DATA_API_DEFAULT_VERSION', '5');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 1;
+    $RELEASE_NUMBER = 6;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -144,7 +144,7 @@ class MT {
             $lang = substr(strtolower(
                 $blog && $blog->blog_language
                     ? $blog->blog_language
-                    : $mt->config('DefaultLanguage')
+                    : $this->config('DefaultLanguage')
                 ), 0, 2);
         }
         else {
@@ -333,7 +333,7 @@ class MT {
         $driver = preg_replace('/^DB[ID]::/', '', $driver);
         $driver or $driver = 'mysql';
         $cfg['dbdriver'] = strtolower($driver);
-        if ((strlen($cfg['database'])<1 || strlen($cfg['dbuser'])<1)) {
+        if ((strlen($cfg['database'])<1 || !isset($cfg['dbuser']) || strlen($cfg['dbuser'])<1)) {
             if (($cfg['dbdriver'] != 'sqlite') && ($cfg['dbdriver'] != 'mssqlserver') && ($cfg['dbdriver'] != 'umssqlserver')) {
                 die("Unable to read database or username");
             }
@@ -475,6 +475,8 @@ class MT {
             $cfg['dbretryinterval'] = 1;
         isset($cfg['dataapiscript']) or
             $cfg['dataapiscript'] = 'mt-data-api.cgi';
+        isset($cfg['dynamictemplateallowphp']) or
+            $cfg['dynamictemplateallowphp'] = 1;
     }
 
     function configure_paths($blog_site_path) {
@@ -635,7 +637,7 @@ class MT {
         }
 
         $cache_id = $blog_id.';'.$fi_path;
-        if (!$ctx->is_cached('mt:'.$tpl_id, $cache_id)) {
+        if (!$ctx->isCached('mt:'.$tpl_id, $cache_id)) {
             if (isset($at) && $at) {
                 require_once("archive_lib.php");
                 try {
@@ -684,13 +686,13 @@ class MT {
                 $ctx->stash('content_type', $ct);
                 $ctx->stash('current_timestamp', $cd->cd_authored_on);
             }
-            if (preg_match('/^ContentType/', $at) && !$ctx->stash('content_type') && $tmpl && $tmpl->content_type_id) {
+            if (isset($at) && preg_match('/^ContentType/', $at) && !$ctx->stash('content_type') && $tmpl && $tmpl->content_type_id) {
                 $ct = $mtdb->fetch_content_type($tmpl->content_type_id);
                 if ($ct) {
                     $ctx->stash('content_type', $ct);
                 }
             }
-            if(preg_match('/ContentType-Category/', $at)){
+            if(isset($at) && preg_match('/ContentType-Category/', $at)){
                 if($archive_category){
                     $category_set = $ctx->mt->db()->fetch_category_set($archive_category->category_category_set_id);
                     if($category_set)
@@ -710,7 +712,7 @@ class MT {
 
         if (!isset($content_type)) {
             $content_type = $this->mime_types['__default__'];
-            if ($req_ext && (isset($this->mime_types[$req_ext]))) {
+            if (!empty($req_ext) && (isset($this->mime_types[$req_ext]))) {
                 $content_type = $this->mime_types[$req_ext];
             }
         }
@@ -762,7 +764,7 @@ class MT {
         $data = $this->db->resolve_url($path, $this->blog_id, $build_type);
         if (isset($data)) {
             $tmpl_map = $data->templatemap();
-            if (strtolower($tmpl_map->templatemap_archive_type) == 'contenttype') {
+            if (isset($tmpl_map) && strtolower($tmpl_map->templatemap_archive_type) == 'contenttype') {
                 if ( isset($data->fileinfo_cd_id)
                     && is_numeric($data->fileinfo_cd_id)
                 ) {
@@ -873,8 +875,21 @@ class MT {
         $this->_dump($this->log);
     }
 
+    function _write_error_log($errno, $errstr, $errfile, $errline) {
+        $log_file = $this->config('PHPErrorLogFilePath');
+        if (!$log_file) {
+            return;
+        }
+
+        $ts = date('Y-m-d H:i:s');
+        $errstr = preg_replace('/\t/', '\\t', $errstr);
+        error_log("timestamp:$ts\tno:$errno\tstr:$errstr\tfile:$errfile\tline:$errline\turi:${_SERVER['REQUEST_URI']}\n", 3, $log_file);
+    }
+
     function error_handler($errno, $errstr, $errfile, $errline) {
-        if ($errno & (E_ALL ^ E_NOTICE ^ E_WARNING)) {
+        $this->_write_error_log($errno, $errstr, $errfile, $errline);
+
+        if ($errno & (E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED ^ E_USER_NOTICE ^ E_USER_WARNING ^ E_USER_DEPRECATED)) {
             if ( !empty( $this->db ) ) {
                 $errstr = encode_html_entities($errstr, ENT_QUOTES);
                 $errfile = encode_html_entities($errfile, ENT_QUOTES);
@@ -991,8 +1006,7 @@ class MT {
     }
 
     function mode() {
-        $mode = $_GET['__mode'];
-        if (!isset($mode)) $mode = 'default';
+        $mode = isset($_GET['__mode']) ? $_GET['__mode'] : 'default';
         preg_replace('/[<>"\']/', '', $mode);
         return $mode;
     }

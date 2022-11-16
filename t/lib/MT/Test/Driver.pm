@@ -1,6 +1,6 @@
 package MT::Test::Driver;
 
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1739,6 +1739,7 @@ package Test::DriverBasic;
 use base qw( Test::Class );
 use MT::Test::DriverUtil;
 use Test::More;
+use MT::Util qw(ts2epoch epoch2ts);
 
 sub reset_db : Test(setup) {
     reset_table_for(qw( Foo Bar Baz ));
@@ -1918,7 +1919,7 @@ sub basic : Test(137) {
         'Next newer Foo after just before Foo #2 is Foo #2' );
 
 ## Override created_on timestamp, make sure it works
-    my $ts = substr( $foo[1]->created_on, 0, -4 ) . '0000';
+    my $ts = epoch2ts(undef, ts2epoch(undef, $foo[0]->created_on, 1) - 1, 1);
     $foo[1]->created_on($ts);
     $foo[1]->save;
 

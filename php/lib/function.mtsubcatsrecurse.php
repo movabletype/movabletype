@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -15,7 +15,7 @@ function smarty_function_mtsubcatsrecurse($args, &$ctx) {
     $cat = $ctx->stash('category');
 
     # Get the depth info
-    $max_depth = $args['max_depth'];
+    $max_depth = isset($args['max_depth']) ? $args['max_depth'] : null;
     $depth = $ctx->stash('subCatsDepth') or 0;
 
     # If we're too deep, return an emtry string because we're done

@@ -93,6 +93,7 @@ Some styles for textarea are used in no Rich Text mode (Rich Text mode uses ifra
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     border-radius: 0;
+    min-height: auto !important;
 }
 @media (max-width: 767.98px) {
     #editor-content textarea,

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -18,7 +18,7 @@ sub new {
 
     $Log::Minimal::PRINT = sub {
         my ( $time, $type, $message, $trace, $raw_message ) = @_;
-        Test::More::note $message;
+        Test::More::note $message unless $ENV{MT_TEST_RUN_APP_AS_CGI};
         open my $fh, '>>:utf8', $log_file or die "$log_file: $!";
         print $fh $message, "\n";
     };
@@ -36,6 +36,11 @@ sub debug {
 }
 
 sub info {
+    my ( $class, $msg ) = @_;
+    infof($msg);
+}
+
+sub notice {
     my ( $class, $msg ) = @_;
     infof($msg);
 }

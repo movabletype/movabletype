@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -32,7 +32,7 @@ function smarty_block_mtloop($args, $content, &$ctx, &$repeat) {
             $repeat = false;
             return '';
         }
-        $sort = $args['sort_by'];
+        $sort = isset($args['sort_by']) ? $args['sort_by'] : null;
         $keys = array_keys($value);
         if ($sort) {
             $sort = strtolower($sort);

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -13,6 +13,44 @@ use MT::App;
 use MT::App::DataAPI;
 use MT::Util;
 use MT::CMS::Tools;
+
+sub backup_openapi_spec {
+    +{
+        tags      => ['Sites', 'BackupRestore'],
+        summary   => 'Backup specified site',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status      => { type => 'string' },
+                                backupFiles => {
+                                    type  => 'array',
+                                    items => {
+                                        type => 'string',
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
 
 sub backup {
     my ( $app, $endpoint ) = @_;
@@ -83,11 +121,14 @@ sub backup {
 sub _check_tmp_dir {
     my ($app) = @_;
 
-    my $tmp = $app->config('TempDir');
+    my $tmp = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($tmp) unless -d $tmp;
     unless ( ( -d $tmp ) && ( -w $tmp ) ) {
         return $app->error(
             $app->translate(
-                'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.'
+                'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.'
             ),
             409
         );

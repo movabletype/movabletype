@@ -1,21 +1,9 @@
 package Heap::Fibonacci;
 
 use strict;
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
+use vars qw($VERSION);
 
-require Exporter;
-require AutoLoader;
-
-@ISA = qw(Exporter AutoLoader);
-
-# No names exported.
-# No names available for export.
-@EXPORT = ( );
-
-$VERSION = '0.71';
-
-
-# Preloaded methods go here.
+$VERSION = '0.80';
 
 # common names
 #	h	- heap head
@@ -448,7 +436,7 @@ __END__
 
 =head1 NAME
 
-Heap::Fibonacci - a Perl extension for keeping data partially sorted
+Heap::Fibonacci - a fibonacci heap to keep data partially sorted
 
 =head1 SYNOPSIS
 
@@ -467,11 +455,11 @@ See L<Heap> for details on using this module.
 
 =head1 AUTHOR
 
-John Macdonald, jmm@perlwolf.com
+John Macdonald, john@perlwolf.com
 
 =head1 COPYRIGHT
 
-Copyright 1998-2003, O'Reilly & Associates.
+Copyright 1998-2007, O'Reilly & Associates.
 
 This code is distributed under the same copyright terms as perl itself.
 

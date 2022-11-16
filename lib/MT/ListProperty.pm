@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,6 +9,8 @@ use strict;
 use warnings;
 use MT;
 use base qw( MT::ErrorHandler );
+
+our %CachedListProperties;
 
 sub instance {
     my $pkg = shift;
@@ -99,7 +101,7 @@ sub AUTOLOAD {
         if ( 'CODE' eq ref $attr_val ) {
             $code = $attr_val;
         }
-        elsif ( $attr_val =~ m/^sub \{/ || $attr_val =~ m/^\$/ ) {
+        elsif ( defined($attr_val) && ($attr_val =~ m/^sub \{/ || $attr_val =~ m/^\$/) ) {
             $code = MT->handler_to_coderef($attr_val);
         }
 
@@ -273,11 +275,15 @@ sub list_properties {
     my $cls = shift;
     my %props;
 
+    return $CachedListProperties{$cls} if exists $CachedListProperties{$cls};
+
+    my $cacheable = 1;
     my $local_props = MT->registry( 'list_properties', $cls );
     if ($local_props) {
         for my $key ( keys %$local_props ) {
             my $prop = MT::ListProperty->instance( $cls, $key );
             if ( $prop->has('condition') ) {
+                $cacheable = 0;
                 next unless $prop->condition;
             }
             $props{$key} = $prop;
@@ -290,10 +296,14 @@ sub list_properties {
             next if $props{$key};
             my $prop = MT::ListProperty->instance( $cls, $key );
             if ( $prop->has('condition') ) {
+                $cacheable = 0;
                 next unless $prop->condition;
             }
             $props{$key} = $prop if $prop;
         }
+    }
+    if ($cacheable) {
+        $CachedListProperties{$cls} = \%props;
     }
 
     return \%props;

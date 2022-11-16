@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -177,6 +177,85 @@ sub upgrade_functions {
             version_limit => '7.0046',
             priority      => 3.1,
             code          => \&_v7_remove_sql_set_names,
+        },
+        'v7_reorder_warning_level' => {
+            version_limit => '7.0050',
+            priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
+            updater       => {
+                type  => 'log',
+                label => 'Reorder WARNING level',
+                sql   => 'UPDATE mt_log SET log_level = 3 WHERE log_level = 2',
+            },
+        },
+        'v7_reorder_security_level' => {
+            version_limit => '7.0050',
+            priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
+            updater       => {
+                type   => 'log',
+                label => 'Reorder SECURITY level',
+                sql   => 'UPDATE mt_log SET log_level = 5 WHERE log_level = 8',
+            },
+        },
+        'v7_reorder_debug_level' => {
+            version_limit => '7.0050',
+            priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
+            updater       => {
+                type   => 'log',
+                label => 'Reorder DEBUG level',
+                sql   => 'UPDATE mt_log SET log_level = 0 WHERE log_level = 16',
+            },
+        },
+        'v7_migrate_filters_for_log_level' => {
+            version_limit => '7.0050',
+            priority      => 3.1,
+            condition     => \&_v7_reorder_log_level_condition,
+            updater       => {
+                type  => 'filter',
+                label => 'Migrating filters that have conditions on the log level...',
+                terms => { object_ds => 'log' },
+                code  => do {
+                    my %map = (
+                        2  => 3,
+                        8  => 5,
+                        16 => 0,
+                    );
+                    sub {
+                        my $self  = shift;
+                        my $items = $self->items
+                            or return;
+                        for my $item (@$items) {
+                            if ($item->{type} eq 'level') {
+                                if (defined(my $new_value = $map{ $item->{args}{value} })) {
+                                    $item->{args}{value} = $new_value;
+                                    $self->items($items);
+                                }
+                            }
+                        }
+                    };
+                },
+            },
+        },
+        'v7_remove_image_metadata' => {
+            version_limit => '7.0051',
+            priority      => 3.1,
+            updater       => {
+                type   => 'asset:meta',
+                label => 'Remove image metadata',
+                sql   => q{DELETE FROM mt_asset_meta WHERE asset_meta_type = 'image_metadata'},
+            },
+        },
+        'v7_migrate_data_api_disable_site' => {
+            version_limit => '7.0053',
+            priority      => 3.2,
+            code          => \&_v7_migrate_data_api_disable_site,
+        },
+        'v7_fill_with_missing_system_templates' => {
+            version_limit => '7.0054',
+            priority      => 3.2,
+            code          => \&_v7_fill_with_missing_system_templates,
         },
     };
 }
@@ -466,11 +545,7 @@ sub _migrate_system_privileges {
             'Migrating system level permissions to new structure...')
     );
 
-    my $iter = MT->model('author')->load_iter(
-        {   status => MT::Author::ACTIVE(),
-            type   => MT::Author::AUTHOR(),
-        }
-    );
+    my $iter = MT->model('author')->load_iter({ type => MT::Author::AUTHOR() });
     while ( my $author = $iter->() ) {
         $author->can_sign_in_cms(1);
         $author->can_sign_in_data_api(1);
@@ -523,7 +598,7 @@ sub _migrate_site_archive_type {
     my ( $self, $site ) = @_;
 
     my @archive_type = split ',', $site->archive_type;
-    my %hash = map { $_, 1 } map { $_ =~ s/_/-/; $_; } @archive_type;
+    my %hash = map { $_, 1 } map { my $tmp = $_; $tmp =~ s/_/-/; $tmp; } @archive_type;
     my @unique_archive_type = sort keys %hash;
     $site->archive_type( join( ',', @unique_archive_type ) );
     $site->save
@@ -726,9 +801,8 @@ sub _v7_rebuild_content_field_permissions {
     while ( my $perm = $perm_iter->() ) {
         my $permissions = $perm->permissions;
         my @permissions = split ',', $permissions;
-        @permissions = map { $_ =~ s/content-field:/content_field:/g; $_; }
-            @permissions;
-        @permissions = map { $_ =~ s/'//g; $_; } @permissions;
+        @permissions = map { my $tmp = $_; $tmp =~ s/content-field:/content_field:/g; $tmp; } @permissions;
+        @permissions = map { my $tmp = $_; $tmp =~ s/'//g;                            $tmp; } @permissions;
 
         # clear_permissions is content-field can not remove.
         $perm->permissions('');
@@ -747,9 +821,8 @@ sub _v7_rebuild_content_field_permissions {
     while ( my $role = $iter->() ) {
         my $permissions = $role->permissions;
         my @permissions = split ',', $permissions;
-        @permissions = map { $_ =~ s/content-field:/content_field:/g; $_; }
-            @permissions;
-        @permissions = map { $_ =~ s/'//g; $_; } @permissions;
+        @permissions = map { my $tmp = $_; $tmp =~ s/content-field:/content_field:/g; $tmp; } @permissions;
+        @permissions = map { my $tmp = $_; $tmp =~ s/'//g;                            $tmp; } @permissions;
 
         # clear_permissions is content-field: can not remove.
         $role->permissions('');
@@ -835,77 +908,104 @@ sub _v7_remove_create_child_sites {
 sub v7_migrate_rebuild_trigger {
     my $self = shift;
 
-    $self->progress(
-        $self->translate_escape('Migrating MultiBlog settings...') );
+    $self->progress($self->translate_escape('Migrating MultiBlog settings...'));
 
-    require MT::PluginData;
-    my @config = MT::PluginData->load( { plugin => 'MultiBlog' } );
-    foreach my $cfg (@config) {
-        if ( $cfg->key =~ m/^configuration$/ ) {
+    my $plugin = MT::Plugin->new({ id => 'multiblog', name => 'MultiBlog' });
 
-            # Config
-            my $default_access_allowed
-                = ( $cfg->data || {} )->{default_access_allowed};
-            MT->config( 'DefaultAccessAllowed', $default_access_allowed, 1 )
-                if defined $default_access_allowed;
-        }
-        elsif ( $cfg->key =~ m/^configuration:blog:(\d+)/ ) {
-            my $blog_id = $1;
+    my $valid_config = sub {
+        my $blog_id = shift;
+        my $cfg     = $plugin->get_config_obj($blog_id ? 'blog:' . $blog_id : undef);
+        return unless $cfg->id;
+        my $data = $cfg->data;
+        return $data if (ref $data eq 'HASH');
 
-            # meta
-            my $default_mtmulitblog_blogs
-                = ( $cfg->data || {} )->{default_mtmulitblog_blogs};
-            my $default_mtmultiblog_action
-                = ( $cfg->data || {} )->{default_mtmultiblog_action};
-            my $blog_content_accessible
-                = ( $cfg->data || {} )->{blog_content_accessible};
-            my $blog = MT->model('blog')->load($blog_id) or next;
-            $blog->default_mt_sites_sites($default_mtmulitblog_blogs)
-                if defined $default_mtmulitblog_blogs;
-            $blog->default_mt_sites_action($default_mtmultiblog_action)
-                if defined $default_mtmultiblog_action;
-            $blog->blog_content_accessible($blog_content_accessible)
-                if defined $blog_content_accessible;
-            $blog->save;
+        MT->log({
+              message => $blog_id
+            ? MT->translate('MultiBlog migration for site(ID:[_1]) is skipped due to the data breakage.', $blog_id)
+            : MT->translate('MultiBlog migration is skipped due to the data breakage.'),
+            category => 'upgrade',
+            level    => MT::Log::WARNING(),
+            blog_id  => $blog_id ? $blog_id : undef,
+        });
 
-            # Trigger
-            require MT::RebuildTrigger;
-            my $rebuild_triggers = ( $cfg->data || {} )->{rebuild_triggers};
-            foreach ( split( /\|/, $rebuild_triggers ) ) {
-                my ( $action, $id, $event ) = split( /:/, $_ );
-                $action
-                    = $action eq 'ri'
-                    ? MT::RebuildTrigger::ACTION_RI()
-                    : MT::RebuildTrigger::ACTION_RIP();
-                my $object_type
-                    = $event =~ /^entry_.*/
-                    ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
-                    : $event =~ /^comment_.*/
-                    ? MT::RebuildTrigger::TYPE_COMMENT()
-                    : MT::RebuildTrigger::TYPE_PING();
-                $event
-                    = $event =~ /.*_save$/ ? MT::RebuildTrigger::EVENT_SAVE()
-                    : $event =~ /.*_pub$/
-                    ? MT::RebuildTrigger::EVENT_PUBLISH()
-                    : MT::RebuildTrigger::EVENT_UNPUBLISH();
-                my $target
-                    = $id eq '_all' ? MT::RebuildTrigger::TARGET_ALL()
-                    : $id eq '_blogs_in_website'
-                    ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
-                    : MT::RebuildTrigger::TARGET_BLOG();
-                my $target_blog_id = $id =~ /\d+/ ? $id : 0;
-                my $rt = MT->model('rebuild_trigger')->new;
-                $rt->blog_id($blog_id);
-                $rt->object_type($object_type);
-                $rt->action($action);
-                $rt->event($event);
-                $rt->target($target);
-                $rt->target_blog_id($target_blog_id);
-                $rt->ct_id(0);
-                $rt->save or return $rt->error( $rt->errstr );
+        return;
+    };
+
+    if (my $data = $valid_config->()) {
+        MT->config('DefaultAccessAllowed', $data->{default_access_allowed}, 1) if defined $data->{default_access_allowed};
+    }
+
+    my $iter = MT::Blog->load_iter({ class => '*' });
+
+    while (my $blog = $iter->()) {
+        my $data = $valid_config->($blog->id) or next;
+
+        # meta
+        $blog->default_mt_sites_sites($data->{default_mtmulitblog_blogs})   if defined $data->{default_mtmulitblog_blogs};
+        $blog->default_mt_sites_action($data->{default_mtmultiblog_action}) if defined $data->{default_mtmultiblog_action};
+        $blog->blog_content_accessible($data->{blog_content_accessible})    if defined $data->{blog_content_accessible};
+        $blog->save;
+
+        next unless $data->{rebuild_triggers};
+
+        my $skip_occur = 0;
+
+        for my $single (split(/\|/, $data->{rebuild_triggers})) {
+            next unless $single;
+            if (my $rt = _v7_migrate_rebuild_trigger_unserialize($single)) {
+                $rt->blog_id($blog->id);
+                $rt->save or return $rt->error($rt->errstr);
+            } else {
+                $skip_occur = 1;
             }
         }
+
+        if ($skip_occur) {
+            MT->log({
+                message  => MT->translate('Some MultiBlog migrations for site(ID:[_1]) are skipped due to the data breakage.', $blog->id),
+                category => 'upgrade',
+                level    => MT::Log::WARNING(),
+                blog_id  => $blog->id,
+            });
+        }
     }
+}
+
+sub _v7_migrate_rebuild_trigger_unserialize {
+    my ($string) = @_;
+    my ($action, $id, $event) = split(/:/, $string);
+    my @event_elems = split(/_/, $event);
+
+    require MT::RebuildTrigger;
+    
+    $action =
+          $action eq 'ri'  ? MT::RebuildTrigger::ACTION_RI()
+        : $action eq 'rip' ? MT::RebuildTrigger::ACTION_RIP()
+        :                    return;
+    my $object_type =
+          $event_elems[0] eq 'entry'   ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
+        : $event_elems[0] eq 'comment' ? MT::RebuildTrigger::TYPE_COMMENT()
+        : $event_elems[0] eq 'tb'      ? MT::RebuildTrigger::TYPE_PING()
+        :                                return;
+    $event =
+          $event_elems[1] eq 'save'  ? MT::RebuildTrigger::EVENT_SAVE()
+        : $event_elems[1] eq 'pub'   ? MT::RebuildTrigger::EVENT_PUBLISH()
+        : $event_elems[1] eq 'unpub' ? MT::RebuildTrigger::EVENT_UNPUBLISH()
+        :                              return;
+    my $target =
+          $id eq '_all'              ? MT::RebuildTrigger::TARGET_ALL()
+        : $id eq '_blogs_in_website' ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
+        : $id =~ /^[0-9]+$/          ? MT::RebuildTrigger::TARGET_BLOG()
+        :                              return;
+
+    my $rt = MT->model('rebuild_trigger')->new;
+    $rt->object_type($object_type);
+    $rt->action($action);
+    $rt->event($event);
+    $rt->target($target);
+    $rt->target_blog_id($target == MT::RebuildTrigger::TARGET_BLOG() ? $id : 0);
+    $rt->ct_id(0);
+    return $rt;
 }
 
 sub _v7_migrate_content_type_fields_column {
@@ -1461,6 +1561,99 @@ sub _v7_remove_sql_set_names {
     my $cfg       = MT->config;
     $cfg->SQLSetNames( undef, 1 );
     $cfg->save_config;
+}
+
+sub _v7_reorder_log_level_condition {
+    my ( $self, %param ) = @_;
+    my $from = $param{from};
+
+    return unless $from;
+    return if $from >= 6.0026 && $from < 7;
+
+    1;
+}
+
+sub _v7_migrate_data_api_disable_site {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Migrating DataAPIDisableSite...'));
+
+    # Load from DB directly. Do not refer to mt-config.cgi.
+    my ($config) = MT->model('config')->search;
+    if ($config) {
+        my $data = $config->data;
+        my $data_api_disable_site;
+        if ($data =~ /DataAPIDisableSite\s(.*)/) {
+            $data_api_disable_site = $1;
+        }
+        my %data_api_disable_site = map { $_ => 1 } split /,/, $data_api_disable_site || '';
+
+        my @sites = MT->model('website')->load({
+                class => '*',
+            },
+            {
+                fetchonly => { id => 1 },
+            },
+        );
+        my $from = int( MT->config->SchemaVersion || 0 );
+        for my $site (@sites) {
+            if ($from < 6) {
+                $site->allow_data_api(0);
+            } else {
+                if ($data_api_disable_site{$site->id}) {
+                    $site->allow_data_api(0);
+                } else {
+                    $site->allow_data_api(1);
+                }
+            }
+            $site->save;
+        }
+
+        # Clean up
+        if ($from < 6) {
+            MT->config->DataAPIDisableSite('0', 1);
+        } else {
+            if ($data_api_disable_site{0}) {
+                MT->config->DataAPIDisableSite('0', 1);
+            } else {
+                MT->config->DataAPIDisableSite('', 1);
+            }
+        }
+        MT->config->save_config;
+    }
+}
+
+sub _v7_fill_with_missing_system_templates {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Filling missing system templates...'));
+
+    my %tmpls;
+    require MT::DefaultTemplates;
+    MT::DefaultTemplates->fill_with_missing_system_templates(\%tmpls);
+
+    my @blog_ids = map { $_->id } MT->model('site')->load({ class => '*' }, { fetchonly => ['id'] });
+
+    my @templates = MT->model('template')->load({ type => [keys %tmpls] }, { fetchonly => ['blog_id', 'type'] });
+    my %map       = map { $_->blog_id . ':' . $_->type . ':' . $_->type => 1 } @templates;
+
+    require MT::Template;
+    for my $blog_id (@blog_ids) {
+        for my $key (keys %tmpls) {    # $key = $type:$type (= $tmpl_id:$tmpl_id)
+            next if $map{"$blog_id:$key"};
+            my $tmpl = $tmpls{$key};
+            my $p    = $tmpl->{plugin} || 'MT';
+            $tmpl->{text} = $p->translate_templatized($tmpl->{text}) if defined $tmpl->{text};
+            my $obj = MT::Template->new(
+                blog_id       => $blog_id,
+                build_dynamic => 0,
+            );
+            for my $col (keys %$tmpl) {
+                $obj->column($col, $tmpl->{$col}) if $obj->has_column($col);
+            }
+            $obj->save;
+        }
+    }
 }
 
 1;

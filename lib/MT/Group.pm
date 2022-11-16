@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -143,7 +143,8 @@ sub user_count {
             group_id => $group->id,
         }
     );
-    MT::Author->count( $terms, $args );
+    my $count = MT::Author->count( $terms, $args );
+    return $count + 0;
 }
 
 sub role_iter {
@@ -849,7 +850,6 @@ sub member_list_props {
         },
         email => {
             base         => '__virtual.string',
-            col          => 'name',
             label        => 'Email',
             filter_label => 'Email Address',
             display      => 'none',

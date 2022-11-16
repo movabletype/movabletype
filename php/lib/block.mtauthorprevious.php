@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -24,7 +24,8 @@ function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
                               'lastn' => 1,
                               'blog_id' => $blog_id,
                               'need_content' => 1);
-                list($prev_author) = $ctx->mt->db()->fetch_authors($args);
+                $authors = $ctx->mt->db()->fetch_authors($args);
+                $prev_author = isset($authors[0]) ? $authors[0] : null;
             }
             if ($prev_author) {
               $_prev_cache[$author_id] = $prev_author;

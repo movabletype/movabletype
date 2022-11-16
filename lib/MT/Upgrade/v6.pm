@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -26,7 +26,7 @@ sub upgrade_functions {
 UPDATE mt_blog
 SET    blog_class = 'website'
 WHERE  blog_class = 'blog'
-    AND ( blog_parent_id is null OR blog_parent_id = 0 );
+    AND ( blog_parent_id is null OR blog_parent_id = 0 )
 __SQL__
             },
         },
@@ -45,7 +45,7 @@ __SQL__
                 sql => <<__SQL__,
 UPDATE mt_author_meta
 SET    author_meta_type = 'favorite_websites'
-WHERE  author_meta_type = 'favorite_blogs';
+WHERE  author_meta_type = 'favorite_blogs'
 __SQL__
             },
         },
@@ -216,6 +216,8 @@ SQL
         $driver->sql( [ 'alter table mt_ts_error drop primary key', ] );
     }
     elsif ( $driver->dbd =~ m/::Oracle$/ ) {
+        my ($exist) = $dbh->selectrow_array(q{select 1 from user_constraints where table_name = 'MT_TS_ERROR' AND constraint_type = 'P'});
+        return unless $exist;
         $driver->sql( [ 'alter table mt_ts_error drop primary key', ] );
     }
     elsif ( $driver->dbd =~ m/::u?mssqlserver$/i ) {

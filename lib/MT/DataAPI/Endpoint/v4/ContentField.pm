@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -12,6 +12,82 @@ use Hash::Merge::Simple;
 
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
+
+sub list_openapi_spec {
+    +{
+        tags        => ['Content Fields', 'Content Types'],
+        summary     => 'Content Field Collection',
+        description => <<'DESCRIPTION',
+**Authentication required**
+
+Retrieve a list of Content Fields of the specified Content Type. This endpoint requires following permission.
+
+- Manage Content Types
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/content_field_limit' },
+            { '$ref' => '#/components/parameters/content_field_offset' },
+            {
+                in     => 'query',
+                name   => 'sortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'name',
+                        'dataLabel',
+                        'uniqueID',
+                        'modified_on',
+                    ],
+                },
+                description => <<'DESCRIPTION',
+The field name for sort. You can specify one of following values.
+- name
+- dataLabel
+- uniqueID
+- modified_on
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/content_field_sortOrder' },
+            { '$ref' => '#/components/parameters/content_field_fields' },
+            { '$ref' => '#/components/parameters/content_field_includeIds' },
+            { '$ref' => '#/components/parameters/content_field_excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type => 'integer',
+                                },
+                                items => {
+                                    type  => 'array',
+                                    items => {
+                                        '$ref' => '#/components/schemas/cf',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+
+    };
+}
 
 sub list {
     my ( $app, $endpoint ) = @_;
@@ -31,9 +107,63 @@ sub list {
         }
     ) or return;
 
-    +{  totalResults => $res->{count} || 0,
+    +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Fields'],
+        summary     => 'Create Content Field',
+        description => <<'DESCRIPTION',
+**Authentication required**
+
+Create a new Content Field. This endpoint requires following permission.
+
+- Manage Content Types
+
+Post form data is as follows.
+
+- content_field (required, ContentField) - Single Content Field resource
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            content_field => {
+                                '$ref' => '#/components/schemas/cf_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/cf',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -100,6 +230,45 @@ sub _build_around_filter {
     };
 }
 
+sub get_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Fields'],
+        summary     => 'Fetch single Content Field',
+        description => <<'DESCRIPTION',
+**Authentication required**
+
+Fetch single content field. This endpoint requires following permission.
+
+- Manage Content Types
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/content_field_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/cf',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type or Content_field not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -115,6 +284,58 @@ sub get {
         or return;
 
     $content_field;
+}
+
+sub update_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Fields'],
+        summary     => 'Update Content Field',
+        description => <<'DESCRIPTION',
+**Authentication required**
+
+Update content field. This endpoint requires following permission.
+
+- Manage Content Types
+
+If you want to update label, description and required, should be use options field. (e.g, {“options”:{“label”:“foo”}})
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            content_field => {
+                                '$ref' => '#/components/schemas/cf_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/cf',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type or Content_field not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub update {
@@ -137,6 +358,42 @@ sub update {
     ) or return;
 
     $new_content_field;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Fields'],
+        summary     => 'Delete Content Field',
+        description => <<'DESCRIPTION',
+**Authentication required**
+
+Delete content field from specified content type. This endpoint requires following permission.
+
+- Manage Content Types
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/cf',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type or Content_field not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {
@@ -166,6 +423,96 @@ sub delete {
         $app, $content_field );
 
     $content_field;
+}
+
+sub permutate_openapi_spec {
+    +{
+        tags        => ['Content Types', 'Content Fields'],
+        summary     => 'Save hierarchical content field order',
+        description => <<'DESCRIPTION',
+**Authentication required.**
+
+Rearranges content field order in specified content type. This endpoint need folllowing permissions.
+
+- Manage Content Types
+
+This method returns rearranged ContentField collection.
+
+Post form data is following:
+
+- content_fields (array[ContentField]) - Array of content fields resource that were rearranged.
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    # TODO: The schema will be like below.
+                    # However, items are packed as strings instead objects in Swagger.
+                    # As a workaround, categories parameter treats as string.
+                    #schema => {
+                    #    type => 'object',
+                    #    properties => {
+                    #        content_fields => {
+                    #           type => 'array',
+                    #           items => {
+                    #               type => 'object',
+                    #               properties => {
+                    #                   id => {
+                    #                       type => 'integer',
+                    #                   },
+                    #               },
+                    #           },
+                    #        },
+                    #    },
+                    #},
+                    #encoding => {
+                    #    content_fields => {
+                    #        contentType => 'application/json',
+                    #    },
+                    #},
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            content_fields => {
+                                type    => 'string',
+                                example => <<'EXAMPLE',
+[
+  { "id": 0 },
+  { "id": 1 } 
+]
+EXAMPLE
+                                description => 'Array of content fields resource that were rearranged.',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type  => 'array',
+                            items => {
+                                '$ref' => '#/components/schemas/cf',
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub permutate {

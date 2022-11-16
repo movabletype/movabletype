@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -21,7 +21,15 @@ sub fields {
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
         {   name      => 'content_type_count',
-            alias     => 'ct_count',
+            bulk_from_object => sub {
+                my ($objs, $hashes, $field) = @_;
+                my $app      = MT->instance;
+                my $ct_count = MT->model('category_set')->ct_count_by_blog($app->blog->id);
+                for my $i (0 .. (@$objs - 1)) {
+                    my $obj = $objs->[$i];
+                    $hashes->[$i]{ $field->{name} } = $ct_count->{ $obj->id } || 0;
+                }
+            },
             condition => sub {
                 my $app  = MT->instance or return;
                 my $user = $app->user   or return;
@@ -34,6 +42,18 @@ sub fields {
                 my $cats = $obj->categories;
                 MT::DataAPI::Resource->from_object( $cats,
                     [ 'id', 'parent', 'label', 'basename' ] );
+            },
+            schema => {
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        id       => { type => 'integer' },
+                        parent   => { type => 'string' },
+                        label    => { type => 'string' },
+                        basename => { type => 'string' },
+                    },
+                },
             },
         },
         {   name             => 'updatable',

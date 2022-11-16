@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2007-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -23,6 +23,7 @@ use MT::Session;
 use MT::Template;
 use MT::TemplateMap;
 use MT::Util;
+use MT::Util::Log;
 
 sub edit {
     my ( $app, $param ) = @_;
@@ -30,6 +31,36 @@ sub edit {
     my $user = $app->user;
     my $cfg  = $app->config;
     my $data;
+
+    $app->validate_param({
+        _recover              => [qw/MAYBE_STRING/],
+        authored_on_date      => [qw/MAYBE_STRING/],
+        authored_on_day       => [qw/MAYBE_STRING/],
+        authored_on_hour      => [qw/MAYBE_STRING/],
+        authored_on_minute    => [qw/MAYBE_STRING/],
+        authored_on_month     => [qw/MAYBE_STRING/],
+        authored_on_second    => [qw/MAYBE_STRING/],
+        authored_on_time      => [qw/MAYBE_STRING/],
+        authored_on_year      => [qw/MAYBE_STRING/],
+        content_type_id       => [qw/ID/],
+        data_label            => [qw/MAYBE_STRING/],
+        id                    => [qw/ID/],
+        identifier            => [qw/MAYBE_STRING/],
+        mobile_view           => [qw/MAYBE_STRING/],
+        no_snapshot           => [qw/MAYBE_STRING/],
+        r                     => [qw/MAYBE_STRING/],
+        reedit                => [qw/MAYBE_STRING/],
+        serialized_data       => [qw/MAYBE_STRING/],
+        status                => [qw/MAYBE_STRING/],
+        unpublished_on_date   => [qw/MAYBE_STRING/],
+        unpublished_on_day    => [qw/MAYBE_STRING/],
+        unpublished_on_hour   => [qw/MAYBE_STRING/],
+        unpublished_on_minute => [qw/MAYBE_STRING/],
+        unpublished_on_month  => [qw/MAYBE_STRING/],
+        unpublished_on_second => [qw/MAYBE_STRING/],
+        unpublished_on_time   => [qw/MAYBE_STRING/],
+        unpublished_on_year   => [qw/MAYBE_STRING/],
+    }) or return;
 
     unless ($blog) {
         return $app->return_to_dashboard( redirect => 1 );
@@ -91,6 +122,12 @@ sub edit {
         }
         else {
             $param->{'recovered_failed'} = 1;
+        }
+    }
+    elsif ( $app->param('_discard') && !$app->param('reedit') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        if ($sess_obj) {
+            $sess_obj->remove;
         }
     }
 
@@ -164,6 +201,14 @@ sub edit {
             );
         }
 
+        if (my $other_user = $app->user_who_is_also_editing_the_same_stuff($content_data)) {
+            $param->{is_also_edited_by} = $other_user->{name};
+            $param->{is_also_edited_at} = $other_user->{time};
+        }
+        if ($param->{autosaved_object_ts} && $param->{autosaved_object_ts} < $content_data->modified_on) {
+            $param->{autosaved_object_is_outdated} = 1;
+        }
+
         $param->{identifier}
             = $app->param('identifier') || $content_data->identifier;
 
@@ -172,8 +217,15 @@ sub edit {
         $param->{status} = $status;
         $param->{ 'status_' . MT::ContentStatus::status_text($status) } = 1;
 
-        $param->{content_data_permalink}
-            = MT::Util::encode_html( $content_data->permalink );
+        $param->{content_data_permalink} =
+          MT::Util::encode_html( $content_data->permalink );
+        $param->{has_archive_mapping} = MT::TemplateMap->exist(
+            {
+                blog_id      => $content_type->blog_id,
+                archive_type => 'ContentType',
+                is_preferred => 1,
+            }
+        );
 
         $param->{authored_on_date} = $app->param('authored_on_date')
             || MT::Util::format_ts( '%Y-%m-%d', $content_data->authored_on,
@@ -312,6 +364,9 @@ sub edit {
                 $field->{value} = $field->{options}{initial_value};
             }
         }
+        if ($field->{type} eq 'multi_line_text') {
+            $field->{options}{full_rich_text} = 1 unless defined $field->{options}{full_rich_text};
+        }
 
         my $content_field_type = $content_field_types->{ $field->{type} };
 
@@ -420,10 +475,7 @@ sub edit {
     }
 
     $param->{can_publish_post} = 1
-        if ( $perm->can_do('publish_all_content_data')
-        || $perm->can_do('edit_all_content_data_$ct_unique_id') )
-        || ( $content_data
-        || $perm->can_republish_content_data( $content_data, $user ) );
+        if $perm->can_republish_content_data( $content_data, $user, $ct_unique_id );
 
     ## Load text filters if user displays them
     my $filters = MT->all_text_filters;
@@ -457,6 +509,38 @@ sub edit {
 
 sub save {
     my ($app) = @_;
+
+    $app->validate_param({
+        _autosave             => [qw/MAYBE_STRING/],
+        authored_on_date      => [qw/MAYBE_STRING/],
+        authored_on_day       => [qw/MAYBE_STRING/],
+        authored_on_hour      => [qw/MAYBE_STRING/],
+        authored_on_minute    => [qw/MAYBE_STRING/],
+        authored_on_month     => [qw/MAYBE_STRING/],
+        authored_on_second    => [qw/MAYBE_STRING/],
+        authored_on_time      => [qw/MAYBE_STRING/],
+        authored_on_year      => [qw/MAYBE_STRING/],
+        blog_id               => [qw/ID MULTI/],     # FIXME: after uploading an image
+        content_type_id       => [qw/ID/],
+        data_label            => [qw/MAYBE_STRING/],
+        from_preview          => [qw/MAYBE_STRING/],
+        id                    => [qw/ID/],
+        identifier            => [qw/MAYBE_STRING/],
+        mobile_view           => [qw/MAYBE_STRING/],
+        return_args           => [qw/MAYBE_STRING/],
+        scheduled             => [qw/MAYBE_STRING/],
+        serialized_data       => [qw/MAYBE_STRING/],
+        status                => [qw/MAYBE_STRING/],
+        unpublished_on_date   => [qw/MAYBE_STRING/],
+        unpublished_on_day    => [qw/MAYBE_STRING/],
+        unpublished_on_hour   => [qw/MAYBE_STRING/],
+        unpublished_on_minute => [qw/MAYBE_STRING/],
+        unpublished_on_month  => [qw/MAYBE_STRING/],
+        unpublished_on_second => [qw/MAYBE_STRING/],
+        unpublished_on_time   => [qw/MAYBE_STRING/],
+        unpublished_on_year   => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $blog  = $app->blog;
     my $cfg   = $app->config;
     my $param = {};
@@ -504,19 +588,53 @@ sub save {
         $data ||= {};
     }
 
+    my $content_data =
+      $content_data_id
+      ? MT::ContentData->load($content_data_id)
+      : MT::ContentData->new();
+
+    my $org_data = $content_data->data;
+    my $org_convert_breaks = MT::Serialize->unserialize( $content_data->convert_breaks );
+    my $data_is_updated;
     foreach my $f (@$field_data) {
-        if ( !$app->param('from_preview') ) {
-            my $content_field_type = $content_field_types->{ $f->{type} };
-            $data->{ $f->{id} }
-                = _get_form_data( $app, $content_field_type, $f );
+        my $e_unique_id = $f->{unique_id};
+        my $can_edit_field =
+          $app->permissions->can_do( 'content_type:'
+              . $content_type->unique_id
+              . '-content_field:'
+              . $e_unique_id );
+        if (   $content_data_id
+            && !$can_edit_field
+            && !$app->permissions->can_do('edit_all_content_data') )
+        {
+            if ( !$app->param('from_preview') ) {
+                $data->{ $f->{id} } = $org_data->{ $f->{id} };
+            }
+            if ( $f->{type} eq 'multi_line_text' ) {
+                my $key = $f->{id} . '_convert_breaks';
+                if ( $org_convert_breaks
+                    && exists $$org_convert_breaks->{ $f->{id} } )
+                {
+                    $convert_breaks->{ $f->{id} } =
+                      $$org_convert_breaks->{ $f->{id} };
+                    $data->{$key} = $$org_convert_breaks->{ $f->{id} };
+                }
+            }
         }
-        if ( $f->{type} eq 'multi_line_text' ) {
-            $convert_breaks->{ $f->{id} } = $app->param(
-                'content-field-' . $f->{id} . '_convert_breaks' );
-            my $key = $f->{id} . '_convert_breaks';
-            $data->{$key}
-                = $app->param(
-                'content-field-' . $f->{id} . '_convert_breaks' );
+        else {
+            $data_is_updated->{ $f->{id} } = 1;
+            if ( !$app->param('from_preview') ) {
+                my $content_field_type = $content_field_types->{ $f->{type} };
+                $data->{ $f->{id} } =
+                  _get_form_data( $app, $content_field_type, $f );
+            }
+            if ( $f->{type} eq 'multi_line_text' ) {
+                $convert_breaks->{ $f->{id} } = $app->param(
+                    'content-field-' . $f->{id} . '_convert_breaks' );
+                my $key = $f->{id} . '_convert_breaks';
+                $data->{$key} = $app->param(
+                    'content-field-' . $f->{id} . '_convert_breaks' );
+            }
         }
     }
 
@@ -524,7 +642,7 @@ sub save {
         return MT::CMS::ContentType::_autosave_content_data( $app, $data );
     }
 
-    if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
+    if ( my $errors = _validate_content_fields( $app, $content_type, $data, $data_is_updated ) )
     {
         $app->param( '_type',           'content_data' );
         $app->param( 'reedit',          1 );
@@ -533,11 +651,6 @@ sub save {
         $param{err_msg} = $errors->[0]{error};
         return $app->forward( 'view_content_data', \%param );
     }
-
-    my $content_data
-        = $content_data_id
-        ? MT::ContentData->load($content_data_id)
-        : MT::ContentData->new();
 
     my $archive_type = '';
 
@@ -594,43 +707,17 @@ sub save {
             }
         );
 
-        my @cat_ids = map {@$_} values %categories_old;
-        my @cats    = MT->model('category')->load(
-            {   id              => \@cat_ids,
-                category_set_id => \'> 0',
-            }
-        );
-
-        for my $map (@maps) {
-            my $at       = $map->archive_type;
-            my $archiver = $app->publisher->archiver($at);
-            for my $cat ( $archiver->category_based ? @cats : undef ) {
-                my $file
-                    = MT::Util::archive_file_for( $orig, $blog, $at, $cat,
-                    $map )
-                    or next;
-
-                $file = File::Spec->catfile( $archive_root, $file );
-
-                ## params for _delete_archive_file
-                my %params = (
-                    Blog        => $blog,
-                    File        => $file,
-                    ArchiveType => $at,
-                    ContentData => $orig,
-                );
-
-                ## ignore if fileinfo does not exist
-                $params{FileInfo} = MT->model('fileinfo')->load(
-                    {   blog_id        => $blog_id,
-                        file_path      => $file,
-                        templatemap_id => $map->id,
-                        archive_type   => $at,
-                    }
-                ) or next;
-
-                push @old_archive_params, \%params;
-            }
+        my @finfos = MT->model('fileinfo')->load( { blog_id => $blog_id, cd_id => $orig->id } );
+        for my $finfo (@finfos) {
+            next if $finfo->archive_type eq 'ContentType';
+            my %params = (
+                Blog        => $blog,
+                File        => $finfo->file_path,
+                ArchiveType => $finfo->archive_type,
+                FileInfo    => $finfo,
+                ContentData => $orig,
+            );
+            push @old_archive_params, \%params;
         }
     }
 
@@ -804,35 +891,45 @@ sub save {
     $app->run_callbacks( 'cms_post_save.content_data',
         $app, $content_data, $orig );
 
-    # Delete old archive files.
-    if ( $app->config('DeleteFilesAtRebuild') && $content_data_id ) {
-        $app->request->cache( 'file', {} );    # clear cache
-        my $file = MT::Util::archive_file_for( $content_data, $blog,
-            $archive_type );
-        if (   $file ne $orig_file
-            || $content_data->status != MT::ContentStatus::RELEASE() )
-        {
-            $app->publisher->remove_content_data_archive_file(
-                ContentData => $orig,
-                ArchiveType => $archive_type,
-            );
-        }
-        MT::Util::Log::init();
-        for my $param (@old_archive_params) {
-            $app->publisher->_delete_archive_file(%$param);
-            if ( my $fi = $param->{FileInfo} ) {
-                $fi->remove;
-                MT::Util::Log->info( ' Removed ' . $fi->file_path );
-            }
-        }
-    }
-
     ## If the saved status is RELEASE, or if the *previous* status was
     ## RELEASE, then rebuild content data archives and indexes.
     ## Otherwise the status was and is HOLD, and we don't have to do anything.
     if ( ( $content_data->status || 0 ) == MT::ContentStatus::RELEASE()
         || $status_old == MT::ContentStatus::RELEASE() )
     {
+        # Delete old archive files.
+        if ( $app->config('DeleteFilesAtRebuild') && $content_data_id ) {
+            $app->request->cache( 'file', {} );    # clear cache
+            my $file = MT::Util::archive_file_for( $content_data, $blog,
+                $archive_type );
+            if (   $file ne $orig_file
+                || $content_data->status != MT::ContentStatus::RELEASE() )
+            {
+                $app->publisher->remove_content_data_archive_file(
+                    ContentData => $orig,
+                    ArchiveType => $archive_type,
+                );
+            }
+            MT::Util::Log::init();
+            for my $param (@old_archive_params) {
+                my $orig = $param->{ContentData};
+                next if $orig->status != MT::ContentStatus::RELEASE();
+                my $fi = $param->{FileInfo};
+                if ( MT->config('DeleteFilesAfterRebuild') ) {
+                    $fi->mark_to_remove;
+                    MT::Util::Log->debug( 'Marked to remove ' . $fi->file_path );
+                }
+                else {
+                    $fi->remove;
+                    $app->publisher->_delete_archive_file(%$param);
+                }
+            }
+        }
+
+        my $old_categories
+            = %categories_old
+            ? MT::Util::to_json( \%categories_old )
+            : undef;
         if ( $blog->count_static_templates($archive_type) == 0
             || MT::Util->launch_background_tasks )
         {
@@ -847,20 +944,18 @@ sub save {
                         ? $previous_old->id
                         : undef,
                         OldNext => $next_old ? $next_old->id : undef,
+                        OldCategories => $old_categories,
                     );
 
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
+                    $app->publisher->remove_marked_files( $blog, 1 );
                     1;
                 }
             );
             return unless $res;
         }
         else {
-            my $old_categories
-                = %categories_old
-                ? MT::Util::to_json( \%categories_old )
-                : undef;
             require MT::Util::UniqueID;
             my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
             if ( my $session = $app->session ) {
@@ -907,6 +1002,14 @@ sub delete {
     my $app = shift;
     return unless $app->validate_magic;
 
+    $app->validate_param({
+        all_selected    => [qw/MAYBE_STRING/],
+        blog_id         => [qw/ID/],
+        content_type_id => [qw/ID/],
+        id              => [qw/ID MULTI/],
+        type            => [qw/WORD/],
+    }) or return;
+
     my $blog;
     if ( my $blog_id = $app->param('blog_id') ) {
         $blog = MT::Blog->load($blog_id)
@@ -937,6 +1040,9 @@ sub delete {
         = ( ( $blog && $blog->count_static_templates('ContentType') == 0 )
             || MT::Util->launch_background_tasks() ) ? 1 : 0;
 
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
     $app->setup_filtered_ids
         if $app->param('all_selected');
     my %rebuild_recipe;
@@ -949,11 +1055,14 @@ sub delete {
             $app, $obj )
             or return $app->permission_denied;
 
-        my %recipe;
-        %recipe = $app->publisher->rebuild_deleted_content_data(
-            ContentData => $obj,
-            Blog        => $obj->blog,
-        ) if $obj->status eq MT::ContentStatus::RELEASE();
+        # Mark before FileInfo records are gone by cascading delete
+        my @finfos = MT->model('fileinfo')->load({ cd_id => $obj->id, blog_id => $blog->id });
+        for my $finfo (@finfos) {
+            if ( $app->config('DeleteFilesAfterRebuild') ) {
+                $finfo->mark_to_remove;
+                MT::Util::Log->debug( 'Marked to remove ' . $finfo->file_path );
+            }
+        }
 
         # Remove object from database
         my $content_type_name
@@ -964,6 +1073,12 @@ sub delete {
             or return $app->errtrans( 'Removing [_1] failed: [_2]',
             $content_type_name, $obj->errstr );
         $app->run_callbacks( 'cms_post_delete.content_data', $app, $obj );
+
+        my %recipe;
+        %recipe = $app->publisher->rebuild_deleted_content_data(
+            ContentData => $obj,
+            Blog        => $obj->blog,
+        ) if $obj->status eq MT::ContentStatus::RELEASE();
 
         my $child_hash = $rebuild_recipe{ $obj->blog_id } || {};
         MT::__merge_hash( $child_hash, \%recipe );
@@ -990,6 +1105,7 @@ sub delete {
                 $app->rebuild_indexes( Blog => $b )
                     or return $app->publish_error();
                 $app->run_callbacks( 'rebuild', $b );
+                $app->publisher->remove_marked_files( $b, 1 );
             }
         };
 
@@ -1035,7 +1151,7 @@ sub post_save {
     }
     elsif ( $orig_obj->status ne $obj->status ) {
         $message = $app->translate(
-            "[_1] '[_5]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
+            "[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
             $ct->name,
             $obj->id,
             $app->translate(
@@ -1055,7 +1171,7 @@ sub post_save {
     require MT::Log;
     $app->log(
         {   message => $message,
-            level   => MT::Log::INFO(),
+            $orig_obj->id ? ( level => MT::Log::NOTICE() ) : ( level => MT::Log::INFO() ),
             class   => 'content_data_' . $ct->id,
             $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
             metadata => $obj->id
@@ -1083,7 +1199,7 @@ sub post_delete {
                 "[_1] '[_4]' (ID:[_2]) deleted by '[_3]'",
                 $ct->name, $obj->id, $author->name, $label
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'content_data_' . $ct->id,
             category => 'delete'
         }
@@ -1124,6 +1240,10 @@ sub make_content_actions {
                     content_type_id => $ct->id,
                 },
                 class => 'icon-create',
+                permit_action => {
+                    permit_action => 'create_new_content_data,create_new_content_data_' . $ct->unique_id,
+                    system_action => 'manage_content_data'
+                },
             }
         };
     }
@@ -1286,12 +1406,13 @@ sub make_menus {
 
 sub _validate_content_fields {
     my $app = shift;
-    my ( $content_type, $data ) = @_;
+    my ( $content_type, $data, $data_is_updated ) = @_;
     my $content_field_types = $app->registry('content_field_types');
 
     my @errors;
 
     foreach my $f ( @{ $content_type->fields } ) {
+        next unless $data_is_updated->{ $f->{id} };
         my $content_field_type = $content_field_types->{ $f->{type} };
         my $param_name         = 'content-field-' . $f->{id};
         my $d                  = $data->{ $f->{id} };
@@ -1351,15 +1472,17 @@ sub validate_content_fields {
 
     my $content_field_types = $app->registry('content_field_types');
     my $data                = {};
+    my $data_is_updated;
     foreach my $f ( @{ $content_type->fields } ) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         $data->{ $f->{id} }
             = _get_form_data( $app, $content_field_type, $f );
+        $data_is_updated->{ $f->{id} } = 1;
     }
 
     my $invalid_count = 0;
     my %invalid_fields;
-    if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
+    if ( my $errors = _validate_content_fields( $app, $content_type, $data, $data_is_updated ) )
     {
         $invalid_count  = scalar @{$errors};
         %invalid_fields = map { $_->{field_id} => $_->{error} } @{$errors};
@@ -1607,10 +1730,15 @@ sub _build_content_data_preview {
     my $archive_file = '';
     my $orig_file    = '';
     my $file_ext     = '';
+    my $archive_url;
     if ($tmpl_map) {
         $tmpl         = MT::Template->load( $tmpl_map->template_id );
         $file_ext     = $blog->file_extension || '';
         $archive_file = $content_data->archive_file;
+        my $base_url = $blog->archive_url;
+        $base_url .= '/' unless $base_url =~ m|/$|;
+        $archive_url = $base_url . $archive_file;
+        $archive_url =~ s{(?<!:)//+}{/}g;
 
         my $blog_path = $blog->archive_path || $blog->site_path;
         $archive_file = File::Spec->catfile( $blog_path, $archive_file );
@@ -1635,6 +1763,7 @@ sub _build_content_data_preview {
     $ctx->{current_timestamp}    = $content_data->authored_on;
     $ctx->{curernt_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
+    $ctx->stash('current_mapping_url', $archive_url);
 
     my $archiver = MT->publisher->archiver($at);
     if ( my $params = $archiver->template_params ) {
@@ -1848,6 +1977,11 @@ sub _build_content_data_preview {
 
 sub publish_content_data {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     _update_content_data_status(
         $app,
         MT::ContentStatus::RELEASE(),
@@ -1857,6 +1991,11 @@ sub publish_content_data {
 
 sub draft_content_data {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     _update_content_data_status( $app, MT::ContentStatus::HOLD(),
         $app->multi_param('id') );
 }
@@ -1868,7 +2007,7 @@ sub _update_content_data_status {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start update_content_data_status.');
+    MT::Util::Log->debug('--- Start update_content_data_status.');
 
     return $app->errtrans('Need a status to update content data')
         unless $new_status;
@@ -1878,7 +2017,7 @@ sub _update_content_data_status {
     my $app_author = $app->user;
     my $perms      = $app->permissions;
 
-    MT::Util::Log->info(' Start load content data.');
+    MT::Util::Log->debug(' Start load content data.');
 
     my ( @objects, %rebuild_these );
     require MT::ContentData;
@@ -1929,7 +2068,7 @@ sub _update_content_data_status {
         );
         $app->log(
             {   message  => $message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => 'content_data_' . $content_data->content_type_id,
                 category => 'edit',
                 metadata => $content_data->id
@@ -1938,27 +2077,27 @@ sub _update_content_data_status {
         push( @objects, { current => $content_data, original => $original } );
     }
 
-    MT::Util::Log->info(' End   load content data.');
+    MT::Util::Log->debug(' End   load content data.');
 
-    MT::Util::Log->info(' Start rebuild_these.');
+    MT::Util::Log->debug(' Start rebuild_these.');
 
     my $tmpl = $app->rebuild_these_content_data( \%rebuild_these,
         how => MT::App::CMS::NEW_PHASE() );
 
-    MT::Util::Log->info(' End   rebuild_these.');
+    MT::Util::Log->debug(' End   rebuild_these.');
 
     if (@objects) {
         my $obj = $objects[0]{current};
 
-        MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
+        MT::Util::Log->debug(' Start callbacks cms_post_bulk_save.');
 
         $app->run_callbacks( 'cms_post_bulk_save.content_data',
             $app, \@objects );
 
-        MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
+        MT::Util::Log->debug(' End   callbacks cms_post_bulk_save.');
     }
 
-    MT::Util::Log->info('--- End   update_content_data_status.');
+    MT::Util::Log->debug('--- End   update_content_data_status.');
 
     $tmpl;
 }

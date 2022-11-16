@@ -24,7 +24,7 @@ use Test::MockObject::Extends;
 use MT;
 use MT::Test;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 #require MultiBlog;
 use MT::RebuildTrigger;

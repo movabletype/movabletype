@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -56,33 +56,56 @@ class MTDatabasemysql extends MTDatabase {
     }
 
     function entries_recently_commented_on_sql($subsql) {
-        $sql = $subsql;
-        $sql = preg_replace("/from mt_entry/i",
-                    ",MAX(comment_created_on) as cco from mt_entry\ninner join mt_comment on comment_entry_id = entry_id and comment_visible = 1\n",
-                    $sql);
-        $sql = preg_replace("/order by(.+)/i",
-                    "group by entry_id order by cco desc, \$1",
-                   $sql);
+        $sql = "
+            select distinct
+                subs.*, max_comment_created_on
+            from
+                ($subsql) subs
+                inner join (
+                    select comment_entry_id, max(comment_created_on) as max_comment_created_on
+                    from mt_comment
+                    where comment_visible = 1
+                    group by comment_entry_id
+                ) c on comment_entry_id = entry_id
+            order by
+                max_comment_created_on desc
+        ";
         return $sql;
     }
 
-    function set_names($mt) {
-        $conf = $mt->config('sqlsetnames');
-        if (isset($conf) && $conf == 0)
-            return;
+    protected $private_set_names;
 
+    function set_names($mt) {
+        if (isset($this->private_set_names)) {
+            return;
+        }
+        $this->private_set_names = 1;
+        $conf = $mt->config('sqlsetnames');
+        if (isset($conf) && empty($conf))
+            return;
+        
         $ret = $this->Execute('show variables like "character_set_database"');
         $val = $ret->fields[1];
         if (!empty($val) && ($val != 'latin1')) {
             // MySQL 4.1+ and non-latin1(database) == needs SET NAMES call.
             $Charset = array(
-                'utf-8' => 'utf8',
+                'utf-8' => $val === 'utf8mb4' ? 'utf8mb4' : 'utf8',
                 'shift_jis' => 'sjis',
                 'euc-jp' => 'ujis');
             $lang = $Charset[strtolower($mt->config('publishcharset'))];
             if ($lang) {
                 $this->Execute("SET NAMES '$lang'");
             }
+            if (!isset($conf)) {
+               # SQLSetNames has never been assigned; we had a successful
+               # 'SET NAMES' command, so it's safe to SET NAMES in the future.
+               $mt->config('sqlsetnames', 1);
+            }
+        } else {
+            # 'set names' command isn't working for this verison of mysql,
+            # assign SQLSetNames to 0 to prevent further errors.
+            $mt->config('sqlsetnames', 0);
+            return;
         }
     }
 

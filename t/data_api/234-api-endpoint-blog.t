@@ -663,7 +663,7 @@ sub suite {
             method => 'POST',
             params => {
                 blog => {
-                    themeId      => 'pico',
+                    themeId      => 'mont-blanc',
                     name         => 'blog-2 name',
                     url          => 'blog-2',
                     sitePath     => 'blog-2',
@@ -696,7 +696,7 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                is( $got->{themeId}, 'pico',        'themeId' );
+                is( $got->{themeId}, 'mont-blanc', 'themeId' );
                 is( $got->{name},    'blog-2 name', 'name' );
 
                 my $url = $website->site_url;

@@ -270,7 +270,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
     <mt:if name="plugin_disabled">
           <svg role="img" class="mt-icon mt-pluginpanel__icon">
             <title>Disabled</title>
-            <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_empty" />
+            <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_empty"></use>
           </svg>
           <span class="plugin-name-disabled text-muted">
             <$mt:var name="plugin_name" escape="html"$>
@@ -283,7 +283,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
     <mt:else>
           <svg role="img" class="mt-icon--secondary mt-pluginpanel__icon">
             <title>Enabled</title>
-            <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_plugin" />
+            <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_plugin"></use>
           </svg>
           <a id="plugin-<mt:var name="plugin_id" escape="html">" data-toggle="collapse" href="#collapse-plugin-<mt:var name="plugin_id" escape="html">-content" aria-expanded="false" aria-controls="collapse-plugin-<mt:var name="plugin_id" escape="html">-content">
             <mt:var name="plugin_name" escape="html">
@@ -318,7 +318,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
             <span class="text-muted icon-left icon-neutral">
               <svg role="img" class="mt-icon--secondary mt-icon--sm" style="margin: 0;">
                 <title><__trans phrase="Disabled"></title>
-                <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_remove" />
+                <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_remove"></use>
               </svg>
               <__trans phrase="Disabled">
             </span>
@@ -427,14 +427,14 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
                   <ul class="list-inline plugin-metadata-list">
         <mt:if name="plugin_doc_link">
                     <li class="list-inline-item">
-                      <a href="<mt:var name="plugin_doc_link">" class="icon-mini-left icon-mini-docs" title="<__trans phrase="Documentation for [_1]" params="<mt:var name="plugin_name" escape="html">">">
+                      <a href="<mt:var name="plugin_doc_link">" rel="noopener noreferrer" class="icon-mini-left icon-mini-docs" title="<__trans phrase="Documentation for [_1]" params="<mt:var name="plugin_name" escape="html">">">
                         <__trans phrase="Documentation">
                       </a>
                     </li>
         </mt:if>
         <mt:if name="plugin_plugin_link">
                     <li class="list-inline-item">
-                      <a href="<mt:var name="plugin_plugin_link">" class="icon-mini-left icon-mini-view-site" title="<__trans phrase="More about [_1]" params="<mt:var name="plugin_name" escape="html">">">
+                      <a href="<mt:var name="plugin_plugin_link">" rel="noopener noreferrer" class="icon-mini-left icon-mini-view-site" title="<__trans phrase="More about [_1]" params="<mt:var name="plugin_name" escape="html">">">
                         <__trans phrase="Plugin Home">
                       </a>
                     </li>
@@ -442,7 +442,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
         <mt:if name="plugin_author_name">
                     <li class="list-inline-item">
                       <mt:if name="plugin_author_link">
-                        <a href="<mt:var name="plugin_author_link">" class="icon-mini-left icon-mini-view-site" title="<__trans phrase="Author of [_1]" params="<mt:var name="plugin_name" escape="html">">">
+                        <a href="<mt:var name="plugin_author_link">" rel="noopener noreferrer" class="icon-mini-left icon-mini-view-site" title="<__trans phrase="Author of [_1]" params="<mt:var name="plugin_name" escape="html">">">
                           <mt:var name="plugin_author_name">
                         </a>
                       <mt:else>

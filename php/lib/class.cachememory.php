@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,7 +11,7 @@ class CacheMemory extends BaseCache {
 
     public function get ($key, $ttl = null) {
         $ret = $this->get_multi(array($key), $ttl);
-        return $ret[0];
+        return isset($ret[0]) ? $ret[0] : null;
     }
 
     public function get_multi ($keys, $ttl = null) {

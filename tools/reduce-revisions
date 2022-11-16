@@ -1,0 +1,108 @@
+#!/usr/bin/perl -w
+package MT::Tool::ReduceRevisions;
+use strict;
+use warnings;
+use utf8;
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use Getopt::Long;
+use MT::Bootstrap;
+use MT;
+use MT::Revisable;
+
+our $BULK_DELETE = 100;
+my %target;
+
+GetOptions(
+    'b|blog_id=i' => \my ($blog_id),
+    'l|limit=i'   => \my ($delete_limit),
+    'd|delete'    => \my ($delete),
+    'e|entry'     => sub { $target{entry}    = 1 },
+    'c|cd'        => sub { $target{cd}       = 1 },
+    't|template'  => sub { $target{template} = 1 },
+    "help|?"      => sub { usage(); exit },
+);
+
+map { $target{$_} = 1 } ('entry', 'cd', 'template') unless keys(%target);
+
+my $delete_count = 0;
+my $detect_count = 0;
+my $mt           = MT->new;
+
+my $site_iter = MT::Blog->load_iter($blog_id ? { id => $blog_id } : { class => '*' });
+
+while (my $site = $site_iter->()) {
+
+    for my $ds (keys %target) {
+        my $col = 'max_revisions_' . $ds;
+        my $max = $site->$col || $MT::Revisable::MAX_REVISIONS;
+        _do_delete($ds, $site->id, $max);
+    }
+}
+
+if ($target{template} && !$blog_id && MT->config->GlobalTemplateMaxRevisions) {
+    _do_delete('template', 0, MT->config->GlobalTemplateMaxRevisions);
+}
+
+print "============================================================\n";
+print "Total Result\n";
+printf(($delete ? "Deleted: $delete_count" : "Detected: $detect_count") . "\n");
+print "============================================================\n";
+
+sub _do_delete {
+    my ($ds, $site_id, $max) = @_;
+    my $model     = MT->model($ds);
+    my $rev_class = MT->model($ds . ':revision');
+    my $found     = 0;
+
+    print "============================================================\n";
+    printf("Checking %s of site(id:%s) for max=%d\n", $ds, $site_id, $max);
+    print "============================================================\n";
+
+    my $count_iter = $rev_class->count_group_by(undef, {
+        join   => $model->join_on(undef, { id => \"= ${ds}_rev_${ds}_id", blog_id => $site_id }),
+        group  => ["${ds}_id"],
+        having => { "count(${ds}_rev_${ds}_id)" => \"> $max" },
+    });
+
+    while (my ($count, $id) = $count_iter->()) {
+        $found = 1;
+        $detect_count += ($count - $max);
+        printf("Violation detected(%d/%d) for id=%d", $count, $max, $id);
+        if ($delete) {
+            print " and deleting";
+            my $plan = $count - $max;
+            if ($delete_limit) {
+                $plan = (($plan + $delete_count) <= $delete_limit) ? $plan : $delete_limit - $delete_count;
+            }
+            while ($plan > 0) {
+                my $limit = $plan > $BULK_DELETE ? $BULK_DELETE : $plan;
+                $plan -= $limit;
+                my @ids = map { $_->id } $rev_class->load(
+                    { $ds . '_id' => $id },
+                    {
+                        fetchonly => { 'id' => 1 }, sort => 'created_on', direction => 'ascend',
+                        limit     => $limit
+                    });
+                $delete_count += $rev_class->remove({ id => \@ids }, { nofetch => 1 });
+            }
+        }
+        print ".\n";
+    }
+    print(!$found ? "OK.\n\n" : $delete ? "Fixed.\n\n" : "\n");
+}
+
+sub usage {
+    print STDERR << "EOT";
+usage: $0
+
+These options are available:
+
+-b, --blog_id           Blog ID.
+-l, --limit             Maximum number of deletion.
+-d, --delete            Delete on detecting revision amount excession.
+-e, --entry             process entries.
+-c, --cd                process content data.
+-t, --template          process templates.
+EOT
+}

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -45,7 +45,7 @@ function smarty_function_mtcategoryarchivelink($args, &$ctx) {
 
     $content_type_id = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : 0;
     $link = $ctx->mt->db()->category_link($category->category_id, $cat_at_label, $content_type_id);
-    if ($args['with_index'] && preg_match('/\/(#.*)*$/', $link)) {
+    if (!empty($args['with_index']) && preg_match('/\/(#.*)*$/', $link)) {
         $blog = $ctx->stash('blog');
         $index = $ctx->mt->config('IndexBasename');
         $ext = $blog->blog_file_extension;

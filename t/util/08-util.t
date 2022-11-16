@@ -22,23 +22,21 @@ use MT;
 use MT::FileMgr;
 use MT::Test;
 use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
-    start_end_period week2ymd munge_comment
-    rich_text_transform html_text_transform encode_html decode_html
+    start_end_period week2ymd
+    rich_text_transform html_text_transform_traditional encode_html decode_html
     iso2ts ts2iso offset_time offset_time_list first_n_words
-    archive_file_for format_ts dirify remove_html
-    days_in wday_from_ts encode_js decode_js get_entry spam_protect
+    format_ts dirify remove_html
+    days_in wday_from_ts encode_js decode_js spam_protect
     is_valid_email encode_php encode_url decode_url encode_xml
     decode_xml is_valid_url is_url convert_high_ascii
-    mark_odd_rows dsa_verify perl_sha1_digest relative_date
-    perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8
-    start_background_task launch_background_tasks substr_wref
+    mark_odd_rows relative_date xliterate_utf8
+    start_background_task substr_wref
     extract_urls extract_domain extract_domains is_valid_date
     epoch2ts ts2epoch escape_unicode unescape_unicode
-    sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
+    sax_parser trim ltrim rtrim asset_cleanup caturl
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do
     deep_copy canonicalize_path is_valid_ip clear_site_stats_widget_cache);
-use MT::I18N qw( encode_text );
 
 $test_env->prepare_fixture('db_data');
 
@@ -94,6 +92,10 @@ is( format_ts( '%x', $ts ), 'September  8, 1977' );
 is( format_ts( '%X', $ts ), ' 3:30 PM' );
 is( format_ts( '%y', $ts ), '77' );
 is( format_ts( '%Y', $ts ), '1977' );
+{
+    local $SIG{__WARN__} = sub { fail 'format_ts warning: ' . shift; };
+    is( format_ts( '%Y', {} ), '' );
+}
 
 is( encode_html('<foo>'), '&lt;foo&gt;' );
 is( encode_html('&gt;'),  '&gt;' );
@@ -269,7 +271,7 @@ my $content_html_text_transformed = <<__HTML__;
 </p>
 __HTML__
 chomp($content_html_text_transformed);
-is( html_text_transform($content),
+is( html_text_transform_traditional($content),
     $content_html_text_transformed,
     'html_text_transform()'
 );
@@ -605,7 +607,11 @@ my %accept_languages = qw(
     nl-nl nl
 );
 
+my %default_supported_languages = map {$_ => 1} split ',', MT->config->DefaultSupportedLanguages;
+
 while ( my ( $env, $expected ) = each(%accept_languages) ) {
+    (my $lang = $expected) =~ tr/-/_/;
+    next unless $default_supported_languages{$lang};
     $ENV{HTTP_ACCEPT_LANGUAGE} = $env;
     is( browser_language(), $expected, "browser_language() for \"$env\"" );
 }
@@ -777,7 +783,6 @@ for my $clear_cache ( 0, 1 ) {
                 excerpt        => 'A story of a stroll.',
                 keywords       => 'keywords',
                 created_on     => '19780131074500',
-                authored_on    => '19780131074500',
                 modified_on    => '19780131074600',
                 authored_on    => '19780131074500',
                 author_id      => 3,

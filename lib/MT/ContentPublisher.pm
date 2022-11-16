@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -17,8 +17,6 @@ use MT::ContentData;
 use MT::Util::Log;
 use File::Basename;
 use File::Spec;
-
-use MT::ArchiveType;
 use MT::PublishOption;
 use MT::Template;
 use MT::TemplateMap;
@@ -119,7 +117,6 @@ sub rebuild {
             )
             );
     }
-    return 1 if $blog->is_dynamic;
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -396,6 +393,9 @@ sub rebuild {
         $mt->rebuild_indexes( Blog => $blog, NoStatic => $param{NoStatic}, )
             or return;
     }
+
+    $mt->remove_marked_files($blog);
+
     MT::Util::Log->info('--- End   rebuild.');
     1;
 }
@@ -503,16 +503,18 @@ sub _get_categories_for_rebuild {
     for my $field_id (@field_ids) {
         my $field_hash = $ct->get_field($field_id);
         my %rebuild_ids;
-        $rebuild_ids{$_} = 1 for @{ $cd->data->{$field_id}       || [] };
         $rebuild_ids{$_} = 1 for @{ $old_categories->{$field_id} || [] };
+        $rebuild_ids{$_} = 0 for @{ $cd->data->{$field_id}       || [] };
         if (%rebuild_ids) {
-            $categories_for_rebuild{$field_id} = [
-                MT->model('category')->load(
-                    {   id              => [ keys %rebuild_ids ],
-                        category_set_id => \'> 0',
-                    }
-                )
-            ];
+            my @categories = MT->model('category')->load(
+                {   id              => [ keys %rebuild_ids ],
+                    category_set_id => \'> 0',
+                }
+            );
+            for my $category (@categories) {
+                push @{ $categories_for_rebuild{$field_id} ||= [] },
+                    [ $category, $rebuild_ids{ $category->id } ];
+            }
         }
         else {
             $categories_for_rebuild{$field_id} = [];
@@ -549,7 +551,6 @@ sub rebuild_content_data {
     my $blog = $param{Blog} || $content_data->blog
         or return $mt->trans_error( "Load of blog '[_1]' failed",
         $content_data->blog_id );
-    return 1 if $blog->is_dynamic;
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -601,11 +602,22 @@ sub rebuild_content_data {
             if ( $archiver->category_based ) {
                 for my $map (@maps) {
                     my @cats = map { @$_ } values %{ $categories_for_rebuild || {} };
-                    for my $cat (@cats) {
+                    for my $cat_item (@cats) {
+                        my ( $cat, $is_old ) = @$cat_item;
                         MT::Util::Log->debug(
                             " Rebuilding $at (" . $cat->label . ")" );
+                        my $content_data_to_use = $content_data;
+                        if ($is_old) {
+                            $content_data_to_use = $archiver->alternative_content( {
+                                ContentData => $content_data,
+                                Blog        => $blog,
+                                ArchiveType => $at,
+                                Category    => $cat,
+                                TemplateMap => $map,
+                            } ) || $content_data;
+                        }
                         $mt->_rebuild_content_archive_type(
-                            ContentData => $content_data,
+                            ContentData => $content_data_to_use,
                             Blog        => $blog,
                             ArchiveType => $at,
                             Category    => $cat,
@@ -738,7 +750,8 @@ sub rebuild_content_data {
                         my @cats
                             = @{ $categories_for_rebuild
                                 ->{ $map->cat_field_id } || [] };
-                        for my $cat (@cats) {
+                        for my $cat_item (@cats) {
+                            my ( $cat, $is_old ) = @$cat_item;
                             if (my $prev_arch
                                 = $archiver->previous_archive_content_data(
                                     {   category_field_id =>
@@ -939,14 +952,16 @@ sub rebuild_file {
             $ctx->{__stash}{category_set} = $category_set;
         }
     }
-    if ( $archiver->entry_based ) {
+    if ( $archiver->entry_based or $args{Entry} ) {
         $entry = $args{Entry};
         die MT->translate( "[_1] archive type requires [_2] parameter",
             $archiver->archive_label, 'Entry' )
             unless $entry;
         require MT::Entry;
         $entry = MT::Entry->load($entry) if !ref $entry;
-        $ctx->{__stash}{entry} = $entry;
+        if ( $archiver->entry_based ) {
+            $ctx->{__stash}{entry} = $entry;
+        }
     }
     if ( $archiver->date_based ) {
 
@@ -1076,19 +1091,25 @@ sub rebuild_file {
         else {
          # if the shoe don't fit, remove all shoes and create the perfect shoe
             MT::Util::Log::init();
-            foreach (@finfos) {
-                $_->remove();
-                MT::Util::Log->info( ' Removed ' . $_->file_path );
-                if ( MT->config('DeleteFilesAtRebuild') ) {
-                    $mt->_delete_archive_file(
-                        Blog        => $blog,
-                        File        => $_->file_path,
-                        ArchiveType => $at,
-                        (   $any_contenttype_based && $content_data
-                            ? ( ContentData => $content_data->id )
-                            : ()
-                        ),
-                    );
+            foreach my $fi (@finfos) {
+                if ( MT->config('DeleteFilesAfterRebuild') ) {
+                    $fi->mark_to_remove( $map->build_type );
+                    MT::Util::Log->debug( 'Marked to remove ' . $fi->file_path );
+                }
+                else {
+                    $fi->remove();
+                    MT::Util::Log->debug( 'Removed FileInfo for ' . $fi->file_path );
+                    if ( MT->config('DeleteFilesAtRebuild') ) {
+                        $mt->_delete_archive_file(
+                            Blog        => $blog,
+                            File        => $fi->file_path,
+                            ArchiveType => $at,
+                            (   $any_contenttype_based && $content_data
+                                ? ( ContentData => $content_data->id )
+                                : ()
+                            ),
+                        );
+                    }
                 }
             }
 
@@ -1115,6 +1136,7 @@ sub rebuild_file {
                 )
                 || die "Couldn't create FileInfo because "
                 . MT::FileInfo->errstr();
+            MT::Util::Log->debug( 'Created FileInfo for ' . $file );
         }
     }
 
@@ -1129,18 +1151,28 @@ sub rebuild_file {
                 ( $content_data ? ( ContentData => $content_data ) : () ),
             }
         )
+        or ( $entry && $archiver->entry_based && $entry->status != MT::Entry::RELEASE() )
+        or (   $content_data
+            && $archiver->contenttype_based
+            && $content_data->status != MT::ContentStatus::RELEASE() )
         )
     {
-        $finfo->remove();
-        MT::Util::Log->info( ' Removed ' . $finfo->file_path );
         $map->{__saved_but_removed} = 1;
-
-        if ( MT->config->DeleteFilesAtRebuild ) {
-            $mt->_delete_archive_file(
-                Blog        => $blog,
-                File        => $finfo->file_path,
-                ArchiveType => $at
-            );
+        if ( MT->config->DeleteFilesAfterRebuild ) {
+            $finfo->mark_to_remove( $map->build_type );
+            MT::Util::Log->debug( 'Marked to remove ' . $finfo->file_path );
+        }
+        else {
+            $finfo->remove();
+            MT::Util::Log->debug(
+                'Removed (saved-but-not-published) FileInfo for ' . $finfo->file_path );
+            if ( MT->config->DeleteFilesAtRebuild ) {
+                $mt->_delete_archive_file(
+                    Blog        => $blog,
+                    File        => $finfo->file_path,
+                    ArchiveType => $at
+                );
+            }
         }
 
         return 1;
@@ -1187,14 +1219,9 @@ sub rebuild_file {
             $finfo->virtual(1);
             $finfo->save();
         }
-    }
 
-    return 1 if ( $map->build_type == MT::PublishOption::DYNAMIC() );
-    return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
-    return 1
-        if ( $content_data
-        && $archiver->contenttype_based
-        && $content_data->status != MT::ContentStatus::RELEASE() );
+        return 1;
+    }
     return 1 unless ( $map->build_type );
 
     my $timer = MT->get_timer;
@@ -1304,7 +1331,7 @@ sub rebuild_file {
 
         # Some browsers throw you to quirks mode if the doctype isn't
         # up front and leading whitespace makes a feed invalid.
-        $html =~ s/\A\s+(<(?:\?xml|!DOCTYPE))/$1/s;
+        $html =~ s/\A(?:\s|\x{feff}|\xef\xbb\xbf)+(<(?:\?xml|!DOCTYPE))/$1/s;
 
         my $orig_html = $html;
         MT->run_callbacks(
@@ -1576,7 +1603,7 @@ sub rebuild_content_from_fileinfo {
     my $arch_root
         = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
     return $pub->error(
-        MT->translate("You did not set your blog publishing path") )
+        MT->translate("You did not set your site publishing path") )
         unless $arch_root;
 
     my %cond;
@@ -1596,18 +1623,18 @@ sub _rebuild_content_archive_type {
         or return $mt->error(
         MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
     return 1 if $at eq 'None';
-    my $content_data
-        = (    $param{ArchiveType} ne 'ContentType-Category'
+    my $content_data = $param{ContentData};
+
+    ## XXX: shouldn't always raise an error if content data is not defined?
+    if (!$content_data
+        && (   $param{ArchiveType} ne 'ContentType-Category'
             && $param{ArchiveType} ne 'ContentType-Author'
             && !exists $param{Start}
             && !exists $param{End} )
-        ? (
-        $param{ContentData}
-            or return $mt->error(
-            MT->translate( "Parameter '[_1]' is required", 'ContentData' )
-            )
         )
-        : undef;
+    {
+        return $mt->error( MT->translate( "Parameter '[_1]' is required", 'ContentData' ) );
+    }
 
     my $blog;
     unless ( $blog = $param{Blog} ) {
@@ -1711,12 +1738,12 @@ sub _rebuild_content_archive_type {
             ? $param{File}
             : $mt->archive_file_for( $content_data, $blog, $at,
             $param{Category}, $map, $ts, $param{Author} );
-        if ( $file eq '' ) {
+        if ( !defined($file) ) {
+            return $mt->error( MT->translate( $blog->errstr() ) );
+        }
+        elsif ( $file eq '' ) {
 
             # np
-        }
-        elsif ( !defined($file) ) {
-            return $mt->error( MT->translate( $blog->errstr() ) );
         }
         else {
             push @map_build, $map unless $done->{$file};
@@ -1737,7 +1764,7 @@ sub _rebuild_content_archive_type {
     my $arch_root
         = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
     return $mt->error(
-        MT->translate("You did not set your blog publishing path") )
+        MT->translate("You did not set your site publishing path") )
         unless $arch_root;
 
     ## For each mapping, we need to rebuild the entries we loaded above in
@@ -1810,9 +1837,7 @@ sub _rebuild_content_archive_type {
         my $mt = shift;
         init_archive_types() unless %ArchiveTypes;
 
-        my ( $obj, $blog, $at, $cat, $map, $timestamp, $author,
-            $content_type_id )
-            = @_;
+        my ($obj, $blog, $at, $cat, $map, $timestamp, $author, $ct_id) = @_;
         return if $at eq 'None';
         my $archiver = $mt->archiver($at);
         return '' unless $archiver;
@@ -1827,54 +1852,7 @@ sub _rebuild_content_archive_type {
             return $file;
         }
 
-        if ( $blog->is_dynamic ) {
-            require MT::TemplateMap;
-            $map = MT::TemplateMap->new;
-            $map->file_template( $archiver->dynamic_template );
-        }
-        unless ($map) {
-            my $cache_map = MT::Request->instance->cache('maps');
-            unless ($cache_map) {
-                MT::Request->instance->cache( 'maps', $cache_map = {} );
-            }
-            $content_type_id ||=
-                ref $obj eq 'MT::ContentData'
-                ? $obj->content_type_id
-                : '';
-            my $cache_map_key
-                = $blog->id . ':'
-                . (
-                ( $at =~ /^ContentType/ && $content_type_id )
-                ? $content_type_id . ':'
-                : ''
-                ) . $at;
-            unless ( $map = $cache_map->{$cache_map_key} ) {
-                my $args
-                    = ( $at =~ /^ContentType/ && $content_type_id )
-                    ? {
-                    join => MT->model('template')->join_on(
-                        undef,
-                        {   id              => \'= templatemap_template_id',
-                            content_type_id => $content_type_id,
-                        }
-                    )
-                    }
-                    : {};
-                require MT::TemplateMap;
-                $map = MT::TemplateMap->load(
-                    {   blog_id      => $blog->id,
-                        archive_type => $at,
-                        is_preferred => 1
-                    },
-                    $args,
-                );
-                $cache_map->{$cache_map_key} = $map if $map;
-            }
-        }
-
-        # No archive mappings cloud be found, then return.
-        return '' unless $map;
-
+        $map ||= $archiver->get_preferred_map({ blog_id => $blog->id, content_type_id => $ct_id });
         my $file_tmpl;
         $file_tmpl = $map->file_template if $map;
         unless ($file_tmpl) {
@@ -1918,7 +1896,7 @@ sub _rebuild_content_archive_type {
                 : $obj->authored_on();
         }
 
-        my %blog_at = map { $_ => 1 } split /,/, $blog->archive_type;
+        my %blog_at = map { $_ => 1 } split /,/, ($blog->archive_type || '');
         return '' unless $blog_at{$at};
 
         $file = $archiver->archive_file(
@@ -2018,12 +1996,29 @@ sub remove_content_data_archive_file {
             die MT->translate( $blog->errstr );
         }
 
-        $mt->_delete_archive_file(
-            Blog        => $blog,
-            File        => $file,
-            ArchiveType => $at,
-            ContentData => $content_data,
+        require MT::FileInfo;
+        my @fileinfos = MT::FileInfo->load(
+            {   blog_id   => $blog->id,
+                file_path => $file,
+            }
         );
+        if ( MT->config('DeleteFilesAfterRebuild') ) {
+            for my $fi (@fileinfos) {
+                $fi->mark_to_remove( $map->build_type );
+            }
+            MT::Util::Log->debug("Marked to remove $file");
+        }
+        else {
+            for my $fi (@fileinfos) {
+                $fi->remove;
+            }
+            $mt->_delete_archive_file(
+                Blog        => $blog,
+                File        => $file,
+                ArchiveType => $at,
+                ContentData => $content_data,
+            );
+        }
     }
 }
 
@@ -2076,7 +2071,55 @@ sub remove_fileinfo {
     my @finfo = MT::FileInfo->load( $terms, $args );
     for my $f (@finfo) {
         $f->remove;
-        MT::Util::Log->info( ' Removed ' . $f->file_path );
+        MT::Util::Log->debug( 'Removed FileInfo for ' . $f->file_path );
+    }
+    1;
+}
+
+sub mark_fileinfo {
+    my $mt    = shift;
+    my %param = @_;
+    my $at    = $param{ArchiveType}
+        or return $mt->error( MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
+    my $blog_id = $param{Blog}
+        or return $mt->error( MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
+    my $entry_id  = $param{Entry};
+    my $author_id = $param{Author};
+    my $start     = $param{StartDate};
+    my $cat_id    = $param{Category};
+    my $cd_id     = $param{ContentData};
+    my $ct_id     = $param{ContentType};
+    my $map       = $param{TemplateMap};
+
+    require MT::FileInfo;
+    my ( $terms, $args );
+    $terms = {
+        archive_type => $at,
+        blog_id      => $blog_id,
+        ( $author_id ? ( author_id   => $author_id ) : () ),
+        ( $entry_id  ? ( entry_id    => $entry_id )  : () ),
+        ( $cat_id    ? ( category_id => $cat_id )    : () ),
+        ( $start     ? ( startdate   => $start )     : () ),
+        ( $cd_id     ? ( cd_id       => $cd_id )     : () ),
+    };
+
+    if ($ct_id) {
+        $args = {
+            join => MT::Template->join_on(
+                undef,
+                {   id              => \'= fileinfo_template_id',
+                    content_type_id => $ct_id,
+                },
+            ),
+        };
+    }
+
+    MT::Util::Log::init();
+    my @finfo      = MT::FileInfo->load( $terms, $args );
+    my $build_type = $map ? $map->build_type : 0;
+    for my $f (@finfo) {
+        $f->mark_to_remove($build_type);
+        MT::Util::Log->debug( 'Marked to remove ' . $f->file_path );
     }
     1;
 }
@@ -2119,17 +2162,26 @@ sub rebuild_deleted_content_data {
         @at = grep { $_ =~ /^ContentType/ } @at_orig;
     }
 
-    # Remove Individual archive file.
-    if ( $app->config('DeleteFilesAtRebuild') ) {
-        $mt->remove_content_data_archive_file( ContentData => $content_data );
+    if ( $app->config('DeleteFilesAfterRebuild') ) {
+        $mt->mark_fileinfo(
+            ArchiveType => 'ContentType',
+            Blog        => $blog->id,
+            ContentData => $content_data->id,
+        );
     }
+    else {
+        # Remove ContentType archive file.
+        if ( $app->config('DeleteFilesAtRebuild') ) {
+            $mt->remove_content_data_archive_file( ContentData => $content_data );
+        }
 
-    # Remove Individual fileinfo records.
-    $mt->remove_fileinfo(
-        ArchiveType => 'ContentType',
-        Blog        => $blog->id,
-        ContentData => $content_data->id,
-    );
+        # Remove ContentType fileinfo records.
+        $mt->remove_fileinfo(
+            ArchiveType => 'ContentType',
+            Blog        => $blog->id,
+            ContentData => $content_data->id,
+        );
+    }
 
     for my $at (@at) {
         my $archiver = $mt->archiver($at) or next;
@@ -2161,39 +2213,63 @@ sub rebuild_deleted_content_data {
                 = $archiver->target_category_ids( $content_data, $map );
             for my $cat_id (@$category_ids) {
                 my $cat = MT::Category->load($cat_id) or next;
-                if ($archiver->does_publish_file(
+                if (!$archiver->does_publish_file(
                         {   Blog        => $blog,
                             ArchiveType => $at,
                             ContentData => $content_data,
                             Category    => $cat,
                             TemplateMap => $map,
                         }
-                    ) == 1
+                    )
                     )
                 {
-                    # Remove archives fileinfo records.
-                    $mt->remove_fileinfo(
-                        ArchiveType => $at,
-                        Blog        => $blog->id,
-                        Category    => $cat->id,
-                        ContentType => $content_data->content_type_id,
-                        (   $archiver->date_based()
-                            ? ( StartDate => $start )
-                            : ()
-                        ),
-                    );
-
-                    if (   $app->config('RebuildAtDelete')
-                        && $app->config('DeleteFilesAtRebuild') )
-                    {
-                        $mt->remove_content_data_archive_file(
-                            ContentData => $content_data,
+                    if ( MT->config('DeleteFilesAfterRebuild') ) {
+                        $mt->mark_fileinfo(
                             ArchiveType => $at,
-                            Category    => $cat,
+                            Blog        => $blog->id,
+                            Category    => $cat->id,
+                            ContentType => $content_data->content_type_id,
+                            TemplateMap => $map,
+                            (   $archiver->date_based()
+                                ? ( StartDate => $start )
+                                : ()
+                            ),
                         );
+                    }
+                    else {
+                        # Remove archives fileinfo records.
+                        $mt->remove_fileinfo(
+                            ArchiveType => $at,
+                            Blog        => $blog->id,
+                            Category    => $cat->id,
+                            ContentType => $content_data->content_type_id,
+                            TemplateMap => $map,
+                            (   $archiver->date_based()
+                                ? ( StartDate => $start )
+                                : ()
+                            ),
+                        );
+
+                        if (   $app->config('RebuildAtDelete')
+                            && $app->config('DeleteFilesAtRebuild') )
+                        {
+                            $mt->remove_content_data_archive_file(
+                                ContentData => $content_data,
+                                ArchiveType => $at,
+                                Category    => $cat,
+                            );
+                        }
                     }
                 }
                 else {
+                    my $new_content_data = $archiver->alternative_content(
+                        {   Blog        => $blog,
+                            ArchiveType => $at,
+                            ContentData => $content_data,
+                            Category    => $cat,
+                            TemplateMap => $map,
+                        }
+                    );
                     if ( $app->config('RebuildAtDelete') ) {
                         if ( $archiver->date_based ) {
                             $rebuild_recipe{$at}{ $cat->id }
@@ -2204,13 +2280,13 @@ sub rebuild_deleted_content_data {
                                 { $start . $end }{'Timestamp'} = $target_dt;
                             $rebuild_recipe{$at}{ $cat->id }
                                 { $start . $end }{'ContentData'}
-                                = $content_data;
+                                = $new_content_data;
                         }
                         else {
                             $rebuild_recipe{$at}{ $cat->id }{id}
                                 = $cat->id;
                             $rebuild_recipe{$at}{ $cat->id }{ContentData}
-                                = $content_data;
+                                = $new_content_data;
                         }
                     }
                 }
@@ -2229,46 +2305,75 @@ sub rebuild_deleted_content_data {
                 }
             }
             elsif (
-                $archiver->does_publish_file(
+                !$archiver->does_publish_file(
                     {   Blog        => $blog,
                         ArchiveType => $at,
                         ContentData => $content_data,
                         TemplateMap => $map,
-                        (   $archiver->author_based()
-                            ? ( Author => $content_data->author )
+                        (   $archiver->author_based() ? ( Author => $content_data->author )
                             : ()
                         ),
                         (   $archiver->date_based() ? ( Timestamp => $start )
                             : ()
                         ),
                     }
-                ) == 1
+                )
                 )
             {
-                # Remove archives fileinfo records.
-                $mt->remove_fileinfo(
-                    ArchiveType => $at,
-                    Blog        => $blog->id,
-                    (   $archiver->author_based()
-                        ? ( author_id => $content_data->author_id )
-                        : ()
-                    ),
-                    (   $archiver->date_based() ? ( StartDate => $start )
-                        : ()
-                    ),
-                );
-
-                if (   $app->config('RebuildAtDelete')
-                    && $app->config('DeleteFilesAtRebuild') )
-                {
-                    $mt->remove_content_data_archive_file(
-                        ContentData => $content_data,
+                if ( $app->config('DeleteFilesAfterRebuild') ) {
+                    $mt->mark_fileinfo(
                         ArchiveType => $at,
+                        Blog        => $blog->id,
+                        ContentType => $content_data->content_type_id,
+                        TemplateMap => $map,
+                        (   $archiver->author_based() ? ( Author => $content_data->author_id )
+                            : ()
+                        ),
+                        (   $archiver->date_based() ? ( StartDate => $start )
+                            : ()
+                        ),
                     );
+                }
+                else {
+                    # Remove archives fileinfo records.
+                    $mt->remove_fileinfo(
+                        ArchiveType => $at,
+                        Blog        => $blog->id,
+                        ContentType => $content_data->content_type_id,
+                        TemplateMap => $map,
+                        (   $archiver->author_based() ? ( Author => $content_data->author_id )
+                            : ()
+                        ),
+                        (   $archiver->date_based() ? ( StartDate => $start )
+                            : ()
+                        ),
+                    );
+
+                    if (   $app->config('RebuildAtDelete')
+                        && $app->config('DeleteFilesAtRebuild') )
+                    {
+                        $mt->remove_content_data_archive_file(
+                            ContentData => $content_data,
+                            ArchiveType => $at,
+                        );
+                    }
                 }
             }
             else {
                 next unless $app->config('RebuildAtDelete');
+                my $new_content_data = $archiver->alternative_content( {
+                        ArchiveType => $at,
+                        Blog        => $blog->id,
+                        ContentType => $content_data->content_type_id,
+                        ContentData => $content_data,
+                        TemplateMap => $map,
+                        (   $archiver->author_based() ? ( Author => $content_data->author_id )
+                            : ()
+                        ),
+                        (   $archiver->date_based() ? ( StartDate => $start )
+                            : ()
+                        ),
+                } );
 
                 if ( $archiver->author_based && $content_data->author ) {
                     if ( $archiver->date_based ) {
@@ -2279,13 +2384,13 @@ sub rebuild_deleted_content_data {
                         $rebuild_recipe{$at}{ $content_data->author->id }
                             { $start . $end }{'Timestamp'} = $target_dt;
                         $rebuild_recipe{$at}{ $content_data->author->id }
-                            { $start . $end }{'ContentData'} = $content_data;
+                            { $start . $end }{'ContentData'} = $new_content_data;
                     }
                     else {
                         $rebuild_recipe{$at}{ $content_data->author->id }{id}
                             = $content_data->author->id;
                         $rebuild_recipe{$at}{ $content_data->author->id }
-                            {ContentData} = $content_data;
+                            {ContentData} = $new_content_data;
                     }
                 }
                 elsif ( $archiver->date_based ) {
@@ -2295,7 +2400,7 @@ sub rebuild_deleted_content_data {
                     $rebuild_recipe{$at}{ $start . $end }{'Timestamp'}
                         = $target_dt;
                     $rebuild_recipe{$at}{ $start . $end }{'ContentData'}
-                        = $content_data;
+                        = $new_content_data;
                 }
 
                 if ( my $prev = $content_data->previous(1) ) {
@@ -2488,12 +2593,18 @@ sub unpublish_past_contents {
                 or die $content_data->errstr;
             $app->post_scheduled( $content_data, $original );
 
-            # remove file
-            if ( $mt->config('DeleteFilesAtRebuild') ) {
-                $app->remove_content_data_archive_file(
-                    ContentData => $content_data,
-                    ArchiveType => 'ContentType',
-                );
+            if ( $mt->config('DeleteFilesAfterRebuild') ) {
+
+                # Marking seems unnecessary here as $content_data is enqueued below
+            }
+            else {
+                # remove file
+                if ( $mt->config('DeleteFilesAtRebuild') ) {
+                    $app->remove_content_data_archive_file(
+                        ContentData => $content_data,
+                        ArchiveType => 'ContentType',
+                    );
+                }
             }
 
             MT->run_callbacks( 'unpublish_past_contents', $mt,
@@ -2526,6 +2637,7 @@ sub unpublish_past_contents {
                 }
                 $mt->rebuild_indexes( Blog => $site )
                     or die $mt->errstr;
+                $mt->publisher->remove_marked_files($site);
             };
             if ( my $err = $@ ) {
 

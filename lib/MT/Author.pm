@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -567,16 +567,18 @@ sub _bulk_author_name_html {
         }
         my $lc_auth_label = lc $auth_label;
 
-        my $name = MT::Util::encode_html( $obj->name )
-            || '(' . MT->translate('Registered User') . ')';
+        my $name = MT::Util::encode_html( $obj->name );
+        if (!defined $name or $name eq '') {
+            $name = '(' . MT->translate('Registered User') . ')';
+        }
         my $email = MT::Util::encode_html( $obj->email );
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
             <div class="row">
                 <div class="col-auto px-0 userpic">
                     <div class="mt-user">
-                        <img src="$userpic_url" alt="User" class="rounded-circle" width="48" height="48">
-                        <div class="mt-user__badge--img"><img alt="$auth_label" src="$auth_img" width="16" height="16" class="mt-icon--img" /></div>
+                        <img src="$userpic_url" alt="User" class="rounded-circle" width="48" height="48" loading="lazy" decoding="async">
+                        <div class="mt-user__badge--img"><img alt="$auth_label" src="$auth_img" width="16" height="16" class="mt-icon--img" loading="lazy" decoding="async" /></div>
                     </div>
                 </div>
                 <div class="col pl-4">
@@ -703,7 +705,7 @@ sub set_password {
         $crypt_sha
             = '$6$'
             . $salt . '$'
-            . MT::Util::Digest::SHA::sha512_base64( $salt . $pass );
+            . MT::Util::Digest::SHA::sha512_base64( $salt . Encode::encode_utf8($pass) );
     }
     else {
 
@@ -1499,10 +1501,11 @@ sub userpic_html {
     my ( $thumb_url, $w, $h ) = $author->userpic_url(%param) or return;
     return unless $thumb_url;
     my $asset = $author->userpic(@_);
+    my $lazy = $param{Lazy} ? 'loading="lazy" decoding="async" ' : '';
     my $format
         = $param{Ts}
-        ? q{<img src="%s&%d" width="%d" height="%d" alt="%s" />}
-        : q{<img src="%s?%d" width="%d" height="%d" alt="%s" />};
+        ? qq{<img src="%s&%d" width="%d" height="%d" alt="%s" $lazy/>}
+        : qq{<img src="%s?%d" width="%d" height="%d" alt="%s" $lazy/>};
     sprintf $format,
         MT::Util::encode_html($thumb_url), $asset->id, $w, $h,
         MT::Util::encode_html( $asset->label );
@@ -1514,20 +1517,39 @@ sub can_do {
 
     return 1 if $author->is_superuser;
 
-    my $sys_perm = MT->model('permission')
-        ->load( { blog_id => 0, author_id => $author->id } );
+    # use the same as MT::Author::permissions
+    my $sys_cache_key = "__perm_author_" . (defined $author->id ? $author->id : '');
+    require MT::Request;
+    my $req = MT::Request->instance;
+    my $sys_perm = $req->stash($sys_cache_key);
+    if (!$sys_perm) {
+        $sys_perm = MT->model('permission')->load( { blog_id => 0, author_id => $author->id } );
+        $req->stash($sys_cache_key, $sys_perm);
+    }
     my $sys_priv;
     if ($sys_perm) {
         $sys_priv = $sys_perm->can_do($action);
     }
     return $sys_priv if $sys_priv;
     if ( $opts{at_least_one} ) {
+        # ignore cache if the reftype of blog_id is uncommon
+        my @blog_ids = ref $opts{blog_id} eq 'ARRAY' ? @{$opts{blog_id}} : !ref $opts{blog_id} ? ($opts{blog_id}) : ();
+        for my $blog_id (@blog_ids) {
+            my $cache_key = $blog_id ? $sys_cache_key . "_blog_$blog_id" : $sys_cache_key;
+            my $perm = $req->stash($cache_key) or next;
+            my $blog_priv = $perm->can_do($action);
+            return $blog_priv if $blog_priv;
+        }
+
         my $perm_iter = MT->model('permission')->load_iter(
             {   author_id => $author->id,
                 ( $opts{blog_id} ? ( blog_id => $opts{blog_id} ) : () ),
             }
         );
         while ( my $perm = $perm_iter->() ) {
+            my $blog_id = $perm->blog_id;
+            my $cache_key = $blog_id ? $sys_cache_key . "_blog_$blog_id" : $sys_cache_key;
+            $req->stash($cache_key, $perm);
             my $blog_priv = $perm->can_do($action);
             return $blog_priv if $blog_priv;
         }
@@ -1600,8 +1622,8 @@ sub rebuild_favorite_sites {
     if (@current_blog) {
         @current_blog = grep { $user->has_perm($_) } @current_blog;
         foreach my $blog_id (@current_blog) {
-            if ( my $blog = MT->model('blog')->load($blog_id) ) {
-                push @parents, $blog->website->id;
+            if ( my $blog = MT->model('blog')->load( $blog_id ) ) {
+                push @parents, $blog->parent_id if $blog->parent_id;
             }
         }
         $user->favorite_blogs( \@current_blog );

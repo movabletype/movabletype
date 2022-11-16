@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -18,7 +18,7 @@ class TBPing extends BaseObject
 
     public function trackback() {
         $col_name = "tbping_tb_id";
-        $$tb = null;
+        $tb = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
             $tb_id = $this->$col_name;
 

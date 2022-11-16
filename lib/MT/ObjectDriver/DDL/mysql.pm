@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -106,6 +106,12 @@ sub column_defs {
         next if $colname !~ m/^\Q$field_prefix\E_/i;
         $colname =~ s/^\Q$field_prefix\E_//i;
         my $coltype = $row->{Type};
+
+        # Remove comments
+        # e.g. old temporal formats mark
+        # https://mariadb.com/kb/en/datetime/#internal-format
+        $coltype =~ s{\s*/\*.*?\*/\s*}{}gs;
+
         my ($size) = ( $coltype =~ m/(?:var)?char\((\d+)\)/i ? $1 : undef );
         $coltype = $ddl->db2type($coltype);
         $defs->{$colname}{type} = $coltype;

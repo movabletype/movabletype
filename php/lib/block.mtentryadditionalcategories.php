@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -32,7 +32,7 @@ function smarty_block_mtentryadditionalcategories($args, $content, &$ctx, &$repe
                 $ctx->stash('__out', true);
         }
     } else {
-        if (isset($args['glue']) && $out && !empty($content))
+        if (isset($args['glue']) && !empty($out) && !empty($content))
             $content = $args['glue'] . $content;
         $ctx->restore($localvars);
         $repeat = false;

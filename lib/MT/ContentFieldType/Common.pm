@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -62,7 +62,7 @@ sub field_type_icon {
 
     $id = 'ic_contentstype' unless $id;
     if ($title) {
-        $title = qq { title=$title};
+        $title = qq {<title>$title</title>};
     }
     else {
         $title = '';
@@ -71,7 +71,7 @@ sub field_type_icon {
     my $static_uri = MT->static_path;
 
     return
-        qq{<svg$title role="img" class="mt-icon"><use xlink:href="${static_uri}images/sprite.svg#$id"></use></svg>};
+        qq{<svg role="img" class="mt-icon">$title<use xlink:href="${static_uri}images/sprite.svg#$id"></use></svg>};
 }
 
 sub _get_cd_ids {
@@ -125,15 +125,15 @@ sub filter_tmpl_multiple {
     return <<'__TMPL__';
 <mt:setvarblock name="select_options">
 <select class="custom-select form-control <mt:var name="type">-option">
-  <option value="is_selected"><__trans phrase="is selected" escape="js"></option>
-  <option value="is_not_selected"><__trans phrase="is not selected" escape="js"></option>
+  <option value="is_selected"><__trans phrase="is selected" encode_html="1"></option>
+  <option value="is_not_selected"><__trans phrase="is not selected" encode_html="1"></option>
 </select>
 </mt:setvarblock>
 <__trans phrase="In [_1] column, [_2] [_3]"
-         params="<mt:var name="label" escape="js">%%
+         params="<mt:var name="label">%%
                  <select class="custom-select form-control <mt:var name="type">-value">
                  <mt:loop name="single_select_options">
-                   <option value="<mt:var name="value" encode_js="1">"><mt:var name="label" encode_html="1" encode_js="1" encode_html="1" ></option>
+                   <option value="<mt:var name="value" encode_html="1">"><mt:var name="label" encode_html="1" ></option>
                  </mt:loop>
                  </select>%%<mt:var name="select_options">">
 __TMPL__

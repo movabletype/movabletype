@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -29,7 +29,7 @@ function smarty_function_mtentrymore($args, &$ctx) {
         require_once("MTUtil.php");
         return first_n_text($text, $args['words']);
     } else {
-        if (preg_match('/\smt:asset-id="\d+"/', $text)) {
+        if (preg_match('/\smt:asset-id="\d+"/', $text ?? '')) {
             require_once("MTUtil.php");
             $text = asset_cleanup($text);
         }

@@ -33,6 +33,8 @@ my $admin   = MT::Author->load(1);
 my $blog_id = MT::Website->load( { name => 'My Site' } )->id;
 my $ct_id   = MT::ContentType->load( { name => 'ct' } )->id;
 
+no Carp::Always;
+
 subtest 'Empty publish date' => sub {
     my $app = MT::Test::App->new;
     $app->login($admin);

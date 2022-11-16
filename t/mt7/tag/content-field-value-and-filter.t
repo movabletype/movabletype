@@ -15,7 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
@@ -86,8 +86,8 @@ __DATA__
 === FEEDBACK-1493
 --- template
 <mt:Contents content_type="ct2">
-<mt:ContentField content_field="cf_content_type">
-<mt:ContentField content_field="cf_multi">
+<mt:ContentField content_field="content">
+<mt:ContentField content_field="value">
 <mt:ContentFieldValue>
 </mt:ContentField>
 </mt:ContentField>

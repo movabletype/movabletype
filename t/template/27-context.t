@@ -15,7 +15,6 @@ BEGIN {
 }
 
 plan tests => 54;
-use File::Temp qw( tempfile );
 
 use MT;
 use MT::Author;
@@ -157,7 +156,7 @@ $blog->convert_paras(1);
 ## the excerpt in CDATA, which was then screwed up by remove_html.
 $entry->excerpt('Contains <html>');
 is(build($ctx, '<$MTEntryExcerpt remove_html="1" encode_xml="1"$>'), 'Contains ', 'remove_html 1 encode_xml 1');
-$entry->excerpt('Fight the powers that be');
+$entry->excerpt('Dear Brutus');
 
 ## Test with set excerpt.
 is(build($ctx, '<$MTEntryExcerpt$>'), $entry->excerpt, 'MTEntryExcerpt');
@@ -193,9 +192,9 @@ is(build($ctx, '<$MTEntryExcerpt convert_breaks="0"$>'), $excerpt, 'convert_brea
 is(build($ctx, '<$MTEntryExcerpt convert_breaks="1"$>'), MT->apply_text_filters( $excerpt, [ '__default__' ] ), 'convert_breaks 1');
 
 $entry->convert_breaks('__default__');
-$entry->text('Elvis was a hero to most but he never meant shit to me');
+$entry->text('Men at some time are masters of their fates');
 
-is(build($ctx, '<$MTEntryBody encode_xml="1"$>'), "<![CDATA[<p>Elvis was a hero to most but he never meant shit to me</p>]]>", 'MTEntryBody');
+is(build($ctx, '<$MTEntryBody encode_xml="1"$>'), "<![CDATA[<p>Men at some time are masters of their fates</p>]]>", 'MTEntryBody');
 
 my $comment = MT::Comment->new;
 isa_ok($comment, 'MT::Comment');

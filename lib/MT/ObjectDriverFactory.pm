@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -63,10 +63,10 @@ sub driver_for_class {
     return $driver_code;
 }
 
-our $dbd_class;
+our $DbdClass;
 
 sub dbd_class {
-    return $dbd_class if defined $dbd_class;
+    return $DbdClass if defined $DbdClass;
     my $pkg = shift;
 
     my ($type) = @_;
@@ -101,7 +101,7 @@ sub dbd_class {
     eval "use $dbd_class;";
     die "Unsupported driver $type: $@" if $@;
 
-    return $dbd_class;
+    return $DbdClass = $dbd_class;
 }
 
 sub configure {

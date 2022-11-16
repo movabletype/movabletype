@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -64,7 +64,7 @@ sub edit {
     }
 
     if ($id) {
-        if ( $blog && $blog->use_revision ) {
+        if ( ($blog && $blog->use_revision) or (!$blog && MT->config->GlobalTemplateMaxRevisions) ) {
             my $rn = $app->param('r') || 0;
             if ( $obj->current_revision > 0 || $rn != $obj->current_revision )
             {
@@ -223,15 +223,24 @@ sub edit {
                             = $app->translate('Unknown blog');
                     }
                     else {
-                        my $inc_blog_id
-                            = $tag->[1]->{global}
-                            ? 0
-                            : $tag->[1]->{blog_id}
-                            ? [ $tag->[1]->{blog_id}, 0 ]
-                            : $tag->[1]->{parent} ? $obj->blog
-                                ? $obj->blog->website->id
-                                : 0
-                            : [ $obj->blog_id, 0 ];
+                        my $inc_blog_id;
+                        if ($tag->[1]->{global}) {
+                            $inc_blog_id = 0;
+                        } elsif ($tag->[1]->{blog_id}) {
+                            $inc_blog_id = [ $tag->[1]->{blog_id}, 0 ];
+                        } elsif ($tag->[1]->{parent}) {
+                            if ($obj->blog) {
+                                if ($obj->blog->is_blog) {
+                                    $inc_blog_id = $obj->blog->parent_id or next; # skip if data is broken
+                                } else {
+                                    $inc_blog_id = $obj->blog_id;
+                                }
+                            } else {
+                                $inc_blog_id = 0; # TODO Adding 0 is wrong when parent is given according to manual
+                            }
+                        } else {
+                            $inc_blog_id = [$obj->blog_id, 0];
+                        }
 
                         my $mod_id
                             = $mod . "::"
@@ -410,15 +419,15 @@ sub edit {
                         = $app->translate('Unknown blog');
                 }
                 else {
-                    my $set_blog_id
-                        = $set->attributes->{blog_id}
-                        ? $set->attributes->{blog_id}
-                        : $set->attributes->{parent} ? $obj->blog
-                            ? $obj->blog->website->id
-                            : $obj->blog_id
-                        : $obj->blog_id;
+                    my $set_blog_id = $set->attributes->{blog_id};
+                    if (!$set_blog_id) {
+                        if ($set->attributes->{parent} && $obj->blog && $obj->blog->is_blog) {
+                            $set_blog_id = $obj->blog->parent_id or next; # skip if data is broken
+                        }
+                        $set_blog_id ||= $obj->blog_id;
+                    }
                     my $wset = MT::Template->load(
-                        {   blog_id => [ $set_blog_id, 0 ],
+                        {   blog_id => [ $set_blog_id, 0 ], # TODO Adding 0 is wrong when parent is given according to manual
                             name    => $name,
                             type    => 'widgetset',
                         },
@@ -959,7 +968,7 @@ sub edit {
         || ( $obj && ( $obj->outfile || '' ) !~ m/\.(css|xml|rss|js)$/ ) )
         && ( !exists $param->{can_preview} );
 
-    if ( $blog && $blog->use_revision ) {
+    if ( ($blog && $blog->use_revision) or (!$blog && MT->config->GlobalTemplateMaxRevisions) ) {
         $param->{use_revision} = 1;
 
  #TODO: the list of revisions won't appear on the edit screen.
@@ -981,57 +990,6 @@ sub edit {
  #);
     }
 
-    # Content Type Selector
-    my @content_types
-        = MT->model('content_type')->load( { blog_id => $blog_id } );
-
-    my @ct_selects = ();
-    my $ct_data    = {};
-    my $cf_selects = {};
-    my $cf_data    = {};
-    foreach my $ct (@content_types) {
-
-        # Content Type
-        push @ct_selects,
-            {
-            id       => $ct->id,
-            label    => $ct->name,
-            selected => (
-                       $obj
-                    && $obj->content_type_id
-                    && $obj->content_type_id == $ct->id ? 1 : 0
-            )
-            };
-        $ct_data->{ $ct->id } = {
-            id        => $ct->id,
-            label     => $ct->name,
-            unique_id => $ct->unique_id,
-        };
-
-        # Content Field
-        my $fields = $ct->fields;
-        my @cfs = MT::ContentField->load( { content_type_id => $ct->id } );
-        foreach my $cf (@cfs) {
-            my ($field) = grep { $_->{id} == $cf->id } @{$fields};
-            my $label = $field->{options}{label};
-            push @{ $cf_selects->{ $ct->id } },
-                { id => $cf->id, label => $cf->name };
-            my $content_field_types = $app->registry('content_field_types');
-            my $type_label = $content_field_types->{ $cf->type }->{label};
-            $type_label = $type_label->()
-                if 'CODE' eq ref $type_label;
-            $cf_data->{ $cf->id } = {
-                id        => $cf->id,
-                label     => $label,
-                unique_id => $cf->unique_id,
-                type      => $type_label,
-            };
-        }
-    }
-    $param->{ct_selects}                  = \@ct_selects;
-    $param->{ct_data}                     = MT::Util::to_json($ct_data);
-    $param->{cf_selects}                  = MT::Util::to_json($cf_selects);
-    $param->{cf_data}                     = MT::Util::to_json($cf_data);
     $param->{can_create_new_content_type} = 1
         if $perms->can_do('create_new_content_type');
 
@@ -1183,6 +1141,8 @@ sub list {
         $scope = 'global:system';
     }
 
+    my @system_default_templates = grep !/plugin/, keys %{ MT->registry('default_templates')->{system} || {} };
+
     my $sys_tmpl = $set->{$scope};
     my @tmpl_loop;
     my %types;
@@ -1213,7 +1173,7 @@ sub list {
                 },
                 'system' => {
                     label => $app->translate("System Templates"),
-                    type  => [ keys %$sys_tmpl ],
+                    type  => [ (keys %$sys_tmpl), @system_default_templates ],
                     order => 500,
                 },
             );
@@ -1405,6 +1365,12 @@ sub _generate_list_widget_params {
 
 sub preview {
     my $app     = shift;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+    }) or return;
+
     my $blog_id = $app->param('blog_id');
     my $blog    = $app->blog;
     my $id      = $app->param('id');
@@ -1978,6 +1944,12 @@ sub _populate_archive_loop {
 sub delete_map {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        id          => [qw/ID/],
+        template_id => [qw/ID/],
+    }) or return;
+
     $app->validate_magic() or return;
     return $app->error( $app->translate('No permissions') )
         unless $app->can_do('edit_templates');
@@ -2007,6 +1979,15 @@ sub delete_map {
 
 sub add_map {
     my $app = shift;
+
+    $app->validate_param({
+        blog_id          => [qw/ID/],
+        cat_field_id     => [qw/ID/],
+        dt_field_id      => [qw/ID/],
+        file_template    => [qw/MAYBE_STRING/],
+        new_archive_type => [qw/MAYBE_STRING/],
+        template_id      => [qw/ID/],
+    }) or return;
 
     $app->validate_magic() or return;
     return $app->error( $app->translate('No permissions') )
@@ -2106,6 +2087,18 @@ sub can_delete {
     return $author->permissions($blog_id)->can_edit_templates;
 }
 
+sub _path_contains_inappropriate_whitespaces {
+    my ($path, $ignore_tag) = @_;
+    return unless $path;
+    if ($ignore_tag) {
+        1 while $path =~ s!<[/\$]?[Mm][Tt][^<>]+>!!g;
+    }
+    for my $part (split /[\\\/]/, $path) {
+        return 1 if $part =~ /(?:^\s|\s$)/s;
+    }
+    return;
+}
+
 sub pre_save {
     my $eh = shift;
     my ( $app, $obj ) = @_;
@@ -2122,6 +2115,17 @@ sub pre_save {
     }
 
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
+
+    if (_path_contains_inappropriate_whitespaces($obj->outfile)) {
+        return $eh->error($app->translate("Output filename contains an inappropriate whitespace."));
+    }
+    for my $name ($app->multi_param) {
+        next unless $name =~ /^archive_file_tmpl_\d+$/;
+        my $path = $app->param($name);
+        if (_path_contains_inappropriate_whitespaces($path, 1)) {
+            return $eh->error($app->translate("Archive mapping '[_1]' contains an inappropriate whitespace.", MT::Util::encode_html($path)));
+        }
+    }
 
     # update text heights if necessary
     if ($perms) {
@@ -2354,7 +2358,7 @@ sub post_delete {
                 "Template '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'template',
             category => 'delete'
         }
@@ -2503,10 +2507,19 @@ sub refresh_all_templates {
     my ($app) = @_;
     $app->validate_magic or return;
 
+    $app->validate_param({
+        backup                 => [qw/MAYBE_STRING/],
+        blog_id                => [qw/ID/],
+        id                     => [qw/ID MULTI/],
+        action_name            => [qw/MAYBE_STRING/],
+        plugin_action_selector => [qw/MAYBE_STRING/],
+        refresh_type           => [qw/MAYBE_STRING/],
+    }) or return;
+
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start refresh_all_templates.');
+    MT::Util::Log->debug('--- Start refresh_all_templates.');
 
     my $backup = 0;
     if ( $app->param('backup') ) {
@@ -2520,7 +2533,7 @@ sub refresh_all_templates {
     my @id;
     if ( my $blog_id = $app->param('blog_id') ) {
         if ( 'refresh_blog_templates' eq
-            ( $app->param('plugin_action_selector') || '' ) )
+            ( $app->param('action_name') || $app->param('plugin_action_selector') || '' ) )
         {
             ## called from website wide blog listing screen.
             @id = $app->multi_param('id');
@@ -2561,7 +2574,7 @@ BLOG: for my $blog_id (@id) {
             next BLOG unless $blog;
         }
 
-        MT::Util::Log->info(
+        MT::Util::Log->debug(
             ' Start refresh all templates. blog_id:' . $blog_id );
 
         my $tmpl_lang;
@@ -2851,7 +2864,7 @@ BLOG: for my $blog_id (@id) {
         }
         $refreshed = 1;
 
-        MT::Util::Log->info(
+        MT::Util::Log->debug(
             ' End   refresh all templates. blog_id:' . $blog_id );
     }
     if (@blogs_not_refreshed) {
@@ -2861,13 +2874,18 @@ BLOG: for my $blog_id (@id) {
     }
     $app->add_return_arg( 'refreshed' => 1 ) if $refreshed;
 
-    MT::Util::Log->info('--- End   refresh_all_templates.');
+    MT::Util::Log->debug('--- End   refresh_all_templates.');
 
     $app->call_return;
 }
 
 sub refresh_individual_templates {
     my ($app) = @_;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+    }) or return;
 
     require MT::Util;
 
@@ -2885,7 +2903,7 @@ sub refresh_individual_templates {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start refresh_individual_templates.');
+    MT::Util::Log->debug('--- Start refresh_individual_templates.');
 
     my $set;
     my $blog_id = $app->param('blog_id');
@@ -2920,7 +2938,6 @@ sub refresh_individual_templates {
     }
     $tmpl_list ||= MT::DefaultTemplates->templates();
 
-    my $tmpl_types        = {};
     my $tmpl_ids          = {};
     my $tmpls             = {};
     my $current_component = MT->app->{component};
@@ -2932,14 +2949,7 @@ sub refresh_individual_templates {
         MT->app->{component} = $current_component;
         $tmpl_ids->{ $tmpl->{identifier} } = $tmpl
             if $tmpl->{identifier};
-        if ( $tmpl->{type}
-            !~ m/^(archive|individual|page|category|index|custom|widget)$/ )
-        {
-            $tmpl_types->{ $tmpl->{type} } = $tmpl;
-        }
-        else {
-            $tmpls->{ $tmpl->{type} }{ $tmpl->{name} } = $tmpl;
-        }
+        $tmpls->{ $tmpl->{type} }{ $tmpl->{name} } = $tmpl;
     }
     $app->set_language($user_lang);
 
@@ -2962,7 +2972,6 @@ sub refresh_individual_templates {
         my $val
             = (
             $tmpl->identifier ? $tmpl_ids->{ $tmpl->identifier() } : undef )
-            || $tmpl_types->{ $tmpl->type() }
             || $tmpls->{ $tmpl->type() }{ $tmpl->name };
         if ( !$val ) {
             push @msg,
@@ -3030,7 +3039,7 @@ sub refresh_individual_templates {
 
     $app->mode('view');    # set mode for blog selector
 
-    MT::Util::Log->info('--- End   refresh_individual_templates.');
+    MT::Util::Log->debug('--- End   refresh_individual_templates.');
 
     $app->build_page( 'refresh_results.tmpl',
         { message_loop => \@msg_loop, return_url => $app->return_uri } );
@@ -3038,6 +3047,10 @@ sub refresh_individual_templates {
 
 sub clone_templates {
     my ($app) = @_;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
 
     my $user = $app->user;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
@@ -3090,6 +3103,10 @@ sub publish_templates_from_search {
     my $blog = $app->blog;
     require MT::Blog;
 
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my $templates
         = MT->model('template')->lookup_multi( [ $app->multi_param('id') ] );
     my @at_ids;
@@ -3121,6 +3138,11 @@ TEMPLATE: for my $tmpl (@$templates) {
 sub publish_index_templates {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        from_search => [qw/MAYBE_STRING/],
+        id          => [qw/ID MULTI/],
+    }) or return;
 
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
@@ -3162,6 +3184,13 @@ TEMPLATE: for my $tmpl (@$templates) {
 sub publish_archive_templates {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        from_search => [qw/MAYBE_STRING/],
+        id          => [qw/IDS MULTI/],
+        reedit      => [qw/MAYBE_STRING/],
+    }) or return;
 
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
@@ -3262,6 +3291,13 @@ sub publish_archive_templates {
 sub save_widget {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+        modules => [qw/MAYBE_STRING/],
+        name    => [qw/MAYBE_STRING/],
+    }) or return;
+
     $app->validate_magic() or return;
     my $author = $app->user;
 
@@ -3339,6 +3375,13 @@ sub save_widget {
 sub edit_widget {
     my $app = shift;
     my (%opt) = @_;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+        name    => [qw/MAYBE_STRING/],
+        saved   => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $id      = $app->param('id') || $opt{id};
     my $name    = $app->param('name');
@@ -3489,6 +3532,12 @@ sub edit_widget {
 
 sub delete_widget {
     my $app  = shift;
+
+    $app->validate_param({
+        _type => [qw/OBJTYPE/],
+        id    => [qw/ID MULTI/],
+    }) or return;
+
     my $type = $app->param('_type');
 
     return $app->errtrans("Invalid request.")

@@ -38,6 +38,7 @@
     width: 100%;
     margin: 0;
     font-size: 95%;
+    table-layout: fixed;
 }
 .ui-datepicker th {
     padding: 0.7em 0.5em 0;

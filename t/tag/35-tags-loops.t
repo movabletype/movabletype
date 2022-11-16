@@ -13,7 +13,7 @@ BEGIN {
 }
 
 use MT::Test::Tag;
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
@@ -139,7 +139,7 @@ $test_env->prepare_fixture(sub {
     });
     $obj->tags(qw(@PRIVATE TEST1 TEST2));
     $obj->save or die $obj->errstr;
-    $obj->authored_on( MT::Util::iso2ts( $obj->authored_on - 60 ) );
+    $obj->authored_on(MT::Util::epoch2ts(undef, MT::Util::ts2epoch(undef, $obj->authored_on) - 60));
     $obj->save;
 
     $obj = $mt->model('entry')->new;
@@ -261,7 +261,7 @@ $test_env->prepare_fixture(sub {
     });
     $obj->tags(qw(@PRIVATE TEST1 TEST2));
     $obj->save or die $obj->errstr;
-    $obj->authored_on( MT::Util::iso2ts( $obj->authored_on - 60 ) );
+    $obj->authored_on(MT::Util::epoch2ts(undef, MT::Util::ts2epoch(undef, $obj->authored_on) - 60));
     $obj->save;
 
     $obj = $mt->model('page')->new;
@@ -534,34 +534,6 @@ __END__
 --- expected
 2
 --- SKIP
-
-=== mt:Comments
---- SKIP
---- template
-<mt:Comments>____</mt:Comments>
---- expected
-3
-
-=== mt:CommentReplies
---- SKIP
---- template
-<mt:Comments><mt:IfCommentReplies><mt:CommentReplies>____</mt:CommentReplies></mt:IfCommentReplies></mt:Comments>
---- expected
-2
-
-=== mt:PingsSent
---- SKIP
---- template
-<mt:Entries lastn="1"><mt:PingsSent>____</mt:PingsSent></mt:Entries>
---- expected
-2
-
-=== mt:Pings
---- SKIP
---- template
-<mt:Pings>____</mt:Pings>
---- expected
-2
 
 === mt:EntryAdditionalCategories
 --- template

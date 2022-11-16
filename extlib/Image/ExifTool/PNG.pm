@@ -36,7 +36,7 @@ use strict;
 use vars qw($VERSION $AUTOLOAD %stdCase);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.53';
+$VERSION = '1.58';
 
 sub ProcessPNG_tEXt($$$);
 sub ProcessPNG_iTXt($$$);
@@ -89,10 +89,10 @@ $Image::ExifTool::PNG::colorType = -1;
 
 # data and text chunk types
 my %isDatChunk = ( IDAT => 1, JDAT => 1, JDAA => 1 );
-my %isTxtChunk = ( tEXt => 1, zTXt => 1, iTXt => 1 );
+my %isTxtChunk = ( tEXt => 1, zTXt => 1, iTXt => 1, eXIf => 1 );
 
 # chunks that we shouldn't move other chunks across (ref 3)
-my %noLeapFrog = ( SAVE => 1, SEEK => 1, IHDR => 1, JHDR => 1, IEND => 1, MEND => 1, 
+my %noLeapFrog = ( SAVE => 1, SEEK => 1, IHDR => 1, JHDR => 1, IEND => 1, MEND => 1,
                    DHDR => 1, BASI => 1, CLON => 1, PAST => 1, SHOW => 1, MAGN => 1 );
 
 # PNG chunks
@@ -118,6 +118,11 @@ my %noLeapFrog = ( SAVE => 1, SEEK => 1, IHDR => 1, JHDR => 1, IEND => 1, MEND =
         other text chunks here.  For this reason, when writing, ExifTool 11.63 and
         later create new text chunks (including XMP) before IDAT, and move existing
         text chunks to before IDAT.
+
+        The PNG format contains CRC checksums that are validated when reading with
+        either the L<Verbose|../ExifTool.html#Verbose> or L<Validate|../ExifTool.html#Validate> option.  When writing, these checksums are
+        validated by default, but the L<FastScan|../ExifTool.html#FastScan> option may be used to bypass this
+        check if speed is more of a concern.
     },
     bKGD => {
         Name => 'BackgroundColor',
@@ -306,6 +311,18 @@ my %noLeapFrog = ( SAVE => 1, SEEK => 1, IHDR => 1, JHDR => 1, IEND => 1, MEND =
     },
     # fcTL - animation frame control for each frame
     # fdAT - animation data for each frame
+    iDOT => { # (ref NealKrawetz)
+        Name => 'AppleDataOffsets',
+        Binary => 1,
+        # Apple offsets into data relative to start of iDOT chunk:
+        #    int32u Divisor  [only ever seen 2]
+        #    int32u Unknown  [always 0]
+        #    int32u TotalDividedHeight  [image height from IDHR/Divisor]
+        #    int32u Size  [always 40 / 0x28; size of this chunk]
+        #    int32u DividedHeight1
+        #    int32u DividedHeight2
+        #    int32u IDAT_Offset2 [location of IDAT with start of DividedHeight2 segment]
+    },
 );
 
 # PNG IHDR chunk
@@ -614,7 +631,7 @@ my %unreg = ( Notes => 'unregistered' );
     GROUPS => { 2 => 'Image' },
     FORMAT => 'int32u',
     NOTES => q{
-        Tags found in the Animation Conrol chunk.  See
+        Tags found in the Animation Control chunk.  See
         L<https://wiki.mozilla.org/APNG_Specification> for details.
     },
     0 => {
@@ -958,7 +975,7 @@ sub FoundPNG($$$$;$$$$)
         $$tagInfo{LangCode} = $lang if $lang;
         # make unknown profiles binary data type
         $$tagInfo{Binary} = 1 if $tag =~ /^Raw profile type /;
-        $verbose and $et->VPrint(0, "  | [adding $tag]\n");
+        $verbose and $et->VPrint(0, "  [adding $tag]\n");
         AddTagToTable($tagTablePtr, $tag, $tagInfo);
     }
 #
@@ -1248,7 +1265,8 @@ sub ProcessPNG($$)
     my $datChunk = '';
     my $datCount = 0;
     my $datBytes = 0;
-    my ($n, $sig, $err, $hbuf, $dbuf, $cbuf, $fastScan);
+    my $fastScan = $et->Options('FastScan');
+    my ($n, $sig, $err, $hbuf, $dbuf, $cbuf);
     my ($wasHdr, $wasEnd, $wasDat, $doTxt, @txtOffset);
 
     # check to be sure this is a valid PNG/MNG/JNG image
@@ -1264,7 +1282,6 @@ sub ProcessPNG($$)
         # initialize with same directories, with PNG tags taking priority
         $et->InitWriteDirs(\%pngMap,'PNG');
     } else {
-        $fastScan = $et->Options('FastScan');
         # disable buffering in FastScan mode
         $$raf{NoBuffer} = 1 if $fastScan;
     }
@@ -1337,8 +1354,7 @@ sub ProcessPNG($$)
             } elsif ($hdrChunk eq 'IHDR' and $chunk eq 'CgBI') {
                 $et->Warn('Non-standard PNG image (Apple iPhone format)');
             } else {
-                $et->Warn("$fileType image did not start with $hdrChunk");
-                last;
+                $et->WarnOnce("$fileType image did not start with $hdrChunk");
             }
         }
         if ($outfile and ($isDatChunk{$chunk} or $chunk eq $endChunk) and @txtOffset) {
@@ -1366,9 +1382,8 @@ sub ProcessPNG($$)
                 # to add it as a text profile chunk if this isn't successful
                 # (ie. if Compress::Zlib wasn't available)
                 Add_iCCP($et, $outfile);
-                AddChunks($et, $outfile) or $err = 1;   # all all text chunks
-                # add EXIF before end chunk if not found already
-                AddChunks($et, $outfile, 'IFD0') if $chunk eq $endChunk;
+                AddChunks($et, $outfile) or $err = 1;           # add all text chunks
+                AddChunks($et, $outfile, 'IFD0') or $err = 1;   # and eXIf chunk
             } elsif ($chunk eq 'PLTE') {
                 # iCCP chunk must come before PLTE (and IDAT, handled above)
                 # (ignore errors -- will add later as text profile if this fails)
@@ -1406,8 +1421,16 @@ sub ProcessPNG($$)
             next;
         }
         if ($datChunk) {
-            # skip over data chunks if possible
-            unless ($verbose or $validate or $outfile) {
+            my $chunkSizeLimit = 10000000;  # largest chunk to read into memory
+            if ($outfile) {
+                # avoid loading very large data chunks into memory
+                if ($len > $chunkSizeLimit) {
+                    Write($outfile, $hbuf) or $err = 1;
+                    Image::ExifTool::CopyBlock($raf, $outfile, $len+4) or $et->Error("Error copying $datChunk");
+                    next;
+                }
+            # skip over data chunks if possible/necessary
+            } elsif (not $validate or $len > $chunkSizeLimit) {
                 $raf->Seek($len + 4, 1) or $et->Warn('Seek error'), last;
                 next;
             }
@@ -1420,14 +1443,14 @@ sub ProcessPNG($$)
             } else {
                 $msg = 'fixed';
             }
-            $et->WarnOnce("Text chunk(s) found after $$et{FileType} $wasDat ($msg)", 1);
+            $et->WarnOnce("Text/EXIF chunk(s) found after $$et{FileType} $wasDat ($msg)", 1);
         }
         # read chunk data and CRC
         unless ($raf->Read($dbuf,$len)==$len and $raf->Read($cbuf, 4)==4) {
             $et->Warn("Corrupted $fileType image") unless $wasEnd;
             last;
         }
-        if ($verbose or $validate or $outfile) {
+        if ($verbose or $validate or ($outfile and not $fastScan)) {
             # check CRC when in verbose mode (since we don't care about speed)
             my $crc = CalculateCRC(\$hbuf, undef, 4);
             $crc = CalculateCRC(\$dbuf, $crc);
@@ -1515,7 +1538,7 @@ and JNG (JPEG Network Graphics) images.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

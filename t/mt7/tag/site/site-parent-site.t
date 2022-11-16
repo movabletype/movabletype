@@ -14,7 +14,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
@@ -47,6 +47,22 @@ __END__
 2
 --- template
 <mt:SiteParentSite><mt:SiteID></mt:SiteParentSite>
+--- expected
+2
+
+=== mt:ParentSite - blog
+--- blog_id
+1
+--- template
+<mt:ParentSite><mt:SiteID></mt:ParentSite>
+--- expected
+2
+
+=== mt:ParentSite - website
+--- blog_id
+2
+--- template
+<mt:ParentSite><mt:SiteID></mt:ParentSite>
 --- expected
 2
 

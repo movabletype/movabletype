@@ -524,7 +524,6 @@ $VERSION = '1.31';
         Name => 'LensType',
         Condition => '$$self{MakerNoteSigmaVer} >= 3 and $format eq "string"',
         Notes => 'some newer models only',
-        
         ValueConv => '$val =~ /^[0-9a-f]+$/i ? hex($val) : $val',
         # (truncate decimal part and convert hex)
         ValueConvInv => '$val=~s/\.\d+$//;$val=~/^0x/ and $val=hex($val);IsInt($val) ? sprintf("%x",$val) : $val',
@@ -838,7 +837,7 @@ Sigma and Foveon maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

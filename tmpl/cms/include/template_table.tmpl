@@ -4,7 +4,7 @@
   <mt:if name="template_type" eq="ct">
   <mt:unless name="content_type_exists">
       <mtapp:statusmsg
-         id="zero-state"
+         id="zero-state-template-<$mt:var name="template_type"$>"
          class="info zero-state"
          can_close="0">
         <__trans phrase="No content type could be found.">
@@ -218,7 +218,7 @@
 <mt:else>
   <mt:setvarblock name="zero_state_listing">
     <mtapp:statusmsg
-       id="zero-state"
+       id="zero-state-template-<$mt:var name="template_type"$>"
        class="info zero-state"
        can_close="0">
       <__trans phrase="No [_1] could be found." params="<$mt:var name="template_type_label" lower_case="1"$>">

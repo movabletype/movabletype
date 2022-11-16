@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -564,8 +564,19 @@ sub listing {
             ? $iter_method
             : ( $class->$iter_method( $terms, $args )
                 or return $app->error( $class->errstr ) );
-        my @data;
+        my @objs;
         while ( my $obj = $iter->() ) {
+            push @objs, $obj;
+            last if ( scalar @objs == $limit ) && ( !$no_limit );
+        }
+
+        if (@objs && $objs[0]->has_meta) {
+            require MT::Meta::Proxy;
+            MT::Meta::Proxy->bulk_load_meta_objects(\@objs);
+        }
+
+        my @data;
+        for my $obj (@objs) {
             my $row = $obj->get_values();
             $hasher->( $obj, $row ) if $hasher;
 
@@ -576,7 +587,6 @@ sub listing {
             #$app->run_callbacks( 'app_listing_'.$app->mode,
             #                     $app, $obj, $row );
             push @data, $row;
-            last if ( scalar @data == $limit ) && ( !$no_limit );
         }
 
         $param->{object_loop} = \@data;
@@ -788,6 +798,29 @@ sub multi_listing {
     }
 }
 
+sub parse_filtered_list_permission {
+    my ($app, $maybe_action_list) = @_;
+
+    my $inherit_blogs = 1;
+    if ('HASH' eq ref $maybe_action_list) {
+        $inherit_blogs = $maybe_action_list->{inherit} if defined $maybe_action_list->{inherit};
+        $maybe_action_list = $maybe_action_list->{permit_action};
+    }
+    my @actions;
+    if (ref $maybe_action_list eq 'CODE' || $maybe_action_list =~ m/^sub \{/ || $maybe_action_list =~ m/^\$/ ) {
+        my $code = $maybe_action_list;
+        $code = MT->handler_to_coderef($code);
+        ($maybe_action_list, @actions) = $code->($app);     # may die here
+    }
+
+    if (ref $maybe_action_list eq 'ARRAY') {
+        unshift @actions, @$maybe_action_list;
+    } else {
+        unshift @actions, split /\s*,\s*/, $maybe_action_list;
+    }
+    return (\@actions, $inherit_blogs);
+}
+
 sub json_result {
     my $app = shift;
     my ($result) = @_;
@@ -862,6 +895,15 @@ sub set_x_xss_protection_header {
     $app->set_header( 'X-XSS-Protection', $xss_protection );
 }
 
+sub set_referrer_policy {
+    my $app = shift;
+
+    my $policy = $app->config->ReferrerPolicy;
+    return unless $policy;
+
+    $app->set_header( 'Referrer-Policy', $policy );
+}
+
 sub send_http_header {
     my $app = shift;
     my ($type) = @_;
@@ -922,6 +964,10 @@ sub print {
 sub print_encode {
     my $app = shift;
     my $enc = $app->charset || 'UTF-8';
+    my $restype = $app->{response_content_type} || '';
+    if ($restype =~ m!/json$!) {
+        $enc = 'UTF-8';
+    }
     $app->print( Encode::encode( $enc, $_[0] ) );
 }
 
@@ -1025,13 +1071,21 @@ sub run_callbacks {
         my $app = shift;
         $app->SUPER::init_callbacks(@_);
         return if $callbacks_added;
+
+        my $call_with_current_app = sub {
+            my $method_name = shift;
+            my $current_app = MT->instance;
+            return unless $current_app->isa('MT::App');
+            $current_app->$method_name;
+        };
         MT->add_callback( 'post_save',   0, $app, \&_cb_mark_blog );
         MT->add_callback( 'post_remove', 0, $app, \&_cb_mark_blog );
         MT->add_callback( 'MT::Blog::post_remove', 0, $app,
             \&_cb_unmark_blog );
         MT->add_callback( 'MT::Config::post_save', 0, $app,
-            sub { $app->reboot } );
-        MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
+            sub { $call_with_current_app->('reboot') } );
+        MT->add_callback( 'pre_build', 9, $app,
+            sub { $call_with_current_app->('touch_blogs') } );
         $callbacks_added = 1;
     }
 }
@@ -1367,11 +1421,21 @@ sub can_do {
     }
     ## if there were no result from blog permission,
     ## look for system level permission.
-    my $sys_perms = MT::Permission->load(
-        {   author_id => $user->id,
-            blog_id   => 0,
-        }
-    );
+
+    # use the same cache_key as MT::Author::permissions
+    my $cache_key = "__perm_author_" . (defined $user->id ? $user->id : '');
+
+    require MT::Request;
+    my $req = MT::Request->instance;
+    my $sys_perms = $req->stash($cache_key);
+    if (!$sys_perms) {
+        $sys_perms = MT::Permission->load(
+            {   author_id => $user->id,
+                blog_id   => 0,
+            }
+        );
+        $req->stash($cache_key, $sys_perms);
+    }
 
     return $sys_perms ? $sys_perms->can_do($action) : undef;
 }
@@ -1495,27 +1559,26 @@ sub session_user {
     my $app = shift;
     my ( $author, $session_id, %opt ) = @_;
     return undef unless $author && $session_id;
-    if ( $app->{session} ) {
-        if ( $app->{session}->get('author_id') == $author->id ) {
-            return $author;
-        }
+    if ( !$app->{session} ) {
+        require MT::Session;
+        my $timeout
+            = $opt{permanent}
+            ? ( 360 * 24 * 365 * 10 )
+            : $app->config->UserSessionTimeout;
+        $app->{session} = MT::Session::get_unexpired_value(
+            $timeout,
+            {   id   => $session_id,
+                kind => 'US'
+            }
+        );
     }
+    my $sess = $app->{session} or return undef;
 
-    require MT::Session;
-    my $timeout
-        = $opt{permanent}
-        ? ( 360 * 24 * 365 * 10 )
-        : $app->config->UserSessionTimeout;
-    my $sess = MT::Session::get_unexpired_value(
-        $timeout,
-        {   id   => $session_id,
-            kind => 'US'
-        }
-    );
-    $app->{session} = $sess;
-
-    return undef if !$sess;
-    if ( $sess && ( $sess->get('author_id') == $author->id ) ) {
+    if ( $sess->get('author_id') == $author->id ) {
+        my $start = time;
+        $sess->start($start);
+        $sess->set(start => $start) unless $sess->get('start');
+        $sess->save;
         return $author;
     }
     else {
@@ -2076,6 +2139,17 @@ sub login {
     my $ctx = MT::Auth->fetch_credentials( { app => $app } );
     unless ($ctx) {
         if ( defined( $app->param('password') ) ) {
+            # Login invalid (empty password)
+            my $username = $app->param('username');
+            my $message  = defined $username && $username ne ''
+                         ? $app->translate("Failed login attempt by user '[_1]'", $username)
+                         : $app->translate("Failed login attempt by anonymous user");
+            $app->log({
+                message  => $message,
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            });
             return $app->error( $app->translate('Invalid login.') );
         }
         return;
@@ -2147,7 +2221,7 @@ sub login {
         || $res == MT::Auth::SESSION_EXPIRED() )
     {
 
-        # Login invlaid (password error, etc...)
+        # Login invalid (password error, etc...)
         $app->log(
             {   message => $app->translate(
                     "Failed login attempt by user '[_1]'", $user
@@ -2289,15 +2363,15 @@ sub login {
 
             $app->start_session( $author, $ctx->{permanent} ? 1 : 0 );
             $app->request( 'fresh_login', 1 );
-            $app->log(
-                $app->translate(
+            $app->log({
+                message  => $app->translate(
                     "User '[_1]' (ID:[_2]) logged in successfully",
                     $author->name, $author->id
                 ),
                 level    => MT::Log::INFO(),
                 class    => 'author',
                 category => 'login_user',
-            );
+            });
 
             ## magic_token = the user is trying to post something
             ## (after a long pause, or because of CSRF)
@@ -2548,126 +2622,94 @@ sub _send_comment_notification {
         return;
     }
 
-    require MT::Mail;
+    require MT::Util::Mail;
     my $author = $entry->author;
-    $app->set_language( $author->preferred_language )
-        if $author && $author->preferred_language;
-    my $from_addr;
-    my $reply_to;
-    if ( $cfg->EmailReplyTo ) {
-        $reply_to = $comment->email;
+    return unless $author && $author->email;
+    $app->set_language($author->preferred_language) if $author->preferred_language;
+    my $from_addr = $comment->email;
+    if (!$from_addr || !is_valid_email($from_addr)) {
+        $from_addr = $cfg->EmailAddressMain || $author->email;
+        $from_addr = $comment->author . ' <' . $from_addr . '>' if $comment->author;
     }
-    else {
-        $from_addr = $comment->email;
+    my %head = (
+        id      => 'new_comment',
+        To      => $author->email,
+        From    => $from_addr,
+        Subject => '[' . $blog->name . '] ' . $app->translate("New Comment Added to '[_1]'", $entry->title),
+    );
+    my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
+    $head{'Content-Type'} = qq(text/plain; charset="$charset");
+    my $base;
+    {
+        local $app->{is_admin} = 1;
+        $base = $app->base . $app->mt_uri;
     }
-    $from_addr = undef if $from_addr && !is_valid_email($from_addr);
-    $reply_to  = undef if $reply_to  && !is_valid_email($reply_to);
-    if ( $author && $author->email )
-    {    # } && is_valid_email($author->email)) {
-        if ( !$from_addr ) {
-            $from_addr = $cfg->EmailAddressMain || $author->email;
-            $from_addr = $comment->author . ' <' . $from_addr . '>'
-                if $comment->author;
+    if ( $base =~ m!^/! ) {
+        my ($blog_domain) = $blog->site_url =~ m|(.+://[^/]+)|;
+        $base = $blog_domain . $base;
+    }
+    my $nonce
+        = MT::Util::perl_sha1_digest_hex( $comment->id
+            . $comment->created_on
+            . $blog->id
+            . $cfg->SecretToken );
+    my $approve_link = $base
+        . $app->uri_params(
+        'mode' => 'approve_item',
+        args   => {
+            blog_id => $blog->id,
+            '_type' => 'comment',
+            id      => $comment->id,
+            nonce   => $nonce
         }
-        my %head = (
-            id => 'new_comment',
-            To => $author->email,
-            $from_addr ? ( From       => $from_addr ) : (),
-            $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
-            Subject => '['
-                . $blog->name . '] '
-                . $app->translate(
-                "New Comment Added to '[_1]'",
-                $entry->title
-                )
         );
-        my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
-        $head{'Content-Type'} = qq(text/plain; charset="$charset");
-        my $base;
-        {
-            local $app->{is_admin} = 1;
-            $base = $app->base . $app->mt_uri;
+    my $spam_link = $base
+        . $app->uri_params(
+        'mode' => 'handle_junk',
+        args   => {
+            blog_id => $blog->id,
+            '_type' => 'comment',
+            id      => $comment->id,
+            nonce   => $nonce
         }
-        if ( $base =~ m!^/! ) {
-            my ($blog_domain) = $blog->site_url =~ m|(.+://[^/]+)|;
-            $base = $blog_domain . $base;
-        }
-        my $nonce
-            = MT::Util::perl_sha1_digest_hex( $comment->id
-                . $comment->created_on
-                . $blog->id
-                . $cfg->SecretToken );
-        my $approve_link = $base
-            . $app->uri_params(
-            'mode' => 'approve_item',
-            args   => {
-                blog_id => $blog->id,
-                '_type' => 'comment',
-                id      => $comment->id,
-                nonce   => $nonce
-            }
-            );
-        my $spam_link = $base
-            . $app->uri_params(
-            'mode' => 'handle_junk',
-            args   => {
-                blog_id => $blog->id,
-                '_type' => 'comment',
-                id      => $comment->id,
-                nonce   => $nonce
-            }
-            );
-        my $edit_link = $base
-            . $app->uri_params(
-            'mode' => 'view',
-            args   => {
-                blog_id => $blog->id,
-                '_type' => 'comment',
-                id      => $comment->id
-            }
-            );
-        my $ban_link = $base
-            . $app->uri_params(
-            'mode' => 'save',
-            args   => {
-                '_type' => 'banlist',
-                blog_id => $blog->id,
-                ip      => $comment->ip
-            }
-            );
-        my %param = (
-            blog           => $blog,
-            entry          => $entry,
-            view_url       => $comment_link,
-            approve_url    => $approve_link,
-            spam_url       => $spam_link,
-            edit_url       => $edit_link,
-            ban_url        => $ban_link,
-            comment        => $comment,
-            unapproved     => !$comment->visible(),
-            state_editable => (
-                $author->is_superuser()
-                    || (
-                       $author->permissions( $blog->id )->can_manage_feedback
-                    || $author->permissions( $blog->id )->can_publish_post )
-            ) ? 1 : 0,
         );
-        my $body = MT->build_email( 'new-comment.tmpl', \%param );
-        MT::Mail->send( \%head, $body ) or do {
-            $app->log(
-                {   message => $app->translate(
-                        'Error sending mail: [_1]',
-                        MT::Mail->errstr
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'email'
-                }
-            );
-
-            return $app->error( MT::Mail->errstr() );
-        };
-    }
+    my $edit_link = $base
+        . $app->uri_params(
+        'mode' => 'view',
+        args   => {
+            blog_id => $blog->id,
+            '_type' => 'comment',
+            id      => $comment->id
+        }
+        );
+    my $ban_link = $base
+        . $app->uri_params(
+        'mode' => 'save',
+        args   => {
+            '_type' => 'banlist',
+            blog_id => $blog->id,
+            ip      => $comment->ip
+        }
+        );
+    my %param = (
+        blog           => $blog,
+        entry          => $entry,
+        view_url       => $comment_link,
+        approve_url    => $approve_link,
+        spam_url       => $spam_link,
+        edit_url       => $edit_link,
+        ban_url        => $ban_link,
+        comment        => $comment,
+        unapproved     => !$comment->visible(),
+        state_editable => (
+            $author->is_superuser()
+                || (
+                   $author->permissions( $blog->id )->can_manage_feedback
+                || $author->permissions( $blog->id )->can_publish_post )
+        ) ? 1 : 0,
+    );
+    my $body = MT->build_email( 'new-comment.tmpl', \%param );
+    MT::Util::Mail->send_and_log( \%head, $body ) or return $app->error( MT::Util::Mail->errstr() );
 }
 
 sub _send_sysadmins_email {
@@ -2690,20 +2732,11 @@ sub _send_sysadmins_email {
         }
     );
 
-    require MT::Mail;
+    require MT::Util::Mail;
 
-    my $from_addr;
-    my $reply_to;
-    if ( $cfg->EmailReplyTo ) {
-        $reply_to = $cfg->EmailAddressMain || $from;
-    }
-    else {
-        $from_addr = $cfg->EmailAddressMain || $from;
-    }
-    $from_addr = undef if $from_addr && !is_valid_email($from_addr);
-    $reply_to  = undef if $reply_to  && !is_valid_email($reply_to);
+    my $from_addr = $cfg->EmailAddressMain || $from;
 
-    unless ( $from_addr || $reply_to ) {
+    if (!$from_addr || !is_valid_email($from_addr)) {
         $app->log(
             {   message =>
                     MT->translate("System Email Address is not configured."),
@@ -2718,27 +2751,14 @@ sub _send_sysadmins_email {
     foreach my $a (@sysadmins) {
         next unless $a->email && is_valid_email( $a->email );
         my %head = (
-            id => $email_id,
-            To => $a->email,
-            $from_addr ? ( From       => $from_addr ) : (),
-            $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
+            id      => $email_id,
+            To      => $a->email,
+            From    => $from_addr,
             Subject => $subject,
         );
         my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
         $head{'Content-Type'} = qq(text/plain; charset="$charset");
-        MT::Mail->send( \%head, $body ) or do {
-            $app->log(
-                {   message => $app->translate(
-                        'Error sending mail: [_1]',
-                        MT::Mail->errstr
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'email'
-                }
-            );
-            last;
-        };
+        MT::Util::Mail->send_and_log( \%head, $body ) or last;
     }
 }
 
@@ -2981,6 +3001,7 @@ sub show_error {
     }
     $param->{hide_goback_button} = $app->{hide_goback_button} || 0;
     local $param->{error} = $error;
+    $param->{local_lang_id} = $app->current_language || 'en_us';
     $tmpl->param($param);
     $app->run_callbacks( 'template_param.error', $app, $tmpl->param, $tmpl );
     my $out = $tmpl->output;
@@ -3123,6 +3144,17 @@ sub do_reboot {
             );
             return 1;
         }
+        if (my $wait = MT->config->WaitAfterReboot) {
+            require Time::HiRes;
+            if (MT->config->DisableMetaRefresh) {
+                my $until = Time::HiRes::time() + $wait;
+                while ((my $sleep = $until - Time::HiRes::time()) > 0) {
+                    Time::HiRes::sleep($sleep);
+                }
+            } else {
+                Time::HiRes::sleep $wait;
+            }
+        }
     }
     1;
 }
@@ -3143,6 +3175,7 @@ sub run {
 
     $app->set_x_frame_options_header;
     $app->set_x_xss_protection_header;
+    $app->set_referrer_policy;
 
     my ($body);
 
@@ -3341,11 +3374,9 @@ sub run {
     }
 
     if ( my $url = $app->{redirect} ) {
-        if ( $app->{redirect_use_meta} ) {
+        if ( !MT->config->DisableMetaRefresh and $app->{redirect_use_meta} ) {
             $app->send_http_header();
-            $app->print( '<meta http-equiv="refresh" content="0;url='
-                    . encode_html( $app->{redirect} )
-                    . '">' );
+            $app->print( '<meta http-equiv="refresh" content="' . encode_html(MT->config->WaitAfterReboot). ';url=' . encode_html($url) . '">' );
         }
         else {
             if ( MT::Util::is_mod_perl1() ) {
@@ -3403,7 +3434,7 @@ __HTML__
 
             # Some browsers throw you to quirks mode if the doctype isn't
             # up front and leading whitespace makes a feed invalid.
-            $body =~ s/\A\s+(<(?:\?xml|!DOCTYPE))/$1/s if defined $body;
+            $body =~ s/\A(?:\s|\x{feff}|\xef\xbb\xbf)+(<(?:\?xml|!DOCTYPE))/$1/s if defined $body;
 
             $app->print_encode($body);
         }
@@ -3993,6 +4024,32 @@ sub param_hash {
     %result;
 }
 
+sub validate_param {
+    my ($app, $rules) = @_;
+    return 1 if $app->config->DisableValidateParam;
+
+    require MT::ParamValidator;
+    unless ($MT::ParamValidator::Initialized) {
+        my $handlers = $app->registry('param_validator') || {};
+        for my $name (keys %$handlers) {
+            next unless $name && $name =~ /^[A-Za-z][A-Za-z0-9_]*$/;
+            my $code = $app->handler_to_coderef($handlers->{$name});
+            MT::ParamValidator->set_handler($name => $code);
+        }
+        $MT::ParamValidator::Initialized = 1;
+    }
+    my $validator = MT::ParamValidator->new($rules) or return $app->error(MT::ParamValidator->errstr);
+    my $res = $validator->validate_param($app);
+    if (!$res) {
+        if ($MT::DebugMode) {
+            return $app->error($validator->errstr);
+        } else {
+            return $app->error(MT->translate("Invalid request."));
+        }
+    }
+    return $res;
+}
+
 ## Path/server/script-name determination methods
 
 sub query_string {
@@ -4148,7 +4205,11 @@ sub app_path {
     $app->{__path} = $path;
 }
 
-sub envelope {''}
+sub envelope {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
+    '';
+}
 
 sub script {
     my $app = shift;
@@ -4323,12 +4384,16 @@ sub is_valid_redirect_target {
 
 sub _is_valid_redirect_target {
     my ( $app, $target, $allowed_hosts ) = @_;
+    return if $target =~ /[[:cntrl:]]|\\/;
     my $uri  = URI->new( $target, 'http' )->canonical;
     my $host = $uri->host;
-    my $path = $uri->path_query;
+    my $path = $uri->path;
     return   unless $uri->isa('URI::http');
     return   unless substr( $path, 0, 1 ) eq '/';
-    return 1 unless defined $host;                  # relative URL
+    # If relative, $target should be one of the app scripts (usually mt.cgi)
+    if (!defined $host) {
+        return ($path eq URI->new($app->uri)->path) ? 1 : 0;
+    }
     for my $allowed ( @{ $allowed_hosts || [] } ) {
         return 1 if $allowed eq $host;
     }
@@ -4412,6 +4477,7 @@ sub log {
     my $method
         = $log->level == MT::Log::DEBUG()    ? 'debug'
         : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::NOTICE()   ? 'notice'
         : $log->level == MT::Log::WARNING()  ? 'warn'
         : $log->level == MT::Log::ERROR()    ? 'error'
         : $log->level == MT::Log::SECURITY() ? 'error'

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -20,7 +20,7 @@ function smarty_function_mtcategorycount($args, &$ctx) {
                 $cf_arg = $args['content_field'];
                 require_once("class.mt_content_field.php");
                 $content_field = new ContentField();
-                $content_field->Load("cf_unique_id = \"$cf_arg\"");
+                $content_field->Load("cf_unique_id = '$cf_arg'");
                 if ($content_field->id) {
                     $terms['content_field_id'] = $content_field->id;
                 } else {
@@ -34,7 +34,7 @@ function smarty_function_mtcategorycount($args, &$ctx) {
             if (is_numeric($args['content_type'])) {
                 $terms['content_type_id'] = $args['content_type'];
             } else {
-                $content_type = $ctx->get_content_type_context($args);
+                $content_type = get_content_type_context($ctx, $args);
                 if (isset($content_type)) {
                     $terms['content_type_id'] = $content_type->id;
                 }

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -28,6 +28,7 @@ sub core_content_field_types {
         tags             => _tags_registry(),
         list             => _list_registry(),
         tables           => _table_registry(),
+        text_label       => _text_label_registry(),
     };
 }
 
@@ -1243,6 +1244,30 @@ sub _table_registry {
                 initial_cols
                 increase_decrease_cols
                 )
+        ],
+    };
+}
+
+sub _text_label_registry {
+    {
+        label                => 'Text Display Area',
+        data_type            => 'text',
+        order                => 210,
+        can_data_label_field => 0,
+        field_html           => 'field_html/field_html_text_label.tmpl',
+        field_html_params =>
+          '$Core::MT::ContentFieldType::TextLabel::field_html_params',
+        tag_handler => '$Core::MT::ContentFieldType::TextLabel::tag_handler',
+        feed_value_handler =>
+          '$Core::MT::ContentFieldType::TextLabel::feed_value_handler',
+        preview_handler =>
+          '$Core::MT::ContentFieldType::TextLabel::preview_handler',
+        options_html => 'content_field_type_options/text_label.tmpl',
+        options      => [
+            qw(
+              label
+              text
+              )
         ],
     };
 }

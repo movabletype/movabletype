@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -151,7 +151,11 @@ sub _hdlr_widget_manager {
     my $blog_id = $args->{blog_id} || $ctx->{__stash}{blog_id} || 0;
     if ( exists $args->{parent} && $args->{parent} ) {
         if ( my $_stash_blog = $ctx->stash('blog') ) {
-            $blog_id = $_stash_blog->website->id;
+            if ($_stash_blog->is_blog) {
+                $blog_id = $_stash_blog->parent_id or return '';
+            } else {
+                $blog_id = $_stash_blog->id;
+            }
         }
     }
     my $tmpl = MT->model('template')->load(
@@ -263,12 +267,13 @@ If any stats provider was not found, this template tag will return blank string.
 =cut
 
 sub _hdlr_stats_snippet {
-    my ( $ctx, $args ) = @_;
-    my $blog_id = $ctx->stash('blog_id');
-    my $blog    = MT->model('blog')->load($blog_id);
+    my ($ctx, $args) = @_;
+    my $blog_id      = $ctx->stash('blog_id');
+    my $blog         = MT->model('blog')->load($blog_id);
+    my $provider_arg = $args->{provider} || '';
 
     require MT::Stats;
-    my $provider = MT::Stats::readied_provider( MT->instance, $blog )
+    my $provider = MT::Stats::readied_provider(MT->instance, $blog, $provider_arg)
         or return q();
 
     $provider->snipet(@_);

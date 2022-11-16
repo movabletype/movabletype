@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -107,7 +107,7 @@ sub ss_validator {
     my $options = $field_data->{options} || {};
 
     my $iter = MT::Category->load_iter(
-        {   id => @$data ? $data : 0,
+        {   id => @{ $data || [] } ? $data : 0,
             category_set_id => $options->{category_set}
         },
         { fetchonly => { id => 1 } }

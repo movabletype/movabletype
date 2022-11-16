@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -15,20 +15,22 @@ use base qw(Exporter);
 our %providers;
 
 sub readied_provider {
-    my ( $app, $blog ) = @_;
+    my ($app, $blog, $provider_arg) = @_;
 
-    if ( !%providers ) {
+    if (!%providers) {
         my $all_providers = $app->registry('stats_providers');
         return undef unless $all_providers;
-        for my $k ( keys %$all_providers ) {
-            $providers{$k} = $app->registry( 'stats_providers', $k );
+        for my $k (keys %$all_providers) {
+            $providers{$k} = $app->registry('stats_providers', $k);
             eval "require $providers{$k}{provider};";
         }
     }
 
-    for my $k ( keys %providers ) {
-        if ( $providers{$k}{provider}->is_ready( $app, $blog ) ) {
-            return $providers{$k}{provider}->new( $k, $blog );
+    my %seen;
+    my @provider_keys = grep { $_ && !$seen{$_}++ } ($provider_arg || MT->config('DefaultStatsProvider'), keys %providers);
+    for my $k (@provider_keys) {
+        if ($providers{$k}{provider}->is_ready($app, $blog)) {
+            return $providers{$k}{provider}->new($k, $blog);
         }
     }
 

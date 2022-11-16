@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -501,7 +501,8 @@ package MT::App::CMS;
 use strict;
 
 sub register_type {
-    warn "Deprecated: MT::App::CMS->register_type";
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
 }
 
 sub add_rebuild_option {

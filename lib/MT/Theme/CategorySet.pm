@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -79,15 +79,16 @@ sub template {
     my %checked_ids
         = $saved
         ? map { $_ => 1 } @{ $saved->{default_category_set_export_ids} }
-        : undef;
+        : ();
 
+    my $cat_count = MT->model('category_set')->cat_count_by_blog($blog->id);
     my @list;
     for my $cs (@category_sets) {
         push @list,
             {
             category_set_id   => $cs->id,
             category_set_name => $cs->name,
-            categories_count  => $cs->cat_count,
+            categories_count  => $cat_count->{ $cs->id } || 0,
             checked           => $saved ? $checked_ids{ $cs->id } : 1,
             };
     }

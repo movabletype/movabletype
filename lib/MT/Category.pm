@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -8,6 +8,7 @@ package MT::Category;
 
 use strict;
 use warnings;
+use List::Util qw( first );
 use base qw( MT::Object );
 use MT::Util qw( weaken );
 
@@ -56,30 +57,42 @@ __PACKAGE__->install_properties(
 
 __PACKAGE__->add_trigger( pre_search => \&_set_category_set_id_if_needed );
 
+sub _has_category_set_id {
+    my $class = shift;
+    my ($terms) = @_;
+
+    return
+          ref $terms eq 'HASH'  ? exists $terms->{category_set_id}
+        : ref $terms eq 'ARRAY' ? first { $class->_has_category_set_id($_) } @$terms
+        :                   ();
+}
+
 sub _set_category_set_id_if_needed {
     my $class = shift;
-    my ( $terms, $args ) = @_;
-    my $no_category_set_id = 0;
-    if ( ref $args eq 'HASH' && $args->{no_category_set_id} ) {
-        delete $args->{no_category_set_id};
-        $no_category_set_id = 1;
-    }
+    my ( $terms, $args, $conds ) = @_;
+
+    $conds ||= +{
+        no_category_set_id  => ref $args eq 'HASH' && delete $args->{no_category_set_id},
+        has_category_set_id => $class->_has_category_set_id($terms),
+    };
+
     if ( ref $terms eq 'HASH' ) {
         if ( ( $terms->{category_set_id} || '' ) eq '*'
-            || $no_category_set_id )
+            || $conds->{no_category_set_id} )
         {
             delete $terms->{category_set_id};
         }
         elsif (!exists $terms->{category_set_id}
             && !exists $terms->{id}
-            && !$terms->{parent} )
+            && !$terms->{parent}
+            && !$conds->{has_category_set_id})
         {
             $terms->{category_set_id} = 0;
         }
     }
     elsif ( ref $terms eq 'ARRAY' ) {
         for my $term (@$terms) {
-            $class->_set_category_set_id_if_needed( $term, $args );
+            $class->_set_category_set_id_if_needed( $term, $args, $conds );
         }
     }
 }
@@ -661,56 +674,51 @@ sub content_data_count {
     my ($terms) = @_;
     $terms ||= {};
 
-    my $content_type_id  = $terms->{content_type_id};
-    my $content_field_id = $terms->{content_field_id};
+    my $ct_id = $terms->{content_type_id};
+    my $cf_id = $terms->{content_field_id};
 
-    if ( !$content_field_id && $terms->{content_field_name} ) {
-        my $cf = MT->model('content_field')->load(
-            {   blog_id => $self->blog_id,
-                name    => $terms->{content_field_name},
-                $content_type_id
-                ? ( content_type_id => $content_type_id )
-                : (),
-            }
-        );
+    if (!$cf_id && $terms->{content_field_name}) {
+        my $cf = MT->model('content_field')->load({
+            blog_id => $self->blog_id,
+            name    => $terms->{content_field_name},
+            $ct_id ? (content_type_id => $ct_id) : (),
+        });
         return 0 unless $cf;
-        $content_field_id = $cf->id;
+        $cf_id = $cf->id;
     }
 
     my $key_suffix = '';
-    if ($content_type_id) {
-        $key_suffix = ":ct-$content_type_id";
+    if ($ct_id) {
+        $key_suffix .= ":ct-$ct_id";
     }
-    elsif ($content_field_id) {
-        $key_suffix = ":cf-$content_field_id";
+    if ($cf_id) {
+        $key_suffix .= ":cf-$cf_id";
     }
 
-    require MT::ContentFieldIndex;
+    require MT::ObjectCategory;
     require MT::ContentData;
     require MT::Entry;
     return $self->cache_property(
         "content_data_count$key_suffix",
         sub {
-            return MT::ContentData->count(
-                {   blog_id => $self->blog_id,
+            return MT::ContentData->count({
+                    blog_id => $self->blog_id,
                     status  => MT::Entry::RELEASE(),
+                    $ct_id ? (content_type_id => $ct_id) : (),
                 },
-                {   join => MT::ContentFieldIndex->join_on(
-                        'content_data_id',
-                        {   value_integer => $self->id,
-                            $content_type_id
-                            ? ( content_type_id => $content_type_id )
-                            : (),
-                            $content_field_id
-                            ? ( content_field_id => $content_field_id )
-                            : (),
+                {
+                    join => MT::ObjectCategory->join_on(
+                        'object_id',
+                        {
+                            object_ds   => 'content_data',
+                            category_id => $self->id,
+                            $cf_id ? (cf_id => $cf_id) : (),
                         },
                         { unique => 1 },
                     ),
-                }
-            );
+                });
         },
-        ( $terms->{count} ? ( $terms->{count} ) : () ),
+        ($terms->{count} ? ($terms->{count}) : ()),
     );
 }
 

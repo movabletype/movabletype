@@ -19,7 +19,7 @@ use MT::Test;
 use MT::Test::DataAPI;
 use MT::Test::Permission;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -33,6 +33,9 @@ $user->save;
 $app->user($user);
 
 my $site_id = 1;
+
+my $content_data_label_index = 0;
+sub unique_content_data_label{ 'test:' . $content_data_label_index++ }
 
 my $content_type
     = MT::Test::Permission->make_content_type( blog_id => $site_id );
@@ -132,8 +135,74 @@ $ct_with_content_type->fields(
 $ct_with_content_type->save;
 my $ct_with_content_type_id = $ct_with_content_type->id;
 
+my $category_set    = MT::Test::Permission->make_category_set(blog_id => $site_id);
+my $parent_category = MT::Test::Permission->make_category(
+    blog_id         => $site_id,
+    category_set_id => $category_set->id,
+);
+my $parent_category_id  = $parent_category->id;
+my $ct_with_category    = MT::Test::Permission->make_content_type(blog_id => $site_id);
+my $ct_with_category_id = $ct_with_category->id;
+my $category_field      = MT::Test::Permission->make_content_field(
+    blog_id         => $site_id,
+    content_type_id => $ct_with_category_id,
+    name            => 'category_set',
+    type            => 'categories',
+);
+$ct_with_category->fields([{
+    id      => $category_field->id,
+    options => {
+        category_set => $category_set->id,
+        label        => $category_field->name,
+    },
+    order     => 1,
+    type      => $category_field->type,
+    unique_id => $category_field->unique_id,
+}]);
+$ct_with_category->save;
+
+my $asset            = MT::Test::Permission->make_asset(blog_id => $site_id);
+my $asset_id         = $asset->id;
+my $ct_with_asset    = MT::Test::Permission->make_content_type(blog_id => $site_id);
+my $ct_with_asset_id = $ct_with_asset->id;
+my $asset_field      = MT::Test::Permission->make_content_field(
+    blog_id         => $site_id,
+    content_type_id => $ct_with_asset_id,
+    name            => 'asset',
+    type            => 'asset',
+);
+$ct_with_asset->fields([{
+    id      => $asset_field->id,
+    options => {
+        label => $asset_field->name,
+    },
+    order     => 1,
+    type      => $asset_field->type,
+    unique_id => $asset_field->unique_id,
+}]);
+$ct_with_asset->save;
+
+my $ct_with_multi_line_text = MT::Test::Permission->make_content_type(blog_id => $site_id);
+my $multi_line_text_field   = MT::Test::Permission->make_content_field(
+    blog_id         => $site_id,
+    content_type_id => $ct_with_multi_line_text->id,
+    name            => 'Editor',
+    type            => 'multi_line_text',
+);
+$ct_with_multi_line_text->fields([{
+    id        => $multi_line_text_field->id,
+    order     => 1,
+    type      => $multi_line_text_field->type,
+    options   => { label => $multi_line_text_field->name },
+    unique_id => $multi_line_text_field->unique_id,
+}]);
+$ct_with_multi_line_text->save;
+
 $user->permissions(0)->rebuild;
 $user->permissions($site_id)->rebuild;
+
+MT->request->reset;
+MT::CMS::ContentType::init_content_type(sub { die }, $app);
 
 irregular_tests_for_create();
 normal_tests_for_create();
@@ -149,6 +218,8 @@ normal_tests_for_update();
 
 irregular_tests_for_delete();
 normal_tests_for_delete();
+
+restriction_tests_for_list();
 
 done_testing;
 
@@ -340,7 +411,7 @@ sub normal_tests_for_create {
             method => 'POST',
             params => {
                 content_data => {
-                    label => 'test',
+                    label => unique_content_data_label(),
                     data  => [
                         {   id   => $single_field->id,
                             data => 'single',
@@ -396,7 +467,7 @@ sub normal_tests_for_create {
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params =>
-                { content_data => { label => 'test', status => 'Draft', }, },
+                { content_data => { label => unique_content_data_label() , status => 'Draft', }, },
             restrictions => {
                 0 => [
 
@@ -445,7 +516,7 @@ sub normal_tests_for_create {
         {   note   => 'blog.manage_content_data',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => { label => 'test' }, },
+            params => { content_data => { label => unique_content_data_label() }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -495,7 +566,7 @@ sub normal_tests_for_create {
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params =>
-                { content_data => { label => 'test', status => 'Draft', }, },
+                { content_data => { label => unique_content_data_label(), status => 'Draft', }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -544,7 +615,7 @@ sub normal_tests_for_create {
         {   note   => 'blog.manage_content_data:???',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => { label => 'test' }, },
+            params => { content_data => { label => unique_content_data_label() }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -595,7 +666,7 @@ sub normal_tests_for_create {
         {   note   => 'blog.manage_content_data:??? and own content_data',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => { label => 'test' }, },
+            params => { content_data => { label => unique_content_data_label() }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -647,7 +718,7 @@ sub normal_tests_for_create {
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params =>
-                { content_data => { label => 'test', status => 'Draft' }, },
+                { content_data => { label => unique_content_data_label(), status => 'Draft' }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -699,7 +770,7 @@ sub normal_tests_for_create {
             method => 'POST',
             params => {
                 content_data => {
-                    label           => 'test',
+                    label           => unique_content_data_label(),
                     unpublishedDate => '2020-01-01 00:00:00'
                 },
             },
@@ -711,7 +782,7 @@ sub normal_tests_for_create {
                         limit     => 1,
                     },
                 );
-                is( $cd->unpublished_on => '20200101000000' );
+                is( int($cd->unpublished_on) => '20200101000000' );
             },
         }
     );
@@ -721,7 +792,7 @@ sub normal_tests_for_create {
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
-                content_data => { label => 'test', unpublishedDate => '' },
+                content_data => { label => unique_content_data_label(), unpublishedDate => '' },
             },
             complete => sub {
                 my $cd = MT->model('content_data')->load(
@@ -753,7 +824,7 @@ sub normal_tests_for_create {
                     'publish_own_content_data_' . $content_type->unique_id,
                 ],
             },
-            params    => { content_data => { label => 'test' }, },
+            params    => { content_data => { label => unique_content_data_label() }, },
             callbacks => [
                 {   name =>
                         'MT::App::DataAPI::data_api_save_permission_filter.content_data',
@@ -801,14 +872,14 @@ sub normal_tests_for_create {
                 },
             },
             result => sub {
-                ok my $cd = MT->model('content_data')->load(
+                my $cd = MT->model('content_data')->load(
                     { content_type_id => $ct_with_content_type_id, },
                     {   sort      => 'id',
                         direction => 'descend',
                         limit     => 1,
                     },
                 );
-                ok %{ $cd->data };
+                ok $cd && %{ $cd->data };
                 $cd;
             },
         }
@@ -984,6 +1055,130 @@ sub normal_tests_for_create {
             },
         }
     );
+
+    test_data_api({
+        note         => 'Category Set field (MTC-26481; no data field)',
+        path         => "/v4/sites/$site_id/contentTypes/$ct_with_category_id/data",
+        method       => 'POST',
+        is_superuser => 1,
+        params       => { content_data => { label => 'no category field', }, },
+        result       => sub {
+            ok my $cd = MT->model('content_data')->load(
+                { content_type_id => $ct_with_category_id, },
+                {
+                    sort      => 'id',
+                    direction => 'descend',
+                    limit     => 1,
+                },
+            );
+            $cd;
+        },
+    });
+
+    test_data_api({
+        note         => 'Category Set field (MTC-26481)',
+        path         => "/v4/sites/$site_id/contentTypes/$ct_with_category_id/data",
+        method       => 'POST',
+        is_superuser => 1,
+        params       => {
+            content_data => {
+                label => 'category field',
+                data  => [{
+                        id   => $category_field->id,
+                        data => [$parent_category_id],
+                    },
+                ],
+            },
+        },
+        result => sub {
+            ok my $cd = MT->model('content_data')->load(
+                { content_type_id => $ct_with_category_id, },
+                {
+                    sort      => 'id',
+                    direction => 'descend',
+                    limit     => 1,
+                },
+            );
+            $cd;
+        },
+    });
+
+    test_data_api({
+        note         => 'Asset field (MTC-26481; no data field)',
+        path         => "/v4/sites/$site_id/contentTypes/$ct_with_asset_id/data",
+        method       => 'POST',
+        is_superuser => 1,
+        params       => { content_data => { label => 'no asset field', }, },
+        result       => sub {
+            ok my $cd = MT->model('content_data')->load(
+                { content_type_id => $ct_with_asset_id, },
+                {
+                    sort      => 'id',
+                    direction => 'descend',
+                    limit     => 1,
+                },
+            );
+            $cd;
+        },
+    });
+
+    test_data_api({
+        note         => 'Asset field (MTC-26481)',
+        path         => "/v4/sites/$site_id/contentTypes/$ct_with_asset_id/data",
+        method       => 'POST',
+        is_superuser => 1,
+        params       => {
+            content_data => {
+                label => 'asset field',
+                data  => [{
+                        id   => $asset_field->id,
+                        data => [$asset_id],
+                    },
+                ],
+            },
+        },
+        result => sub {
+            ok my $cd = MT->model('content_data')->load(
+                { content_type_id => $ct_with_asset_id, },
+                {
+                    sort      => 'id',
+                    direction => 'descend',
+                    limit     => 1,
+                },
+            );
+            $cd;
+        },
+    });
+
+    test_data_api({
+        note         => 'Retrieve convert_breaks as format field (MTC-26477)',
+        path         => "/v5/sites/$site_id/contentTypes/@{[$ct_with_multi_line_text->id]}/data",
+        method       => 'POST',
+        is_superuser => 1,
+        params       => {
+            content_data => {
+                label => 'Multi line text',
+                data  => [{
+                        id     => $multi_line_text_field->id,
+                        data   => <<'TEXT',
+ただいま試験中
+
+1. 本日は晴天なり
+TEXT
+                        format => 'markdown',
+                    },
+                ],
+            },
+        },
+        complete => sub {
+            my ($data, $body, $header) = @_;
+            my $obj = MT::Util::from_json($body);
+            is($obj->{data}[0]{format}, 'markdown', 'Check format field in the response.');
+            my $cd             = MT->model('cd')->load($obj->{id});
+            my $convert_breaks = MT::Serialize->unserialize($cd->convert_breaks);
+            is($$convert_breaks->{ $multi_line_text_field->id }, 'markdown', 'Check format value in DB.');
+        },
+    });
 }
 
 sub irregular_tests_for_list {
@@ -1112,6 +1307,73 @@ sub normal_tests_for_list {
             },
         }
     );
+
+    test_data_api({
+        note      => 'Retrieve format field by not logged in user (MTC-27955)',
+        path      => "/v5/sites/$site_id/contentTypes/@{[$ct_with_multi_line_text->id]}/data",
+        method    => 'GET',
+        author_id => 0,
+        complete  => sub {
+            my ($data, $body, $header) = @_;
+            my $obj       = MT::Util::from_json($body);
+            my $cd        = MT->model('cd')->load($obj->{items}[0]{id});
+            my $body_text = $obj->{items}[0]{data}[0]{data};
+            my $expected  = Encode::decode_utf8(<<'HTML');
+<p>ただいま試験中</p>
+
+<ol start='1'>
+<li>本日は晴天なり</li>
+</ol>
+HTML
+            my $trim = sub {
+                my ($str) = @_;
+                $str =~ s/\A(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                return $str;
+            };
+            is($trim->($body_text), $trim->($expected));
+            ok(!exists $obj->{items}[0]{data}[0]{format});
+        },
+    });
+
+    test_data_api({
+        note     => 'Retrieve format field by logged in user (MTC-27955)',
+        path     => "/v5/sites/$site_id/contentTypes/@{[$ct_with_multi_line_text->id]}/data",
+        method   => 'GET',
+        complete => sub {
+            my ($data, $body, $header) = @_;
+            my $obj                 = MT::Util::from_json($body);
+            my $cd                  = MT->model('cd')->load($obj->{items}[0]{id});
+            my $body_text = $obj->{items}[0]{data}[0]{data};
+            my $expected  = Encode::decode_utf8(<<'HTML');
+<p>ただいま試験中</p>
+
+<ol start='1'>
+<li>本日は晴天なり</li>
+</ol>
+HTML
+            my $trim = sub {
+                my ($str) = @_;
+                $str =~ s/\A(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                return $str;
+            };
+            is($trim->($body_text), $trim->($expected));
+            ok(exists $obj->{items}[0]{data}[0]{format});
+        },
+    });
+
+    test_data_api({
+        note     => 'noTextFilter=1 with logged in user (MTC-27955)',
+        path     => "/v5/sites/$site_id/contentTypes/@{[$ct_with_multi_line_text->id]}/data",
+        method   => 'GET',
+        params   => { noTextFilter => 1 },
+        complete => sub {
+            my ($data, $body, $header) = @_;
+            my $obj = MT::Util::from_json($body);
+            my $cd  = MT->model('cd')->load($obj->{items}[0]{id});
+            is($obj->{items}[0]{data}[0]{data}, $cd->data->{ $multi_line_text_field->id });
+            ok(exists $obj->{items}[0]{data}[0]{format});
+        },
+    });
 }
 
 sub irregular_tests_for_get {
@@ -1848,7 +2110,7 @@ sub normal_tests_for_update {
             },
             complete => sub {
                 $cd = MT->model('content_data')->load( $cd->id );
-                is( $cd->unpublished_on => '20200101000000' );
+                is( int($cd->unpublished_on) => '20200101000000' );
             },
         }
     );
@@ -2429,6 +2691,49 @@ sub normal_tests_for_delete {
             result   => sub {$cd},
             complete => sub {
                 ok( !MT->model('content_data')->load( $cd->id ) );
+            },
+        }
+    );
+}
+
+sub restriction_tests_for_list {
+    test_data_api(
+        {   note   => 'restrict sitei_id = 1',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method => 'GET',
+            setup        => sub {
+                $app->config->DataAPIDisableSite(1);
+                $app->config->save_config;
+            },
+            code => 403,
+        }
+    );
+
+    test_data_api(
+        {   note   => 'restrict site_id = 2',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method => 'GET',
+            setup        => sub {
+                $app->config->DataAPIDisableSite(2);
+                $app->config->save_config;
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_list_permission_filter.content_data',
+                    count => 1,
+                },
+                {   name  => 'data_api_pre_load_filtered_list.content_data',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                my @cd = MT->model('content_data')->load(
+                    { content_type_id => $content_type_id, blog_id => { 'not' => 2 } },
+                    { sort => 'modified_on', direction => 'descend', },
+                );
+                +{  totalResults => scalar @cd,
+                    items => MT::DataAPI::Resource->from_object( \@cd ),
+                };
             },
         }
     );

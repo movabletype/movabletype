@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -218,24 +218,11 @@ sub recover_password {
                 }
             );
 
-            require MT::Mail;
-            MT::Mail->send( \%head, $body ) or do {
-                $app->log(
-                    {   message => $app->translate(
-                            'Error sending mail: [_1]',
-                            MT::Mail->errstr
-                        ),
-                        level    => MT::Log::ERROR(),
-                        class    => 'system',
-                        category => 'email'
-                    }
-                );
-                die $app->translate(
-                    "Error sending e-mail ([_1]); Please fix the problem, then "
-                        . "try again to recover your password.",
-                    MT::Mail->errstr
-                );
-            };
+            require MT::Util::Mail;
+            MT::Util::Mail->send_and_log(\%head, $body) or die $app->translate(
+                "Error sending e-mail ([_1]); Please fix the problem, then try again to recover your password.",
+                MT::Util::Mail->errstr
+            );
         }
     );
 
@@ -318,9 +305,17 @@ sub new_password {
             $user->password_reset(undef);
             $user->password_reset_expires(undef);
             $user->password_reset_return_to(undef);
+            $user->modified_by($user->id);
             $user->save;
             $app->param( 'username', $user->name )
                 if $user->type == MT::Author::AUTHOR();
+
+            $app->log({
+                message  => $app->translate(q{The password for the user '[_1]' has been recovered.}, $user->name),
+                level    => MT::Log::NOTICE(),
+                class    => 'system',
+                category => 'password-recovery',
+            });
 
             if ( ref $app eq 'MT::App::CMS' && !$redirect ) {
                 $app->login;
@@ -458,7 +453,7 @@ sub test_system_mail {
 
     my $cfg = $app->config;
     return $app->json_error(
-        $app->errtrans(
+        $app->translate(
             "You do not have a system email address configured.  Please set this first, save it, then try the test email again."
         )
     ) unless ( $cfg->EmailAddressMain );
@@ -472,25 +467,15 @@ sub test_system_mail {
     my $body
         = $app->translate("This is the test email sent by Movable Type.");
 
-    require MT::Mail;
-    if ( MT::Mail->send( \%head, $body ) ) {
-        $app->log(
-            {   message => $app->translate(
-                    'Test e-mail was successfully sent to [_1]',
-                    $to_email_address
-                ),
-                level    => MT::Log::INFO(),
-                class    => 'system',
-                category => 'email',
-            }
-        );
+    require MT::Util::Mail;
+    if ( MT::Util::Mail->send_and_log( \%head, $body ) ) {
         return $app->json_result( { success => 1 } );
     }
     else {
         return $app->json_error(
             $app->translate(
                 "E-mail was not properly sent. [_1]",
-                MT::Mail->errstr
+                MT::Util::Mail->errstr
             )
         );
     }
@@ -907,7 +892,7 @@ sub save_cfg_system_general {
         $app->log(
             {   message =>
                     $app->translate('System Settings Changes Took Place'),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => 'system',
                 metadata => $message,
                 category => 'edit',
@@ -1090,11 +1075,14 @@ sub start_backup {
     $param{over_1024} = 1 if $limit >= 1024 * 1024;
     $param{over_2048} = 1 if $limit >= 2048 * 1024;
 
-    my $tmp = $app->config('TempDir');
+    my $tmp = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($tmp) unless -d $tmp;
     unless ( ( -d $tmp ) && ( -w $tmp ) && _can_write_temp_dir($tmp) ) {
         $param{error}
             = $app->translate(
-            'Temporary directory needs to be writable for export to work correctly.  Please check TempDir configuration directive.'
+            'Temporary directory needs to be writable for export to work correctly.  Please check (Export)TempDir configuration directive.'
             );
     }
     $app->load_tmpl( 'backup.tmpl', \%param );
@@ -1124,11 +1112,14 @@ sub start_restore {
     eval "require XML::SAX";
     $param{missing_sax} = 1 if $@;
 
-    my $tmp = $app->config('TempDir');
+    my $tmp = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($tmp) unless -d $tmp;
     unless ( ( -d $tmp ) && ( -w $tmp ) ) {
         $param{error}
             = $app->translate(
-            'Temporary directory needs to be writable for import to work correctly.  Please check TempDir configuration directive.'
+            'Temporary directory needs to be writable for import to work correctly.  Please check (Export)TempDir configuration directive.'
             );
     }
 
@@ -1137,6 +1128,14 @@ sub start_restore {
 
 sub backup {
     my $app     = shift;
+
+    $app->validate_param({
+        backup_archive_format => [qw/MAYBE_STRING/],
+        backup_what           => [qw/IDS/],
+        blog_id               => [qw/ID/],
+        size_limit            => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id') || 0;
     my $perms   = $app->permissions
@@ -1215,7 +1214,10 @@ sub backup {
     require File::Temp;
     require File::Spec;
     use File::Copy;
-    my $temp_dir = $app->config('TempDir');
+    my $temp_dir = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($temp_dir) unless -d $temp_dir;
 
     require MT::BackupRestore;
     my $count_term
@@ -1475,7 +1477,7 @@ sub backup_download {
     $app->validate_magic() or return;
     my $filename  = $app->param('filename');
     my $assetname = $app->param('assetname');
-    my $temp_dir  = $app->config('TempDir');
+    my $temp_dir  = $app->config('ExportTempDir') || $app->config('TempDir');
     my $newfilename;
 
     $app->{hide_goback_button} = 1;
@@ -1578,6 +1580,19 @@ sub restore {
         = File::Spec->splitpath($uploaded)
         if defined($uploaded);
     $app->mode('start_restore');
+
+    $app->log(
+        {   message  => (
+                $uploaded_filename
+                ? MT->translate( 'Started importing sites: [_1]', $uploaded_filename )
+                : MT->translate('Started importing sites')
+            ),
+            level    => MT::Log::INFO(),
+            class    => 'system',
+            category => 'restore',
+        }
+    );
+
     if ( defined($uploaded_filename)
         && ( $uploaded_filename =~ /^.+\.manifest$/i ) )
     {
@@ -1714,7 +1729,7 @@ sub restore {
                 $app->request( '__restore_in_progress', undef );
                 return 1;
             }
-            my $temp_dir = $app->config('TempDir');
+            my $temp_dir = $app->config('ExportTempDir') || $app->config('TempDir');
             require File::Temp;
             my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
                 DIR => $temp_dir );
@@ -1900,6 +1915,7 @@ sub adjust_sitepath {
         my $blog = $app->model('blog')->load($id)
             or return $app->error(
             $app->translate( 'Cannot load site #[_1].', $id ) );
+        my $original           = $blog->clone();
         my $old_site_path      = $app->param("old_site_path_$id");
         my $old_site_url       = $app->param("old_site_url_$id");
         my $site_path          = $app->param("site_path_$id") || q();
@@ -1913,6 +1929,9 @@ sub adjust_sitepath {
         my $site_path_absolute = $app->param("site_path_absolute_$id")
             || q();
         my $use_absolute = $app->param("use_absolute_$id") || q();
+
+        my $site_name = $app->param("site_name_$id");
+        $blog->name($site_name) if defined $site_name && $site_name ne '';
 
         if ($use_absolute) {
             $site_path = $app->param("site_path_absolute_$id") || q();
@@ -2008,6 +2027,8 @@ sub adjust_sitepath {
                     )
             );
         }
+        _call_pre_save_blog( $app, $blog, $original )
+            or $app->print_encode( $app->translate("failed") . "\n" ), next;
         $blog->save
             or $app->print_encode( $app->translate("failed") . "\n" ), next;
         $app->print_encode( $app->translate("ok") . "\n" );
@@ -2386,7 +2407,7 @@ sub dialog_restore_upload {
     $app->print_encode(
         $app->build_page( 'dialog/restore_start.tmpl', $param ) );
 
-    if ( defined $objects_json ) {
+    if ( $objects_json ) {
         my $objects_tmp = JSON::from_json($objects_json);
         my %class2ids;
 
@@ -2564,6 +2585,15 @@ sub dialog_adjust_sitepath {
     return $app->permission_denied()
         if !$user->is_superuser;
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        asset_ids      => [qw/MAYBE_IDS/],
+        blog_ids       => [qw/IDS/],
+        current_file   => [qw/MAYBE_STRING/],
+        error          => [qw/MAYBE_STRING/],
+        restore_upload => [qw/MAYBE_STRING/],
+        tmp_dir        => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $tmp_dir    = $app->param('tmp_dir');
     my $error      = $app->param('error') || q();
@@ -2799,26 +2829,11 @@ sub reset_password {
         }
     );
 
-    require MT::Mail;
-    MT::Mail->send( \%head, $body ) or do {
-        $app->log(
-            {   message => $app->translate(
-                    'Error sending mail: [_1]',
-                    MT::Mail->errstr
-                ),
-                level    => MT::Log::ERROR(),
-                class    => 'system',
-                category => 'email'
-            }
-        );
-        return $app->error(
-            $app->translate(
-                "Error sending e-mail ([_1]); Please fix the problem, then "
-                    . "try again to recover your password.",
-                MT::Mail->errstr
-            )
-        );
-    };
+    require MT::Util::Mail;
+    MT::Util::Mail->send_and_log(\%head, $body) or return $app->error($app->translate(
+        "Error sending e-mail ([_1]); Please fix the problem, then try again to recover your password.",
+        MT::Util::Mail->errstr
+    ));
 
     ( 1, $message );
 }
@@ -2914,7 +2929,6 @@ sub restore_directory {
             }
         );
     }
-    return ( $blogs, $assets ) unless ( defined($deferred) && %$deferred );
 
     if ( scalar( keys %error_assets ) ) {
         my $data;
@@ -3142,6 +3156,19 @@ sub _exists_system_tmpl {
     my $set = MT->registry('default_templates');
     my $scope = $tmpl->blog_id ? 'system' : 'global:system';
     return $set->{$scope}{ $tmpl->identifier } ? 1 : 0;
+}
+
+sub _call_pre_save_blog {
+    my ( $app, $blog, $original ) = @_;
+    my @types = ('blog');
+    if ( !$blog->is_blog() ) {
+        push @types, 'website';
+    }
+    my $filter_result = 1;
+    for my $t (@types) {
+        $filter_result &&= $app->run_callbacks( 'cms_pre_save.' . $t, $app, $blog, $original );
+    }
+    return $filter_result;
 }
 
 1;

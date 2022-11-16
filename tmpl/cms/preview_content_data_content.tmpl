@@ -8,6 +8,7 @@
 </mt:if>
 
 <mt:ContentFields>
+<mt:unless name="content_field_type" eq="text_label">
 <div class="row my-4">
   <div class="col preview-title">
     <b><mt:var name="content_field_options{label}" escape="html"> (<mt:var name="content_field_type_label" escape="html">)</b><br/>
@@ -39,5 +40,6 @@
   </mt:ContentField>
   </div>
 </div>
+</mt:unless>
 </mt:ContentFields>
 

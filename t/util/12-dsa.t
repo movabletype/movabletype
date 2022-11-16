@@ -19,6 +19,8 @@ use MT::Test;
 use MT::Builder;
 use MT::Util qw(dsa_verify perl_sha1_digest_hex dec2bin);
 
+no Carp::Always;
+
 my $msg = 'nina@blues.org::Nina Simone::1072216494';
 my $sig = {
     r => "527791435593304577725339030118988880225606145248",

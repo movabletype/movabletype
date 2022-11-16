@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -43,14 +43,14 @@ sub data_load_handler {
     my $convert_breaks
         = $app->param("content-field-${field_id}_convert_breaks");
     $convert_breaks = '' unless defined $convert_breaks;
+    my $full_rich_text = defined $options->{full_rich_text} ? $options->{full_rich_text} : 1;
 
-    if ( $convert_breaks eq 'richtext' && !$options->{full_rich_text} ) {
+    if ( $convert_breaks eq 'richtext' && !$full_rich_text ) {
         return scalar $app->param("editor-input-content-field-$field_id");
     }
     else {
         return scalar $app->param("content-field-multi-$field_id");
     }
-
 }
 
 sub options_html_params {

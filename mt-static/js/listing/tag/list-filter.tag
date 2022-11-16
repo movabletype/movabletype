@@ -51,9 +51,9 @@
 
     addFilterItem(filterType) {
       if (this.isAllpassFilter()) {
-        this.createNewFilter(trans('Unknown Filter'))
+        this.createNewFilter(trans('New Filter'))
       }
-      this.currentFilter.items.push({ type: filterType })
+      this.currentFilter.items.push({ type: filterType, args: {} })
       this.update()
     }
 
@@ -392,7 +392,23 @@
     addFilterItemContent(e) {
       var itemIndex = this.getListItemIndex(e.target)
       var contentIndex = this.getListItemContentIndex(e.target)
+      var item = this.listFilterTop.currentFilter.items[itemIndex]
+      if (item.type == 'pack') {
+        item = item.args.items[contentIndex]
+      }
+      jQuery(e.target).parent().each(function() {
+        jQuery(this).find(':input').each(function() {
+          var re = new RegExp(item.type+'-(\\w+)');
+          jQuery(this).attr('class').match(re);
+            var key = RegExp.$1;
+            if (key && !item.args.hasOwnProperty(key)) {
+            item.args[key] = jQuery(this).val();
+          }
+        });
+      });
       this.listFilterTop.addFilterItemContent(itemIndex, contentIndex)
+      this.initializeDateOption()
+      this.initializeOptionWithBlank()
     }
 
     getListItemIndex(element) {
@@ -433,7 +449,6 @@
         default:
           type = 'range'
         }
-        $node.parents('.item-content').find('input').mtUnvalidate()
         $node.parents('.item-content').find('.date-options span.date-option').hide()
         $node.parents('.item-content').find('.date-option.'+type).show()
       }
@@ -449,11 +464,8 @@
         dayNamesMin: this.listFilterTop.opts.localeCalendarHeader,
         monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
         showMonthAfterYear: true,
-        prevText: '&lt;',
-        nextText: '&gt;',
-        onSelect: function( dateText, inst ) {
-          inst.input.mtValid();
-        }
+        prevText: '<',
+        nextText: '>',
       })
     }
 
@@ -633,7 +645,7 @@
     }
 
     removeFilter(e) {
-      var filterData = e.target.parentElement.parentElement.dataset
+      var filterData = e.target.closest('[data-mt-list-filter-label]').dataset
       var message = trans(
         "Are you sure you want to remove filter '[_1]'?",
         filterData.mtListFilterLabel

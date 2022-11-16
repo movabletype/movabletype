@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -784,6 +784,14 @@ A container tag which loads parent website of blog in the current context.
 =cut
 
 =head2 SiteParentSite
+
+A container tag which loads parent site of child site in the current context.
+
+=for tags sites
+
+=cut
+
+=head2 ParentSite
 
 A container tag which loads parent site of child site in the current context.
 

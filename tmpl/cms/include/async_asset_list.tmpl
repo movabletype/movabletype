@@ -10,7 +10,7 @@
         <__trans phrase="All Types">
       </option>
 <mt:loop name="class_filter_loop">
-      <option value="<mt:var name="key">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>>
+      <option value="<mt:var name="key" escape="html">"<mt:if name="filter"><mt:if name="filter_val" eq="$key"> selected="selected"</mt:if></mt:if>>
         <mt:var name="label">
       </option>
 </mt:loop>
@@ -19,7 +19,7 @@
 </div>
 <div>
   <form action="" method="get" id="modal-search" class="form-inline">
-    <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
+    <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="" placeholder="<__trans phrase="Search">" />
     <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').trigger('click'); return false;">
       <mtapp:svgicon id="ic_search" title="Search">
     </a>
@@ -93,7 +93,7 @@
               </td>
               <td class="asset-label primary">
     <mt:if name="has_thumbnail">
-                <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name" escape="html"$>">
+                <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="html" escape="js">');" title="<$mt:var name="file_name" escape="html"$>">
                   <$mt:var name="label" escape="html"$>
                 </a>
                 <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview"></div>
@@ -150,6 +150,9 @@ function loadAssetList(offset) {
   jQuery('#asset-class').attr("disabled", "disabled");
   jQuery('#search').attr("disabled", "disabled");
   jQuery('#search-button').attr("disabled", "disabled");
+  <mt:unless name="can_multi">
+  jQuery('.actions-bar button.primary').attr('disabled','disabled').addClass('disabled');
+  </mt:unless>
 
   var opts= {
     offset: offset,
@@ -160,6 +163,9 @@ function loadAssetList(offset) {
 </mt:if>
 <mt:if name="blog_id">
       blog_id: <mt:var name="blog_id" escape="html">,
+</mt:if>
+<mt:if name="content_field_id">
+      content_field_id: '<mt:var name="content_field_id" escape="html">',
 </mt:if>
       dialog_view: 1,
 <mt:if name="upload_mode">
@@ -172,7 +178,7 @@ function loadAssetList(offset) {
 
 <mt:if name="filter" eq="userpic">
     opts.filter = 'userpic';
-    opts.filter_val = <mt:var name="filter_val" escape="html">;
+    opts.filter_val = '<mt:var name="filter_val" escape="html" escape="js">';
 <mt:else>
   if(jQuery('#search').val().length > 0) {
     opts.search = jQuery('#search').val();
@@ -233,6 +239,16 @@ function loadAssetList(offset) {
         }
         saveChecked(currentPage);
       });
+      <mt:if name="can_multi">
+      if(checked.length > 0 && currentPage in checked){
+        jQuery('table.listing-table tbody tr input[name="id"]').map(function(index, elm){
+          let id = jQuery(elm).closest('tr').attr('id');
+          if( id in checked[currentPage]){
+            jQuery(elm).prop('checked', true);
+          }
+        });
+      }
+      </mt:if>
 
       toggleClassOfPaginationContainer();
     },
@@ -285,6 +301,8 @@ function renderPagination(pager) {
 
   if (page - 2 >= 1) {
     $pagination.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
+  }
+  if (page - 3 >= 1) {
     $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
   }
 
@@ -300,8 +318,10 @@ function renderPagination(pager) {
     $pagination.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
   }
 
-  if (page + 2 <= maxPage) {
+  if (page + 3 <= maxPage) {
     $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
+  }
+  if (page + 2 <= maxPage) {
     $pagination.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
   }
 
@@ -462,6 +482,7 @@ jQuery('.actions-bar button.primary').on('click', function() {
     return;
   }
 
+<mt:if name="can_multi">
   var ids = [];
   var page_keys = Object.keys(checked);
   for(i=0; i < page_keys.length; i++) {
@@ -472,6 +493,10 @@ jQuery('.actions-bar button.primary').on('click', function() {
   }
   // Set asset ID
   jQuery('#select_asset input[name="id"]').val(ids.join(','));
+<mt:else>
+  var item_keys = Object.keys(checked[currentPage]);
+  jQuery('#select_asset input[name="id"]').val(checked[currentPage][item_keys[0]]);
+</mt:if>
 })
 
 jQuery('#asset-table').on('click', 'td.cb', function (e) {
@@ -500,6 +525,12 @@ jQuery('#asset-table').on('click', 'td:not(.cb)', function (e) {
   if ($link.length > 0) {
     $link.get(0).click();
     return false;
+  }
+});
+
+jQuery('#list-asset-panel').on('changePanel', function(){
+  if(jQuery('table.listing-table tbody tr input[name="id"]:checked').length > 0){
+    jQuery('.actions-bar button.primary').prop('disabled', false).removeClass('disabled');
   }
 });
 

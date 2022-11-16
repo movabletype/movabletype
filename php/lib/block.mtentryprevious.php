@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -46,7 +46,8 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
                 if (isset($args['by_category']) || isset($args['by_folder'])) {
                     $eargs['category_id'] = $cat_id;
                 }
-                list($prev_entry) = $ctx->mt->db()->fetch_entries($eargs);
+                $entries = $ctx->mt->db()->fetch_entries($eargs);
+                $prev_entry = isset($entries[0]) ? $entries[0] : null;
                 if ($prev_entry) $_prev_cache[$label] = $prev_entry;
             }
             $ctx->stash('entry', $prev_entry);

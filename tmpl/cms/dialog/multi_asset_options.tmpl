@@ -182,6 +182,21 @@
   }).on('hide.bs.collapse', function () {
     jQuery(this).removeAttr('checked');
   });
+
+  jQuery('input[name^=popup-]').each(function(){
+  if (!jQuery(this).prop('checked')) {
+  jQuery(this).parent().parent().find('.custom-radio').hide();
+  }
+  });
+
+  jQuery('input[name^=popup-]').on('change', function(){
+  var radios = jQuery(this).parent().parent().find('.custom-radio');
+  if (jQuery(this).prop('checked')) {
+  radios.show();
+  } else {
+  radios.hide();
+  }
+  });
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">

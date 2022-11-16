@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -30,7 +30,7 @@ function smarty_function_mtauthorcontentcount($args, &$ctx) {
 
     $args['blog_id'] = $ctx->stash('blog_id');
     $args['author_id'] = $author->id;
-    $args['content_type_id'] = $content_type_id;
+    $args['content_type_id'] = isset($content_type_id) ? $content_type_id : null;
     $count = $ctx->mt->db()->author_content_count($args);
     return $ctx->count_format($count, $args);
 }

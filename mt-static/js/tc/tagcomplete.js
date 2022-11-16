@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) (C) 2004-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,7 +16,7 @@ auto-completion of words using an input box and a DHTML selection menu
 /*
 - Given an array of possible auto-completion words...
 - Keep in memory the current word being typed
-- on keyUp:
+- on keyDown:
     - if the character is a space, kill the internal word memory
     - if the character is a tab, autocomplete with the selected word
     - otherwise, narrow down the list of possible matches
@@ -55,8 +55,8 @@ TC.TagComplete.prototype.attachElements = function()
         this.input_box = document.getElementById(this.id);
         if ( this.input_box ) {
             var self = this;
-            var keyUp = function( event ) { return self.keyUp( event ); }
-            TC.attachEvent( this.input_box, "keyup", keyUp );
+            var keyDown = function( event ) { return self.keyDown( event ); }
+            TC.attachEvent( this.input_box, "keydown", keyDown );
             this.input_box.setAttribute("autocomplete", "off");
         }
     }
@@ -69,7 +69,7 @@ TC.TagComplete.prototype.attachElements = function()
         window.setTimeout( "TC.TagComplete.instances[ '" + this.id + "' ].attachElements();", 1000 );
 }
 
-TC.TagComplete.prototype.keyUp = function( evt )
+TC.TagComplete.prototype.keyDown = function( evt )
 {
     evt = evt || event;
     var element = evt.target || evt.srcElement;
@@ -151,8 +151,8 @@ TC.TagComplete.prototype.selectCompletion = function( offset )
     var i = this.selectedCompletion + offset;
     if ( ( i < 0 ) || ( i > this.suggestedCompletions.length - 1 ) )
         return;
-    this.completion_box.childNodes[ this.selectedCompletion ].className = 'complete-none';
-    this.completion_box.childNodes[ i ].className = 'complete-highlight';
+    this.completion_box.firstElementChild.childNodes[ this.selectedCompletion ].className = 'complete-none';
+    this.completion_box.firstElementChild.childNodes[ i ].className = 'complete-highlight';
     this.selectedCompletion = i;
 }
 
@@ -258,6 +258,8 @@ TC.TagComplete.prototype.constructCompletionBox = function()
         ul.appendChild(li);
     }
     div.parentElement.style.display = 'block';
+    if (ul.firstChild)
+        ul.firstChild.className = 'complete-highlight';
 
     var $scrollableParent = jQuery('.modal-body');
     if ($scrollableParent.length == 0) {

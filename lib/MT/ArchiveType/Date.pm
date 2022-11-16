@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -147,7 +147,7 @@ sub adjacent_archive_entry {
 
     # if $param->{entry} given, override $ts and $blog_id.
     if ( my $e = $param->{entry} ) {
-        $ts      = $e->authored_on;
+        $ts      ||= $e->authored_on;
         $blog_id = $e->blog_id;
     }
     my ( $start, $end ) = $obj->date_range($ts);
@@ -178,7 +178,7 @@ sub adjacent_archive_entry {
 
 sub archive_entries_count {
     my $obj = shift;
-    my ( $blog, $at, $entry ) = @_;
+    my ( $blog, $at, $entry, $ts ) = @_;
     return $obj->SUPER::archive_entries_count(
         {   Blog        => $blog,
             ArchiveType => $at,
@@ -187,7 +187,7 @@ sub archive_entries_count {
     return $obj->SUPER::archive_entries_count(
         {   Blog        => $blog,
             ArchiveType => $at,
-            Timestamp   => $entry->authored_on
+            Timestamp   => $ts || $entry->authored_on
         }
     );
 }
@@ -197,7 +197,7 @@ sub does_publish_file {
     my %params = %{ shift() };
 
     $obj->archive_entries_count( $params{Blog}, $params{ArchiveType},
-        $params{Entry} );
+        $params{Entry}, $params{Timestamp} );
 }
 
 1;

@@ -41,8 +41,21 @@
   <mtapp:statusmsg
      id="autosaved-object-exists"
      class="info">
+    <mt:if name="autosaved_object_is_outdated">
+    <__trans phrase="A saved version of this [_1] was auto-saved [_3] but it is outdated.<br><a href="[_2]" class="alert-link">Recover auto-saved content</a> / <a href="[_4]" class="alert-link">Discard auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;_recover=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>%%<mt:If name="blog_id"><mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>"></mt:If>%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;_discard=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>">
+    <mt:else>
     <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]" class="alert-link">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;_recover=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>%%<mt:If name="blog_id"><mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>"></mt:If>">
+    </mt:if>
   </mtapp:statusmsg>
+  </mt:if>
+  <mt:if name="is_also_edited_by">
+    <mt:unless name="error">
+  <mtapp:statusmsg
+     id="someone-is-also-editing"
+     class="warning">
+    <__trans phrase="[_1] is also editing the same template (last updated at [_2])." params="<mt:var name="is_also_edited_by" escape="html">%%<mt:var name="is_also_edited_at" escape="html">">
+  </mtapp:statusmsg>
+    </mt:unless>
   </mt:if>
 </mt:unless>
 <mt:if name="recovered_object">
@@ -125,7 +138,7 @@
    class="status-widget"
    label="<__trans phrase="Status">">
   <mt:if name="new_object">
-    <p class="zero-state"><__trans phrase="New Template"></p>
+    <p class="zero-state-widget"><__trans phrase="New Template"></p>
   <mt:else>
     <div class="revision-info">
     <mt:if name="rev_date">
@@ -134,7 +147,7 @@
         <__trans phrase="View revisions">
       </a>
     <mt:else>
-      <p class="zero-state"><__trans phrase="No revision(s) associated with this template"></p>
+      <p class="zero-state-rev"><__trans phrase="No revision(s) associated with this template"></p>
     </mt:if>
     </div>
   </mt:if>
@@ -282,99 +295,6 @@
 </mtapp:widget>
 </mt:if>
 
-<mt:if name="blog_id">
-<mt:if name="ct_selects">
-<mtapp:widget
-   id="content-type-info"
-   hidden="1"
-   label="<__trans phrase="Content Type">">
-
-    <div id="ct_selects-field" class="form-group">
-      <label for="content_type_sel" id="content_type_sel-label" class="sr-only first-child"><__trans phrase="Select Content Type"></label>
-      <select name="content_type_sel" id="content_type_sel" tabindex="13" class="custom-select form-control">
-      <mt:loop name="ct_selects">
-      <option value="<mt:var name="id">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
-      </mt:loop>
-      </select>
-   </div>
-
-    <div id="ct_label-field" class="form-group">
-      <p id="ct_label-label" class="font-weight-bold"><__trans phrase="Label"></p>
-      <p id="ct_label"></p>
-    </div>
-
-    <div id="ct_id-field" class="form-group">
-      <p id="ct_id-label" class="font-weight-bold"><__trans phrase="ID"></p>
-      <p id="ct_id"></p>
-    </div>
-
-    <div id="ct_unique_id-field" class="form-group">
-      <label for="ct_unique_id" id="ct_unique_id-label" class="font-weight-bold"><__trans phrase="Unique ID"></label>
-      <div class="form-row">
-        <div class="col">
-          <input type="text" id="ct_unique_id" class="form-control id text full" readonly="readonly">
-        </div>
-        <div class="col-auto">
-          <a href="javascript:void(0)" id="copy_ct_unique_id" class="d-inline-block">
-            <mtapp:svgicon id="ic_duplicate" title="<__trans phrase="Copy Unique ID">" size="secondary">
-          </a>
-        </div>
-      </div>
-    </div>
-
-</mtapp:widget>
-
-<mtapp:widget
-   id="content-field-info"
-   hidden="1"
-   label="<__trans phrase="Content field">">
-
-    <div id="content_field_sel-field" class="form-group">
-      <label for="content_field_sel" id="content_field_sel-label" class="sr-only font-weight-bold"><__trans phrase="Select Content Field"></label>
-      <select name="content_field_sel" id="content_field_sel" tabindex="13" class="custom-select form-control">
-      </select>
-    </div>
-
-    <div id="cf_label-field" class="form-group">
-      <p id="cf_label-label" class="font-weight-bold"><__trans phrase="Label"></p>
-      <p id="cf_label"></p>
-    </div>
-
-    <div id="cf_id-field" class="form-group">
-      <p id="cf_id-label" class="font-weight-bold"><__trans phrase="ID"></p>
-      <p id="cf_id"></p>
-    </div>
-
-    <div id="cf_unique_id-field" class="form-group">
-      <label for="cf_unique_id" id="cf_unique_id-label" class="font-weight-bold"><__trans phrase="Unique ID"></label>
-      <div class="form-row">
-        <div class="col">
-          <input type="text" id="cf_unique_id" class="form-control id text full" readonly="readonly">
-        </div>
-        <div class="col-auto">
-          <a href="javascript:void(0)" id="copy_cf_unique_id" class="d-inline-block">
-            <mtapp:svgicon id="ic_duplicate" title="<__trans phrase="Copy Unique ID">" size="secondary">
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div id="cf_type-field" class="last-child">
-      <p id="cf_type-label" class="font-weight-bold"><__trans phrase="Type"></p>
-      <p id="cf_type"></p>
-    </div>
-
-</mtapp:widget>
-<mt:else>
-<mtapp:widget
-   id="content-type-info"
-   label="<__trans phrase="Content Type">">
-<__trans phrase="No Content Type could be found.">
-<mt:if name="can_create_new_content_type"><a href="<mt:var name="script_url">?__mode=view&_type=content_type&blog_id=<mt:var name="blog_id">"><__trans phrase="Create a new Content Type?"></a></mt:if>
-</mtapp:widget>
-</mt:if>
-</mt:if>
-
 <$MTApp:PageActions from="edit_template"$>
 </mt:setvarblock>
 
@@ -383,7 +303,6 @@
   <button
      type="submit"
      accesskey="s"
-     tabindex="13"
      title="<__trans phrase="Save (s)">"
      class="btn btn-primary save action primary button">
     <__trans phrase="Save"></button>
@@ -391,7 +310,6 @@
   <button
      type="submit"
      accesskey="s"
-     tabindex="13"
      title="<__trans phrase="Save Changes (s)">"
      class="btn btn-primary save action primary button">
     <__trans phrase="Save Changes"></button>
@@ -401,7 +319,6 @@
      name="preview_template"
      type="submit"
      accesskey="v"
-     tabindex="14"
      title="<__trans phrase="Preview">"
      class="btn btn-default preview action button">
     <__trans phrase="Preview"></button>
@@ -413,7 +330,6 @@
   <button
      type="submit"
      accesskey="r"
-     tabindex="15"
      title="<__trans phrase="Save and Publish this template (r)">"
      class="btn btn-default publish action button">
     <__trans phrase="Save &amp; Publish"></button>
@@ -599,7 +515,7 @@ function setSyntaxHighlight(on_or_off) {
      help_page="templates"
      help_section="template_name">
   <mt:if name="has_name">
-    <input type="text" name="name" id="title" class="form-control title text full" tabindex="1" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Template Name">"  maxlength="255" mt:watch-change="1" />
+    <input type="text" name="name" id="title" class="form-control title text full" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Template Name">"  maxlength="255" mt:watch-change="1" />
   <mt:else>
     <input type="hidden" name="name" value="<$mt:var name="name" escape="html"$>" />
     <input type="text" name="name_display" id="title" class="form-control title text full" value="<$mt:var name="name" escape="html">" disabled="disabled" />
@@ -650,7 +566,7 @@ function setSyntaxHighlight(on_or_off) {
         </div>
       </div>
       <div id="textarea-enclosure" class="editor">
-        <textarea name="text" style="height: 550px;" id="text" class="form-control monospace text full" tabindex="3" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" ><mt:var name="text" escape="html"></textarea>
+        <textarea name="text" style="height: 550px;" id="text" class="form-control monospace text full" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" ><mt:var name="text" escape="html"></textarea>
       </div>
     </div>
   </mtapp:setting>
@@ -673,7 +589,7 @@ function setSyntaxHighlight(on_or_off) {
          label_class="top-label"
          help_page="templates"
          help_section="output_file">
-        <input type="text" name="outfile" id="outfile" class="form-control text" tabindex="4" value="<mt:var name="outfile" escape="html">" mt:watch-change="1" />
+        <input type="text" name="outfile" id="outfile" class="form-control text" value="<mt:var name="outfile" escape="html">" mt:watch-change="1" />
       </mtapp:setting>
     </mt:if>
     <mt:if name="type" eq="index">
@@ -684,7 +600,7 @@ function setSyntaxHighlight(on_or_off) {
          id="identifier"
          help_page="templates"
          help_section="template_type">
-        <select name="identifier" id="identifier" tabindex="5" class="custom-select form-control">
+        <select name="identifier" id="identifier" class="custom-select form-control">
           <option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
         <mt:loop name="index_identifiers">
           <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><$mt:var name="label" escape="html"$> (<$mt:var name="key" escape="html"$>)</option>
@@ -700,7 +616,7 @@ function setSyntaxHighlight(on_or_off) {
          label_class="top-label"
          help_page="templates"
          help_section="linked_templates">
-        <input type="text" name="linked_file" id="linked_file" class="form-control text" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" mt:watch-change="1" />
+        <input type="text" name="linked_file" id="linked_file" class="form-control text" value="<mt:var name="linked_file" escape="html">" maxlength="255" mt:watch-change="1" />
       </mtapp:setting>
 
 <mt:setvarblock name="publishing_hint"><__trans phrase="Learn more about <a href="https://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>"></mt:setvarblock>
@@ -731,7 +647,7 @@ function setSyntaxHighlight(on_or_off) {
           <input type="hidden" name="new_archive_type" id="new_archive_type" value="ContentType" />
           </div>
         <mt:else>
-        <select name="new_archive_type" id="new_archive_type" tabindex="9" class="custom-select form-control">
+        <select name="new_archive_type" id="new_archive_type" class="custom-select form-control">
         <mt:loop name="archive_types">
           <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
         </mt:loop>
@@ -748,7 +664,7 @@ function setSyntaxHighlight(on_or_off) {
            label_class="top-label"
            help_page="templates"
            help_section="archive_file_sel">
-          <select name="archive_file_sel" id="archive_file_sel" tabindex="11" class="custom-select form-control">
+          <select name="archive_file_sel" id="archive_file_sel" class="custom-select form-control">
           </select>
           <input type="text" id="archive_file_tmpl" name="archive_file_tmpl" class="form-control tmpl-path tmpl-path-custom last-child" value="" style="display:none;" />
           <input type="hidden" id="custom_path" />
@@ -763,7 +679,7 @@ function setSyntaxHighlight(on_or_off) {
            help_page="templates"
            help_section="cat_field_id"
            shown="0">
-          <select name="cat_field_id" id="cat_field_id" tabindex="12" class="custom-select form-control">
+          <select name="cat_field_id" id="cat_field_id" class="custom-select form-control">
           </select>
         </mtapp:setting>
 
@@ -776,7 +692,7 @@ function setSyntaxHighlight(on_or_off) {
            help_page="templates"
            help_section="dt_field_id"
            shown="0">
-          <select name="dt_field_id" id="dt_field_id" tabindex="13" class="custom-select form-control">
+          <select name="dt_field_id" id="dt_field_id" class="custom-select form-control">
           </select>
         </mtapp:setting>
 

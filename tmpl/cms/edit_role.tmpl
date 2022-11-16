@@ -229,22 +229,81 @@ function init() {
   <mtapp:settinggroup id="role-content-type-privileges">
     <legend class="h3"><__trans phrase="Content Type Privileges"></legend>
     <mt:loop name="content_type_perm_groups">
-      <mtapp:setting
-        id="ct-perm-group-<mt:var name="ct_perm_group_unique_id" escape="html">"
-        label="<mt:var name="ct_perm_group_label" escape="html">">
-        <div class="form-group">
+        <mt:setvar name="manage_content_data" value="">
+        <mt:setvar name="manage_content_field" value="">
         <mt:loop name="loaded_permissions">
         <mt:if name="content_type_unique_id" eq="$ct_perm_group_unique_id">
-          <div class="form-check form-check-inline">
-            <div class="custom-control custom-checkbox">
-                <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
-                <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
-            </div>
-          </div>
+
+            <mt:if test="$id =~ /^manage_content_data/">
+                <mt:setvarblock name="all">
+                <div class="form-check">
+                    <div class="custom-control custom-checkbox">
+                        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><span class="h4"><mt:var name="label" escape="html"></span></label>
+                    </div>
+                </div>
+                </mt:setvarblock>
+
+            <mt:elseif test="$id =~ /^create|publish|edit_all|_contentdata:/">
+                <mt:setvarblock name="manage_content_data" append="1">
+                <div class="form-check">
+                    <div class="custom-control custom-checkbox">
+                        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+                    </div>
+                </div>
+                </mt:setvarblock>
+
+            <mt:else>
+                <mt:setvarblock name="manage_content_field" append="1">
+                <div class="form-check mb-3" style="">
+                    <div class="custom-control custom-checkbox">
+                        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+                    </div>
+                </div>
+                </mt:setvarblock>
+            </mt:if>
+
         </mt:if>
         </mt:loop>
-        </div>
-      </mtapp:setting>
+
+
+        <mtapp:setting
+          id="ct-perm-group-<mt:var name="ct_perm_group_unique_id" escape="html">"
+          label_class="label-none">
+
+            <div class="mt-collapse ">
+                
+                <a class="btn btn-link" data-toggle="collapse" href="#collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">" aria-expanded="false" aria-controls="collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">">
+                    <svg role="img" class="mt-icon--secondary"><title>Collapse</title><use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_collapse"></use></svg>
+                    <mt:var name="ct_perm_group_label" escape="html">
+                </a>
+
+                <div class="collapse" id="collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">">
+                    <div class="form-group manage_all_content_data ml-3 mb-3">
+                        <mt:var name="all">
+                    </div>
+
+                    <div class="form-group manage_content_data d-flex flex-wrap ml-3 mb-3">
+                        <mt:var name="manage_content_data">
+                    </div>
+
+                    <hr class="manage_content_data_bottom">
+                    <h4 class="ml-5"><__trans phrase="Content Field Privileges"></h4>
+
+                    <div class="form-group ml-3 mb-3">
+                        <div class="row ml-2 mb-2">
+                        <div class="col-auto"><a href="#" class="check_all_content_field"><__trans phrase="Check All"></a></div>
+                        <div class="col-auto"><a href="#" class="uncheck_all_content_field"><__trans phrase="Uncheck All"></a></div>
+                        </div>
+                        <div class="manage_content_field d-flex flex-wrap">
+                        <mt:var name="manage_content_field">
+                        </div>
+                    </div>
+                </div>
+          </div>
+        </mtapp:setting>
     </mt:loop>
   </mtapp:settinggroup>
 </mt:if>
@@ -287,7 +346,35 @@ function init() {
             this.disabled = false;
         });
     });
-</mt:setvarblock>
+    jQuery('.check_all_content_field').on('click', function(){
+        const $parent = jQuery(this).closest('.collapse');
+        const $target = $parent.find('.manage_content_field input[type="checkbox"]')
+        if($target.prop('disabled')) return false;
+        $target .prop('checked', true);
+        return false;
+    });
+    jQuery('.uncheck_all_content_field').on('click', function(){
+        const $parent = jQuery(this).closest('.collapse');
+        const $target = $parent.find('.manage_content_field input[type="checkbox"]')
+        if($target.prop('disabled')) return false;
+        $target .prop('checked', false);
+        return false;
+    });
 
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<style>
+#role-content-type-privileges .field-label-none > label {
+  display: none;
+}
+#role-content-type-privileges .manage_content_data_bottom {
+    width: 94%;
+}
+#role-content-type-privileges .manage_content_field.d-flex .form-check {
+  flex-basis: 33%;
+  margin-bottom: 3px;
+}
+</style>
+</mt:setvarblock>
 <mt:include name="layout/default.tmpl">
 <mt:var name="layout">

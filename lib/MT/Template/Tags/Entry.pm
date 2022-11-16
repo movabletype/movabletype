@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -320,6 +320,8 @@ sub _hdlr_entries {
     %terms = %blog_terms;
     %args  = %blog_args;
 
+    $args{joins} = [];
+
     my $class_type     = $args->{class_type} || 'entry';
     my $class          = MT->model($class_type);
     my $cat_class_type = $class->container_type();
@@ -519,20 +521,27 @@ sub _hdlr_entries {
                 $map{ $_->category_id } = 1 for @c_ids;
                 \%map;
             };
+
+            my $filter_only_by_join = 0;
             if ( !$entries ) {
                 if ( $category_arg !~ m/\bNOT\b/i ) {
                     return MT::Template::Context::_hdlr_pass_tokens_else(@_)
                         unless @cat_ids;
-                    $args{join} = MT::Placement->join_on(
+                    push @{ $args{joins} }, MT::Placement->join_on(
                         'entry_id',
                         {   category_id => \@cat_ids,
                             %blog_terms
                         },
                         { %blog_args, unique => 1 }
                     );
+
+                    # We can filter by "JOIN" statement for simple args. (single tag, "or" condition)
+                    $filter_only_by_join = 1 if $category_arg !~ m/\b(AND|NOT)\b|\(|\)/i;
                 }
             }
-            push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+            unless ($filter_only_by_join) {
+                push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+            }
         }
         else {
             return $ctx->error(
@@ -546,77 +555,18 @@ sub _hdlr_entries {
 
     # Adds a tag filter to the filters list.
     if ( my $tag_arg = $args->{tags} || $args->{tag} ) {
-        require MT::Tag;
-        require MT::ObjectTag;
+        my $status = $ctx->set_tag_filter_context({
+            objects     => $entries,
+            tag_arg     => $tag_arg,
+            blog_terms  => \%blog_terms,
+            blog_args   => \%blog_args,
+            object_args => $entries ? undef : \%args,
+            filters     => \@filters,
+            datasource  => $class->datasource,
+        });
 
-        my $terms;
-        if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
-            my @tags = MT::Tag->split( ',', $tag_arg );
-            $terms = { name => \@tags };
-            $tag_arg = join " or ", @tags;
-        }
-        my $tags = [
-            MT::Tag->load(
-                $terms,
-                {   ( $terms ? ( binary => { name => 1 } ) : () ),
-                    join => MT::ObjectTag->join_on(
-                        'tag_id',
-                        {   object_datasource => $class->datasource,
-                            %blog_terms,
-                        },
-                        { %blog_args, unique => 1 }
-                    ),
-                }
-            )
-        ];
-        my $cexpr = $ctx->compile_tag_filter( $tag_arg, $tags );
-        if ($cexpr) {
-            my @tag_ids
-                = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
-            my $preloader = sub {
-                my ($entry_id) = @_;
-                my %map;
-                return \%map unless @tag_ids;
-                my $terms = {
-                    tag_id            => \@tag_ids,
-                    object_id         => $entry_id,
-                    object_datasource => $class->datasource,
-                    %blog_terms,
-                };
-                my $args = {
-                    %blog_args,
-                    fetchonly   => ['tag_id'],
-                    no_triggers => 1
-                };
-                my @ot_ids;
-                @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
-                $map{ $_->tag_id } = 1 for @ot_ids;
-                \%map;
-            };
-            if ( !$entries ) {
-                if ( $tag_arg !~ m/\bNOT\b/i ) {
-                    return MT::Template::Context::_hdlr_pass_tokens_else(@_)
-                        unless @tag_ids;
-                    $args{join} = MT::ObjectTag->join_on(
-                        'object_id',
-                        {   tag_id            => \@tag_ids,
-                            object_datasource => 'entry',
-                            %blog_terms
-                        },
-                        { %blog_args, unique => 1 }
-                    );
-                }
-            }
-            push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
-        }
-        else {
-            return $ctx->error(
-                MT->translate(
-                    "You have an error in your '[_2]' attribute: [_1]",
-                    $tag_arg, 'tag'
-                )
-            );
-        }
+        return $ctx->error( $ctx->errstr ) unless $status;
+        return $ctx->_hdlr_pass_tokens_else($args, $cond) if $status eq 'no_matching_tags';
     }
 
     # Adds an author filter to the filters list.
@@ -691,7 +641,7 @@ sub _hdlr_entries {
                 $scored_by = $author;
             }
 
-            $args{join} = MT->model('objectscore')->join_on(
+            push @{ $args{joins} }, MT->model('objectscore')->join_on(
                 undef,
                 {   object_id => \'=entry_id',
                     object_ds => 'entry',
@@ -855,7 +805,7 @@ sub _hdlr_entries {
             # for now, we support one join
             my ( $col, $val ) = %fields;
             my $type = MT::Meta->metadata_by_name( $class, 'field.' . $col );
-            $args{join} = [
+            push @{ $args{joins} }, [
                 $class->meta_pkg,
                 undef,
                 {   type          => 'field.' . $col,
@@ -2053,9 +2003,9 @@ sub _hdlr_entry_author {
 
 ###########################################################################
 
-=head2 EntryAuthorDisplayName
+=head2 EntryAuthorDisplayName, EntryModifiedAuthorDisplayName
 
-Outputs the display name of the author for the current entry in context.
+Outputs the display name of the (last modified) author for the current entry in context.
 If the author has not provided a display name for publishing, this tag
 will output an empty string.
 
@@ -2065,8 +2015,16 @@ sub _hdlr_entry_author_display_name {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return $a ? $a->nickname || '' : '';
+    my $author = $e->author;
+    return $author ? $author->nickname || '' : '';
+}
+
+sub _hdlr_entry_modified_author_display_name {
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $author = $e->modified_author;
+    return $author ? $author->nickname || '' : '';
 }
 
 ###########################################################################
@@ -2090,9 +2048,9 @@ sub _hdlr_entry_author_nick {
 
 ###########################################################################
 
-=head2 EntryAuthorUsername
+=head2 EntryAuthorUsername, EntryModifiedAuthorUsername
 
-Outputs the username of the author for the entry currently in context.
+Outputs the username of the (last modified) author for the entry currently in context.
 B<NOTE: it is not recommended to publish MT usernames.>
 
 =cut
@@ -2101,15 +2059,23 @@ sub _hdlr_entry_author_username {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return $a ? $a->name || '' : '';
+    my $author = $e->author;
+    return $author ? $author->name || '' : '';
+}
+
+sub _hdlr_entry_modified_author_username {
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $author = $e->modified_author;
+    return $author ? $author->name || '' : '';
 }
 
 ###########################################################################
 
-=head2 EntryAuthorEmail
+=head2 EntryAuthorEmail, EntryModifiedAuthorEmail
 
-Outputs the email address of the author for the current entry in context.
+Outputs the email address of the (last modified) author for the current entry in context.
 B<NOTE: it is not recommended to publish e-mail addresses for MT users.>
 
 B<Attributes:>
@@ -2130,17 +2096,27 @@ sub _hdlr_entry_author_email {
     my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return '' unless $a && defined $a->email;
+    my $author = $e->author;
+    return '' unless $author && defined $author->email;
     return $args
-        && $args->{'spam_protect'} ? spam_protect( $a->email ) : $a->email;
+        && $args->{'spam_protect'} ? spam_protect( $author->email ) : $author->email;
+}
+
+sub _hdlr_entry_modified_author_email {
+    my ( $ctx, $args ) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $author = $e->modified_author;
+    return '' unless $author && defined $author->email;
+    return $args
+        && $args->{'spam_protect'} ? spam_protect( $author->email ) : $author->email;
 }
 
 ###########################################################################
 
-=head2 EntryAuthorURL
+=head2 EntryAuthorURL, EntryModifiedAuthorURL
 
-Outputs the Website URL field from the author's profile for the
+Outputs the Website URL field from the (last modified) author's profile for the
 current entry in context.
 
 =cut
@@ -2149,15 +2125,23 @@ sub _hdlr_entry_author_url {
     my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return $a ? $a->url || "" : "";
+    my $author = $e->author;
+    return $author ? $author->url || "" : "";
+}
+
+sub _hdlr_entry_modified_author_url {
+    my ( $ctx, $args ) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $author = $e->modified_author;
+    return $author ? $author->url || "" : "";
 }
 
 ###########################################################################
 
-=head2 EntryAuthorLink
+=head2 EntryAuthorLink, EntryModifiedAuthorLink
 
-Outputs a linked author name suitable for publishing in the 'byline'
+Outputs a linked (last modified) author name suitable for publishing in the 'byline'
 of an entry.
 
 B<Attributes:>
@@ -2198,15 +2182,29 @@ sub _hdlr_entry_author_link {
     my ( $ctx, $args, $cond ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return '' unless $a;
+    my $author = $e->author;
+    return '' unless $author;
+    __hdlr_entry_author_link($ctx, $args, $cond, $author);
+}
+
+sub _hdlr_entry_modified_author_link {
+    my ( $ctx, $args, $cond ) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $author = $e->modified_author;
+    return '' unless $author;
+    __hdlr_entry_author_link($ctx, $args, $cond, $author);
+}
+
+sub __hdlr_entry_author_link {
+    my ( $ctx, $args, $cond, $author ) = @_;
 
     my $type = $args->{type} || '';
 
     if ( $type && $type eq 'archive' ) {
         require MT::Author;
-        if ( $a->type == MT::Author::AUTHOR() ) {
-            local $ctx->{__stash}{author} = $a;
+        if ( $author->type == MT::Author::AUTHOR() ) {
+            local $ctx->{__stash}{author} = $author;
             local $ctx->{current_archive_type} = undef;
             if (my $link = $ctx->invoke_handler(
                     'archivelink', { type => 'Author' }, $cond
@@ -2215,21 +2213,21 @@ sub _hdlr_entry_author_link {
             {
                 my $target = $args->{new_window} ? ' target="_blank"' : '';
                 my $displayname
-                    = encode_html( remove_html( $a->nickname || '' ) );
+                    = encode_html( remove_html( $author->nickname || '' ) );
                 return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
                     $displayname;
             }
         }
     }
 
-    return MT::Template::Tags::Common::hdlr_author_link( @_, $a );
+    return MT::Template::Tags::Common::hdlr_author_link( @_, $author );
 }
 
 ###########################################################################
 
-=head2 EntryAuthorID
+=head2 EntryAuthorID, EntryModifiedAuthorID
 
-Outputs the numeric ID of the author for the current entry in context.
+Outputs the numeric ID of the (last modified) author for the current entry in context.
 
 =cut
 
@@ -2237,8 +2235,16 @@ sub _hdlr_entry_author_id {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $a = $e->author;
-    return $a ? $a->id || '' : '';
+    my $author = $e->author;
+    return $author ? $author->id || '' : '';
+}
+
+sub _hdlr_entry_modified_author_id {
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+    my $author = $e->modified_author;
+    return $author ? $author->id || '' : '';
 }
 
 ###########################################################################

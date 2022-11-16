@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -13,8 +13,8 @@ function smarty_function_mtcontentpermalink($args, &$ctx) {
 
 
     $blog = $ctx->stash('blog');
-    $at = $args['type'];
-    $at or $at = $args['archive_type'];
+    $at = isset($args['type']) ? $args['type'] : null;
+    $at or $at = isset($args['archive_type']) ? $args['archive_type'] : null;
     if(!$at)
         $at = "ContentType";
 

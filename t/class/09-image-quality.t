@@ -20,7 +20,7 @@ MT->instance;
 
 my $cfg = MT::ConfigMgr->instance;
 
-for my $d (qw/ ImageMagick GD Imager NetPBM /) {
+for my $d ( $test_env->image_drivers ) {
     subtest "ImageDriver: $d" => sub {
         $cfg->ImageDriver($d);
 
@@ -45,7 +45,7 @@ for my $d (qw/ ImageMagick GD Imager NetPBM /) {
                     or plan skip_all => qq/ImageDriver "$d" may be disabled./;
 
                 is( $png_image->png_quality,
-                    $d eq 'ImageMagick' ? $q * 10 : $q,
+                    $d =~ /(?:Image|Graphics)Magick/ ? $q * 10 : $q,
                     "ImagePngQuality: $q"
                 );
 
@@ -79,7 +79,7 @@ for my $d (qw/ ImageMagick GD Imager NetPBM /) {
                 my $jpg_image = MT::Image->new( Filename => $jpg_file )
                     or plan skip_all => qq/ImageDriver "$d" may be disabled./;
 
-                if ( $d eq 'ImageMagick' && $q == 0 ) {
+                if ( $d =~ /(?:Image|Graphics)Magick/ && $q == 0 ) {
                     is( $jpg_image->jpeg_quality, 1,
                         "ImageJpegQuality: 1 (This is a special case)" );
                 }

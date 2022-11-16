@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -12,7 +12,6 @@ use base qw( MT::ErrorHandler );
 use filetest 'access';
 use File::Spec;
 use File::Basename;
-use Encode::Locale;
 use MT::Util qw( weaken );
 use MT::I18N qw( const );
 
@@ -29,20 +28,23 @@ our (
 );
 my %Text_filters;
 
+our $STATUS;
+$SIG{USR2} = sub { $MT::STATUS ||= 'Got USR2 signal'; print STDERR "$$: $MT::STATUS\n"; return } unless $^O eq 'MSWin32';
+
 # For state determination in MT::Object
 our $plugins_installed;
 
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.3', '7.0046' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.9', '7.0054' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.3.1',              '__PRODUCT_VERSION_ID__',
+        '7.9.6',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -60,11 +62,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 1;
+        $RELEASE_NUMBER = 6;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.4608';
+        $RELEASE_VERSION_ID = 'r.5401';
     }
 
     $DebugMode = 0;
@@ -386,21 +388,24 @@ sub log {
         unless defined $log->level;
     $log->class('system')
         unless defined $log->class;
-    $log->save();
-    print STDERR Encode::encode( 'locale',
-        MT->translate( "Message: [_1]", $log->message ) . "\n" )
-        if $MT::DebugMode;
 
+    # log to a file/handle before saving to the database
     require MT::Util::Log;
     MT::Util::Log::init();
     my $method
         = $log->level == MT::Log::DEBUG()    ? 'debug'
         : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::NOTICE()   ? 'notice'
         : $log->level == MT::Log::WARNING()  ? 'warn'
         : $log->level == MT::Log::ERROR()    ? 'error'
         : $log->level == MT::Log::SECURITY() ? 'error'
         :                                      'none';
-    MT::Util::Log->$method( $log->message );
+    my $message  = $log->message;
+    my $metadata = $log->metadata;
+    $message .= " ($metadata)" if defined $metadata && $metadata ne '';
+    MT::Util::Log->$method($message);
+
+    $log->save();
 }
 
 sub run_tasks {
@@ -1795,6 +1800,18 @@ sub update_ping_list {return}
 
 sub supported_languages {
     my $mt = shift;
+
+    my %default_supported_languages;
+    if (my $default = MT->config->DefaultSupportedLanguages) {
+        for my $tag (split ',', $default) {
+            $tag =~ tr/A-Z-/a-z_/;
+            $default_supported_languages{$tag} = 1;
+        }
+        # just in case
+        $default_supported_languages{MT->config->DefaultLanguage} = 1;
+        $default_supported_languages{MT->current_language} = 1;
+    }
+
     require MT::L10N;
     require File::Basename;
     ## Determine full path to lib/MT/L10N directory...
@@ -1814,6 +1831,7 @@ sub supported_languages {
         for my $f ( readdir $DH ) {
             my ($tag) = $f =~ /^(\w+)\.pm$/;
             next unless $tag;
+            next if %default_supported_languages && !$default_supported_languages{$tag};
             my $lh = MT::L10N->get_handle($tag);
             $langs{ $lh->language_tag } = $lh->language_name;
         }
@@ -2084,6 +2102,9 @@ sub set_default_tmpl_params {
     $param->{language_tag}          = substr( $mt->current_language, 0, 2 );
     $param->{language_encoding}     = $mt->charset;
     $param->{optimize_ui}           = $mt->build_id && !$MT::DebugMode;
+    $param->{use_mt_common_json}    = $mt->config->UseMTCommonJSON;
+    $param->{use_svg4everybody}     = $mt->config->UseSVGForEverybody;
+    $param->{use_jquery_json}       = $mt->config->UseJQueryJSON;
 
     if ( $mt->isa('MT::App') ) {
         if ( my $author = $mt->user ) {
@@ -2199,6 +2220,8 @@ sub build_page {
     {
         $param->{ $config_field . '_readonly' } = 1;
     }
+
+    $param->{hide_config_warnings} = $mt->config->HideConfigWarnings;
 
     my $tmpl_file = '';
     if ( UNIVERSAL::isa( $file, 'MT::Template' ) ) {
@@ -2614,7 +2637,7 @@ sub handler_to_coderef {
     my ( $name, $delayed ) = @_;
 
     return $name if ref($name) eq 'CODE';
-    return undef unless defined $name && $name ne '';
+    return undef unless defined $name && !ref($name) && $name ne '';
 
     my $code;
     if ( $name !~ m/->/ ) {
@@ -2656,6 +2679,7 @@ sub handler_to_coderef {
     else {
         $hdlr_pkg =~ s/::[^:]+$//;
     }
+    die "Illegal package name: $hdlr_pkg" unless $hdlr_pkg =~ /\A[A-Za-z][A-Za-z0-9_]*(?:(?:::|')[A-Za-z0-9_]+)*\z/;
     if ( !defined(&$name) && !$pkg->can('AUTOLOAD') ) {
 
         # The delayed option will return a coderef that delays the loading
@@ -3882,7 +3906,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2020 Six Apart.
+Except where otherwise noted, MT is Copyright Six Apart.
 All rights reserved.
 
 =cut

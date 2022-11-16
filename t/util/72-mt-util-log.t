@@ -13,12 +13,11 @@ BEGIN {
 }
 
 use MT::Test;
+use File::Path qw(mkpath);
 
 require_ok('MT::Util::Log');
 
-my $mt   = MT->instance;
-my $path = $test_env->path('log');
-mkdir $path;
+my $mt = MT->instance;
 
 # initialize
 require MT::FileMgr;
@@ -27,6 +26,9 @@ my $fmgr = MT::FileMgr->new('Local');
 for my $module (qw/ Log4perl Minimal /) {
     for my $level (qw/ debug warn /) {
     SKIP: {
+            my $path = $test_env->path("log/$module/$level");
+            mkpath $path;
+
             $mt->config( 'LoggerLevel',  $level );
             $mt->config( 'LoggerPath',   $path );
             $mt->config( 'LoggerModule', $module );
@@ -55,6 +57,26 @@ for my $module (qw/ Log4perl Minimal /) {
                 ok( !-s $logfile_path,
                     "A data was not written to a file. ($module)"
                 );
+            }
+
+            eval {
+                use locale;
+                use POSIX qw(locale_h);
+                setlocale(LC_ALL, "ja_JP.UTF-8");
+                my @warnings;
+                local $SIG{__WARN__} = sub { push @warnings, @_ };
+                mkdir $test_env->path("tmp");
+                mkdir $test_env->path("tmp");
+                MT::Util::Log->error("$!");
+                ok !@warnings, "Write Japanese error without warnings" or note explain \@warnings;
+            };
+            warn $@ if $@;
+
+            if ($module eq 'Log4perl') {
+                Log::Log4perl->reset;
+            }
+            if ($module eq 'Minimal') {
+                undef $Log::Minimal::PRINT;
             }
         }
     }

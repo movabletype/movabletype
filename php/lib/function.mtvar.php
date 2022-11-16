@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -83,7 +83,7 @@ function smarty_function_mtvar($args, &$ctx) {
                     }
                 } else {
                     if ($key != chr(0)) {
-                        $return_val = $value[$key];
+                        $return_val = isset($value[$key]) ? $value[$key] : null;
                     } else {
                         unset($value);
                     }
@@ -112,7 +112,7 @@ function smarty_function_mtvar($args, &$ctx) {
         elseif (is_array($value)) {
             if ( isset($index) ) {
                 if (is_numeric($index)) {
-                    $return_val = $value[ $index ];
+                    $return_val = isset($value[$index]) ? $value[$index] : null;
                 } else {
                     unset($value); # fall through to any 'default'
                 }
@@ -149,14 +149,14 @@ function smarty_function_mtvar($args, &$ctx) {
         }
         if ( array_key_exists('op', $args) ) {
             $op = $args['op'];
-            $rvalue = $args['value'];
+            $rvalue = isset($args['value']) ? $args['value'] : null;
             if ( $op && isset($value) && !is_array($value) ) {
                 $return_val = _math_operation($op, $value, $rvalue);
                 if (!isset($return_val)) {
                     return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", array($value, $op, $rvalue)));
             }}
         }
-        if ( !is_array($return_val) && preg_match('/^smarty_fun_[a-f0-9]+$/', $return_val) ) {
+        if ( !is_array($return_val) && preg_match('/^smarty_fun_[a-f0-9]+$/', $return_val ?? '') ) {
             if (function_exists($return_val)) {
                 ob_start();
                 $return_val($ctx, array());
@@ -168,7 +168,7 @@ function smarty_function_mtvar($args, &$ctx) {
         }
     }
 
-    if ($return_val == '') {
+    if ($return_val === '') {
         if (isset($args['default'])) {
             $return_val = $args['default'];
         }

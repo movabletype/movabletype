@@ -16,6 +16,8 @@ BEGIN {
 
 use MT::Test::DataAPI;
 use MT::Test::Permission;
+use MT::Test::Image;
+use File::Basename;
 use File::Path;
 
 $test_env->prepare_fixture('db_data');
@@ -44,6 +46,14 @@ my $unpublished_page = MT::Test::Permission->make_page(
 MT->model('asset')->driver->Disabled(1)
     if MT->model('asset')->driver->can('Disabled');
 
+my ( %guards, %images );
+for my $ext (qw/ jpg png gif /) {
+    ( $guards{$ext}, $images{$ext} ) = MT::Test::Image->tempfile(
+        DIR => $test_env->root,
+        SUFFIX => ".$ext",
+    );
+}
+
 my $suite = suite();
 test_data_api($suite);
 
@@ -56,12 +66,7 @@ sub suite {
         {    # Not logged in.
             path   => '/v1/sites/1/assets/upload',
             method => 'POST',
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
-                ),
-            ],
+            upload => [ 'file', $images{jpg} ],
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
@@ -69,12 +74,7 @@ sub suite {
         {    # No permissions.
             path   => '/v1/sites/1/assets/upload',
             method => 'POST',
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
-                ),
-            ],
+            upload => [ 'file', $images{jpg} ],
             restrictions => { 1 => [qw/ upload /], },
             code         => 403,
             error => 'Do not have permission to upload.',
@@ -87,12 +87,7 @@ sub suite {
                 my ($data) = @_;
                 $data->{count} = $app->model('asset')->count;
             },
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
-                ),
-            ],
+            upload => [ 'file', $images{jpg} ],
             result => sub {
                 $app->model('asset')->load( { class => '*' },
                     { sort => [ { column => 'id', desc => 'DESC' }, ] } );
@@ -102,12 +97,7 @@ sub suite {
             path   => '/v1/sites/1/assets/upload',
             method => 'POST',
             code   => '409',
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
-                ),
-            ],
+            upload => [ 'file', $images{jpg} ],
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
@@ -122,12 +112,7 @@ sub suite {
                     %$temp_data,
                 };
             },
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
-                ),
-            ],
+            upload => [ 'file', $images{jpg} ],
         },
 
         # Overwrite once. (version 2 or later)
@@ -135,22 +120,12 @@ sub suite {
             method => 'POST',
             code   => 409,
             params => { overwrite_once => 1, },
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
-                ),
-            ],
+            upload => [ 'file', $images{jpg} ],
         },
         {   path   => '/v2/sites/1/assets/upload',
             method => 'POST',
             params => { overwrite_once => 1, },
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
-                ),
-            ],
+            upload => [ 'file', $images{jpg} ],
         },
 
         # upload_asset_v2 - irregular tests.
@@ -158,12 +133,7 @@ sub suite {
             path   => '/v2/assets/upload',
             method => 'POST',
             params => { site_id => 1, },
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.png'
-                ),
-            ],
+            upload => [ 'file', $images{png} ],
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
@@ -172,12 +142,7 @@ sub suite {
             path   => '/v2/assets/upload',
             method => 'POST',
             params => { site_id => 1, },
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.png'
-                ),
-            ],
+            upload => [ 'file', $images{png} ],
             restrictions => {
                 1 => [qw/ upload /],
                 0 => [qw/ upload /],
@@ -195,12 +160,7 @@ sub suite {
                 my ($data) = @_;
                 $data->{count} = $app->model('asset')->count;
             },
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.png'
-                ),
-            ],
+            upload => [ 'file', $images{png} ],
             result => sub {
                 $app->model('asset')->load( { class => '*' },
                     { sort => [ { column => 'id', desc => 'DESC' }, ] } );
@@ -211,12 +171,7 @@ sub suite {
             method => 'POST',
             params => { site_id => 1, },
             code   => '409',
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
-                ),
-            ],
+            upload => [ 'file', $images{jpg} ],
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
@@ -232,23 +187,13 @@ sub suite {
                     %$temp_data,
                 };
             },
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
-                ),
-            ],
+            upload => [ 'file', $images{jpg} ],
         },
         {    # Overwrite once. (version 2 or later)
             path   => '/v2/assets/upload',
             method => 'POST',
             params => { site_id => 1, overwrite_once => 1, },
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.jpg'
-                ),
-            ],
+            upload => [ 'file', $images{jpg} ],
         },
 
         {    # System.
@@ -259,12 +204,7 @@ sub suite {
                 my ($data) = @_;
                 $data->{count} = $app->model('asset')->count;
             },
-            upload => [
-                'file',
-                File::Spec->catfile(
-                    $ENV{MT_HOME}, "t", 'images', 'test.gif'
-                ),
-            ],
+            upload => [ 'file', $images{gif} ],
             result => sub {
                 $app->model('asset')->load( { class => '*' },
                     { sort => [ { column => 'id', desc => 'DESC' }, ] } );
@@ -1177,11 +1117,11 @@ sub suite {
         },
 
         # get_thumbnail - normal tests
-        {   path      => '/v2/sites/1/assets/5/thumbnail',
+        {   path      => '/v2/sites/1/assets/1/thumbnail',
             method    => 'GET',
             author_id => 0,
             result    => sub {
-                my $image = $app->model('asset')->load(5);
+                my $image = $app->model('asset')->load(1);
                 my ( $thumbnail, $w, $h ) = $image->thumbnail_url;
                 return +{
                     url    => $thumbnail,

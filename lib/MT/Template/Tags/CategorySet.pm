@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -43,7 +43,7 @@ If specified, selects category sets defined for the content type matching the gi
 sub _hdlr_category_sets {
     my ( $ctx, $args, $cond ) = @_;
 
-    my $content_type = $ctx->stash('content_type');
+    my $content_type = $ctx->get_content_type_context( $args, $cond );
     my $blog_id
         = $args->{blog_id}    ? $args->{blog_id}
         : $ctx->stash('blog') ? $ctx->stash('blog')->id
@@ -66,7 +66,6 @@ sub _hdlr_category_sets {
         push @category_sets, $category_set if $category_set;
     }
     else {
-        $content_type = $ctx->get_content_type_context( $args, $cond );
         if ( $args->{content_type} && !$content_type ) {
             return;
         }

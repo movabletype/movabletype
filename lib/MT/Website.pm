@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -228,6 +228,33 @@ sub add_blog {
             }
         }
     }
+}
+
+sub system_filters {
+    my %filters;
+    my @filters_to_sort;
+    my $order = 0;
+
+    $filters{parent_site_only} = {
+        label => 'Show only Parent Site',
+        items => [{
+                type => 'parent_website',
+                args => { value => 1, }
+            },
+        ],
+        order => 100,
+    };
+    $filters{child_site_only} = {
+        label => 'Show only Child Site',
+        items => [{
+                type => 'parent_website',
+                args => { value => 0, }
+            },
+        ],
+        order => 200,
+    };
+
+    return \%filters;
 }
 
 1;

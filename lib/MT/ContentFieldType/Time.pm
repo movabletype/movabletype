@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -181,7 +181,7 @@ sub options_validation_handler {
     my ( $app, $type, $label, $field_label, $options ) = @_;
 
     my $date = '1970-01-01';
-    my $time = $options->{initial_time} || '00:00:00';
+    my $time = $options->{initial_value} || '00:00:00';
     my $ts   = "$date $time";
     return $app->translate(
         "Invalid time \'[_1]\'; An initial time value be in the format HH:MM:SS.",

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -131,6 +131,8 @@ sub work {
     }
 
     if ($rebuilt) {
+        $mt->publisher->remove_marked_files;
+
         MT::TheSchwartz->debug(
             $mt->translate(
                 "-- set complete ([quant,_1,file,files] in [_2] seconds)",

@@ -11,23 +11,13 @@
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-  <mtapp:settinggroup id="export-entry-settings">
-    <mtapp:setting
-       id="export_blog_id_field"
-       label="<mt:var name="export_label">">
-      <div>
-        <strong><mt:var name="blog_name" escape="html"> (<mt:var name="blog_id">)</strong>
-      </div>
-    </mtapp:setting>
-  </mtapp:settinggroup>
-
   <mt:setvarblock name="action_buttons">
     <button
        type="submit"
        accesskey="s"
-       title="<__trans phrase="Export [_1]" params="<mt:var name="scope_label">">"
+       title="<__trans phrase="Export [_1] Entries" params="<mt:var name="scope_label">">"
        class="export action primary button btn btn-primary">
-      <__trans phrase="Export [_1]" params="<mt:var name="scope_label">">
+      <__trans phrase="Export [_1] Entries" params="<mt:var name="scope_label">">
     </button>
   </mt:setvarblock>
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">

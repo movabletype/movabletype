@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -19,6 +19,8 @@ sub parse {
 
 sub _add_patch_version_if_needed {
     my ($version_string) = @_;
+    $version_string =~ s/\A(v?[0-9]+(?:\.[0-9]+)?(?:\.[0-9]+)?).*\z/$1/ if $version_string;
+    $version_string ||= '0';
     if ( $version_string =~ /^[0-9]+\.[0-9]+$/ ) {
         return "$version_string.0";
     }

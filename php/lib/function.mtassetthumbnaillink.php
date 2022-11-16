@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -22,10 +22,13 @@ function smarty_function_mtassetthumbnaillink($args, &$ctx) {
 
     require_once('MTUtil.php');
 
-    list($thumb, $thumb_w, $thumb_h) = get_thumbnail_file($asset, $blog, $args);
-    if (empty($thumb)) {
+    $props = get_thumbnail_file($asset, $blog, $args);
+    
+    if (empty($props)) {
         return '';
     }
+
+    list($thumb, $thumb_w, $thumb_h) = $props;
 
     $target = "";
     if (isset($args['new_window']))

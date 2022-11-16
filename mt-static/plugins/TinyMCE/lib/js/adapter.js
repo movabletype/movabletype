@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+ * Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -11,7 +11,7 @@
 
     $.extend(MT.Editor.TinyMCE, MT.Editor, {
         isMobileOSWYSIWYGSupported: function() {
-            return false;
+            return true;
         },
         config: {
             mode: "exact",
@@ -166,6 +166,24 @@
             adapter.$editorElement = adapter.$editorTextarea;
 
             var config = $.extend({}, this.constructor.config);
+
+            // ignore errors in the setup function added by the thrid-party plugin.
+            ['init_instance_callback', 'setup'].forEach(function(key) {
+                var orig = config[key];
+                if (! orig) {
+                   return;
+                }
+
+                config[key] = function(ed) {
+                    try {
+                        orig.apply(this, arguments);
+                    }
+                    catch (e) {
+                        console.error(e);
+                    }
+                }
+            });
+
             var init_instance_callback = config['init_instance_callback'];
             config['init_instance_callback'] = function(ed) {
                 init_instance_callback.apply(this, arguments);
@@ -244,9 +262,25 @@
             }
             adapter.$editorTextarea = $('#' + adapter.id);
 
+            // default height
+            config["height"] = 350;
+            var text_height = parseInt(adapter.$editorTextarea.css('height').replace('px', ''));
+            if( config["height"] < text_height ){
+                config["height"] = text_height;
+            }
+
             tinyMCE.init(config);
 
             adapter.setFormat(format, true);
+
+            if (MT.Util.isMobileView()) {
+                window.oncontextmenu = function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                };
+            }
+
         },
 
         setFormat: function(format, calledInInit) {

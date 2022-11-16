@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,6 +14,45 @@ use MT::I18N qw( const wrap_text );
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
+
+    $app->validate_param({
+        _type                     => [qw/OBJTYPE/],
+        allow_comments            => [qw/MAYBE_STRING/],
+        allow_pings               => [qw/MAYBE_STRING/],
+        asset_id                  => [qw/ID/],
+        authored_on_date          => [qw/MAYBE_STRING/],
+        authored_on_day           => [qw/MAYBE_STRING/],
+        authored_on_hour          => [qw/MAYBE_STRING/],
+        authored_on_minute        => [qw/MAYBE_STRING/],
+        authored_on_month         => [qw/MAYBE_STRING/],
+        authored_on_second        => [qw/MAYBE_STRING/],
+        authored_on_time          => [qw/MAYBE_STRING/],
+        authored_on_year          => [qw/MAYBE_STRING/],
+        basename                  => [qw/MAYBE_STRING/],
+        category_id               => [qw/ID/],
+        category_ids              => [qw/MAYBE_IDS/],    # may contain -1?
+        convert_breaks            => [qw/MAYBE_STRING/],
+        convert_breaks_for_mobile => [qw/MAYBE_STRING/],
+        dirty                     => [qw/MAYBE_STRING/],
+        id                        => [qw/ID/],
+        include_asset_ids         => [qw/IDS/],
+        mobile_view               => [qw/MAYBE_STRING/],
+        no_snapshot               => [qw/MAYBE_STRING/],
+        ping_errors               => [qw/MAYBE_STRING/],
+        r                         => [qw/MAYBE_STRING/],
+        reedit                    => [qw/MAYBE_STRING/],
+        save_revision             => [qw/MAYBE_STRING/],
+        status                    => [qw/MAYBE_STRING/],
+        tags                      => [qw/MAYBE_STRING/],
+        unpublished_on_date       => [qw/MAYBE_STRING/],
+        unpublished_on_day        => [qw/MAYBE_STRING/],
+        unpublished_on_hour       => [qw/MAYBE_STRING/],
+        unpublished_on_minute     => [qw/MAYBE_STRING/],
+        unpublished_on_month      => [qw/MAYBE_STRING/],
+        unpublished_on_second     => [qw/MAYBE_STRING/],
+        unpublished_on_time       => [qw/MAYBE_STRING/],
+        unpublished_on_year       => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $type  = $app->param('_type');
     my $perms = $app->permissions
@@ -171,6 +210,18 @@ sub edit {
         $param->{ping_errors}         = $app->param('ping_errors');
         $param->{can_view_log}        = $app->can_do('view_log');
         $param->{entry_permalink} = MT::Util::encode_html( $obj->permalink );
+
+        my $at = $blog->archive_type_preferred
+          || 'Individual';
+        $at = 'Page' if $type eq 'page';
+        $param->{has_archive_mapping} = MT::TemplateMap->exist(
+            {
+                archive_type => $at,
+                is_preferred => 1,
+                blog_id      => $blog_id,
+            }
+        );
+
         $param->{'mode_view_entry'} = 1;
         $param->{'basename'}        = $obj->basename;
 
@@ -346,12 +397,12 @@ sub edit {
                 if ($asset) {
                     my $asset_1;
                     if ( $asset->class eq 'image' ) {
+                        my ($thumb_url) = $asset->thumbnail_url( Width => 100 );
                         $asset_1 = {
                             asset_id   => $asset->id,
                             asset_name => $asset->file_name,
                             asset_type => $asset->class,
-                            asset_thumb =>
-                                $asset->thumbnail_url( Width => 100 ),
+                            asset_thumb => $thumb_url,
                             asset_blog_id => $asset->blog_id,
                         };
                     }
@@ -393,10 +444,11 @@ sub edit {
             foreach my $asset (@assets) {
                 my $asset_1;
                 if ( $asset->class eq 'image' ) {
+                    my ($thumb_url) = $asset->thumbnail_url( Width => 100 );
                     $asset_1 = {
                         asset_id    => $asset->id,
                         asset_name  => $asset->file_name,
-                        asset_thumb => $asset->thumbnail_url( Width => 100 ),
+                        asset_thumb => $thumb_url,
                         asset_type  => $asset->class,
                         asset_blog_id => $asset->blog_id,
                     };
@@ -635,7 +687,9 @@ sub edit {
         } @ordered
     ];
 
-    $param->{quickpost_js} = MT::CMS::Entry::quickpost_js( $app, $type );
+    unless (MT->config->DisableQuickPost) {
+        $param->{quickpost_js} = MT::CMS::Entry::quickpost_js( $app, $type );
+    }
     $param->{object_label_plural} = $param->{search_label}
         = $class->class_label_plural;
     if ( 'page' eq $type ) {
@@ -903,11 +957,17 @@ sub _build_entry_preview {
     my $archive_file;
     my $orig_file;
     my $file_ext;
+    my $archive_url;
     if ($tmpl_map) {
         $tmpl = MT::Template->load( $tmpl_map->template_id );
         MT::Request->instance->cache( 'build_template', $tmpl );
         $file_ext = $blog->file_extension || '';
         $archive_file = $entry->archive_file;
+        my $base_url = $blog->archive_url;
+        $base_url = $blog->site_url if $type eq 'page';
+        $base_url .= '/' unless $base_url =~ m|/$|;
+        $archive_url = $base_url . $archive_file;
+        $archive_url =~ s{(?<!:)//+}{/}g;
 
         my $blog_path
             = $type eq 'page'
@@ -934,6 +994,7 @@ sub _build_entry_preview {
     $ctx->{current_timestamp}    = $ao_ts;
     $ctx->{current_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
+    $ctx->stash('current_mapping_url', $archive_url);
 
     my $archiver = MT->publisher->archiver($at);
     if ( my $params = $archiver->template_params ) {
@@ -1160,6 +1221,43 @@ sub cfg_entry {
 sub save {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        _autosave                 => [qw/MAYBE_STRING/],
+        _type                     => [qw/OBJTYPE/],
+        allow_comments            => [qw/MAYBE_STRING/],
+        allow_pings               => [qw/MAYBE_STRING/],
+        authored_on_date          => [qw/MAYBE_STRING/],
+        authored_on_day           => [qw/MAYBE_STRING/],
+        authored_on_hour          => [qw/MAYBE_STRING/],
+        authored_on_minute        => [qw/MAYBE_STRING/],
+        authored_on_month         => [qw/MAYBE_STRING/],
+        authored_on_second        => [qw/MAYBE_STRING/],
+        authored_on_time          => [qw/MAYBE_STRING/],
+        authored_on_year          => [qw/MAYBE_STRING/],
+        basename                  => [qw/MAYBE_STRING/],
+        basename_manual           => [qw/MAYBE_STRING/],
+        blog_id                   => [qw/ID/],
+        category_ids              => [qw/MAYBE_IDS/],    # may contain -1?
+        class                     => [qw/MAYBE_STRING/],
+        convert_breaks_for_mobile => [qw/MAYBE_STRING/],
+        id                        => [qw/ID/],
+        include_asset_ids         => [qw/IDS/],
+        is_power_edit             => [qw/MAYBE_STRING/],
+        mobile_view               => [qw/MAYBE_STRING/],
+        return_args               => [qw/MAYBE_STRING/],
+        scheduled                 => [qw/MAYBE_STRING/],
+        status                    => [qw/MAYBE_STRING/],
+        unpublished_on_date       => [qw/MAYBE_STRING/],
+        unpublished_on_day        => [qw/MAYBE_STRING/],
+        unpublished_on_hour       => [qw/MAYBE_STRING/],
+        unpublished_on_minute     => [qw/MAYBE_STRING/],
+        unpublished_on_month      => [qw/MAYBE_STRING/],
+        unpublished_on_second     => [qw/MAYBE_STRING/],
+        unpublished_on_time       => [qw/MAYBE_STRING/],
+        unpublished_on_year       => [qw/MAYBE_STRING/],
+        week_number               => [qw/MAYBE_STRING/],
+    }) or return;
 
     $app->remove_preview_file;
 
@@ -1633,18 +1731,6 @@ sub save {
 
     $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $orig_obj );
 
-    # Delete old archive files.
-    if ( $app->config('DeleteFilesAtRebuild') && $id ) {
-        my $file = archive_file_for( $obj, $blog, $archive_type );
-        if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() ) {
-            $app->publisher->remove_entry_archive_file(
-                Entry       => $orig_obj,
-                ArchiveType => $archive_type,
-                Category    => $primary_category_old,
-            );
-        }
-    }
-
     ## If the saved status is RELEASE, or if the *previous* status was
     ## RELEASE, then rebuild entry archives, indexes, and send the
     ## XML-RPC ping(s). Otherwise the status was and is HOLD, and we
@@ -1652,6 +1738,19 @@ sub save {
     if ( ( $obj->status || 0 ) == MT::Entry::RELEASE()
         || $status_old == MT::Entry::RELEASE() )
     {
+        # Delete old archive files.
+        if ( $app->config('DeleteFilesAtRebuild') && $id ) {
+            $app->request->cache( 'file', {} );    # clear cache
+            my $file = archive_file_for( $obj, $blog, $archive_type );
+            if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() ) {
+                $app->publisher->remove_entry_archive_file(
+                    Entry       => $orig_obj,
+                    ArchiveType => $archive_type,
+                    Category    => $primary_category_old,
+                );
+            }
+        }
+
         # If there are no static pages, just rebuild indexes.
         if ( $blog->count_static_templates($archive_type) == 0
             || MT::Util->launch_background_tasks() )
@@ -1662,27 +1761,19 @@ sub save {
                     $app->rebuild_entry(
                         Entry => $obj,
                         (   $obj->is_entry
-                            ? ( BuildDependencies => 1 )
+                            ? ( BuildDependencies => 1,
+                                OldEntry          => $orig_obj,
+                                OldPrevious       => $previous_old ? $previous_old->id : undef,
+                                OldNext           => $next_old ? $next_old->id : undef,
+                                OldDate           => $orig_obj->authored_on,
+                                )
                             : ( BuildIndexes => 1 )
                         ),
-                        ( $obj->is_entry ? ( OldEntry => $orig_obj ) : () ),
-                        (   $obj->is_entry
-                            ? ( OldPrevious => ($previous_old)
-                                ? $previous_old->id
-                                : undef
-                                )
-                            : ()
-                        ),
-                        (   $obj->is_entry
-                            ? ( OldNext => ($next_old)
-                                ? $next_old->id
-                                : undef
-                                )
-                            : ()
-                        ),
+                        OldCategories => join( ',', map { $_->id } @$categories_old ),
                     ) or return $app->publish_error();
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
+                    $app->publisher->remove_marked_files( $blog, 1 );
                     1;
                 }
             );
@@ -1718,6 +1809,7 @@ sub save {
                         entry_id   => $obj->id,
                         is_new     => $is_new,
                         old_status => $status_old,
+                        old_date   => $orig_obj->authored_on,
                         old_categories =>
                             join( ',', map { $_->id } @$categories_old ),
                         (   $previous_old
@@ -1739,7 +1831,7 @@ sub save_entries {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start save_entries.');
+    MT::Util::Log->debug('--- Start save_entries.');
 
     my $perms = $app->permissions
         or $app->permission_denied();
@@ -1751,7 +1843,7 @@ sub save_entries {
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog;
 
-    MT::Util::Log->info(' Start permission check.');
+    MT::Util::Log->debug(' Start permission check.');
 
 PERMCHECK: {
         my $action
@@ -1783,7 +1875,7 @@ PERMCHECK: {
         return $app->permission_denied();
     }
 
-    MT::Util::Log->info(' End   permission check.');
+    MT::Util::Log->debug(' End   permission check.');
 
     $app->validate_magic() or return;
 
@@ -1795,7 +1887,7 @@ PERMCHECK: {
     my $this_author_id = $this_author->id;
     my @objects;
 
-    MT::Util::Log->info(' Start check params.');
+    MT::Util::Log->debug(' Start check params.');
 
     for my $p (@p) {
         next unless $p =~ /^author_id_(\d+)/;
@@ -1963,7 +2055,7 @@ PERMCHECK: {
         }
         $app->log(
             {   message  => $message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $entry->class,
                 category => 'edit',
                 metadata => $entry->id
@@ -1972,25 +2064,30 @@ PERMCHECK: {
         push( @objects, { current => $entry, original => $orig_obj } );
     }
 
-    MT::Util::Log->info(' End   check params.');
+    MT::Util::Log->debug(' End   check params.');
 
-    MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
+    MT::Util::Log->debug(' Start callbacks cms_post_bulk_save.');
 
     $app->run_callbacks(
         'cms_post_bulk_save.' . ( $type eq 'entry' ? 'entries' : 'pages' ),
         $app, \@objects );
 
-    MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
+    MT::Util::Log->debug(' End   callbacks cms_post_bulk_save.');
 
     $app->add_return_arg( 'saved' => 1, is_power_edit => 1 );
 
-    MT::Util::Log->info('--- End   save_entries.');
+    MT::Util::Log->debug('--- End   save_entries.');
 
     $app->call_return;
 }
 
 sub pinged_urls {
     my $app   = shift;
+
+    $app->validate_param({
+        entry_id => [qw/ID/],
+    }) or return;
+
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     my %param;
@@ -2022,7 +2119,7 @@ sub save_entry_prefs {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start save_entry_prefs.');
+    MT::Util::Log->debug('--- Start save_entry_prefs.');
 
     # Magic token check
     $app->validate_magic() or return;
@@ -2080,13 +2177,18 @@ sub save_entry_prefs {
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
 
-    MT::Util::Log->info('--- End   save_entry_prefs.');
+    MT::Util::Log->debug('--- End   save_entry_prefs.');
 
     return $app->json_result( { success => 1 } );
 }
 
 sub publish_entries {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     require MT::Entry;
     update_entry_status( $app, MT::Entry::RELEASE(),
         $app->multi_param('id') );
@@ -2094,6 +2196,11 @@ sub publish_entries {
 
 sub draft_entries {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     require MT::Entry;
     update_entry_status( $app, MT::Entry::HOLD(), $app->multi_param('id') );
 }
@@ -2101,6 +2208,14 @@ sub draft_entries {
 sub open_batch_editor {
     my $app = shift;
     my ($param) = @_;
+
+    $app->validate_param({
+        _type   => [qw/OBJTYPE/],
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+        saved   => [qw/MAYBE_STRING/],
+    }) or return;
+
     $param ||= {};
     my @ids = $app->multi_param('id')
         or return "Invalid request.";
@@ -2609,7 +2724,7 @@ sub post_save {
     require MT::Log;
     $app->log(
         {   message => $message,
-            level   => MT::Log::INFO(),
+            $orig_obj->id ? ( level => MT::Log::NOTICE() ) : ( level => MT::Log::INFO() ),
             class   => $obj->class,
             $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
             metadata => $obj->id
@@ -2633,7 +2748,7 @@ sub post_delete {
                 $obj->class_label, $obj->title,
                 $obj->id,          $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => $obj->class,
             category => 'delete'
         }
@@ -2646,7 +2761,7 @@ sub update_entry_status {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start update_entry_status.');
+    MT::Util::Log->debug('--- Start update_entry_status.');
 
     my ( $new_status, @ids ) = @_;
     return $app->errtrans("Need a status to update entries")
@@ -2660,7 +2775,7 @@ sub update_entry_status {
 
     my @objects;
 
-    MT::Util::Log->info(' Start load entries.');
+    MT::Util::Log->debug(' Start load entries.');
 
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
@@ -2721,7 +2836,7 @@ sub update_entry_status {
         );
         $app->log(
             {   message  => $message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $entry->class,
                 category => 'edit',
                 metadata => $entry->id
@@ -2730,19 +2845,19 @@ sub update_entry_status {
         push( @objects, { current => $entry, original => $original } );
     }
 
-    MT::Util::Log->info(' End   load entries.');
+    MT::Util::Log->debug(' End   load entries.');
 
-    MT::Util::Log->info(' Start rebuild_these.');
+    MT::Util::Log->debug(' Start rebuild_these.');
 
     my $tmpl = $app->rebuild_these( \%rebuild_these,
         how => MT::App::CMS::NEW_PHASE() );
 
-    MT::Util::Log->info(' End   rebuild_these.');
+    MT::Util::Log->debug(' End   rebuild_these.');
 
     if (@objects) {
         my $obj = $objects[0]{current};
 
-        MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
+        MT::Util::Log->debug(' Start callbacks cms_post_bulk_save.');
 
         $app->run_callbacks(
             'cms_post_bulk_save.'
@@ -2750,10 +2865,10 @@ sub update_entry_status {
             $app, \@objects
         );
 
-        MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
+        MT::Util::Log->debug(' End   callbacks cms_post_bulk_save.');
     }
 
-    MT::Util::Log->info('--- End   update_entry_status.');
+    MT::Util::Log->debug('--- End   update_entry_status.');
 
     $tmpl;
 }
@@ -2777,6 +2892,14 @@ sub _finish_rebuild {
 sub delete {
     my $app = shift;
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        all_selected  => [qw/MAYBE_STRING/],
+        blog_id       => [qw/ID/],
+        id            => [qw/ID MULTI/],
+        is_power_edit => [qw/MAYBE_STRING/],
+    }) or return;
+
     require MT::Blog;
 
     my $blog;
@@ -2845,6 +2968,7 @@ sub delete {
                 $app->rebuild_indexes( Blog => $b )
                     or return $app->publish_error();
                 $app->run_callbacks( 'rebuild', $b );
+                $app->publisher->remove_marked_files( $b, 1 );
             }
         };
 

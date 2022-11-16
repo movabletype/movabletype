@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -452,7 +452,7 @@ our %Languages;
 
 sub format_ts {
     my ( $format, $ts, $blog, $lang, $is_mail ) = @_;
-    return '' unless defined $ts and $ts ne '';
+    return '' unless defined $ts and $ts ne '' and !ref $ts;
     my %f;
     unless ($lang) {
         $lang
@@ -700,31 +700,43 @@ sub _change_lf {
 sub html_text_transform {
     my $str = shift;
     $str = '' unless defined $str;
-    my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style)!;
+    my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style|article|aside|details|dialog|figcaption|figure|footer|header|hgroup|main|nav|section|template|thead|tfoot|tbody|tr|th|td|caption|colgroup|col|dt|dd|legend|summary)!;
     $str =~ s/\r\n/\n/gs;
-    my $special_tags = qr!(?:script|style|pre)!;
+    my $special_tags = qr!(?:script|style|pre|object|map|menu|select|svg|audio|picture|video)!;
     $str =~ s{(<!--.*?-->|<($special_tags).*?</\2)}{_change_lf($1)}ges;
     my @paras = split /\n\n/, $str;
     for my $i ( 0 .. @paras - 1 ) {
         ## If the paragraph does not start nor end with a block(-ish) tag,
-        ## then wrap it with <p>.
-        if ( $paras[$i] !~ m{(?:^(?:</?$tags|<!--)|(?:</$tags>|-->)$)} ) {
-            $paras[$i] = "<p>$paras[$i]</p>";
+        ## then wrap it with <p> (later).
+        my $wrap = 0;
+        if ( $paras[$i] !~ m{(?:^</?$tags\b|</$tags>$|\A(?><!--.*?-->)+\z)} ) {
+            $wrap = 1;
         }
-        ## If a line in the paragraph does not end with a tag,
-        ## append a <br>. (Let's hope it does not end with an inline tag.)
-        $paras[$i] =~ s|(?<!>)\n|<br />\n|g;
+
+        ## If a line in the paragraph does not end with a block tag,
+        ## append a <br>.
+        my @lines = split /\n/, $paras[$i];
+        my $last_line = pop @lines;  ## but not for the last line
+        for my $line (@lines) {
+            $line .= "<br />" unless $line =~ m{(?:</?$tags\s*[^<>]*/?>|\A(?><!--.*?-->)+\z)$};
+        }
 
         ## Special case: if the paragraph starts with a block(-ish) tag,
         ## and does not end with a closing tag, then the paragraph should have
         ## two <br>s to make a blank line, but only when the next paragraph
         ## does not start with a block(-ish) tag and it ends with a block(-ish)
         ## tag that prevents wrapping.
-        if ( $paras[$i] =~ m|(?<!>)\z| ) {
+        if ( !$wrap and defined $last_line && $last_line !~ m!(?:</?$tags\s*/?>|-->)\z! ) {
             my $next = $i < @paras - 1 ? $paras[$i + 1] : undef;
-            if ( defined $next && $next =~ m!</$tags>$! && $next !~ m!^</?$tags! ) {
-                $paras[$i] .= '<br /><br />';
+            if ( defined $next && $next =~ m!</$tags>$! && $next !~ m!^</?$tags\b! ) {
+                $last_line .= '<br /><br />';
             }
+        }
+
+        push @lines, $last_line if defined $last_line;
+        $paras[$i] = join "\n", @lines;
+        if ($wrap) {
+            $paras[$i] = "<p>$paras[$i]</p>";
         }
     }
     $str = join "\n\n", @paras;
@@ -2614,36 +2626,17 @@ sub normalize_language {
 sub clear_site_stats_widget_cache {
     my ($site_id) = @_;
 
-    my $path;
+    my @parts;
     if ($site_id) {
-        my $iter = MT::Permission->load_iter( { blog_id => $site_id } );
-        while ( my $perm = $iter->() ) {
-            my $user_id = $perm->author_id;
-            my $low_dir = sprintf( "%03d", $user_id % 1000 );
-            my $sub_dir = sprintf( "%03d", $site_id % 1000 );
-            my $top_dir = $site_id > $sub_dir ? $site_id - $sub_dir : 0;
-            my $support_path
-                = File::Spec->catdir( MT->app->support_directory_path,
-                'dashboard', 'stats', $top_dir, $sub_dir, $low_dir );
-            my $file = "data_" . $site_id . ".json";
-            my $path = File::Spec->catfile( $support_path, $file );
-            require MT::FileMgr;
-            my $fmgr = MT::FileMgr->new('Local');
-
-            if ( $fmgr->exists($path) ) {
-                $fmgr->delete($path) or return 0;
-            }
-        }
+        my $sub_dir = sprintf( "%03d", $site_id % 1000 );
+        my $top_dir = $site_id > $sub_dir ? $site_id - $sub_dir : 0;
+        @parts = ($top_dir, $sub_dir);
     }
-    else {
-        my $dir = File::Spec->catdir( MT->app->support_directory_path,
-            'dashboard', 'stats' );
-        if ( -d $dir ) {
-            require File::Path;
-            File::Path::rmtree($dir);
-        }
+    my $dir = File::Spec->catdir( MT->app->support_directory_path, 'dashboard', 'stats', @parts );
+    if (-d $dir) {
+        require File::Path;
+        File::Path::rmtree($dir);
     }
-
     return 1;
 }
 
@@ -2793,8 +2786,7 @@ sub asset_from_url {
     $asset->file_ext($ext_copy);
     $asset->blog_id(0);
 
-    my $original = $asset->clone;
-    my $url      = $local_relative;
+    my $url = $local_relative;
     $url =~ s!\\!/!g;
     $asset->url($url);
     $asset->image_width($w);

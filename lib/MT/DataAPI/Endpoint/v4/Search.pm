@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,6 +11,29 @@ use warnings;
 use MT::App::Search;
 use MT::App::Search::ContentData;
 use MT::DataAPI::Endpoint::v2::Search;
+
+sub search_openapi_spec {
+    my $spec = MT::DataAPI::Endpoint::v2::Search::search_openapi_spec;
+    push @{ $spec->{parameters} }, ({
+            in          => 'query',
+            name        => 'class',
+            schema      => { type => 'string' },
+            description => <<'DESCRIPTION',
+Class name of the object to be searched. Available values are as follows.
+
+- entry: Search results will only contain entries.
+- page: Search results will only contain pages.
+DESCRIPTION
+        },
+        {
+            in          => 'query',
+            name        => 'cdSearch',
+            schema      => { type => 'integer' },
+            description => 'If 1 specified, searching content data only.',
+        },
+    );
+    return $spec;
+}
 
 sub search {
     my ( $app, $endpoint ) = @_;

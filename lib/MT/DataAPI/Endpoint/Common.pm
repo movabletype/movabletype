@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -215,8 +215,10 @@ sub _query_builder {
 sub filtered_list {
     my ( $app, $endpoint, $ds, $terms, $args, $options ) = @_;
 
+    (my $callback_ds = $ds) =~ s/\..*//;
+
     run_permission_filter( $app, 'data_api_list_permission_filter',
-        $ds, $terms, $args, $options )
+        $callback_ds, $terms, $args, $options )
         or return;
 
     $terms   ||= {};
@@ -233,7 +235,6 @@ sub filtered_list {
         = !$blog         ? undef
         : $blog->is_blog ? [$blog_id]
         :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
-    my $resource_data = MT::DataAPI::Resource->resource($ds);
 
     my $setting = MT->registry( listing_screens => $ds ) || {};
 
@@ -262,32 +263,13 @@ sub filtered_list {
         && !$app->user->is_superuser()
         )
     {
+        my $allowed = 0;
         my $list_permission
             = $setting->{data_api_permission} || $setting->{permission};
-        my $inherit_blogs = 1;
-        if ( 'HASH' eq ref $list_permission ) {
-            $inherit_blogs = $list_permission->{inherit}
-                if defined $list_permission->{inherit};
-            $list_permission = $list_permission->{permit_action};
-        }
-        my $allowed = 0;
-        my @act;
-        if ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
-            my $code = $list_permission;
-            $code = MT->handler_to_coderef($code);
-            eval { @act = $code->(); };
-            return $app->error(
-                $app->translate(
-                    'Error occurred during permission check: [_1]', $@
-                )
-            ) if $@;
-        }
-        elsif ( 'ARRAY' eq ref $list_permission ) {
-            @act = @$list_permission;
-        }
-        else {
-            @act = split /\s*,\s*/, $list_permission;
-        }
+        my ($actions, $inherit_blogs) = eval { $app->parse_filtered_list_permission($list_permission) };
+        my $error = $@;
+        return $app->error($app->translate('Error occurred during permission check: [_1]', $error)) if $error;
+
         my $blog_ids = undef;
         if ($blog_id) {
             push @$blog_ids, $blog_id;
@@ -295,11 +277,11 @@ sub filtered_list {
                 push @$blog_ids, $_->id foreach @{ $app->blog->blogs() };
             }
         }
-        foreach my $p (@act) {
+        foreach my $action (@$actions) {
             $allowed = 1,
                 last
                 if $app->user->can_do(
-                $p,
+                $action,
                 at_least_one => 1,
                 ( $blog_ids ? ( blog_id => $blog_ids ) : () )
                 );
@@ -308,7 +290,7 @@ sub filtered_list {
             unless $allowed;
     }
 
-    my $class = $setting->{datasource} || MT->model($ds);
+    my $class = $setting->{datasource} || MT->model( $setting->{object_type} || $ds );
     my $filteritems;
     my $allpass = 0;
     if ( my $items = $app->param('items') ) {
@@ -335,6 +317,7 @@ sub filtered_list {
         }
     );
 
+    my $resource_data = MT::DataAPI::Resource->resource( $setting->{object_type} || $ds );
     if ( my $search = $app->param('search') ) {
         my @fields = ();
         if ( my $specified = $app->param('searchFields') ) {
@@ -571,7 +554,7 @@ sub filtered_list {
         %$options,
     );
 
-    MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $ds,
+    MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $callback_ds,
         $app, $filter, \%count_options, \@cols );
 
     my $count_result = $filter->count_objects(%count_options);
@@ -590,11 +573,11 @@ sub filtered_list {
 
     my $objs;
     if ($count) {
-        MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $ds,
+        MT->run_callbacks( 'data_api_pre_load_filtered_list.' . $callback_ds,
             $app, $filter, \%load_options, \@cols );
 
         $objs = $filter->load_objects(%load_options);
-        if ( !defined $objs ) {
+        if ( !defined $objs and $filter->errstr ) {
             return $app->error(
                 MT->translate(
                     "An error occurred while loading objects: [_1]",
@@ -619,12 +602,19 @@ sub _restrict_site {
         ? 'id'
         : 'blog_id';
 
-    # Load config settings.
+    return if ( !$class->has_column($column) );
+
     my $cfg = $app->config;
-    my $data_api_disable_site
-        = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-    my @data_api_disable_site = ( split ',', $data_api_disable_site )
-        or return;
+    my @data_api_disable_sites = split ',', defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
+    if (!$cfg->is_readonly('DataAPIDisableSite')) {
+        my @not_allow_data_api_sites = map { $_->id } MT->model('website')->load({
+                class          => '*',
+                allow_data_api => 0,
+            },
+            { fetchonly => { id => 1 } });
+        push @data_api_disable_sites, @not_allow_data_api_sites;
+    }
+    return unless @data_api_disable_sites;
 
     # Set filters.
     $filter->append_item(
@@ -639,7 +629,7 @@ sub _restrict_site {
                                 value  => $_,
                             },
                         };
-                    } @data_api_disable_site,
+                    } @data_api_disable_sites,
                 ],
             },
         },

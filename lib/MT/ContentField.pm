@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2016 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -117,22 +117,8 @@ sub unique_id {
     }
 }
 
-sub _exist_same_name {
-    my $self = shift;
-    __PACKAGE__->exist(
-        {   $self->id ? ( id => { not => $self->id } ) : (),
-            content_type_id => $self->content_type_id,
-            name            => $self->name,
-        }
-    );
-}
-
 sub save {
     my $self = shift;
-
-    return $self->error(
-        MT->translate( 'name "[_1]" is already used.', $self->name ) )
-        if $self->_exist_same_name;
 
     if ( !$self->id && !defined $self->unique_id ) {
         MT::ContentType::UniqueID::set_unique_id($self);
@@ -200,9 +186,7 @@ sub permission {
     return +{
         $name => {
             group => $content_type->permission_group,
-            label => sub {
-                return MT->translate( 'Edit [_1] field', $obj->name );
-            },
+            label => $obj->name,
             permitted_action => { $permitted_action => 1 },
             $order ? ( order => $order ) : (),
             content_type_unique_id => $content_type->unique_id,
@@ -311,7 +295,13 @@ sub is_parent_content_type_id {
 sub type_registry {
     my $self = shift;
     return unless defined $self->type && $self->type ne '';
-    MT->registry( 'content_field_types', $self->type );
+    MT->registry( 'content_field_types', $self->type )
+      or $self->error(
+        MT->translate(
+            "Cannot load content field data_type [_1]", $self->type
+        )
+      );
+
 }
 
 sub data_type {

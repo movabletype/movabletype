@@ -27,7 +27,6 @@ use XML::XPath;
 use XML::Atom;
 use XML::Atom::Feed;
 use XML::Atom::Entry;
-use POSIX qw( ceil );
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
@@ -44,8 +43,8 @@ my %test_data;
 $test_data{'/mt-atom.cgi/weblog'} = <<XML1;
 <?xml version="1.0" encoding="utf-8"?>
     <entry xmlns="http://purl.org/atom/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <title>Fight the Power</title>
-    <content>Elvis was a hero to most but he never meant shit to me</content>
+    <title>Julius Caesar, Act I, Scene II</title>
+    <content>An English playwright, poet, and actor, widely regarded as the greatest writer</content>
     <issued>2004-08-06T00:43:34+01:00</issued>
     </entry>
 XML1
@@ -53,8 +52,8 @@ XML1
 #$test_data{'/mt-atom.cgi/1.0'} = <<XML2;
 #<?xml version="1.0" encoding="utf-8"?>
 #<entry xmlns="http://www.w3.org/2005/Atom">
-#<title>Fight the Power</title>
-#<content type="html">Elvis was a hero to most but he never meant shit to me</content>
+#<title>Julius Caesar, Act I, Scene II</title>
+#<content type="html">An English playwright, poet, and actor, widely regarded as the greatest writer</content>
 #<published>2004-08-06T00:43:34+01:00</published>
 #</entry>
 #XML2
@@ -461,10 +460,10 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             my $atom_entry
                 = XML::Atom::Entry->new( Stream => \$resp->content() );
 
-            is( $atom_entry->title(),          "Fight the Power" );
+            is( $atom_entry->title(),          "Julius Caesar, Act I, Scene II" );
             is( $atom_entry->author()->name(), $chuck->nickname );
             is( $atom_entry->content()->body(),
-                "Elvis was a hero to most but he never meant shit to me" );
+                "An English playwright, poet, and actor, widely regarded as the greatest writer" );
 
             $wsse_header = make_wsse($chuck_token);
             $uri         = new URI;
@@ -480,7 +479,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             if ( ok( $resp->is_success ) ) {
                 $atom_entry
                     = XML::Atom::Entry->new( Stream => \$resp->content() );
-                is( $atom_entry->title, "Fight the Power" );
+                is( $atom_entry->title, "Julius Caesar, Act I, Scene II" );
                 is( Date::Parse::str2time( $atom_entry->issued ),
                     Date::Parse::str2time("2004-08-05T21:13:34-0230")
                 );
@@ -532,7 +531,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             }
 
             my $name = 't/images/test.gif';
-            open my $fh, $name or die $!;
+            open my $fh, "<", $name or die $!;
             binmode $fh;
             my $data = do { local $/; <$fh> };
             close $fh;

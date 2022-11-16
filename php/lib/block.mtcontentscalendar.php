@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -15,7 +15,8 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         # first iterations:
         $ctx->localize($local_vars);
         $blog_id = $ctx->stash('blog_id');
-        $today = strftime("%Y%m", time());
+        $ts = offset_time_list( time(), $blog_id );
+        $today = sprintf("%04d%02d", $ts[5] + 1900, $ts[4] + 1);
 
         $start_with_offset = 0;
         if (isset($args['weeks_start_with'])) {
@@ -42,7 +43,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
             }
         }
 
-        $prefix = $args['month'];
+        $prefix = isset($args['month']) ? $args['month'] : null;
         if ($prefix) {
             if ($prefix == 'this') {
                 $ts = $ctx->stash('current_timestamp');
@@ -91,7 +92,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
 
             if(preg_match('/^[0-9]+$/',$id))
                 $category_set = $ctx->mt->db()->fetch_category_set($id);
-            if(!$category_set){
+            if(empty($category_set)){
                 $category_sets = $ctx->mt->db()->fetch_category_sets(array(
                     'blog_id' => $blog_id,
                     'name' => $id,
@@ -139,7 +140,8 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         } else {
             $cat_name = '';
         }
-        $today .= strftime("%d", time());
+        $ts = offset_time_list( time(), $blog_id );
+        $today .= sprintf("%02d", $ts[3]);
         list($start, $end) = start_end_month($prefix);
         $y = substr($prefix, 0, 4);
         $m = substr($prefix, 4, 2);
@@ -165,10 +167,10 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         if(isset($args['category']))
           $contents_args['category'] = $args['category'];
 
-        $iter = $ctx->mt->db()->fetch_contents($contents_args, $content_type_id);
+        $iter = $ctx->mt->db()->fetch_contents($contents_args, isset($content_type_id) ? $content_type_id : null);
         $dt_field    = 'cd_authored_on';
         $dt_field_id = 0;
-        if ( $arg = $args['date_field'] ) {
+        if ( !empty($args['date_field']) && ($arg = $args['date_field']) ) {
             if (   $arg === 'authored_on'
                 || $arg === 'modified_on'
                 || $arg === 'created_on' )
@@ -212,14 +214,14 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         $cell = $ctx->stash('CalendarCellNumber');
         $dt_field_id = $ctx->stash('cal_date_field_id');
     }
-    $left or $left = array();
+    !empty($left) or $left = array();
     if ($day <= $pad_start + $days_in_month + $pad_end) {
         $is_padding = $day < $pad_start + 1 || $day > $pad_start + $days_in_month;
         $this_day = '';
         if (!$is_padding) {
             $this_day = $prefix . sprintf("%02d", $day - $pad_start);
             $no_loop = 0;
-            if (count($left)) {
+            if (isset($left) && count($left)) {
                 $data = $left[0]->data();
                 $datetime = '';
                 if(isset($data[$dt_field_id])){
@@ -254,15 +256,19 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
                 }
             }
             $ctx->stash('cal_left', $left);
-            $ctx->stash('contents', $cds);
+            $ctx->stash('contents', isset($cds) ? $cds : null);
             $ctx->stash('current_timestamp', $this_day . '000000');
             $ctx->stash('current_timestamp_end', $this_day . '235959');
             $ctx->stash('CalendarDay', $day - $pad_start);
         }
+        $count = 0;
+        if (isset($cds)) {
+            $count = count($cds);
+        }
         $ctx->stash('CalendarWeekHeader', ($day - 1) % 7 == 0);
         $ctx->stash('CalendarWeekFooter', $day % 7 == 0);
-        $ctx->stash('CalendarIfContents', !$is_padding && count($cds));
-        $ctx->stash('CalendarIfNoContents', !$is_padding && !count($cds));
+        $ctx->stash('CalendarIfContents', !$is_padding && $count);
+        $ctx->stash('CalendarIfNoContents', !$is_padding && !$count);
         $ctx->stash('CalendarIfToday', $today == $this_day);
         $ctx->stash('CalendarIfBlank', $is_padding);
         $ctx->stash('cal_day', $day + 1);

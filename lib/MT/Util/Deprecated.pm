@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 
@@ -14,6 +14,24 @@ our @EXPORT_OK = qw(
     dsa_verify dec2bin bin2dec
     perl_sha1_digest perl_sha1_digest_hex perl_sha1_digest_base64
 );
+
+sub warning {
+    my (%args) = @_;
+
+    $args{name} ||= (caller 1)[3];
+
+    my $msg;
+    local $Carp::CarpLevel = 1;
+    if ($args{alterative}) {
+        $msg = Carp::shortmess sprintf("%s is deprecated and will be removed in the future. Use %s instead.", $args{name}, $args{alterative});
+    } else {
+        $msg = Carp::shortmess sprintf("%s is deprecated and will be removed in the future.", $args{name});
+    }
+    require MT::Util::Log;
+    MT::Util::Log::init();
+    chomp($msg);
+    MT::Util::Log->warn($msg);
+}
 
 {
     eval { require bytes; 1; };
@@ -82,7 +100,7 @@ our @EXPORT_OK = qw(
     }
 
     sub dec2bin {
-        warn "dec2bin() is deprecated and will be removed in the future.";
+        MT::Util::Deprecated::warning(since => '7.8');
 
         my ($decimal) = @_;
         my @digits = split //, $decimal;
@@ -98,7 +116,7 @@ our @EXPORT_OK = qw(
     }
 
     sub bin2dec {
-        warn "bin2dec() is deprecated and will be removed in the future.";
+        MT::Util::Deprecated::warning(since => '7.8');
 
         my $bin    = $_[0];
         my $result = '';
@@ -196,7 +214,7 @@ sub perl_sha1_digest_hex {
 }
 
 sub perl_sha1_digest_base64 {
-    warn "perl_sha1_digest_base64() is deprecated and will be removed in the future.";
+    MT::Util::Deprecated::warning(since => '7.8');
 
     require MIME::Base64;
     MIME::Base64::encode_base64( perl_sha1_digest(@_), '' );
@@ -208,7 +226,7 @@ sub perl_sha1_digest_base64 {
     sub dsa_verify {
         my %param = @_;
 
-        warn "dsa_verify() is deprecated and will be removed in the future.";
+        MT::Util::Deprecated::warning(since => '7.8');
 
         unless ( defined $has_crypt_dsa ) {
             eval { require Crypt::DSA; };
@@ -274,6 +292,29 @@ MT::Util::Deprecated - Deprecated Movable Type utility functions
 I<MT::Util::Deprecated> provides a variety of deprecated utility functions
 used by the Movable Type libraries. These functions should not be used any more,
 and will be removed in the future.
+
+=head1 FUNCTIONS
+
+=head2 warning
+
+Warning deprecation.
+
+    warning(since => '7.8');
+
+Warning starts immidiately on server log.
+
+=over 4
+
+=item * since
+
+The version number in string that indicates staring version of deprecation. Note that the option is only for
+source code notation and has nothing to do with the actual behavior.
+
+=item * alternative
+
+If any, the option suggests an alternative to the function.
+
+=back
 
 =head1 AUTHOR & COPYRIGHTS
 

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -212,11 +212,13 @@ sub export {
     my $hdlrs          = MT->registry('theme_element_handlers');
     my $exporters      = [];
     my $saved_settings = $blog->theme_export_settings;
-    my $has_saved      = $saved_settings;
-    my $last_includes  = $saved_settings->{core}{include};
-    $last_includes = { map { $_ => 1 } @$last_includes };
+    my %last_includes;
+    if ( exists $saved_settings->{core} && exists $saved_settings->{core}{include} ) {
+        %last_includes = map { $_ => 1 } @{ $saved_settings->{core}{include} };
+    }
 
-    for my $hdlr ( keys %$hdlrs ) {
+
+    for my $hdlr ( sort keys %$hdlrs ) {
         my $exporter
             = MT->registry( theme_element_handlers => $hdlr => 'exporter' );
         next unless $exporter;
@@ -230,7 +232,7 @@ sub export {
         push @$exporters,
             {
             id       => $hdlr,
-            included => $has_saved ? $last_includes->{$hdlr} : 1,
+            included => %last_includes ? $last_includes{$hdlr} : 1,
             label =>
                 MT->registry( theme_element_handlers => $hdlr => 'label' ),
             template => $tmpl,
@@ -539,8 +541,10 @@ sub do_export {
     }
     $theme_hash->{elements} = $elements;
     require File::Temp;
+    my $parent = MT->config('ExportTempDir') || MT->config('TempDir');
+    $fmgr->mkpath($parent) unless -d $parent;
     my $tmproot = File::Temp::tempdir(
-        DIR     => MT->config('TempDir'),
+        DIR     => $parent,
         CLEANUP => 1
     );
     my $tmpdir = File::Spec->catdir( $tmproot, $theme_id );
@@ -608,7 +612,7 @@ sub do_export {
         my $arc = MT::Util::Archive->new( $arctype, $arcfile )
             or die "Cannot load archiver : " . MT::Util::Archive->errstr;
         $arc->add_tree($tmproot);
-        $arc->close;
+        $arc->close or return $app->error($arc->errstr);
         my $newfilename = $theme_id;
         $newfilename .= $theme_version if $theme_version;
         $newfilename .= '.' . $arc_info->{extension};

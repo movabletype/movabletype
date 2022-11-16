@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -153,6 +153,9 @@ sub mt_postsave_obj {
         if ( my $blog = $obj->blog ) {
             my $max = $blog->$col;
             $obj->handle_max_revisions($max);
+        } elsif ( $obj->datasource eq 'template' ) {
+            my $global_max = MT->config->GlobalTemplateMaxRevisions;
+            $obj->handle_max_revisions($global_max);
         }
         my $revision_note = $app->param('revision-note');
         my $revision      = $obj->save_revision($revision_note);
@@ -251,7 +254,7 @@ sub save_revision {
 
     MT->run_callbacks( $class . '::pre_save_revision', $obj, @_ );
 
-    my $current_revision = _handle( $obj, @_ );
+    my $current_revision = _handle( $obj, @_ ) || 0;
 
     MT->run_callbacks( $class . '::post_save_revision',
         $obj, $current_revision );

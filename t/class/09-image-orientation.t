@@ -24,7 +24,7 @@ use MT::Test::Image;
 
 MT->instance;
 
-my @drivers = qw( ImageMagick NetPBM GD Imager );
+my @drivers = $test_env->image_drivers;
 
 my ( $guard, $file ) = MT::Test::Image->tempfile(
     DIR    => $test_env->root,
@@ -79,6 +79,7 @@ for my $driver (@drivers) {
 sub _run {
     my ( $label, $sub, $width, $height, $expected_map ) = @_;
     my $image = MT::Image->new( Data => $original_image_blob, Type => 'png' );
+    $image->_init_image_size;
 
     my ( $blob, $w, $h ) = $sub->($image);
 

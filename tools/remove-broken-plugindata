@@ -1,0 +1,123 @@
+#!/usr/bin/perl -w
+use strict;
+use warnings;
+use utf8;
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use Getopt::Long;
+use MT::Bootstrap;
+use MT;
+use MT::PluginData;
+binmode STDOUT, ":utf8";
+binmode STDERR, ":utf8";
+
+GetOptions(
+    'd|delete'  => \my ($delete),
+    'v|verbose' => \my ($verbose),
+    'debug'     => \my ($debug),
+    "help|?"    => sub { usage(); exit },
+);
+
+my $mt = MT->new;
+
+MT->config('LoggerLevel', 'NONE') unless $debug;
+
+my $pd_plugins = pd_plugins();
+my $installed  = installed_plugins();
+
+for my $pname (keys %$pd_plugins) {
+
+    if ($verbose) {
+        print "============================================================\n";
+        printf("Checking Plugin Data for %s\n", $pname);
+        print "============================================================\n";
+    }
+
+    my $plugin = $installed->{$pname} || MT::Plugin->new({ id => $pname, name => $pname });
+    my $found;
+    my @fixed_duplication;
+    my @fixed_breakage;
+
+    while (my ($key, $count) = each(%{ $pd_plugins->{$pname} })) {
+        my $scope_id  = ($key =~ qr{^configuration:?(.*)})[0] || '';
+        my $cfg       = $plugin->get_config_obj($scope_id);
+        my $active_id = $cfg->id || next;                              # never reach next
+
+        if ($count > 1) {
+            printf(qq{%s Duplication for key "%s" is found.\n}, $count, $key);
+            $found = 1;
+            if ($delete) {
+                MT::PluginData->remove(
+                    { plugin  => $pname, key => $key, id => { not => $active_id } },
+                    { nofetch => 1 });
+                push(@fixed_duplication, $key);
+            }
+        }
+
+        if (ref $cfg->data ne 'HASH') {
+            printf(qq{Data breakage for id %d key "%s" is found.\n}, $active_id, $key);
+            $found = 1;
+            if ($delete) {
+                $cfg->remove;
+                push(@fixed_breakage, $key);
+            }
+        }
+    }
+
+    if (@fixed_duplication) {
+        my $msg = MT->translate('Plugin data duplications for "[_1]" are resolved.', $pname);
+        print $msg. "\n";
+        MT->log({
+            message  => $msg,
+            level    => MT::Log::INFO(),
+            metadata => 'keys:'. join(',', @fixed_duplication),
+        });
+    }
+
+    if (@fixed_breakage) {
+        my $msg = MT->translate('Plugin data for "[_1]" is deleted due to data breakage.', $pname);
+        print $msg. "\n";
+        MT->log({
+            message  => $msg,
+            level    => MT::Log::INFO(),
+            metadata => 'keys:'. join(',', @fixed_breakage),
+        });
+    }
+
+    printf("No data breakages nor duplications found.\n") unless $found;
+}
+
+printf("No plugin data is found.\n") unless (%$pd_plugins);
+
+sub installed_plugins {
+    my $plugins;
+    for my $k (keys %MT::Plugins) {
+        if (my $p = $MT::Plugins{$k}->{object}) {
+            next unless $p->isa('MT::Plugin');
+            $plugins->{ $p->key || $p->name } = $p;
+        }
+    }
+    return $plugins;
+}
+
+sub pd_plugins {
+    my $plugins = {};
+    my $iter    = MT::PluginData->count_group_by(undef, { group => ['plugin', 'key'] });
+    while (my ($count, $plugin, $key) = $iter->()) {
+        $plugins->{$plugin} ||= {};
+        $plugins->{$plugin}->{$key} = $count;
+    }
+    return $plugins;
+}
+
+sub usage {
+    print STDERR << "EOT";
+usage: $0
+
+These options are available:
+
+-d, --delete    Delete on detecting data breakage or duplication.
+-v, --verbose   Verbose output.
+    --debug     debug output.
+EOT
+}

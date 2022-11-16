@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -17,6 +17,55 @@ use MT::Util qw( dirify );
 use MT::CMS::Theme;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
+
+sub list_openapi_spec {
+    +{
+        tags        => ['Themes'],
+        summary     => 'Retrieve a list of themes',
+        description => <<'DESCRIPTION',
+- Authentication is required
+
+#### Permissions
+
+- manage_themes
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of themes.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of theme resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/theme',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
 
 sub list {
     my ( $app, $endpoint ) = @_;
@@ -117,6 +166,12 @@ sub _list_for_blog {
     return [ $current_theme, @blog_themes ];
 }
 
+sub list_for_site_openapi_spec {
+    my $spec = __PACKAGE__->list_openapi_spec();
+    $spec->{summary} = 'Retrieve a list of themes for site',
+    return $spec;
+}
+
 sub list_for_site {
     my ( $app, $endpoint ) = @_;
 
@@ -146,6 +201,42 @@ sub list_for_site {
     };
 }
 
+sub get_openapi_spec {
+    +{
+        tags        => ['Themes'],
+        summary     => 'Retrieve a single theme by its ID',
+        description => <<'DESCRIPTION',
+- Authentication is required
+
+#### Permissions
+
+- manage_themes
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/theme',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Theme not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -156,6 +247,12 @@ sub get {
         or return $app->error( $app->translate('Theme not found'), 404 );
 
     return $theme;
+}
+
+sub get_for_site_openapi_spec {
+    my $spec = __PACKAGE__->get_openapi_spec();
+    $spec->{summary} = 'Retrieve a single theme by its ID for site';
+    return $spec;
 }
 
 sub get_for_site {
@@ -185,6 +282,45 @@ sub get_for_site {
     }
 
     return $theme;
+}
+
+sub apply_openapi_spec {
+    +{
+        tags        => ['Themes'],
+        summary     => 'Apply a theme to site',
+        description => <<'DESCRIPTION',
+- Authentication is required
+
+#### Permissions
+
+- manage_themes
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Theme not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub apply {
@@ -218,6 +354,43 @@ sub apply {
         500 );
 
     return +{ status => 'success' };
+}
+
+sub uninstall_openapi_spec {
+    +{
+        tags        => ['Themes'],
+        summary     => 'Uninstall a specified theme from the MT',
+        description => <<'DESCRIPTION',
+- Authentication is required
+- When successful, you can take Themes Resource that was deleted. However, this theme is already removed from the Movable Type. You cannot apply this theme to.
+
+#### Permissions
+
+- manage_themes
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/theme',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Theme not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub uninstall {
@@ -364,6 +537,46 @@ sub _check_params {
     return 1;
 }
 
+sub export_openapi_spec {
+    +{
+        tags        => ['Themes'],
+        summary     => "Export site's theme",
+        description => <<'DESCRIPTION',
+- Authentication is required
+- This endpoint will export current theme elements of specified site into theme directory.
+
+#### Permissions
+
+- manage_themes
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Theme not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub export {
     my ( $app, $endpoint ) = @_;
 
@@ -508,8 +721,10 @@ sub export {
     }
     $theme_hash->{elements} = $elements;
     require File::Temp;
+    my $parent = MT->config('ExportTempDir') || MT->config('TempDir');
+    $fmgr->mkpath($parent) unless -d $parent;
     my $tmproot = File::Temp::tempdir(
-        DIR     => MT->config('TempDir'),
+        DIR     => $parent,
         CLEANUP => 1
     );
     my $tmpdir = File::Spec->catdir( $tmproot, $theme_id );

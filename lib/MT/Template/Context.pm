@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -540,21 +540,19 @@ sub get_content_type_context {
     my $blog_id      = $args->{blog_id} || $blog->id || '';
 
     if ( my $str = $args->{content_type} ) {
-        if (!$content_type
-            || (   $content_type
-                && ( $str =~ /^[0-9]+$/ && $content_type->id != $str )
-                && $content_type->unique_id ne $str
-                && ($content_type->blog_id != $blog_id
-                    || (   $content_type->blog_id == $blog_id
-                        && $content_type->name ne $str )
-                )
+        ## If $str points to $content_type, just return it
+        return $content_type
+            if (
+            $content_type
+            && (   ( $str =~ /^[0-9]+$/ && $content_type->id eq $str )
+                || ( $str eq $content_type->unique_id )
+                || (   $str eq $content_type->name
+                    && $content_type->blog_id eq $blog_id )
             )
-            )
-        {
-            $content_type = MT->model('content_type')
-                ->load_by_id_or_name( $str, $blog_id );
-            return $ctx->_no_content_type_error() unless $content_type;
-        }
+            );
+        $content_type
+            = MT->model('content_type')->load_by_id_or_name( $str, $blog_id );
+        return $ctx->_no_content_type_error() unless $content_type;
     }
 
     return $content_type;
@@ -842,6 +840,93 @@ sub compile_status_filter {
     my $expr  = 'sub{' . $status_expr . ';}';
     my $cexpr = eval $expr;
     $@ ? undef : $cexpr;
+}
+
+sub set_tag_filter_context {
+    my ( $ctx, $param ) = @_;
+
+    # You can pass undef to $object_args if you do not want to filter by SQL statements.
+    my ( $objects, $tag_arg, $blog_terms, $blog_args, $object_args, $filters, $datasource ) = @$param{qw(objects tag_arg blog_terms blog_args object_args filters datasource)};
+
+    require MT::Tag;
+    require MT::ObjectTag;
+
+    my $terms;
+    if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
+        my @tags = MT::Tag->split( ',', $tag_arg );
+        $terms   = { name => \@tags };
+        $tag_arg = join " or ", @tags;
+    }
+    my @tags = MT::Tag->load(
+        $terms,
+        {   ( $terms ? ( binary => { name => 1 } ) : () ),
+            join => MT::ObjectTag->join_on(
+                'tag_id',
+                {   object_datasource => $datasource,
+                    %$blog_terms,
+                },
+                { %$blog_args, unique => 1 }
+            ),
+        }
+    );
+
+    my $cexpr = $ctx->compile_tag_filter( $tag_arg, \@tags )
+        or return $ctx->error(
+            MT->translate(
+                "You have an error in your '[_2]' attribute: [_1]",
+                $tag_arg, 'tag'
+            )
+            );
+
+    my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @tags;
+
+    if ( $tag_arg !~ m/\bNOT\b/i ) {
+        if ( !@tags ) {
+            return 'no_matching_tags';
+        }
+
+        if ($object_args) {
+            push @{ $object_args->{joins} },
+                MT::ObjectTag->join_on(
+                'object_id',
+                {   tag_id            => \@tag_ids,
+                    object_datasource => $datasource,
+                    %$blog_terms
+                },
+                { %$blog_args, unique => 1 }
+                );
+        }
+    }
+
+    # We can filter by "JOIN" statement for simple args. (single tag, "or" condition)
+    return 'filter_only_by_join'
+        if !$objects && $object_args && $tag_arg !~ m/\b(AND|NOT)\b|\(|\)/i;
+
+    # TODO: optimize $preloader
+    my $preloader = @tag_ids
+        ? sub {
+        my ($object_id) = @_;
+        my $preload_terms = {
+            tag_id            => \@tag_ids,
+            object_id         => $object_id,
+            object_datasource => $datasource,
+            %$blog_terms,
+        };
+        my $preload_args = {
+            %$blog_args,
+            fetchonly   => ['tag_id'],
+            no_triggers => 1,
+        };
+        my @ot_ids;
+        @ot_ids = MT::ObjectTag->load( $preload_terms, $preload_args );
+        my %map;
+        $map{ $_->tag_id } = 1 for @ot_ids;
+        \%map;
+        }
+        : sub { +{} };
+    push @$filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+
+    return 'filter_added';
 }
 
 sub count_format {

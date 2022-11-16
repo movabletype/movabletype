@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,7 +9,7 @@ require_once('class.basecache.php');
 class CacheSession extends BaseCache {
     public function get ($key, $ttl = null) {
         $ret = $this->get_multi($key, $ttl);
-        return $ret[0];
+        return isset($ret[0]) ? $ret[0] : '';
     }
 
     public function get_multi ($keys, $ttl = null) {
@@ -49,7 +49,7 @@ class CacheSession extends BaseCache {
     }
 
     public function flush_all() {
-        $mt = MT::get_insrance();
+        $mt = MT::get_instance();
 
         return $mt->db()->flush_session();
     }

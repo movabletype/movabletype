@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -149,7 +149,7 @@ sub config_tmpl {
     my $missing = undef;
     $missing = $app->translate(
         'A Perl module required for using Google Analytics API is missing: [_1].',
-        'Crypt::SSLeay'
+        'IO::Socket::SSL'
         )
         unless eval { require IO::Socket::SSL }
         || eval     { require Crypt::SSLeay };

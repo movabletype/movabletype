@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -78,6 +78,7 @@ sub list_props {
                 );
                 my %is_userpic = map { $_->object_id => 1 } @userpics;
                 my @rows;
+                MT::Meta::Proxy->bulk_load_meta_objects($objs);
                 for my $obj (@$objs) {
                     my $id = $obj->id;
                     my $label
@@ -120,6 +121,7 @@ sub list_props {
                         if (   $obj->has_thumbnail
                             && $obj->can_create_thumbnail )
                         {
+                            my $thumbnail_method = $obj->can('maybe_dynamic_thumbnail_url') || 'thumbnail_url';
                             my ( $orig_width, $orig_height )
                                 = ( $obj->image_width, $obj->image_height );
                             my ( $thumbnail_url, $thumbnail_width,
@@ -130,7 +132,7 @@ sub list_props {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = $obj->thumbnail_url(
+                                    = $obj->$thumbnail_method(
                                     Height => $thumb_size,
                                     Width  => $thumb_size,
                                     Square => 1,
@@ -141,7 +143,7 @@ sub list_props {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = $obj->thumbnail_url(
+                                    = $obj->$thumbnail_method(
                                     Width => $thumb_size,
                                     Ts    => 1
                                     );
@@ -150,7 +152,7 @@ sub list_props {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = $obj->thumbnail_url(
+                                    = $obj->$thumbnail_method(
                                     Height => $thumb_size,
                                     Ts     => 1
                                     );
@@ -165,19 +167,21 @@ sub list_props {
                                     );
                             }
 
-                            my $thumbnail_width_offset = int(
-                                ( $thumb_size - $thumbnail_width ) / 2 );
-                            my $thumbnail_height_offset = int(
-                                ( $thumb_size - $thumbnail_height ) / 2 );
+                            my $style = '';
+                            if ($thumbnail_width && $thumbnail_height) {
+                                my $thumbnail_width_offset = int( ( $thumb_size - $thumbnail_width ) / 2 );
+                                my $thumbnail_height_offset = int( ( $thumb_size - $thumbnail_height ) / 2 );
+                                $style = qq{style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px"};
+                            }
 
                             push @rows, qq{
                                 <div class="pull-left d-none d-md-inline">
-                                    <img alt="" src="$thumbnail_url" class="img-thumbnail" width="$thumbnail_width" height="$thumbnail_height" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                                    <img alt="link1" src="$thumbnail_url" class="img-thumbnail" width="$thumb_size" height="$thumb_size" $style loading="lazy" decoding="async" />
                                     <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
                                 </div>
                                 <div class="d-md-none row">
                                     <div class="col-auto mb-2 pl-0">
-                                        <img alt="" src="$thumbnail_url" class="img-thumbnail" width="$thumbnail_width" height="$thumbnail_height" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                                        <img alt="link2" src="$thumbnail_url" class="img-thumbnail" width="$thumb_size" height="$thumb_size" $style loading="lazy" decoding="async" />
                                     </div>
                                     <div class="col pl-0">
                                         <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
@@ -194,7 +198,7 @@ sub list_props {
                         elsif ( $class_type eq 'image' ) {
                             my $svg = qq{
                                     <div class="mt-thumbnail">
-                                        <img src="${static_uri}images/file-image.svg" width="60" height="60">
+                                        <img src="${static_uri}images/file-image.svg" width="60" height="60" loading="lazy" decoding="async">
                                     </div>
                                 };
                             push @rows, qq{
@@ -237,7 +241,7 @@ sub list_props {
                         else {
                             my $svg = qq{
                                     <div class="mt-thumbnail">
-                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60">
+                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60" loading="lazy" decoding="async">
                                     </div>
                                 };
                             push @rows, qq{
@@ -247,7 +251,7 @@ sub list_props {
                                 </div>
                                 <div class="d-md-none row">
                                     <div class="col-auto mb-2 pl-0">
-                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60">
+                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60" loading="lazy" decoding="async">
                                     </div>
                                     <div class="col pl-0">
                                         <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
@@ -265,7 +269,7 @@ sub list_props {
                     else {
                         my $svg = qq{
                                 <div class="mt-thumbnail">
-                                    <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60">
+                                    <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60" loading="lazy" decoding="async">
                                 </div>
                             };
                         push @rows, qq{
@@ -865,7 +869,9 @@ sub remove_cached_files {
             if ($fmgr) {
                 my $basename = $asset->file_name;
                 my $ext      = '.' . $asset->file_ext;
-                $basename =~ s/$ext$//;
+                if ($ext =~ /\A\.[A-Za-z0-9]+\z/) {
+                    $basename =~ s/\Q$ext\E$//;
+                }
                 my $cache_glob = File::Spec->catfile( $cache_dir,
                     $basename . '-thumb-*-' . $asset->id . $ext );
                 my @files = glob($cache_glob);
@@ -952,9 +958,8 @@ sub type_list {
 }
 
 sub metadata {
-    my $asset = shift;
-    return {
-        MT->translate("Tags")        => MT::Tag->join( ',', $asset->tags ),
+    my ($asset, %opts) = @_;
+    my %metadata = (
         MT->translate("Description") => $asset->description,
         MT->translate("Name")        => $asset->label,
         url                          => $asset->url,
@@ -966,7 +971,11 @@ sub metadata {
         mime_type                    => $asset->mime_type,
 
         # duration => $asset->duration,
-    };
+    );
+    if (!$opts{no_tags}) {
+        $metadata{ MT->translate("Tags") } = MT::Tag->join( ',', $asset->tags );
+    }
+    return \%metadata;
 }
 
 sub has_thumbnail {

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -124,7 +124,7 @@ sub save_revision {
         }
     );
     $revision->rev_number( ++$current_revision );
-    $revision->description($description)
+    $revision->description( substr $description, 0, 255 )
         if defined($description);
     $revision->save or return;
 
@@ -140,6 +140,12 @@ sub object_from_revision {
     my $serialized_obj = $rev->$datasource;
     require MT::Serialize;
     my $packed_obj = MT::Serialize->unserialize($serialized_obj);
+
+    if (ref $$packed_obj ne 'HASH') {
+        $rev->remove();
+        return;
+    }
+
     $rev_obj->unpack_revision($$packed_obj);
 
     # Here we cheat since audit columns aren't revisioned
@@ -182,7 +188,7 @@ sub load_revision {
 sub handle_max_revisions {
     my $driver = shift;
     my ( $obj, $max ) = @_;
-    return unless $max;
+    $max ||= $MT::Revisable::MAX_REVISIONS;
 
     my $datasource = $obj->datasource;
     my $rev_class  = MT->model( $datasource . ':revision' );

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,10 +11,15 @@ use warnings;
 
 use MT::CMS::Template;
 use MT::DataAPI::Endpoint::Common;
+use MT::DataAPI::Endpoint::v2::Template;
 use MT::DataAPI::Resource;
 
 my %SupportedType = map { $_ => 1 }
     qw/ index archive individual page category ct ct_archive /;
+
+sub list_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::Template::list_openapi_spec;
+}
 
 sub list {
     my ( $app, $endpoint ) = @_;
@@ -24,10 +29,14 @@ sub list {
     my $res = filtered_list( $app, $endpoint, 'template', \%terms ) or return;
 
     return +{
-        totalResults => ( $res->{count} || 0 ),
+        totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
     };
+}
+
+sub get_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::Template::get_openapi_spec;
 }
 
 sub get {
@@ -44,6 +53,10 @@ sub get {
         or return;
 
     return $tmpl;
+}
+
+sub update_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::Template::update_openapi_spec;
 }
 
 sub update {
@@ -65,6 +78,10 @@ sub update {
     remove_autosave_session_obj( $app, 'template', $new_tmpl->id );
 
     return $new_tmpl;
+}
+
+sub delete_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::Template::delete_openapi_spec;
 }
 
 sub delete {
@@ -100,6 +117,10 @@ sub delete {
     return $tmpl;
 }
 
+sub publish_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::Template::publish_openapi_spec;
+}
+
 sub publish {
     my ( $app, $endpoint ) = @_;
 
@@ -132,6 +153,10 @@ sub publish {
     return +{ status => 'success' };
 }
 
+sub refresh_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::Template::refresh_openapi_spec;
+}
+
 sub refresh {
     my ( $app, $endpoint ) = @_;
 
@@ -162,6 +187,10 @@ sub refresh {
         status   => 'success',
         messages => \@messages,
     };
+}
+
+sub clone_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::Template::clone_openapi_spec;
 }
 
 sub clone {

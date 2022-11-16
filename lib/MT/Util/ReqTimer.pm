@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -97,9 +97,9 @@ sub dump_line {
             $dur = $_->[2];
         }
 
-        #if ($dur >= $threshold) {
-        #    push @lines, sprintf("%s=%.5f", $_->[1], $dur);
-        #}
+        if ($dur >= $threshold) {
+            push @lines, sprintf("%s=%.5f", $_->[1], $dur);
+        }
         $total += $_->[0];
     }
     return '' if ( $total < $threshold );

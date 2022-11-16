@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -53,7 +53,7 @@ sub save {
     my $at   = $map->archive_type;
     my $blog = MT->model('blog')->load( $map->blog_id )
         or return;
-    my $blog_at = $blog->archive_type;
+    my $blog_at = $blog->archive_type || '';
     my @ats;
     @ats = map {$_}
         grep { $map->archive_type ne $_ }

@@ -42,6 +42,8 @@ sub work {
     my \$class = shift;
     my TheSchwartz::Job \$job = shift;
 
+    print STDERR "Working on MT::Worker::$key\n";
+
     print STDERR "[" . time . "] $key starts waiting for $sleep\n";
 
     sleep $sleep;

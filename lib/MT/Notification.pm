@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -56,7 +56,7 @@ sub list_props {
                 return qq{
                     <a href="javascript:void(0)" title="$title" class="edit-link note-email-link start-edit" id="note-email-link-$id" data-id="$id">$email</a>
                     <span id="note-email-field-$id" style="display: none">
-                    <input type="text" name="note-email-$id" id="note-email-$id" class="form-control text email" value="$email" />
+                    <input type="text" name="note-email-$id" id="note-email-$id" class="form-control text required email" value="$email" />
                     </span>
                 };
             },
@@ -82,7 +82,7 @@ sub list_props {
                     <span id="note-url-link-$id" class="view-link"><a href="javascript:void(0)" class="edit-link start-edit" title="$title" data-id="$id">$url</a>}
                     . (
                     $url
-                    ? qq{&nbsp;<a href="$url" target="_blank">                        <img alt="View" src="$view_img" /></a>}
+                    ? qq{&nbsp;<a href="$url" target="_blank">                        <img alt="View" src="$view_img" loading="lazy" decoding="async" /></a>}
                     : ''
                     )
                     . qq{</span>

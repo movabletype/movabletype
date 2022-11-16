@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -10,14 +10,17 @@ use warnings;
 use MT::Util qw( is_valid_date encode_html first_n_words );
 
 sub core_search_apis {
-    my $app     = shift;
-    my $blog_id = $app->param('blog_id');
-    my $author  = $app->user;
+    my $app = shift;
+
+    # use a different variable name not to be bound in closures by chance.
+    # this user is used to determine if site-related values can be replaced or not.
+    my $user_not_to_be_bound = $app->user;
 
     my $types = {
         content_data => {
             order     => 50,
             condition => sub {
+                my $blog_id = MT->app->param('blog_id');
                 return 0
                     unless $app->model('content_type')->exist(
                     {   (     ($blog_id)
@@ -125,6 +128,7 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
+                my $blog_id = MT->app->param('blog_id');
                 my $cnt = MT->model('permission')->count(
                     [   {   (     ($blog_id)
                                 ? ( blog_id => $blog_id )
@@ -185,6 +189,7 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
+                my $blog_id = MT->app->param('blog_id');
                 my $cnt = MT->model('permission')->count(
                     {   (     ($blog_id)
                             ? ( blog_id => $blog_id )
@@ -235,6 +240,7 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
+                my $blog_id = MT->app->param('blog_id');
                 my $cnt = MT->model('permission')->count(
                     [   {   (     ($blog_id)
                                 ? ( blog_id => $blog_id )
@@ -292,6 +298,7 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
+                my $blog_id = MT->app->param('blog_id');
                 my $cnt = MT->model('permission')->count(
                     {   (     ($blog_id)
                             ? ( blog_id => $blog_id )
@@ -344,6 +351,7 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
+                my $blog_id = MT->app->param('blog_id');
                 my $terms;
                 push @$terms, { author_id => $author->id };
                 if ($blog_id) {
@@ -402,6 +410,8 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if $author->can_manage_users_groups;
+
+                my $blog_id = MT->app->param('blog_id');
                 return 0 if !$blog_id;
 
                 my $cnt = MT->model('permission')->count(
@@ -419,6 +429,8 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if $author->can_manage_users_groups;
+
+                my $blog_id = MT->app->param('blog_id');
                 return 0 if !$blog_id;
 
                 my $perm = $author->permissions($blog_id);
@@ -461,7 +473,7 @@ sub core_search_apis {
                 return 0 if $blog && $blog->is_blog;
                 return 1 if $author->is_superuser;
                 return 1 if $author->permissions(0)->can_do('administer');
-                return 1 if $author->permissions(0)->can_do('edit_template');
+                return 1 if $author->permissions(0)->can_do('edit_templates');
                 return 0;
             },
             'handler'    => '$Core::MT::CMS::Blog::build_blog_table',
@@ -481,7 +493,7 @@ sub core_search_apis {
                 'description' => sub { $app->translate('Description') },
             },
             'replace_cols'       => [qw(name site_url site_path description)],
-            'can_replace'        => $author->is_superuser(),
+            'can_replace'        => $user_not_to_be_bound->is_superuser(),
             'can_search_by_date' => 0,
             'setup_terms_args'   => sub {
                 my ( $terms, $args, $blog_id ) = @_;
@@ -494,10 +506,11 @@ sub core_search_apis {
             'order'     => 1000,
             'condition' => sub {
                 my $author = MT->app->user;
+                my $blog_id = MT->app->param('blog_id');
                 return 0 if $blog_id;
                 return 1 if $author->is_superuser;
                 return 1 if $author->permissions(0)->can_do('administer');
-                return 1 if $author->permissions(0)->can_do('edit_template');
+                return 1 if $author->permissions(0)->can_do('edit_templates');
                 return 0;
             },
             'label'      => 'Sites',
@@ -517,7 +530,7 @@ sub core_search_apis {
                 'description' => sub { $app->translate('Description') },
             },
             'replace_cols'       => [qw(name site_url site_path description)],
-            'can_replace'        => $author->is_superuser(),
+            'can_replace'        => $user_not_to_be_bound->is_superuser(),
             'can_search_by_date' => 0,
             'view'               => 'system',
             'setup_terms_args'   => sub {
@@ -548,10 +561,11 @@ sub core_search_apis {
             'order'     => 1000,
             'condition' => sub {
                 my $author = MT->app->user;
+                my $blog_id = MT->app->param('blog_id');
                 return 0 if $blog_id;
                 return 1 if $author->is_superuser;
                 return 1 if $author->permissions(0)->can_do('administer');
-                return 1 if $author->permissions(0)->can_do('edit_template');
+                return 1 if $author->permissions(0)->can_do('edit_templates');
                 return 0;
             },
             'label'      => 'Sites',
@@ -586,8 +600,10 @@ sub core_search_apis {
             'system_permission' => 'administer,manage_users_groups',
             'label'             => 'Groups',
             'perm_check'        => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if $author->can_manage_users_groups;
+                my $blog_id = MT->app->param('blog_id');
                 if ($blog_id) {
                     my $perm = $author->permissions($blog_id);
                     return $perm->can_administer_site;
@@ -668,6 +684,14 @@ sub can_search_replace {
 
 sub search_replace {
     my $app     = shift;
+
+    $app->validate_param({
+        _type           => [qw/OBJTYPE/],
+        blog_id         => [qw/ID/],
+        content_type_id => [qw/ID/],
+        entry_type      => [qw/OBJTYPE/],
+    }) or return;
+
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
 
@@ -847,7 +871,7 @@ sub do_search_replace {
     $replace && ( $app->validate_magic() or return );
     $search = $orig_search if $do_replace;    # for safety's sake
     my $list_pref = $app->list_pref($type);
-    my $search_api = $app->registry( "search_apis", $type );
+    my $search_api = $app->registry("search_apis")->{$type};
 
     $app->assert( $search_api, "Invalid request." ) or return;
 
@@ -1083,7 +1107,7 @@ sub do_search_replace {
             $terms{class}  = $type;
         }
         if ($is_dateranged) {
-            if ($date_time_field_id) {
+            if ($content_type && $date_time_field_id) {
                 my $field_data
                     = $content_type->get_field($date_time_field_id);
                 my $datetime_term;
@@ -1172,11 +1196,7 @@ sub do_search_replace {
         $args{limit} = $limit + 1 if $limit ne 'all';
         my $iter;
         if ($do_replace) {
-            $iter = sub {
-                if ( my $id = pop @ids ) {
-                    $class->load($id);
-                }
-            };
+            $iter = iter_for_replace($class, \@ids);
         }
         else {
             my $terms = $param->{terms};
@@ -1305,7 +1325,7 @@ sub do_search_replace {
             my $match = 0;
 
             # For cms_pre_save callback and revisioning
-            my $orig_obj = $obj->clone();
+            my $orig_obj;
             unless ($show_all) {
                 for my $col (@cols) {
                     next if $do_replace && !$replace_cols{$col};
@@ -1328,6 +1348,7 @@ sub do_search_replace {
                     if ($do_replace) {
                         my $replaced;
                         my $replace_handler;
+                        $orig_obj ||= $obj->clone();
                         if ( my $replace_handler
                             = $field_registry->{replace_handler} )
                         {
@@ -1526,7 +1547,7 @@ sub do_search_replace {
         $app->log(
             {   message  => $message,
                 blog_id  => ( $obj->can('blog_id') ? $obj->blog_id : 0 ),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $type,
                 category => 'edit',
                 metadata => $obj->id
@@ -1777,6 +1798,24 @@ sub do_search_replace {
     \%res;
 }
 
+sub iter_for_replace {
+    require MT::Meta::Proxy;
+    my ($class, $ids) = @_;
+    my @objs;
+    my $capacity = MT->config->BulkLoadMetaObjectsLimit;
+    my %idx = map { $ids->[$_] => $_ } 0 .. scalar(@$ids) - 1;
+    return sub {
+        unless (@objs) {
+            my $len = @$ids or return;
+            my @stock_ids = splice @$ids, $len > $capacity ? -$capacity : -$len;
+            @objs = $class->load({ id => \@stock_ids });
+            @objs = sort { $idx{ $b->id } <=> $idx{ $a->id } } @objs;
+            MT::Meta::Proxy->bulk_load_meta_objects(\@objs) if @objs && $objs[0]->has_meta;
+        }
+        return shift(@objs);
+    };
+}
+
 sub _default_results_table_template {
     my $app = shift;
     my ( $type, $results, $plural ) = @_;
@@ -1787,7 +1826,7 @@ sub _default_results_table_template {
     else {
         return <<TMPL;
         <mtapp:statusmsg
-                id="no-$plural"
+                id="no-$type"
                 class="info"
                 can_close="0">
                 <__trans phrase="No [_1] were found that match the given criteria." params="$plural">

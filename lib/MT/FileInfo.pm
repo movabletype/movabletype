@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -164,6 +164,28 @@ sub cleanup {
     while ( my $obj = $iter->() ) {
         $obj->remove;
     }
+}
+
+sub mark_to_remove {
+    my ( $self, $build_type ) = @_;
+    if ( !$build_type ) {
+        if ( $self->templatemap_id ) {
+            require MT::TemplateMap;
+            my $map = MT::TemplateMap->load( $self->templatemap_id );
+            $build_type = $map ? $map->build_type : 0;
+        }
+    }
+    require MT::PublishOption;
+    if ( $build_type != MT::PublishOption::DYNAMIC() ) {
+        require MT::DeleteFileInfo;
+        my $del = MT::DeleteFileInfo->new(
+            blog_id    => $self->blog_id,
+            file_path  => $self->file_path,
+            build_type => $build_type || 0,
+        );
+        $del->save;
+    }
+    $self->remove;
 }
 
 1;

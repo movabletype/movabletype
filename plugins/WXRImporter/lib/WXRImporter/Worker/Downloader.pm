@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -65,13 +65,14 @@ sub work {
                     unless $path eq
                     '/';    ## OS X doesn't like / at the end in mkdir().
                 unless ( $filemgr->exists($path) ) {
-                    $filemgr->mkpath($path);
+                    $filemgr->mkpath($path) or do { $job->failed("Failed to make path: $path"); last };
                 }
-                $filemgr->put_data( $content, $asset_file, 'upload' )
-                    or $job->failed(
-                    "Failed to save content of the file $asset_file via: $url"
-                    );
-                $job->completed();
+                my $ok = $filemgr->put_data( $content, $asset_file, 'upload' );
+                if ($ok) {
+                    $job->completed();
+                } else {
+                    $job->failed("Failed to save content of the file $asset_file via: $url");
+                }
             }
             else {
                 $job->failed("Error downloading $url");
@@ -84,7 +85,7 @@ sub work {
 }
 
 sub grab_for    {60}
-sub max_retries {100000}
+sub max_retries {1}
 sub retry_delay {60}
 
 1;

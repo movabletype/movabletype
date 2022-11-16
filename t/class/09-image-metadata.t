@@ -22,7 +22,7 @@ $test_env->prepare_fixture('db');
 
 my $cfg = MT->config;
 
-for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
+for my $driver ( $test_env->image_drivers ) {
     subtest $driver => sub {
 
         $cfg->ImageDriver($driver);
@@ -36,19 +36,19 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
 
         ok( -s $tempfile, 'JPEG file exists.' );
 
-        # JPEG file does not have 'Orientation' tag.
-        my $tag  = 'Orientation';
+        # JPEG file does not have 'Comment' tag.
+        my $tag  = 'Comment';
         my $exif = Image::ExifTool->new;
         $exif->ExtractInfo($tempfile);
         ok( !$exif->GetValue($tag), qq{JPEG file does not have $tag tag.} );
 
-        # Set 'Orientation' tag.
+        # Set 'Keywords' tag.
         $exif->SetNewValue( $tag, 1 );
         $exif->WriteInfo($tempfile);
         $exif->ExtractInfo($tempfile);
         ok( $exif->GetValue($tag), qq{$tag tag is set to JPEG file.} );
 
-        # Remove 'Orientation' tag. (remove all tags)
+        # Remove 'Keywords' tag. (remove all tags)
         MT::Image->remove_metadata($tempfile);
         
         SKIP: {

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2016 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -86,7 +86,7 @@ sub list_props {
         current_context => { filter_editable => 0 },
         content_count   => {
             label        => 'Content Data',
-            filter_label => 'Content Data',
+            filter_label => 'Content Data Count',
             display      => 'default',
             order        => 500,
             base         => '__virtual.object_count',

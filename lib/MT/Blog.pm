@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -65,7 +65,7 @@ __PACKAGE__->install_properties(
             'autodiscover_links'       => 'boolean',
             'sanitize_spec'            => 'string(255)',
             'cc_license'               => 'string(255)',
-            'is_dynamic'               => 'boolean',
+            'is_dynamic'               => 'boolean', # DEPRECATED
             'remote_auth_token'        => 'string(50)',
             'children_modified_on'     => 'datetime',
             'custom_dynamic_templates' => 'string(25)',
@@ -78,6 +78,7 @@ __PACKAGE__->install_properties(
             'archive_url'              => 'string(255)',
             'archive_path'             => 'string(255)',
             'content_css'              => 'string(255)',
+            'allow_data_api'           => 'boolean',
             ## Have to keep these around for use in mt-upgrade.cgi.
             'old_style_archive_links' => 'boolean',
             'archive_tmpl_daily'      => 'string(255)',
@@ -96,6 +97,7 @@ __PACKAGE__->install_properties(
             'image_default_constrain'  => 'integer meta',
             'image_default_popup'      => 'integer meta',
             'commenter_authenticators' => 'string meta',
+            'image_default_link'      => 'integer meta',
             'require_typekey_emails'   => 'integer meta',
             'nofollow_urls'            => 'integer meta',
             'follow_auth_links'        => 'integer meta',
@@ -180,6 +182,24 @@ sub list_props {
                 my $name = $obj->name;
                 $name = '' if !defined $name;
                 $name =~ s/^\s+|\s+$//g;
+                my $scope_label = '';
+                my $badge_class = '';
+                my $scope_html  = '';
+                my $scope_lc    = '';
+                if(!$app->blog){
+                    if ($obj->is_blog) {
+                        $scope_label = MT->translate('Child Site');
+                        $badge_class = 'badge badge-info ';
+                        $scope_lc    = 'blog';
+                    } else {
+                        $scope_label = MT->translate('Site');
+                        $badge_class = 'badge badge-success ';
+                        $scope_lc    = 'website';
+                    }
+                    $scope_html = qq{
+                        <span class="${badge_class} ${scope_lc} sticky-label">$scope_label</span>
+                    };
+                }
                 my $dashboard_link = $app->uri(
                     mode => 'dashboard',
                     args => { blog_id => $obj->id, },
@@ -188,11 +208,11 @@ sub list_props {
                     my $can_double_encode = 1;
                     $name
                         = MT::Util::encode_html( $name, $can_double_encode );
-                    return qq{<a href="$dashboard_link">$name</a>};
+                    return qq{$scope_html <a href="$dashboard_link"> $name</a>};
                 }
                 else {
                     return MT->translate(
-                        qq{[_1] (<a href="[_2]">id:[_3]</a>)},
+                        qq{[_1] ($scope_html <a href="[_2]">id:[_3]</a>)},
                         'No Name', $dashboard_link, $obj->id, );
                 }
             }
@@ -297,6 +317,28 @@ sub list_props {
                 } @$objs;
                 return @sorted;
             },
+            verb                  => ' ',
+            single_select_options => [
+                {
+                    label => MT->translate('__INTEGER_FILTER_EQUAL'),
+                    value => 1,
+                },
+                {
+                    label => MT->translate('__INTEGER_FILTER_NOT_EQUAL'),
+                    value => 0,
+                },
+            ],
+            singleton => 1,
+            base      => '__virtual.single_select',
+            terms     => sub {
+                my $prop = shift;
+                my ($args, $db_terms, $db_args) = @_;
+                if ($args->{value}) {
+                    $db_terms->{parent_id} = \'IS NULL';
+                } else {
+                        $db_terms->{parent_id} = \'IS NOT NULL';
+                }
+            }
         },
         created_on => {
             base  => '__virtual.created_on',
@@ -693,20 +735,10 @@ sub site_url {
 
     if (@_) {
         my $url = $_[0];
-        $url .= '/' unless $url =~ m{/$};
-        return $blog->column( 'site_url', $url );
-    }
-    elsif ( $blog->is_dynamic ) {
-        my $cfg  = MT->config;
-        my $path = $cfg->CGIPath;
-        if ( $path =~ m!^/! ) {
-
-            # relative path, prepend blog domain
-            my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
-            $path = $blog_domain . $path;
+        if (defined $url) {
+            $url .= '/' unless $url =~ m{/$};
         }
-        $path .= '/' unless $path =~ m{/$};
-        return $path;
+        return $blog->column( 'site_url', $url );
     }
     else {
         my $url = '';
@@ -762,10 +794,11 @@ sub site_path {
 
     if (@_) {
         my ($new_site_path) = @_;
-        my $sep = quotemeta MT::Util::dir_separator;
-        $sep = qr![\\/]! if $^O eq 'MSWin32';
-        $new_site_path =~ s/$sep*$//;
-
+        if (defined $new_site_path) {
+            my $sep = quotemeta MT::Util::dir_separator;
+            $sep = qr![\\/]! if $^O eq 'MSWin32';
+            $new_site_path =~ s/$sep*$//;
+        }
         $blog->column( 'site_path', $new_site_path );
     }
     else {
@@ -807,9 +840,6 @@ sub archive_url {
         my $url = $_[0];
         $url .= '/' if $url ne "" && $url !~ m{/$};
         $blog->column( 'archive_url', $url ) || $blog->site_url;
-    }
-    elsif ( $blog->is_dynamic ) {
-        return $blog->site_url;
     }
     else {
         my $url = $blog->site_url;
@@ -1754,6 +1784,21 @@ sub _adjust_threshold {
     }
 }
 
+sub can_popup_image {
+    my $blog = shift;
+    return 0 if MT->config('DisableImagePopup');
+    my %tmpl_param = (
+        blog_id => $blog->id,
+        type    => 'popup_image'
+    );
+    my $tmpl = MT->model('template')->load(\%tmpl_param);
+    
+    if ($tmpl && $tmpl->text ne '') {
+        return 1;
+    }
+    return 0;
+}
+
 1;
 __END__
 
@@ -2008,7 +2053,7 @@ IF the blog is CC license, this property holds the variation. for example
 
 =item * is_dynamic
 
-Specify if this blog is published dynamically or statically
+DEPRECATED. Specify if this blog is published dynamically or statically
 
 =item * remote_auth_token
 
@@ -2203,6 +2248,10 @@ Contain a comma-delimiter list of category ids, ordered
 =item * folder_order
 
 Contain a comma-delimiter list of folder ids, ordered
+
+=item * allow_data_api
+
+A boolean flag specifying whether the website accepts Data API.
 
 =back
 

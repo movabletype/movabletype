@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -31,8 +31,92 @@ sub _iso2epoch {
     ts2epoch( $blog, iso2ts( $blog, $iso ) );
 }
 
+sub entries_openapi_spec {
+    +{
+        tags        => ['Entries', 'Publish'],
+        summary     => 'Rebuild the static archives in relation to specified entries',
+        description => <<'DESCRIPTION',
+Rebuild the static archives in relation to specified entries.
+
+Authorization is required.
+DESCRIPTION
+        parameters => [{
+                'in'        => 'query',
+                name        => 'ids',
+                schema      => { type => 'string' },
+                description => 'This is an required parameter. The comma separated ID list of entries to rebuild.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'blogId',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'startTime',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter.',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                headers     => {
+                    'X-MT-Next-Phase-URL' => {
+                        schema => { type => 'string' },
+                        description => 'If status is "Rebuilding", user should start next phase that implies by this header, manually.(In JavaScript library, a next phase is started automatically.) ',
+                    },
+                },
+                content => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => {
+                                    type => 'string',
+                                    enum => [
+                                        'Rebuilding',
+                                        'Complete',
+                                    ],
+                                    description => <<'DESCRIPTION',
+The status text of this rebuild.
+
+#### Rebuilding
+
+Not yet completed.
+User should start next phase that implies by X-MT-Next-Phase-URL response header.
+(In JavaScript library, a next phase is started automatically.)
+
+#### Complete
+
+All the static archives were rebuilded.
+DESCRIPTION
+                                },
+                                startTime => {
+                                    type        => 'string',
+                                    format      => 'date-time',
+                                    description => 'The time which started rebuilding.',
+                                },
+                                restIds => {
+                                    type        => 'string',
+                                    description => 'The comma separated ID list of entries which has not been rebuilt',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub entries {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     publish_common( $app, $endpoint, \&MT::App::CMS::rebuild_these );
 }
 

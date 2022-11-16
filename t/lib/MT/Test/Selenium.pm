@@ -3,6 +3,11 @@ package MT::Test::Selenium;
 use Role::Tiny::With;
 use strict;
 use warnings;
+use FindBin;
+use Time::HiRes qw(time);
+use File::Path;
+use Try::Tiny;
+use 5.010;
 use JSON::PP ();    # silence redefine warnings
 use JSON;
 use Test::More;
@@ -12,6 +17,9 @@ use Plack::Builder;
 use Plack::App::Directory;
 use File::Spec;
 use File::Which qw/which/;
+use Devel::GlobalDestruction;
+use Encode;
+use LWP::UserAgent;
 use URI;
 use URI::QueryParam;
 use MT::PSGI;
@@ -29,11 +37,18 @@ our %EXTRA = (
         'goog:chromeOptions' => {
             args => [
                 'headless', ( DEBUG ? ('enable-logging') : () ),
-                'window-size=1280,800', 'no-sandbox',
+                'window-size=1280,800', 'no-sandbox', 'disable-dev-shm-usage',
+                'host-rules=MAP * '. MY_HOST,
             ],
-            perfLoggingPrefs => {},
+            prefs => {
+                'download.default_directory'   => $ENV{MT_TEST_ROOT},
+                'download.prompt_for_download' => $JSON::false,
+            },
+            perfLoggingPrefs => {
+                traceCategories => 'browser,devtools.timeline,devtools',
+            },
         },
-        loggingPrefs => { performance => 'ALL' },
+        'goog:loggingPrefs' => { performance => 'ALL', browser => 'ALL' },
         binaries     => [
             'chromedriver',
             '/usr/bin/chromedriver',
@@ -45,9 +60,18 @@ our %EXTRA = (
         'goog:chromeOptions' => {
             args => [
                 'headless', ( DEBUG ? 'enable-logging' : () ),
-                'window-size=1280,800', 'no-sandbox',
+                'window-size=1280,800', 'no-sandbox', 'disable-dev-shm-usage',
+                'host-rules=MAP * '. MY_HOST,
             ],
+            prefs => {
+                'download.default_directory'   => $ENV{MT_TEST_ROOT},
+                'download.prompt_for_download' => $JSON::false,
+            },
+            perfLoggingPrefs => {
+                traceCategories => 'browser,devtools.timeline,devtools',
+            },
         },
+        'goog:loggingPrefs' => { performance => 'ALL', browser => 'ALL' },
         travis => {
             remote_server_addr => 'chromedriver',
             port               => 9515,
@@ -56,10 +80,11 @@ our %EXTRA = (
 );
 
 sub new {
-    my ( $class, $env ) = @_;
+    my ( $class, $env, $args ) = @_;
 
-    my $driver_class = $ENV{MT_TEST_SELENIUM_DRIVER}
-        || ( $ENV{TRAVIS} ? 'Selenium::Remote::Driver' : 'Selenium::Chrome' );
+    plan skip_all => "Selenium testing is skipped by env" if $ENV{MT_TEST_SKIP_SELENIUM};
+
+    my $driver_class = $ENV{MT_TEST_SELENIUM_DRIVER} || 'Selenium::Chrome';
     eval "require $driver_class" or plan skip_all => "No $driver_class";
 
     my $extra = $EXTRA{$driver_class} || {};
@@ -69,7 +94,7 @@ sub new {
         default_finder      => 'css',
         extra_capabilities  => $extra,
         acceptInsecureCerts => 1,
-        timeout             => 10,
+        startup_timeout     => 10,
     );
     for my $binary ( @{ delete $extra->{binaries} || [] } ) {
         $binary = _fix_binary($binary) or next;
@@ -77,10 +102,10 @@ sub new {
         last;
     }
 
+    my $ua = LWP::UserAgent->new(timeout => 300);
+    $driver_opts{ua} = $ua;
+
     my $travis_config = delete $extra->{travis};
-    if ( $ENV{TRAVIS} ) {
-        %driver_opts = ( %driver_opts, %$travis_config );
-    }
 
     if (DEBUG) {
         my $log_file = "$ENV{MT_HOME}/selenium_log.txt";
@@ -88,7 +113,7 @@ sub new {
     }
 
     my $driver = eval { $driver_class->new(%driver_opts) }
-        or plan skip_all => "Failed to instantiate $driver_class";
+        or plan skip_all => "Failed to instantiate $driver_class: $@";
 
     $driver->debug_on if DEBUG;
 
@@ -96,10 +121,27 @@ sub new {
         code => sub {
             my $port = shift;
 
-            my $host  = MY_HOST;
-            my %extra = ( CGIPath => "http://$host:$port/cgi-bin/" );
+            my $pid_file = "$ENV{MT_TEST_ROOT}/.server.pid";
+            my $host     = MY_HOST;
+            my %extra    = (
+                CGIPath        => "http://$host:$port/cgi-bin/",
+                StaticWebPath  => "http://$host:$port/mt-static/",
+                StaticFilePath => "$ENV{MT_HOME}/mt-static",
+                PIDFilePath    => $pid_file,
+            );
             $env->update_config(%extra);
 
+            if ($args->{rebootable} && 
+                    eval { require Server::Starter; require Net::Server::SS::PreFork; require Starman; 1 }) {
+                my @options = qw(-s Starman --workers 2);
+                push @options, '--env', (DEBUG ? 'development' : 'production');
+                Server::Starter::start_server(
+                    port     => "$host:$port",
+                    pid_file => $pid_file,
+                    exec     => ['plackup', @options, "$ENV{MT_HOME}/mt.psgi"],
+                );
+                exit(0);
+            }
             my $app        = MT::PSGI->new->to_app;
             my $static_app = Plack::App::Directory->new(
                 root => "$ENV{MT_HOME}/mt-static" );
@@ -151,8 +193,12 @@ sub driver { shift->{driver} }
 sub DESTROY {
     my $self = shift;
     return unless $self->{pid} eq $$;
+    if (in_global_destruction) {
+        warn "Destroy MT::Test::Selenium object earlier!\nWebDriver may not be shut down properly at the global destruction";
+    }
     my $driver = $self->{driver} or return;
     $driver->quit;
+    $self->{server}->stop;
 }
 
 sub base_url {
@@ -293,7 +339,7 @@ sub request {
         # TODO: take care of redirection
         $res = HTTP::Response->new( $log->{status}, $log->{statusText},
             [ %{ $log->{headers} || {} } ] );
-        $res->content( $self->{content} );
+        $res->content(encode_utf8($self->{content}));
     }
     $res ||= HTTP::Response->new(200);
     return $self->{res} = $res;
@@ -326,6 +372,64 @@ sub _get_response_logs {
                 qw/headers status statusText url requestHeaders/ };
     }
     return \@responses;
+}
+
+sub get_browser_error_log {
+    my ($self) = @_;
+    state $ignore_hosts = join('|', ('narnia.na', 'example.com', 'creativecommons.org'));
+    my $logs = $self->driver->get_log('browser');
+    my @filtered;
+    for my $log (@$logs) {
+        if ($log->{source} eq 'network') {
+            next if ($log->{message} =~ qr{^https?://($ignore_hosts)});
+        }
+        if ($log->{source} eq 'console-api' && $log->{level} =~ qr{INFO|WARNING}) {
+            next;
+        }
+        push(@filtered, $log);
+    }
+    return @filtered;
+}
+
+sub screenshot {
+    # TODO consider zero padding for index numbers
+    my ($self, $id) = @_;
+    state $index = 1;
+    state $evidence_dir = sprintf("%s/evidence/%s/%s", $FindBin::Bin, time, $FindBin::Script);
+    File::Path::make_path("$evidence_dir");
+    my $basename = $index. ($id ? '-'. $id : ''). '.png';
+    $self->driver->capture_screenshot("$evidence_dir/$basename");
+    $index++;
+}
+
+sub screenshot_full {
+    my ($self, $id, $width, $height) = @_;
+    my $size_org = $self->driver->get_window_size();
+    $width  = $width  || $self->driver->execute_script('return document.body.scrollWidth / (top === self ? 1 : 0.8)');
+    $height = $height || $self->driver->execute_script('return document.body.scrollHeight / (top === self ? 1 : 0.8)');
+    $self->driver->set_window_size($height, $width);
+    my $name = $self->screenshot($id);
+    $self->driver->set_window_size($size_org->{'height'}, $size_org->{'width'});
+    return $name;
+}
+
+sub retry_until_success {
+    my $self = shift;
+    my $args = { limit => $ENV{MT_TEST_SELENIUM_MAX_RETRY} || 1, task => sub { }, teardown => sub { }, @_ };
+    for my $i (1 .. $args->{'limit'}) {
+        my $exception;
+        my $ret = try {
+            return $args->{'task'}->();
+        } catch {
+            $exception = $_;
+            $exception =~ s{ at \S+ line \d+.*}{}s;
+            diag(($i == $args->{'limit'} ? 'Aborting' : 'Retrying'). ': '. $exception);
+            $args->{'teardown'}->();
+        };
+        return $ret unless defined($exception);
+    }
+    diag 'Failed';
+    return;
 }
 
 1;

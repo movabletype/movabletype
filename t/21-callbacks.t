@@ -22,7 +22,7 @@ use MT::Entry;
 use MT::App::CMS;
 use MT::Permission;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $mt = MT->new;
 die "Couldn't create MT (" . MT->errstr. ")" unless $mt;
@@ -56,8 +56,8 @@ MT->add_callback('MT::Entry::post_load', 1, $plugin,
     || die "Couldn't add post_load cb: " . MT->errstr;
 
 my $entry = MT::Entry->new();
-my $TEST_TEXT = "Come flow on the mic with the mighty mic master ";
-my $TEST_TEXT_MORE = "beau-coup ducks, I'm a sucker to disaster. Scribble-dabbble scrabble, on the microphone I babble, as I fit the funky words! Into a puzzle! Yes, yes, yes, on and on as I flex, .... birds manifest, feel the vibe from here to Asia--dip trip, flip fantasia.";
+my $TEST_TEXT = "thus with a kiss I die ";
+my $TEST_TEXT_MORE = "Do not swear by the moon, for she changes constantly. then your love would also change.";
 $entry->author_id(1);
 $entry->status(1);
 $entry->text($TEST_TEXT);

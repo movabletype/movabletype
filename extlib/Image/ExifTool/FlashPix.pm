@@ -21,7 +21,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::ASF;   # for GetGUID()
 
-$VERSION = '1.38';
+$VERSION = '1.39';
 
 sub ProcessFPX($$);
 sub ProcessFPXR($$$);
@@ -1086,7 +1086,7 @@ my %fpxFileType = (
             0x0807 => 'German (Swiss)',
             0x0408 => 'Greek',
             0x0409 => 'English (US)',
-            0x0809 => 'English (British)',		
+            0x0809 => 'English (British)',
             0x0c09 => 'English (Australian)',
             0x040a => 'Spanish (Castilian)',
             0x080a => 'Spanish (Mexican)',
@@ -1109,7 +1109,7 @@ my %fpxFileType = (
             0x0415 => 'Polish',
             0x0416 => 'Portuguese (Brazilian)',
             0x0816 => 'Portuguese',
-            0x0417 => 'Rhaeto-Romanic',	
+            0x0417 => 'Rhaeto-Romanic',
             0x0418 => 'Romanian',
             0x0419 => 'Russian',
             0x041a => 'Croato-Serbian (Latin)',
@@ -1369,29 +1369,48 @@ sub ReadFPXValue($$$$$;$$)
         my $flags = $type & 0xf000;
         if ($flags) {
             if ($flags == VT_VECTOR) {
-                $noPad = 1;     # values don't seem to be padded inside vectors
+                $noPad = 1;     # values sometimes aren't padded inside vectors!!
                 my $size = $oleFormatSize{VT_VECTOR};
-                last if $valPos + $size > $dirEnd;
+                if ($valPos + $size > $dirEnd) {
+                    $et->WarnOnce('Incorrect FPX VT_VECTOR size');
+                    last;
+                }
                 $count = Get32u($dataPt, $valPos);
                 push @vals, '' if $count == 0;  # allow zero-element vector
                 $valPos += 4;
             } else {
                 # can't yet handle this property flag
+                $et->WarnOnce('Unknown FPX property');
                 last;
             }
         }
         unless ($format =~ /^VT_/) {
             my $size = Image::ExifTool::FormatSize($format) * $count;
-            last if $valPos + $size > $dirEnd;
+            if ($valPos + $size > $dirEnd) {
+                $et->WarnOnce("Incorrect FPX $format size");
+                last;
+            }
             @vals = ReadValue($dataPt, $valPos, $format, $count, $size);
             # update position to end of value plus padding
             $valPos += ($count * $size + 3) & 0xfffffffc;
             last;
         }
         my $size = $oleFormatSize{$format};
-        my ($item, $val);
+        my ($item, $val, $len);
         for ($item=0; $item<$count; ++$item) {
-            last if $valPos + $size > $dirEnd;
+            if ($valPos + $size > $dirEnd) {
+                $et->WarnOnce("Truncated FPX $format value");
+                last;
+            }
+            # sometimes VT_VECTOR items are padded to even 4-byte boundaries, and sometimes they aren't
+            if ($noPad and defined $len and $len & 0x03) {
+                my $pad = 4 - ($len & 0x03);
+                if ($valPos + $pad + $size <= $dirEnd) {
+                    # skip padding if all zeros
+                    $valPos += $pad if substr($$dataPt, $valPos, $pad) eq "\0" x $pad;
+                }
+            }
+            undef $len;
             if ($format eq 'VT_VARIANT') {
                 my $subType = Get32u($dataPt, $valPos);
                 $valPos += $size;
@@ -1429,9 +1448,12 @@ sub ReadFPXValue($$$$$;$$)
                 $val = ($val - 25569) * 24 * 3600 if $val != 0;
                 $val = Image::ExifTool::ConvertUnixTime($val);
             } elsif ($format =~ /STR$/) {
-                my $len = Get32u($dataPt, $valPos);
+                $len = Get32u($dataPt, $valPos);
                 $len *= 2 if $format eq 'VT_LPWSTR';    # convert to byte count
-                last if $valPos + $len + 4 > $dirEnd;
+                if ($valPos + $len + 4 > $dirEnd) {
+                    $et->WarnOnce("Truncated $format value");
+                    last;
+                }
                 $val = substr($$dataPt, $valPos + 4, $len);
                 if ($format eq 'VT_LPWSTR') {
                     # convert wide string from Unicode
@@ -1450,8 +1472,11 @@ sub ReadFPXValue($$$$$;$$)
                 #  on even 32-bit boundaries, but this isn't always the case)
                 $valPos += $noPad ? $len : ($len + 3) & 0xfffffffc;
             } elsif ($format eq 'VT_BLOB' or $format eq 'VT_CF') {
-                my $len = Get32u($dataPt, $valPos);
-                last if $valPos + $len + 4 > $dirEnd;
+                my $len = Get32u($dataPt, $valPos); # (use local $len because we always expect padding)
+                if ($valPos + $len + 4 > $dirEnd) {
+                    $et->WarnOnce("Truncated $format value");
+                    last;
+                }
                 $val = substr($$dataPt, $valPos + 4, $len);
                 # update position for data length plus padding
                 # (does this padding disappear in arrays too?)
@@ -1646,14 +1671,14 @@ sub ProcessCommentBy($$$)
     my $pos = $$dirInfo{DirStart};
     my $end = $$dirInfo{DirLen} + $pos;
     $et->VerboseDir($$dirInfo{DirName});
-	while ($pos + 2 < $end) {
-		my $len = Get16u($dataPt, $pos);
-		$pos += 2;
-	    last if $pos + $len * 2 > $end;
-		my $author = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
-		$pos += $len * 2;
-		$et->HandleTag($tagTablePtr, CommentBy => $author);
-	}
+    while ($pos + 2 < $end) {
+        my $len = Get16u($dataPt, $pos);
+        $pos += 2;
+        last if $pos + $len * 2 > $end;
+        my $author = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
+        $pos += $len * 2;
+        $et->HandleTag($tagTablePtr, CommentBy => $author);
+    }
     return 1;
 }
 
@@ -1669,24 +1694,24 @@ sub ProcessLastSavedBy($$$)
     my $end = $$dirInfo{DirLen} + $pos;
     return 0 if $pos + 6 > $end;
     $et->VerboseDir($$dirInfo{DirName});
-	my $num = Get16u($dataPt, $pos+2);
-	$pos += 6;
-	while ($num >= 2) {
-	    last if $pos + 2 > $end;
-		my $len = Get16u($dataPt, $pos);
-		$pos += 2;
-	    last if $pos + $len * 2 > $end;
-		my $author = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
-		$pos += $len * 2;
-	    last if $pos + 2 > $end;
-		$len = Get16u($dataPt, $pos);
-		$pos += 2;
-	    last if $pos + $len * 2 > $end;
-		my $path = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
-		$pos += $len * 2;
-		$et->HandleTag($tagTablePtr, LastSavedBy => "$author ($path)");
-		$num -= 2;
-	}
+    my $num = Get16u($dataPt, $pos+2);
+    $pos += 6;
+    while ($num >= 2) {
+        last if $pos + 2 > $end;
+        my $len = Get16u($dataPt, $pos);
+        $pos += 2;
+        last if $pos + $len * 2 > $end;
+        my $author = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
+        $pos += $len * 2;
+        last if $pos + 2 > $end;
+        $len = Get16u($dataPt, $pos);
+        $pos += 2;
+        last if $pos + $len * 2 > $end;
+        my $path = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
+        $pos += $len * 2;
+        $et->HandleTag($tagTablePtr, LastSavedBy => "$author ($path)");
+        $num -= 2;
+    }
     return 1;
 }
 
@@ -2224,7 +2249,7 @@ sub ProcessFPX($$)
         my $rSib = Get32u(\$dir, $pos + 0x48);  # right sibling
         my $chld = Get32u(\$dir, $pos + 0x4c);  # child directory
 
-        # save information about object hierachy
+        # save information about object hierarchy
         my ($obj, $sub);
         $obj = $hier{$index} or $obj = $hier{$index} = { };
         $$obj{Left} = $lSib unless $lSib == FREE_SECT;
@@ -2370,7 +2395,7 @@ JPEG images.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

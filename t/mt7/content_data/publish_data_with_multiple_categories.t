@@ -42,7 +42,7 @@ my $objs = MT::Test::Fixture->prepare(
         content_type => {
             ct => [
                 cf_title         => 'single_line_text',
-                cf_text          => 'multiple_line_text',
+                cf_text          => 'multi_line_text',
                 cf_category_type => {
                     type         => 'categories',
                     category_set => 'catset_type',
@@ -102,7 +102,9 @@ sub get_files {
         sub {
             my $file = shift;
             return unless -f $file;
-            push @files, File::Spec->abs2rel( $file, $archive_path );
+            my $path = File::Spec->abs2rel( $file, $archive_path );
+            $path =~ s|\\|/|g if $^O eq 'MSWin32';
+            push @files, $path;
         }
     );
     @files;
@@ -126,7 +128,7 @@ subtest 'publish' => sub {
     );
     my $res
         = $app->post_form_ok( { status => MT::ContentStatus::RELEASE(), } );
-    note explain $res;
+    # note explain $res;
 
     @files = get_files();
     my @expected = qw(

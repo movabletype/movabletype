@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -35,6 +35,7 @@ BEGIN {
                     'dbserver', 'dbname', 'dbuser', 'dbpass',
                     'dbport',   'dbsocket'
                 ],
+                recommended => 1,
             },
             'postgres' => {
                 label          => 'PostgreSQL Database',
@@ -156,6 +157,7 @@ BEGIN {
             'association'     => 'MT::Association',
             'permission'      => 'MT::Permission',
             'fileinfo'        => 'MT::FileInfo',
+            'deletefileinfo'  => 'MT::DeleteFileInfo',
             'placement'       => 'MT::Placement',
             'plugindata'      => 'MT::PluginData',
             'session'         => 'MT::Session',
@@ -195,7 +197,7 @@ BEGIN {
             cf        => ['content_field'],
             cf_idx    => ['content_field_index'],
             ipbanlist => ['banlist'],
-            tbping    => ['ping', 'ping_cat'],
+            tbping    => [ 'ping', 'ping_cat' ],
         },
         list_properties => {
             __virtual => {
@@ -618,7 +620,7 @@ BEGIN {
                         ## since __trans macro doesn't work with including itself
                         ## recursively, so do translate by hand here.
                         my $prop  = shift;
-                        my $label = '<mt:var name="label">';
+                        my $label = '<mt:var name="label" encode_html="1">';
                         my $tmpl
                             = $prop->use_future
                             ? 'filter_form_future_date'
@@ -661,7 +663,7 @@ BEGIN {
                         my $is_relative
                             = ( $app->user->date_format || 'relative' ) eq
                             'relative' ? 1 : 0;
-                        return $is_relative
+                        my $date = $is_relative
                             ? MT::Util::relative_date( $ts, time, $blog )
                             : MT::Util::format_ts(
                             $date_format,
@@ -670,6 +672,12 @@ BEGIN {
                             $app->user ? $app->user->preferred_language
                             : undef
                             );
+                        my $timestamp = MT::Util::format_ts(
+                            '%Y-%m-%d %H:%M:%S',
+                            $ts,
+                            $blog,
+                            );
+                        return qq{<span title="$timestamp">$date</span>};
                     },
                     priority           => 5,
                     default_sort_order => 'descend',
@@ -775,8 +783,8 @@ BEGIN {
                     display => 'optional',
                 },
                 author_name => {
-                    label        => 'Author',
-                    filter_label => 'Author Name',
+                    label        => 'Created by',
+                    filter_label => 'Created by',
                     display      => 'default',
                     base         => '__virtual.string',
                     raw          => sub {
@@ -847,6 +855,70 @@ BEGIN {
                         return sort {
                             $nickname{ $a->$col || 0 }
                                 cmp $nickname{ $b->$col || 0 }
+                        } @$objs;
+                    },
+                },
+                modified_by => {
+                    label        => 'Modified by',
+                    filter_label => 'Modified by',
+                    display      => 'optional',
+                    base         => '__virtual.string',
+                    raw          => sub {
+                        my ( $prop, $obj ) = @_;
+
+                        # If there's no value in the column then no voter ID was
+                        # recorded.
+                        return '' if !$obj->modified_by;
+
+                        my $author = MT->model('author')->load( $obj->modified_by );
+                        return $author
+                            ? ( $author->nickname || $author->name )
+                            : MT->translate('*User deleted*');
+                    },
+                    terms => sub {
+                        my $prop = shift;
+                        my ( $args, $load_terms, $load_args ) = @_;
+                        my $driver  = $prop->datasource->driver;
+                        my $colname = $driver->dbd->db_column_name(
+                            $prop->datasource->datasource, 'modified_by' );
+                        $prop->{col} = 'name';
+                        my $name_query = $prop->super(@_);
+                        $prop->{col} = 'nickname';
+                        my $nick_query = $prop->super(@_);
+                        $load_args->{joins} ||= [];
+                        push @{ $load_args->{joins} },
+                            MT->model('author')->join_on(
+                            undef,
+                            [   { id => \"= $colname" },
+                                '-and',
+                                [   $name_query,
+                                    (   $args->{'option'} eq 'not_contains'
+                                        ? '-and'
+                                        : '-or'
+                                    ),
+                                    $nick_query,
+                                ]
+                            ],
+                            {}
+                            );
+                    },
+                    bulk_sort => sub {
+                        my $prop = shift;
+                        my ($objs) = @_;
+                        my %author_id
+                            = map { ( $_->modified_by ) ? ( $_->modified_by => 1 ) : () }
+                            @$objs;
+                        my @authors = MT->model('author')
+                            ->load( { id => [ keys %author_id ] } );
+                        my %nickname = map {
+                                  $_->id => defined $_->nickname
+                                ? $_->nickname
+                                : ''
+                        } @authors;
+                        $nickname{0} = '';    # fallback
+                        return sort {
+                            $nickname{ $a->modified_by || 0 }
+                                cmp $nickname{ $b->modified_by || 0 }
                         } @$objs;
                     },
                 },
@@ -1110,6 +1182,12 @@ BEGIN {
                     grep          => \&MT::Filter::pack_grep,
                     requires_grep => \&MT::Filter::pack_requires_grep,
                 },
+                blog_id => {
+                    auto            => 0,
+                    col             => 'blog_id',
+                    display         => 'none',
+                    filter_editable => 0,
+                },
                 blog_name => {
                     label        => 'Site Name',
                     filter_label => 'Site Name',
@@ -1327,7 +1405,7 @@ BEGIN {
             association  => '$Core::MT::Association::system_filters',
             group        => '$Core::MT::Group::system_filters',
             group_member => '$Core::MT::Group::member_system_filters',
-
+            website      => '$Core::MT::Website::system_filters',
         },
         listing_screens => {
             website => {
@@ -1768,6 +1846,7 @@ BEGIN {
             'DBRetryInterval'              => { default => 1 },
             'PIDFilePath'                  => undef,
             'DefaultLanguage'              => { default => 'en_US', },
+            'DefaultSupportedLanguages'    => undef,
             'LocalPreviews'                => { default => 0 },
             'EnableAutoRewriteOnIIS'       => { default => 1 },
             'IISFastCGIMonitoringFilePath' => undef,
@@ -1833,14 +1912,18 @@ BEGIN {
                 default => sub { $_[0]->CGIPath }
             },
             'BaseSitePath'                   => undef,
+            'BaseTemplatePath'               => { default => undef },
             'HideBaseSitePath'               => { default => 0, },
             'HidePerformanceLoggingSettings' => { default => 0, },
             'HidePaformanceLoggingSettings' =>
                 { alias => 'HidePerformanceLoggingSettings' },
             'CookieDomain'          => undef,
             'CookiePath'            => undef,
+            'MailModule'            => { default => 'MIME::Lite', },
             'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
+            'MailTransferEncoding'  => undef,
+            'MailLogAlways'         => undef,
             'SMTPServer'            => { default => 'localhost', },
             'SMTPAuth'              => { default => 0, },
             'SMTPUser'              => undef,
@@ -1859,9 +1942,9 @@ BEGIN {
                 type    => 'HASH',
                 default => { ReuseSession => 1 }
             },
-            'SSLVerifyNone'         => undef,
-            'SSLVersion'            => undef,
-            'DebugEmailAddress'     => undef,
+            'SSLVerifyNone'     => undef,
+            'SSLVersion'        => undef,
+            'DebugEmailAddress' => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
                 { default => 'http://www.movabletype.org/update/', },
@@ -1877,6 +1960,7 @@ BEGIN {
             'UploadPerms'            => { default => '0666', },
             'NoTempFiles'            => { default => 0, },
             'TempDir'                => { default => '/tmp', },
+            'ExportTempDir'          => { default => undef },
             'RichTextEditor'         => { default => 'archetype', },
             'WYSIWYGEditor'          => undef,
             'SourceEditor'           => undef,
@@ -1930,6 +2014,7 @@ BEGIN {
             },
             'GenerateTrackBackRSS'                   => { default => 0, },
             'DBIRaiseError'                          => { default => 0, },
+            'DBIShowErrorStatement'                  => { default => 0, },
             'SearchAlwaysAllowTemplateID'            => { default => 0, },
             'ContentDataSearchAlwaysAllowTemplateID' => {
                 default => sub { $_[0]->SearchAlwaysAllowTemplateID }
@@ -2020,19 +2105,19 @@ BEGIN {
             'NewsboxURL' => {
                 default => 'https://www.movabletype.org/news/newsbox.json',
             },
-            'FeedbackURL' =>
-                { default => 'http://www.movabletype.org/feedback.html', },
+            'FeedbackURL' => { default => 'http://www.movabletype.org/feedback.html', },
 
-            'EmailAddressMain'      => undef,
-            'EmailReplyTo'          => undef,
-            'EmailNotificationBcc'  => { default => 1, },
-            'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
-            'UserSessionTimeout'    => { default => 60 * 60 * 4, },
-            'UserSessionCookieName' => { default => \&UserSessionCookieName },
-            'UserSessionCookieDomain' =>
-                { default => '<$MTBlogHost exclude_port="1"$>' },
-            'UserSessionCookiePath' => { default => \&UserSessionCookiePath },
+            'EmailAddressMain'         => undef,
+            'EmailReplyTo'             => undef,
+            'EmailNotificationBcc'     => { default => 1, },
+            'CommentSessionTimeout'    => { default => 60 * 60 * 24 * 3, },
+            'UserSessionTimeout'       => { default => 60 * 60 * 4, },
+            'AutosaveSessionTimeout'   => { default => 60 * 60 * 24 * 30, },
+            'UserSessionCookieName'    => { default => \&UserSessionCookieName },
+            'UserSessionCookieDomain'  => { default => '<$MTBlogHost exclude_port="1"$>' },
+            'UserSessionCookiePath'    => { default => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
+            'MaxUserSession'           => { default => 10000 },
             'LaunchBackgroundTasks'    => { default => 0 },
             'TransparentProxyIPs'      => { default => 0, },
             'DebugMode'                => { default => 0, },
@@ -2070,6 +2155,7 @@ BEGIN {
                     height => 162,          # textarea height
                 },
             },
+            'DeleteFilesAfterRebuild'   => { default => 0, },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
             'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
@@ -2135,7 +2221,8 @@ BEGIN {
             'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
             'DefaultBlogTheme'     => { default => 'mont-blanc' },
             'ThemeStaticFileExtensions' => {
-                default => 'html jpg jpeg gif png js css ico flv swf otf ttf svg'
+                default =>
+                    'html jpg jpeg gif png js css ico flv swf otf ttf svg'
             },
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },
@@ -2203,12 +2290,15 @@ BEGIN {
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
             'XXSSProtection'    => undef,
+            'ReferrerPolicy'    => undef,
             'DynamicCacheTTL'   => { default => 0 },
 
             # Activity logging
-            'LoggerLevel'  => { default => 'info' },
-            'LoggerPath'   => undef,
-            'LoggerModule' => undef,
+            'LoggerLevel'    => { default => 'info' },
+            'LoggerPath'     => undef,
+            'LoggerModule'   => undef,
+            'LoggerFileName' => undef,
+            'LoggerConfig'   => undef,
 
             # Notification Center
             'NotificationCacheTTL' => { default => 3600 },
@@ -2226,11 +2316,36 @@ BEGIN {
             'AccessOverrides'      => undef,
 
             'JSONCanonicalization' => { default => 1 },
+            'UseMTCommonJSON'      => { default => 0 },
+            'UseSVGForEverybody'   => { default => 0 },
+            'UseJQueryJSON'        => { default => 0 },
 
             'RequiredUserEmail'       => { default => 1 },
             'DefaultClassParamFilter' => { default => 'all' },
 
             'UseTraditionalTransformer' => undef,
+            'DisableValidateParam'      => undef,
+            'UseExternalArchiver' => undef,
+            'BinTarPath' => undef,
+            'BinZipPath' => undef,
+            'BinUnzipPath' => undef,
+
+            'MaxFavoriteSites' => { default => 5 },
+            'DisableImagePopup' => undef,
+            'ForceExifRemoval' => { default => 1 },
+            'TemporaryFileExpiration' => { default => 60 * 60 },
+            'PSGIStreaming' => { default => 1 },
+            'PSGIServeStatic' => { default => 1 },
+            'HideVersion' => { default => 1 },
+            'HideConfigWarnings' => { default => undef },
+            'GlobalTemplateMaxRevisions' => { default => 20 },
+            'DisableQuickPost' => { default => 0 },
+            'DisableActivityFeeds' => { default => 0 },
+            'DefaultStatsProvider' => { default => 'GoogleAnalyticsV4' },
+            'DefaultListLimit' => { default => '50' },
+            'WaitAfterReboot' => { default => '1.0' },
+            'DisableMetaRefresh' => { default => 1 },
+            'DynamicTemplateAllowPHP' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2289,6 +2404,7 @@ BEGIN {
             },
             'cms' => {
                 handler         => 'MT::App::CMS',
+                type            => 'psgi_streaming',
                 script          => sub { MT->config->AdminScript },
                 cgi_path        => sub { MT->config->AdminCGIPath },
                 cgi_base        => 'mt',
@@ -2564,6 +2680,7 @@ sub load_core_tasks {
                 $job->uniqkey(1);
                 $job->priority(4);
                 MT::TheSchwartz->insert($job);
+                return;
             },
         },
         'JunkExpiration' => {
@@ -2576,7 +2693,7 @@ sub load_core_tasks {
         },
         'CleanTemporaryFiles' => {
             label     => 'Remove Temporary Files',
-            frequency => 60 * 60,                    # once per hour
+            frequency => $cfg->TemporaryFileExpiration,   # once per hour by default
             code      => sub {
                 MT::Core->remove_temporary_files;
             },
@@ -2654,16 +2771,21 @@ sub remove_compiled_template_files {
 sub remove_temporary_files {
     require MT::Session;
 
+    my $expiration = MT->config->TemporaryFileExpiration;
+
     my @files
         = MT::Session->load(
-        { kind => 'TF', start => [ undef, time - 60 * 60 ] },
+        { kind => 'TF', start => [ undef, time - $expiration ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
+    my @ids;
     foreach my $f (@files) {
         if ( $fmgr->delete( $f->name ) ) {
-            $f->remove;
+            push @ids, $f->id;
         }
     }
+    return unless @ids;
+    MT::Session->remove({id => \@ids});
 
     # This is a silent task; no need to log removal of temporary files
     return '';
@@ -2696,6 +2818,10 @@ sub purge_session_records {
 
     # remove stale search cache
     MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },
+        { range => { start => 1 } } );
+
+    # remove autosave sessions
+    MT::Session->remove( { kind => 'AS', start => [ undef, time - MT->config->AutosaveSessionTimeout ] },
         { range => { start => 1 } } );
 
     # remove all the other session records
@@ -2878,6 +3004,7 @@ sub load_core_permissions {
                 'edit_entry_authored_on'                => 1,
                 'edit_entry_unpublished_on'             => 1,
                 'save_edit_prefs'                       => 1,
+                'view_thumbnail_image'                  => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2908,6 +3035,7 @@ sub load_core_permissions {
                 'insert_asset'                     => 1,
                 'access_to_insert_asset_list'      => 1,
                 'save_edit_prefs'                  => 1,
+                'view_thumbnail_image'             => 1,
             }
         },
         'blog.edit_assets' => {
@@ -2923,6 +3051,7 @@ sub load_core_permissions {
                 'delete_asset_file'                => 1,
                 'edit_assets'                      => 1,
                 'open_asset_edit_screen'           => 1,
+                'view_thumbnail_image'             => 1,
                 'remove_tags_from_assets'          => 1,
                 'remove_tags_from_assets_via_list' => 1,
                 'save_asset'                       => 1,
@@ -3033,7 +3162,7 @@ sub load_core_permissions {
         },
         'blog.manage_content_data' => {
             group            => 'auth_pub',
-            label            => 'Manage Content Data',
+            label            => 'Manage All Content Data',
             order            => 700,
             permitted_action => {
                 'access_to_content_data_list'             => 1,
@@ -3051,7 +3180,6 @@ sub load_core_permissions {
                 'remove_tags_from_content_data_via_list'  => 1,
                 'set_content_data_draft_via_list'         => 1,
                 'use_content_data:manage_menu'            => 1,
-                'use_tools:search'                        => 1,
                 'get_content_data_feed'                   => 1,
                 'save_multiple_content_data'              => 1,
                 'open_select_author_dialog'               => 1,
@@ -3059,6 +3187,7 @@ sub load_core_permissions {
                 'access_to_insert_asset_list'             => 1,
                 'manage_content_data'                     => 1,
                 'use_tools:search'                        => 1,
+                'view_thumbnail_image'                    => 1,
             },
         },
         'blog.manage_pages' => {
@@ -3094,6 +3223,7 @@ sub load_core_permissions {
                 'edit_page_authored_on'           => 1,
                 'edit_page_unpublished_on'        => 1,
                 'save_edit_prefs'                 => 1,
+                'view_thumbnail_image'            => 1,
             }
         },
         'blog.manage_users' => {
@@ -3363,7 +3493,6 @@ sub load_core_permissions {
                 'search_authors'                 => 1,
                 'remove_user_assoc'              => 1,
                 'revoke_role'                    => 1,
-                'use_tools:search'               => 1,
                 'access_to_any_group_list'       => 1,
                 'access_to_system_dashboard'     => 1,
                 'grant_administer_role'          => 1,
@@ -3371,7 +3500,6 @@ sub load_core_permissions {
                 'access_to_all_association_list' => 1,
                 'access_to_system_author_list'   => 1,
                 'create_user'                    => 1,
-                'create_any_association'         => 1,
                 'access_to_any_permission_list'  => 1,
                 'edit_authors'                   => 1,
                 'edit_groups'                    => 1,
@@ -3387,7 +3515,7 @@ sub load_core_permissions {
         },
         'system.manage_content_data' => {
             group        => 'sys_admin',
-            label        => 'Manage Content Data',
+            label        => 'Manage All Content Data',
             order        => 900,
             inherit_from => [
                 'system.sign_in_cms', 'blog.manage_content_data',
@@ -3409,7 +3537,6 @@ sub load_core_permissions {
                 'remove_tags_from_content_data_via_list'  => 1,
                 'set_content_data_draft_via_list'         => 1,
                 'use_content_data:manage_menu'            => 1,
-                'use_tools:search'                        => 1,
                 'get_content_data_feed'                   => 1,
                 'save_multiple_content_data'              => 1,
                 'open_select_author_dialog'               => 1,
@@ -3419,11 +3546,11 @@ sub load_core_permissions {
                 'access_to_website_list'                  => 1,
                 'access_to_blog_list'                     => 1,
                 'use_tools:search'                        => 1,
+                'view_thumbnail_image'                    => 1,
             },
         },
         'system.manage_content_types' => {
             group          => 'sys_admin',
-            'inherit_from' => ['system.sign_in_cms'],
             label          => 'Manage Content Types',
             order          => 1000,
             inherit_from   => [

@@ -17,7 +17,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
@@ -302,7 +302,7 @@ $test_env->prepare_fixture(
                 type    => $cf_table->type,
                 options => {
                     label        => $cf_table->name,
-                    initial_row  => 3,
+                    initial_rows => 3,
                     initial_cols => 3,
                 },
             },
@@ -332,9 +332,6 @@ $test_env->prepare_fixture(
                 type    => $cf_image->type,
                 options => {
                     label    => $cf_image->name,
-                    multiple => 1,
-                    max      => 5,
-                    min      => 1,
                     multiple => 1,
                     max      => 5,
                     min      => 1,

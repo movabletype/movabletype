@@ -30,6 +30,7 @@ plan tests => 2 * blocks;
 my $app = MT->instance;
 
 $test_env->prepare_fixture('db_data');
+$test_env->update_config( PluginSwitch => 'Trackback=1' );
 
 # Remove objects in website (blog_id = 2).
 $app->model('page')->remove( { id => 24 } );
@@ -240,9 +241,14 @@ SKIP:
                 $block->ctx_stash  || undef
             );
             my $php_result = MT::Test::PHP->run($php_script);
+            my $expected = $block->expected;
+
+            # for Smarty 3.1.32+
+            $php_result =~ s/\n//g;
+            $expected =~ s/\n//g;
 
             my $name = $block->name . ' - dynamic';
-            is( $php_result, $block->expected, $name );
+            is( $php_result, $expected, $name );
         }
     };
 }

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2007-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -32,6 +32,10 @@ sub edit {
     my ( $app, $param ) = @_;
     my $cfg = $app->config;
 
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     return $app->return_to_dashboard( redirect => 1 )
         unless $app->blog;
 
@@ -52,7 +56,7 @@ sub edit {
                 $field_data = MT::Util::decode_js($field_data);
             }
             $field_data
-                = JSON::decode_json( MT::Util::decode_url($field_data) );
+                = JSON->new->utf8(0)->decode( MT::Util::decode_url($field_data) );
         }
     }
     else {
@@ -129,7 +133,7 @@ sub edit {
             typeLabel => $typeLabel,
             label     => $f->{options}->{label},
             (     ( defined $f->{id} )
-                ? ( id => $f->{id} )
+                ? ( id => $f->{id}, realId => $f->{id} )
                 : ( id => $random_id->() )
             ),
             order   => $f->{order},
@@ -288,6 +292,7 @@ sub edit {
 
 sub tmpl_param_list_common {
     my ( $cb, $app, $param, $tmpl ) = @_;
+
     if ($app->mode eq 'list'
         && (   $app->param('_type') eq 'content_data'
             && $app->param('type') =~ /^content_data_(\d+)$/ )
@@ -321,6 +326,16 @@ sub save {
     my ($app) = @_;
     my $cfg   = $app->config;
     my $user  = $app->user;
+
+    $app->validate_param({
+        blog_id          => [qw/ID/],
+        data             => [qw/MAYBE_STRING/],
+        description      => [qw/MAYBE_STRING/],
+        id               => [qw/ID/],
+        label_field      => [qw/MAYBE_STRING/],
+        name             => [qw/MAYBE_STRING/],
+        user_disp_option => [qw/MAYBE_STRING/],
+    }) or return;
 
     my %param = ();
     for my $col (qw{ name description user_disp_option label_field data }) {
@@ -404,6 +419,24 @@ sub save {
     }
     else {
         $field_list = [];
+    }
+
+    # Duplication check (just in case; this check should have been done before saving using JS)
+    my %seen_field_names;
+    for my $field (@$field_list) {
+        my $name    = $field->{options}{label};
+        my $lc_name = lc $name;
+        if ( $seen_field_names{$lc_name} ) {
+            my $prev = $seen_field_names{$lc_name};
+            if ($prev ne $name) {
+                $param{error} = $app->translate( 'Field \'[_1]\' and \'[_2]\' must not coexist within the same content type.', $prev, $name );
+            } else {
+                $param{error} = $app->translate( 'Field \'[_1]\' must be unique in this content type.', $name );
+            }
+            $app->mode('view');
+            return $app->forward( "view", \%param );
+        }
+        $seen_field_names{$lc_name} = $name;
     }
 
     # Prepare save field data
@@ -724,6 +757,10 @@ sub _autosave_content_data {
 sub dialog_content_data_modal {
     my $app = shift;
 
+    $app->validate_param({
+        content_field_id => [qw/ID/],
+    }) or return;
+
     my ( $can_multi, $content_type_id, $content_type_name );
     my $content_field_id = $app->param('content_field_id');
     if ($content_field_id) {
@@ -749,6 +786,13 @@ sub dialog_content_data_modal {
 
 sub dialog_list_content_data {
     my $app              = shift;
+
+    $app->validate_param({
+        content_field_id => [qw/ID/],
+        dialog           => [qw/MAYBE_STRING/],
+        no_insert        => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $blog             = $app->blog;
     my $content_field_id = $app->param('content_field_id') || 0;
     my $content_field    = MT::ContentField->load($content_field_id);
@@ -850,7 +894,7 @@ sub init_content_type {
     my ( $cb, $app ) = @_;
 
     require MT::Object;
-    my $driver = MT::Object->driver;
+    my $driver = eval { MT::Object->driver };
     return
         unless $driver
         && $driver->table_exists( $app->model('content_type') );
@@ -941,6 +985,7 @@ sub _make_content_data_listing_screens {
                     'access_to_content_data_list',
                 ];
             },
+            data_api_permission => undef,
             feed_link => sub {
 
                 # TODO: fix permission
@@ -1082,8 +1127,8 @@ sub post_save {
     require MT::Log;
     $app->log(
         {   message => $message,
-            level   => MT::Log::INFO(),
-            class   => 'content_type',
+            $orig_obj->id ? ( level => MT::Log::NOTICE() ) : ( level => MT::Log::INFO() ),
+            class   => 'content_type',    ## trans('content_type')
             $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
             ( $meta_message ? ( metadata => $meta_message ) : () ),
         }
@@ -1100,7 +1145,7 @@ sub post_delete {
                 "Content Type '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'content_type',
             category => 'delete'
         }

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -142,6 +142,7 @@ sub _hdlr_assets {
 
     # Adds parent filter (skips any generated files such as thumbnails)
     $args{null}{parent} = 1;
+    $args{joins} = [];
     $terms{parent} = \'is null';
 
     # Adds an author filter to the filters list.
@@ -187,77 +188,18 @@ sub _hdlr_assets {
 
     # Adds a tag filter to the filters list.
     if ( my $tag_arg = $args->{tags} || $args->{tag} ) {
-        require MT::Tag;
-        require MT::ObjectTag;
+        my $status = $ctx->set_tag_filter_context({
+            objects     => $assets,
+            tag_arg     => $tag_arg,
+            blog_terms  => \%blog_terms,
+            blog_args   => \%blog_args,
+            object_args => \%args,
+            filters     => \@filters,
+            datasource  => MT::Asset->datasource,
+        });
 
-        my $terms;
-        if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
-            my @tags = MT::Tag->split( ',', $tag_arg );
-            $terms = { name => \@tags };
-            $tag_arg = join " or ", @tags;
-
-            my $count = MT::Tag->count(
-                $terms,
-                {   ( $terms ? ( binary => { name => 1 } ) : () ),
-                    join => MT::ObjectTag->join_on(
-                        'tag_id',
-                        {   object_datasource => MT::Asset->datasource,
-                            %blog_terms,
-                        },
-                        { %blog_args, unique => 1 }
-                    ),
-                }
-            );
-            return $ctx->_hdlr_pass_tokens_else(@_)
-                unless $count;
-        }
-        my $tags = [
-            MT::Tag->load(
-                $terms,
-                {   ( $terms ? ( binary => { name => 1 } ) : () ),
-                    join => MT::ObjectTag->join_on(
-                        'tag_id',
-                        {   object_datasource => MT::Asset->datasource,
-                            %blog_terms,
-                        },
-                        { %blog_args, unique => 1 }
-                    ),
-                }
-            )
-        ];
-        my $cexpr = $ctx->compile_tag_filter( $tag_arg, $tags );
-        if ($cexpr) {
-            my @tag_ids
-                = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
-            my $preloader = sub {
-                my ($entry_id) = @_;
-                my $terms = {
-                    tag_id            => \@tag_ids,
-                    object_id         => $entry_id,
-                    object_datasource => $class->datasource,
-                    %blog_terms,
-                };
-                my $args = {
-                    %blog_args,
-                    fetchonly   => ['tag_id'],
-                    no_triggers => 1,
-                };
-                my @ot_ids;
-                @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
-                my %map;
-                $map{ $_->tag_id } = 1 for @ot_ids;
-                \%map;
-            };
-            push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
-        }
-        else {
-            return $ctx->error(
-                MT->translate(
-                    "You have an error in your '[_2]' attribute: [_1]",
-                    $args->{tags} || $args->{tag}, 'tag'
-                )
-            );
-        }
+        return $ctx->error( $ctx->errstr ) unless $status;
+        return $ctx->_hdlr_pass_tokens_else($args, $cond) if $status eq 'no_matching_tags';
     }
 
     if ( $args->{namespace} ) {
@@ -284,7 +226,7 @@ sub _hdlr_assets {
                 $scored_by = $author;
             }
 
-            $args{join} = MT->model('objectscore')->join_on(
+            push @{ $args{joins} }, MT->model('objectscore')->join_on(
                 undef,
                 {   object_id => \'=asset_id',
                     object_ds => 'asset',
@@ -1170,7 +1112,7 @@ sub _hdlr_asset_thumbnail_url {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
-    return '' unless $a->has_thumbnail;
+    return '' unless UNIVERSAL::isa( $a, 'MT::Asset::Image' );
 
     my %arg;
     foreach ( keys %$args ) {
@@ -1279,7 +1221,6 @@ sub _hdlr_asset_thumbnail_link {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
-    my $class = ref($a);
     return '' unless UNIVERSAL::isa( $a, 'MT::Asset::Image' );
 
     # # Load MT::Image

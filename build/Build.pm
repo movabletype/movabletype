@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -151,7 +151,7 @@ sub setup {
     ) if $@ && @{ $self->{'plugin=s@'} };
 
     # Do we have SSL support?
-    $prereq = 'Crypt::SSLeay';
+    $prereq = 'IO::Socket::SSL';
     eval "require $prereq;";
     warn("WARNING: $prereq not found. Can't use SSL.\n") if $@;
 
@@ -211,7 +211,7 @@ sub setup {
             my $v = $config->{PRODUCT_VERSION};
             if ( exists $self->{'rel_num=s'} ) {
                 $v .= ".$self->{'rel_num=s'}"
-                    if $self->{'rel_num=s'}
+                    if defined $self->{'rel_num=s'}
                     || ( $self->{'export!'} && $self->{'export-dir=s'} );
             }
             if ( $self->{'alpha=s'} || $self->{'beta=s'} || $self->{'rc=s'} )
@@ -530,9 +530,9 @@ sub stage_distro {
     $self->verbose("Change to $stage_root");
 
 # Make sure there is a user-style so we don't barf unneccessarily into the error_log.
-    open STYLE, "> user_styles.css"
+    open my $STYLE, ">", "user_styles.css"
         or die("ERROR: Can't touch user_styles.css $@");
-    close STYLE;
+    close $STYLE;
 
 # Our database is named the same as the distribution (but with _'s) except for LDAP.
     ( my $db = $stage_dir ) =~ s/[.-]/_/g;

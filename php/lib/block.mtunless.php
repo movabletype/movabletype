@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,7 +11,7 @@ function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
         if (isset($args['var'])) {
             $val = $ctx->__stash['vars'][$args['var']];
         } elseif (isset($args['name'])) {
-            $val = $ctx->__stash['vars'][$args['name']];
+            $val = $ctx->__stash['vars'][$args['name']] ?? null;
         } elseif (isset($args['tag'])) {
             $tag = $args['tag'];
             $tag = preg_replace('/^mt:?/i', '', $tag);
@@ -19,7 +19,7 @@ function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
             unset($largs['tag']);
             $val = $ctx->tag($tag, $largs);
         }
-        if (!is_array($val)
+        if (isset($val) && !is_array($val)
           && preg_match('/^smarty_fun_[a-f0-9]+$/', $val)) {
             if (function_exists($val)) {
                 ob_start();

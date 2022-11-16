@@ -8,25 +8,20 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        MemcachedServers => '127.0.0.1:11211',
-    );
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+use Test::MockTime::HiRes;
 use MT::Test;
 use MT::Memcached::ExpirableProxy;
+use MT::Test::Memcached;
 
-my $alive = eval {
-    my $m = MT::Memcached->instance;
-    $m->set( __FILE__, __FILE__, 1 );
-};
+my $memcached = MT::Test::Memcached->new or plan skip_all => "Memcached is not available";
+MT->config(MemcachedServers => $memcached->address);
 
-if ( !$alive ) {
-    plan skip_all => "Memcached is not available";
-}
-
-MT::Test::init_time();
+my $m = MT::Memcached->instance;
+$m->set( __FILE__, __FILE__, 1 );
 
 my @values = (
     {   key   => 'test_key1',
@@ -49,107 +44,123 @@ sub set_values {
     sleep( -$sleep );
 }
 
-for my $method (qw(add set)) {
-    note( 'MT::Memcached::ExpirableProxy->' . $method );
+mock_time sub {
+    for my $method (qw(add set)) {
+        note('MT::Memcached::ExpirableProxy->' . $method);
+        {
+            my $driver = MT::Memcached::ExpirableProxy->new();
+            $driver->delete($values[0]{key});
+            ok(
+                $driver->$method($values[0]{key}, $values[0]{value}),
+                "call $method"
+            );
+            is(
+                $driver->get($values[0]{key}),
+                $values[0]{value}, 'should get a value'
+            );
+        }
+    }
+
+    note('MT::Memcached::ExpirableProxy->replace');
     {
         my $driver = MT::Memcached::ExpirableProxy->new();
-        $driver->delete( $values[0]{key} );
-        ok( $driver->$method( $values[0]{key}, $values[0]{value} ),
-            "call $method" );
-        is( $driver->get( $values[0]{key} ),
-            $values[0]{value}, 'should get a value' );
-    }
-}
+        $driver->delete($values[0]{key});
+        ok(
+            !$driver->replace($values[0]{key}, $values[0]{value}),
+            'call replace for a deleted key'
+        );
+        is($driver->get($values[0]{key}), undef, 'should get undef');
 
-note('MT::Memcached::ExpirableProxy->replace');
-{
-    my $driver = MT::Memcached::ExpirableProxy->new();
-    $driver->delete( $values[0]{key} );
-    ok( !$driver->replace( $values[0]{key}, $values[0]{value} ),
-        'call replace for a deleted key' );
-    is( $driver->get( $values[0]{key} ), undef, 'should get undef' );
-
-    $driver->set( $values[0]{key}, $values[1]{value} . 'Dummy' );
-    ok( $driver->replace( $values[0]{key}, $values[0]{value} ),
-        'call replace for an existing key' );
-    is( $driver->get( $values[0]{key} ),
-        $values[0]{value}, 'should get a value' );
-}
-
-note('MT::Memcached::ExpirableProxy->get');
-{
-    my @suite = (
-        {   sleep => 1,
-            ttl   => 2,
-            key   => $values[0]{key},
-            value => $values[0]{value},
-        },
-        {   sleep => 2,
-            ttl   => 2,
-            key   => $values[0]{key},
-            value => $values[0]{value},
-        },
-        {   sleep => 3,
-            ttl   => 2,
-            key   => $values[0]{key},
-            value => undef,
-        },
-    );
-
-    foreach my $hash (@suite) {
-        set_values();
-
-        sleep $hash->{sleep};
-
-        my $driver
-            = MT::Memcached::ExpirableProxy->new( ttl => $hash->{ttl} );
-        is( $driver->get( $hash->{key} ),
-            $hash->{value},
-            "get a value (sleep: $hash->{sleep}, ttl: $hash->{ttl})" );
-    }
-}
-
-note('MT::Memcached::ExpirableProxy->get_multi');
-{
-    my @suite = (
-        {   set_values_sleep => 0,
-            sleep            => 1,
-            ttl              => 2,
-            key              => [ map { $values[$_]{key} } 0 .. 1 ],
-            value =>
-                { map { $values[$_]{key} => $values[$_]{value} } 0 .. 1 },
-        },
-        {   set_values_sleep => 1,
-            sleep            => 2,
-            ttl              => 2,
-            key              => [ map { $values[$_]{key} } 0 .. 1 ],
-            value            => {
-                $values[0]{key} => undef,
-                $values[1]{key} => $values[1]{value},
-            }
-        },
-        {   set_values_sleep => 1,
-            sleep            => 3,
-            ttl              => 2,
-            key              => [ map { $values[$_]{key} } 0 .. 1 ],
-            value            => { map { $values[$_]{key} => undef } 0 .. 1 },
-        },
-    );
-
-    foreach my $hash (@suite) {
-        set_values( $hash->{set_values_sleep} );
-
-        sleep $hash->{sleep};
-
-        my $driver
-            = MT::Memcached::ExpirableProxy->new( ttl => $hash->{ttl} );
-
-        is_deeply(
-            $driver->get_multi( @{ $hash->{key} } ),
-            $hash->{value},
-            "get a value (set_values_sleep: $hash->{set_values_sleep}, sleep: $hash->{sleep}, ttl: $hash->{ttl})"
+        $driver->set($values[0]{key}, $values[1]{value} . 'Dummy');
+        ok(
+            $driver->replace($values[0]{key}, $values[0]{value}),
+            'call replace for an existing key'
+        );
+        is(
+            $driver->get($values[0]{key}),
+            $values[0]{value}, 'should get a value'
         );
     }
-}
+
+    note('MT::Memcached::ExpirableProxy->get');
+    {
+        my @suite = ({
+                sleep => 1,
+                ttl   => 2,
+                key   => $values[0]{key},
+                value => $values[0]{value},
+            },
+            {
+                sleep => 2,
+                ttl   => 2,
+                key   => $values[0]{key},
+                value => $values[0]{value},
+            },
+            {
+                sleep => 3,
+                ttl   => 2,
+                key   => $values[0]{key},
+                value => undef,
+            },
+        );
+
+        foreach my $hash (@suite) {
+            set_values();
+
+            sleep $hash->{sleep};
+
+            my $driver = MT::Memcached::ExpirableProxy->new(ttl => $hash->{ttl});
+            is(
+                $driver->get($hash->{key}),
+                $hash->{value},
+                "get a value (sleep: $hash->{sleep}, ttl: $hash->{ttl})"
+            );
+        }
+    }
+
+    note('MT::Memcached::ExpirableProxy->get_multi');
+    {
+        my @suite = ({
+                set_values_sleep => 0,
+                sleep            => 1,
+                ttl              => 2,
+                key              => [map { $values[$_]{key} } 0 .. 1],
+                value            => { map { $values[$_]{key} => $values[$_]{value} } 0 .. 1 },
+            },
+            {
+                set_values_sleep => 1,
+                sleep            => 2,
+                ttl              => 2,
+                key              => [map { $values[$_]{key} } 0 .. 1],
+                value            => {
+                    $values[0]{key} => undef,
+                    $values[1]{key} => $values[1]{value},
+                }
+            },
+            {
+                set_values_sleep => 1,
+                sleep            => 3,
+                ttl              => 2,
+                key              => [map { $values[$_]{key} } 0 .. 1],
+                value            => { map { $values[$_]{key} => undef } 0 .. 1 },
+            },
+        );
+
+        foreach my $hash (@suite) {
+            set_values($hash->{set_values_sleep});
+
+            sleep $hash->{sleep};
+
+            my $driver = MT::Memcached::ExpirableProxy->new(ttl => $hash->{ttl});
+
+            is_deeply(
+                $driver->get_multi(@{ $hash->{key} }),
+                $hash->{value},
+                "get a value (set_values_sleep: $hash->{set_values_sleep}, sleep: $hash->{sleep}, ttl: $hash->{ttl})"
+            );
+        }
+    }
+
+}, time;
 
 done_testing();

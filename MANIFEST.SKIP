@@ -186,6 +186,7 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^mt-cp.cgi
 #?package=MTCLOUD ^addons/Community.pack
 #?package=MTCLOUD ^mt-static/addons/Community.pack
+#?package=MTCLOUD ^addons/Cloud.pack/tools/Cloud.pack/cloud-log
 
 #?package=MTP ^COPYING
 #?package=MTP ^COPYRIGHT
@@ -237,7 +238,7 @@ themes/broken_blog_theme
 #?package=MTPCLOUD ^addons/Enterprise.pack
 #?package=MTPCLOUD ^mt-static/addons/Enterprise.pack
 #?package=MTPCLOUD ^tools/migrate-mssql
-#?package=MTPCLOUD ^addons/Sync.pack
+#?package=MTPCLOUD ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTPCLOUD ^addons/AWS.pack
 #?package=MTPCLOUD ^mt-cp.cgi
 #?package=MTPCLOUD ^addons/Community.pack
@@ -246,10 +247,12 @@ themes/broken_blog_theme
 
 #?language=ja ^plugins/zemanta
 
-^schemas
+^schemas/
+^scss/
 \bknown-issues
 ^t/
 .*/t/
+^xt/
 ^phpunit.xml
 ^php/tests
 ^php/extlib/adodb5/tests
@@ -270,6 +273,7 @@ themes/broken_blog_theme
 \.git\b
 \.gitignore
 \.gitmodules
+\.mailmap$
 ,v$
 
 # Hidden, temp and backup files.
@@ -351,7 +355,8 @@ build-language-stamp
 ^package-lock.json
 ^package.json
 ^node_modules/
-^\.node-version
+\.node-version$
+\.php_cs\.dist$
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion
@@ -379,6 +384,9 @@ build-language-stamp
 ^mt-static/a-table.js/test/
 ^mt-static/a-table.js/yarn.lock
 
+# GitHub
+\.github
+
 # Travis
 \.travis.yml
 
@@ -396,7 +404,6 @@ Dockerfile
 \.gitattributes
 shippable.yml
 yarn.lock
-\.circleci
 
 # Test
 \.proverc

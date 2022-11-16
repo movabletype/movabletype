@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,6 +9,7 @@ use warnings;
 use MT;
 use base qw(MT::Util::Log);
 use Log::Minimal;
+use Encode;
 
 sub new {
     my ( $self, $logger_level, $log_file ) = @_;
@@ -27,7 +28,7 @@ sub new {
 
     $Log::Minimal::PRINT = sub {
         my ( $time, $type, $message, $trace, $raw_message ) = @_;
-        print $fh "$message\n";
+        print $fh encode_utf8("$message\n");
     };
 
     my $level = $logger_level || MT->config->Loggerlevel;
@@ -43,6 +44,11 @@ sub debug {
 }
 
 sub info {
+    my ( $class, $msg ) = @_;
+    infof($msg);
+}
+
+sub notice {
     my ( $class, $msg ) = @_;
     infof($msg);
 }

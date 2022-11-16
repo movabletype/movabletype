@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -316,12 +316,13 @@ sub save {
 
                         my $name  = 'can_' . $_->[0];
                         my $value = $app->param($name);
+                        my $perm_obj = $obj->can($name) ? $obj : $obj->permissions(0);
                         if ( defined $value ) {
-                            $obj->$name($value);
+                            $perm_obj->$name($value);
                             delete $values{$name};
                         }
                         else {
-                            $obj->$name(0);
+                            $perm_obj->$name(0);
                         }
                     }
                 }
@@ -440,6 +441,7 @@ sub save {
         if ( 'blog' eq $type ) {
             my $meth = $cfg_screen;
             if ( $meth && $app->handlers_for_mode($meth) ) {
+                $app->mode($meth);
                 $app->error(
                     $app->translate( "Save failed: [_1]", $app->errstr ) );
                 return $app->$meth;
@@ -506,7 +508,7 @@ sub save {
                         "'[_1]' edited the template '[_2]' in the blog '[_3]'",
                         $app->user->name, $obj->name, $blog->name
                     ),
-                    level    => MT::Log::INFO(),
+                    level    => MT::Log::NOTICE(),
                     blog_id  => $blog->id,
                     class    => 'template',
                     category => 'edit',
@@ -519,7 +521,7 @@ sub save {
                         "'[_1]' edited the global template '[_2]'",
                         $app->user->name, $obj->name
                     ),
-                    level    => MT::Log::INFO(),
+                    level    => MT::Log::NOTICE(),
                     class    => 'template',
                     category => 'edit',
                 }
@@ -742,6 +744,12 @@ sub edit {
             $param{'recovered_failed'} = 1;
         }
     }
+    elsif ( $app->param('_discard') ) {
+        my $sess_obj = $app->autosave_session_obj;
+        if ($sess_obj) {
+            $sess_obj->remove;
+        }
+    }
     elsif ( $app->param('qp') ) {
 
         # dedupe
@@ -931,6 +939,12 @@ sub edit {
                 $param{autosaved_object_exists} = 1;
                 $param{autosaved_object_ts}
                     = MT::Util::epoch2ts( $blog, $sess_obj->start );
+                $param{autosaved_object_is_outdated} = 1
+                    if $obj && $param{autosaved_object_ts} < $obj->modified_on;
+            }
+            if (my $other_user = $app->user_who_is_also_editing_the_same_stuff($obj)) {
+                $param{is_also_edited_by} = $other_user->{name};
+                $param{is_also_edited_at} = $other_user->{time};
             }
         }
     }
@@ -973,6 +987,13 @@ sub edit {
     }
 
     return $app->load_tmpl( $tmpl_file, \%param );
+}
+
+my %ListLimitMap = map {$_ => 1} (10, 25, 50, 100, 200);
+
+sub canonicalize_list_limit {
+    my $limit = shift || MT->config->DefaultListLimit;
+    $ListLimitMap{$limit} ? $limit : 50;
 }
 
 sub list {
@@ -1049,51 +1070,20 @@ sub list {
     if ( defined $screen_settings->{permission}
         && !$app->user->is_superuser() )
     {
-        my $list_permission = $screen_settings->{permission};
-        my $inherit_blogs   = 1;
-        if ( 'HASH' eq ref $list_permission ) {
-            $inherit_blogs = $list_permission->{inherit}
-                if defined $list_permission->{inherit};
-            $list_permission = $list_permission->{permit_action};
-        }
-        my $allowed = 0;
-        my @act;
-        if ( 'CODE' eq ref $list_permission ) {
-            my $code = $list_permission;
-            eval { $list_permission = $code->($app); };
-            return $app->error(
-                $app->translate(
-                    'Error occurred during permission check: [_1]', $@
-                )
-            ) if $@;
-        }
-        elsif ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ )
-        {
-            my $code = $list_permission;
-            $code = MT->handler_to_coderef($code);
-            eval { $list_permission = $code->(); };
-            return $app->error(
-                $app->translate(
-                    'Error occurred during permission check: [_1]', $@
-                )
-            ) if $@;
-        }
+        my ($actions, $inherit_blogs) = eval { $app->parse_filtered_list_permission($screen_settings->{permission}) };
+        my $error = $@;
+        return $app->error($app->translate('Error occurred during permission check: [_1]', $error)) if $error;
 
-        if ( 'ARRAY' eq ref $list_permission ) {
-            @act = @$list_permission;
-        }
-        else {
-            @act = split /\s*,\s*/, $list_permission;
-        }
         my $blog_ids = undef;
         if ($blog_id) {
             push @$blog_ids, $blog_id;
         }
-        foreach my $p (@act) {
+        my $allowed = 0;
+        foreach my $action (@$actions) {
             $allowed = 1,
                 last
                 if $app->user->can_do(
-                $p,
+                $action,
                 at_least_one => 1,
                 ( $blog_ids ? ( blog_id => $blog_ids ) : () )
                 );
@@ -1106,7 +1096,6 @@ sub list {
 
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{ $type . $subtype }{$blog_id} || {};
-    my $rows        = $list_pref->{rows}        || 50;    ## FIXME: Hardcoded
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $last_items         = $list_pref->{last_items} || [];
@@ -1114,7 +1103,7 @@ sub list {
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
     }
-    $param{ 'limit_' . $rows } = 1;
+    $param{'limit'} = canonicalize_list_limit($list_pref->{rows});
 
     require MT::ListProperty;
     my $obj_type   = $screen_settings->{object_type} || $type;
@@ -1277,7 +1266,7 @@ sub list {
             {
             id                 => $prop->id,
             type               => $prop->type,
-            label              => MT::Util::encode_html( $prop->label ),
+            label              => MT::Util::encode_html( $prop->label, 1 ),
             primary            => $primary_col{$id} ? 1 : 0,
             col_class          => $prop->col_class,
             sortable           => $prop->can_sort($scope),
@@ -1304,13 +1293,13 @@ sub list {
         my $label_for_sort;
         if ( defined $prop->filter_label ) {
             $label_for_sort
-                = ref $prop->filter_label
+                = ref $prop->filter_label eq 'CODE'
                 ? $prop->filter_label->($screen_settings)
                 : $prop->filter_label;
         }
         if ( !defined $label_for_sort ) {
             $label_for_sort
-                = ref $prop->label
+                = ref $prop->label eq 'CODE'
                 ? $prop->label->($screen_settings)
                 : $prop->label;
             $label_for_sort = '' unless defined $label_for_sort;
@@ -1321,8 +1310,7 @@ sub list {
             prop => $prop,
             id   => $prop->id,
             type => $prop->type,
-            label =>
-                MT::Util::encode_html( $prop->filter_label || $prop->label ),
+            label => $prop->filter_label || $prop->label,
             field                 => $prop->filter_tmpl,
             single_select_options => $prop->single_select_options($app),
             verb                  => defined $prop->verb ? $prop->verb
@@ -1444,7 +1432,7 @@ sub list {
     my $feed_link = $screen_settings->{feed_link};
     $feed_link = $feed_link->($app)
         if 'CODE' eq ref $feed_link;
-    if ($feed_link) {
+    if ($feed_link and !MT->config->DisableActivityFeeds) {
         my $view = $subtype ? $app->param('type') : $type;
         $param{feed_url} = $app->make_feed_link( $view,
             $blog_id ? { blog_id => $blog_id } : undef );
@@ -1550,46 +1538,16 @@ sub filtered_list {
     if ( defined $setting->{permission}
         && !$app->user->is_superuser() )
     {
-        my $list_permission = $setting->{permission};
-        my $inherit_blogs   = 1;
-        if ( 'HASH' eq ref $list_permission ) {
-            $inherit_blogs = $list_permission->{inherit}
-                if defined $list_permission->{inherit};
-            $list_permission = $list_permission->{permit_action};
-        }
         my $allowed = 0;
-        my @permissions;
-        if ( 'CODE' eq ref $list_permission ) {
-            eval { $list_permission = $list_permission->($app); };
-            return $app->json_error(
-                $app->translate(
-                    'Error occurred during permission check: [_1]', $@
-                )
-            ) if $@;
-        }
-        elsif ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ )
-        {
-            my $code = $list_permission;
-            $code = MT->handler_to_coderef($code);
-            eval { $list_permission = $code->($app); };
-            return $app->json_error(
-                $app->translate(
-                    'Error occurred during permission check: [_1]', $@
-                )
-            ) if $@;
-        }
+        my ($actions, $inherit_blogs) = eval { $app->parse_filtered_list_permission($setting->{permission}) };
+        my $error = $@;
+        return $app->json_error($app->translate('Error occurred during permission check: [_1]', $error)) if $error;
 
-        if ( 'ARRAY' eq ref $list_permission ) {
-            @permissions = @$list_permission;
-        }
-        else {
-            @permissions = split /\s*,\s*/, $list_permission;
-        }
-        foreach my $p (@permissions) {
+        foreach my $action (@$actions) {
             $allowed = 1,
                 last
                 if $app->user->can_do(
-                $p,
+                $action,
                 at_least_one => 1,
                 ( $blog_ids ? ( blog_id => $blog_ids ) : () )
                 );
@@ -1597,7 +1555,7 @@ sub filtered_list {
         return $app->json_error(
             $app->translate(
                 'Permission denied: [_1]',
-                join( ',', @permissions )
+                join( ',', @$actions )
             )
         ) unless $allowed;
     }
@@ -1644,7 +1602,8 @@ sub filtered_list {
             blog_id   => $blog_id || 0,
         }
     );
-    my $limit = $app->param('limit') || 50;    # FIXME: hard coded.
+    my $limit = $app->param('limit');
+    $limit = canonicalize_list_limit($limit);
     my $page  = $app->param('page');
     $page = 1 if !$page || $page =~ /\D/;
     my $offset = ( $page - 1 ) * $limit;
@@ -1755,7 +1714,7 @@ sub filtered_list {
 
         $MT::DebugMode && $debug->{section}->('prepare load cols');
         for my $col (@cols) {
-            my $prop = $props->{$col};
+            my $prop = $props->{$col} or next;
             my @result;
             if ( $prop->has('bulk_html') ) {
                 @result = $prop->bulk_html( $objs, $app, \%load_options );
@@ -1863,11 +1822,11 @@ sub save_list_prefs {
         = !$blog         ? 'system'
         : $blog->is_blog ? 'blog'
         :                  'website';
-    my $limit      = $app->param('limit')   || 50;    # FIXME: hard coded.
     my $cols       = $app->param('columns') || '';
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};
-    $list_pref->{rows}    = $limit;
+    my $limit = $app->param('limit');
+    $list_pref->{rows}    = canonicalize_list_limit($limit);
     $list_pref->{columns} = [ split ',', $cols ];
 
 #$list_pref->{last_filter} = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
@@ -2200,6 +2159,7 @@ sub build_revision_table {
         }
     }
     my %users;
+    my $broken_rev = 0;
     my $hasher = sub {
         my ( $rev, $row ) = @_;
         if ( my $ts = $rev->created_on ) {
@@ -2221,7 +2181,15 @@ sub build_revision_table {
                 $row->{created_by} = $app->translate('(user deleted)');
             }
         }
-        my $revision    = $obj->object_from_revision($rev);
+
+        my $revision = $obj->object_from_revision($rev);
+
+        if (!$revision) {
+            $row->{is_broken} = 1;
+            $broken_rev++;
+            return;
+        }
+
         my $column_defs = $obj->column_defs;
 
         #my @changed = map {
@@ -2236,7 +2204,7 @@ sub build_revision_table {
         $row->{rev_js}     = $js . '&amp;r=' . $row->{rev_number} . "'";
         $row->{is_current} = $param->{revision} == $row->{rev_number};
     };
-    return $app->listing(
+    my $ret = $app->listing(
         {   type   => "$type:revision",
             code   => $hasher,
             terms  => { $class->datasource . '_id' => $obj->id },
@@ -2245,6 +2213,21 @@ sub build_revision_table {
             %$param
         }
     );
+
+    if ($broken_rev > 0) {
+        MT->log({
+            message => MT->translate(
+                '[_1] broken revisions of [_2](id:[_3]) are removed.',
+                $broken_rev, MT->translate($class->datasource), $obj->id
+            ),
+            blog_id   => $blog->id,
+            author_id => $app->user->id,
+            category  => 'edit',
+            level     => MT::Log::NOTICE(),
+        });
+    }
+
+    return $ret;
 }
 
 sub list_revision {
@@ -2461,6 +2444,8 @@ sub is_enabled_mode {
 
 sub is_within_base_sitepath {
     my ( $app, $s_path ) = @_;
+    return unless (defined $s_path && $s_path ne '');
+    
     my $l_path = $app->config->BaseSitePath;
 
     # making sure that we have a '/' in the end of the paths

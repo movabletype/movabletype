@@ -97,33 +97,47 @@ class Smarty_Internal_Config_File_Compiler
      * @param Smarty_Internal_Template $template
      *
      * @return bool true if compiling succeeded, false if it failed
+     * @throws \SmartyException
      */
     public function compileTemplate(Smarty_Internal_Template $template)
     {
         $this->template = $template;
         $this->template->compiled->file_dependency[ $this->template->source->uid ] =
-            array($this->template->source->filepath, $this->template->source->getTimeStamp(),
-                  $this->template->source->type);
+            array(
+                $this->template->source->filepath,
+                $this->template->source->getTimeStamp(),
+                $this->template->source->type
+            );
         if ($this->smarty->debugging) {
-            if (!isset( $this->smarty->_debug)) {
-                $this->smarty->_debug  = new Smarty_Internal_Debug();
+            if (!isset($this->smarty->_debug)) {
+                $this->smarty->_debug = new Smarty_Internal_Debug();
             }
             $this->smarty->_debug->start_compile($this->template);
         }
         // init the lexer/parser to compile the config file
         /* @var Smarty_Internal_ConfigFileLexer $this->lex */
-        $this->lex = new $this->lexer_class(str_replace(array("\r\n", "\r"), "\n", $template->source->getContent()) . "\n",
-                                      $this);
+        $this->lex = new $this->lexer_class(
+            str_replace(
+                array(
+                    "\r\n",
+                    "\r"
+                ),
+                "\n",
+                $template->source->getContent()
+            ) . "\n",
+            $this
+        );
         /* @var Smarty_Internal_ConfigFileParser $this->parser */
         $this->parser = new $this->parser_class($this->lex, $this);
-
-        if (function_exists('mb_internal_encoding') && ((int) ini_get('mbstring.func_overload')) & 2) {
+        if (function_exists('mb_internal_encoding')
+            && function_exists('ini_get')
+            && ((int)ini_get('mbstring.func_overload')) & 2
+        ) {
             $mbEncoding = mb_internal_encoding();
             mb_internal_encoding('ASCII');
         } else {
             $mbEncoding = null;
         }
-
         if ($this->smarty->_parserdebug) {
             $this->parser->PrintTrace();
         }
@@ -136,7 +150,6 @@ class Smarty_Internal_Config_File_Compiler
         }
         // finish parsing process
         $this->parser->doParse(0, 0);
-
         if ($mbEncoding) {
             mb_internal_encoding($mbEncoding);
         }
@@ -144,11 +157,12 @@ class Smarty_Internal_Config_File_Compiler
             $this->smarty->_debug->end_compile($this->template);
         }
         // template header code
-        $template_header =
-            "<?php /* Smarty version " . Smarty::SMARTY_VERSION . ", created on " . strftime("%Y-%m-%d %H:%M:%S") .
-            "\n";
-        $template_header .= "         compiled from \"" . $this->template->source->filepath . "\" */ ?>\n";
-
+        $template_header = sprintf(
+            "<?php /* Smarty version %s, created on %s\n         compiled from '%s' */ ?>\n",
+            Smarty::SMARTY_VERSION,
+            date("Y-m-d H:i:s"),
+            str_replace('*/', '* /' , $this->template->source->filepath)
+        );
         $code = '<?php $_smarty_tpl->smarty->ext->configLoad->_loadConfigVars($_smarty_tpl, ' .
                 var_export($this->config_data, true) . '); ?>';
         return $template_header . $this->template->smarty->ext->_codeFrame->create($this->template, $code);

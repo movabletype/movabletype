@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,6 +14,10 @@ use FormattedText::App;
 sub view_text {
     my $app  = shift;
     my $user = $app->user;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
 
     my $formatted_text
         = MT->model('formatted_text')->load( scalar $app->param('id') )

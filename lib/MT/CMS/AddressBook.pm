@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -12,6 +12,11 @@ use MT::I18N qw( wrap_text );
 
 sub entry_notify {
     my $app = shift;
+
+    $app->validate_param({
+        entry_id => [qw/ID/],
+    }) or return;
+
     return $app->return_to_dashboard( permission => 1 )
         unless $app->can_do('open_entry_notification_screen');
     my $entry_id = $app->param('entry_id')
@@ -33,6 +38,15 @@ sub send_notify {
     my $app = shift;
     $app->validate_magic() or return;
 
+    $app->validate_param({
+        entry_id           => [qw/ID/],
+        message            => [qw/MAYBE_STRING/],
+        send_body          => [qw/MAYBE_STRING/],
+        send_excerpt       => [qw/MAYBE_STRING/],
+        send_notify_emails => [qw/MAYBE_STRING/],
+        send_notify_list   => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $entry_id = $app->param('entry_id')
         or return $app->error( $app->translate("No entry ID was provided") );
     require MT::Entry;
@@ -50,7 +64,6 @@ sub send_notify {
 
     my $author = $entry->author;
 
-    my $cols = 72;
     my %params;
     $params{blog}         = $blog;
     $params{entry}        = $entry;
@@ -59,9 +72,9 @@ sub send_notify {
     if ( $app->param('send_excerpt') ) {
         $params{send_excerpt} = 1;
     }
-    my $message = $app->param('message');
-    $params{message}
-        = defined $message ? wrap_text( $message, $cols, '', '' ) : '';
+    $params{message} = $app->param('message');
+    $params{message} = '' unless defined $params{message};
+
     if ( $app->param('send_body') ) {
         $params{send_body} = 1;
     }
@@ -133,25 +146,12 @@ sub send_notify {
         || $app->charset;
     $head{'Content-Type'} = qq(text/plain; charset="$charset");
     my $i = 1;
-    require MT::Mail;
+    require MT::Util::Mail;
     unless ( exists $params{from_address} ) {
-        MT::Mail->send( \%head, $body ) or do {
-            $app->log(
-                {   message => $app->translate(
-                        'Error sending mail: [_1]',
-                        MT::Mail->errstr
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'email'
-                }
-            );
-
-            return $app->errtrans(
-                "Error sending mail ([_1]): Try another MailTransfer setting?",
-                MT::Mail->errstr
-            );
-        };
+        MT::Util::Mail->send_and_log(\%head, $body) or return $app->errtrans(
+            "Error sending mail ([_1]): Try another MailTransfer setting?",
+            MT::Util::Mail->errstr
+        );
     }
     delete $head{To};
 
@@ -169,25 +169,10 @@ sub send_notify {
         } @addresses_to_send;
     }
     foreach my $info (@email_to_send) {
-        MT::Mail->send( $info, $body ) or do {
-            $app->log(
-                {   message => $app->translate(
-                        'Error sending mail: [_1]',
-                        MT::Mail->errstr
-                    ),
-                    level    => MT::Log::ERROR(),
-                    class    => 'system',
-                    category => 'email'
-                }
-            );
-
-            return $app->error(
-                $app->translate(
-                    "Error sending mail ([_1]): Try another MailTransfer setting?",
-                    MT::Mail->errstr
-                )
-            );
-        };
+        MT::Util::Mail->send_and_log($info, $body) or return $app->error($app->translate(
+            "Error sending mail ([_1]): Try another MailTransfer setting?",
+            MT::Util::Mail->errstr
+        ));
     }
     $app->redirect(
         $app->uri(
@@ -310,7 +295,7 @@ sub post_delete {
                 "Subscriber '[_1]' (ID:[_2]) deleted from address book by '[_3]'",
                 $obj->email, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'system',
             category => 'delete'
         }
@@ -318,7 +303,7 @@ sub post_delete {
 }
 
 sub cms_pre_load_filtered_list {
-    my ( $cb, $app, $filter, $load_options, $cols ) = @_;
+    my ( $cb, $app, $filter, $load_options ) = @_;
 
     my $user = $app->user;
     return if $user->is_superuser;

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2016 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -655,7 +655,37 @@ sub author {
     $self->cache_property(
         'author',
         sub {
-            scalar MT::Author->load( $self->author_id || 0 );
+            my $author_id = $self->author_id or return undef;
+            my $req       = MT::Request->instance;
+            my $cache     = $req->stash('author_cache');
+            my $author    = $cache->{$author_id};
+            unless ($author) {
+                require MT::Author;
+                $author = MT::Author->load($author_id) or return undef;
+                $cache->{$author_id} = $author;
+                $req->stash('author_cache', $cache);
+            }
+            $author;
+        },
+    );
+}
+
+sub modified_author {
+    my $self = shift;
+    $self->cache_property(
+        'modified_author',
+        sub {
+            my $modified_by = $self->modified_by or return undef;
+            my $req         = MT::Request->instance;
+            my $cache       = $req->stash('author_cache');
+            my $author      = $cache->{$modified_by};
+            unless ($author) {
+                require MT::Author;
+                $author = MT::Author->load($modified_by) or return undef;
+                $cache->{$modified_by} = $author;
+                $req->stash('author_cache', $cache);
+            }
+            $author;
         },
     );
 }
@@ -1027,13 +1057,26 @@ sub make_list_props {
                     my $prop = shift;
                     my ( $args, $db_terms, $db_args ) = @_;
 
-                    my $ct
-                        = MT->model('content_type')
-                        ->load( $db_terms->{content_type_id} )
-                        or die MT->translate(
-                        'Cannot load content type #[_1]',
-                        $db_terms->{content_type_id}
-                        );
+                    my $content_type_id;
+                    if ( ref $db_terms eq 'ARRAY' ) {
+                        for my $t (@$db_terms) {
+                            if ( ref $t eq 'HASH'
+                                && exists $t->{content_type_id} )
+                            {
+                                $content_type_id = $t->{content_type_id};
+                                last;
+                            }
+                        }
+                    }
+                    else {
+                        $content_type_id = $db_terms->{content_type_id};
+                    }
+                    die MT->translate('No Content Type could be found.')
+                      unless $content_type_id;
+                    my $ct = MT->model('content_type')->load($content_type_id)
+                      or die MT->translate( 'Cannot load content type #[_1]',
+                        $content_type_id );
+
                     if ( !$ct->data_label ) {
 
                         # Use __virtual.string based filtering
@@ -1073,16 +1116,16 @@ sub make_list_props {
                             or die MT->translate(
                             'Cannot load content field #[_1]',
                             $ct->data_label );
+                        
+                        my $data_type = $cf->data_type;
 
                         $db_args->{joins} ||= [];
                         push @{ $db_args->{joins} },
                             MT->model('content_field_index')->join_on(
                             undef,
-                            [   { content_data_id => \'= cd_id' },
-                                [   { value_varchar => $query },
-                                    '-or',
-                                    { value_text => $query },
-                                ],
+                            [   
+                                { content_data_id => \'= cd_id' },
+                                { "value_$data_type" => $query },
                             ],
                             {   join => MT->model('content_field')->join_on(
                                     undef,
@@ -1168,6 +1211,10 @@ sub make_list_props {
             blog_name     => { display => 'none', filter_editable => 0 },
             current_context => { filter_editable => 0 },
             __mobile => { base => 'entry.__mobile', col => 'label' },
+            modified_by => {
+                base  => '__virtual.modified_by',
+                order => $order + 500,
+            },
             %{$field_list_props},
         };
         MT::__merge_hash( $props->{$key}, $common_list_props );
@@ -1202,6 +1249,7 @@ sub _make_label_html {
         : $status == MT::ContentStatus::UNPUBLISH() ? 'Unpublish'
         :                                             '';
     my $lc_status_class = lc $status_class;
+    my $status_class_trans = MT->translate($status_class);
 
     my $status_icon_id
         = $status == MT::ContentStatus::HOLD()      ? 'ic_draft'
@@ -1225,13 +1273,13 @@ sub _make_label_html {
         my $static_uri = MT->static_path;
         $status_img = qq{
           <svg role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
-              <title>$status_class</title>
+              <title>$status_class_trans</title>
               <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
           </svg>
         };
     }
 
-    my $label = $obj->label || MT->translate('No Label');
+    my $label = MT::Util::encode_html($obj->label || MT->translate('No Label'), 1);
     my $edit_link;
     if ( $app->user->permissions( $obj->blog_id )
         ->can_edit_content_data( $obj, $app->user ) )
@@ -1249,12 +1297,13 @@ sub _make_label_html {
 
     my $permalink  = MT::Util::encode_html( $obj->permalink );
     my $static_uri = MT->static_path;
+    my $view_title = MT->translate('View Content Data');
     my $view_link  = ( $status == MT::ContentStatus::RELEASE() && $permalink )
         ? qq{
             <span class="view-link">
               <a href="$permalink" class="d-inline-block" target="_blank">
                 <svg role="img" class="mt-icon mt-icon--sm">
-                  <title>View</title>
+                  <title>${view_title}</title>
                   <use xlink:href="${static_uri}images/sprite.svg#ic_permalink"></use>
                 </svg>
               </a>
@@ -1287,6 +1336,7 @@ sub _make_field_list_props {
     my $props               = {};
     my $content_field_types = MT->registry('content_field_types');
 
+    require MT::Util::BlessedString;
     for my $field_data ( @{ $content_type->fields } ) {
         my $idx_type   = $field_data->{type};
         my $field_key  = 'content_field_' . $field_data->{id};
@@ -1318,6 +1368,7 @@ sub _make_field_list_props {
             if ($parent_field_data) {
                 $label = $parent_field_data->{options}{label} . " ${label}";
             }
+            $label = MT::Util::BlessedString->new($label);
 
             my $prop_key;
             if ( $prop_name eq $idx_type ) {
@@ -1508,19 +1559,23 @@ sub archive_file {
     my $blog = $self->blog or return '';
     $at ||= 'ContentType';    # should check $blog->archive_type here
 
-    # Load category
-    my $obj_category = MT->model('objectcategory')->load(
-        {   object_ds  => 'content_data',
-            object_id  => $self->id,
-            is_primary => 1
-        }
-    );
-    my $cat
-        = $obj_category
-        ? MT->model('category')->load( $obj_category->category_id )
-        : '';
+    my $map = MT->publisher->archiver($at)->get_preferred_map({
+        blog_id         => $blog->id,
+        content_type_id => $self->content_type_id,
+    });
 
-    my $file = MT::Util::archive_file_for( $self, $blog, $at, $cat );
+    # Load category
+    my $cat;
+    if ($map && $map->cat_field_id) {
+        my $obj_category = MT->model('objectcategory')->load({
+            object_ds  => 'content_data',
+            object_id  => $self->id,
+            is_primary => 1,
+            cf_id      => $map->cat_field_id,
+        });
+        $cat = $obj_category ? MT->model('category')->load($obj_category->category_id) : '';
+    }
+    my $file = MT::Util::archive_file_for($self, $blog, $at, $cat, $map);
     $file = '' unless defined $file;
     return $file;
 }
@@ -1528,15 +1583,15 @@ sub archive_file {
 sub archive_url {
     my $self = shift;
     my $blog = $self->blog or return;
-    my $file = $self->archive_file(@_) or return;
     my $url  = $blog->archive_url || '';
-    MT::Util::caturl( $url, $file );
+    $url .= '/' unless $url =~ m!/$!;
+    $url . $self->archive_file(@_);
 }
 
 sub permalink {
     my $self                   = shift;
     my $blog                   = $self->blog or return;
-    my $url                    = $self->archive_url( $_[0] ) or return;
+    my $url                    = $self->archive_url( $_[0] );
     my $effective_archive_type = ( $_[0] || 'ContentType' );
     $url
         .= '#'
@@ -1617,6 +1672,7 @@ sub preview_data {
             ? $preview_handler->( $f, $self->data->{ $f->{id} }, $self )
             : $self->data->{ $f->{id} };
         $field_data = '' unless defined $field_data && $field_data ne '';
+        my $escaped_field_data = MT::Util::encode_html($field_data);
 
         my $field_label = ( $f->{options} || +{} )->{label}
             || MT->translate('(No label)');
@@ -1624,7 +1680,7 @@ sub preview_data {
         my $escaped_field_label = MT::Util::encode_html($field_label);
 
         $data
-            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$field_data</div></div>};
+            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$escaped_field_data</div></div>};
     }
     $data;
 }

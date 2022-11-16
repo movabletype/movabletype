@@ -59,6 +59,15 @@ function toggleWebsite() {
     var $website_configs = jQuery('#adjust_sitepath .for-website input');
     if ($website_configs.mtValidate('simple')) {
         $website_configs.mtUnvalidate();
+        jQuery('input[name^=site_name_]').each(function(){
+           if (this.name.match(/site_name_([0-9]+)/)) {
+               var blog_id = RegExp.$1;
+               var name = this.value;
+               jQuery('select[name^=parent_id_]').each(function(){
+                   jQuery(this).find('option[value='+blog_id+']').text(name);
+               });
+           }
+        });
         jQuery('.for-website').hide();
         jQuery('.for-blog').show();
     }
@@ -97,6 +106,7 @@ function init() {
   <input type="hidden" name="objects_json" value="<mt:var name="objects_json" escape="html">" />
   <input type="hidden" name="deferred_json" value="<mt:var name="deferred_json" escape="html">" />
   <input type="hidden" name="blogs_meta" value="<mt:var name="blogs_meta" escape="html">" />
+  <input type="hidden" name="cfg_screen" value="adjust_sitepath" />
 </mt:setvarblock>
 
 <mt:setvarblock name="form_footer">
@@ -113,6 +123,14 @@ function init() {
     </mt:if>
       <fieldset class="form-group">
         <legend class="h3"><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</legend>
+        <mtapp:setting
+           id="site_name"
+           label="<__trans phrase="Site Name">"
+           label_for="site_name_<mt:var name="id" escape="html">"
+           label_class="top-label">
+          <input type="text" name="site_name_<mt:var name="id" escape="html">" id="site_name_<mt:var name="id" escape="html">" class="form-control text" value="<mt:var name="name" escape="html">" />
+        </mtapp:setting>
+
         <mtapp:setting
            id="site_url"
            label="<__trans phrase="Site URL">"
@@ -146,6 +164,14 @@ function init() {
     </mt:if>
       <fieldset class="form-group">
         <legend class="h3"><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</legend>
+        <mtapp:setting
+           id="site_name"
+           label="<__trans phrase="Site Name">"
+           label_for="site_name_<mt:var name="id" escape="html">"
+           label_class="top-label">
+          <input type="text" name="site_name_<mt:var name="id" escape="html">" id="site_name_<mt:var name="id" escape="html">" class="form-control text" value="<mt:var name="name" escape="html">" />
+        </mtapp:setting>
+
         <mtapp:setting
            id="parent_id"
            label="<__trans phrase="Parent Site">"

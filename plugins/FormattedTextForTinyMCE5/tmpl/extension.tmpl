@@ -1,0 +1,55 @@
+<mt:if name="formatted_texts">
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+(function($) {
+
+$.extend(MT.Editor.TinyMCE.config, {
+    templates: [
+    <mt:loop name="formatted_texts" glue=",">
+        {
+            title: "<mt:var name="label" escape="html" encode_js="1" />",
+            url: "<mt:var name="script_url">?__mode=tiny_mce_view_formatted_text_text&blog_id=<mt:var name="blog_id" escape="html" escape="js">&id=<mt:var name="id" escape="html" escape="js" />",
+            description: "<mt:var name="description" encode_html="1" nl2br="1" encode_js="1" />"
+        }
+    </mt:loop>
+    ]
+});
+
+<__trans_section component="FormattedText">
+Lexicon['boilerplate'] = '<__trans phrase="Boilerplate" encode_js="1" />';
+Lexicon['Name'] = '<__trans phrase="Name" encode_js="1" />';
+Lexicon['Description'] = '<__trans phrase="Description" encode_js="1" />';
+Lexicon['Preview'] = '<__trans phrase="Preview" encode_js="1" />';
+</__trans_section>
+<__trans_section component="FormattedTextForTinyMCE5">
+Lexicon['Insert Boilerplate'] = '<__trans phrase="Insert Boilerplate" encode_js="1" />';
+Lexicon['Select a Boilerplate'] = '<__trans phrase="Select a Boilerplate" encode_js="1" />';
+</__trans_section>
+
+
+})(jQuery);
+</script>
+<script type="text/javascript" src="<mt:var name="static_uri">plugins/FormattedTextForTinyMCE5/extension.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<style type="text/css">
+.mce-ico.mce-i-template,
+.mce-ico.mce-i-mt_source_template {
+    background: transparent url('<mt:Var name="static_uri">images/icons/ic_template.svg') no-repeat center/16px;
+    overflow: hidden;
+    text-indent: 100%;
+    white-space: nowrap;
+}
+[aria-label="Insert template"] {
+    max-width: 100%!important;
+}
+[aria-label="Insert template"] span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 95%;
+}
+
+</style>
+</mt:setvarblock>
+</mt:if>

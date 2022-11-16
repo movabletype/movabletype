@@ -15,7 +15,7 @@ BEGIN {
 use MT::Test::DataAPI;
 use MT::Test::Permission;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -44,7 +44,7 @@ sub suite {
                         status => MT::Entry::RELEASE(),
                     }
                 );
-                is( $entry->unpublished_on => '20200101000000' );
+                is( int($entry->unpublished_on) => '20200101000000' );
             },
         },
         {   path   => '/v2/sites/1/entries',
@@ -74,7 +74,7 @@ sub suite {
             },
             complete => sub {
                 my ( $data, $body ) = @_;
-                is( MT->model('entry')->load(1)->unpublished_on => '20380101000000' );
+                is( int(MT->model('entry')->load(1)->unpublished_on) => '20380101000000' );
             },
         },
         {   path   => '/v2/sites/1/entries/1',

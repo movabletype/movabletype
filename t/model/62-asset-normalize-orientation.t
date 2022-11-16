@@ -33,6 +33,7 @@ my ( $guard, $src_file ) = MT::Test::Image->tempfile(
 close $guard;
 
 my $src_image = MT::Image->new( Filename => $src_file );
+$src_image->_init_image_size;
 
 sub _create_image_with_orientation {
     my ($orientation) = @_;
@@ -200,8 +201,7 @@ sub _run {
     }
 }
 
-my @drivers = qw( ImageMagick NetPBM GD Imager );
-for my $driver (@drivers) {
+for my $driver ( $test_env->image_drivers ) {
     subtest $driver => sub {
         my ( $guard, $file ) = MT::Test::Image->tempfile(
             DIR    => $test_env->root,

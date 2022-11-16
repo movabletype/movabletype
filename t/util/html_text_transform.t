@@ -12,6 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+use utf8;
 use Test::Base::Less;
 use MT::Util qw( html_text_transform );
 
@@ -531,3 +532,218 @@ text
 <div>
 text<br />
 </div>
+
+=== comment in a block (MTC-27365)
+--- input
+a
+<!--b-->
+
+<!--c-->
+d<!--d-->
+<!--e-->
+
+1
+<!--a-->b<!--c-->
+3
+--- expected
+<p>a<br />
+<!--b--></p>
+
+<p><!--c-->
+d<!--d--><br />
+<!--e--></p>
+
+<p>1<br />
+<!--a-->b<!--c--><br />
+3</p>
+=== end with non-block tag (MTC-27373)
+--- input
+line<strong>strong</strong>
+line<em>strong</em>
+line line
+
+<a href="url1">text1</a>
+<a href="url2">text2</a>
+
+or even <MTAuthor>
+and such.
+
+or even
+<div class="start">
+foo
+</div>
+and such.
+--- expected
+<p>line<strong>strong</strong><br />
+line<em>strong</em><br />
+line line</p>
+
+<p><a href="url1">text1</a><br />
+<a href="url2">text2</a></p>
+
+<p>or even <MTAuthor><br />
+and such.</p>
+
+<p>or even<br />
+<div class="start">
+foo<br />
+</div>
+and such.</p>
+=== two or more consecutive empty lines (MTC-27374)
+--- input
+a
+
+b
+
+
+c
+
+
+
+d
+
+
+
+
+e
+--- expected
+<p>a</p>
+
+<p>b</p>
+
+<p><br />
+c</p>
+
+<p></p>
+
+<p>d</p>
+
+<p></p>
+
+<p><br />
+e</p>
+=== table tags (MTC-27461)
+--- input
+<table>
+<thead>
+<tr>
+<th>年月</th>
+<th align="right">時間</th>
+<th align="right">累計</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2020年1月</td>
+<td align="right">1.7</td>
+<td align="right">1.7</td>
+</tr>
+</tbody>
+</table>
+--- expected
+<table>
+<thead>
+<tr>
+<th>年月</th>
+<th align="right">時間</th>
+<th align="right">累計</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2020年1月</td>
+<td align="right">1.7</td>
+<td align="right">1.7</td>
+</tr>
+</tbody>
+</table>
+=== form tags (MTC-27461)
+--- input
+<form>
+<fieldset>
+<legend>legend</legend>
+<select>
+<optgroup label="foo">
+<option>opt1</option>
+<option>opt2</option>
+<option>opt3</option>
+</optgroup>
+</select>
+</fieldset>
+</form>
+--- expected
+<form>
+<fieldset>
+<legend>legend</legend>
+<select>
+<optgroup label="foo">
+<option>opt1</option>
+<option>opt2</option>
+<option>opt3</option>
+</optgroup>
+</select>
+</fieldset>
+</form>
+=== dl tags (MTC-27461)
+--- input
+<dl>
+<dt>title1</dt>
+<dd>foo
+bar</dd>
+<dt>title2</dt>
+<dd>baz</dd>
+<dl>
+--- expected
+<dl>
+<dt>title1</dt>
+<dd>foo<br />
+bar</dd>
+<dt>title2</dt>
+<dd>baz</dd>
+<dl>
+=== audio/picture/video tags (MTC-27461)
+--- input
+<audio controls>
+<source src="myAudio.mp4" type="audio/mp4">
+<source src="myAudio.ogg" type="audio/ogg">
+<p>Your browser doesn't support HTML5 audio.</p>
+</audio>
+
+<picture>
+<source srcset="/media/examples/surfer-240-200.jpg">
+<img src="/media/examples/painted-hand-298-332.jpg" alt="" />
+</picture>
+
+<video controls>
+<source src="myVideo.mp4" type="video/mp4">
+<source src="myVideo.webm" type="video/webm">
+<p>Your browser doesn't support HTML5 video.</p>
+</video>
+--- expected
+<p><audio controls>
+<source src="myAudio.mp4" type="audio/mp4">
+<source src="myAudio.ogg" type="audio/ogg">
+<p>Your browser doesn't support HTML5 audio.</p>
+</audio></p>
+
+<p><picture>
+<source srcset="/media/examples/surfer-240-200.jpg">
+<img src="/media/examples/painted-hand-298-332.jpg" alt="" />
+</picture></p>
+
+<p><video controls>
+<source src="myVideo.mp4" type="video/mp4">
+<source src="myVideo.webm" type="video/webm">
+<p>Your browser doesn't support HTML5 video.</p>
+</video></p>
+=== svg tags (MTC-27461)
+--- input
+<svg>
+<title>image</title>
+<use xlink:href="foo"></use>
+</svg>
+--- expected
+<p><svg>
+<title>image</title>
+<use xlink:href="foo"></use>
+</svg></p>

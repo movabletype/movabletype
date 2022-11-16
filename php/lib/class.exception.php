@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -71,7 +71,7 @@ class MTInitException extends MTException {
 
     public function __construct ( $e, $debug = false ) {
         $this->is_debug = $debug;
-        parent::__construct( $e->getMessage(), $e->getCode());
+        parent::__construct( $e->getMessage(), intval($e->getCode()));
     }
 
     public function is_debug () {

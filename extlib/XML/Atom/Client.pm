@@ -9,7 +9,7 @@ use LWP::UserAgent;
 use XML::Atom::Entry;
 use XML::Atom::Feed;
 use XML::Atom::Util qw( first textValue );
-use Digest::SHA1 qw( sha1 );
+use Digest::SHA qw( sha1 );
 use MIME::Base64 qw( encode_base64 );
 use DateTime;
 

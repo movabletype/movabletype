@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -49,7 +49,8 @@ function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat) {
                     $eargs['category_id'] = $cat_id;
                 }
                 
-                list($next_entry) = $ctx->mt->db()->fetch_entries($eargs);
+                $entries = $ctx->mt->db()->fetch_entries($eargs);
+                $next_entry = isset($entries[0]) ? $entries[0] : null;
                 if ($next_entry) $_next_cache[$label] = $next_entry;
             }
             $ctx->stash('entry', $next_entry);

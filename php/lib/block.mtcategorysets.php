@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2017 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,8 +9,9 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('_category_sets_counter', '_category_sets_glue', 'blog_id', 'blog', 'category_sets', 'category_set', 'content_type', '__out'), common_loop_vars());
 
     if (!isset($content)) {
+        require_once("MTUtil.php");
         $blog = $ctx->stash('blog');
-        $content_type = $ctx->stash('content_type');
+        $content_type = get_content_type_context($ctx, $args);
 
         $ctx->localize($localvars);
 
@@ -40,12 +41,10 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
             }
         } else { 
             if( isset($args['content_type']) && !empty($args['content_type']) ) {
-                $content_types = $ctx->mt->db()->fetch_content_types($args);
-                if(!$content_types || count($content_types) == 0) {
+                if(!$content_type) {
                     $repeat = false;
                     return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
                 }
-                $content_type = $content_types[0];
             }
             if($content_type){
                 $content_fields = $content_type->fields;
@@ -69,7 +68,7 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
         }
         $ctx->stash('category_sets', $category_sets);
 
-        $glue = $args['glue'];
+        $glue = isset($args['glue']) ? $args['glue'] : null;
         $ctx->stash('_category_sets_glue', $glue);
         $ctx->stash('__out', false);
         $counter = 0;
@@ -84,7 +83,7 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
         $cs = $category_sets[$counter];
         $count = $counter + 1;
         $ctx->__stash['vars']['__first__'] = $count == 1;
-        $ctx->__stash['vars']['__last__'] = ($count == count($categories));
+        $ctx->__stash['vars']['__last__'] = ($count == count($category_sets));
         $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
         $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
         $ctx->__stash['vars']['__counter__'] = $count;
@@ -92,7 +91,7 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
         $ctx->stash('category_set', $cs);
         $ctx->stash('blog', $cs->blog());
         $ctx->stash('blog_id', $cs->blog_id);
-        if($content_type)
+        if(!empty($content_type))
             $ctx->stash('content_type', $content_type);
 
         if (!empty($glue) && !empty($content)) {
@@ -113,4 +112,3 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
 
     return $content;
 }
-

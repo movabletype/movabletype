@@ -1,0 +1,25 @@
+id: ContentInfoWidget
+name: ContentType Information Widget
+version: 0.01
+author_link: https://www.movabletype.org/
+author_name: Six Apart Ltd.
+description: <MT_TRANS phrase="Show ContentType information on the right sidebar of Edit Template.">
+config_template: config.tmpl
+l10n_class: ContentInfoWidget::L10N
+
+callbacks:
+    MT::App::CMS::template_param.edit_template: $ContentInfoWidget::ContentInfoWidget::edit_template_param
+
+settings:
+    ct:
+        default: 1
+    ct_archive:
+        default: 1
+    index:
+        default: 1
+    widget:
+        default: 1
+    cd_search_results:
+        default: 1
+    others:
+        default:

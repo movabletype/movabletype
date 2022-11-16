@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -61,10 +61,11 @@ sub status_icon {
     my $status_icon_color_class = _status_icon_color_class($status);
     my $status_icon_id          = _status_icon_id($status);
     my $static_uri              = MT->static_path;
+    my $status_class_trans      = MT->translate($status_class);
     return '' unless $status_icon_id;
     return qq{
         <svg role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
-          <title>$status_class</title>
+          <title>$status_class_trans</title>
           <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
         </svg>
     };

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -69,12 +69,29 @@ sub is_valid_password {
     }
     elsif ( $real_pass =~ m/^{SHA}(.*)\$(.*)/ ) {
         my ( $salt, $value ) = ( $1, $2 );
-        return $value eq MT::Util::perl_sha1_digest_hex( $salt . $pass );
+        if ($value eq MT::Util::perl_sha1_digest_hex( $salt . $pass )) {
+            if (MT->config->SchemaVersion > 5.0025) {
+                unless ( $pass =~ /[^\x20-\x7E]/ ) {
+                    $author->set_password($pass);
+                    $author->save;
+                }
+            }
+            return 1;
+        }
+        return;
     }
     else {
-
         # the password is stored using the old hashing method
-        return crypt( $pass, $real_pass ) eq $real_pass;
+        if (crypt( $pass, $real_pass ) eq $real_pass) {
+            if (MT->config->SchemaVersion > 5.0025) {
+                unless ( $pass =~ /[^\x20-\x7E]/ ) {
+                    $author->set_password($pass);
+                    $author->save;
+                }
+            }
+            return 1;
+        }
+        return;
     }
 }
 

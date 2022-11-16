@@ -93,7 +93,7 @@
             note_fields[i].show();
         }
         $note_email.trigger('focus');
-        $note_email.select();
+        $note_email.trigger('select');
         return false;
     }
 
@@ -131,7 +131,7 @@
         // if not in noteList and not in range of noteList notes, check with server.
         var $note_email = jQuery('#note-email-' + id);
         var $note_url   = jQuery('#note-url-' + id);
-        if ( !$note_email.val() || !$note_email.mtValidate() ) return false;
+        if ( !$note_email.mtValidate() || !$note_email.val() ) return false;
         if ( $note_url.val() && !$note_url.mtValidate() ) return false;
         var new_note_email = $note_email.val();
         var new_note_url = $note_url.val();
@@ -172,6 +172,10 @@
     jQuery('#action-create-contact').on('click', function() {
         setCreateMode();
         return false;
+    });
+
+    jQuery('#create-inline-notification').on('submit', function () {
+        return jQuery(this).find('input').mtValidate() ? true : false;
     });
 
     jQuery('#create-inline-notification button.mt-cancel-action').on('click', function() {

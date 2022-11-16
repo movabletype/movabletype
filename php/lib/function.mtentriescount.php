@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -25,7 +25,9 @@ function smarty_function_mtentriescount($args, &$ctx) {
         }
     
         $lastn = $ctx->stash('_entries_lastn');
-        if ($lastn && $lastn <= count($entries))
+        if (!isset($entries))
+            $count = 0;
+        elseif ($lastn && $lastn <= count($entries))
             $count = $lastn;
         else
             $count = count($entries);

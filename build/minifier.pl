@@ -7,7 +7,7 @@ my $copyright;
 my $year = ( localtime(time) )[5] + 1900;
 
 $copyright
-    = "Movable Type (r) (C) 2001-$year Six Apart Ltd. All Rights Reserved";
+    = "Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.";
 
 my %types = (
     css => 'CSS::Minifier',
@@ -36,18 +36,18 @@ else {
     }
 }
 
-open( INFILE, $file ) or die $!;
-my $data = join( '', <INFILE> );
-close(INFILE);
+open( my $INFILE, "<", $file ) or die $!;
+my $data = join( '', <$INFILE> );
+close($INFILE);
 
-open( OUTFILE, '>', $file ) or die $!;
-print OUTFILE minify(
+open( my $OUTFILE, '>', $file ) or die $!;
+print $OUTFILE minify(
     input     => $data,
     copyright => qq|$copyright
  * This file is combined from multiple sources.  Consult the source files for their
  * respective licenses and copyrights.
 |,
 );
-close(OUTFILE);
+close($OUTFILE);
 
 exit 0;

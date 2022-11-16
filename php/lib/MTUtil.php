@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -8,6 +8,16 @@
 function datetime_to_timestamp($dt, $type = 'local') {
     $mktime = (isset($type) && $type == 'gmt') ? 'gmmktime' : 'mktime';
     $dt = preg_replace('/[^0-9]/', '', $dt);
+
+    // mktime on php7.x have returned FALSE when any of args were an empty string.
+    // Since php8.0 it throws an exception on the same condition.
+    // We preserve the old behavior for backward compatibility.
+    // XXX Use intval instead since the next major version
+    if (strlen($dt) < 14) {
+        trigger_error('Arguments for datetime_to_timestamp must be valid format.', E_USER_DEPRECATED);
+        return false;
+    }
+
     $ts = $mktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
     return $ts;
 }
@@ -37,6 +47,15 @@ function start_end_month($ts) {
 }
 
 function days_in($m, $y) {
+
+    // date($format, false) have returned epoch on php7.x and since php8.0 it's current time.
+    // We preserve the old behavior for backward compatibility.
+    // XXX Use intval instead since the next major version
+    if ($m === '' || $y === '') {
+        trigger_error('Arguments for days_in must not be empty strings.', E_USER_DEPRECATED);
+        return 31; // Jan 1970
+    }
+
     return date('t', mktime(0, 0, 0, $m, 1, $y));
 }
 
@@ -154,7 +173,7 @@ function wday_from_ts($y, $m, $d) {
     $days = $y * 365;
     $days += $y >>= 2;
     $days -= intval($y /= 25);
-    $days += $y >> 2;
+    $days += intval($y) >> 2;
     $days += $In_Year[$leap][$m-1] + $d;
     return $days % 7;
 }
@@ -901,7 +920,7 @@ function strip_hyphen($s) {
 }
 
 function first_n_words($text, $n) {
-    $text = strip_tags($text);
+    $text = strip_tags($text ?? '');
     $words = preg_split('/\s+/', $text);
     $max = count($words) > $n ? $n : count($words);
     return join(' ', array_slice($words, 0, $max));
@@ -975,6 +994,23 @@ function decode_html($str, $quote_style = ENT_QUOTES) {
         $trans_table["'"] = '&#039;';
     }
     return (strtr($str, array_flip($trans_table)));
+}
+
+function get_content_type_context(&$ctx, $args) {
+    $blog         = $ctx->stash('blog');
+    $content_type = $ctx->stash('content_type');
+    $blog_id      = (!empty($args['blog_id']) ? $args['blog_id'] : ($blog->id || ''));
+    if (isset($args['content_type']) && $str = $args['content_type']) {
+        ## If $str points to $content_type, just return it
+        if ($content_type && ((preg_match('/^[0-9]+$/', $str) && $content_type->id === $str) ||
+            ($str === $content_type->unique_id) || ($str === $content_type->name && $content_type->blog_id === $blog_id))) {
+            return $content_type;
+        }
+        $ct2 = $ctx->mt->db()->fetch_content_types(array('blog_id' => $blog_id, 'content_type' => $str));
+        return $ct2 ? $ct2[0] : null;
+    }
+
+    return $content_type;
 }
 
 function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) {
@@ -1070,11 +1106,8 @@ function substr_text($text, $startpos, $length) {
 }
 
 function first_n_text($text, $n) {
-    if (!isset($lang) || empty($lang)) { 
-        $mt = MT::get_instance();
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language : 
-                     $mt->config('DefaultLanguage'));
-    }
+    $mt = MT::get_instance();
+    $lang = $mt->config('DefaultLanguage');
     if ($lang == 'jp') {
         $lang = 'ja';
     }
@@ -1122,13 +1155,13 @@ function catarray_length_sort($a, $b) {
 }
 
 function create_expr_exception($m) {
-    if ($m[2])
+    if (!empty($m[2]))
         return '(0)';
     else
         return $m[1];
 }
 
-function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) {
+function create_cat_expr_function($expr, &$cats, $datasource, $param) {
     $mt = MT::get_instance();
     $cats_used = array();
     $orig_expr = $expr;
@@ -1209,7 +1242,7 @@ function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) 
     $expr = preg_replace('/\bNOT\b/i', '!', $expr);
 
     # replace any other 'thing' with '(0)' since it's a category that doesn't even exist.
-    $cat_expr = preg_split("/($regexp)/", $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $cat_expr = preg_split("/($regexp)/", $expr, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $new_cat_expr = array();
     foreach ($cat_expr as $token) {
         if (preg_match("/^(\s+|$regexp)$/", $token, $matches)) {
@@ -1234,10 +1267,10 @@ function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) 
     $expr = '$pm = array_key_exists($o->'.$datasource.'_id, $c["c"]) ? $c["c"][$o->'.$datasource.'_id] : array(); return (' . $expr . ');';
     try {
         eval("\$fn = function(&\$o, &\$c) { $expr };");
+        if ($fn === FALSE) {
+            throw new MTException('$fn is not set');
+        }
     } catch (ParseError $e) {
-        $error = true;
-    }
-    if ($error || $fn === FALSE) {
         echo "Invalid category filter: $orig_expr";
         return;
     }
@@ -1309,7 +1342,7 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     foreach ($tags as $tag) {
         $tags_dict[$tag->tag_name] = $tag;
     }
-    $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $result = '';
     foreach ($tokens as $t) {
         $upperToken = strtoupper( $t );
@@ -1345,10 +1378,10 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     $expr = '$tm = array_key_exists($o->'.$datasource.'_id, $c["t"]) ? $c["t"][$o->'.$datasource.'_id] : array(); return (' . $result . ');';
     try {
         eval("\$fn = function(&\$o, &\$c) { $expr; };");
+        if ($fn === FALSE) {
+            throw new MTException('$fn is not set');
+        }
     } catch (ParseError $e) {
-        $error = true;
-    }
-    if ($error || $fn === FALSE) {
         echo "Invalid tag filter: $orig_expr";
         return;
     }
@@ -1556,7 +1589,7 @@ function asset_cleanup_cb($matches) {
 }
 
 # sorts by length of category label, from longest to shortest
-function rolearray_length_sort(&$a, &$b) {
+function rolearray_length_sort($a, $b) {
     $al = strlen($a->name);
     $bl = strlen($b->name);
     return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
@@ -1598,10 +1631,10 @@ function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     $expr = '$tm = array_key_exists($e->'.$datasource.'_id, $c["r"]) ? $c["r"][$e->'.$datasource.'_id] : array(); return ' . $expr . ';';
     try {
         eval("\$fn = function(&\$e, &\$c) { $expr };");
+        if ($fn === FALSE) {
+            throw new MTException('$fn is not set');
+        }
     } catch (ParseError $e) {
-        $error = true;
-    }
-    if ($error || $fn === FALSE) {
         echo "Invalid role filter: $orig_expr";
         return;
     }
@@ -1631,10 +1664,10 @@ function create_status_expr_function($expr, &$status, $datasource = 'author') {
     $expr = 'return ' . $expr . ';';
     try {
         eval("\$fn = function(&\$e, &\$c) { $expr };");
+        if ($fn === FALSE) {
+            throw new MTException('$fn is not set');
+        }
     } catch (ParseError $e) {
-        $error = true;
-    }
-    if ($error || $fn === FALSE) {
         echo "Invalid status filter: $orig_expr";
         return;
     }
@@ -1665,10 +1698,10 @@ function create_rating_expr_function($expr, $filter, $namespace, $datasource = '
 
     try {
         eval("\$fn = function(&\$e, &\$c) { $expr };");
+        if ($fn === FALSE) {
+            throw new MTException('$fn is not set');
+        }
     } catch (ParseError $e) {
-        $error = true;
-    }
-    if ($error || $fn === FALSE) {
         echo "Invalid rating filter: $orig_expr";
         return;
     }
@@ -1699,7 +1732,7 @@ function _math_operation($op, $lvalue, $rvalue) {
         return $lvalue * $rvalue;
     }
     elseif ( ( '/' == $op ) || ( 'div' == $op ) ) {
-        if ( $rvalue == 0 )
+        if ( !$rvalue )
             return;
         return $lvalue / $rvalue;
     }
@@ -1707,7 +1740,7 @@ function _math_operation($op, $lvalue, $rvalue) {
         // to be in line with perl equivalent
         $lvalue = floor($lvalue);
         $rvalue = floor($rvalue);
-        if ( $rvalue == 0 )
+        if ( !$rvalue )
             return;
         return $lvalue % $rvalue;
     }
@@ -1787,7 +1820,7 @@ function common_loop_vars() {
 function normalize_language($language, $locale, $ietf) {
     $real_lang = array('cz' => 'cs', 'dk' => 'da', 'jp' => 'ja', 'si' => 'sl');
 
-    if ($real_lang[$language]) {
+    if (!empty($real_lang[$language])) {
         $language = $real_lang[$language];
     }
     if ($locale) {

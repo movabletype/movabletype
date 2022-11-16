@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,9 +7,7 @@
 
 require_once("function.mtinclude.php");
 function smarty_function_mtwidgetmanager($args, &$ctx) {
-    $blog_id = $args['blog_id'];
-    $blog_id or $blog_id = $ctx->stash('blog_id');
-    $blog_id or $blog_id = 0;
+    $blog_id = $args['blog_id'] ?? $ctx->stash('blog_id') ?? 0;
     if( isset( $args['parent'] ) ) {
       $_stash_blog = $ctx->stash( 'blog' );
       if( $_stash_blog->is_blog() ){
@@ -21,7 +19,7 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
     if (!$widgetmanager) 
         return;
 
-    $tmpl = $ctx->mt->db()->get_template_text($ctx, $widgetmanager, $blog_id, 'widgetset', $args['global']);
+    $tmpl = $ctx->mt->db()->get_template_text($ctx, $widgetmanager, $blog_id, 'widgetset', $args['global'] ?? null);
     if ( !isset($tmpl) || !$tmpl ) {
         return '';
     }

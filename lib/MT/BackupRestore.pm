@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -90,6 +90,7 @@ sub core_backup_instructions {
         'accesstoken'         => { 'skip' => 1 },
         'cf_idx'              => { 'skip' => 1 },
         'content_field_index' => { 'skip' => 1 },
+        'log'                 => { 'skip' => 1 },
     };
 }
 
@@ -311,11 +312,11 @@ sub backup {
 # when multiple blogs from the same instance are restored one-by-one. ideally, this should be a user setting on the backup form
 # push @$blog_ids, '0' if defined($blog_ids) && scalar(@$blog_ids);
 
-    MT::Util::Log->info(' Start _populate_obj_to_backup.');
+    MT::Util::Log->debug(' Start _populate_obj_to_backup.');
 
     my $obj_to_backup = $class->_populate_obj_to_backup($blog_ids);
 
-    MT::Util::Log->info(' End   _populate_obj_to_backup.');
+    MT::Util::Log->debug(' End   _populate_obj_to_backup.');
 
     my $header = "<movabletype xmlns='" . NS_MOVABLETYPE . "'\n";
     $header .= join ' ',
@@ -326,24 +327,24 @@ sub backup {
 
     my $files = {};
 
-    MT::Util::Log->info(' Start _loop_through_objects.');
+    MT::Util::Log->debug(' Start _loop_through_objects.');
 
     my $backuped_objs
         = _loop_through_objects( $printer, $splitter, $finisher, $progress,
         $size, $obj_to_backup, $files, $header );
 
-    MT::Util::Log->info(' End   _loop_through_objects.');
+    MT::Util::Log->debug(' End   _loop_through_objects.');
 
     my $else_xml = MT->run_callbacks( 'Backup', $blog_ids, $progress );
     $printer->($else_xml) if $else_xml ne '1';
     my @else_xml;
 
-    MT::Util::Log->info(' Start callbacks "backup.plugin_objects".');
+    MT::Util::Log->debug(' Start callbacks "backup.plugin_objects".');
 
     MT->run_callbacks( 'backup.plugin_objects', $blog_ids, $progress,
         \@else_xml, $backuped_objs );
 
-    MT::Util::Log->info(' End   callbacks "backup.plugin_objects".');
+    MT::Util::Log->debug(' End   callbacks "backup.plugin_objects".');
 
     $printer->($_) foreach @else_xml;
 
@@ -370,10 +371,10 @@ sub _loop_through_objects {
         $can_read_disk_usage = 1;
     }
 
+    my $temp_dir = MT->config('ExportTempDir') || MT->config('TempDir');
     for my $class_hash (@$obj_to_backup) {
         if ($can_read_disk_usage) {
-            my $ref = Filesys::DfPortable::dfportable(
-                MT->instance->config('TempDir') );
+            my $ref = Filesys::DfPortable::dfportable($temp_dir);
             if ( $ref->{per} == 100 ) {
                 die MT->translate("\nCannot write file. Disk full.");
             }
@@ -669,14 +670,14 @@ sub restore_directory {
         push @asset_ids, @$tmp_asset_ids if defined $tmp_asset_ids;
     }
 
-    MT::Util::Log->info('  Start callback restore.');
+    MT::Util::Log->debug('  Start callback restore.');
 
     unless ($@) {
         MT->run_callbacks( 'restore', \%objects, $deferred, $errors,
             $callback );
     }
 
-    MT::Util::Log->info('  End   callback restore.');
+    MT::Util::Log->debug('  End   callback restore.');
 
     my $blog_ids  = scalar(@blog_ids)  ? \@blog_ids  : undef;
     my $asset_ids = scalar(@asset_ids) ? \@asset_ids : undef;

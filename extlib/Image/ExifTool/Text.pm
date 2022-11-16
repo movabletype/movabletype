@@ -1,9 +1,10 @@
 #------------------------------------------------------------------------------
 # File:         Text.pm
 #
-# Description:  Deduce characteristics of a text file
+# Description:  Deduce characteristics of TXT and CSV files
 #
 # Revisions:    2019-11-01 - P. Harvey Created
+#               2020-02-13 - PH Added CSV file support
 #
 # References:   1) https://github.com/file/file
 #------------------------------------------------------------------------------
@@ -15,7 +16,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::XMP;
 
-$VERSION = '1.01';
+$VERSION = '1.03';
 
 # Text tags
 %Image::ExifTool::Text::Main = (
@@ -23,12 +24,13 @@ $VERSION = '1.01';
     GROUPS => { 0 => 'File', 1 => 'File', 2 => 'Document' },
     NOTES => q{
         Although basic text files contain no metadata, the following tags are
-        determined from a simple analysis of the text data.  LineCount and WordCount
-        are generated only for 8-bit encodings, but the L<FastScan|../ExifTool.html#FastScan> (-fast) option may
-        be used to limit processing to the first 64 kB in which case these two tags
-        are not produced.  To avoid long processing delays, ExifTool will issue a
-        minor warning and process only the first 64 kB of any file larger than 20 MB
-        unless the L<IgnoreMinorErrors|../ExifTool.html#IgnoreMinorErrors> (-m) option is used.
+        determined from a simple analysis of the data in TXT and CSV files. 
+        Statistics are generated only for 8-bit encodings, but the L<FastScan|../ExifTool.html#FastScan> (-fast)
+        option may be used to limit processing to the first 64 kB in which case some
+        tags are not produced.  To avoid long processing delays, ExifTool will issue
+        a minor warning and process only the first 64 kB of any file larger than 20
+        MB unless the L<IgnoreMinorErrors|../ExifTool.html#IgnoreMinorErrors> (-m)
+        option is used.
     },
     MIMEEncoding => { Groups => { 2 => 'Other' } },
     Newlines => {
@@ -42,6 +44,10 @@ $VERSION = '1.01';
     ByteOrderMark => { PrintConv => { 0 => 'No', 1 => 'Yes' } },
     LineCount => { },
     WordCount => { },
+    Delimiter => { PrintConv => { '' => '(none)', ',' => 'Comma', ';' => 'Semicolon', "\t" => 'Tab' }},
+    Quoting   => { PrintConv => { '' => '(none)', '"' => 'Double quotes', "'" => 'Single quotes' }},
+    RowCount  => { },
+    ColumnCount => { },
 );
 
 #------------------------------------------------------------------------------
@@ -104,7 +110,7 @@ sub ProcessTXT($$)
         }
         $nl = $1 if $$dataPt =~ /(\r\n|\r|\n)/;
     }
-    
+
     my $tagTablePtr = GetTagTable('Image::ExifTool::Text::Main');
 
     $et->SetFileType();
@@ -116,6 +122,49 @@ sub ProcessTXT($$)
     $et->HandleTag($tagTablePtr, Newlines => $nl);
 
     return 1 if $fast or not defined $isUTF8;
+#
+# generate stats for CSV files
+#
+    if ($$et{FileType} eq 'CSV') {
+        my ($delim, $quot, $ncols);
+        my $nrows = 0;
+        while ($raf->ReadLine($buff)) {
+            if (not defined $delim) {
+                my %count = ( ',' => 0, ';' => 0, "\t" => 0 );
+                ++$count{$_} foreach $buff =~ /[,;\t]/g;
+                if ($count{','} > $count{';'} and $count{','} > $count{"\t"}) {
+                    $delim = ',';
+                } elsif ($count{';'} > $count{"\t"}) {
+                    $delim = ';';
+                } elsif ($count{"\t"}) {
+                    $delim = "\t";
+                } else {
+                    $delim = '';
+                    $ncols = 1;
+                }
+                unless ($ncols) {
+                    # account for delimiters in quotes (simplistically)
+                    while ($buff =~ /(^|$delim)(["'])(.*?)\2(?=$delim|$)/sg) {
+                        $quot = $2;
+                        my $field = $3;
+                        $count{$delim} -= () = $field =~ /$delim/g;
+                    }
+                    $ncols = $count{$delim} + 1;
+                }
+            } elsif (not $quot) {
+                $quot = $2 if $buff =~ /(^|$delim)(["'])(.*?)\2(?=$delim|$)/sg;
+            }
+            if (++$nrows == 1000 and $et->Warn('Not counting rows past 1000', 2)) {
+                undef $nrows;
+                last;
+            }
+        }
+        $et->HandleTag($tagTablePtr, Delimiter => ($delim || ''));
+        $et->HandleTag($tagTablePtr, Quoting => ($quot || ''));
+        $et->HandleTag($tagTablePtr, ColumnCount => $ncols);
+        $et->HandleTag($tagTablePtr, RowCount => $nrows) if $nrows;
+        return 1;
+    }
     return 1 if $$et{VALUE}{FileSize} and $$et{VALUE}{FileSize} > 20000000 and
         $et->Warn('Not counting lines/words in text file larger than 20 MB', 2);
 #
@@ -128,7 +177,7 @@ sub ProcessTXT($$)
         ++$lines;
         ++$words while $buff =~ /\S+/g;
         if (not $nl and $buff =~ /(\r\n|\r|\n)$/) {
-            # (the first line must have been longer than 1024 characters)
+            # (the first line must have been longer than 64 kB)
             $$et{VALUE}{Newlines} = $nl = $1;
         }
         next if $raf->Tell() < 65536;
@@ -170,11 +219,11 @@ This module is used by Image::ExifTool
 =head1 DESCRIPTION
 
 This module contains definitions required by Image::ExifTool to deduce some
-characteristics of Text files.
+characteristics of TXT and CSV files.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

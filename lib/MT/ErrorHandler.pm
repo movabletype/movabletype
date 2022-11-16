@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -34,6 +34,15 @@ sub trans_error {
 }
 
 sub errstr { ref( $_[0] ) ? $_[0]->{_errstr} : $ERROR }
+
+sub clear_error {
+    my $class = shift;
+    if (ref $class) {
+        delete $class->{_errstr};
+    } else {
+        undef $ERROR;
+    }
+}
 
 1;
 __END__

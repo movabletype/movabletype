@@ -18,7 +18,7 @@ my $test_root = $test_env->root;
 use File::Copy;
 use File::Temp qw( tempfile );
 
-plan tests => 71;
+plan tests => 72;
 use MT::Test;
 
 use Image::ExifTool;
@@ -27,11 +27,17 @@ $Image::Size::NO_CACHE = 1;
 
 use MT;
 use MT::Asset;
+use MT::Test::Image;
 
 $test_env->prepare_fixture('db_data');
 
 my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT', 'Is MT' );
+
+my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
+    DIR    => $test_env->root,
+    SUFFIX => '.jpg',
+);
 
 {
     ### Cases for MT::Asset::Image
@@ -40,6 +46,10 @@ isa_ok( $mt, 'MT', 'Is MT' );
     # object validation
     my $asset = MT::Asset->load( { id => 1 } );
     isa_ok( $asset, 'MT::Asset::Image', 'Is MT::Asset::Image' );
+
+    # Set a temporary image path not to affect other tests
+    $asset->file_path($tempfile);
+    $asset->save;
 
     # method validation
     my $cache_path = join '/', unpack 'A4A2', $asset->created_on;
@@ -86,12 +96,6 @@ isa_ok( $mt, 'MT', 'Is MT' );
     {
         note('Remove metadata from thumbnail file');
 
-        # Changing t/images/test.jpg affects t/35-tags.t,
-        # so preserve this image file here.
-        my ( $fh, $temp_file ) = tempfile( DIR => $test_env->root );
-        close($fh);
-        copy( $asset->file_path, $temp_file );
-
         my $exif = $asset->exif;
         $exif->SetNewValue( 'GPSVersionID', '2.2.1.0' );
         $exif->WriteInfo( $asset->file_path );
@@ -108,20 +112,22 @@ isa_ok( $mt, 'MT', 'Is MT' );
         ok( !exists $info->{GPSVersionID},
             'removed metadata from thumbnail file'
         );
-
-        # Restore t/images/test.jpg.
-        copy( $temp_file, $asset->file_path );
     }
 
     is( $asset->image_width,  640, 'image_width' );
     is( $asset->image_height, 480, 'height' );
-    is( $asset->as_html,
-        '<a href="http://narnia.na/nana/images/test.jpg">Image photo</a>',
+    is( $asset->as_html, '<a href="http://narnia.na/nana/images/test.jpg">Image photo</a>',
         'as_html' );
     is( $asset->as_html(
-            { popup => 1, popup_asset_id => $asset->id, include => 1 }
+            { popup => 1, image_default_link => 1, popup_asset_id => $asset->id, include => 1 }
         ),
-        qq(<a href="http://narnia.na/nana/images/test.jpg" onclick="window.open('http://narnia.na/nana/images/test.jpg','popup','width=640,height=481,scrollbars=yes,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">View image</a>),
+        qq(<a href="http://narnia.na/nana/images/test.jpg" data-test="popup-now" onclick="window.open('http://narnia.na/nana/images/test.jpg','popup','width=640,height=481,scrollbars=yes,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">View image</a>),
+        'as_html_popup'
+    );
+    is( $asset->as_html(
+            { popup => 1, image_default_link => 2, popup_asset_id => $asset->id, include => 1 }
+        ),
+        qq(<a href="http://narnia.na/nana/images/test.jpg">View image</a>),
         'as_html_popup'
     );
     is( $asset->as_html( { include => 1, wrap_text => 1, align => 'right' } ),
@@ -137,7 +143,7 @@ isa_ok( $mt, 'MT', 'Is MT' );
         'metadata - URL'
     );
     is( $meta->{Location},
-        File::Spec->canonpath("$ENV{MT_HOME}/t/images/test.jpg"),
+        $tempfile,
         'metadata - Location'
     );
     is( $meta->{name},      "test.jpg",   'metadata - name' );

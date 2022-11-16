@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -268,6 +268,7 @@ sub list_props {
                     : $status == MT::Entry::UNPUBLISH() ? 'Unpublish'
                     :                                     '';
                 my $lc_status_class = lc $status_class;
+                my $status_class_trans = MT->translate($status_class);
 
                 my $status_icon_id
                     = $status == MT::Entry::HOLD()      ? 'ic_draft'
@@ -291,7 +292,7 @@ sub list_props {
                     my $static_uri = MT->static_path;
                     $status_img = qq{
                         <svg role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
-                            <title>$status_class</title>
+                            <title>$status_class_trans</title>
                             <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
                         </svg>
                     };
@@ -659,6 +660,10 @@ sub list_props {
                 },
             ],
         },
+        modified_by => {
+            base    => '__virtual.modified_by',
+            display => 'optional',
+        },
         created_on => {
             base    => '__virtual.created_on',
             display => 'none',
@@ -909,15 +914,34 @@ sub author {
     $entry->cache_property(
         'author',
         sub {
-            return undef unless $entry->author_id;
+            my $author_id    = $entry->author_id or return undef;
             my $req          = MT::Request->instance();
             my $author_cache = $req->stash('author_cache');
-            my $author       = $author_cache->{ $entry->author_id };
+            my $author       = $author_cache->{$author_id};
             unless ($author) {
                 require MT::Author;
-                $author = MT::Author->load( $entry->author_id )
-                    or return undef;
-                $author_cache->{ $entry->author_id } = $author;
+                $author = MT::Author->load($author_id) or return undef;
+                $author_cache->{$author_id} = $author;
+                $req->stash( 'author_cache', $author_cache );
+            }
+            $author;
+        }
+    );
+}
+
+sub modified_author {
+    my $entry = shift;
+    $entry->cache_property(
+        'modified_author',
+        sub {
+            my $modified_by  = $entry->modified_by or return undef;
+            my $req          = MT::Request->instance();
+            my $author_cache = $req->stash('author_cache');
+            my $author       = $author_cache->{$modified_by};
+            unless ($author) {
+                require MT::Author;
+                $author = MT::Author->load($modified_by) or return undef;
+                $author_cache->{$modified_by} = $author;
                 $req->stash( 'author_cache', $author_cache );
             }
             $author;
@@ -927,10 +951,11 @@ sub author {
 
 sub __load_category_data {
     my $entry = shift;
+    return unless $entry->id;
     my $t     = MT->get_timer;
     $t->pause_partial if $t;
     my $cache  = MT::Memcached->instance;
-    my $memkey = $entry->cache_key('categories');
+    my $memkey = $entry->cache_key($entry->id, 'categories');
     my $rows;
     unless ( $rows = $cache->get($memkey) ) {
         require MT::Placement;
@@ -1049,7 +1074,7 @@ sub archive_file {
             last;
         }
     }
-    my $file = archive_file_for( $entry, $blog, $at ) or return;
+    my $file = archive_file_for( $entry, $blog, $at );
     $file = '' unless defined $file;
     $file;
 }
@@ -1057,15 +1082,15 @@ sub archive_file {
 sub archive_url {
     my $entry = shift;
     my $blog  = $entry->blog() || return;
-    my $file  = $entry->archive_file(@_) or return;
     my $url   = $blog->archive_url || "";
-    MT::Util::caturl( $url, $file );
+    $url .= '/' unless $url =~ m!/$!;
+    $url . $entry->archive_file(@_);
 }
 
 sub permalink {
     my $entry = shift;
     my $blog  = $entry->blog() || return;
-    my $url   = $entry->archive_url( $_[0] ) or return;
+    my $url   = $entry->archive_url( $_[0] );
     my $effective_archive_type
         = ( $_[0] || $blog->archive_type_preferred || $blog->archive_type );
     $url
@@ -1175,6 +1200,9 @@ sub make_atom_id {
 
 # Deprecated (case #112321).
 sub sync_assets {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
+
     my $entry = shift;
     my $text = ( $entry->text || '' ) . "\n" . ( $entry->text_more || '' );
 
@@ -2020,7 +2048,7 @@ The status of the entry, either Publish (C<2>) or Draft (C<1>).
 
 An integer flag specifying whether comments are allowed on this entry. This
 setting determines whether C<E<lt>MTEntryIfAllowCommentsE<gt>> containers are
-displayed for this entry. Possible values are 0 for not allowing any additional 
+displayed for this entry. Possible values are 0 for not allowing any additional
 comments and 1 for allowing new comments to be made on the entry.
 
 =item * convert_breaks

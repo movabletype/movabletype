@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -12,7 +12,7 @@ function smarty_function_mtsetvar($args, &$ctx) {
     $name or $name = $args['var'];
     if (!$name) return '';
 
-    $value = $args['value'];
+    $value = isset($args['value']) ? $args['value'] : null;
 
     $vars =& $ctx->__stash['vars'];
 
@@ -57,14 +57,14 @@ function smarty_function_mtsetvar($args, &$ctx) {
                 "You used an [_1] tag without a valid name attribute.", "<MT$tag>" ));
     }
 
-    $existing = $vars[$name];
+    $existing = isset($vars[$name]) ? $vars[$name] : null;
 
     require_once("MTUtil.php");
     if (isset($key)) {
         if (!isset($existing))
             $existing = array($key => $value);
         elseif (is_hash($existing))
-            $existing = $existing[$key];
+            $existing = isset($existing[$key]) ? $existing[$key] : null;
         else
             return $ctx->error( $ctx->mt->translate("'[_1]' is not a hash.", $name) );
     }
@@ -73,7 +73,7 @@ function smarty_function_mtsetvar($args, &$ctx) {
             $existing[$index] = $value;
         elseif (is_array($existing)) {
             if ( is_numeric($index) )
-                $existing = $existing[$index];
+                $existing = isset($existing[$index]) ? $existing[$index] : null;
             else
                 return $ctx->error( $ctx->mt->translate("Invalid index.") );
         }
@@ -94,7 +94,7 @@ function smarty_function_mtsetvar($args, &$ctx) {
             return $ctx->error($ctx->mt->translate("[_1] [_2] [_3] is illegal.", array($existing, $op, $value)));
     }
 
-    $data = $vars[$name];
+    $data = isset($vars[$name]) ? $vars[$name] : null;
     if ( isset($key) ) {
         if ( ( isset($func) )
           && ( 'delete' == strtolower( $func ) ) ) {

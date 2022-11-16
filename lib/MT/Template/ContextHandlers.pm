@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -63,6 +63,8 @@ sub core_tags {
             ## Site
             Sites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
             ChildSites => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
+            ParentSite =>
+                '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
             SiteParentSite =>
                 '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
             'SiteHasChildSite?' =>
@@ -284,6 +286,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Userpic::_hdlr_author_userpic_asset',
             EntryAuthorUserpicAsset =>
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_asset',
+            EntryModifiedAuthorUserpicAsset =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_modified_author_userpic_asset',
             CommenterUserpicAsset => sub {''},
 
             ## Tag
@@ -341,6 +345,8 @@ sub core_tags {
             CalendarIfNoContents => \&slurp,
             ContentAuthorUserpicAsset =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic_asset',
+            ContentModifiedAuthorUserpicAsset =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_userpic_asset',
             ContentCalendar =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_calendar',
             ContentField =>
@@ -656,6 +662,18 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_link',
             EntryAuthorID =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_entry_author_id',
+            EntryModifiedAuthorDisplayName =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_display_name',
+            EntryModifiedAuthorUsername =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_username',
+            EntryModifiedAuthorEmail =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_email',
+            EntryModifiedAuthorURL =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_url',
+            EntryModifiedAuthorLink =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_link',
+            EntryModifiedAuthorID =>
+                '$Core::MT::Template::Tags::Entry::_hdlr_entry_modified_author_id',
 
             AuthorEntryCount =>
                 '$Core::MT::Template::Tags::Entry::_hdlr_author_entry_count',
@@ -783,6 +801,14 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Page::_hdlr_page_author_link',
             PageAuthorURL =>
                 '$Core::MT::Template::Tags::Page::_hdlr_page_author_url',
+            PageModifiedAuthorDisplayName =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_display_name',
+            PageModifiedAuthorEmail =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_email',
+            PageModifiedAuthorLink =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_link',
+            PageModifiedAuthorURL =>
+                '$Core::MT::Template::Tags::Page::_hdlr_page_modified_author_url',
             PageExcerpt =>
                 '$Core::MT::Template::Tags::Page::_hdlr_page_excerpt',
             BlogPageCount =>
@@ -846,6 +872,10 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic',
             EntryAuthorUserpicURL =>
                 '$Core::MT::Template::Tags::Userpic::_hdlr_entry_author_userpic_url',
+            EntryModifiedAuthorUserpic =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_modified_author_userpic',
+            EntryModifiedAuthorUserpicURL =>
+                '$Core::MT::Template::Tags::Userpic::_hdlr_entry_modified_author_userpic_url',
             CommenterUserpic    => sub {''},
             CommenterUserpicURL => sub {''},
 
@@ -983,6 +1013,22 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic',
             ContentAuthorUserpicURL =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_author_userpic_url',
+            ContentModifiedAuthorDisplayName =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_display_name',
+            ContentModifiedAuthorEmail =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_email',
+            ContentModifiedAuthorID =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_id',
+            ContentModifiedAuthorLink =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_link',
+            ContentModifiedAuthorURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_url',
+            ContentModifiedAuthorUsername =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_username',
+            ContentModifiedAuthorUserpic =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_userpic',
+            ContentModifiedAuthorUserpicURL =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_modified_author_userpic_url',
             ContentCreatedDate =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_created_date',
             ContentDate =>
@@ -3109,7 +3155,7 @@ sub _hdlr_app_setting {
     }
     if ( $hint && $show_hint ) {
         if ( $hint_id ne "" ) {
-            $hint_id = " id=\"$hint_id\"";
+            $hint_id = " id=\"$hint_id\" ";
         }
         $hint
             = "\n<small ${hint_id}class=\"form-text text-muted\">$hint$help</small>";
@@ -3578,7 +3624,7 @@ sub _hdlr_app_listing {
         );
         return $ctx->build(
             qq{<mtapp:statusmsg
-            id="zero-state"
+            id="zero-state-$type"
             class="info zero-state"
             can_close="0">
             $msg
@@ -4004,7 +4050,7 @@ sub _hdlr_app_action_bar {
 
     return $ctx->build(<<EOT);
 $form_id
-<div id="actions-bar-$pos" class="row form-inline mb-3 actions-bar actions-bar-$pos $pager_class">
+<div id="actions-bar-$pos-$args->{form_id}" class="row form-inline mb-3 actions-bar actions-bar-$pos $pager_class">
   <div class="col">
     $pager
     $buttons_html
@@ -4690,7 +4736,12 @@ B<Example:> Passing Parameters to a Template Module
 
             my $local_blog
                 = MT->model('blog')->load( $ctx->stash('local_blog_id') );
-            $blog_id = $local_blog->website->id;
+
+            if ($local_blog->is_blog) {
+                $blog_id = $local_blog->parent_id or return; # skip if data is broken
+            } else {
+                $blog_id = $local_blog->id;
+            }
         }
 
         ## Don't know why but hash key has to be encoded
@@ -5952,9 +6003,9 @@ for the MTOS edition, this would output:
 sub _hdlr_product_name {
     my ( $ctx, $args, $cond ) = @_;
     require MT;
-    my $short_name = MT->translate( MT->product_name );
-    if ( $args->{version} ) {
-        return MT->translate( "[_1] [_2]", $short_name, MT->version_id );
+    my $short_name = MT->product_name;
+    if ( $args->{version} && !MT->config('HideVersion') ) {
+        return join ' ', $short_name, MT->version_id;
     }
     else {
         return $short_name;

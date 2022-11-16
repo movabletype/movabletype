@@ -18,14 +18,16 @@
     <__trans phrase="Your settings have been saved.">
   </mtapp:statusmsg>
 </mt:if>
-<mt:if name="config_warning">
-  <mtapp:statusmsg
-     id="info"
-     class="info"
-     can_close="0">
-    <mt:var name="config_warning">
-  </mtapp:statusmsg>
-</mt:if>
+<mt:unless name="hide_config_warnings">
+  <mt:if name="config_warning">
+    <mtapp:statusmsg
+       id="info"
+       class="info"
+       can_close="0">
+      <mt:var name="config_warning">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:unless>
 <mt:if name="image_driver" eq="imager">
   <mtapp:statusmsg
      id="info"
@@ -118,7 +120,7 @@
          hint="<__trans phrase="The time limit for unlogged events in seconds. Any event that takes this amount of time or longer will be reported.">"
          hint_id="loggingThreshold"
          show_hint="1">
-        <input type="text"<mt:if name="config_warnings_performanceloggingthreshold"> disabled="disable"</mt:if> name="system_performance_logging_threshold" id="system-performance-logging-threshold" class="form-control text number" maxlength="3" value="<mt:var name="system_performance_logging_threshold" escape="html">" aria-describedby="loggingThreshold" />
+        <input type="text"<mt:if name="config_warnings_performanceloggingthreshold"> disabled="disable"</mt:if> name="system_performance_logging_threshold" id="system-performance-logging-threshold" class="form-control text number" value="<mt:var name="system_performance_logging_threshold" escape="html">" aria-describedby="loggingThreshold" />
       </mt:app:setting>
     </div>
     </mt:unless>

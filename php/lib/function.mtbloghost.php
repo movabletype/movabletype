@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,7 +14,7 @@ function smarty_function_mtbloghost($args, &$ctx) {
         $host .= '/';
 
     if (preg_match('!^https?://([^/:]+)(:\d+)?/?!', $host, $matches)) {
-        if ($args['signature']) {
+        if (!empty($args['signature'])) {
             $sig = $matches[1];
             $sig = preg_replace('/\./', '_', $sig);
             return $sig;
