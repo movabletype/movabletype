@@ -438,6 +438,7 @@ subtest 'cd' => sub {
 subtest 'autosave session purge' => sub {
     if ($ENV{MT_TEST_RUN_APP_AS_CGI}) {
         $test_env->update_config(AutosaveSessionTimeout => 5);
+        no warnings 'once';
         *sleep = sub { CORE::sleep(@_) };
     } else {
         Test::MockTime::set_fixed_time(CORE::time());

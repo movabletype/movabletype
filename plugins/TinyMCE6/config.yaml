@@ -1,0 +1,33 @@
+id: TinyMCE6
+name: TinyMCE6
+version: 6.2.0
+author_link: http://www.movabletype.org/
+author_name: Six Apart Ltd.
+description: <MT_TRANS phrase="Default WYSIWYG editor.">
+l10n_class: TinyMCE6::L10N
+schema_version: 1
+
+editors:
+    tinymce:
+        label: TinyMCE
+        template: editor.tmpl
+
+callbacks:
+    MT::Upgrade::upgrade_end: |
+        sub {
+            my ( $cb, $self, %param ) = @_;
+
+            # enabled by install
+            return 1 unless $param{from};
+
+            # disable by upgrade (but only for the first time)
+            my $cfg = MT->config;
+            if (!$cfg->PluginSchemaVersion->{'tinymce6'}) {
+                $cfg->PluginSwitch( 'TinyMCE6=0', 1 );
+                $cfg->PluginSwitch( 'FormattedTextForTinyMCE6=0', 1 );
+                $cfg->PluginSchemaVersion('tinymce6=1', 1);
+                $cfg->save_config;
+            }
+            return 1;
+
+        }

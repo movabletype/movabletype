@@ -607,7 +607,11 @@ my %accept_languages = qw(
     nl-nl nl
 );
 
+my %default_supported_languages = map {$_ => 1} split ',', MT->config->DefaultSupportedLanguages;
+
 while ( my ( $env, $expected ) = each(%accept_languages) ) {
+    (my $lang = $expected) =~ tr/-/_/;
+    next unless $default_supported_languages{$lang};
     $ENV{HTTP_ACCEPT_LANGUAGE} = $env;
     is( browser_language(), $expected, "browser_language() for \"$env\"" );
 }

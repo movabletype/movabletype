@@ -1284,6 +1284,28 @@ __BODY__
                 } MT::FileInfo->load;
             },
         },
+        {   # no_format_filter = 1
+            path      => '/v5/sites/1/entries/2',
+            method    => 'GET',
+            params    => { noTextFilter => 1, },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_view_permission_filter.entry',
+                    count => 1,
+                },
+            ],
+            result   => sub { $app->model('entry')->load(2) },
+            complete => sub {
+                my ( $data, $body ) = @_;
+
+                my $got      = $app->current_format->{unserialize}->($body);
+                my $expected = $app->model('entry')->load(2);
+
+                is( $got->{body}, $expected->text, 'noTextFilter = 1.' );
+                is( $got->{unpublishedDate},
+                    undef, 'upublishedDate is undef.' );
+            },
+        },
     ];
 }
 

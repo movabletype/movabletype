@@ -5,6 +5,21 @@ use PHPUnit\Framework\TestCase;
 include_once("php/lib/captcha_lib.php");
 
 class UnitTest extends TestCase {
+
+    public function testWdayFromTs() {
+        include_once("php/lib/MTUtil.php");
+        // leap year
+        $this->assertEquals(6, wday_from_ts(2000,1,1), 'right wday');
+        $this->assertEquals(4, wday_from_ts(2000,1,6), 'right wday');
+        $this->assertEquals(2, wday_from_ts(2000,2,29), 'right wday');
+        $this->assertEquals(3, wday_from_ts(2000,3,1), 'right wday');
+        $this->assertEquals(0, wday_from_ts(2000,4,30), 'right wday');
+        $this->assertEquals(1, wday_from_ts(2000,5,1), 'right wday');
+        // normal year
+        $this->assertEquals(3, wday_from_ts(2001,2,28), 'right wday');
+        $this->assertEquals(4, wday_from_ts(2001,3,1), 'right wday');
+    }
+
     public function testFetchPermission() {
         include_once("php/mt.php");
         include_once("php/lib/MTUtil.php");

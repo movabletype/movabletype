@@ -620,7 +620,7 @@ BEGIN {
                         ## since __trans macro doesn't work with including itself
                         ## recursively, so do translate by hand here.
                         my $prop  = shift;
-                        my $label = '<mt:var name="label">';
+                        my $label = '<mt:var name="label" encode_html="1">';
                         my $tmpl
                             = $prop->use_future
                             ? 'filter_form_future_date'
@@ -1846,6 +1846,7 @@ BEGIN {
             'DBRetryInterval'              => { default => 1 },
             'PIDFilePath'                  => undef,
             'DefaultLanguage'              => { default => 'en_US', },
+            'DefaultSupportedLanguages'    => undef,
             'LocalPreviews'                => { default => 0 },
             'EnableAutoRewriteOnIIS'       => { default => 1 },
             'IISFastCGIMonitoringFilePath' => undef,
@@ -2013,6 +2014,7 @@ BEGIN {
             },
             'GenerateTrackBackRSS'                   => { default => 0, },
             'DBIRaiseError'                          => { default => 0, },
+            'DBIShowErrorStatement'                  => { default => 0, },
             'SearchAlwaysAllowTemplateID'            => { default => 0, },
             'ContentDataSearchAlwaysAllowTemplateID' => {
                 default => sub { $_[0]->SearchAlwaysAllowTemplateID }
@@ -2314,6 +2316,9 @@ BEGIN {
             'AccessOverrides'      => undef,
 
             'JSONCanonicalization' => { default => 1 },
+            'UseMTCommonJSON'      => { default => 0 },
+            'UseSVGForEverybody'   => { default => 0 },
+            'UseJQueryJSON'        => { default => 0 },
 
             'RequiredUserEmail'       => { default => 1 },
             'DefaultClassParamFilter' => { default => 'all' },
@@ -2325,6 +2330,7 @@ BEGIN {
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
 
+            'MaxFavoriteSites' => { default => 5 },
             'DisableImagePopup' => undef,
             'ForceExifRemoval' => { default => 1 },
             'TemporaryFileExpiration' => { default => 60 * 60 },
@@ -2333,7 +2339,13 @@ BEGIN {
             'HideVersion' => { default => 1 },
             'HideConfigWarnings' => { default => undef },
             'GlobalTemplateMaxRevisions' => { default => 20 },
+            'DisableQuickPost' => { default => 0 },
+            'DisableActivityFeeds' => { default => 0 },
             'DefaultStatsProvider' => { default => 'GoogleAnalyticsV4' },
+            'DefaultListLimit' => { default => '50' },
+            'WaitAfterReboot' => { default => '1.0' },
+            'DisableMetaRefresh' => { default => 1 },
+            'DynamicTemplateAllowPHP' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

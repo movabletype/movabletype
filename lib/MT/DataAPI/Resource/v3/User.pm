@@ -13,7 +13,7 @@ use boolean ();
 
 use MT::Author;
 use MT::DataAPI::Resource::Common;
-use MT::DataAPI::Resource::User;
+use MT::DataAPI::Resource::v1::User;
 
 sub updatable_fields {
     [ qw( apiPassword ), ];

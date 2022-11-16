@@ -3144,6 +3144,17 @@ sub do_reboot {
             );
             return 1;
         }
+        if (my $wait = MT->config->WaitAfterReboot) {
+            require Time::HiRes;
+            if (MT->config->DisableMetaRefresh) {
+                my $until = Time::HiRes::time() + $wait;
+                while ((my $sleep = $until - Time::HiRes::time()) > 0) {
+                    Time::HiRes::sleep($sleep);
+                }
+            } else {
+                Time::HiRes::sleep $wait;
+            }
+        }
     }
     1;
 }
@@ -3363,11 +3374,9 @@ sub run {
     }
 
     if ( my $url = $app->{redirect} ) {
-        if ( $app->{redirect_use_meta} ) {
+        if ( !MT->config->DisableMetaRefresh and $app->{redirect_use_meta} ) {
             $app->send_http_header();
-            $app->print( '<meta http-equiv="refresh" content="0;url='
-                    . encode_html( $app->{redirect} )
-                    . '">' );
+            $app->print( '<meta http-equiv="refresh" content="' . encode_html(MT->config->WaitAfterReboot). ';url=' . encode_html($url) . '">' );
         }
         else {
             if ( MT::Util::is_mod_perl1() ) {
@@ -4375,12 +4384,16 @@ sub is_valid_redirect_target {
 
 sub _is_valid_redirect_target {
     my ( $app, $target, $allowed_hosts ) = @_;
+    return if $target =~ /[[:cntrl:]]|\\/;
     my $uri  = URI->new( $target, 'http' )->canonical;
     my $host = $uri->host;
-    my $path = $uri->path_query;
+    my $path = $uri->path;
     return   unless $uri->isa('URI::http');
     return   unless substr( $path, 0, 1 ) eq '/';
-    return 1 unless defined $host;                  # relative URL
+    # If relative, $target should be one of the app scripts (usually mt.cgi)
+    if (!defined $host) {
+        return ($path eq URI->new($app->uri)->path) ? 1 : 0;
+    }
     for my $allowed ( @{ $allowed_hosts || [] } ) {
         return 1 if $allowed eq $host;
     }

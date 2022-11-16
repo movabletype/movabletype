@@ -1,7 +1,7 @@
 <content-field id="content-field-block-{ id }">
   <div class="mt-collapse__container">
     <div class="col-auto"><ss title="{ trans('Move') }" class="mt-icon" href="{ StaticURI }/images/sprite.svg#ic_move"></ss></div>
-    <div class="col text-wrap"><ss title="{ trans('ContentField') }" class="mt-icon--secondary" href="{ StaticURI }images/sprite.svg#ic_contentstype"></ss>{ label } ({ typeLabel })</div>
+    <div class="col text-wrap"><ss title="{ trans('ContentField') }" class="mt-icon--secondary" href="{ StaticURI }images/sprite.svg#ic_contentstype"></ss>{ label } ({ typeLabel }) <span if="{ realId }">(ID: { realId })</span></div>
     <div class="col-auto">
       <a href="javascript:void(0)" onclick={ duplicateField } class="d-inline-block duplicate-content-field"><ss title="{ trans('Duplicate') }" class="mt-icon--secondary" href="{ StaticURI }images/sprite.svg#ic_duplicate"></ss></a>
       <a href="javascript:void(0)" onclick={ deleteField } class="d-inline-block delete-content-field"><ss title="{ trans('Delete') }" class="mt-icon--secondary" href="{ StaticURI }images/sprite.svg#ic_trash"></ss></a>

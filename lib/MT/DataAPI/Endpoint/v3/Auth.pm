@@ -9,11 +9,11 @@ use strict;
 use warnings;
 
 use MT::Author;
-use MT::DataAPI::Endpoint::Auth;
+use MT::DataAPI::Endpoint::v1::Auth;
 use MT::Log;
 
 sub authentication_openapi_spec {
-    my $spec = MT::DataAPI::Endpoint::Auth::authentication_openapi_spec();
+    my $spec = MT::DataAPI::Endpoint::v1::Auth::authentication_openapi_spec();
     $spec->{summary}     = 'User authentication by username and password';
     $spec->{description} = 'Create a new session and access token. This is like sign-in.';
     $spec->{requestBody}{content}{'application/x-www-form-urlencoded'}{schema}{properties}{username}{description} = 'Your Sign-in Name';
@@ -23,7 +23,7 @@ sub authentication_openapi_spec {
 
 sub authentication {
     my ($app) = @_;
-    MT::DataAPI::Endpoint::Auth::_authentication( $app, \&_login );
+    MT::DataAPI::Endpoint::v1::Auth::_authentication( $app, \&_login );
 }
 
 sub _login {

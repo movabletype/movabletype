@@ -8,6 +8,7 @@
 require_once('adodb-exceptions.inc.php');
 require_once('adodb.inc.php');
 if (!defined('ADODB_ASSOC_CASE')) define('ADODB_ASSOC_CASE', ADODB_ASSOC_CASE_LOWER);
+
 require_once('adodb-active-record.inc.php');
 
 abstract class MTDatabase {
@@ -39,10 +40,13 @@ abstract class MTDatabase {
     protected $_category_set_id_cache = array();
     protected $_rebuild_trigger_cache = array();
     protected $_content_link_cache = array();
+    protected $_adodb_quote_fieldnames = 'NATIVE';
 
 
     // Construction
     public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
+        global $ADODB_QUOTE_FIELDNAMES;
+        $ADODB_QUOTE_FIELDNAMES = $this->_adodb_quote_fieldnames;
         $this->id = md5(uniqid('MTDatabase',true));
         $retry_cnt = 0;
         while ( ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) && $retry_cnt++ < $retry ) {
@@ -293,7 +297,7 @@ abstract class MTDatabase {
     }
 
     public function db2ts($dbts) {
-        $dbts = preg_replace('/[^0-9]/', '', $dbts);
+        $dbts = preg_replace('/[^0-9]/', '', $dbts ?? '');
         return $dbts;
     }
 
@@ -673,7 +677,9 @@ abstract class MTDatabase {
             }
 
             $ts = $this->db2ts($entry->entry_authored_on);
-            if (preg_match('/Monthly$/', $at)) {
+            if ($ts === '') {
+                // DO NOTHING
+            } elseif (preg_match('/Monthly$/', $at)) {
                 $ts = substr($ts, 0, 6) . '01000000';
             } elseif (preg_match('/Daily$/', $at)) {
                 $ts = substr($ts, 0, 8) . '000000';
@@ -1364,6 +1370,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $e = new Entry;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $e->$key = $result->fields($key);
             }
@@ -4190,7 +4197,7 @@ abstract class MTDatabase {
             $str = $args['content_type'];
             if (isset($blog_filter))
                 $blog_filter = 'and '.$blog_filter;
-            if (ctype_digit($str)) {
+            if (ctype_digit(strval($str))) {
                 $sql = "select
                             mt_content_type.*
                         from mt_content_type
@@ -4234,6 +4241,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $ct = new ContentType;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $ct->$key = $result->fields($key);
             }
@@ -4540,6 +4548,9 @@ abstract class MTDatabase {
                     $extras['join'][$join_table] = array('condition' => $join_condition, 'type' => 'left');
 
                     $sort_field = "$alias.cf_idx_value_$data_type";
+                    if ($data_type == 'text') {
+                        $sort_field = $this->decorate_column($sort_field);
+                    }
                     $no_resort = 1;
                 }
                 if (!isset($sort_field) && isset($args['sort_by'])) {
@@ -4755,7 +4766,13 @@ abstract class MTDatabase {
                     $extras['join'][$join_table] = array('condition' => $join_condition);
 
                     $quote = $data_type == 'integer' || $data_type == 'double' ? '' : '\'';
-                    $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
+                    if ($data_type == 'text') {
+                        $field = "$alias.cf_idx_value_$data_type";
+                        $field = $this->decorate_column($field);
+                        $field_filter .= " and $field = $quote$value$quote\n";
+                    } else {
+                        $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
+                    }
                 }
             }
         }
@@ -4823,6 +4840,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $cd = new ContentData;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $cd->$key = $result->fields($key);
             }
@@ -5039,13 +5057,13 @@ abstract class MTDatabase {
         $joins = '';
         if (!empty($cat_field_id)) {
             if (isset($category_id)) {
-                $joins .= "join mt_cf_idx as cat_cf_idx";
+                $joins .= "join mt_cf_idx cat_cf_idx";
                 $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
                 $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
                 $joins .= " and cat_cf_idx.cf_idx_value_integer = '$category_id'";
             }
             else {
-                $joins .= "left join mt_cf_idx as cat_cf_idx";
+                $joins .= "left join mt_cf_idx cat_cf_idx";
                 $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
                 $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
                 $joins .= " and cat_cf_idx.cf_idx_value_integer IS NULL";
@@ -5057,7 +5075,7 @@ abstract class MTDatabase {
             $op   = $next ? '>'   : '<';
 
             if (!empty($joins)) $joins .= ' ';
-            $joins .= "join mt_cf_idx as dt_cf_idx";
+            $joins .= "join mt_cf_idx dt_cf_idx";
             $joins .= " on dt_cf_idx.cf_idx_content_data_id = cd_id";
             $joins .= " and dt_cf_idx.cf_idx_content_field_id = '$dt_field_id'";
             $joins .= " and dt_cf_idx.cf_idx_value_datetime $op '$date_field_value'";
@@ -5104,6 +5122,7 @@ abstract class MTDatabase {
         while (!$result->EOF) {
             $cd = new ContentData;
             foreach($field_names as $key) {
+                if (is_numeric($key)) continue;
   	            $key = strtolower($key);
                 $cd->$key = $result->fields($key);
             }
@@ -5195,7 +5214,8 @@ abstract class MTDatabase {
             require_once('class.mt_content_field.php');
             $cf = new ContentField;
             foreach($field_names as $key) {
-  	        $key = strtolower($key);
+                if (is_numeric($key)) continue;
+      	        $key = strtolower($key);
                 $cf->$key = $result->fields($key);
             }
             $result->MoveNext();
@@ -5449,7 +5469,9 @@ abstract class MTDatabase {
             $content = $this->fetch_content($cid);
 
             $ts = $this->db2ts($content->authored_on);
-            if (preg_match('/Monthly$/', $at)) {
+            if ($ts === '') {
+                // DO NOTHING
+            } elseif (preg_match('/Monthly$/', $at)) {
                 $ts = substr($ts, 0, 6) . '01000000';
             } elseif (preg_match('/Daily$/', $at)) {
                 $ts = substr($ts, 0, 8) . '000000';

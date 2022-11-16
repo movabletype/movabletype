@@ -12,10 +12,16 @@ use warnings;
 use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     [];
 }
 
 sub fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     [   $MT::DataAPI::Resource::Common::fields{blog},
         {   name             => 'permissions',
             bulk_from_object => sub {

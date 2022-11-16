@@ -139,7 +139,7 @@ $test_env->prepare_fixture(sub {
     });
     $obj->tags(qw(@PRIVATE TEST1 TEST2));
     $obj->save or die $obj->errstr;
-    $obj->authored_on( MT::Util::iso2ts( $obj->authored_on - 60 ) );
+    $obj->authored_on(MT::Util::epoch2ts(undef, MT::Util::ts2epoch(undef, $obj->authored_on) - 60));
     $obj->save;
 
     $obj = $mt->model('entry')->new;
@@ -261,7 +261,7 @@ $test_env->prepare_fixture(sub {
     });
     $obj->tags(qw(@PRIVATE TEST1 TEST2));
     $obj->save or die $obj->errstr;
-    $obj->authored_on( MT::Util::iso2ts( $obj->authored_on - 60 ) );
+    $obj->authored_on(MT::Util::epoch2ts(undef, MT::Util::ts2epoch(undef, $obj->authored_on) - 60));
     $obj->save;
 
     $obj = $mt->model('page')->new;

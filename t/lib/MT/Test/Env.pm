@@ -18,6 +18,7 @@ use Digest::SHA;
 use String::CamelCase qw/decamelize camelize/;
 use Mock::MonkeyPatch;
 use Sub::Name;
+use Time::HiRes qw/time/;
 
 our $MT_HOME;
 
@@ -35,9 +36,11 @@ use Term::Encoding qw(term_encoding);
 my $enc = term_encoding() || 'utf8';
 
 my $builder = Test::More->builder;
-binmode $builder->output,         ":encoding($enc)";
-binmode $builder->failure_output, ":encoding($enc)";
-binmode $builder->todo_output,    ":encoding($enc)";
+unless ($^O eq 'MSWin32') {
+    binmode $builder->output,         ":encoding($enc)";
+    binmode $builder->failure_output, ":encoding($enc)";
+    binmode $builder->todo_output,    ":encoding($enc)";
+}
 
 sub new {
     my ($class, %extra_config) = @_;
@@ -54,6 +57,7 @@ sub new {
         root   => $root,
         driver => _driver(),
         config => \%extra_config,
+        start  => [Time::HiRes::gettimeofday],
     }, $class;
 
     $self->write_config(\%extra_config);
@@ -224,7 +228,9 @@ sub update_config {
     for my $key (keys %extra_config) {
         $self->{_config}{$key} = $extra_config{$key};
         MT->config($key, $extra_config{$key});
+        MT->config($key, $extra_config{$key}, 1);
     }
+    MT->config->save_config;
     $self->_write_config;
 }
 
@@ -358,6 +364,50 @@ sub _connect_info_mysql {
     return %info;
 }
 
+sub _connect_info_pg {
+    my $self = shift;
+
+    my %info = (
+        ObjectDriver => "DBI::Pg",
+        DBHost       => "127.0.0.1",
+        DBUser       => "mt",
+        Database     => "mt_test",
+    );
+
+    if (eval { require Test::PostgreSQL }) {
+        my $pg = $self->{pg} = Test::PostgreSQL->new;
+        my $dsn = $ENV{MT_TEST_DSN} = $pg->dsn;
+        my $dbh = DBI->connect($dsn) or die $DBI::errstr;
+        $self->_prepare_pg_database($dbh);
+        $dsn =~ s/^DBI:Pg://i;
+        my %opts = map { split '=', $_ } split ';', $dsn;
+        $opts{dbname} = $info{Database};
+        if ($opts{host}) {
+            $info{DBHost} = $opts{host};
+        }
+        if ($opts{user}) {
+            $info{DBUser} = $opts{user};
+        }
+        if ($opts{port}) {
+            $info{DBPort} = $opts{port};
+        }
+        if ($opts{password}) {
+            $info{DBPassword} = $opts{password};
+        }
+        $self->{dsn} = "dbi:Pg:" . (join ";", map { "$_=$opts{$_}" } keys %opts);
+    } else {
+        $self->{dsn} = "dbi:Pg:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
+        my $dbh = DBI->connect($self->{dsn});
+        if (!$dbh) {
+            die $DBI::errstr unless $DBI::errstr =~ /Unknown database/;
+            (my $dsn = $self->{dsn}) =~ s/dbname=$info{Database};//;
+            $dbh = DBI->connect($dsn) or die $DBI::errstr;
+        }
+        $self->_prepare_pg_database($dbh);
+    }
+    return %info;
+}
+
 sub _connect_info_sqlite {
     my $self = shift;
 
@@ -393,6 +443,11 @@ sub _connect_info_oracle {
     $ENV{NLS_COMP}  = $ENV{MT_TEST_NLS_COMP}  || 'LINGUISTIC';
     $ENV{NLS_SORT}  = $ENV{MT_TEST_NLS_SORT}  || 'AMERICAN_AMERICA';
 
+    my $dsn = sprintf('dbi:Oracle:host=%s;sid=%s;port=%s',
+        $connect_info{DBHost}, $connect_info{Database}, $connect_info{DBPort});
+    my $dbh = DBI->connect($dsn, $connect_info{DBUser}, $connect_info{DBPassword});
+    $self->_oracle_increase_open_cursors($dbh);
+
     %connect_info;
 }
 
@@ -417,6 +472,12 @@ sub show_mysql_db_variables {
         my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
         Test::More::note join ': ', @$_ for @$rows;
     }
+}
+
+sub _oracle_increase_open_cursors {
+    my ($self, $dbh) = @_;
+    return unless $self->driver eq 'oracle';
+    $dbh->do('ALTER SYSTEM SET OPEN_CURSORS = 1000 SCOPE=BOTH') or die $dbh->errstr;
 }
 
 sub mysql_session_variable {
@@ -469,6 +530,20 @@ sub _prepare_mysql_database {
     my $sql           = <<"END_OF_SQL";
 DROP DATABASE IF EXISTS mt_test;
 CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
+END_OF_SQL
+    for my $statement (split ";\n", $sql) {
+        $dbh->do($statement);
+    }
+}
+
+sub _prepare_pg_database {
+    my ($self, $dbh) = @_;
+    local $dbh->{RaiseError}         = 1;
+    local $dbh->{PrintWarn}          = 0;
+    local $dbh->{ShowErrorStatement} = 1;
+    my $sql           = <<"END_OF_SQL";
+DROP DATABASE IF EXISTS mt_test;
+CREATE DATABASE mt_test;
 END_OF_SQL
     for my $statement (split ";\n", $sql) {
         $dbh->do($statement);
@@ -893,7 +968,7 @@ sub load_schema_and_fixture {
 sub update_sequences {
     my $self = shift;
 
-    return unless lc $self->driver eq 'oracle';
+    return unless lc($self->driver) =~ /^(oracle|pg)/;
 
     my @classes;
     my $types = MT->registry('object_types');
@@ -1348,6 +1423,11 @@ sub DESTROY {
         for my $name (@disabled) {
             $self->enable_plugin($name);
         }
+    }
+    if ($ENV{MT_TEST_PERFORMANCE}) {
+        undef $Test::MockTime::fixed;
+        open my $fh, '>>', 'mt_test_performance.log';
+        printf $fh "%f\t%s\n", Time::HiRes::tv_interval($self->{start}), $0;
     }
 }
 

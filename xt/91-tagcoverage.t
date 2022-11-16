@@ -136,10 +136,10 @@ foreach my $c ( sort keys %$components ) {
                 next unless -e $file_path;
 
                 note("Reading module $file_path");
-                open DOC, "< $file_path"
+                open my $DOC, "<", $file_path
                     or die "Can't read file $file_path: " . $!;
-                $all_docs .= <DOC>;
-                close DOC;
+                $all_docs .= <$DOC>;
+                close $DOC;
                 next FILE;
             }
             die "Could not locate $file!";

@@ -25,7 +25,7 @@ $author->api_password('seecret');
 $author->can_sign_in_data_api(0);
 $author->save or die $author->errstr;
 
-use MT::DataAPI::Endpoint::Auth;
+use MT::DataAPI::Endpoint::v1::Auth;
 
 my $suite = suite();
 test_data_api($suite);

@@ -1787,13 +1787,13 @@ sub _adjust_threshold {
 sub can_popup_image {
     my $blog = shift;
     return 0 if MT->config('DisableImagePopup');
-
-    my $existing = MT->model('template')->exist({
+    my %tmpl_param = (
         blog_id => $blog->id,
         type    => 'popup_image'
-    });
-
-    if ($existing) {
+    );
+    my $tmpl = MT->model('template')->load(\%tmpl_param);
+    
+    if ($tmpl && $tmpl->text ne '') {
         return 1;
     }
     return 0;

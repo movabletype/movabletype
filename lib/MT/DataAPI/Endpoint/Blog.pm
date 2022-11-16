@@ -131,6 +131,9 @@ DESCRIPTION
 sub list {
     my ( $app, $endpoint ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my $user = get_target_user(@_)
         or return;
 
@@ -183,6 +186,9 @@ sub get_openapi_spec {
 
 sub get {
     my ( $app, $endpoint ) = @_;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my ($blog) = context_objects(@_);
     return unless $blog && $blog->id;

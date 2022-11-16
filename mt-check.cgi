@@ -56,9 +56,9 @@ for my $cfg_candidate (@cfg_candidates) {
 
 if ($cfg_path) {
     $cfg_exist = 1;
-    my $file_handle = open( CFG, $cfg_path );
+    my $file_handle = open( my $CFG, "<", $cfg_path );
     my $line;
-    while ( $line = <CFG> ) {
+    while ( $line = <$CFG> ) {
         next if $line !~ /\S/ || $line =~ /^#/;
         if ( $line =~ s/StaticWebPath[\s]*([^\n]*)/$1/ ) {
             $mt_static_path = $line;
@@ -113,11 +113,11 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '7.9.5';
+    $version = '7.9.6';
 }
 my $release_version = '__RELEASE_VERSION_ID__';
 if ( $release_version eq '__RELEASE' . '_VERSION_ID__' ) {
-    $release_version = 'r.5301';
+    $release_version = 'r.5401';
 }
 
 my ( $mt, $LH );
@@ -1015,9 +1015,8 @@ if ( $server !~ m/psgi/i ) {
 ## isn't a perfect test for running under cgiwrap/suexec, but it
 ## is a pretty good test.
     my $TMP = "test$$.tmp";
-    local *FH;
-    if ( open( FH, ">$TMP" ) ) {
-        close FH;
+    if ( open( my $FH, ">", $TMP ) ) {
+        close $FH;
         unlink($TMP);
         print_encode(
             trans_templ(

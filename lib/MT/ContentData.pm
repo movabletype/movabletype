@@ -1279,7 +1279,7 @@ sub _make_label_html {
         };
     }
 
-    my $label = $obj->label || MT->translate('No Label');
+    my $label = MT::Util::encode_html($obj->label || MT->translate('No Label'), 1);
     my $edit_link;
     if ( $app->user->permissions( $obj->blog_id )
         ->can_edit_content_data( $obj, $app->user ) )
@@ -1336,6 +1336,7 @@ sub _make_field_list_props {
     my $props               = {};
     my $content_field_types = MT->registry('content_field_types');
 
+    require MT::Util::BlessedString;
     for my $field_data ( @{ $content_type->fields } ) {
         my $idx_type   = $field_data->{type};
         my $field_key  = 'content_field_' . $field_data->{id};
@@ -1367,6 +1368,7 @@ sub _make_field_list_props {
             if ($parent_field_data) {
                 $label = $parent_field_data->{options}{label} . " ${label}";
             }
+            $label = MT::Util::BlessedString->new($label);
 
             my $prop_key;
             if ( $prop_name eq $idx_type ) {

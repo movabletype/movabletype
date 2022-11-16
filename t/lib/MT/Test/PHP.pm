@@ -10,6 +10,7 @@ use Test::More ();
 my $PHPVersion;
 
 sub php_version {
+    return if $ENV{MT_TEST_SKIP_PHP};
     return $PHPVersion if defined $PHPVersion;
     my $php_version_string = `php --version 2>&1` or return $PHPVersion = 0;
     ($PHPVersion) = $php_version_string =~ /^PHP (\d+\.\d+)/im;
@@ -22,8 +23,8 @@ sub php_version {
     if ($smarty_major_version > 3) {
         return $PHPVersion = 0 if $PHPVersion < 7.1;
     }
-    if ($PHPVersion > 8.0 && $ENV{TRAVIS}) {
-        Test::More::diag "PHP $PHPVersion is not supported yet";
+    if ($PHPVersion < 7.2) {
+        Test::More::diag "PHP $PHPVersion is not supported";
         return $PHPVersion = 0;
     }
     $PHPVersion;
@@ -75,6 +76,16 @@ INI
     unlink $ini_file;
 
     return $result;
+}
+
+sub supports_gd {
+    my $result = shift->run('<?php phpinfo(); ?>');
+    $result =~ /GD Support\s*=>\s*enabled/ ? 1 : 0;
+}
+
+sub supports_memcached {
+    my $result = shift->run('<?php phpinfo(); ?>');
+    $result =~ /memcache support\s*=>\s*enabled/ ? 1 : 0;
 }
 
 1;

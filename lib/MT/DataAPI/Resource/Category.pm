@@ -12,6 +12,9 @@ use warnings;
 use MT::DataAPI::Resource::Common;
 
 sub updatable_fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     [   qw(
             label
             description
@@ -21,6 +24,9 @@ sub updatable_fields {
 }
 
 sub fields {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     [   $MT::DataAPI::Resource::Common::fields{blog},
         {   name => 'id',
             type => 'MT::DataAPI::Resource::DataType::Integer',

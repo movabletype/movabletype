@@ -989,6 +989,13 @@ sub edit {
     return $app->load_tmpl( $tmpl_file, \%param );
 }
 
+my %ListLimitMap = map {$_ => 1} (10, 25, 50, 100, 200);
+
+sub canonicalize_list_limit {
+    my $limit = shift || MT->config->DefaultListLimit;
+    $ListLimitMap{$limit} ? $limit : 50;
+}
+
 sub list {
     my $app     = shift;
     my $type    = $app->param('_type');
@@ -1089,7 +1096,6 @@ sub list {
 
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{ $type . $subtype }{$blog_id} || {};
-    my $rows        = $list_pref->{rows}        || 50;    ## FIXME: Hardcoded
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $last_items         = $list_pref->{last_items} || [];
@@ -1097,7 +1103,7 @@ sub list {
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
     }
-    $param{ 'limit_' . $rows } = 1;
+    $param{'limit'} = canonicalize_list_limit($list_pref->{rows});
 
     require MT::ListProperty;
     my $obj_type   = $screen_settings->{object_type} || $type;
@@ -1260,7 +1266,7 @@ sub list {
             {
             id                 => $prop->id,
             type               => $prop->type,
-            label              => MT::Util::encode_html( $prop->label ),
+            label              => MT::Util::encode_html( $prop->label, 1 ),
             primary            => $primary_col{$id} ? 1 : 0,
             col_class          => $prop->col_class,
             sortable           => $prop->can_sort($scope),
@@ -1287,13 +1293,13 @@ sub list {
         my $label_for_sort;
         if ( defined $prop->filter_label ) {
             $label_for_sort
-                = ref $prop->filter_label
+                = ref $prop->filter_label eq 'CODE'
                 ? $prop->filter_label->($screen_settings)
                 : $prop->filter_label;
         }
         if ( !defined $label_for_sort ) {
             $label_for_sort
-                = ref $prop->label
+                = ref $prop->label eq 'CODE'
                 ? $prop->label->($screen_settings)
                 : $prop->label;
             $label_for_sort = '' unless defined $label_for_sort;
@@ -1304,8 +1310,7 @@ sub list {
             prop => $prop,
             id   => $prop->id,
             type => $prop->type,
-            label =>
-                MT::Util::encode_html( $prop->filter_label || $prop->label ),
+            label => $prop->filter_label || $prop->label,
             field                 => $prop->filter_tmpl,
             single_select_options => $prop->single_select_options($app),
             verb                  => defined $prop->verb ? $prop->verb
@@ -1427,7 +1432,7 @@ sub list {
     my $feed_link = $screen_settings->{feed_link};
     $feed_link = $feed_link->($app)
         if 'CODE' eq ref $feed_link;
-    if ($feed_link) {
+    if ($feed_link and !MT->config->DisableActivityFeeds) {
         my $view = $subtype ? $app->param('type') : $type;
         $param{feed_url} = $app->make_feed_link( $view,
             $blog_id ? { blog_id => $blog_id } : undef );
@@ -1597,7 +1602,8 @@ sub filtered_list {
             blog_id   => $blog_id || 0,
         }
     );
-    my $limit = $app->param('limit') || 50;    # FIXME: hard coded.
+    my $limit = $app->param('limit');
+    $limit = canonicalize_list_limit($limit);
     my $page  = $app->param('page');
     $page = 1 if !$page || $page =~ /\D/;
     my $offset = ( $page - 1 ) * $limit;
@@ -1816,11 +1822,11 @@ sub save_list_prefs {
         = !$blog         ? 'system'
         : $blog->is_blog ? 'blog'
         :                  'website';
-    my $limit      = $app->param('limit')   || 50;    # FIXME: hard coded.
     my $cols       = $app->param('columns') || '';
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};
-    $list_pref->{rows}    = $limit;
+    my $limit = $app->param('limit');
+    $list_pref->{rows}    = canonicalize_list_limit($limit);
     $list_pref->{columns} = [ split ',', $cols ];
 
 #$list_pref->{last_filter} = $filter_id ? $filter_id : $allpass ? '_allpass' : '';

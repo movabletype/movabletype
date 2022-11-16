@@ -72,6 +72,21 @@ subtest 'Check disable image popup' => sub {
         note $app->wq_find($elm_id)->as_html;
         is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
         $test_env->update_config(DisableImagePopup => 0);
+        
+    };
+
+    subtest 'empty popup_image template' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        my $tmpl = $mt->model('template')->load({
+            blog_id => $blog->id,
+            type    => 'popup_image'
+        });
+        $tmpl->text('');
+        $tmpl->save;
+        $app->post_ok(\%params);
+        note $app->_find_text('.custom-control .alert');
+        is($app->_find_text('.custom-control .alert'), q{'Popup image' template does not exist or is empty and cannot be selected.}, 'empty error');
     };
 
     subtest 'remove popup_image template' => sub {
@@ -82,8 +97,8 @@ subtest 'Check disable image popup' => sub {
             type    => 'popup_image'
         });
         $app->post_ok(\%params);
-        note $app->wq_find($elm_id)->as_html;
-        is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
+        note $app->_find_text('.custom-control .alert');
+        is $app->_find_text('.custom-control .alert'), q{'Popup image' template does not exist or is empty and cannot be selected.}, 'empty error';
     };
 
 };

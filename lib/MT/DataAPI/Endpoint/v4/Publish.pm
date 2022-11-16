@@ -9,7 +9,7 @@ use strict;
 use warnings;
 
 use MT::App::CMS;
-use MT::DataAPI::Endpoint::Publish;
+use MT::DataAPI::Endpoint::v1::Publish;
 
 sub content_data_openapi_spec {
     +{
@@ -77,7 +77,7 @@ DESCRIPTION
 
 sub content_data {
     my ( $app, $endpoint ) = @_;
-    MT::DataAPI::Endpoint::Publish::publish_common( $app, $endpoint,
+    MT::DataAPI::Endpoint::v1::Publish::publish_common( $app, $endpoint,
         \&MT::App::CMS::rebuild_these_content_data );
 }
 

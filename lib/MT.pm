@@ -37,14 +37,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.9', '7.0053' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.9', '7.0054' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.9.5',              '__PRODUCT_VERSION_ID__',
+        '7.9.6',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -62,11 +62,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 5;
+        $RELEASE_NUMBER = 6;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5301';
+        $RELEASE_VERSION_ID = 'r.5401';
     }
 
     $DebugMode = 0;
@@ -1800,6 +1800,18 @@ sub update_ping_list {return}
 
 sub supported_languages {
     my $mt = shift;
+
+    my %default_supported_languages;
+    if (my $default = MT->config->DefaultSupportedLanguages) {
+        for my $tag (split ',', $default) {
+            $tag =~ tr/A-Z-/a-z_/;
+            $default_supported_languages{$tag} = 1;
+        }
+        # just in case
+        $default_supported_languages{MT->config->DefaultLanguage} = 1;
+        $default_supported_languages{MT->current_language} = 1;
+    }
+
     require MT::L10N;
     require File::Basename;
     ## Determine full path to lib/MT/L10N directory...
@@ -1819,6 +1831,7 @@ sub supported_languages {
         for my $f ( readdir $DH ) {
             my ($tag) = $f =~ /^(\w+)\.pm$/;
             next unless $tag;
+            next if %default_supported_languages && !$default_supported_languages{$tag};
             my $lh = MT::L10N->get_handle($tag);
             $langs{ $lh->language_tag } = $lh->language_name;
         }
@@ -2089,6 +2102,9 @@ sub set_default_tmpl_params {
     $param->{language_tag}          = substr( $mt->current_language, 0, 2 );
     $param->{language_encoding}     = $mt->charset;
     $param->{optimize_ui}           = $mt->build_id && !$MT::DebugMode;
+    $param->{use_mt_common_json}    = $mt->config->UseMTCommonJSON;
+    $param->{use_svg4everybody}     = $mt->config->UseSVGForEverybody;
+    $param->{use_jquery_json}       = $mt->config->UseJQueryJSON;
 
     if ( $mt->isa('MT::App') ) {
         if ( my $author = $mt->user ) {
@@ -2621,7 +2637,7 @@ sub handler_to_coderef {
     my ( $name, $delayed ) = @_;
 
     return $name if ref($name) eq 'CODE';
-    return undef unless defined $name && $name ne '';
+    return undef unless defined $name && !ref($name) && $name ne '';
 
     my $code;
     if ( $name !~ m/->/ ) {
