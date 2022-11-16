@@ -9,7 +9,9 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        CGIPath => '/cgi-bin/',
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -140,12 +142,12 @@ subtest 'relative' => sub {
     $app->post(
         {   __mode    => 'recover',
             email     => $admin->email,
-            return_to => '/path',
+            return_to => '/cgi-bin/mt.cgi',
         },
     );
     $app->status_is(200);
     $app->content_unlike('Invalid request');
-    $app->content_like('/path');
+    $app->content_like('/cgi-bin/mt.cgi');
     $app->content_like('Reset Password');
 };
 
