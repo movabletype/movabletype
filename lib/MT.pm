@@ -46,7 +46,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.9.5',              '__PRODUCT_VERSION_ID__',
+        '7.9.6',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -64,11 +64,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 5;
+        $RELEASE_NUMBER = 6;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5301';
+        $RELEASE_VERSION_ID = 'r.5401';
     }
 
     $DebugMode = 0;
@@ -2664,7 +2664,7 @@ sub handler_to_coderef {
     my ( $name, $delayed ) = @_;
 
     return $name if ref($name) eq 'CODE';
-    return undef unless defined $name && $name ne '';
+    return undef unless defined $name && !ref($name) && $name ne '';
 
     my $code;
     if ( $name !~ m/->/ ) {

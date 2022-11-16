@@ -4374,12 +4374,16 @@ sub is_valid_redirect_target {
 
 sub _is_valid_redirect_target {
     my ( $app, $target, $allowed_hosts ) = @_;
+    return if $target =~ /[[:cntrl:]]|\\/;
     my $uri  = URI->new( $target, 'http' )->canonical;
     my $host = $uri->host;
-    my $path = $uri->path_query;
+    my $path = $uri->path;
     return   unless $uri->isa('URI::http');
     return   unless substr( $path, 0, 1 ) eq '/';
-    return 1 unless defined $host;                  # relative URL
+    # If relative, $target should be one of the app scripts (usually mt.cgi)
+    if (!defined $host) {
+        return ($path eq URI->new($app->uri)->path) ? 1 : 0;
+    }
     for my $allowed ( @{ $allowed_hosts || [] } ) {
         return 1 if $allowed eq $host;
     }

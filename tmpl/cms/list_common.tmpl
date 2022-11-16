@@ -120,6 +120,11 @@
   <script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:unless>
 
+<mt:loop name="filter_types">
+<mt:setvarblock name="label"><mt:var name="label" encode_html="1"></mt:setvarblock>
+<script id="filter_types_field_<mt:var name="type">" type="text/html"><mt:var name="field" mteval="1"></script>
+</mt:loop>
+
 <script>
 var listStore;
 
@@ -264,8 +269,8 @@ jQuery.event.special.listReady = {
   filterTypes.push({
     baseType: '<mt:var name="base_type">',
     <mt:if name="editable">editable: true,</mt:if>
-    field: '<mt:var name="field" mteval="1" regex_replace="/\n*/g":"">',
-    label: '<mt:var name="label">',
+    field: document.getElementById("filter_types_field_<mt:var name="type">").textContent,
+    label: '<mt:var name="label" encode_html="1" encode_js="1">',
     <mt:if name="singleton">singleton: true,</mt:if>
     type: '<mt:var name="type">'
   });

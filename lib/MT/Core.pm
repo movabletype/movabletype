@@ -614,7 +614,7 @@ BEGIN {
                         ## since __trans macro doesn't work with including itself
                         ## recursively, so do translate by hand here.
                         my $prop  = shift;
-                        my $label = '<mt:var name="label">';
+                        my $label = '<mt:var name="label" encode_html="1">';
                         my $tmpl
                             = $prop->use_future
                             ? 'filter_form_future_date'
