@@ -261,13 +261,7 @@ sub edit {
 
             $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
 
-            if ( $cfg->is_readonly('DataAPIDisableSite') ) {
-                $param->{'data_api_disable_site_readonly'} = 1;
-                $param->{config_warning} = $app->translate(
-                    "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
-                    'DataAPIDisableSite',
-                );
-            }
+            _set_show_data_api_params($app, $cfg, $param);
         }
         elsif ( $output eq 'cfg_feedback.tmpl' ) {
             $param->{email_new_comments_1}
@@ -354,15 +348,10 @@ sub edit {
     elsif ( $param->{output} && $param->{output} eq 'cfg_web_services.tmpl' )
     {
         # System level web services settings.
+        $param->{deactivate_data_api} = $app->config->DeactivateDataAPI || grep { 'data_api' eq $_ } $app->config->RestrictedPSGIApp;
         $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
 
-        if ( $app->config->is_readonly('DataAPIDisableSite') ) {
-            $param->{'data_api_disable_site_readonly'} = 1;
-            $param->{config_warning} = $app->translate(
-                "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
-                'DataAPIDisableSite',
-            );
-        }
+        _set_show_data_api_params($app, $cfg, $param);
     }
     else {
         return $app->return_to_dashboard( redirect => 1 )
@@ -1978,9 +1967,10 @@ sub _post_save_cfg_screens {
         }
     }
     if ( $screen eq 'cfg_web_services' ) {
-        my $blog_id         = $app->param('id');
-        my $enable_data_api = $app->param('enable_data_api');
-        save_data_api_settings( $app, $blog_id, $enable_data_api );
+        my $blog_id             = $app->param('id');
+        my $deactivate_data_api = $app->param('deactivate_data_api');
+        my $enable_data_api     = $app->param('enable_data_api');
+        save_data_api_settings( $app, $blog_id, $deactivate_data_api, $enable_data_api );
     }
 
     return 1;
@@ -3629,14 +3619,18 @@ sub data_api_is_enabled {
 }
 
 sub save_data_api_settings {
-    my ( $app, $blog_id, $new_value ) = @_;
+    my ( $app, $blog_id, $deactivate_data_api, $enable_data_api ) = @_;
 
-    $blog_id   = $app->param('id') || 0         unless defined $blog_id;
-    $new_value = $app->param('enable_data_api') unless defined $new_value;
+    $blog_id             = $app->param('id') || 0             unless defined $blog_id;
+    $deactivate_data_api = $app->param('deactivate_data_api') unless defined $deactivate_data_api;
+    $enable_data_api     = $app->param('enable_data_api')     unless defined $enable_data_api;
 
     if ($blog_id == 0) {
         my $cfg = $app->config;
-        $cfg->DataAPIDisableSite($new_value ? '' : $blog_id, 1);
+        $cfg->DataAPIDisableSite($enable_data_api ? '' : $blog_id, 1);
+        if (_can_write_deactivate_data_api($cfg)) {
+            $cfg->DeactivateDataAPI($deactivate_data_api, 1);
+        }
         $cfg->save_config;
     } else {
         my $blog;
@@ -3645,7 +3639,7 @@ sub save_data_api_settings {
         } else {
             $blog = MT->model('blog')->load($blog_id);
         }
-        $blog->allow_data_api($new_value ? 1 : 0);
+        $blog->allow_data_api($enable_data_api ? 1 : 0);
         $blog->save;
     }
 
@@ -3740,6 +3734,43 @@ sub filtered_list_param {
             $obj->[0] = undef;
         }
     }
+}
+
+sub _set_show_data_api_params {
+    my ($app, $cfg, $param) = @_;
+
+    my @config_warnings;
+    if ($cfg->is_readonly('DeactivateDataAPI')) {
+        $param->{'deactivate_data_api_readonly'} = 1;
+        push @config_warnings, 'DeactivateDataAPI';
+    }
+
+    if ($cfg->DeactivateDataAPI) {
+        $param->{'data_api_disable_site_readonly'} = 1;
+    }
+
+    if (grep { 'data_api' eq $_ } $cfg->RestrictedPSGIApp) {
+        $param->{'data_api_disable_site_readonly'} = 1;
+        $param->{'deactivate_data_api_readonly'} = 1;
+        push @config_warnings, 'RestrictedPSGIApp';
+    }
+
+    if ($cfg->is_readonly('DataAPIDisableSite')) {
+        $param->{'data_api_disable_site_readonly'} = 1;
+        push @config_warnings, 'DataAPIDisableSite';
+    }
+
+    if (@config_warnings) {
+        $param->{config_warning} = $app->translate(
+            "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
+            join(", ", @config_warnings),
+        );
+    }
+}
+
+sub _can_write_deactivate_data_api {
+    my ($cfg) = @_;
+    return !$cfg->is_readonly('DeactivateDataAPI') && !grep { 'data_api' eq $_ } $cfg->RestrictedPSGIApp;
 }
 
 1;
