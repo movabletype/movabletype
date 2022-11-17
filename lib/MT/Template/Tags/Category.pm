@@ -584,7 +584,7 @@ sub _hdlr_category_prevnext {
                     },
                     {   'join' => [
                             'MT::Placement', 'entry_id',
-                            { category_id => $cat->id }
+                            { category_id => $cats->[$pos]->id }
                         ],
                         'sort'    => 'authored_on',
                         direction => 'descend',
@@ -605,7 +605,7 @@ sub _hdlr_category_prevnext {
                             'MT::ObjectCategory',
                             'object_id',
                             {   object_ds   => 'content_data',
-                                category_id => $cat->id,
+                                category_id => $cats->[$pos]->id,
                             },
                         ],
                         'sort'    => 'authored_on',
