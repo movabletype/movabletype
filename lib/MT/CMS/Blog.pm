@@ -3625,22 +3625,26 @@ sub save_data_api_settings {
     $deactivate_data_api = $app->param('deactivate_data_api') unless defined $deactivate_data_api;
     $enable_data_api     = $app->param('enable_data_api')     unless defined $enable_data_api;
 
+    my $cfg = $app->config;
     if ($blog_id == 0) {
-        my $cfg = $app->config;
-        $cfg->DataAPIDisableSite($enable_data_api ? '' : $blog_id, 1);
+        if (_can_write_data_api_disable_site($cfg)) {
+            $cfg->DataAPIDisableSite($enable_data_api ? '' : $blog_id, 1);
+        }
         if (_can_write_deactivate_data_api($cfg)) {
             $cfg->DeactivateDataAPI($deactivate_data_api, 1);
         }
         $cfg->save_config;
     } else {
-        my $blog;
-        if ($app->blog && $app->blog->id == $blog_id) {
-            $blog = $app->blog;
-        } else {
-            $blog = MT->model('blog')->load($blog_id);
+        if (_can_write_data_api_disable_site($cfg)) {
+            my $blog;
+            if ($app->blog && $app->blog->id == $blog_id) {
+                $blog = $app->blog;
+            } else {
+                $blog = MT->model('blog')->load($blog_id);
+            }
+            $blog->allow_data_api($enable_data_api ? 1 : 0);
+            $blog->save;
         }
-        $blog->allow_data_api($enable_data_api ? 1 : 0);
-        $blog->save;
     }
 
     return 1;
@@ -3766,6 +3770,11 @@ sub _set_show_data_api_params {
             join(", ", @config_warnings),
         );
     }
+}
+
+sub _can_write_data_api_disable_site {
+    my ($cfg) = @_;
+    return !$cfg->DeactivateDataAPI && !grep { 'data_api' eq $_ } $cfg->RestrictedPSGIApp && !$cfg->is_readonly('DataAPIDisableSite');
 }
 
 sub _can_write_deactivate_data_api {
