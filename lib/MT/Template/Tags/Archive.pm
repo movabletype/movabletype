@@ -587,8 +587,9 @@ sub _hdlr_archive_prev_next {
                     if $map && $arctype->contenttype_date_based;
                 if ( $arctype->contenttype_category_based ) {
                     $param->{category_field_id} = $map->cat_field_id if $map;
-                    $param->{category_id} = $ctx->stash('category')->id
-                        if $ctx->stash('category');
+                    if (my $cat = $ctx->stash('category') || $ctx->stash('archive_category')) {
+                        $param->{category_id} = $cat->id;
+                    }
                 }
                 $param->{content_type_id} = $content_type->id;
             }
