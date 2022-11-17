@@ -520,13 +520,16 @@ sub _hdlr_category_prevnext {
     return '' if ( $cat eq '' );
 
     require MT::Placement;
-    my $needs_entries;
-    my $uncompiled = $ctx->stash('uncompiled') || '';
-    $needs_entries
-        = ($ctx->stash('entries') || ( $class_type eq 'category'
-        ? ( ( $uncompiled =~ /<MT:?Entries/i ) ? 1 : 0 )
-        : ( ( $uncompiled =~ /<MT:?Pages/i ) ? 1 : 0 )));
-    my $needs_contents = ($ctx->stash('content_type') || ( $uncompiled =~ /<MT:?Contents/i )) ? 1 : 0;
+    my $uncompiled    = $ctx->stash('uncompiled') || '';
+    my $needs_entries = (
+        $ctx->stash('entries')
+            || (
+            $class_type eq 'category'
+            ? (($uncompiled =~ /<MT:?Entries/i) ? 1 : 0)
+            : (($uncompiled =~ /<MT:?Pages/i)   ? 1 : 0)
+            ),
+    );
+    my $needs_contents = ($ctx->stash('content_type') || ($uncompiled =~ /<MT:?Contents/i)) ? 1 : 0;
     my $blog_id        = $cat->blog_id;
     my $cats           = _load_sibling_categories( $ctx, $cat, $class_type );
 
