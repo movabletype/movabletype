@@ -416,7 +416,14 @@ sub call {
 
 sub is_restricted_app {
     my ( $self, $app ) = @_;
-    ( grep { $app eq $_ } $mt->config->RestrictedPSGIApp ) ? 1 : 0;
+    my $data_api_restriction;
+    if ($mt->config->DeactivateDataAPI) {
+        $data_api_restriction = 'data_api';
+    }
+    my %seen_apps;
+    my @restricted_apps = $mt->config->RestrictedPSGIApp;
+    @restricted_apps = grep { $_ && !$seen_apps{$_}++ } @restricted_apps, $data_api_restriction;
+    ( grep { $app eq $_ } @restricted_apps ) ? 1 : 0;
 }
 
 1;
