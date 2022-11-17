@@ -452,11 +452,6 @@
                 })
             })
 
-            ed.on('SaveContent', function (args) {
-                let content = args.content.replace(/\u00a0/g, '\u0020')
-                ed.setContent(content)
-            })
-
             ed.addCommand('mtSetFormat', function (format) {
                 adapter.manager.setFormat(format)
             })
