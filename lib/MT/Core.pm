@@ -2281,6 +2281,7 @@ BEGIN {
             },
             'DataAPIDisableSite'   => undef,
             'RebuildOffsetSeconds' => { default => 20 },
+            'DeactivateDataAPI'    => { default => 0 },
 
             # Enterprise.pack
             'LDAPOptions'           => { type => 'HASH' },
