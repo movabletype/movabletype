@@ -575,7 +575,7 @@ sub _hdlr_category_prevnext {
     return '' unless defined $pos;
     $pos += $step;
     while ( $pos >= 0 && $pos < scalar @$cats ) {
-        if ( !exists $cats->[$pos]->{_placement_count} ) {
+        if ( !exists $cats->[$pos]->{_placement_count} or $needs_contents ) {
             if ($needs_entries) {
                 require MT::Entry;
                 my @entries = MT::Entry->load(
