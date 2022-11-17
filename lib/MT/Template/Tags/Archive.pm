@@ -590,6 +590,7 @@ sub _hdlr_archive_prev_next {
                     $param->{category_id} = $ctx->stash('category')->id
                         if $ctx->stash('category');
                 }
+                $param->{content_type_id} = $content_type->id;
             }
         }
         $obj
