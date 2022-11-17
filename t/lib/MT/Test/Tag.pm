@@ -197,6 +197,8 @@ SKIP: {
                     }
                 }
                 my $expected_src = $block->$expected_method // '';
+                my $expected_ref = ref($expected_src);
+
                 $expected_src =~ s/\\r/\\n/g;
                 $expected_src =~ s/\r/\n/g;
 
@@ -206,11 +208,11 @@ SKIP: {
 
                 local $TODO = "may fail" if $expected_method =~ /^expected_(?:php_)?todo/;
 
-                my $expected_ref = ref($expected_src);
                 my $expected     = _filter_vars($expected_src);
                 my $name         = $test_name_prefix . $block->name . ' - dynamic';
 
                 if ($expected_ref && $expected_ref eq 'Regexp') {
+                    $expected = qr{$expected} if ref($expected) ne 'Regexp';
                     like($got, $expected, $name);
                 } else {
                     is($got, $expected, $name);
