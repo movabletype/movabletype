@@ -3774,7 +3774,7 @@ sub _set_show_data_api_params {
 
 sub _can_write_data_api_disable_site {
     my ($cfg) = @_;
-    return !$cfg->DeactivateDataAPI && !grep { 'data_api' eq $_ } $cfg->RestrictedPSGIApp && !$cfg->is_readonly('DataAPIDisableSite');
+    return !$cfg->DeactivateDataAPI && !grep { $_ && 'data_api' eq $_ } $cfg->RestrictedPSGIApp && !$cfg->is_readonly('DataAPIDisableSite');
 }
 
 sub _can_write_deactivate_data_api {
