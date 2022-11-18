@@ -27,10 +27,8 @@ sub system_check {
     my %param;
 
     my $author_class = $app->model('author');
-    $param{user_count}
-        = $author_class->count( { type => MT::Author::AUTHOR() } );
-
-    $param{commenter_count} = 0;
+    $param{user_count}      = $author_class->count( { type => MT::Author::AUTHOR() } );
+    $param{commenter_count} = $author_class->count( { type => MT::Author::COMMENTER() } );
     $param{screen_id}       = "system-check";
 
     require MT::Util::SystemCheck;
