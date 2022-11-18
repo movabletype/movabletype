@@ -362,7 +362,7 @@ subtest 'with dt_field' => sub {
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
             href_is_ok($prev => 'http://narnia.na/ct2/author2/2012/01/', 'prev points to 2012/01, not 2022/01');
-            href_is_ok($next => 'http://narnia.na/ct2/author2/2012/04/', 'prev points to 2012/04, not 2022/03');
+            href_is_ok($next => 'http://narnia.na/ct2/author2/2012/04/', 'next points to 2012/04, not 2022/03');
         };
 
         subtest 'fourth archive for ct (dt_field)' => sub {
@@ -370,7 +370,7 @@ subtest 'with dt_field' => sub {
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
             href_is_ok($prev => 'http://narnia.na/ct/author/2022/03/', 'prev points to 2022/03');
-            ok !$next->as_html, 'next is empty';
+            ok !$next->as_html, 'next is empty' or note $next->attr('href');
         };
 
         subtest 'fourth archive for ct2 (dt_field)' => sub {
@@ -396,7 +396,7 @@ subtest 'with dt_field' => sub {
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
             href_is_ok($prev => 'http://narnia.na/ct2/topic/2012/01/', 'prev points to 2012/01, not 2022/01');
-            href_is_ok($next => 'http://narnia.na/ct2/topic/2012/04/', 'prev points to 2012/04, not 2022/03');
+            href_is_ok($next => 'http://narnia.na/ct2/topic/2012/04/', 'next points to 2012/04, not 2022/03');
         };
 
         subtest 'fourth archive for ct (dt_field)' => sub {
@@ -412,7 +412,7 @@ subtest 'with dt_field' => sub {
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
             href_is_ok($prev => 'http://narnia.na/ct2/topic/2012/02/', 'prev points to 2012/02, not 2022/03');
-            ok !$next->as_html, 'next is empty';
+            ok !$next->as_html, 'next is empty' or note $next->attr('href');
         };
     };
 
@@ -430,7 +430,7 @@ subtest 'with dt_field' => sub {
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
             href_is_ok($prev => 'http://narnia.na/ct2/2012/01/', 'prev points to 2012/01, not 2022/01');
-            href_is_ok($next => 'http://narnia.na/ct2/2012/04/', 'prev points to 2012/04, not 2022/03');
+            href_is_ok($next => 'http://narnia.na/ct2/2012/04/', 'next points to 2012/04, not 2022/03');
         };
 
         subtest 'fourth archive for ct (dt_field)' => sub {
@@ -438,7 +438,7 @@ subtest 'with dt_field' => sub {
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
             href_is_ok($prev => 'http://narnia.na/ct/2022/03/', 'prev points to 2022/03');
-            href_is_ok($next => 'http://narnia.na/ct/2022/05/', 'prev points to 2022/05');
+            href_is_ok($next => 'http://narnia.na/ct/2022/05/', 'next points to 2022/05');
         };
 
         subtest 'fourth archive for ct2 (dt_field)' => sub {
@@ -446,7 +446,7 @@ subtest 'with dt_field' => sub {
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
             href_is_ok($prev => 'http://narnia.na/ct2/2012/02/', 'prev points to 2012/02, not 2022/03');
-            href_is_ok($next => 'http://narnia.na/ct2/2012/05/', 'prev points to 2012/05, not 2022/05');
+            href_is_ok($next => 'http://narnia.na/ct2/2012/05/', 'next points to 2012/05, not 2022/05');
         };
     };
 
@@ -479,7 +479,7 @@ subtest 'without dt_field' => sub {
                 my $prev = Web::Query->new($html)->find('#prev');
                 my $next = Web::Query->new($html)->find('#next');
                 href_is_ok($prev => 'http://narnia.na/ct2/author2/2010/01/', 'prev points to 2010/01, not 2020/01');
-                href_is_ok($next => 'http://narnia.na/ct2/author2/2010/04/', 'prev points to 2010/04, not 2020/03');
+                href_is_ok($next => 'http://narnia.na/ct2/author2/2010/04/', 'next points to 2010/04, not 2020/03');
             };
 
             subtest 'fourth archive for ct' => sub {
@@ -487,7 +487,7 @@ subtest 'without dt_field' => sub {
                 my $prev = Web::Query->new($html)->find('#prev');
                 my $next = Web::Query->new($html)->find('#next');
                 href_is_ok($prev => 'http://narnia.na/ct/author/2020/03/', 'prev points to 2020/03');
-                ok !$next->as_html, 'next is empty';
+                ok !$next->as_html, 'next is empty' or note $next->attr('href');
             };
 
             subtest 'fourth archive for ct2' => sub {
@@ -513,7 +513,7 @@ subtest 'without dt_field' => sub {
                 my $prev = Web::Query->new($html)->find('#prev');
                 my $next = Web::Query->new($html)->find('#next');
                 href_is_ok($prev => 'http://narnia.na/ct2/topic/2010/01/', 'prev points to 2010/01, not 2020/01');
-                href_is_ok($next => 'http://narnia.na/ct2/topic/2010/04/', 'prev points to 2010/04, not 2020/03');
+                href_is_ok($next => 'http://narnia.na/ct2/topic/2010/04/', 'next points to 2010/04, not 2020/03');
             };
 
             subtest 'fourth archive for ct' => sub {
@@ -529,7 +529,7 @@ subtest 'without dt_field' => sub {
                 my $prev = Web::Query->new($html)->find('#prev');
                 my $next = Web::Query->new($html)->find('#next');
                 href_is_ok($prev => 'http://narnia.na/ct2/topic/2010/02/', 'prev points to 2010/02, not 2020/03');
-                ok !$next->as_html, 'next is empty';
+                ok !$next->as_html, 'next is empty' or note $next->attr('href');
             };
         };
 
@@ -547,7 +547,7 @@ subtest 'without dt_field' => sub {
                 my $prev = Web::Query->new($html)->find('#prev');
                 my $next = Web::Query->new($html)->find('#next');
                 href_is_ok($prev => 'http://narnia.na/ct2/2010/01/', 'prev points to 2010/01, not 2020/01');
-                href_is_ok($next => 'http://narnia.na/ct2/2010/04/', 'prev points to 2010/04, not 2020/03');
+                href_is_ok($next => 'http://narnia.na/ct2/2010/04/', 'next points to 2010/04, not 2020/03');
             };
 
             subtest 'fourth archive for ct' => sub {
@@ -577,7 +577,7 @@ subtest 'unrelated to datetime' => sub {
             my $html = $test_env->slurp($test_env->path('site/archive/ct/author/index.html'));
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
-            ok !$prev->as_html, 'prev is empty';
+            ok !$prev->as_html, 'prev is empty' or note $prev->attr('href');
             href_is_ok($next => 'http://narnia.na/ct/author3/', 'next points to author3');
         };
 
@@ -586,15 +586,15 @@ subtest 'unrelated to datetime' => sub {
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
             href_is_ok($prev => 'http://narnia.na/ct/author/', 'prev points to author');
-            ok !$next->as_html, 'prev is empty';
+            ok !$next->as_html, 'next is empty' or note $next->attr('href');
         };
 
         subtest 'author2 for ct2' => sub {
             my $html = $test_env->slurp($test_env->path('site/archive/ct2/author2/index.html'));
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
-            ok !$prev->as_html, 'prev is empty';
-            ok !$next->as_html, 'next is empty';
+            ok !$prev->as_html, 'prev is empty' or note $prev->attr('href');
+            ok !$next->as_html, 'next is empty' or note $next->attr('href');
         };
     };
 
@@ -603,8 +603,8 @@ subtest 'unrelated to datetime' => sub {
             my $html = $test_env->slurp($test_env->path('site/archive/ct/news/index.html'));
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
-            ok !$prev->as_html, 'prev is empty';
-            ok !$next->as_html, 'next is empty';
+            ok !$prev->as_html, 'prev is empty' or note $prev->attr('href');
+            ok !$next->as_html, 'next is empty' or note $next->attr('href');
         };
 
         subtest 'topic archive for ct2' => sub {
@@ -612,14 +612,14 @@ subtest 'unrelated to datetime' => sub {
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
             href_is_ok($prev => 'http://narnia.na/ct2/release/', 'prev points to release');
-            ok !$next->as_html, 'next is empty';
+            ok !$next->as_html, 'next is empty' or note $next->attr('href');
         };
 
         subtest 'release archive for ct2' => sub {
             my $html = $test_env->slurp($test_env->path('site/archive/ct2/release/index.html'));
             my $prev = Web::Query->new($html)->find('#prev');
             my $next = Web::Query->new($html)->find('#next');
-            ok !$prev->as_html, 'prev is empty';
+            ok !$prev->as_html, 'prev is empty' or note $prev->attr('href');
             href_is_ok($next => 'http://narnia.na/ct2/topic/', 'next points to topic');
         };
     };
