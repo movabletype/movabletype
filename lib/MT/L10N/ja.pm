@@ -3118,6 +3118,7 @@ use vars qw( @ISA %Lexicon );
 	'Movable Type System Check Successful' => 'システムのチェックを完了しました。',
 	'Movable Type System Check' => 'Movable Type システムチェック',
 	'Movable Type version:' => 'Movable Type バージョン',
+	'Not installed' => '未インストール',
 	'Operating system:' => 'オペレーティングシステム',
 	'Perl include path:' => 'Perl の インクルードパス',
 	'Perl version:' => 'Perl のバージョン',
