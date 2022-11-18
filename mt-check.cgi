@@ -675,7 +675,7 @@ MSG
         print_encode( "    <h3>$mod"
                 . ( $ver ? " (version &gt;= $ver)" : "" )
                 . "</h3>" );
-        eval( "use $mod" . ( $ver ? " $ver;" : ";" ) );
+        eval( "use $mod" . ( $ver ? " $ver ();" : "();" ) );
         if ($@) {
             my $exception = $@;
             $is_good = 0 if $req;
