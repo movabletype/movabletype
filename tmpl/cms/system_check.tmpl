@@ -1,14 +1,100 @@
 <mt:setvarblock name="page_title"><__trans phrase="System Information"></mt:setvarblock>
 <mt:setvar name="system-information" value="1">
+<mt:setvarblock name="system_msg" append="1">
+  <mt:if name="perl_is_too_old">
+    <mtapp:statusmsg
+      id="perl-is-too-old"
+      class="error"
+      can_close="0">
+      <__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="<mt:var name="perl_version" escape="html">%%5.10.1">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:setvarblock>
+
+<mt:setvartemplate name="dependency_block">
+    <mt:if name="module" like="^DBD::">
+    <div class="dependence-module">
+    </mt:if>
+    <h4><mt:var name="module" escape="html"><mt:if name="version"> (version >= <mt:var name="version">)</mt:if></h4>
+    <mt:if name="exception">
+        <p><mt:var name="description" escape="html"></p>
+        <div class="alert alert-warning msg msg-warning"><p class="msg-text">
+        <mt:if name="version">
+            <__trans phrase="Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed." params="<mt:var name="module" escape="html">">
+        <mt:else>
+            <__trans phrase="Your server does not have [_1] installed, or [_1] requires another module that is not installed." params="<mt:var name="module" escape="html">">
+        </mt:if>
+        <__trans phrase="Please consult the installation instructions for help in installing [_1]." params="<mt:var name="module" escape="html">">
+        <span class="toggle-link detail-link"><a id="exception-toggle-<mt:var name="id" escape="html">" href="#" onclick="showException(<mt:var name="id" escape="html">); return false;"><__trans phrase="Details"></a></span>
+        </p>
+        <span id="exception-<mt:var name="id" escape="html">" class="exception"><mt:var name="exception" escape="html"></span>
+        </div>
+    <mt:else>
+        <mt:if name="warning">
+        <div class="alert alert-warning msg msg-warning"><p class="msg-text"><mt:var name="warning" escape="html"></p></div>
+        </mt:if>
+        <p class="installed"><__trans phrase="Your server has [_1] installed (version [_2])." params="<mt:var name="module" escape="html">%%<mt:var name="installed_version" escape="html">"></p>
+        <mt:if name="extra_html">
+            <p class="extra"><mt:var name="extra_html" escape="none"></p>
+        </mt:if>
+    </mt:if>
+    <mt:if name="module" like="^DBD::">
+    </div>
+    </mt:if>
+</mt:setvartemplate>
+
+<mt:setvarblock name="dependencies">
+<mt:if name="req">
+<h3><__trans phrase="[_1] [_2] Modules" params="<__trans phrase="Installed">%%<__trans phrase="Required">"></h3>
+<mt:loop name="req">
+    <mt:var name="dependency_block">
+</mt:loop>
+</mt:if>
+
+<mt:if name="data">
+<h3><__trans phrase="[_1] [_2] Modules" params="<__trans phrase="Installed">%%<__trans phrase="Data Storage">"></h3>
+<mt:loop name="data">
+    <mt:var name="dependency_block">
+</mt:loop>
+</mt:if>
+
+<mt:if name="opt">
+<h3><__trans phrase="[_1] [_2] Modules" params="<__trans phrase="Installed">%%<__trans phrase="Optional">"></h3>
+<mt:loop name="opt">
+    <mt:var name="dependency_block">
+</mt:loop>
+</mt:if>
+
+<mt:if name="missing_req">
+<h3><__trans phrase="[_1] [_2] Modules" params="<__trans phrase="Not installed">%%<__trans phrase="Required">"></h3>
+<mt:loop name="missing_req">
+    <mt:var name="dependency_block">
+</mt:loop>
+</mt:if>
+
+<mt:if name="missing_data">
+<h3><__trans phrase="[_1] [_2] Modules" params="<__trans phrase="Not installed">%%<__trans phrase="Data Storage">"></h3>
+<mt:loop name="missing_data">
+    <mt:var name="dependency_block">
+</mt:loop>
+</mt:if>
+
+<mt:if name="missing_opt">
+<h3><__trans phrase="[_1] [_2] Modules" params="<__trans phrase="Not installed">%%<__trans phrase="Optional">"></h3>
+<mt:loop name="missing_opt">
+    <mt:var name="dependency_block">
+</mt:loop>
+</mt:if>
+</mt:setvarblock>
 
 <mt:setvarblock name="page_content">
 <ul class="list-unstyled">
   <li>
-    <strong><__trans phrase="Total Users"></strong>: <mt:var name="user_count">
+    <strong><__trans phrase="Total Users"></strong>: <mt:var name="user_count" escape="html">
   </li>
   <mt:if name="enabled_plugins{Comments}">
   <li>
-    <strong><__trans phrase="Commenters"></strong>: <mt:var name="commenter_count">
+    <strong><__trans phrase="Commenters"></strong>: <mt:var name="commenter_count" escape="html">
   </li>
   </mt:if>
 </ul>
@@ -22,33 +108,39 @@
   </mt:if>
   </li>
   <li>
-    <strong><__trans phrase="Server Model"></strong>:
-    <mt:if name="server_modperl">
-      mod_perl
-    <mt:else name="server_fastcgi">
-      FastCGI
-    <mt:else name="server_psgi">
-      PSGI
-    <mt:else>
-      CGI
-    </mt:if>
+    <strong><__trans phrase="Server Model"></strong>: <mt:var name="server_model" escape="html">
   </li>
 </ul>
 
-<mtapp:setting
-    id="system_check"
-    label="System Info (MTCheck)"
-    label_class="top-label"
-    show_label="0">
-    <div class="info">
-        <mt:if name="syscheck_html">
-          <mt:var name="syscheck_html">
-          <mt:var name="syscheck_script">
-        <mt:else>
-          <p><__trans phrase="Movable Type could not find the script named 'mt-check.cgi'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly."></p>
-        </mt:if>
-    </div>
-</mtapp:setting>
+<ul class="list-unstyled version">
+  <li>
+    <strong><__trans phrase="Movable Type version:"></strong> <code><mt:var name="release_version" escape="html"></code>
+  </li>
+</ul>
+
+<ul id="path-info" class="list-unstyled">
+<mt:unless name="is_cloud">
+    <li><strong><__trans phrase="Current working directory:"></strong> <code><mt:var name="current_working_directory" escape="html"></code></li>
+    <li><strong><__trans phrase="MT home directory:"></strong> <code><mt:var name="mt_home" escape="html"></code></li>
+    <li><strong><__trans phrase="Operating system:"></strong> <code><mt:var name="os" escape="html"></code></li>
+    <li><strong><__trans phrase="Perl version:"></strong> <code><mt:var name="perl_version" escape="html"></code></li>
+    <li><strong><__trans phrase="Perl include path:"></strong><br /> <code>
+    <mt:loop name="perl_include_path">
+        <mt:var name="__value__" escape="html"><br />
+    </mt:loop>
+    </code></li>
+</mt:unless>
+
+    <mt:if name="web_server">
+    <li><strong><__trans phrase="Web server:"></strong> <code><mt:var name="web_server" escape="html"></code></li>
+    </mt:if>
+
+    <mt:if name="is_cgiwrap_or_suexec">
+    <li><__trans phrase="(Probably) running under cgiwrap or suexec"></li>'
+    </mt:if>
+</ul>
+
+<mt:var name="dependencies" escape="none">
 </mt:setvarblock>
 
 <mt:setvarblock name="css_include" append="1">
