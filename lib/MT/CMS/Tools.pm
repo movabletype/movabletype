@@ -33,23 +33,11 @@ sub system_check {
     $param{commenter_count} = 0;
     $param{screen_id}       = "system-check";
 
-    require MT::Memcached;
-    if ( MT::Memcached->is_available ) {
-        $param{memcached_enabled} = 1;
-        my $inst = MT::Memcached->instance;
-        my $key  = 'syscheck-' . $$;
-        $inst->add( $key, $$ );
-        if ( $inst->get($key) == $$ ) {
-            $inst->delete($key);
-            $param{memcached_active} = 1;
-        }
-    }
+    require MT::Util::SystemCheck;
 
-    $param{server_modperl} = 1 if MT::Util::is_mod_perl1();
-    $param{server_fastcgi} = 1 if $ENV{FAST_CGI};
+    MT::Util::SystemCheck->check_all(\%param);
 
-    $param{server_psgi} = $ENV{'psgi.version'} ? 1 : 0;
-    $param{syscheck_html} = get_syscheck_content($app) || '';
+    $param{is_cloud} = eval { require MT::Cloud::App::CMS; 1 };
 
     $app->add_breadcrumb( $app->translate('System Information') );
 
