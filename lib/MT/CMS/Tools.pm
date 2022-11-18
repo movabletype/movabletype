@@ -42,43 +42,6 @@ sub system_check {
     $app->load_tmpl( 'system_check.tmpl', \%param );
 }
 
-sub get_syscheck_content {
-    my $app     = shift;
-    my $sess_id = $app->session->id;
-    my $syscheck_url
-        = $app->base
-        . $app->mt_path
-        . $app->config('CheckScript')
-        . '?view=tools&version='
-        . MT->version_id
-        . '&session_id='
-        . $sess_id
-        . '&language='
-        . MT->current_language;
-
-    my $ua = $app->new_ua();
-    return unless $ua;
-    $ua->max_size(undef) if $ua->can('max_size');
-
-    # Do not verify SSL certificate.
-    $ua->ssl_opts( verify_hostname => 0 );
-
-    my $req = new HTTP::Request( GET => $syscheck_url );
-    my $resp = $ua->request($req);
-    return unless $resp->is_success();
-    my $result = $resp->content();
-    if ($result) {
-        require MT::Sanitize;
-
-        # allowed html
-        my $spec
-            = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p,textarea';
-        $result = MT::Util::Encode::decode_utf8_unless_flagged($result);    # mt-check.cgi always returns by utf-8
-        $result = MT::Sanitize->sanitize( $result, $spec );
-    }
-    return $result;
-}
-
 sub start_recover {
     my $app     = shift;
     my ($param) = @_;
