@@ -111,14 +111,17 @@ sub run_perl_tests {
 
                 local $TODO = "may fail" if $expected_method =~ /^expected_todo/;
 
-                my $expected     = _filter_vars($block->$expected_method);
-                my $expected_ref = ref($expected);
-                my $name         = $test_name_prefix . $block->name;
+                my @expected_array = $block->$expected_method;
+                for my $expected (@expected_array) {
+                    $expected        = _filter_vars($expected);
+                    my $expected_ref = ref($expected);
+                    my $name         = $test_name_prefix . $block->name;
 
-                if ($expected_ref && $expected_ref eq 'Regexp') {
-                    like($got, $expected, $name);
-                } else {
-                    is($got, $expected, $name);
+                    if ($expected_ref && $expected_ref eq 'Regexp') {
+                        like($got, $expected, $name);
+                    } else {
+                        is($got, $expected, $name);
+                    }
                 }
             }
             __PACKAGE__->_update_config($prev_config);
@@ -196,26 +199,29 @@ SKIP: {
                         last;
                     }
                 }
-                my $expected_src = $block->$expected_method // '';
-                my $expected_ref = ref($expected_src);
+                my @expected_array = $block->$expected_method;
+                for my $expected_src (@expected_array) {
+                    $expected_src //= '';
+                    my $expected_ref = ref($expected_src);
 
-                $expected_src =~ s/\\r/\\n/g;
-                $expected_src =~ s/\r/\n/g;
+                    $expected_src =~ s/\\r/\\n/g;
+                    $expected_src =~ s/\r/\n/g;
 
-                # for Smarty 3.1.32+
-                $got          =~ s/\n//gs;
-                $expected_src =~ s/\n//gs;
+                    # for Smarty 3.1.32+
+                    $got          =~ s/\n//gs;
+                    $expected_src =~ s/\n//gs;
 
-                local $TODO = "may fail" if $expected_method =~ /^expected_(?:php_)?todo/;
+                    local $TODO = "may fail" if $expected_method =~ /^expected_(?:php_)?todo/;
 
-                my $expected     = _filter_vars($expected_src);
-                my $name         = $test_name_prefix . $block->name . ' - dynamic';
+                    my $expected     = _filter_vars($expected_src);
+                    my $name         = $test_name_prefix . $block->name . ' - dynamic';
 
-                if ($expected_ref && $expected_ref eq 'Regexp') {
-                    $expected = qr{$expected} if ref($expected) ne 'Regexp';
-                    like($got, $expected, $name);
-                } else {
-                    is($got, $expected, $name);
+                    if ($expected_ref && $expected_ref eq 'Regexp') {
+                        $expected = qr{$expected} if ref($expected) ne 'Regexp';
+                        like($got, $expected, $name);
+                    } else {
+                        is($got, $expected, $name);
+                    }
                 }
                 if ($ENV{MT_TEST_IGNORE_PHP_WARNINGS} && $php_error) {
                     SKIP: {
@@ -229,6 +235,15 @@ SKIP: {
             }
         }
     }
+}
+
+sub count_plans {
+    my $sum = 0;
+    use Data::Dumper;
+    warn Dumper((blocks())[0]);
+    $sum += ($_->plans || 1) * 2 for blocks();    # block specific number (defaults to 1) * 2 (perl + php)
+    $sum += scalar(blocks()) * 1;                 # blocks * 1 number for php warnings test
+    $sum;
 }
 
 sub MT::Test::Tag::_filter_vars {
@@ -330,6 +345,16 @@ sub _check_skip_php {
         }
     }
     return;
+}
+
+package MT::Test::Tag::Filter;
+use strict;
+use warnings;
+use base 'Test::Base::Filter';
+
+sub regexp_multi {
+    my @splitted = $self->split(@_);
+    return map { qr{$_} } @splitted;
 }
 
 1;
