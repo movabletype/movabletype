@@ -106,7 +106,7 @@ sub check_dependencies {
     my @keys = qw(req data opt);
     my %deps = map { $_ => [] } @keys;
 
-    my $wizard = MT->registry->{applications}{wizard} || {};
+    my $wizard = MT->instance->registry->{applications}{wizard} || {};
     my $req    = $wizard->{required_packages}         || {};
     my $dbi;
     for my $module (keys %$req) {
