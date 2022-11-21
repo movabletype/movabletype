@@ -11,8 +11,8 @@ use warnings;
 use utf8;
 use open ':utf8';
 use base qw( MT::Object MT::Revisable );
-use MT::Util qw( weaken );
 use MT::Util::Encode;
+use Scalar::Util;
 
 use MT::Template::Node ':constants';
 sub NODE () {'MT::Template::Node'}
@@ -284,7 +284,7 @@ sub context {
     return $tmpl->{context} = shift if @_;
     require MT::Template::Context;
     my $ctx = $tmpl->{context} ||= MT::Template::Context->new;
-    weaken( $ctx->{__stash}{'template'} = $tmpl );
+    Scalar::Util::weaken( $ctx->{__stash}{'template'} = $tmpl );
     return $ctx;
 }
 
@@ -1072,7 +1072,7 @@ sub insertAfter {
     if ($node2) {
         for ( my $i = 0; $i < scalar @{$parent_array || []}; $i++ ) {
             if ( $parent_array->[$i] eq $node2 ) {
-                MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
+                Scalar::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
                 splice( @$parent_array, $i + 1, 0, $node1 );
                 return 1;
             }
@@ -1080,7 +1080,7 @@ sub insertAfter {
         return 0;
     }
     else {
-        MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
+        Scalar::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
         push @$parent_array, $node1;
         return 1;
     }
@@ -1099,7 +1099,7 @@ sub insertBefore {
     if ($node2) {
         for ( my $i = 0; $i < scalar @{$parent_array || []}; $i++ ) {
             if ( $parent_array->[$i] eq $node2 ) {
-                MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
+                Scalar::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
                 splice( @$parent_array, $i, 0, $node1 );
                 return 1;
             }
@@ -1107,7 +1107,7 @@ sub insertBefore {
         return 0;
     }
     else {
-        MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
+        Scalar::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
         unshift @$parent_array, $node1;
         return 1;
     }
