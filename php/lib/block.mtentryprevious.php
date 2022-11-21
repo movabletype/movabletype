@@ -38,6 +38,7 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
                 $eargs = array('not_entry_id' => $entry->entry_id,
                               'current_timestamp_end' => $ts,
                               'lastn' => 1,
+                              'base_sort_order' => 'descend',
                               'blog_id' => $blog_id,
                               'class' => $class);
                 if (isset($args['by_author'])) {
