@@ -33,7 +33,7 @@ our @EXPORT_OK
     start_background_task launch_background_tasks substr_wref
     extract_urls extract_domain extract_domains is_valid_date valid_date_time2ts
     epoch2ts ts2epoch escape_unicode unescape_unicode
-    sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
+    sax_parser expat_parser libxml_parser trim ltrim rtrim trim_path asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
@@ -2195,6 +2195,12 @@ sub rtrim {
     return unless defined $string;
     $string =~ s/\s+$//;
     $string;
+}
+
+sub trim_path {
+    my $path = shift;
+    return unless defined $path;
+    join '', map {trim($_)} split /([\\\/])/, $path;
 }
 
 sub asset_cleanup {
