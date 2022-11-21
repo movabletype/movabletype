@@ -1027,7 +1027,7 @@ sub getElementsByClassName {
     my $tokens  = $classes->{ lc $name };
     if ( $tokens && @$tokens ) {
 
-        #@$tokens = map { bless $_, NODE } @$tokens;
+        @$tokens = map { Scalar::Util::blessed($_) ? $_ : bless $_, NODE } @$tokens;
         return @$tokens;
     }
     return ();
@@ -1042,6 +1042,7 @@ sub getElementById {
     my $tmpl = shift;
     my ($id) = @_;
     if ( my $node = $tmpl->token_ids->{$id} ) {
+        $node = bless $node, NODE unless Scalar::Util::blessed($node);
         return $node;
     }
     undef;
@@ -1169,6 +1170,9 @@ sub getElementsByTagName {
             push @list, @$subt if $subt;
         }
     }
+    for my $node (@list) {
+        $node = bless $node, 'MT::Template::Node' unless Scalar::Util::blessed($node);
+    }
     scalar @list ? \@list : undef;
 }
 
@@ -1184,6 +1188,9 @@ sub getElementsByName {
             my $subt = getElementsByName( $childNodes, $name );
             push @list, @$subt if $subt;
         }
+    }
+    for my $node (@list) {
+        $node = bless $node, 'MT::Template::Node' unless Scalar::Util::blessed($node);
     }
     scalar @list ? \@list : undef;
 }
