@@ -110,6 +110,7 @@ sub check_dependencies {
         my $req    = $wizard->{required_packages} || {};
         my $dbi;
         for my $module (keys %$req) {
+            next if $module eq 'plugin';
             my $conf = $req->{$module};
             if ($module eq 'DBI') {
                 $dbi = [$module, $conf->{version} || 0, 1, $conf->{label}];
@@ -130,6 +131,7 @@ sub check_dependencies {
         unshift @{ $deps{data} }, $dbi;
         my $opt = $wizard->{optional_packages} || {};
         for my $module (keys %$opt) {
+            next if $module eq 'plugin';
             my $conf = $opt->{$module};
             push @{ $deps{opt} }, [$module, $conf->{version} || 0, 0, $conf->{label}];
         }
