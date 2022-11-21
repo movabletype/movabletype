@@ -124,7 +124,8 @@ sub check_dependencies {
             my $label  = $driver->{label};
             push @{ $deps{data} }, [
                 $driver->{dbd_package},
-                $driver->{dbd_version}, 0,
+                $driver->{dbd_version} || 0,
+                0,
                 MT->translate("The [_1] database driver is required to use [_2].", $driver->{dbd_package}, $label),
             ];
         }
