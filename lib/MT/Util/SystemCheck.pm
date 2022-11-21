@@ -118,7 +118,7 @@ sub check_dependencies {
                 push @{ $deps{req} }, [$module, $conf->{version} || 0, 1, $conf->{label}];
             }
         }
-        my $drivers = $app->object_drivers;
+        my $drivers = MT->registry('object_drivers') || {};
         for my $key (keys %$drivers) {
             my $driver = $drivers->{$key};
             my $label  = $driver->{label};
