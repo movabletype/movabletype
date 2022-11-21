@@ -143,10 +143,10 @@ sub check_dependencies {
 
     my $i = 0;
     for my $key (@keys) {
-        $deps{$key} = $core_deps{$key} unless @{ $deps{$key} };
+        my @merged = grep defined, (@{$deps{$key}}, @{$core_deps{$key}});
 
         my %seen;
-        my @sorted = grep { !$seen{ $_->[0] }++ } sort { $a->[0] cmp $b->[0] or $b->[1] <=> $a->[1] } @{ $deps{$key} };
+        my @sorted = grep { !$seen{ $_->[0] }++ } sort { $a->[0] cmp $b->[0] or $b->[1] <=> $a->[1] } @merged;
 
         if ($key eq 'data') {
             my @tmp;
