@@ -106,36 +106,36 @@ sub check_dependencies {
     my @keys = qw(req data opt);
     my %deps = map { $_ => [] } @keys;
 
-        my $wizard = MT->registry->{applications}{wizard} || {};
-        my $req    = $wizard->{required_packages} || {};
-        my $dbi;
-        for my $module (keys %$req) {
-            next if $module eq 'plugin';
-            my $conf = $req->{$module};
-            if ($module eq 'DBI') {
-                $dbi = [$module, $conf->{version} || 0, 1, $conf->{label}];
-            } else {
-                push @{ $deps{req} }, [$module, $conf->{version} || 0, 1, $conf->{label}];
-            }
+    my $wizard = MT->registry->{applications}{wizard} || {};
+    my $req    = $wizard->{required_packages}         || {};
+    my $dbi;
+    for my $module (keys %$req) {
+        next if $module eq 'plugin';
+        my $conf = $req->{$module};
+        if ($module eq 'DBI') {
+            $dbi = [$module, $conf->{version} || 0, 1, $conf->{label}];
+        } else {
+            push @{ $deps{req} }, [$module, $conf->{version} || 0, 1, $conf->{label}];
         }
-        my $drivers = MT->registry('object_drivers') || {};
-        for my $key (keys %$drivers) {
-            my $driver = $drivers->{$key};
-            my $label  = $driver->{label};
-            push @{ $deps{data} }, [
-                $driver->{dbd_package},
-                $driver->{dbd_version} || 0,
-                0,
-                MT->translate("The [_1] database driver is required to use [_2].", $driver->{dbd_package}, $label),
-            ];
-        }
-        unshift @{ $deps{data} }, $dbi;
-        my $opt = $wizard->{optional_packages} || {};
-        for my $module (keys %$opt) {
-            next if $module eq 'plugin';
-            my $conf = $opt->{$module};
-            push @{ $deps{opt} }, [$module, $conf->{version} || 0, 0, $conf->{label}];
-        }
+    }
+    my $drivers = MT->registry('object_drivers') || {};
+    for my $key (keys %$drivers) {
+        my $driver = $drivers->{$key};
+        my $label  = $driver->{label};
+        push @{ $deps{data} }, [
+            $driver->{dbd_package},
+            $driver->{dbd_version} || 0,
+            0,
+            MT->translate("The [_1] database driver is required to use [_2].", $driver->{dbd_package}, $label),
+        ];
+    }
+    unshift @{ $deps{data} }, $dbi;
+    my $opt = $wizard->{optional_packages} || {};
+    for my $module (keys %$opt) {
+        next if $module eq 'plugin';
+        my $conf = $opt->{$module};
+        push @{ $deps{opt} }, [$module, $conf->{version} || 0, 0, $conf->{label}];
+    }
 
     require MT::Util::Dependencies;
     my %core_deps;
@@ -143,7 +143,7 @@ sub check_dependencies {
 
     my $i = 0;
     for my $key (@keys) {
-        my @merged = grep defined, (@{$deps{$key}}, @{$core_deps{$key}});
+        my @merged = grep defined, (@{ $deps{$key} }, @{ $core_deps{$key} });
 
         my %seen;
         my @sorted = grep { !$seen{ $_->[0] }++ } sort { $a->[0] cmp $b->[0] or $b->[1] <=> $a->[1] } @merged;
