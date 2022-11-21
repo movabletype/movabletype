@@ -20,7 +20,7 @@ MT->instance;
 
 my $cfg = MT::ConfigMgr->instance;
 
-for my $d ( $test_env->image_drivers ) {
+for my $d ( grep !/SVG/, $test_env->image_drivers ) {
     subtest "ImageDriver: $d" => sub {
         $cfg->ImageDriver($d);
 

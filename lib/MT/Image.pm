@@ -19,7 +19,7 @@ sub new {
     eval "require $class"
         or return __PACKAGE__->error(
         MT->translate( "Invalid Image Driver [_1]", $class ) );
-    my $image = bless {}, $class;
+    my $image = bless {driver => MT->config->ImageDriver}, $class;
     $image->load_driver
         or return $class->error( $image->errstr );
     if (@_) {
@@ -33,6 +33,16 @@ sub init {
     my ( $image, %param ) = @_;
 
     $image->{param} = \%param;
+
+    if (($param{Filename} && lc $param{Filename} =~ /\.svgz?$/) or ($param{Type} && lc $param{Type} =~ /svg/)) {
+        if ($image->{driver} ne 'SVG') {
+            if (!eval { require MT::Image::SVG; 1 }) {
+                return $image->error( MT->translate("Cannot load [_1]: [_2]", "MT::Image::SVG", $@) );
+            }
+            $image = bless $image, 'MT::Image::SVG';
+            $image->{driver} = 'SVG';
+        }
+    }
 
     my $jpeg_quality
         = exists $param{JpegQuality}
@@ -157,12 +167,27 @@ sub get_image_info {
         require File::RandomAccess;
         $info = Image::ExifTool::ImageInfo(File::RandomAccess->new($fh));
         seek $fh, 0, 0;
+        if ($info->{FileType} =~ /(?:svg|xml|gzip)/i) {
+            _get_svg_info($fh, $info);
+        }
+        seek $fh, 0, 0;
     }
     elsif ( my $filename = $params{Filename} ) {
         $info = Image::ExifTool::ImageInfo($filename);
+        if ($info->{FileType} =~ /(?:svg|xml|gzip)/i) {
+            _get_svg_info($filename, $info);
+        }
     }
     return unless $info;
     return int($info->{ImageWidth} || 0), int($info->{ImageHeight} || 0), $info->{FileTypeExtension};
+}
+
+sub _get_svg_info {
+    my ($fh_or_fname, $info) = @_;
+    # TODO: better to handle gzip first
+    require MT::Image::SVG;
+    my $svg_info = MT::Image::SVG->get_size($fh_or_fname, $info->{FileType});
+    $info->{$_} = $svg_info->{$_} for keys %$svg_info;
 }
 
 sub get_image_type {
@@ -200,9 +225,9 @@ sub check_upload {
     my ( $filename, $path, $ext )
         = ( File::Basename::fileparse( $filepath, qr/[A-Za-z0-9]+$/ ) );
 
-    # Check for Content Sniffing bug (IE)
+    # Check for Content Sniffing bug (IE), except for .svg
     require MT::Asset::Image;
-    if ( MT::Asset::Image->can_handle($ext) ) {
+    if ( MT::Asset::Image->can_handle($ext) && lc $ext !~ /svg/ ) {
         return $class->error(
             MT->translate(
                 "Saving [_1] failed: Invalid image file format.",

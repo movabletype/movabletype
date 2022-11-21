@@ -105,9 +105,11 @@
               <button class="btn btn-default p-1 button editor-button enable-submit" title="<__trans phrase="Flip vertical">" onclick="image.flipVertical();">
                 <mtapp:svgicon id="ic_flipv" title="Flip vertical">
               </button>
+              <mt:unless name="no_crop">
               <button id="crop" class="btn btn-default p-1 button editor-button enable-submit disabled" disabled="disabled" title="<__trans phrase="Crop">" onclick="image.crop();">
                 <mtapp:svgicon id="ic_crop" title="Crop">
               </button>
+              </mt:unless>
             </div>
           </div>
           <div class="form-row align-items-center editor-button-column">

@@ -28,7 +28,7 @@ __PACKAGE__->install_properties(
 sub extensions {
     my $pkg = shift;
     return $pkg->SUPER::extensions(
-        [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, qr/ico/i ] );
+        [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, qr/ico/i, qr/svgz?/i ] );
 }
 
 sub image_metadata {
@@ -789,6 +789,8 @@ sub edit_template_param {
 
 sub normalize_orientation {
     my $obj = shift;
+
+    return 1 if $obj->file_ext =~ /svg/i;  # no need to normalize
 
     require Image::ExifTool;
 

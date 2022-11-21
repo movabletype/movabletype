@@ -26,6 +26,7 @@ sub init {
     my %param = @_;
 
     $image->SUPER::init(%param);
+    return $image if $image->isa('MT::Image::SVG');
 
     if ( ( !defined $param{Type} ) && ( my $file = $param{Filename} ) ) {
         ( my $ext = $file ) =~ s/.*\.//;

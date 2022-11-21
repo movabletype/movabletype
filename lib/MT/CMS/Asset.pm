@@ -1039,7 +1039,7 @@ sub build_asset_hasher {
 
         if ( $obj->has_thumbnail && $obj->can_create_thumbnail ) {
             $row->{has_thumbnail}  = 1;
-            $row->{can_edit_image} = 1;
+            $row->{can_edit_image} = $row->{file_ext} =~ /svg/i ? 0 : 1;   # TODO: svg edit is not ready yet
             my $height = $thumb_height || $default_thumb_height || $default_thumbnail_size;
             my $width  = $thumb_width  || $default_thumb_width  || $default_thumbnail_size;
             my $square = $height == $default_thumbnail_size && $width == $default_thumbnail_size;
@@ -2745,7 +2745,7 @@ sub dialog_edit_asset {
             $thumb_h   = $orig_height;
         }
         $param->{has_thumbnail}    = 1;
-        $param->{can_edit_image}   = 1;
+        $param->{can_edit_image}   = $asset->file_ext =~ /svg/i ? 0 : 1;
         $param->{thumbnail_url}    = $thumb_url;
         $param->{thumbnail_width}  = $thumb_w;
         $param->{thumbnail_height} = $thumb_h;
@@ -2930,6 +2930,8 @@ sub dialog_edit_image {
 
     $param->{return_args} = $app->param('return_args') || '';
 
+    $param->{no_crop} = $param->{ext} =~ /svgz?/i ? 1 : 0;
+
     $app->load_tmpl( 'dialog/edit_image.tmpl', $param );
 }
 
@@ -2969,6 +2971,10 @@ sub thumbnail_image {
     my $data = $fmgr->get_data( $thumbnail, 'upload' );
 
     $app->{no_print_body} = 1;
+    if (lc $asset->file_ext eq 'svgz') {
+        require MT::Image::SVG;
+        $data = MT::Image::SVG::gunzip($data);
+    }
     $app->send_http_header( $asset->mime_type );
     $app->print($data);
 }

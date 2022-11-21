@@ -24,7 +24,7 @@ use MT::Test::Image;
 
 MT->instance;
 
-my @drivers = $test_env->image_drivers;
+my @drivers = grep !/SVG/, $test_env->image_drivers;
 
 my ( $guard, $file ) = MT::Test::Image->tempfile(
     DIR    => $test_env->root,
