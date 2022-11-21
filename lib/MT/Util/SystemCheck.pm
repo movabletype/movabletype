@@ -105,9 +105,9 @@ sub check_dependencies {
 
     my @keys = qw(req data opt);
     my %deps = map { $_ => [] } @keys;
-    if (eval { require MT::App::Wizard; 1 }) {
-        my $app = MT::App::Wizard->new;
-        my $req = $app->registry('required_packages');
+
+        my $wizard = MT->registry->{applications}{wizard} || {};
+        my $req    = $wizard->{required_packages} || {};
         my $dbi;
         for my $module (keys %$req) {
             my $conf = $req->{$module};
@@ -128,12 +128,11 @@ sub check_dependencies {
             ];
         }
         unshift @{ $deps{data} }, $dbi;
-        my $opt = $app->registry('optional_packages');
+        my $opt = $wizard->{optional_packages} || {};
         for my $module (keys %$opt) {
             my $conf = $opt->{$module};
             push @{ $deps{opt} }, [$module, $conf->{version} || 0, 0, $conf->{label}];
         }
-    }
 
     require MT::Util::Dependencies;
     my %core_deps;
