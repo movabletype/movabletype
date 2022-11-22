@@ -1924,7 +1924,7 @@ sub _rebuild_content_archive_type {
         else {
             my $ext = $blog->file_extension;
             $file .= '.' . $ext if $ext;
-            $file = trim_path($file) if MT->cofig->TrimFilePath;
+            $file = trim_path($file) if MT->config->TrimFilePath;
         }
         $cache_file->{$cache_key} = $file;
         $file;
