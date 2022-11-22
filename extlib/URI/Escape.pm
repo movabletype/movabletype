@@ -71,6 +71,13 @@ as the reserved characters.  I.e. the default is:
 
     "^A-Za-z0-9\-\._~"
 
+The second argument can also be specified as a regular expression object:
+
+  qr/[^A-Za-z]/
+
+Any strings matched by this regular expression will have all of their
+characters escaped.
+
 =item uri_escape_utf8( $string )
 
 =item uri_escape_utf8( $string, $unsafe )
@@ -141,7 +148,7 @@ use Exporter 5.57 'import';
 our %escapes;
 our @EXPORT = qw(uri_escape uri_unescape uri_escape_utf8);
 our @EXPORT_OK = qw(%escapes);
-our $VERSION = '5.14';
+our $VERSION = '5.17';
 
 use Carp ();
 
@@ -162,6 +169,12 @@ sub uri_escape {
     return undef unless defined $text;
     my $re;
     if (defined $patn){
+        if (ref $patn eq 'Regexp') {
+            $text =~ s{($patn)}{
+                join('', map +($escapes{$_} || _fail_hi($_)), split //, "$1")
+            }ge;
+            return $text;
+        }
         $re = $subst{$patn};
         if (!defined $re) {
             $re = $patn;

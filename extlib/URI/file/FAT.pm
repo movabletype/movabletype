@@ -5,7 +5,7 @@ use warnings;
 
 use parent 'URI::file::Win32';
 
-our $VERSION = '5.14';
+our $VERSION = '5.17';
 
 sub fix_path
 {

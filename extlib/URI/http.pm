@@ -3,7 +3,7 @@ package URI::http;
 use strict;
 use warnings;
 
-our $VERSION = '5.14';
+our $VERSION = '5.17';
 
 use parent 'URI::_server';
 

@@ -3,7 +3,7 @@ package URI;
 use strict;
 use warnings;
 
-our $VERSION = '5.14';
+our $VERSION = '5.17';
 
 # 1=version 5.10 and earlier; 0=version 5.11 and later
 use constant HAS_RESERVED_SQUARE_BRACKETS => $ENV{URI_HAS_RESERVED_SQUARE_BRACKETS} ? 1 : 0;
@@ -759,8 +759,79 @@ documents as this avoids the trouble of escaping the "&" character.
 You might also set the $URI::DEFAULT_QUERY_FORM_DELIMITER variable to
 ";" for the same global effect.
 
-The C<URI::QueryParam> module can be loaded to add further methods to
-manipulate the form of a URI.  See L<URI::QueryParam> for details.
+=item @keys = $u->query_param
+
+=item @values = $u->query_param( $key )
+
+=item $first_value = $u->query_param( $key )
+
+=item $u->query_param( $key, $value,... )
+
+If $u->query_param is called with no arguments, it returns all the
+distinct parameter keys of the URI.  In a scalar context it returns the
+number of distinct keys.
+
+When a $key argument is given, the method returns the parameter values with the
+given key.  In a scalar context, only the first parameter value is
+returned.
+
+If additional arguments are given, they are used to update successive
+parameters with the given key.  If any of the values provided are
+array references, then the array is dereferenced to get the actual
+values.
+
+Please note that you can supply multiple values to this method, but you cannot
+supply multiple keys.
+
+Do this:
+
+    $uri->query_param( widget_id => 1, 5, 9 );
+
+Do NOT do this:
+
+    $uri->query_param( widget_id => 1, frobnicator_id => 99 );
+
+=item $u->query_param_append($key, $value,...)
+
+Adds new parameters with the given
+key without touching any old parameters with the same key.  It
+can be explained as a more efficient version of:
+
+   $u->query_param($key,
+                   $u->query_param($key),
+                   $value,...);
+
+One difference is that this expression would return the old values
+of $key, whereas the query_param_append() method does not.
+
+=item @values = $u->query_param_delete($key)
+
+=item $first_value = $u->query_param_delete($key)
+
+Deletes all key/value pairs with the given key.
+The old values are returned.  In a scalar context, only the first value
+is returned.
+
+Using the query_param_delete() method is slightly more efficient than
+the equivalent:
+
+   $u->query_param($key, []);
+
+=item $hashref = $u->query_form_hash
+
+=item $u->query_form_hash( \%new_form )
+
+Returns a reference to a hash that represents the
+query form's key/value pairs.  If a key occurs multiple times, then the hash
+value becomes an array reference.
+
+Note that sequence information is lost.  This means that:
+
+   $u->query_form_hash($u->query_form_hash);
+
+is not necessarily a no-op, as it may reorder the key/value pairs.
+The values returned by the query_param() method should stay the same
+though.
 
 =item $uri->query_keywords
 
@@ -1208,7 +1279,7 @@ readable alternative.
 
 =head1 SEE ALSO
 
-L<URI::file>, L<URI::WithBase>, L<URI::QueryParam>, L<URI::Escape>,
+L<URI::file>, L<URI::WithBase>, L<URI::Escape>,
 L<URI::Split>, L<URI::Heuristic>
 
 RFC 2396: "Uniform Resource Identifiers (URI): Generic Syntax",
