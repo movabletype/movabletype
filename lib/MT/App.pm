@@ -3607,32 +3607,25 @@ sub load_widgets {
         }
     }
 
-    my @ordered_list;
-    my %orders;
-    my $order_num = 0;
-    foreach my $widget_id ( keys %$all_widgets ) {
-        my $widget_param = $all_widgets->{$widget_id} ||= {};
-        if ( my $order = $widget_param->{order} ) {
-            $order_num = $order_num < $order ? $order : $order_num;
-        }
-    }
-    foreach my $widget_id ( keys %$all_widgets ) {
-        my $widget_param = $all_widgets->{$widget_id} ||= {};
+    my $max = 0;
+    my @ordered_list =
+        map  { $_->[0] }
+        sort { ($a->[1] || $max + 1 <=> $b->[1] || $max + 1) or $a->[0] cmp $b->[0] }
+        map {
+        my $param = $all_widgets->{$_};
         my $order;
-        if ( !( $order = $widget_param->{order} ) ) {
-            $order = $all_widgets->{$widget_id}{order};
-            $order
-                = $order && ref $order eq 'HASH'
-                ? $all_widgets->{$widget_id}{order}{$scope_type}
-                : $order * 100;
-            $order = $order_num = $order_num + 100 unless defined $order;
-            $widget_param->{order} = $order;
-            $resave_widgets = 1;
+        if (ref $param eq 'HASH' && $param->{order}) {
+            if (ref $param->{order} eq 'HASH') {
+                $order = $param->{order}{$scope_type};
+            } else {
+                $order = $param->{order};
+            }
+        } else {
+            $order = 0;
         }
-        push @ordered_list, $widget_id;
-        $orders{$widget_id} = $order;
-    }
-    @ordered_list = sort { $orders{$a} <=> $orders{$b} } @ordered_list;
+        $max = $order if $order > $max;
+        [$_, $order]
+        } keys %$all_widgets;
 
     $app->build_widgets(
         set         => $widget_set,
