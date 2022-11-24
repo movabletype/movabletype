@@ -2082,7 +2082,7 @@ sub _is_commenter {
         }
         return $app->error(
             $app->translate(
-                'Sorry, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
+                'Our apologies, but you do not have permission to access any sites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
             )
         ) unless $has_system_permission;
         return -1;
@@ -2342,7 +2342,7 @@ sub login {
 
             return $app->error(
                 $app->translate(
-                    'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
+                    'Our apologies, but you do not have permission to access any sites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
                 )
             ) if !defined $commenter_blog_id || $commenter_blog_id > 0;
 
