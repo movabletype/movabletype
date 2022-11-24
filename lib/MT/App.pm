@@ -3635,12 +3635,6 @@ sub load_widgets {
         order       => \@ordered_list,
     ) or return;
 
-    if ($resave_widgets) {
-        my $widget_store = $user->widgets();
-        $widget_store->{$widget_set} = $widgets;
-        $user->widgets($widget_store);
-        $user->save;
-    }
     return $param;
 }
 
