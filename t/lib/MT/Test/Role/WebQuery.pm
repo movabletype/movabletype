@@ -69,13 +69,13 @@ sub _concatenated_error {
 sub has_permission_error {
     my ($self, $message) = @_;
     my $response = $self->_concatenated_message // '';
-    like $response => qr/(?:No permissions|permission denied|you do not have (\w+ )?permission|not implemented)/is, $message || 'has permission error';
+    like $response => qr/(?:No permissions|permission denied|you do not have (\w+ )?permission|not implemented)/is, $message || 'has permission error' or diag $self->content;
 }
 
 sub has_no_permission_error {
     my ($self, $message) = @_;
     my $response = $self->_concatenated_message // '';
-    unlike $response => qr/(?:No permissions|permission denied|you do not have (\w+ )?permission|not implemented)/is, $message || 'has no permission error';
+    unlike $response => qr/(?:No permissions|permission denied|you do not have (\w+ )?permission|not implemented)/is, $message || 'has no permission error' or diag $self->content;;
 }
 
 sub has_invalid_request {
