@@ -3685,7 +3685,7 @@ sub build_widgets {
         foreach (@$passthru_param) {
             $widget_param->{$_} = '';
         }
-        my $tmpl_name = $widget->{template};
+        my $tmpl_name = $widget->{template} or next;
 
         my $p = $widget->{plugin};
         my $tmpl;
