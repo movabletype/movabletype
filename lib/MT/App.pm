@@ -3610,14 +3610,14 @@ sub load_widgets {
     my @ordered_list;
     my %orders;
     my $order_num = 0;
-    foreach my $widget_id ( keys %$widgets ) {
-        my $widget_param = $widgets->{$widget_id} ||= {};
+    foreach my $widget_id ( keys %$all_widgets ) {
+        my $widget_param = $all_widgets->{$widget_id} ||= {};
         if ( my $order = $widget_param->{order} ) {
             $order_num = $order_num < $order ? $order : $order_num;
         }
     }
-    foreach my $widget_id ( keys %$widgets ) {
-        my $widget_param = $widgets->{$widget_id} ||= {};
+    foreach my $widget_id ( keys %$all_widgets ) {
+        my $widget_param = $all_widgets->{$widget_id} ||= {};
         my $order;
         if ( !( $order = $widget_param->{order} ) ) {
             $order = $all_widgets->{$widget_id}{order};
