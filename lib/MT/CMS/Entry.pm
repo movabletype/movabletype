@@ -8,7 +8,7 @@ package MT::CMS::Entry;
 use strict;
 use warnings;
 use MT::Util qw( format_ts relative_date remove_html encode_html encode_js
-    encode_url archive_file_for offset_time_list break_up_text first_n_words );
+    encode_url archive_file_for offset_time_list break_up_text first_n_words trim_path);
 use MT::I18N qw( const wrap_text );
 
 sub edit {
@@ -221,7 +221,7 @@ sub edit {
         );
 
         $param->{'mode_view_entry'} = 1;
-        $param->{'basename'}        = $obj->basename;
+        $param->{'basename'} = MT->config->TrimFilePath ? trim_path($obj->basename) : $obj->basename;
 
         if ( my $ts = $obj->authored_on ) {
             $param->{authored_on_ts} = $ts;
