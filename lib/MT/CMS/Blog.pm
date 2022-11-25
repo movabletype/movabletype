@@ -3627,15 +3627,15 @@ sub save_data_api_settings {
 
     my $cfg = $app->config;
     if ($blog_id == 0) {
-        if (_can_write_data_api_disable_site($cfg)) {
+        if (!_data_api_disable_site_is_readonly($cfg)) {
             $cfg->DataAPIDisableSite($enable_data_api ? '' : $blog_id, 1);
         }
-        if (_can_write_deactivate_data_api($cfg)) {
+        if (!_deactivate_data_api_is_readonly($cfg)) {
             $cfg->DeactivateDataAPI($deactivate_data_api, 1);
         }
         $cfg->save_config;
     } else {
-        if (_can_write_data_api_disable_site($cfg)) {
+        if (!_data_api_disable_site_is_readonly($cfg)) {
             my $blog;
             if ($app->blog && $app->blog->id == $blog_id) {
                 $blog = $app->blog;
@@ -3772,14 +3772,14 @@ sub _set_show_data_api_params {
     }
 }
 
-sub _can_write_data_api_disable_site {
+sub _data_api_disable_site_is_readonly {
     my ($cfg) = @_;
-    return !$cfg->DeactivateDataAPI && !grep { $_ && 'data_api' eq $_ } $cfg->RestrictedPSGIApp && !$cfg->is_readonly('DataAPIDisableSite');
+    return $cfg->DeactivateDataAPI || grep { $_ && 'data_api' eq $_ } $cfg->RestrictedPSGIApp || $cfg->is_readonly('DataAPIDisableSite');
 }
 
-sub _can_write_deactivate_data_api {
+sub _deactivate_data_api_is_readonly {
     my ($cfg) = @_;
-    return !$cfg->is_readonly('DeactivateDataAPI') && !grep { 'data_api' eq $_ } $cfg->RestrictedPSGIApp;
+    return $cfg->is_readonly('DeactivateDataAPI') || grep { 'data_api' eq $_ } $cfg->RestrictedPSGIApp;
 }
 
 1;
