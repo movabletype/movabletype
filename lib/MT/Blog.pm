@@ -842,13 +842,13 @@ sub archive_url {
         $blog->column( 'archive_url', $url ) || $blog->site_url;
     }
     else {
+        my $archive_url = $blog->column('archive_url');
+        return $blog->site_url unless $archive_url;
+        return $archive_url if $archive_url =~ m!^https?://!;
         my $url = $blog->site_url;
         if ( my $website = $blog->website() ) {
             $url = $website->column('site_url');
         }
-        my $archive_url = $blog->column('archive_url');
-        return $blog->site_url unless $archive_url;
-        return $archive_url if $archive_url =~ m!^https?://!;
         my @paths = $blog->raw_archive_url;
         if ( 2 == @paths ) {
             if ( $paths[0] ) {
