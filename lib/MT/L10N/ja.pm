@@ -4145,7 +4145,7 @@ use vars qw( @ISA %Lexicon );
 	'Data API Settings' => 'Data API の設定',
 	'Data API' => 'Data API',
 	'Deactivate Data API' => 'Data API を利用しない',
-	'Enable Data API in system scope.' => 'システム設定を Data API の出力結果に反映する',
+	'Enable Data API in system scope.' => 'システム領域の設定やデータを Data API の出力結果に含める',
 	'Enable Data API in this site.' => 'Data API の利用を許可する。',
 	'External Notifications' => '更新通知',
 	'Note: This option is currently ignored because outbound notification pings are disabled system-wide.' => '備考: システム外部ping通知がシステムレベルで無効のため、このオプションは現在無効となっています。',
