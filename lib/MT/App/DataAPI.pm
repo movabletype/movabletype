@@ -911,7 +911,7 @@ sub load_default_page_prefs {
 sub api {
     my ($app) = @_;
 
-    return $app->print_error('DataAPI is disabled', 400) if $app->config->DeactivateDataAPI;
+    return $app->print_error('DataAPI is disabled', 400) if $app->config->DisableDataAPI;
 
     my ( $version, $path ) = $app->_version_path;
 

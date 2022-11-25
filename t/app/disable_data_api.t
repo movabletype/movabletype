@@ -67,8 +67,8 @@ subtest 'with RestrictedPSGIApp' => sub {
     MT->config->set('RestrictedPSGIApp', \@restricted_psgi_apps, 1);
 };
 
-subtest 'with DeactivateDataAPI' => sub {
-    MT->config->DeactivateDataAPI(1, 1);
+subtest 'with DisableDataAPI' => sub {
+    MT->config->DisableDataAPI(1, 1);
 
     {
         my $apps      = MT::PSGI->new->to_app;
@@ -84,10 +84,10 @@ subtest 'with DeactivateDataAPI' => sub {
         is($res->content, 'Not Found', 'Restrict "data_api" for specific application');
     }
 
-    MT->config->DeactivateDataAPI(undef, 1);
+    MT->config->DisableDataAPI(undef, 1);
 };
 
-subtest 'Deactivate Data API via UI' => sub {
+subtest 'Disable Data API via UI' => sub {
     my $admin = MT->model('author')->load(1);
     my $app   = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
@@ -96,7 +96,7 @@ subtest 'Deactivate Data API via UI' => sub {
         blog_id => 0,
     });
     $app->post_form_ok({
-        deactivate_data_api => 1,
+        disable_data_api => 1,
     });
 
     {

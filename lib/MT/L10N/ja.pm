@@ -4144,7 +4144,7 @@ use vars qw( @ISA %Lexicon );
 	'(Separate URLs with a carriage return.)' => '(URLは改行で区切ってください)',
 	'Data API Settings' => 'Data API の設定',
 	'Data API' => 'Data API',
-	'Deactivate Data API' => 'Data API を利用しない',
+	'Disable Data API' => 'Data API を利用しない',
 	'Enable Data API in system scope.' => 'システム領域の設定やデータを Data API の出力結果に含める',
 	'Enable Data API in this site.' => 'Data API の利用を許可する。',
 	'External Notifications' => '更新通知',
