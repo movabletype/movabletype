@@ -1561,7 +1561,7 @@ sub archive_file {
     my $map = MT->publisher->archiver($at)->get_preferred_map({
         blog_id         => $blog->id,
         content_type_id => $self->content_type_id,
-    });
+    }) or return '';
 
     # Load category
     my $cat;

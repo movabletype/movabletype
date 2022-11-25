@@ -224,7 +224,14 @@ sub edit {
                 blog_id      => $content_type->blog_id,
                 archive_type => 'ContentType',
                 is_preferred => 1,
-            }
+            }, {
+                join => MT->model('template')->join_on(
+                    undef, {
+                        id              => \'= templatemap_template_id',
+                        content_type_id => $content_type->id,
+                    },
+                ),
+            },
         );
 
         $param->{authored_on_date} = $app->param('authored_on_date')
