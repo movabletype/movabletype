@@ -11,8 +11,8 @@ use warnings;
 use utf8;
 use open ':utf8';
 use base qw( MT::Object MT::Revisable );
-use MT::Util qw( weaken );
 use MT::Util::Encode;
+use Scalar::Util;
 
 use MT::Template::Node ':constants';
 sub NODE () {'MT::Template::Node'}
@@ -284,7 +284,7 @@ sub context {
     return $tmpl->{context} = shift if @_;
     require MT::Template::Context;
     my $ctx = $tmpl->{context} ||= MT::Template::Context->new;
-    weaken( $ctx->{__stash}{'template'} = $tmpl );
+    Scalar::Util::weaken( $ctx->{__stash}{'template'} = $tmpl );
     return $ctx;
 }
 
@@ -362,7 +362,7 @@ sub build {
     local $timer->{elapsed} = 0 if $timer;
 
     local $ctx->{__stash}{template} = $tmpl;
-    my $tokens = $tmpl->tokens
+    my $tokens = $tmpl->raw_tokens
         or return;
 
     my $tmpl_name = $tmpl->name || $tmpl->{__file} || "?";
@@ -928,13 +928,28 @@ sub token_classes {
     return $tmpl->{__classes};
 }
 
-sub tokens {
+sub raw_tokens {
     my $tmpl = shift;
     if (@_) {
         return bless $tmpl->{__tokens} = shift, 'MT::Template::Tokens';
     }
     my $t = $tmpl->{__tokens} || $tmpl->compile;
     return bless $t, 'MT::Template::Tokens' if $t;
+    return undef;
+}
+
+sub tokens {
+    my $tmpl = shift;
+    if (@_) {
+        return bless $tmpl->{__tokens} = shift, 'MT::Template::Tokens';
+    }
+    my $t = $tmpl->{__tokens} || $tmpl->compile;
+    if ($t) {
+        for my $node (@$t) {
+            $node = bless $node, 'MT::Template::Node' unless Scalar::Util::blessed($node);
+        }
+        return bless $t, 'MT::Template::Tokens';
+    }
     return undef;
 }
 
@@ -1012,7 +1027,7 @@ sub getElementsByClassName {
     my $tokens  = $classes->{ lc $name };
     if ( $tokens && @$tokens ) {
 
-        #@$tokens = map { bless $_, NODE } @$tokens;
+        @$tokens = map { Scalar::Util::blessed($_) ? $_ : bless $_, NODE } @$tokens;
         return @$tokens;
     }
     return ();
@@ -1027,6 +1042,7 @@ sub getElementById {
     my $tmpl = shift;
     my ($id) = @_;
     if ( my $node = $tmpl->token_ids->{$id} ) {
+        $node = bless $node, NODE unless Scalar::Util::blessed($node);
         return $node;
     }
     undef;
@@ -1049,11 +1065,14 @@ sub insertAfter {
     my ( $node1, $node2 ) = @_;
     my $parent_node
         = $node2 && $node2->[EL_NODE_PARENT] ? $node2->[EL_NODE_PARENT] : $tmpl;
-    my $parent_array = $parent_node->childNodes;
+    my $parent_array = ref $parent_node eq 'ARRAY' ? $parent_node->[EL_NODE_PARENT] : $parent_node->childNodes;
+    if (ref $parent_array eq 'MT::Template') {
+        $parent_array = $parent_array->childNodes;
+    }
     if ($node2) {
         for ( my $i = 0; $i < scalar @{$parent_array || []}; $i++ ) {
             if ( $parent_array->[$i] eq $node2 ) {
-                MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
+                Scalar::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
                 splice( @$parent_array, $i + 1, 0, $node1 );
                 return 1;
             }
@@ -1061,7 +1080,7 @@ sub insertAfter {
         return 0;
     }
     else {
-        MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
+        Scalar::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
         push @$parent_array, $node1;
         return 1;
     }
@@ -1073,11 +1092,14 @@ sub insertBefore {
     my ( $node1, $node2 ) = @_;
     my $parent_node
         = $node2 && $node2->[EL_NODE_PARENT] ? $node2->[EL_NODE_PARENT] : $tmpl;
-    my $parent_array = $parent_node->childNodes;
+    my $parent_array = ref $parent_node eq 'ARRAY' ? $parent_node->[EL_NODE_CHILDREN] : $parent_node->childNodes;
+    if (ref $parent_array eq 'MT::Template') {
+        $parent_array = $parent_array->childNodes;
+    }
     if ($node2) {
         for ( my $i = 0; $i < scalar @{$parent_array || []}; $i++ ) {
             if ( $parent_array->[$i] eq $node2 ) {
-                MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
+                Scalar::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
                 splice( @$parent_array, $i, 0, $node1 );
                 return 1;
             }
@@ -1085,7 +1107,7 @@ sub insertBefore {
         return 0;
     }
     else {
-        MT::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
+        Scalar::Util::weaken($node1->[EL_NODE_PARENT] = $parent_node);
         unshift @$parent_array, $node1;
         return 1;
     }
@@ -1154,6 +1176,9 @@ sub getElementsByTagName {
             push @list, @$subt if $subt;
         }
     }
+    for my $node (@list) {
+        $node = bless $node, 'MT::Template::Node' unless Scalar::Util::blessed($node);
+    }
     scalar @list ? \@list : undef;
 }
 
@@ -1169,6 +1194,9 @@ sub getElementsByName {
             my $subt = getElementsByName( $childNodes, $name );
             push @list, @$subt if $subt;
         }
+    }
+    for my $node (@list) {
+        $node = bless $node, 'MT::Template::Node' unless Scalar::Util::blessed($node);
     }
     scalar @list ? \@list : undef;
 }

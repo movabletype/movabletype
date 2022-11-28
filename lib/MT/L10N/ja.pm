@@ -1138,6 +1138,12 @@ use vars qw( @ISA %Lexicon );
 	'Error in <mt[_1]> tag: [_2]' => '<mt[_1]>タグでエラーがありました: [_2]',
 	'Unknown tag found: [_1]' => '不明なタグです: [_1]',
 
+## lib/MT/Builder/Fast.pm
+	'Found mismatched closing tag [_1] at line #' => '</mt:[_1]>に対応する<mt:[_1]>がありません(#行目)',
+	'Tag [_1] left unclosed at line #' => '<mt:[_1]>に対応する</mt:[_1]>がありません(#行目)',
+	'Undefined tag [_1] at line #' => '<mt:[_1]>は定義されていません(#行目)',
+	q{Publish error in template '[_1]': [_2]} => q{テンプレート「[_1]」の再構築中にエラーが発生しました: [_2]},
+
 ## lib/MT/CMS/AddressBook.pm
 	'Error sending mail ([_1]): Try another MailTransfer setting?' => 'メールを送信できませんでした。MailTransferの設定を見直してください: [_1]',
 	'No entry ID was provided' => '記事のIDが指定されていません。',
@@ -2572,7 +2578,6 @@ use vars qw( @ISA %Lexicon );
 	'You cannot use a [_1] extension for a linked file.' => '[_1]をリンクファイルの拡張子に使うことはできません。',
 	q{Error reading file '[_1]': [_2]} => q{ファイル: [_1]を読み込めませんでした: [_2]},
 	q{Opening linked file '[_1]' failed: [_2]} => q{リンクファイル'[_1]'を開けませんでした: [_2]},
-	q{Publish error in template '[_1]': [_2]} => q{テンプレート「[_1]」の再構築中にエラーが発生しました: [_2]},
 	q{Tried to load the template file from outside of the include path '[_1]'} => q{許可されない場所からテンプレートファイルを読み込もうとしました。'[_1]'},
 
 ## lib/MT/Template/Context.pm
