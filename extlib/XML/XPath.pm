@@ -6,17 +6,18 @@ XML::XPath - Parse and evaluate XPath statements.
 
 =head1 VERSION
 
-Version 1.44
+Version 1.48
 
 =cut
 
-use strict; use warnings;
-use vars qw($VERSION $AUTOLOAD $revision);
+use strict;
+use warnings;
+use parent qw/Exporter/;
 
-$VERSION = '1.44';
-$XML::XPath::Namespaces = 1;
-$XML::XPath::ParseParamEnt = 1;
-$XML::XPath::Debug = 0;
+our $VERSION = '1.48';
+our $Namespaces = 1;
+our $ParseParamEnt = 1;
+our $Debug = 0;
 
 use Data::Dumper;
 use XML::XPath::XMLParser;
@@ -60,6 +61,10 @@ should be worth it. Please get a good understanding of XPath by reading  the spe
 before asking me questions. All of the classes and parts  herein are named to  be
 synonymous  with  the  names in  the  specification, so consult that if you don't
 understand why I'm doing something in the code.
+
+Currently, it supports XPath 1.0 with a small number of XPath 2.0
+functions. See L<XML::XPath::Function> for the complete list of
+predefined functions.
 
 =head1 METHODS
 
@@ -572,9 +577,10 @@ Currently maintained by Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
 
 =head1 SEE ALSO
 
-L<XML::XPath::Literal>, L<XML::XPath::Boolean>, L<XML::XPath::Number>,
-L<XML::XPath::XMLParser>, L<XML::XPath::NodeSet>, L<XML::XPath::PerlSAX>,
-L<XML::XPath::Builder>.
+L<XML::XPath::Function>, L<XML::XPath::Literal>,
+L<XML::XPath::Boolean>, L<XML::XPath::Number>,
+L<XML::XPath::XMLParser>, L<XML::XPath::NodeSet>,
+L<XML::XPath::PerlSAX>, L<XML::XPath::Builder>.
 
 =head1 LICENSE AND COPYRIGHT
 

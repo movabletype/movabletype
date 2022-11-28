@@ -1,9 +1,9 @@
 use 5.006;
 use strict;
 use warnings;
-package Email::Date::Format;
+package Email::Date::Format 1.006;
 # ABSTRACT: produce RFC 2822 date strings
-$Email::Date::Format::VERSION = '1.005';
+
 our @EXPORT_OK = qw[email_date email_gmdate];
 
 use Exporter 5.57 'import';
@@ -54,8 +54,12 @@ use Time::Local ();
 sub _tz_diff {
   my ($time) = @_;
 
-  my $diff  =   Time::Local::timegm(localtime $time)
-              - Time::Local::timegm(gmtime    $time);
+  my @localtime = localtime $time;
+  my @gmtime    = gmtime    $time;
+  $localtime[5] += 1900;
+  $gmtime[5]    += 1900;
+  my $diff  =   Time::Local::timegm(@localtime)
+              - Time::Local::timegm(@gmtime);
 
   my $direc = $diff < 0 ? '-' : '+';
   $diff  = abs $diff;
@@ -106,7 +110,7 @@ Email::Date::Format - produce RFC 2822 date strings
 
 =head1 VERSION
 
-version 1.005
+version 1.006
 
 =head1 SYNOPSIS
 
@@ -126,6 +130,16 @@ version 1.005
 This module provides a simple means for generating an RFC 2822 compliant
 datetime string.  (In case you care, they're not RFC 822 dates, because they
 use a four digit year, which is not allowed in RFC 822.)
+
+=head1 PERL VERSION
+
+This library should run on perls released even a long time ago.  It should work
+on any version of perl released in the last five years.
+
+Although it may work on older versions of perl, no guarantee is made that the
+minimum required version will not be increased.  The version may be increased
+for any reason, and there is no promise that patches will be accepted to lower
+the minimum required perl.
 
 =head1 FUNCTIONS
 
@@ -160,7 +174,23 @@ Casey West
 
 =item *
 
-Ricardo SIGNES <rjbs@cpan.org>
+Ricardo SIGNES <rjbs@semiotic.systems>
+
+=back
+
+=head1 CONTRIBUTORS
+
+=for stopwords bitcardbmw@lsmod.de Eric Sproul
+
+=over 4
+
+=item *
+
+bitcardbmw@lsmod.de <bitcardbmw@lsmod.de>
+
+=item *
+
+Eric Sproul <esproul@omniti.com>
 
 =back
 

@@ -1,6 +1,6 @@
 package XML::XPath::Function;
 
-$VERSION = '1.44';
+$VERSION = '1.48';
 
 use XML::XPath::Number;
 use XML::XPath::Literal;
@@ -8,6 +8,21 @@ use XML::XPath::Boolean;
 use XML::XPath::NodeSet;
 use XML::XPath::Node::Attribute;
 use strict; use warnings;
+
+=head1 NAME
+
+XML::XPath::Functions - implementations of XPath functions
+
+=head1 DESCRIPTION
+
+XPath 1.0 and some later functions are supported.
+
+Note that functions that take regular expressions use Perl-syntax REs,
+not the language described in the XPath spec.
+
+=head1 FUNCTIONS
+
+=cut
 
 sub new {
     my $class = shift;
@@ -76,7 +91,41 @@ sub _execute {
 # XML::XPath::NodeSet
 # XML::XPath::Boolean
 
-### NODESET FUNCTIONS ###
+=head2 NODESET FUNCTIONS
+
+=over
+
+=item *
+
+C<last()>
+
+=item *
+
+C<position()>
+
+=item *
+
+C<count()>
+
+=item *
+
+C<id()>
+
+=item *
+
+C<local-name()>
+
+=item *
+
+C<name()>
+
+=item *
+
+C<namespace-uri()>
+
+=back
+
+=cut
 
 sub last {
     my $self = shift;
@@ -176,7 +225,71 @@ sub name {
     return XML::XPath::Literal->new($node->getName);
 }
 
-### STRING FUNCTIONS ###
+=head2 STRING FUNCTIONS
+
+=head3 Functions On String Values
+
+=over
+
+=item *
+
+C<string()>
+
+=item *
+
+C<concat()>
+
+=item *
+
+C<substring()>
+
+=item *
+
+C<string-length()>
+
+=item *
+
+C<normalize-space()>
+
+=item *
+
+C<translate()>
+
+=back
+
+=head3 Functions Based on Substring Matching
+
+=over
+
+=item *
+
+C<contains()>
+
+=item *
+
+C<starts-with()>
+
+=item *
+
+C<substring-before()>
+
+=item *
+
+C<substring-after()>
+
+=back
+
+=head3 String Functions that Use Pattern Matching
+
+=over
+
+=item *
+
+C<matches()>
+
+=back
+
+=cut
 
 sub string {
     my $self = shift;
@@ -359,7 +472,64 @@ sub translate {
     return XML::XPath::Literal->new($_);
 }
 
-### BOOLEAN FUNCTIONS ###
+sub _re_flags {
+  my $opts = "";
+  my $fn = shift;
+  for my $flag (split //, shift) {
+    if ($flag =~ /[smix]/) {
+      $opts .= $flag;
+    } elsif ($flag ne 'q') {
+      die "$fn: unknown flag $flag\n";
+    }
+  }
+  return $opts eq '' ? '' : "(?$opts)";
+}
+
+sub matches {
+  my $self = shift;
+  my ($node, @params) = @_;
+  die "matches: wrong number of params\n" if @params < 2 || @params > 3;
+  my $str = $params[0]->string_value;
+  my $re = $params[1]->string_value;
+  if (@params == 3) {
+    my $flags = $params[2]->string_value;
+    my $opts = _re_flags('matches', $flags);
+    if ($flags =~ /q/) {
+      $re = $opts . quotemeta($re);
+    } else {
+      $re = $opts . $re;
+    }
+  }
+  return $str =~ /$re/ ? XML::XPath::Boolean->True : XML::XPath::Boolean->False;
+}
+
+=head2 BOOLEAN FUNCTIONS
+
+=over
+
+=item *
+
+C<boolean()>
+
+=item *
+
+C<not()>
+
+=item *
+
+C<true()>
+
+=item *
+
+C<false()>
+
+=item *
+
+C<lang()>
+
+=back
+
+=cut
 
 sub boolean {
     my $self = shift;
@@ -404,7 +574,33 @@ sub lang {
     }
 }
 
-### NUMBER FUNCTIONS ###
+=head2 NUMBER FUNCTIONS
+
+=over
+
+=item *
+
+C<number()>
+
+=item *
+
+C<sum()>
+
+=item *
+
+C<floor()>
+
+=item *
+
+C<ceiling()>
+
+=item *
+
+C<round()>
+
+=back
+
+=cut
 
 sub number {
     my $self = shift;

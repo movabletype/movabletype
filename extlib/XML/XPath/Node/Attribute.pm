@@ -1,18 +1,17 @@
 package XML::XPath::Node::Attribute;
 
-use strict; use warnings;
-use vars qw/@ISA $VERSION/;
+use strict;
+use warnings;
+use parent qw/XML::XPath::Node/;
 
-@ISA = ('XML::XPath::Node');
-$VERSION = '1.44';
+our $VERSION = '1.48';
 
 package XML::XPath::Node::AttributeImpl;
 
-use vars qw/@ISA $VERSION/;
-@ISA = ('XML::XPath::NodeImpl', 'XML::XPath::Node::Attribute');
 use XML::XPath::Node ':node_keys';
+use parent qw/-norequire XML::XPath::NodeImpl XML::XPath::Node::Attribute/;
 
-$VERSION = '1.44';
+our $VERSION = '1.48';
 
 sub new {
 	my $class = shift;

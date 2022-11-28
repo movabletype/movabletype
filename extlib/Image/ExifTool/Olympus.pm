@@ -40,7 +40,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::APP12;
 
-$VERSION = '2.74';
+$VERSION = '2.78';
 
 sub PrintLensInfo($$$);
 
@@ -432,6 +432,7 @@ my %olympusCameraTypes = (
     S0089 => 'E-M5MarkIII',
     S0092 => 'E-M1MarkIII', #IB
     S0093 => 'E-P7', #IB
+    S0095 => 'OM-1', #IB
     SR45 => 'D220',
     SR55 => 'D320L',
     SR83 => 'D340L',
@@ -1910,6 +1911,23 @@ my %indexInfo = (
         Name => 'FocusBracketStepSize',
         Writable => 'int8u',
     },
+    0x309 => { #forum13341
+        Name => 'AISubjectTrackingMode',
+        Writable => 'int16u',
+        ValueConv => '($val >> 8) . " " . ($val & 0xff)',
+        ValueConvInv => 'my @a = split " ", $val; $val = $a[0]*256 + $a[1]',
+        PrintConv => [{
+            0 => 'Off',
+            1 => 'Motorsports',
+            2 => 'Airplnes',
+            3 => 'Trains',
+            4 => 'Birds',
+            5 => 'Dogs & Cats',
+        },{
+            0 => 'Object Not Found',
+            1 => 'Object Found',
+        }],
+    },
     0x400 => { #6
         Name => 'FlashMode',
         Writable => 'int16u',
@@ -2537,11 +2555,13 @@ my %indexInfo = (
             '3 8' => 'ND8 (3EV)', #IB
             '3 16' => 'ND16 (4EV)', #IB
             '3 32' => 'ND32 (5EV)', #IB
+            '3 64' => 'ND64 (6EV)', #forum13341
             '5 4' => 'HDR1', #forum8906
             '6 4' => 'HDR2', #forum8906
             '8 8' => 'Tripod high resolution', #IB
             '9 *' => 'Focus-stacked (* images)', #IB (* = 2-15)
-            '11 16' => 'Hand-held high resolution', #IB (perhaps '11 15' would be possible, ref 24)
+            '11 12' => 'Hand-held high resolution (11 12)', #forum13341 (OM-1)
+            '11 16' => 'Hand-held high resolution (11 16)', #IB (perhaps '11 15' would be possible, ref 24)
             OTHER => sub {
                 my ($val, $inv, $conv) = @_;
                 if ($inv) {
@@ -3430,7 +3450,7 @@ my %indexInfo = (
     0x2a => {
         Name => 'FNumber',
         Format => 'rational64u',
-        PrintConv => 'sprintf("%.1f",$val)',
+        PrintConv => 'Image::ExifTool::Exif::PrintFNumber($val)',
     },
     0x32 => { #(NC)
         Name => 'ExposureCompensation',
@@ -3476,7 +3496,7 @@ my %indexInfo = (
     0x3a => {
         Name => 'FNumber',
         Format => 'rational64u',
-        PrintConv => 'sprintf("%.1f",$val)',
+        PrintConv => 'Image::ExifTool::Exif::PrintFNumber($val)',
     },
     0x42 => { #(NC)
         Name => 'ExposureCompensation',
@@ -3527,7 +3547,7 @@ my %indexInfo = (
     0x28 => {
         Name => 'FNumber',
         Format => 'rational64u',
-        PrintConv => 'sprintf("%.1f",$val)',
+        PrintConv => 'Image::ExifTool::Exif::PrintFNumber($val)',
     },
     0x30 => { #(NC)
         Name => 'ExposureCompensation',
@@ -3608,6 +3628,10 @@ my %indexInfo = (
         Name => 'DateTime2',
         Format => 'string[24]',
         Groups => { 2 => 'Time' },
+    },
+    0x17f => {
+        Name => 'LensModel',
+        Format => 'string[32]'
     },
 );
 
@@ -3740,7 +3764,7 @@ my %indexInfo = (
     0x5a => {
         Name => 'FNumber',
         Format => 'rational64u',
-        PrintConv => 'sprintf("%.1f",$val)',
+        PrintConv => 'Image::ExifTool::Exif::PrintFNumber($val)',
     },
     0x7f => {
         Name => 'DateTimeOriginal', #(NC)
@@ -3785,7 +3809,7 @@ my %indexInfo = (
     0x5e => {
         Name => 'FNumber',
         Format => 'rational64u',
-        PrintConv => 'sprintf("%.1f",$val)',
+        PrintConv => 'Image::ExifTool::Exif::PrintFNumber($val)',
     },
     0x83 => {
         Name => 'DateTime1',
@@ -4067,7 +4091,7 @@ Olympus or Epson maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

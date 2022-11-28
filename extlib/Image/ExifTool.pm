@@ -8,7 +8,7 @@
 # Revisions:    Nov. 12/2003 - P. Harvey Created
 #               (See html/history.html for revision history)
 #
-# Legal:        Copyright (c) 2003-2021, Phil Harvey (philharvey66 at gmail.com)
+# Legal:        Copyright (c) 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 #               This library is free software; you can redistribute it and/or
 #               modify it under the same terms as Perl itself.
 #------------------------------------------------------------------------------
@@ -26,10 +26,10 @@ use vars qw($VERSION $RELEASE @ISA @EXPORT_OK %EXPORT_TAGS $AUTOLOAD @fileTypes
             $psAPP13hdr $psAPP13old @loadAllTables %UserDefined $evalWarning
             %noWriteFile %magicNumber @langs $defaultLang %langName %charsetName
             %mimeType $swapBytes $swapWords $currentByteOrder %unpackStd
-            %jpegMarker %specialTags %fileTypeLookup $testLen $exePath
+            %jpegMarker %specialTags %fileTypeLookup $testLen $exeDir
             %static_vars);
 
-$VERSION = '12.30';
+$VERSION = '12.42';
 $RELEASE = '';
 @ISA = qw(Exporter);
 %EXPORT_TAGS = (
@@ -320,7 +320,7 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
     FPF  => ['FPF',  'FLIR Public image Format'],
     FPX  => ['FPX',  'FlashPix'],
     GIF  => ['GIF',  'Compuserve Graphics Interchange Format'],
-    GPR  => ['TIFF', 'GoPro RAW'],
+    GPR  => ['TIFF', 'General Purpose RAW'], # https://gopro.github.io/gpr/
     GZ   =>  'GZIP',
     GZIP => ['GZIP', 'GNU ZIP compressed archive'],
     HDP  => ['TIFF', 'Windows HD Photo'],
@@ -406,6 +406,8 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
   # NDPI => ['TIFF', 'Hamamatsu NanoZoomer Digital Pathology Image'],
     NEF  => ['TIFF', 'Nikon (RAW) Electronic Format'],
     NEWER => 'COS',
+    NKSC => ['XMP',  'Nikon Sidecar'],
+
     NMBTEMPLATE => ['ZIP','Apple Numbers Template'],
     NRW  => ['TIFF', 'Nikon RAW (2)'],
     NUMBERS => ['ZIP','Apple Numbers spreadsheet'],
@@ -691,6 +693,7 @@ my %fileDescription = (
     MRW  => 'image/x-minolta-mrw',
     MXF  => 'application/mxf',
     NEF  => 'image/x-nikon-nef',
+    NKSC => 'application/x-nikon-nxstudio',
     NRW  => 'image/x-nikon-nrw',
     NUMBERS => 'application/x-iwork-numbers-sffnumbers',
     ODB  => 'application/vnd.oasis.opendocument.database',
@@ -808,6 +811,7 @@ my %moduleName = (
     DEX  => 0,
     DOCX => 'OOXML',
     DCX  => 0,
+    DIR  => 0,
     DR4  => 'CanonVRD',
     DSS  => 'Olympus',
     DWF  => 0,
@@ -908,7 +912,7 @@ $testLen = 1024;    # number of bytes to read when testing for magic number
     GZIP => '\x1f\x8b\x08',
     HDR  => '#\?(RADIANCE|RGBE)\x0a',
     HTML => '(\xef\xbb\xbf)?\s*(?i)<(!DOCTYPE\s+HTML|HTML|\?xml)', # (case insensitive)
-    ICC  => '.{12}(scnr|mntr|prtr|link|spac|abst|nmcl|nkpf)(XYZ |Lab |Luv |YCbr|Yxy |RGB |GRAY|HSV |HLS |CMYK|CMY |[2-9A-F]CLR){2}',
+    ICC  => '.{12}(scnr|mntr|prtr|link|spac|abst|nmcl|nkpf|cenc|mid |mlnk|mvis)(XYZ |Lab |Luv |YCbr|Yxy |RGB |GRAY|HSV |HLS |CMYK|CMY |[2-9A-F]CLR|nc..|\0{4}){2}',
     IND  => '\x06\x06\xed\xf5\xd8\x1d\x46\xe5\xbd\x31\xef\xe7\xfe\x74\xb7\x1d',
   # ISO  =>  signature is at byte 32768
     ITC  => '.{4}itch',
@@ -1155,14 +1159,14 @@ my %systemTagsNotes = (
         Groups => { 1 => 'System', 2 => 'Other' },
         Notes => q{
             file name without extension. Not generated unless specifically requested or
-            the L<RequestAll|../ExifTool.html#RequestAll> API option is set
+            the API L<RequestAll|../ExifTool.html#RequestAll> option is set
         },
     },
     FilePath => {
         Groups => { 1 => 'System', 2 => 'Other' },
         Notes => q{
             absolute path of source file. Not generated unless specifically requested or
-            the L<RequestAll|../ExifTool.html#RequestAll> API option is set.  Does not support Windows Unicode file
+            the API L<RequestAll|../ExifTool.html#RequestAll> option is set.  Does not support Windows Unicode file
             names
         },
     },
@@ -1185,7 +1189,7 @@ my %systemTagsNotes = (
             sequence number for each source file when extracting or copying information,
             including files that fail the -if condition of the command-line application,
             beginning at 0 for the first file.  Not generated unless specifically
-            requested or the L<RequestAll|../ExifTool.html#RequestAll> API option is set
+            requested or the API L<RequestAll|../ExifTool.html#RequestAll> option is set
         },
     },
     FileSize => {
@@ -1206,6 +1210,18 @@ my %systemTagsNotes = (
             the command line
         },
         PrintConv => \&ConvertFileSize,
+    },
+    ZoneIdentifier => {
+        Groups => { 1 => 'System', 2 => 'Other' },
+        Notes => q{
+            Windows only.  Existence indicates that the file has a Zone.Identifier
+            alternate data stream, which is used by some Windows browsers to mark
+            downloaded files as possibly unsafe to run.  May be deleted to remove this
+            stream.  Requires Win32API::File
+        },
+        Writable => 1,
+        WritePseudo => 1,
+        Protected => 1,
     },
     FileType => {
         Groups => { 2 => 'Other' },
@@ -1258,7 +1274,7 @@ my %systemTagsNotes = (
             the filesystem creation date/time.  Windows/Mac only.  In Windows, the file
             creation date/time is preserved by default when writing if Win32API::File
             and Win32::API are available.  On Mac, this tag is extracted only if it or
-            the MacOS group is specifically requested or the L<RequestAll|../ExifTool.html#RequestAll> API option is
+            the MacOS group is specifically requested or the API L<RequestAll|../ExifTool.html#RequestAll> option is
             set to 2 or higher.  Requires "setfile" for writing on Mac, which may be
             installed by typing C<xcode-select --install> in the Terminal
         },
@@ -1649,7 +1665,7 @@ my %systemTagsNotes = (
             sub-sampling values to generate the value of this tag.  The result is
             compared to known values in an attempt to deduce the originating software
             based only on the JPEG image data.  For performance reasons, this tag is
-            generated only if specifically requested or the L<RequestAll|../ExifTool.html#RequestAll> API option is set
+            generated only if specifically requested or the API L<RequestAll|../ExifTool.html#RequestAll> option is set
             to 3 or higher
         },
     },
@@ -1657,14 +1673,14 @@ my %systemTagsNotes = (
         Notes => q{
             an estimate of the IJG JPEG quality setting for the image, calculated from
             the quantization tables.  For performance reasons, this tag is generated
-            only if specifically requested or the L<RequestAll|../ExifTool.html#RequestAll> API option is set to 3 or
+            only if specifically requested or the API L<RequestAll|../ExifTool.html#RequestAll> option is set to 3 or
             higher
         },
     },
     JPEGImageLength => {
         Notes => q{
             byte length of JPEG image without metadata.  For performance reasons, this
-            tag is generated only if specifically requested or the L<RequestAll|../ExifTool.html#RequestAll> API option
+            tag is generated only if specifically requested or the API L<RequestAll|../ExifTool.html#RequestAll> option
             is set to 3 or higher
         },
     },
@@ -1674,7 +1690,7 @@ my %systemTagsNotes = (
         Notes => q{
             the current date/time.  Useful when setting the tag values, eg.
             C<"-modifydate<now">.  Not generated unless specifically requested or the
-            L<RequestAll|../ExifTool.html#RequestAll> API option is set
+            API L<RequestAll|../ExifTool.html#RequestAll> option is set
         },
         PrintConv => '$self->ConvertDateTime($val)',
     },
@@ -1685,7 +1701,7 @@ my %systemTagsNotes = (
             YYYYmmdd-HHMM-SSNN-PPPP-RRRRRRRRRRRR, where Y=year, m=month, d=day, H=hour,
             M=minute, S=second, N=file sequence number in hex, P=process ID in hex, and
             R=random hex number; without dashes with the -n option.  Not generated
-            unless specifically requested or the L<RequestAll|../ExifTool.html#RequestAll> API option is set
+            unless specifically requested or the API L<RequestAll|../ExifTool.html#RequestAll> option is set
         },
         PrintConv => '$val =~ s/(.{8})(.{4})(.{4})(.{4})/$1-$2-$3-$4-/; $val',
     },
@@ -1778,11 +1794,12 @@ my %systemTagsNotes = (
         Groups => { 0 => 'Trailer' },
         Notes => q{
             the full JPEG trailer data block.  Extracted only if specifically requested
-            or the RequestAll API option is set to 3 or higher
+            or the API RequestAll option is set to 3 or higher
         },
         Writable => 1,
         Protected => 1,
     },
+    PageCount => { Notes => 'the number of pages in a multi-page TIFF document' },
 );
 
 # tags defined by UserParam option (added at runtime)
@@ -2319,6 +2336,7 @@ sub ClearOptions($)
         Password    => undef,   # password for password-protected PDF documents
         PrintConv   => 1,       # flag to enable print conversion
         QuickTimeHandler => 1,  # flag to add mdir Handler to newly created Meta box
+        QuickTimePad=> undef,   # flag to preserve padding of QuickTime CR3 tags
         QuickTimeUTC=> undef,   # assume that QuickTime date/time tags are stored as UTC
         RequestAll  => undef,   # extract all tags that must be specifically requested
         RequestTags => undef,   # extra tags to request (on top of those in the tag list)
@@ -2368,7 +2386,7 @@ sub ExtractInfo($;@)
     my $fast = $$options{FastScan} || 0;
     my $req = $$self{REQ_TAG_LOOKUP};
     my $reqAll = $$options{RequestAll} || 0;
-    my (%saveOptions, $reEntry, $rsize, $type, @startTime, $saveOrder, $isDir);
+    my (%saveOptions, $reEntry, $rsize, $zid, $type, @startTime, $saveOrder, $isDir);
 
     # check for internal ReEntry option to allow recursive calls to ExtractInfo
     if (ref $_[1] eq 'HASH' and $_[1]{ReEntry} and
@@ -2460,6 +2478,17 @@ sub ExtractInfo($;@)
                 }
                 # get size of resource fork on Mac OS
                 $rsize = -s "$filename/..namedfork/rsrc" if $^O eq 'darwin' and not $$self{IN_RESOURCE};
+                # check to see if Zone.Identifier file exists in Windows
+                if ($^O eq 'MSWin32' and eval { require Win32API::File }) {
+                    my $wattr;
+                    my $zfile = "${filename}:Zone.Identifier";
+                    if ($self->EncodeFileName($zfile)) {
+                        $wattr = eval { Win32API::File::GetFileAttributesW($zfile) };
+                    } else {
+                        $wattr = eval { Win32API::File::GetFileAttributes($zfile) };
+                    }
+                    $zid = 1 unless $wattr == Win32API::File::INVALID_FILE_ATTRIBUTES();
+                }
             }
             # open the file
             if ($self->Open(\*EXIFTOOL_FILE, $filename)) {
@@ -2502,6 +2531,7 @@ sub ExtractInfo($;@)
         my $fileSize = $stat[7];
         $self->FoundTag('FileSize', $stat[7]) if defined $stat[7];
         $self->FoundTag('ResourceForkSize', $rsize) if $rsize;
+        $self->FoundTag('ZoneIdentifier', 'Exists') if $zid;
         $self->FoundTag('FileModifyDate', $stat[9]) if defined $stat[9];
         $self->FoundTag('FileAccessDate', $stat[8]) if defined $stat[8];
         my $cTag = $^O eq 'MSWin32' ? 'FileCreateDate' : 'FileInodeChangeDate';
@@ -4062,8 +4092,9 @@ sub Open($*$;$)
     my ($self, $fh, $file, $mode) = @_;
 
     $file =~ s/^([\s&])/.\/$1/; # protect leading whitespace or ampersand
-    # default to read mode ('<') unless input is a pipe
-    $mode = ($file =~ /\|$/ ? '' : '<') unless $mode;
+    # default to read mode ('<') unless input is a trusted pipe
+    $mode = (($file =~ /\|$/ and $$self{TRUST_PIPE}) ? '' : '<') unless $mode;
+    delete $$self{TRUST_PIPE};
     if ($mode) {
         if ($self->EncodeFileName($file)) {
             # handle Windows Unicode file name
@@ -4121,7 +4152,9 @@ sub Exists($$)
         return 0 unless $wh;
         eval { Win32API::File::CloseHandle($wh) };
     } else {
-        return -e $file;
+        # (named pipes already exist, but we pretend that they don't
+        #  so we will be able to write them, so test with for pipe -p)
+        return(-e $file and not -p $file);
     }
     return 1;
 }
@@ -4224,6 +4257,7 @@ sub ParseArguments($;@)
     $$self{REQ_TAG_LOOKUP}  = { };
     $$self{EXCL_TAG_LOOKUP} = { };
     $$self{IO_TAG_LIST} = undef;
+    delete $$self{EXCL_XMP_LOOKUP};
 
     # handle our input arguments
     while (@_) {
@@ -4307,7 +4341,11 @@ sub ParseArguments($;@)
     # generate lookup for excluded tags
     if ($$options{Exclude}) {
         foreach (@{$$options{Exclude}}) {
-            /([-\w]+)#?$/ and $$self{EXCL_TAG_LOOKUP}{lc($1)} = 1;
+            /([-\w]+)#?$/ and $$self{EXCL_TAG_LOOKUP}{lc $1} = 1;
+            if (/(xmp-.*:[-\w]+)#?/i) {
+                $$self{EXCL_XMP_LOOKUP} or $$self{EXCL_XMP_LOOKUP} = { };
+                $$self{EXCL_XMP_LOOKUP}{lc $1} = 1;
+            }
         }
         # exclude list is used only for EXCL_TAG_LOOKUP when TAGS_FROM_FILE is set
         undef $$options{Exclude} if $$self{TAGS_FROM_FILE};
@@ -5649,6 +5687,38 @@ sub ConvertDateTime($$)
             unshift @a, 1 while @a < 3; # add month and day if necessary
             unshift @a, 0 while @a < 6; # add h,m,s if necessary
             $a[4] -= 1;                 # base month is 1
+            # parse our %f fractional seconds first (and round up seconds if necessary)
+            # - if there are multiple %f codes, they all get the same number of digits as the first
+            if ($fmt =~ /%\.?(\d*)f/) {
+                my $dig = $1;
+                my $frac = $date =~ /(\.\d+)/ ? $1 : '';
+                if (not $frac) {
+                    $frac = '.' . ('0' x $dig) if $dig;
+                } elsif (length $dig) {
+                    if ($dig+1 > length($frac)) {
+                        $frac .= '0' x ($dig+1-length($frac));
+                    } elsif ($dig+1 < length($frac)) {
+                        $frac = sprintf("%.${dig}f", $frac);
+                        while ($frac =~ s/^(\d)// and $1 ne '0') {
+                            # this is a pain, but we must round up to the next second
+                            ++$a[0] < 60 and last;
+                            $a[0] = 0;
+                            ++$a[1] < 60 and last;
+                            $a[1] = 0;
+                            ++$a[2] < 24 and last;
+                            $a[2] = 0;
+                            require 'Image/ExifTool/Shift.pl';
+                            ++$a[3] <= DaysInMonth($a[4]+1, $a[5]) and last;
+                            $a[3] = 1;
+                            ++$a[4] < 12 and last;
+                            $a[4] = 0;
+                            ++$a[5];
+                            last; # (this was a goto)
+                        }
+                    } 
+                }
+                $fmt =~ s/(^|[^%])((%%)*)%\.?\d*f/$1$2$frac/g;
+            }
             # parse %z and %s ourself (to handle time zones properly)
             if ($fmt =~ /%[sz]/) {
                 # use system time zone unless otherwise specified
@@ -5826,13 +5896,13 @@ sub GetUnixTime($;$)
 sub ConvertFileSize($)
 {
     my $val = shift;
-    $val < 2048 and return "$val bytes";
-    $val < 10240 and return sprintf('%.1f KiB', $val / 1024);
-    $val < 2097152 and return sprintf('%.0f KiB', $val / 1024);
-    $val < 10485760 and return sprintf('%.1f MiB', $val / 1048576);
-    $val < 2147483648 and return sprintf('%.0f MiB', $val / 1048576);
-    $val < 10737418240 and return sprintf('%.1f GiB', $val / 1073741824);
-    return sprintf('%.0f GiB', $val / 1073741824);
+    $val < 2000 and return "$val bytes";
+    $val < 10000 and return sprintf('%.1f kB', $val / 1000);
+    $val < 2000000 and return sprintf('%.0f kB', $val / 1000);
+    $val < 10000000 and return sprintf('%.1f MB', $val / 1000000);
+    $val < 2000000000 and return sprintf('%.0f MB', $val / 1000000);
+    $val < 10000000000 and return sprintf('%.1f GB', $val / 1000000000);
+    return sprintf('%.0f GB', $val / 1000000000);
 }
 
 #------------------------------------------------------------------------------
@@ -5963,6 +6033,8 @@ sub IdentifyTrailer($;$)
             $type = 'Samsung';
         } elsif ($buff =~ /8db42d694ccc418790edff439fe026bf$/s) {
             $type = 'Insta360';
+        } elsif ($buff =~ m(\0{6}/NIKON APP$)) {
+            $type = 'NikonApp';
         }
         last;
     }
@@ -5998,6 +6070,9 @@ sub ProcessTrailers($$)
         if ($dirName eq 'Insta360') {
             require 'Image/ExifTool/QuickTimeStream.pl';
             $proc = 'Image::ExifTool::QuickTime::ProcessInsta360';
+        } elsif ($dirName eq 'NikonApp') {
+            require Image::ExifTool::Nikon;
+            $proc = 'Image::ExifTool::Nikon::ProcessNikonApp';
         } else {
             require "Image/ExifTool/$dirName.pm";
             $proc = "Image::ExifTool::${dirName}::Process$dirName";
@@ -6249,7 +6324,7 @@ sub ProcessJPEG($$)
         my $markerName = JpegMarkerName($marker);
         $$path[$pn] = $markerName;
         # issue warning if we skipped some garbage
-        if ($skipped and not $foundSOS) {
+        if ($skipped and not $foundSOS and $markerName ne 'SOS') {
             $self->Warn("Skipped unknown $skipped bytes after JPEG $markerName segment", 1);
             if ($htmlDump) {
                 $self->HDump($nextSegPos-4-$skipped, $skipped, "[unknown $skipped bytes]", undef, 0x08);
@@ -6467,7 +6542,7 @@ sub ProcessJPEG($$)
             next;
         } elsif ($marker == 0xdb and length($$segDataPt) and    # DQT
             # save the DQT data only if JPEGDigest has been requested
-            # (Note: since we aren't checking the RequestAll API option here, the application
+            # (Note: since we aren't checking the API RequestAll option here, the application
             #  must use the RequestTags option to generate these tags if they have not been
             #  specifically requested.  The reason is that there is too much overhead involved
             #  in the calculation of this tag to make this worth the CPU time.)
@@ -7374,7 +7449,11 @@ sub DoProcessTIFF($$;$)
                 # this looks like a BigTIFF image
                 $raf->Seek(0);
                 require Image::ExifTool::BigTIFF;
-                return 1 if Image::ExifTool::BigTIFF::ProcessBTF($self, $dirInfo);
+                my $result = Image::ExifTool::BigTIFF::ProcessBTF($self, $dirInfo);
+                if ($result) {
+                    $self->FoundTag(PageCount => $$self{PageCount}) if $$self{MultiPage};
+                    return 1;
+                }
             } elsif ($identifier == 0x4f52 or $identifier == 0x5352) {
                 # Olympus ORF image (set FileType now because base type is 'ORF')
                 $self->SetFileType($fileType = 'ORF');
@@ -7466,6 +7545,9 @@ sub DoProcessTIFF($$;$)
         if ($$self{DNGVersion} and $$self{VALUE}{FileType} !~ /^(DNG|GPR)$/) {
             # override whatever FileType we set since we now know it is DNG
             $self->OverrideFileType($$self{TIFF_TYPE} = 'DNG');
+        }
+        if ($$self{TIFF_TYPE} eq 'TIFF') {
+            $self->FoundTag(PageCount => $$self{PageCount}) if $$self{MultiPage};
         }
         return 1;
     }
@@ -7604,8 +7686,8 @@ sub DoProcessTIFF($$;$)
     # check DNG version
     if ($$self{DNGVersion}) {
         my $ver = $$self{DNGVersion};
-        # currently support up to DNG version 1.5
-        unless ($ver =~ /^(\d+) (\d+)/ and "$1.$2" <= 1.5) {
+        # currently support up to DNG version 1.6
+        unless ($ver =~ /^(\d+) (\d+)/ and "$1.$2" <= 1.6) {
             $ver =~ tr/ /./;
             $self->Error("DNG Version $ver not yet tested", 1);
         }
@@ -8708,6 +8790,7 @@ sub ProcessBinaryData($$$)
         # read value now if necessary
         unless (defined $val and not $$tagInfo{SubDirectory}) {
             $val = ReadValue($dataPt, $entry+$offset, $format, $count, $more, \$rational);
+            next unless defined $val;
             $mask = $$tagInfo{Mask};
             $val = ($val & $mask) >> $$tagInfo{BitShift} if $mask;
         }
@@ -8809,8 +8892,8 @@ until ($Image::ExifTool::noConfig) {
         $file = $config;
     }
     # also check executable directory unless path is absolute
-    $exePath = $0 unless defined $exePath; # (undocumented $exePath setting)
-    -r $file or $config =~ /^\// or $file = ($exePath =~ /(.*[\\\/])/ ? $1 : './') . $config;
+    $exeDir = ($0 =~ /(.*)[\\\/]/) ? $1 : '.' unless defined $exeDir;
+    -r $file or $config =~ /^\// or $file = "$exeDir/$config";
     unless (-r $file) {
         warn("Config file not found\n") if defined $Image::ExifTool::configFile;
         last;
