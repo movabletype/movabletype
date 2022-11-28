@@ -145,7 +145,9 @@ subtest 'first site search: content data: non privilege users' => sub {
             __mode  => 'search_replace',
             blog_id => $first_site->id,
         });
-        $app->has_permission_error("search:content_data by $name");
+        $app->has_no_permission_error("search:content_data by $name");
+        my @search_tabs = _find_search_tabs($app);
+        ok !grep(/Content Data/, @search_tabs), "$name has no 'Content Data' tab" or next;
     }
 };
 
@@ -176,7 +178,13 @@ subtest 'second site search: content data: non privilege users' => sub {
             __mode  => 'search_replace',
             blog_id => $second_site->id,
         });
-        $app->has_permission_error("search:content_data by $name");
+        if ($name eq 'entry editor') {
+            $app->has_no_permission_error("search:content_data by $name");
+            my @search_tabs = _find_search_tabs($app);
+            ok !grep(/Content Data/, @search_tabs), "$name has no 'Content Data' tab" or next;
+        } else {
+            $app->has_permission_error("search:content_data by $name");
+        }
     }
 };
 
