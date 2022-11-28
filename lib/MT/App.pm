@@ -3574,7 +3574,6 @@ sub load_widgets {
         || $scope_type eq 'website' ? 'blog:' . $blog_id
         : $scope_type eq 'user'     ? 'user:' . $user->id
         :                             'system';
-    my $resave_widgets = 0;
     my $widget_set     = $page . ':' . $scope;
 
     my $widget_store = $user->widgets;
@@ -3582,8 +3581,7 @@ sub load_widgets {
     $widgets = $widget_store->{$widget_set} if $widget_store;
 
     unless ($widgets) {
-        $resave_widgets = 1;
-        $widgets        = $app->default_widgets_for_dashboard($scope_type);
+        $widgets = $app->default_widgets_for_dashboard($scope_type);
     }
 
     my $reg_widgets = $app->registry("widgets");
