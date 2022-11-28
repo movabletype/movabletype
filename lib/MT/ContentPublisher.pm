@@ -1733,6 +1733,13 @@ sub _rebuild_content_archive_type {
             : exists $param{Timestamp} ? $param{Timestamp}
             :                            undef;
 
+        if ($content_data && $map->cat_field_id && !$param{Category}) {
+            my $cat = $content_data->data->{$map->cat_field_id};
+            if ($cat && @$cat) {
+                $param{Category} = MT->model('category')->load($cat->[0]);
+            }
+        }
+
         my $file
             = exists $param{File}
             ? $param{File}
@@ -1906,8 +1913,7 @@ sub _rebuild_content_archive_type {
         );
         if ( $file_tmpl && !$file ) {
             local $ctx->{archive_type} = $at;
-            require MT::Builder;
-            my $build  = MT::Builder->new;
+            my $build  = MT->builder;
             my $tokens = $tokens_cache{$file_tmpl}
                 ||= $build->compile( $ctx, $file_tmpl )
                 or return $blog->error( $build->errstr() );

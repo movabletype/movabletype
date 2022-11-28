@@ -448,6 +448,9 @@ sub adjacent_archive_content_data {
         $terms->{blog_id}         = $cd->blog_id;
         $terms->{content_type_id} = $cd->content_type_id;
     }
+    if (my $ct_id = $param->{content_type_id}) {
+        $terms->{content_type_id} ||= $ct_id;
+    }
 
     my ( $start, $end ) = $obj->date_range($ts);
     $ts = ( $order eq 'descend' ) ? $start : $end;

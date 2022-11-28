@@ -26,7 +26,48 @@ Authentication required if you want to retrieve unpublished content data. Requir
 - Publish Content Data (each content type)
 - Edit All Content Data (each content type)
 DESCRIPTION
-        parameters => [
+        parameters => [{
+                'in'   => 'query',
+                name   => 'status',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'Draft',
+                        'Publish',
+                        'Review',
+                        'Future',
+                        'Spam',
+                        'Unpublish',
+                    ],
+                },
+                description => <<'DESCRIPTION',
+This is an optional parameter. Filter by status.
+
+#### Draft
+
+content_status is 1.
+
+#### Publish
+
+content_status is 2.
+
+#### Review
+
+content_status is 3.
+
+#### Future
+
+content_status is 4.
+
+#### Spam
+
+content_status is 5.
+
+#### Unpublish
+
+content_status is 6.
+DESCRIPTION
+            },
             { '$ref' => '#/components/parameters/content_data_limit' },
             { '$ref' => '#/components/parameters/content_data_offset' },
             {

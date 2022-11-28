@@ -445,4 +445,9 @@ sub retry_until_success {
     return;
 }
 
+sub wait_until_ready {
+    my $self = shift;
+    wait_until { $self->driver->execute_script("return document.readyState === 'complete'") };
+}
+
 1;

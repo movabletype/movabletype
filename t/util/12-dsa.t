@@ -16,7 +16,6 @@ plan tests => 8;
 
 use MT;
 use MT::Test;
-use MT::Builder;
 use MT::Util qw(dsa_verify perl_sha1_digest_hex dec2bin);
 
 no Carp::Always;

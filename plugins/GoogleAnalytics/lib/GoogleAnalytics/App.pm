@@ -9,7 +9,6 @@ package GoogleAnalytics::App;
 use strict;
 use warnings;
 
-use Encode;
 use MT::Util;
 
 use GoogleAnalytics;

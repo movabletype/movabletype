@@ -182,9 +182,7 @@ MT.App = new Class( MT.App, {
 
         }
         return event.stop();
-    },
-    // override
-    eventSubmit: function( event ){}
+    }
 } );
 
 

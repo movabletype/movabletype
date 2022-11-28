@@ -159,6 +159,7 @@ sub write_config {
         NewsboxURL             => 'disable',
         HideVersion            => 0,
         DebugMode              => $ENV{MT_TEST_DEBUG_MODE} || 0,
+        BuilderModule          => $ENV{MT_TEST_BUILDER} || 'MT::Builder',
     );
 
     if ($extra) {

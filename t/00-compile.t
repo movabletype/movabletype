@@ -116,6 +116,7 @@ use_ok('MT::Group');
 
 # Utility modules
 use_ok('MT::Builder');
+use_ok('MT::Builder::Fast');
 use_ok('MT::Callback');
 use_ok('MT::ConfigMgr');
 use_ok('MT::DateTime');
@@ -199,10 +200,14 @@ use_ok('MT::DataAPI::Resource::v4::Website');
 use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
+use_ok('MT::Util::BlessedString');
 use_ok('MT::Util::ContentType');
+use_ok('MT::Util::Dependencies');
 use_ok('MT::Util::Deprecated');
 use_ok('MT::Util::Digest::MD5');
 use_ok('MT::Util::Digest::SHA');
+use_ok('MT::Util::Encode');
+use_ok('MT::Util::SystemCheck');
 use_ok('MT::Util::UniqueID');
 use_ok('MT::Util::Mail');
 use_ok('MT::Template::Tags::Common');

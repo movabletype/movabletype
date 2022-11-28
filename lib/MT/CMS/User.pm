@@ -271,14 +271,7 @@ sub edit_role {
             }
         }
         my $assoc_class = $app->model('association');
-        my $user_count  = $assoc_class->count(
-            {   role_id   => $role->id,
-                author_id => [ 1, undef ],
-            },
-            {   unique     => 'author_id',
-                range_incl => { author_id => 1 },
-            }
-        );
+        my $user_count  = $assoc_class->count({ role_id => $role->id });
         $param{members} = $user_count;
     }
     else {

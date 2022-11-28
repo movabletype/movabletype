@@ -11,7 +11,7 @@ use warnings;
 
 use MT;
 use base qw( MT::ErrorHandler );
-use Encode;
+use MT::Util::Encode;
 use Sys::Hostname;
 use MT::Util qw(is_valid_email);
 
@@ -77,7 +77,7 @@ sub fix_xfer_enc {
     $enc ||= '7bit';
 
     if ($enc =~ /^(?:8bit|7bit)$/) {
-        for my $line (split(/\r\n|\r|\n/, Encode::encode($charset, $body))) {
+        for my $line (split(/\r\n|\r|\n/, MT::Util::Encode::encode($charset, $body))) {
             use bytes;
             return $non_ascii ? 'base64' : 'quoted-printable' if length($line) > 998;
         }

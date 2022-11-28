@@ -1,19 +1,7 @@
 package XML::XPath::Parser;
 
-$VERSION = '1.44';
-
-use strict; use warnings;
-use vars qw/
-        $NCName
-        $QName
-        $NCWild
-        $QNWild
-        $NUMBER_RE
-        $NODE_TYPE
-        $AXIS_NAME
-        %AXES
-        $LITERAL/;
-
+use strict;
+use warnings;
 use Carp qw(croak);
 use XML::XPath::XMLParser;
 use XML::XPath::Step;
@@ -25,8 +13,10 @@ use XML::XPath::Literal;
 use XML::XPath::Number;
 use XML::XPath::NodeSet;
 
+our $VERSION = '1.48';
+
 # Axis name to principal node type mapping
-%AXES = (
+my %AXES = (
         'ancestor' => 'element',
         'ancestor-or-self' => 'element',
         'attribute' => 'attribute',
@@ -46,14 +36,14 @@ my $NameStartCharClassBody = "a-zA-Z_\\xC0-\\xD6\\xD8-\\xF6\\xF8-\\x{2FF}\\x{370
 my $NameCharClassBody = "${NameStartCharClassBody}\\-.0-9\\xB7\\x{300}-\\x{36F}\\x{203F}-\\x{2040}";
 my $Name = "(?:[$NameStartCharClassBody][$NameCharClassBody]*)";
 
-$NCName = $Name;
-$QName  = "$NCName(?::$NCName)?";
-$NCWild = "${NCName}:\\*";
-$QNWild = "\\*";
-$NODE_TYPE = '((text|comment|processing-instruction|node)\\(\\))';
-$AXIS_NAME = '(' . join('|', keys %AXES) . ')::';
-$NUMBER_RE = '\d+(\\.\d*)?|\\.\d+';
-$LITERAL = '\\"[^\\"]*\\"|\\\'[^\\\']*\\\'';
+my $NCName = $Name;
+my $QName  = "$NCName(?::$NCName)?";
+my $NCWild = "${NCName}:\\*";
+my $QNWild = "\\*";
+my $NODE_TYPE = '((text|comment|processing-instruction|node)\\(\\))';
+my $AXIS_NAME = '(' . join('|', keys %AXES) . ')::';
+my $NUMBER_RE = '\d+(\\.\d*)?|\\.\d+';
+my $LITERAL = '\\"[^\\"]*\\"|\\\'[^\\\']*\\\'';
 
 sub new {
     my $class = shift;

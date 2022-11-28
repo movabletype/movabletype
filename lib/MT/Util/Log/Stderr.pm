@@ -8,7 +8,7 @@ package MT::Util::Log::Stderr;
 use strict;
 use warnings;
 use MT;
-use Encode qw(find_encoding);
+use MT::Util::Encode qw(find_encoding);
 use base qw(MT::Util::Log);
 
 use constant HasANSIColor => eval {

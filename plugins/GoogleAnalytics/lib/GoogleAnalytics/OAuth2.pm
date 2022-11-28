@@ -14,6 +14,7 @@ use base qw(Exporter);
 
 use GoogleAnalytics;
 use HTTP::Request::Common;
+use MT::Util::Encode;
 
 sub authorize_url {
     my ( $app, $client_id, $redirect_uri ) = @_;
@@ -58,7 +59,7 @@ sub get_token {
         start     => time(),
         client_id => $client_id,
         data =>
-            MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) ),
+            MT::Util::from_json( MT::Util::Encode::decode( 'utf-8', $res->content ) ),
     };
 
     my $username = get_username( $app, $ua, $token_data )
@@ -94,7 +95,7 @@ sub refresh_access_token {
     my $token_data = {
         start => time(),
         data =>
-            MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) ),
+            MT::Util::from_json( MT::Util::Encode::decode( 'utf-8', $res->content ) ),
     };
 
     $token_data;
@@ -122,7 +123,7 @@ sub get_username {
     ) unless $res->is_success;
 
     my $data
-        = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+        = MT::Util::from_json( MT::Util::Encode::decode( 'utf-8', $res->content ) );
 
     return $data->{username};
 }
@@ -165,7 +166,7 @@ sub get_profiles {
         ) if $res->header("Client-Aborted");
 
         my $data
-            = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+            = MT::Util::from_json( MT::Util::Encode::decode( 'utf-8', $res->content ) );
 
         my @items = @{ $data->{items} }
             or last;

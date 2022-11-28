@@ -3,7 +3,7 @@ package URI::rtspu;
 use strict;
 use warnings;
 
-our $VERSION = '5.10';
+our $VERSION = '5.17';
 
 use parent 'URI::rtsp';
 
