@@ -232,6 +232,9 @@ function toggleContentTypeDateTimeInputs() {
       <mt:loop name="content_types">
              <option value="<mt:var name="content_type_id" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>>
                <mt:var name="content_type_name" escape="html">
+               <mt:unless name="blog_id">
+                 (ID:<mt:var name="content_type_id"> / BLOG ID:<mt:var name="content_type_blog_id">)
+               </mt:unless>
              </option>
       </mt:loop>
            </select>

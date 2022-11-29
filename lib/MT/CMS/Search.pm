@@ -744,8 +744,9 @@ sub search_replace {
 
             push @content_types,
                 +{
-                content_type_id   => $content_type->id,
-                content_type_name => $content_type->name,
+                content_type_blog_id => $content_type->blog_id,
+                content_type_id      => $content_type->id,
+                content_type_name    => $content_type->name,
                 (         !$selected_content_type_id
                         || $content_type->id == $selected_content_type_id
                     )
