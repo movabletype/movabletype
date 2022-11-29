@@ -24,7 +24,7 @@
       <mtapp:svgicon id="ic_search" title="Search">
     </a>
     <button id="search-button" class="search-command search-submit" style="display: none;">
-      <span class="sr-only">
+      <span class="visually-hidden">
         <__trans phrase="Search">
       </span>
     </button>
@@ -72,7 +72,7 @@
                 <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
                 <div class="custom-control custom-checkbox">
                   <input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
-                  <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                  <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
                 </div>
               </td>
     <mt:else>
@@ -80,7 +80,7 @@
                 <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
                 <div class="custom-control custom-radio">
                   <input type="radio" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
-                  <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                  <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
                 </div>
               </td>
     </mt:if>
@@ -311,7 +311,7 @@ function renderPagination(pager) {
     $pagination.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-start">' + String(page - 1) + '</a></li>');
   }
 
-  $pagination.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>');
+  $pagination.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="visually-hidden">(current)</span></a></li>');
 
   if (page + 1 <= maxPage) {
     var firstLastClass = page + 1 == maxPage ? ' first-last' : '';
@@ -435,7 +435,7 @@ function renderPaginationForMobile(pager) {
 function generateMobilePageLink(page, setMrAuto, current) {
   var mrAutoClass = setMrAuto ? ' mr-auto' : '';
   if (current) {
-    return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
+    return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="visually-hidden">(current)</span></a></li>';
   } else {
     return '<li class="page-item' + mrAutoClass + '"><a href="#" class="page-link">' + page + '</a></li>';
   }

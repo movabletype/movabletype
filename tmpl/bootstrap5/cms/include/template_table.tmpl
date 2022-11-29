@@ -66,7 +66,7 @@
       <th class="head cb">
         <div class="custom-control custom-checkbox">
           <input id="select_all_<mt:var name="template_type" escape="html">" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
-          <label class="custom-control-label" for="select_all_<mt:var name="template_type" escape="html">"><span class="sr-only"><__trans phrase="Select All"></span></label>
+          <label class="custom-control-label" for="select_all_<mt:var name="template_type" escape="html">"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
         </div>
       </th>
       <th class="head template-name primary"><span class="col-label"><__trans phrase="Name"></span></th>
@@ -107,7 +107,7 @@
       <td class="cb">
         <div class="custom-control custom-checkbox">
           <input id="select_<mt:var name="template_type" escape="html">_<mt:var name="id" escape="html">" type="checkbox" name="id" class="custom-control-input select" value="<mt:var name="id">" />
-          <label class="custom-control-label" for="select_<mt:var name="template_type" escape="html">_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+          <label class="custom-control-label" for="select_<mt:var name="template_type" escape="html">_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
         </div>
       </td>
       <td class="template-name"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>

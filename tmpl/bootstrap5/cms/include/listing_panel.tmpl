@@ -70,7 +70,7 @@ parameters:
             <mt:if name="panel_multi">
                 <div class="custom-control custom-checkbox">
                   <input id="select_all_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>" type="checkbox" value="all" class="custom-control-input select" />
-                  <label class="custom-control-label" for="select_all_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>"><span class="sr-only"><__trans phrase="Select All"></span></label>
+                  <label class="custom-control-label" for="select_all_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
                 </div>
             <mt:else>
                 &nbsp;
@@ -90,7 +90,7 @@ parameters:
               <td class="cb" scope="row">
                 <div class="custom-control custom-<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>">
                   <input id="select_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">" type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
-                  <label class="custom-control-label" for="select_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                  <label class="custom-control-label" for="select_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
                 </div>
               </td>
               <td class="panel-label-tr">
@@ -108,7 +108,7 @@ parameters:
                           <mt:if name="icon">
                             <div class="mt-user mr-3"><img src="<mt:var name="icon">" width="32" height="32"></div>
                           </mt:if>
-                          <label class="custom-control-label" for="select_child_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                          <label class="custom-control-label" for="select_child_<mt:if name="object_type"><mt:var name="object_type"><mt:else><mt:var name="panel_type"></mt:if>_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
                           <span class="child-panel-label"><mt:var name="label" escape="html"></span>
                       </div>
 
@@ -130,7 +130,7 @@ parameters:
               <td class="cb" scope="row" >
                 <div class="custom-control custom-<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>">
                   <input id="select_blog_<mt:var name="id" escape="html">" type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="custom-control-input select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" />
-                  <label class="custom-control-label" for="select_blog_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                  <label class="custom-control-label" for="select_blog_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
                 </div>
               </td>
               <td class="panel-label sub-label"><label><mt:var name="label" escape="html"></label></td>
