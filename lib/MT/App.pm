@@ -3574,7 +3574,6 @@ sub load_widgets {
         || $scope_type eq 'website' ? 'blog:' . $blog_id
         : $scope_type eq 'user'     ? 'user:' . $user->id
         :                             'system';
-    my $resave_widgets = 0;
     my $widget_set     = $page . ':' . $scope;
 
     my $widget_store = $user->widgets;
@@ -3582,8 +3581,7 @@ sub load_widgets {
     $widgets = $widget_store->{$widget_set} if $widget_store;
 
     unless ($widgets) {
-        $resave_widgets = 1;
-        $widgets        = $app->default_widgets_for_dashboard($scope_type);
+        $widgets = $app->default_widgets_for_dashboard($scope_type);
     }
 
     my $reg_widgets = $app->registry("widgets");
@@ -3607,32 +3605,25 @@ sub load_widgets {
         }
     }
 
-    my @ordered_list;
-    my %orders;
-    my $order_num = 0;
-    foreach my $widget_id ( keys %$widgets ) {
-        my $widget_param = $widgets->{$widget_id} ||= {};
-        if ( my $order = $widget_param->{order} ) {
-            $order_num = $order_num < $order ? $order : $order_num;
-        }
-    }
-    foreach my $widget_id ( keys %$widgets ) {
-        my $widget_param = $widgets->{$widget_id} ||= {};
+    my $max = 0;
+    my @ordered_list =
+        map  { $_->[0] }
+        sort { ($a->[1] || $max + 1 <=> $b->[1] || $max + 1) or $a->[0] cmp $b->[0] }
+        map {
+        my $param = $all_widgets->{$_};
         my $order;
-        if ( !( $order = $widget_param->{order} ) ) {
-            $order = $all_widgets->{$widget_id}{order};
-            $order
-                = $order && ref $order eq 'HASH'
-                ? $all_widgets->{$widget_id}{order}{$scope_type}
-                : $order * 100;
-            $order = $order_num = $order_num + 100 unless defined $order;
-            $widget_param->{order} = $order;
-            $resave_widgets = 1;
+        if (ref $param eq 'HASH' && $param->{order}) {
+            if (ref $param->{order} eq 'HASH') {
+                $order = $param->{order}{$scope_type};
+            } else {
+                $order = $param->{order};
+            }
+        } else {
+            $order = 0;
         }
-        push @ordered_list, $widget_id;
-        $orders{$widget_id} = $order;
-    }
-    @ordered_list = sort { $orders{$a} <=> $orders{$b} } @ordered_list;
+        $max = $order if $order > $max;
+        [$_, $order]
+        } keys %$all_widgets;
 
     $app->build_widgets(
         set         => $widget_set,
@@ -3642,12 +3633,6 @@ sub load_widgets {
         order       => \@ordered_list,
     ) or return;
 
-    if ($resave_widgets) {
-        my $widget_store = $user->widgets();
-        $widget_store->{$widget_set} = $widgets;
-        $user->widgets($widget_store);
-        $user->save;
-    }
     return $param;
 }
 
@@ -3684,7 +3669,7 @@ sub build_widgets {
         foreach (@$passthru_param) {
             $widget_param->{$_} = '';
         }
-        my $tmpl_name = $widget->{template};
+        my $tmpl_name = $widget->{template} or next;
 
         my $p = $widget->{plugin};
         my $tmpl;
