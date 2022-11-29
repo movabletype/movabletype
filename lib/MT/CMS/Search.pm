@@ -683,12 +683,15 @@ sub search_replace {
     return $app->return_to_dashboard( redirect => 1 )
         if !$app->can_do('use_tools:search') && $app->param('blog_id');
 
+    my $search_tabs = $app->search_apis( $blog_id ? 'blog' : 'system' );
+    return $app->permission_denied() unless @{$search_tabs || []};
+
     my $param = do_search_replace( $app, @_ ) or return;
     $app->add_breadcrumb( $app->translate('Search & Replace') );
     $param->{nav_search}   = 1;
     $param->{screen_class} = "search-replace";
     $param->{screen_id}    = "search-replace";
-    $param->{search_tabs} = $app->search_apis( $blog_id ? 'blog' : 'system' );
+    $param->{search_tabs} = $search_tabs;
     $param->{entry_type}  = $app->param('entry_type');
 
     if (   $app->param('_type')
