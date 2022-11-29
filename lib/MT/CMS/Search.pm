@@ -33,50 +33,32 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
-                my $cnt = MT->model('permission')->count(
-                    [   [   {   (     ($blog_id)
-                                    ? ( blog_id => $blog_id )
-                                    : ( blog_id => \'> 0' )
-                                ),
-                                author_id => $author->id,
-                            },
-                            '-and',
-                            [   {   permissions => {
-                                        like => "\%'manage_content_data'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like => "\%'manage_content_data:\%'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like => "\%'create_content_data:\%'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like =>
-                                            "\%'edit_all_content_data:\%'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like =>
-                                            "\%'publish_content_data:\%'\%"
-                                    },
-                                },
-                            ],
-                        ],
-                        '-or',
-                        {   author_id => $author->id,
-                            permissions =>
-                                { like => "\%'manage_content_data'\%" },
-                            blog_id => 0,
+                my @terms = ({
+                    author_id   => $author->id,
+                    permissions => { like => "\%'manage_content_data'\%" },
+                    blog_id     => 0,
+                });
+                if ($blog_id) {
+                    push @terms, '-or', [{
+                            blog_id   => $blog_id,
+                            author_id => $author->id,
                         },
-                    ]
-                );
+                        '-and',
+                        [
+                            { permissions => { like => "\%'manage_content_data'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'manage_content_data:\%'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'create_content_data:\%'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'edit_all_content_data:\%'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'publish_content_data:\%'\%" } },
+                        ],
+                    ];
+                }
+
+                my $cnt = MT->model('permission')->count(\@terms);
 
                 return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
