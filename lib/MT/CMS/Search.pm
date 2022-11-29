@@ -644,7 +644,7 @@ sub can_search_replace {
             {   author_id => $app->user->id,
                 (   $blog_ids
                     ? ( blog_id => $blog_ids )
-                    : ( blog_id => { not => 0 } )
+                    : ( blog_id => 0 )
                 ),
             }
         );
