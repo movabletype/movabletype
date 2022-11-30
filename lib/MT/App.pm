@@ -824,6 +824,7 @@ sub parse_filtered_list_permission {
 
 sub json_result {
     my $app = shift;
+    return if $app->{finalized}++;
     my ($result) = @_;
     $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
     $app->send_http_header("application/json");
@@ -836,6 +837,7 @@ sub json_result {
 sub json_error {
     my $app = shift;
     my ( $error, $status ) = @_;
+    return if $app->{finalized}++;
     $app->response_code($status)
         if defined $status;
     $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
@@ -3179,6 +3181,7 @@ sub run {
         # line __LINE__ __FILE__
 
         $mode = $app->mode || 'default';
+        delete $app->{finalized};
 
         $requires_login  = $app->{requires_login};
         $get_method_info = sub {
