@@ -409,6 +409,14 @@ function toggleContentTypeDateTimeInputs() {
            help_section="replace">
           <textarea name="replace" id="replace" class="form-control text low"><mt:var name="replace" escape="html"></textarea>
         </mtapp:setting>
+        <!-- change note -->
+        <mtapp:setting
+           id="change-note"
+           label="<__trans phrase="Change note">"
+           label_class="top-label"
+           help_section="replace">
+          <textarea name="change_note" id="change-note" class="form-control text low"></textarea>
+        </mtapp:setting>
         <div class="actions-bar">
           <button
              onclick="doReplace(); return false"

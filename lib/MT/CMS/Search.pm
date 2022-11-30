@@ -840,10 +840,11 @@ sub do_search_replace {
         $to,           $timefrom,           $timeto,
         $show_all,     $do_search,          $orig_search,
         $quicksearch,  $publish_status,     $my_posts,
-        $search_type,  $filter,             $filter_val
+        $search_type,  $filter,             $filter_val,
+        $change_note,
         )
         = map scalar $app->param($_),
-        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
+        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val change_note );
 
     # trim 'search' parameter
     $search = '' unless defined($search);
@@ -1510,12 +1511,11 @@ sub do_search_replace {
                     my $max = $blog->$col;
                     $obj->handle_max_revisions($max);
 
-                    my $msg
-                        = $app->translate(
+                    $change_note ||= $app->translate(
                         "Searched for: '[_1]' Replaced with: '[_2]'",
                         $plain_search, $replace );
 
-                    my $revision = $obj->save_revision($msg);
+                    my $revision = $obj->save_revision($change_note);
                     $obj->current_revision($revision);
 
                     # call update to bypass instance save method
