@@ -230,7 +230,7 @@ sub search_terms {
             }
         }
     }
-    push @sort, { desc => $desc, column => $sort }, { desc => 'ASC', column => 'id' };
+    push @sort, { desc => $desc, column => $sort }, { desc => $desc, column => 'id' };
 
     my %args = (
         'join' => $join_on,
