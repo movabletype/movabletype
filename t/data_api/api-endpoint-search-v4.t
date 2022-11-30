@@ -40,25 +40,25 @@ subtest 'Simple' => sub {
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, search => 'text' },
-        complete => expected_labels('cd_multi', 'cd_multi2'),
+        complete => expected_labels('cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, search => 'text' },
-        complete => expected_labels('cd_multi', 'cd_multi2'),
+        complete => expected_labels('cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, search => 'single text' },
-        complete => expected_labels('cd_multi', 'cd_multi2'),
+        complete => expected_labels('cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, search => '"text multi1" OR "text multi2"' },
-        complete => expected_labels('cd_multi', 'cd_multi2'),
+        complete => expected_labels('cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
@@ -84,7 +84,7 @@ subtest 'IncludeBlogs => all' => sub {
             cdSearch           => 1,
             IncludeBlogs       => 'all',
         },
-        complete => expected_labels('cd_multi', 'cd_multi2'),
+        complete => expected_labels('cd_multi2', 'cd_multi'),
     });
 };
 
@@ -98,7 +98,7 @@ subtest 'search type of A OR B' => sub {
             cdSearch           => 1,
             IncludeBlogs       => $blog_id,
         },
-        complete => expected_labels('cd_multi', 'cd_multi2', 'cd'),
+        complete => expected_labels('cd', 'cd_multi2', 'cd_multi'),
     });
 };
 
@@ -127,7 +127,7 @@ subtest 'pagination' => sub {
             SearchContentTypes => $ct_id,
             limit_by           => 'any',
         },
-        complete => expected_labels('cd_multi', 'cd_multi2'),
+        complete => expected_labels('cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path   => '/v4/search',
@@ -149,7 +149,7 @@ subtest 'pagination' => sub {
             SearchContentTypes => $ct_id,
             limit              => 1,
         },
-        complete => expected_labels('cd_multi'),
+        complete => expected_labels('cd_multi2'),
     });
     test_data_api({
         path   => '/v4/search',
@@ -160,7 +160,7 @@ subtest 'pagination' => sub {
             SearchContentTypes => qq{"test content data" OR "test multiple content data"},
             offset             => 1,
         },
-        complete => expected_labels('cd_multi2', 'cd'),
+        complete => expected_labels('cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path   => '/v4/search',
@@ -172,7 +172,7 @@ subtest 'pagination' => sub {
             limit              => 1,
             page               => 3,
         },
-        complete => expected_labels('cd'),
+        complete => expected_labels('cd_multi'),
     });
 };
 
@@ -187,25 +187,25 @@ subtest 'archive_type' => sub {
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, archive_type => 'Yearly', year => '2017' },
-        complete => expected_labels('cd_multi', 'cd_multi2', 'cd'),
+        complete => expected_labels('cd', 'cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, archive_type => 'Monthly', year => '2017', month => '05' },
-        complete => expected_labels('cd_multi', 'cd_multi2', 'cd'),
+        complete => expected_labels('cd', 'cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, archive_type => 'Daily', year => '2017', month => '05', day => '30' },
-        complete => expected_labels('cd_multi', 'cd_multi2', 'cd'),
+        complete => expected_labels('cd', 'cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, archive_type => 'Weekly', year => '2017', month => '05', day => '31' },
-        complete => expected_labels('cd_multi', 'cd_multi2', 'cd'),
+        complete => expected_labels('cd', 'cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
@@ -226,7 +226,7 @@ subtest 'author' => sub {
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, author => 'author' },
-        complete => expected_labels('cd_multi', 'cd_multi2'),
+        complete => expected_labels('cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
@@ -253,7 +253,7 @@ subtest 'content_field => field:needle' => sub {
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, content_field => 'number:12345' },
-        complete => expected_labels('cd_multi', 'cd_multi2'),
+        complete => expected_labels('cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
@@ -271,7 +271,7 @@ subtest 'content_field => field:needle' => sub {
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, content_field => 'asset_image:2' },
-        complete => expected_labels('cd_multi', 'cd_multi2'),
+        complete => expected_labels('cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
@@ -289,7 +289,7 @@ subtest 'content_field => field:needle' => sub {
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, content_field => q{single line text:multi1 OR multi2} },
-        complete => expected_labels('cd_multi', 'cd_multi2'),
+        complete => expected_labels('cd_multi2', 'cd_multi'),
     });
     test_data_api({
         path     => '/v4/search',
