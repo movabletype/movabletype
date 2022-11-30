@@ -310,6 +310,29 @@ sub suite {
             params => {
                 search  => '-unknown:Reilly',
                 blog_id => $blog_id,
+                limit => 20, # default of 10 is too small to test 10 result out of 11.
+            },
+            complete => expected_titles(
+                'unknown:Reilly',
+                'Foo Bar Doe',
+                'Quux',
+                'Jane, Foo Bar',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
+                'Bar Foo',
+                'FooBar',
+                'Foo BigBar',
+                'Foo Bar',
+            ),
+        },
+        {    # unknown field inside phrase with negation
+            path   => '/v2/search',
+            method => 'GET',
+            params => {
+                search  => '-"unknown:Reilly"',
+                blog_id => $blog_id,
+                limit => 20, # default of 10 is too small to test 10 result out of 11.
             },
             complete => expected_titles(
                 'Foo Bar Doe',
