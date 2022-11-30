@@ -215,7 +215,7 @@ sub seed_database {
 
     # disable system scope data api
     require MT::CMS::Blog;
-    MT::CMS::Blog::save_data_api_settings( $App, 0, 0 );
+    MT::CMS::Blog::save_data_api_settings( $App, 0, 0, 0 );
 
     require MT::Role;
     MT::Role->create_default_roles(%param)
