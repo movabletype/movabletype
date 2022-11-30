@@ -2358,6 +2358,7 @@ BEGIN {
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
+            'TrimFilePath' => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
