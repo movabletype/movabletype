@@ -21,7 +21,7 @@ use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
-use MT::ContentStatus qw(status_icon);
+use MT::ContentStatus;
 use MT::ContentType;
 use MT::ContentType::UniqueID;
 use MT::ObjectAsset;

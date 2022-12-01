@@ -8,8 +8,7 @@ package MT::CMS::Dashboard;
 use strict;
 use warnings;
 use MT::version;
-use MT::Util
-    qw( ts2epoch epoch2ts encode_html relative_date offset_time format_ts );
+use MT::Util qw( ts2epoch epoch2ts offset_time format_ts );
 use MT::Stats qw(readied_provider);
 use MT::I18N qw( const );
 

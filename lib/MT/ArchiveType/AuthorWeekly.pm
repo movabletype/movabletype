@@ -9,7 +9,7 @@ package MT::ArchiveType::AuthorWeekly;
 use strict;
 use warnings;
 use base qw( MT::ArchiveType::Author MT::ArchiveType::Weekly );
-use MT::Util qw( dirify start_end_week week2ymd );
+use MT::Util qw( start_end_week week2ymd );
 
 sub name {
     return 'Author-Weekly';

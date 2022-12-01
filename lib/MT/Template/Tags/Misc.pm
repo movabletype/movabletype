@@ -9,20 +9,10 @@ use strict;
 use warnings;
 
 use MT;
-use MT::Util qw( start_end_day start_end_week
-    start_end_month week2ymd archive_file_for
-    format_ts offset_time_list first_n_words dirify get_entry
-    encode_html encode_js remove_html wday_from_ts days_in
-    spam_protect encode_php encode_url decode_html encode_xml
-    decode_xml relative_date asset_cleanup );
 use MT::Util::Encode;
 use MT::Request;
-use Time::Local qw( timegm timelocal );
-use MT::Promise qw( delay );
 use MT::Category;
 use MT::Entry;
-use MT::I18N
-    qw( first_n_text const uppercase lowercase substr_text length_text wrap_text );
 use MT::Asset;
 
 ###########################################################################

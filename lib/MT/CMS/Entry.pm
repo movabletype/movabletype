@@ -8,8 +8,8 @@ package MT::CMS::Entry;
 use strict;
 use warnings;
 use MT::Util qw( format_ts relative_date remove_html encode_html encode_js
-    encode_url archive_file_for offset_time_list break_up_text first_n_words trim_path);
-use MT::I18N qw( const wrap_text );
+    archive_file_for offset_time_list break_up_text first_n_words trim_path );
+use MT::I18N qw( const );
 
 sub edit {
     my $cb = shift;

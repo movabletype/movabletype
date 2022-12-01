@@ -14,7 +14,7 @@ use MT::ContentData;
 use MT::ContentField;
 use MT::ContentStatus;
 use MT::ContentType;
-use MT::Util qw( offset_time_list encode_html remove_html );
+use MT::Util qw( encode_html remove_html );
 use MT::Util::ContentType;
 use MT::Template::Tags::Common;
 

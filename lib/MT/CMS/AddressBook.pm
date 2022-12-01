@@ -9,7 +9,6 @@ use strict;
 use warnings;
 use MT::Util qw( is_valid_email is_url dirify );
 use MT::Util::Encode;
-use MT::I18N qw( wrap_text );
 
 sub entry_notify {
     my $app = shift;

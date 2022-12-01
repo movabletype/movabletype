@@ -9,7 +9,7 @@ package MT::Component;
 use strict;
 use warnings;
 use base qw( Class::Accessor::Fast MT::ErrorHandler );
-use MT::Util qw( encode_js weaken );
+use MT::Util qw( encode_js weaken ); ## no critic
 use MT::Util::Encode;
 
 __PACKAGE__->mk_accessors(qw( id path envelope version schema_version ));

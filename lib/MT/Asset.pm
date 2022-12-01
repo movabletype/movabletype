@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use MT::Tag;    # Holds MT::Taggable
 use base qw( MT::Object MT::Taggable MT::Scorable );
-use MT::Util qw( encode_js );
+use MT::Util;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
