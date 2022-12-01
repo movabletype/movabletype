@@ -64,7 +64,8 @@ subtest 'file_template' => sub {
        { pattern => 'entry/%b',      basename => 'f o o ', trim_file_path => 1, expected => 'entry/f o o' },
     );
     foreach my $tc (@testcases) {
-        MT->config('TrimFilePath' => $tc->{trim_file_path});
+        MT->config('TrimFilePath' => $tc->{trim_file_path}, 1);
+        is(MT->config('TrimFilePath') => $tc->{trim_file_path}, "TrimFilePath is set correctly");
         my $entry = MT::Test::Permission->make_entry(
             blog_id   => $site->id,
             author_id => $admin->id,
@@ -84,7 +85,8 @@ subtest 'file_extension' => sub {
        { trim_file_path => 1, expected => '1978/01/index.html' },
     );
     foreach my $tc (@testcases) {
-        MT->config('TrimFilePath' => $tc->{trim_file_path});
+        MT->config('TrimFilePath' => $tc->{trim_file_path}, 1);
+        is(MT->config('TrimFilePath') => $tc->{trim_file_path}, "TrimFilePath is set correctly");
         my $entry = MT::Test::Permission->make_entry(
             blog_id   => $site->id,
             author_id => $admin->id,
