@@ -709,9 +709,14 @@ sub search_replace {
     $param->{search_tabs} = $app->search_apis( $blog_id ? 'blog' : 'system' );
     $param->{entry_type}  = $app->param('entry_type');
 
-    if (   $app->param('_type')
-        && $app->param('_type') =~ /entry|page|comment|ping|template/ )
-    {
+    my $type  = $app->param('_type');
+
+    if ($type) {
+        my $model = $app->model($type);
+        $param->{is_revisable} = $model->isa('MT::Revisable') ? 1 : 0;
+    }
+
+    if ( $type && $type =~ /entry|page|comment|ping|template/ ) {
         if ( $app->param('blog_id') ) {
             my $perms = $app->permissions
                 or return $app->permission_denied();
