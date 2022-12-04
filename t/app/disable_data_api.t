@@ -103,14 +103,22 @@ subtest 'Disable Data API via UI' => sub {
         my $apps      = MT::PSGI->new->to_app;
         my $test_apps = Plack::Test->create($apps);
         my $res       = $test_apps->request(GET $uri );
-        is($res->content, 'Not Found', 'Restrict "data_api"');
+        if ($ENV{MT_TEST_RUN_APP_AS_CGI}) {
+            is($res->content, '{"error":{"code":400,"message":"API Version is required"}}', 'Restrict "data_api"');
+        } else {
+            is($res->content, 'Not Found', 'Restrict "data_api"');
+        }
     }
 
     {
         my $cms      = MT::PSGI->new(application => 'data_api')->to_app;
         my $test_cms = Plack::Test->create($cms);
         my $res      = $test_cms->request(GET $uri );
-        is($res->content, 'Not Found', 'Restrict "data_api" for specific application');
+        if ($ENV{MT_TEST_RUN_APP_AS_CGI}) {
+            is($res->content, '{"error":{"code":400,"message":"API Version is required"}}', 'Restrict "data_api"');
+        } else {
+            is($res->content, 'Not Found', 'Restrict "data_api" for specific application');
+        }
     }
 };
 
