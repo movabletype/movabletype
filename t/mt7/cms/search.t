@@ -26,11 +26,11 @@ my $author  = MT->model('author')->load(1);
 my $blog_id = $objs->{blog_id};
 my $ct_id   = $objs->{content_type}{ct_multi}{content_type}->id;
 
-my $is_deeply_org = \&is_deeply;
-*is_deeply = sub {
-    my $ret = $is_deeply_org->(@_) or note explain \$_[0];
-    return $ret;
-};
+# my $is_deeply_org = \&is_deeply;
+# *is_deeply = sub {
+#     my $ret = $is_deeply_org->(@_) or note explain \$_[0];
+#     return $ret;
+# };
 
 subtest 'content_data' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');

@@ -30,11 +30,11 @@ my $ct_id   = $objs->{content_type}{ct_multi}{content_type}->id;
 
 # test.
 
-my $is_deeply_org = \&is_deeply;
-*is_deeply = sub {
-    my $ret = $is_deeply_org->(@_) or note explain \$_[0];
-    return $ret;
-};
+# my $is_deeply_org = \&is_deeply;
+# *is_deeply = sub {
+#     my $ret = $is_deeply_org->(@_) or note explain \$_[0];
+#     return $ret;
+# };
 
 subtest 'Simple' => sub {
     my %params = (
