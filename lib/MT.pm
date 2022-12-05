@@ -1393,14 +1393,6 @@ sub init_plugins {
         unless ( $plugin->{registry} && ( %{ $plugin->{registry} } ) ) {
             $plugin->{registry} = $plugin_registry;
         }
-        if ( $plugin->{registry} ) {
-            if ( my $settings = $plugin->{registry}{config_settings} ) {
-                $settings = $plugin->{registry}{config_settings}
-                    = $settings->()
-                    if ref($settings) eq 'CODE';
-                $class->config->define($settings) if $settings;
-            }
-        }
         push @Components, $plugin;
         1;
     }
@@ -1572,6 +1564,12 @@ sub init_plugins {
         for my $plugin (@loaded_plugins) {
             if ($plugin->isa('MT::Plugin')) {
                 $plugin->init;
+            }
+            if ($plugin->{registry}) {
+                if (my $settings = $plugin->{registry}{config_settings}) {
+                    $settings = $plugin->{registry}{config_settings} = $settings->() if ref($settings) eq 'CODE';
+                    $mt->config->define($settings)                                   if $settings;
+                }
             }
             $plugin->init_callbacks;
         }
