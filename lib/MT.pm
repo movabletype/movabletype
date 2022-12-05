@@ -1447,11 +1447,7 @@ sub init_plugins {
             return;
         }
         else {
-            if ( my $obj = $Plugins{$plugin_sig}{object} ) {
-                $obj->init_callbacks();
-            }
-            else {
-
+            if ( !$Plugins{$plugin_sig}{object} ) {
                 # A plugin did not register itself, so
                 # create a dummy plugin object which will
                 # cause it to show up in the plugin listing
@@ -1497,7 +1493,6 @@ sub init_plugins {
         local $plugin_sig = $plugin_dir;
         $PluginSwitch->{$plugin_sig} = 1;
         MT->add_plugin($p);
-        $p->init_callbacks();
         return $p;
     }
 
@@ -1578,6 +1573,7 @@ sub init_plugins {
             if ($plugin->isa('MT::Plugin')) {
                 $plugin->init;
             }
+            $plugin->init_callbacks;
         }
 
         # Reset the Text_filters hash in case it was preloaded by plugins by
