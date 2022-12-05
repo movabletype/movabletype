@@ -1444,7 +1444,7 @@ sub init_plugins {
                     }
                 );
             };
-            return 0;
+            return;
         }
         else {
             if ( my $obj = $Plugins{$plugin_sig}{object} ) {
@@ -1461,7 +1461,7 @@ sub init_plugins {
         }
         $Plugins{$plugin_sig}{enabled} = 1;
         $PluginSwitch->{$plugin_sig} = 1;
-        return 1;
+        return $Plugins{$plugin_sig}{object};
     }
 
     sub __load_plugin_with_yaml {
@@ -1498,6 +1498,7 @@ sub init_plugins {
         $PluginSwitch->{$plugin_sig} = 1;
         MT->add_plugin($p);
         $p->init_callbacks();
+        return $p;
     }
 
     sub _init_plugins_core {
@@ -1509,6 +1510,7 @@ sub init_plugins {
             $timer = $mt->get_timer();
         }
 
+        my @loaded_plugins;
         foreach my $PluginPath (@$PluginPaths) {
             my $plugin_lastdir = $PluginPath;
             $plugin_lastdir =~ s![\\/]$!!;
@@ -1524,9 +1526,10 @@ sub init_plugins {
                         = File::Spec->catfile( $PluginPath, $plugin );
                     if ( -f $plugin_full_path ) {
                         $plugin_envelope = $plugin_lastdir;
-                        __load_plugin( $mt, $timer, $PluginSwitch,
-                            $use_plugins, $plugin_full_path, $plugin )
-                            if $plugin_full_path =~ /\.pl$/;
+                        if ($plugin_full_path =~ /\.pl$/) {
+                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
+                            push @loaded_plugins, $obj if $obj;
+                        }
                         next;
                     }
 
@@ -1544,8 +1547,8 @@ sub init_plugins {
                         'config.yaml' );
 
                     if ( -f $yaml ) {
-                        __load_plugin_with_yaml( $use_plugins, $PluginSwitch,
-                            $plugin_dir );
+                        my $obj = __load_plugin_with_yaml( $use_plugins, $PluginSwitch, $plugin_dir );
+                        push @loaded_plugins, $obj if $obj;
                         next;
                     }
 
@@ -1563,12 +1566,17 @@ sub init_plugins {
                             = File::Spec->catfile( $plugin_full_path,
                             $plugin );
                         if ( -f $plugin_file ) {
-                            __load_plugin( $mt, $timer, $PluginSwitch,
-                                $use_plugins, $plugin_file,
-                                $plugin_dir . '/' . $plugin );
+                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $plugin_dir . '/' . $plugin );
+                            push @loaded_plugins, $obj if $obj;
                         }
                     }
                 }
+            }
+        }
+
+        for my $plugin (@loaded_plugins) {
+            if ($plugin->isa('MT::Plugin')) {
+                $plugin->init;
             }
         }
 
