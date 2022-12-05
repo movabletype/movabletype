@@ -15,20 +15,28 @@ our %FixtureSpec = (
     ],
     image => {
         'test.jpg' => {
+            id          => 1,
             label       => 'Sample Image 1',
             description => 'Sample photo',
         },
         'test2.jpg' => {
+            id          => 2,
             label       => 'Sample Image 2',
             description => 'Sample photo',
             parent      => 'test.jpg',
         },
         'test3.png' => {
+            id          => 3,
             label       => 'Sample Image 3',
             description => 'Sample photo',
         },
+        'test1000.png' => {
+            id          => 1000,
+            label       => 'Sample Image 1000',
+            description => 'Sample photo',
+        },
     },
-    tag          => [ 'tag1', 'tag2', 'tag3', '0' ],
+    tag          => [ 'tag1', 'tag2', 'tag3', '0', 'tagtext' ],
     category_set => {
         'test category set' => [qw/ category1 category2 category3 /],
         'category set 0'    => ['0'],
@@ -441,7 +449,7 @@ our %FixtureSpec = (
                     . "<tr><td></td><td></td><td>3</td></tr>",
                 cf_tags         => [ 'tag2',      'tag1' ],
                 cf_categories   => [ 'category2', 'category1' ],
-                cf_image        => [ 'test2.jpg', 'test.jpg' ],
+                cf_image        => [ 'test2.jpg', 'test.jpg', 'test1000.png' ],
                 cf_content_type => [ 'cd2' ],
             },
         },
@@ -469,6 +477,70 @@ our %FixtureSpec = (
                 cf_tags         => [ 'tag3' ],
                 cf_categories   => [ 'category3' ],
                 cf_image        => [ 'test2.jpg' ],
+                cf_content_type => [ 'cd2' ],
+            },
+        },
+        cd_multi3 => {
+            content_type => 'ct_multi',
+            author       => 'author',
+            authored_on  => '20170601232323', # same as cd_multi2
+            data         => {
+                cf_single_line_text => 'text',
+            },
+        },
+        cd_multi4 => {
+            content_type => 'ct_multi',
+            author       => 'author',
+            authored_on  => '20170602232323',
+            data         => {
+                cf_url => 'https://example.jp/~text',
+            },
+        },
+        cd_multi5 => {
+            content_type => 'ct_multi',
+            author       => 'author',
+            authored_on  => '20170603232323',
+            data         => {
+                cf_url => 'https://example.jp/~text/in/url',
+            },
+        },
+        cd_multi6 => {
+            content_type => 'ct_multi',
+            author       => 'author',
+            authored_on  => '20170604232323',
+            data         => {
+                cf_embedded_text => "left\ntext\nright",
+            },
+        },
+        cd_multi7 => {
+            content_type => 'ct_multi',
+            author       => 'author',
+            authored_on  => '20170605232323',
+            data         => {
+                cf_list => [ 'aaa', 'text in list', 'ccc', 'ddd' ],
+            },
+        },
+        cd_multi8 => {
+            content_type => 'ct_multi',
+            author       => 'author',
+            authored_on  => '20170606232323',
+            data         => {
+                cf_tables => "<tr><td>text</td></tr>\n"
+            },
+        },
+        cd_multi9 => {
+            content_type => 'ct_multi',
+            author       => 'author',
+            authored_on  => '20170607232323',
+            data         => {
+                cf_tags         => [ 'tagtext' ],
+            },
+        },
+        cd_multi10 => {
+            content_type => 'ct_multi',
+            author       => 'author',
+            authored_on  => '20170608232323',
+            data         => {
                 cf_content_type => [ 'cd2' ],
             },
         },

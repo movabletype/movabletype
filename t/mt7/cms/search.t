@@ -26,6 +26,12 @@ my $author  = MT->model('author')->load(1);
 my $blog_id = $objs->{blog_id};
 my $ct_id   = $objs->{content_type}{ct_multi}{content_type}->id;
 
+my $is_deeply_org = \&is_deeply;
+*is_deeply = sub {
+    my $ret = $is_deeply_org->(@_) or note explain \$_[0];
+    return $ret;
+};
+
 subtest 'content_data' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($author);
@@ -35,10 +41,21 @@ subtest 'content_data' => sub {
 
     subtest 'basic' => sub {
         $app->search('text', {});
-        is_deeply($app->found_titles, ['cd_multi2', 'cd_multi']);
+        is_deeply(
+            $app->found_titles, [
+                'cd_multi10',
+                'cd_multi9',
+                'cd_multi7',
+                'cd_multi6',
+                'cd_multi5',
+                'cd_multi4',
+                'cd_multi2',
+                'cd_multi3',
+                'cd_multi'
+            ]);
 
         $app->search('single line text', {});
-        is_deeply($app->found_titles, ['cd_multi2', 'cd_multi']);
+        is_deeply($app->found_titles, ['cd_multi10', 'cd_multi2', 'cd_multi']);
     };
 
     subtest 'is_limited' => sub {
@@ -47,7 +64,7 @@ subtest 'content_data' => sub {
 
         my %params = (is_limited => 1);
         $app->search('text', { %params, search_cols => ['__field:' . $cf_id1] });
-        is_deeply($app->found_titles, ['cd_multi2', 'cd_multi']);
+        is_deeply($app->found_titles, ['cd_multi2', 'cd_multi3', 'cd_multi']);
 
         $app->search('multi1', { %params, search_cols => ['__field:' . $cf_id1] });
         is_deeply($app->found_titles, ['cd_multi']);
@@ -285,7 +302,7 @@ subtest 'asset' => sub {
     $app->change_tab('asset');
 
     $app->search('Sample', { is_limited => 1, search_cols => 'label' });
-    is_deeply($app->found_titles, ['Sample Image 1', 'Sample Image 2', 'Sample Image 3']);
+    is_deeply($app->found_titles, ['Sample Image 1', 'Sample Image 2', 'Sample Image 3', 'Sample Image 1000']);
 };
 
 subtest 'blog' => sub {
@@ -399,7 +416,6 @@ subtest 'dialog_grant_role' => sub {
         for my $key (keys %{$pager}) {
             is($json->{pager}->{$key}, $pager->{$key}, qq{right value for pager key:$key});
         }
-        note explain $json;
     };
 
     my $app = MT::Test::App->new('MT::App::CMS');
