@@ -713,7 +713,7 @@ sub search_replace {
 
     if ($type) {
         my $model = $app->model($type);
-        $param->{is_revisable} = $model->isa('MT::Revisable') ? 1 : 0;
+        $param->{is_revisable} = $model && $model->isa('MT::Revisable') ? 1 : 0;
     }
 
     if ( $type && $type =~ /entry|page|comment|ping|template/ ) {
