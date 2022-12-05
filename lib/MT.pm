@@ -1586,6 +1586,7 @@ sub init_plugins {
                 $Plugins{$sig_to_drop}{enabled} = 0;
                 delete $Plugins{$sig_to_drop}{object};
                 @Components = grep { ($_->{plugin_sig} || '') ne $sig_to_drop } @Components;
+                next;
             }
             $deduped_plugins{$id} = $plugin;
         }
