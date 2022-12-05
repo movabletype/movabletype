@@ -1561,7 +1561,36 @@ sub init_plugins {
             }
         }
 
+        # Drop conflicting plugins
+        my %deduped_plugins;
         for my $plugin (@loaded_plugins) {
+            my $id = $plugin->id || $plugin->{plugin_sig};
+            if (my $dup = $deduped_plugins{$id}) {
+                require version;
+                my $dup_version = version->parse($dup->version    || 0);
+                my $cur_version = version->parse($plugin->version || 0);
+                my ($version_to_drop, $sig_to_drop);
+                if ($cur_version > $dup_version) {
+                    $deduped_plugins{$id} = $plugin;
+                    $version_to_drop      = $dup_version;
+                    $sig_to_drop          = $dup->{plugin_sig};
+                } else {
+                    $version_to_drop = $cur_version;
+                    $sig_to_drop     = $plugin->{plugin_sig};
+                }
+                eval {
+                    require MT::Util::Log;
+                    MT::Util::Log::init();
+                    MT::Util::Log->error($mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $id, $version_to_drop));
+                };
+                $Plugins{$sig_to_drop}{enabled} = 0;
+                delete $Plugins{$sig_to_drop}{object};
+                @Components = grep { ($_->{plugin_sig} || '') ne $sig_to_drop } @Components;
+            }
+            $deduped_plugins{$id} = $plugin;
+        }
+
+        for my $plugin (values %deduped_plugins) {
             if ($plugin->isa('MT::Plugin')) {
                 $plugin->init;
             }
