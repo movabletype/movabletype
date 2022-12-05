@@ -40,8 +40,8 @@ subtest 'Simple' => sub {
         params => { %params, search => 'FOO' },
         result => {
             'items' => [
-                superhashof({ data => [superhashof({ data => 'FOO' })] }),
                 superhashof({ data => [superhashof({ data => 'FOO BAR' })] }),
+                superhashof({ data => [superhashof({ data => 'FOO' })] }),
             ],
             'totalResults' => 2,
         },
@@ -63,8 +63,8 @@ subtest 'Simple' => sub {
         params => { %params, search => '"FOO BAR" OR "BAZ YADA"' },
         result => {
             'items' => [
-                superhashof({ data => [superhashof({ data => 'FOO BAR' })] }),
                 superhashof({ data => [superhashof({ data => 'BAZ YADA' })] }),
+                superhashof({ data => [superhashof({ data => 'FOO BAR' })] }),
             ],
             'totalResults' => 2,
         },
@@ -86,8 +86,8 @@ subtest 'Simple' => sub {
         params => { %params, search => 'NOT "FOO BAR"' },
         result => {
             'items' => [
-                superhashof({ data => [superhashof({ data => 'FOO' })] }),
                 superhashof({ data => [superhashof({ data => 'BAZ YADA' })] }),
+                superhashof({ data => [superhashof({ data => 'FOO' })] }),
             ],
             'totalResults' => 2,
         },
@@ -100,8 +100,8 @@ subtest 'Simple' => sub {
             params => { %params, search => 'BAR BAZ', limit_by => 'any' },
             result => {
                 'items' => [
-                    superhashof({ data => [superhashof({ data => 'FOO BAR' })] }),
                     superhashof({ data => [superhashof({ data => 'BAZ YADA' })] }),
+                    superhashof({ data => [superhashof({ data => 'FOO BAR' })] }),
                 ],
                 'totalResults' => 2,
             },
@@ -152,8 +152,8 @@ subtest 'Simple' => sub {
             params => { %params, search => 'BAZ', IncludeBlogs => 'all' },
             result => {
                 'items' => [
-                    superhashof({ blog => { id => $blog_id2 }, data => [superhashof({ data => 'BAZ YADA' })] }),
                     superhashof({ blog => { id => $blog_id1 }, data => [superhashof({ data => 'BAZ' })] }),
+                    superhashof({ blog => { id => $blog_id2 }, data => [superhashof({ data => 'BAZ YADA' })] }),
                 ],
                 'totalResults' => 2,
             },
@@ -174,8 +174,8 @@ subtest 'pagination' => sub {
         params => { %params, limit => 2 },
         result => {
             'items' => [
-                superhashof({ label => 'pagination01' }),
-                superhashof({ label => 'pagination02' }),
+                superhashof({ label => 'pagination10' }),
+                superhashof({ label => 'pagination09' }),
             ],
             'totalResults' => 10,
         },
@@ -186,8 +186,8 @@ subtest 'pagination' => sub {
         params => { %params, limit => 2, offset => 1 },
         result => {
             'items' => [
-                superhashof({ label => 'pagination02' }),
-                superhashof({ label => 'pagination03' }),
+                superhashof({ label => 'pagination09' }),
+                superhashof({ label => 'pagination08' }),
             ],
             'totalResults' => 10,
         },
@@ -198,8 +198,8 @@ subtest 'pagination' => sub {
         params => { %params, limit => 2, page => 3 },
         result => {
             'items' => [
-                superhashof({ label => 'pagination05' }),
                 superhashof({ label => 'pagination06' }),
+                superhashof({ label => 'pagination05' }),
             ],
             'totalResults' => 10,
         },
@@ -230,9 +230,9 @@ subtest 'content_field => field:needle' => sub {
         params => { %params, content_field => 'mynumber:1234' },
         result => {
             'items' => [
-                superhashof({ data => [superhashof({ data => '12345' })] }),
-                superhashof({ data => [superhashof({ data => '12341' })] }),
                 superhashof({ data => [superhashof({ data => '12342' })] }),
+                superhashof({ data => [superhashof({ data => '12341' })] }),
+                superhashof({ data => [superhashof({ data => '12345' })] }),
             ],
             'totalResults' => 3,
         },
