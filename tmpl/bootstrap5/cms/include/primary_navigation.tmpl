@@ -15,7 +15,7 @@
 <mt:setvartemplate name="primary_navigation_info">
 <mt:if name="user_actions">
   <div class="mt-primaryNavigation__info">
-    <button class="mt-primaryNavigation__footer<mt:if name="scope_type" eq="user">--invert</mt:if>" type="button" id="userDropdownMenu" data-toggle="dropdown" data-offset="100%,-100%" aria-haspopup="true" aria-expanded="false">
+    <button class="mt-primaryNavigation__footer<mt:if name="scope_type" eq="user">--invert</mt:if>" type="button" id="userDropdownMenu" data-bs-toggle="dropdown" data-offset="100%,-100%" aria-haspopup="true" aria-expanded="false">
   <mt:if name="author_userpic_url">
       <img src="<mt:var name="author_userpic_url" escape="html">" alt="" width="32" height="32" class="mr-1 rounded-circle">
   <mt:else>
@@ -116,7 +116,7 @@ function stopPropagation(e) {
       <ul id="primaryNavigation" class="mt-primaryNavigation__list" data-children=".item">
   <mt:loop name="top_nav_loop">
         <li id="menu-<mt:var name="id" escape="html">" class="item mt-primaryNavigation__item">
-          <a data-toggle="collapse" data-parent="#primaryNavigation" href="#primayNavigation-item<mt:var name="__counter__">" aria-expanded="<mt:if name="screen_group" eq="$id">true<mt:else>false</mt:if>" aria-controls="primayNavigation-item<mt:var name="__counter__">">
+          <a data-bs-toggle="collapse" data-parent="#primaryNavigation" href="#primayNavigation-item<mt:var name="__counter__">" aria-expanded="<mt:if name="screen_group" eq="$id">true<mt:else>false</mt:if>" aria-controls="primayNavigation-item<mt:var name="__counter__">">
     <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
     <mt:if name="icon">
       <mt:setvarblock name="escaped_icon"><mt:var name="icon" escape="html"></mt:setvarblock>

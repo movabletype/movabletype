@@ -8,11 +8,11 @@
                 <div class="row" style="text-align:left; margin-left:[#= item.path.length * 10 #]px; margin-right: 0;">
                     <div class="col text-break custom-control <mt:if name="object_type" eq="page">custom-radio<mt:else>custom-checkbox</mt:if>" style="">
                         <input type="<mt:if name="object_type" eq="page">radio<mt:else>checkbox</mt:if>" id="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" name="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" class="custom-control-input add-category-checkbox" <mt:if name="category_is_selected">checked="checked"</mt:if> />
-                        <label class="custom-control-label" for="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>">[#|h item.label #]</label>
+                        <label class="custom-control-label form-label" for="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>">[#|h item.label #]</label>
                     </div>
                 <mt:if name="can_edit_categories">
                     <div class="col-auto d-md-block">
-                        <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="float-right add-category-new-link">
+                        <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="float-end add-category-new-link">
                             <mtapp:svgicon id="ic_add" color="success" title="Add">
                         </a>
                     </div>
@@ -22,7 +22,7 @@
         Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
 <mt:if name="object_type" eq="entry">
         [# div.className="add-category-form m-3"; div.style.display = "none" #]
-          <div class="form-group row">
+          <div class="mb-3 row">
             <div class="col-auto pl-0 pr-0">
               <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link btn"><mtapp:svgicon id="ic_caution" title="Cancel"></a>
             </div>
@@ -37,7 +37,7 @@
           </div>
 <mt:else>
         [# div.className="add-category-form m-3"; div.style.display = "none" #]
-          <div class="form-group row">
+          <div class="mb-3 row">
             <div class="col-auto pl-0 pr-0">
               <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link btn"><mtapp:svgicon id="ic_caution" title="Cancel"></a>
             </div>

@@ -17,7 +17,7 @@
       $('[data-mt-modal-close]').mtModalClose();
 
       // checkbox collapse
-      $('[type=checkbox], [data-toggle=collapse]').on('show.bs.collapse', function () {
+      $('[type=checkbox], [data-bs-toggle=collapse]').on('show.bs.collapse', function () {
           $(this).attr('checked', 'checked');
       }).on('hide.bs.collapse', function () {
           $(this).attr('checked', '');

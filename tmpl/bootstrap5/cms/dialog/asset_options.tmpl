@@ -137,7 +137,7 @@
        id="tags"
        label_class="top-label"
        label="<__trans phrase="Tags">">
-      <div class="form-group position-relative">
+      <div class="mb-3 position-relative">
         <input type="text" name="tags" id="tags" class="text full" value="" mt:watch-change="1" autocomplete="off" />
         <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
         <div id="tags-suggestion" class="mt-suggest" style="display: none;">
@@ -159,7 +159,7 @@
      help_page="file_upload"
      help_section="creating_a_new_entry">
     <input type="checkbox" name="new_entry" id="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
-    <label for="new_entry"><__trans phrase="Create a new entry using this uploaded file."></label>
+    <label for="new_entry" class="form-label"><__trans phrase="Create a new entry using this uploaded file."></label>
   </mtapp:setting>
       </mt:if>
     </mt:unless>

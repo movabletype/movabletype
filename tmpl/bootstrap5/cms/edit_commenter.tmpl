@@ -191,7 +191,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
   <mtapp:setting
      id="name"
      label="<__trans phrase="Display Name">">
-    <div class="form-group">
+    <div class="mb-3">
       <mt:var name="nickname" escape="html">
       <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">" class="d-inline-block">
         <mtapp:svgicon id="ic_search" title="<__trans phrase="Title">" size="sm">
@@ -202,7 +202,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
   <mtapp:setting
      id="identity"
      label="<__trans phrase="Identity">">
-    <div class="form-group">
+    <div class="mb-3">
   <mt:if name="url">
       <a href="<mt:var name="url" escape="html">" target="_blank" class="d-inline-block"><mt:var name="name" escape="html">
         <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View">" size="sm">
@@ -216,7 +216,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
   <mtapp:setting
      id="email"
      label="<__trans phrase="Email Address">">
-    <div class="form-group">
+    <div class="mb-3">
   <mt:if name="is_email_hidden">
       <__trans phrase="Withheld">
   <mt:else>
@@ -235,7 +235,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
   <mtapp:setting
      id="url"
      label="<__trans phrase="Website URL">">
-    <div class="form-group">
+    <div class="mb-3">
   <mt:if name="url">
       <a href="<mt:var name="url" escape="html">" class="d-inline-block"><mt:var name="url" escape="html">
         <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View">" size="sm">
@@ -249,7 +249,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
   <mtapp:setting
      id="status"
      label="<__trans phrase="Status">">
-    <div class="form-group">
+    <div class="mb-3">
   <mt:if name="commenter_approved">
       <span class="icon-left-wide icon-trusted">
         <mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm">

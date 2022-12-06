@@ -145,7 +145,7 @@ h1.dialog-title {
 
 <form id="upload">
 
-<fieldset class="form-group text-center">
+<fieldset class="mb-3 text-center">
   <input type="file" id="file" name="file"<mt:if name="can_multi"> multiple="multiple"</mtif> style="display: none;">
   <a href="javascript:void(0)" id="open-file-dialog" class="d-none d-md-inline-block">
     <img src="<mt:var name="static_uri">images/ic_addfiles.svg">
@@ -174,7 +174,7 @@ h1.dialog-title {
 
 <div id="uploadSettings">
 
-  <fieldset class="form-group">
+  <fieldset class="mb-3">
     <legend class="h3"><__trans phrase="Upload Destination"></legend>
 <mt:unless name="filter" eq="userpic">
   <mt:if name="allow_to_change_at_upload">
@@ -221,16 +221,16 @@ h1.dialog-title {
   <input type="hidden" name="dir_separator" value="<mt:var name="dir_separator">" />
 </mt:if>
 
-  <fieldset class="form-group">
+  <fieldset class="mb-3">
     <legend class="h3"><__trans phrase="Upload Options"></legend>
     <mtapp:setting
         id="auto_rename_non_ascii"
         label="<__trans phrase="Rename filename">"
         show_label="1">
-      <div class="form-group">
+      <div class="mb-3">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="cb custom-control-input" />
-          <label class="custom-control-label" for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
+          <label class="custom-control-label form-label" for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
         </div>
       </div>
     </mtapp:setting>
@@ -256,10 +256,10 @@ h1.dialog-title {
         id="normalize_orientation"
         label="<__trans phrase="Normalize orientation">"
         show_label="1">
-      <div class="form-group">
+      <div class="mb-3">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="cb custom-control-input" />
-          <label class="custom-control-label" for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+          <label class="custom-control-label form-label" for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
         </div>
       </div>
     </mtapp:setting>
@@ -459,7 +459,7 @@ function createUploadBlock () {
   this.uploadBlock  = jQuery('<div class="row upload-status-block" id="upload-status_' + numOfRows + '"></div>').appendTo(this.uploadBlockPanel.children());
 
   this.leftPanel    = jQuery('<div class="col w-50 upload-status-block-left-panel"></div>').appendTo(this.uploadBlock);
-  this.rightPanel   = jQuery('<div class="col-auto text-right upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
+  this.rightPanel   = jQuery('<div class="col-auto text-end upload-status-block-right-panel"></div>').appendTo(this.uploadBlock);
   this.leftContent  = jQuery('<div class="upload-status-block-left-content"></div>').appendTo(this.leftPanel);
 
   this.progressbar  = jQuery('<div class="mt-progress mt-4"><div class="progress"><div class="progress-bar" data-role="progressbar" aria-valuemin="0" aria-valuemax="100"></div></div></div>').appendTo(this.leftContent);

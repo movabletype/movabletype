@@ -545,7 +545,7 @@
             <mtapp:svgicon id="ic_date" title="<__trans phrase="Published Date">">
           </span>
         </div>
-        <div class="form-group col d-none d-md-block mb-0">
+        <div class="mb-3 col d-none d-md-block mb-0">
           <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
         </div>
         <div class="form-inline col d-md-none">
@@ -585,7 +585,7 @@
             <mtapp:svgicon id="ic_time" title="<__trans phrase="Published Time">">
           </span>
         </div>
-        <div class="form-group col d-none d-md-block mb-0">
+        <div class="mb-3 col d-none d-md-block mb-0">
           <input id="created-on-time" type="text" class="form-control text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
         </div>
         <div class="form-inline col d-md-none">
@@ -648,7 +648,7 @@
               <mtapp:svgicon id="ic_date" title="<__trans phrase="Unpublished Date">">
             </span>
           </div>
-          <div class="form-group col d-none d-md-block mb-0">
+          <div class="mb-3 col d-none d-md-block mb-0">
             <input type="text" id="unpublished-on-date" class="form-control text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" />
           </div>
           <div class="form-inline col d-md-none">
@@ -688,7 +688,7 @@
                <mtapp:svgicon id="ic_time" title="<__trans phrase="Unpublished Time">">
              </span>
           </div>
-          <div class="form-group col d-none d-md-block mb-0">
+          <div class="mb-3 col d-none d-md-block mb-0">
             <input type="text" id="unpublished-on-time" class="form-control text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" placeholder="HH:mm:ss" />
           </div>
           <div class="form-inline col d-md-none">
@@ -793,7 +793,7 @@
   </div>
 
 <mt:if name="id">
-<div class="text-right delete-action mt-4 d-none d-md-block">
+<div class="text-end delete-action mt-4 d-none d-md-block">
   <a
      href="javascript:void(0)"
      mt:command="do-remove-items"
@@ -839,10 +839,10 @@
 <div id="category-field-wrapper"<mt:unless name="disp_prefs_show_category"> style="display: none;"</mt:unless>>
 <mt:if name="object_type" eq="entry">
   <mt:setvarblock name="header_action">
-  <a href="javascript:void(0)" class="float-right category-toggle-link toggle-link" id="open-category-selector1" mt:command="open-category-selector" mt:close-el="close-category-selector1" title="<__trans phrase="Add category">">
+  <a href="javascript:void(0)" class="float-end category-toggle-link toggle-link" id="open-category-selector1" mt:command="open-category-selector" mt:close-el="close-category-selector1" title="<__trans phrase="Add category">">
     <__trans phrase="edit"/>
   </a>
-  <a href="javascript:void(0)" class="float-right category-toggle-link toggle-link" style="display: none;" mt:command="close-category-selector" id="close-category-selector1">
+  <a href="javascript:void(0)" class="float-end category-toggle-link toggle-link" style="display: none;" mt:command="close-category-selector" id="close-category-selector1">
     <__trans phrase="close">
   </a>
   </mt:setvarblock>
@@ -872,7 +872,7 @@
         <li>
           <div class="custom-control custom-checkbox">
             <input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <label class="custom-control-label" for="allow_comments"><__trans phrase="Accept Comments"></label>
+            <label class="custom-control-label form-label" for="allow_comments"><__trans phrase="Accept Comments"></label>
           </div>
         <mt:unless name="new_object">
           <span class="comments-link feedback-count">
@@ -886,7 +886,7 @@
         <li>
           <div class="custom-control custom-checkbox">
             <input type="checkbox" name="allow_pings" id="allow_pings" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <label class="custom-control-label" for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
+            <label class="custom-control-label form-label" for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
           </div>
         <mt:unless name="new_object">
           <span class="pings-link feedback-count">
@@ -931,7 +931,7 @@
   <mtapp:widget
      id="asset_container"
      label="$widget_label">
-    <div class="text-right asset-list-header mb-2">
+    <div class="text-end asset-list-header mb-2">
       <a href="<mt:var name="script_url">?__mode=list_asset&amp;&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1&can_multi=1" class="add-new-asset-link mt-open-dialog mt-modal-open d-inline-block" data-mt-modal-large>
         <mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add Entry Asset">">
         <__trans phrase="Add">
@@ -1478,25 +1478,19 @@ div.mce-notification-error {
        label="<__trans phrase="Fields">"
        label_class="display-options">
       <div>
-      <mt:loop name="field_loop">
-        <mt:unless name="system_field">
-          <mt:unless name="lock_field">
-            <div class="form-check form-check-inline">
-              <div class="custom-control custom-checkbox">
-                <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="custom-control-input cb" />
-                <label class="custom-control-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
-              </div>
-            </div>
-          <mt:else>
-            <div class="form-check form-check-inline">
-             <div class="custom-control custom-checkbox">
-                <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="custom-control-input cb" />
-                <label class="custom-control-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
-              </div>
-            </div>
+        <div class="form-check form-check-inline">
+        <mt:loop name="field_loop">
+          <mt:unless name="system_field">
+            <mt:unless name="lock_field">
+              <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="custom-control-input cb" />
+              <label class="custom-control-label form-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
+            <mt:else>
+              <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="custom-control-input cb" />
+              <label class="custom-control-label form-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
+            </mt:unless>
           </mt:unless>
-        </mt:unless>
-      </mt:loop>
+        </mt:loop>
+        </div>
       </div>
     </mtapp:setting>
 
@@ -1508,25 +1502,19 @@ div.mce-notification-error {
       <div>
       <mt:if name="object_type" ne="page">
         <div class="form-check form-check-inline">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <label class="custom-control-label" for="custom-prefs-category"><__trans phrase="Categories"></label>
-          </div>
+          <input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="custom-control-input cb form-check-input" />
+          <label class="custom-control-label form-label form-check-label" for="custom-prefs-category"><__trans phrase="Categories"></label>
         </div>
       </mt:if>
       <mt:if name="enabled_plugins{Comments}">
         <div class="form-check form-check-inline">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <label class="custom-control-label" for="custom-prefs-feedback"><__trans phrase="Comments"></label>
-          </div>
+          <input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="custom-control-input cb form-check-input" />
+          <label class="custom-control-label form-label form-check-label" for="custom-prefs-feedback"><__trans phrase="Comments"></label>
         </div>
       </mt:if>
         <div class="form-check form-check-inline">
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="custom-control-input cb" />
-            <label class="custom-control-label" for="custom-prefs-assets"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label>
-          </div>
+          <input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="custom-control-input cb form-check-input" />
+          <label class="custom-control-label form-label form-check-label" for="custom-prefs-assets"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label>
         </div>
       </div>
     </mtapp:setting>
@@ -1569,7 +1557,7 @@ div.mce-notification-error {
         <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
       </div>
       <div class="col">
-          <label class="form-control-label"><mt:var name="label_encoded"></label>
+          <label class="form-control-label form-label"><mt:var name="label_encoded"></label>
   <mt:if name="required">
           <span class="badge badge-danger"><__trans phrase="Required"></span>
   </mt:if>
@@ -1625,10 +1613,10 @@ div.mce-notification-error {
       <div id="editor">
         <div id="editor-header" class="editor-header" mt:delegate="tab-container">
           <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
-            <label><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Body"></a></label>
+            <label class="form-label"><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Body"></a></label>
           </div>
           <div class="tab" mt:command="set-editor-extended" mt:tab="extended">
-            <label><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Extended"></a></label>
+            <label class="form-label"><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Extended"></a></label>
           </div>
           <div id="field-convert_breaks" class="form-inline d-none d-lg-block">
             <__trans phrase="Format:">
@@ -1694,11 +1682,11 @@ div.mce-notification-error {
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
         <div class="col">
-          <label class="form-control-label" for="tags"><__trans phrase="Tags"></label>
+          <label class="form-control-label form-label" for="tags"><__trans phrase="Tags"></label>
         </div>
         <div class="mt-flexBreak"></div>
         <div class="mt-draggable__content">
-          <div class="form-group position-relative">
+          <div class="mb-3 position-relative">
             <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
             <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
             <div id="tags-suggestion" class="mt-suggest" style="display: none; z-index: 100;">
@@ -1719,7 +1707,7 @@ div.mce-notification-error {
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
         <div class="col">
-          <label class="form-control-label" for="excerpt"><mt:var name="field_label"></label>
+          <label class="form-control-label form-label" for="excerpt"><mt:var name="field_label"></label>
         </div>
         <div class="mt-flexBreak"></div>
         <div class="mt-draggable__content">
@@ -1736,7 +1724,7 @@ div.mce-notification-error {
           <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
         </div>
         <div class="col">
-          <label class="form-control-label" for="keywords"><mt:var name="field_label"></label>
+          <label class="form-control-label form-label" for="keywords"><mt:var name="field_label"></label>
         </div>
         <div class="mt-flexBreak"></div>
         <div class="mt-draggable__content">

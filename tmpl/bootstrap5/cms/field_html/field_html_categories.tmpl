@@ -59,7 +59,7 @@
     display: none;
 }
 
-.form-group.add-category-form {
+.mb-3.add-category-form {
     margin-top: 1rem;
     clear:both;
 }
@@ -94,7 +94,7 @@ input.add-category-input {
 
 <mt:setvarblock name="jq_js_include" append="1">
 jQuery(window).on('load resize', function () {
-  var $fieldToggleLinks = jQuery('.categories-field-container a[data-toggle=collapse]');
+  var $fieldToggleLinks = jQuery('.categories-field-container a[data-bs-toggle=collapse]');
   if (MT.Util.isMobileView()) {
     $fieldToggleLinks
       .removeClass('btn-link')
@@ -114,7 +114,7 @@ jQuery(window).on('load resize', function () {
     <div class="mt-collapse__container">
       <div class="col"></div>
       <div class="col-auto">
-        <a data-toggle="collapse" href="#categories-<mt:var name="content_field_id" escape="html">" aria-expanded="<mt:if name="selected_category_loop">false<mt:else>true</mt:if>" aria-controls="categories-<mt:var name="content_field_id" escape="html">" class="btn btn-link d-inline-block<mt:if name="selected_category_loop"> collapsed</mt:if>">
+        <a data-bs-toggle="collapse" href="#categories-<mt:var name="content_field_id" escape="html">" aria-expanded="<mt:if name="selected_category_loop">false<mt:else>true</mt:if>" aria-controls="categories-<mt:var name="content_field_id" escape="html">" class="btn btn-link d-inline-block<mt:if name="selected_category_loop"> collapsed</mt:if>">
           <mt:if name="selected_category_loop"><__trans phrase="Edit"><mt:else><__trans phrase="Close"></mt:if>
         </a>
       </div>
@@ -203,7 +203,7 @@ jQuery(window).on('load resize', function () {
                       <div class="category-selector-list row" style="margin-left:[#= item.path.length * 10 #]px; margin-right:0;">
                           <div class="col custom-control <mt:if name="options{multiple}">custom-checkbox<mt:else>custom-radio</mt:if> category-selector-item">
                               <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="custom-control-input add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> mt:watch-change="1" mt:raw-name="1" />
-                              <label class="custom-control-label" for="content-field-<mt:var name="content_field_id">-[#= item.id #]">
+                              <label class="custom-control-label form-label" for="content-field-<mt:var name="content_field_id">-[#= item.id #]">
                                   [#|h item.label #]
                               </label>
                           </div>
@@ -216,8 +216,8 @@ jQuery(window).on('load resize', function () {
               </mt:section>';
 
               Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
-              [# div.className="form-group add-category-form m-3" #]
-                <div class="form-group row">
+              [# div.className="mb-3 add-category-form m-3" #]
+                <div class="mb-3 row">
                   <div class="col-auto pl-3 pr-0">
                     <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link btn"><mtapp:svgicon id="ic_caution" title="Cancel"></a>
                   </div>

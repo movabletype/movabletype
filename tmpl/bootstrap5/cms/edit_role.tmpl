@@ -128,7 +128,7 @@ function init() {
     <mtapp:setting
        id="created_by"
        label="<__trans phrase="Created by">">
-      <div class="form-group">
+      <div class="mb-3">
         <mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if>
       </div>
     </mtapp:setting>
@@ -140,13 +140,13 @@ function init() {
     <mtapp:setting
        id="administration"
        label="<__trans phrase="Administration">">
-      <div class="form-group">
+      <div class="mb-3">
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_admin">
         <div class="form-check form-check-inline">
           <div class="custom-control custom-checkbox">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+            <label class="custom-control-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
           </div>
         </div>
       </mt:if>
@@ -157,13 +157,13 @@ function init() {
     <mtapp:setting
        id="authoring_publishing"
        label="<__trans phrase="Authoring and Publishing">">
-      <div class="form-group">
+      <div class="mb-3">
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="auth_pub">
         <div class="form-check form-check-inline">
           <div class="custom-control custom-checkbox">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+            <label class="custom-control-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
           </div>
         </div>
       </mt:if>
@@ -174,13 +174,13 @@ function init() {
     <mtapp:setting
        id="designing"
        label="<__trans phrase="Designing">">
-      <div class="form-group">
+      <div class="mb-3">
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_design">
         <div class="form-check form-check-inline">
           <div class="custom-control custom-checkbox">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+            <label class="custom-control-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
           </div>
         </div>
       </mt:if>
@@ -191,13 +191,13 @@ function init() {
     <mtapp:setting
        id="assets"
        label="<__trans phrase="Assets">">
-      <div class="form-group">
+      <div class="mb-3">
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_upload">
         <div class="form-check form-check-inline">
           <div class="custom-control custom-checkbox">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+            <label class="custom-control-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
           </div>
         </div>
       </mt:if>
@@ -209,13 +209,13 @@ function init() {
     <mtapp:setting
        id="commenting"
        label="<__trans phrase="Commenting">">
-      <div class="form-group">
+      <div class="mb-3">
       <mt:loop name="loaded_permissions">
       <mt:if name="group" eq="blog_comment">
         <div class="form-check form-check-inline">
           <div class="custom-control custom-checkbox">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+            <label class="custom-control-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
           </div>
         </div>
       </mt:if>
@@ -239,7 +239,7 @@ function init() {
                 <div class="form-check">
                     <div class="custom-control custom-checkbox">
                         <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
-                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><span class="h4"><mt:var name="label" escape="html"></span></label>
+                        <label class="custom-control-label form-label" for="<mt:var name="id" escape="html">"><span class="h4"><mt:var name="label" escape="html"></span></label>
                     </div>
                 </div>
                 </mt:setvarblock>
@@ -249,7 +249,7 @@ function init() {
                 <div class="form-check">
                     <div class="custom-control custom-checkbox">
                         <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
-                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+                        <label class="custom-control-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
                     </div>
                 </div>
                 </mt:setvarblock>
@@ -259,7 +259,7 @@ function init() {
                 <div class="form-check mb-3" style="">
                     <div class="custom-control custom-checkbox">
                         <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
-                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+                        <label class="custom-control-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
                     </div>
                 </div>
                 </mt:setvarblock>
@@ -275,24 +275,24 @@ function init() {
 
             <div class="mt-collapse ">
                 
-                <a class="btn btn-link" data-toggle="collapse" href="#collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">" aria-expanded="false" aria-controls="collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">">
+                <a class="btn btn-link" data-bs-toggle="collapse" href="#collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">" aria-expanded="false" aria-controls="collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">">
                     <svg role="img" class="mt-icon--secondary"><title>Collapse</title><use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_collapse"></use></svg>
                     <mt:var name="ct_perm_group_label" escape="html">
                 </a>
 
                 <div class="collapse" id="collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">">
-                    <div class="form-group manage_all_content_data ml-3 mb-3">
+                    <div class="mb-3 manage_all_content_data ml-3 mb-3">
                         <mt:var name="all">
                     </div>
 
-                    <div class="form-group manage_content_data d-flex flex-wrap ml-3 mb-3">
+                    <div class="mb-3 manage_content_data d-flex flex-wrap ml-3 mb-3">
                         <mt:var name="manage_content_data">
                     </div>
 
                     <hr class="manage_content_data_bottom">
                     <h4 class="ml-5"><__trans phrase="Content Field Privileges"></h4>
 
-                    <div class="form-group ml-3 mb-3">
+                    <div class="mb-3 ml-3 mb-3">
                         <div class="row ml-2 mb-2">
                         <div class="col-auto"><a href="#" class="check_all_content_field"><__trans phrase="Check All"></a></div>
                         <div class="col-auto"><a href="#" class="uncheck_all_content_field"><__trans phrase="Uncheck All"></a></div>

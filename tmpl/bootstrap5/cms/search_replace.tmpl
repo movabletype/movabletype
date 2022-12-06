@@ -142,10 +142,10 @@ function toggleContentTypeDateTimeField() {
 
 function toggleContentTypeDateTimeInputs() {
   var $selectedOptgroup = jQuery('select#date_time_field_id option:selected').parents('optgroup');
-  var $dateFrom = jQuery('#datefrom').parents('.form-group');
-  var $dateTo = jQuery('#dateto').parents('.form-group');
-  var $timeFrom = jQuery('#timefrom').parents('.form-group');
-  var $timeTo = jQuery('#timeto').parents('.form-group');
+  var $dateFrom = jQuery('#datefrom').parents('.mb-3');
+  var $dateTo = jQuery('#dateto').parents('.mb-3');
+  var $timeFrom = jQuery('#timefrom').parents('.mb-3');
+  var $timeTo = jQuery('#timeto').parents('.mb-3');
   if ($selectedOptgroup.attr('label') == 'Time') {
     $dateFrom.hide();
     $dateTo.hide();
@@ -207,13 +207,13 @@ function toggleContentTypeDateTimeInputs() {
           <li class="list-inline-item">
             <div class="custom-control custom-radio">
               <input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="custom-control-input rb" onclick="toggleSearchAndReplace(this)" />
-              <label class="custom-control-label" for="search-replace-toggle-search"><__trans phrase="Search Again"></label>
+              <label class="custom-control-label form-label" for="search-replace-toggle-search"><__trans phrase="Search Again"></label>
             </div>
           </li>
           <li class="list-inline-item">
             <div class="custom-control custom-radio">
               <input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="custom-control-input rb" onclick="toggleSearchAndReplace(this)" />
-              <label class="custom-control-label" for="search-replace-toggle-replace"><__trans phrase="Search &amp; Replace"></label>
+              <label class="custom-control-label form-label" for="search-replace-toggle-replace"><__trans phrase="Search &amp; Replace"></label>
             </div>
           </li>
         </ul>
@@ -248,26 +248,26 @@ function toggleContentTypeDateTimeInputs() {
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
               <input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="custom-control-input cb" />
-              <label class="custom-control-label" for="case"><__trans phrase="Case Sensitive"></label>
+              <label class="custom-control-label form-label" for="case"><__trans phrase="Case Sensitive"></label>
             </div>
           </li>
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
               <input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="custom-control-input cb" />
-              <label class="custom-control-label" for="is_regex"><__trans phrase="Regex Match"></label>
+              <label class="custom-control-label form-label" for="is_regex"><__trans phrase="Regex Match"></label>
             </div>
           </li>
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
               <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'limited-fields')" />
-              <label class="custom-control-label" for="is_limited"><__trans phrase="Limited Fields"></label>
+              <label class="custom-control-label form-label" for="is_limited"><__trans phrase="Limited Fields"></label>
             </div>
           </li>
         <mt:if name="can_search_by_date">
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
               <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'date-range')" />
-              <label class="custom-control-label" for="is_dateranged">
+              <label class="custom-control-label form-label" for="is_dateranged">
     <mt:if name="object_type" eq="content_data">
                 <__trans phrase="Date/Time Range">
     <mt:else>
@@ -281,7 +281,7 @@ function toggleContentTypeDateTimeInputs() {
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
               <input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="custom-control-input cb" />
-              <label class="custom-control-label" for="is_junk"><__trans phrase="Reported as Spam?"></label>
+              <label class="custom-control-label form-label" for="is_junk"><__trans phrase="Reported as Spam?"></label>
             </div>
           </li>
         </mt:if>
@@ -294,7 +294,7 @@ function toggleContentTypeDateTimeInputs() {
               <li class="list-inline-item m-2"<mt:if name="field_ct_id"> data-mt-content-type="<mt:var name="field_ct_id" escape="html">"</mt:if><mt:if name="hidden"> style="display: none;"</mt:if>>
                 <div class="custom-control custom-checkbox">
                   <input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if><mt:if name="hidden"> disabled="disabled"</mt:if> class="custom-control-input cb" />
-                  <label class="custom-control-label" for="search_cols-<mt:var name="field" escape="html">"><mt:var name="label" escape="html"><mt:unless name="replaceable"> <__trans phrase="(search only)"></mt:unless></label>
+                  <label class="custom-control-label form-label" for="search_cols-<mt:var name="field" escape="html">"><mt:var name="label" escape="html"><mt:unless name="replaceable"> <__trans phrase="(search only)"></mt:unless></label>
                 </div>
               </li>
             </mt:loop>
@@ -306,8 +306,8 @@ function toggleContentTypeDateTimeInputs() {
           <div class="form-inline p-2">
             <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="from">0<mt:else>1</mt:if>" />
     <mt:if name="object_type" eq="content_data">
-            <div class="form-group mx-3">
-              <label for="date_time_field_id">
+            <div class="mb-3 mx-3">
+              <label for="date_time_field_id" class="form-label">
                 <__trans phrase="Field">:
               </label>
               <select id="date_time_field_id" name="date_time_field_id" class="custom-select form-control">
@@ -343,21 +343,21 @@ function toggleContentTypeDateTimeInputs() {
               </select>
             </div>
     </mt:if>
-            <div class="form-group"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
-              <label for="datefrom"><__trans phrase="_DATE_FROM">:</label>
+            <div class="mb-3"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
+              <label for="datefrom" class="form-label"><__trans phrase="_DATE_FROM">:</label>
               <input placeholder="YYYY-MM-DD" type="text" name="from" id="datefrom" class="form-control text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
             </div>
-            <div class="form-group mx-3"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
-              <label for="dateto"><__trans phrase="_DATE_TO">:</label>
+            <div class="mb-3 mx-3"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
+              <label for="dateto" class="form-label"><__trans phrase="_DATE_TO">:</label>
               <input placeholder="YYYY-MM-DD" type="text" name="to" id="dateto" class="form-control text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
             </div>
     <mt:if name="object_type" eq="content_data">
-            <div class="form-group"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
-              <label for="timefrom"><__trans phrase="_TIME_FROM">:</label>
+            <div class="mb-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
+              <label for="timefrom" class="form-label"><__trans phrase="_TIME_FROM">:</label>
               <input placeholder="HH:mm:ss" type="text" name="timefrom" id="timefrom" class="form-control text-time text time" value="<mt:if name="timefrom"><mt:var name="timefrom" escape="html"></mt:if>">
             </div>
-            <div class="form-group mx-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
-              <label for="timeto"><__trans phrase="_TIME_TO">:</label>
+            <div class="mb-3 mx-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
+              <label for="timeto" class="form-label"><__trans phrase="_TIME_TO">:</label>
               <input placeholder="HH:mm:ss" type="text" name="timeto" id="timeto" class="form-control text-time text time" value="<mt:if name="timeto"><mt:var name="timeto" escape="html"></mt:if>">
             </div>
     </mt:if>

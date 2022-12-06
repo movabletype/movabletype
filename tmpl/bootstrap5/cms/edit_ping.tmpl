@@ -21,7 +21,7 @@
   <div id="junk-message" class="alert alert-warning msg msg-alert">
     <p class="msg-text">
       <__trans phrase="This trackback was classified as spam.">
-      <a href="#ping-feedback-rating" class="detail-link" data-toggle="collapse" aria-expanded="false" aria-controls="ping-feedback-rating">
+      <a href="#ping-feedback-rating" class="detail-link" data-bs-toggle="collapse" aria-expanded="false" aria-controls="ping-feedback-rating">
         <__trans phrase="Details">
       </a>
     </p>
@@ -220,7 +220,7 @@
   <mtapp:setting
      id="target_entry"
      label='<__trans phrase="Target [_1]" params="<$mt:var name="target_label">">'>
-    <div class="form-group">
+    <div class="mb-3">
   <mt:if name="no_entry">
       [<__trans phrase="Entry no longer exists">]
   <mt:else>
@@ -237,7 +237,7 @@
   <mtapp:setting
      id="target_category"
      label="<__trans phrase="Target Category">">
-      <div class="form-group">
+      <div class="mb-3">
     <mt:if name="no_category">
         [<__trans phrase="Category no longer exists">]
     <mt:else>
@@ -253,7 +253,7 @@
 <mtapp:setting
    id="date"
    label="<__trans phrase="Date">">
-  <div class="form-group">
+  <div class="mb-3">
     <mt:var name="created_on_time_formatted">
     <a title="<__trans phrase="View all TrackBacks created on this day">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=created_on&amp;filter_val=<mt:date ts="$created_on" format="%Y%m%d">-<mt:date ts="$created_on" format="%Y%m%d">" class="d-inline-block">
       <mtapp:svgicon id="ic_search" size="sm">
@@ -265,7 +265,7 @@
   <mtapp:setting
      id="source_ip"
      label="<__trans phrase="IP address">">
-    <div class="form-group">
+    <div class="mb-3">
       <mt:var name="ip" escape="html">
       <a title="<__trans phrase="View all TrackBacks from this IP address">" href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="blog_id">&amp;filter=ip&amp;filter_val=<mt:var name="ip" escape="url">" class="d-inline-block">
         <mtapp:svgicon id="ic_search" size="sm">

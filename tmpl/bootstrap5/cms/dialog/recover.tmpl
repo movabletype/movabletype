@@ -22,7 +22,7 @@
 
 <mt:if name="recovered">
 <p><__trans phrase="An email with a link to reset your password has been sent to your email address ([_1]).", params="<mt:var name="email" escape="html">"></p>
-<div class="actions-bar actions-bar-login text-right">
+<div class="actions-bar actions-bar-login text-end">
 <mt:if name="return_to">
   <a
      href="<$mt:var name="return_to" escape="html" $>"
@@ -51,7 +51,7 @@
        id="email"
        label="<__trans phrase="Email Address">"
        label_for="email"
-       label_class="top-label form-group">
+       label_class="top-label mb-3">
       <input type="text" name="email" id="email" class="form-control text full" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
   <mt:if name="not_unique_email">
@@ -59,11 +59,11 @@
        id="name"
        label="<__trans phrase="Username">"
        label_for="name"
-       label_class="top-label form-group">
+       label_class="top-label mb-3">
       <input type="text" name="name" id="name" class="form-control text full" value="<mt:var name="name" escape="html">" />
     </mtapp:setting>
   </mt:if>
-  <div class="actions-bar actions-bar-login text-right">
+  <div class="actions-bar actions-bar-login text-end">
     <button
        type="submit"
        accesskey="s"

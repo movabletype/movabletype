@@ -219,7 +219,7 @@ jQuery(window).on('load', init );
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <input type="hidden" name="asset_type" value="<mt:var name="asset_type" escape="html">" />
 
-    <fieldset class="form-group">
+    <fieldset class="mb-3">
       <mt:if name="file_is_missing">
         <mtapp:statusmsg
            id="file-missing-error"
@@ -293,7 +293,7 @@ jQuery(window).on('load', init );
       </div>
     </fieldset>
 
-    <fieldset class="form-group">
+    <fieldset class="mb-3">
       <div class="asset-info">
         <mtapp:setting
            id="label"
@@ -319,7 +319,7 @@ jQuery(window).on('load', init );
            label="<__trans phrase="Tags">"
            label_for="tags"
            label_class="top-label">
-          <div class="form-group position-relative">
+          <div class="mb-3 position-relative">
             <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" />
             <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
             <div id="tags-suggestion" class="mt-suggest" style="display: none; z-index: 100;">

@@ -58,13 +58,13 @@
 
 <mt:if name="debug_riot">
 <script type="riot/tag" src="<mt:var name="static_uri">js/ss/tag/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-fields.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="riot/tag" src="<mt:var name="static_uri">js/contenttype/tag/content-field.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="riot/tag" src="<mt:var name="static_uri">js/bootstrap5/contenttype/tag/content-fields.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="riot/tag" src="<mt:var name="static_uri">js/bootstrap5/contenttype/tag/content-field.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <mt:else>
 <script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.min.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/ss/ss.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/contenttype/contenttype.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/bootstrap5/contenttype/contenttype.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
 </mt:if>
 
 <script>
@@ -247,7 +247,7 @@
   <div class="mt-collapse">
     <div class="mt-collapse__container">
       <div class="col"><mt:if name="icon"><mt:var name="icon"></mt:if><mt:var name="label" escape="html"></div>
-      <div class="col-auto"><a data-toggle="collapse" href="#unavailable-reason-<mt:var name="type" escape="html">" aria-expanded="false" aria-controls="unavailable-reason-<mt:var name="type" escape="html">"><mtapp:svgicon id="ic_collapse" title="<__trans phrase="Reason">" size="secondary"></a></div>
+      <div class="col-auto"><a data-bs-toggle="collapse" href="#unavailable-reason-<mt:var name="type" escape="html">" aria-expanded="false" aria-controls="unavailable-reason-<mt:var name="type" escape="html">"><mtapp:svgicon id="ic_collapse" title="<__trans phrase="Reason">" size="secondary"></a></div>
     </div>
     <div class="collapse mt-collapse__content" id="unavailable-reason-<mt:var name="type" escape="html">">
       <div class="row">

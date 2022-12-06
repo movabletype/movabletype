@@ -52,7 +52,7 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
       <th class="head cb">
         <div class="custom-control custom-checkbox">
           <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
-          <label class="custom-control-label" for="select_all"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
+          <label class="custom-control-label form-label" for="select_all"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
         </div>
       </th>
       <th class="head status si">
@@ -78,7 +78,7 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
   <mt:if name="has_edit_access">
         <div class="custom-control custom-checkbox">
           <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<$mt:var name="id"$>" class="custom-control-input select" />
-          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+          <label class="custom-control-label form-label" for="select_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
         </div>
   <mt:else>
         &#160;
@@ -140,7 +140,7 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
         </span>
       </td>
       <td class="data">
-        <a class="d-inline-block" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
+        <a class="d-inline-block" data-bs-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
           <mtapp:svgicon title="Collapse" color="secondary" id="ic_collapse">
         </a>
       </td>

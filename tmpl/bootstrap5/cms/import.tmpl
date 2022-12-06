@@ -78,7 +78,7 @@ function selectBlog() {
         <li>
           <div class="custom-control custom-radio">
             <input class="custom-control-input" type="radio" id="import_as_me-on" name="import_as_me" value="1" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').hide();"</mt:if> checked="checked">
-            <label class="custom-control-label" for="import_as_me-on">
+            <label class="custom-control-label form-label" for="import_as_me-on">
               <__trans phrase="Import as me">
             </label>
           </div>
@@ -86,7 +86,7 @@ function selectBlog() {
         <li>
           <div class="custom-control custom-radio">
             <input class="custom-control-input" type="radio" id="import_as_me-off" name="import_as_me" value="0" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').show();"</mt:if>>
-            <label class="custom-control-label" for="import_as_me-off">
+            <label class="custom-control-label form-label" for="import_as_me-off">
               <__trans phrase="Preserve original user">
             </label>
           </div>
@@ -98,7 +98,7 @@ function selectBlog() {
           <__trans phrase="If you choose to preserve the ownership of the imported entries and any of those users must be created in this installation, you must define a default password for those new accounts.">
         </p>
         <div class="form-inline">
-          <label class="mr-sm-3" for="password">
+          <label class="mr-sm-3 form-label" for="password">
             <__trans phrase="Default password for new users:">
           </label>
           <input type="password" name="password" id="password" class="form-control text password" />

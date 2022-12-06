@@ -165,7 +165,7 @@ jQuery(window).on('load', function () {
         <div class="use-subdomain option">
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="custom-control-input cb"<mt:if name="use_subdomain">checked="checked"</mt:if> />
-                <label class="custom-control-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+                <label class="custom-control-label form-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
             </div>
         </div>
         </mt:unless>
@@ -190,7 +190,7 @@ jQuery(window).on('load', function () {
         <div class="use-absolute option">
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" name="use_absolute" id="use_absolute" class="custom-control-input cb" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> />
-                <label class="custom-control-label" for="use_absolute"><__trans phrase="Use absolute path"></label>
+                <label class="custom-control-label form-label" for="use_absolute"><__trans phrase="Use absolute path"></label>
             </div>
         </div>
         <small id="absolutePath" class="form-text text-muted hint absolute-site_path-hint"><__trans phrase="The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></small>

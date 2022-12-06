@@ -26,7 +26,7 @@ td.log-message {
     <tr class="<mt:if name="log_detail">log-detail-parent </mt:if><mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="log_detail"> id="log-detail-parent-<$mt:var name="id"$>"</mt:if>>
       <td class="log-message">
       <mt:if name="log_detail">
-         <a href="#log-detail-<mt:var name="id" escape="html">" data-toggle="collapse" class="dropdown-toggle toggle-link icon-left icon-spinner detail-link" aria-expanded="false" aria-controls="log-detail-<mt:var name="id" escape="html">">
+         <a href="#log-detail-<mt:var name="id" escape="html">" data-bs-toggle="collapse" class="dropdown-toggle toggle-link icon-left icon-spinner detail-link" aria-expanded="false" aria-controls="log-detail-<mt:var name="id" escape="html">">
            <mt:var name="log_message" escape="html">
          </a>
       <mt:else>

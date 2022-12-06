@@ -59,14 +59,14 @@
 
 <mt:setvarblock name="table_id"><mt:var name="template_type" default="template" escape="html">-listing</mt:setvarblock>
 
-<mtapp:listing id="$table_id" hide_pager="1" class="show-all" listing_class="form-group mb-5 listing" type="template">
+<mtapp:listing id="$table_id" hide_pager="1" class="show-all" listing_class="mb-3 mb-5 listing" type="template">
 <mt:if __first__>
   <mt:setvarblock name="table_header">
     <tr>
       <th class="head cb">
         <div class="custom-control custom-checkbox">
           <input id="select_all_<mt:var name="template_type" escape="html">" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
-          <label class="custom-control-label" for="select_all_<mt:var name="template_type" escape="html">"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
+          <label class="custom-control-label form-label" for="select_all_<mt:var name="template_type" escape="html">"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
         </div>
       </th>
       <th class="head template-name primary"><span class="col-label"><__trans phrase="Name"></span></th>
@@ -107,7 +107,7 @@
       <td class="cb">
         <div class="custom-control custom-checkbox">
           <input id="select_<mt:var name="template_type" escape="html">_<mt:var name="id" escape="html">" type="checkbox" name="id" class="custom-control-input select" value="<mt:var name="id">" />
-          <label class="custom-control-label" for="select_<mt:var name="template_type" escape="html">_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+          <label class="custom-control-label form-label" for="select_<mt:var name="template_type" escape="html">_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
         </div>
       </td>
       <td class="template-name"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>
@@ -224,7 +224,7 @@
       <__trans phrase="No [_1] could be found." params="<$mt:var name="template_type_label" lower_case="1"$>">
     </mtapp:statusmsg>
   </mt:setvarblock>
-  <div id="<$mt:var name="template_type" default="template" escape="html"$>-listing" class="form-group mb-5 listing zero-state-listing zero-state">
+  <div id="<$mt:var name="template_type" default="template" escape="html"$>-listing" class="mb-3 mb-5 listing zero-state-listing zero-state">
     <mt:var name="listing_header">
     <mt:if name="template_type" ne="ct">
       <mt:var name="zero_state_listing">

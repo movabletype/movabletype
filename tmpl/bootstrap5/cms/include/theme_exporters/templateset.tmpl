@@ -1,7 +1,7 @@
 <mt:loop tmpl_groups>
 <div id="template-group-<mt:var name="template_type">" class="template-group">
   <div id="template-group-<mt:var name="template_type">-header" class="template-group-header">
-    <div class="float-right template-group-summary">
+    <div class="float-end template-group-summary">
     <mt:if name="template_type" eq="widgetset">
       <mt:setvar name="tmpl_type_name" value="<__trans phrase="widget sets">">
     <mt:elseif name="template_type" eq="module">
@@ -23,7 +23,7 @@
         <th class="head cb">
           <div class="custom-control custom-checkbox">
             <input id="select_all_<mt:var name="template_type" escape="html">" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
-            <label class="custom-control-label" for="select_all_<mt:var name="template_type" escape="html">"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
+            <label class="custom-control-label form-label" for="select_all_<mt:var name="template_type" escape="html">"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
           </div>
         </th>
         <th class="head template-name primary"><span class="col-label"><__trans phrase="Template Name"></span></th>
@@ -54,7 +54,7 @@
                  <mt:if name="includes">tmpl_includes="<mt:loop includes glue=","><mt:var name="__value__"></mt:loop>"</mt:if>
                  <mt:if name="checked">checked="checked"</mt:if>
                  />
-              <label class="custom-control-label" for="select_<mt:var name="template_type" escape="html">_<mt:var name="tmpl_id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+              <label class="custom-control-label form-label" for="select_<mt:var name="template_type" escape="html">_<mt:var name="tmpl_id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
             </div>
           </td>
           <td class="template-name"><mt:var name="tmpl_label" escape="html"></td>

@@ -247,7 +247,7 @@
             <mtapp:svgicon id="ic_date" title="<__trans phrase="Published Date">">
           </span>
         </div>
-        <div class="form-group col d-none d-md-block mb-0">
+        <div class="mb-3 col d-none d-md-block mb-0">
           <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
         </div>
         <div class="form-inline col d-md-none">
@@ -287,7 +287,7 @@
             <mtapp:svgicon id="ic_time" title="<__trans phrase="Published Time">">
           </span>
         </div>
-        <div class="form-group col d-none d-md-block mb-0">
+        <div class="mb-3 col d-none d-md-block mb-0">
           <input id="created-on-time" type="text" class="form-control text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
         </div>
         <div class="form-inline col d-md-none">
@@ -350,7 +350,7 @@
                <mtapp:svgicon id="ic_date" title="<__trans phrase="Unpublished Date">">
              </span>
           </div>
-          <div class="form-group col d-none d-md-block mb-0">
+          <div class="mb-3 col d-none d-md-block mb-0">
              <input type="text" id="unpublished-on-date" class="form-control text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" />
           </div>
           <div class="form-inline col d-md-none">
@@ -390,7 +390,7 @@
                <mtapp:svgicon id="ic_time" title="<__trans phrase="Unpublished Time">">
              </span>
           </div>
-          <div class="form-group col d-none d-md-block mb-0">
+          <div class="mb-3 col d-none d-md-block mb-0">
              <input type="text" id="unpublished-on-time" class="form-control text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" placeholder="HH:mm:ss" />
           </div>
           <div class="form-inline col d-md-none">
@@ -489,7 +489,7 @@
   </div>
 
 <mt:if name="id">
-<div class="text-right delete-action mt-4 d-none d-md-block">
+<div class="text-end delete-action mt-4 d-none d-md-block">
   <a
      href="javascript:void(0)"
      mt:command="do-remove-items"
@@ -673,9 +673,9 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
   <mt:loop name="fields">
     <mt:if name="can_edit">
-<div class="form-group">
+<div class="mb-3">
       <mt:if name="type" like="^(?!(multi_line_text|text_label))">
-  <label><mt:var name="options{label}" escape="html"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if></label>
+  <label class="form-label"><mt:var name="options{label}" escape="html"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if></label>
       </mt:if>
 
       <mt:if name="field_html">

@@ -43,7 +43,7 @@
             </th>
             <th class="head string" scope="col">
               <span class="col-label d-none d-md-inline"><__trans phrase="Data"></span>
-              <span id="page-status" class="float-right d-md-none"></span>
+              <span id="page-status" class="float-end d-md-none"></span>
             </th>
           </thead>
 </mt:unless>
@@ -54,7 +54,7 @@
                 <input type="hidden" id="content-data-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
                 <div class="custom-control <mt:if name="can_multi">custom-checkbox<mt:else>custom-radio</mt:if>">
                   <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select custom-control-input" id="content-data-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" data-label="<mt:var name="label" escape="html">" />
-                  <label class="custom-control-label" for="content-data-select-<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+                  <label class="custom-control-label form-label" for="content-data-select-<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
                 </div>
               </td>
               <td class="content-data-label primary">
@@ -66,8 +66,8 @@
               <td class="content-data-author d-none d-md-table-cell">
                 <mt:var name="author_name" escape="html">
               </td>
-              <td class="content-data-data text-right text-md-left">
-                <a class="d-inline-block" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
+              <td class="content-data-data text-end text-md-left">
+                <a class="d-inline-block" data-bs-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
                   <mtapp:svgicon title="Collapse" color="secondary" id="ic_collapse">
                 </a>
               </td>

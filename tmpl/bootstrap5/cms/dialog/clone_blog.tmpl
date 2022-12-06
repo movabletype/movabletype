@@ -199,7 +199,7 @@
 
 <mt:else>
 
-  <fieldset class="form-group">
+  <fieldset class="mb-3">
   <legend class="h3"><__trans phrase="Child Site Details"></legend>
   <mtapp:setting
      id="blog-name"
@@ -210,7 +210,7 @@
   </mtapp:setting>
   </fieldset>
 
-  <fieldset class="form-group">
+  <fieldset class="mb-3">
   <legend class="h3"><__trans phrase="Publishing Paths"></legend>
   <mtapp:setting
      id="site_url"
@@ -233,7 +233,7 @@
     <div class="use-subdomain option">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="custom-control-input cb" />
-        <label class="custom-control-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+        <label class="custom-control-label form-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
       </div>
     </div>
     </mt:unless>
@@ -250,7 +250,7 @@
     <div class="use-subdomain option">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="custom-control-input cb" />
-        <label class="custom-control-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+        <label class="custom-control-label form-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
       </div>
     </div>
     </mt:unless>
@@ -267,7 +267,7 @@
     <div class="use-subdomain option">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="custom-control-input cb" />
-        <label class="custom-control-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+        <label class="custom-control-label form-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
       </div>
     </div>
     </mt:unless>
@@ -290,7 +290,7 @@
     <div class="use-absolute option">
       <div class="custom-control custom-checkbox">
         <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="use_absolute"> checked="checked"</mt:if> class="custom-control-input cb" />
-        <label class="custom-control-label" for="use_absolute"><__trans phrase="Use absolute path"></label>
+        <label class="custom-control-label form-label" for="use_absolute"><__trans phrase="Use absolute path"></label>
       </div>
     </div>
     </mt:unless>
@@ -310,7 +310,7 @@
      help_section="advanced_archive_publishing">
     <div class="custom-control custom-checkbox">
       <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="custom-control-input cb" />
-      <label class="custom-control-label" for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
+      <label class="custom-control-label form-label" for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
     </div>
   </mtapp:setting>
   <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> style="display: none;"</mt:unless>>
@@ -341,7 +341,7 @@
       <div class="use-subdomain option">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" checked="checked" class="custom-control-input cb" />
-          <label class="custom-control-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+          <label class="custom-control-label form-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
         </div>
       </div>
       </mt:unless>
@@ -360,7 +360,7 @@
       <div class="use-subdomain option">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="custom-control-input cb" />
-          <label class="custom-control-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+          <label class="custom-control-label form-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
         </div>
       </div>
       </mt:unless>
@@ -381,7 +381,7 @@
       <div class="use-subdomain option">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="custom-control-input cb" />
-          <label class="custom-control-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+          <label class="custom-control-label form-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
         </div>
       </div>
       </mt:unless>
@@ -402,7 +402,7 @@
       <div class="use-subdomain option">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="custom-control-input cb" />
-          <label class="custom-control-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+          <label class="custom-control-label form-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
         </div>
       </div>
       </mt:unless>
@@ -430,7 +430,7 @@
       <div class="use-absolute option">
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="use_absolute_archive"> checked="checked"</mt:if> class="custom-control-input cb" />
-          <label class="custom-control-label" for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
+          <label class="custom-control-label form-label" for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
         </div>
       </div>
       </mt:unless>
@@ -447,7 +447,7 @@
   </div>
   </fieldset>
 
-  <fieldset class="form-group">
+  <fieldset class="mb-3">
   <legend class="h3"><__trans phrase="Exclusions"></legend>
   <mtapp:setting
      id="clone_prefs"
@@ -458,14 +458,14 @@
       <li>
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="clone_prefs_entries_pages" id="clone-prefs-entries-pages" <mt:if name="clone_prefs_entries_pages">checked="<mt:var name="clone_prefs_entries_pages" escape="html">"</mt:if> class="custom-control-input cb" />
-          <label class="custom-control-label" for="clone-prefs-entries-pages"><__trans phrase="Entries/Pages"></label>
+          <label class="custom-control-label form-label" for="clone-prefs-entries-pages"><__trans phrase="Entries/Pages"></label>
         </div>
       </li>
       <mt:if name="enabled_plugins{Comments}">
       <li>
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="clone_prefs_comments" id="clone-prefs-comments" <mt:if name="clone_prefs_comments">checked="<mt:var name="clone_prefs_comments">"</mt:if> class="custom-control-input cb" />
-          <label class="custom-control-label" for="clone-prefs-comments"><__trans phrase="Comments"></label>
+          <label class="custom-control-label form-label" for="clone-prefs-comments"><__trans phrase="Comments"></label>
         </div>
       </li>
       </mt:if>
@@ -473,14 +473,14 @@
       <li>
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="clone_prefs_trackbacks" id="clone-prefs-trackbacks" <mt:if name="clone_prefs_trackbacks">checked="<mt:var name="clone_prefs_trackbacks">"</mt:if> class="custom-control-input cb" />
-          <label class="custom-control-label" for="clone-prefs-trackbacks"><__trans phrase="Trackbacks"></label>
+          <label class="custom-control-label form-label" for="clone-prefs-trackbacks"><__trans phrase="Trackbacks"></label>
         </div>
       </li>
       </mt:if>
       <li>
         <div class="custom-control custom-checkbox">
           <input type="checkbox" name="clone_prefs_categories" id="clone-prefs-categories" <mt:if name="clone_prefs_categories">checked="<mt:var name="clone_prefs_categories">"</mt:if> class="custom-control-input cb" />
-          <label class="custom-control-label" for="clone-prefs-categories"><__trans phrase="Categories/Folders"></label>
+          <label class="custom-control-label form-label" for="clone-prefs-categories"><__trans phrase="Categories/Folders"></label>
         </div>
       </li>
       <mt:unless name="clone_prefs_checkbox"></mt:unless>

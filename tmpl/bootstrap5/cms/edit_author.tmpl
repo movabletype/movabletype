@@ -228,7 +228,7 @@ function showPasswordField() {
   <input type="hidden" id="status" name="status" value="1" />
 </mt:if>
 
-  <fieldset id="author-profile-settings" class="form-group">
+  <fieldset id="author-profile-settings" class="mb-3">
     <legend class="h3"><__trans phrase="Profile"></legend>
 <mt:unless name="new_object">
   <mt:if name="can_modify_sys_perms">
@@ -402,7 +402,7 @@ function showPasswordField() {
     </mt:if>
   </fieldset>
 
-  <fieldset id="author-preferences-settings" class="form-group">
+  <fieldset id="author-preferences-settings" class="mb-3">
     <legend class="h3"><__trans phrase="Preferences"></legend>
     <mtapp:setting
        id="preferred_language"
@@ -482,17 +482,17 @@ function showPasswordField() {
   </mt:if>
   </fieldset>
 
-  <fieldset id="author-permission-settings" class="form-group">
+  <fieldset id="author-permission-settings" class="mb-3">
     <legend class="h3"><__trans phrase="System Permissions"></legend>
     <mtapp:setting
        id="system_permissions"
        label="<__trans phrase="Permissions">">
-      <div class="form-group align-items-center">
+      <div class="mb-3 align-items-center">
       <mt:loop name="loaded_permissions">
         <div class="form-check form-check-inline">
           <div class="custom-control custom-checkbox">
             <input name="<mt:var name="id">" id="<mt:var name="id">" class="custom-control-input permission-checkbox" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="can_modify_sys_perms">disabled="disabled"</mt:unless> onclick="togglePerms(this, '<mt:var name="children">')"<mt:if name="children"> data-child-perm='<mt:var name="children">'</mt:if> />
-            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label"></label>
+            <label class="custom-control-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label"></label>
           </div>
         </div>
       </mt:loop>

@@ -29,7 +29,7 @@
   <div id="junk-message" class="alert alert-warning msg msg-alert">
     <p class="msg-text">
       <__trans phrase="This comment was classified as spam.">
-        <a href="#comment-feedback-rating" class="detail-link" data-toggle="collapse" aria-expanded="false" aria-controls="comment-feedback-rating"><__trans phrase="Details"></a>
+        <a href="#comment-feedback-rating" class="detail-link" data-bs-toggle="collapse" aria-expanded="false" aria-controls="comment-feedback-rating"><__trans phrase="Details"></a>
     </p>
     <div id="comment-feedback-rating" class="collapse detail">
       <p class="junk-score"><__trans phrase="Total Feedback Rating: [_1]" params="<$mt:var name="junk_score"$>"></p>
@@ -202,7 +202,7 @@
      id="author"
      label="<__trans phrase="Commenter">">
   <mt:if name="commenter_id">
-    <div class="form-group">
+    <div class="mb-3">
     <mt:if name="auth_icon_url">
       <img src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" />
     </mt:if>
@@ -230,7 +230,7 @@
   <mtapp:setting
      id="author"
      label="<__trans phrase="Commenter Status">">
-    <div class="form-group">
+    <div class="mb-3">
     <mt:if name="commenter_approved">
       <mt:if name="can_edit_commenters">
       <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link d-inline-block" title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm"></a>
@@ -294,7 +294,7 @@
      label="<__trans phrase="Email Address">"
      label_for="email">
   <mt:if name="commenter_id">
-    <div class="form-group">
+    <div class="mb-3">
     <mt:if name="email">
       <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mt:var name="email" escape="html"></a>
     <mt:else>
@@ -322,7 +322,7 @@
      label="<__trans phrase="Website URL">"
      label_for="url">
   <mt:if name="commenter_id">
-    <div class="form-group">
+    <div class="mb-3">
     <mt:if name="url">
       <a href="<mt:var name="url" escape="html">"><$mt:Var name="url" escape="html"$></a>
     <mt:else>
@@ -350,7 +350,7 @@
   <mtapp:setting
      id="entry"
      label="$entry_class_label">
-    <div class="form-group">
+    <div class="mb-3">
   <mt:if name="no_entry">
       [<__trans phrase="[_1] no longer exists" params="<mt:var name="entry_class_label">">]
   <mt:else>
@@ -363,7 +363,7 @@
   <mtapp:setting
      id="date"
      label="<__trans phrase="Date">">
-    <div class="form-group">
+    <div class="mb-3">
       <mt:var name="created_on_time_formatted">
       <a title="<__trans phrase="View all comments created on this day">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter=created_on&amp;filter_val=<mt:date ts="$created_on" format="%Y%m%d">-<mt:date ts="$created_on" format="%Y%m%d">&amp;show_all=1&amp;blog_id=<mt:var name="blog_id">" class="d-none d-md-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
     </div>
@@ -373,7 +373,7 @@
   <mtapp:setting
      id="ip"
      label="<__trans phrase="IP Address">">
-    <div class="form-group">
+    <div class="mb-3">
       <mt:var name="ip" escape="html">
       <a title="<__trans phrase="View all comments from this IP Address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=ip&amp;filter_val=<mt:var name="ip" escape="html">" class="d-none d-md-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
     </div>
