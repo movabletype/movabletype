@@ -798,7 +798,7 @@ sub optional_packages_for_wizard {
         next if $hash->{required};
         next if $hash->{tags} && $hash->{tags}[0] eq 'Database';
         $packages{$module}{link}    = $hash->{url};
-        $packages{$module}{label}   = $app ? $app->translate($hash->{label}) : $hash->{label};
+        $packages{$module}{label}   = $hash->{label};
         $packages{$module}{version} = $hash->{version} if $hash->{version};
     }
     \%packages;
@@ -811,7 +811,7 @@ sub required_packages_for_wizard {
         my $hash = $Requirements{$module};
         next unless $hash->{required};
         $packages{$module}{link}    = $hash->{url};
-        $packages{$module}{label}   = $app ? $app->translate($hash->{label}) : $hash->{label};
+        $packages{$module}{label}   = $hash->{label};
         $packages{$module}{version} = $hash->{version} if $hash->{version};
     }
     \%packages;
