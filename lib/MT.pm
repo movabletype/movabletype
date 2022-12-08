@@ -1352,8 +1352,8 @@ sub init_plugins {
         $mt->config->PluginAlias( \%PluginAlias, 1 );
 
         if (my $model = $mt->model('config')) {
-            if (eval { $model->driver->table_exists($model) }) {
-                $mt->config->save_config unless $mt->isa('MT::App::Wizard');
+            if (!$mt->isa('MT::App::Wizard') && $model->driver->table_exists($model)) {
+                $mt->config->save_config;
             }
         }
     }
