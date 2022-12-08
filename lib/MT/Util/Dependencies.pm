@@ -791,7 +791,7 @@ our %ExtLibOnly = (
 );
 
 sub optional_packages_for_wizard {
-    my ($class, $app) = @_;
+    my ($class) = @_;
     my %packages;
     for my $module (keys %Requirements) {
         my $hash = $Requirements{$module};
@@ -805,7 +805,7 @@ sub optional_packages_for_wizard {
 }
 
 sub required_packages_for_wizard {
-    my ($class, $app) = @_;
+    my ($class) = @_;
     my %packages;
     for my $module (keys %Requirements) {
         my $hash = $Requirements{$module};
