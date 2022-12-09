@@ -4478,7 +4478,7 @@ package MT::Template::Tags::System;
 use strict;
 
 use MT;
-use MT::Util qw( offset_time_list encode_html );
+use MT::Util qw( offset_time_list encode_html trim_path );
 use MT::Request;
 
 {
@@ -6366,6 +6366,7 @@ B<Example:>
             or return $ctx->error( $builder->errstr );
         $file =~ s!/{2,}!/!g;
         $file =~ s!(^/|/$)!!g;
+        $file = trim_path($file) if MT->config->TrimFilePath;
         $file;
     }
 }

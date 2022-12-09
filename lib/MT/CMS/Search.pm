@@ -33,50 +33,32 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
-                my $cnt = MT->model('permission')->count(
-                    [   [   {   (     ($blog_id)
-                                    ? ( blog_id => $blog_id )
-                                    : ( blog_id => \'> 0' )
-                                ),
-                                author_id => $author->id,
-                            },
-                            '-and',
-                            [   {   permissions => {
-                                        like => "\%'manage_content_data'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like => "\%'manage_content_data:\%'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like => "\%'create_content_data:\%'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like =>
-                                            "\%'edit_all_content_data:\%'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like =>
-                                            "\%'publish_content_data:\%'\%"
-                                    },
-                                },
-                            ],
-                        ],
-                        '-or',
-                        {   author_id => $author->id,
-                            permissions =>
-                                { like => "\%'manage_content_data'\%" },
-                            blog_id => 0,
+                my @terms = ({
+                    author_id   => $author->id,
+                    permissions => { like => "\%'manage_content_data'\%" },
+                    blog_id     => 0,
+                });
+                if ($blog_id) {
+                    push @terms, '-or', [{
+                            blog_id   => $blog_id,
+                            author_id => $author->id,
                         },
-                    ]
-                );
+                        '-and',
+                        [
+                            { permissions => { like => "\%'manage_content_data'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'manage_content_data:\%'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'create_content_data:\%'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'edit_all_content_data:\%'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'publish_content_data:\%'\%" } },
+                        ],
+                    ];
+                }
+
+                my $cnt = MT->model('permission')->count(\@terms);
 
                 return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
@@ -662,7 +644,7 @@ sub can_search_replace {
             {   author_id => $app->user->id,
                 (   $blog_ids
                     ? ( blog_id => $blog_ids )
-                    : ( blog_id => { not => 0 } )
+                    : ( blog_id => 0 )
                 ),
             }
         );
@@ -701,12 +683,15 @@ sub search_replace {
     return $app->return_to_dashboard( redirect => 1 )
         if !$app->can_do('use_tools:search') && $app->param('blog_id');
 
+    my $search_tabs = $app->search_apis( $blog_id ? 'blog' : 'system' );
+    return $app->permission_denied() unless @{$search_tabs || []};
+
     my $param = do_search_replace( $app, @_ ) or return;
     $app->add_breadcrumb( $app->translate('Search & Replace') );
     $param->{nav_search}   = 1;
     $param->{screen_class} = "search-replace";
     $param->{screen_id}    = "search-replace";
-    $param->{search_tabs} = $app->search_apis( $blog_id ? 'blog' : 'system' );
+    $param->{search_tabs} = $search_tabs;
     $param->{entry_type}  = $app->param('entry_type');
 
     if (   $app->param('_type')

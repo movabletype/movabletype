@@ -116,6 +116,7 @@ use_ok('MT::Group');
 
 # Utility modules
 use_ok('MT::Builder');
+use_ok('MT::Builder::Fast');
 use_ok('MT::Callback');
 use_ok('MT::ConfigMgr');
 use_ok('MT::DateTime');

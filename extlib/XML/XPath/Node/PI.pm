@@ -1,17 +1,16 @@
 package XML::XPath::Node::PI;
 
-$VERSION = '1.44';
+use strict;
+use warnings;
+use parent qw/XML::XPath::Node/;
 
-use strict; use warnings;
-use vars qw/@ISA/;
-
-@ISA = ('XML::XPath::Node');
+our $VERSION = '1.48';
 
 package XML::XPath::Node::PIImpl;
 
-use vars qw/@ISA/;
-@ISA = ('XML::XPath::NodeImpl', 'XML::XPath::Node::PI');
 use XML::XPath::Node ':node_keys';
+use parent qw/-norequire XML::XPath::NodeImpl XML::XPath::Node::PI/;
+
 
 sub new {
 	my $class = shift;

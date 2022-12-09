@@ -21,7 +21,7 @@ sub ProcessKodakPatch($$$);
 sub WriteUnknownOrPreview($$$);
 sub FixLeicaBase($$;$);
 
-$VERSION = '2.10';
+$VERSION = '2.11';
 
 my $debug;          # set to 1 to enable debugging code
 
@@ -88,6 +88,11 @@ my $debug;          # set to 1 to enable debugging code
             ByteOrder => 'Unknown',
             FixBase => 1, # necessary for AVI and MOV videos
         },
+    },
+    {
+        Name => 'MakerNoteDJIInfo',
+        Condition => '$$valPt =~ /^\[ae_dbg_info:/',
+        SubDirectory => { TagTable => 'Image::ExifTool::DJI::Info' },
     },
     {
         Name => 'MakerNoteDJI',
@@ -567,6 +572,17 @@ my $debug;          # set to 1 to enable debugging code
             TagTable => 'Image::ExifTool::Olympus::Main',
             Start => '$valuePtr + 12',
             Base => '$start - 12',
+            ByteOrder => 'Unknown',
+        },
+    },
+    {
+        Name => 'MakerNoteOlympus3',
+        # new Olympus maker notes start with "OLYMPUS\0"
+        Condition => '$$valPt =~ /^OM SYSTEM\0/',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Olympus::Main',
+            Start => '$valuePtr + 16',
+            Base => '$start - 16',
             ByteOrder => 'Unknown',
         },
     },
@@ -1812,7 +1828,7 @@ maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

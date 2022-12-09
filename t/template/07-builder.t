@@ -139,7 +139,7 @@ note("Testing compilation failure for a block tag (no closing tag)");
 $tokens = $builder->compile( $ctx, '<MTBars>' );
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( !$tokens, "Compiling failed, as expected" );
-ok( $builder->errstr eq "<MTBars> with no </MTBars> on line 1.\n",
+like( $builder->errstr => qr!^(<MTBars> with no </MTBars> on line 1.|Tag Bars left unclosed at line 1)\n\z!,
     "Compilation yielded proper error message" );
 
 # diag("Testing compilation failure for a nested block tag");

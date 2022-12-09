@@ -132,7 +132,7 @@ if (USE_ENCODE) {
     }
 }
 
-$VERSION = '1.012.2';
+$VERSION = '1.013.1';
 
 ######## Private Attributes ########
 
@@ -142,6 +142,7 @@ my $FALLBACK_CHARSET = 'UTF-8';
 # This table was initially borrowed from Python email package.
 
 my %CHARSETS = (# input		    header enc body enc output conv
+		'DIN_66003' =>          ['Q',   undef,  undef],
 		'ISO-8859-1' =>		['Q',	'Q',	undef],
 		'ISO-8859-2' =>		['Q',	'Q',	undef],
 		'ISO-8859-3' =>		['Q',	'Q',	undef],
@@ -206,6 +207,7 @@ my %CHARSET_ALIASES = (# unpreferred		preferred
 		       "CP874" =>		"WINDOWS-874",
 		       "CP936" =>		"GBK",
 		       "CP949" =>		"KS_C_5601-1987",
+		       "DIN66003" =>		"DIN_66003",
 		       "EUC-CN" =>		"GB2312",
 		       "HZ" =>			"HZ-GB-2312", # RFC 1842
 		       "KS_C_5601" =>		"KS_C_5601-1987",
@@ -268,6 +270,7 @@ my %ENCODERS = (
 		    'UTF-8'      => [['utf8'], ],       # Special name on Perl
 		},
 		'STANDARD' => {
+		    'DIN_66003'     => [['din66003', 'Endode::DIN66003'], ],
 		    'ISO-8859-6-E'  => [['iso-8859-6'],],# Encode::Byte
 		    'ISO-8859-6-I'  => [['iso-8859-6'],],# ditto
 		    'ISO-8859-8-E'  => [['iso-8859-8'],],# Encode::Byte
@@ -413,6 +416,12 @@ sub new {
 	# And "TIS-620" not known by some versions of Encode (cf.
 	# CPAN RT #20781).
 	$charset = "TIS-620";
+    } elsif ($charset =~ /\biso[-_]8859[-_]8[-_]i$/i) {
+	# workaround: "ISO-8859-8-I" is treated as an alias of "ISO-8859-8"
+	# by Encode (3.19): See the note in
+	# https://encoding.spec.whatwg.org/#legacy-single-byte-encodings
+	# However we'll treat these as separate names for compatibility.
+	$charset = "ISO-8859-8-I";
     } else {
 	$charset = resolve_alias($charset) || $charset
     }

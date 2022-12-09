@@ -1,17 +1,15 @@
 package XML::XPath::Node::Comment;
 
-$VERSION = '1.44';
+use strict;
+use warnings;
+use parent qw/XML::XPath::Node/;
 
-use strict; use warnings;
-use vars qw/@ISA/;
-
-@ISA = ('XML::XPath::Node');
+our $VERSION = '1.48';
 
 package XML::XPath::Node::CommentImpl;
 
-use vars qw/@ISA/;
-@ISA = ('XML::XPath::NodeImpl', 'XML::XPath::Node::Comment');
 use XML::XPath::Node ':node_keys';
+use parent qw/-norequire XML::XPath::NodeImpl XML::XPath::Node::Comment/;
 
 sub new {
     my $class = shift;

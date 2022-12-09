@@ -248,11 +248,12 @@ my %unicodeString = (
         Protected => 1,
         Notes => q{
             this tag indicates provides a way for XMP-aware applications to indicate
-            that the XMP is synchronized with the IPTC.  When writing, special values of
-            "new" and "old" represent the digests of the IPTC from the edited and
-            original files respectively, and are undefined if the IPTC does not exist in
-            the respective file.  Set this to "new" as an indication that the XMP is
-            synchronized with the IPTC
+            that the XMP is synchronized with the IPTC.  The MWG recommendation is to
+            ignore the XMP if IPTCDigest exists and doesn't match the CurrentIPTCDigest.
+            When writing, special values of "new" and "old" represent the digests of the
+            IPTC from the edited and original files respectively, and are undefined if
+            the IPTC does not exist in the respective file.  Set this to "new" as an
+            indication that the XMP is synchronized with the IPTC
         },
         # also note the 'new' feature requires that the IPTC comes before this tag is written
         ValueConv => 'unpack("H*", $val)',
@@ -1143,7 +1144,7 @@ be preserved when copying Photoshop information via user-defined tags.
 
 =head1 AUTHOR
 
-Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -1526,6 +1526,11 @@ sub remove_children_multi {
     my $child_classes = $class->properties->{child_classes} || {};
     my @classes = keys %$child_classes;
 
+    my $class_column = $class->properties->{class_column};
+    if ($class_column) {
+        $terms->{$class_column} = '*';
+    }
+
     my @ids = map { $_->id }
         $class->load( $terms, { fetchonly => ['id'], no_triggers => 1 } );
     if (@ids) {
