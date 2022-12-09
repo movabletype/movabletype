@@ -1605,7 +1605,7 @@ $.fn.mtModal.close = function (url) {
 
 function getModalHtml() {
   return '<style>iframe.embed-response-item:not(:last-child) { display: none; }</style>'
-    + '<div class="modal fade mt-modal" data-backdrop="static">'
+    + '<div class="modal fade mt-modal" data-bs-backdrop="static">'
     + '<div class="modal-dialog">'
     + '<div class="modal-content embed-responsive">'
     + '</div>'

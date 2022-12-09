@@ -211,7 +211,7 @@ function handleMessages( data ) {
   if ( data.error ) {
     jQuery('#msg-block').append(
       '<div class="alert alert-danger msg msg-error">'
-      + '<button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+      + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
       + '<p class="msg-text">'
       + data.error
       + '</p>'
@@ -233,7 +233,7 @@ function handleMessages( data ) {
     }
     jQuery('#msg-block').append(
       '<div class="alert alert-' + alertCls + ' msg msg-' + cls + '">'
-      + '<button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+      + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
       + '<p class="msg-text">'
       + text
       + '</p>'
