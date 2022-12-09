@@ -1691,7 +1691,8 @@ function openModal(href, opts) {
   $modal.find('.modal-content').append($iframe);
 
 //   $modal.modal(getModalOptions(opts));
-  new bootstrap.Modal($modal.get(0), getModalOptions(opts));
+  var $bsmodal = new bootstrap.Modal($modal.get(0), getModalOptions(opts));
+  $bsmodal.show();
 }
 
 function getNextIframeId() {
