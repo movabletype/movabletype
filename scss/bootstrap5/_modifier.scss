@@ -1079,7 +1079,7 @@ fieldset.form-group{
   background: $white;
   font-weight: $font-weight-normal;
   &:hover{
-    border-color: theme-color("primary");
+    border-color: map-get($theme-colors, "primary");
     background: $gray-lightest;
   }
 }
@@ -1100,7 +1100,7 @@ fieldset.form-group{
   font-weight: $font-weight-normal;
   text-align: left;
   &:hover{
-    border-color: theme-color("primary");
+    border-color: map-get($theme-colors, "primary");
     background: $gray-lightest;
   }
   .mt-icon{
@@ -1108,8 +1108,8 @@ fieldset.form-group{
   }
 }
 .btn-contentblock--selected{
-    border-color: theme-color("info");
-    box-shadow: 0 0 0 2px theme-color("info");
+    border-color: map-get($theme-colors, "info");
+    box-shadow: 0 0 0 2px map-get($theme-colors, "info");
 }
 
 /* Inline Editor */
@@ -1407,7 +1407,7 @@ fieldset.form-group{
     }
   }
   &[aria-grabbed="true"]{
-    border-color: theme-color("info");
+    border-color: map-get($theme-colors, "info");
     font-weight: $font-weight-bold;
   }
 }
@@ -1433,7 +1433,7 @@ fieldset.form-group{
 .mt-contentfield{
   @extend %mt-collapse;
   &[aria-grabbed="true"]{
-    border-color: theme-color("info");
+    border-color: map-get($theme-colors, "info");
     font-weight: $font-weight-bold;
   }
   .mt-collapse__container{
@@ -1688,7 +1688,7 @@ fieldset.form-group{
     margin: 0 0.5rem 0.2rem 0;
     cursor: pointer;
     &:hover{
-      border-color: theme-color("primary");
+      border-color: map-get($theme-colors, "primary");
     }
   }
 }
@@ -1745,7 +1745,7 @@ fieldset.form-group{
 }
 .badge-primary{
   border-color: transparent;
-  background-color: theme-color("success");
+  background-color: map-get($theme-colors, "success");
   color: $white;
 }
 .badge-info{
@@ -1754,16 +1754,16 @@ fieldset.form-group{
   color: $white;
 }
 .badge-success{
-  border-color: theme-color("success");
-  color: theme-color("success");
+  border-color: map-get($theme-colors, "success");
+  color: map-get($theme-colors, "success");
 }
 .badge-warning{
-  border-color: theme-color("warning");
-  color: theme-color("warning");
+  border-color: map-get($theme-colors, "warning");
+  color: map-get($theme-colors, "warning");
 }
 .badge-danger{
-  border-color: theme-color("danger");
-  color: theme-color("danger");
+  border-color: map-get($theme-colors, "danger");
+  color: map-get($theme-colors, "danger");
 }
 h1, h2,
 .h1, .h2{
@@ -1810,30 +1810,30 @@ button.close, .btn-close {
 }
 .mt-icon--primary{
   @extend .mt-icon;
-  fill: theme-color("primary");
+  fill: map-get($theme-colors, "primary");
 }
 .mt-icon--secondary{
   @extend .mt-icon;
-  fill: theme-color("secondary");
+  fill: map-get($theme-colors, "secondary");
 }
 a:hover .mt-icon--secondary{
   fill: $gray-darker;
 }
 .mt-icon--success{
   @extend .mt-icon;
-  fill: theme-color("success");
+  fill: map-get($theme-colors, "success");
 }
 .mt-icon--info{
   @extend .mt-icon;
-  fill: theme-color("info");
+  fill: map-get($theme-colors, "info");
 }
 .mt-icon--warning{
   @extend .mt-icon;
-  fill: theme-color("warning");
+  fill: map-get($theme-colors, "warning");
 }
 .mt-icon--danger{
   @extend .mt-icon;
-  fill: theme-color("danger");
+  fill: map-get($theme-colors, "danger");
 }
 .mt-icon--inverse{
   @extend .mt-icon;
@@ -1881,7 +1881,7 @@ a:hover .mt-icon--secondary{
   position: absolute;
   border: 2px solid $white;
   border-radius: 10px;
-  background: theme-color("secondary");
+  background: map-get($theme-colors, "secondary");
 }
 .mt-user__badge--img{
   @extend .mt-user__badge;
@@ -1889,19 +1889,19 @@ a:hover .mt-icon--secondary{
 }
 .mt-user__badge--primary{
   @extend .mt-user__badge;
-  background: theme-color("primary");
+  background: map-get($theme-colors, "primary");
 }
 .mt-user__badge--success{
   @extend .mt-user__badge;
-  background: theme-color("success");
+  background: map-get($theme-colors, "success");
 }
 .mt-user__badge--warning{
   @extend .mt-user__badge;
-  background: theme-color("warning");
+  background: map-get($theme-colors, "warning");
 }
 .mt-user__badge--danger{
   @extend .mt-user__badge;
-  background: theme-color("danger");
+  background: map-get($theme-colors, "danger");
 }
 
 /* Pagination */
