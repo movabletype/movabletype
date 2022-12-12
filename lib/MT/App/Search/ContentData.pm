@@ -776,6 +776,7 @@ sub _join_content_field {
             ? [ keys %content_field_index_ids ]
             : 0,
         },
+        { unique => 1 },
     );
 }
 
