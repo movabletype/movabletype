@@ -1653,6 +1653,7 @@ fieldset.form-group{
   button{
     color: $white;
   }
+  padding: $modal-header-padding;
 }
 .modal-title{
   margin-top: 0;
@@ -1664,9 +1665,11 @@ fieldset.form-group{
   }
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
+  padding: $modal-inner-padding;
 }
 .modal-footer {
   width: 100%;
+  padding: calc( #{$modal-inner-padding} - #{$modal-footer-margin-between} * .5);
 }
 .modal-description{
   @extend .d-flex, .justify-content-between;

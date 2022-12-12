@@ -11984,6 +11984,7 @@ fieldset.form-group {
   border-radius: 0;
   background: #595959;
   color: #FFFFFF;
+  padding: 1rem 1rem;
 }
 
 .modal-header button {
@@ -11998,6 +11999,7 @@ fieldset.form-group {
   max-height: 22rem;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
+  padding: 1rem;
 }
 
 @media (min-width: 768px) {
@@ -12008,6 +12010,7 @@ fieldset.form-group {
 
 .modal-footer {
   width: 100%;
+  padding: calc( 1rem - 0.5rem * .5);
 }
 
 .modal-description {
