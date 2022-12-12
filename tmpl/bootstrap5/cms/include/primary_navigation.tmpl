@@ -14,8 +14,8 @@
 
 <mt:setvartemplate name="primary_navigation_info">
 <mt:if name="user_actions">
-  <div class="mt-primaryNavigation__info">
-    <button class="mt-primaryNavigation__footer<mt:if name="scope_type" eq="user">--invert</mt:if>" type="button" id="userDropdownMenu" data-bs-toggle="dropdown" data-offset="100%,-100%" aria-haspopup="true" aria-expanded="false">
+  <div class="mt-primaryNavigation__info dropend">
+    <button class="mt-primaryNavigation__footer<mt:if name="scope_type" eq="user">--invert</mt:if>" type="button" id="userDropdownMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
   <mt:if name="author_userpic_url">
       <img src="<mt:var name="author_userpic_url" escape="html">" alt="" width="32" height="32" class="mr-1 rounded-circle">
   <mt:else>
