@@ -161,6 +161,51 @@ subtest 'Simple' => sub {
     };
 };
 
+subtest 'pagination' => sub {
+    my %params = (
+        cdSearch           => 1,
+        SearchContentTypes => 'pagination',
+        IncludeBlogs       => $blog_id2,
+        search             => 'FOO',
+    );
+    test_data_api({
+        path   => '/v4/search',
+        method => 'GET',
+        params => { %params, limit => 2 },
+        result => {
+            'items' => [
+                superhashof({ label => 'pagination01' }),
+                superhashof({ label => 'pagination02' }),
+            ],
+            'totalResults' => 10,
+        },
+    });
+    test_data_api({
+        path   => '/v4/search',
+        method => 'GET',
+        params => { %params, limit => 2, offset => 1 },
+        result => {
+            'items' => [
+                superhashof({ label => 'pagination02' }),
+                superhashof({ label => 'pagination03' }),
+            ],
+            'totalResults' => 10,
+        },
+    });
+    test_data_api({
+        path   => '/v4/search',
+        method => 'GET',
+        params => { %params, limit => 2, page => 3 },
+        result => {
+            'items' => [
+                superhashof({ label => 'pagination05' }),
+                superhashof({ label => 'pagination06' }),
+            ],
+            'totalResults' => 10,
+        },
+    });
+};
+
 subtest 'content_field => field:needle' => sub {
     my %params = (
         search             => '1',

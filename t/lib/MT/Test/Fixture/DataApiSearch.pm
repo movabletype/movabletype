@@ -99,6 +99,15 @@ our %FixtureSpec = (
             author       => 'author',
             data         => { myfield => 'BAZ' },
         },
+        (
+            map {
+                sprintf('pagination%02d', $_) => {
+                    content_type => 'pagination',
+                    author       => 'author',
+                    data         => { myfield => 'FOO' },
+                }
+            } (1 .. 10)
+        ),
         content_field1 => {
             content_type => 'content_field',
             author       => 'author',
