@@ -2825,7 +2825,7 @@ function showMsg(message, id, type, rebuild, blogID) {
         }
         DOM.addClassName(msg, 'alert-' + type);
     }
-    msg.innerHTML = message + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+    msg.innerHTML = message + '<button type="button" class="close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
     if (rebuild == 'all')
         msg.innerHTML += ' ' + trans('[_1]Publish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\');">', '</a>');
     if (rebuild == 'index')
