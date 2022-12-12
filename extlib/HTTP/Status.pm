@@ -3,12 +3,12 @@ package HTTP::Status;
 use strict;
 use warnings;
 
-our $VERSION = '6.36';
+our $VERSION = '6.43';
 
 use Exporter 5.57 'import';
 
 our @EXPORT = qw(is_info is_success is_redirect is_error status_message);
-our @EXPORT_OK = qw(is_client_error is_server_error is_cacheable_by_default);
+our @EXPORT_OK = qw(is_client_error is_server_error is_cacheable_by_default status_constant_name);
 
 # Note also addition of mnemonics to @EXPORT below
 
@@ -90,6 +90,8 @@ my %StatusCode = (
     511 => 'Network Authentication Required', # RFC 6585: Additional Codes
 );
 
+my %StatusCodeName;
+
 # keep some unofficial codes that used to be in this distribution
 %StatusCode = (
     %StatusCode,
@@ -104,10 +106,12 @@ while (($code, $message) = each %StatusCode) {
     # create mnemonic subroutines
     $message =~ s/I'm/I am/;
     $message =~ tr/a-z \-/A-Z__/;
-    $mnemonicCode .= "sub HTTP_$message () { $code }\n";
+    my $constant_name = "HTTP_".$message;
+    $mnemonicCode .= "sub $constant_name () { $code }\n";
     $mnemonicCode .= "*RC_$message = \\&HTTP_$message;\n";  # legacy
     $mnemonicCode .= "push(\@EXPORT_OK, 'HTTP_$message');\n";
     $mnemonicCode .= "push(\@EXPORT, 'RC_$message');\n";
+    $StatusCodeName{$code} = $constant_name
 }
 eval $mnemonicCode; # only one eval for speed
 die if $@;
@@ -139,6 +143,9 @@ our %EXPORT_TAGS = (
 
 
 sub status_message  ($) { $StatusCode{$_[0]}; }
+sub status_constant_name ($) {
+    exists($StatusCodeName{$_[0]}) ? $StatusCodeName{$_[0]} : undef;
+}
 
 sub is_info                 ($) { $_[0] && $_[0] >= 100 && $_[0] < 200; }
 sub is_success              ($) { $_[0] && $_[0] >= 200 && $_[0] < 300; }
@@ -174,7 +181,7 @@ HTTP::Status - HTTP Status code processing
 
 =head1 VERSION
 
-version 6.36
+version 6.43
 
 =head1 SYNOPSIS
 
@@ -280,7 +287,20 @@ the classification functions.
 
 The status_message() function will translate status codes to human
 readable strings. The string is the same as found in the constant
-names above. If the $code is not registered in the L<list of IANA HTTP Status
+names above.
+For example, C<status_message(303)> will return C<"Not Found">.
+
+If the $code is not registered in the L<list of IANA HTTP Status
+Codes|https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml>
+then C<undef> is returned.
+
+=item status_constant_name( $code )
+
+The status_constant_name() function will translate a status code
+to a string which has the name of the constant for that status code.
+For example, C<status_constant_name(404)> will return C<"HTTP_NOT_FOUND">.
+
+If the C<$code> is not registered in the L<list of IANA HTTP Status
 Codes|https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml>
 then C<undef> is returned.
 

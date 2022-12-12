@@ -125,15 +125,15 @@ sub filter_tmpl_multiple {
     return <<'__TMPL__';
 <mt:setvarblock name="select_options">
 <select class="custom-select form-control <mt:var name="type">-option">
-  <option value="is_selected"><__trans phrase="is selected" escape="js"></option>
-  <option value="is_not_selected"><__trans phrase="is not selected" escape="js"></option>
+  <option value="is_selected"><__trans phrase="is selected" encode_html="1"></option>
+  <option value="is_not_selected"><__trans phrase="is not selected" encode_html="1"></option>
 </select>
 </mt:setvarblock>
 <__trans phrase="In [_1] column, [_2] [_3]"
-         params="<mt:var name="label" escape="js">%%
+         params="<mt:var name="label">%%
                  <select class="custom-select form-control <mt:var name="type">-value">
                  <mt:loop name="single_select_options">
-                   <option value="<mt:var name="value" encode_js="1">"><mt:var name="label" encode_html="1" encode_js="1" encode_html="1" ></option>
+                   <option value="<mt:var name="value" encode_html="1">"><mt:var name="label" encode_html="1" ></option>
                  </mt:loop>
                  </select>%%<mt:var name="select_options">">
 __TMPL__

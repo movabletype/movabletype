@@ -33,7 +33,7 @@ our @EXPORT_OK
     start_background_task launch_background_tasks substr_wref
     extract_urls extract_domain extract_domains is_valid_date valid_date_time2ts
     epoch2ts ts2epoch escape_unicode unescape_unicode
-    sax_parser expat_parser libxml_parser trim ltrim rtrim asset_cleanup caturl multi_iter
+    sax_parser expat_parser libxml_parser trim ltrim rtrim trim_path asset_cleanup caturl multi_iter
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
@@ -450,6 +450,7 @@ sub relative_date {
 }
 
 our %Languages;
+my %TsFormatCache;
 
 sub format_ts {
     my ( $format, $ts, $blog, $lang, $is_mail ) = @_;
@@ -467,79 +468,68 @@ sub format_ts {
     unless ( defined $format ) {
         $format = $Languages{$lang}[3] || "%B %e, %Y %l:%M %p";
     }
-    my $cache = MT->request->cache('formats');
-    unless ($cache) {
-        MT::Request->instance->cache( 'formats', $cache = {} );
-    }
-    if ( my $f_ref = $cache->{ $ts . $lang } ) {
-        %f = %$f_ref;
-    }
-    else {
-        my $L  = $Languages{$lang};
-        my @ts = @f{qw( Y m d H M S )}
-            = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
-        $f{w} = wday_from_ts( @ts[ 0 .. 2 ] );
-        $f{j} = yday_from_ts( @ts[ 0 .. 2 ] );
-        $f{'y'} = substr $f{Y}, 2;
-        $f{b} = substr_wref $L->[1][ $f{'m'} - 1 ] || '', 0, 3;
-        $f{B} = $L->[1][ $f{'m'} - 1 ];
+    my $str;
+    if (exists $TsFormatCache{$lang}{$format}) {
+        $str = $TsFormatCache{$lang}{$format};
+    } else {
+        my $org = $format;
+        my $date_format = $Languages{$lang}->[4] || "%B %e, %Y";
+        my $time_format = $Languages{$lang}->[5] || "%l:%M %p";
+        $format =~ s!%x!$date_format!g;
+        $format =~ s!%X!$time_format!g;
+        ## This is a dreadful hack. I can't think of a good format specifier
+        ## for "%B %Y" (which is used for monthly archives, for example) so
+        ## I'll just hardcode this, for Japanese dates.
         if ( $lang eq 'ja' ) {
-            $f{a} = substr $L->[0][ $f{w} ] || '', 0, 1;
+            $format =~ s!%B %Y!$Languages{$lang}->[6]!g;
+            $format =~ s!%B %E,? %Y!$Languages{$lang}->[4]!ig;
+            $format =~ s!%b. %e, %Y!$Languages{$lang}->[4]!ig;
+            $format =~ s!%B %E!$Languages{$lang}->[7]!ig;
         }
-        else {
-            $f{a} = substr_wref $L->[0][ $f{w} ] || '', 0, 3;
+        elsif ( $lang eq 'it' ) {
+            ## Hack for the Italian dates
+            ## In Italian, the date always come before the month.
+            $format =~ s!%b %e!%e %b!g;
         }
-        $f{A} = $L->[0][ $f{w} ];
-        ( $f{e} = $f{d} ) =~ s!^0! !;
-        $f{I} = $f{H};
-        if ( $f{I} > 12 ) {
-            $f{I} -= 12;
-            $f{p} = $L->[2][1];
-        }
-        elsif ( $f{I} == 0 ) {
-            $f{I} = 12;
-            $f{p} = $L->[2][0];
-        }
-        elsif ( $f{I} == 12 ) {
-            $f{p} = $L->[2][1];
-        }
-        else {
-            $f{p} = $L->[2][0];
-        }
-        $f{I} = sprintf "%02d", $f{I};
-        ( $f{k} = $f{H} ) =~ s!^0! !;
-        ( $f{l} = $f{I} ) =~ s!^0! !;
-        $f{j}                   = sprintf "%03d", $f{j};
-        $f{Z}                   = '';
-        $cache->{ $ts . $lang } = \%f;
+        $str = $TsFormatCache{$lang}{$org} = $format;
     }
-    my $date_format = $Languages{$lang}->[4] || "%B %e, %Y";
-    my $time_format = $Languages{$lang}->[5] || "%l:%M %p";
-    $format =~ s!%x!$date_format!g;
-    $format =~ s!%X!$time_format!g;
-    ## This is a dreadful hack. I can't think of a good format specifier
-    ## for "%B %Y" (which is used for monthly archives, for example) so
-    ## I'll just hardcode this, for Japanese dates.
-    if ( $lang eq 'ja' ) {
-        $format =~ s!%B %Y!$Languages{$lang}->[6]!g;
-        $format =~ s!%B %E,? %Y!$Languages{$lang}->[4]!ig;
-        $format =~ s!%b. %e, %Y!$Languages{$lang}->[4]!ig;
-        $format =~ s!%B %E!$Languages{$lang}->[7]!ig;
-    }
-    elsif ( $lang eq 'it' ) {
-        ## Hack for the Italian dates
-        ## In Italian, the date always come before the month.
-        $format =~ s!%b %e!%e %b!g;
-    }
-    $format =~ s!%(\w)!$f{$1}!g if defined $format;
+    $format = $str;
+    my $L = $Languages{$lang};
+    my @t = unpack 'A4A2A2A2A2A2', $ts;
+    $str =~ s{%([A-Za-z])}{
+        my $n = $1;
+        if ($n eq 'Y') { $t[0] }
+        elsif ($n eq 'm') { $t[1] }
+        elsif ($n eq 'd') { $t[2] }
+        elsif ($n eq 'H') { $t[3] || 0 }
+        elsif ($n eq 'M') { $t[4] || 0 }
+        elsif ($n eq 'S') { $t[5] || 0 }
+        elsif ($n eq 'Z') { '' }
+        elsif ($n eq 'B') { $L->[1][$t[1] - 1] }
+        elsif ($n eq 'e') { my $d = $t[2]; $d =~ s|^0| |; $d }
+        elsif ($n eq 'k') { my $h = $t[3]; $h =~ s|^0| |; $h }
+        elsif ($n eq 'l') { my $i = $t[3] || 0; if ($i > 12) { $i -= 12 } elsif ($i == 0) { $i = 12 } sprintf '%2d', $i }
+        elsif ($n eq 'I') { my $i = $t[3] || 0; if ($i > 12) { $i -= 12 } elsif ($i == 0) { $i = 12 } sprintf '%02d', $i }
+        elsif ($n eq 'p') {($t[3] || 0) >= 12 ? $L->[2][1] : $L->[2][0] }
+        elsif ($n eq 'b') { substr_wref $L->[1][$t[1] - 1] || '', 0, 3 }
+        elsif ($n eq 'w') { wday_from_ts(@t[0..2]) }
+        elsif ($n eq 'j') { sprintf '%03d', yday_from_ts(@t[0..2]) }
+        elsif ($n eq 'y') { substr($t[0], 2) }
+        elsif ($n eq 'a') {
+            if ($lang eq 'ja') { substr $L->[0][ wday_from_ts(@t[0..2]) ] || '', 0, 1 }
+            else { substr_wref $L->[0][ wday_from_ts(@t[0..2]) ] || '', 0, 3 }
+        }
+        elsif ($n eq 'A') { $L->[0][ wday_from_ts(@t[0..2]) ] }
+        else { '' }
+    }gex;
 
     ## FIXME: This block must go away after Languages hash
     ## removes all of the character references
     if ($is_mail) {
-        $format =~ s!&#([0-9]+);!chr($1)!ge;
-        $format =~ s!&#[xX]([0-9A-Fa-f]+);!chr(hex $1)!ge;
+        $str =~ s!&#([0-9]+);!chr($1)!ge;
+        $str =~ s!&#[xX]([0-9A-Fa-f]+);!chr(hex $1)!ge;
     }
-    $format;
+    $str;
 }
 
 {
@@ -2205,6 +2195,12 @@ sub rtrim {
     return unless defined $string;
     $string =~ s/\s+$//;
     $string;
+}
+
+sub trim_path {
+    my $path = shift;
+    return unless defined $path;
+    join '', map {trim($_)} split /([\\\/])/, $path;
 }
 
 sub asset_cleanup {

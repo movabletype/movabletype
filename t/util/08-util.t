@@ -95,6 +95,7 @@ is( format_ts( '%Y', $ts ), '1977' );
 {
     local $SIG{__WARN__} = sub { fail 'format_ts warning: ' . shift; };
     is( format_ts( '%Y', {} ), '' );
+    is( format_ts( '%o', $ts ), '', 'unknown format' );
 }
 
 is( encode_html('<foo>'), '&lt;foo&gt;' );

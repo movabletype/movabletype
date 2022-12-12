@@ -1,9 +1,7 @@
 package XML::XPath::XMLParser;
 
-$VERSION = '1.44';
-
-use strict; use warnings;
-
+use strict;
+use warnings;
 use XML::Parser;
 use XML::XPath::Node;
 use XML::XPath::Node::Element;
@@ -12,6 +10,8 @@ use XML::XPath::Node::Comment;
 use XML::XPath::Node::PI;
 use XML::XPath::Node::Attribute;
 use XML::XPath::Node::Namespace;
+
+our $VERSION = '1.48';
 
 my @options = qw(
         filename
@@ -23,10 +23,8 @@ my @options = qw(
 my ($_current, $_namespaces_on);
 my %IdNames;
 
-use vars qw/$xmlns_ns $xml_ns/;
-
-$xmlns_ns = "http://www.w3.org/2000/xmlns/";
-$xml_ns = "http://www.w3.org/XML/1998/namespace";
+my $xmlns_ns = "http://www.w3.org/2000/xmlns/";
+my $xml_ns = "http://www.w3.org/XML/1998/namespace";
 
 sub new {
     my $proto = shift;

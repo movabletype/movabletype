@@ -98,7 +98,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="form_header">
-<form name="edit-content-type-data-form" id="edit-content-type-data-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewinnewwindow"> mt:once</mt:unless> mt:auto-save="1" mt:auto-save-delay="<mt:var name="autosave_frequency">000" novalidate>
+<form name="edit-content-type-data-form" id="edit-content-type-data-form" method="post" action="<mt:var name="script_url">"<mt:unless name="config.previewinnewwindow"> mt:once="1"</mt:unless> mt:auto-save="1" mt:auto-save-delay="<mt:var name="autosave_frequency">000" novalidate>
   <input type="hidden" name="__mode" value="save" />
   <input type="hidden" name="_type" value="content_data" />
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
@@ -809,6 +809,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 
   jQuery('#edit-content-type-data-form').on('submit', function(event) {
     var $form = jQuery(this);
+    var dform = $form.get(0);
 
     if ($form.children('input[name=__mode]').val() == 'preview_content_data') {
 <mt:if name="has_multi_line_text_field">
@@ -816,7 +817,11 @@ Template.templates.autoSave = '<mt:section encode_js="1">
         setMultiLineTextData($form);
 </mt:if>
         setDirty(false);
-        $form.get(0).submit();
+        if(dform.submitted){
+          return false;
+        }
+        dform.submit();
+        dform.submitted = true;
         return false;
     }
 
@@ -830,7 +835,14 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 <mt:if name="config.previewinnewwindow">
         $form.attr('mt:once', '1');
 </mt:if>
-        $form.get(0).submit();
+
+        if(dform.submitted){
+          return false;
+        }
+        dform.submit();
+        dform.submitted = true;
+      } else {
+        dform.submitted = false;
       }
     });
     return false;

@@ -326,7 +326,7 @@ sub bulk_load_meta_objects {
     my $meta_pkg = $first->meta_pkg;
 
     # Supported only for single primary key.
-    return if scalar keys %{ $first->{__pkeys} } > 1;
+    return if scalar keys %{ $first->{__pkeys} } != 1;
 
     my ($primary_key_col) = %{ $first->{__pkeys} };
     my @primary_keys      = ();
@@ -396,6 +396,7 @@ sub bulk_load_meta_objects {
                 = { not => [ keys %{ $proxy->{__loaded} } ] };
         }
         $proxy->{__loaded_all_objects} = 1;
+        $proxy->{__objects} ||= {};
     }
 
     if ( MT::Memcached->is_available ) {

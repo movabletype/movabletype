@@ -491,7 +491,7 @@ use vars qw( @ISA %Lexicon );
 	'Internal Error: Login user is not initialized.' => '内部エラー: ユーザーが初期化されていません。',
 	'Invalid login.' => 'サインインできませんでした。',
 	'Invalid request' => '不正な要求です。',
-	'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'ブログまたはウェブサイトへのアクセスが許されていません。エラーでこのページが表示された場合は、システム管理者に問い合わせてください。',
+	'Our apologies, but you do not have permission to access any sites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'サイトへのアクセスが許されていません。エラーでこのページが表示された場合は、システム管理者に問い合わせてください。',
 	'Password should be longer than [_1] characters' => 'パスワードは最低[_1]文字以上です。',
 	'Password should contain symbols such as #!$%' => 'パスワードは記号を含める必要があります。',
 	'Password should include letters and numbers' => 'パスワードは文字と数字を含める必要があります。',
@@ -500,7 +500,6 @@ use vars qw( @ISA %Lexicon );
 	'Passwords do not match.' => '入力したパスワードが一致しません。',
 	'Problem with this request: corrupt character data for character set [_1]' => '不正な要求です。文字コード[_1]に含まれない文字データを送信しています。',
 	'Removed [_1].' => '[_1]を削除しました。',
-	'Sorry, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'ブログまたはウェブサイトへのアクセスが許されていません。エラーでこのページが表示された場合は、システム管理者に問い合わせてください。',
 	'System Email Address is not configured.' => 'システムで利用するメールアドレスが設定されていません。',
 	'Text entered was wrong.  Try again.' => '入力された文字列が正しくありません。',
 	'The file you uploaded is too large.' => 'アップロードしたファイルは大きすぎます。',
@@ -1139,6 +1138,12 @@ use vars qw( @ISA %Lexicon );
 	'Error in <mt[_1]> tag: [_2]' => '<mt[_1]>タグでエラーがありました: [_2]',
 	'Unknown tag found: [_1]' => '不明なタグです: [_1]',
 
+## lib/MT/Builder/Fast.pm
+	'Found mismatched closing tag [_1] at line #' => '</mt:[_1]>に対応する<mt:[_1]>がありません(#行目)',
+	'Tag [_1] left unclosed at line #' => '<mt:[_1]>に対応する</mt:[_1]>がありません(#行目)',
+	'Undefined tag [_1] at line #' => '<mt:[_1]>は定義されていません(#行目)',
+	q{Publish error in template '[_1]': [_2]} => q{テンプレート「[_1]」の再構築中にエラーが発生しました: [_2]},
+
 ## lib/MT/CMS/AddressBook.pm
 	'Error sending mail ([_1]): Try another MailTransfer setting?' => 'メールを送信できませんでした。MailTransferの設定を見直してください: [_1]',
 	'No entry ID was provided' => '記事のIDが指定されていません。',
@@ -1189,7 +1194,7 @@ use vars qw( @ISA %Lexicon );
 	q{File with name '[_1]' already exists. Upload has been cancelled.} => q{'[_1]'という名前のファイルが既に存在します。アップロードはキャンセルされました。},
 	q{File with name '[_1]' already exists.} => q{'[_1]'という名前のファイルが既に存在します。},
 	q{File with name '[_1]' already exists; Tried to write to a tempfile, but the webserver could not open it: [_2]} => q{'[_1]'という名前のファイルが既に存在します。テンポラリファイルに書き込むこともできませんでした: [_2]},
-	q{Invalid extra path '[_1]'} => q{追加パス'[_1]'が不正です。},
+	q{Invalid upload path '[_1]'} => q{アップロード先'[_1]'が不正です。},
 	q{Invalid filename '[_1]'} => q{ファイル名'[_1]'が不正です。},
 	q{Invalid temp file name '[_1]'} => q{テンポラリファイルの名前'[_1]'が不正です。},
 
@@ -2573,7 +2578,6 @@ use vars qw( @ISA %Lexicon );
 	'You cannot use a [_1] extension for a linked file.' => '[_1]をリンクファイルの拡張子に使うことはできません。',
 	q{Error reading file '[_1]': [_2]} => q{ファイル: [_1]を読み込めませんでした: [_2]},
 	q{Opening linked file '[_1]' failed: [_2]} => q{リンクファイル'[_1]'を開けませんでした: [_2]},
-	q{Publish error in template '[_1]': [_2]} => q{テンプレート「[_1]」の再構築中にエラーが発生しました: [_2]},
 	q{Tried to load the template file from outside of the include path '[_1]'} => q{許可されない場所からテンプレートファイルを読み込もうとしました。'[_1]'},
 
 ## lib/MT/Template/Context.pm
@@ -3118,6 +3122,7 @@ use vars qw( @ISA %Lexicon );
 	'Movable Type System Check Successful' => 'システムのチェックを完了しました。',
 	'Movable Type System Check' => 'Movable Type システムチェック',
 	'Movable Type version:' => 'Movable Type バージョン',
+	'Not installed' => '未インストール',
 	'Operating system:' => 'オペレーティングシステム',
 	'Perl include path:' => 'Perl の インクルードパス',
 	'Perl version:' => 'Perl のバージョン',
@@ -3127,7 +3132,7 @@ use vars qw( @ISA %Lexicon );
 	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1]はインストールされていますが、新しいDBIが必要です。上記を参考に必要なDBIを確認してください。',
 	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.' => 'これらのモジュールのインストールは<strong>任意</strong>です。お使いのサーバーにこれらのモジュールがインストールされていない場合でも、Movable Type の基本機能は動作します。これらのモジュールの機能が必要となった場合にはインストールを行ってください。',
 	'The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly.' => 'これらのモジュールは、Movable Type がデータを保存するために必要なモジュールです。DBIと、1つ以上のデータベース用のモジュールをインストールする必要があります。',
-	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステム([_1])にインストールされているPerlは、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlを[_2]以上にアップグレードしてください。',
+	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされているPerl ([_1])は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlを[_2]以上にアップグレードしてください。',
 	'Web server:' => 'ウェブサーバー',
 	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'サーバーに [_1]か、[_1]の動作に必要な他のモジュールがインストールされていません。',
@@ -4144,7 +4149,8 @@ use vars qw( @ISA %Lexicon );
 	'(Separate URLs with a carriage return.)' => '(URLは改行で区切ってください)',
 	'Data API Settings' => 'Data API の設定',
 	'Data API' => 'Data API',
-	'Enable Data API in system scope.' => 'システム全般での Data API の利用を許可する。',
+	'Disable Data API' => 'Data API を利用しない',
+	'Enable Data API in system scope.' => 'システム領域の設定やデータを Data API の出力結果に含める',
 	'Enable Data API in this site.' => 'Data API の利用を許可する。',
 	'External Notifications' => '更新通知',
 	'Note: This option is currently ignored because outbound notification pings are disabled system-wide.' => '備考: システム外部ping通知がシステムレベルで無効のため、このオプションは現在無効となっています。',

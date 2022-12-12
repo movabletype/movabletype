@@ -824,6 +824,7 @@ sub parse_filtered_list_permission {
 
 sub json_result {
     my $app = shift;
+    return if $app->{finalized}++;
     my ($result) = @_;
     $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
     $app->send_http_header("application/json");
@@ -836,6 +837,7 @@ sub json_result {
 sub json_error {
     my $app = shift;
     my ( $error, $status ) = @_;
+    return if $app->{finalized}++;
     $app->response_code($status)
         if defined $status;
     $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
@@ -2082,7 +2084,7 @@ sub _is_commenter {
         }
         return $app->error(
             $app->translate(
-                'Sorry, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
+                'Our apologies, but you do not have permission to access any sites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
             )
         ) unless $has_system_permission;
         return -1;
@@ -2342,7 +2344,7 @@ sub login {
 
             return $app->error(
                 $app->translate(
-                    'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
+                    'Our apologies, but you do not have permission to access any sites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
                 )
             ) if !defined $commenter_blog_id || $commenter_blog_id > 0;
 
@@ -3179,6 +3181,7 @@ sub run {
         # line __LINE__ __FILE__
 
         $mode = $app->mode || 'default';
+        delete $app->{finalized};
 
         $requires_login  = $app->{requires_login};
         $get_method_info = sub {
@@ -3574,7 +3577,6 @@ sub load_widgets {
         || $scope_type eq 'website' ? 'blog:' . $blog_id
         : $scope_type eq 'user'     ? 'user:' . $user->id
         :                             'system';
-    my $resave_widgets = 0;
     my $widget_set     = $page . ':' . $scope;
 
     my $widget_store = $user->widgets;
@@ -3582,8 +3584,7 @@ sub load_widgets {
     $widgets = $widget_store->{$widget_set} if $widget_store;
 
     unless ($widgets) {
-        $resave_widgets = 1;
-        $widgets        = $app->default_widgets_for_dashboard($scope_type);
+        $widgets = $app->default_widgets_for_dashboard($scope_type);
     }
 
     my $reg_widgets = $app->registry("widgets");
@@ -3607,32 +3608,25 @@ sub load_widgets {
         }
     }
 
-    my @ordered_list;
-    my %orders;
-    my $order_num = 0;
-    foreach my $widget_id ( keys %$widgets ) {
-        my $widget_param = $widgets->{$widget_id} ||= {};
-        if ( my $order = $widget_param->{order} ) {
-            $order_num = $order_num < $order ? $order : $order_num;
-        }
-    }
-    foreach my $widget_id ( keys %$widgets ) {
-        my $widget_param = $widgets->{$widget_id} ||= {};
+    my $max = 0;
+    my @ordered_list =
+        map  { $_->[0] }
+        sort { ($a->[1] || $max + 1 <=> $b->[1] || $max + 1) or $a->[0] cmp $b->[0] }
+        map {
+        my $param = $all_widgets->{$_};
         my $order;
-        if ( !( $order = $widget_param->{order} ) ) {
-            $order = $all_widgets->{$widget_id}{order};
-            $order
-                = $order && ref $order eq 'HASH'
-                ? $all_widgets->{$widget_id}{order}{$scope_type}
-                : $order * 100;
-            $order = $order_num = $order_num + 100 unless defined $order;
-            $widget_param->{order} = $order;
-            $resave_widgets = 1;
+        if (ref $param eq 'HASH' && $param->{order}) {
+            if (ref $param->{order} eq 'HASH') {
+                $order = $param->{order}{$scope_type};
+            } else {
+                $order = $param->{order};
+            }
+        } else {
+            $order = 0;
         }
-        push @ordered_list, $widget_id;
-        $orders{$widget_id} = $order;
-    }
-    @ordered_list = sort { $orders{$a} <=> $orders{$b} } @ordered_list;
+        $max = $order if $order > $max;
+        [$_, $order]
+        } keys %$all_widgets;
 
     $app->build_widgets(
         set         => $widget_set,
@@ -3642,12 +3636,6 @@ sub load_widgets {
         order       => \@ordered_list,
     ) or return;
 
-    if ($resave_widgets) {
-        my $widget_store = $user->widgets();
-        $widget_store->{$widget_set} = $widgets;
-        $user->widgets($widget_store);
-        $user->save;
-    }
     return $param;
 }
 
@@ -3684,7 +3672,7 @@ sub build_widgets {
         foreach (@$passthru_param) {
             $widget_param->{$_} = '';
         }
-        my $tmpl_name = $widget->{template};
+        my $tmpl_name = $widget->{template} or next;
 
         my $p = $widget->{plugin};
         my $tmpl;
@@ -4374,12 +4362,16 @@ sub is_valid_redirect_target {
 
 sub _is_valid_redirect_target {
     my ( $app, $target, $allowed_hosts ) = @_;
+    return if $target =~ /[[:cntrl:]]|\\/;
     my $uri  = URI->new( $target, 'http' )->canonical;
     my $host = $uri->host;
-    my $path = $uri->path_query;
+    my $path = $uri->path;
     return   unless $uri->isa('URI::http');
     return   unless substr( $path, 0, 1 ) eq '/';
-    return 1 unless defined $host;                  # relative URL
+    # If relative, $target should be one of the app scripts (usually mt.cgi)
+    if (!defined $host) {
+        return ($path eq URI->new($app->uri)->path) ? 1 : 0;
+    }
     for my $allowed ( @{ $allowed_hosts || [] } ) {
         return 1 if $allowed eq $host;
     }

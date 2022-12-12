@@ -1,17 +1,15 @@
 package XML::XPath::Node::Text;
 
-$VERSION = '1.44';
+use strict;
+use warnings;
+use parent qw/XML::XPath::Node/;
 
-use strict; use warnings;
-use vars qw/@ISA/;
-
-@ISA = ('XML::XPath::Node');
+our $VERSION = '1.48';
 
 package XML::XPath::Node::TextImpl;
 
-use vars qw/@ISA/;
-@ISA = ('XML::XPath::NodeImpl', 'XML::XPath::Node::Text');
 use XML::XPath::Node ':node_keys';
+use parent qw/-norequire XML::XPath::NodeImpl XML::XPath::Node::Text/;
 
 sub new {
     my $class = shift;

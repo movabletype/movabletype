@@ -1,12 +1,11 @@
 package XML::XPath::Node;
 
-$VERSION = '1.44';
-
-use strict; use warnings;
-use vars qw(@ISA @EXPORT $AUTOLOAD %EXPORT_TAGS @EXPORT_OK);
-use Exporter;
+use strict;
+use warnings;
+use parent qw/Exporter/;
 use Carp;
-@ISA = ('Exporter');
+
+our $VERSION = '1.48';
 
 sub UNKNOWN_NODE () {0;}
 sub ELEMENT_NODE () {1;}
@@ -63,7 +62,7 @@ sub node_value () { 5; }
 # sub node_prefix () { 3; }
 sub node_expanded () { 4; }
 
-@EXPORT = qw(
+our @EXPORT = qw(
     UNKNOWN_NODE
     ELEMENT_NODE
     ATTRIBUTE_NODE
@@ -84,7 +83,7 @@ sub node_expanded () { 4; }
     NAMESPACE_NODE
     );
 
-@EXPORT_OK = qw(
+our @EXPORT_OK = qw(
             node_parent
             node_pos
             node_global_pos
@@ -103,7 +102,7 @@ sub node_expanded () { 4; }
                         node_ids
         );
 
-%EXPORT_TAGS = (
+our %EXPORT_TAGS = (
     'node_keys' => [
         qw(
             node_parent
@@ -215,6 +214,7 @@ sub new {
 }
 
 sub AUTOLOAD {
+    our $AUTOLOAD;
     my $method = $AUTOLOAD;
     $method =~ s/.*:://;
 #    warn "AUTOLOAD $method!\n";
@@ -245,8 +245,7 @@ sub AUTOLOAD {
 
 package XML::XPath::NodeImpl;
 
-use vars qw/@ISA $AUTOLOAD/;
-@ISA = ('XML::XPath::Node');
+use parent qw/-norequire XML::XPath::Node/;
 
 sub new {
     die "Virtual base method";

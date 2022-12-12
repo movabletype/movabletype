@@ -8,7 +8,7 @@ package MT::CMS::Entry;
 use strict;
 use warnings;
 use MT::Util qw( format_ts relative_date remove_html encode_html encode_js
-    encode_url archive_file_for offset_time_list break_up_text first_n_words );
+    encode_url archive_file_for offset_time_list break_up_text first_n_words trim_path);
 use MT::I18N qw( const wrap_text );
 
 sub edit {
@@ -221,7 +221,7 @@ sub edit {
         );
 
         $param->{'mode_view_entry'} = 1;
-        $param->{'basename'}        = $obj->basename;
+        $param->{'basename'} = MT->config->TrimFilePath ? trim_path($obj->basename) : $obj->basename;
 
         if ( my $ts = $obj->authored_on ) {
             $param->{authored_on_ts} = $ts;
@@ -2137,13 +2137,15 @@ sub save_entry_prefs {
     );
 
     # Sometimes super user does not have any permission for each site.
-    return $app->json_result( { success => 1 } )
-        if $user->is_superuser && !$perms;
-
+    if ($user->is_superuser && !$perms) {
+        $perms = MT->model('permission')->new(
+            author_id => $user->id,
+            blog_id   => $blog_id,
+        );
+    }
     # Permission check
     return $app->permission_denied()
-        unless $perms
-        && $perms->can_do('save_edit_prefs');
+        if !$user->is_superuser && !($perms && $perms->can_do('save_edit_prefs'));
 
     my $prefs      = $app->_entry_prefs_from_params;
     my $disp       = scalar $app->param('entry_prefs');

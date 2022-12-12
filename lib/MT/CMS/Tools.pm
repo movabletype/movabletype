@@ -27,70 +27,19 @@ sub system_check {
     my %param;
 
     my $author_class = $app->model('author');
-    $param{user_count}
-        = $author_class->count( { type => MT::Author::AUTHOR() } );
-
-    $param{commenter_count} = 0;
+    $param{user_count}      = $author_class->count( { type => MT::Author::AUTHOR() } );
+    $param{commenter_count} = $author_class->count( { type => MT::Author::COMMENTER() } );
     $param{screen_id}       = "system-check";
 
-    require MT::Memcached;
-    if ( MT::Memcached->is_available ) {
-        $param{memcached_enabled} = 1;
-        my $inst = MT::Memcached->instance;
-        my $key  = 'syscheck-' . $$;
-        $inst->add( $key, $$ );
-        if ( $inst->get($key) == $$ ) {
-            $inst->delete($key);
-            $param{memcached_active} = 1;
-        }
-    }
+    require MT::Util::SystemCheck;
 
-    $param{server_modperl} = 1 if MT::Util::is_mod_perl1();
-    $param{server_fastcgi} = 1 if $ENV{FAST_CGI};
+    MT::Util::SystemCheck->check_all(\%param);
 
-    $param{server_psgi} = $ENV{'psgi.version'} ? 1 : 0;
-    $param{syscheck_html} = get_syscheck_content($app) || '';
+    $param{is_cloud} = eval { require MT::Cloud::App::CMS; 1 };
 
     $app->add_breadcrumb( $app->translate('System Information') );
 
     $app->load_tmpl( 'system_check.tmpl', \%param );
-}
-
-sub get_syscheck_content {
-    my $app     = shift;
-    my $sess_id = $app->session->id;
-    my $syscheck_url
-        = $app->base
-        . $app->mt_path
-        . $app->config('CheckScript')
-        . '?view=tools&version='
-        . MT->version_id
-        . '&session_id='
-        . $sess_id
-        . '&language='
-        . MT->current_language;
-
-    my $ua = $app->new_ua();
-    return unless $ua;
-    $ua->max_size(undef) if $ua->can('max_size');
-
-    # Do not verify SSL certificate.
-    $ua->ssl_opts( verify_hostname => 0 );
-
-    my $req = new HTTP::Request( GET => $syscheck_url );
-    my $resp = $ua->request($req);
-    return unless $resp->is_success();
-    my $result = $resp->content();
-    if ($result) {
-        require MT::Sanitize;
-
-        # allowed html
-        my $spec
-            = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p,textarea';
-        $result = MT::Util::Encode::decode_utf8_unless_flagged($result);    # mt-check.cgi always returns by utf-8
-        $result = MT::Sanitize->sanitize( $result, $spec );
-    }
-    return $result;
 }
 
 sub start_recover {

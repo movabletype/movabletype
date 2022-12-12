@@ -614,7 +614,7 @@ BEGIN {
                         ## since __trans macro doesn't work with including itself
                         ## recursively, so do translate by hand here.
                         my $prop  = shift;
-                        my $label = '<mt:var name="label">';
+                        my $label = '<mt:var name="label" encode_html="1">';
                         my $tmpl
                             = $prop->use_future
                             ? 'filter_form_future_date'
@@ -2281,6 +2281,7 @@ BEGIN {
             },
             'DataAPIDisableSite'   => undef,
             'RebuildOffsetSeconds' => { default => 20 },
+            'DisableDataAPI'       => { default => 0 },
 
             # Enterprise.pack
             'LDAPOptions'           => { type => 'HASH' },
@@ -2359,6 +2360,7 @@ BEGIN {
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
             'AdminThemeId' => undef,
+            'TrimFilePath' => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
