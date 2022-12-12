@@ -53,6 +53,14 @@
        id="enable-data-api"
        label="<__trans phrase="Data API">">
     <div class="mb-3">
+      <mt:unless name="blog_id">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" value="1" name="disable_data_api" id="disable-data-api" class="custom-control-input" <mt:if name="disable_data_api_readonly">disabled="disabled"</mt:if><mt:if name="disable_data_api"> checked="checked"</mt:if> />
+        <label class="custom-control-label" for="disable-data-api">
+          <__trans phrase="Disable Data API">
+        </label>
+      </div>
+      </mt:unless>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" value="1" name="enable_data_api" id="enable-data-api" class="custom-control-input" <mt:if name="data_api_disable_site_readonly">disabled="disabled"</mt:if><mt:if name="enable_data_api"> checked="checked"</mt:if> />
         <label class="custom-control-label form-label" for="enable-data-api">
