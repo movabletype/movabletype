@@ -648,11 +648,7 @@ sub search_terms {
             }
         }
     }
-    push @sort,
-        {
-        desc   => $desc,
-        column => $sort
-        };
+    push @sort, { desc => $desc, column => $sort }, { desc => $desc, column => 'id' };
 
     my %args = (
         exists( $parsed->{args} ) ? %{ $parsed->{args} } : (),
