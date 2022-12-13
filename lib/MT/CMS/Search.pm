@@ -821,8 +821,9 @@ sub do_search_replace {
     my $blog_id = $app->param('blog_id');
     my $author  = $app->user;
 
-    my ($search,       $replace,            $do_replace,
-        $case,         $is_regex,           $is_limited,
+    my (
+        $search,       $replace,            $do_replace,
+        $case,         $word_boundary,      $is_regex, $is_limited,
         $type,         $is_junk,            $is_dateranged,
         $ids,          $date_time_field_id, $from,
         $to,           $timefrom,           $timeto,
@@ -832,7 +833,7 @@ sub do_search_replace {
         $change_note,
         )
         = map scalar $app->param($_),
-        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val change_note );
+        qw( search replace do_replace case word_boundary is_regex is_limited _type is_junk is_dateranged replace_ids date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val change_note );
 
     # trim 'search' parameter
     $search = '' unless defined($search);
@@ -949,7 +950,14 @@ sub do_search_replace {
     ## on it if it's there.
     my $plain_search = $search;
     if ( defined $search && $search ne '' ) {
-        $search = quotemeta($search) unless $is_regex;
+        unless ($is_regex) {
+            $search = quotemeta($search);
+            if ($word_boundary || $search !~ qr{\W}a) {
+                $search =~ s{^(?=\w)}{\\b}a;
+                $search =~ s{(?<=\w)$}{\\b}a;
+                $search = '(?a)'. $search;
+            }
+        }
         $search = '(?i)' . $search   unless $case;
     }
     my ( @to_save, @to_save_orig, @data );

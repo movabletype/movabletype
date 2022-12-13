@@ -322,13 +322,21 @@ subtest 'word boundary' => sub {
     my %params = (is_limited => 1, search_cols => ['title']);
 
     $app->search('boundary', {%params});
-    cmp_bag($app->found_titles, ['wordboundaryテスト', 'wordboundarytest', 'wordboundary/test']);
+    cmp_bag($app->found_titles, []);
     $app->search('wordboundaryテスト', {%params});
     cmp_bag($app->found_titles, ['wordboundaryテスト']);
     $app->search('wordboundary', {%params});
-    cmp_bag($app->found_titles, ['wordboundaryテスト', 'wordboundarytest', 'wordboundary/test']);
+    cmp_bag($app->found_titles, ['wordboundaryテスト', 'wordboundary/test']);
     $app->search('boundaryテスト', {%params});
     cmp_bag($app->found_titles, ['wordboundaryテスト']);
+    $app->search('boundary', { %params, word_boundary => 1 });
+    cmp_bag($app->found_titles, []);
+    $app->search('wordboundaryテスト', { %params, word_boundary => 1 });
+    cmp_bag($app->found_titles, ['wordboundaryテスト']);
+    $app->search('wordboundary', { %params, word_boundary => 1 });
+    cmp_bag($app->found_titles, ['wordboundaryテスト', 'wordboundary/test']);
+    $app->search('boundaryテスト', { %params, word_boundary => 1 });
+    cmp_bag($app->found_titles, []);
 };
 
 subtest 'replace' => sub {

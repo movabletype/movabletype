@@ -253,6 +253,12 @@ function toggleContentTypeDateTimeInputs() {
           </li>
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="word_boundary" name="word_boundary" value="1"<mt:if name="word_boundary"> checked="checked"</mt:if> class="custom-control-input cb" />
+              <label class="custom-control-label" for="word_boundary"><__trans phrase="Respect Word Boundary"></label>
+            </div>
+          </li>
+          <li class="list-inline-item">
+            <div class="custom-control custom-checkbox">
               <input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="custom-control-input cb" />
               <label class="custom-control-label" for="is_regex"><__trans phrase="Regex Match"></label>
             </div>
