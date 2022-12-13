@@ -940,7 +940,7 @@ sub _transform {
     # Preserve metadata.
     my ( $exif, $next_exif );
     my $update_metadata
-        = lc( $asset->file_ext ) =~ /^(jpe?g|tiff?)$/
+        = lc( $asset->file_ext ) =~ /^(jpe?g|tiff?|webp)$/
         && $asset->has_metadata
         && !$asset->is_metadata_broken;
     if ($update_metadata) {
@@ -1079,7 +1079,7 @@ sub exif {
 sub has_gps_metadata {
     my ($asset) = @_;
 
-    return 0 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
+    return 0 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?|webp)$/;
 
     my $exif = $asset->exif or return;
     $exif->Options( Group1 => 'GPS' );
@@ -1094,12 +1094,13 @@ sub has_metadata {
     my ($asset) = @_;
 
     my $file_ext = lc( $asset->file_ext || '' );
-    return 0 if $file_ext !~ /^(jpe?g|tiff?)$/;
+    return 0 if $file_ext !~ /^(jpe?g|tiff?|webp)$/;
 
     require Image::ExifTool;
     my $exif    = $asset->exif or return;
     my $is_jpeg = $file_ext =~ /^jpe?g$/;
     my $is_tiff = $file_ext =~ /^tiff?$/;
+    my $is_webp = $file_ext eq 'webp';
 
     @MandatoryExifTags = _set_mandatory_exif_tags() unless @MandatoryExifTags;
     for my $g ( $exif->GetGroups ) {
@@ -1107,6 +1108,7 @@ sub has_metadata {
             if $g eq 'ExifTool'
             || $g eq 'File'
             || ( $is_jpeg && $g =~ /\A(?:JFIF|ICC_Profile)\z/ )
+            || ( $is_webp && $g =~ /\A(?:RIFF|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
         my %writable_tags = map {$_ => 1} Image::ExifTool::GetWritableTags($g);
         delete $writable_tags{$_} for @MandatoryExifTags;
@@ -1135,7 +1137,7 @@ sub _set_mandatory_exif_tags {
 sub remove_gps_metadata {
     my ($asset) = @_;
 
-    return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
+    return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?|webp)$/;
     return 1 if $asset->is_metadata_broken;
 
     require Image::ExifTool;
@@ -1154,7 +1156,7 @@ sub remove_gps_metadata {
 sub remove_all_metadata {
     my ($asset) = @_;
 
-    return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?)$/;
+    return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?|webp)$/;
     return 1 if $asset->is_metadata_broken;
 
     my $exif = $asset->exif or return;
@@ -1162,7 +1164,7 @@ sub remove_all_metadata {
     my $orientation = $exif->GetValue('Orientation');
 
     $exif->SetNewValue('*');
-    if (lc($asset->file_ext) =~ /^jpe?g$/) {
+    if (lc($asset->file_ext) =~ /^(jpe?g|webp)$/) {
         $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
         $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
         $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
