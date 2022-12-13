@@ -50,7 +50,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 require Exporter;
 
-$VERSION = '3.51';
+$VERSION = '3.55';
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(EscapeXML UnescapeXML);
 
@@ -128,6 +128,8 @@ my %xmpNS = (
     stRef     => 'http://ns.adobe.com/xap/1.0/sType/ResourceRef#',
     stVer     => 'http://ns.adobe.com/xap/1.0/sType/Version#',
     stMfs     => 'http://ns.adobe.com/xap/1.0/sType/ManifestItem#',
+    stCamera  => 'http://ns.adobe.com/photoshop/1.0/camera-profile',
+    crlcp     => 'http://ns.adobe.com/camera-raw-embedded-lens-profile/1.0/',
     tiff      => 'http://ns.adobe.com/tiff/1.0/',
    'x'        => 'adobe:ns:meta/',
     xmpG      => 'http://ns.adobe.com/xap/1.0/g/',
@@ -1273,6 +1275,41 @@ my %sPantryItem = (
         },
     },
     EmbeddedXMPDigest => { },   #PH (LR5)
+    CameraProfiles => { #PH (2022-10-11)
+        List => 'Seq',
+        Struct => {
+            NAMESPACE   => 'stCamera',
+            STRUCT_NAME => 'Camera',
+            Author              => { },
+            Make                => { },
+            Model               => { },
+            UniqueCameraModel   => { },
+            CameraRawProfile    => { Writable => 'boolean' },
+            AutoScale           => { Writable => 'boolean' },
+            Lens                => { },
+            CameraPrettyName    => { },
+            LensPrettyName      => { },
+            ProfileName         => { },
+            SensorFormatFactor  => { Writable => 'real' },
+            FocalLength         => { Writable => 'real' },
+            FocusDistance       => { Writable => 'real' },
+            ApertureValue       => { Writable => 'real' },
+            PerspectiveModel    => {
+                Namespace       => 'crlcp',
+                Struct => {
+                    NAMESPACE   => 'stCamera',
+                    STRUCT_NAME => 'PerspectiveModel',
+                    Version              => { },
+                    ImageXCenter         => { Writable => 'real' },
+                    ImageYCenter         => { Writable => 'real' },
+                    ScaleFactor          => { Writable => 'real' },
+                    RadialDistortParam1  => { Writable => 'real' },
+                    RadialDistortParam2  => { Writable => 'real' },
+                    RadialDistortParam3  => { Writable => 'real' },
+                },
+            },
+        },
+    },
 );
 
 # Photoshop Camera Raw namespace properties (crs) - (ref 8,PH)
@@ -1431,7 +1468,14 @@ my %sPantryItem = (
     PostCropVignetteMidpoint    => { Writable => 'integer' },
     PostCropVignetteFeather     => { Writable => 'integer' },
     PostCropVignetteRoundness   => { Writable => 'integer' },
-    PostCropVignetteStyle       => { Writable => 'integer' },
+    PostCropVignetteStyle       => {
+        Writable => 'integer',
+        PrintConv => { #forum14011
+            1 => 'Highlight Priority',
+            2 => 'Color Priority',
+            3 => 'Paint Overlay',
+        },
+    },
     # disable List behaviour of flattened Gradient/PaintBasedCorrections
     # because these are nested in lists and the flattened tags can't
     # do justice to this complex structure
@@ -1528,7 +1572,17 @@ my %sPantryItem = (
     },
     ColorNoiseReductionSmoothness       => { Writable => 'integer' },
     PerspectiveAspect                   => { Writable => 'integer' },
-    PerspectiveUpright                  => { Writable => 'integer' },
+    PerspectiveUpright                  => {
+        Writable => 'integer',
+        PrintConv => { #forum14012
+            0 => 'Off',     # Disable Upright
+            1 => 'Auto',    # Apply balanced perspective corrections
+            2 => 'Full',    # Apply level, horizontal, and vertical perspective corrections
+            3 => 'Level',   # Apply only level correction
+            4 => 'Vertical',# Apply level and vertical perspective corrections
+            5 => 'Guided',  # Draw two or more guides to customize perspective corrections
+        },
+    },
     RetouchAreas => {
         FlatName => 'RetouchArea',
         Struct => \%sRetouchArea,
@@ -1552,12 +1606,17 @@ my %sPantryItem = (
     UprightPreview                      => { Writable => 'boolean' },
     UprightTransformCount               => { Writable => 'integer' },
     UprightDependentDigest              => { },
+    UprightGuidedDependentDigest        => { },
     UprightTransform_0                  => { },
     UprightTransform_1                  => { },
     UprightTransform_2                  => { },
     UprightTransform_3                  => { },
     UprightTransform_4                  => { },
     UprightTransform_5                  => { },
+    UprightFourSegments_0               => { },
+    UprightFourSegments_1               => { },
+    UprightFourSegments_2               => { },
+    UprightFourSegments_3               => { },
     # more stuff seen in lens profile file (unknown source)
     What => { }, # (with value "LensProfileDefaultSettings")
     LensProfileMatchKeyExifMake         => { },
@@ -2396,6 +2455,12 @@ my %sPantryItem = (
     LateralChromaticAberrationCorrectionAlreadyApplied => { Writable => 'boolean' },
     LensDistortInfo => { }, # (LR 7.5.1, 4 signed rational values)
     NeutralDensityFactor => { }, # (LR 11.0 - rational value, but denominator seems significant)
+    # the following are ref forum13747
+    EnhanceDetailsAlreadyApplied    => { Writable => 'boolean' },
+    EnhanceDetailsVersion           => { }, # integer?
+    EnhanceSuperResolutionAlreadyApplied => { Writable => 'boolean' },
+    EnhanceSuperResolutionVersion   => { }, # integer?
+    EnhanceSuperResolutionScale     => { Writable => 'rational' },
 );
 
 # IPTC Core namespace properties (Iptc4xmpCore) (ref 4)
@@ -2620,7 +2685,7 @@ sub FullEscapeXML($)
     $str =~ s/([&><'"])/&$charName{$1};/sg; # escape necessary XML characters
     $str =~ s/\\/&#92;/sg;                  # escape backslashes too
     # then use C-escape sequences for invalid characters
-    if ($str =~ /[\0-\x1f]/ or IsUTF8(\$str) < 0) {
+    if ($str =~ /[\0-\x1f]/ or Image::ExifTool::IsUTF8(\$str) < 0) {
         $str =~ s/([\0-\x1f\x80-\xff])/sprintf("\\x%.2x",ord $1)/sge;
     }
     return $str;
@@ -2666,57 +2731,6 @@ sub UnescapeChar($$;$)
 }
 
 #------------------------------------------------------------------------------
-# Does a string contain valid UTF-8 characters?
-# Inputs: 0) string reference, 1) true to allow last character to be truncated
-# Returns: 0=regular ASCII, -1=invalid UTF-8, 1=valid UTF-8 with maximum 16-bit
-#          wide characters, 2=valid UTF-8 requiring 32-bit wide characters
-# Notes: Changes current string position
-# (see http://www.fileformat.info/info/unicode/utf8.htm for help understanding this)
-sub IsUTF8($;$)
-{
-    my ($strPt, $trunc) = @_;
-    pos($$strPt) = 0; # start at beginning of string
-    return 0 unless $$strPt =~ /([\x80-\xff])/g;
-    my $rtnVal = 1;
-    for (;;) {
-        my $ch = ord($1);
-        # minimum lead byte for 2-byte sequence is 0xc2 (overlong sequences
-        # not allowed), 0xf8-0xfd are restricted by RFC 3629 (no 5 or 6 byte
-        # sequences), and 0xfe and 0xff are not valid in UTF-8 strings
-        return -1 if $ch < 0xc2 or $ch >= 0xf8;
-        # determine number of bytes remaining in sequence
-        my $n;
-        if ($ch < 0xe0) {
-            $n = 1;
-        } elsif ($ch < 0xf0) {
-            $n = 2;
-        } else {
-            $n = 3;
-            # character code is greater than 0xffff if more than 2 extra bytes
-            # were required in the UTF-8 character
-            $rtnVal = 2;
-        }
-        my $pos = pos $$strPt;
-        unless ($$strPt =~ /\G([\x80-\xbf]{$n})/g) {
-            return $rtnVal if $trunc and $pos + $n > length $$strPt;
-            return -1;
-        }
-        # the following is ref https://www.cl.cam.ac.uk/%7Emgk25/ucs/utf8_check.c
-        if ($n == 2) {
-            return -1 if ($ch == 0xe0 and (ord($1) & 0xe0) == 0x80) or
-                         ($ch == 0xed and (ord($1) & 0xe0) == 0xa0) or
-                         ($ch == 0xef and ord($1) == 0xbf and
-                            (ord(substr $1, 1) & 0xfe) == 0xbe);
-        } else {
-            return -1 if ($ch == 0xf0 and (ord($1) & 0xf0) == 0x80) or
-                         ($ch == 0xf4 and ord($1) > 0x8f) or $ch > 0xf4;
-        }
-        last unless $$strPt =~ /([\x80-\xff])/g;
-    }
-    return $rtnVal;
-}
-
-#------------------------------------------------------------------------------
 # Fix malformed UTF8 (by replacing bad bytes with specified character)
 # Inputs: 0) string reference, 1) string to replace each bad byte,
 #         may be '' to delete bad bytes, or undef to use '?'
@@ -2730,7 +2744,7 @@ sub FixUTF8($;$)
         last unless $$strPt =~ /([\x80-\xff])/g;
         my $ch = ord($1);
         my $pos = pos($$strPt);
-        # (see comments in IsUTF8() above)
+        # (see comments in Image::ExifTool::IsUTF8())
         if ($ch >= 0xc2 and $ch < 0xf8) {
             my $n = $ch < 0xe0 ? 1 : ($ch < 0xf0 ? 2 : 3);
             if ($$strPt =~ /\G([\x80-\xbf]{$n})/g) {
@@ -2982,8 +2996,9 @@ sub AddFlattenedTags($;$$)
             } else {
                 $$flatInfo{Groups}{2} = $tagG2;
             }
-            # save reference to top-level structure
+            # save reference to top-level and parent structures
             $$flatInfo{RootTagInfo} = $$tagInfo{RootTagInfo} || $tagInfo;
+            $$flatInfo{ParentTagInfo} = $tagInfo;
             # recursively generate flattened tags for sub-structures
             next unless $$flatInfo{Struct};
             length($flatID) > 250 and warn("Possible deep recursion for tag $flatID\n"), last;
@@ -3447,8 +3462,12 @@ NoLoop:
         } else {
             $val = ConvertXMPDate($val, $new) if $new or $fmt eq 'date';
         }
-        if ($$et{XmpValidate} and $fmt and $fmt eq 'boolean') {
-            $et->WarnOnce("Boolean value for XMP-$ns:$$tagInfo{Name} should be capitalized",1);
+        if ($$et{XmpValidate} and $fmt and $fmt eq 'boolean' and $val!~/^True|False$/) {
+            if ($val =~ /^true|false$/) {
+                $et->WarnOnce("Boolean value for XMP-$ns:$$tagInfo{Name} should be capitalized",1);
+            } else {
+                $et->WarnOnce(qq(Boolean value for XMP-$ns:$$tagInfo{Name} should be "True" or "False"),1);
+            }
         }
         # protect against large binary data in unknown tags
         $$tagInfo{Binary} = 1 if $new and length($val) > 65536;

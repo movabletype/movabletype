@@ -56,7 +56,7 @@ use vars qw($VERSION $AUTOLOAD @formatSize @formatName %formatNumber %intFormat
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::MakerNotes;
 
-$VERSION = '4.40';
+$VERSION = '4.42';
 
 sub ProcessExif($$$);
 sub WriteExif($$$);
@@ -1084,11 +1084,11 @@ my %opcodeInfo = (
         {
             Name => 'ThumbnailOffset',
             Notes => q{
-                ThumbnailOffset in IFD1 of JPEG and some TIFF-based images, IFD0 of MRW
-                images and AVI and MOV videos, and the SubIFD in IFD1 of SRW images;
-                PreviewImageStart in MakerNotes and IFD0 of ARW and SR2 images;
-                JpgFromRawStart in SubIFD of NEF images and IFD2 of PEF images; and
-                OtherImageStart in everything else
+                called JPEGInterchangeFormat in the specification, this is ThumbnailOffset
+                in IFD1 of JPEG and some TIFF-based images, IFD0 of MRW images and AVI and
+                MOV videos, and the SubIFD in IFD1 of SRW images; PreviewImageStart in
+                MakerNotes and IFD0 of ARW and SR2 images; JpgFromRawStart in SubIFD of NEF
+                images and IFD2 of PEF images; and OtherImageStart in everything else
             },
             # thumbnail is found in IFD1 of JPEG and TIFF images, and
             # IFD0 of EXIF information in FujiFilm AVI (RIFF) and MOV videos
@@ -1225,6 +1225,7 @@ my %opcodeInfo = (
         {
             Name => 'ThumbnailLength',
             Notes => q{
+                called JPEGInterchangeFormatLength in the specification, this is
                 ThumbnailLength in IFD1 of JPEG and some TIFF-based images, IFD0 of MRW
                 images and AVI and MOV videos, and the SubIFD in IFD1 of SRW images;
                 PreviewImageLength in MakerNotes and IFD0 of ARW and SR2 images;
@@ -2080,6 +2081,7 @@ my %opcodeInfo = (
         Groups => { 2 => 'Time' },
         Notes => 'time zone for ModifyDate',
         Writable => 'string',
+        Shift => 'Time',
         PrintConvInv => q{
             return "+00:00" if $val =~ /\d{2}Z$/;
             return sprintf("%s%.2d:%.2d",$1,$2,$3) if $val =~ /([-+])(\d{1,2}):(\d{2})/;
@@ -2091,6 +2093,7 @@ my %opcodeInfo = (
         Groups => { 2 => 'Time' },
         Notes => 'time zone for DateTimeOriginal',
         Writable => 'string',
+        Shift => 'Time',
         PrintConvInv => q{
             return "+00:00" if $val =~ /\d{2}Z$/;
             return sprintf("%s%.2d:%.2d",$1,$2,$3) if $val =~ /([-+])(\d{1,2}):(\d{2})/;
@@ -2102,6 +2105,7 @@ my %opcodeInfo = (
         Groups => { 2 => 'Time' },
         Notes => 'time zone for CreateDate',
         Writable => 'string',
+        Shift => 'Time',
         PrintConvInv => q{
             return "+00:00" if $val =~ /\d{2}Z$/;
             return sprintf("%s%.2d:%.2d",$1,$2,$3) if $val =~ /([-+])(\d{1,2}):(\d{2})/;
@@ -4080,7 +4084,7 @@ my %opcodeInfo = (
         WriteGroup => 'SubIFD' #? (NC) Semantic Mask IFD (only for Validate)
     },
     0xcd30 => { # DNG 1.6
-        Name => 'SemanticInstanceIFD',
+        Name => 'SemanticInstanceID',
       # Writable => 'string',
         WriteGroup => 'SubIFD' #? (NC) Semantic Mask IFD (only for Validate)
     },
@@ -4842,10 +4846,10 @@ my %subSecConv = (
         Writable => 1,
         Protected => 1,
         WriteAlso => {
-            GPSLatitude => '$val =~ /(.*?)( ?[NS])?,/ ? $1 : undef',
-            GPSLatitudeRef => '$val =~ /(-?)(.*?) ?([NS]?),/ ? ($3 || ($1 ? "S" : "N")) : undef',
-            GPSLongitude => '$val =~ /, ?(.*?)( ?[EW]?)$/ ? $1 : undef',
-            GPSLongitudeRef => '$val =~ /, ?(-?)(.*?) ?([EW]?)$/ ? ($3 || ($1 ? "W" : "E")) : undef',
+            GPSLatitude => '(defined $val and $val =~ /(.*?)( ?[NS])?,/) ? $1 : undef',
+            GPSLatitudeRef => '(defined $val and $val =~ /(-?)(.*?) ?([NS]?),/) ? ($3 || ($1 ? "S" : "N")) : undef',
+            GPSLongitude => '(defined $val and $val =~ /, ?(.*?)( ?[EW]?)$/) ? $1 : undef',
+            GPSLongitudeRef => '(defined $val and $val =~ /, ?(-?)(.*?) ?([EW]?)$/) ? ($3 || ($1 ? "W" : "E")) : undef',
         },
         PrintConvInv => q{
             return undef unless $val =~ /(.*? ?[NS]?), ?(.*? ?[EW]?)$/;
@@ -6012,7 +6016,8 @@ sub ProcessExif($$$)
         my $tagID = Get16u($dataPt, $entry);
         my $format = Get16u($dataPt, $entry+2);
         my $count = Get32u($dataPt, $entry+4);
-        if ($format < 1 or $format > 13) {
+        # (Apple uses the BigTIFF format code 16 in the maker notes of their ProRaw DNG files)
+        if (($format < 1 or $format > 13) and not ($format == 16 and $$et{Make} eq 'Apple' and $inMakerNotes)) {
             if ($mapFmt and $$mapFmt{$format}) {
                 $format = $$mapFmt{$format};
             } else {
