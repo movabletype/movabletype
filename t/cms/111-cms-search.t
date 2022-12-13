@@ -327,6 +327,9 @@ subtest 'replace' => sub {
         is($reloaded[0]->basename, 'ReplaceTest 1 basename', 'basename is not replaced');
         is($reloaded[1]->basename, 'ReplaceTest 2 basename', 'basename is not replaced');
         is($reloaded[2]->basename, 'ReplaceTest 3 basename', 'basename is not replaced');
+
+        my $rev = MT->model('entry:revision')->load({ 'entry_id' => $reloaded[0]->id });
+        is($rev->description, q{Searched for: 'ReplaceTest' Replaced with: 'ReplaceTest-mod'}, 'right revision note');
     };
 
     subtest 'is_limited' => sub {
@@ -342,6 +345,22 @@ subtest 'replace' => sub {
         is($reloaded[0]->text, 'ReplaceTest-mod-mod 1 text', 'replaced');
         is($reloaded[1]->text, 'ReplaceTest-mod-mod 2 text', 'replaced');
         is($reloaded[2]->text, 'ReplaceTest 3 text',         'unchecked one is not replaced');
+    };
+
+    subtest 'handwritten change_note' => sub {
+        $app->get_ok({ __mode => 'search_replace', blog_id => $website->id });
+
+        $app->search('ReplaceTest');
+        is_deeply($app->found_ids, [@entry_ids[0, 1, 2]], 'found all');
+        $app->replace('ReplaceTest-mod', [$entry_ids[0]], { change_note => 'Foo bar baz' });
+        is_deeply($app->found_ids,    [$entry_ids[0]],           'selected ones are replaced');
+        is_deeply($app->found_titles, ['ReplaceTest-mod-mod 1'], 'selected ones are replaced');
+        note $app->{cgi}->query_string;
+
+        my $rev = MT->model('entry:revision')->load(
+            { 'entry_id' => $entry_ids[0] },
+            { sort => 'id', direction => 'descend', limit => 1 });
+        is($rev->description, 'Foo bar baz', 'right revision note');
     };
 
     $_->remove for @entries;
