@@ -340,60 +340,61 @@ sub template_paths {
 
     my @paths;
 
-    my $dir = File::Spec->catdir( $c->path, 'tmpl' );
-    push @paths, File::Spec->catdir( $dir, $admin_theme_id ) if $admin_theme_id;
+    my $dir = File::Spec->catdir($c->path, 'tmpl');
+    push @paths, File::Spec->catdir($dir, $admin_theme_id) if $admin_theme_id;
     push @paths, $dir;
 
     $dir = $c->path;
-    push @paths, File::Spec->catdir( $dir, $admin_theme_id ) if $admin_theme_id;
+    push @paths, File::Spec->catdir($dir, $admin_theme_id) if $admin_theme_id;
     push @paths, $dir;
-    if ( $mt->{plugin_template_path} ) {
-        if (File::Spec->file_name_is_absolute( $mt->{plugin_template_path} ) )
-        {
-            push @paths, File::Spec->catdir($mt->{plugin_template_path},$admin_theme_id) 
+    if ($mt->{plugin_template_path}) {
+        if (File::Spec->file_name_is_absolute($mt->{plugin_template_path})) {
+            push @paths, File::Spec->catdir($mt->{plugin_template_path}, $admin_theme_id)
                 if $admin_theme_id;
             push @paths, $mt->{plugin_template_path};
-        }
-        else {
-            my $dir = File::Spec->catdir( $mt->app_dir,
-                $mt->{plugin_template_path} );
-            push @paths, File::Spec->catdir( $dir, $admin_theme_id ) if $admin_theme_id;
+        } else {
+            my $dir = File::Spec->catdir(
+                $mt->app_dir,
+                $mt->{plugin_template_path});
+            push @paths, File::Spec->catdir($dir, $admin_theme_id) if $admin_theme_id;
             push @paths, $dir;
-            $dir = File::Spec->catdir( $mt->mt_dir,
-                $mt->{plugin_template_path} );
-            push @paths, File::Spec->catdir( $dir, $admin_theme_id ) if $admin_theme_id;
-            push @paths, $dir if -d $dir;
+            $dir = File::Spec->catdir(
+                $mt->mt_dir,
+                $mt->{plugin_template_path});
+            push @paths, File::Spec->catdir($dir, $admin_theme_id) if $admin_theme_id;
+            push @paths, $dir                                      if -d $dir;
         }
     }
     my @alt_paths = $mt->config('AltTemplatePath');
     foreach my $alt_path (@alt_paths) {
         if ($mt->{template_dir}) {
-            push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir}, $admin_theme_id ) if $admin_theme_id;
-            push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} );
+            push @paths, File::Spec->catdir($alt_path, $mt->{template_dir}, $admin_theme_id) if $admin_theme_id;
+            push @paths, File::Spec->catdir($alt_path, $mt->{template_dir});
         }
-        push @paths, File::Spec->catdir( $alt_path, $admin_theme_id ) if $admin_theme_id;
+        push @paths, File::Spec->catdir($alt_path, $admin_theme_id) if $admin_theme_id;
         push @paths, $alt_path;
     }
-    if ( UNIVERSAL::isa( $c, 'MT::Plugin' ) ) {
-        for my $addon ( @{ $mt->find_addons('pack') } ) {
-            if($mt->{template_dir}){
-                push @paths,  File::Spec->catdir( $addon->{path}, 'tmpl', $mt->{template_dir}, $admin_theme_id ) if $admin_theme_id;
+    if (UNIVERSAL::isa($c, 'MT::Plugin')) {
+        for my $addon (@{ $mt->find_addons('pack') }) {
+            if ($mt->{template_dir}) {
+                push @paths, File::Spec->catdir($addon->{path}, 'tmpl', $mt->{template_dir}, $admin_theme_id) if $admin_theme_id;
                 push @paths,
-                    File::Spec->catdir( $addon->{path}, 'tmpl',
-                    $mt->{template_dir} );
+                    File::Spec->catdir(
+                    $addon->{path}, 'tmpl',
+                    $mt->{template_dir});
             }
-            push @paths, File::Spec->catdir( $addon->{path}, 'tmpl', $admin_theme_id ) if $admin_theme_id;
-            push @paths, File::Spec->catdir( $addon->{path}, 'tmpl' );
+            push @paths, File::Spec->catdir($addon->{path}, 'tmpl', $admin_theme_id) if $admin_theme_id;
+            push @paths, File::Spec->catdir($addon->{path}, 'tmpl');
         }
     }
-    if ($mt->{template_dir}){
-        push @paths, File::Spec->catdir( $path, $mt->{template_dir}, $admin_theme_id )
+    if ($mt->{template_dir}) {
+        push @paths, File::Spec->catdir($path, $mt->{template_dir}, $admin_theme_id)
             if $admin_theme_id;
-        push @paths, File::Spec->catdir( $path, $mt->{template_dir} );
+        push @paths, File::Spec->catdir($path, $mt->{template_dir});
     }
-    push @paths, File::Spec->catdir( $path, $admin_theme_id ) if $admin_theme_id;
+    push @paths, File::Spec->catdir($path, $admin_theme_id) if $admin_theme_id;
     push @paths, $path;
-    return grep {-d $_} @paths;
+    return grep { -d $_ } @paths;
 }
 
 sub load_tmpl {
