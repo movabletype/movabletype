@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use utf8;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
@@ -292,6 +293,42 @@ subtest 'Search in site scope' => sub {
     });
     $app->search('Day');
     $app->has_permission_error();
+};
+
+subtest 'word boundary' => sub {
+    my $entry1 = MT::Test::Permission->make_entry(
+        blog_id   => $website->id,
+        author_id => $admin->id,
+        title     => "wordboundaryテスト",
+        basename  => '----',
+    );
+    my $entry2 = MT::Test::Permission->make_entry(
+        blog_id   => $website->id,
+        author_id => $admin->id,
+        title     => "wordboundarytest",
+        basename  => '----',
+    );
+    my $entry3 = MT::Test::Permission->make_entry(
+        blog_id   => $website->id,
+        author_id => $admin->id,
+        title     => "wordboundary/test",
+        basename  => '----',
+    );
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->get_ok({ __mode => 'search_replace', blog_id => $website->id });
+
+    my %params = (is_limited => 1, search_cols => ['title']);
+
+    $app->search('boundary', {%params});
+    cmp_bag($app->found_titles, ['wordboundaryテスト', 'wordboundarytest', 'wordboundary/test']);
+    $app->search('wordboundaryテスト', {%params});
+    cmp_bag($app->found_titles, ['wordboundaryテスト']);
+    $app->search('wordboundary', {%params});
+    cmp_bag($app->found_titles, ['wordboundaryテスト', 'wordboundarytest', 'wordboundary/test']);
+    $app->search('boundaryテスト', {%params});
+    cmp_bag($app->found_titles, ['wordboundaryテスト']);
 };
 
 subtest 'replace' => sub {
