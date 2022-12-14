@@ -638,7 +638,7 @@ progress {
 }
 
 .row, .mt-primaryNavigation__header, .mt-primaryNavigation__header--invert, .mt-mobileGlobalMenu {
-  --bs-gutter-x: 1.5rem;
+  --bs-gutter-x: 0;
   --bs-gutter-y: 0;
   display: flex;
   flex-wrap: wrap;
@@ -4441,7 +4441,7 @@ fieldset:disabled .btn__mobile {
   --bs-card-color: ;
   --bs-card-bg: #FFFFFF;
   --bs-card-img-overlay-padding: 1rem;
-  --bs-card-group-margin: 0.75rem;
+  --bs-card-group-margin: 0;
   position: relative;
   display: flex;
   flex-direction: column;
