@@ -38,7 +38,7 @@ for my $dir (map { glob "$root/$_" } @dirs) {
                     my @trans_params  = $trans  =~ /\[(?:[^,\[\]]+,\s*)*_(\d+)(?:,\s*[^,\[\]]+)*\]/g;
                     next if !@phrase_params && !@trans_params;
                     next if ($Skip{$phrase} // '') eq ($trans // '');
-                    cmp_bag \@phrase_params, \@trans_params, encode_utf8("$file: '$phrase' => '$trans'");
+                    cmp_bag [_uniq(@phrase_params)], [_uniq(@trans_params)], encode_utf8("$file: '$phrase' => '$trans'");
                 }
             },
             no_chdir => 1,
@@ -48,6 +48,8 @@ for my $dir (map { glob "$root/$_" } @dirs) {
 }
 
 done_testing;
+
+sub _uniq { my %seen; return grep(!($seen{$_}++), @_); } # a util function
 
 sub _set_skip {
     return (

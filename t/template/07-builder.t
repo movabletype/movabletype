@@ -362,7 +362,7 @@ $mt->set_language('ja_JP');
 
 note("Unknown localized tag");
 $tokens = $builder->compile( $ctx, '<mt:vあr>' );
-like $builder->errstr => qr/\Q<mt:vあr>は存在しません(1行目)\E/,
+like $builder->errstr => qr/\Q<mt:vあr>は存在しません(1行目)\E|\Q<mt:vあr>は定義されていません(1行目)\E/,
     "correct error" or note "Error: " . $builder->errstr;
 
 done_testing;

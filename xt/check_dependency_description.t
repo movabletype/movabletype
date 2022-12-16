@@ -2,6 +2,8 @@ use strict;
 use warnings;
 use Test::More;
 
+plan skip_all => 'Skipping since dependencies no longer hardcorded on mt-check.cgi';
+
 my $deps_from_mt_check = parse_mt_check();
 my $deps_from_wizard   = parse_mt_app_wizard();
 
