@@ -10390,6 +10390,7 @@ li {
     max-width: 280px;
     min-width: 240px;
     background: #F4F4F4;
+    position: relative;
   }
 }
 
@@ -10506,6 +10507,7 @@ li {
   display: flex;
   align-items: stretch;
   flex-direction: column;
+  width: 100%;
 }
 
 .mt-primaryNavigation__header, .mt-primaryNavigation__header--invert {

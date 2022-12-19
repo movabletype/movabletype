@@ -172,6 +172,7 @@ li{
     max-width: 280px;
     min-width: 240px;
     background: $gray-lightest;
+    position: relative;
     }
 
 }
@@ -268,6 +269,7 @@ li{
   display: flex;
   align-items: stretch;
   flex-direction: column;
+  width: 100%;
 }
 .mt-primaryNavigation__header{
   @extend .row, .justify-content-between;
