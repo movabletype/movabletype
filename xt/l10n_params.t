@@ -38,7 +38,7 @@ for my $dir (map { glob "$root/$_" } @dirs) {
                     my @trans_params  = $trans  =~ /\[(?:[^,\[\]]+,\s*)*_(\d+)(?:,\s*[^,\[\]]+)*\]/g;
                     next if !@phrase_params && !@trans_params;
                     next if ($Skip{$phrase} // '') eq ($trans // '');
-                    cmp_bag [_uniq(@phrase_params)], [_uniq(@trans_params)], encode_utf8("$file: '$phrase' => '$trans'");
+                    cmp_bag \@phrase_params, \@trans_params, encode_utf8("$file: '$phrase' => '$trans'");
                 }
             },
             no_chdir => 1,
@@ -48,8 +48,6 @@ for my $dir (map { glob "$root/$_" } @dirs) {
 }
 
 done_testing;
-
-sub _uniq { my %seen; return grep(!($seen{$_}++), @_); } # a util function
 
 sub _set_skip {
     return (
@@ -75,5 +73,8 @@ sub _set_skip {
 
         # movabletype-addons/Commercial.pack/lib/MT/Commercial/L10N/ja.pm
         q{The '[_1]' of the template tag '[_2]' that is already in use in [_3] is [_4].} => q{'[_2]'というテンプレートタグが[_3]に既に存在していますが、[_1]が異なるため、重複して作成する事が出来ません。テンプレートタグ名を変えるか、[_1]を同じにする必要があります。([_1]: [_4])},
+
+        'Found mismatched closing tag [_1] at line #' => '</mt:[_1]>に対応する<mt:[_1]>がありません(#行目)',
+        'Tag [_1] left unclosed at line #' => '<mt:[_1]>に対応する</mt:[_1]>がありません(#行目)',
     );
 }
