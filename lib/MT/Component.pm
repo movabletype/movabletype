@@ -388,7 +388,7 @@ sub template_paths {
         }
     }
     if ($mt->{template_dir}) {
-        push @paths, File::Spec->catdir($path, $mt->{template_dir}, $admin_theme_id)
+        push @paths, File::Spec->catdir($path, $admin_theme_id, $mt->{template_dir} )
             if $admin_theme_id;
         push @paths, File::Spec->catdir($path, $mt->{template_dir});
     }
