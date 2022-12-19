@@ -776,14 +776,14 @@ $.fn.mtEditInput = function(options) {
             $input = $('input#'+id);
         if ($input.val() && !$input.hasClass('show-input')) {
             $input
-                .before('<span class="'+id+'-text text-wrap mr-3"></span>')
+                .before('<span class="'+id+'-text text-wrap ms-3"></span>')
                 .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'-text').text($input.val());
         }
         if (!$input.val() && $input.hasClass('hide-input')) {
             $input
-                .before('<span class="'+id+'-text text-wrap mr-3"></span>')
+                .before('<span class="'+id+'-text text-wrap ms-3"></span>')
                 .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
         }
@@ -1535,7 +1535,7 @@ $.fn.mtEditInputBlock = function(options) {
           $time = $('input#'+id);
       if (!$div.hasClass('show-input')) {
           $div
-              .before('<span class="'+id+'-text mr-2"></span>')
+              .before('<span class="'+id+'-text ms-2"></span>')
               .after('<button type="button" id="mt-edit-'+id+'" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
               .hide();
           $('span.'+id+'-text').text(opts.text);

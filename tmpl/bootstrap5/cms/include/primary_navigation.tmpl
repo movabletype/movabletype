@@ -17,9 +17,9 @@
   <div class="mt-primaryNavigation__info dropend">
     <button class="mt-primaryNavigation__footer<mt:if name="scope_type" eq="user">--invert</mt:if>" type="button" id="userDropdownMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
   <mt:if name="author_userpic_url">
-      <img src="<mt:var name="author_userpic_url" escape="html">" alt="" width="32" height="32" class="mr-1 rounded-circle">
+      <img src="<mt:var name="author_userpic_url" escape="html">" alt="" width="32" height="32" class="me-1 rounded-circle">
   <mt:else>
-      <img src="<mt:var name="static_uri">images/user-default.svg" alt="" width="32" height="32" class="mr-1">
+      <img src="<mt:var name="static_uri">images/user-default.svg" alt="" width="32" height="32" class="me-1">
   </mt:if>
       <mt:var name="user_screen_name">
       <svg role="img" class="mt-icon mt-user-control">
@@ -73,7 +73,7 @@ function stopPropagation(e) {
 <mt:if name="scope_type" ne="user">
   <div class="mt-primaryNavigation__container">
   <mt:if name="scope_type" eq="system">
-    <div class="mt-primaryNavigation__header--invert<mt:if name="scope_type" eq="system"> mr-0</mt:if>" style="background-color: #595959;">
+    <div class="mt-primaryNavigation__header--invert<mt:if name="scope_type" eq="system"> me-0</mt:if>" style="background-color: #595959;">
   <mt:else>
     <div class="mt-primaryNavigation__header">
   </mt:if>

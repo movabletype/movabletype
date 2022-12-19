@@ -198,7 +198,7 @@ h1.dialog-title {
       <div class="col-12 col-md-6">
         <div class="upload-extra-path row">
           <div class="col-auto h5 mt-auto mb-auto">/</div>
-          <div class="col w-100 ml-0 pl-0"><input type="text" name="extra_path" id="extra_path" class="form-control text path w-100 ml-0" value="<mt:var name="extra_path" escape="html">" /></div>
+          <div class="col w-100 ms-0 pl-0"><input type="text" name="extra_path" id="extra_path" class="form-control text path w-100 ms-0" value="<mt:var name="extra_path" escape="html">" /></div>
         </div>
       </div>
       </mt:if>
@@ -468,7 +468,7 @@ function createUploadBlock () {
   this.thumbnail    = jQuery('<div class="upload-thumbnail text-truncate"></div>').appendTo(this.leftContent);
   this.uploadResult = jQuery('<div class="upload-result"></div>').appendTo(this.leftContent);
 
-  this.cancelUpload = jQuery('<div class="upload-cancel"><mtapp:svgicon id="ic_stop" title="Cancel" size="sm" strip_linefeeds="1"><span class="ml-2"><__trans phrase="Cancel"></span></div>').appendTo(this.rightPanel);
+  this.cancelUpload = jQuery('<div class="upload-cancel"><mtapp:svgicon id="ic_stop" title="Cancel" size="sm" strip_linefeeds="1"><span class="ms-2"><__trans phrase="Cancel"></span></div>').appendTo(this.rightPanel);
 <mt:unless name="filter" eq="userpic">
   this.editAsset    = jQuery('<div class="edit-asset"></div>').appendTo(this.rightPanel);
 
@@ -552,7 +552,7 @@ function createUploadBlock () {
       .attr('href', '<mt:var name="script_url">?__mode=dialog_edit_asset&blog_id=' + Asset.blog_id + '&id=' + Asset.id + '&magic_token=<mt:var name="magic_token">')
       .attr('class', 'd-inline-block')
       .append('<mtapp:svgicon id="ic_edit" title="Edit" size="sm" strip_linefeeds="1">')
-      .append('<span class="ml-2"><__trans phrase="Edit"></span>')
+      .append('<span class="ms-2"><__trans phrase="Edit"></span>')
       .appendTo(this.editAsset);
     editLink.mtModal({ large: true });
     this.editAsset.show();

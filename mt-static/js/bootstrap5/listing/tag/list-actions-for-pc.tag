@@ -1,6 +1,6 @@
 <list-actions-for-pc>
   <button each={ action, key in listTop.opts.buttonActions }
-    class="btn btn-default mr-2"
+    class="btn btn-default me-2"
     data-action-id={ key }
     onclick={ doAction }
   >
