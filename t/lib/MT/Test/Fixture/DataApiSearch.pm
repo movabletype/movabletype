@@ -64,6 +64,7 @@ our %FixtureSpec = (
             name   => 'content_field',
             fields => [
                 mynumber => { type => 'number', name => 'mynumber' },
+                other_field => { type => 'number', name => 'otherfield' },
             ],
         },
         content_field2 => {
@@ -72,6 +73,11 @@ our %FixtureSpec = (
                 myasset_image => {
                     type    => 'asset_image',
                     name    => 'myasset_image',
+                    options => { multiple => 1, max => 2, min => 1 },
+                },
+                other_field => {
+                    type    => 'asset_image',
+                    name    => 'other_field',
                     options => { multiple => 1, max => 2, min => 1 },
                 },
             ],
@@ -99,10 +105,24 @@ our %FixtureSpec = (
             author       => 'author',
             data         => { myfield => 'BAZ' },
         },
+        (
+            map {
+                sprintf('pagination%02d', $_) => {
+                    content_type => 'pagination',
+                    author       => 'author',
+                    data         => { myfield => 'FOO' },
+                }
+            } (1 .. 10)
+        ),
         content_field1 => {
             content_type => 'content_field',
             author       => 'author',
             data         => { mynumber => '12345' },
+        },
+        content_field1_other_field => {
+            content_type => 'content_field',
+            author       => 'author',
+            data         => { other_field => '12345' },
         },
         content_field2 => {
             content_type => 'content_field',
@@ -117,7 +137,17 @@ our %FixtureSpec = (
         content_field4 => {
             content_type => 'content_field2',
             author       => 'author',
+            data         => { myasset_image => ['test.jpg', 'test1000.png'], other_field => ['test.jpg'] },
+        },
+        content_field4_2 => {
+            content_type => 'content_field2',
+            author       => 'author',
             data         => { myasset_image => ['test.jpg', 'test1000.png'] },
+        },
+        content_field4_other_field => {
+            content_type => 'content_field2',
+            author       => 'author',
+            data         => { other_field => ['test.jpg', 'test1000.png'] },
         },
     },
 );

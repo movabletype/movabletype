@@ -161,6 +161,51 @@ subtest 'Simple' => sub {
     };
 };
 
+subtest 'pagination' => sub {
+    my %params = (
+        cdSearch           => 1,
+        SearchContentTypes => 'pagination',
+        IncludeBlogs       => $blog_id2,
+        search             => 'FOO',
+    );
+    test_data_api({
+        path   => '/v4/search',
+        method => 'GET',
+        params => { %params, limit => 2 },
+        result => {
+            'items' => [
+                superhashof({ label => 'pagination01' }),
+                superhashof({ label => 'pagination02' }),
+            ],
+            'totalResults' => 10,
+        },
+    });
+    test_data_api({
+        path   => '/v4/search',
+        method => 'GET',
+        params => { %params, limit => 2, offset => 1 },
+        result => {
+            'items' => [
+                superhashof({ label => 'pagination02' }),
+                superhashof({ label => 'pagination03' }),
+            ],
+            'totalResults' => 10,
+        },
+    });
+    test_data_api({
+        path   => '/v4/search',
+        method => 'GET',
+        params => { %params, limit => 2, page => 3 },
+        result => {
+            'items' => [
+                superhashof({ label => 'pagination05' }),
+                superhashof({ label => 'pagination06' }),
+            ],
+            'totalResults' => 10,
+        },
+    });
+};
+
 subtest 'content_field => field:needle' => sub {
     my %params = (
         search             => '1',
@@ -174,7 +219,7 @@ subtest 'content_field => field:needle' => sub {
         params => { %params, content_field => 'mynumber:12345' },
         result => {
             'items' => [
-                superhashof({ data => [superhashof({ data => '12345' })] }),
+                superhashof({ data  => [superhashof({ data => '12345' }), ignore()]}),
             ],
             'totalResults' => 1,
         },
@@ -185,9 +230,9 @@ subtest 'content_field => field:needle' => sub {
         params => { %params, content_field => 'mynumber:1234' },
         result => {
             'items' => [
-                superhashof({ data => [superhashof({ data => '12345' })] }),
-                superhashof({ data => [superhashof({ data => '12341' })] }),
-                superhashof({ data => [superhashof({ data => '12342' })] }),
+                superhashof({ data  => [superhashof({ data => '12345' }), ignore()]}),
+                superhashof({ data  => [superhashof({ data => '12341' }), ignore()]}),
+                superhashof({ data  => [superhashof({ data => '12342' }), ignore()]}),
             ],
             'totalResults' => 3,
         },
@@ -207,9 +252,16 @@ subtest 'content_field => field:needle do not return duplication for 1 and 1000 
         params => { %params, content_field => 'myasset_image:1' },
         result => {
             'items' => [
-                superhashof({ data => [superhashof({ data => [1, 1000] })] }),
+                superhashof({
+                    label => 'content_field4',
+                    data  => [superhashof({ data => [1, 1000] }), superhashof({ data => [1] })]
+                }),
+                superhashof({
+                    label => 'content_field4_2',
+                    data  => [superhashof({ data => [1, 1000] }), superhashof({ data => undef })]
+                }),
             ],
-            'totalResults' => 1,
+            'totalResults' => 2,
         },
     });
 };
