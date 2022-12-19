@@ -167,7 +167,7 @@ h1.dialog-title {
 </fieldset>
 
 <p class="d-md-none">
-  <a id="uploadSettingsLink" class="btn btn-link pl-0" href="javascript:void(0);" aria-expanded="true" aria-controls="uploadSettings" onclick="toggleUploadSettings(); return false;">
+  <a id="uploadSettingsLink" class="btn btn-link ps-0" href="javascript:void(0);" aria-expanded="true" aria-controls="uploadSettings" onclick="toggleUploadSettings(); return false;">
     <__trans phrase="Upload Settings">
   </a>
 </p>
@@ -185,7 +185,7 @@ h1.dialog-title {
        class="form-inline">
       <div class="row w-100">
       <mt:if name="destination_loop">
-      <div class="col-12 col-md-6 pr-0">
+      <div class="col-12 col-md-6 pe-0">
       <select name="destination" id="destination" class="custom-select form-control w-100" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
         <mt:loop name="destination_loop">
         <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>>
@@ -198,7 +198,7 @@ h1.dialog-title {
       <div class="col-12 col-md-6">
         <div class="upload-extra-path row">
           <div class="col-auto h5 mt-auto mb-auto">/</div>
-          <div class="col w-100 ms-0 pl-0"><input type="text" name="extra_path" id="extra_path" class="form-control text path w-100 ms-0" value="<mt:var name="extra_path" escape="html">" /></div>
+          <div class="col w-100 ms-0 ps-0"><input type="text" name="extra_path" id="extra_path" class="form-control text path w-100 ms-0" value="<mt:var name="extra_path" escape="html">" /></div>
         </div>
       </div>
       </mt:if>
