@@ -6691,31 +6691,31 @@ fieldset:disabled .btn__mobile {
   margin-top: auto !important;
 }
 
-.me-0 {
+.me-0, .mr-0 {
   margin-right: 0 !important;
 }
 
-.me-1 {
+.me-1, .mr-1 {
   margin-right: 0.125rem !important;
 }
 
-.me-2 {
+.me-2, .mr-2 {
   margin-right: 0.25rem !important;
 }
 
-.me-3 {
+.me-3, .mr-3 {
   margin-right: 0.5rem !important;
 }
 
-.me-4 {
+.me-4, .mr-4 {
   margin-right: 1.5rem !important;
 }
 
-.me-5 {
+.me-5, .mr-5 {
   margin-right: 2rem !important;
 }
 
-.me-auto {
+.me-auto, .mr-auto {
   margin-right: auto !important;
 }
 
@@ -6747,31 +6747,31 @@ fieldset:disabled .btn__mobile {
   margin-bottom: auto !important;
 }
 
-.ms-0 {
+.ms-0, .ml-0 {
   margin-left: 0 !important;
 }
 
-.ms-1, .mt-mobileGlobalMenu__menu--username img {
+.ms-1, .mt-mobileGlobalMenu__menu--username img, .ml-1 {
   margin-left: 0.125rem !important;
 }
 
-.ms-2, .mt-sharedPreviewNav .mt-sharedPreviewNav__logo {
+.ms-2, .mt-sharedPreviewNav .mt-sharedPreviewNav__logo, .ml-2 {
   margin-left: 0.25rem !important;
 }
 
-.ms-3, .mt-mobileGlobalMenu__menuActions a, .mt-mobilePrimaryMenu__dropdownMenuButton {
+.ms-3, .mt-mobileGlobalMenu__menuActions a, .mt-mobilePrimaryMenu__dropdownMenuButton, .ml-3 {
   margin-left: 0.5rem !important;
 }
 
-.ms-4 {
+.ms-4, .ml-4 {
   margin-left: 1.5rem !important;
 }
 
-.ms-5 {
+.ms-5, .ml-5 {
   margin-left: 2rem !important;
 }
 
-.ms-auto, .mt-sharedPreviewNav .mt-sharedPreviewNav__leftNav {
+.ms-auto, .mt-sharedPreviewNav .mt-sharedPreviewNav__leftNav, .ml-auto {
   margin-left: auto !important;
 }
 
@@ -6883,27 +6883,27 @@ fieldset:disabled .btn__mobile {
   padding-top: 2rem !important;
 }
 
-.pe-0 {
+.pe-0, .pr-0 {
   padding-right: 0 !important;
 }
 
-.pe-1 {
+.pe-1, .pr-1 {
   padding-right: 0.125rem !important;
 }
 
-.pe-2 {
+.pe-2, .pr-2 {
   padding-right: 0.25rem !important;
 }
 
-.pe-3 {
+.pe-3, .pr-3 {
   padding-right: 0.5rem !important;
 }
 
-.pe-4 {
+.pe-4, .pr-4 {
   padding-right: 1.5rem !important;
 }
 
-.pe-5 {
+.pe-5, .pr-5 {
   padding-right: 2rem !important;
 }
 
@@ -6931,27 +6931,27 @@ fieldset:disabled .btn__mobile {
   padding-bottom: 2rem !important;
 }
 
-.ps-0 {
+.ps-0, .pl-0 {
   padding-left: 0 !important;
 }
 
-.ps-1 {
+.ps-1, .pl-1 {
   padding-left: 0.125rem !important;
 }
 
-.ps-2 {
+.ps-2, .pl-2 {
   padding-left: 0.25rem !important;
 }
 
-.ps-3 {
+.ps-3, .pl-3 {
   padding-left: 0.5rem !important;
 }
 
-.ps-4 {
+.ps-4, .pl-4 {
   padding-left: 1.5rem !important;
 }
 
-.ps-5 {
+.ps-5, .pl-5 {
   padding-left: 2rem !important;
 }
 
@@ -12440,6 +12440,7 @@ ul.asset-list li img.list-image {
   overflow-y: scroll;
 }
 
+/* padding and margin left,right to start,end */
 .form-inline {
   display: flex;
   flex-flow: row wrap;

@@ -2081,18 +2081,40 @@ ul.asset-list li img.list-image {
   overflow-y: scroll;
 }
 .float-left {
-  @extend .float-start
+  @extend .float-start;
 }
 .float-right {
-  @extend .float-end
+  @extend .float-end;
 }
 .text-left {
-  @extend .text-start
+  @extend .text-start;
 }
 .text-right {
-  @extend .text-end
+  @extend .text-end;
 }
 
+/* padding and margin left,right to start,end */
+$target_properties: ("m", "p");
+$target_sides : (
+  "l": "s",
+  "r": "e",
+);
+@each $target in $target_properties {
+  @each $side, $replaced in $target_sides {
+    @each $size, $length in $spacers {
+      .#{$target}#{$side}-#{$size} {
+        @extend .#{$target}#{$replaced}-#{$size};
+      }
+    }
+    @if $target == 'm' {
+      // ml-auto, mr-auto
+      .#{$target}#{$side}-auto {
+        @extend .#{$target}#{$replaced}-auto;
+      }
+    }
+
+  }
+}
 
 .form-inline {
   display: -ms-flexbox;
