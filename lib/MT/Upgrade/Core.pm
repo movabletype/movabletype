@@ -215,7 +215,7 @@ sub seed_database {
 
     # disable system scope data api
     require MT::CMS::Blog;
-    MT::CMS::Blog::save_data_api_settings( $App, 0, 0 );
+    MT::CMS::Blog::save_data_api_settings( $App, 0, 0, 0 );
 
     require MT::Role;
     MT::Role->create_default_roles(%param)
@@ -255,6 +255,7 @@ sub seed_database {
     $cfg->set(DisableActivityFeeds => 1, 1);
     $cfg->set(DisableNotificationPings => 1, 1);
     $cfg->set(DefaultSupportedLanguages => 'en_us,ja', 1);
+    $cfg->set(TrimFilePath => 1, 1);
 
     $cfg->save;
 

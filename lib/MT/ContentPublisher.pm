@@ -20,6 +20,7 @@ use File::Spec;
 use MT::PublishOption;
 use MT::Template;
 use MT::TemplateMap;
+use MT::Util qw( trim_path );
 
 our %ArchiveTypes;
 
@@ -1923,6 +1924,7 @@ sub _rebuild_content_archive_type {
         else {
             my $ext = $blog->file_extension;
             $file .= '.' . $ext if $ext;
+            $file = trim_path($file) if MT->config->TrimFilePath;
         }
         $cache_file->{$cache_key} = $file;
         $file;

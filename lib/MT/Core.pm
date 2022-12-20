@@ -2281,6 +2281,7 @@ BEGIN {
             },
             'DataAPIDisableSite'   => undef,
             'RebuildOffsetSeconds' => { default => 20 },
+            'DisableDataAPI'       => { default => 0 },
 
             # Enterprise.pack
             'LDAPOptions'           => { type => 'HASH' },
@@ -2358,6 +2359,7 @@ BEGIN {
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
+            'TrimFilePath' => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

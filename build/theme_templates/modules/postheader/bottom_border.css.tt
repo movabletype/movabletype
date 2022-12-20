@@ -1,9 +1,0 @@
-[%# Post header with border underneath like Camo. No image -%]
-
-.asset-name a {
-    margin-bottom: 8px;
-}
-
-.asset-name a:hover {
-    text-decoration: underline;
-}

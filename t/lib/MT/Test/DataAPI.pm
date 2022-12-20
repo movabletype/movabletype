@@ -92,7 +92,7 @@ sub test_data_api {
         $is_superuser
             = $author
             ? (
-              exists $data->{is_superuser} ? $data->{is_superuser}
+            exists $data->{is_superuser} ? $data->{is_superuser}
             : exists $args->{is_superuser} ? $args->{is_superuser}
             : 0
             )
@@ -164,115 +164,117 @@ sub test_data_api {
         }
         $note .= ' ' . $data->{method};
         $note .= ' ' . $data->{note} if $data->{note};
-        note($note);
+
         if ( $data->{skip} ) {
-            note "SKIP";
+            note "SKIP: ". $note;
             next;
         }
 
-        if ( $data->{config} ) {
-            for my $k ( keys %{ $data->{config} } ) {
-                $app->config->$k( $data->{config}{$k} );
-            }
-        }
-        if ( $data->{request_headers} ) {
-            for my $k ( keys %{ $data->{request_headers} } ) {
-                $ENV{ 'HTTP_' . uc $k } = $data->{request_headers}{$k};
-            }
-        }
+        subtest $note => sub {
 
-        %callbacks = ();
-        _run_app(
-            'MT::App::DataAPI',
-            {   __path_info      => $path,
-                __request_method => $data->{method},
-                (   $data->{upload}
-                    ? ( __test_upload => $data->{upload} )
-                    : ()
-                ),
-                (   $params
-                    ? map {
-                        $_ => ref $params->{$_}
-                            ? MT::Util::to_json( $params->{$_},
-                            { canonical => 1 } )
-                            : $params->{$_};
-                        }
-                        keys %{$params}
-                    : ()
-                ),
+            if ( $data->{config} ) {
+                for my $k ( keys %{ $data->{config} } ) {
+                    $app->config->$k( $data->{config}{$k} );
+                }
             }
-        );
-        my $out = delete $app->{__test_output};
-        my ( $headers, $body ) = split /^\s*$/m, $out, 2;
-        my %headers = map {
-            my ( $k, $v ) = split /\s*:\s*/, $_, 2;
-            $v =~ s/(\r\n|\r|\n)\z//;
-            lc $k => $v
-            }
-            split /\n/, $headers;
-
-        my $expected_status = $data->{code} || 200;
-        is( $headers{status}, $expected_status,
-            'Status ' . $expected_status );
-        if ( $data->{next_phase_url} ) {
-            like(
-                $headers{'x-mt-next-phase-url'},
-                $data->{next_phase_url},
-                'X-MT-Next-Phase-URL'
-            );
-        }
-
-        foreach my $cb ( @{ $data->{callbacks} } ) {
-            my $params_list = $callbacks{ $cb->{name} } || [];
-            if ( my $params = $cb->{params} ) {
-                for ( my $i = 0; $i < scalar(@$params); $i++ ) {
-                    cmp_deeply( $params_list->[$i], $cb->{params}[$i] );
+            if ( $data->{request_headers} ) {
+                for my $k ( keys %{ $data->{request_headers} } ) {
+                    $ENV{ 'HTTP_' . uc $k } = $data->{request_headers}{$k};
                 }
             }
 
-            if ( defined( my $c = $cb->{count} ) ) {
-                is( @$params_list, $c,
-                    $cb->{name} . ' was called ' . $c . ' time(s)' );
-            }
-        }
+            %callbacks = ();
+            _run_app(
+                'MT::App::DataAPI',
+                {   __path_info      => $path,
+                    __request_method => $data->{method},
+                    (   $data->{upload}
+                        ? ( __test_upload => $data->{upload} )
+                        : ()
+                    ),
+                    (   $params
+                        ? map {
+                            $_ => ref $params->{$_}
+                                ? MT::Util::to_json( $params->{$_},
+                                { canonical => 1 } )
+                                : $params->{$_};
+                            }
+                            keys %{$params}
+                        : ()
+                    ),
+                }
+            );
+            my $out = delete $app->{__test_output};
+            my ( $headers, $body ) = split /^\s*$/m, $out, 2;
+            my %headers = map {
+                my ( $k, $v ) = split /\s*:\s*/, $_, 2;
+                $v =~ s/(\r\n|\r|\n)\z//;
+                lc $k => $v
+                }
+                split /\n/, $headers;
 
-        my $result;
-        if ( my $expected_result = $data->{result} ) {
-            MT->instance->user($author);
-            no warnings 'redefine';
-            local *boolean::true  = sub {$JSON::true};
-            local *boolean::false = sub {$JSON::false};
-
-            $expected_result = $expected_result->( $data, $body )
-                if ref $expected_result eq 'CODE';
-            if ( UNIVERSAL::isa( $expected_result, 'MT::Object' ) ) {
-                $expected_result = $format->{unserialize}->(
-                    $format->{serialize}->(
-                        MT::DataAPI::Resource->from_object($expected_result)
-                    )
+            my $expected_status = $data->{code} || 200;
+            is( $headers{status}, $expected_status,
+                'Status ' . $expected_status );
+            if ( $data->{next_phase_url} ) {
+                like(
+                    $headers{'x-mt-next-phase-url'},
+                    $data->{next_phase_url},
+                    'X-MT-Next-Phase-URL'
                 );
             }
 
-            $result = $format->{unserialize}->($body);
-            cmp_deeply( $result, $expected_result, 'result' );
-        }
+            foreach my $cb ( @{ $data->{callbacks} } ) {
+                my $params_list = $callbacks{ $cb->{name} } || [];
+                if ( my $params = $cb->{params} ) {
+                    for ( my $i = 0; $i < scalar(@$params); $i++ ) {
+                        cmp_deeply( $params_list->[$i], $cb->{params}[$i] );
+                    }
+                }
 
-        if ( exists $data->{error} ) {
-            $result = $format->{unserialize}->($body) if !defined $result;
-            if ( ref $data->{error} eq ref qr// ) {
-                like( $result->{error}{message},
-                    $data->{error}, 'error: ' . $data->{error} );
+                if ( defined( my $c = $cb->{count} ) ) {
+                    is( @$params_list, $c,
+                        $cb->{name} . ' was called ' . $c . ' time(s)' );
+                }
             }
-            else {
-                is( $result->{error}{message},
-                    $data->{error}, 'error: ' . $data->{error} );
+
+            my $result;
+            if ( my $expected_result = $data->{result} ) {
+                MT->instance->user($author);
+                no warnings 'redefine';
+                local *boolean::true  = sub {$JSON::true};
+                local *boolean::false = sub {$JSON::false};
+
+                $expected_result = $expected_result->( $data, $body )
+                    if ref $expected_result eq 'CODE';
+                if ( UNIVERSAL::isa( $expected_result, 'MT::Object' ) ) {
+                    $expected_result = $format->{unserialize}->(
+                        $format->{serialize}->(
+                            MT::DataAPI::Resource->from_object($expected_result)
+                        )
+                    );
+                }
+
+                $result = $format->{unserialize}->($body);
+                cmp_deeply( $result, $expected_result, 'result' ) || note explain $result;
             }
-        }
 
-        if ( my $complete = $data->{complete} ) {
-            $complete->( $data, $body, \%headers );
-        }
+            if ( exists $data->{error} ) {
+                $result = $format->{unserialize}->($body) if !defined $result;
+                if ( ref $data->{error} eq ref qr// ) {
+                    like( $result->{error}{message},
+                        $data->{error}, 'error: ' . $data->{error} );
+                }
+                else {
+                    is( $result->{error}{message},
+                        $data->{error}, 'error: ' . $data->{error} );
+                }
+            }
 
+            if ( my $complete = $data->{complete} ) {
+                $complete->( $data, $body, \%headers );
+            }
+        };
     }
 }
 

@@ -73,5 +73,8 @@ sub _set_skip {
 
         # movabletype-addons/Commercial.pack/lib/MT/Commercial/L10N/ja.pm
         q{The '[_1]' of the template tag '[_2]' that is already in use in [_3] is [_4].} => q{'[_2]'というテンプレートタグが[_3]に既に存在していますが、[_1]が異なるため、重複して作成する事が出来ません。テンプレートタグ名を変えるか、[_1]を同じにする必要があります。([_1]: [_4])},
+
+        'Found mismatched closing tag [_1] at line #' => '</mt:[_1]>に対応する<mt:[_1]>がありません(#行目)',
+        'Tag [_1] left unclosed at line #' => '<mt:[_1]>に対応する</mt:[_1]>がありません(#行目)',
     );
 }
