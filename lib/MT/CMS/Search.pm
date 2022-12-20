@@ -824,9 +824,7 @@ sub do_search_replace {
     my ($search,       $replace,            $do_replace,
         $case,         $is_regex,           $is_limited,
         $type,         $is_junk,            $is_dateranged,
-        $ids,          $datefrom_year,      $datefrom_month,
-        $datefrom_day, $dateto_year,        $dateto_month,
-        $dateto_day,   $date_time_field_id, $from,
+        $ids,          $date_time_field_id, $from,
         $to,           $timefrom,           $timeto,
         $show_all,     $do_search,          $orig_search,
         $quicksearch,  $publish_status,     $my_posts,
@@ -834,7 +832,7 @@ sub do_search_replace {
         $change_note,
         )
         = map scalar $app->param($_),
-        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val change_note );
+        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val change_note );
 
     # trim 'search' parameter
     $search = '' unless defined($search);
@@ -931,33 +929,7 @@ sub do_search_replace {
         $quicksearch_id = $search;
         unshift @cols, 'id';
     }
-    foreach (
-        $datefrom_year, $datefrom_month, $datefrom_day,
-        $dateto_year,   $dateto_month,   $dateto_day
-        )
-    {
-        s!\D!!g if $_;
-    }
-    if ( $is_dateranged && $datefrom_year ) {
-        $datefrom = sprintf( "%04d%02d%02d",
-            $datefrom_year, $datefrom_month, $datefrom_day );
-        $dateto = sprintf( "%04d%02d%02d",
-            $dateto_year, $dateto_month, $dateto_day );
-        if ( ( $datefrom eq '00000000' ) && ( $dateto eq '00000000' ) ) {
-            $is_dateranged = 0;
-        }
-        else {
-            if (   !is_valid_date( $datefrom . '000000' )
-                || !is_valid_date( $dateto . '000000' ) )
-            {
-                return $app->error(
-                    $app->translate(
-                        "Invalid date(s) specified for date range.")
-                );
-            }
-        }
-    }
-    elsif ($is_dateranged) {
+    if ($is_dateranged) {
         if ( $from && $to ) {
             s!\D!!g foreach ( $from, $to );
             $datefrom = substr( $from, 0, 8 );
@@ -1636,15 +1608,9 @@ sub do_search_replace {
         }
     }
     if ($is_dateranged) {
-        if ( $from && $to ) {
-            ( $datefrom_year, $datefrom_month, $datefrom_day )
-                = $datefrom =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
-            ( $dateto_year, $dateto_month, $dateto_day )
-                = $dateto =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
-            $from = sprintf "%s-%s-%s", $datefrom_year, $datefrom_month,
-                $datefrom_day;
-            $to = sprintf "%s-%s-%s", $dateto_year, $dateto_month,
-                $dateto_day;
+        if ($from && $to) {
+            $from =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
+            $to   =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
         }
         if ( $timefrom && $timeto ) {
             $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
@@ -1684,16 +1650,10 @@ sub do_search_replace {
         do_replace         => $do_replace,
         case               => $case,
         from               => $from,
-        datefrom_year      => $datefrom_year,
-        datefrom_month     => $datefrom_month,
-        datefrom_day       => $datefrom_day,
         to                 => $to,
         date_time_field_id => $date_time_field_id,
         timefrom           => $timefrom,
         timeto             => $timeto,
-        dateto_year        => $dateto_year,
-        dateto_month       => $dateto_month,
-        dateto_day         => $dateto_day,
         is_regex           => $is_regex,
         is_limited         => $is_limited,
         is_dateranged      => $is_dateranged,
@@ -1762,21 +1722,6 @@ sub do_search_replace {
     $search_options .= '&amp;is_dateranged=' . encode_html($is_dateranged)
         if defined $is_dateranged;
 
-    if ($is_dateranged) {
-        $search_options .= '&amp;datefrom_year=' . encode_html($datefrom_year)
-            if defined $datefrom_year;
-        $search_options
-            .= '&amp;datefrom_month=' . encode_html($datefrom_month)
-            if defined $datefrom_month;
-        $search_options .= '&amp;datefrom_day=' . encode_html($datefrom_day)
-            if defined $datefrom_day;
-        $search_options .= '&amp;dateto_year=' . encode_html($dateto_year)
-            if defined $dateto_year;
-        $search_options .= '&amp;dateto_month=' . encode_html($dateto_month)
-            if defined $dateto_month;
-        $search_options .= '&amp;dateto_day=' . encode_html($dateto_day)
-            if defined $dateto_day;
-    }
     if ($is_limited) {
         foreach (@cols) {
             $search_options .= '&amp;search_cols=' . encode_html($_);
