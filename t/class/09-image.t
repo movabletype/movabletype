@@ -25,10 +25,11 @@ use File::Copy;
 my $TESTS_FOR_EACH = 30;
 
 my @Img = (
-    [ 'test.gif', 400, 300 ],
-    [ 'test.jpg', 640, 480 ],
-    [ 'test.png', 150, 150 ],
-    [ 'test.bmp', 600, 450 ],
+    [ 'test.gif',  400, 300 ],
+    [ 'test.jpg',  640, 480 ],
+    [ 'test.png',  150, 150 ],
+    [ 'test.bmp',  600, 450 ],
+    [ 'test.webp', 600, 450 ],
 );
 my @drivers = $test_env->image_drivers;
 
@@ -40,7 +41,7 @@ my $cfg    = MT::ConfigMgr->instance;
 my $tested = 0;
 for my $rec (@Img) {
     my ( $img_filename, $img_width, $img_height ) = @$rec;
-    my ($ext) = $img_filename =~ /\.(gif|jpg|png|bmp)$/;
+    my ($ext) = $img_filename =~ /\.(gif|jpg|png|bmp|webp)$/;
     my ( $guard, $img_file ) = MT::Test::Image->tempfile(
         DIR    => $test_env->root,
         SUFFIX => ".$ext",
