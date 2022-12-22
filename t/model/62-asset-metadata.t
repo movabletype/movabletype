@@ -25,6 +25,13 @@ use Image::ExifTool;
 
 $test_env->prepare_fixture('db');
 
+my %webp_capable_driver_map = (
+    ImageMagick    => eval { require Image::Magick; grep { $_ eq 'webp' } Image::Magick->QueryFormat },
+    GraphicsMagick => eval { require Graphics::Magick; grep { $_ eq 'webp' } Graphics::Magick->QueryFormat },
+    Imager         => eval { require Imager; require Imager::File::WEBP; grep { $_ eq 'webp' } Imager->read_types },
+);
+my @webp_capable_drivers = grep { $webp_capable_driver_map{$_} } $test_env->image_drivers;
+
 my $cfg = MT->config;
 
 for my $driver ( $test_env->image_drivers ) {
@@ -134,7 +141,7 @@ for my $driver ( $test_env->image_drivers ) {
 
                         my $init_res = $mtimg->init( Filename => $image->file_path );
                         skip( "no $driver for image $tempfile", 1 )
-                            if $file_ext eq 'webp' && $driver !~  m/\A(?:ImageMagick|GraphicsMagick)\z/; # some drivers do not support webp in the test environment
+                            if $file_ext eq 'webp' && $driver !~  m/\A(?:@{[join('|', @webp_capable_drivers)]})\z/; # some drivers do not support webp in the test environment
                         ok( $init_res, 'Read the image having no metadata.' );
 
                         $image->rotate(90);
