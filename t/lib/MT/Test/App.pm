@@ -4,6 +4,7 @@ use Role::Tiny::With;
 use strict;
 use warnings;
 use CGI;
+use CGI::Cookie;
 use HTTP::Response;
 use URI;
 use URI::QueryParam;
@@ -300,6 +301,9 @@ sub _request_internally {
         }
         $app->param('magic_token', $app->current_magic);
         $app->user($user);
+        my $cookie_name  = $app->user_cookie;
+        my $cookie_value = join '::', $user->name, $self->{session};
+        $app->{cookies} = { $cookie_name => CGI::Cookie->new(-name => $cookie_name, -value => $cookie_value) };
         $login = sub { return ($user, 0) };
         if ($self->{app_class} eq 'MT::App::DataAPI') {
             $api_login = sub { return $user };
