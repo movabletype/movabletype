@@ -713,6 +713,7 @@ sub suite {
         {
             # login by created user
             path      => '/v2/authentication',
+            up_to     => 2,
             method    => 'POST',
             author_id => 0,
             params    => {

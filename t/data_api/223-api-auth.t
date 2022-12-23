@@ -147,6 +147,7 @@ sub suite {
             },
         },
         {   path      => '/v1/authentication',
+            up_to     => 2,
             method    => 'POST',
             author_id => 2,
             params    => {
@@ -176,6 +177,7 @@ sub suite {
         },
         {   note            => 'Get token from oneTimeToken',
             path            => '/v1/token',
+            up_to           => 2,
             author_id       => 2,
             method          => 'POST',
             request_headers => {
