@@ -153,24 +153,26 @@ sub request {
         }
     }
 
-    if (my $message = $self->message_text) {
-        if ($message =~ /Compilation failed/) {
-            BAIL_OUT $message;
-        }
-        note $message;
-    } elsif (my $error = $self->generic_error) {
-        note "ERROR: $error";
-    }
-
     # json response?
-    if ($self->{content} =~ /\A\s*[\{\[]/) {
+    if ($content_type =~ /json/ or $self->{content} =~ /\A\s*[\{\[]/) {
         if (my $json = eval { decode_json($self->{content}) }) {
-            if ($json->{result}{messages} && @{ $json->{result}{messages} || [] }) {
-                note explain $json->{result}{messages};
+            if (ref $json eq 'HASH') {
+                if ($json->{result}{messages} && @{ $json->{result}{messages} || [] }) {
+                    note explain $json->{result}{messages};
+                }
+                if ($json->{error}) {
+                    note "ERROR: " . encode_json($json->{error});
+                }
             }
-            if ($json->{error}) {
-                note "ERROR: $json->{error}";
+        }
+    } elsif ($content_type =~ /html/ and $self->{content}) {
+        if (my $message = $self->message_text) {
+            if ($message =~ /Compilation failed/) {
+                BAIL_OUT $message;
             }
+            note $message;
+        } elsif (my $error = $self->generic_error) {
+            note "ERROR: $error";
         }
     }
 
