@@ -55,6 +55,7 @@ $test_env->prepare_fixture(sub {
     $uploader->set_password("bass");
     $uploader->type( MT::Author::AUTHOR() );
     $uploader->id(100);
+    $uploader->can_sign_in_data_api(1);
     $uploader->save()
         or die "Couldn't save author record 100: " . $uploader->errstr;
 
