@@ -646,6 +646,7 @@ sub suite {
         # create_templatemap
         {   note   => 'create content type archive for $ct1 (v2)',
             path   => "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
+            up_to  => 3,
             method => 'POST',
             params => {
                 templatemap => {
@@ -659,6 +660,7 @@ sub suite {
         {   note => 'create content type archive listing for $ct2 (v2)',
             path =>
                 "/v2/sites/1/templates/$blog_ct2_archive_tmpl_id/templatemaps",
+            up_to  => 3,
             method => 'POST',
             params => {
                 templatemap => {
@@ -985,6 +987,7 @@ sub suite {
         # list_templatemaps
         {    # ct1 content type archive
             path   => "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
+            up_to  => 3,
             method => 'GET',
             code   => 400,
             error  => 'Template "blog-name 0" is not an archive template.',
@@ -992,6 +995,7 @@ sub suite {
         {    # ct2 content type archive listing
             path =>
                 "/v2/sites/1/templates/$blog_ct2_archive_tmpl_id/templatemaps",
+            up_to  => 3,
             method => 'GET',
             code   => 400,
             error  => 'Template "blog-name 3" is not an archive template.',
@@ -1026,6 +1030,7 @@ sub suite {
         {   note => 'get content type archive map (v2)',
             path =>
                 "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps/$blog_ct1_tmplmap_id",
+            up_to  => 3,
             method => 'GET',
             code   => 400,
             error  => 'Template "blog-name 0" is not an archive template.',
@@ -1033,6 +1038,7 @@ sub suite {
         {   note => 'get content type archive map (v2)',
             path =>
                 "/v2/sites/1/templates/$blog_ct1_archive_tmpl_id/templatemaps/$blog_ct1_archive_tmplmap_id",
+            up_to  => 3,
             method => 'GET',
             code   => 400,
             error  => 'Template "blog-name 1" is not an archive template.',
@@ -1054,6 +1060,7 @@ sub suite {
         {   note => 'update content type archive map (v2)',
             path =>
                 "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps/$blog_ct1_tmplmap_id",
+            up_to  => 3,
             method => 'PUT',
             params => { templatemap => { buildType => 'Dynamic', }, },
             code   => 400,
@@ -1062,6 +1069,7 @@ sub suite {
         {   note => 'update content type archive listing map (v2)',
             path =>
                 "/v2/sites/1/templates/$blog_ct1_archive_tmpl_id/templatemaps/$blog_ct1_archive_tmplmap_id",
+            up_to  => 3,
             method => 'PUT',
             params => { templatemap => { buildType => 'Dynamic', }, },
             code   => 400,
@@ -1097,6 +1105,7 @@ sub suite {
         {   note => 'delete content type archive map (v2)',
             path =>
                 "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps/$blog_ct1_tmplmap_id",
+            up_to  => 3,
             method => 'DELETE',
             code   => 400,
             error  => 'Template "blog-name 0" is not an archive template.',
@@ -1104,6 +1113,7 @@ sub suite {
         {   note => 'delete content type archive listing map (v2)',
             path =>
                 "/v2/sites/1/templates/$blog_ct1_archive_tmpl_id/templatemaps/$blog_ct1_archive_tmplmap_id",
+            up_to  => 3,
             method => 'DELETE',
             code   => 400,
             error  => 'Template "blog-name 1" is not an archive template.',
