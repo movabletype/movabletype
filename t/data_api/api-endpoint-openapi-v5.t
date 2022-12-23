@@ -17,6 +17,9 @@ use MT::Test::DataAPI;
 
 $test_env->prepare_fixture('db');
 
+# This test can't force api version
+local $ENV{MT_TEST_FORCE_DATAAPI_VERSION};
+
 my %json;
 test_data_api({
         path     => "/v4/",
