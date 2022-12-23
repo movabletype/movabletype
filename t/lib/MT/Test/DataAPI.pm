@@ -141,6 +141,12 @@ sub test_data_api {
         my $path = $data->{path};
         $path
             =~ s/:(?:(\w+)_id)|:(\w+)/ref $data->{$1} ? $data->{$1}->id : $data->{$2}/ge;
+        if (my $api_version = $ENV{MT_TEST_FORCE_DATAAPI_VERSION}) {
+            if (!$data->{up_to} or $api_version <= $data->{up_to}) {
+                my ($current) = $path =~ m!^/v(\d)/!;
+                $path =~ s!^/v$current/!/v$api_version/! if $current and $current < $api_version;
+            }
+        }
 
         my $params
             = ref $data->{params} eq 'CODE'
