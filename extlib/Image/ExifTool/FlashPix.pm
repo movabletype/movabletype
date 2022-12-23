@@ -21,7 +21,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::ASF;   # for GetGUID()
 
-$VERSION = '1.39';
+$VERSION = '1.41';
 
 sub ProcessFPX($$);
 sub ProcessFPXR($$$);
@@ -298,6 +298,7 @@ my %fpxFileType = (
 %Image::ExifTool::FlashPix::Main = (
     PROCESS_PROC => \&ProcessFPXR,
     GROUPS => { 2 => 'Image' },
+    VARS => { LONG_TAGS => 0 },
     NOTES => q{
         The FlashPix file format, introduced in 1996, was developed by Kodak,
         Hewlett-Packard and Microsoft.  Internally the FPX file structure mimics
@@ -466,6 +467,25 @@ my %fpxFileType = (
             TagTable => 'Image::ExifTool::FlashPix::PreviewInfo',
             ByteOrder => 'BigEndian',
         },
+    },
+    # recognize Autodesk Revit files by looking at BasicFileInfo
+    # (but don't yet support reading their metatdata)
+    BasicFileInfo => {
+        Name => 'BasicFileInfo',
+        Binary => 1,
+        RawConv => q{
+            $val =~ tr/\0//d;   # brute force conversion to ASCII
+            if ($val =~ /\.(rfa|rft|rte|rvt)/) {
+                $self->OverrideFileType(uc($1), "application/$1", $1);
+            }
+            return $val;
+        },
+    },
+    IeImg => {
+        Name => 'EmbeddedImage',
+        Notes => 'embedded images in Scene7 vignette VNT files',
+        Groups => { 2 => 'Preview' },
+        Binary => 1,
     },
 );
 
@@ -1318,7 +1338,9 @@ sub ConvertDTTM($)
     my $hr  = ($val >> 6)  & 0x1f;
     my $min = ($val & 0x3f);
     $yr += 1900 if $val;
-    return sprintf("%.4d:%.2d:%.2d %.2d:%.2d:00%s",$yr,$mon,$day,$hr,$min,$val ? 'Z' : '');
+    # ExifTool 12.48 dropped the "Z" on the time here because a test .doc
+    # file written by Word 2011 on Mac certainly used local time here
+    return sprintf("%.4d:%.2d:%.2d %.2d:%.2d:00",$yr,$mon,$day,$hr,$min);
 }
 
 #------------------------------------------------------------------------------
@@ -2242,7 +2264,8 @@ sub ProcessFPX($$)
             # remove instance number or class ID from tag if necessary
             $tagInfo = $et->GetTagInfo($tagTablePtr, $1) if
                 ($tag =~ /(.*) \d{6}$/s and $$tagTablePtr{$1}) or
-                ($tag =~ /(.*)_[0-9a-f]{16}$/s and $$tagTablePtr{$1});
+                ($tag =~ /(.*)_[0-9a-f]{16}$/s and $$tagTablePtr{$1}) or
+                ($tag =~ /(.*)_[0-9]{4}$/s and $$tagTablePtr{$1});  # IeImg instances
         }
 
         my $lSib = Get32u(\$dir, $pos + 0x44);  # left sibling
