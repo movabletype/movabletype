@@ -294,7 +294,7 @@ sub _request_internally {
     my $api_login;
     if (my $user = $self->{user}) {
         if (!$self->{session}) {
-            $app->start_session($user, 1);
+            $app->start_session($user, 1) unless $app->{session};
             $self->{session} = $app->{session}->id;
         } else {
             $app->session_user($user, $self->{session});
