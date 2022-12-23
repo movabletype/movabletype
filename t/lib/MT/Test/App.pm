@@ -129,11 +129,13 @@ sub request {
 
     $self->{html_content} = '';
 
+    my $content_type = $res->headers->content_type;
+
     # redirect?
     my $location;
     if ($res->header('Location')) {
         $location = $res->header('Location');
-    } elsif ($self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
+    } elsif ($content_type =~ /html/ and $self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
         $location = $2;
     }
     if ($location) {
