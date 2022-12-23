@@ -313,7 +313,7 @@ sub _request_internally {
             return ($user, 0)
         };
         if ($self->{app_class} eq 'MT::App::DataAPI') {
-            $api_login = sub { return $user };
+            $api_login = sub { return $user->is_active && $user->can_sign_in_data_api ? $user : undef };
         }
     }
     no warnings 'redefine';
