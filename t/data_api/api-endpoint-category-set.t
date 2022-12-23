@@ -646,7 +646,7 @@ sub irregular_tests_for_delete_category_sets {
     );
     test_data_api(
         {   note   => 'invalid category_set_id',
-            path   => "/v4/sits/$site_id/categorySets/1000",
+            path   => "/v4/sites/$site_id/categorySets/1000",
             method => 'DELETE',
             code   => 404,
         }
