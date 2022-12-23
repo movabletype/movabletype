@@ -175,6 +175,7 @@ sub test_data_api {
                 }
             }
 
+            local $ENV{MT_TEST_RUN_APP_AS_CGI};    ## MT::Test::DataAPI mocks too much
 
             %callbacks = ();
             my $app = MT::Test::App->new('DataAPI');
