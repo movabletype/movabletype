@@ -19,8 +19,8 @@ BEGIN {
 }
 
 use MT::Test;
+use MT::Test::App;
 
-MT::Test->init_app;
 unless ( $ENV{MT_TEST_ROOT} ) {
     MT::Test->init_db;
     MT::Test->init_data;
@@ -183,39 +183,33 @@ sub test_data_api {
                 }
             }
 
-            %callbacks = ();
-            _run_app(
-                'MT::App::DataAPI',
-                {   __path_info      => $path,
-                    __request_method => $data->{method},
-                    (   $data->{upload}
-                        ? ( __test_upload => $data->{upload} )
-                        : ()
-                    ),
-                    (   $params
-                        ? map {
-                            $_ => ref $params->{$_}
-                                ? MT::Util::to_json( $params->{$_},
-                                { canonical => 1 } )
-                                : $params->{$_};
-                            }
-                            keys %{$params}
-                        : ()
-                    ),
-                }
-            );
-            my $out = delete $app->{__test_output};
-            my ( $headers, $body ) = split /^\s*$/m, $out, 2;
-            my %headers = map {
-                my ( $k, $v ) = split /\s*:\s*/, $_, 2;
-                $v =~ s/(\r\n|\r|\n)\z//;
-                lc $k => $v
-                }
-                split /\n/, $headers;
 
+            %callbacks = ();
+            my $app = MT::Test::App->new('DataAPI');
+            $app->login($author) if $author;
+            my $res = $app->request({
+                __path_info      => $path,
+                __request_method => $data->{method},
+                (   $data->{upload}
+                    ? ( __test_upload => $data->{upload} )
+                    : ()
+                ),
+                (   $params
+                    ? map {
+                        $_ => ref $params->{$_}
+                            ? MT::Util::to_json( $params->{$_},
+                            { canonical => 1 } )
+                            : $params->{$_};
+                        }
+                        keys %{$params}
+                    : ()
+                ),
+            });
+            my %headers = $res->headers->flatten;
+            $headers{lc $_} = delete $headers{$_} for keys %headers;
+            my $body    = $res->decoded_content;
             my $expected_status = $data->{code} || 200;
-            is( $headers{status}, $expected_status,
-                'Status ' . $expected_status );
+            is( $res->code, $expected_status, 'Status ' . $expected_status );
             if ( $data->{next_phase_url} ) {
                 like(
                     $headers{'x-mt-next-phase-url'},
