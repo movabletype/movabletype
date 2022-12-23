@@ -46,11 +46,8 @@ sub test_data_api {
     my $mock_author = Test::MockModule->new('MT::Author');
     $mock_author->mock( 'is_superuser', sub {$is_superuser} );
 
-    my $author;
-    my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
-    $mock_app_api->mock( 'authenticate', sub {$author} );
-
     my $version;
+    my $mock_app_api = Test::MockModule->new('MT::App::DataAPI');
     $mock_app_api->mock( 'current_api_version',
         sub { $version = $_[1] if $_[1]; $version } );
 
@@ -75,18 +72,13 @@ sub test_data_api {
         $suite = \@only;
     }
     for my $data (@$suite) {
-        $mock_app_api->mock( 'authenticate', sub {$author} )
-            if !$mock_app_api->is_mocked('authenticate');
-
+        my $author;
         if ( $data->{author_id} ) {
             $author = $app->model('author')->load( $data->{author_id} );
         }
         elsif ( !exists( $data->{author_id} ) ) {
             $author = $app->model('author')
                 ->load( exists $args->{author_id} ? $args->{author_id} : 1 );
-        }
-        else {
-            $mock_app_api->unmock('authenticate');
         }
 
         $is_superuser
