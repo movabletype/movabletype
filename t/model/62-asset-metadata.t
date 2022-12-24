@@ -26,9 +26,9 @@ use Image::ExifTool;
 $test_env->prepare_fixture('db');
 
 my %webp_capable_driver_map = (
-    ImageMagick    => eval { require Image::Magick; grep { $_ eq 'webp' } Image::Magick->QueryFormat },
-    GraphicsMagick => eval { require Graphics::Magick; grep { $_ eq 'webp' } Graphics::Magick->QueryFormat },
-    Imager         => eval { require Imager; require Imager::File::WEBP; grep { $_ eq 'webp' } Imager->read_types },
+    ImageMagick    => eval { require Image::Magick; grep { $_ eq 'webp' } Image::Magick->QueryFormat } ? 1 : 0,
+    GraphicsMagick => eval { require Graphics::Magick; grep { $_ eq 'webp' } Graphics::Magick->QueryFormat } ? 1 : 0,
+    Imager         => eval { require Imager; require Imager::File::WEBP; grep { $_ eq 'webp' } Imager->read_types } ? 1 : 0,
 );
 my @webp_capable_drivers = grep { $webp_capable_driver_map{$_} } $test_env->image_drivers;
 
