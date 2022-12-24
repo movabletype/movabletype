@@ -67,7 +67,7 @@ for my $rec (@Img) {
             ok( eval 'MT::Image::' . $driver . '->load_driver()',
                 'Also can load driver via class method'
             );
-            $img->_init_image_size;
+            $img->_init_image_size or skip( $img->errstr, $TESTS_FOR_EACH - 2 );
             is( $img->{width}, $img_width,
                 "$driver says $img_filename is $img_width px wide" );
             is( $img->{height}, $img_height,
