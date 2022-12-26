@@ -52,8 +52,8 @@ subtest 'Simple' => sub {
             'cd_multi6',
             'cd_multi5',
             'cd_multi4',
-            'cd_multi2',
             'cd_multi3',
+            'cd_multi2',
             'cd_multi',
         ),
     });
@@ -109,8 +109,8 @@ subtest 'IncludeBlogs => all' => sub {
             'cd_multi6',
             'cd_multi5',
             'cd_multi4',
-            'cd_multi2',
             'cd_multi3',
+            'cd_multi2',
             'cd_multi',
         ),
     });
@@ -132,10 +132,10 @@ subtest 'search type of A OR B' => sub {
             'cd_multi6',
             'cd_multi5',
             'cd_multi4',
-            'cd_multi2',
             'cd_multi3',
-            'cd_multi',
+            'cd_multi2',
             'cd',
+            'cd_multi',
         ),
     });
 };
@@ -213,10 +213,10 @@ subtest 'pagination' => sub {
             'cd_multi6',
             'cd_multi5',
             'cd_multi4',
-            'cd_multi2',
             'cd_multi3',
-            'cd_multi',
+            'cd_multi2',
             'cd',
+            'cd_multi',
         ),
     });
     test_data_api({
@@ -250,25 +250,28 @@ subtest 'archive_type' => sub {
             'cd_multi6',
             'cd_multi5',
             'cd_multi4',
-            'cd_multi2',
             'cd_multi3',
-            'cd_multi',
+            'cd_multi2',
             'cd',
+            'cd_multi',
         ),
     });
     test_data_api({
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, archive_type => 'Monthly', year => '2017', month => '05' },
-        complete => expected_labels('cd_multi', 'cd'),
+        complete => expected_labels(
+            'cd',
+            'cd_multi',
+        ),
     });
     test_data_api({
         path     => '/v4/search',
         method   => 'GET',
         params   => { %params, archive_type => 'Daily', year => '2017', month => '05', day => '30' },
         complete => expected_labels(
+            'cd',
             'cd_multi',
-            'cd'
         ),
     });
     test_data_api({
@@ -278,10 +281,10 @@ subtest 'archive_type' => sub {
         complete => expected_labels(
             'cd_multi5',
             'cd_multi4',
-            'cd_multi2',
             'cd_multi3',
+            'cd_multi2',
+            'cd',
             'cd_multi',
-            'cd'
         ),
     });
     test_data_api({
@@ -309,8 +312,8 @@ subtest 'author' => sub {
             'cd_multi6',
             'cd_multi5',
             'cd_multi4',
-            'cd_multi2',
             'cd_multi3',
+            'cd_multi2',
             'cd_multi',
         ),
     });
