@@ -346,6 +346,7 @@ sub label_field {
 sub field_objs {
     my $obj        = shift;
     my @field_objs = MT->model('content_field')->load({ id => [map { $_->{id} || 0 } @{ $obj->fields }] });
+    $_->{__content_type_obj} = $obj for @field_objs;
     return \@field_objs;
 }
 

@@ -169,9 +169,7 @@ sub remove {
 
 sub content_type {
     my $obj = shift;
-    my $content_type
-        = MT->model('content_type')->load( $obj->content_type_id || 0 );
-    return $content_type;
+    return $obj->{__content_type_obj} ||= MT->model('content_type')->load( $obj->content_type_id || 0 );
 }
 
 sub permission {
