@@ -344,10 +344,8 @@ sub label_field {
 }
 
 sub field_objs {
-    my $obj = shift;
-    my @field_objs
-        = map { MT->model('content_field')->load( $_->{id} || 0 ) }
-        @{ $obj->fields };
+    my $obj        = shift;
+    my @field_objs = MT->model('content_field')->load({ id => [map { $_->{id} || 0 } @{ $obj->fields }] });
     return \@field_objs;
 }
 
