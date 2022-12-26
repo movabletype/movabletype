@@ -45,7 +45,7 @@ sub fields {
             },
         },
         {   name        => 'password',
-            from_object => sub { },      # Display nothing.
+            from_object => undef,
             to_object   => sub {
                 my ( $hash, $obj ) = @_;
                 my $pass = $hash->{password};
@@ -139,7 +139,7 @@ sub fields {
         },
         {   name             => 'systemPermissions',
             bulk_from_object => \&_system_permissions_bulk_from_object,
-            to_object => sub { },    # Do nothing.
+            to_object => undef,
             type_to_object => \&_system_permissions_type_to_object,
             schema => {
                 type  => 'array',
