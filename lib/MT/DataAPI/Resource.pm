@@ -459,7 +459,7 @@ sub resource {
                         eval "require $type;";
                         for my $mtype (qw(from_object to_object)) {
                             if ( my $method = $type->can($mtype) ) {
-                                $f->{ 'type_' . $mtype } = $method;
+                                $f->{ 'type_' . $mtype } ||= $method;
                             }
                         }
                     }
