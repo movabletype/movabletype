@@ -588,6 +588,7 @@ sub from_object {
             $f->{bulk_from_object}->( $objs, \@hashs, $f, $stash );
         }
         else {
+            my $i;
             my $name        = $f->{name};
             my $has_default = exists $f->{from_object_default};
             my $default     = $f->{from_object_default};
@@ -601,7 +602,7 @@ sub from_object {
             } else {
                 $method = $objs->[0]->can( $f->{alias} || $name );
             }
-            for ( my $i = 0; $i < $objs_count; $i++ ) {
+            for ( $i = 0; $i < $objs_count; $i++ ) {
                 my @vals = $method ? $method->( $objs->[$i] ) : ();
                 if ( @vals || $has_default ) {
                     $hashs[$i]{$name}
