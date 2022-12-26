@@ -162,7 +162,7 @@ sub get_target_user {
         if ( $app->current_api_version != 1 ) {
             my $login_user = $app->user;
 
-            if ( $login_user->is_superuser || $login_user->id == $user->id ) {
+            if ( $login_user->is_superuser || ($user and $login_user->id == $user->id) ) {
                 return $user;
             }
         }
