@@ -1841,6 +1841,7 @@ div.mce-notification-error {
         },
         update: function () {
             jQuery('div.field.sort-enabled', this).trigger('sort-updated');
+            jQuery('#entry_prefs').val('Custom');
             sendEntryPrefs({ sort_only: true });
         }
     });
