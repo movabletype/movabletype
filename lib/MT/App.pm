@@ -12,9 +12,8 @@ use base qw( MT );
 
 use File::Spec;
 use MT::Request;
-use MT::Util qw( encode_html offset_time_list decode_html encode_url
-    is_valid_email is_url escape_unicode extract_url_path);
-use MT::I18N qw( wrap_text );
+use MT::Util qw( encode_html encode_url is_valid_email is_url );
+use MT::I18N;
 use MT::Util::Encode;
 
 my $COOKIE_NAME = 'mt_user';

@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use base qw( MT::App );
 
-use MT::Util qw( trim browser_language );
+use MT::Util qw( browser_language );
 
 sub id {'wizard'}
 

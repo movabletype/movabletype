@@ -11,7 +11,7 @@ use warnings;
 use MT;
 use MT::Category;
 use MT::ContentStatus;
-use MT::Util qw( archive_file_for dirify );
+use MT::Util qw( archive_file_for );
 use MT::Promise qw( delay );
 
 sub _load_sibling_categories {

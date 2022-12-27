@@ -9,7 +9,7 @@ use strict;
 use warnings;
 
 use MT;
-use MT::Util qw( encode_xml );
+use MT::Util;
 
 ###########################################################################
 

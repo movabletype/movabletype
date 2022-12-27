@@ -21,8 +21,7 @@ use MT::Memcached;
 use MT::Placement;
 use MT::Comment;
 use MT::TBPing;
-use MT::Util qw( archive_file_for start_end_period extract_domain
-    extract_domains weaken first_n_words remove_html encode_html trim );
+use MT::Util qw( archive_file_for weaken remove_html trim );
 use MT::I18N qw( first_n_text const );
 
 use MT::EntryStatus qw(:all);

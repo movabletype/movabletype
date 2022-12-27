@@ -11,7 +11,6 @@ use warnings;
 use base qw( MT::ArchiveType::Category );
 
 use MT::ContentStatus;
-use MT::Util qw( remove_html encode_html );
 
 sub name {
     return 'ContentType-Category';

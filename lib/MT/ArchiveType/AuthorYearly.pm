@@ -9,7 +9,7 @@ package MT::ArchiveType::AuthorYearly;
 use strict;
 use warnings;
 use base qw( MT::ArchiveType::Author MT::ArchiveType::Yearly );
-use MT::Util qw( dirify start_end_year );
+use MT::Util qw( start_end_year );
 
 sub name {
     return 'Author-Yearly';

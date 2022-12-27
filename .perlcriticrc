@@ -3,3 +3,4 @@ include = Variables::ProhibitUnusedVariables
 include = ValuesAndExpressions::ProhibitDuplicateHashKeys
 include = InputOutput::ProhibitTwoArgOpen
 include = InputOutput::ProhibitBarewordFileHandles
+include = TooMuchCode::ProhibitUnusedImport TooMuchCode::ProhibitUnusedConstant

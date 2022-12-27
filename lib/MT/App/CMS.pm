@@ -11,8 +11,7 @@ use warnings;
 use base qw( MT::App );
 
 use MT::CMS::ContentData;
-use MT::Util qw( format_ts epoch2ts perl_sha1_digest_hex perl_sha1_digest
-    remove_html );
+use MT::Util qw( perl_sha1_digest_hex );
 use MT::App::CMS::Common;
 
 sub LISTING_DATE_FORMAT ()      {'%b %e, %Y'}
