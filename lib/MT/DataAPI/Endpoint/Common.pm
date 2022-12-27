@@ -157,16 +157,15 @@ sub get_target_user {
         return $user->is_anonymous ? $app->error(401) : $user;
     }
     else {
-        my ($user) = context_objects(@_);
-
-        if ( $app->current_api_version != 1 ) {
-            my $login_user = $app->user;
-
-            if ( $login_user->is_superuser || ($user and $login_user->id == $user->id) ) {
-                return $user;
+        if (my $user = context_objects(@_)) {
+            if ($app->current_api_version != 1) {
+                my $login_user = $app->user;
+                if ($login_user->is_superuser || $login_user->id == $user->id) {
+                    return $user;
+                }
             }
+            return $user if $user->status == MT::Author::ACTIVE();
         }
-        return $user if $user && $user->status == MT::Author::ACTIVE();
         return $app->error( $app->translate('User not found'), 404 );
     }
 }
