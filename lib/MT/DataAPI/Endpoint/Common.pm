@@ -157,7 +157,7 @@ sub get_target_user {
         return $user->is_anonymous ? $app->error(401) : $user;
     }
     else {
-        if (my $user = context_objects(@_)) {
+        if (my ($user) = context_objects(@_)) {
             if ($app->current_api_version != 1) {
                 my $login_user = $app->user;
                 if ($login_user->is_superuser || $login_user->id == $user->id) {
