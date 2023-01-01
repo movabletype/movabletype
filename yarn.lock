@@ -3024,10 +3024,10 @@ tar@^6.1.11:
     mkdirp "^1.0.3"
     yallist "^4.0.0"
 
-tinymce-i18n@20.12.25:
-  version "20.12.25"
-  resolved "https://registry.yarnpkg.com/tinymce-i18n/-/tinymce-i18n-20.12.25.tgz#479d2c69613ec2324aeadb4478c9da2d8d4e0bb8"
-  integrity sha512-MOVCgGbkZ2ZVvb9B38Mbdhwam1oZOBXDkxmzcHX3W7c3RCB8r4VG9DS8+4BcsoCCgfUg1JXwh2Hk+7aXcYXkkg==
+tinymce-i18n@22.12.27:
+  version "22.12.27"
+  resolved "https://registry.yarnpkg.com/tinymce-i18n/-/tinymce-i18n-22.12.27.tgz#9f36a999699bcb2e5fc078d96989aef9952013a7"
+  integrity sha512-vRanI30NxPKL3igTikx0YTvgflp4R2HbToeiTFvZiNbUtabnUJECKR0ZaJKbFt+6bcscrUPFpiZbwV2sHM2nYA==
 
 "tinymce6-i18n@npm:tinymce-i18n@^22.5.2":
   version "22.8.26"
