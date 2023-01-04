@@ -13,7 +13,7 @@ use FindBin;
 use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 use base qw( MT::Tool );
 
-use Carp qw(confess);
+use Carp qw();
 use MT::Upgrade;
 
 sub usage { '[--ttl <days>] [--kind <comma,separated,list,of,kinds>]' }

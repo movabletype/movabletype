@@ -25,7 +25,7 @@ use MT::Test::Fixture;
 use MT::Test::Fixture::ArchiveTypeDistinct;
 use MT::Test::App;
 use File::Path;
-use Test::Deep qw/cmp_deeply cmp_bag/;
+use Test::Deep qw/cmp_bag/;
 use Array::Diff;
 use List::Util qw/uniq/;
 use Time::Piece;

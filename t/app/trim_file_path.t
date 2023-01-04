@@ -14,7 +14,6 @@ BEGIN {
 use MT::Test;
 use MT::Test::App;
 use MT::Test::Fixture;
-use File::Path qw(remove_tree);
 
 $test_env->prepare_fixture('db');
 
