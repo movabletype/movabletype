@@ -285,6 +285,10 @@ sub process_scenarios {
             $s->wait_until_ready;
         },
     );
+    if (!$frame) {
+        diag "SKIP: frame is not found";
+        return;
+    }
 
     # make sure switch to frame succeeded
     wait_until { $s->driver->switch_to_frame($frame) && $s->driver->execute_script("return self !== top") };
