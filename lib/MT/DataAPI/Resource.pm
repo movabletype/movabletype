@@ -594,20 +594,16 @@ sub from_object {
             my $default     = $f->{from_object_default};
 
             # Prepare method to fetching value, outside of the loop
-            my $method = do {
-                if ( exists $f->{from_object} ) {
-                    sub {
-                        $f->{from_object}->( $_[0], $hashs[$i], $f, $stash );
-                    };
+            my $method;
+            if ( exists $f->{from_object} ) {
+                if (ref $f->{from_object} eq 'CODE') {
+                    $method = sub { $f->{from_object}->( $_[0], $hashs[$i], $f, $stash ) };
                 }
-                else {
-                    $objs->[0]->can( $f->{alias} || $name );
-                }
-                }
-                || sub { };
-
+            } else {
+                $method = $objs->[0]->can( $f->{alias} || $name );
+            }
             for ( $i = 0; $i < $objs_count; $i++ ) {
-                my @vals = $method->( $objs->[$i] );
+                my @vals = $method ? $method->( $objs->[$i] ) : ();
                 if ( @vals || $has_default ) {
                     $hashs[$i]{$name}
                         = defined( $vals[0] ) ? $vals[0] : $default;
@@ -676,7 +672,7 @@ sub to_object {
                 # Do nothing
             }
             elsif ( exists $f->{to_object} ) {
-                @vals = $f->{to_object}->( $hash, $obj, $f, $stash );
+                @vals = $f->{to_object}->( $hash, $obj, $f, $stash ) if $f->{to_object};
             }
             else {
                 @vals = ( $hash->{$name} );

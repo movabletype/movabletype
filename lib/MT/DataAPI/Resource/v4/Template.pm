@@ -54,8 +54,7 @@ sub fields {
                     = +{ id => $obj->content_type_id };
             }
         },
-        to_object => sub {   # Do nothing here and set value in type_to_object
-        },
+        to_object => undef,  # Do nothing here and set value in type_to_object
         type_to_object => sub {
             my ( $hashes, $objs ) = @_;
             return if $objs->[0]->id;
