@@ -89,7 +89,6 @@ my $scenarios_full = [
 ];
 
 subtest 'system context' => sub {
-    plan tests => 3;
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=0');
     assert_no_browser_errors();
     $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
@@ -106,9 +105,6 @@ subtest 'site context' => sub {
     if (!$ENV{EXTENDED_TESTING}) {
         # Only tests random 15 cases to save time. Do not randomize on runtime because it's confusing.
         $scenarios = [@$scenarios_full[10, 11, 14, 22, 25, 28, 31, 36, 41, 43, 44, 49, 50, 61, 63]];
-        plan tests => 475;
-    } else {
-        plan tests => 2125;
     }
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
@@ -140,8 +136,6 @@ subtest 'duplication' => sub {
     set_up();
 
     my $scenarios = [@$scenarios_full[1, 1]];
-
-    plan tests => 111;
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
     $s->wait_until_ready;
@@ -177,8 +171,6 @@ subtest 'duplication with content type' => sub {
 
     my $scenarios = [@$scenarios_full[18, 18]];
 
-    plan tests => 135;
-
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
     $s->wait_until_ready;
     assert_no_browser_errors();
@@ -213,8 +205,6 @@ subtest 'two cases saved at once' => sub {
 
     my $scenarios = [@$scenarios_full[18, 19]];
 
-    plan tests => 67;
-
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
     $s->wait_until_ready;
     assert_no_browser_errors();
@@ -242,8 +232,6 @@ subtest 'remove' => sub {
     set_up();
 
     my $scenarios = [@$scenarios_full[18, 19]];
-
-    plan tests => 68;
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
     $s->wait_until_ready;
