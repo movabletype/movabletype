@@ -97,6 +97,13 @@ my $content_category_change_diff = 13;
 rmtree($site_root);
 MT::FileInfo->remove_all;
 
+sub make_date {
+    my $date = Time::Piece->new(shift);
+    $date += ONE_WEEK if $date->week == 1;
+    $date -= ONE_WEEK if $date->week == 52;
+    $date;
+}
+
 sub list_files {
     if ( $ENV{MT_TEST_PUBLISH_DYNAMIC} ) {
         return
@@ -1269,8 +1276,8 @@ subtest 'change authored_on of the newly-created entry' => sub {
         }
     );
 
-    my $date     = Time::Piece->new;
-    my $new_date = Time::Piece->new( time + ONE_YEAR );
+    my $date     = make_date();
+    my $new_date = make_date(time + ONE_YEAR);
     my $year     = $date->year;
     my $new_year = $new_date->year;
 
@@ -1333,8 +1340,8 @@ subtest 'unpublish the newly-created entry (just to restore the initial state)' 
     $file->spew("test");
     ok -f $file, "target file exists now";
 
-    my $date     = Time::Piece->new;
-    my $new_date = Time::Piece->new( time + ONE_YEAR * 2 );
+    my $date     = make_date();
+    my $new_date = make_date(time + ONE_YEAR * 2);
     my $year     = $date->year;
     my $new_year = $new_date->year;
 
@@ -1528,8 +1535,8 @@ subtest 'change authored_on of the newly-created content data' => sub {
         }
     );
 
-    my $date     = Time::Piece->new;
-    my $new_date = Time::Piece->new( time + ONE_YEAR );
+    my $date     = make_date();
+    my $new_date = make_date(time + ONE_YEAR);
     my $year     = $date->year;
     my $new_year = $new_date->year;
 
@@ -1594,8 +1601,8 @@ subtest 'unpublish the newly-created content data (just to restore the initial s
     $file->spew("test");
     ok -f $file, "target file exists now";
 
-    my $date     = Time::Piece->new;
-    my $new_date = Time::Piece->new( time + ONE_YEAR * 2 );
+    my $date     = make_date();
+    my $new_date = make_date(time + ONE_YEAR * 2);
     my $year     = $date->year;
     my $new_year = $new_date->year;
 
@@ -1778,8 +1785,8 @@ subtest 'change authored_on of the newly-created entry by DataAPI' => sub {
     my $app = MT::Test::App->new('MT::App::DataAPI');
     $app->login($author1);
 
-    my $date     = Time::Piece->new;
-    my $new_date = Time::Piece->new( time + ONE_YEAR );
+    my $date     = make_date();
+    my $new_date = make_date(time + ONE_YEAR);
     my $year     = $date->year;
     my $new_year = $new_date->year;
 
@@ -1837,8 +1844,8 @@ subtest 'unpublish the newly-created entry (just to restore the initial state)' 
     $file->spew("test");
     ok -f $file, "target file exists now";
 
-    my $date     = Time::Piece->new;
-    my $new_date = Time::Piece->new( time + ONE_YEAR * 2 );
+    my $date     = make_date();
+    my $new_date = make_date(time + ONE_YEAR * 2);
     my $year     = $date->year;
     my $new_year = $new_date->year;
 
@@ -1899,8 +1906,8 @@ subtest 'change authored_on of the newly-created content data by DataAPI' => sub
     my $app = MT::Test::App->new('MT::App::DataAPI');
     $app->login($author1);
 
-    my $date     = Time::Piece->new;
-    my $new_date = Time::Piece->new( time + ONE_YEAR );
+    my $date     = make_date();
+    my $new_date = make_date(time + ONE_YEAR);
     my $year     = $date->year;
     my $new_year = $new_date->year;
 
@@ -1959,8 +1966,8 @@ subtest 'unpublish the newly-created content data (just to restore the initial s
     $file->spew("test");
     ok -f $file, "target file exists now";
 
-    my $date     = Time::Piece->new;
-    my $new_date = Time::Piece->new( time + ONE_YEAR * 2 );
+    my $date     = make_date();
+    my $new_date = make_date(time + ONE_YEAR * 2);
     my $year     = $date->year;
     my $new_year = $new_date->year;
 
