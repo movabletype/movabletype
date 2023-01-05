@@ -13,7 +13,6 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Fixture;
-use Test::Deep qw/cmp_bag/;
 use File::Spec;
 use Path::Tiny;
 use utf8;

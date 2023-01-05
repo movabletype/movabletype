@@ -76,7 +76,7 @@ like $log2 => qr/Some error/, "logfile2 contains correct error log";
 
 eval {
     use locale;
-    use POSIX qw(locale_h);
+    use POSIX qw(locale_h);    ## no critic
     setlocale(LC_ALL, "ja_JP.UTF-8");
     my @warnings;
     local $SIG{__WARN__} = sub { push @warnings, @_ };

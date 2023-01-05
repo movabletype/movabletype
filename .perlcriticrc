@@ -4,3 +4,6 @@ include = ValuesAndExpressions::ProhibitDuplicateHashKeys
 include = InputOutput::ProhibitTwoArgOpen
 include = InputOutput::ProhibitBarewordFileHandles
 include = TooMuchCode::ProhibitUnusedImport TooMuchCode::ProhibitUnusedConstant
+
+[TooMuchCode::ProhibitUnusedImport]
+ignored_modules = MT::Test::App

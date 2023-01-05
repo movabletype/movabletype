@@ -6,7 +6,6 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
-use File::Temp qw( tempfile );
 our $test_env;
 
 BEGIN {
