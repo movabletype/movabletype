@@ -2904,13 +2904,8 @@ function removeAssetFromList(assetId, prefix) {
     // get include_asset_ids and split it
     var AssetList = document.getElementById(prefix + "include_asset_ids").value;
     var Assets = AssetList.split(",");
-    var NewAssetList = "";
-    for (var i = 0; i < Assets.length; i++) {
-        if (Assets[i] != assetId) {
-            NewAssetList = NewAssetList + Assets[i] + ",";
-        }
-    }
-    document.getElementById(prefix + "include_asset_ids").value = NewAssetList;
+    var NewAssets = Assets.filter(function(id) { return id != assetId });
+    document.getElementById(prefix + "include_asset_ids").value = NewAssets.join(",");
 }
 
 function isIE11() {
