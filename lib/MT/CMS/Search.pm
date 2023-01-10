@@ -88,17 +88,9 @@ sub core_search_apis {
                     $terms->{ $app->param('filter') }
                         = $app->param('filter_val');
                 }
-                my $content_type_id = $app->param('content_type_id') || 0;
-                my $content_type
-                    = $app->model('content_type')
-                    ->load( { id => $content_type_id } )
-                    || $app->model('content_type')->load(
-                    { blog_id => $blog_id || \'> 0' },
-                    { sort => 'name', limit => 0 }
-                    );
-                if ($content_type) {
-                    $terms->{content_type_id} = $content_type->id;
-                    $app->param( 'content_type_id', $content_type->id );
+                if (my $selected_content_type_id = $app->param('content_type_id')) {
+                    $terms->{content_type_id} = $selected_content_type_id;
+                    $app->param('content_type_id', $selected_content_type_id);
                 }
                 $args->{sort}      = 'authored_on';
                 $args->{direction} = 'descend';
@@ -882,18 +874,12 @@ sub do_search_replace {
     my ( $content_type, @content_types );
     if ( $type eq 'content_data' ) {
         my $content_type_id = $app->param('content_type_id') || 0;
-        $content_type
-            = $app->model('content_type')->load( { id => $content_type_id } )
-            || $app->model('content_type')->load(
-            { blog_id => $blog_id || \'> 0' },
-            { sort => 'name', limit => 1 },
-            );
-
-        my $iter = $app->model('content_type')
-            ->load_iter( { blog_id => $blog_id || \'> 0' } );
+        my $iter = $app->model('content_type')->load_iter( { blog_id => $blog_id || \'> 0' }, { sort => 'name'});
         while ( my $ct = $iter->() ) {
             push @content_types, $ct;
+            $content_type = $ct if $ct->id == $content_type_id;
         }
+        $content_type ||= $content_types[0] if @content_types;
     }
     if ($is_limited) {
         @cols = $app->multi_param('search_cols');
