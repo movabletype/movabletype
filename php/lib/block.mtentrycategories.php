@@ -18,9 +18,11 @@ function smarty_block_mtentrycategories($args, $content, &$ctx, &$repeat) {
         } else {
             $args['entry_id'] = $entry->entry_id;
             $categories = $ctx->mt->db()->fetch_categories($args);
-            usort($categories, function($a,$b) {
-                return strcmp($a->label,$b->label);
-            });
+            if (!empty($categories)) {
+                usort($categories, function($a,$b) {
+                    return strcmp($a->label,$b->label);
+                });
+            }
         }
         $ctx->stash('_categories', $categories);
         $ctx->stash('__out', false);
