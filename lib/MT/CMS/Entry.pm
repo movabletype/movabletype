@@ -850,7 +850,7 @@ sub _build_entry_preview {
             my @categories
                 = MT::Category->load( { id => \@cats, blog_id => $blog_id } );
             $entry->cache_property( 'category',   undef, $cat );
-            $entry->cache_property( 'categories', undef, \@categories );
+            $entry->cache_property( 'categories', undef, [sort {$a->label cmp $b->label} @categories] );
         }
     }
     else {
