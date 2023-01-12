@@ -115,6 +115,7 @@ sub dbh_handle {
                 # A database connection has been reused,
                 # but this is probably already expired.
                 $driver->reuse_dbh(0);
+                $dbh->disconnect;
                 $dbh = $driver->init_db() or die $driver->last_error;
                 $driver->reuse_dbh($orig_reuse);
             }
