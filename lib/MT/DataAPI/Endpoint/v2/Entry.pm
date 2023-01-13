@@ -371,11 +371,11 @@ sub list_for_category_common {
             },
         ),
     );
-    my $res = filtered_list( $app, $endpoint, $class, undef, \%args );
+    my $res = filtered_list( $app, $endpoint, $class, undef, \%args ) or return;
 
-    +{  totalResults => ( $res ? $res->{count} : 0 ) + 0,
+    +{  totalResults => $res->{count} + 0,
         items => MT::DataAPI::Resource::Type::ObjectList->new(
-            $res ? $res->{objects} : {}
+            $res->{objects}
         ),
     };
 }

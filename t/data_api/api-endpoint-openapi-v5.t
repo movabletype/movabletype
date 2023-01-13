@@ -67,7 +67,7 @@ for my $prop (qw/assets categories/) {
 
 # asset
 is($json{v4}{components}{schemas}{asset}{properties}{parent}{type}, 'string', "asset parent is string type in v4");
-is($json{v5}{components}{schemas}{asset}{properties}{parent}{type}, 'integer', "asset parent is integer type in v5");
+is($json{v5}{components}{schemas}{asset}{properties}{parent}{type}, 'object', "asset parent is object type in v5");
 
 # association
 for my $prop (qw/user role/) {

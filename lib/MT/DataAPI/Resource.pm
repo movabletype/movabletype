@@ -459,7 +459,7 @@ sub resource {
                         eval "require $type;";
                         for my $mtype (qw(from_object to_object)) {
                             if ( my $method = $type->can($mtype) ) {
-                                $f->{ 'type_' . $mtype } = $method;
+                                $f->{ 'type_' . $mtype } ||= $method;
                             }
                         }
                     }
@@ -658,7 +658,7 @@ sub to_object {
     my $stash      = {};
 
     for my $f (@fields) {
-        my $name        = $f->{name};
+        my $field_name  = $f->{name};
         my $has_default = exists $f->{to_object_default};
         my $default     = $f->{to_object_default};
 
@@ -667,7 +667,7 @@ sub to_object {
             my $obj  = $objs[$i];
 
             my @vals = ();
-            if ( !exists( $hash->{$name} ) ) {
+            if ( !exists( $hash->{$field_name} ) ) {
 
                 # Do nothing
             }
@@ -675,11 +675,11 @@ sub to_object {
                 @vals = $f->{to_object}->( $hash, $obj, $f, $stash ) if $f->{to_object};
             }
             else {
-                @vals = ( $hash->{$name} );
+                @vals = ( $hash->{$field_name} );
             }
 
             if ( @vals || $has_default ) {
-                my $k = $f->{alias} || $name;
+                my $k = $f->{alias} || $field_name;
                 $obj->$k( defined( $vals[0] ) ? $vals[0] : $default );
             }
         }
