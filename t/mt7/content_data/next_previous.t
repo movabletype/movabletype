@@ -104,7 +104,7 @@ subtest 'no $opt or $opt = 1' => sub {
     is( $cd1->next->id,     $cd2->id, '$cd1->next is $cd2' );
     is( $cd2->previous->id, $cd1->id, '$cd2->previous is $cd1' );
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    $test_env->clear_mt_cache;
 
     # $opt = 1
     is( $cd1->next(1)->id,     $cd3->id, '$cd1->next(1) is $cd3' );
