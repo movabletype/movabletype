@@ -161,7 +161,7 @@ sub request {
     if ($content_type =~ /json/ or $self->{content} =~ /\A\s*[\{\[]/) {
         if (my $json = eval { decode_json($self->{content}) }) {
             if (ref $json eq 'HASH') {
-                if ($json->{result}{messages} && @{ $json->{result}{messages} || [] }) {
+                if (ref $json->{result} eq 'HASH' && $json->{result}{messages} && @{ $json->{result}{messages} || [] }) {
                     note explain $json->{result}{messages};
                 }
                 if ($json->{error}) {
