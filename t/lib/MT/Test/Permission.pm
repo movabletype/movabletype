@@ -8,6 +8,11 @@ package MT::Test::Permission;
 use strict;
 use warnings;
 
+sub clear_cache {
+    require MT::ObjectDriver::Driver::Cache::RAM;
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+}
+
 sub make_author {
     my $pkg    = shift;
     my %params = @_;
@@ -45,7 +50,7 @@ sub make_author {
     $author->save()
         or die "Couldn't save author record: " . $author->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $author;
 }
@@ -100,7 +105,7 @@ sub make_website {
     $theme->apply($website);
     $website->save() or die "Couldn't save blog: " . $website->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $website;
 }
@@ -161,7 +166,7 @@ sub make_blog {
     $theme->apply($blog);
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $blog;
 }
@@ -181,7 +186,7 @@ sub make_role {
     $role->save
         or die "Couldn't save role record: " . $role->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $role;
 }
@@ -218,7 +223,7 @@ sub make_entry {
     $entry->save() or die "Couldn't save entry record: " . $entry->errstr;
     $entry->clear_cache();
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $entry;
 }
@@ -264,7 +269,7 @@ sub make_asset {
     }
     $asset->save() or die "Couldn't save asset record: " . $asset->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $asset;
 }
@@ -301,7 +306,7 @@ sub make_comment {
     $comment->save()
         or die "Couldn't save comment record: " . $comment->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $comment;
 }
@@ -334,7 +339,7 @@ sub make_template {
     }
     $tmpl->save() or die "Couldn't save template record: " . $tmpl->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $tmpl;
 }
@@ -369,7 +374,7 @@ sub make_page {
     $page->save() or die "Couldn't save page record: " . $page->errstr;
     $page->clear_cache();
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $page;
 }
@@ -400,7 +405,7 @@ sub make_folder {
     }
     $folder->save() or die "Couldn't save folder record: " . $folder->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $folder;
 }
@@ -430,7 +435,7 @@ sub make_templatemap {
     }
     $map->save() or die "Couldn't save templatemap record: " . $map->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $map;
 }
@@ -461,7 +466,7 @@ sub make_category {
     }
     $cat->save() or die "Couldn't save category record: " . $cat->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $cat;
 }
@@ -490,7 +495,7 @@ sub make_banlist {
     $banlist->save()
         or die "Couldn't save banlist record: " . $banlist->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $banlist;
 }
@@ -521,7 +526,7 @@ sub make_notification {
     $notification->save()
         or die "Couldn't save notification record: " . $notification->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $notification;
 }
@@ -547,7 +552,7 @@ sub make_fileinfo {
     $fileinfo->save()
         or die "Couldn't save fileinfo record: " . $fileinfo->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $fileinfo;
 }
@@ -572,7 +577,7 @@ sub make_log {
     }
     $log->save() or die "Couldn't save log record: " . $log->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $log;
 }
@@ -602,7 +607,7 @@ sub make_objectasset {
     }
     $os->save() or die "Couldn't save objectasset record: " . $os->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $os;
 }
@@ -631,7 +636,7 @@ sub make_objectscore {
     }
     $os->save() or die "Couldn't save objectscore record: " . $os->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $os;
 }
@@ -661,7 +666,7 @@ sub make_objecttag {
     }
     $os->save() or die "Couldn't save objecttag record: " . $os->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $os;
 }
@@ -689,7 +694,7 @@ sub make_permission {
     }
     $perm->save() or die "Couldn't save permission record: " . $perm->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $perm;
 }
@@ -719,7 +724,7 @@ sub make_placement {
     }
     $place->save() or die "Couldn't save placement record: " . $place->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $place;
 }
@@ -747,7 +752,7 @@ sub make_session {
     }
     $sess->save() or die "Couldn't save session record: " . $sess->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $sess;
 }
@@ -776,7 +781,7 @@ sub make_tag {
     }
     $tag->save() or die "Couldn't save tag record: " . $tag->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $tag;
 }
@@ -814,7 +819,7 @@ sub make_ping {
     }
     $ping->save() or die "Couldn't save tbping record: " . $ping->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $ping;
 }
@@ -843,7 +848,7 @@ sub make_tb {
     }
     $tb->save() or die "Couldn't save trackback record: " . $tb->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $tb;
 }
@@ -871,7 +876,7 @@ sub make_touch {
     }
     $touch->save() or die "Couldn't save touch record: " . $touch->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $touch;
 }
@@ -900,7 +905,7 @@ sub make_plugindata {
     $plugindata->save()
         or die "Couldn't save plugindata record: " . $plugindata->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $plugindata;
 }
@@ -933,7 +938,7 @@ sub make_field {
     }
     $cf->save() or die "Couldn't save field record: " . $cf->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $cf;
 }
@@ -962,7 +967,7 @@ sub make_group {
     }
     $grp->save() or die "Couldn't save group record: " . $grp->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $grp;
 }
@@ -983,7 +988,7 @@ sub make_category_set {
     $cs->$_( $values->{$_} ) for keys %{$values};
     $cs->save or die q{Couldn't save category set record: } . $cs->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    clear_cache();
 
     $cs;
 }
@@ -1007,7 +1012,7 @@ sub make_content_type {
     $ct->$_( $values->{$_} ) for keys %{$values};
     $ct->save or die q{Couldn't save content type record: } . $ct->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    clear_cache();
     _mock_perms_from_registry();
 
     $ct;
@@ -1031,7 +1036,7 @@ sub make_content_field {
     $cf->$_( $values->{$_} ) for keys %{$values};
     $cf->save or die q{Couldn't save content field record: } . $cf->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    clear_cache();
     _mock_perms_from_registry();
 
     $cf;
@@ -1056,7 +1061,7 @@ sub make_content_data {
     $cd->$_( $values->{$_} ) for keys %{$values};
     $cd->save or die q{Couldn't save content data record: } . $cd->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    clear_cache();
 
     $cd;
 }
@@ -1103,7 +1108,7 @@ sub make_filter {
     $filter->$_( $values->{$_} ) for keys %{$values};
     $filter->save or die q{Couldn't save filter record: } . $filter->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    clear_cache();
 
     return $filter;
 }
