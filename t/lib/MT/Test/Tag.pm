@@ -274,6 +274,7 @@ $mt->config('PHPErrorLogFilePath', $log);
 $mt->init_plugins();
 
 $db = $mt->db();
+$db->execute("SET time_zone = '+00:00'");
 $ctx =& $mt->context();
 
 $ctx->stash('index_archive', true);
