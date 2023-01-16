@@ -70,6 +70,7 @@ sub run_perl_tests {
             $callback->( $ctx, $block ) if $callback;
 
             my $got = eval { $tmpl->build };
+            diag $@ if $@;
 
             ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
