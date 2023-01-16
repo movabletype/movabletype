@@ -186,8 +186,8 @@ subtest 'save content_data' => sub {
 };
 
 File::Path::rmtree( $website->archive_path ) or die;
-MT->request->reset;
-MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+
+$test_env->clear_mt_cache;
 
 subtest 'save & publish template' => sub {
 
@@ -210,8 +210,8 @@ subtest 'save & publish template' => sub {
 };
 
 File::Path::rmtree( $website->archive_path ) or die;
-MT->request->reset;
-MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+
+$test_env->clear_mt_cache;
 
 my $cd_a = MT::Test::Permission->make_content_data(
     authored_on     => '20181209000000',
@@ -227,8 +227,7 @@ $cd_a->data(
 );
 $cd_a->save or die;
 
-MT->request->reset;
-MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+$test_env->clear_mt_cache;
 
 subtest 'save content_data when there are 2 data' => sub {
     my $prev_old = $cd_a->previous(1);
@@ -247,8 +246,8 @@ subtest 'save content_data when there are 2 data' => sub {
 };
 
 File::Path::rmtree( $website->archive_path ) or die;
-MT->request->reset;
-MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+
+$test_env->clear_mt_cache;
 
 subtest 'save & publish template when there are 2 data' => sub {
     $app->rebuild(

@@ -267,8 +267,8 @@ subtest 'save content_data' => sub {
 };
 
 File::Path::rmtree( $website->archive_path ) or die;
-MT->request->reset;
-MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+
+$test_env->clear_mt_cache;
 
 subtest 'save & publish template' => sub {
     my @archive_types = qw(

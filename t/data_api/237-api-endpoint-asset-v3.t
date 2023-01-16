@@ -439,6 +439,7 @@ sub suite {
             method => 'GET',
             setup  => sub {
                 my $asset = $app->model('asset')->load(1);
+                $asset = $asset->clone;
                 $asset->set_values(
                     {   id     => 100,
                         parent => 1,
@@ -1124,12 +1125,14 @@ sub suite {
 
                 # add grandchilden
                 my $asset = $app->model('asset')->load(100) or die $!;
+                $asset = $asset->clone;
                 $asset->set_values(
                     {   id     => 1000,
                         parent => 100,
                     }
                 );
                 $asset->save or die $asset->errstr;
+                $asset = $asset->clone;
                 $asset->set_values(
                     {   id     => 10000,
                         parent => 1000,

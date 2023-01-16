@@ -8,6 +8,11 @@ package MT::Test::Permission;
 use strict;
 use warnings;
 
+sub clear_cache {
+    require MT::ObjectDriver::Driver::Cache::RAM;
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+}
+
 sub make_author {
     my $pkg    = shift;
     my %params = @_;
@@ -37,7 +42,9 @@ sub make_author {
         $values->{nickname} = 'test' . $count;
     }
 
-    my $author = MT::Author->new();
+    my $author;
+    $author = MT::Author->load($values->{id}) if $values->{id};
+    $author ||= MT::Author->new();
     $author->set_values($values);
     $author->set_password("pass");
     $author->can_sign_in_cms(1);
@@ -45,7 +52,7 @@ sub make_author {
     $author->save()
         or die "Couldn't save author record: " . $author->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $author;
 }
@@ -86,7 +93,9 @@ sub make_website {
     }
 
     require MT::Website;
-    my $website = MT::Website->new();
+    my $website;
+    $website = MT::Website->load($values->{id}) if $values->{id};
+    $website ||= MT::Website->new();
     $website->set_values($values);
     $website->class('website');
     $website->save() or die "Couldn't save website: " . $website->errstr;
@@ -100,7 +109,7 @@ sub make_website {
     $theme->apply($website);
     $website->save() or die "Couldn't save blog: " . $website->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $website;
 }
@@ -147,7 +156,9 @@ sub make_blog {
     }
 
     require MT::Blog;
-    my $blog = MT::Blog->new();
+    my $blog;
+    $blog = MT::Blog->load($values->{id}) if $values->{id};
+    $blog ||= MT::Blog->new();
     $blog->set_values($values);
     $blog->class('blog');
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
@@ -161,7 +172,7 @@ sub make_blog {
     $theme->apply($blog);
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $blog;
 }
@@ -171,9 +182,12 @@ sub make_role {
     my (%params) = @_;
 
     require MT::Role;
-    my $role = MT::Role->new();
+    my $role;
+    my $name = MT->translate($params{name});
+    $role = MT::Role->load({ name => $name });
+    $role ||= MT::Role->new();
     $role->set_values(
-        {   name        => MT->translate( $params{name} ),
+        {   name        => $name,
             permissions => $params{permissions},
         }
     );
@@ -181,7 +195,7 @@ sub make_role {
     $role->save
         or die "Couldn't save role record: " . $role->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $role;
 }
@@ -213,12 +227,14 @@ sub make_entry {
         }
     }
 
-    my $entry = MT::Entry->new();
+    my $entry;
+    $entry = MT::Entry->load($values->{id}) if $values->{id};
+    $entry ||= MT::Entry->new();
     $entry->set_values($values);
     $entry->save() or die "Couldn't save entry record: " . $entry->errstr;
     $entry->clear_cache();
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $entry;
 }
@@ -257,14 +273,16 @@ sub make_asset {
 
     require MT::Asset;
     my $pkg_class = MT::Asset->class_handler($class);
-    my $asset     = $pkg_class->new();
+    my $asset;
+    $asset = $pkg_class->load($values->{id}) if $values->{id};
+    $asset ||= $pkg_class->new();
 
     foreach my $k ( keys %$values ) {
         $asset->$k( $values->{$k} );
     }
     $asset->save() or die "Couldn't save asset record: " . $asset->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $asset;
 }
@@ -293,7 +311,9 @@ sub make_comment {
     }
 
     require MT::Comment;
-    my $comment = MT::Comment->new();
+    my $comment;
+    $comment = MT::Comment->load($values->{id}) if $values->{id};
+    $comment ||= MT::Comment->new();
 
     foreach my $k ( keys %$values ) {
         $comment->$k( $values->{$k} );
@@ -301,7 +321,7 @@ sub make_comment {
     $comment->save()
         or die "Couldn't save comment record: " . $comment->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $comment;
 }
@@ -327,14 +347,16 @@ sub make_template {
     }
 
     require MT::Template;
-    my $tmpl = MT::Template->new();
+    my $tmpl;
+    $tmpl = MT::Template->load($values->{id}) if $values->{id};
+    $tmpl ||= MT::Template->new();
 
     foreach my $k ( keys %$values ) {
         $tmpl->$k( $values->{$k} );
     }
     $tmpl->save() or die "Couldn't save template record: " . $tmpl->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $tmpl;
 }
@@ -364,12 +386,14 @@ sub make_page {
         }
     }
 
-    my $page = MT::Page->new();
+    my $page;
+    $page = MT::Page->load($values->{id}) if $values->{id};
+    $page ||= MT::Page->new();
     $page->set_values($values);
     $page->save() or die "Couldn't save page record: " . $page->errstr;
     $page->clear_cache();
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $page;
 }
@@ -393,14 +417,16 @@ sub make_folder {
     }
 
     require MT::Folder;
-    my $folder = MT::Folder->new();
+    my $folder;
+    $folder = MT::Folder->load($values->{id}) if $values->{id};
+    $folder ||= MT::Folder->new();
 
     foreach my $k ( keys %$values ) {
         $folder->$k( $values->{$k} );
     }
     $folder->save() or die "Couldn't save folder record: " . $folder->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $folder;
 }
@@ -423,14 +449,16 @@ sub make_templatemap {
     }
 
     require MT::TemplateMap;
-    my $map = MT::TemplateMap->new();
+    my $map;
+    $map = MT::TemplateMap->load($values->{id}) if $values->{id};
+    $map ||= MT::TemplateMap->new();
 
     foreach my $k ( keys %$values ) {
         $map->$k( $values->{$k} );
     }
     $map->save() or die "Couldn't save templatemap record: " . $map->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $map;
 }
@@ -454,14 +482,16 @@ sub make_category {
     }
 
     require MT::Category;
-    my $cat = MT::Category->new();
+    my $cat;
+    $cat = MT::Category->load($values->{id}) if $values->{id};
+    $cat ||= MT::Category->new();
 
     foreach my $k ( keys %$values ) {
         $cat->$k( $values->{$k} );
     }
     $cat->save() or die "Couldn't save category record: " . $cat->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $cat;
 }
@@ -482,7 +512,9 @@ sub make_banlist {
     }
 
     require MT::IPBanList;
-    my $banlist = MT::IPBanList->new();
+    my $banlist;
+    $banlist = MT::IPBanList->load($values->{id}) if $values->{id};
+    $banlist ||= MT::IPBanList->new();
 
     foreach my $k ( keys %$values ) {
         $banlist->$k( $values->{$k} );
@@ -490,7 +522,7 @@ sub make_banlist {
     $banlist->save()
         or die "Couldn't save banlist record: " . $banlist->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $banlist;
 }
@@ -513,7 +545,9 @@ sub make_notification {
     }
 
     require MT::Notification;
-    my $notification = MT::Notification->new();
+    my $notification;
+    $notification = MT::Notification->load($values->{id}) if $values->{id};
+    $notification ||= MT::Notification->new();
 
     foreach my $k ( keys %$values ) {
         $notification->$k( $values->{$k} );
@@ -521,7 +555,7 @@ sub make_notification {
     $notification->save()
         or die "Couldn't save notification record: " . $notification->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $notification;
 }
@@ -539,7 +573,9 @@ sub make_fileinfo {
     }
 
     require MT::FileInfo;
-    my $fileinfo = MT::FileInfo->new();
+    my $fileinfo;
+    $fileinfo = MT::FileInfo->load($values->{id}) if $values->{id};
+    $fileinfo ||= MT::FileInfo->new();
 
     foreach my $k ( keys %$values ) {
         $fileinfo->$k( $values->{$k} );
@@ -547,7 +583,7 @@ sub make_fileinfo {
     $fileinfo->save()
         or die "Couldn't save fileinfo record: " . $fileinfo->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $fileinfo;
 }
@@ -565,14 +601,16 @@ sub make_log {
     }
 
     require MT::Log;
-    my $log = MT::Log->new();
+    my $log;
+    $log = MT::Log->load($values->{id}) if $values->{id};
+    $log ||= MT::Log->new();
 
     foreach my $k ( keys %$values ) {
         $log->$k( $values->{$k} );
     }
     $log->save() or die "Couldn't save log record: " . $log->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $log;
 }
@@ -595,14 +633,16 @@ sub make_objectasset {
     }
 
     require MT::ObjectAsset;
-    my $os = MT::ObjectAsset->new();
+    my $os;
+    $os = MT::ObjectAsset->load($values->{id}) if $values->{id};
+    $os ||= MT::ObjectAsset->new();
 
     foreach my $k ( keys %$values ) {
         $os->$k( $values->{$k} );
     }
     $os->save() or die "Couldn't save objectasset record: " . $os->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $os;
 }
@@ -624,14 +664,16 @@ sub make_objectscore {
     }
 
     require MT::ObjectScore;
-    my $os = MT::ObjectScore->new();
+    my $os;
+    $os = MT::ObjectScore->load($values->{id}) if $values->{id};
+    $os ||= MT::ObjectScore->new();
 
     foreach my $k ( keys %$values ) {
         $os->$k( $values->{$k} );
     }
     $os->save() or die "Couldn't save objectscore record: " . $os->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $os;
 }
@@ -654,14 +696,16 @@ sub make_objecttag {
     }
 
     require MT::ObjectTag;
-    my $os = MT::ObjectTag->new();
+    my $os;
+    $os = MT::ObjectTag->load($values->{id}) if $values->{id};
+    $os ||= MT::ObjectTag->new();
 
     foreach my $k ( keys %$values ) {
         $os->$k( $values->{$k} );
     }
     $os->save() or die "Couldn't save objecttag record: " . $os->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $os;
 }
@@ -682,14 +726,16 @@ sub make_permission {
     }
 
     require MT::Permission;
-    my $perm = MT::Permission->new();
+    my $perm;
+    $perm = MT::Permission->load($values->{id}) if $values->{id};
+    $perm ||= MT::Permission->new();
 
     foreach my $k ( keys %$values ) {
         $perm->$k( $values->{$k} );
     }
     $perm->save() or die "Couldn't save permission record: " . $perm->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $perm;
 }
@@ -712,14 +758,16 @@ sub make_placement {
     }
 
     require MT::Placement;
-    my $place = MT::Placement->new();
+    my $place;
+    $place = MT::Placement->load($values->{id}) if $values->{id};
+    $place ||= MT::Placement->new();
 
     foreach my $k ( keys %$values ) {
         $place->$k( $values->{$k} );
     }
     $place->save() or die "Couldn't save placement record: " . $place->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $place;
 }
@@ -740,14 +788,16 @@ sub make_session {
     }
 
     require MT::Session;
-    my $sess = MT::Session->new();
+    my $sess;
+    $sess = MT::Session->load($values->{id}) if $values->{id};
+    $sess ||= MT::Session->new();
 
     foreach my $k ( keys %$values ) {
         $sess->$k( $values->{$k} );
     }
     $sess->save() or die "Couldn't save session record: " . $sess->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $sess;
 }
@@ -769,14 +819,16 @@ sub make_tag {
     }
 
     require MT::Tag;
-    my $tag = MT::Tag->new();
+    my $tag;
+    $tag = MT::Tag->load($values->{id}) if $values->{id};
+    $tag ||= MT::Tag->new();
 
     foreach my $k ( keys %$values ) {
         $tag->$k( $values->{$k} );
     }
     $tag->save() or die "Couldn't save tag record: " . $tag->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $tag;
 }
@@ -807,14 +859,16 @@ sub make_ping {
     }
 
     require MT::TBPing;
-    my $ping = MT::TBPing->new();
+    my $ping;
+    $ping = MT::TBPing->load($values->{id}) if $values->{id};
+    $ping ||= MT::TBPing->new();
 
     foreach my $k ( keys %$values ) {
         $ping->$k( $values->{$k} );
     }
     $ping->save() or die "Couldn't save tbping record: " . $ping->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $ping;
 }
@@ -836,14 +890,16 @@ sub make_tb {
     }
 
     require MT::Trackback;
-    my $tb = MT::Trackback->new();
+    my $tb;
+    $tb = MT::Trackback->load($values->{id}) if $values->{id};
+    $tb ||= MT::Trackback->new();
 
     foreach my $k ( keys %$values ) {
         $tb->$k( $values->{$k} );
     }
     $tb->save() or die "Couldn't save trackback record: " . $tb->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $tb;
 }
@@ -864,14 +920,16 @@ sub make_touch {
     }
 
     require MT::Touch;
-    my $touch = MT::Touch->new();
+    my $touch;
+    $touch = MT::Touch->load($values->{id}) if $values->{id};
+    $touch ||= MT::Touch->new();
 
     foreach my $k ( keys %$values ) {
         $touch->$k( $values->{$k} );
     }
     $touch->save() or die "Couldn't save touch record: " . $touch->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $touch;
 }
@@ -892,7 +950,9 @@ sub make_plugindata {
     }
 
     require MT::PluginData;
-    my $plugindata = MT::PluginData->new();
+    my $plugindata;
+    $plugindata = MT::PluginData->load($values->{id}) if $values->{id};
+    $plugindata ||= MT::PluginData->new();
 
     foreach my $k ( keys %$values ) {
         $plugindata->$k( $values->{$k} );
@@ -900,7 +960,7 @@ sub make_plugindata {
     $plugindata->save()
         or die "Couldn't save plugindata record: " . $plugindata->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $plugindata;
 }
@@ -926,14 +986,16 @@ sub make_field {
     }
 
     require CustomFields::Field;
-    my $cf = CustomFields::Field->new();
+    my $cf;
+    $cf = CustomFields::Field->load($values->{id}) if $values->{id};
+    $cf ||= CustomFields::Field->new();
 
     foreach my $k ( keys %$values ) {
         $cf->$k( $values->{$k} );
     }
     $cf->save() or die "Couldn't save field record: " . $cf->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $cf;
 }
@@ -955,14 +1017,16 @@ sub make_group {
     }
 
     require MT::Group;
-    my $grp = MT::Group->new();
+    my $grp;
+    $grp = MT::Group->load($values->{id}) if $values->{id};
+    $grp ||= MT::Group->new();
 
     foreach my $k ( keys %$values ) {
         $grp->$k( $values->{$k} );
     }
     $grp->save() or die "Couldn't save group record: " . $grp->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     return $grp;
 }
@@ -978,12 +1042,14 @@ sub make_category_set {
     };
 
     require MT::CategorySet;
-    my $cs = MT::CategorySet->new;
+    my $cs;
+    $cs = MT::CategorySet->load($values->{id}) if $values->{id};
+    $cs ||= MT::CategorySet->new;
 
     $cs->$_( $values->{$_} ) for keys %{$values};
     $cs->save or die q{Couldn't save category set record: } . $cs->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    clear_cache();
 
     $cs;
 }
@@ -1002,12 +1068,14 @@ sub make_content_type {
     };
 
     require MT::ContentType;
-    my $ct = MT::ContentType->new;
+    my $ct;
+    $ct = MT::ContentType->load($values->{id}) if $values->{id};
+    $ct ||= MT::ContentType->new;
 
     $ct->$_( $values->{$_} ) for keys %{$values};
     $ct->save or die q{Couldn't save content type record: } . $ct->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    clear_cache();
     _mock_perms_from_registry();
 
     $ct;
@@ -1026,12 +1094,14 @@ sub make_content_field {
     };
 
     require MT::ContentField;
-    my $cf = MT::ContentField->new;
+    my $cf;
+    $cf = MT::ContentField->load($values->{id}) if $values->{id};
+    $cf ||= MT::ContentField->new;
 
     $cf->$_( $values->{$_} ) for keys %{$values};
     $cf->save or die q{Couldn't save content field record: } . $cf->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    clear_cache();
     _mock_perms_from_registry();
 
     $cf;
@@ -1051,12 +1121,14 @@ sub make_content_data {
     };
 
     require MT::ContentData;
-    my $cd = MT::ContentData->new;
+    my $cd;
+    $cd = MT::ContentData->load($values->{id}) if $values->{id};
+    $cd ||= MT::ContentData->new;
 
     $cd->$_( $values->{$_} ) for keys %{$values};
     $cd->save or die q{Couldn't save content data record: } . $cd->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    clear_cache();
 
     $cd;
 }
@@ -1098,12 +1170,14 @@ sub make_filter {
     };
 
     require MT::Filter;
-    my $filter = MT::Filter->new;
+    my $filter;
+    $filter = MT::Filter->load($values->{id}) if $values->{id};
+    $filter ||= MT::Filter->new;
 
     $filter->$_( $values->{$_} ) for keys %{$values};
     $filter->save or die q{Couldn't save filter record: } . $filter->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+    clear_cache();
 
     return $filter;
 }

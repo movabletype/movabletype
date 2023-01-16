@@ -141,8 +141,7 @@ foreach my $blog (@blogs) {
     ok( !@jobs, "Jobs were not found, everything went through" );
 
     ## need reload for getting latest status, since rpt run as other process.
-    require MT::ObjectDriver::Driver::Cache::RAM;
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
     my $current_entry = MT::Entry->load($entry_id);
     is( $current_entry->status, MT::Entry::RELEASE(),
         "Running publish_future_post publishes future post; status is now RELEASE"

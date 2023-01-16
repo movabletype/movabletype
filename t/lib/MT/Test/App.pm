@@ -51,8 +51,11 @@ sub init {
         no warnings 'redefine';
         *MT::App::print = sub {
             my $app = shift;
-            if ($app->{redirect} && $_[0] =~ /Status:/) {
-                $app->{__test_output} = '';
+            if ($_[0] =~ /^Status:/) {
+                my $res = HTTP::Response->parse($app->{__test_output});
+                if (!$res->content) {
+                    $app->{__test_output} = '';
+                }
             }
             $app->{__test_output} ||= '';
             $app->{__test_output} .= join('', @_);
@@ -158,7 +161,7 @@ sub request {
     if ($content_type =~ /json/ or $self->{content} =~ /\A\s*[\{\[]/) {
         if (my $json = eval { decode_json($self->{content}) }) {
             if (ref $json eq 'HASH') {
-                if ($json->{result}{messages} && @{ $json->{result}{messages} || [] }) {
+                if (ref $json->{result} eq 'HASH' && $json->{result}{messages} && @{ $json->{result}{messages} || [] }) {
                     note explain $json->{result}{messages};
                 }
                 if ($json->{error}) {
