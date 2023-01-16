@@ -365,7 +365,9 @@ sub init_data {
     clear_cache();
 
     require MT::Blog;
-    my $blog = MT::Blog->new();
+    my $blog;
+    $blog = MT::Blog->load(1);
+    $blog ||= MT::Blog->new();
     $blog->set_values(
         {   name         => 'none',
             site_url     => '/::/nana/',
