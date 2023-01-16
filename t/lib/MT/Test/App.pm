@@ -51,8 +51,11 @@ sub init {
         no warnings 'redefine';
         *MT::App::print = sub {
             my $app = shift;
-            if ($app->{redirect} && $_[0] =~ /Status:/) {
-                $app->{__test_output} = '';
+            if ($_[0] =~ /^Status:/) {
+                my $res = HTTP::Response->parse($app->{__test_output});
+                if (!$res->content) {
+                    $app->{__test_output} = '';
+                }
             }
             $app->{__test_output} ||= '';
             $app->{__test_output} .= join('', @_);
