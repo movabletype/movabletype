@@ -34,9 +34,9 @@
   <mt:setvarblock name="table_header">
   <tr>
     <th class="head cb">
-      <div class="custom-control custom-checkbox">
-        <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
-        <label class="custom-control-label form-label" for="select_all"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
+      <div class="form-check">
+        <input id="select_all" type="checkbox" name="id-head" value="all" class="form-check-input select" />
+        <label class="form-check-label form-label" for="select_all"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
       </div>
     </th>
     <th class="head name primary"><span class="col-label"><__trans phrase="[_1] Name" params="<mt:var name="object_label" capitalize="1">"></span></th>
@@ -59,9 +59,9 @@
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
       <td class="cb">
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="select_<mt:var name="id" escape="html">" name="id" value="<mt:var name="id">" class="custom-control-input select"<mt:if checked> checked="checked"</mt:if> />
-          <label class="custom-control-label form-label" for="select_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+        <div class="form-check">
+          <input type="checkbox" id="select_<mt:var name="id" escape="html">" name="id" value="<mt:var name="id">" class="form-check-input select"<mt:if checked> checked="checked"</mt:if> />
+          <label class="form-check-label form-label" for="select_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
         </div>
       </td>
       <td class="name"><a href="?__mode=dashboard&amp;blog_id=<mt:var name="id">"><mt:var name="name" escape="html"></a></td>

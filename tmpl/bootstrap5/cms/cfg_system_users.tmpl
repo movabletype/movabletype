@@ -60,9 +60,9 @@ function clearNotifyUsers() {
        label="<__trans phrase="Allow Registration">">
       <div>
         <input type="hidden" id="notify_user_id" name="notify_user_id" value="<mt:var name="notify_user_id" escape="html">" />
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="registration" class="custom-control-input" name="registration"<mt:if name="registration"> checked="checked"</mt:if><mt:if name="commenter_registration_readonly"> disabled="disabled"</mt:if> />
-          <label class="custom-control-label form-label" for="registration"><__trans phrase="Allow commenters to register on this system."></label>
+        <div class="form-check">
+          <input type="checkbox" id="registration" class="form-check-input" name="registration"<mt:if name="registration"> checked="checked"</mt:if><mt:if name="commenter_registration_readonly"> disabled="disabled"</mt:if> />
+          <label class="form-check-label form-label" for="registration"><__trans phrase="Allow commenters to register on this system."></label>
         </div>
         <p><__trans phrase="Notify the following system administrators when a commenter registers:"></p>
         <span id="notify_user_name">
@@ -99,21 +99,21 @@ function clearNotifyUsers() {
        label="<__trans phrase="Options">">
       <ul id="password-validation-options-setting-list" class="list-unstyled setting-list">
         <li>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" name="combo_upper_lower" id="combo-upper-lower" class="custom-control-input"<mt:if name="combo_upper_lower"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
-            <label class="custom-control-label form-label" for="combo-upper-lower"><__trans phrase="Should contain uppercase and lowercase letters."></label>
+          <div class="form-check">
+            <input type="checkbox" name="combo_upper_lower" id="combo-upper-lower" class="form-check-input"<mt:if name="combo_upper_lower"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
+            <label class="form-check-label form-label" for="combo-upper-lower"><__trans phrase="Should contain uppercase and lowercase letters."></label>
           </div>
         </li>
         <li>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" name="combo_letter_number" id="combo-letter-number" class="custom-control-input"<mt:if name="combo_letter_number"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
-            <label class="custom-control-label form-label" for="combo-letter-number"><__trans phrase="Should contain letters and numbers."></label>
+          <div class="form-check">
+            <input type="checkbox" name="combo_letter_number" id="combo-letter-number" class="form-check-input"<mt:if name="combo_letter_number"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
+            <label class="form-check-label form-label" for="combo-letter-number"><__trans phrase="Should contain letters and numbers."></label>
           </div>
         </li>
         <li>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" name="require_special_characters" id="require-special-characters" class="custom-control-input"<mt:if name="require_special_characters"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
-            <label class="custom-control-label form-label" for="require-special-characters"><__trans phrase="Should contain special characters."></label>
+          <div class="form-check">
+            <input type="checkbox" name="require_special_characters" id="require-special-characters" class="form-check-input"<mt:if name="require_special_characters"> checked="checked"</mt:if><mt:if name="user_password_validation_readonly"> disabled="disabled"</mt:if>>
+            <label class="form-check-label form-label" for="require-special-characters"><__trans phrase="Should contain special characters."></label>
           </div>
         </li>
       </ul>

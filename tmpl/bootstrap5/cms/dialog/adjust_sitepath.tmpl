@@ -208,9 +208,9 @@ function init() {
             </span>
           </div>
           <div class="use_subdomain option">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" name="use_subdomain_<mt:var name="id">" id="use_subdomain_<mt:var name="id">" value="1" checked="checked" class="custom-control-input cb" />
-              <label class="custom-control-label form-label" for="use_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            <div class="form-check">
+              <input type="checkbox" name="use_subdomain_<mt:var name="id">" id="use_subdomain_<mt:var name="id">" value="1" checked="checked" class="form-check-input cb" />
+              <label class="form-check-label form-label" for="use_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
             </div>
           </div>
         <mt:elseif name="old_site_url_path">
@@ -227,9 +227,9 @@ function init() {
             </span>
           </div>
           <div class="use_subdomain option">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" name="use_subdomain_<mt:var name="id">" id="use_subdomain_<mt:var name="id">" value="1" class="custom-control-input cb" />
-              <label class="custom-control-label form-label" for="use_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            <div class="form-check">
+              <input type="checkbox" name="use_subdomain_<mt:var name="id">" id="use_subdomain_<mt:var name="id">" value="1" class="form-check-input cb" />
+              <label class="form-check-label form-label" for="use_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
             </div>
           </div>
         <mt:else>
@@ -246,9 +246,9 @@ function init() {
             </span>
           </div>
           <div class="use_subdomain option">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" name="use_subdomain_<mt:var name="id">" id="use_subdomain_<mt:var name="id">" value="1" class="custom-control-input cb" />
-              <label class="custom-control-label form-label" for="use_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            <div class="form-check">
+              <input type="checkbox" name="use_subdomain_<mt:var name="id">" id="use_subdomain_<mt:var name="id">" value="1" class="form-check-input cb" />
+              <label class="form-check-label form-label" for="use_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
             </div>
           </div>
         </mt:if>
@@ -275,9 +275,9 @@ function init() {
             <input type="text" name="site_path_absolute_<mt:var name="id" escape="html">" id="site_path_absolute_<mt:var name="id" escape="html">" value="<$mt:var name="old_site_path" escape="html"$>" class="form-control blog-path-text text" />
           </div>
           <div class="option use-absolute<mt:if name="site_path_absolute"> default-absolute</mt:if>">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" name="use_absolute_<mt:var name="id" escape="html">" id="use_absolute_<mt:var name="id" escape="html">" value="1" class="custom-control-input cb" />
-              <label class="custom-control-label form-label" for="use_absolute_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
+            <div class="form-check">
+              <input type="checkbox" name="use_absolute_<mt:var name="id" escape="html">" id="use_absolute_<mt:var name="id" escape="html">" value="1" class="form-check-input cb" />
+              <label class="form-check-label form-label" for="use_absolute_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
             </div>
           </div>
           </mt:unless>
@@ -309,9 +309,9 @@ function init() {
             </span>
           </div>
           <div class="use-subdomain option">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" checked="checked" class="custom-control-input cb" />
-              <label class="custom-control-label form-label" for="use_archive_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            <div class="form-check">
+              <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" checked="checked" class="form-check-input cb" />
+              <label class="form-check-label form-label" for="use_archive_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
             </div>
           </div>
         <mt:elseif name="old_archive_url_path">
@@ -322,9 +322,9 @@ function init() {
             </span>
           </div>
           <div class="use_subdomain option">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" class="custom-control-input cb" />
-              <label class="custom-control-label form-label" for="use_archive_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            <div class="form-check">
+              <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" class="form-check-input cb" />
+              <label class="form-check-label form-label" for="use_archive_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
             </div>
           </div>
         <mt:elseif name="old_archive_url">
@@ -335,9 +335,9 @@ function init() {
             </span>
           </div>
           <div class="use-subdomain option">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" class="custom-control-input cb" />
-              <label class="custom-control-label form-label" for="use_archive_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            <div class="form-check">
+              <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" class="form-check-input cb" />
+              <label class="form-check-label form-label" for="use_archive_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
             </div>
           </div>
         </mt:if>
@@ -364,9 +364,9 @@ function init() {
             <input type="text" name="archive_path_absolute_<mt:var name="id" escape="html">" id="archive_path_absolute_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" class="form-control blog-path-text archive-path text" />
           </div>
           <div class="option use-absolute<mt:if name="archive_path_absolute"> default-absolute</mt:if>">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" name="use_absolute_archive_<mt:var name="id" escape="html">" id="use_absolute_archive_<mt:var name="id" escape="html">" value="1" class="custom-control-input cb"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> />
-              <label class="custom-control-label form-label" for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
+            <div class="form-check">
+              <input type="checkbox" name="use_absolute_archive_<mt:var name="id" escape="html">" id="use_absolute_archive_<mt:var name="id" escape="html">" value="1" class="form-check-input cb"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> />
+              <label class="form-check-label form-label" for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
             </div>
           </div>
           </mt:unless>

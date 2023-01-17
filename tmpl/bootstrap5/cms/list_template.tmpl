@@ -262,9 +262,9 @@ function init() {
   <mt:setvarblock name="table_header">
     <tr>
       <th class="head cb">
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="id-head" name="id-head" value="all" class="custom-control-input select" />
-          <label class="custom-control-label form-label" for="id-head"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
+        <div class="form-check">
+          <input type="checkbox" id="id-head" name="id-head" value="all" class="form-check-input select" />
+          <label class="form-check-label form-label" for="id-head"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
         </div>
       </th>
       <th class="head widgetmanager-name primary"><span class="col-label"><__trans phrase="Name"></span></th>
@@ -278,9 +278,9 @@ function init() {
 </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
       <td class="cb">
-        <div class="custom-control custom-checkbox">
-          <input type="checkbox" id="id_<mt:var name="id" escape="html">" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" />
-          <label class="custom-control-label form-label" for="id_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+        <div class="form-check">
+          <input type="checkbox" id="id_<mt:var name="id" escape="html">" name="id" value="<mt:var name="id" escape="html">" class="form-check-input select" />
+          <label class="form-check-label form-label" for="id_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
         </div>
       </td>
       <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" escape="url">"><mt:var name="widgetmanager" escape="html"></a></td>

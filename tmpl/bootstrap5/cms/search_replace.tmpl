@@ -206,14 +206,14 @@ function toggleContentTypeDateTimeInputs() {
       <ul class="list-inline multiple-selection">
           <li class="list-inline-item">
             <div class="custom-control custom-radio">
-              <input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="custom-control-input rb" onclick="toggleSearchAndReplace(this)" />
-              <label class="custom-control-label form-label" for="search-replace-toggle-search"><__trans phrase="Search Again"></label>
+              <input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="form-check-input rb" onclick="toggleSearchAndReplace(this)" />
+              <label class="form-check-label form-label" for="search-replace-toggle-search"><__trans phrase="Search Again"></label>
             </div>
           </li>
           <li class="list-inline-item">
             <div class="custom-control custom-radio">
-              <input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="custom-control-input rb" onclick="toggleSearchAndReplace(this)" />
-              <label class="custom-control-label form-label" for="search-replace-toggle-replace"><__trans phrase="Search &amp; Replace"></label>
+              <input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="form-check-input rb" onclick="toggleSearchAndReplace(this)" />
+              <label class="form-check-label form-label" for="search-replace-toggle-replace"><__trans phrase="Search &amp; Replace"></label>
             </div>
           </li>
         </ul>
@@ -246,28 +246,28 @@ function toggleContentTypeDateTimeInputs() {
         </mtapp:setting>
         <ul id="search-bar-advanced-search" class="list-inline multiple-selection">
           <li class="list-inline-item">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="custom-control-input cb" />
-              <label class="custom-control-label form-label" for="case"><__trans phrase="Case Sensitive"></label>
+            <div class="form-check">
+              <input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="form-check-input cb" />
+              <label class="form-check-label form-label" for="case"><__trans phrase="Case Sensitive"></label>
             </div>
           </li>
           <li class="list-inline-item">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="custom-control-input cb" />
-              <label class="custom-control-label form-label" for="is_regex"><__trans phrase="Regex Match"></label>
+            <div class="form-check">
+              <input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="form-check-input cb" />
+              <label class="form-check-label form-label" for="is_regex"><__trans phrase="Regex Match"></label>
             </div>
           </li>
           <li class="list-inline-item">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'limited-fields')" />
-              <label class="custom-control-label form-label" for="is_limited"><__trans phrase="Limited Fields"></label>
+            <div class="form-check">
+              <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="form-check-input cb" onclick="toggleVisibility(this, 'limited-fields')" />
+              <label class="form-check-label form-label" for="is_limited"><__trans phrase="Limited Fields"></label>
             </div>
           </li>
         <mt:if name="can_search_by_date">
           <li class="list-inline-item">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'date-range')" />
-              <label class="custom-control-label form-label" for="is_dateranged">
+            <div class="form-check">
+              <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="form-check-input cb" onclick="toggleVisibility(this, 'date-range')" />
+              <label class="form-check-label form-label" for="is_dateranged">
     <mt:if name="object_type" eq="content_data">
                 <__trans phrase="Date/Time Range">
     <mt:else>
@@ -279,9 +279,9 @@ function toggleContentTypeDateTimeInputs() {
         </mt:if>
         <mt:if name="can_search_junk">
           <li class="list-inline-item">
-            <div class="custom-control custom-checkbox">
-              <input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="custom-control-input cb" />
-              <label class="custom-control-label form-label" for="is_junk"><__trans phrase="Reported as Spam?"></label>
+            <div class="form-check">
+              <input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="form-check-input cb" />
+              <label class="form-check-label form-label" for="is_junk"><__trans phrase="Reported as Spam?"></label>
             </div>
           </li>
         </mt:if>
@@ -292,9 +292,9 @@ function toggleContentTypeDateTimeInputs() {
             <ul class="list-inline mb-0 multiple-selection">
             <mt:loop name="search_cols">
               <li class="list-inline-item m-2"<mt:if name="field_ct_id"> data-mt-content-type="<mt:var name="field_ct_id" escape="html">"</mt:if><mt:if name="hidden"> style="display: none;"</mt:if>>
-                <div class="custom-control custom-checkbox">
-                  <input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if><mt:if name="hidden"> disabled="disabled"</mt:if> class="custom-control-input cb" />
-                  <label class="custom-control-label form-label" for="search_cols-<mt:var name="field" escape="html">"><mt:var name="label" escape="html"><mt:unless name="replaceable"> <__trans phrase="(search only)"></mt:unless></label>
+                <div class="form-check">
+                  <input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if><mt:if name="hidden"> disabled="disabled"</mt:if> class="form-check-input cb" />
+                  <label class="form-check-label form-label" for="search_cols-<mt:var name="field" escape="html">"><mt:var name="label" escape="html"><mt:unless name="replaceable"> <__trans phrase="(search only)"></mt:unless></label>
                 </div>
               </li>
             </mt:loop>

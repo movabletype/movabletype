@@ -42,9 +42,9 @@
   </div>
 <mt:unless name="config_created">
   <p class="form-inline">
-    <div class="custom-control custom-checkbox">
-      <input name="manually" id="manually" class="custom-control-input" type="checkbox" value="1" onclick="toggleConfig()" <mt:if name="manually">checked="checked"</mt:if>>
-      <label class="custom-control-label form-label" for="manually"><__trans phrase="The mt-config.cgi file has been created manually."></label>
+    <div class="form-check">
+      <input name="manually" id="manually" class="form-check-input" type="checkbox" value="1" onclick="toggleConfig()" <mt:if name="manually">checked="checked"</mt:if>>
+      <label class="form-check-label form-label" for="manually"><__trans phrase="The mt-config.cgi file has been created manually."></label>
     </div>
   </p>
 </mt:unless>

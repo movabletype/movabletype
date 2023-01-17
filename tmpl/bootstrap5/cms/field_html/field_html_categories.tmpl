@@ -202,8 +202,8 @@ jQuery(window).on('load resize', function () {
                       [# if ( item.path == null ) item.path = [] #]
                       <div class="category-selector-list row" style="margin-left:[#= item.path.length * 10 #]px; margin-right:0;">
                           <div class="col custom-control <mt:if name="options{multiple}">custom-checkbox<mt:else>custom-radio</mt:if> category-selector-item">
-                              <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="custom-control-input add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> mt:watch-change="1" mt:raw-name="1" />
-                              <label class="custom-control-label form-label" for="content-field-<mt:var name="content_field_id">-[#= item.id #]">
+                              <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="form-check-input add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> mt:watch-change="1" mt:raw-name="1" />
+                              <label class="form-check-label form-label" for="content-field-<mt:var name="content_field_id">-[#= item.id #]">
                                   [#|h item.label #]
                               </label>
                           </div>

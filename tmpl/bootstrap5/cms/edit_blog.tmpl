@@ -163,9 +163,9 @@ jQuery(window).on('load', function () {
         </div>
         <mt:unless name="ignore_subdomain">
         <div class="use-subdomain option">
-            <div class="custom-control custom-checkbox">
-                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="custom-control-input cb"<mt:if name="use_subdomain">checked="checked"</mt:if> />
-                <label class="custom-control-label form-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+            <div class="form-check">
+                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="form-check-input cb"<mt:if name="use_subdomain">checked="checked"</mt:if> />
+                <label class="form-check-label form-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
             </div>
         </div>
         </mt:unless>
@@ -188,9 +188,9 @@ jQuery(window).on('load', function () {
           <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path_absolute" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="form-control blog-path-text text hide-input required" aria-describedby="absolutePath" />
         </div>
         <div class="use-absolute option">
-            <div class="custom-control custom-checkbox">
-                <input type="checkbox" name="use_absolute" id="use_absolute" class="custom-control-input cb" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> />
-                <label class="custom-control-label form-label" for="use_absolute"><__trans phrase="Use absolute path"></label>
+            <div class="form-check">
+                <input type="checkbox" name="use_absolute" id="use_absolute" class="form-check-input cb" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> />
+                <label class="form-check-label form-label" for="use_absolute"><__trans phrase="Use absolute path"></label>
             </div>
         </div>
         <small id="absolutePath" class="form-text text-muted hint absolute-site_path-hint"><__trans phrase="The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></small>

@@ -15,9 +15,9 @@
   <mt:setvarblock name="table_header">
     <tr>
       <th class="head cb">
-        <div class="custom-control custom-checkbox">
-          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
-          <label class="custom-control-label form-label" for="selct_all"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
+        <div class="form-check">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="form-check-input select" />
+          <label class="form-check-label form-label" for="selct_all"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
         </div>
       </th>
       <th class="head asset-thumbnail">&nbsp;</th>
@@ -40,9 +40,9 @@
     <tr id="asset-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if> status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
       <td class="cb">
         <input type="hidden" id="asset-<mt:var name="id">-json" value="<mt:var name="metadata_json" escape="html">" />
-        <div class="custom-control custom-checkbox">
-          <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<mt:var name="id">" class="custom-control-input select" />
-          <label class="custom-control-label form-label" for="select_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+        <div class="form-check">
+          <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<mt:var name="id">" class="form-check-input select" />
+          <label class="form-check-label form-label" for="select_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
         </div>
       </td>
       <td class="asset-thumbnail asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
