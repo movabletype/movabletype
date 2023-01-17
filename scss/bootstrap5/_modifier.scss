@@ -1790,7 +1790,8 @@ button.close, .btn-close {
   opacity: 0.8;
   float: right;
   border: none;
-  background-color: transparent; 
+  background-color: transparent;
+  background: none !important;
 }
 .mt-icon{
   position: relative;
@@ -2092,7 +2093,10 @@ ul.asset-list li img.list-image {
 .text-right {
   @extend .text-end;
 }
-
+.col, .col-auto {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
 /* padding and margin left,right to start,end */
 $target_properties: ("m", "p");
 $target_sides : (

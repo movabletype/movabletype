@@ -12137,6 +12137,7 @@ button.close, .btn-close {
   float: right;
   border: none;
   background-color: transparent;
+  background: none !important;
 }
 
 .mt-icon, .mt-icon--primary, .mt-icon--secondary, .mt-icon--success, .mt-icon--info, .mt-icon--warning, .mt-icon--danger, .mt-icon--inverse {
@@ -12438,6 +12439,11 @@ ul.asset-list li img.list-image {
 .pre-scrollable {
   max-height: 340px;
   overflow-y: scroll;
+}
+
+.col, .mt-productHeader, .mt-mobileGlobalMenu__name, .mt-mobileGlobalMenu__name--invert, .mt-widget__data, .col-auto, .mt-footer, .mt-mobileGlobalMenu__dropdown, .mt-mobileGlobalMenu__menuActions {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 /* padding and margin left,right to start,end */
