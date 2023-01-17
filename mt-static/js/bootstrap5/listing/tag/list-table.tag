@@ -38,13 +38,13 @@
     <th if={ listTop.opts.hasListActions }
       class="mt-table__control"
     >
-      <div class="custom-control custom-checkbox">
+      <div class="form-check">
         <input type="checkbox"
-          class="custom-control-input"
+          class="form-check-input"
           id="select-all"
           checked={ store.checkedAllRowsOnPage }
           onchange={ toggleAllRowsOnPage } />
-        <label class="custom-control-label form-label" for="select-all"><span class="visually-hidden">{ trans('Select All') }</span></label>
+        <label class="form-check-label form-label" for="select-all"><span class="visually-hidden">{ trans('Select All') }</span></label>
       </div>
     </th>
     <th each={ store.columns }
@@ -85,13 +85,13 @@
     <th if={ listTop.opts.hasMobilePulldownActions }
       class="mt-table__control"
     >
-      <div class="custom-control custom-checkbox">
+      <div class="form-check">
         <input type="checkbox"
-          class="custom-control-input"
+          class="form-check-input"
           id="select-all"
           checked={ store.checkedAllRowsOnPage }
           onchange={ toggleAllRowsOnPage } />
-        <label class="custom-control-label" for="select-all"><span class="visually-hidden">{ trans('Select All') }</span></label>
+        <label class="form-check-label" for="select-all"><span class="visually-hidden">{ trans('Select All') }</span></label>
       </div>
     </th>
     <th scope="col">
@@ -182,15 +182,15 @@
       d-md-table-cell: !listTop.opts.hasMobilePulldownActions
     }
   >
-    <div class="custom-control custom-checkbox" if={ opts.object[0] }>
+    <div class="form-check" if={ opts.object[0] }>
       <input type="checkbox"
         name="id"
-        class="custom-control-input"
+        class="form-check-input"
         id={ 'select_' + opts.object[0] }
         value={ opts.object[0] }
         checked={ opts.checked }>
       <span class="custom-control-indicator"></span>
-      <label class="custom-control-label" for={ 'select_' + opts.object[0] }><span class="visually-hidden">{ trans('Select') }</span></label>
+      <label class="form-check-label" for={ 'select_' + opts.object[0] }><span class="visually-hidden">{ trans('Select') }</span></label>
     </div>
   </td>
   <td data-is="list-table-column"

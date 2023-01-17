@@ -90,15 +90,15 @@
     <ul id="disp_cols" class="list-inline m-0">
       <virtual each={ column in store.columns }>
         <li hide={ column.force_display } class="list-inline-item">
-          <div class="custom-control custom-checkbox">
+          <div class="form-check">
             <input type="checkbox"
-              class="custom-control-input"
+              class="form-check-input"
               id={ column.id }
               checked={ column.checked }
               onchange={ toggleColumn }
               disabled={ store.isLoading }
             />
-            <label class="custom-control-label form-label" for={ column.id }>
+            <label class="form-check-label form-label" for={ column.id }>
               <raw content={ column.label }></raw>
             </label>
           </div>
@@ -108,16 +108,16 @@
           hide={ subField.force_display }
           class="list-inline-item"
         >
-          <div class="custom-control custom-checkbox">
+          <div class="form-check">
             <input type="checkbox"
               id={ subField.id }
               pid={ subField.parent_id }
-              class="custom-control-input { subField.class }"
+              class="form-check-input { subField.class }"
               disabled={ disabled: !column.checked }
               checked={ subField.checked }
               onchange={ toggleSubField }
             />
-            <label class="custom-control-label form-label" for={ subField.id }>{ subField.label }</label>
+            <label class="form-check-label form-label" for={ subField.id }>{ subField.label }</label>
           </div>
         </li>
       </virtual>
