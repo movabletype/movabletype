@@ -57,6 +57,6 @@ ok $switch->{'MyPlugin1.0/MyPlugin.pl'},         "newer version is listed in Plu
 ok eval { MT::PSGI->new->to_app }, "psgi app without an error" or note $@;
 
 my $log = $test_env->slurp_logfile;
-like $log => qr/Conflicted plugin my_plugin 0.1 is disabled/, "logged correctly";
+like $log => qr/Conflicted plugin MyPlugin 0.1 is disabled/, "logged correctly";
 
 done_testing;
