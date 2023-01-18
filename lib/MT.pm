@@ -1572,10 +1572,10 @@ sub init_plugins {
                 my ($version_to_drop, $sig_to_drop);
                 if ($cur_version > $dup_version) {
                     $deduped_plugins{$id} = $plugin;
-                    $version_to_drop      = $dup_version;
+                    $version_to_drop      = $dup->version || '';
                     $sig_to_drop          = $dup->{plugin_sig};
                 } else {
-                    $version_to_drop = $cur_version;
+                    $version_to_drop = $plugin->version || '';
                     $sig_to_drop     = $plugin->{plugin_sig};
                 }
                 eval {
