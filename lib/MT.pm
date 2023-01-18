@@ -1567,8 +1567,8 @@ sub init_plugins {
             my $id = $plugin->name || $plugin->id || $plugin->{plugin_sig};
             if (my $dup = $deduped_plugins{$id}) {
                 require version;
-                my $dup_version = version->parse($dup->version    || 0);
-                my $cur_version = version->parse($plugin->version || 0);
+                my $dup_version = eval { version->parse($dup->version    || 0) } || 0;
+                my $cur_version = eval { version->parse($plugin->version || 0) } || 0;
                 my ($version_to_drop, $sig_to_drop);
                 if ($cur_version > $dup_version) {
                     $deduped_plugins{$id} = $plugin;
