@@ -1564,7 +1564,7 @@ sub init_plugins {
         # Drop conflicting plugins
         my %deduped_plugins;
         for my $plugin (@loaded_plugins) {
-            my $id = $plugin->id || $plugin->{plugin_sig};
+            my $id = $plugin->name || $plugin->id || $plugin->{plugin_sig};
             if (my $dup = $deduped_plugins{$id}) {
                 require version;
                 my $dup_version = version->parse($dup->version    || 0);
