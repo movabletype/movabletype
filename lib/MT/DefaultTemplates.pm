@@ -386,7 +386,7 @@ sub fill_with_missing_system_templates {
             $plugins_with_default_templates = { '' => $weblog_templates_path };
             for my $plugin_sig (keys %MT::Plugins) {
                 next if defined $MT::Plugins{$plugin_sig}{enabled} && !$MT::Plugins{$plugin_sig}{enabled};
-                my $plugin                 = $MT::Plugins{$plugin_sig}{object};
+                my $plugin                 = $MT::Plugins{$plugin_sig}{object} or next;
                 my $full_path              = $plugin->path;
                 my $default_templates_path = File::Spec->catdir($full_path, $basename);
                 next unless -d $default_templates_path;
