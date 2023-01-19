@@ -9,7 +9,7 @@ use strict;
 use warnings;
 
 sub can_save {
-    my ( $eh, $app, $obj ) = @_;
+    my ( $eh, $app, $id, $obj ) = @_;
     my $user = $app->user or return;
 
     return 1 if $user->is_superuser;
@@ -26,7 +26,7 @@ sub can_save {
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
     my $obj = $objp->force();
-    can_save( $eh, $app, $obj );
+    can_save( $eh, $app, $id, $obj );
 }
 
 sub save_filter {
