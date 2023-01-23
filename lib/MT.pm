@@ -1564,16 +1564,16 @@ sub init_plugins {
         # Drop conflicting plugins
         my %deduped_plugins;
         for my $plugin (@loaded_plugins) {
-            my $id = $plugin->name || $plugin->id || $plugin->{plugin_sig};
-            if (my $dup = $deduped_plugins{$id}) {
+            my $name = $plugin->name;
+            if (my $dup = $deduped_plugins{$name}) {
                 require version;
                 my $dup_version = eval { version->parse($dup->version    || 0) } || 0;
                 my $cur_version = eval { version->parse($plugin->version || 0) } || 0;
                 my ($version_to_drop, $sig_to_drop);
                 if ($cur_version > $dup_version) {
-                    $deduped_plugins{$id} = $plugin;
-                    $version_to_drop      = $dup->version || '';
-                    $sig_to_drop          = $dup->{plugin_sig};
+                    $deduped_plugins{$name} = $plugin;
+                    $version_to_drop        = $dup->version || '';
+                    $sig_to_drop            = $dup->{plugin_sig};
                 } else {
                     $version_to_drop = $plugin->version || '';
                     $sig_to_drop     = $plugin->{plugin_sig};
@@ -1581,7 +1581,7 @@ sub init_plugins {
                 eval {
                     require MT::Util::Log;
                     MT::Util::Log::init();
-                    MT::Util::Log->error($mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $id, $version_to_drop));
+                    MT::Util::Log->error($mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $name, $version_to_drop));
                 };
                 $Plugins{$sig_to_drop}{enabled} = 0;
                 delete $Plugins{$sig_to_drop}{object};
@@ -1589,7 +1589,7 @@ sub init_plugins {
                 @Components = grep { ($_->{plugin_sig} || '') ne $sig_to_drop } @Components;
                 next;
             }
-            $deduped_plugins{$id} = $plugin;
+            $deduped_plugins{$name} = $plugin;
         }
 
         for my $plugin (values %deduped_plugins) {
