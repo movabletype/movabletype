@@ -149,47 +149,45 @@ sub _hdlr_widget_manager {
             }
         }
     }
-    my $tmpl = MT->model('template')->load(
-        {   name    => $tmpl_name,
-            blog_id => $blog_id
-            ? ( exists $args->{parent} && $args->{parent} )
-                    ? $blog_id
-                    : [ 0, $blog_id ]
-            : 0,
-            type => 'widgetset'
-        },
-            {
-            sort      => 'blog_id',
-            direction => 'descend'
-            }
-        )
-        or return $ctx->error(
-        MT->translate( "Specified WidgetSet '[_1]' not found.", $tmpl_name )
-        );
-
-    ## Load all widgets for make cache.
+    my @blog_ids  = $blog_id ? $args->{parent} ? $blog_id : (0, $blog_id) : 0;
+    my $cache_key = join ':', "widgets", $tmpl_name, @blog_ids;
+    my $req       = MT->request;
     my @widgets;
-    if ( my $modulesets = $tmpl->modulesets ) {
-        my @widget_ids = split ',', $modulesets;
-        my $terms
-            = ( scalar @widget_ids ) > 1
-            ? { id => \@widget_ids }
-            : $widget_ids[0];
-        my @objs = MT->model('template')->load($terms);
-        my %widgets = map { $_->id => $_ } @objs;
-        push @widgets, $widgets{$_} for @widget_ids;
-    }
-    elsif ( my $text = $tmpl->text ) {
-        my @widget_names = $text =~ /widget\=\"([^"]+)\"/g;
-        my @objs         = MT->model('template')->load(
-            {   name    => \@widget_names,
-                blog_id => [ $blog_id, 0 ],
-            }
-        );
-        @objs = sort { $a->blog_id <=> $b->blog_id } @objs;
-        my %widgets;
-        $widgets{ $_->name } = $_ for @objs;
-        push @widgets, $widgets{$_} for @widget_names;
+    if (my $cache = $req->{__stash}{__obj}{$cache_key}) {
+        @widgets = @$cache;
+    } else {
+        my $tmpl = MT->model('template')->load({
+                name    => $tmpl_name,
+                blog_id => \@blog_ids,
+                type    => 'widgetset'
+            },
+            {
+                sort      => 'blog_id',
+                direction => 'descend'
+            }) or return $ctx->error(MT->translate("Specified WidgetSet '[_1]' not found.", $tmpl_name));
+
+        ## Load all widgets for make cache.
+        if (my $modulesets = $tmpl->modulesets) {
+            my @widget_ids = split ',', $modulesets;
+            my $terms =
+                  (scalar @widget_ids) > 1
+                ? { id => \@widget_ids }
+                : $widget_ids[0];
+            my @objs    = MT->model('template')->load($terms);
+            my %widgets = map { $_->id => $_ } @objs;
+            push @widgets, $widgets{$_} for @widget_ids;
+        } elsif (my $text = $tmpl->text) {
+            my @widget_names = $text =~ /widget\=\"([^"]+)\"/g;
+            my @objs         = MT->model('template')->load({
+                name    => \@widget_names,
+                blog_id => [$blog_id, 0],
+            });
+            @objs = sort { $a->blog_id <=> $b->blog_id } @objs;
+            my %widgets;
+            $widgets{ $_->name } = $_ for @objs;
+            push @widgets, $widgets{$_} for @widget_names;
+        }
+        $req->{__stash}{__obj}{$cache_key} = \@widgets;
     }
     return '' unless scalar @widgets;
 
@@ -197,14 +195,9 @@ sub _hdlr_widget_manager {
     {
         local $ctx->{__stash}{tag} = 'include';
         for my $widget (@widgets) {
-            my $name     = $widget->name;
-            my $stash_id = MT::Util::Encode::encode_utf8(
-                join( '::', 'template_widget', $blog_id, $name ) );
-            my $req = MT::Request->instance;
-            my $tokens = $ctx->stash('builder')->compile( $ctx, $widget );
-            $req->stash( $stash_id, [ $widget, $tokens ] );
-            my $out = $ctx->invoke_handler( 'include',
-                { %$args, widget => $name, }, $cond, );
+            my $name   = $widget->name;
+            my $tokens = $ctx->stash('builder')->compile($ctx, $widget);
+            my $out    = $ctx->invoke_handler('include', { %$args, widget => $name, }, $cond);
 
             # if error is occurred, pass the include's errstr
             return unless defined $out;
