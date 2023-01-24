@@ -5323,7 +5323,7 @@ sub _hdlr_link {
             : $curr_blog;
         my $blog_id = $blog->id;
         require MT::Template;
-        my $tmpl = MT::Template->load(
+        my $tmpl = MT->request->{__stash}{__obj}{"$tmpl_name:$blog_id"} ||= MT::Template->load(
             {   identifier => $tmpl_name,
                 type       => 'index',
                 blog_id    => $blog_id
