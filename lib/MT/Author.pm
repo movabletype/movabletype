@@ -922,9 +922,10 @@ sub is_superuser {
             }
         }
     }
-    else {
-        $author->permissions(0)->can_administer();
+    if (!defined $author->{__is_superuser}) {
+        $author->{__is_superuser} = $author->permissions(0)->can_administer() ? 1 : 0;
     }
+    $author->{__is_superuser};
 }
 
 sub can_create_blog {
