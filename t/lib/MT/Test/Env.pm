@@ -160,6 +160,7 @@ sub write_config {
         HideVersion            => 0,
         DebugMode              => $ENV{MT_TEST_DEBUG_MODE} || 0,
         BuilderModule          => $ENV{MT_TEST_BUILDER} || 'MT::Builder',
+        DisableObjectCache     => $ENV{MT_TEST_DISABLE_OBJECT_CACHE} || 0,
     );
 
     if ($extra) {
