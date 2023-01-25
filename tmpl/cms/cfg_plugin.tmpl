@@ -299,7 +299,12 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
         <div class="col-auto">
           <div class="plugin-status">
       <mt:unless name="blog_view">
-        <mt:if name="plugin_error">
+        <mt:if name="plugin_system_error">
+            <span class="alert-error-inline icon-left icon-error text-muted">
+              <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
+              <mt:var name="plugin_system_error" escape="html">
+            </span>
+        <mt:elseif name="plugin_error">
             <span class="alert-error-inline icon-left icon-error text-muted">
               <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
               <__trans phrase="Failed to Load">
@@ -330,7 +335,12 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
           </mt:unless>
         </mt:if>
       <mt:else>
-        <mt:if name="plugin_error">
+        <mt:if name="plugin_system_error">
+            <span class="alert-error-inline icon-left icon-error text-muted">
+              <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
+              <mt:var name="plugin_system_error" escape="html">
+            </span>
+        <mt:elseif name="plugin_error">
             <span class="alert-error-inline icon-left icon-error text-muted">
               <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
               <__trans phrase="Failed to Load">
