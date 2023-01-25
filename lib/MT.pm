@@ -1393,14 +1393,6 @@ sub init_plugins {
         unless ( $plugin->{registry} && ( %{ $plugin->{registry} } ) ) {
             $plugin->{registry} = $plugin_registry;
         }
-        if ( $plugin->{registry} ) {
-            if ( my $settings = $plugin->{registry}{config_settings} ) {
-                $settings = $plugin->{registry}{config_settings}
-                    = $settings->()
-                    if ref($settings) eq 'CODE';
-                $class->config->define($settings) if $settings;
-            }
-        }
         push @Components, $plugin;
         1;
     }
@@ -1444,14 +1436,10 @@ sub init_plugins {
                     }
                 );
             };
-            return 0;
+            return;
         }
         else {
-            if ( my $obj = $Plugins{$plugin_sig}{object} ) {
-                $obj->init_callbacks();
-            }
-            else {
-
+            if ( !$Plugins{$plugin_sig}{object} ) {
                 # A plugin did not register itself, so
                 # create a dummy plugin object which will
                 # cause it to show up in the plugin listing
@@ -1461,7 +1449,7 @@ sub init_plugins {
         }
         $Plugins{$plugin_sig}{enabled} = 1;
         $PluginSwitch->{$plugin_sig} = 1;
-        return 1;
+        return $Plugins{$plugin_sig}{object};
     }
 
     sub __load_plugin_with_yaml {
@@ -1497,7 +1485,7 @@ sub init_plugins {
         local $plugin_sig = $plugin_dir;
         $PluginSwitch->{$plugin_sig} = 1;
         MT->add_plugin($p);
-        $p->init_callbacks();
+        return $p;
     }
 
     sub _init_plugins_core {
@@ -1509,6 +1497,7 @@ sub init_plugins {
             $timer = $mt->get_timer();
         }
 
+        my @loaded_plugins;
         foreach my $PluginPath (@$PluginPaths) {
             my $plugin_lastdir = $PluginPath;
             $plugin_lastdir =~ s![\\/]$!!;
@@ -1524,9 +1513,10 @@ sub init_plugins {
                         = File::Spec->catfile( $PluginPath, $plugin );
                     if ( -f $plugin_full_path ) {
                         $plugin_envelope = $plugin_lastdir;
-                        __load_plugin( $mt, $timer, $PluginSwitch,
-                            $use_plugins, $plugin_full_path, $plugin )
-                            if $plugin_full_path =~ /\.pl$/;
+                        if ($plugin_full_path =~ /\.pl$/) {
+                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
+                            push @loaded_plugins, $obj if $obj;
+                        }
                         next;
                     }
 
@@ -1544,8 +1534,8 @@ sub init_plugins {
                         'config.yaml' );
 
                     if ( -f $yaml ) {
-                        __load_plugin_with_yaml( $use_plugins, $PluginSwitch,
-                            $plugin_dir );
+                        my $obj = __load_plugin_with_yaml( $use_plugins, $PluginSwitch, $plugin_dir );
+                        push @loaded_plugins, $obj if $obj;
                         next;
                     }
 
@@ -1563,13 +1553,56 @@ sub init_plugins {
                             = File::Spec->catfile( $plugin_full_path,
                             $plugin );
                         if ( -f $plugin_file ) {
-                            __load_plugin( $mt, $timer, $PluginSwitch,
-                                $use_plugins, $plugin_file,
-                                $plugin_dir . '/' . $plugin );
+                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $plugin_dir . '/' . $plugin );
+                            push @loaded_plugins, $obj if $obj;
                         }
                     }
                 }
             }
+        }
+
+        # Drop conflicting plugins
+        my %deduped_plugins;
+        for my $plugin (@loaded_plugins) {
+            my $name = $plugin->name;
+            if (my $dup = $deduped_plugins{$name}) {
+                require version;
+                my $dup_version = eval { version->parse($dup->version    || 0) } || 0;
+                my $cur_version = eval { version->parse($plugin->version || 0) } || 0;
+                my ($version_to_drop, $sig_to_drop);
+                if ($cur_version > $dup_version) {
+                    $deduped_plugins{$name} = $plugin;
+                    $version_to_drop        = $dup->version || '';
+                    $sig_to_drop            = $dup->{plugin_sig};
+                } else {
+                    $version_to_drop = $plugin->version || '';
+                    $sig_to_drop     = $plugin->{plugin_sig};
+                }
+                eval {
+                    require MT::Util::Log;
+                    MT::Util::Log::init();
+                    MT::Util::Log->error($mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $name, $version_to_drop));
+                };
+                $Plugins{$sig_to_drop}{enabled} = 0;
+                delete $Plugins{$sig_to_drop}{object};
+                delete $PluginSwitch->{$sig_to_drop};
+                @Components = grep { ($_->{plugin_sig} || '') ne $sig_to_drop } @Components;
+                next;
+            }
+            $deduped_plugins{$name} = $plugin;
+        }
+
+        for my $plugin (values %deduped_plugins) {
+            if ($plugin->isa('MT::Plugin')) {
+                $plugin->init;
+            }
+            if ($plugin->{registry}) {
+                if (my $settings = $plugin->{registry}{config_settings}) {
+                    $settings = $plugin->{registry}{config_settings} = $settings->() if ref($settings) eq 'CODE';
+                    $mt->config->define($settings)                                   if $settings;
+                }
+            }
+            $plugin->init_callbacks;
         }
 
         # Reset the Text_filters hash in case it was preloaded by plugins by
