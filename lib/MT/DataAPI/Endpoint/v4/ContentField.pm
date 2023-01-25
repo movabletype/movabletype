@@ -227,6 +227,7 @@ sub _build_around_filter {
         $content_type->fields($fields);
         $content_type->save
             or return $new_content_field->error( $content_type->errstr );
+        $new_content_field->{__content_type_obj} = $content_type;
     };
 }
 
