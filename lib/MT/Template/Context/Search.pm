@@ -386,6 +386,7 @@ sub _hdlr_results {
         else {
             $blog_footer = 1;
             $footer      = 1;
+            $ctx->stash('results', undef);  # clear finished iterator
         }
 
         my $vars = $ctx->{__stash}{vars} ||= {};
