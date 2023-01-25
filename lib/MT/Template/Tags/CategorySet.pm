@@ -98,13 +98,19 @@ sub _hdlr_category_sets {
     my $vars = $ctx->{__stash}{vars} ||= {};
 
     for my $category_set (@category_sets) {
+        my $site;
+        if ($ctx->{__stash}{blog} && $ctx->{__stash}{blog}->id == $category_set->blog_id) {
+            $site = $ctx->{__stash}{blog};
+        } else {
+            $site = $category_set->blog;
+        }
         local $vars->{__first__}       = !$i;
         local $vars->{__last__}        = !defined $category_sets[ $i + 1 ];
         local $vars->{__odd__}         = ( $i % 2 ) == 0;
         local $vars->{__even__}        = ( $i % 2 ) == 1;
         local $vars->{__counter__}     = $i + 1;
-        local $ctx->{__stash}{blog}    = $category_set->blog;
-        local $ctx->{__stash}{blog_id} = $category_set->blog_id;
+        local $ctx->{__stash}{blog}    = $site,
+        local $ctx->{__stash}{blog_id} = $site->id,
         local $ctx->{__stash}{category_set} = $category_set;
         local $ctx->{__stash}{content_type} = $content_type if $content_type;
 
