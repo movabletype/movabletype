@@ -4117,7 +4117,7 @@ sub base {
     }
 
     # determine hostname from environment (supports relative CGI paths)
-    if ( my $host = $ENV{HTTP_HOST} ) {
+    if ( my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} ) {
         return $app->{__host}
             = 'http' . ( $app->is_secure ? 's' : '' ) . '://' . $host;
     }
