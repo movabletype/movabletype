@@ -78,38 +78,39 @@ foreach my $blog (@blogs) {
         my $fi = MT::FileInfo->load( { id => $job->uniqkey } );
         my $at = $fi->archive_type || '';
         my $priority = $job->priority;
+        my $path = $fi->file_path;
 
         if ( ( $at eq 'Individual' ) || ( $at eq 'Page' ) ) {
             my $map = MT::TemplateMap->load( $fi->templatemap_id );
             if ( $map && $map->is_preferred ) {
-                is( $priority, 10, "Priority is correct" );
+                is( $priority, 10, "$at: Priority is correct: $priority: $path" );
             }
             else {
-                is( $priority, 10, "Priority is correct" );
+                is( $priority, 10, "$at: Priority is correct: $priority: $path" );
             }
         }
         elsif ( $at eq 'index' ) {
             if ( $fi->file_path =~ m!index|default|atom|feed!i ) {
-                is( $priority, 8, "Priority is correct" );
+                is( $priority, 8, "$at: Priority is correct: $priority: $path" );
             }
             else {
-                is( $priority, 9, "Priority is correct" );
+                is( $priority, 9, "$at: Priority is correct: $priority: $path" );
             }
         }
         elsif ( $at =~ m/Category|Author/ ) {
-            is( $priority, 1, "Priority is correct" );
+            is( $priority, 1, "$at: Priority is correct: $priority: $path" );
         }
         elsif ( $at =~ m/Yearly/ ) {
-            is( $priority, 1, "Priority is correct" );
+            is( $priority, 1, "$at: Priority is correct: $priority: $path" );
         }
         elsif ( $at =~ m/Monthly/ ) {
-            is( $priority, 2, "Priority is correct" );
+            is( $priority, 2, "$at: Priority is correct: $priority: $path" );
         }
         elsif ( $at =~ m/Weekly/ ) {
-            is( $priority, 3, "Priority is correct" );
+            is( $priority, 3, "$at: Priority is correct: $priority: $path" );
         }
         elsif ( $at =~ m/Daily/ ) {
-            is( $priority, 4, "Priority is correct" );
+            is( $priority, 4, "$at: Priority is correct: $priority: $path" );
         }
     }
 
