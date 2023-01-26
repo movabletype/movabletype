@@ -266,7 +266,7 @@ sub _hdlr_stats_snippet {
             or return q();
     }
 
-    $provider->snipet(@_);
+    $provider->snippet(@_);
 }
 
 ###########################################################################
