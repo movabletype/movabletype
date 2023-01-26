@@ -60,6 +60,7 @@ foreach my $blog (@blogs) {
 
         $tmpl->save;
     }
+    $test_env->clear_mt_cache;
 
     my $mt = MT->new or die MT->errstr;
     $mt->rebuild(
