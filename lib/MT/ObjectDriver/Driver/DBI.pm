@@ -517,7 +517,7 @@ sub prepare_statement {
         my $skip = $stmt->select_map_reverse;
         for my $col (@$cols) {
             next if $skip->{$col};
-            if ( keys %fetch ) {
+            if (%fetch) {
                 next unless $fetch{$col};
             }
             my $dbcol = $dbd->db_column_name( $tbl, $col, $alias );
