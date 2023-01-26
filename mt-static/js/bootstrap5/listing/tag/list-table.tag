@@ -164,7 +164,6 @@
           return false
         }
       }
-      e.preventDefault()
       e.stopPropagation()
       this.store.trigger('toggle_row', e.currentTarget.dataset.index)
     }
