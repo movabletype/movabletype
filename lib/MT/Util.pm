@@ -1395,9 +1395,10 @@ sub archive_file_for {
     MT->instance->publisher->archive_file_for(@_);
 }
 
+my $IndexBasename;
 sub strip_index {
     my ( $link, $blog ) = @_;
-    my $index = MT->instance->config('IndexBasename');
+    my $index = $IndexBasename ||= MT->instance->config('IndexBasename');
     my $ext = $blog->file_extension || '';
     $ext = '.' . $ext if $ext ne '';
     $index .= $ext;
