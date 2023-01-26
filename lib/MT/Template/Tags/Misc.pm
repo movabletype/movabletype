@@ -255,10 +255,16 @@ sub _hdlr_stats_snippet {
     my $blog_id      = $ctx->stash('blog_id');
     my $blog         = MT->model('blog')->load($blog_id);
     my $provider_arg = $args->{provider} || '';
-
-    require MT::Stats;
-    my $provider = MT::Stats::readied_provider(MT->instance, $blog, $provider_arg)
-        or return q();
+    my $cache_key    = "stats_provider:$provider_arg";
+    my $provider;
+    my $stash = MT->request->{__stash};
+    if (exists $stash->{__obj}{$cache_key}) {
+        $provider = $stash->{__obj}{$cache_key} or return '';
+    } else {
+        require MT::Stats;
+        $provider = $stash->{__obj}{$cache_key} = MT::Stats::readied_provider(MT->instance, $blog, $provider_arg)
+            or return q();
+    }
 
     $provider->snipet(@_);
 }
