@@ -1578,12 +1578,14 @@ sub init_plugins {
                     $version_to_drop = $plugin->version || '';
                     $sig_to_drop     = $plugin->{plugin_sig};
                 }
+                my $error = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $name, $version_to_drop);
                 eval {
                     require MT::Util::Log;
                     MT::Util::Log::init();
-                    MT::Util::Log->error($mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $name, $version_to_drop));
+                    MT::Util::Log->error($error);
                 };
                 $Plugins{$sig_to_drop}{enabled} = 0;
+                $Plugins{$sig_to_drop}{system_error} = $error;
                 delete $Plugins{$sig_to_drop}{object};
                 delete $PluginSwitch->{$sig_to_drop};
                 @Components = grep { ($_->{plugin_sig} || '') ne $sig_to_drop } @Components;

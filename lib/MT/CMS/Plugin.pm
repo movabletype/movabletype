@@ -440,14 +440,15 @@ sub build_plugin_table {
 
             # no registered plugin objects--
             $row = {
-                first           => $next_is_first,
-                plugin_major    => $fld ? 0 : 1,
-                plugin_icon     => $icon,
-                plugin_name     => $alias_map{$plugin_sig} || $plugin_sig,
-                plugin_sig      => $plugin_sig,
-                plugin_error    => $profile->{error},
-                plugin_disabled => $profile->{enabled} ? 0 : 1,
-                plugin_id       => $id,
+                first               => $next_is_first,
+                plugin_major        => $fld ? 0 : 1,
+                plugin_icon         => $icon,
+                plugin_name         => $alias_map{$plugin_sig} || $plugin_sig,
+                plugin_sig          => $plugin_sig,
+                plugin_error        => $profile->{error},
+                plugin_system_error => $profile->{system_error},
+                plugin_disabled     => $profile->{enabled} ? 0 : 1,
+                plugin_id           => $id,
             };
             push @$data, $row;
         }
