@@ -310,7 +310,7 @@ sub install_properties {
         $class->init_revisioning();
     }
 
-    my $enc = MT->config->PublishCharset || 'UTF-8';
+    my $enc = MT->publish_charset;
 
     # install these callbacks that is guaranteed to be called
     # at the very last in the callback list to encode everything.
@@ -380,7 +380,7 @@ sub install_properties {
 
 sub _encode_terms {
     my ($value) = @_;
-    my $enc = MT->config->PublishCharset || 'UTF-8';
+    my $enc = MT->publish_charset;
 
     if ( 'SCALAR' eq ref($value) ) {
         return $value unless MT::Util::Encode::is_utf8($$value);

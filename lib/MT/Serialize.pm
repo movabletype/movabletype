@@ -198,7 +198,7 @@ sub no_utf8 {
 }
 
 sub _freeze_mt_5 {
-    my $enc = MT->config('PublishCharset') || 'UTF-8';
+    my $enc = MT->publish_charset;
     no warnings 'redefine';
     local *no_utf8 = sub {
         for (@_) {
@@ -255,7 +255,7 @@ sub _macrowave {
     my $refs = [undef];
     my $len  = length $frozen;
     my ( @stack, $value );
-    my $encoding = MT->app->config('PublishCharset') || 'UTF-8';
+    my $encoding = MT->publish_charset;
     my $enc = MT::Util::Encode::find_encoding($encoding)
         or die "unknown encoding: $encoding";
 

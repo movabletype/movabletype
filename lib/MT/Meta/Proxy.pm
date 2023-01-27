@@ -211,7 +211,7 @@ sub save {
         my $meta_is_blob
             = $meta_col_def ? $meta_col_def->{type} eq 'blob' : 0;
 
-        my $enc = MT->config->PublishCharset || 'UTF-8';
+        my $enc = MT->publish_charset;
         my ( $data, $utf8_data );
         $data = $utf8_data = $meta_obj->$type;
         unless ( ref $data ) {
@@ -375,7 +375,7 @@ sub bulk_load_meta_objects {
                     $meta_obj->$type( _db2ts( $meta_obj->$type ) );
                 }
 
-                my $enc = MT->config->PublishCharset || 'UTF-8';
+                my $enc = MT->publish_charset;
                 my $data = $meta_obj->$type;
                 unless ( ref $data ) {
                     $data = MT::Util::Encode::decode_unless_flagged( $enc, $data );
@@ -434,7 +434,7 @@ sub prepare_objects {
                 $meta_obj->$type( _db2ts( $meta_obj->$type ) );
             }
 
-            my $enc = MT->config->PublishCharset || 'UTF-8';
+            my $enc = MT->publish_charset;
             my $data = $meta_obj->$type;
             unless ( ref $data ) {
                 $data = MT::Util::Encode::decode_unless_flagged( $enc, $data );
@@ -513,7 +513,7 @@ sub do_unserialization {
         }
     }
     elsif ( $prefix eq 'ASC' ) {
-        my $enc = MT->config('PublishCharset');
+        my $enc = MT->publish_charset;
         $$dataref = MT::Util::Encode::decode_unless_flagged( $enc, $$dataref );
         return $dataref;
     }
