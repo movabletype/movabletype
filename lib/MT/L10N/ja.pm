@@ -439,7 +439,7 @@ use vars qw( @ISA %Lexicon );
 	'Bad CGIPath config' => 'CGIPathの設定が不正です。',
 	'Bad LocalLib config ([_1]): [_2]' => 'LocalLibの設定([_1])が不正です: [_2]',
 	'Bad ObjectDriver config' => 'ObjectDriverの設定が不正です。',
-	'Conflicted plugin [_1] [_2] is disabled by the system' => 'プラグイン [_1] [_2] は他のプラグインと衝突するので無効にしました',
+	'Conflicted plugin [_1] [_2] is disabled by the system' => '[_1] [_2] は他のプラグインと衝突するので無効にしました',
 	'Error while creating email: [_1]' => 'メールの再構築中にエラーが発生しました: [_1]',
 	'Fourth argument to add_callback must be a CODE reference.' => 'add_callbackの第4引数はCODEへの参照でなければなりません。',
 	'Google' => 'Google',
