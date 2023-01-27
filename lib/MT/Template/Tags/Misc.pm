@@ -270,7 +270,7 @@ sub _hdlr_stats_snippet {
         require MT::Util::Deprecated;
         my $class = ref $provider;
         MT::Util::Deprecated::warning({ name => "$class\::snipet", alternative => "snippet" });
-        $provider->snipet(@_);
+        return $provider->snipet(@_);
     }
     $provider->snippet(@_);
 }
