@@ -362,7 +362,7 @@ sub build {
     local $timer->{elapsed} = 0 if $timer;
 
     local $ctx->{__stash}{template} = $tmpl;
-    my $tokens = $tmpl->raw_tokens
+    my $tokens = $tmpl->_raw_tokens
         or return;
 
     my $tmpl_name = $tmpl->name || $tmpl->{__file} || "?";
@@ -933,9 +933,20 @@ sub raw_tokens {
     if (@_) {
         return bless $tmpl->{__tokens} = shift, 'MT::Template::Tokens';
     }
-    my $t = $tmpl->{__tokens} || $tmpl->compile;
-    return bless $t, 'MT::Template::Tokens' if $t;
-    return undef;
+    my $t = $tmpl->{__tokens} || $tmpl->compile or return undef;
+    for my $node (@$t) {
+        $node = bless $node, 'MT::Template::Node' unless Scalar::Util::blessed($node);
+    }
+    return bless $t, 'MT::Template::Tokens';
+}
+
+sub _raw_tokens {
+    my $tmpl = shift;
+    if (@_) {
+        return bless $tmpl->{__tokens} = shift, 'MT::Template::Tokens';
+    }
+    my $t = $tmpl->{__tokens} || $tmpl->compile or return undef;
+    return bless $t, 'MT::Template::Tokens';
 }
 
 sub tokens {
