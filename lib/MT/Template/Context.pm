@@ -414,9 +414,15 @@ sub set_blog_load_context {
             ? $blog->website
             : $blog;
         my ( @blogs, $blog_ids );
-        @blogs = MT->model('blog')->load( { parent_id => $website->id } );
+        my $website_id = $website->id;
+        if (my $child_sites = MT->request->{__stash}{__obj}{"child_sites:$website_id"}) {
+            @blogs = @$child_sites;
+        } else {
+            @blogs = MT->model('blog')->load( { parent_id => $website_id } );
+            MT->request->{__stash}{__obj}{"child_sites:$website_id"} = \@blogs;
+        }
         $blog_ids = scalar @blogs ? [ map { $_->id } @blogs ] : [];
-        push @$blog_ids, $website->id
+        push @$blog_ids, $website_id
             if $attr->{include_parent_site} || $attr->{include_with_website};
         $blog_ids = -1
             unless scalar @$blog_ids
