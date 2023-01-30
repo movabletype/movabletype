@@ -852,23 +852,37 @@ sub set_tag_filter_context {
     require MT::ObjectTag;
 
     my $terms;
+    my $cache_key;
     if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
         my @tags = MT::Tag->split( ',', $tag_arg );
         $terms   = { name => \@tags };
         $tag_arg = join " or ", @tags;
-    }
-    my @tags = MT::Tag->load(
-        $terms,
-        {   ( $terms ? ( binary => { name => 1 } ) : () ),
-            join => MT::ObjectTag->join_on(
-                'tag_id',
-                {   object_datasource => $datasource,
-                    %$blog_terms,
-                },
-                { %$blog_args, unique => 1 }
-            ),
+        if (!%$blog_args and exists $blog_terms->{blog_id} && keys %$blog_terms == 1) {
+            my $blog_ids = $blog_terms->{blog_id};
+            $blog_ids  = ref $blog_ids ? join ',', sort @$blog_ids : $blog_ids;
+            $cache_key = "tag:$blog_ids:$tag_arg";
         }
-    );
+    }
+    my @tags;
+    my $stash = MT->request->{__stash};
+    if ($cache_key && $stash->{__obj}{$cache_key}) {
+        @tags = @{ $stash->{__obj}{$cache_key} };
+    } else {
+        @tags = MT::Tag->load(
+            $terms,
+            {
+                ($terms ? (binary => { name => 1 }) : ()),
+                join => MT::ObjectTag->join_on(
+                    'tag_id',
+                    {
+                        object_datasource => $datasource,
+                        %$blog_terms,
+                    },
+                    { %$blog_args, unique => 1 }
+                ),
+            });
+        $stash->{__obj}{$cache_key} = \@tags if $cache_key;
+    }
 
     my $cexpr = $ctx->compile_tag_filter( $tag_arg, \@tags )
         or return $ctx->error(
