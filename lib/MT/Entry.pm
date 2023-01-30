@@ -953,17 +953,13 @@ sub __load_category_data {
     return unless $entry->id;
     my $t     = MT->get_timer;
     $t->pause_partial if $t;
-    my $cache  = MT::Memcached->instance;
-    my $memkey = $entry->cache_key($entry->id, 'categories');
-    my $rows;
-    unless ( $rows = $cache->get($memkey) ) {
-        require MT::Placement;
-        my @maps = MT::Placement->search( { entry_id => $entry->id } );
-        $rows = [ map { [ $_->category_id, $_->is_primary ] } @maps ];
-        $cache->set( $memkey, $rows, CATEGORY_CACHE_TIME );
-    }
+    my $rows = $entry->{__category_data};
+    return $rows if $rows;
+    require MT::Placement;
+    my @maps = MT::Placement->search( { entry_id => $entry->id } );
+    $rows = [ map { [ $_->category_id, $_->is_primary ] } @maps ];
     $t->mark('MT::Entry::__load_category_data') if $t;
-    return $rows;
+    return $entry->{__category_data} = $rows;
 }
 
 sub flush_category_cache {
