@@ -339,7 +339,7 @@ sub build {
     my $builder = $ctx->stash('builder');
     my $tokens = $builder->compile( $ctx, $tmpl )
         or return $ctx->error( $builder->errstr );
-    local $ctx->{stash}{tokens} = $tokens;
+    local $ctx->{__stash}{tokens} = $tokens;
     my $result = $builder->build( $ctx, $tokens, $cond );
     return $ctx->error( $builder->errstr )
         unless defined $result;
