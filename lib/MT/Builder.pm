@@ -587,9 +587,9 @@ sub build {
                 }
             }
             else {
-                if ( $t->tag !~ m/^_/ ) {    # placeholder tag. just ignore
+                if ( $tag !~ m/^_/ ) {    # placeholder tag. just ignore
                     return $build->error(
-                        MT->translate( "Unknown tag found: [_1]", $t->tag ) );
+                        MT->translate( "Unknown tag found: [_1]", $tag ) );
                 }
             }
         }
