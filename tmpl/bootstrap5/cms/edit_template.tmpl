@@ -535,7 +535,7 @@ function setSyntaxHighlight(on_or_off) {
     <input type="hidden" name="content_type_id" id="content_type_id" value="<$mt:var name="content_type_id" escape="html"$>" />
     </div>
   <mt:else>
-    <select name="content_type_id" id="content_type_id" class="custom-select form-control">
+    <select name="content_type_id" id="content_type_id" class="custom-select form-control form-select">
   <mt:loop name="content_types">
       <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
   </mt:loop>
@@ -600,7 +600,7 @@ function setSyntaxHighlight(on_or_off) {
          id="identifier"
          help_page="templates"
          help_section="template_type">
-        <select name="identifier" id="identifier" class="custom-select form-control">
+        <select name="identifier" id="identifier" class="custom-select form-control form-select">
           <option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
         <mt:loop name="index_identifiers">
           <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><$mt:var name="label" escape="html"$> (<$mt:var name="key" escape="html"$>)</option>
@@ -647,7 +647,7 @@ function setSyntaxHighlight(on_or_off) {
           <input type="hidden" name="new_archive_type" id="new_archive_type" value="ContentType" />
           </div>
         <mt:else>
-        <select name="new_archive_type" id="new_archive_type" class="custom-select form-control">
+        <select name="new_archive_type" id="new_archive_type" class="custom-select form-control form-select">
         <mt:loop name="archive_types">
           <option value="<mt:var name="archive_type" escape="html">"><mt:var name="archive_type_translated" escape="html"></option>
         </mt:loop>
@@ -664,7 +664,7 @@ function setSyntaxHighlight(on_or_off) {
            label_class="top-label"
            help_page="templates"
            help_section="archive_file_sel">
-          <select name="archive_file_sel" id="archive_file_sel" class="custom-select form-control">
+          <select name="archive_file_sel" id="archive_file_sel" class="custom-select form-control form-select">
           </select>
           <input type="text" id="archive_file_tmpl" name="archive_file_tmpl" class="form-control tmpl-path tmpl-path-custom last-child" value="" style="display:none;" />
           <input type="hidden" id="custom_path" />
@@ -679,7 +679,7 @@ function setSyntaxHighlight(on_or_off) {
            help_page="templates"
            help_section="cat_field_id"
            shown="0">
-          <select name="cat_field_id" id="cat_field_id" class="custom-select form-control">
+          <select name="cat_field_id" id="cat_field_id" class="custom-select form-control form-select">
           </select>
         </mtapp:setting>
 
@@ -692,7 +692,7 @@ function setSyntaxHighlight(on_or_off) {
            help_page="templates"
            help_section="dt_field_id"
            shown="0">
-          <select name="dt_field_id" id="dt_field_id" class="custom-select form-control">
+          <select name="dt_field_id" id="dt_field_id" class="custom-select form-control form-select">
           </select>
         </mtapp:setting>
 
@@ -733,7 +733,7 @@ function setSyntaxHighlight(on_or_off) {
        show_hint="1"
        help_page="templates"
        help_section="enable_dynamic_publishing">
-      <select name="build_type" id="build-type" class="custom-select form-control fhalf-width" aria-describedby="publishingHint">
+      <select name="build_type" id="build-type" class="custom-select form-control fhalf-width form-select" aria-describedby="publishingHint">
         <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
       <mt:if name="publish_queue_available">
         <option value="4"<mt:if name="build_type_4"> selected="selected"</mt:if>><__trans phrase="Via Publish Queue"></option>
@@ -742,7 +742,7 @@ function setSyntaxHighlight(on_or_off) {
   <option value="5"<mt:if name="build_type_5"> selected="selected"</mt:if>><__trans phrase="On a schedule"></option>
   <!-- This code needs to be shown if the "On a schedule" has been selected -->
   <__trans phrase=": every "><input name="schedule_interval" id="schedule_interval" value="<mt:var name="schedule_interval" escape="html">" maxlength="10" class="quarter-width" mt:watch-change="1" />
-    <select name="schedule_period" id="schedule_period" class="custom-select form-control">
+    <select name="schedule_period" id="schedule_period" class="custom-select form-control form-select">
       <option value="minutes"<mt:if name="schedule_period_minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
       <option value="hours"<mt:if name="schedule_period_hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
       <option value="days"<mt:if name="schedule_period_days"> selected="selected"</mt:if>><__trans phrase="days"></option>
@@ -809,7 +809,7 @@ function setSyntaxHighlight(on_or_off) {
               <input type="text" id="cache-time-value" class="text num form-control" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval" escape="html">" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
             </div>
             <div class="col">
-              <select id="cache-time-unit" class="custom-select form-control" name="cache_expire_period"<mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless>>
+              <select id="cache-time-unit" class="custom-select form-control form-select" name="cache_expire_period"<mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless>>
                 <option value="minutes"<mt:if name="cache_expire_period" eq="minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
                 <option value="hours"<mt:if name="cache_expire_period" eq="hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
                 <option value="days"<mt:if name="cache_expire_period" eq="days"> selected="selected"</mt:if>><__trans phrase="days"></option>

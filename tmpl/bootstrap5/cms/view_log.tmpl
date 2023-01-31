@@ -122,7 +122,7 @@
         <div id="filter-select" style="display: none">
             <__trans phrase="Show log records where">
             <span id="filter-mode-only" style="display: none">
-                <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton()">
+                <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton()" class="form-select">
                     <option value="level"><__trans phrase="level"></option>
     <mt:if name="class_loop">
                     <option value="class"><__trans phrase="classification"></option>
@@ -130,7 +130,7 @@
                 </select>
                 <__trans phrase="is">
                 <span id="filter-level" style="display: none">
-                    <select id="level-val" name="filter_val" onchange="enableFilterButton()">
+                    <select id="level-val" name="filter_val" onchange="enableFilterButton()" class="form-select">
                         <option value="5"><__trans phrase="Security"></option>
                         <option value="4"><__trans phrase="Error"></option>
                         <option value="3"><__trans phrase="Warning"></option>
@@ -144,7 +144,7 @@
                 </span>
     <mt:if name="class_loop">
                 <span id="filter-class" style="display: none">
-                    <select id="class-val" name="filter_val" onchange="enableFilterButton()">
+                    <select id="class-val" name="filter_val" onchange="enableFilterButton()" class="form-select">
         <mt:loop name="class_loop">
                         <option value="<mt:var name="class_name">"><mt:var name="class_label"></option>
         </mt:loop>

@@ -5,7 +5,7 @@
   <div class="form-inline col d-md-none">
     <input type="number" class="date-field-year form-control w-25" name="date-<mt:var name="content_field_id" escape="html">-year" value="<mt:var name="year" escape="html">" maxlength="4">
     -
-    <select class="date-field-month custom-control custom-select w-25" name="date-<mt:var name="content_field_id" escape="html">-month">
+    <select class="date-field-month custom-control custom-select w-25 form-select" name="date-<mt:var name="content_field_id" escape="html">-month">
       <option value=""></option>
 <mt:for var="x" from="1" to="12">
   <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
@@ -17,7 +17,7 @@
 </mt:for>
     </select>
     -
-    <select class="date-field-day custom-control custom-select w-25" name="date-<mt:var name="content_field_id" escape="html">-day">
+    <select class="date-field-day custom-control custom-select w-25 form-select" name="date-<mt:var name="content_field_id" escape="html">-day">
       <option value=""></option>
 <mt:for var="x" from="1" to="31">
   <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>

@@ -189,7 +189,7 @@ function init()
                 <__trans phrase="Show only pages where">
             </mt:if>
             <!-- start filter form -->
-                <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton(this)">
+                <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton(this)" class="form-select">
                     <option value="status"><__trans phrase="status"></option>
                     <option value="author_id"><__trans phrase="user"></option>
                     <option value="exacttag"><__trans phrase="tag (exact match)"></option>
@@ -206,7 +206,7 @@ function init()
                 </select>
                 <__trans phrase="is">
                 <span id="filter-status" style="display: none">
-                    <select id="status-val" name="filter_val" onchange="enableFilterButton()">
+                    <select id="status-val" name="filter_val" onchange="enableFilterButton()" class="form-select">
                         <option value="2"><__trans phrase="published"></option>
                         <option value="1"><__trans phrase="unpublished"></option>
                         <mt:if name="object_type" eq="entry"><option value="3"><__trans phrase="review"></option></mt:if>
@@ -222,7 +222,7 @@ function init()
                 </span>
     <mt:if name="category_loop">
                 <span id="filter-category_id" style="display: none">
-                    <select id="category_id-val" name="filter_val" onchange="enableFilterButton()">
+                    <select id="category_id-val" name="filter_val" onchange="enableFilterButton()" class="form-select">
         <mt:loop name="category_loop">
                         <option value="<mt:var name="category_id">"><mt:var name="category_label_spacer"><mt:var name="category_label" escape="html"></option>
         </mt:loop>
@@ -230,7 +230,7 @@ function init()
                 </span>
     </mt:if>
                 <span id="filter-author_id" style="display: none">
-                    <select id="author_id-val" name="filter_val" onchange="enableFilterButton(this)">
+                    <select id="author_id-val" name="filter_val" onchange="enableFilterButton(this)" class="form-select">
                         <option selected="selected" value=""><__trans phrase='Select A User:'></option>
                         <option id="filter-user-search" value=""><__trans phrase='User Search...'></option>
                         <optgroup label="<__trans phrase='Recent Users...'>" value="">
@@ -243,7 +243,7 @@ function init()
     <mt:loop name="quickfilter_loop">
                 <span id="filter-<mt:var name="filter" escape="html">" style="display: none">
         <mt:if name="type" eq="select">
-                        <select id="<mt:var name="filter">-val" name="filter_val" onchange="enableFilterButton(this)">
+                        <select id="<mt:var name="filter">-val" name="filter_val" onchange="enableFilterButton(this)" class="form-select">
                             <option value=""><__trans phrase="Select..."></option>
             <mt:loop name="options">
                             <option value="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></option>

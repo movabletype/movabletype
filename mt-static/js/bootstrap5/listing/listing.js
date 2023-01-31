@@ -1,4 +1,4 @@
-riot.tag2('display-options-for-mobile', '<div class="row d-md-none"> <div class="col-auto mx-auto"> <div class="form-inline"> <label for="row-for-mobile" class="form-label">{trans(\'Show\') + \':\'}</label> <select id="row-for-mobile" class="custom-select form-control" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="10">{trans(\'[_1] rows\', 10)}</option> <option value="25">{trans(\'[_1] rows\', 25)}</option> <option value="50">{trans(\'[_1] rows\', 50)}</option> <option value="100">{trans(\'[_1] rows\', 100)}</option> <option value="200">{trans(\'[_1] rows\', 200)}</option> </select> </div> </div> </div>', '', '', function(opts) {
+riot.tag2('display-options-for-mobile', '<div class="row d-md-none"> <div class="col-auto mx-auto"> <div class="form-inline"> <label for="row-for-mobile" class="form-label">{trans(\'Show\') + \':\'}</label> <select id="row-for-mobile" class="custom-select form-control form-select" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="10">{trans(\'[_1] rows\', 10)}</option> <option value="25">{trans(\'[_1] rows\', 25)}</option> <option value="50">{trans(\'[_1] rows\', 50)}</option> <option value="100">{trans(\'[_1] rows\', 100)}</option> <option value="200">{trans(\'[_1] rows\', 200)}</option> </select> </div> </div> </div>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('displayOptions')
 });
@@ -14,7 +14,7 @@ riot.tag2('display-options-detail', '<div id="display-options-detail" class="col
     }.bind(this)
 });
 
-riot.tag2('display-options-limit', '<div class="field-header"> <label class="form-label">{trans(\'Show\')}</label> </div> <div class="field-content"> <select id="row" class="custom-select form-control" style="width: 100px;" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="10">{trans(\'[_1] rows\', 10)}</option> <option value="25">{trans(\'[_1] rows\', 25)}</option> <option value="50">{trans(\'[_1] rows\', 50)}</option> <option value="100">{trans(\'[_1] rows\', 100)}</option> <option value="200">{trans(\'[_1] rows\', 200)}</option> </select> </div>', '', '', function(opts) {
+riot.tag2('display-options-limit', '<div class="field-header"> <label class="form-label">{trans(\'Show\')}</label> </div> <div class="field-content"> <select id="row" class="custom-select form-control form-select" style="width: 100px;" ref="limit" riot-value="{store.limit}" onchange="{changeLimit}"> <option value="10">{trans(\'[_1] rows\', 10)}</option> <option value="25">{trans(\'[_1] rows\', 25)}</option> <option value="50">{trans(\'[_1] rows\', 50)}</option> <option value="100">{trans(\'[_1] rows\', 100)}</option> <option value="200">{trans(\'[_1] rows\', 200)}</option> </select> </div>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('displayOptions')
 });

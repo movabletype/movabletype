@@ -107,7 +107,7 @@ function toggleDisabled( state ){
        label="<__trans phrase="_USER_STATUS_CAPTION">"
        label_class="left-label <$mt:var name="group_status"$>"
        hint="<__trans phrase="Status of this group in the system. Disabling a group prohibits its members&rsquo; from accessing the system but preserves their content and history.">">
-      <select name="status" id="status" class="custom-select form-control" onchange="toggleDisabled(this.value)">
+      <select name="status" id="status" class="custom-select form-control form-select" onchange="toggleDisabled(this.value)">
         <option <mt:if name="status_enabled">selected="selected"</mt:if> value="1"><__trans phrase="_USER_ENABLED"></option>
         <option <mt:unless name="status_enabled">selected="selected"</mt:unless> value="2"><__trans phrase="_USER_DISABLED"></option>
       </select>

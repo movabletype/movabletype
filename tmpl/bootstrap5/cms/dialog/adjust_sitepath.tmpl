@@ -177,7 +177,7 @@ function init() {
            label="<__trans phrase="Parent Site">"
            label_for="parent_id_<mt:var name="id">"
            label_class="top-label">
-          <select id="parent_id_<mt:var name="id">" name="parent_id_<mt:var name="id">" class="custom-select form-control parent_website" onchange="changeParent(this)">
+          <select id="parent_id_<mt:var name="id">" name="parent_id_<mt:var name="id">" class="custom-select form-control parent_website form-select" onchange="changeParent(this)">
             <option value="0"><__trans phrase="Please choose parent site."></option>
           <mt:loop name="all_websites">
             <option value="<mt:var name="website_id">"<mt:if name="parent_id" eq="$website_id"> selected</mt:if>> <mt:var name="website_name" escape="html"></option>

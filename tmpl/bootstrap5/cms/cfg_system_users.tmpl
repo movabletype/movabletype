@@ -160,7 +160,7 @@ function clearNotifyUsers() {
        id="default_language"
        label="<__trans phrase="Default User Language">"
        label_for="default_language">
-      <select id="default_language" class="custom-select form-control" name="default_language"<mt:if name="default_language_readonly"> disabled="disabled"</mt:if>>
+      <select id="default_language" class="custom-select form-control form-select" name="default_language"<mt:if name="default_language_readonly"> disabled="disabled"</mt:if>>
       <mt:loop name="languages">
         <option value="<mt:var name="l_tag">" <mt:if name="l_selected">selected="selected"</mt:if>><mt:var name="l_name" escape="html"></option>
       </mt:loop>
@@ -173,7 +173,7 @@ function clearNotifyUsers() {
        label_for="default_time_zone"
        help_page="blog_settings_general"
        help_section="blog_timezone">
-      <select name="default_time_zone" class="custom-select form-control" id="default_time_zone"<mt:if name="default_time_zone_readonly"> disabled="disabled"</mt:if>>
+      <select name="default_time_zone" class="custom-select form-control form-select" id="default_time_zone"<mt:if name="default_time_zone_readonly"> disabled="disabled"</mt:if>>
       <mt:if name="server_offset_">
         <option value=""><__trans phrase="Time zone not selected"></option>
       </mt:if>
@@ -214,7 +214,7 @@ function clearNotifyUsers() {
        id="tag_delim"
        label="<__trans phrase="Default Tag Delimiter">"
        label_for="tag_delim">
-      <select name="default_user_tag_delimiter" class="custom-select form-control" id="tag_delim" <mt:if name="default_user_tag_delimiter_readonly">disabled="disabled"</mt:if>>
+      <select name="default_user_tag_delimiter" class="custom-select form-control form-select" id="tag_delim" <mt:if name="default_user_tag_delimiter_readonly">disabled="disabled"</mt:if>>
         <option value="comma"<mt:if name="tag_delim_comma"> selected="selected"</mt:if>><__trans phrase="Comma"></option>
         <option value="space"<mt:if name="tag_delim_space"> selected="selected"</mt:if>><__trans phrase="Space"></option>
       </select>

@@ -198,7 +198,7 @@ function is_valid_path(path_){
 
      <!-- <$mt:var name="blog_url" escape="html"$> -->
 
-     <select name="site_path" id="site_path" class="form-control" onchange="setExtraPath(this)">
+     <select name="site_path" id="site_path" class="form-control form-select" onchange="setExtraPath(this)">
        <option value="1">&#60;<__trans phrase="Site Root">&#62;</option>
      <mt:if name="enable_archive_paths">
        <option value="0"<mt:if name="archive_path"> selected="selected"</mt:if>>&#60;<__trans phrase="Archive Root">&#62;</option>

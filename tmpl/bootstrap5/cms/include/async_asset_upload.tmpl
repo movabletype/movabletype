@@ -186,7 +186,7 @@ h1.dialog-title {
       <div class="row w-100">
       <mt:if name="destination_loop">
       <div class="col-12 col-md-6 pe-0">
-      <select name="destination" id="destination" class="custom-select form-control w-100" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
+      <select name="destination" id="destination" class="custom-select form-control w-100 form-select" onchange="uploadDestinationSelect(this);" aria-describedby="uploadDestination">
         <mt:loop name="destination_loop">
         <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif>>
           <mt:var name="label" escape="html">
@@ -240,7 +240,7 @@ h1.dialog-title {
         label="<__trans phrase="Operation for a file exists">"
         label_for="operation_if_exists"
         label_class="left-label">
-      <select name="operation_if_exists" id="operation_if_exists" class="custom-select form-control text-truncate">
+      <select name="operation_if_exists" id="operation_if_exists" class="custom-select form-control text-truncate form-select">
         <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>>
           <__trans phrase="Upload and rename">
         </option>

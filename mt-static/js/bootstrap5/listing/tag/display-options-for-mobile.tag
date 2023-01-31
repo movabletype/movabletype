@@ -4,7 +4,7 @@
       <div class="form-inline">
         <label for="row-for-mobile" class="form-label">{ trans('Show') + ':' }</label>
         <select id="row-for-mobile"
-          class="custom-select form-control"
+          class="custom-select form-control form-select"
           ref="limit"
           value={ store.limit }
           onchange={ changeLimit }

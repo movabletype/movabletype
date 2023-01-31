@@ -228,7 +228,7 @@ function toggleContentTypeDateTimeInputs() {
            label="<__trans phrase="Content Type">"
            label_class="top-label"
            help_section="search-alt">
-           <select class="custom-select form-control" name="content_type_id">
+           <select class="custom-select form-control form-select" name="content_type_id">
       <mt:loop name="content_types">
              <option value="<mt:var name="content_type_id" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>>
                <mt:var name="content_type_name" escape="html">
@@ -310,7 +310,7 @@ function toggleContentTypeDateTimeInputs() {
               <label for="date_time_field_id" class="form-label">
                 <__trans phrase="Field">:
               </label>
-              <select id="date_time_field_id" name="date_time_field_id" class="custom-select form-control">
+              <select id="date_time_field_id" name="date_time_field_id" class="custom-select form-control form-select">
                 <option value="0">
                   <__trans phrase="Publish Date">
                 </option>
@@ -385,7 +385,7 @@ function toggleContentTypeDateTimeInputs() {
            label="<__trans phrase="Content Type">"
            label_class="top-label"
            help_section="content-type-alt">
-          <select name="content-type-alt" class="custom-select form-control" disabled>
+          <select name="content-type-alt" class="custom-select form-control form-select" disabled>
         <mt:loop name="content_types">
           <mt:if name="selected">
             <option value="content_type_id"><mt:var name="content_type_name" escape="html"></option>

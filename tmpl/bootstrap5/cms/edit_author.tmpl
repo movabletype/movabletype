@@ -238,7 +238,7 @@ function showPasswordField() {
        label="<__trans phrase="_USER_STATUS_CAPTION">"
        label_for="status"
        label_class="left-label <mt:var name="user_status">">
-      <select name="status" id="status" class="form-control half-width" onchange="toggleDisabled(this.value);">
+      <select name="status" id="status" class="form-control half-width form-select" onchange="toggleDisabled(this.value);">
         <option <mt:if name="status_enabled">selected="selected"</mt:if> value="1">
           <__trans phrase="_USER_ENABLED">
         </option>
@@ -411,7 +411,7 @@ function showPasswordField() {
        show_hint="1"
        hint_id="langaugeHelp"
        hint="<__trans phrase="Display language for the Movable Type interface.">">
-      <select name="preferred_language" id="preferred_language" class="custom-select form-control" aria-describedby="languageHelp">
+      <select name="preferred_language" id="preferred_language" class="custom-select form-control form-select" aria-describedby="languageHelp">
       <mt:loop name="languages">
         <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
       </mt:loop>
@@ -425,7 +425,7 @@ function showPasswordField() {
        show_hint="1"
        hint_id="textFormat"
        hint="<__trans phrase="Default text formatting filter when creating new entries and new pages.">">
-      <select name="text_format" id="text_format" class="custom-select form-control se" aria-describedby="textFormat">
+      <select name="text_format" id="text_format" class="custom-select form-control se form-select" aria-describedby="textFormat">
       <mt:loop name="text_filters">
         <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>>
           <mt:if name="key" eq="0">
@@ -445,7 +445,7 @@ function showPasswordField() {
        show_hint="1"
        hint_id="dateFormat"
        hint="<__trans phrase="Default date formatting in the Movable Type interface.">">
-      <select name="date_format" id="date_format" class="custom-select form-control" aria-describedby="dateFormat">
+      <select name="date_format" id="date_format" class="custom-select form-control form-select" aria-describedby="dateFormat">
         <option value="relative"<mt:if name="date_format" eq="relative"> selected="selected"</mt:if>><__trans phrase="Relative"></option>
         <option value="full"<mt:if name="date_format" eq="full"> selected="selected"</mt:if>><__trans phrase="Full"></option>
       </select>
@@ -458,7 +458,7 @@ function showPasswordField() {
        show_hint="1"
        hint_id="tagDelimiter"
        hint="<__trans phrase="Preferred method of separating tags.">">
-      <select name="tag_delim" id="tag_delim" class="custom-select form-control se" aria-describedby="tagDelimiter">
+      <select name="tag_delim" id="tag_delim" class="custom-select form-control se form-select" aria-describedby="tagDelimiter">
         <option value="comma"<mt:if name="auth_pref_tag_delim_comma"> selected="selected"</mt:if>><__trans phrase="Comma"></option>
         <option value="space"<mt:if name="auth_pref_tag_delim_space"> selected="selected"</mt:if>><__trans phrase="Space"></option>
       </select>

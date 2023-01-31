@@ -105,7 +105,7 @@
          id="preferred_language"
          label="<__trans phrase="Language">"
          label_class="top-label">
-        <select name="preferred_language" id="preferred_language" class="custom-select form-control"><mt:loop name="languages">
+        <select name="preferred_language" id="preferred_language" class="custom-select form-control form-select"><mt:loop name="languages">
           <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
       </mtapp:setting>
@@ -145,7 +145,7 @@
          id="preferred_language"
          label="<__trans phrase="Language">"
          label_class="top-label">
-        <select name="preferred_language" id="preferred_language" class="custom-control form-control"><mt:loop name="languages">
+        <select name="preferred_language" id="preferred_language" class="custom-control form-control form-select"><mt:loop name="languages">
           <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
       </mtapp:setting>
