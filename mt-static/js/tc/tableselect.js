@@ -151,8 +151,7 @@ TC.TableSelect.prototype.click = function( evt ) {
         if ((element.type == "checkbox") || (element.type == "radio"))
             var parent = TC.getParentByTagName( element, "tr" );
             if (parent) this.setFocus( parent );
-            evt.preventDefault();
-            return this.select( element );
+            return this.select( element, parent );
     }
 
     // handle rows
@@ -181,7 +180,6 @@ TC.TableSelect.prototype.click = function( evt ) {
             if ( (element.type == "checkbox") || (element.type == "radio") ) {
                 if ( element.disabled ) return;
                 element.checked = !element.checked;
-                evt.preventDefault();
                 return this.select( element, parent );
             }
         }
