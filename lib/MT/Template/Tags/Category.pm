@@ -711,6 +711,7 @@ sub _hdlr_sub_categories {
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
+    my $blog_id = $ctx->stash('blog_id');
 
     # Do we want the current category?
     my $include_current = $args->{include_current};
@@ -743,18 +744,24 @@ sub _hdlr_sub_categories {
     my $current_cat;
     my @cats;
     if ( $args->{top} ) {
-        @cats = $class->load(
-            {   blog_id         => $ctx->stash('blog_id'),
-                parent          => '0',
-                category_set_id => $category_set_id,
-            },
-            {   (     ( 'user_custom' eq $sort_by )
-                    ? ( sort => 'label' )
-                    : ( sort => $sort_by )
-                ),
-                direction => $sort_order,
-            }
-        );
+        my $top_cats = MT->request->{__stash}{__obj}{"top_categories:$blog_id:$category_set_id"};
+        if ($top_cats) {
+            @cats = @$top_cats;
+        } else {
+            @cats = $class->load({
+                    blog_id         => $blog_id,
+                    parent          => '0',
+                    category_set_id => $category_set_id,
+                },
+                { (
+                          ('user_custom' eq $sort_by)
+                        ? (sort => 'label')
+                        : (sort => $sort_by)
+                    ),
+                    direction => $sort_order,
+                });
+            MT->request->{__stash}{__obj}{"top_categories:$blog_id:$category_set_id"} = \@cats;
+        }
     }
     else {
 
@@ -763,7 +770,7 @@ sub _hdlr_sub_categories {
 
             # user specified category; list from this category down
             ($current_cat) = $ctx->cat_path_to_category(
-                $args->{category}, $ctx->stash('blog_id'),
+                $args->{category}, $blog_id,
                 $class_type,       $category_set_id
             );
         }
@@ -841,7 +848,7 @@ sub _hdlr_sub_categories {
         local $ctx->{__stash}{'entries'} = delay(
             sub {
                 my @args = (
-                    {   blog_id => $ctx->stash('blog_id'),
+                    {   blog_id => $blog_id,
                         status  => MT::Entry::RELEASE()
                     },
                     {   'join' => [
