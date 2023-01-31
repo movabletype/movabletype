@@ -506,7 +506,7 @@ sub context_script {
 
 sub _decode_utf8_if_needed {
     my $str = shift;
-    my $enc = MT->config->PublishCharset;
+    my $enc = MT->publish_charset;
     return $str unless lc($enc) =~ /^utf-?8$/ && !MT::Util::Encode::is_utf8($str);
     MT::Util::Encode::decode_utf8($str);
 }

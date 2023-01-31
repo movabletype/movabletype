@@ -4831,7 +4831,7 @@ B<Example:> Passing Parameters to a Template Module
         }
 
         # Try to read from cache
-        my $enc               = MT->config->PublishCharset;
+        my $enc               = MT->publish_charset;
         my $cache_expire_type = 0;
         my $cache_enabled     = 0;
 
@@ -5188,7 +5188,7 @@ sub _hdlr_section {
     my $app = MT->instance;
     my $out;
     my $cache_require;
-    my $enc = MT->config->PublishCharset || 'UTF-8';
+    my $enc = MT->publish_charset;
 
     # make cache id
     my $cache_id = $args->{cache_prefix} || '';

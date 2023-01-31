@@ -1864,6 +1864,12 @@ sub update_ping_list {return}
         $mt->{charset} = $mt->config->PublishCharset
             || $mt->language_handle->encoding;
     }
+
+    sub publish_charset {
+        my $mt = shift;
+        $mt = $mt->instance unless ref $mt;
+        $mt->{publish_charset} ||= $mt->config->PublishCharset || 'UTF-8';
+    }
 }
 
 sub supported_languages {

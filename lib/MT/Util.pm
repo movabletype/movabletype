@@ -806,7 +806,7 @@ sub encode_phphere {
 
 sub encode_url {
     my ( $str, $enc ) = @_;
-    $enc ||= MT->config->PublishCharset;
+    $enc ||= MT->publish_charset;
     my $encoded = MT::Util::Encode::encode( $enc, $str );
     $encoded =~ s!([^a-zA-Z0-9_.~-])!uc sprintf "%%%02x", ord($1)!eg;
     $encoded;
@@ -814,7 +814,7 @@ sub encode_url {
 
 sub decode_url {
     my ( $str, $enc ) = @_;
-    $enc ||= MT->config->PublishCharset;
+    $enc ||= MT->publish_charset;
     my $from_enc = MT::I18N::guess_encoding($str) || 'utf8';
     $str = MT::Util::Encode::encode( $from_enc, $str );
     $str =~ s!%([0-9a-fA-F][0-9a-fA-F])!pack("H*",$1)!eg;
@@ -2240,7 +2240,7 @@ sub get_newsbox_html {
     return unless is_url($newsbox_url);
     return unless $kind && ( length($kind) == 2 );
     $cached_only ||= 0;
-    my $enc               = MT->config('PublishCharset');
+    my $enc               = MT->publish_charset;
     my $NEWSCACHE_TIMEOUT = 60 * 60 * 24;
     my $sess_class        = MT->model('session');
     my ($news_object)     = ("");
