@@ -1355,6 +1355,7 @@ sub utime_r {
 
 sub clear_mt_cache {
     MT::Request->instance->reset;
+    require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
 }
 
