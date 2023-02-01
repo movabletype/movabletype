@@ -949,26 +949,26 @@ sub modified_author {
 }
 
 sub __load_category_data {
-    my $entry = shift;
-    return unless $entry->id;
+    my $entry    = shift;
+    my $entry_id = $entry->id or return;
     my $t     = MT->get_timer;
     $t->pause_partial if $t;
-    my $rows = $entry->{__category_data};
+    my $stash = MT->request->{__stash};
+    my $rows  = $stash->{__obj}{"category_data:$entry_id"};
     return $rows if $rows;
     require MT::Placement;
     my @maps = MT::Placement->search( { entry_id => $entry->id } );
     $rows = [ map { [ $_->category_id, $_->is_primary ] } @maps ];
     $t->mark('MT::Entry::__load_category_data') if $t;
-    return $entry->{__category_data} = $rows;
+    return $stash->{__obj}{"category_data:$entry_id"} = $rows;
 }
 
 sub flush_category_cache {
     my ( $copy, $place ) = @_;
-    MT::Memcached->instance->delete(
-        MT::Entry->cache_key( $place->entry_id, 'categories' ) );
     my $entry = MT::Entry->load( $place->entry_id ) or return;
     $entry->clear_cache('category');
     $entry->clear_cache('categories');
+    delete MT->request->{__stash}{__obj}{"category_data:".$entry->id};
 }
 
 MT::Placement->add_trigger( post_save   => \&flush_category_cache );
@@ -1644,10 +1644,9 @@ sub update_categories {
         MT::Placement->remove( { entry_id => $obj->id, } )
             or return $obj->error( MT::Placement->errstr );
 
-        MT::Memcached->instance->delete(
-            MT::Entry->cache_key( $obj->id, 'categories' ) );
         $obj->clear_cache('category');
         $obj->clear_cache('categories');
+        delete MT->request->{__stash}{__obj}{"category_data:".$obj->id};
 
         return [];
     }
