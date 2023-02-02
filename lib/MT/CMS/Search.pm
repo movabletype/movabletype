@@ -656,6 +656,26 @@ sub can_search_replace {
     return 0;
 }
 
+sub load_all_content_types {
+    my ($blog_id, $user) = @_;
+    my $content_types = MT::Request->instance->stash('all_content_types_for_search');
+    unless ($content_types) {
+        $content_types = [];
+        my $iter  = MT->model('content_type')->load_iter({ blog_id => $blog_id || \'> 0' }, { sort => 'name' });
+        my $perms = $user->permissions($blog_id);
+        while (my $content_type = $iter->()) {
+            next
+                unless ($user->is_superuser
+                || $user->permissions(0)->can_do('manage_content_data')
+                || $perms->can_do('manage_content_data')
+                || $perms->can_do('search_content_data_' . $content_type->unique_id));
+            push @$content_types, $content_type;
+        }
+        MT::Request->instance->stash('all_content_types_for_search', $content_types);
+    }
+    return @$content_types;
+}
+
 sub search_replace {
     my $app     = shift;
 
@@ -717,23 +737,7 @@ sub search_replace {
         my $selected_content_type_id = $app->param('content_type_id');
         my $selected_content_type;
         my ( @content_types, @date_time_fields, @date_fields, @time_fields );
-        my $iter
-            = MT->model('content_type')
-            ->load_iter( { blog_id => $blog_id || \'> 0' },
-            { sort => 'name' } );
-        my $perms = $user->permissions($blog_id);
-        while ( my $content_type = $iter->() ) {
-
-            next
-                unless (
-                   $user->is_superuser
-                || $user->permissions(0)->can_do('manage_content_data')
-                || $perms->can_do('manage_content_data')
-                || $perms->can_do(
-                    'search_content_data_' . $content_type->unique_id
-                )
-                );
-
+        for my $content_type (load_all_content_types($blog_id, $user)) {
             push @content_types,
                 +{
                 content_type_id   => $content_type->id,
@@ -873,11 +877,14 @@ sub do_search_replace {
     }
     my ( $content_type, @content_types );
     if ( $type eq 'content_data' ) {
-        my $content_type_id = $app->param('content_type_id') || 0;
-        my $iter = $app->model('content_type')->load_iter( { blog_id => $blog_id || \'> 0' }, { sort => 'name'});
-        while ( my $ct = $iter->() ) {
-            push @content_types, $ct;
-            $content_type = $ct if $ct->id == $content_type_id;
+        @content_types = load_all_content_types($blog_id, $author);
+        if (my $selected_content_type_id = $app->param('content_type_id')) {
+            for my $ct (@content_types) {
+                if ($ct->id == $selected_content_type_id) {
+                    $content_type = $ct;
+                    last;
+                }
+            }
         }
         $content_type ||= $content_types[0] if @content_types;
     }
@@ -1247,12 +1254,9 @@ sub do_search_replace {
         my %replace_cols;
         if ($do_replace) {
             %replace_cols = map { $_ => 1 } @{ $api->{replace_cols} };
-            if ($content_type) {
-                %replace_cols = (
-                    %replace_cols,
-                    map { '__field:' . $_->{id} => 1 }
-                        @{ $content_type->replaceable_fields }
-                );
+            if ($type eq 'content_data') {
+                my @fields = map { @{ $_->replaceable_fields } } ($content_type || @content_types);
+                %replace_cols = (%replace_cols, map { '__field:' . $_->{id} => 1 } @fields);
             }
         }
 
@@ -1360,7 +1364,7 @@ sub do_search_replace {
                                                 '"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]',
                                                 $text,
                                                 $field_data->{options}{label},
-                                                $content_type->name,
+                                                join ',', map { $_->name } ($content_type || @content_types),
                                                 $obj->id,
                                                 $error,
                                             );

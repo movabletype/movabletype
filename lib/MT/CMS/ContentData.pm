@@ -2165,13 +2165,11 @@ sub build_content_data_table {
     my $param      = $args{param} || {};
     my $type       = $args{type};
 
+    require MT::CMS::Search;
+    my @content_types = MT::CMS::Search::load_all_content_types($app->blog ? $app->blog->id : 0, $app_author);
+    return [] unless @content_types;
     my $content_type_id = $app->param('content_type_id') || 0;
-    my $content_type
-        = MT->model('content_type')->load( { id => $content_type_id } )
-        || MT->model('content_type')
-        ->load( { blog_id => ( $app->blog ? $app->blog->id : \'> 0' ) },
-        { sort => 'name', limit => 1 } );
-    return [] unless $content_type;
+    my $content_type = MT->model('content_type')->load( { id => $content_type_id } ) || $content_types[0];
     $param->{content_type_id}   = $content_type->id;
     $param->{content_type_name} = $content_type->name;
 
