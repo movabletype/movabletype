@@ -14,6 +14,8 @@ use MT::Stats qw(readied_provider);
 use MT::DataAPI::Endpoint::v1::Stats;
 use MT::DataAPI::Resource;
 
+use constant DEFAULT_LIMIT => 50;
+
 sub _invoke {
     my ( $app, $endpoint ) = @_;
 
@@ -25,9 +27,14 @@ sub _invoke {
     my $params = {
         startDate => scalar( $app->param('startDate') ),
         endDate   => scalar( $app->param('endDate') ),
-        limit     => scalar( $app->param('limit') || 50 ),
         offset    => scalar( $app->param('offset') ),
     };
+
+    if ( defined($app->param('limit')) ) {
+        $params->{limit} = scalar( $app->param('limit') );
+    } else {
+        $params->{limit} = DEFAULT_LIMIT;
+    }
 
     return
         unless $app->has_valid_limit_and_offset( $params->{limit},
@@ -54,7 +61,7 @@ sub pageviews_for_path_openapi_spec {
 
 sub pageviews_for_path {
     my ( $app, $endpoint ) = @_;
-    _maybe_raw( MT::DataAPI::Endpoint::v1::Stats::fill_in_archive_info( _invoke(@_), $app->blog ) );
+    _maybe_raw( MT::DataAPI::Endpoint::v1::Stats::fill_in_archive_info( scalar _invoke(@_), $app->blog ) );
 }
 
 sub visits_for_path_openapi_spec {
@@ -66,7 +73,7 @@ sub visits_for_path_openapi_spec {
 
 sub visits_for_path {
     my ( $app, $endpoint ) = @_;
-    _maybe_raw( MT::DataAPI::Endpoint::v1::Stats::fill_in_archive_info( _invoke(@_), $app->blog ) );
+    _maybe_raw( MT::DataAPI::Endpoint::v1::Stats::fill_in_archive_info( scalar _invoke(@_), $app->blog ) );
 }
 
 sub pageviews_for_date_openapi_spec {
