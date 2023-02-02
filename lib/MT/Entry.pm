@@ -955,10 +955,11 @@ sub __load_category_data {
     $t->pause_partial if $t;
     my $stash = MT->request->{__stash};
     my $rows  = $stash->{__obj}{"category_data:$entry_id"};
-    return $rows if $rows;
-    require MT::Placement;
-    my @maps = MT::Placement->search( { entry_id => $entry->id } );
-    $rows = [ map { [ $_->category_id, $_->is_primary ] } @maps ];
+    unless ($rows) {
+        require MT::Placement;
+        my @maps = MT::Placement->search( { entry_id => $entry->id } );
+        $rows = [ map { [ $_->category_id, $_->is_primary ] } @maps ];
+    }
     $t->mark('MT::Entry::__load_category_data') if $t;
     return $stash->{__obj}{"category_data:$entry_id"} = $rows;
 }
