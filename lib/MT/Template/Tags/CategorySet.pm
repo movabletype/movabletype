@@ -109,8 +109,8 @@ sub _hdlr_category_sets {
         local $vars->{__odd__}         = ( $i % 2 ) == 0;
         local $vars->{__even__}        = ( $i % 2 ) == 1;
         local $vars->{__counter__}     = $i + 1;
-        local $ctx->{__stash}{blog}    = $site,
-        local $ctx->{__stash}{blog_id} = $site->id,
+        local $ctx->{__stash}{blog}    = $site;
+        local $ctx->{__stash}{blog_id} = $site->id;
         local $ctx->{__stash}{category_set} = $category_set;
         local $ctx->{__stash}{content_type} = $content_type if $content_type;
 
