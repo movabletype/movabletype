@@ -27,6 +27,8 @@ sub save_object {
     $original ||= $app->model($type)->new;
     $around_filter ||= sub { $_[0]->() };
 
+    $obj->{__is_stored} ||= $original->{__is_stored};
+
     run_permission_filter( $app, 'data_api_save_permission_filter',
         $type, $obj->id, $obj, $original )
         or return;
