@@ -787,12 +787,12 @@ BEGIN {
                             = $prop->datasource->has_column('author_id')
                             ? 'author_id'
                             : 'created_by';
-
+                      my $author_id = $obj->$col;
                       # If there's no value in the column then no voter ID was
                       # recorded.
-                        return '' if !$obj->$col;
+                        return '' if !$author_id;
 
-                        my $author = MT->model('author')->load( $obj->$col );
+                        my $author = MT->request->{__stash}{author_cache}{$author_id} ||= MT->model('author')->load($author_id);
                         return $author
                             ? ( $author->nickname || $author->name )
                             : MT->translate('*User deleted*');
