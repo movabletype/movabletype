@@ -1151,6 +1151,7 @@ sub init_request {
     ## Initialize the MT::Request singleton for this particular request.
     $app->request->reset();
     $app->request( 'App-Class', ref $app );
+    $app->publisher->{start_time} = time;
 
     $app->run_callbacks( ref($app) . '::init_request', $app, @_ );
 
