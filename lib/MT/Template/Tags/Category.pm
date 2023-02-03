@@ -744,7 +744,8 @@ sub _hdlr_sub_categories {
     my $current_cat;
     my @cats;
     if ( $args->{top} ) {
-        my $top_cats = MT->request->{__stash}{__obj}{"top_categories:$blog_id:$category_set_id"};
+        my $cache_key = join ':', ($class_type eq 'category' ? 'top_categories' : 'top_folders'), $blog_id, $category_set_id, $sort_by, $sort_order;
+        my $top_cats = MT->request->{__stash}{__obj}{$cache_key};
         if ($top_cats) {
             @cats = @$top_cats;
         } else {
@@ -760,7 +761,7 @@ sub _hdlr_sub_categories {
                     ),
                     direction => $sort_order,
                 });
-            MT->request->{__stash}{__obj}{"top_categories:$blog_id:$category_set_id"} = \@cats;
+            MT->request->{__stash}{__obj}{$cache_key} = \@cats;
         }
     }
     else {
