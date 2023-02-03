@@ -496,7 +496,7 @@ sub _hdlr_entries {
                 my @cats;
                 my $cache_key;
                 my $stash = MT->request->{__stash};
-                if (!%blog_args && $blog_terms{blog_id} && keys %blog_terms == 1) {
+                if (!%blog_args && $blog_terms{blog_id} && !ref $blog_terms{blog_id} && keys %blog_terms == 1) {
                     $cache_key = join ':', ($cat_class_type eq 'category' ? 'categories' : 'folders'), $blog_terms{blog_id};
                 }
                 if ($cache_key && $stash->{__obj}{$cache_key}) {
