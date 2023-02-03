@@ -62,6 +62,7 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
       <mt:unless name="is_blog">
       <th class="head blog"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
       </mt:unless>
+      <th class="head content-type"><span class="col-label"><__trans phrase="content_type"></span></th>
       <th class="head author"><span class="col-label"><__trans phrase="Author"></span></th>
       <th class="head datetime"><span class="col-label"><__trans phrase="Created"></span></th>
       <th class="head data"><span class="col-label"><__trans phrase="Data"></span></th>
@@ -123,6 +124,9 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
       </td>
     </mt:unless>
   </mt:unless>
+      <td class="content-type">
+    <mt:var name="content_type" escape="html">
+      </td>
       <td class="author">
     <mt:var name="author_name" escape="html">
       </td>
@@ -155,7 +159,7 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
       </td>
     </tr>
     <tr class="preview-data">
-      <td class="p-0" colspan="8">
+      <td class="p-0" colspan="9">
         <div class="collapse mt-collapse__content" id="content-data-data-<mt:var name="id" escape="html">">
           <mt:var name="preview_data">
         </div>

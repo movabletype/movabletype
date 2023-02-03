@@ -2167,6 +2167,7 @@ sub build_content_data_table {
 
     require MT::CMS::Search;
     my @content_types = MT::CMS::Search::load_all_content_types($app->blog ? $app->blog->id : 0, $app_author);
+    my %ct = map { $_->id => $_ } @content_types;
     return [] unless @content_types;
     my $content_type_id = $app->param('content_type_id') || 0;
     my $content_type = MT->model('content_type')->load( { id => $content_type_id } ) || $content_types[0];
@@ -2195,6 +2196,7 @@ sub build_content_data_table {
         my $blog   = $content_data->blog;
 
         my $row = {};
+        $row->{content_type} = $ct{$content_data->content_type_id}->name;
         $row->{author_name}
             = $author ? $author->name : $app->translate('(user deleted)');
         $row->{id} = $content_data->id;
