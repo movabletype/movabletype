@@ -353,7 +353,7 @@ sub update {
         = $app->resource_object( 'content_field', $orig_content_field );
 
     save_object(
-        $app, 'content_field', $new_content_field, undef,
+        $app, 'content_field', $new_content_field, $orig_content_field,
         _build_around_filter( $app, $content_type, $new_content_field ),
 
     ) or return;

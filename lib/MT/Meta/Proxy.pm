@@ -170,7 +170,9 @@ sub set {
     # update optimization for metadata columns
     $proxy->lazier_load_objects($col);
 
+    my $old = $proxy->{__objects}{$col};
     $proxy->{__objects}->{$col} = $proxy->create_meta_object( $col, $value );
+    $proxy->{__objects}{$col}{__is_stored} = $old->{__is_stored} if $old;
 
     $proxy->{__loaded}->{$col} = 1;
     if ( %{ $proxy->{__loaded} } ) {
@@ -309,7 +311,9 @@ sub lazier_load_objects {
         my @objs     = $meta_pkg->search( $proxy->{__pkeys},
             { fetchonly => ['type'] } );
         for my $obj (@objs) {
-            $proxy->{__objects}->{ $obj->type } = $meta_pkg->new;
+            my $meta_obj = $meta_pkg->new;
+            $meta_obj->{__is_stored} = 1;
+            $proxy->{__objects}->{ $obj->type } = $meta_obj;
         }
         $proxy->{__loaded} = {};
     }
