@@ -423,6 +423,12 @@ sub delete {
     $app->run_callbacks( 'data_api_post_delete.content_field',
         $app, $content_field );
 
+    my $fields    = $content_type->fields;
+    my @newfields = grep { $_->{id} != $content_field->id } @$fields;
+    $content_type->fields(\@newfields);
+    $content_type->save or return $content_field->errstr($content_type->errstr);
+    $content_field->{__content_type_obj} = $content_type;
+
     $content_field;
 }
 
