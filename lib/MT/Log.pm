@@ -185,7 +185,7 @@ sub list_props {
                 my $app   = shift || MT->app;
                 my $terms = {};
                 if ( my $blog_id = $app->param('blog_id') ) {
-                    my $blog = MT->model('blog')->load($blog_id);
+                    my $blog = $app->blog;
                     if ( $blog->is_blog ) {
                         $terms->{blog_id} = $blog->id;
                     }

@@ -1968,7 +1968,7 @@ sub delete_map {
         or return $app->errtrans('Cannot load templatemap');
     $map->remove;
 
-    my $blog = MT->model('blog')->load($blog_id);
+    my $blog = $app->blog;
     $blog->flush_has_archive_type_cache();
 
     my $html = _generate_map_table( $app, $blog_id, $template_id );
@@ -2037,7 +2037,7 @@ sub add_map {
         or return $app->error(
         $app->translate( "Saving map failed: [_1]", $map->errstr ) );
 
-    my $blog = MT->model('blog')->load($blog_id);
+    my $blog = $app->blog;
     $blog->flush_has_archive_type_cache();
 
     my $html = _generate_map_table( $app, $blog_id, $template_id, $map->id );
