@@ -2402,9 +2402,10 @@ sub _hdlr_entry_blog_name {
     my ( $ctx, $args ) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
-    my $b = MT::Blog->load( $e->blog_id )
+    my $blog_id = $e->blog_id;
+    my $b = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
         or return $ctx->error(
-        MT->translate( 'Cannot load blog #[_1].', $e->blog_id ) );
+        MT->translate( 'Cannot load blog #[_1].', $blog_id ) );
     return $b->name;
 }
 

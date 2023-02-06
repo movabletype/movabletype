@@ -1516,7 +1516,7 @@ BEGIN {
                     my $terms;
                     push @$terms, { author_id => $user->id };
                     if ($blog_id) {
-                        my $blog = MT->model('blog')->load($blog_id);
+                        my $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
                         my @blog_ids;
                         push @blog_ids, $blog_id;
                         if ( $blog && !$blog->is_blog ) {

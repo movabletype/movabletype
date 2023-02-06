@@ -635,9 +635,9 @@ sub blog {
     $ct_data->cache_property(
         'blog',
         sub {
-            my $blog_id = $ct_data->blog_id;
+            my $blog_id = $ct_data->blog_id || 0;
             require MT::Blog;
-            MT::Blog->load( $blog_id || 0 )
+            MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
                 or $ct_data->error(
                 MT->translate(
                     "Loading blog '[_1]' failed: [_2]",
