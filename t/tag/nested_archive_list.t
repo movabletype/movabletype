@@ -164,6 +164,8 @@ TMPL
 my $site      = $objs->{website}{my_site};
 my $site_path = $site->site_path;
 
+$test_env->clear_mt_cache;
+
 MT->publisher->rebuild(BlogID => $site->id);
 
 $test_env->ls;
