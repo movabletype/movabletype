@@ -4801,7 +4801,8 @@ B<Example:> Passing Parameters to a Template Module
             $req->stash( $stash_id, [ $tmpl, undef ] );
         }
 
-        my $blog = $ctx->stash('blog') || MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
+        my $blog = $ctx->stash('blog');
+        $blog ||= MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
 
         my %include_recipe;
         my $use_ssi
