@@ -1150,9 +1150,14 @@ sub normal_tests_for_delete {
                     count => 1,
                 },
             ],
-            result   => sub { $cf; },
+            # can't compare the result with $cf as options are not available after deletion
             complete => sub {
+                my ($data, $body) = @_;
+                my $json = JSON::decode_json($body);
+                is $json->{id} => $cf->id;
                 ok( !MT->model('content_field')->load( $cf->id ) );
+                my $content_type = MT->model('content_type')->load($content_type_id);
+                ok !grep {$_->{id} == $cf->id} @{$content_type->fields};
             },
         }
     );
@@ -1182,9 +1187,13 @@ sub normal_tests_for_delete {
                     count => 1,
                 },
             ],
-            result   => sub { $cf; },
             complete => sub {
+                my ($data, $body) = @_;
+                my $json = JSON::decode_json($body);
+                is $json->{id} => $cf->id;
                 ok( !MT->model('content_field')->load( $cf->id ) );
+                my $content_type = MT->model('content_type')->load($content_type_id);
+                ok !grep {$_->{id} == $cf->id} @{$content_type->fields};
             },
         }
     );
@@ -1218,9 +1227,13 @@ sub normal_tests_for_delete {
                     count => 1,
                 },
             ],
-            result   => sub { $cf; },
             complete => sub {
+                my ($data, $body) = @_;
+                my $json = JSON::decode_json($body);
+                is $json->{id} => $cf->id;
                 ok( !MT->model('content_field')->load( $cf->id ) );
+                my $content_type = MT->model('content_type')->load($content_type_id);
+                ok !grep {$_->{id} == $cf->id} @{$content_type->fields};
             },
         }
     );
