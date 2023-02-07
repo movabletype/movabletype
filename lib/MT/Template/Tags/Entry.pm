@@ -493,7 +493,20 @@ sub _hdlr_entries {
                     = $ctx->compile_category_filter( $category_arg, $cats );
             }
             else {
-                my @cats = $cat_class->load( \%blog_terms, \%blog_args );
+                my @cats;
+                my $cache_key;
+                my $stash = MT->request->{__stash};
+                if (!%blog_args && $blog_terms{blog_id} && !ref $blog_terms{blog_id} && keys %blog_terms == 1) {
+                    $cache_key = join ':', ($cat_class_type eq 'category' ? 'categories' : 'folders'), $blog_terms{blog_id};
+                }
+                if ($cache_key && $stash->{__obj}{$cache_key}) {
+                    @cats = @{ $stash->{__obj}{$cache_key} };
+                } else {
+                    @cats = $cat_class->load( \%blog_terms, \%blog_args );
+                    if ($cache_key) {
+                        $stash->{__obj}{$cache_key} = \@cats;
+                    }
+                }
                 if (@cats) {
                     $cats = \@cats;
                 }
