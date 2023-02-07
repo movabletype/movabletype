@@ -427,8 +427,6 @@ sub delete {
     my @newfields = grep { $_->{id} != $content_field->id } @$fields;
     $content_type->fields(\@newfields);
     $content_type->save or return $content_field->errstr($content_type->errstr);
-    # keep an old cache intentionally to show the (old) options
-    # $content_field->{__content_type_obj} = $content_type;
 
     $content_field;
 }
