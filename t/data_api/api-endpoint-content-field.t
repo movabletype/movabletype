@@ -1151,6 +1151,7 @@ sub normal_tests_for_delete {
                 },
             ],
             # can't compare the result with $cf as options are not available after deletion
+            result => sub { $cf },
             complete => sub {
                 my ($data, $body) = @_;
                 my $json = JSON::decode_json($body);
@@ -1161,6 +1162,8 @@ sub normal_tests_for_delete {
             },
         }
     );
+
+    $test_env->clear_mt_cache;
 
     $cf = MT->model('content_field')
         ->load( { content_type_id => $content_type_id } );
@@ -1187,6 +1190,7 @@ sub normal_tests_for_delete {
                     count => 1,
                 },
             ],
+            result => sub { $cf },
             complete => sub {
                 my ($data, $body) = @_;
                 my $json = JSON::decode_json($body);
@@ -1197,6 +1201,8 @@ sub normal_tests_for_delete {
             },
         }
     );
+
+    $test_env->clear_mt_cache;
 
     $cf = MT->model('content_field')
         ->load( { content_type_id => $content_type_id } );
@@ -1227,6 +1233,7 @@ sub normal_tests_for_delete {
                     count => 1,
                 },
             ],
+            result => sub { $cf },
             complete => sub {
                 my ($data, $body) = @_;
                 my $json = JSON::decode_json($body);
