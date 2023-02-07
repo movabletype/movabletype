@@ -2077,6 +2077,9 @@ ul.asset-list li img.list-image {
 }
 
 /* boostrap4 to 5 */
+label {
+  margin-bottom: 0.5rem;
+}
 .pre-scrollable {
   max-height: 340px;
   overflow-y: scroll;
