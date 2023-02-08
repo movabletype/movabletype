@@ -788,18 +788,21 @@ sub search_replace {
             $param->{show_datetime_fields_type} = 'date';
         }
 
-        my $blog_perms = $user->permissions($blog_id);
-        if ( $user->is_superuser ) {
-            $param->{can_republish} = 1;
-        }
-        elsif ( $selected_content_type && $blog_perms ) {
-            my $unique_id = $selected_content_type->unique_id;
-            $param->{can_republish}
-                = $blog_perms->can_do(
-                "publish_content_data_via_list_$unique_id")
-                || $blog_perms->can_do("publish_all_content_data_$unique_id")
-                ? 1
-                : 0;
+        if (keys %selected_content_type_ids == 1) {
+            my $blog_perms = $user->permissions($blog_id);
+            if ( $user->is_superuser ) {
+                $param->{can_republish} = 1;
+            }
+            elsif ( $selected_content_type && $blog_perms ) {
+                my $unique_id = $selected_content_type->unique_id;
+                $param->{can_republish}
+                    = $blog_perms->can_do(
+                    "publish_content_data_via_list_$unique_id")
+                    || $blog_perms->can_do("publish_all_content_data_$unique_id")
+                    ? 1
+                    : 0;
+            }
+            $param->{show_actions} = 1;
         }
     }
 
