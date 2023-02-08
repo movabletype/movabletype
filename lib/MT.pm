@@ -26,7 +26,7 @@ our (
     $plugin_sig, $plugin_envelope, $plugin_registry,
     %Plugins,    @Components,      %Components,
     $DebugMode,  $mt_inst,         %mt_inst,
-    $Builder,
+    $Builder,    $Publisher,
 );
 my %Text_filters;
 
@@ -1687,10 +1687,11 @@ sub component {
 
 sub publisher {
     my $mt = shift;
-    $mt = $mt->instance unless ref $mt;
-    require MT::ContentPublisher;
-    $mt->request('ContentPublisher')
-        || $mt->request( 'ContentPublisher', new MT::ContentPublisher() );
+    if (!$Publisher) {
+        require MT::ContentPublisher;
+        $Publisher = MT::ContentPublisher->new;
+    }
+    $Publisher;
 }
 
 sub builder {
