@@ -88,9 +88,9 @@ sub core_search_apis {
                     $terms->{ $app->param('filter') }
                         = $app->param('filter_val');
                 }
-                if (my $selected_content_type_id = $app->param('content_type_id')) {
-                    $terms->{content_type_id} = $selected_content_type_id;
-                    $app->param('content_type_id', $selected_content_type_id);
+                if (my @selected_content_type_id = $app->multi_param('content_type_id')) {
+                    $terms->{content_type_id} = \@selected_content_type_id;
+                    $app->param('content_type_id', @selected_content_type_id);
                 }
                 $args->{sort}      = 'authored_on';
                 $args->{direction} = 'descend';
@@ -682,7 +682,7 @@ sub search_replace {
     $app->validate_param({
         _type           => [qw/OBJTYPE/],
         blog_id         => [qw/ID/],
-        content_type_id => [qw/ID/],
+        content_type_id => [qw/ID MULTI/],
         entry_type      => [qw/OBJTYPE/],
     }) or return;
 
@@ -734,7 +734,7 @@ sub search_replace {
         }
     }
     elsif ( $param->{object_type} eq 'content_data' ) {
-        my $selected_content_type_id = $app->param('content_type_id');
+        my %selected_content_type_ids = map { $_ => 1 } $app->multi_param('content_type_id');
         my $selected_content_type;
         my ( @content_types, @date_time_fields, @date_fields, @time_fields );
         for my $content_type (load_all_content_types($blog_id, $user)) {
@@ -742,14 +742,12 @@ sub search_replace {
                 +{
                 content_type_id   => $content_type->id,
                 content_type_name => $content_type->name,
-                (         !$selected_content_type_id
-                        || $content_type->id == $selected_content_type_id
-                    )
+                $selected_content_type_ids{ $content_type->id }
                 ? ( selected => 1 )
                 : (),
                 };
-            $selected_content_type_id ||= $content_type->id;
-            if ( $content_type->id == $selected_content_type_id ) {
+
+            if ( $content_type->id == ((%selected_content_type_ids)[0] || 0) ) {
                 $selected_content_type = $content_type;
             }
 

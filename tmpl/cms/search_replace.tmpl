@@ -26,7 +26,7 @@ function toggleSearchAndReplace(selection) {
     if (selection.value == 'search') {
         jQuery('#search-bar-search-field').css('display', '');
         jQuery('#search-bar-advanced-search').css('display', '');
-	jQuery('#search-bar-replace-fields').hide();
+	      jQuery('#search-bar-replace-fields').hide();
         if (jQuery('#is_limited').is(':checked')) {
             jQuery('#limited-fields').css('display', '');
         } else {
@@ -38,7 +38,7 @@ function toggleSearchAndReplace(selection) {
     } else if (selection.value == 'replace') {
         jQuery('#search-bar-search-field').hide();
         jQuery('#search-bar-advanced-search').hide();
-	jQuery('#search-bar-replace-fields').css('display', '');
+	      jQuery('#search-bar-replace-fields').css('display', '');
         jQuery('#limited-fields').hide();
         jQuery('#date-range').hide();
     }
@@ -229,7 +229,7 @@ function toggleContentTypeDateTimeInputs() {
            label="<__trans phrase="Content Type">"
            label_class="top-label"
            help_section="search-alt">
-           <select class="custom-select form-control" name="content_type_id">
+           <select class="custom-select form-control" name="content_type_id" multiple="multiple">
       <mt:loop name="content_types">
              <option value="<mt:var name="content_type_id" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>>
                <mt:var name="content_type_name" escape="html">
