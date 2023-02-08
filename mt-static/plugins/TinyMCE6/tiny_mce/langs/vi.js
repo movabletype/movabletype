@@ -8,7 +8,7 @@ tinymce.addI18n("vi", {
     "Redo": "L\xe0m l\u1ea1i",
     "Undo": "H\u1ee7y thao t\xe1c",
     "Cut": "C\u1eaft",
-    "Copy": "Sao ch\xe9p",
+    "Copy": "Sao ch\xe9p 2",
     "Paste": "D\xe1n",
     "Select all": "Ch\u1ecdn t\u1ea5t c\u1ea3",
     "New document": "T\u1ea1o t\xe0i li\u1ec7u m\u1edbi",

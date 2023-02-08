@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.10.2 (2021-11-17)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -1028,6 +1028,7 @@
 
     var fireFullscreenStateChanged = function (editor, state) {
       editor.fire('FullscreenStateChanged', { state: state });
+      editor.fire('ResizeEditor');
     };
 
     var getFullscreenNative = function (editor) {
@@ -1283,10 +1284,10 @@
         editorContainerStyle.height = fullscreenInfo.containerHeight;
         editorContainerStyle.top = fullscreenInfo.containerTop;
         editorContainerStyle.left = fullscreenInfo.containerLeft;
+        cleanup();
         setScrollPos(fullscreenInfo.scrollPos);
         fullscreenState.set(null);
         fireFullscreenStateChanged(editor, false);
-        cleanup();
         editor.off('remove', cleanup);
       }
     };
