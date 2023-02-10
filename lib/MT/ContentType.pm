@@ -493,7 +493,7 @@ sub blog {
         sub {
             my $blog_id = $obj->blog_id;
             require MT::Blog;
-            MT::Blog->load($blog_id)
+            MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
                 or $obj->error(
                 MT->translate(
                     "Loading blog '[_1]' failed: [_2]",

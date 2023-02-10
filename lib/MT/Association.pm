@@ -424,11 +424,12 @@ sub user {
 
 sub blog {
     my $assoc = shift;
+    my $blog_id = $assoc->blog_id;
     $assoc->cache_property(
         'blog',
         sub {
             require MT::Blog;
-            $assoc->blog_id ? MT::Blog->load( $assoc->blog_id ) : undef;
+            $blog_id ? MT->requst->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id) : undef;
         }
     );
 }

@@ -1257,7 +1257,7 @@ sub build_date {
     unless ( ref $blog ) {
         my $blog_id = $blog || $args->{offset_blog_id};
         if ($blog_id) {
-            $blog = MT->model('blog')->load($blog_id);
+            $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
             return $ctx->error(
                 MT->translate( 'Cannot load blog #[_1].', $blog_id ) )
                 unless $blog;
@@ -3425,7 +3425,7 @@ sub _hdlr_app_statusmsg {
     my $blog_id = $ctx->var('blog_id');
     my $blog    = $ctx->stash('blog');
     if ( !$blog && $blog_id ) {
-        $blog = MT->model('blog')->load($blog_id);
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
     }
     if ( $id && $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
         my $link_l
@@ -4735,8 +4735,8 @@ B<Example:> Passing Parameters to a Template Module
                 )
             ) if $arg->{local};
 
-            my $local_blog
-                = MT->model('blog')->load( $ctx->stash('local_blog_id') );
+            my $local_blog_id = $ctx->stash('local_blog_id');
+            my $local_blog    = MT->request->{__stash}{__obj}{"site:$local_blog_id"} ||= MT->model('blog')->load($local_blog_id);
 
             if ($local_blog->is_blog) {
                 $blog_id = $local_blog->parent_id or return; # skip if data is broken
@@ -4801,7 +4801,8 @@ B<Example:> Passing Parameters to a Template Module
             $req->stash( $stash_id, [ $tmpl, undef ] );
         }
 
-        my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
+        my $blog = $ctx->stash('blog');
+        $blog ||= MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
 
         my %include_recipe;
         my $use_ssi
@@ -5019,7 +5020,7 @@ B<Example:> Passing Parameters to a Template Module
         else {
             my $blog = $ctx->stash('blog');
             if ( $blog && $blog->id != $blog_id ) {
-                $blog = MT::Blog->load($blog_id)
+                $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
                     or return $ctx->error(
                     MT->translate(
                         "Cannot find blog for id '[_1]", $blog_id

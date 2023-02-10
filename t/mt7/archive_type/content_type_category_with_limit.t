@@ -82,6 +82,8 @@ TMPL
     ],
 });
 
+$test_env->clear_mt_cache;
+
 my $admin = MT::Author->load(1);
 my $site  = $objs->{website}{my_site};
 my $ct    = $objs->{content_type}{ct}{content_type};

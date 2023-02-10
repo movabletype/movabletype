@@ -176,7 +176,7 @@ sub blog {
     unless ($blog) {
         my $blog_id = $comment->blog_id;
         require MT::Blog;
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $comment->error(
             MT->translate(
                 "Loading blog '[_1]' failed: [_2]", $blog_id,

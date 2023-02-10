@@ -11,6 +11,7 @@ use warnings;
 sub clear_cache {
     require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    MT->request->reset;
 }
 
 sub make_author {

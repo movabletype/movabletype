@@ -85,12 +85,12 @@ sub user {
 
 sub blog {
     my $perm = shift;
-    return undef unless $perm->blog_id;
+    my $blog_id = $perm->blog_id or return undef;
     $perm->cache_property(
         'blog',
         sub {
             require MT::Blog;
-            MT::Blog->load( $perm->blog_id );
+            MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id);
         }
     );
 }

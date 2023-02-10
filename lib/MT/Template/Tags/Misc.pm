@@ -227,7 +227,7 @@ B<Example:>
 sub _hdlr_captcha_fields {
     my ( $ctx, $args, $cond ) = @_;
     my $blog_id = $ctx->stash('blog_id');
-    my $blog    = MT->model('blog')->load($blog_id);
+    my $blog    = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
     return $ctx->error( MT->translate( 'Cannot load blog #[_1].', $blog_id ) )
         unless $blog;
     if ( my $provider
@@ -253,7 +253,7 @@ If any stats provider was not found, this template tag will return blank string.
 sub _hdlr_stats_snippet {
     my ($ctx, $args) = @_;
     my $blog_id      = $ctx->stash('blog_id');
-    my $blog         = MT->model('blog')->load($blog_id);
+    my $blog         = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
     my $provider_arg = $args->{provider} || '';
     my $cache_key    = "stats_provider:$provider_arg";
     my $provider;
