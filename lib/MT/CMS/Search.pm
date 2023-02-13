@@ -886,7 +886,6 @@ sub do_search_replace {
                 }
             }
         }
-        $content_type ||= $content_types[0] if @content_types;
     }
     if ($is_limited) {
         @cols = $app->multi_param('search_cols');
@@ -905,12 +904,17 @@ sub do_search_replace {
         @cols = grep { $search_api_cols{$_} } @cols;
         $is_limited = 0 unless scalar @cols;
     }
+    my %cf_to_ct;
     if ( !$is_limited ) {
         @cols = grep { $_ ne 'plugin' }
             keys %{ $search_api->{search_cols} };
         if ( $type eq 'content_data' ) {
-            push @cols, map { '__field:' . $_->{id} }
-                map { @{ $_->searchable_fields } } @content_types;
+            for my $ct (@content_types) {
+                for my $f (@{$ct->searchable_fields}) {
+                    push @cols, '__field:' . $f->{id};
+                    $cf_to_ct{$f->{id}} = $ct;
+                }
+            }
         }
     }
     my $quicksearch_id;
@@ -1286,9 +1290,8 @@ sub do_search_replace {
                     my ( $content_field_id, $field_data, $field_registry );
                     if ( $col =~ /^__field:(\d+)$/ ) {
                         $content_field_id = $1;
-                        $field_data
-                            = $content_type->get_field($content_field_id)
-                            or next;
+                        my $ct = $content_type || $cf_to_ct{$content_field_id} or next;
+                        $field_data = $ct->get_field($content_field_id) or next;
                         $field_registry
                             = $content_field_types->{ $field_data->{type} };
                         $text = $obj->data->{$content_field_id};
@@ -1687,7 +1690,7 @@ sub do_search_replace {
                     field       => '__field:' . $f->{id},
                     label       => $f->{options}{label},
                     selected    => exists( $cols{ '__field:' . $f->{id} } ),
-                    hidden      => ( $ct->id != $content_type->id ) ? 1 : 0,
+                    hidden      => ( $ct->id != ($content_type || $content_types[0])->id ) ? 1 : 0,
                     field_ct_id => $ct->id,
                     replaceable => (
                         grep { $_->{id} == $f->{id} }
