@@ -15,6 +15,12 @@ use base qw(
     MT::ErrorHandler
 );
 
+sub enable_utf8_option_name {
+    require DBD::mysql;
+    (my $dbd_version = DBD::mysql->VERSION) =~ s/_.+$//;
+    $dbd_version >= 4.032 ? 'mysql_enable_utf8mb4' : 'mysql_enable_utf8';
+}
+
 sub dsn_from_config {
     my $dbd   = shift;
     my $dsn   = $dbd->SUPER::dsn_from_config(@_);

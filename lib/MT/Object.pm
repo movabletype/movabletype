@@ -354,21 +354,23 @@ sub install_properties {
     $class->add_trigger(
         '__core_final_post_load',
         sub {
-            my ($obj)    = @_;
-            my $data     = $obj->{column_values};
-            my $props    = $obj->properties;
-            my $cols     = $props->{columns};
-            my $col_defs = $obj->column_defs;
-            my %is_blob;
-            for my $col (@$cols) {
-                $is_blob{$col} = 1
-                    if $col_defs->{$col}
-                    && $col_defs->{$col}{type} =~ /\bblob\b/;
-            }
-            foreach ( keys %$data ) {
-                my $v = $data->{$_};
-                if ( !( MT::Util::Encode::is_utf8( $data->{$_} ) ) && !$is_blob{$_} ) {
-                    $data->{$_} = MT::Util::Encode::decode( $enc, $v );
+            my ($obj) = @_;
+            if ($obj->driver->dbd->need_encode) {
+                my $data     = $obj->{column_values};
+                my $props    = $obj->properties;
+                my $cols     = $props->{columns};
+                my $col_defs = $props->{column_defs_parsed} ? $props->{column_defs} : $obj->column_defs;
+                my %is_blob;
+                for my $col (@$cols) {
+                    $is_blob{$col} = 1
+                        if $col_defs->{$col}
+                        && $col_defs->{$col}{type} =~ /\bblob\b/;
+                }
+                foreach ( keys %$data ) {
+                    my $v = $data->{$_};
+                    if ( !$is_blob{$_} && !( MT::Util::Encode::is_utf8($v) ) ) {
+                        $data->{$_} = MT::Util::Encode::decode( $enc, $v );
+                    }
                 }
             }
             $obj->{__core_final_post_load_mark} = 1;

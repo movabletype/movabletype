@@ -57,7 +57,11 @@ sub db_column_name {
 
 sub configure { }
 
-sub need_encode { 1; }
+sub enable_utf8_option_name { }
+
+sub need_encode {
+    MT->config->DatabaseEnableUTF8 ? 0 : 1;
+}
 
 1;
 __END__
