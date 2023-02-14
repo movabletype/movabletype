@@ -1225,7 +1225,7 @@ sub list {
         ? $screen_settings->{default_sort_key}
         : '';
     my $sort_by    = $list_pref->{sort_by}    || $default_sort;
-    my $sort_order = $list_pref->{sort_order} || 'ascend';
+    my $sort_order = $list_pref->{sort_order} || '';
 
     my @list_columns;
     for my $prop ( values %$list_props ) {
