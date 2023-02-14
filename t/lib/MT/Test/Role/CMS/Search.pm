@@ -69,16 +69,26 @@ sub change_content_type {
     my ($self, $ct_id) = @_;
     return if $self->current_tab ne 'content_data';
     my $form      = $self->find_searchform('search_form') or return;
-    my $ct_select = $form->find_input('content_type_id')  or return note 'Failed to find content type selector';
-    $ct_select->value($ct_id);
+    my @ct_select = $form->find_input('content_type_id')  or return note 'Failed to find content type selector';
+    my @ct_ids    = ref $ct_id eq 'ARRAY' ? @$ct_id : ($ct_id);
+    my %id_exists = map { $_ => 1 } @ct_ids;
+    for my $dom (@ct_select) {
+        if ($id_exists{ ($dom->possible_values)[1] }) {
+            $dom->check;
+        } else {
+            $dom->value(undef);
+        }
+    }
 
-    my @input = $form->find_input('search_cols');
-    for my $elem (@input) {
-        my $val             = _checkbox_attr_value($elem);
-        my $checkbox        = $self->wq_find(qq{#search_form input[name="search_cols"][value="$val"]});
-        my $li              = $checkbox->parent->parent;
-        my $ct_cf_belogs_to = $li->attr('data-mt-content-type');
-        $elem->disabled($ct_cf_belogs_to && $ct_cf_belogs_to == $ct_id ? '' : 'disabled');
+    if (scalar @ct_ids == 1) {
+        my @input = $form->find_input('search_cols');
+        for my $elem (@input) {
+            my $val             = _checkbox_attr_value($elem);
+            my $checkbox        = $self->wq_find(qq{#search_form input[name="search_cols"][value="$val"]});
+            my $li              = $checkbox->parent->parent;
+            my $ct_cf_belogs_to = $li->attr('data-mt-content-type');
+            $elem->disabled($ct_cf_belogs_to && $ct_cf_belogs_to == $ct_ids[0] ? '' : 'disabled');
+        }
     }
 }
 
@@ -163,18 +173,30 @@ sub apply_opts {
     }
 }
 
+sub selected_options {
+    my ($self, $form, $sel) = @_;
+    my @options = $form->find_input($sel);
+    if (exists $options[0]->{multiple}) {
+        return map { $_->{menu}->[ $_->{current} ]->{value} } grep { $_->{current} > 0 } @options;
+    } else {
+        return $options[0]->{menu}->[$options[0]->{current}]->{value}; 
+    }
+}
+
 sub _validate {
     my ($self, $key, $opts) = @_;
 
     if ($key eq 'date_time_field_id') {
-        my $new_val = $opts->{$key};
-        if ($new_val > 0) {
-            my $form            = $self->find_searchform('search_form') or return;
-            my $ct_id           = $form->find_input('content_type_id')->value;
-            my $option          = $self->wq_find(qq{#search_form select[name="date_time_field_id"] option[value="$new_val"]});
-            my $ct_cf_belogs_to = $option->attr('data-mt-content-type');
-            if ($ct_cf_belogs_to != $ct_id) {
-                note "Warning: cf=$new_val belongs to ct=$ct_cf_belogs_to but ct=$ct_id given: continue";
+        my $form   = $self->find_searchform('search_form') or return;
+        my @ct_ids = ($self->selected_options($form, 'content_type_id'));
+        if (scalar @ct_ids == 1) {
+            my $new_val = $opts->{$key};
+            if ($new_val > 0) {
+                my $option          = $self->wq_find(qq{#search_form select[name="date_time_field_id"] option[value="$new_val"]});
+                my $ct_cf_belogs_to = $option->attr('data-mt-content-type');
+                if ($ct_cf_belogs_to != $ct_ids[0]) {
+                    note "Warning: cf=$new_val belongs to ct=$ct_cf_belogs_to but ct=$ct_ids[0] given: continue";
+                }
             }
         }
     }

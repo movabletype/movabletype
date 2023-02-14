@@ -3642,8 +3642,9 @@ sub _hdlr_app_listing {
     my $show_actions
         = exists $args->{show_actions} ? $args->{show_actions} : 1;
     my $return_args = $ctx->var('return_args') || '';
+    my $is_search_replace = MT->app->param('__mode') eq 'search_replace';
     my $search_options
-        = MT->app->param('__mode') eq 'search_replace'
+        = $is_search_replace
         ? ( $ctx->var('search_options') || '' )
         : '';
     $return_args = encode_html( $return_args . $search_options );
@@ -3686,7 +3687,7 @@ $insides
         </div>
 TABLE
 
-    if ($show_actions) {
+    if ($show_actions || $is_search_replace) {
         local $ctx->{__stash}{vars}{__contents__} = $table;
         return $ctx->build(<<EOT);
 <div id="$id" class="listing line $listing_class">
