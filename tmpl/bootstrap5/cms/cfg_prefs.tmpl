@@ -115,7 +115,7 @@
        label_for="server_offset"
        help_page="blog_settings_general"
        help_section="blog_timezone">
-      <select name="server_offset" id="server_offset" class="custom-select form-control half-width required">
+      <select name="server_offset" id="server_offset" class="custom-select form-control half-width required form-select">
         <option value=""><__trans phrase="Time zone not selected"></option>
         <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
         <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
@@ -157,7 +157,7 @@
         hint="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">"
         hint_id="languageHelp"
         show_hint="1">
-        <select name="language" id="language" class="custom-select form-control" aria-describedby="languageHelp">
+        <select name="language" id="language" class="custom-select form-control form-select" aria-describedby="languageHelp">
         <mt:loop name="languages">
             <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
         </mt:loop>
@@ -568,7 +568,7 @@
        help_section="preferred_archive_type">
     <mt:loop name="entry_archive_types">
       <mt:if name="__first__">
-      <select name="preferred_archive_type" id="preferred_archive_type" class="custom-select form-control">
+      <select name="preferred_archive_type" id="preferred_archive_type" class="custom-select form-control form-select">
         <mt:if name="no_preferred_archive_type">
           <option value="" selected="selected"><__trans phrase="Choose archive type"></option>
         </mt:if>
@@ -610,7 +610,7 @@
        label_for="include_system"
        help_page="blog_settings_publishing"
        help_section="ssi">
-      <select id="include_system" name="include_system" class="custom-select form-control">
+      <select id="include_system" name="include_system" class="custom-select form-control form-select">
         <option value=""<mt:unless name="include_system"> selected="selected"</mt:unless>><__trans phrase="None (disabled)"></option>
         <option value="php"<mt:if name="include_system" eq="php"> selected="selected"</mt:if>><__trans phrase="PHP Includes"></option>
         <option value="shtml"<mt:if name="include_system" eq="shtml"> selected="selected"</mt:if>><__trans phrase="Apache Server-Side Includes"></option>
@@ -691,7 +691,7 @@
     >
       <div class="row">
         <div class="form-inline col">
-          <select name="upload_destination" id="upload_destination" class="custom-select form-control" onchange="uploadDestinationSelect(this)">
+          <select name="upload_destination" id="upload_destination" class="custom-select form-control form-select" onchange="uploadDestinationSelect(this)">
           <mt:loop name="destination_loop">
             <option value="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mtif><mt:if name="disabled" eq="1"> hidden</mt:if><mt:if name="archive" eq="1"> data-archive="1"</mt:if>><mt:var name="label" escape="html"></option>
           </mt:loop>
@@ -727,7 +727,7 @@
       id="operation_if_exists"
       label="<__trans phrase="Operation if a file exists">"
       label_for="operation_if_exists">
-      <select name="operation_if_exists" id="operation_if_exists" class="custom-select form-control">
+      <select name="operation_if_exists" id="operation_if_exists" class="custom-select form-control form-select">
         <option value="1"<mt:if name="operation_if_exists" eq="1"> selected="selected"</mtif>><__trans phrase="Upload and rename"></option>
         <option value="2"<mt:if name="operation_if_exists" eq="2"> selected="selected"</mtif>><__trans phrase="Overwrite existing file"></option>
         <option value="3"<mt:if name="operation_if_exists" eq="3"> selected="selected"</mtif>><__trans phrase="Cancel upload"></option>

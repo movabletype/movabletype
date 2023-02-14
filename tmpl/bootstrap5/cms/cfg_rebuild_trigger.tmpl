@@ -48,7 +48,7 @@
    id="blog_content_accessible"
    label="<__trans phrase="Content Privacy">"
    label_for="blog_content_accessible">
-  <select name="blog_content_accessible" id="blog_content_accessible" class="custom-select form-control">
+  <select name="blog_content_accessible" id="blog_content_accessible" class="custom-select form-control form-select">
     <option value="0"><__trans phrase="Use system default"></option>
     <option value="2"<mt:if name="blog_content_accessible" eq="2"> selected="selected"</mt:if>><__trans phrase="Allow"></option>
     <option value="1"<mt:if name="blog_content_accessible" eq="1"> selected="selected"</mt:if>><__trans phrase="Disallow"></option>
@@ -61,7 +61,7 @@
    class="form-inline"
    hint="<__trans phrase="Enables use of the MTSites tag without include_sites/exclude_sites attributes. Comma-separated SiteIDs or 'all' (include_sites only) are acceptable values.">"
    show_hint="1">
-  <select name="default_mt_sites_action" id="default_mt_sites_action" class="custom-select form-control">
+  <select name="default_mt_sites_action" id="default_mt_sites_action" class="custom-select form-control form-select">
     <option value="1"<mt:if name="default_mt_sites_action" eq="1"> selected="selected"</mt:if>>
       <__trans phrase="Include sites/child sites">
     </option>

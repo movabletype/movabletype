@@ -65,7 +65,7 @@
          id="mail_transfer"
          label="<__trans phrase="Send mail via:">"
          label_class="top-label">
-        <select id="mail_transfer" class="custom-select form-control" name="mail_transfer">
+        <select id="mail_transfer" class="custom-select form-control form-select" name="mail_transfer">
           <option value=""><__trans phrase="Select One..."></option>
         <mt:loop name="mail_loop">
           <option value="<mt:var name="ID">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="name"></option>
@@ -149,7 +149,7 @@
                   id="smtp_ssl"
                   label="<__trans phrase="SSL Connection">"
                   label_class="top-label">
-                  <select id="smtp_ssl" class="custom-select form-control" name="smtp_ssl">
+                  <select id="smtp_ssl" class="custom-select form-control form-select" name="smtp_ssl">
                     <option value="0"<mt:if name="smtp_ssl" eq="0"> selected="selected"</mt:if>><__trans phrase="Do not use SSL"></option>
                     <option value="ssl"<mt:if name="smtp_ssl" eq="ssl"> selected="selected"</mt:if>><__trans phrase="Use SSL"></option>
                     <option value="tls"<mt:if name="smtp_ssl" eq="tls"> selected="selected"</mt:if>><__trans phrase="Use STARTTLS"></option>

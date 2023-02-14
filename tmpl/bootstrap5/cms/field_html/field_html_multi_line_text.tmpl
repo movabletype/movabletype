@@ -17,7 +17,7 @@
     <div class="mt-contentblock" id="contentblock<mt:var name="content_field_id">">
       <div class="mb-3 mb-4">
         <label for="formGroup-<mt:var name="content_field_id">" class="form-label"><__trans phrase="Format:"></label>
-        <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="custom-select form-control convert_breaks" id="formGroup-<mt:var name="content_field_id">" data-bs-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
+        <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="custom-select form-control convert_breaks form-select" id="formGroup-<mt:var name="content_field_id">" data-bs-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
         <mt:loop name="text_filters">
           <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
         </mt:loop>

@@ -141,7 +141,7 @@
   <div class="form-row align-items-center">
     <div class="col">
 <mt:if name="has_publish_access">
-      <select id="status" name="status" class="custom-select form-control ping-status width90">
+      <select id="status" name="status" class="custom-select form-control ping-status width90 form-select">
         <option value="publish" <mt:if name="ping_approved">selected="selected"</mt:if>><__trans phrase="Approved"></option>
         <option value="moderate" <mt:if name="ping_pending">selected="selected"</mt:if>><__trans phrase="Unapproved"></option>
         <option value="junk" <mt:if name="is_junk">selected="selected"</mt:if>><__trans phrase="Reported as Spam"></option>

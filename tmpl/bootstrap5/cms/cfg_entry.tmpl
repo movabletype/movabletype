@@ -47,7 +47,7 @@
     <div class="row">
       <div class="form-inline col">
         <input type="text" name="list_on_index" id="list_on_index" class="form-control text num" value="<mt:var name="list_on_index" escape="html">" />
-        <select name="days_or_posts" id="days_or_posts" class="custom-select form-control">
+        <select name="days_or_posts" id="days_or_posts" class="custom-select form-control form-select">
           <option value="days"<mt:if name="days"> selected="selected"</mt:if>><__trans phrase="Days"></option>
           <option value="posts"<mt:if name="posts"> selected="selected"</mt:if>><__trans phrase="Posts"></option>
         </select>
@@ -63,7 +63,7 @@
       help_section="entries_to_display">
       <div class="form-inline">
         <input type="text" name="list_on_index" id="list_on_index" class="form-control text num" value="<mt:var name="list_on_index" escape="html">" />
-        <select name="days_or_posts" id="days_or_posts" class="custom-select form-control">
+        <select name="days_or_posts" id="days_or_posts" class="custom-select form-control form-select">
           <option value="days"<mt:if name="days"> selected="selected"</mt:if>><__trans phrase="Days"></option>
           <option value="posts"<mt:if name="posts"> selected="selected"</mt:if>><__trans phrase="Posts"></option>
         </select>
@@ -77,7 +77,7 @@
        label_for="sort_order_posts"
        help_page="blog_settings_general"
        help_section="entry_order">
-      <select name="sort_order_posts" id="sort_order_posts" class="custom-select form-control">
+      <select name="sort_order_posts" id="sort_order_posts" class="custom-select form-control form-select">
         <option value="ascend"<mt:if name="sort_order_posts_ascend"> selected="selected"</mt:if>><__trans phrase="Ascending"></option>
         <option value="descend"<mt:if name="sort_order_posts_descend"> selected="selected"</mt:if>><__trans phrase="Descending"></option>
       </select>
@@ -98,7 +98,7 @@
        label_for="date_language"
        help_page="blog_settings_general"
        help_section="date_language">
-      <select name="date_language" id="date_language" class="custom-select form-control">
+      <select name="date_language" id="date_language" class="custom-select form-control form-select">
         <option value="cz"<mt:if name="date_language_cz"> selected="selected"</mt:if>><__trans phrase="Czech"></option>
         <option value="dk"<mt:if name="date_language_dk"> selected="selected"</mt:if>><__trans phrase="Danish"></option>
         <option value="nl"<mt:if name="date_language_nl"> selected="selected"</mt:if>><__trans phrase="Dutch"></option>
@@ -137,7 +137,7 @@
        id="status_default"
        label="<__trans phrase="Status">"
        label_for="status_default">
-      <select name="status_default" id="status_default" class="custom-select form-control">
+      <select name="status_default" id="status_default" class="custom-select form-control form-select">
         <option value="1"<mt:if name="STATUS_DEFAULT_1"> selected="selected"</mt:if>><__trans phrase="Unpublished"></option>
         <option value="2"<mt:if name="STATUS_DEFAULT_2"> selected="selected"</mt:if>><__trans phrase="Published"></option>
       </select>
@@ -150,7 +150,7 @@
        hint="<__trans phrase="Specifies the default Text Formatting option when creating a new entry.">"
        help_page="blog_settings_entry_defaults"
        help_section="text_formatting">
-      <select name="convert_paras" id="convert_paras" class="custom-select form-control">
+      <select name="convert_paras" id="convert_paras" class="custom-select form-control form-select">
       <mt:loop name="text_filters">
         <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
       </mt:loop>

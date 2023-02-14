@@ -118,7 +118,7 @@ jQuery(window).on('load', function () {
         show_hint="1"
         help_page="blog_settings_general"
         help_section="blog_theme">
-        <select id="blog_theme" name="blog_theme" class="custom-select form-control" aria-describedby="blogTheme">
+        <select id="blog_theme" name="blog_theme" class="custom-select form-control form-select" aria-describedby="blogTheme">
         <mt:loop name="theme_loop">
           <option value="<mt:var name="value" escape="html">"<mt:if name="t_selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
         </mt:loop>
@@ -208,7 +208,7 @@ jQuery(window).on('load', function () {
         show_hint="1"
         help_page="blog_settings_general"
         help_section="blog_timezone">
-            <select name="server_offset" id="server_offset" class="custom-select form-control" aria-describedby="timeZone">
+            <select name="server_offset" id="server_offset" class="custom-select form-control form-select" aria-describedby="timeZone">
                 <option value=""><__trans phrase="Time zone not selected"></option>
                 <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
                 <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
@@ -251,7 +251,7 @@ jQuery(window).on('load', function () {
     hint="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">"
     hint_id="languageHelp"
     show_hint="1">
-    <select name="blog_language" id="blog_language" class="custom-select form-control se" aria-describedby="languageHelp">
+    <select name="blog_language" id="blog_language" class="custom-select form-control se form-select" aria-describedby="languageHelp">
     <mt:loop name="languages">
         <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
     </mt:loop>

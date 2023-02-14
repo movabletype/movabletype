@@ -10,7 +10,7 @@
   <mtapp:ContentFieldOption
      id="multi_line_text-input_format"
      label="<__trans phrase="Input format">">
-    <select ref="input_format" name="input_format" id="multi_line_text-input_format" class="custom-select form-control">
+    <select ref="input_format" name="input_format" id="multi_line_text-input_format" class="custom-select form-control form-select">
     <mt:loop name="text_filters">
       <option value="<mt:var name="filter_key" escape="html">" selected={ options.input_formats['<mt:var name="filter_key" escape="html">'] }><mt:var name="filter_label" escape="html"></option>
       </mt:loop>

@@ -301,7 +301,7 @@
            hint="<__trans phrase="Select whether you want comments displayed in ascending (oldest at top) or descending (newest at top) order.">"
            help_page="blog_settings_general"
            help_section="comment_order">
-          <select name="sort_order_comments" id="sort_order_comments" class="custom-select form-control">
+          <select name="sort_order_comments" id="sort_order_comments" class="custom-select form-control form-select">
             <option value="ascend"<mt:if name="sort_order_comments_ascend"> selected="selected"</mt:if>><__trans phrase="Ascending"></option>
             <option value="descend"<mt:if name="sort_order_comments_descend"> selected="selected"</mt:if>><__trans phrase="Descending"></option>
           </select>
@@ -328,7 +328,7 @@
            label_for="convert_paras_comments"
            help_page="blog_settings_feedback"
            help_section="comment_text_formatting">
-          <select name="convert_paras_comments" id="convert_paras_comments" class="custom-select form-control">
+          <select name="convert_paras_comments" id="convert_paras_comments" class="custom-select form-control form-select">
           <mt:loop name="text_filters_comments">
             <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
           </mt:loop>
@@ -340,7 +340,7 @@
            label="<__trans phrase="CAPTCHA Provider">"
            label_for="captcha_provider">
         <mt:if name="captcha_loop">
-          <select name="captcha_provider" id="captcha_provider" class="custom-select form-control">
+          <select name="captcha_provider" id="captcha_provider" class="custom-select form-control form-select">
             <option value="none"><__trans phrase="none"></option>
           <mt:loop name="captcha_loop">
             <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>

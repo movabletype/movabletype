@@ -55,7 +55,7 @@
   </div>
   <div class="field-content">
     <select id="row"
-      class="custom-select form-control"
+      class="custom-select form-control form-select"
       style="width: 100px;"
       ref="limit"
       value={ store.limit }

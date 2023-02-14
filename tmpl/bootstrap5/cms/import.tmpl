@@ -56,7 +56,7 @@ function selectBlog() {
     <mtapp:setting
        id="import_type"
        label="<__trans phrase="Importing from">">
-      <select name="import_type" class="custom-select form-control" onchange="return toggleDisplay(this)">
+      <select name="import_type" class="custom-select form-control form-select" onchange="return toggleDisplay(this)">
       <mt:loop name="importer_loop">
         <option value="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></option>
       </mt:loop>
@@ -137,7 +137,7 @@ function selectBlog() {
        show_hint="1"
        hint_id="textFormatted"
        hint="<__trans phrase="Apply this formatting if text format is not set on each entry.">">
-      <select name="convert_breaks" id="convert_breaks" class="custom-select form-control" aria-describedby="textFormatted">
+      <select name="convert_breaks" id="convert_breaks" class="custom-select form-control form-select" aria-describedby="textFormatted">
       <mt:loop name="text_filters">
         <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
       </mt:loop>
@@ -149,7 +149,7 @@ function selectBlog() {
        label="<__trans phrase="Import File Encoding">"
        help_page="entry_import"
        help_section="source_file_encoding">
-      <select name="encoding" id="encoding" class="custom-select form-control">
+      <select name="encoding" id="encoding" class="custom-select form-control form-select">
       <mt:loop name="encoding_names">
         <option value="<mt:var name="name" escape="html">"><__trans phrase="<mt:var name="display_name" escape="html">"></option>
       </mt:loop>
@@ -161,7 +161,7 @@ function selectBlog() {
        label="<__trans phrase="Default category for entries (optional)">"
        help_page="entry_import"
        help_section="default_category_for_entries">
-      <select name="default_cat_id" id="default_cat_id" class="custom-select form-control">
+      <select name="default_cat_id" id="default_cat_id" class="custom-select form-control form-select">
         <option value=""><__trans phrase="Select a category"></option>
       <mt:loop name="category_loop">
         <option value="<mt:var name="category_id" escape="html">"><mt:var name="category_label" escape="html"></option>
