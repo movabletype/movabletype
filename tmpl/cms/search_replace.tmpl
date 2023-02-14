@@ -261,14 +261,14 @@ function toggleContentTypeDateTimeInputs() {
           </li>
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
-              <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'limited-fields')" />
+              <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="custom-control-input cb" />
               <label class="custom-control-label" for="is_limited"><__trans phrase="Limited Fields"></label>
             </div>
           </li>
         <mt:if name="can_search_by_date">
           <li class="list-inline-item">
             <div class="custom-control custom-checkbox">
-              <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'date-range')" />
+              <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="custom-control-input cb" />
               <label class="custom-control-label" for="is_dateranged">
     <mt:if name="object_type" eq="content_data">
                 <__trans phrase="Date/Time Range">
@@ -507,6 +507,9 @@ jQuery(function() {
 
     toggleContentTypeLimitedFields();
     toggleContentTypeDateTimeField();
+
+    jQuery('#is_limited').on('change', function () { toggleVisibility(this, 'limited-fields') }).trigger('change');
+    jQuery('#is_dateranged').on('change', function () { toggleVisibility(this, 'date-range') }).trigger('change');
 });
 /* ]]> */
 </script>
