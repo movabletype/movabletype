@@ -2631,8 +2631,7 @@ sub _delete_archive_file {
         );
         if ( $file_tmpl && !$file ) {
             local $ctx->{archive_type} = $at;
-            require MT::Builder;
-            my $build  = MT::Builder->new;
+            my $build  = MT->builder;
             my $tokens = $tokens_cache{$file_tmpl}
                 ||= $build->compile( $ctx, $file_tmpl )
                 or return $blog->error( $build->errstr() );

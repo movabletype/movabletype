@@ -133,7 +133,7 @@ SKIP:
         $ctx->stash( 'blog',          $blog );
         $ctx->stash( 'blog_id',       $blog->id );
         $ctx->stash( 'local_blog_id', $blog->id );
-        $ctx->stash( 'builder',       MT::Builder->new );
+        $ctx->stash( 'builder',       MT->builder );
 
         my $result = $tmpl->build;
         die $tmpl->errstr unless defined $result;

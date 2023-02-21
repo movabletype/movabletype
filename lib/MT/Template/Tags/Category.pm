@@ -277,7 +277,7 @@ sub _hdlr_categories {
     ## Otherwise, counts are collected on an as-needed basis, using the
     ## 'entry_count' method in MT::Category.
     my $counts_fetched   = 0;
-    my $content_count_of = !$args->{category_set_id}
+    my $content_count_of = !($args->{category_set_id} || $ctx->stash('category_set'))
         ? sub {
         my $cat = shift;
         return delay( sub { $cat->entry_count } )
@@ -520,13 +520,16 @@ sub _hdlr_category_prevnext {
     return '' if ( $cat eq '' );
 
     require MT::Placement;
-    my $needs_entries;
-    my $uncompiled = $ctx->stash('uncompiled') || '';
-    $needs_entries
-        = $class_type eq 'category'
-        ? ( ( $uncompiled =~ /<MT:?Entries/i ) ? 1 : 0 )
-        : ( ( $uncompiled =~ /<MT:?Pages/i ) ? 1 : 0 );
-    my $needs_contents = ( $uncompiled =~ /<MT:?Contents/i ) ? 1 : 0;
+    my $uncompiled    = $ctx->stash('uncompiled') || '';
+    my $needs_entries = (
+        $ctx->stash('entries')
+            || (
+            $class_type eq 'category'
+            ? (($uncompiled =~ /<MT:?Entries/i) ? 1 : 0)
+            : (($uncompiled =~ /<MT:?Pages/i)   ? 1 : 0)
+            ),
+    );
+    my $needs_contents = ($ctx->stash('content_type') || ($uncompiled =~ /<MT:?Contents/i)) ? 1 : 0;
     my $blog_id        = $cat->blog_id;
     my $cats           = _load_sibling_categories( $ctx, $cat, $class_type );
 
@@ -575,7 +578,7 @@ sub _hdlr_category_prevnext {
     return '' unless defined $pos;
     $pos += $step;
     while ( $pos >= 0 && $pos < scalar @$cats ) {
-        if ( !exists $cats->[$pos]->{_placement_count} ) {
+        if ( !exists $cats->[$pos]->{_placement_count} or $needs_contents ) {
             if ($needs_entries) {
                 require MT::Entry;
                 my @entries = MT::Entry->load(
@@ -584,7 +587,7 @@ sub _hdlr_category_prevnext {
                     },
                     {   'join' => [
                             'MT::Placement', 'entry_id',
-                            { category_id => $cat->id }
+                            { category_id => $cats->[$pos]->id }
                         ],
                         'sort'    => 'authored_on',
                         direction => 'descend',
@@ -605,7 +608,7 @@ sub _hdlr_category_prevnext {
                             'MT::ObjectCategory',
                             'object_id',
                             {   object_ds   => 'content_data',
-                                category_id => $cat->id,
+                                category_id => $cats->[$pos]->id,
                             },
                         ],
                         'sort'    => 'authored_on',

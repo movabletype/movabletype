@@ -4519,7 +4519,7 @@ abstract class MTDatabase {
             if (isset($args['sort_by']) || $map && $map[0]->dt_field_id) {
                 if (!isset($args['sort_by'])) {
                     $cf = $map[0]->dt_field();
-                } else if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
+                } else if (preg_match('/^field:(.+)$/', $args['sort_by'], $m)) {
                     $key= $m[1];
                     $cfs = $this->fetch_content_fields(array(
                         'blog_id' => $blog_id,
@@ -4554,6 +4554,7 @@ abstract class MTDatabase {
                     $no_resort = 1;
                 }
                 if (!isset($sort_field) && isset($args['sort_by'])) {
+                    $sort_field = '';
                     if ($args['sort_by'] == 'authored_on') {
                         $sort_field = 'cd_authored_on';
                     } elseif ($args['sort_by'] == 'modified_on') {
@@ -4565,8 +4566,8 @@ abstract class MTDatabase {
                     } elseif ($args['sort_by'] == 'identifier') {
                         $sort_field = 'cd_identifier';
                     } elseif (preg_match('/field[:\.]/', $args['sort_by'])) {
-                        $post_sort_limit = $limit ? $limit : 0;
-                        $post_sort_offset = $offset ? $offset : 0;
+                        $post_sort_limit = !empty($limit) ? $limit : 0;
+                        $post_sort_offset = !empty($offset) ? $offset : 0;
                         $limit = 0; $offset = 0;
                         $no_resort = 0;
                     } else {

@@ -12,6 +12,7 @@ use Symbol;
 use MT::I18N qw( wrap_text );
 use MT::Util
     qw( encode_url encode_html decode_html encode_js trim dir_separator is_valid_email );
+use MT::Util::Encode;
 
 sub system_check {
     my $app = shift;
@@ -26,73 +27,19 @@ sub system_check {
     my %param;
 
     my $author_class = $app->model('author');
-    $param{user_count}
-        = $author_class->count( { type => MT::Author::AUTHOR() } );
-
-    $param{commenter_count} = 0;
+    $param{user_count}      = $author_class->count( { type => MT::Author::AUTHOR() } );
+    $param{commenter_count} = $author_class->count( { type => MT::Author::COMMENTER() } );
     $param{screen_id}       = "system-check";
 
-    require MT::Memcached;
-    if ( MT::Memcached->is_available ) {
-        $param{memcached_enabled} = 1;
-        my $inst = MT::Memcached->instance;
-        my $key  = 'syscheck-' . $$;
-        $inst->add( $key, $$ );
-        if ( $inst->get($key) == $$ ) {
-            $inst->delete($key);
-            $param{memcached_active} = 1;
-        }
-    }
+    require MT::Util::SystemCheck;
 
-    $param{server_modperl} = 1 if MT::Util::is_mod_perl1();
-    $param{server_fastcgi} = 1 if $ENV{FAST_CGI};
+    MT::Util::SystemCheck->check_all(\%param);
 
-    $param{server_psgi} = $ENV{'psgi.version'} ? 1 : 0;
-    $param{syscheck_html} = get_syscheck_content($app) || '';
+    $param{is_cloud} = eval { require MT::Cloud::App::CMS; 1 };
 
     $app->add_breadcrumb( $app->translate('System Information') );
 
     $app->load_tmpl( 'system_check.tmpl', \%param );
-}
-
-sub get_syscheck_content {
-    my $app     = shift;
-    my $sess_id = $app->session->id;
-    my $syscheck_url
-        = $app->base
-        . $app->mt_path
-        . $app->config('CheckScript')
-        . '?view=tools&version='
-        . MT->version_id
-        . '&session_id='
-        . $sess_id
-        . '&language='
-        . MT->current_language;
-
-    my $ua = $app->new_ua();
-    return unless $ua;
-    $ua->max_size(undef) if $ua->can('max_size');
-
-    # Do not verify SSL certificate.
-    $ua->ssl_opts( verify_hostname => 0 );
-
-    my $req = new HTTP::Request( GET => $syscheck_url );
-    my $resp = $ua->request($req);
-    return unless $resp->is_success();
-    my $result = $resp->content();
-    if ($result) {
-        require MT::Sanitize;
-
-        # allowed html
-        my $spec
-            = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p,textarea';
-        $result = Encode::decode_utf8($result)
-            if !Encode::is_utf8($result)
-            ;    # mt-check.cgi always returns by utf-8
-
-        $result = MT::Sanitize->sanitize( $result, $spec );
-    }
-    return $result;
 }
 
 sub start_recover {
@@ -211,7 +158,7 @@ sub recover_password {
             my $body    = $app->build_email(
                 'recover-password',
                 {         link_to_login => $app->base
-                        . $app->uri
+                        . $app->mt_uri
                         . "?__mode=new_pw&token=$token&email="
                         . encode_url($email)
                         . ( $blog_id ? "&blog_id=$blog_id" : '' ),
@@ -1269,7 +1216,7 @@ sub backup {
                 close $fh;
                 unlink $filepath;
                 my $arc = MT::Util::Archive->new( $archive, $filepath );
-                $arc->add_string( Encode::encode_utf8($arc_buf),
+                $arc->add_string( MT::Util::Encode::encode_utf8($arc_buf),
                     "$file.xml" );
                 $arc->add_string(
                     "<manifest xmlns='"
@@ -1299,8 +1246,7 @@ sub backup {
         $printer = sub {
             require bytes;
             my ($data) = @_;
-            $data = Encode::encode_utf8($data)
-                if Encode::is_utf8($data);
+            $data = MT::Util::Encode::encode_utf8_if_flagged($data);
             print $fh $data;
             return bytes::length($data);
         };
@@ -1402,7 +1348,7 @@ sub backup {
                     $f->{filename}
                         = MT::FileMgr::Local::_syserr( $f->{filename} )
                         if ( $f->{filename}
-                        && !Encode::is_utf8( $f->{filename} ) );
+                        && !MT::Util::Encode::is_utf8( $f->{filename} ) );
                 }
                 $param->{files_loop} = \@files;
                 $param->{tempdir}    = $temp_dir;
@@ -1529,7 +1475,7 @@ sub backup_download {
     else {
         $contenttype = 'application/octet-stream';
         if ( $app->param->user_agent =~ /MSIE/ ) {
-            $newfilename = Encode::encode( 'Shift_JIS', $newfilename );
+            $newfilename = MT::Util::Encode::encode( 'Shift_JIS', $newfilename );
         }
     }
 
@@ -1733,7 +1679,7 @@ sub restore {
             require File::Temp;
             my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
                 DIR => $temp_dir );
-            $tmp = Encode::decode( MT->config->PublishCharset, $tmp );
+            $tmp = MT::Util::Encode::decode( MT->config->PublishCharset, $tmp );
 
             MT::Util::Log->info( '=== Start extract ' . $uploaded_filename );
 
@@ -2224,7 +2170,7 @@ sub adjust_sitepath {
             for my $f ( readdir $dh ) {
                 next if $f !~ /^.+\.manifest$/i;
                 $manifest = File::Spec->catfile( $tmp_dir,
-                    Encode::decode( MT->config->PublishCharset, $f ) );
+                    MT::Util::Encode::decode( MT->config->PublishCharset, $f ) );
                 last;
             }
             closedir $dh;
@@ -2378,10 +2324,7 @@ sub dialog_restore_upload {
                 = $app->translate( "Invalid filename '[_1]'", $uploaded );
             return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );
         }
-        $uploaded
-            = Encode::is_utf8($uploaded)
-            ? $uploaded
-            : Encode::decode( $app->charset, $uploaded );
+        $uploaded = MT::Util::Encode::decode_unless_flagged( $app->charset, $uploaded );
     }
     if ( defined($uploaded) ) {
         if ( $current ne $uploaded ) {

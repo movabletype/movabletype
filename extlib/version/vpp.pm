@@ -122,9 +122,11 @@ use strict;
 use warnings::register;
 
 use Config;
-use vars qw($VERSION $CLASS @ISA $LAX $STRICT $WARN_CATEGORY);
-$VERSION = 0.9918;
-$CLASS = 'version::vpp';
+
+our $VERSION = 0.9929;
+our $CLASS = 'version::vpp';
+our ($LAX, $STRICT, $WARN_CATEGORY);
+
 if ($] > 5.015) {
     warnings::register_categories(qw/version/);
     $WARN_CATEGORY = 'version';
@@ -775,6 +777,7 @@ sub stringify {
 
 sub vcmp {
     my ($left,$right,$swap) = @_;
+    die "Usage: version::vcmp(lobj, robj, ...)" if @_ < 2;
     my $class = ref($left);
     unless ( UNIVERSAL::isa($right, $class) ) {
 	$right = $class->new($right);

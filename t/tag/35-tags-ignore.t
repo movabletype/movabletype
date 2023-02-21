@@ -18,7 +18,6 @@ BEGIN {
 }
 
 use MT;
-use MT::Builder;
 use MT::Template::Context;
 
 use MT::Test;
@@ -39,7 +38,7 @@ $mock_mt->mock(
 );
 
 my $app     = MT->instance;
-my $builder = MT::Builder->new;
+my $builder = MT->builder;
 my $ctx     = MT::Template::Context->new;
 
 # test

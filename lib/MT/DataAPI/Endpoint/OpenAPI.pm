@@ -321,6 +321,7 @@ DESCRIPTION
                     'Review',
                     'Future',
                     'Spam',
+                    'Unpublish',
                 ],
             },
             description => <<"DESCRIPTION",
@@ -345,6 +346,10 @@ entry_status is 4.
 #### Spam
 
 entry_status is 5.
+
+#### Unpublish
+
+entry_status is 6.
 DESCRIPTION
         };
         $parameter_template->{"${singular}_sortBy"} = {

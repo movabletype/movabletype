@@ -34,7 +34,7 @@ isa_ok($mt, 'MT');
 
 sub build {
 #    my($ctx, $markup) = @_;
-#    my $b = MT::Builder->new;
+#    my $b = MT->builder;
 #    my $tokens = $b->compile($ctx, $markup) or die $b->errstr;
 #    $b->build($ctx, $tokens);
 
@@ -86,7 +86,7 @@ my $ctx = MT::Template::Context->new;
 isa_ok($ctx, 'MT::Template::Context');
 $ctx->stash('blog', $blog);
 $ctx->stash('blog_id', $blog->id);
-$ctx->stash('builder', MT::Builder->new);
+$ctx->stash('builder', MT->builder);
 isa_ok($ctx, 'MT::Template::Context');
 
 

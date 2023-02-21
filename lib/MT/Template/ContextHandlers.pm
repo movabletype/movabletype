@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use MT::Util qw( format_ts relative_date );
+use MT::Util::Encode;
 use Time::Local qw( timelocal );
 
 sub init_default_handlers { }
@@ -4477,7 +4478,7 @@ package MT::Template::Tags::System;
 use strict;
 
 use MT;
-use MT::Util qw( offset_time_list encode_html );
+use MT::Util qw( offset_time_list encode_html trim_path );
 use MT::Request;
 
 {
@@ -4745,7 +4746,7 @@ B<Example:> Passing Parameters to a Template Module
         }
 
         ## Don't know why but hash key has to be encoded
-        my $stash_id = Encode::encode_utf8(
+        my $stash_id = MT::Util::Encode::encode_utf8(
             'template_' . $type . '::' . $blog_id . '::' . $tmpl_name );
         return $ctx->error(
             MT->translate(
@@ -4905,7 +4906,7 @@ B<Example:> Passing Parameters to a Template Module
                 expirable => 1
             );
             my $cache_value = $cache_driver->get($cache_key);
-            $cache_value = Encode::decode( $enc, $cache_value );
+            $cache_value = MT::Util::Encode::decode( $enc, $cache_value );
             if ($cache_value) {
                 return $cache_value if !$use_ssi;
 
@@ -4946,7 +4947,7 @@ B<Example:> Passing Parameters to a Template Module
         }
 
         if ($cache_enabled) {
-            $cache_driver->set( $cache_key, Encode::encode( $enc, $ret ),
+            $cache_driver->set( $cache_key, MT::Util::Encode::encode( $enc, $ret ),
                 $ttl_for_set );
         }
 
@@ -5220,7 +5221,7 @@ sub _hdlr_section {
                 ## need to decode by hand for blob typed column.
                 my $data = $sess->data();
                 $data = MT::I18N::utf8_off($data) if MT::I18N::is_utf8($data);
-                my $out = Encode::decode( $enc, $data );
+                my $out = MT::Util::Encode::decode( $enc, $data );
                 if ($out) {
                     if ( my $wrap_tag = $args->{html_tag} ) {
                         my $id = $args->{id};
@@ -5253,7 +5254,7 @@ sub _hdlr_section {
             {   id    => $cache_id,
                 kind  => 'CO',
                 start => time,
-                data  => Encode::encode( $enc, $out )
+                data  => MT::Util::Encode::encode( $enc, $out )
             }
         );
         $sess->save();
@@ -6365,6 +6366,7 @@ B<Example:>
             or return $ctx->error( $builder->errstr );
         $file =~ s!/{2,}!/!g;
         $file =~ s!(^/|/$)!!g;
+        $file = trim_path($file) if MT->config->TrimFilePath;
         $file;
     }
 }

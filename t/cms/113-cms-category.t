@@ -161,6 +161,7 @@ subtest 'Test on website' => sub {
         );
         is($cat_class->count(), 1, "A new category has created");
 
+        $test_env->clear_mt_cache;
         my $cat = $cat_class->load(undef, { limit => 1 });
         ok($cat, "Loaded a category");
 
@@ -180,6 +181,7 @@ subtest 'Test on website' => sub {
         });
         is($cat_class->count(), 1, "Number of category has not changed.");
 
+        $test_env->clear_mt_cache;
         $cat = $cat_class->load(undef, { limit => 1 });
         ok($cat, "Loaded a category");
 
@@ -207,6 +209,7 @@ subtest 'Test on website' => sub {
 
         require Digest::MD5;
         my $make_checksum = sub {
+            $test_env->clear_mt_cache;
             my @old_objects = $cat_class->load({ blog_id => $website->id });
 
             # Test CheckSum
@@ -254,6 +257,7 @@ subtest 'Test on website' => sub {
             });
             is($cat_class->count(), 1, "Added a category");
 
+            $test_env->clear_mt_cache;
             my $cat = $cat_class->load(undef, { limit => 1 });
             ok($cat, "Loaded a category");
             is($cat->label,    'Foo', 'Category label is "Foo"');
@@ -307,6 +311,7 @@ subtest 'Test on website' => sub {
             });
             is($cat_class->count(), 2, "Created categories");
 
+            $test_env->clear_mt_cache;
             my $cat = $cat_class->load({ parent => 0 });
             ok($cat, 'Loaded a parent category');
             is($cat->label,    'Foo', 'Category label is "Foo"');
@@ -348,6 +353,7 @@ subtest 'Test on website' => sub {
             });
             is($cat_class->count(), 2, "Renamed categories");
 
+            $test_env->clear_mt_cache;
             $cat = $cat_class->load({ parent => 0 });
             ok($cat, 'Loaded a parent category');
             is($cat->label,    'FooBar', 'Category label is "FooBar"');
@@ -387,6 +393,7 @@ subtest 'Test on website' => sub {
             });
             is($cat_class->count(), 2, "Swapped categories");
 
+            $test_env->clear_mt_cache;
             $cat = $cat_class->load({ parent => 0 });
             ok($cat, 'Loaded a parent category');
             is($cat->label,    'Baz', 'Category label is "Baz"');
@@ -456,6 +463,7 @@ subtest 'Test on website' => sub {
             });
             is($cat_class->count(), 2, "Added categories");
 
+            $test_env->clear_mt_cache;
             my $cat_foo   = $cat_class->load({ label => 'Foo' });
             my $cat_bar   = $cat_class->load({ label => 'Bar' });
             my $cat_order = join ',', ($cat_foo->id, $cat_bar->id);
@@ -496,6 +504,7 @@ subtest 'Test on website' => sub {
             });
             is($cat_class->count(), 2, "Swapped categories");
 
+            $test_env->clear_mt_cache;
             $cat_foo = $cat_class->load({ label => 'Foo' });
             $cat_bar = $cat_class->load({ label => 'Bar' });
             my $cat_order = join ',', ($cat_bar->id, $cat_foo->id);

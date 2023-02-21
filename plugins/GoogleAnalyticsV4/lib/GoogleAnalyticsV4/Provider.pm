@@ -14,6 +14,7 @@ use base qw(MT::Stats::Provider);
 use HTTP::Request::Common;
 use GoogleAnalyticsV4;
 use GoogleAnalyticsV4::OAuth2 qw(effective_token);
+use MT::Util::Encode;
 
 sub is_ready {
     my $class = shift;
@@ -115,7 +116,7 @@ sub _request {
         500
     ) unless $res->is_success;
 
-    my $data = MT::Util::from_json(Encode::decode('utf-8', $res->content));
+    my $data = MT::Util::from_json(MT::Util::Encode::decode('utf-8', $res->content));
 
     my @headers = map { $_->{name} } @{ $data->{dimensionHeaders} };
     push @headers, map { $_->{name} } @{ $data->{metricHeaders} };

@@ -604,10 +604,10 @@ sub _remove_objects {
                 $data ? $$data : {};
             }
             else {
-                require Encode;
+                require MT::Util::Encode;
                 require JSON;
                 my $data;
-                if ( Encode::is_utf8($raw_data) ) {
+                if ( MT::Util::Encode::is_utf8($raw_data) ) {
                     $data = eval { JSON::from_json($raw_data) } || {};
                 }
                 else {
@@ -1180,6 +1180,7 @@ sub make_list_props {
             modified_on => {
                 base  => '__virtual.modified_on',
                 order => $order + 300,
+                display => 'default',
             },
             unpublished_on => {
                 auto    => 1,
@@ -1562,7 +1563,7 @@ sub archive_file {
     my $map = MT->publisher->archiver($at)->get_preferred_map({
         blog_id         => $blog->id,
         content_type_id => $self->content_type_id,
-    });
+    }) or return '';
 
     # Load category
     my $cat;

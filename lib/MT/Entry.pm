@@ -1070,8 +1070,10 @@ sub archive_file {
             qw( Individual Daily Weekly Author-Monthly Category-Monthly Monthly Category )
             )
         {
-            $at = $tat if $at{$tat};
-            last;
+            if ($at{$tat}) {
+                $at = $tat;
+                last;
+            }
         }
     }
     my $file = archive_file_for( $entry, $blog, $at );

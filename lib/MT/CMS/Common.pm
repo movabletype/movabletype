@@ -1214,7 +1214,7 @@ sub list {
     }
 
     my $columns = $list_pref->{columns} || [];
-    my %cols = map { $_ => 1 } @$columns;
+    my %cols = $list_pref->{display} ? %{ $list_pref->{display} } : map { $_ => 1 } @$columns;
 
     my $primary_col = $screen_settings->{primary};
     $primary_col ||= [ @{ $screen_settings->{columns} || [] } ]->[0];
@@ -1224,6 +1224,8 @@ sub list {
         = defined( $screen_settings->{default_sort_key} )
         ? $screen_settings->{default_sort_key}
         : '';
+    my $sort_by    = $list_pref->{sort_by}    || $default_sort;
+    my $sort_order = $list_pref->{sort_order} || '';
 
     my @list_columns;
     for my $prop ( values %$list_props ) {
@@ -1233,7 +1235,7 @@ sub list {
         my $show
             = $disp eq 'force'   ? 1
             : $disp eq 'none'    ? 0
-            : scalar %cols       ? $cols{$id}
+            : exists $cols{$id}  ? $cols{$id}
             : $disp eq 'default' ? 1
             :                      0;
 
@@ -1244,16 +1246,17 @@ sub list {
         if ( my $subfields = $prop->sub_fields ) {
             for my $sub (@$subfields) {
                 my $sdisp = $sub->{display} || 'optional';
+                my $subid = $id . '.' . $sub->{class};
                 my $display
                     = $sdisp eq 'force'   ? 1
                     : $sdisp eq 'none'    ? 0
-                    : scalar %cols        ? $cols{ $id . '.' . $sub->{class} }
+                    : exists $cols{$subid} ? $cols{$subid}
                     : $sdisp eq 'default' ? 1
                     :                       0;
                 push @subfields,
                     {
                     display    => $display,
-                    id         => $id . '.' . $sub->{class},
+                    id         => $subid,
                     class      => $sub->{class},
                     parent_id  => $id,
                     label      => $app->translate( $sub->{label} ),
@@ -1365,7 +1368,8 @@ sub list {
         $param{allpass_filter} = $encode_filter->($allpass_filter);
     $param{system_messages}   = $json->encode( \@messages );
     $param{filters_raw}       = $filters;
-    $param{default_sort_key}  = $default_sort;
+    $param{sort_by}           = $sort_by;
+    $param{sort_order}        = $sort_order;
     $param{list_columns}      = \@list_columns;
     $param{list_columns_json} = $json->encode( \@list_columns );
     $param{filter_types}      = \@filter_types;
@@ -1765,6 +1769,7 @@ sub filtered_list {
     my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};
     $list_pref->{rows}    = $limit;
     $list_pref->{columns} = [ split ',', $cols ];
+    $list_pref->{display} = _update_display_pref(@$list_pref{qw(display columns)});
     $list_pref->{last_filter}
         = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
     $list_pref->{last_items} = $filteritems;
@@ -1813,6 +1818,14 @@ sub filtered_list {
     return $app->json_result( \%res );
 }
 
+sub _update_display_pref {
+    my ($disp, $columns) = @_;
+    $disp ||= {};
+    $disp->{$_} = undef for keys %$disp;     # must be undef atm
+    $disp->{$_} = 1 for @$columns;
+    $disp;
+}
+
 sub save_list_prefs {
     my $app     = shift;
     my $ds      = $app->param('datasource');
@@ -1828,6 +1841,9 @@ sub save_list_prefs {
     my $limit = $app->param('limit');
     $list_pref->{rows}    = canonicalize_list_limit($limit);
     $list_pref->{columns} = [ split ',', $cols ];
+    $list_pref->{display} = _update_display_pref(@$list_pref{qw(display columns)});
+    $list_pref->{sort_by}    = $app->param('sort_by') || '';
+    $list_pref->{sort_order} = $app->param('sort_order') || '';
 
 #$list_pref->{last_filter} = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
 #$list_pref->{last_items} = $filteritems;

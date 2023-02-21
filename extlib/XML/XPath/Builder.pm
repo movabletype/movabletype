@@ -1,8 +1,9 @@
 package XML::XPath::Builder;
 
-$VERSION = '1.44';
+use strict;
+use warnings;
 
-use strict; use warnings;
+our $VERSION = '1.48';
 
 # to get array index constants
 use XML::XPath::Node;
@@ -13,10 +14,8 @@ use XML::XPath::Node::Text;
 use XML::XPath::Node::PI;
 use XML::XPath::Node::Comment;
 
-use vars qw/$xmlns_ns $xml_ns/;
-
-$xmlns_ns = "http://www.w3.org/2000/xmlns/";
-$xml_ns = "http://www.w3.org/XML/1998/namespace";
+my $xmlns_ns = "http://www.w3.org/2000/xmlns/";
+my $xml_ns = "http://www.w3.org/XML/1998/namespace";
 
 sub new {
     my $class = shift;

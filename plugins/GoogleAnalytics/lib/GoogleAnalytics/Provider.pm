@@ -14,6 +14,7 @@ use base qw(MT::Stats::Provider);
 use HTTP::Request::Common;
 use GoogleAnalytics;
 use GoogleAnalytics::OAuth2 qw(effective_token);
+use MT::Util::Encode;
 
 sub is_ready {
     my $class = shift;
@@ -128,7 +129,7 @@ sub _request {
     ) unless $res->is_success;
 
     my $data
-        = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
+        = MT::Util::from_json( MT::Util::Encode::decode( 'utf-8', $res->content ) );
 
     my @headers = map { _name( $_->{name} ) } @{ $data->{columnHeaders} };
     my $date_index = undef;

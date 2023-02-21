@@ -223,7 +223,7 @@
   </mt:if>
   <mt:if name="published_url">
     <li>
-      <a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related d-inline-block" target="<__trans phrase="_external_link_target">">
+      <a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related d-inline-block" target="_blank">
         <mtapp:svgicon id="ic_related" title="<__trans phrase="View Published Template">" size="sm">
         <__trans phrase="View Published Template">
       </a>
@@ -962,7 +962,6 @@ function saveTemplatePrefs( sync ) {
   jQuery.ajax({
     type: 'POST',
     contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-    async: false,
     url: '<mt:var name="script_url">',
     dataType: 'json',
     data: {

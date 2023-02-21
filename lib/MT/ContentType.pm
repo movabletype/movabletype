@@ -528,6 +528,10 @@ sub _eval_if_mssql_server_or_oracle {
 # class method
 sub all_permissions {
     my $class = shift;
+
+    my $driver = $class->driver;
+    return {} unless $driver && $driver->table_exists($class);
+
     my @all_permissions;
     my @content_types
         = _eval_if_mssql_server_or_oracle( sub { @{ $class->load_all } } );

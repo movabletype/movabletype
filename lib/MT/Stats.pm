@@ -29,8 +29,9 @@ sub readied_provider {
     my %seen;
     my @provider_keys = grep { $_ && !$seen{$_}++ } ($provider_arg || MT->config('DefaultStatsProvider'), keys %providers);
     for my $k (@provider_keys) {
-        if ($providers{$k}{provider}->is_ready($app, $blog)) {
-            return $providers{$k}{provider}->new($k, $blog);
+        my $provider = $providers{$k}{provider} or next;
+        if ($provider->is_ready($app, $blog)) {
+            return $provider->new($k, $blog);
         }
     }
 

@@ -291,3 +291,12 @@ test category set 01
 <mt:Contents content_type="[% content_type_02_unique_id %]"><mt:CategorySets><mt:CategorySetName></mt:CategorySets></mt:Contents>
 --- expected
 test category set 02
+
+=== mt:CategorySets without contents
+--- template
+<mt:CategorySets name="test category set 01"><mt:CategorySetName>
+<mt:Categories><mt:CategoryLabel>
+</mt:Categories></mt:CategorySets>
+--- expected
+test category set 01
+Category 01

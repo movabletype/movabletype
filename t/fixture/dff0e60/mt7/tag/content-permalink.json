@@ -63,13 +63,13 @@
          [
             "__API_PASS__",
             "MT",
-            "authorce2f3",
+            "melody",
             null,
             null,
             1,
             "__NOW__",
             "relative",
-            "",
+            "test@localhost.localdomain",
             null,
             null,
             null,
@@ -79,7 +79,7 @@
             null,
             "__NOW__",
             "Melody",
-            "",
+            "Melody",
             "__AUTHOR_PASS__",
             "en_US",
             null,
@@ -586,7 +586,7 @@
             1,
             null,
             "__NOW__",
-            "65f669ff9a40083244b18d6b1844f7879a688215",
+            "c25f939540f068751d1b92521db151cd0afc6544",
             0,
             null,
             1,
@@ -596,7 +596,7 @@
             "__NOW__",
             3,
             2,
-            "1a794f6cd4c735d3f3cf67ad9d74a081661b30a7",
+            "fc5a051389576d0f4fba2047d9b0738ddd8bb789",
             null,
             201739
          ],
@@ -607,7 +607,7 @@
             2,
             null,
             "__NOW__",
-            "6c63d5efe45868bee8a96e0ae42ab5619c9db1b5",
+            "66dfde42c4af84fb968cc4cf039c401a3cbee925",
             0,
             null,
             2,
@@ -615,9 +615,9 @@
             null,
             null,
             "__NOW__",
-            7,
             2,
-            "06e333eba194da05930487560b7fed6f56ebc883",
+            2,
+            "77947aac76c9777b44d14f37d3b0c85b1c10ac13",
             null,
             201739
          ],
@@ -628,7 +628,7 @@
             3,
             null,
             "__NOW__",
-            "b4fea4111b68e67152a73fc2d485ac63e95c0132",
+            "dbca02f069be663ec59a06a6fb831ad678fa8d5c",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             3,
@@ -636,9 +636,9 @@
             null,
             null,
             "__NOW__",
+            1,
             2,
-            2,
-            "0703127c20640cf55ba9086dc627c5cb034a9ba4",
+            "0b2b00481f216ba6d729f155fdc6014645d30a41",
             null,
             201739
          ],
@@ -649,7 +649,7 @@
             4,
             null,
             "__NOW__",
-            "036b6f40e94d54d251a5d3c7177e789a23f81eba",
+            "3c27fec4bfe9db7b4fff249e375cd459c9111b0f",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012",
             4,
@@ -659,7 +659,7 @@
             "__NOW__",
             1,
             2,
-            "5e61d77fa043b947b22109c710282c6c74f93bb9",
+            "91b988dec9a25feb3fafcb14b4cb4a2bda843f34",
             null,
             201739
          ]
@@ -699,7 +699,7 @@
             null,
             null,
             "categories",
-            "24e512360c9b527a0715bf6efa545f556b5849ee"
+            "2888e429bae11619aa2e945625c8a61792ddc137"
          ],
          [
             3,
@@ -716,7 +716,7 @@
             null,
             null,
             "categories",
-            "ce81f887fa9adf1d92e44e9995fab33358b1a5c1"
+            "826448259f135c223d7bd26105f37c80207e580a"
          ]
       ]
    },
@@ -815,7 +815,7 @@
             null,
             "__NOW__",
             "test content type 01",
-            "65f669ff9a40083244b18d6b1844f7879a688215",
+            "c25f939540f068751d1b92521db151cd0afc6544",
             null,
             null
          ],
@@ -830,7 +830,7 @@
             null,
             "__NOW__",
             "test content type 02",
-            "6c63d5efe45868bee8a96e0ae42ab5619c9db1b5",
+            "66dfde42c4af84fb968cc4cf039c401a3cbee925",
             null,
             null
          ],
@@ -840,12 +840,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0011category field 03\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0011category field 03\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011",
             3,
             null,
             "__NOW__",
             "test content type 03",
-            "b4fea4111b68e67152a73fc2d485ac63e95c0132",
+            "dbca02f069be663ec59a06a6fb831ad678fa8d5c",
             null,
             null
          ],
@@ -855,12 +855,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0011category field 04",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0011category field 04\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215",
             4,
             null,
             "__NOW__",
             "test content type 04",
-            "036b6f40e94d54d251a5d3c7177e789a23f81eba",
+            "3c27fec4bfe9db7b4fff249e375cd459c9111b0f",
             null,
             null
          ]
@@ -1190,12 +1190,12 @@
             null,
             1,
             null,
-            "__TEST_ROOT__/site/archives/author/authorce2f3/index.html",
+            "__TEST_ROOT__/site/archives/author/melody/index.html",
             21,
             null,
             113,
             17,
-            "/test/archives/author/authorce2f3/index.html",
+            "/test/archives/author/melody/index.html",
             1
          ],
          [
@@ -1205,12 +1205,12 @@
             null,
             1,
             null,
-            "__TEST_ROOT__/site/archives/author/authorce2f3/2017/09/27/index.html",
+            "__TEST_ROOT__/site/archives/author/melody/2017/09/27/index.html",
             22,
             "20170927000000",
             113,
             18,
-            "/test/archives/author/authorce2f3/2017/09/27/index.html",
+            "/test/archives/author/melody/2017/09/27/index.html",
             1
          ],
          [
@@ -1220,12 +1220,12 @@
             null,
             1,
             null,
-            "__TEST_ROOT__/site/archives/author/authorce2f3/2017/09/24-week/index.html",
+            "__TEST_ROOT__/site/archives/author/melody/2017/09/24-week/index.html",
             23,
             "20170924000000",
             113,
             19,
-            "/test/archives/author/authorce2f3/2017/09/24-week/index.html",
+            "/test/archives/author/melody/2017/09/24-week/index.html",
             1
          ],
          [
@@ -1235,12 +1235,12 @@
             null,
             1,
             null,
-            "__TEST_ROOT__/site/archives/author/authorce2f3/2017/09/index.html",
+            "__TEST_ROOT__/site/archives/author/melody/2017/09/index.html",
             24,
             "20170901000000",
             113,
             20,
-            "/test/archives/author/authorce2f3/2017/09/index.html",
+            "/test/archives/author/melody/2017/09/index.html",
             1
          ],
          [
@@ -1250,12 +1250,12 @@
             null,
             1,
             null,
-            "__TEST_ROOT__/site/archives/author/authorce2f3/2017/index.html",
+            "__TEST_ROOT__/site/archives/author/melody/2017/index.html",
             25,
             "20170101000000",
             113,
             21,
-            "/test/archives/author/authorce2f3/2017/index.html",
+            "/test/archives/author/melody/2017/index.html",
             1
          ],
          [
@@ -1400,12 +1400,12 @@
             null,
             4,
             null,
-            "__TEST_ROOT__/author/authorce2f3/index.html",
+            "__TEST_ROOT__/author/melody/index.html",
             35,
             null,
             116,
             49,
-            "/author/authorce2f3/index.html",
+            "/author/melody/index.html",
             1
          ],
          [
@@ -1415,12 +1415,12 @@
             null,
             4,
             null,
-            "__TEST_ROOT__/author/authorce2f3/2017/09/27/index.html",
+            "__TEST_ROOT__/author/melody/2017/09/27/index.html",
             36,
             "20170927000000",
             116,
             50,
-            "/author/authorce2f3/2017/09/27/index.html",
+            "/author/melody/2017/09/27/index.html",
             1
          ],
          [
@@ -1430,12 +1430,12 @@
             null,
             4,
             null,
-            "__TEST_ROOT__/author/authorce2f3/2017/09/24-week/index.html",
+            "__TEST_ROOT__/author/melody/2017/09/24-week/index.html",
             37,
             "20170924000000",
             116,
             51,
-            "/author/authorce2f3/2017/09/24-week/index.html",
+            "/author/melody/2017/09/24-week/index.html",
             1
          ],
          [
@@ -1445,12 +1445,12 @@
             null,
             4,
             null,
-            "__TEST_ROOT__/author/authorce2f3/2017/09/index.html",
+            "__TEST_ROOT__/author/melody/2017/09/index.html",
             38,
             "20170901000000",
             116,
             52,
-            "/author/authorce2f3/2017/09/index.html",
+            "/author/melody/2017/09/index.html",
             1
          ],
          [
@@ -1460,12 +1460,12 @@
             null,
             4,
             null,
-            "__TEST_ROOT__/author/authorce2f3/2017/index.html",
+            "__TEST_ROOT__/author/melody/2017/index.html",
             39,
             "20170101000000",
             116,
             53,
-            "/author/authorce2f3/2017/index.html",
+            "/author/melody/2017/index.html",
             1
          ],
          [

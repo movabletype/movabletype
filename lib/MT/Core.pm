@@ -51,12 +51,6 @@ BEGIN {
                 config_package => 'DBI::sqlite',
                 display        => ['dbpath'],
             },
-            'sqlite2' => {
-                label          => 'SQLite Database (v2)',
-                dbd_package    => 'DBD::SQLite2',
-                config_package => 'DBI::sqlite',
-                display        => ['dbpath'],
-            },
         },
         db_form_data => {
             dbserver => {
@@ -2141,7 +2135,6 @@ BEGIN {
             'ActivityFeedsRunTasks'    => { default => 1, },
             'ExportEncoding'           => { default => 'utf-8', },
             'SQLSetNames'              => undef,
-            'UseSQLite2'               => { default => 0, },
 
             #'UseJcodeModule'  => { default => 0, },
             'DefaultTimezone'    => { default => '0', },
@@ -2270,6 +2263,7 @@ BEGIN {
             },
             'DataAPIDisableSite'   => undef,
             'RebuildOffsetSeconds' => { default => 20 },
+            'DisableDataAPI'       => { default => 0 },
 
             # Enterprise.pack
             'LDAPOptions'           => { type => 'HASH' },
@@ -2337,6 +2331,7 @@ BEGIN {
             'PSGIStreaming' => { default => 1 },
             'PSGIServeStatic' => { default => 1 },
             'HideVersion' => { default => 1 },
+            'BuilderModule' => { default => 'MT::Builder' },
             'HideConfigWarnings' => { default => undef },
             'GlobalTemplateMaxRevisions' => { default => 20 },
             'DisableQuickPost' => { default => 0 },
@@ -2346,6 +2341,7 @@ BEGIN {
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
+            'TrimFilePath' => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2781,6 +2777,12 @@ sub remove_temporary_files {
     my @ids;
     foreach my $f (@files) {
         if ( $fmgr->delete( $f->name ) ) {
+            # MTC-26474
+            require File::Basename;
+            my $dir = File::Basename::dirname($f->name);
+            if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
+                rmdir($dir);
+            }
             push @ids, $f->id;
         }
     }
