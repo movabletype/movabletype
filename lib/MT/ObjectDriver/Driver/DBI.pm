@@ -827,8 +827,6 @@ sub search {
     $driver->SUPER::search(@_);
 }
 
-sub clear_cache {}
-
 1;
 __END__
 

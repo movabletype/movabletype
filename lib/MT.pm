@@ -46,7 +46,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.9.7',              '__PRODUCT_VERSION_ID__',
+        '7.9.8',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -64,11 +64,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 7;
+        $RELEASE_NUMBER = 8;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5402';
+        $RELEASE_VERSION_ID = 'r.5403';
     }
 
     $DebugMode = 0;
@@ -249,21 +249,6 @@ sub construct {
             }
         }
         return @matches;
-    }
-
-    sub loaded_models {
-        my $pkg = shift;
-        values %object_types;
-    }
-
-    sub clear_cache_of_loaded_models {
-        my $pkg = shift;
-        for my $model (values %object_types) {
-            # avoid loading a new driver here
-            my $props = $model->properties or next;
-            my $driver = $props->{driver} or next;
-            $driver->clear_cache if $driver->can('clear_cache');
-        }
     }
 }
 
@@ -1004,6 +989,7 @@ sub init_config_from_db {
     require MT::ObjectDriverFactory;
     if ( MT->config('ObjectDriver') ) {
         my $driver = MT::ObjectDriverFactory->instance;
+        $driver->configure if $driver;
     }
     else {
         MT::ObjectDriverFactory->configure();
