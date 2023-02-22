@@ -3351,22 +3351,9 @@ sub print_status_page {
 
     $app->print_encode( $app->build_page('layout/modal/header.tmpl') );
 
-    my $page_title = $app->translate('Clone Child Site');
-    $app->print_encode( $app->translate_templatized(<<"HTML" ) );
-
-<div class="modal-header">
-    <h5 class="modal-title">$page_title</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
-      <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-
-<div class="modal-body">
-    <h2><__trans phrase="Cloning child site '[_1]'..." params="$blog_name_encode"></h2>
-    <div class="modal_width card" id="dialog-clone-weblog" style="background-color: #fafafa;">
-        <div id="clone-process" class="process-msg card-block">
-            <ul class="list-unstyled p-3">
-HTML
+    my $status_header = $app->load_templ(
+        'cms/include/status_page_header.tmpl', { blog_name_encode => $blog_name_encode })->output();
+    $app->print_encode( $status_header );
 
     my $new_blog;
     eval {
