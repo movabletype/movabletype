@@ -1,0 +1,43 @@
+<div class="pull-left d-none d-md-inline">
+    <div class="mt-user">
+        <div class="mt-thumbnail">
+            <img src="<$mt:var name="static_uri">images/file-image.svg" width="60" height="60" loading="lazy" decoding="async">
+        </div>
+        <div class="mt-user__badge--warning">
+            <svg class="mt-icon--inverse mt-icon--sm">
+                <title>Warning</title>
+                <use xlink:href="<$mt:var name="static_uri">images/sprite.svg#ic_error"></use>
+            </svg>
+        </div>
+    </div>
+    <span class="title ml-4 mr-2"><a href="<$mt:var name="edit_link">" style="vertical-align: top; line-height: normal;"><$mt:var name="label"></a></span>
+    <mt:if name="is_usrpic">
+        <span class="badge badge-default" style="vertical-align: top; line-height: normal; margin-top: -3px;">Userpic</span>
+    </mt:if>
+</div>
+<div class="d-md-none row">
+    <div class="col-auto mb-2 pl-0">
+        <div class="mt-user">
+            <div class="mt-thumbnail">
+                <img src="<$mt:var name="static_uri">images/file-image.svg" width="60" height="60" loading="lazy" decoding="async">
+            </div>
+            <div class="mt-user__badge--warning">
+                <svg class="mt-icon--inverse mt-icon--sm">
+                    <title>Warning</title>
+                    <use xlink:href="<$mt:var name="static_uri">images/sprite.svg#ic_error"></use>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="col pl-0">
+        <span class="title"><a href="<$mt:var name="edit_link">" style="vertical-align: top; line-height: normal;"><$mt:var name="label"></a></span>
+    </div>
+    <div class="col-12 pl-0">
+        <span class="font-weight-light">
+            <$mt:var name="created_on">
+        </span>
+        <mt:if name="is_usrpic">
+            <span class="badge badge-default" style="vertical-align: top; line-height: normal; margin-top: -3px;">Userpic</span>
+        </mt:if>
+    </div>
+</div>
