@@ -1561,7 +1561,7 @@ MT.App = new Class( App, {
             return;
 
         if ( form.getAttribute( "mt:once" ) ) {
-            if ( form.submitted || app.formValidated )
+            if ( form.submitted )
                 return event.stop();
 
             this.eventSubmitForm = form;
