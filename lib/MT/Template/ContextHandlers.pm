@@ -3410,77 +3410,40 @@ Accepted values: "all", "index".
 sub _hdlr_app_statusmsg {
     my ( $ctx, $args, $cond ) = @_;
     my $app = MT->instance;
-    my $id  = $args->{id};
+    my $id  = $args->{id} || '';
 
     my $class = $args->{class} || 'info';
     $class =~ s/\balert\b/warning/;
     $class =~ s/\berror\b/danger/;
 
-    my $hidden = $args->{hidden};
-    my $style = $hidden ? ' style="display: none;"' : '';
-
-    my $msg     = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
-    my $no_link = $args->{no_link} || '';
     my $blog_id = $ctx->var('blog_id');
     my $blog    = $ctx->stash('blog');
     if ( !$blog && $blog_id ) {
         $blog = MT->model('blog')->load($blog_id);
     }
-    if ( $id && $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
-        my $link_l
-            = $no_link
-            ? ''
-            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">';
-        my $link_r = $no_link ? '' : '</a>';
-        my $obj_type
-            = $rebuild eq 'blog'
-            ? MT->translate('blog(s)')
-            : MT->translate('website(s)');
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your [_3] to see these changes take effect." params="$link_l%%$link_r%%$obj_type">};
-    }
-    elsif (
-        $blog && $app->user
-        and $app->user->can_do(
-            'rebuild',
-            at_least_one => 1,
-            blog_id      => $blog->id,
-        )
-        )
-    {
-        $rebuild = ''
-            if $rebuild ne 'cfg_prefs'
-            && $blog
-            && $blog->custom_dynamic_templates eq 'all';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
-            if $rebuild eq 'cfg_prefs';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
-            if $rebuild eq 'all';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">%%</a>">}
-            if $rebuild eq 'index';
-    }
-    else {
-        $rebuild = '';
-    }
-    $id    = defined $id    ? qq{ id="$id"}          : "";
-    $class = defined $class ? qq{alert alert-$class} : "alert alert-info";
-    my $close = '';
-    if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
-        $class .= ' alert-dismissable';
-        $close
-            = qq{<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>};
-    }
-    my $role = '';
-    if ( $class =~ /\bwarning|\bdanger/ ) {
-        $role = ' role="alert"';
-    }
-    return $ctx->build(<<"EOT");
-    <div$id class="$class"$style$role>$close $msg $rebuild</div>
-EOT
+
+    my %param = (
+        blog_id     => $blog_id,
+        can_close   => 0,
+        can_rebuild => 0,
+        class       => $class,
+        did_replace => 0,
+        dynamic_all => 0,
+        hidden      => $args->{hidden} || '',
+        id          => $id,
+        msg         => $ctx->slurp,
+        no_link     => $args->{no_link} || '',
+        rebuild     => $rebuild,
+    );
+
+    $param{can_close}   = 1 if $id && ( $args->{can_close} || !exists $args->{can_close} );
+    $param{can_rebuild} = 1 if $blog && ( $app->user and $app->user->can_do( 'rebuild', at_least_one => 1, blog_id => $blog->id ) );
+    $param{did_replace} = 1 if $id && $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/;
+    $param{dynamic_all} = 1 if $blog && $blog->custom_dynamic_templates eq 'all';
+
+    my $tmpl = $app->load_tmpl( 'cms/include/mtapp_statusmsg.tmpl', \%param );
+    return $ctx->build( $tmpl->output() );
 }
 
 ###########################################################################
