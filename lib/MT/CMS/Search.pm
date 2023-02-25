@@ -827,7 +827,7 @@ sub do_search_replace {
         $ids,          $date_time_field_id, $from,
         $to,           $timefrom,           $timeto,
         $show_all,     $do_search,          $orig_search,
-        $quicksearch,  $publish_status,     $my_posts,
+        $quicksearch,  $publish_status,
         $search_type,  $filter,             $filter_val,
         $change_note,
         )
@@ -977,7 +977,6 @@ sub do_search_replace {
         || $show_all
         || $do_replace
         || defined $publish_status
-        || $my_posts
         || ( $filter && $filter_val ) )
     {
         my %terms;
@@ -1112,19 +1111,6 @@ sub do_search_replace {
         if ( defined $publish_status ) {
             if ( $type eq 'entry' || $type eq 'page' ) {
                 $terms{status} = $publish_status;
-            }
-        }
-        if ($my_posts) {
-            if ( $type eq 'comment' ) {
-                $args{join} = MT::Entry->join_on(
-                    undef,
-                    {   id        => \'= comment_entry_id',
-                        author_id => $app->user->id
-                    }
-                );
-            }
-            elsif ( $type eq 'entry' || $type eq 'page' ) {
-                $terms{author_id} = $app->user->id;
             }
         }
 
@@ -1644,7 +1630,6 @@ sub do_search_replace {
             )
             || $show_all
             || defined $publish_status
-            || $my_posts
             || ( $filter && $filter_val ),
         replace            => $replace,
         do_replace         => $do_replace,
