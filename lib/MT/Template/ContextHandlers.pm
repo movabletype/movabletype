@@ -3130,92 +3130,29 @@ sub _hdlr_app_setting {
     my $id = $args->{id};
     return $ctx->error("'id' attribute missing") unless $id;
 
-    my $label       = $args->{label};
-    my $label_for   = $args->{label_for};
-    my $show_label  = exists $args->{show_label} ? $args->{show_label} : 1;
-    my $shown       = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
-    my $label_class = $args->{label_class} || "";
-    my $hint        = $args->{hint} || "";
-    my $hint_id     = $args->{hint_id} || "";
-    my $show_hint   = $args->{show_hint} || 0;
-    my $indent      = $args->{indent};
-    my $help        = "";
+    my $shown = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
 
-    my $label_help = "";
-    if ( $label && $show_label ) {
-        if ( defined $label_for && $label_for ne '' ) {
-            $label_for = qq{ for="$label_for"};
-        }
-        else {
-            $label_for = '';
-        }
-    }
-    else {
-        $label     = '';    # zero it out, because the user turned it off
-        $label_for = '';
-    }
-    if ( $hint && $show_hint ) {
-        if ( $hint_id ne "" ) {
-            $hint_id = " id=\"$hint_id\" ";
-        }
-        $hint
-            = "\n<small ${hint_id}class=\"form-text text-muted\">$hint$help</small>";
-    }
-    else {
-        $hint = ''
-            ;  # hiding hint because it is either empty or should not be shown
-    }
-    unless ($label_class) {
-        $label_class = 'field-left-label';
-    }
-    else {
-        $label_class = 'field-' . $label_class;
-    }
+    my %param = (
+        class        => $args->{class} || '',
+        field_header => $args->{field_header} ? 1 : 0,
+        label_class  => $args->{label_class} || '',
+        label_for    => $args->{label_for} || '',
+        label        => $args->{label} || '',
+        help         => '',
+        hint         => $args->{hint} || '',
+        hint_id      => $args->{hint_id} || '',
+        id           => $args->{id},
+        indent       => $args->{indent} || '',
+        insides      => $ctx->slurp( $args, $cond ),
+        required     => $args->{required} ? 1 : 0,
+        show_hint    => $args->{hint} && $args->{show_hint} ? 1 : 0,
+        show_label   => exists $args->{show_label} ? $args->{show_label} : 1,
+        shown        => $shown,
+        use_style    => $args->{indent} || !$shown ? 1 : 0,
+    );
 
-    my $style = "";
-    if ($indent) {
-        if ( !$shown ) {
-            $style = qq{ style="padding-left: ${indent}px; display: none;"};
-        }
-        else {
-            $style = qq{ style="padding-left: ${indent}px;"};
-        }
-    }
-    elsif ( !$shown ) {
-        $style = ' style="display: none;"';
-    }
-
-    # 'Required' indicator plus CSS class
-    my $req
-        = $args->{required}
-        ? qq{ <span class="badge badge-danger">}
-        . MT->translate('Required')
-        . qq{</span>}
-        : "";
-    my $req_class = $args->{required} ? " required" : "";
-
-    my $insides = $ctx->slurp( $args, $cond );
-
-    my $class = $args->{class} || "";
-
-    if ( $args->{field_header} ) {
-        return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
-        <div class="field-header">
-          <label$label_for>$label$req</label>
-        </div>
-        $insides$hint
-    </div>
-EOT
-    }
-    else {
-        return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
-        <label$label_for>$label$req</label>
-        $insides$hint
-    </div>
-EOT
-    }
+    my $tmpl = MT->instance->load_tmpl( 'cms/include/mtapp_setting.tmpl', \%param );
+    return $ctx->build( $tmpl->output() );
 }
 
 ###########################################################################
