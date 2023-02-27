@@ -6,7 +6,7 @@
             </label>
         </div>
     <mt:else>
-        <label <mt:if name="show_label"><mt:if name="label_for"> for="<$mt:var name="label_for">"</mt:if></mt:if>>
+        <label <mt:if name="show_label"><mt:if name="label_for"> for="<$mt:var name="label_for">"</mt:if></mt:if> class="form-label">
             <mt:if name="show_label"><mt:var name="label"></mt:if><mt:if name="required"><span class="badge badge-danger"><__trans phrase="Required"></span></mt:if>
         </label>
     </mt:if>
