@@ -58,7 +58,7 @@ subtest 'Title/Text' => sub {
     is $entry->title => $title, "title";
     is $entry->text  => $text,  "text";
 
-    MT->instance->publisher->rebuild;
+    MT->instance->publisher->rebuild(BlogID => $blog_id);
     $test_env->ls;
 
     my $post_file = $test_env->path("2020/02/post.html");

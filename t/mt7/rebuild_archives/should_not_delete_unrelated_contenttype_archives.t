@@ -312,7 +312,7 @@ my $author = MT->model('author')->load( { name => 'author' } );
 my $blog   = MT->model('blog')->load(   { name => 'my_blog' } );
 my $blog_id = $blog->id;
 
-MT->publisher->rebuild;
+MT->publisher->rebuild(BlogID => $blog_id);
 
 $test_env->utime_r( $blog->archive_path );
 
