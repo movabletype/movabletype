@@ -12506,6 +12506,10 @@ label {
   }
 }
 
+li.nav-item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav li.mt-sharedPreviewNav__item {
+  margin-bottom: -1px;
+}
+
 .selector.scope {
   background-color: #333;
 }
