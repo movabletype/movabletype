@@ -1768,7 +1768,7 @@ sub _build_content_data_preview {
     $ctx->stash( 'blog',         $blog );
     $ctx->stash( 'blog_id',      $blog->id ) if $blog;
     $ctx->{current_timestamp}    = $content_data->authored_on;
-    $ctx->{curernt_archive_type} = $at;
+    $ctx->{current_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
     $ctx->stash('current_mapping_url', $archive_url);
 
