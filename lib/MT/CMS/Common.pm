@@ -1686,6 +1686,10 @@ sub filtered_list {
 
     my ( $objs, @data );
     if ($count) {
+        if ($offset && $count < $offset) {
+            $load_options{offset} = $offset = 0;
+            $page = 1;
+        }
         MT->run_callbacks( 'cms_pre_load_filtered_list.' . $callback_ds,
             $app, $filter, \%load_options, \@cols );
 
