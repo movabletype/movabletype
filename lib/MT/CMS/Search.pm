@@ -1167,38 +1167,20 @@ sub do_search_replace {
             if ( defined $terms && defined $args ) {
                 $iter = $class->load_iter( $terms, $args )
                     or die $class->errstr;
-            }
-            elsif ($blog_id
-                || ( $type eq 'blog' )
-                || ( $app->mode eq 'dialog_grant_role' ) )
-            {
-                $iter
-                    = $class->load_iter( @terms ? \@terms : \%terms, \%args )
-                    or die $class->errstr;
-            }
-            else {
-                if ( $author->is_superuser ) {
-                    $iter = $class->load_iter(@terms ? \@terms : \%terms, \%args);
-                }
-                else {
-                    if ( $class->has_column('blog_id') ) {
+            } elsif ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
+                $iter = $class->load_iter(@terms ? \@terms : \%terms, \%args) or die $class->errstr;
+            } else {
+                if ( $class->has_column('blog_id') ) {
 
-                        # Get an iter for each accessible blog
-                        my @perms = $app->model('permission')->load(
-                            {   blog_id   => { not => 0 },
-                                author_id => $author->id
-                            },
-                        );
-                        if (@perms) {
-                            my @blog_terms;
-                            push( @blog_terms,
-                                { blog_id => $_->blog_id, }, '-or' )
-                                foreach @perms;
-                            push @terms, \@blog_terms if @blog_terms;
-                        }
-                    }
-                    $iter = $class->load_iter( \@terms, \%args );
+                    # Get an iter for each accessible blog
+                    my @perms = $app->model('permission')->load(
+                        {   blog_id   => { not => 0 },
+                            author_id => $author->id
+                        },
+                    );
+                    push @terms, {blog_id => [map {$_->blog_id} @perms]} if @perms;
                 }
+                $iter = $class->load_iter( \@terms, \%args );
             }
         }
         my $i = 1;

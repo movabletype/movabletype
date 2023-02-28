@@ -366,4 +366,38 @@ subtest 'replace' => sub {
     $_->remove for @entries;
 };
 
+subtest 'Search in system scope by non super user' => sub {
+
+    my $egawa          = MT::Test::Permission->make_author(name => 'egawa', nickname => 'Shiro Egawa');
+    my $edit_all_posts = MT::Test::Permission->make_role(name => 'Edit All Posts', permissions => "'edit_all_posts'");
+    MT::Association->link($egawa, $edit_all_posts, $website);
+    MT::Association->link($egawa, $edit_all_posts, $blog);
+    my $perm = $egawa->permissions(0);
+    $perm->add_permissions(MT::Test::Permission->make_role(name => 'Designer'));
+    $perm->save;
+
+    my @entries;
+    for my $site ($website, $blog) {
+        push @entries, MT::Test::Permission->make_entry(
+            blog_id   => $site->id,
+            author_id => $admin->id,
+            title     => "system-search-test",
+            text      => "text",
+            basename  => "basename",
+        );
+    }
+    my @entry_ids = map { $_->id } @entries;
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($egawa);
+    $app->get_ok({
+        __mode  => 'search_replace',
+        blog_id => 0,
+    });
+    $app->search('system-search-test');
+    is(@{ $app->found_titles }, 2, 'found from multiple sites');
+
+    $_->remove for @entries;
+};
+
 done_testing();
