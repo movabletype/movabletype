@@ -204,6 +204,7 @@
       done: function (data, textStatus, jqXHR) {
         if (data && !data.error) {
           self.setResult(data.result);
+          self.trigger('move_page', self.page, true);
         } else if (data.error) {
           alert(data.error);
           self.objects = [];

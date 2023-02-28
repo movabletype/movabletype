@@ -282,6 +282,7 @@
     this.count = result.count;
     this.editableCount = result.editable_count;
     this.pageMax = result.page_max;
+    this.page = result.page;
     this.filters = result.filters;
     this.setFilterById(result.id);
 
