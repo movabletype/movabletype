@@ -200,8 +200,8 @@ function init() {
 <mt:setvarblock name="page_content">
 
 <mt:unless name="filter_key" eq="backup_templates">
-<div class="form-row">
-  <div class="col-auto ms-auto form-inline">
+<div class="form-group row">
+  <div class="col-auto ms-auto form-inline p-0">
     <mtapp:svgicon id="ic_add" title="create" color="primary">
     <select id="new-template-type" class="custom-select form-control ms-3 form-select" name="template_type_to_create">
   <mt:if name="blog_id">
@@ -220,7 +220,7 @@ function init() {
       <option value="widget"><__trans phrase="Widget Template"></option>
     </select>
   </div>
-  <div class="col-auto">
+  <div class="col-auto pe-0">
     <button
       id="create-template"
       accesskey="c"
