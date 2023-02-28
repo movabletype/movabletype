@@ -148,10 +148,11 @@ TC.TableSelect.prototype.click = function( evt ) {
     // handle checkboxes
     if ( tagName == "input" &&
         TC.hasClassName( element, "select" ) ) {
-        if ((element.type == "checkbox") || (element.type == "radio"))
+        if ((element.type == "checkbox") || (element.type == "radio")) {
             var parent = TC.getParentByTagName( element, "tr" );
             if (parent) this.setFocus( parent );
             return this.select( element, parent );
+        }
     }
 
     // handle rows
