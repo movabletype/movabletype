@@ -1559,10 +1559,10 @@ isobject@^3.0.0, isobject@^3.0.1:
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==
 
-jquery-migrate@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/jquery-migrate/-/jquery-migrate-3.4.0.tgz#915d6e914c76bd7410a58c86d20fec0052784af9"
-  integrity sha512-K0W02EhZyqjVpyF5pdi+t238cIfQACzMsXiX4AEfEOxPPfiZZFzf3brtFY21FOOEPiWZF4mH04TXHDE6e2YDyg==
+jquery-migrate@^3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/jquery-migrate/-/jquery-migrate-3.4.1.tgz#6a7114626b80e0d9e1cb77f170623efd85c5fc9c"
+  integrity sha512-6RaV23lLAYccu8MtLfy2sIxOvx+bulnWHm/pvffAi7KOzPk1sN9IYglpkl1ZNCj1FSgSNDPS2fSZ1hWsXc200Q==
 
 jquery-ui-touch-punch@^0.2.3:
   version "0.2.3"
