@@ -702,6 +702,16 @@ sub load_all {
     $r->cache( $cache_key, $cache_data );
 }
 
+sub load_all_searchables {
+    my ($class, $blog_id, $user) = @_;
+    my @objs = @{ $class->load_all };
+    @objs = grep { $_->blog_id == $blog_id } @objs if $blog_id;
+    return \@objs if $user->is_superuser || $user->permissions(0)->can_do('manage_content_data');
+    my $perms = $user->permissions($blog_id);
+    return \@objs if $perms->can_do('manage_content_data');
+    return [grep { $perms->can_do('search_content_data_' . $_->unique_id) } @objs];
+}
+
 sub make_tag_list_props {
     my $class      = shift;
     my $order      = 500;

@@ -88,17 +88,9 @@ sub core_search_apis {
                     $terms->{ $app->param('filter') }
                         = $app->param('filter_val');
                 }
-                my $content_type_id = $app->param('content_type_id') || 0;
-                my $content_type
-                    = $app->model('content_type')
-                    ->load( { id => $content_type_id } )
-                    || $app->model('content_type')->load(
-                    { blog_id => $blog_id || \'> 0' },
-                    { sort => 'name', limit => 0 }
-                    );
-                if ($content_type) {
-                    $terms->{content_type_id} = $content_type->id;
-                    $app->param( 'content_type_id', $content_type->id );
+                if (my $selected_content_type_id = $app->param('content_type_id')) {
+                    $terms->{content_type_id} = $selected_content_type_id;
+                    $app->param('content_type_id', $selected_content_type_id);
                 }
                 $args->{sort}      = 'authored_on';
                 $args->{direction} = 'descend';
@@ -725,23 +717,7 @@ sub search_replace {
         my $selected_content_type_id = $app->param('content_type_id');
         my $selected_content_type;
         my ( @content_types, @date_time_fields, @date_fields, @time_fields );
-        my $iter
-            = MT->model('content_type')
-            ->load_iter( { blog_id => $blog_id || \'> 0' },
-            { sort => 'name' } );
-        my $perms = $user->permissions($blog_id);
-        while ( my $content_type = $iter->() ) {
-
-            next
-                unless (
-                   $user->is_superuser
-                || $user->permissions(0)->can_do('manage_content_data')
-                || $perms->can_do('manage_content_data')
-                || $perms->can_do(
-                    'search_content_data_' . $content_type->unique_id
-                )
-                );
-
+        for my $content_type (@{MT->model('content_type')->load_all_searchables($blog_id, $user)}) {
             push @content_types,
                 +{
                 content_type_id   => $content_type->id,
@@ -881,19 +857,16 @@ sub do_search_replace {
     }
     my ( $content_type, @content_types );
     if ( $type eq 'content_data' ) {
-        my $content_type_id = $app->param('content_type_id') || 0;
-        $content_type
-            = $app->model('content_type')->load( { id => $content_type_id } )
-            || $app->model('content_type')->load(
-            { blog_id => $blog_id || \'> 0' },
-            { sort => 'name', limit => 1 },
-            );
-
-        my $iter = $app->model('content_type')
-            ->load_iter( { blog_id => $blog_id || \'> 0' } );
-        while ( my $ct = $iter->() ) {
-            push @content_types, $ct;
+        @content_types = @{MT->model('content_type')->load_all_searchables($blog_id, $author)};
+        if (my $selected_content_type_id = $app->param('content_type_id')) {
+            for my $ct (@content_types) {
+                if ($ct->id == $selected_content_type_id) {
+                    $content_type = $ct;
+                    last;
+                }
+            }
         }
+        $content_type ||= $content_types[0] if @content_types;
     }
     if ($is_limited) {
         @cols = $app->multi_param('search_cols');

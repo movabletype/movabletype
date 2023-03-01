@@ -2166,11 +2166,8 @@ sub build_content_data_table {
     my $type       = $args{type};
 
     my $content_type_id = $app->param('content_type_id') || 0;
-    my $content_type
-        = MT->model('content_type')->load( { id => $content_type_id } )
-        || MT->model('content_type')
-        ->load( { blog_id => ( $app->blog ? $app->blog->id : \'> 0' ) },
-        { sort => 'name', limit => 1 } );
+    my $content_type = MT->model('content_type')->load( { id => $content_type_id } )
+        || MT->model('content_type')->load_all_searchables($app->blog ? $app->blog->id : 0, $app_author)->[0];
     return [] unless $content_type;
     $param->{content_type_id}   = $content_type->id;
     $param->{content_type_name} = $content_type->name;
