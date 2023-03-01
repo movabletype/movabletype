@@ -226,8 +226,7 @@ function toggleContentTypeDateTimeInputs() {
         <mtapp:setting
            id="content-type"
            label="<__trans phrase="Content Type">"
-           label_class="top-label"
-           help_section="search-alt">
+           label_class="top-label">
            <select class="custom-select form-control form-select" name="content_type_id">
       <mt:loop name="content_types">
              <option value="<mt:var name="content_type_id" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>>
@@ -240,8 +239,7 @@ function toggleContentTypeDateTimeInputs() {
         <mtapp:setting
            id="search"
            label="<__trans phrase="Search">"
-           label_class="top-label"
-           help_section="search-alt">
+           label_class="top-label">
           <input type="text" name="search" id="search" class="form-control text query" value="<mt:var name="search" escape="html">" />
         </mtapp:setting>
         <ul id="search-bar-advanced-search" class="list-inline multiple-selection">
@@ -383,8 +381,7 @@ function toggleContentTypeDateTimeInputs() {
         <mtapp:setting
            id="content-type-alt"
            label="<__trans phrase="Content Type">"
-           label_class="top-label"
-           help_section="content-type-alt">
+           label_class="top-label">
           <select name="content-type-alt" class="custom-select form-control form-select" disabled>
         <mt:loop name="content_types">
           <mt:if name="selected">
@@ -397,16 +394,14 @@ function toggleContentTypeDateTimeInputs() {
         <mtapp:setting
            id="search-alt"
            label="<__trans phrase="Search For">"
-           label_class="top-label"
-           help_section="search-alt">
+           label_class="top-label">
           <input type="text" name="search-alt" id="search-alt" class="form-control text query disabled" disabled value="<mt:var name="search" escape="html">" readonly="readonly" />
         </mtapp:setting>
         <!-- Replace -->
         <mtapp:setting
            id="replace"
            label="<__trans phrase="Replace With">"
-           label_class="top-label"
-           help_section="replace">
+           label_class="top-label">
           <textarea name="replace" id="replace" class="form-control text low"><mt:var name="replace" escape="html"></textarea>
         </mtapp:setting>
         <div class="actions-bar">

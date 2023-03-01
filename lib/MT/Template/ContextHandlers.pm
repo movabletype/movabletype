@@ -3111,14 +3111,6 @@ Set hind_id which is added to form element.
 
 Controls whether the inline help 'hint' label is shown or not.
 
-=item * help_page
-
-Identifies a specific page of the MT help documentation for this setting.
-
-=item * help_section
-
-Identifies a section name of the MT help documentation for this setting.
-
 =back
 
 =for tags application
@@ -3138,7 +3130,6 @@ sub _hdlr_app_setting {
         label_class  => $args->{label_class} || '',
         label_for    => $args->{label_for} || '',
         label        => $args->{label} || '',
-        help         => '',
         hint         => $args->{hint} || '',
         hint_id      => $args->{hint_id} || '',
         id           => $args->{id},

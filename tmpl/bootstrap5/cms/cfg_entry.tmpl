@@ -58,9 +58,7 @@
 
     <mtapp:setting
       id="list_on_index"
-      label="<__trans phrase="Listing Default">"
-      help_page="blog_settings_general"
-      help_section="entries_to_display">
+      label="<__trans phrase="Listing Default">">
       <div class="form-inline">
         <input type="text" name="list_on_index" id="list_on_index" class="form-control text num" value="<mt:var name="list_on_index" escape="html">" />
         <select name="days_or_posts" id="days_or_posts" class="custom-select form-control form-select">
@@ -74,9 +72,7 @@
     <mtapp:setting
        id="sort_order_posts"
        label="<__trans phrase="Order">"
-       label_for="sort_order_posts"
-       help_page="blog_settings_general"
-       help_section="entry_order">
+       label_for="sort_order_posts">
       <select name="sort_order_posts" id="sort_order_posts" class="custom-select form-control form-select">
         <option value="ascend"<mt:if name="sort_order_posts_ascend"> selected="selected"</mt:if>><__trans phrase="Ascending"></option>
         <option value="descend"<mt:if name="sort_order_posts_descend"> selected="selected"</mt:if>><__trans phrase="Descending"></option>
@@ -86,18 +82,14 @@
     <mtapp:setting
        id="words_in_excerpt"
        label="<__trans phrase="Excerpt Length">"
-       label_for="words_in_excerpt"
-       help_page="blog_settings_general"
-       help_section="excerpt_length">
+       label_for="words_in_excerpt">
       <input type="text" name="words_in_excerpt" id="words_in_excerpt" class="form-control text num" value="<mt:var name="words_in_excerpt" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="date_language"
        label="<__trans phrase="Date Language">"
-       label_for="date_language"
-       help_page="blog_settings_general"
-       help_section="date_language">
+       label_for="date_language">
       <select name="date_language" id="date_language" class="custom-select form-control form-select">
         <option value="cz"<mt:if name="date_language_cz"> selected="selected"</mt:if>><__trans phrase="Czech"></option>
         <option value="dk"<mt:if name="date_language_dk"> selected="selected"</mt:if>><__trans phrase="Danish"></option>
@@ -123,9 +115,7 @@
     <mtapp:setting
        id="basename_limit"
        label="<__trans phrase="Basename Length">"
-       label_for="basename_limit"
-       help_page="blog_settings_entry_defaults"
-       help_section="basename_length">
+       label_for="basename_limit">
       <input type="text" name="basename_limit" id="basename_limit" class="form-control text num" maxlength="3" value="<mt:var name="basename_limit" escape="html">" />
     </mtapp:setting>
   </mtapp:settinggroup>
@@ -147,9 +137,7 @@
        id="convert_paras"
        label="<__trans phrase="Text Formatting">"
        label_for="convert_paras"
-       hint="<__trans phrase="Specifies the default Text Formatting option when creating a new entry.">"
-       help_page="blog_settings_entry_defaults"
-       help_section="text_formatting">
+       hint="<__trans phrase="Specifies the default Text Formatting option when creating a new entry.">">
       <select name="convert_paras" id="convert_paras" class="custom-select form-control form-select">
       <mt:loop name="text_filters">
         <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
@@ -160,9 +148,7 @@
     <mt:if name="enabled_plugins{Comments}">
     <mtapp:setting
        id="allow_comments_default"
-       label="<__trans phrase="Comments">"
-       help_page="blog_settings_entry_defaults"
-       help_section="accept_comments">
+       label="<__trans phrase="Comments">">
       <div class="mb-3">
         <div class="form-check">
           <input type="checkbox" name="allow_comments_default" id="allow_comments_default" class="form-check-input" value="1"<mt:if name="ALLOW_COMMENTS_DEFAULT_1"> checked="checked"</mt:if> />
@@ -187,9 +173,7 @@
     <mt:if name="enabled_plugins{Trackback}">
     <mtapp:setting
        id="allow_pings_default"
-       label="<__trans phrase="TrackBacks">"
-       help_page="blog_settings_entry_defaults"
-       help_section="allow_trackbacks">
+       label="<__trans phrase="TrackBacks">">
       <div class="mb-3">
         <div class="form-check">
           <input type="checkbox" value="1" name="allow_pings_default" class="form-check-input" id="allow_pings_default"<mt:if name="allow_pings_default"> checked="checked"</mt:if> />

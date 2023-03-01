@@ -115,9 +115,7 @@ jQuery(window).on('load', function () {
         label_for="blog_theme"
         hint="<__trans phrase="Select the theme you wish to use for this child site.">"
         hint_id="blogTheme"
-        show_hint="1"
-        help_page="blog_settings_general"
-        help_section="blog_theme">
+        show_hint="1">
         <select id="blog_theme" name="blog_theme" class="custom-select form-control form-select" aria-describedby="blogTheme">
         <mt:loop name="theme_loop">
           <option value="<mt:var name="value" escape="html">"<mt:if name="t_selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
@@ -131,9 +129,7 @@ jQuery(window).on('load', function () {
         label_for="name"
         hint="<__trans phrase="Name your child site. The site name can be changed at any time.">"
         hint_id="siteName"
-        show_hint="1"
-        help_page="blog_settings_general"
-        help_section="blog_name">
+        show_hint="1">
         <input type="text" name="name" id="name" class="form-control text required" value="<mt:var name="name" escape="html">" onkeyup="dirify_blog_name(this)" aria-describedby="siteName" />
     </mtapp:setting>
 </mt:if>
@@ -144,9 +140,7 @@ jQuery(window).on('load', function () {
         label="<__trans phrase="Site URL">"
         hint="<__trans phrase="Enter the URL of your Child Site. Exclude the filename (i.e. index.html). Example: http://www.example.com/blog/">"
         hint_id="siteUrl"
-        show_hint="1"
-        help_page="blog_settings_publishing"
-        help_section="site_url">
+        show_hint="1">
         <div class="form-inline site-url content-path">
             <mt:var name="website_scheme">://
             <span class="subdomain">
@@ -174,9 +168,7 @@ jQuery(window).on('load', function () {
     <mtapp:setting
         id="site_path"
         class="field-content site-path-field"
-        label="<__trans phrase="Site Root">"
-        help_page="blog_settings_publishing"
-        help_section="site_root">
+        label="<__trans phrase="Site Root">">
         <div class="form-inline relative-site_path content-path">
           <span class="website-path">
             <mt:var name="website_path" encode_html="1">
@@ -205,9 +197,7 @@ jQuery(window).on('load', function () {
         label_for="server_offset"
         hint="<__trans phrase="Select your timezone from the pulldown menu.">"
         hint_id="timeZone"
-        show_hint="1"
-        help_page="blog_settings_general"
-        help_section="blog_timezone">
+        show_hint="1">
             <select name="server_offset" id="server_offset" class="custom-select form-control form-select" aria-describedby="timeZone">
                 <option value=""><__trans phrase="Time zone not selected"></option>
                 <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
