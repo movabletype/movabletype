@@ -20,6 +20,8 @@ BEGIN {
 
 use MT;
 use MT::Test;
+use File::Spec::Functions qw(catdir);
+use Test::Deep qw(cmp_deeply superbagof);
 
 my $fmgr;
 my @alt_paths;
@@ -30,7 +32,7 @@ BEGIN {
     $fmgr = MT::FileMgr->new('Local');
 
     foreach my $alt_path (@alt_paths) {
-        $fmgr->mkpath(File::Spec->catdir($alt_path, $admin_theme_id));
+        $fmgr->mkpath(catdir($alt_path, $admin_theme_id));
     }
     note "startup";
 }
@@ -38,46 +40,50 @@ BEGIN {
 END {
     @alt_paths = MT->config('AltTemplatePath');
     foreach my $alt_path (@alt_paths) {
-        $fmgr->rmdir(File::Spec->catdir($alt_path, $admin_theme_id));
+        $fmgr->rmdir(catdir($alt_path, $admin_theme_id));
     }
     note "shutdown";
 }
+
+my $mt_dir = MT->instance->mt_dir;
 
 subtest 'MT::template_paths' => sub {
     my $mt = MT->instance;
     $mt->{template_dir} = 'cms';
 
     my @paths = $mt->template_paths;
+    note explain \@paths;
 
-    is($paths[0], "/var/www/cgi-bin/mt/alt-tmpl/${admin_theme_id}", "alt-tmpl/${admin_theme_id}");
-    is($paths[1], "/var/www/cgi-bin/mt/alt-tmpl",                   "alt-tmpl");
-    is($paths[2], "/var/www/cgi-bin/mt/tmpl/${admin_theme_id}/cms", "tmpl/${admin_theme_id}/cms");
-    is($paths[3], "/var/www/cgi-bin/mt/tmpl/cms",                   "tmpl/cms");
-    is($paths[4], "/var/www/cgi-bin/mt/tmpl/${admin_theme_id}",     "tmpl/${admin_theme_id}");
-    is($paths[5], "/var/www/cgi-bin/mt/tmpl",                       "tmpl");
-
-    done_testing;
+    cmp_deeply \@paths, superbagof(
+        catdir($mt_dir, "alt-tmpl/${admin_theme_id}"),
+        catdir($mt_dir, "alt-tmpl"),
+        catdir($mt_dir, "tmpl/${admin_theme_id}/cms"),
+        catdir($mt_dir, "tmpl/cms"),
+        catdir($mt_dir, "tmpl/${admin_theme_id}"),
+        catdir($mt_dir, "tmpl"),
+    );
 };
 
 subtest 'Component::template_paths' => sub {
     my $mt = MT->instance;
     $mt->{template_dir} = 'cms';
-    my $component = 'GoogleAnalyticsV4';
+    my $component = 'BlockEditor';
     my $c         = $mt->component($component);
 
     my @cpaths = $c->template_paths;
+    note explain \@cpaths;
 
-    is($cpaths[0], "/var/www/cgi-bin/mt/plugins/${component}/tmpl/${admin_theme_id}", "plugins/${component}/tmpl/${admin_theme_id}");
-    is($cpaths[1], "/var/www/cgi-bin/mt/plugins/${component}/tmpl",                   "plugins/${component}/tmpl");
-    is($cpaths[2], "/var/www/cgi-bin/mt/plugins/${component}",                        "plugins/${component}");
-    is($cpaths[3], "/var/www/cgi-bin/mt/alt-tmpl/${admin_theme_id}",                  "alt-tmpl/${admin_theme_id}");
-    is($cpaths[4], "/var/www/cgi-bin/mt/alt-tmpl",                                    "alt-tmpl");
-    is($cpaths[5], "/var/www/cgi-bin/mt/tmpl/${admin_theme_id}/cms",                  "tmpl/${admin_theme_id}/cms");
-    is($cpaths[6], "/var/www/cgi-bin/mt/tmpl/cms",                                    "tmpl/cms");
-    is($cpaths[7], "/var/www/cgi-bin/mt/tmpl/${admin_theme_id}",                      "tmpl/${admin_theme_id}");
-    is($cpaths[8], "/var/www/cgi-bin/mt/tmpl",                                        "tmpl");
-
-    done_testing;
+    cmp_deeply \@cpaths, superbagof(
+        catdir($mt_dir, "plugins/${component}/tmpl/${admin_theme_id}"),
+        catdir($mt_dir, "plugins/${component}/tmpl"),
+        catdir($mt_dir, "plugins/${component}"),
+        catdir($mt_dir, "alt-tmpl/${admin_theme_id}"),
+        catdir($mt_dir, "alt-tmpl"),
+        catdir($mt_dir, "tmpl/${admin_theme_id}/cms"),
+        catdir($mt_dir, "tmpl/cms"),
+        catdir($mt_dir, "tmpl/${admin_theme_id}"),
+        catdir($mt_dir, "tmpl"),
+    );
 };
 
 done_testing;
