@@ -817,11 +817,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
         setMultiLineTextData($form);
 </mt:if>
         setDirty(false);
-        if(dform.submitted){
-          return false;
-        }
-        dform.submit();
-        dform.submitted = true;
+        $form.get(0).submit();
         return false;
     }
 
