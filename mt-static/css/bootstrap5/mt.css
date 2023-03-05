@@ -12055,6 +12055,7 @@ fieldset.form-group {
   border-color: #CACACA;
   border-radius: 0.375rem;
   font-weight: bold;
+  color: #212529;
 }
 
 .modal-rebuildtriggers .badge.badge--selected {
