@@ -818,7 +818,7 @@ riot.tag2('list-table-body', '<tr if="{store.objects.length == 0}"> <td colspan=
           return false
         }
       }
-      e.preventDefault()
+      // e.preventDefault()
       e.stopPropagation()
       this.store.trigger('toggle_row', e.currentTarget.dataset.index)
     }.bind(this)

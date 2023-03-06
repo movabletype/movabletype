@@ -113,8 +113,8 @@ function init() {
             if ((element.type == "checkbox") || (element.type == "radio"))
                 var parent = TC.getParentByTagName( element, "tr" );
                 if (parent) this.setFocus( parent );
-                evt.preventDefault();
-                return this.select( element );
+                // evt.preventDefault();
+                return this.select( element, parent );
         }
 
         // handle rows

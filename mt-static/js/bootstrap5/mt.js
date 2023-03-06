@@ -2537,7 +2537,12 @@ MT.App.CategorySelector = new Class( Component, {
 
     eventClick: function( event ) {
         var command = this.getMouseEventCommand( event );
-        if (!command) return event.stop();
+        if( !command ){
+            if(event.target.tagName == 'INPUT'){
+                return false;
+            }
+            return event.stop()
+        }
         switch( command ) {
 
             case "close":
