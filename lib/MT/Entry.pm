@@ -601,7 +601,7 @@ sub list_props {
                 my $prop = shift;
                 my ($obj, $app, $opts) = @_;
                 my $ts = $prop->raw(@_) or return '';
-                return '' if $obj->status != MT::EntryStatus::RELEASE();
+                return '' if $obj->status != MT::EntryStatus::RELEASE() && $obj->status != MT::EntryStatus::FUTURE();
                 my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
                 my $blog        = $opts->{blog};
                 my $is_relative = ($app->user->date_format || 'relative') eq 'relative' ? 1 : 0;
