@@ -140,7 +140,6 @@ subtest 'Check applying a blog theme' => sub {
     $app->has_no_permission_error;
     ok($app->last_location->query_param('applied'), 'Theme has been applied.');
 
-    $test_env->clear_mt_cache;
     $website = MT->model('website')->load($website->id);
     is(
         $website->theme_id, 'MyBlogTheme',
