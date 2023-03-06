@@ -1709,6 +1709,7 @@ fieldset.form-group{
     border-color: $gray-light;
     border-radius: $border-radius;
     font-weight: $font-weight-bold;
+    color: $body-color;
     &.badge--selected{
       border-color: $lochmara100;
       background: $lochmara100;
