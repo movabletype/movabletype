@@ -97,7 +97,10 @@ sub dbh_handle {
                 $dbh->{private_last_ping} = time;
             }
             else {
-                $driver->dbh( $dbh = undef );
+                for my $dr (@MT::ObjectDriverFactory::drivers) {
+                    $dr->dbh(undef);
+                }
+                $dbh = undef;
             }
         }
     }
