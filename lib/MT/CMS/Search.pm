@@ -1017,7 +1017,7 @@ sub do_search_replace {
                         foreach my $b (@blogs) {
                             push @blog_ids, $b->id
                                 if $author->permissions( $b->id )
-                                ->has('administer_site');
+                                ->has('administer_site') || $author->is_superuser;
                         }
                         $terms{blog_id} = \@blog_ids;
                     }
