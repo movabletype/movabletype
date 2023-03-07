@@ -597,6 +597,32 @@ sub list_props {
                 ];
                 return;
             },
+            html => sub {
+                my $prop = shift;
+                my ($obj, $app, $opts) = @_;
+                my $ts = $prop->raw(@_) or return '';
+                return '' if $obj->status != MT::EntryStatus::RELEASE() && $obj->status != MT::EntryStatus::FUTURE();
+                my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
+                my $blog        = $opts->{blog};
+                my $is_relative = ($app->user->date_format || 'relative') eq 'relative' ? 1 : 0;
+                my $date =
+                    $is_relative
+                    ? MT::Util::relative_date($ts, time, $blog)
+                    : MT::Util::format_ts(
+                    $date_format,
+                    $ts,
+                    $blog,
+                    $app->user
+                    ? $app->user->preferred_language
+                    : undef
+                    );
+                my $timestamp = MT::Util::format_ts(
+                    '%Y-%m-%d %H:%M:%S',
+                    $ts,
+                    $blog,
+                );
+                return qq{<span title="$timestamp">$date</span>};
+            },
         },
         modified_on => {
             base  => '__virtual.modified_on',
