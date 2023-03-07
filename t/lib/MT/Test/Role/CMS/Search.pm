@@ -238,7 +238,7 @@ sub found_site_ids {
         my ($i, $row) = @_;
         my $url = $row->find('td.blog a')->attr('href');
         $url =~ /\bblog_id=(\d+)/;
-        push @site_ids, $1;
+        push @site_ids, $1 // '';
     });
     return \@site_ids;
 }
