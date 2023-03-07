@@ -1616,10 +1616,11 @@ sub _set_blog_id_to_terms {
     require MT::Blog;
     my $blog = MT::Blog->load($blog_id);
     if ($blog && !$blog->is_blog && ($author->is_superuser || $author->permissions($blog_id)->has('administer_site'))) {
-        my @blogs    = MT::Blog->load({ parent_id => $blog->id });
+        my @children    = MT::Blog->load({ parent_id => $blog->id });
         my @blog_ids = ($blog->id);
-        for my $b (@blogs) {
-            push @blog_ids, $b->id if $author->is_superuser || $author->permissions($b->id)->has('administer_site');
+        for my $child (@children) {
+            push @blog_ids, $child->id
+                if $author->is_superuser || $author->permissions($child->id)->has('administer_site');
         }
         $terms->{blog_id} = \@blog_ids;
     } else {
