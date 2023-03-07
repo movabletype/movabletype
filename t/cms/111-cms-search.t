@@ -388,7 +388,6 @@ subtest 'multiple site search' => sub {
             basename  => "basename",
         );
     }
-    my %blod_ids = map { $_->id => $_->blog_id } @entries;
 
     subtest 'Search in system scope by non super user' => sub {
 

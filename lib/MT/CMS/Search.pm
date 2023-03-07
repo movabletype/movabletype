@@ -1616,7 +1616,7 @@ sub _set_blog_id_to_terms {
     require MT::Blog;
     my $blog = MT::Blog->load($blog_id);
     if ($blog && !$blog->is_blog && ($author->is_superuser || $author->permissions($blog_id)->has('administer_site'))) {
-        my @children    = MT::Blog->load({ parent_id => $blog->id });
+        my @children = MT::Blog->load({ parent_id => $blog->id });
         my @blog_ids = ($blog->id);
         for my $child (@children) {
             push @blog_ids, $child->id
