@@ -230,4 +230,17 @@ sub found_titles {
     return \@titles;
 }
 
+sub found_site_ids {
+    my $self = shift;
+    my @site_ids;
+    my $found    = $self->found or return [];
+    $found->each(sub {
+        my ($i, $row) = @_;
+        my $url = $row->find('td.blog a')->attr('href');
+        $url =~ /\bblog_id=(\d+)/;
+        push @site_ids, $1;
+    });
+    return \@site_ids;
+}
+
 1;

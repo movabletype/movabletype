@@ -388,7 +388,7 @@ subtest 'multiple site search' => sub {
             basename  => "basename",
         );
     }
-    my @entry_ids = map { $_->id } @entries;
+    my %blod_ids = map { $_->id => $_->blog_id } @entries;
 
     subtest 'Search in system scope by non super user' => sub {
 
@@ -399,7 +399,7 @@ subtest 'multiple site search' => sub {
             blog_id => 0,
         });
         $app->search('system-search-test');
-        is(@{ $app->found_titles }, 2, 'found from multiple sites');
+        is_deeply($app->found_site_ids, [$website->id, $blog->id], 'found from multiple sites');
     };
 
     subtest 'Super user recursive search without administer_site permission for child' => sub {
@@ -411,7 +411,10 @@ subtest 'multiple site search' => sub {
             blog_id => $website->id,
         });
         $app->search('system-search-test');
-        is(@{ $app->found_titles }, 3, 'found child site without administer_site permission');
+        is_deeply(
+            $app->found_site_ids, [$website->id, $blog->id, $newblog->id],
+            'found child site without administer_site permission'
+        );
     };
 
     $_->remove for @entries, $newblog;
