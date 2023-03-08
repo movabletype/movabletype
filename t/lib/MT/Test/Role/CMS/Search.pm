@@ -236,9 +236,10 @@ sub found_site_ids {
     my $found    = $self->found or return [];
     $found->each(sub {
         my ($i, $row) = @_;
-        my $url = $row->find('td.blog a')->attr('href');
-        $url =~ /\bblog_id=(\d+)/;
-        push @site_ids, $1 // '';
+        my $anchor = $row->find('td.blog a') || return;
+        my $url = $anchor->attr('href') || return;
+        $url =~ /\bblog_id=(\d+)/ || return;
+        push @site_ids, $1;
     });
     return \@site_ids;
 }
