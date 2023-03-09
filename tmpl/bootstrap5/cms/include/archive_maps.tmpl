@@ -48,9 +48,7 @@
              class="publish-options"
              label="<__trans phrase="Publishing">"
              label_for="publish-options"
-             label_class="top-label"
-             help_page="templates"
-             help_section="publish_options">
+             label_class="top-label">
             <select name="map_build_type_<mt:var name="map_id">" id="build-type" class="custom-select form-control half-width form-select">
               <option value="1"<mt:if name="map_build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
             <mt:if name="publish_queue_available">
@@ -86,8 +84,6 @@
              label="<__trans phrase="Category Field">"
              label_for="cat_field_id_<mt:var name="map_id">"
              label_class="top-label"
-             help_page="templates"
-             help_section="cat_field_id"
              shown="$show_cat_field">
             <select name="cat_field_id_<mt:var name="map_id">" id="cat_field_id_<mt:var name="map_id">" class="custom-select form-control form-select">
               <mt:loop name='cat_fields'>
@@ -105,8 +101,6 @@
              label="<__trans phrase="Date & Time Field">"
              label_for="dt_field_id_<mt:var name="map_id">"
              label_class="top-label"
-             help_page="templates"
-             help_section="dt_field_id"
              shown="$show_dt_field">
             <select name="dt_field_id_<mt:var name="map_id">" id="dt_field_id_<mt:var name="map_id">" class="custom-select form-control form-select">
               <mt:loop name='dt_fields'>

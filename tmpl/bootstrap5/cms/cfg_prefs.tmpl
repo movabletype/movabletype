@@ -91,18 +91,14 @@
        id="name"
        required="1"
        label="<__trans phrase="Name">"
-       label_for="name"
-       help_page="blog_settings_general"
-       help_section="blog_name">
+       label_for="name">
       <input type="text" name="name" id="name" class="form-control text required" value="<mt:var name="name" escape="html">" maxlength="255" />
     </mtapp:setting>
 
     <mtapp:setting
        id="description"
        label="<__trans phrase="Description">"
-       label_for="description"
-       help_page="blog_settings_general"
-       help_section="blog_description">
+       label_for="description">
       <textarea name="description" id="description" class="form-control text low" cols="" rows=""><mt:var name="description" escape="html"></textarea>
     </mtapp:setting>
 
@@ -112,9 +108,7 @@
        id="server_offset"
        required="1"
        label="<__trans phrase="Time Zone">"
-       label_for="server_offset"
-       help_page="blog_settings_general"
-       help_section="blog_timezone">
+       label_for="server_offset">
       <select name="server_offset" id="server_offset" class="custom-select form-control half-width required form-select">
         <option value=""><__trans phrase="Time zone not selected"></option>
         <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
@@ -166,9 +160,7 @@
 
     <mtapp:setting
        id="has-license"
-       label="<__trans phrase="License">"
-       help_page="blog_settings_general"
-       help_section="creative_commons_license">
+       label="<__trans phrase="License">">
       <div id="has-license" style="display: none;">
       <mt:if name="cc_license">
         <a href="<mt:var name="cc_license_url">"><img src="<mt:var name="cc_license_image_url">" /></a>
@@ -207,9 +199,7 @@
     <mtapp:setting
        id="site_url"
        class="url-field"
-       label='<__trans phrase="Site URL">'
-       help_page="blog_settings_publishing"
-       help_section="site_url">
+       label='<__trans phrase="Site URL">'>
     <mt:if name="site_url_subdomain">
       <div class="form-inline site-url content-path">
         <mt:var name="website_scheme">://
@@ -294,9 +284,7 @@
     <mtapp:setting
        id="site_path"
        class="site-path-field"
-       label='<__trans phrase="Site Root">'
-       help_page="blog_settings_publishing"
-       help_section="site_root">
+       label='<__trans phrase="Site Root">'>
       <div class="relative-site_path content-path<mt:if name="is_blog"> form-inline</mt:if>">
         <span class="website-path">
           <mt:if name="is_blog">
@@ -341,9 +329,7 @@
     <mtapp:setting
        id="enable_archive_paths"
        label="<__trans phrase="Advanced Archive Publishing">"
-       show_label="0"
-       help_page="blog_settings_publishing"
-       help_section="advanced_archive_publishing">
+       show_label="0">
       <div class="form-check">
         <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="form-check-input cb" data-bs-target="#enable_archive_paths_prefs" data-bs-toggle="collapse" aria-expanded="<mt:if name="eanble_archive_paths">true<mt:else>false</mt:if>" aria-controls="enable_archive_paths_prefs" />
         <label class="form-check-label form-label" for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
@@ -355,9 +341,7 @@
          id="archive_url"
          class="url-field"
          required="1"
-         label="<__trans phrase="Archive URL">"
-         help_page="blog_settings_publishing"
-         help_section="archive_url">
+         label="<__trans phrase="Archive URL">">
       <mt:if name="is_blog">
         <mt:if name="archive_url_subdomain">
         <div class="form-inline archive-url content-path">
@@ -471,9 +455,7 @@
          id="archive_path"
          class="site-path-field"
          required="1"
-         label="<__trans phrase="Archive Root">"
-         help_page="blog_settings_publishing"
-         help_section="archive_path">
+         label="<__trans phrase="Archive Root">">
         <mt:if name="is_blog">
         <div class="form-inline relative-site_path content-path">
           <span class="website-path">
@@ -554,18 +536,14 @@
     <mtapp:setting
        id="file_extension"
        label="<__trans phrase="File Extension">"
-       label_for="file_extension"
-       help_page="blog_setting_publishing"
-       help_section="archive_file_extension">
+       label_for="file_extension">
       <input type="text" name="file_extension" id="file_extension" class="form-control text min" value="<mt:var name="file_extension" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
        id="preferred_archive_type"
        label="<__trans phrase="Preferred Archive">"
-       label_for="preferred_archive_type"
-       help_page="blog_settings_publishing"
-       help_section="preferred_archive_type">
+       label_for="preferred_archive_type">
     <mt:loop name="entry_archive_types">
       <mt:if name="__first__">
       <select name="preferred_archive_type" id="preferred_archive_type" class="custom-select form-control form-select">
@@ -607,9 +585,7 @@
     <mtapp:setting
        id="include_system"
        label="<__trans phrase="Server Side Includes">"
-       label_for="include_system"
-       help_page="blog_settings_publishing"
-       help_section="ssi">
+       label_for="include_system">
       <select id="include_system" name="include_system" class="custom-select form-control form-select">
         <option value=""<mt:unless name="include_system"> selected="selected"</mt:unless>><__trans phrase="None (disabled)"></option>
         <option value="php"<mt:if name="include_system" eq="php"> selected="selected"</mt:if>><__trans phrase="PHP Includes"></option>
@@ -621,9 +597,7 @@
 
     <mtapp:setting
        id="include_cache"
-       label="<__trans phrase="Module Caching">"
-       help_page="blog_settings_publishing"
-       help_section="include_cache">
+       label="<__trans phrase="Module Caching">">
       <div class="mb-3">
         <div class="form-check">
           <input id="include_cache" class="form-check-input" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if> />

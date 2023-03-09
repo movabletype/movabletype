@@ -304,9 +304,7 @@
 <mtapp:setting
    id="category"
    label="$container_label"
-   label_class="$container_label_class"
-   help_page="entries"
-   help_section="entry_categories">
+   label_class="$container_label_class">
   <script type="text/javascript">
   /* <![CDATA[ */
       MT.App.selectedCategoryList = <$mt:if name="selected_category_loop"><$mt:var name="selected_category_loop" to_json="1"$><mt:else>[]</mt:if>;
@@ -443,9 +441,7 @@
   <mtapp:setting
      id="status"
      label="<__trans phrase="Status">"
-     label_class="top-label"
-     help_page="entries"
-     help_section="status">
+     label_class="top-label">
   <mt:unless name="sitepath_configured">
     <input type="hidden" name="status" id="status" value="1" />
     <span><__trans phrase="Unpublished"></span>
@@ -532,9 +528,7 @@
   <mtapp:setting
      id="authored_on"
      label="$authored_on_label"
-     label_class="top-label"
-     help_page="entries"
-     help_section="date">
+     label_class="top-label">
     <div class="data-time-fields">
       <div class="row mb-2">
         <div class="form-inline col-1">
@@ -634,9 +628,7 @@
   <mtapp:setting
      id="unpublished_on"
      label="$unpublished_on_label"
-     label_class="top-label"
-     help_page="entries"
-     help_section="date">
+     label_class="top-label">
     <div class="date-time-fields">
       <div id="unpublished-on" class="mt-edit-inputblock<mt:if name="show_input_unpublished_on"> show-input</mt:if>">
         <div class="row mb-2">
@@ -736,8 +728,7 @@
   <mtapp:setting
      id="basename"
      label="$basename_label"
-     label_class="top-label"
-     help_page="entries">
+     label_class="top-label">
     <br/>
   <mt:if name="can_publish_post">
     <span class="basename">
@@ -864,9 +855,7 @@
     <mtapp:setting
        id="allow-feedback"
        label="<__trans phrase="Accept">"
-       label_class="no-header"
-       help_page="entries"
-       help_section="accept_comments">
+       label_class="no-header">
       <ul class="list-unstyled">
         <mt:if name="enabled_plugins{Comments}">
         <li>
@@ -915,9 +904,7 @@
        label_class="top-label"
        hint="$ping_urls_hint"
        show_hint="$show_ping_urls_hint"
-       hint_id="outboundTrackbackUrls"
-       help_page="entries"
-       help_section="urls_to_ping">
+       hint_id="outboundTrackbackUrls">
       <textarea name="to_ping_urls" id="to_ping_urls" class="form-control text full low" cols="" rows=""<mt:if name="show_ping_urls_hint"> aria-describedby="outboundTrackbackUrls"</mt:if>><$mt:var name="to_ping_urls" escape="html"$></textarea>
     </mtapp:setting>
   </mt:if>
@@ -1589,9 +1576,7 @@ div.mce-notification-error {
   <mtapp:setting
      id="title"
      label="<__trans phrase="Title">"
-     label_class="no-header"
-     help_page="entries"
-     help_section="entry_title">
+     label_class="no-header">
     <input type="text" name="title" id="title" class="form-control title text full" value="<$mt:var name="title" escape="html"$>" placeholder="<__trans phrase="Title">" maxlength="255" mt:watch-change="1" />
   </mtapp:setting>
     <mt:if name="has_archive_mapping">
@@ -1600,9 +1585,7 @@ div.mce-notification-error {
         class="d-none d-md-block"
         label="Permalink"
         show_label="0"
-        label_class="no-header"
-        help_page="entries"
-        help_section="permalink">
+        label_class="no-header">
         <strong><__trans phrase="Permalink:"></strong> <mt:var name="entry_permalink">
           <mt:if name="status_publish">
             <mt:if name="entry_permalink">

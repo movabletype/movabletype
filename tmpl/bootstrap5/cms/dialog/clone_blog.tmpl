@@ -305,9 +305,7 @@
      id="enable_archive_paths"
      label="<__trans phrase="Advanced Archive Publishing">"
      label_class="top-label"
-     show_label="0"
-     help_page="blog_settings_publishing"
-     help_section="advanced_archive_publishing">
+     show_label="0">
     <div class="form-check">
       <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="form-check-input cb" />
       <label class="form-check-label form-label" for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
@@ -321,9 +319,7 @@
        label="<__trans phrase="Archive URL">"
        label_class="top-label"
        hint="<__trans phrase="Enter the new URL of the archives section of your child site. Example: http://www.example.com/blog/archives/">"
-       show_hint="1"
-       help_page="blog_settings_publishing"
-       help_section="archive_url">
+       show_hint="1">
     <mt:if name="archive_url_subdomain">
       <div class="archive-url content-path form-inline">
         <span class="archive-url-domain">
@@ -416,9 +412,7 @@
        class="site-path-field"
        required="1"
        label="<__trans phrase="Archive Root">"
-       label_class="top-label"
-       help_page="blog_settings_publishing"
-       help_section="archive_path">
+       label_class="top-label">
       <div class="relative-site_path content-path form-inline">
         <span class="website-path"><mt:var name="parent_path" escape="html"></span>
         <input type="text" name="archive_path" id="archive_path" value="<mt:unless name="use_absolute_archive"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text text path form-control" />

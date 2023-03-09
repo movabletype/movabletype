@@ -87,17 +87,13 @@ function toggleFile() {
         <mtapp:setting
             id="label"
             label="<__trans phrase="Label">"
-            help_page="folders"
-            help_section="folder_label"
             required="1">
             <input type="text" name="label" id="label" class="form-control text" maxlength="100" value="<mt:var name="label" escape="html">" />
         </mtapp:setting>
 
         <mtapp:setting
             id="basename"
-            label="<__trans phrase="Path">"
-            help_page="folders"
-            help_section="folder_path">
+            label="<__trans phrase="Path">">
             <div class="form-inline">
               <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
               <input type="hidden" name="basename_old" id="basename_old" value="<mt:var name="basename_old" escape="html">" />
@@ -108,9 +104,7 @@ function toggleFile() {
 
         <mtapp:setting
             id="description"
-            label="<__trans phrase="Description">"
-            help_page="folders"
-            help_section="folder_description">
+            label="<__trans phrase="Description">">
           <textarea name="description" id="description" class="form-control text low"><mt:var name="description" escape="html"></textarea>
         </mtapp:setting>
 

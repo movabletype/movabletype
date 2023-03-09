@@ -511,9 +511,7 @@ function setSyntaxHighlight(on_or_off) {
      id="title"
      label="<__trans phrase="Template Name">"
      label_for="title"
-     label_class="no-header"
-     help_page="templates"
-     help_section="template_name">
+     label_class="no-header">
   <mt:if name="has_name">
     <input type="text" name="name" id="title" class="form-control title text full" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Template Name">"  maxlength="255" mt:watch-change="1" />
   <mt:else>
@@ -526,9 +524,7 @@ function setSyntaxHighlight(on_or_off) {
   <mtapp:setting
      id="content_type_id"
      label="<__trans phrase="Content Type">"
-     label_for="content_type_id"
-     help_page="templates"
-     help_section="content_type">
+     label_for="content_type_id">
   <mt:if name="archive_types">
     <div>
     <input type="text" name="content_type_name" id="content_type_name" class="form-control text full" value="<$mt:var name="content_type_name" escape="html">" disabled="disabled" />
@@ -554,9 +550,7 @@ function setSyntaxHighlight(on_or_off) {
      id="template-body"
      label="$template_name"
      label_for="text"
-     label_class="no-header"
-     help_page="templates"
-     help_section="template_name">
+     label_class="no-header">
     <div class="card">
       <div class="card-header me-0">
         <div class="custom-control float-end me-0">
@@ -586,9 +580,7 @@ function setSyntaxHighlight(on_or_off) {
          id="outfile"
          label="<__trans phrase="Output File">"
          label_for="outfile"
-         label_class="top-label"
-         help_page="templates"
-         help_section="output_file">
+         label_class="top-label">
         <input type="text" name="outfile" id="outfile" class="form-control text" value="<mt:var name="outfile" escape="html">" mt:watch-change="1" />
       </mtapp:setting>
     </mt:if>
@@ -597,9 +589,7 @@ function setSyntaxHighlight(on_or_off) {
          label="<__trans phrase="Template Type">"
          label_for="identifier"
          label_class="top-label"
-         id="identifier"
-         help_page="templates"
-         help_section="template_type">
+         id="identifier">
         <select name="identifier" id="identifier" class="custom-select form-control form-select">
           <option value="" <mt:unless name="identifier">selected="selected"</mt:unless>><__trans phrase="Custom Index Template"></option>
         <mt:loop name="index_identifiers">
@@ -613,9 +603,7 @@ function setSyntaxHighlight(on_or_off) {
          id="linked_file"
          label="<__trans phrase="Link to File">"
          label_for="linked_file"
-         label_class="top-label"
-         help_page="templates"
-         help_section="linked_templates">
+         label_class="top-label">
         <input type="text" name="linked_file" id="linked_file" class="form-control text" value="<mt:var name="linked_file" escape="html">" maxlength="255" mt:watch-change="1" />
       </mtapp:setting>
 
@@ -638,9 +626,7 @@ function setSyntaxHighlight(on_or_off) {
            class="new_archive_type"
            label="<__trans phrase="Type">"
            label_for="new_archive_type"
-           label_class="top-label"
-           help_page="templates"
-           help_section="new_archive_type">
+           label_class="top-label">
         <mt:if name="type" eq="ct">
           <div class="font-weight-bold">
           <__trans phrase="CONTENTTYPE_ADV">
@@ -661,9 +647,7 @@ function setSyntaxHighlight(on_or_off) {
            class="archive_file_sel"
            label="<__trans phrase="Path">"
            label_for="archive_file_sel"
-           label_class="top-label"
-           help_page="templates"
-           help_section="archive_file_sel">
+           label_class="top-label">
           <select name="archive_file_sel" id="archive_file_sel" class="custom-select form-control form-select">
           </select>
           <input type="text" id="archive_file_tmpl" name="archive_file_tmpl" class="form-control tmpl-path tmpl-path-custom last-child" value="" style="display:none;" />
@@ -676,8 +660,6 @@ function setSyntaxHighlight(on_or_off) {
            label="<__trans phrase="Category Field">"
            label_for="cat_field_id"
            label_class="top-label"
-           help_page="templates"
-           help_section="cat_field_id"
            shown="0">
           <select name="cat_field_id" id="cat_field_id" class="custom-select form-control form-select">
           </select>
@@ -689,8 +671,6 @@ function setSyntaxHighlight(on_or_off) {
            label="<__trans phrase="Date & Time Field">"
            label_for="dt_field_id"
            label_class="top-label"
-           help_page="templates"
-           help_section="dt_field_id"
            shown="0">
           <select name="dt_field_id" id="dt_field_id" class="custom-select form-control form-select">
           </select>
@@ -730,9 +710,7 @@ function setSyntaxHighlight(on_or_off) {
        label_class="top-label"
        hint="$publishing_hint"
        hint_id="publishingHint"
-       show_hint="1"
-       help_page="templates"
-       help_section="enable_dynamic_publishing">
+       show_hint="1">
       <select name="build_type" id="build-type" class="custom-select form-control fhalf-width form-select" aria-describedby="publishingHint">
         <option value="1"<mt:if name="build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
       <mt:if name="publish_queue_available">
