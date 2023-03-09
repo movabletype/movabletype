@@ -996,60 +996,11 @@ sub do_search_replace {
         if ( exists $api->{setup_terms_args} ) {
             my $code = $app->handler_to_coderef( $api->{setup_terms_args} );
             $code->( \%terms, \%args, $blog_id );
-            if (   !exists $terms{blog_id}
-                && $type ne 'author'
-                && $type ne 'blog' )
-            {
-                if ($blog_id) {
-                    require MT::Blog;
-                    my $blog;
-                    $blog = MT::Blog->load($blog_id) if $blog_id;
-                    if (   $blog
-                        && !$blog->is_blog
-                        && ( $author->permissions($blog_id)
-                            ->has('administer_site')
-                            || $author->is_superuser )
-                        )
-                    {
-                        my @blogs
-                            = MT::Blog->load( { parent_id => $blog->id } );
-                        my @blog_ids = ( $blog->id );
-                        foreach my $b (@blogs) {
-                            push @blog_ids, $b->id
-                                if $author->permissions( $b->id )
-                                ->has('administer_site');
-                        }
-                        $terms{blog_id} = \@blog_ids;
-                    }
-                    else {
-                        $terms{blog_id} = $blog_id;
-                    }
-                }
+            if (!exists $terms{blog_id} && $type ne 'author' && $type ne 'blog') {
+                _set_blog_id_to_terms(\%terms, $author, $blog_id);
             }
-        }
-        else {
-            if ($blog_id) {
-                require MT::Blog;
-                my $blog;
-                $blog = MT::Blog->load($blog_id) if $blog_id;
-                if (   $blog
-                    && !$blog->is_blog
-                    && $author->permissions($blog_id)->has('administer_site')
-                    )
-                {
-                    my @blogs = MT::Blog->load( { parent_id => $blog->id } );
-                    my @blog_ids = ( $blog->id );
-                    foreach my $b (@blogs) {
-                        push @blog_ids, $b->id
-                            if $author->permissions( $b->id )
-                            ->has('administer_site');
-                    }
-                    %terms = ( blog_id => \@blog_ids );
-                }
-                else {
-                    %terms = ( blog_id => $blog_id );
-                }
-            }
+        } else {
+            _set_blog_id_to_terms(\%terms, $author, $blog_id);
             if ( $type ne 'template' ) {
                 %args = ( 'sort' => $date_col, direction => 'descend' );
             }
@@ -1657,6 +1608,24 @@ sub do_search_replace {
     $res{search_options} = $search_options;
 
     \%res;
+}
+
+sub _set_blog_id_to_terms {
+    my ($terms, $author, $blog_id) = @_;
+    return unless $blog_id;
+    require MT::Blog;
+    my $blog = MT::Blog->load($blog_id);
+    if ($blog && !$blog->is_blog && ($author->is_superuser || $author->permissions($blog_id)->has('administer_site'))) {
+        my @children = MT::Blog->load({ parent_id => $blog->id });
+        my @blog_ids = ($blog->id);
+        for my $child (@children) {
+            push @blog_ids, $child->id
+                if $author->is_superuser || $author->permissions($child->id)->has('administer_site');
+        }
+        $terms->{blog_id} = \@blog_ids;
+    } else {
+        $terms->{blog_id} = $blog_id;
+    }
 }
 
 sub iter_for_replace {

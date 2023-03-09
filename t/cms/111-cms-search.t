@@ -366,7 +366,9 @@ subtest 'replace' => sub {
     $_->remove for @entries;
 };
 
-subtest 'Search in system scope by non super user' => sub {
+subtest 'multiple site search' => sub {
+
+    my $newblog = MT::Test::Permission->make_blog(parent_id => $website->id);
 
     my $egawa          = MT::Test::Permission->make_author(name => 'egawa', nickname => 'Shiro Egawa');
     my $edit_all_posts = MT::Test::Permission->make_role(name => 'Edit All Posts', permissions => "'edit_all_posts'");
@@ -377,7 +379,7 @@ subtest 'Search in system scope by non super user' => sub {
     $perm->save;
 
     my @entries;
-    for my $site ($website, $blog) {
+    for my $site ($website, $blog, $newblog) {
         push @entries, MT::Test::Permission->make_entry(
             blog_id   => $site->id,
             author_id => $admin->id,
@@ -386,18 +388,35 @@ subtest 'Search in system scope by non super user' => sub {
             basename  => "basename",
         );
     }
-    my @entry_ids = map { $_->id } @entries;
 
-    my $app = MT::Test::App->new('MT::App::CMS');
-    $app->login($egawa);
-    $app->get_ok({
-        __mode  => 'search_replace',
-        blog_id => 0,
-    });
-    $app->search('system-search-test');
-    is(@{ $app->found_titles }, 2, 'found from multiple sites');
+    subtest 'Search in system scope by non super user' => sub {
 
-    $_->remove for @entries;
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($egawa);
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => 0,
+        });
+        $app->search('system-search-test');
+        is_deeply($app->found_site_ids, [$website->id, $blog->id], 'found from multiple sites');
+    };
+
+    subtest 'Super user recursive search without administer_site permission for child' => sub {
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => $website->id,
+        });
+        $app->search('system-search-test');
+        is_deeply(
+            $app->found_site_ids, [$website->id, $blog->id, $newblog->id],
+            'found child site without administer_site permission'
+        );
+    };
+
+    $_->remove for @entries, $newblog;
 };
 
 done_testing();
