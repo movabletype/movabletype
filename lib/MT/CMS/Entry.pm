@@ -224,9 +224,8 @@ sub edit {
 
         if ( MT->config->TrimFilePath ) {
             my $file = MT->publisher->archive_file_for( $obj, $blog, $at );
-            my $ext = $blog->file_extension;
             my $basename = trim_path( $obj->basename );
-            ( $basename ) = $file =~ /(?:.+\/)?(${basename}\s*)\.${ext}$/;
+            ( $basename ) = $file =~ /(?:.+\/)?(${basename}\s*)(\..*)?$/;
             $param->{'basename'} = $basename;
         }
         else {
