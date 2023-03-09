@@ -1895,6 +1895,8 @@ sub _build_content_data_preview {
         save_revision
         unpublished_on_date
         unpublished_on_time
+
+        block_editor_data
     );
 
     for my $col (@cols) {
