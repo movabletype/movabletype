@@ -21,7 +21,7 @@ sub fields {
     [   'id',
         'description',
         {   name              => 'options',
-            to_object         => sub { },
+            to_object         => undef,
             to_object_default => +{ options => { display => 'default' } },
             type_to_object    => sub {
                 my ( $hashes, $objs ) = @_;

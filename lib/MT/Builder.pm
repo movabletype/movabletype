@@ -433,22 +433,23 @@ sub build {
     my $ph  = $ctx->post_process_handler;
 
     for my $t (@$tokens) {
-        if ( $t->tag eq 'TEXT' ) {
+        my $tag = $t->tag;
+        if ( $tag eq 'TEXT' ) {
             $res .= $t->nodeValue;
         }
         else {
             my ( $tokens, $tokens_else, $uncompiled );
-            my $tag = lc $t->tag;
-            if ( $cond && ( exists $cond->{$tag} && !$cond->{$tag} ) ) {
+            my $lc_tag = lc $tag;
+            if ( $cond && ( exists $cond->{$lc_tag} && !$cond->{$lc_tag} ) ) {
 
                 # if there's a cond for this tag and it's false,
                 # walk the children and look for an MTElse.
                 # the children of the MTElse will become $tokens
-                for my $tok ( @{ $t->childNodes } ) {
-                    my $tag = lc $tok->tag;
-                    if ( $tag eq 'else' || $tag eq 'elseif' ) {
-                        $tokens     = $tok->childNodes;
-                        $uncompiled = $tok->nodeValue;
+                for my $child ( @{ $t->childNodes } ) {
+                    my $child_tag = lc $child->tag;
+                    if ( $child_tag eq 'else' || $child_tag eq 'elseif' ) {
+                        $tokens     = $child->childNodes;
+                        $uncompiled = $child->nodeValue;
                         last;
                     }
                 }
@@ -462,25 +463,25 @@ sub build {
                     # so we want to partition the children into
                     # those which are inside an else and those which are not.
                     ( $tokens, $tokens_else ) = ( [], [] );
-                    for my $sub (@$childNodes) {
-                        my $tag = lc $sub->tag;
-                        if ( $tag eq 'else' || $tag eq 'elseif' ) {
-                            push @$tokens_else, $sub;
+                    for my $child (@$childNodes) {
+                        my $child_tag = lc $child->tag;
+                        if ( $child_tag eq 'else' || $child_tag eq 'elseif' ) {
+                            push @$tokens_else, $child;
                         }
                         else {
-                            push @$tokens, $sub;
+                            push @$tokens, $child;
                         }
                     }
                 }
                 $uncompiled = $t->nodeValue;
             }
-            my $hdlr = $ctx->handler_for( $t->tag );
+            my $hdlr = $ctx->handler_for( $tag );
             my ( $h, $type, $orig ) = $hdlr->values;
             my $conditional = defined $type && $type == 2;
 
             if ($h) {
                 $timer->pause_partial if $timer;
-                local ( $ctx->{__stash}{tag} ) = $t->tag;
+                local ( $ctx->{__stash}{tag} ) = $tag;
                 local ( $ctx->{__stash}{tokens} )
                     = ref($tokens)
                     ? bless $tokens, 'MT::Template::Tokens'
@@ -546,7 +547,7 @@ sub build {
                     if ( defined $err ) {
                         return $build->error(
                             MT->translate(
-                                "Error in <mt[_1]> tag: [_2]", $t->tag,
+                                "Error in <mt[_1]> tag: [_2]", $tag,
                                 $ctx->errstr
                             )
                         );
@@ -569,7 +570,7 @@ sub build {
                     delete $vars->{__cond_tag__};
                     return $build->error(
                         MT->translate(
-                            "Error in <mt[_1]> tag: [_2]", $t->tag,
+                            "Error in <mt[_1]> tag: [_2]", $tag,
                             $ctx->errstr
                         )
                     ) unless defined $out;
@@ -582,13 +583,13 @@ sub build {
 
                 if ($timer) {
                     $timer->mark(
-                        "tag_" . lc( $t->tag ) . args_to_string( \%args ) );
+                        "tag_" . lc( $tag ) . args_to_string( \%args ) );
                 }
             }
             else {
-                if ( $t->tag !~ m/^_/ ) {    # placeholder tag. just ignore
+                if ( $tag !~ m/^_/ ) {    # placeholder tag. just ignore
                     return $build->error(
-                        MT->translate( "Unknown tag found: [_1]", $t->tag ) );
+                        MT->translate( "Unknown tag found: [_1]", $tag ) );
                 }
             }
         }

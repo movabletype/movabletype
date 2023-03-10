@@ -13,7 +13,7 @@ use MT::Plugin;
 @MT::Plugin::JunkFilter::ISA = qw( MT::Plugin );
 
 use MT::JunkFilter qw(:constants);
-use MT::Util qw(extract_urls);
+use MT::Util;
 
 sub new {
     my $class = shift || __PACKAGE__;

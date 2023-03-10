@@ -161,9 +161,7 @@ sub install_properties {
 
     $props->{get_driver} ||= sub {
         require MT::ObjectDriverFactory;
-        my $coderef = MT::ObjectDriverFactory->driver_for_class($class);
-        $class->get_driver($coderef);
-        return $coderef->(@_);
+        return MT::ObjectDriverFactory->instance;
     };
 
     $class->SUPER::install_properties($props);
@@ -310,7 +308,7 @@ sub install_properties {
         $class->init_revisioning();
     }
 
-    my $enc = MT->config->PublishCharset || 'UTF-8';
+    my $enc = MT->publish_charset;
 
     # install these callbacks that is guaranteed to be called
     # at the very last in the callback list to encode everything.
@@ -380,7 +378,7 @@ sub install_properties {
 
 sub _encode_terms {
     my ($value) = @_;
-    my $enc = MT->config->PublishCharset || 'UTF-8';
+    my $enc = MT->publish_charset;
 
     if ( 'SCALAR' eq ref($value) ) {
         return $value unless MT::Util::Encode::is_utf8($$value);
@@ -1257,16 +1255,17 @@ sub set_defaults {
     $obj->{'column_values'} = $defaults ? {%$defaults} : {};
 }
 
-sub __properties { +{} }
+sub __properties { }
+
+our $DRIVER;
 
 sub driver {
     my $class = shift;
-    if (%{$class->properties}) {
-        return $class->SUPER::driver(@_);
-    } else {
-        require MT::ObjectDriverFactory;
-        return MT::ObjectDriverFactory->instance;
-    }
+    require MT::ObjectDriverFactory;
+    return $DRIVER ||= MT::ObjectDriverFactory->instance
+        if UNIVERSAL::isa( $class, 'MT::Object' );
+    my $driver = $class->SUPER::driver(@_);
+    return $driver;
 }
 
 sub dbi_driver {

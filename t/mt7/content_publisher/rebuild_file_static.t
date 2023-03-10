@@ -30,8 +30,7 @@ my $objs    = MT::Test::Fixture::ArchiveType->load_objs;
 my $blog_id = $objs->{blog_id} or die;
 my $blog    = $app->model('blog')->load($blog_id) or die;
 
-MT::Request->instance->reset;
-MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+$test_env->clear_mt_cache;
 
 my %built_ct_archive_types = map { $_ => undef }
     grep {/^ContentType/} $app->publisher->archive_types;

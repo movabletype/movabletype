@@ -51,6 +51,7 @@ for my $archive_type ( MT->publisher->archive_types ) {
                 : $default_language
             );
             $site->archive_type($archive_type);
+            $ctx->stash('blog', $site);
         },
         $archive_type
     );

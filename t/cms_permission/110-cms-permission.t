@@ -910,7 +910,7 @@ sub make_data {
     $aikawa->save()
         or die "Couldn't save author record 999: " . $aikawa->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     my $ichikawa = MT::Author->new();
     $ichikawa->set_values({
@@ -929,7 +929,7 @@ sub make_data {
     $ichikawa->save()
         or die "Couldn't save author record 998: " . $ichikawa->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     my $ukawa = MT::Author->new();
     $ukawa->set_values({
@@ -948,7 +948,7 @@ sub make_data {
     $ukawa->save()
         or die "Couldn't save author record 997: " . $ukawa->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     my $egawa = MT::Author->new();
     $egawa->set_values({
@@ -967,7 +967,7 @@ sub make_data {
     $egawa->save()
         or die "Couldn't save author record 996: " . $egawa->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     my $ogawa = MT::Author->new();
     $ogawa->set_values({
@@ -986,7 +986,7 @@ sub make_data {
     $ogawa->save()
         or die "Couldn't save author record 995: " . $ogawa->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     my $kagawa = MT::Author->new();
     $kagawa->set_values({
@@ -1005,7 +1005,7 @@ sub make_data {
     $kagawa->save()
         or die "Couldn't save author record 994: " . $kagawa->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     ### Role
     require MT::Role;
@@ -1037,7 +1037,7 @@ sub make_data {
     $assoc->type(1);
     $assoc->save();
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     $assoc = MT::Association->new();
     $assoc->author_id($ichikawa->id);
@@ -1046,7 +1046,7 @@ sub make_data {
     $assoc->type(1);
     $assoc->save();
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
     $assoc = MT::Association->new();
     $assoc->author_id($ukawa->id);
     $assoc->blog_id(1);
@@ -1054,7 +1054,7 @@ sub make_data {
     $assoc->type(1);
     $assoc->save();
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     $assoc = MT::Association->new();
     $assoc->author_id($egawa->id);
@@ -1063,7 +1063,7 @@ sub make_data {
     $assoc->type(1);
     $assoc->save();
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     $assoc = MT::Association->new();
     $assoc->author_id($ogawa->id);
@@ -1072,7 +1072,7 @@ sub make_data {
     $assoc->type(1);
     $assoc->save();
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     $assoc = MT::Association->new();
     $assoc->author_id($kagawa->id);
@@ -1092,7 +1092,7 @@ sub make_data {
     $filter->save()
         or die "Couldn't save filter record: 1" . $filter->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     ### IPBanList
     require MT::IPBanList;
@@ -1104,7 +1104,7 @@ sub make_data {
     $banlist->save()
         or die "Couldn't save ipbanlist record: 1" . $banlist->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     ### Notification
     require MT::Notification;
@@ -1118,7 +1118,7 @@ sub make_data {
     $address->save()
         or die "Couldn't save notification record: 1" . $address->errstr;
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     ## Session
     require MT::Session;
@@ -1138,7 +1138,7 @@ sub make_data {
         category => "test",
     });
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     ### Addons Data
     if ($mt->component('commercial')) {
@@ -1156,7 +1156,7 @@ sub make_data {
             or die "Couldn't save custom field record: 1" . $field->errstr;
     }
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     if ($mt->component('enterprise')) {
         require MT::Group;
@@ -1170,6 +1170,6 @@ sub make_data {
             or die "Couldn't save group record: 1" . $group->errstr;
     }
 
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
 }

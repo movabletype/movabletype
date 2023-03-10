@@ -9,7 +9,7 @@ package MT::ArchiveType::AuthorMonthly;
 use strict;
 use warnings;
 use base qw( MT::ArchiveType::Author MT::ArchiveType::Monthly );
-use MT::Util qw( dirify start_end_month );
+use MT::Util qw( start_end_month );
 
 sub name {
     return 'Author-Monthly';

@@ -650,6 +650,7 @@ sub suite {
 
         # permission - limit - zero
         {   path         => '/v1/users/me/permissions',
+            up_to        => 1,
             method       => 'GET',
             is_superuser => 1,
             params       => { limit => 0, },
@@ -660,6 +661,7 @@ sub suite {
 
         # permission - offset - zero
         {   path         => '/v1/users/me/permissions',
+            up_to        => 1,
             method       => 'GET',
             is_superuser => 1,
             params       => { offset => 0, },
@@ -722,6 +724,7 @@ sub suite {
 
         # permission - limit - one
         {   path         => '/v1/users/me/permissions',
+            up_to        => 1,
             method       => 'GET',
             is_superuser => 1,
             params       => { limit => 1, },
@@ -745,6 +748,7 @@ sub suite {
 
         # permission - offset - one
         {   path         => '/v1/users/me/permissions',
+            up_to        => 1,
             method       => 'GET',
             is_superuser => 1,
             params       => { offset => 1, },
@@ -837,6 +841,7 @@ sub suite {
 
         # permission - limit - Int32 Min
         {   path         => '/v1/users/me/permissions',
+            up_to        => 4,
             method       => 'GET',
             is_superuser => 1,
             params       => { limit => INT32_MIN, },
@@ -846,6 +851,7 @@ sub suite {
 
         # permission - offset - Int32 Min
         {   path         => '/v1/users/me/permissions',
+            up_to        => 4,
             method       => 'GET',
             is_superuser => 1,
             params       => { offset => INT32_MIN, },
@@ -855,6 +861,7 @@ sub suite {
 
         # permission - limit - Int32 Max
         {   path         => '/v1/users/me/permissions',
+            up_to        => 1,
             method       => 'GET',
             is_superuser => 1,
             params       => { limit => INT32_MAX, },
@@ -918,6 +925,7 @@ sub suite {
 
         # permission - offset - Int32 Max
         {   path         => '/v1/users/me/permissions',
+            up_to        => 1,
             method       => 'GET',
             is_superuser => 1,
             params       => { offset => INT32_MAX, },

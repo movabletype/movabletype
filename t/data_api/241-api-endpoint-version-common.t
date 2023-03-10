@@ -45,6 +45,7 @@ sub suite {
             code   => 200,
         },
         {   path   => '/v1/endpoint-test',
+            up_to  => 1,
             method => 'GET',
             code   => 200,
             result => +{ version => 1 },

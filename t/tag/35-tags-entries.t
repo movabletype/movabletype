@@ -15,7 +15,6 @@ BEGIN {
 use MT::Test::Tag;
 
 use MT;
-use MT::Util qw( epoch2ts );
 use MT::Test qw(:db);
 use MT::Test::Permission;
 my $app = MT->instance;

@@ -56,7 +56,7 @@ sub fields {
                 }
                 \@data;
             },
-            to_object      => sub { },    # Do nothing.
+            to_object      => undef,
             type_to_object => sub {
                 my ( $hashes, $objs ) = @_;
                 my $app  = MT->instance;

@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2012 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -23,6 +23,7 @@ my @FilterOrder = qw(
     encode_url upper_case lower_case strip_linefeeds
     space_pad zero_pad sprintf
 );
+my %FilterOrderMap = do { my $i = 0; map { $_ => $i++ } @FilterOrder };
 
 sub compile {
     my $build = shift;
@@ -463,8 +464,8 @@ sub build {
                         # of processing as well, since it's better than
                         # the pseudo random order we get from retrieving the
                         # keys from the hash.
-                        for my $key (@FilterOrder) {
-                            next unless exists $args{$key} && $ctx->{__filters}{$key};
+                        for my $key (sort {($FilterOrderMap{$a} || 0) <=> ($FilterOrderMap{$b} || 0)} keys %args) {
+                            next unless $ctx->{__filters}{$key};
                             push @args, [$key => $args{$key}];
                         }
                     }

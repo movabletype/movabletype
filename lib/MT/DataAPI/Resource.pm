@@ -459,7 +459,7 @@ sub resource {
                         eval "require $type;";
                         for my $mtype (qw(from_object to_object)) {
                             if ( my $method = $type->can($mtype) ) {
-                                $f->{ 'type_' . $mtype } = $method;
+                                $f->{ 'type_' . $mtype } ||= $method;
                             }
                         }
                     }
@@ -594,20 +594,16 @@ sub from_object {
             my $default     = $f->{from_object_default};
 
             # Prepare method to fetching value, outside of the loop
-            my $method = do {
-                if ( exists $f->{from_object} ) {
-                    sub {
-                        $f->{from_object}->( $_[0], $hashs[$i], $f, $stash );
-                    };
+            my $method;
+            if ( exists $f->{from_object} ) {
+                if (ref $f->{from_object} eq 'CODE') {
+                    $method = sub { $f->{from_object}->( $_[0], $hashs[$i], $f, $stash ) };
                 }
-                else {
-                    $objs->[0]->can( $f->{alias} || $name );
-                }
-                }
-                || sub { };
-
+            } else {
+                $method = $objs->[0]->can( $f->{alias} || $name );
+            }
             for ( $i = 0; $i < $objs_count; $i++ ) {
-                my @vals = $method->( $objs->[$i] );
+                my @vals = $method ? $method->( $objs->[$i] ) : ();
                 if ( @vals || $has_default ) {
                     $hashs[$i]{$name}
                         = defined( $vals[0] ) ? $vals[0] : $default;
@@ -662,7 +658,7 @@ sub to_object {
     my $stash      = {};
 
     for my $f (@fields) {
-        my $name        = $f->{name};
+        my $field_name  = $f->{name};
         my $has_default = exists $f->{to_object_default};
         my $default     = $f->{to_object_default};
 
@@ -671,19 +667,19 @@ sub to_object {
             my $obj  = $objs[$i];
 
             my @vals = ();
-            if ( !exists( $hash->{$name} ) ) {
+            if ( !exists( $hash->{$field_name} ) ) {
 
                 # Do nothing
             }
             elsif ( exists $f->{to_object} ) {
-                @vals = $f->{to_object}->( $hash, $obj, $f, $stash );
+                @vals = $f->{to_object}->( $hash, $obj, $f, $stash ) if $f->{to_object};
             }
             else {
-                @vals = ( $hash->{$name} );
+                @vals = ( $hash->{$field_name} );
             }
 
             if ( @vals || $has_default ) {
-                my $k = $f->{alias} || $name;
+                my $k = $f->{alias} || $field_name;
                 $obj->$k( defined( $vals[0] ) ? $vals[0] : $default );
             }
         }

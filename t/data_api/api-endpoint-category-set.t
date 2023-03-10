@@ -245,6 +245,7 @@ sub normal_tests_for_get_category_set {
     test_data_api(
         {   note => 'contentTypeCount by superuser',
             path => "/v4/sites/$site_id/categorySets/" . $category_set->id,
+            up_to        => 4,
             params       => { fields => 'content_type_count' },
             is_superuser => 1,
             method       => 'GET',
@@ -495,6 +496,7 @@ sub normal_tests_for_list_category_sets {
     test_data_api(
         {   note      => 'not logged in',
             path      => "/v4/sites/$site_id/categorySets",
+            up_to     => 4,
             method    => 'GET',
             author_id => 0,
             callbacks => [
@@ -519,6 +521,7 @@ sub normal_tests_for_list_category_sets {
     test_data_api(
         {   note      => 'non superuser',
             path      => "/v4/sites/$site_id/categorySets",
+            up_to     => 4,
             method    => 'GET',
             callbacks => [
                 {   name  => 'data_api_pre_load_filtered_list.category_set',
@@ -539,6 +542,7 @@ sub normal_tests_for_list_category_sets {
     test_data_api(
         {   note         => 'superuser',
             path         => "/v4/sites/$site_id/categorySets",
+            up_to        => 4,
             method       => 'GET',
             is_superuser => 1,
             callbacks    => [
@@ -642,7 +646,7 @@ sub irregular_tests_for_delete_category_sets {
     );
     test_data_api(
         {   note   => 'invalid category_set_id',
-            path   => "/v4/sits/$site_id/categorySets/1000",
+            path   => "/v4/sites/$site_id/categorySets/1000",
             method => 'DELETE',
             code   => 404,
         }

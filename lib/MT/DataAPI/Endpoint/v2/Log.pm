@@ -311,7 +311,7 @@ sub update {
     my $new_log = $app->resource_object( 'log', $orig_log )
         or return;
 
-    save_object( $app, 'log', $new_log )
+    save_object( $app, 'log', $new_log, $orig_log )
         or return;
 
     return $new_log;

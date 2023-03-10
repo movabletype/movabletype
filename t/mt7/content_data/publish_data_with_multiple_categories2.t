@@ -87,6 +87,8 @@ my $objs = MT::Test::Fixture->prepare({
     ],
 });
 
+$test_env->clear_mt_cache;
+
 my $admin = MT::Author->load(1);
 my $blog  = $objs->{blog}{my_blog};
 my $ct    = $objs->{content_type}{ct}{content_type};

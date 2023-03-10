@@ -68,10 +68,10 @@ sub new {
 sub load_envfile {
     my $class = shift;
     my $envfile = "$MT_HOME/.mt_test_env";
-    $class->_load_envfile($envfile);
+    $class->_load_envfile($envfile) if -f $envfile;
     my $driver = lc _driver();
     my $envfile_for_driver = "$MT_HOME/.mt_test_env_$driver";
-    $class->_load_envfile($envfile_for_driver);
+    $class->_load_envfile($envfile_for_driver) if -f $envfile_for_driver;
 }
 
 sub _load_envfile {
@@ -160,6 +160,7 @@ sub write_config {
         HideVersion            => 0,
         DebugMode              => $ENV{MT_TEST_DEBUG_MODE} || 0,
         BuilderModule          => $ENV{MT_TEST_BUILDER} || 'MT::Builder',
+        DisableObjectCache     => $ENV{MT_TEST_DISABLE_OBJECT_CACHE} || 0,
     );
 
     if ($extra) {
@@ -1354,6 +1355,7 @@ sub utime_r {
 
 sub clear_mt_cache {
     MT::Request->instance->reset;
+    require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
 }
 

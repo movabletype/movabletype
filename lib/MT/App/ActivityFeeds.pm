@@ -11,7 +11,7 @@ use warnings;
 use base 'MT::App';
 use MT::Author qw(AUTHOR);
 use MT::ContentStatus;
-use MT::Util qw(perl_sha1_digest_hex ts2epoch epoch2ts ts2iso iso2ts
+use MT::Util qw(perl_sha1_digest_hex ts2epoch epoch2ts
     encode_html encode_url encode_xml);
 use HTTP::Date qw(time2isoz str2time time2str);
 

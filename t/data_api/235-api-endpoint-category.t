@@ -44,6 +44,7 @@ sub suite {
 
         # list_categories - normal tests
         {   path      => '/v1/sites/1/categories',
+            up_to     => 1,
             method    => 'GET',
             callbacks => [
                 {   name  => 'data_api_pre_load_filtered_list.category',
@@ -65,6 +66,7 @@ sub suite {
             },
         },
         {   path      => '/v1/sites/1/categories',
+            up_to     => 1,
             method    => 'GET',
             callbacks => [
                 {   name  => 'data_api_pre_load_filtered_list.category',

@@ -18,7 +18,7 @@ it to handle the data we're passing into it, so that
 it can log pretty in some placess and machine-readable
 in other places.
 
-Requires installation of Time::HiRes and List::Util
+Requires installation of Time::HiRes
 (Time::HiRes is core to Perl 5.8.0 and later).
 
 =cut
@@ -27,7 +27,6 @@ package MT::Util::ReqTimer;
 
 use strict;
 use warnings;
-use List::Util qw( sum );
 use Time::HiRes;
 
 our $Timer;

@@ -9,7 +9,7 @@ package MT::ArchiveType::AuthorDaily;
 use strict;
 use warnings;
 use base qw( MT::ArchiveType::Author MT::ArchiveType::Daily );
-use MT::Util qw( dirify start_end_day );
+use MT::Util qw( start_end_day );
 
 sub name {
     return 'Author-Daily';

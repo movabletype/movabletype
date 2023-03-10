@@ -427,7 +427,7 @@ sub suite {
             complete => sub {
                 my ( $data, $body ) = @_;
                 my @line = split /\n/, $body;
-                is( scalar @line, 4, '3 lines are output.' );
+                is( scalar @line, 3, '3 lines are output.' );
                 print $_[1];
             },
         },
@@ -442,7 +442,7 @@ sub suite {
             complete => sub {
                 my ( $data, $body ) = @_;
                 my @line = split /\n/, $body;
-                is( scalar @line, 5, '4 lines are output.' );
+                is( scalar @line, 4, '4 lines are output.' );
                 print $_[1];
             },
         },
@@ -457,7 +457,7 @@ sub suite {
             complete => sub {
                 my ( $data, $body ) = @_;
                 my @line = split /\n/, $body;
-                is( scalar @line, 6, '5 lines are output.' );
+                is( scalar @line, 5, '5 lines are output.' );
                 print $_[1];
             },
         },

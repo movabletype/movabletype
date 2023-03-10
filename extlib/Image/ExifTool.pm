@@ -29,7 +29,7 @@ use vars qw($VERSION $RELEASE @ISA @EXPORT_OK %EXPORT_TAGS $AUTOLOAD @fileTypes
             %jpegMarker %specialTags %fileTypeLookup $testLen $exeDir
             %static_vars);
 
-$VERSION = '12.42';
+$VERSION = '12.50';
 $RELEASE = '';
 @ISA = qw(Exporter);
 %EXPORT_TAGS = (
@@ -139,8 +139,8 @@ sub ReadValue($$$;$$$);
 @loadAllTables = qw(
     PhotoMechanic Exif GeoTiff CanonRaw KyoceraRaw Lytro MinoltaRaw PanasonicRaw
     SigmaRaw JPEG GIMP Jpeg2000 GIF BMP BMP::OS2 BMP::Extra BPG BPG::Extensions
-    PICT PNG MNG FLIF DjVu DPX OpenEXR ZISRAW MRC LIF MRC::FEI12 MIFF PCX PGF
-    PSP PhotoCD Radiance Other::PFM PDF PostScript Photoshop::Header
+    ICO PICT PNG MNG FLIF DjVu DPX OpenEXR ZISRAW MRC LIF MRC::FEI12 MIFF PCX
+    PGF PSP PhotoCD Radiance Other::PFM PDF PostScript Photoshop::Header
     Photoshop::Layers Photoshop::ImageData FujiFilm::RAF FujiFilm::IFD
     Samsung::Trailer Sony::SRF2 Sony::SR2SubIFD Sony::PMP ITC ID3 ID3::Lyrics3
     FLAC Ogg Vorbis APE APE::NewHeader APE::OldHeader Audible MPC MPEG::Audio
@@ -191,11 +191,12 @@ $defaultLang = 'en';    # default language
                 HTML VRD RTF FITS XCF DSS QTIF FPX PICT ZIP GZIP PLIST RAR BZ2
                 CZI TAR  EXE EXR HDR CHM LNK WMF AVC DEX DPX RAW Font RSRC M2TS
                 MacOS PHP PCX DCX DWF DWG DXF WTV Torrent VCard LRI R3D AA PDB
-                PFM2 MRC LIF JXL MOI ISO ALIAS JSON MP3 DICOM PCD TXT);
+                PFM2 MRC LIF JXL MOI ISO ALIAS JSON MP3 DICOM PCD ICO TXT);
 
 # file types that we can write (edit)
 my @writeTypes = qw(JPEG TIFF GIF CRW MRW ORF RAF RAW PNG MIE PSD XMP PPM EPS
-                    X3F PS PDF ICC VRD DR4 JP2 JXL EXIF AI AIT IND MOV EXV FLIF);
+                    X3F PS PDF ICC VRD DR4 JP2 JXL EXIF AI AIT IND MOV EXV FLIF
+                    RIFF);
 my %writeTypes; # lookup for writable file types (hash filled if required)
 
 # file extensions that we can't write for various base types
@@ -205,6 +206,8 @@ my %writeTypes; # lookup for writable file types (hash filled if required)
     JP2  => [ qw(J2C JPC) ],
     MOV  => [ qw(INSV) ],
 );
+# file extensions that we can only write for various base types
+my %onlyWriteFile = ( RIFF => [ qw(WEBP) ] );
 
 # file types that we can create from scratch
 # - must update CanCreate() documentation if this list is changed!
@@ -257,6 +260,7 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
     CRW  => ['CRW',  'Canon RAW format'],
     CS1  => ['PSD',  'Sinar CaptureShop 1-Shot RAW'],
     CSV  => ['TXT',  'Comma-Separated Values'],
+    CUR  => ['ICO',  'Windows Cursor'],
     CZI  => ['CZI',  'Zeiss Integrated Software RAW'],
     DC3  =>  'DICM',
     DCM  =>  'DICM',
@@ -333,6 +337,7 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
     ICAL =>  'ICS',
     ICC  => ['ICC',  'International Color Consortium'],
     ICM  =>  'ICC',
+    ICO  => ['ICO',  'Windows Icon'],
     ICS  => ['VCard','iCalendar Schedule'],
     IDML => ['ZIP',  'Adobe InDesign Markup Language'],
     IIQ  => ['TIFF', 'Phase One Intelligent Image Quality RAW'],
@@ -378,6 +383,7 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
     M4B  => ['MOV',  'MPEG-4 audio Book'],
     M4P  => ['MOV',  'MPEG-4 Protected'],
     M4V  => ['MOV',  'MPEG-4 Video'],
+    MACOS=> ['MacOS','MacOS ._ sidecar file'],
     MAX  => ['FPX',  '3D Studio MAX'],
     MEF  => ['TIFF', 'Mamiya (RAW) Electronic Format'],
     MIE  => ['MIE',  'Meta Information Encapsulation format'],
@@ -407,7 +413,6 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
     NEF  => ['TIFF', 'Nikon (RAW) Electronic Format'],
     NEWER => 'COS',
     NKSC => ['XMP',  'Nikon Sidecar'],
-
     NMBTEMPLATE => ['ZIP','Apple Numbers Template'],
     NRW  => ['TIFF', 'Nikon RAW (2)'],
     NUMBERS => ['ZIP','Apple Numbers spreadsheet'],
@@ -530,7 +535,6 @@ my %createTypes = map { $_ => 1 } qw(XMP ICC MIE VRD DR4 EXIF EXV);
     WMV  => ['ASF',  'Windows Media Video'],
     WV   => ['RIFF', 'WavePack lossless audio'],
     X3F  => ['X3F',  'Sigma RAW format'],
-    MACOS=> ['MacOS','MacOS ._ sidecar file'],
     XCF  => ['XCF',  'GIMP native image format'],
     XHTML=> ['HTML', 'Extensible HyperText Markup Language'],
     XLA  => ['FPX',  'Microsoft Excel Add-in'],
@@ -599,6 +603,7 @@ my %fileDescription = (
     CRM  => 'video/x-canon-crm',
     CRW  => 'image/x-canon-crw',
     CSV  => 'text/csv',
+    CUR  => 'image/x-cursor', #PH (NC)
     CZI  => 'image/x-zeiss-czi', #PH (NC)
     DCP  => 'application/octet-stream', #PH (NC)
     DCR  => 'image/x-kodak-dcr',
@@ -647,6 +652,7 @@ my %fileDescription = (
     HDR  => 'image/vnd.radiance',
     HTML => 'text/html',
     ICC  => 'application/vnd.iccprofile',
+    ICO  => 'image/x-icon', #PH (NC)
     ICS  => 'text/calendar',
     IDML => 'application/vnd.adobe.indesign-idml-package',
     IIQ  => 'image/x-raw',
@@ -913,6 +919,7 @@ $testLen = 1024;    # number of bytes to read when testing for magic number
     HDR  => '#\?(RADIANCE|RGBE)\x0a',
     HTML => '(\xef\xbb\xbf)?\s*(?i)<(!DOCTYPE\s+HTML|HTML|\?xml)', # (case insensitive)
     ICC  => '.{12}(scnr|mntr|prtr|link|spac|abst|nmcl|nkpf|cenc|mid |mlnk|mvis)(XYZ |Lab |Luv |YCbr|Yxy |RGB |GRAY|HSV |HLS |CMYK|CMY |[2-9A-F]CLR|nc..|\0{4}){2}',
+    ICO  => '\0\0[\x01\x02]\0[^0]\0', # (reasonably assume that the file contains less than 256 images)
     IND  => '\x06\x06\xed\xf5\xd8\x1d\x46\xe5\xbd\x31\xef\xe7\xfe\x74\xb7\x1d',
   # ISO  =>  signature is at byte 32768
     ITC  => '.{4}itch',
@@ -925,6 +932,7 @@ $testLen = 1024;    # number of bytes to read when testing for magic number
     LNK  => '.{4}\x01\x14\x02\0{5}\xc0\0{6}\x46',
     LRI  => 'LELR \0',
     M2TS => '(....)?\x47',
+    MacOS=> '\0\x05\x16\x07\0.\0\0Mac OS X        ',
     MIE  => '~[\x10\x18]\x04.0MIE',
     MIFF => 'id=ImageMagick',
     MKV  => '\x1a\x45\xdf\xa3',
@@ -972,7 +980,6 @@ $testLen = 1024;    # number of bytes to read when testing for magic number
     WMF  => '(\xd7\xcd\xc6\x9a\0\0|\x01\0\x09\0\0\x03)',
     WTV  => '\xb7\xd8\x00\x20\x37\x49\xda\x11\xa6\x4e\x00\x07\xe9\x5e\xad\x8d',
     X3F  => 'FOVb',
-    MacOS=> '\0\x05\x16\x07\0.\0\0Mac OS X        ',
     XCF  => 'gimp xcf ',
     XMP  => '\0{0,3}(\xfe\xff|\xff\xfe|\xef\xbb\xbf)?\0{0,3}\s*<',
     ZIP  => 'PK\x03\x04',
@@ -2209,6 +2216,20 @@ sub Options($$;@)
             } else {
                 $$options{$param} = undef;  # clear the list
             }
+        } elsif ($param eq 'IgnoreTags') {
+            if (defined $newVal) {
+                # parse list from delimited string if necessary
+                my @ignoreList = (ref $newVal eq 'ARRAY') ? @$newVal : ($newVal =~ /[-\w?*:]+/g);
+                ExpandShortcuts(\@ignoreList);
+                # add to existing tags to ignore
+                $$options{$param} or $$options{$param} = { };
+                foreach (@ignoreList) {
+                    /^(.*:)?([-\w?*]+)#?$/ or next;
+                    $$options{$param}{lc $2} = 1;
+                }
+            } else {
+                $$options{$param} = undef;  # clear the option
+            }
         } elsif ($param eq 'ListJoin') {
             $$options{$param} = $newVal;
             # set the old List and ListSep options for backward compatibility
@@ -2321,6 +2342,7 @@ sub ClearOptions($)
         HtmlDump    => 0,       # HTML dump (0-3, higher # = bigger limit)
         HtmlDumpBase => undef,  # base address for HTML dump
         IgnoreMinorErrors => undef, # ignore minor errors when reading/writing
+        IgnoreTags  => undef,   # list of tags to ignore when extracting
         Lang        => $defaultLang,# localized language for descriptions etc
         LargeFileSupport => undef,  # flag indicating support of 64-bit file offsets
         List        => undef,   # extract lists of PrintConv values into arrays [no longer documented]
@@ -3860,6 +3882,10 @@ sub CanWrite($)
         my $ext = GetFileExtension($file) || uc($file);
         return grep(/^$ext$/, @{$noWriteFile{$type}}) ? 0 : 1 if $ext;
     }
+    if ($onlyWriteFile{$type}) {
+        my $ext = GetFileExtension($file) || uc($file);
+        return grep(/^$ext$/, @{$onlyWriteFile{$type}}) ? 1 : 0 if $ext;
+    }
     unless (%writeTypes) {
         $writeTypes{$_} = 1 foreach @writeTypes;
     }
@@ -4028,6 +4054,57 @@ sub NextTagKey($$)
 }
 
 #------------------------------------------------------------------------------
+# Does a string contain valid UTF-8 characters?
+# Inputs: 0) string reference, 1) true to allow last character to be truncated
+# Returns: 0=regular ASCII, -1=invalid UTF-8, 1=valid UTF-8 with maximum 16-bit
+#          wide characters, 2=valid UTF-8 requiring 32-bit wide characters
+# Notes: Changes current string position
+# (see http://www.fileformat.info/info/unicode/utf8.htm for help understanding this)
+sub IsUTF8($;$)
+{
+    my ($strPt, $trunc) = @_;
+    pos($$strPt) = 0; # start at beginning of string
+    return 0 unless $$strPt =~ /([\x80-\xff])/g;
+    my $rtnVal = 1;
+    for (;;) {
+        my $ch = ord($1);
+        # minimum lead byte for 2-byte sequence is 0xc2 (overlong sequences
+        # not allowed), 0xf8-0xfd are restricted by RFC 3629 (no 5 or 6 byte
+        # sequences), and 0xfe and 0xff are not valid in UTF-8 strings
+        return -1 if $ch < 0xc2 or $ch >= 0xf8;
+        # determine number of bytes remaining in sequence
+        my $n;
+        if ($ch < 0xe0) {
+            $n = 1;
+        } elsif ($ch < 0xf0) {
+            $n = 2;
+        } else {
+            $n = 3;
+            # character code is greater than 0xffff if more than 2 extra bytes
+            # were required in the UTF-8 character
+            $rtnVal = 2;
+        }
+        my $pos = pos $$strPt;
+        unless ($$strPt =~ /\G([\x80-\xbf]{$n})/g) {
+            return $rtnVal if $trunc and $pos + $n > length $$strPt;
+            return -1;
+        }
+        # the following is ref https://www.cl.cam.ac.uk/%7Emgk25/ucs/utf8_check.c
+        if ($n == 2) {
+            return -1 if ($ch == 0xe0 and (ord($1) & 0xe0) == 0x80) or
+                         ($ch == 0xed and (ord($1) & 0xe0) == 0xa0) or
+                         ($ch == 0xef and ord($1) == 0xbf and
+                            (ord(substr $1, 1) & 0xfe) == 0xbe);
+        } else {
+            return -1 if ($ch == 0xf0 and (ord($1) & 0xf0) == 0x80) or
+                         ($ch == 0xf4 and ord($1) > 0x8f) or $ch > 0xf4;
+        }
+        last unless $$strPt =~ /([\x80-\xff])/g;
+    }
+    return $rtnVal;
+}
+
+#------------------------------------------------------------------------------
 # Split file name into directory and name parts
 # Inptus: 0) file name
 # Returns: 0) directory, 1) filename
@@ -4072,10 +4149,7 @@ sub EncodeFileName($$;$)
             }
         }
     } elsif ($^O eq 'MSWin32' and $file =~ /[\x80-\xff]/ and not defined $enc) {
-        require Image::ExifTool::XMP;
-        if (Image::ExifTool::XMP::IsUTF8(\$file) < 0) {
-            $self->WarnOnce('FileName encoding not specified');
-        }
+        $self->WarnOnce('FileName encoding not specified') if IsUTF8(\$file) < 0;
     }
     return 0;
 }
@@ -5689,8 +5763,8 @@ sub ConvertDateTime($$)
             $a[4] -= 1;                 # base month is 1
             # parse our %f fractional seconds first (and round up seconds if necessary)
             # - if there are multiple %f codes, they all get the same number of digits as the first
-            if ($fmt =~ /%\.?(\d*)f/) {
-                my $dig = $1;
+            if ($fmt =~ /%(-?)\.?(\d*)f/) {
+                my ($neg, $dig) = ($1, $2);
                 my $frac = $date =~ /(\.\d+)/ ? $1 : '';
                 if (not $frac) {
                     $frac = '.' . ('0' x $dig) if $dig;
@@ -5717,7 +5791,8 @@ sub ConvertDateTime($$)
                         }
                     } 
                 }
-                $fmt =~ s/(^|[^%])((%%)*)%\.?\d*f/$1$2$frac/g;
+                $neg and $frac =~ s/^\.//;
+                $fmt =~ s/(^|[^%])((%%)*)%-?\.?\d*f/$1$2$frac/g;
             }
             # parse %z and %s ourself (to handle time zones properly)
             if ($fmt =~ /%[sz]/) {
@@ -5863,7 +5938,7 @@ sub GetUnixTime($;$)
 {
     my ($timeStr, $isLocal) = @_;
     return 0 if $timeStr eq '0000:00:00 00:00:00';
-    my @tm = ($timeStr =~ /^(\d+):(\d+):(\d+)\s+(\d+):(\d+):(\d+)(.*)/);
+    my @tm = ($timeStr =~ /^(\d+)[-:](\d+)[-:](\d+)\s+(\d+):(\d+):(\d+)(.*)/);
     return undef unless @tm == 7;
     unless (eval { require Time::Local }) {
         warn "Time::Local is not installed\n";
@@ -7955,11 +8030,11 @@ sub GetTagInfo($$$;$$$)
                 next;
             }
         }
-        if ($$tagInfo{Unknown} and not $$self{OPTIONS}{Unknown} and
-            not $$self{OPTIONS}{Verbose} and not $$self{OPTIONS}{Validate} and
-            not $$self{HTML_DUMP})
+        # don't return Unknown tags unless that option is set (also see forum13716)
+        if ($$tagInfo{Unknown} and not $$self{OPTIONS}{Unknown} and not 
+            ($$self{OPTIONS}{Verbose} or $$self{HTML_DUMP} or
+            ($$self{OPTIONS}{Validate} and not $$tagInfo{AddedUnknown})))
         {
-            # don't return Unknown tags unless that option is set
             return undef;
         }
         # return the tag information we found
@@ -7984,6 +8059,7 @@ sub GetTagInfo($$$;$$$)
             Unknown => 1,
             Writable => 0,  # can't write unknown tags
             PrintConv => $printConv,
+            AddedUnknown => 1,
         };
         # add tag information to table
         AddTagToTable($tagTablePtr, $tagID, $tagInfo);
@@ -8045,6 +8121,7 @@ sub AddTagToTable($$;$$)
     unless (defined $$tagTablePtr{$tagID} or $specialTags{$tagID}) {
         $$tagTablePtr{$tagID} = $tagInfo;
     }
+    $$tagInfo{AddedUnknown} = 1 if $$tagInfo{Unknown};
     return $tagInfo;
 }
 
@@ -8187,15 +8264,17 @@ sub FoundTag($$$;@)
 {
     local $_;
     my ($self, $tagInfo, $value, @grps) = @_;
-    my ($tag, $noListDel);
+    my ($tag, $noListDel, $tbl);
     my $options = $$self{OPTIONS};
 
     if (ref $tagInfo eq 'HASH') {
         $tag = $$tagInfo{Name} or warn("No tag name\n"), return undef;
+        $tbl = $$tagInfo{Table};
     } else {
         $tag = $tagInfo;
         # look for tag in Extra
-        $tagInfo = $self->GetTagInfo(GetTagTable('Image::ExifTool::Extra'), $tag);
+        $tbl = GetTagTable('Image::ExifTool::Extra');
+        $tagInfo = $self->GetTagInfo($tbl, $tag);
         # make temporary hash if tag doesn't exist in Extra
         # (not advised to do this since the tag won't show in list)
         $tagInfo or $tagInfo = { Name => $tag, Groups => \%allGroupsExifTool };
@@ -8204,7 +8283,7 @@ sub FoundTag($$$;@)
     # get tag priority
     my $priority = $$tagInfo{Priority};
     unless (defined $priority) {
-        $priority = $$tagInfo{Table}{PRIORITY};
+        $priority = $$tbl{PRIORITY};
         $priority = 0 if not defined $priority and $$tagInfo{Avoid};
     }
     $grps[0] or $grps[0] = $$self{SET_GROUP0};
@@ -8232,6 +8311,14 @@ sub FoundTag($$$;@)
         }
         $self->Warn("RawConv $tag: " . CleanWarning()) if $evalWarning;
         return undef unless defined $value;
+    }
+    # ignore specified tags (AFTER doing RawConv if necessary!)
+    if ($$options{IgnoreTags}) {
+        if ($$options{IgnoreTags}{all}) {
+            return undef unless $$self{REQ_TAG_LOOKUP}{lc $tag};
+        } else {
+            return undef if $$options{IgnoreTags}{lc $tag};
+        }
     }
     # handle duplicate tag names
     if (defined $$valueHash{$tag}) {
@@ -8444,7 +8531,7 @@ sub SetFileType($;$$$)
 
 #------------------------------------------------------------------------------
 # Override the FileType and MIMEType tags
-# Inputs: 0) ExifTool object ref, 1) file type, 2) MIME type, 3) normal extension
+# Inputs: 0) ExifTool object ref, 1) file type, 2) MIME type, 3) normal extension (lower case)
 # Notes:  does nothing if FileType was not previously defined (ie. when writing)
 sub OverrideFileType($$;$$)
 {

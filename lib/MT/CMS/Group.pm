@@ -8,7 +8,6 @@ package MT::CMS::Group;
 
 use strict;
 use warnings;
-use MT::Util qw( encode_html make_string_csv encode_url );
 
 # This package simply holds code that is being grafted onto the CMS
 # application; the namespace of the package is different, but the 'app'

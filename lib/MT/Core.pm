@@ -787,12 +787,12 @@ BEGIN {
                             = $prop->datasource->has_column('author_id')
                             ? 'author_id'
                             : 'created_by';
-
+                      my $author_id = $obj->$col;
                       # If there's no value in the column then no voter ID was
                       # recorded.
-                        return '' if !$obj->$col;
+                        return '' if !$author_id;
 
-                        my $author = MT->model('author')->load( $obj->$col );
+                        my $author = MT->request->{__stash}{author_cache}{$author_id} ||= MT->model('author')->load($author_id);
                         return $author
                             ? ( $author->nickname || $author->name )
                             : MT->translate('*User deleted*');
@@ -1387,7 +1387,6 @@ BEGIN {
             content_data  => '$Core::MT::ContentData::list_props',
             group         => '$Core::MT::Group::list_props',
             group_member  => '$Core::MT::Group::member_list_props',
-            ts_job        => '$Core::MT::TheSchwartz::Job::list_props',
         },
         system_filters => {
             entry        => '$Core::MT::Entry::system_filters',
@@ -1516,7 +1515,7 @@ BEGIN {
                     my $terms;
                     push @$terms, { author_id => $user->id };
                     if ($blog_id) {
-                        my $blog = MT->model('blog')->load($blog_id);
+                        my $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
                         my @blog_ids;
                         push @blog_ids, $blog_id;
                         if ( $blog && !$blog->is_blog ) {
@@ -1767,22 +1766,6 @@ BEGIN {
                 view                => 'system',
                 search_label        => 'User',
                 search_type         => 'author',
-            },
-            ts_job => {
-                object_label => 'Job',
-                view         => 'system',
-                id_column    => 'jobid',
-                primary      => 'funcid',
-                condition    => sub {
-                    my $app = shift;
-                    return 1 if MT->config->ShowTsJob;
-                    $app->errtrans(
-                        'View Background Jobs is disabled by system configuration.');
-                },
-                permission       => 'administer',
-                use_filters      => 0,
-                default_sort_key => 'insert_time',
-                screen_label     => 'View Background Jobs',
             },
         },
         summaries => {
@@ -2133,7 +2116,6 @@ BEGIN {
             'TransparentProxyIPs'      => { default => 0, },
             'DebugMode'                => { default => 0, },
             'ShowIPInformation'        => { default => 0, },
-            'ShowTsJob'                => { default => 0, },
             'AllowComments'            => { default => 1, },
             'AllowPings'               => { default => 1, },
             'HelpURL'                  => undef,

@@ -1706,10 +1706,6 @@ sub pre_save {
             }
         }
         if ( $screen eq 'cfg_web_services' ) {
-            my $tok = '';
-            ( $tok = $obj->remote_auth_token ) =~ s/\s//g;
-            $obj->remote_auth_token($tok);
-
             my $ping_servers = $app->registry('ping_servers');
             my @pings_list;
             push @pings_list, $_
@@ -1740,9 +1736,6 @@ sub pre_save {
             my $c_old = $obj->commenter_authenticators;
             $obj->commenter_authenticators( join( ',', @authenticators ) );
             my $rebuild = $obj->commenter_authenticators ne $c_old ? 1 : 0;
-            my $tok = '';
-            ( $tok = $obj->remote_auth_token ) =~ s/\s//g;
-            $obj->remote_auth_token($tok);
 
             $app->add_return_arg( need_full_rebuild => 1 ) if $rebuild;
         }

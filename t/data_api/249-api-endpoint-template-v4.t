@@ -55,6 +55,7 @@ sub suite {
 
         # list_templates
         {   path   => "/v2/sites/$blog_id/templates",
+            up_to  => 3,
             method => 'GET',
             result => sub {
                 my @tmpl = MT::Template->load(
@@ -96,11 +97,13 @@ sub suite {
 
         # get_template
         {   path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
+            up_to  => 3,
             method => 'GET',
             code   => 400,
             error  => 'Cannot get ct template.',
         },
         {   path => "/v2/sites/$blog_id/templates/" . $ct_archive_tmpl[0]->id,
+            up_to  => 3,
             method => 'GET',
             code   => 400,
             error  => 'Cannot get ct_archive template.',
@@ -117,6 +120,7 @@ sub suite {
         # create_template
         {    # Wrong api version. (ct)
             path   => "/v2/sites/$blog_id/templates",
+            up_to  => 3,
             method => 'POST',
             params => {
                 template => {
@@ -130,6 +134,7 @@ sub suite {
         },
         {    # Wrong api version. (ct_archive)
             path   => "/v2/sites/$blog_id/templates",
+            up_to  => 3,
             method => 'POST',
             params => {
                 template => {
@@ -233,6 +238,7 @@ sub suite {
         # update_template
         {    # Wrong api version. (ct)
             path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
+            up_to  => 3,
             method => 'PUT',
             params => { template => { name => 'update-ct-template' }, },
             code   => 400,
@@ -240,6 +246,7 @@ sub suite {
         },
         {    # Wrong api version. (ct_archive)
             path => "/v2/sites/$blog_id/templates/" . $ct_archive_tmpl[0]->id,
+            up_to  => 3,
             method => 'PUT',
             params =>
                 { template => { name => 'update-ct-archive-template' }, },
@@ -294,6 +301,7 @@ sub suite {
 
         # delete_template
         {   path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
+            up_to  => 3,
             method => 'DELETE',
             code   => 403,
             error  => "Cannot delete ct template.",
@@ -315,6 +323,7 @@ sub suite {
             path => "/v2/sites/$blog_id/templates/"
                 . $ct_tmpl[1]->id
                 . '/publish',
+            up_to  => 3,
             method => 'POST',
             code   => 400,
             error  => "Cannot publish ct template.",
@@ -323,6 +332,7 @@ sub suite {
             path => "/v2/sites/$blog_id/templates/"
                 . $ct_archive_tmpl[1]->id
                 . '/publish',
+            up_to  => 3,
             method => 'POST',
             code   => 400,
             error  => 'Cannot publish ct_archive template.',
@@ -381,6 +391,7 @@ sub suite {
             path => "/v2/sites/$blog_id/templates/"
                 . $ct_tmpl[1]->id
                 . '/refresh',
+            up_to  => 3,
             method => 'POST',
             code   => 400,
             error  => 'Cannot refresh ct template.',
@@ -389,6 +400,7 @@ sub suite {
             path => "/v2/sites/$blog_id/templates/"
                 . $ct_archive_tmpl[1]->id
                 . '/refresh',
+            up_to  => 3,
             method => 'POST',
             code   => 400,
             error  => 'Cannot refresh ct_archive template.',
@@ -431,6 +443,7 @@ sub suite {
             path => "/v2/sites/$blog_id/templates/"
                 . $ct_tmpl[1]->id
                 . '/clone',
+            up_to  => 3,
             method => 'POST',
             code   => 400,
             error  => "Cannot clone ct template.",
@@ -439,6 +452,7 @@ sub suite {
             path => "/v2/sites/$blog_id/templates/"
                 . $ct_archive_tmpl[1]->id
                 . '/clone',
+            up_to  => 3,
             method => 'POST',
             code   => 400,
             error  => "Cannot clone ct_archive template.",
@@ -511,6 +525,7 @@ sub suite {
             path => "/v2/sites/$blog_id/templates/"
                 . $ct_tmpl[1]->id
                 . '/preview',
+            up_to  => 3,
             method => 'POST',
             code   => 400,
             error  => 'Cannot preview ct template.',
@@ -519,6 +534,7 @@ sub suite {
             path => "/v2/sites/$blog_id/templates/"
                 . $ct_archive_tmpl[1]->id
                 . '/preview',
+            up_to  => 3,
             method => 'POST',
             code   => 400,
             error  => 'Cannot preview ct_archive template.',
