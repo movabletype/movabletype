@@ -139,8 +139,8 @@ jQuery.event.special.listReady = {
 
 (function () {
   var listColumns = <mt:var name="list_columns_json">;
-  var listSortBy = '<mt:var name="sort_by">';
-  var listSortOrder = '<mt:var name="sort_order">';
+  var listSortBy = '<mt:var name="sort_by" escape="js">';
+  var listSortOrder = '<mt:var name="sort_order" escape="js">';
 
   var objectType = '<mt:var name="object_type" escape="js">';
   var objectTypeForTableClass = '<mt:var name="object_type_for_table_class" escape="js">';

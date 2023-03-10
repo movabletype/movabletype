@@ -38,7 +38,7 @@ if (AssetList) {
     else {
         // add the asset's id to the include_asset_ids hidden input
         var asset_ids = window.parent.document.getElementById("include_asset_ids").value;
-        if ( asset_ids.length > 0 ) {
+        if ( asset_ids.length > 0 && asset_ids.substring(asset_ids.length - 1) != ',' ) {
             asset_ids += ',';
         }
         window.parent.document.getElementById("include_asset_ids").value = asset_ids + "<mt:AssetID>";

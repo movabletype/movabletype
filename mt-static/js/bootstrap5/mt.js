@@ -1804,7 +1804,7 @@ MT.App = new Class( App, {
         data["_autosave"] = 1;
         if(data["_type"] == "entry" || data["_type"] == "page")
             data["__mode"] = "save_entry";
-        if(data["_type"] == "template")
+        if(data["_type"] == "template" || data["_type"] == "content_data")
             data["__mode"] = "save";
 
         if ( this.cpeList )
@@ -2909,13 +2909,8 @@ function removeAssetFromList(assetId, prefix) {
     // get include_asset_ids and split it
     var AssetList = document.getElementById(prefix + "include_asset_ids").value;
     var Assets = AssetList.split(",");
-    var NewAssetList = "";
-    for (var i = 0; i < Assets.length; i++) {
-        if (Assets[i] != assetId) {
-            NewAssetList = NewAssetList + Assets[i] + ",";
-        }
-    }
-    document.getElementById(prefix + "include_asset_ids").value = NewAssetList;
+    var NewAssets = Assets.filter(function(id) { return id != assetId });
+    document.getElementById(prefix + "include_asset_ids").value = NewAssets.join(",");
 }
 
 function isIE11() {
