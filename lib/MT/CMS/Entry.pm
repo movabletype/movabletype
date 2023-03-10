@@ -2481,7 +2481,6 @@ sub build_entry_table {
         }
         $row->{text} = break_up_text( $row->{text}, $text_max_len )
             if $row->{text};
-        $row->{title_long} = remove_html( $obj->title );
         $row->{status_text}
             = $app->translate( MT::Entry::status_text( $obj->status ) );
         $row->{ "status_" . MT::Entry::status_text( $obj->status ) } = 1;
