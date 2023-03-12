@@ -2406,7 +2406,6 @@ sub build_entry_table {
     my @data;
     my %blogs;
     require MT::Blog;
-    my $title_max_len = const('DISPLAY_LENGTH_EDIT_ENTRY_TITLE');
     my $excerpt_max_len
         = const('DISPLAY_LENGTH_EDIT_ENTRY_TEXT_FROM_EXCERPT');
     my $text_max_len = const('DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP');
@@ -2457,18 +2456,8 @@ sub build_entry_table {
         }
         $row->{file_extension} = $obj->blog ? $obj->blog->file_extension : '';
         $row->{title_short} = $obj->title;
-        if ( !defined( $row->{title_short} ) || $row->{title_short} eq '' ) {
-            my $title = remove_html( $obj->text );
-            $row->{title_short}
-                = substr( defined($title) ? $title : "", 0, $title_max_len )
-                . '...';
-        }
-        else {
-            $row->{title_short} = remove_html( $row->{title_short} );
-            $row->{title_short}
-                = substr( $row->{title_short}, 0, $title_max_len + 3 ) . '...'
-                if length( $row->{title_short} ) > $title_max_len;
-        }
+        $row->{title_short} = $obj->text if !defined( $row->{title_short} ) || $row->{title_short} eq '';
+        $row->{title_short} = ellipsis(remove_html($row->{title_short}), const('DISPLAY_LENGTH_EDIT_ENTRY_TITLE'));
         if ( $row->{excerpt} ) {
             $row->{excerpt} = remove_html( $row->{excerpt} );
         }
@@ -2550,6 +2539,13 @@ sub build_entry_table {
     $app->load_list_actions( $type, \%$param )
         unless $is_power_edit;
     \@data;
+}
+
+sub ellipsis {
+    my ($text, $length) = @_;
+    return '' unless defined($text);
+    return substr($text, 0, $length - 3) . '...' if length($text) > $length;
+    return $text;
 }
 
 sub quickpost_js {
