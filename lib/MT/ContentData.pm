@@ -1677,7 +1677,7 @@ sub gather_changed_cols {
 }
 
 sub preview_data {
-    my $self         = shift;
+    my ($self, $args) = @_;
     my $content_type = $self->content_type;
     return [] unless $content_type;
 
@@ -1706,8 +1706,12 @@ sub preview_data {
 
         my $escaped_field_label = MT::Util::encode_html($field_label);
 
-        $data
-            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$escaped_field_data</div></div>};
+        $args->{layout} ||= sub {
+            my ($f, $label, $data) = @_;
+            return qq{<div class="mb-3"><div><b>$label:</b></div><div class="ml-5">$data</div></div>};
+        };
+
+        $data .= $args->{layout}->($f, $escaped_field_label, $escaped_field_data);
     }
     $data;
 }

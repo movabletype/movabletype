@@ -2208,7 +2208,31 @@ sub build_content_data_table {
             : $app->translate('(No Label)');
         $row->{identifier}   = $content_data->identifier;
         $row->{object}       = $content_data;
-        $row->{preview_data} = $content_data->preview_data;
+
+        my %field_index;
+        if ($content_data->{__search_props}) {
+            my $fields = $content_data->{__search_props}{fields};
+            %field_index = map { $_ => 1 } @$fields;
+            use Data::Dumper;
+            warn Dumper($fields);
+            for my $field (@$fields) {
+                if ($field =~ /^__field:/) {
+                    $row->{preview_data_show} = 1;
+                    next;
+                }
+            }
+            $row->{searchword}{label}      = 'searchword' if $field_index{label};
+            $row->{searchword}{identifier} = 'searchword' if $field_index{identifier};
+        }
+
+        $row->{preview_data} = $content_data->preview_data({
+            layout => sub {
+                my ($f, $label, $data) = @_;
+                my $searchword = $field_index{ '__field:' . $f->{id} } ? 'searchword' : '';
+                return qq{<div><b class="mr-2">$label:</b><span class="$searchword">$data</span></div>};
+            }
+        });
+
         $row->{status_text}
             = MT::ContentStatus::status_text( $content_data->status );
         $row->{ 'status_'
