@@ -2206,6 +2206,7 @@ sub build_content_data_table {
             = defined $content_data->label && $content_data->label ne ''
             ? $content_data->label
             : $app->translate('(No Label)');
+        $row->{identifier}   = $content_data->identifier;
         $row->{object}       = $content_data;
         $row->{preview_data} = $content_data->preview_data;
         $row->{status_text}
