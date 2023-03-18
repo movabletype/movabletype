@@ -2458,6 +2458,7 @@ sub build_entry_table {
         $row->{title_short} = $obj->title;
         $row->{title_short} = $obj->text if !defined( $row->{title_short} ) || $row->{title_short} eq '';
         $row->{title_short} = ellipsis(remove_html($row->{title_short}), const('DISPLAY_LENGTH_EDIT_ENTRY_TITLE'));
+        $row->{title_html}  = list_props($app, $obj, 'title');
         if ( $row->{excerpt} ) {
             $row->{excerpt} = remove_html( $row->{excerpt} );
         }
@@ -2539,6 +2540,15 @@ sub build_entry_table {
     $app->load_list_actions( $type, \%$param )
         unless $is_power_edit;
     \@data;
+}
+
+my $LIST_PROPERTIES;
+
+sub list_props {
+    my ($app, $obj, $col) = @_;
+    require MT::ListProperty;
+    $LIST_PROPERTIES ||= MT::ListProperty->list_properties('entry');
+    $LIST_PROPERTIES->{$col}->html($obj, $app);
 }
 
 sub ellipsis {
