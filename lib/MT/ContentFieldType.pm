@@ -423,7 +423,13 @@ sub _select_box_registry {
         },
         options_validation_handler =>
             '$Core::MT::ContentFieldType::SelectBox::options_validation_handler',
+        options_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Common::options_pre_save_handler_multiple',
+        options_post_save_handler =>
+            '$Core::MT::ContentFieldType::Common::options_post_save_handler_multiple',
         options_html => 'content_field_type_options/select_box.tmpl',
+        options_pre_load_handler =>
+            '$Core::MT::ContentFieldType::Common::options_pre_load_handler_multiple',
         options      => [
             qw(
                 label
@@ -472,7 +478,13 @@ sub _radio_button_registry {
         },
         options_validation_handler =>
             '$Core::MT::ContentFieldType::RadioButton::options_validation_handler',
+        options_pre_save_handler =>
+            '$Core::MT::ContentFieldType::Common::options_pre_save_handler_multiple',
+        options_post_save_handler =>
+            '$Core::MT::ContentFieldType::Common::options_post_save_handler_multiple',
         options_html => 'content_field_type_options/radio_button.tmpl',
+        options_pre_load_handler =>
+            '$Core::MT::ContentFieldType::Common::options_pre_load_handler_multiple',
         options      => [
             qw(
                 label
@@ -521,8 +533,12 @@ sub _checkboxes_registry {
         options_validation_handler =>
             '$Core::MT::ContentFieldType::Checkboxes::options_validation_handler',
         options_pre_save_handler =>
-            '$Core::MT::ContentFieldType::Checkboxes::options_pre_save_handler',
+            '$Core::MT::ContentFieldType::Common::options_pre_save_handler_multiple',
+        options_post_save_handler =>
+            '$Core::MT::ContentFieldType::Common::options_post_save_handler_multiple',
         options_html => 'content_field_type_options/checkboxes.tmpl',
+        options_pre_load_handler =>
+            '$Core::MT::ContentFieldType::Common::options_pre_load_handler_multiple',
         options      => [
             qw(
                 label

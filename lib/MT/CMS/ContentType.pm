@@ -613,6 +613,8 @@ sub save {
     $app->run_callbacks( 'cms_post_save.content_type', $app, $obj,
         $orig_obj );
 
+    my %orig_fields = map {$_->{id} => $_} @{$orig_obj->fields};
+
     # Set content_type id for each content_field
     foreach my $field_data (@field_objects) {
         my $content_field = $field_data->{object};
@@ -624,6 +626,12 @@ sub save {
                 $content_field->errstr
             )
             );
+        if (my $post_save = $content_field_types->{ $content_field->type }{options_post_save_handler}) {
+            $post_save = MT->handler_to_coderef($post_save) unless ref $post_save;
+            if ('CODE' eq ref $post_save) {
+                $post_save->($app, $content_field, $field_data->{data}, $orig_fields{$content_field->id}, );
+            }
+        }
     }
 
     return $app->redirect(

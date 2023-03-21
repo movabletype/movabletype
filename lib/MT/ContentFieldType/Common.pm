@@ -510,6 +510,75 @@ sub preview_handler_multiple {
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
+sub options_pre_load_handler_multiple {
+    my ( $app, $options ) = @_;
+    _assign_value_ids($options);
+}
+
+sub options_pre_save_handler_multiple {
+    my ($app, $type, $obj, $options) = @_;
+
+    $options->{multiple} = 1 if $type eq 'checkboxes';
+    _assign_value_ids($options);
+}
+
+sub _assign_value_ids {
+    my $options = shift;
+    my $index = 1;
+    for (@{ $options->{values} }) {
+        if ($_->{valueId}) {
+            $index = $_->{valueId} + 1 if ($_->{valueId} >= $index);
+            next;
+        }
+        $_->{valueId} = $index++;
+    }
+}
+
+# XXX consider validation
+sub options_post_save_handler_multiple {
+    my ($app, $cf, $field, $orig_field) = @_;
+
+    my %vals      = map { $_->{valueId} ? ($_->{valueId} => $_) : () } @{ $field->{options}->{values} };
+    my %orig_vals = map { $_->{valueId} ? ($_->{valueId} => $_) : () } @{ $orig_field->{options}->{values} };
+    my %delete = map { !defined($vals{$_}) ? ($orig_vals{$_}{value} => 1) : () } keys %orig_vals;
+    my %update = map {
+        my $orig = $orig_vals{ $_->{valueId} || '' };
+        $orig && $_->{value} ne $orig->{value} ? ($orig->{value} => $_->{value}) : ();
+    } @{ $field->{options}->{values} };
+
+    return unless scalar(%delete) || scalar(%update);
+
+    my @cds = MT->model('content_data')->load(
+        {},
+        {
+            joins => [
+                MT->model('cf_idx')->join_on(
+                    'content_data_id',
+                    { content_field_id => $field->{id}, value_varchar => [keys %delete, keys %update] },
+                )] });
+    
+    for my $cd (@cds) {
+        my $data = $cd->data;
+        my $values = $data->{$field->{id}} or next;
+        my $do_save;
+        for my $val (@$values) {
+            if (exists($delete{$val})) {
+                $val = undef;
+                $do_save = 1;
+            }
+            if (my $new_val = $update{$val}) {
+                $val = $new_val;
+                $do_save = 1;
+            }
+        }
+        if ($do_save) {
+            @$values = grep { defined($_) } @$values;
+            $cd->data($data);
+            $cd->save;
+        }
+    }
+}
+
 sub search_handler_multiple {
     my ( $search_regex, $field_data, $values, $content_data ) = @_;
     $values = ''        unless defined $values;
