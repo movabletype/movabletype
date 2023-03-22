@@ -23,7 +23,7 @@ sub fields {
     [   apiPassword => {
             name        => 'apiPassword',
             alias       => 'api_password',
-            from_object => sub { },          # Display nothing.
+            from_object => undef,
             to_object   => sub {
                 my ( $hash, $obj ) = @_;
                 my $pass = $hash->{apiPassword};

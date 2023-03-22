@@ -20,8 +20,13 @@ sub fields {
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
         {
-            name => 'parent',
-            type => 'MT::DataAPI::Resource::DataType::Integer',
+            name   => 'parent',
+            schema => {
+                type => 'object',
+                properties => {
+                    id => { type => 'integer' },
+                },
+            },
         },
     ];
 }

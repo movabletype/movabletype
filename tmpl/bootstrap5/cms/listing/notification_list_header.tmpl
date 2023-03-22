@@ -1,0 +1,203 @@
+<mt:setvarblock name="system_msg" append="1">
+<mt:if name="request.error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="request.saved_changes">
+  <mtapp:statusmsg
+     id="saved-changes"
+     class="success">
+    <__trans phrase="You have updated your contact in your address book.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="request.saved_added">
+  <mtapp:statusmsg
+     id="saved"
+     class="success">
+    <__trans phrase="You have added new contact to your address book.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="request.saved_deleted">
+  <mtapp:statusmsg
+     id="saved-deleted"
+     class="success">
+    <__trans phrase="You have successfully deleted the selected contacts from your address book.">
+  </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="content_header" append="1">
+<form class="create-inline" id="create-inline-notification" method="post" action="<$mt:var name="script_url"$>" style="display: none;">
+  <input type="hidden" name="__mode" value="save">
+  <input type="hidden" name="_type" value="notification">
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">">
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">">
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">">
+  <input type="hidden" name="id" value="">
+
+  <mtapp:setting
+       id="email"
+       required="1"
+       label="<__trans phrase="Email">">
+      <input type="text" name="email" id="email" class="form-control text required email" value="<mt:var name="email" escape="html">" />
+    </mtapp:setting>
+    <mtapp:setting
+       id="website"
+       label="<__trans phrase="Website URL">">
+      <input type="text" name="url" id="url" class="form-control text url" value="<mt:var name="url" escape="html">">
+    </mtapp:setting>
+    <div class="actions-bar settings-actions-bar">
+        <button
+           type="submit"
+           id="submit-new-contact"
+           class="btn btn-default">
+          <__trans phrase="Add">
+        </button>
+        <button
+           type="button"
+           class="btn btn-default mt-cancel-action">
+          <__trans phrase="Cancel">
+        </button>
+    </div>
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+
+    var current_edit = 0;
+    var old_note_email = '';
+    var old_note_url = '';
+
+    function edit_note(id) {
+        if (current_edit) return;
+        var note_links = new Array();
+        note_links.push( jQuery('#note-email-link-' + id) );
+        note_links.push( jQuery('#note-url-link-'   + id) );
+        var note_fields = new Array();
+        note_fields.push( jQuery('#note-email-field-' + id) );
+        note_fields.push( jQuery('#note-url-field-'   + id) );
+
+        var $note_email = jQuery('#note-email-' + id);
+        var $note_url   = jQuery('#note-url-'   + id);
+        if (!note_links.length || !note_fields.length || !$note_email) return;
+        current_edit = id;
+
+        old_note_email = $note_email.val();
+        old_note_url   = $note_url.val();
+        for (i=0;i<2;++i) {
+            note_links[i].hide();
+            note_fields[i].show();
+        }
+        $note_email.trigger('focus');
+        $note_email.trigger('select');
+        return false;
+    }
+
+    function cancel_edit(id) {
+        var note_links = new Array();
+        note_links.push( jQuery('#note-email-link-' + id) );
+        note_links.push( jQuery('#note-url-link-'   + id) );
+        var note_fields = new Array();
+        note_fields.push( jQuery('#note-email-field-' + id) );
+        note_fields.push( jQuery('#note-url-field-'   + id) );
+
+        var $note_email = jQuery('#note-email-' + id);
+        var $note_url   = jQuery('#note-url-'   + id);
+        if (!note_links.length || !note_fields.length || !$note_email) return;
+
+        $note_email.val( old_note_email );
+        old_note_email = '';
+        $note_url.val( old_note_url );
+        old_note_url = '';
+        current_edit = 0;
+        for (i=0;i<2;++i) {
+            note_links[i].show();
+            note_fields[i].hide();
+        }
+        $note_email.mtUnvalidate();
+        $note_url.mtUnvalidate();
+        return false;
+    }
+
+    function submit_edit(id) {
+        if ((0 != current_edit) && (id != current_edit))
+            id = current_edit;
+        // if old email matches new email, ignore submission (same as cancel)
+        // if new email is already in our noteList array, warn user
+        // if not in noteList and not in range of noteList notes, check with server.
+        var $note_email = jQuery('#note-email-' + id);
+        var $note_url   = jQuery('#note-url-' + id);
+        if ( !$note_email.mtValidate() || !$note_email.val() ) return false;
+        if ( $note_url.val() && !$note_url.mtValidate() ) return false;
+        var new_note_email = $note_email.val();
+        var new_note_url = $note_url.val();
+        if ((old_note_email == new_note_email) && (old_note_url == new_note_url)) {
+            cancel_edit(id);
+            return false;
+        }
+        $note_email.mtUnvalidate();
+        $note_url.mtUnvalidate();
+        return submit_edit_form(id, new_note_email, new_note_url);
+    }
+
+    function submit_edit_form(id, new_note_email, new_note_url) {
+      var $form = jQuery('#create-inline-notification');
+      $form.find('input[name="email"]').val(new_note_email);
+      $form.find('input[name="url"]').val(new_note_url);
+      $form.find('input[name="id"]').val(id);
+      $form.trigger('submit');
+    }
+
+    function setCreateMode () {
+      var $form = jQuery('#create-inline-notification');
+      $form.find('input[name="email"]').val('');
+      $form.find('input[name="url"]').val('');
+      $form.find('input[name="id"]').val('');
+      $form.show();
+      jQuery('#content-actions').hide();
+    }
+
+    function cancelCreateMode () {
+        jQuery('#create-inline-notification').hide();
+        jQuery('#create-inline-notification input').mtUnvalidate();
+        jQuery('#content-actions').show();
+
+        current_edit = 0;
+    }
+
+    jQuery('#action-create-contact').on('click', function() {
+        setCreateMode();
+        return false;
+    });
+
+    jQuery('#create-inline-notification').on('submit', function () {
+        return jQuery(this).find('input').mtValidate() ? true : false;
+    });
+
+    jQuery('#create-inline-notification button.mt-cancel-action').on('click', function() {
+        cancelCreateMode();
+        return false;
+    });
+
+    jQuery(document)
+      .on('click','.start-edit',function(){
+        var id = jQuery(this).attr('data-id');
+        edit_note(id);
+        return false;
+      })
+      .on('click','.cancel-edit',function(){
+        var id = jQuery(this).attr('data-id');
+        cancel_edit(id);
+        return false;
+      })
+      .on('click','.submit-note',function(){
+        var id = jQuery(this).attr('data-id');
+        submit_edit(id);
+        return false;
+      });
+
+</mt:setvarblock>

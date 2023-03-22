@@ -7,7 +7,7 @@ package MT::ContentFieldType::SingleLineText;
 use strict;
 use warnings;
 
-use MT::I18N qw( first_n_text const );
+use MT::I18N qw( first_n_text );
 
 my $varchar_size = 255;
 

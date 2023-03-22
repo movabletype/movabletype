@@ -12,9 +12,8 @@ use base qw( MT );
 
 use File::Spec;
 use MT::Request;
-use MT::Util qw( encode_html offset_time_list decode_html encode_url
-    is_valid_email is_url escape_unicode extract_url_path);
-use MT::I18N qw( wrap_text );
+use MT::Util qw( encode_html encode_url is_valid_email is_url );
+use MT::I18N;
 use MT::Util::Encode;
 
 my $COOKIE_NAME = 'mt_user';
@@ -1152,6 +1151,7 @@ sub init_request {
     ## Initialize the MT::Request singleton for this particular request.
     $app->request->reset();
     $app->request( 'App-Class', ref $app );
+    $app->publisher->{start_time} = time;
 
     $app->run_callbacks( ref($app) . '::init_request', $app, @_ );
 
@@ -1379,9 +1379,7 @@ sub permissions {
             # Exists?
             my $blog_id = $app->param('blog_id');
             if ($blog_id) {
-                my $blog = MT->model('blog')->load($blog_id)
-                    or return $app->errtrans( 'Cannot load blog #[_1]',
-                    $blog_id );
+                my $blog = $app->blog or return $app->errtrans( 'Cannot load blog #[_1]', $blog_id );
             }
 
             my $perm = $user->permissions($blog_id);
@@ -3532,7 +3530,8 @@ sub takedown {
         for qw( cookies perms session trace response_content _blog
         WeblogPublisher init_request );
 
-    MT->clear_cache_of_loaded_models;
+    my $driver = $MT::Object::DRIVER;
+    $driver->clear_cache if $driver && $driver->can('clear_cache');
 
     require MT::Auth;
     MT::Auth->release;
@@ -4577,6 +4576,8 @@ sub DESTROY {
     ## a persistent environment, the object will not go out of scope.
     ## Same with the ConfigMgr object and ObjectDriver.
     MT::Request->finish();
+    undef $MT::Object::DRIVER;
+    undef $MT::Object::DBI_DRIVER;
     undef $MT::ConfigMgr::cfg;
 }
 

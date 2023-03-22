@@ -21,11 +21,12 @@ $test_env->prepare_fixture('db');
 my $mt = MT->instance or die MT->errstr;
 isa_ok($mt, 'MT');
 
-
 my $blog = MT->model('blog')->load(1);
 $blog->include_cache(1);
 $blog->site_path($test_env->root);
 $blog->save;
+
+$test_env->clear_mt_cache;
 
 my $include = MT->model('template')->new;
 $include->blog_id($blog->id);
@@ -80,6 +81,8 @@ like($out, qr{ awesome }xms, 'test template included old cached variable value')
 
 $blog->include_system('shtml');
 $blog->save;
+
+$test_env->clear_mt_cache;
 
 $tmpl = MT->model('template')->new;
 $tmpl->blog_id($blog->id);

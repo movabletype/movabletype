@@ -227,6 +227,7 @@ sub _build_around_filter {
         $content_type->fields($fields);
         $content_type->save
             or return $new_content_field->error( $content_type->errstr );
+        $new_content_field->{__content_type_obj} = $content_type;
     };
 }
 
@@ -352,7 +353,7 @@ sub update {
         = $app->resource_object( 'content_field', $orig_content_field );
 
     save_object(
-        $app, 'content_field', $new_content_field, undef,
+        $app, 'content_field', $new_content_field, $orig_content_field,
         _build_around_filter( $app, $content_type, $new_content_field ),
 
     ) or return;
@@ -421,6 +422,11 @@ sub delete {
 
     $app->run_callbacks( 'data_api_post_delete.content_field',
         $app, $content_field );
+
+    my $fields    = $content_type->fields;
+    my @newfields = grep { $_->{id} != $content_field->id } @$fields;
+    $content_type->fields(\@newfields);
+    $content_type->save or return $content_field->errstr($content_type->errstr);
 
     $content_field;
 }

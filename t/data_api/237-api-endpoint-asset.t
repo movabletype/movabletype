@@ -117,6 +117,7 @@ sub suite {
 
         # Overwrite once. (version 2 or later)
         {   path   => '/v1/sites/1/assets/upload',
+            up_to  => 1,
             method => 'POST',
             code   => 409,
             params => { overwrite_once => 1, },

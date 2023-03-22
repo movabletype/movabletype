@@ -74,6 +74,8 @@ $blog->archive_path(join "/", $test_env->root, "site/archive");
 $blog->archive_type('Individual');
 $blog->save;
 
+$test_env->clear_mt_cache;
+
 require MT::WeblogPublisher;
 my $publisher = MT::WeblogPublisher->new;
 $publisher->rebuild(

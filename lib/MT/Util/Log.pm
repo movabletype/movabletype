@@ -21,7 +21,7 @@ BEGIN {
         NONE   => 99,
     );
 }
-use constant \%LoggerLevels;
+use constant \%LoggerLevels; ## no critic
 
 our ( $Initialized, $Logger, $LoggerLevel, $LoggerLevelStr, $LoggerPathDate );
 

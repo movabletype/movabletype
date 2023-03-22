@@ -111,7 +111,7 @@ my $second_entry = MT->model('entry')->load( { title => 'second_entry' } );
 my $first_cd     = MT->model('cd')->load( { label => 'first_cd' } );
 my $second_cd    = MT->model('cd')->load( { label => 'second_cd' } );
 
-MT->publisher->rebuild;
+MT->publisher->rebuild(BlogID => $blog_id);
 
 $test_env->utime_r( $blog->archive_path );
 $test_env->ls( $blog->archive_path );

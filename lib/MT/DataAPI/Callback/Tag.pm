@@ -54,7 +54,7 @@ sub can_view {
 }
 
 sub can_save {
-    my ( $eh, $app, $obj ) = @_;
+    my ( $eh, $app, $id, $obj ) = @_;
     my $user = $app->user or return;
     return 1 if $user->is_superuser;
 

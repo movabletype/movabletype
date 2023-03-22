@@ -110,7 +110,7 @@ sub rebuild {
     my $blog;
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Loading of blog '[_1]' failed: [_2]", $blog_id,
@@ -418,7 +418,7 @@ sub rebuild_content_categories {
 
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Load of blog '[_1]' failed: [_2]", $blog_id,
@@ -1037,7 +1037,7 @@ sub rebuild_file {
         }
     }
 
-    my $tmpl = MT::Template->load($tmpl_id);
+    my $tmpl = MT->request->{__stash}{__obj}{"template:$tmpl_id"} ||= MT::Template->load($tmpl_id);
     return 1 if $tmpl->type eq 'backup';
     $tmpl->context($ctx);
 
@@ -1640,7 +1640,7 @@ sub _rebuild_content_archive_type {
     my $blog;
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $content_data->blog_id;
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Load of blog '[_1]' failed: [_2]", $blog_id,

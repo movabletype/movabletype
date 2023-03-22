@@ -517,7 +517,7 @@ sub prepare_statement {
         my $skip = $stmt->select_map_reverse;
         for my $col (@$cols) {
             next if $skip->{$col};
-            if ( keys %fetch ) {
+            if (%fetch) {
                 next unless $fetch{$col};
             }
             my $dbcol = $dbd->db_column_name( $tbl, $col, $alias );
@@ -546,7 +546,7 @@ sub prepare_statement {
                 $stmt->add_complex_where($terms);
             }
             else {
-                for my $col ( keys %$terms ) {
+                for my $col ( sort keys %$terms ) {
                     $stmt->add_where( join( '.', $alias || $tbl, $col ),
                         $terms->{$col} );
                 }
@@ -593,7 +593,7 @@ sub prepare_statement {
     $stmt->offset( $args->{offset} ) if $args->{offset};
 
     if ( my $terms = $args->{having} ) {
-        for my $col ( keys %$terms ) {
+        for my $col ( sort keys %$terms ) {
             $stmt->add_having( $col => $terms->{$col} );
         }
     }
@@ -678,7 +678,7 @@ sub prepare_statement {
             }
             if ( 'HASH' eq ref $cond ) {
                 my $dbh = $driver->rw_handle;
-                foreach my $cond_col ( keys %$cond ) {
+                foreach my $cond_col ( sort keys %$cond ) {
                     my $col = $driver->_decorate_column_name( $j_class,
                         $cond_col, $j_alias );
                     $cond_query .= ' AND ' if $cond_query;
@@ -826,8 +826,6 @@ sub search {
     my $driver = shift;
     $driver->SUPER::search(@_);
 }
-
-sub clear_cache {}
 
 1;
 __END__

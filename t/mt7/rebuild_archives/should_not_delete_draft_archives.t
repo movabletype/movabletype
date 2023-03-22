@@ -231,7 +231,7 @@ my $catset = MT->model('category_set')->load( { name => 'catset' } );
 my $cat_cat = MT->model('category')->load( { label => 'cat', blog_id => $blog_id, category_set_id => $catset->id } );
 my $cat_dog = MT->model('category')->load( { label => 'dog', blog_id => $blog_id, category_set_id => $catset->id } );
 
-MT->publisher->rebuild;
+MT->publisher->rebuild(BlogID => $blog_id);
 
 $test_env->utime_r( $blog->archive_path );
 

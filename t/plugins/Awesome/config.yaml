@@ -6,3 +6,8 @@ object_types:
     awesome:       MT::Awesome
     awesome_image: MT::Awesome::Image
 
+backup_instructions:
+    awesome:
+        skip: 1
+    awesome_image:
+        skip: 1

@@ -43,7 +43,7 @@ sub suite {
                 my ($data, $body, $headers) = @_;
                 my $result = MT::Util::from_json($body);
 
-                my $version = '1';
+                my $version = $ENV{MT_TEST_FORCE_DATAAPI_VERSION} || '1';
 
                 # OpeAPI Object fields
                 for my $field (qw/openapi info externalDocs servers tags components paths/) {

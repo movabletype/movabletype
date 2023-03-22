@@ -327,6 +327,9 @@ subtest 'replace' => sub {
         is($reloaded[0]->basename, 'ReplaceTest 1 basename', 'basename is not replaced');
         is($reloaded[1]->basename, 'ReplaceTest 2 basename', 'basename is not replaced');
         is($reloaded[2]->basename, 'ReplaceTest 3 basename', 'basename is not replaced');
+
+        my $rev = MT->model('entry:revision')->load({ 'entry_id' => $reloaded[0]->id });
+        is($rev->description, q{Searched for: 'ReplaceTest' Replaced with: 'ReplaceTest-mod'}, 'right revision note');
     };
 
     subtest 'is_limited' => sub {
@@ -344,7 +347,76 @@ subtest 'replace' => sub {
         is($reloaded[2]->text, 'ReplaceTest 3 text',         'unchecked one is not replaced');
     };
 
+    subtest 'handwritten change_note' => sub {
+        $app->get_ok({ __mode => 'search_replace', blog_id => $website->id });
+
+        $app->search('ReplaceTest');
+        is_deeply($app->found_ids, [@entry_ids[0, 1, 2]], 'found all');
+        $app->replace('ReplaceTest-mod', [$entry_ids[0]], { change_note => 'Foo bar baz' });
+        is_deeply($app->found_ids,    [$entry_ids[0]],           'selected ones are replaced');
+        is_deeply($app->found_titles, ['ReplaceTest-mod-mod 1'], 'selected ones are replaced');
+        note $app->{cgi}->query_string;
+
+        my $rev = MT->model('entry:revision')->load(
+            { 'entry_id' => $entry_ids[0] },
+            { sort => 'id', direction => 'descend', limit => 1 });
+        is($rev->description, 'Foo bar baz', 'right revision note');
+    };
+
     $_->remove for @entries;
+};
+
+subtest 'multiple site search' => sub {
+
+    my $newblog = MT::Test::Permission->make_blog(parent_id => $website->id);
+
+    my $egawa          = MT::Test::Permission->make_author(name => 'egawa', nickname => 'Shiro Egawa');
+    my $edit_all_posts = MT::Test::Permission->make_role(name => 'Edit All Posts', permissions => "'edit_all_posts'");
+    MT::Association->link($egawa, $edit_all_posts, $website);
+    MT::Association->link($egawa, $edit_all_posts, $blog);
+    my $perm = $egawa->permissions(0);
+    $perm->add_permissions(MT::Test::Permission->make_role(name => 'Designer'));
+    $perm->save;
+
+    my @entries;
+    for my $site ($website, $blog, $newblog) {
+        push @entries, MT::Test::Permission->make_entry(
+            blog_id   => $site->id,
+            author_id => $admin->id,
+            title     => "system-search-test",
+            text      => "text",
+            basename  => "basename",
+        );
+    }
+
+    subtest 'Search in system scope by non super user' => sub {
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($egawa);
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => 0,
+        });
+        $app->search('system-search-test');
+        is_deeply($app->found_site_ids, [$website->id, $blog->id], 'found from multiple sites');
+    };
+
+    subtest 'Super user recursive search without administer_site permission for child' => sub {
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => $website->id,
+        });
+        $app->search('system-search-test');
+        is_deeply(
+            $app->found_site_ids, [$website->id, $blog->id, $newblog->id],
+            'found child site without administer_site permission'
+        );
+    };
+
+    $_->remove for @entries, $newblog;
 };
 
 done_testing();

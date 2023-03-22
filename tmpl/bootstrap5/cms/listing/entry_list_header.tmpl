@@ -1,0 +1,35 @@
+<mt:setvarblock name="system_msg" append="1">
+    <div id="msg-container">
+    <mt:if name="dynamic_all">
+        <mt:setvar name="rebuild" value="">
+    <mt:elseif name="request.no_rebuild">
+        <mt:setvar name="rebuild" value="">
+    <mt:else>
+        <mt:if name="blog_id">
+            <mt:setvar name="rebuild" value="all">
+        <mt:else>
+            <mt:setvar name="rebuild" value="">
+        </mt:if>
+    </mt:if>
+    <mt:if name="request.saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="$rebuild">
+            <__trans phrase="Your changes have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success"
+            rebuild="$rebuild">
+            <mt:if name="object_type" eq="entry">
+                <__trans phrase="The entry has been deleted from the database.">
+            <mt:else>
+                <__trans phrase="The page has been deleted from the database.">
+            </mt:if>
+        </mtapp:statusmsg>
+    </mt:if>
+    </div>
+</mt:setvarblock>

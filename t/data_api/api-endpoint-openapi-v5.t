@@ -17,6 +17,9 @@ use MT::Test::DataAPI;
 
 $test_env->prepare_fixture('db');
 
+# This test can't force api version
+local $ENV{MT_TEST_FORCE_DATAAPI_VERSION};
+
 my %json;
 test_data_api({
         path     => "/v4/",
@@ -64,7 +67,7 @@ for my $prop (qw/assets categories/) {
 
 # asset
 is($json{v4}{components}{schemas}{asset}{properties}{parent}{type}, 'string', "asset parent is string type in v4");
-is($json{v5}{components}{schemas}{asset}{properties}{parent}{type}, 'integer', "asset parent is integer type in v5");
+is($json{v5}{components}{schemas}{asset}{properties}{parent}{type}, 'object', "asset parent is object type in v5");
 
 # association
 for my $prop (qw/user role/) {

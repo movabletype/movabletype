@@ -67,8 +67,9 @@ TMPL
 );
 
 subtest 'MTC-27211' => sub {
+    my $blog = MT::Blog->load({name => 'my_blog'});
     eval {
-        MT->publisher->rebuild;
+        MT->publisher->rebuild(BlogID => $blog->id);
     };
     my $err = $@;
     ok !$err, 'No errors on Content Type Archive with multiple archive mappings';

@@ -187,7 +187,7 @@ DESCRIPTION
 
 sub pageviews_for_path {
     my ( $app, $endpoint ) = @_;
-    _maybe_raw( fill_in_archive_info( _invoke(@_), $app->blog ) );
+    _maybe_raw( fill_in_archive_info( scalar _invoke(@_), $app->blog ) );
 }
 
 sub visits_for_path_openapi_spec {
@@ -281,7 +281,7 @@ DESCRIPTION
 
 sub visits_for_path {
     my ( $app, $endpoint ) = @_;
-    _maybe_raw( fill_in_archive_info( _invoke(@_), $app->blog ) );
+    _maybe_raw( fill_in_archive_info( scalar _invoke(@_), $app->blog ) );
 }
 
 sub pageviews_for_date_openapi_spec {

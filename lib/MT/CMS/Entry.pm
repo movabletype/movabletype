@@ -8,8 +8,8 @@ package MT::CMS::Entry;
 use strict;
 use warnings;
 use MT::Util qw( format_ts relative_date remove_html encode_html encode_js
-    encode_url archive_file_for offset_time_list break_up_text first_n_words trim_path);
-use MT::I18N qw( const wrap_text );
+    archive_file_for offset_time_list break_up_text first_n_words trim_path );
+use MT::I18N qw( const );
 
 sub edit {
     my $cb = shift;
@@ -850,7 +850,7 @@ sub _build_entry_preview {
             my @categories
                 = MT::Category->load( { id => \@cats, blog_id => $blog_id } );
             $entry->cache_property( 'category',   undef, $cat );
-            $entry->cache_property( 'categories', undef, \@categories );
+            $entry->cache_property( 'categories', undef, [sort {$a->label cmp $b->label} @categories] );
         }
     }
     else {
@@ -919,7 +919,7 @@ sub _build_entry_preview {
 
     my $basename         = $app->param('basename');
     my $preview_basename = $app->preview_object_basename;
-    $entry->basename( $basename || $preview_basename );
+    $entry->basename( $basename || MT::Util::make_unique_basename($entry) );
 
     # translates naughty words when PublishCharset is NOT UTF-8
     MT::Util::translate_naughty_words($entry);

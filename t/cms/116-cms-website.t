@@ -196,6 +196,7 @@ subtest 'Test cfg_prefs mode' => sub {
                 }
                 ok($app->last_location->query_param('saved'), 'Request: save blog');
 
+                $test_env->clear_mt_cache;
                 $test_blog = MT->model($type)->load($test_blog->id);
                 if ($type eq 'website') {
                     is(

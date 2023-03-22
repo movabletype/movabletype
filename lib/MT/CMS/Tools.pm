@@ -9,7 +9,7 @@ use strict;
 use warnings;
 use Symbol;
 
-use MT::I18N qw( wrap_text );
+use MT::I18N;
 use MT::Util
     qw( encode_url encode_html decode_html encode_js trim dir_separator is_valid_email );
 use MT::Util::Encode;

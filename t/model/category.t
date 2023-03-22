@@ -177,15 +177,19 @@ subtest 'content_data_count({ content_field_name => ??? })' => sub {
 };
 
 subtest 'cache content_data_count while a request' => sub {
-    MT::Test::Permission->make_content_data(
+    my $cd = MT::Test::Permission->make_content_data(
         blog_id         => $content_types[0]->blog_id,
         content_type_id => $content_types[0]->id,
         data            => { $category_fields[0][0]->id => [ $cats[0]->id ] },
     );
-    is( $cats[0]->content_data_count, 4 );
+    is( $cats[0]->content_data_count, 5 );
+
+    $cd->remove;
+
+    is( $cats[0]->content_data_count, 5 );
 
     MT::Request->reset;
-    is( $cats[0]->content_data_count, 5 );
+    is( $cats[0]->content_data_count, 4 );
 };
 
 done_testing;

@@ -4,6 +4,7 @@ use Role::Tiny::With;
 use strict;
 use warnings;
 use CGI;
+use CGI::Cookie;
 use HTTP::Response;
 use URI;
 use URI::QueryParam;
@@ -50,8 +51,11 @@ sub init {
         no warnings 'redefine';
         *MT::App::print = sub {
             my $app = shift;
-            if ($app->{redirect} && $_[0] =~ /Status:/) {
-                $app->{__test_output} = '';
+            if ($_[0] =~ /^Status:/) {
+                my $res = HTTP::Response->parse($app->{__test_output});
+                if (!$res->content) {
+                    $app->{__test_output} = '';
+                }
             }
             $app->{__test_output} ||= '';
             $app->{__test_output} .= join('', @_);
@@ -129,11 +133,13 @@ sub request {
 
     $self->{html_content} = '';
 
+    my $content_type = $res->headers->content_type;
+
     # redirect?
     my $location;
     if ($res->header('Location')) {
         $location = $res->header('Location');
-    } elsif ($self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
+    } elsif ($content_type =~ /html/ and $self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
         $location = $2;
     }
     if ($location) {
@@ -151,24 +157,26 @@ sub request {
         }
     }
 
-    if (my $message = $self->message_text) {
-        if ($message =~ /Compilation failed/) {
-            BAIL_OUT $message;
-        }
-        note $message;
-    } elsif (my $error = $self->generic_error) {
-        note "ERROR: $error";
-    }
-
     # json response?
-    if ($self->{content} =~ /\A\s*[\{\[]/) {
+    if ($content_type =~ /json/ or $self->{content} =~ /\A\s*[\{\[]/) {
         if (my $json = eval { decode_json($self->{content}) }) {
-            if ($json->{result}{messages} && @{ $json->{result}{messages} || [] }) {
-                note explain $json->{result}{messages};
+            if (ref $json eq 'HASH') {
+                if (ref $json->{result} eq 'HASH' && $json->{result}{messages} && @{ $json->{result}{messages} || [] }) {
+                    note explain $json->{result}{messages};
+                }
+                if ($json->{error}) {
+                    note "ERROR: " . encode_json($json->{error});
+                }
             }
-            if ($json->{error}) {
-                note "ERROR: $json->{error}";
+        }
+    } elsif ($content_type =~ /html/ and $self->{content}) {
+        if (my $message = $self->message_text) {
+            if ($message =~ /Compilation failed/) {
+                BAIL_OUT $message;
             }
+            note $message;
+        } elsif (my $error = $self->generic_error) {
+            note "ERROR: $error";
         }
     }
 
@@ -289,16 +297,26 @@ sub _request_internally {
     my $api_login;
     if (my $user = $self->{user}) {
         if (!$self->{session}) {
-            $app->start_session($user, 1);
+            $app->start_session($user, 1) unless $app->{session};
             $self->{session} = $app->{session}->id;
         } else {
             $app->session_user($user, $self->{session});
         }
         $app->param('magic_token', $app->current_magic);
         $app->user($user);
-        $login = sub { return ($user, 0) };
+        my $cookie_name  = $app->user_cookie;
+        my $cookie_value = join '::', $user->name, $self->{session};
+        $app->{cookies} = { $cookie_name => CGI::Cookie->new(-name => $cookie_name, -value => $cookie_value) };
+        my $org_login = \&MT::App::login;
+        $login = sub {
+            my $mt = shift;
+            if ($mt->param('username') && $mt->param('password')) {
+                return $org_login->($mt);
+            }
+            return ($user, 0)
+        };
         if ($self->{app_class} eq 'MT::App::DataAPI') {
-            $api_login = sub { return $user };
+            $api_login = sub { return $user->is_active && $user->can_sign_in_data_api ? $user : undef };
         }
     }
     no warnings 'redefine';
@@ -375,9 +393,7 @@ sub _create_cgi_object {
 
 sub _clear_cache {
     my $self = shift;
-    for my $model (MT->loaded_models) {
-        $model->driver->clear_cache;
-    }
+    MT::Object->driver->clear_cache unless MT->config->DisableObjectCache;
     MT->instance->request->reset;
 }
 

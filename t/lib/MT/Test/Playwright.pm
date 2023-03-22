@@ -4,7 +4,7 @@ use Role::Tiny::With;
 use strict;
 use warnings;
 use FindBin;
-use Time::HiRes qw(time);
+use Time::HiRes;
 use File::Path;
 use Try::Tiny;
 use 5.010;

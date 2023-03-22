@@ -1,0 +1,103 @@
+<div class="list-field-container">
+<mt:loop name="list_value">
+  <div class="form-inline d-inline">
+    <input type="text" name="content-field-<mt:var name="content_field_id" escape="html">" class="form-control w-75 text long" value="<mt:var name="__value__" escape="html">" mt:watch-change="1" mt:raw-name="1" style="width: 95%" />
+    <a href="javascript:void(0)" class="remove-list-button d-inline-block" data-mt-content-field-id="<mt:var name="content_field_id">" <mt:var name="required">><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm"></a>
+  </div>
+  </mt:loop>
+
+  <a href="javascript:void(0)" class="add-list-button d-block d-md-inline-block" data-mt-content-field-id="<mt:var name="content_field_id">" <mt:var name="required">><mtapp:svgicon id="ic_add" title="<__trans phrase="Add">" size="sm"></a>
+</div>
+
+<mt:unless name="setup_list_js">
+<mt:var name="setup_list_js" value="1">
+
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.list-field-container input.form-control {
+  display: inline-block;
+}
+
+@media (max-width: 767.98px) {
+  .list-field-container .form-control {
+    margin-bottom: 1rem;
+  }
+  .add-list-button,
+  .remove-list-button {
+    margin-left: 0.5rem;
+  }
+  .add-list-button svg,
+  .remove-list-button svg {
+    height: 24px;
+    width: 24px;
+  }
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+;(function() {
+
+jQuery('a.add-list-button')
+  .on('click', addList)
+  .each(adjustButtons);
+jQuery('a.add-list-button').parent()
+  .on('click', 'a.remove-list-button', removeList);
+
+function removeList() {
+  var $this = jQuery(this);
+  $this.parent().remove();
+  adjustButtons.call(this);
+  setDirty(true);
+  log('found dirty form: removed list element');
+  (app.getIndirectMethod('setDirty'))();
+}
+
+function addList() {
+  var $this = jQuery(this);
+  var fieldId = $this.data('mt-content-field-id');
+  var required = $this.data('mt-required') ? true : false;
+
+  var $newDiv = generateNewListHtml(fieldId, required);
+  log('adding watcher to content-type-' + fieldId);
+  DOM.addEventListener($newDiv.get(0), 'change', app.getIndirectEventListener('setDirty'));
+
+  $this.before($newDiv);
+
+  adjustButtons.call(this);
+  setDirty(true);
+  log('found dirty form: added list element');
+  (app.getIndirectMethod('setDirty'))();
+}
+
+function generateNewListHtml(fieldId, required) {
+  required = required ? 'data-mt-required="1"' : '';
+
+  var newDiv = '<div class="form-inline" style="display: inline;">' + "\n";
+  newDiv    += '  <input type="text" name="content-field-' + fieldId + '" class="form-control w-75 text long" value="" mt:raw-name="1" style="width: 95%" />\n';
+  newDiv    += '  <a href="javascript:void(0)" class="remove-list-button d-inline-block" data-mt-content-field-id="' + fieldId + '" ' + required + '><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm" strip_linefeeds="1"></a>\n';
+  newDiv    += '</div>' + "\n";
+
+  return jQuery(newDiv);
+}
+
+function adjustButtons() {
+  var $this = jQuery(this);
+  if (!$this.data('mt-required')) {
+    return;
+  }
+  var fieldId = $this.data('mt-content-field-id');
+  var $lists = jQuery('input[name=content-field-' + fieldId + ']');
+  if ($lists.length === 1 && $lists.next('a')) {
+    $lists.next('a').remove();
+  } else {
+    $lists.each(function (index) {
+      if (jQuery(this).next('a').length > 0) return;
+      jQuery(this).after('  <a href="javascript:void(0)" class="remove-list-button d-inline-block" data-mt-content-field-id="' + fieldId + '" data-mt-required="1"><mtapp:svgicon id="ic_remove" title="<__trans phrase="Remove">" size="sm" strip_linefeeds="1"></a>');
+    });
+  }
+}
+
+})();
+</mt:setvarblock>
+</mt:unless>
