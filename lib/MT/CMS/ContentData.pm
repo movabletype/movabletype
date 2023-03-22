@@ -2206,6 +2206,7 @@ sub build_content_data_table {
             = defined $content_data->label && $content_data->label ne ''
             ? $content_data->label
             : $app->translate('(No Label)');
+        $row->{label_html}   = list_props($app, $content_data, 'label');
         $row->{object}       = $content_data;
         $row->{preview_data} = $content_data->preview_data;
         $row->{status_text}
@@ -2250,6 +2251,16 @@ sub build_content_data_table {
     $app->load_list_actions( $type, \%$param );
 
     \@data;
+}
+
+my %LIST_PROPERTIES;
+
+sub list_props {
+    my ($app, $obj, $col) = @_;
+    require MT::ListProperty;
+    my $ds = 'content_data.content_data_'. $obj->content_type_id;
+    $LIST_PROPERTIES{$ds} ||= MT::ListProperty->list_properties($ds);
+    $LIST_PROPERTIES{$ds}->{$col}->html($obj, $app);
 }
 
 1;
