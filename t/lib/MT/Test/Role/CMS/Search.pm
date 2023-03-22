@@ -207,9 +207,9 @@ sub found_ids {
 }
 
 my %TitleContainerSelectors = (
-    content_data => 'td.id strong',
+    content_data => 'td.id a.label',
     template     => 'td:nth-of-type(2) a',
-    entry        => 'td.title strong',
+    entry        => 'td.title > span.title',
     asset        => 'td:nth-of-type(3) a',
     blog         => 'td:nth-of-type(2) a',
     website      => 'td:nth-of-type(2) a',
