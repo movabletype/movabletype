@@ -2469,6 +2469,7 @@ sub build_entry_table {
                 = substr( $row->{title_short}, 0, $title_max_len + 3 ) . '...'
                 if length( $row->{title_short} ) > $title_max_len;
         }
+        $row->{title_html}  = list_props($app, $obj, 'title');
         if ( $row->{excerpt} ) {
             $row->{excerpt} = remove_html( $row->{excerpt} );
         }
@@ -2551,6 +2552,15 @@ sub build_entry_table {
     $app->load_list_actions( $type, \%$param )
         unless $is_power_edit;
     \@data;
+}
+
+my $LIST_PROPERTIES;
+
+sub list_props {
+    my ($app, $obj, $col) = @_;
+    require MT::ListProperty;
+    $LIST_PROPERTIES ||= MT::ListProperty->list_properties('entry');
+    $LIST_PROPERTIES->{$col}->html($obj, $app);
 }
 
 sub quickpost_js {
