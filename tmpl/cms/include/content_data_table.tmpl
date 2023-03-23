@@ -55,9 +55,6 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
           <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
         </div>
       </th>
-      <th class="head status si">
-        <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
-      </th>
       <th class="head data-label primary"><span class="col-label"><__trans phrase="Data Label"></span></th>
       <mt:unless name="is_blog">
       <th class="head blog"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
@@ -65,7 +62,6 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
       <th class="head author"><span class="col-label"><__trans phrase="Author"></span></th>
       <th class="head datetime"><span class="col-label"><__trans phrase="Created"></span></th>
       <th class="head data"><span class="col-label"><__trans phrase="Data"></span></th>
-      <th class="head view"><span class="col-label"><__trans phrase="View"></span></th>
     </tr>
     </mt:setvarblock>
   <thead>
@@ -84,35 +80,8 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
         &#160;
   </mt:if>
       </td>
-      <td class="status si">
-    <mt:if name="status_draft">
-        <mtapp:svgicon id="ic_draft" title="<__trans phrase="Draft">" size="sm">
-    <mt:elseif name="status_publish">
-        <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Published">" size="sm" color="success">
-    <mt:elseif name="status_review">
-        <mtapp:svgicon id="ic_error" title="<__trans phrase="Review">" size="sm" color="warning">
-    <mt:elseif name="status_future">
-        <mtapp:svgicon id="ic_clock" title="<__trans phrase="Future">" size="sm" color="info">
-    <mt:elseif name="status_spam">
-        <mtapp:svgicon id="ic_error" title="<__trans phrase="Junk">" size="sm" color="warning">
-    <mt:elseif name="status_unpublish">
-        <mtapp:svgicon id="ic_stop" title="<__trans phrase="Unpublish">" size="sm" color="danger">
-    </mt:if>
-      </td>
       <td class="id">
-        <strong>
-          <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="weblog_id"$>&amp;content_type_id=<mt:var name="content_type_id" escape="html">" target="_blank">
-            <$mt:var name="label" escape="html"$>
-          </a>
-        </strong>
-        <br/>
-  <mt:if name="has_edit_access">
-        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="weblog_id"$>&amp;content_type_id=<mt:var name="content_type_id" escape="html">" target="_blank">
-          <__trans phrase="Edit [_1]" params="<mt:var name="object_type" escape="html">">
-        </a>
-  <mt:else>
-        &#160;
-  </mt:if>
+        <$mt:var name="label_html"$>
       </td>
   <mt:unless name="blog_view">
     <mt:unless name="scope_type" eq="blog">
@@ -144,18 +113,9 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
           <mtapp:svgicon title="Collapse" color="secondary" id="ic_collapse">
         </a>
       </td>
-      <td class="view status-view">
-  <mt:if name="content_data_permalink">
-        <a class="d-inline-block" href="<$mt:var name="content_data_permalink"$>" target="_blank" title="<__trans phrase="View [_1]" params="<mt:var name="content_type_name" escape="html">">">
-          <mtapp:svgicon id="ic_permalink" size="sm" title="<__trans phrase="View Content Data">">
-        </a>
-  <mt:else>
-        &#160;
-  </mt:if>
-      </td>
     </tr>
     <tr class="preview-data">
-      <td class="p-0" colspan="8">
+      <td class="p-0" colspan="6">
         <div class="collapse mt-collapse__content" id="content-data-data-<mt:var name="id" escape="html">">
           <mt:var name="preview_data">
         </div>
