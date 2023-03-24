@@ -114,11 +114,15 @@ $ct->save or die $ct->errstr;
 my $cd1 = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct->id,
+    created_on      => '20100402000000',
+    modified_on     => '20230502000000',
     authored_on     => '20170602000000',
 );
 my $cd2 = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct->id,
+    created_on      => '20100429000000',
+    modified_on     => '20230529000000',
     authored_on     => '20170629000000',
     data => { $cf_category->id => [ $category2->id, $category1->id ], },
 );
@@ -131,6 +135,8 @@ my $cd3 = MT::Test::Permission->make_content_data(
 my $cd4 = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct->id,
+    created_on      => '20100415000000',
+    modified_on     => '20230515000000',
     authored_on     => '20170615000000',
     data            => { $cf_category->id => [ $category1->id ], },
 );
@@ -269,6 +275,36 @@ __END__
 <mt:CalendarIfContents><mt:CalendarDay></mt:CalendarIfContents></mt:ContentCalendar>
 --- expected
 3
+
+
+=== MT::ContentCalendar with authored_on as date_field
+--- template
+<mt:ContentCalendar month="201706" date_field="authored_on" content_type="[% ct_id %]"><mt:CalendarIfContents>
+<mt:CalendarDay></mt:CalendarIfContents></mt:ContentCalendar>
+--- expected
+2
+15
+29
+
+
+=== MT::ContentCalendar with created_on as date_field
+--- template
+<mt:ContentCalendar month="201004" date_field="created_on" content_type="[% ct_id %]"><mt:CalendarIfContents>
+<mt:CalendarDay></mt:CalendarIfContents></mt:ContentCalendar>
+--- expected
+2
+15
+29
+
+
+=== MT::ContentCalendar with modified_on as date_field
+--- template
+<mt:ContentCalendar month="202305" date_field="modified_on" content_type="[% ct_id %]"><mt:CalendarIfContents>
+<mt:CalendarDay></mt:CalendarIfContents></mt:ContentCalendar>
+--- expected
+2
+15
+29
 
 
 === MT::ContentCalendar with category_set
