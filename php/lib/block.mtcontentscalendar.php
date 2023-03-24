@@ -8,7 +8,7 @@
 require_once("MTUtil.php");
 
 function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
-    $local_vars = array('cal_contents','cal_day','cal_pad_start','cal_pad_end','cal_days_in_month','cal_prefix','cal_left','CalendarDay','CalendarWeekHeader','CalendarWeekFooter','CalendarIfContents','CalendarIfNoContents','CalendarIfToday','CalendarIfBlank','contents','current_timestamp','current_timestamp_end','cal_today','CalendarCellNumber', 'cal_date_field_id');
+    $local_vars = array('cal_contents','cal_day','cal_pad_start','cal_pad_end','cal_days_in_month','cal_prefix','cal_left','CalendarDay','CalendarWeekHeader','CalendarWeekFooter','CalendarIfContents','CalendarIfNoContents','CalendarIfToday','CalendarIfBlank','contents','current_timestamp','current_timestamp_end','cal_today','CalendarCellNumber', 'cal_date_field_id', 'cal_date_field');
     // arguments supported: month, category
     // arguments implemented:
     if (!isset($content)) {
@@ -200,6 +200,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         $ctx->stash('cal_today', $today);
         $ctx->stash('CalendarCellNumber', 0);
         $ctx->stash('cal_date_field_id', $dt_field_id);
+        $ctx->stash('cal_date_field', $dt_field);
         $cell = 0;
     } else {
         # subseqent iterations:
@@ -213,6 +214,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         $today = $ctx->stash('cal_today');
         $cell = $ctx->stash('CalendarCellNumber');
         $dt_field_id = $ctx->stash('cal_date_field_id');
+        $dt_field = $ctx->stash('cal_date_field');
     }
     !empty($left) or $left = array();
     if ($day <= $pad_start + $days_in_month + $pad_end) {
@@ -227,7 +229,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
                 if(isset($data[$dt_field_id])){
                     $datetime = $data[$dt_field_id];
                 } else {
-                    $datetime = $ctx->mt->db()->db2ts($left[0]->authored_on);
+                    $datetime = $ctx->mt->db()->db2ts($left[0]->$dt_field);
                 }
                 if ( $datetime && substr($datetime, 0, 8) == $this_day) {
                     $cds = $left;
@@ -242,7 +244,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
                     if(isset($data[$dt_field_id])){
                         $datetime = $data[$dt_field_id];
                     } else {
-                        $datetime = $ctx->mt->db()->db2ts($cd->authored_on);
+                        $datetime = $ctx->mt->db()->db2ts($cd->$dt_field);
                     }
                     $cd_day = '';
                     if($datetime){
