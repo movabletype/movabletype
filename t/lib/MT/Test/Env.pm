@@ -62,6 +62,26 @@ sub new {
 
     $self->write_config(\%extra_config);
 
+    if ($ENV{MT_TEST_QUERY_LOG}) {
+        require DBIx::QueryLog;
+        DBIx::QueryLog->compact(1);
+        if (my $color = $ENV{MT_TEST_QUERY_LOG_COLOR}) {
+            require Term::ANSIColor;
+            $DBIx::QueryLog::OUTPUT = sub {
+                my %param = @_;
+                (my $sql = $param{sql}) =~ s/[[:^print:]]/ /gs;
+                diag "[$param{time}] " . Term::ANSIColor::colored([$color], $sql);
+            };
+        } else {
+            $DBIx::QueryLog::OUTPUT = sub {
+                my %param = @_;
+                (my $sql = $param{sql}) =~ s/[[:^print:]]/ /gs;
+                diag "[$param{time}] $sql";
+            };
+        }
+        DBIx::QueryLog->enable if $ENV{MT_TEST_QUERY_LOG} > 4;
+    }
+
     $self;
 }
 
@@ -829,6 +849,8 @@ sub prepare_fixture {
     $ENV{MT_TEST_LOADED_FIXTURE} = 1;
 
     $self->cluck_errors if $ENV{MT_TEST_CLUCK_ERRORS};
+
+    DBIx::QueryLog->enable if $ENV{MT_TEST_QUERY_LOG} && $ENV{MT_TEST_QUERY_LOG} > 1;
 }
 
 sub slurp {
