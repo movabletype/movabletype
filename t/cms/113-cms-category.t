@@ -145,6 +145,7 @@ subtest 'Test on website' => sub {
             datasource => 'category',
             blog_id    => $website->id,
             _type      => 'category',
+            columns    => 'label',
         });
         $app->content_like(qr/Foo/, 'Request has "Foo" category');
         $app->content_unlike(qr/Bar/, 'Request has not "Bar" category');

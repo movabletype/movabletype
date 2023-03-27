@@ -1581,8 +1581,24 @@ sub filtered_list {
         $allpass     = 1;
         $filteritems = [];
     }
+
+    ## FIXME: take identifical column from column defs.
+    my $cols
+        = defined( $app->param('columns') ) ? $app->param('columns') : '';
+    my @cols    = grep {/^[^\.]+$/} split( ',', $cols );
+    my @subcols = grep {/\./} split( ',', $cols );
+    my $class   = MT->model( $setting->{object_type} || $ds );
+    if ( $class->has_column('id') ) {
+        unshift @cols,    '__id';
+        unshift @subcols, '__id';
+    }
+    elsif ( $setting->{id_column} ) {
+        unshift @cols,    $setting->{id_column};
+        unshift @subcols, $setting->{id_column};
+    }
+    
     require MT::ListProperty;
-    my $props = MT::ListProperty->list_properties($ds);
+    my $props = MT::ListProperty->list_properties($ds, [(map { $_->{type} } @$filteritems), @cols]);
     if ( !$forward_params{validated} ) {
         for my $item (@$filteritems) {
             my $prop = $props->{ $item->{type} };
@@ -1615,21 +1631,6 @@ sub filtered_list {
     $MT::DebugMode
         && $debug->{print}->("LIMIT: $limit PAGE: $page OFFSET: $offset");
     $MT::DebugMode && $debug->{section}->('initialize');
-
-    ## FIXME: take identifical column from column defs.
-    my $cols
-        = defined( $app->param('columns') ) ? $app->param('columns') : '';
-    my @cols    = grep {/^[^\.]+$/} split( ',', $cols );
-    my @subcols = grep {/\./} split( ',', $cols );
-    my $class   = MT->model( $setting->{object_type} || $ds );
-    if ( $class->has_column('id') ) {
-        unshift @cols,    '__id';
-        unshift @subcols, '__id';
-    }
-    elsif ( $setting->{id_column} ) {
-        unshift @cols,    $setting->{id_column};
-        unshift @subcols, $setting->{id_column};
-    }
 
     $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
 

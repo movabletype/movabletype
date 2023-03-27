@@ -272,7 +272,7 @@ sub _scope_filter {
 
 sub list_properties {
     my $pkg = shift;
-    my $cls = shift;
+    my ($cls, $fields) = (@_);
 
     unless (exists $CachedListProperties{$cls}) {
         my %props;
@@ -286,11 +286,12 @@ sub list_properties {
         $CachedListProperties{$cls} = \%props;
     }
 
-    my $ret = $CachedListProperties{$cls};
+    my $index = $fields ? { map { $_ => 1 } @$fields } : undef;
+    my $ret   = $CachedListProperties{$cls};
     $ret = {
-        map  { $_ => $ret->{$_} }
-        grep { !$ret->{$_}->has('condition') || $ret->{$_}->condition }
-        keys %$ret
+        map      { $_ => $ret->{$_} }
+            grep { (!$fields || $index->{$_}) && !$ret->{$_}->has('condition') || $ret->{$_}->condition }
+            keys %$ret
     };
 
     return $ret;
