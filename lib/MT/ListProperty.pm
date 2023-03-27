@@ -276,29 +276,11 @@ sub list_properties {
 
     unless (exists $CachedListProperties{$cls}) {
         my %props;
-        my $cacheable = 1;
-        my $local_props = MT->registry( 'list_properties', $cls );
-        if ($local_props) {
-            for my $key ( keys %$local_props ) {
-                my $prop = MT::ListProperty->instance( $cls, $key );
-                if ( $prop->has('condition') ) {
-                    $cacheable = 0;
-                    next unless $prop->condition;
-                }
-                $props{$key} = $prop;
-            }
-        }
-
-        my $common_props = MT->registry( 'list_properties', '__common' );
-        if ($common_props) {
-            for my $key ( keys %$common_props ) {
+        for my $name ($cls, '__common') {
+            my $seed = MT->registry('list_properties', $name) || next;
+            for my $key (keys %$seed) {
                 next if $props{$key};
-                my $prop = MT::ListProperty->instance( $cls, $key );
-                if ( $prop->has('condition') ) {
-                    $cacheable = 0;
-                    next unless $prop->condition;
-                }
-                $props{$key} = $prop if $prop;
+                $props{$key} = MT::ListProperty->instance($cls, $key);
             }
         }
         $CachedListProperties{$cls} = \%props;
@@ -306,9 +288,9 @@ sub list_properties {
 
     my $ret = $CachedListProperties{$cls};
     $ret = {
-        map      { $_ => $ret->{$_} }
-            grep { !$ret->{$_}->has('condition') || $ret->{$_}->condition }
-            keys %$ret
+        map  { $_ => $ret->{$_} }
+        grep { !$ret->{$_}->has('condition') || $ret->{$_}->condition }
+        keys %$ret
     };
 
     return $ret;
