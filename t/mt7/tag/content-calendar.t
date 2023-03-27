@@ -280,31 +280,31 @@ __END__
 === MT::ContentCalendar with authored_on as date_field
 --- template
 <mt:ContentCalendar month="201706" date_field="authored_on" content_type="[% ct_id %]"><mt:CalendarIfContents>
-<mt:CalendarDay></mt:CalendarIfContents></mt:ContentCalendar>
+<mt:CalendarDate format="%Y-%m-%d"></mt:CalendarIfContents></mt:ContentCalendar>
 --- expected
-2
-15
-29
+2017-06-02
+2017-06-15
+2017-06-29
 
 
 === MT::ContentCalendar with created_on as date_field
 --- template
 <mt:ContentCalendar month="201004" date_field="created_on" content_type="[% ct_id %]"><mt:CalendarIfContents>
-<mt:CalendarDay></mt:CalendarIfContents></mt:ContentCalendar>
+<mt:CalendarDate format="%Y-%m-%d"></mt:CalendarIfContents></mt:ContentCalendar>
 --- expected
-2
-15
-29
+2010-04-02
+2010-04-15
+2010-04-29
 
 
 === MT::ContentCalendar with modified_on as date_field
 --- template
 <mt:ContentCalendar month="202305" date_field="modified_on" content_type="[% ct_id %]"><mt:CalendarIfContents>
-<mt:CalendarDay></mt:CalendarIfContents></mt:ContentCalendar>
+<mt:CalendarDate format="%Y-%m-%d"></mt:CalendarIfContents></mt:ContentCalendar>
 --- expected
-2
-15
-29
+2023-05-02
+2023-05-15
+2023-05-29
 
 
 === MT::ContentCalendar with category_set
