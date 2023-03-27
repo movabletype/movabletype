@@ -283,7 +283,7 @@ sub update {
         = $app->resource_object( 'content_type', $orig_content_type )
         or return;
 
-    save_object( $app, 'content_type', $new_content_type ) or return;
+    save_object( $app, 'content_type', $new_content_type, $orig_content_type ) or return;
 
     $new_content_type;
 }

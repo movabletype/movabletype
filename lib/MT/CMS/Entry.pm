@@ -919,7 +919,7 @@ sub _build_entry_preview {
 
     my $basename         = $app->param('basename');
     my $preview_basename = $app->preview_object_basename;
-    $entry->basename( $basename || $preview_basename );
+    $entry->basename( $basename || MT::Util::make_unique_basename($entry) );
 
     # translates naughty words when PublishCharset is NOT UTF-8
     MT::Util::translate_naughty_words($entry);

@@ -107,66 +107,50 @@ sub dynamic_support {
 
 sub category_based {
     my $obj = shift;
-    if ( ref $obj ne __PACKAGE__ ) {
-        return $obj->isa('MT::ArchiveType::Category');
-    }
-    return $obj->_getset( 'category_based', @_ );
+    return $obj->{category_based} if exists $obj->{category_based};
+    return $obj->{category_based} = $obj->isa('MT::ArchiveType::Category');
 }
 
 sub entry_based {
     my $obj = shift;
-    if ( ref $obj ne __PACKAGE__ ) {
-        return $obj->isa('MT::ArchiveType::Individual');
-    }
-    return $obj->_getset( 'entry_based', @_ );
+    return $obj->{entry_based} if exists $obj->{entry_based};
+    return $obj->{entry_based} = $obj->isa('MT::ArchiveType::Individual');
 }
 
 sub date_based {
     my $obj = shift;
-    if ( ref $obj ne __PACKAGE__ ) {
-        return $obj->isa('MT::ArchiveType::Date');
-    }
-    return $obj->_getset( 'date_based', @_ );
+    return $obj->{date_based} if exists $obj->{date_based};
+    return $obj->{date_based} = $obj->isa('MT::ArchiveType::Date');
 }
 
 sub author_based {
     my $obj = shift;
-    if ( ref $obj ne __PACKAGE__ ) {
-        return $obj->isa('MT::ArchiveType::Author');
-    }
-    return $obj->_getset( 'author_based', @_ );
+    return $obj->{author_based} if exists $obj->{author_based};
+    return $obj->{author_based} = $obj->isa('MT::ArchiveType::Author');
 }
 
 sub contenttype_based {
     my $obj = shift;
-    if ( ref $obj ne __PACKAGE__ ) {
-        return $obj->isa('MT::ArchiveType::ContentType');
-    }
-    return $obj->_getset( 'contenttype_based', @_ );
+    return $obj->{contenttype_based} if exists $obj->{contenttype_based};
+    return $obj->{contenttype_based} = $obj->isa('MT::ArchiveType::ContentType');
 }
 
 sub contenttype_category_based {
     my $obj = shift;
-    if ( ref $obj ne __PACKAGE__ ) {
-        return $obj->isa('MT::ArchiveType::ContentTypeCategory');
-    }
-    return $obj->_getset( 'contenttype_category_based', @_ );
+    return $obj->{contenttype_category_based} if exists $obj->{contenttype_category_based};
+    return $obj->{contenttype_category_based} = $obj->isa('MT::ArchiveType::ContentTypeCategory');
 }
 
 sub contenttype_author_based {
     my $obj = shift;
-    if ( ref $obj ne __PACKAGE__ ) {
-        return $obj->isa('MT::ArchiveType::ContentTypeAuthor');
-    }
-    return $obj->_getset( 'contenttype_author_based', @_ );
+    return $obj->{contenttype_author_based} if exists $obj->{contenttype_author_based};
+    return $obj->{contenttype_author_based} = $obj->isa('MT::ArchiveType::ContentTypeAuthor');
 }
 
 sub contenttype_date_based {
     my $obj = shift;
-    if ( ref $obj ne __PACKAGE__ ) {
-        return $obj->isa('MT::ArchiveType::ContentTypeDate');
-    }
-    return $obj->_getset( 'contenttype_date_based', @_ );
+    return $obj->{contenttype_date_based} if exists $obj->{contenttype_date_based};
+    return $obj->{contenttype_date_based} = $obj->isa('MT::ArchiveType::ContentTypeDate');
 }
 
 sub archive_entries_count {

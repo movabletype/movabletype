@@ -1834,6 +1834,7 @@ my $req = new HTTP::Request( POST => $uri );
 
 foreach my $api (@apis) {
     note("test for $api->{api}");
+    MT->request->reset;
     my $data = {};
     $data = $api->{pre}->() if exists $api->{pre};
     my @params;

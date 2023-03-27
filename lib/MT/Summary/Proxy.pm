@@ -22,8 +22,10 @@ sub set {
     # update optimization for metadata columns
     $proxy->lazier_load_objects;
 
-    $proxy->{__objects}->{ $terms->{type} }
-        = $proxy->create_meta_object( $terms, $value );
+    my $type = $terms->{type};
+    my $old = $proxy->{__objects}{$type};
+    $proxy->{__objects}{$type} = $proxy->create_meta_object( $terms, $value );
+    $proxy->{__objects}{$type}{__is_stored} = $old->{__is_stored} if $old;
 
     $proxy->{__loaded}->{ $terms->{type} } = 1;
     if ( %{ $proxy->{__loaded} } ) {

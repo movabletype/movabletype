@@ -1558,17 +1558,7 @@ sub core_list_actions {
                 },
             },
         },
-        'ts_job' => {
-            'delete' => {
-                label      => 'Delete',
-                code       => "${pkg}Common::delete",
-                mode       => 'delete',
-                order      => 110,
-                js_message => 'delete',
-                button     => 1,
-                mobile     => 1,
-            },
-        }
+
     };
 }
 
@@ -2233,7 +2223,7 @@ sub core_menus {
                 my $terms;
                 push @$terms, { author_id => $user->id };
                 if ($blog_id) {
-                    my $blog = MT->model('blog')->load($blog_id);
+                    my $blog = $app->blog;
                     my @blog_ids;
                     push @blog_ids, $blog_id;
                     if ( $blog && !$blog->is_blog ) {
@@ -2329,18 +2319,6 @@ sub core_menus {
                 return $cond ? 1 : 0;
             },
             view => [qw( system website blog )],
-        },
-        'tools:ts_job' => {
-            label     => "Background Job",
-            order     => 700,
-            mode      => 'list',
-            args      => { _type => 'ts_job' },
-            condition => sub {
-                return 0 unless $app->config->ShowTsJob;
-                return 1 if $app->user->is_superuser;
-                return 0;
-            },
-            view => ['system'],
         },
 
         'category_set:manage' => {
@@ -2585,8 +2563,7 @@ sub core_enable_object_methods {
         group => {
             delete => 1,
             save   => 1,
-        },
-        ts_job => { delete => 1 },
+        }
     };
 }
 
@@ -2672,8 +2649,7 @@ sub is_authorized {
     my $blog_id = $app->param('blog_id');
     return 1 unless $blog_id;
 
-    my $blog = MT->model('blog')->load($blog_id)
-        or return $app->errtrans( 'Cannot load blog (ID:[_1])', $blog_id );
+    my $blog = $app->blog or return $app->errtrans( 'Cannot load blog (ID:[_1])', $blog_id );
 
     # Return true if user has any permissions for a specified
     # blog or parent website.
@@ -2739,8 +2715,7 @@ sub set_default_tmpl_params {
 
     my $blog_id = $app->param('blog_id') || 0;
     my $blog;
-    my $blog_class = $app->model('blog');
-    $blog ||= $blog_class->load($blog_id) if $blog_id;
+    $blog = $app->blog if $blog_id;
     if ( my $auth = $app->user ) {
         $param->{is_administrator} = $auth->is_superuser;
         $param->{can_access_to_system_dashboard}

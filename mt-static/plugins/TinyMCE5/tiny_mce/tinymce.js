@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.10.2 (2021-11-17)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -3541,6 +3541,13 @@
       items = Tools.trim(items);
       return items ? items.split(delim || ' ') : [];
     };
+    var createMap = function (defaultValue, extendWith) {
+      var value = makeMap$2(defaultValue, ' ', makeMap$2(defaultValue.toUpperCase(), ' '));
+      return extend$5(value, extendWith);
+    };
+    var getTextRootBlockElements = function (schema) {
+      return createMap('td th li dt dd figcaption caption details summary', schema.getTextBlockElements());
+    };
     var compileSchema = function (type) {
       var schema = {};
       var globalAttributes, blockContent;
@@ -3800,8 +3807,7 @@
         if (!value) {
           value = mapCache[option];
           if (!value) {
-            value = makeMap$2(defaultValue, ' ', makeMap$2(defaultValue.toUpperCase(), ' '));
-            value = extend$5(value, extendWith);
+            value = createMap(defaultValue, extendWith);
             mapCache[option] = value;
           }
         } else {
@@ -3826,7 +3832,7 @@
       var moveCaretBeforeOnEnterElementsMap = createLookupTable('move_caret_before_on_enter_elements', nonEmptyOrMoveCaretBeforeOnEnter + ' table', shortEndedElementsMap);
       var textBlockElementsMap = createLookupTable('text_block_elements', 'h1 h2 h3 h4 h5 h6 p div address pre form ' + 'blockquote center dir fieldset header footer article section hgroup aside main nav figure');
       var blockElementsMap = createLookupTable('block_elements', 'hr table tbody thead tfoot ' + 'th tr td li ol ul caption dl dt dd noscript menu isindex option ' + 'datalist select optgroup figcaption details summary', textBlockElementsMap);
-      var textInlineElementsMap = createLookupTable('text_inline_elements', 'span strong b em i font strike u var cite ' + 'dfn code mark q sup sub samp');
+      var textInlineElementsMap = createLookupTable('text_inline_elements', 'span strong b em i font s strike u var cite ' + 'dfn code mark q sup sub samp');
       each$h((settings.special || 'script noscript iframe noframes noembed title style textarea xmp').split(' '), function (name) {
         specialElements[name] = new RegExp('</' + name + '[^>]*>', 'gi');
       });
@@ -4031,7 +4037,15 @@
             elements[items[1]].outputName = items[0];
           });
         }
-        each$h(split$1('ol ul sub sup blockquote span font a table tbody strong em b i'), function (name) {
+        each$h(textInlineElementsMap, function (_val, name) {
+          if (elements[name]) {
+            if (settings.padd_empty_block_inline_children) {
+              elements[name].paddInEmptyBlock = true;
+            }
+            elements[name].removeEmpty = true;
+          }
+        });
+        each$h(split$1('ol ul blockquote a table tbody'), function (name) {
           if (elements[name]) {
             elements[name].removeEmpty = true;
           }
@@ -11426,7 +11440,7 @@
             updateResizeRect(e);
           }
         });
-        editor.on('nodechange ResizeEditor ResizeWindow ResizeContent drop FullscreenStateChanged', throttledUpdateResizeRect);
+        editor.on('NodeChange ResizeEditor ResizeWindow ResizeContent drop', throttledUpdateResizeRect);
         editor.on('keyup compositionend', function (e) {
           if (selectedElm && selectedElm.nodeName === 'TABLE') {
             throttledUpdateResizeRect(e);
@@ -12874,7 +12888,7 @@
     }();
 
     var extractBase64DataUris = function (html) {
-      var dataImageUri = /data:[^;]+;base64,([a-z0-9\+\/=\s]+)/gi;
+      var dataImageUri = /data:[^;<"'\s]+;base64,([a-z0-9\+\/=\s]+)/gi;
       var chunks = [];
       var uris = {};
       var prefix = generate('img');
@@ -13216,6 +13230,9 @@
     var isValidPrefixAttrName = function (name) {
       return name.indexOf('data-') === 0 || name.indexOf('aria-') === 0;
     };
+    var lazyTempDocument$1 = cached(function () {
+      return document.implementation.createHTMLDocument('parser');
+    });
     var findMatchingEndTagIndex = function (schema, html, startIndex) {
       var startTagRegExp = /<([!?\/])?([A-Za-z0-9\-_:.]+)/g;
       var endTagRegExp = /(?:\s(?:[^'">]+(?:"[^"]*"|'[^']*'))*[^"'>]*(?:"[^">]*|'[^'>]*)?|\s*|\/)>/g;
@@ -13286,12 +13303,11 @@
       }
     };
     var SaxParser = function (settings, schema) {
-      var _a;
       if (schema === void 0) {
         schema = Schema();
       }
       settings = settings || {};
-      var doc = (_a = settings.document) !== null && _a !== void 0 ? _a : document;
+      var doc = lazyTempDocument$1();
       var form = doc.createElement('form');
       if (settings.fix_self_closing !== false) {
         settings.fix_self_closing = true;
@@ -16292,8 +16308,11 @@
         var children = from(node.childNodes);
         if (contentEditable && !hasContentEditableState) {
           var removed = removeNodeFormat(node);
+          var currentNodeMatches = removed || exists(formatList, function (f) {
+            return matchName$1(dom, node, f);
+          });
           var parentNode = node.parentNode;
-          if (!removed && isNonNullable(parentNode) && shouldExpandToSelector(format)) {
+          if (!currentNodeMatches && isNonNullable(parentNode) && shouldExpandToSelector(format)) {
             removeNodeFormat(parentNode);
           }
         }
@@ -16498,17 +16517,7 @@
     };
     var canFormatBR = function (editor, format, node, parentName) {
       if (canFormatEmptyLines(editor) && isInlineFormat(format)) {
-        var validBRParentElements = __assign(__assign({}, editor.schema.getTextBlockElements()), {
-          td: {},
-          th: {},
-          li: {},
-          dt: {},
-          dd: {},
-          figcaption: {},
-          caption: {},
-          details: {},
-          summary: {}
-        });
+        var validBRParentElements = getTextRootBlockElements(editor.schema);
         var hasCaretNodeSibling = sibling(SugarElement.fromDom(node), function (sibling) {
           return isCaretNode(sibling.dom);
         });
@@ -19080,6 +19089,7 @@
         matchedNodes = {};
         matchedAttributes = {};
         var blockElements = extend$4(makeMap('script,style,head,html,body,title,meta,param'), schema.getBlockElements());
+        var textRootBlockElements = getTextRootBlockElements(schema);
         var nonEmptyElements = schema.getNonEmptyElements();
         var children = schema.children;
         var validate = settings.validate;
@@ -19173,6 +19183,17 @@
           }
           return output;
         };
+        var isTextRootBlockEmpty = function (node) {
+          var tempNode = node;
+          while (isNonNullable(tempNode)) {
+            if (tempNode.name in textRootBlockElements) {
+              return isEmpty(schema, nonEmptyElements, whiteSpaceElements, tempNode);
+            } else {
+              tempNode = tempNode.parent;
+            }
+          }
+          return false;
+        };
         var parser = SaxParser({
           validate: validate,
           document: settings.document,
@@ -19246,7 +19267,7 @@
             }
           },
           end: function (name) {
-            var textNode, text, sibling, tempNode;
+            var textNode, text, sibling;
             var elementRule = validate ? schema.getElementRule(name) : {};
             if (elementRule) {
               if (blockElements[name]) {
@@ -19298,20 +19319,20 @@
               if (isInWhiteSpacePreservedElement && whiteSpaceElements[name]) {
                 isInWhiteSpacePreservedElement = false;
               }
-              if (elementRule.removeEmpty && isEmpty(schema, nonEmptyElements, whiteSpaceElements, node)) {
-                tempNode = node.parent;
+              var isNodeEmpty = isEmpty(schema, nonEmptyElements, whiteSpaceElements, node);
+              var parentNode = node.parent;
+              if (elementRule.paddInEmptyBlock && isNodeEmpty && isTextRootBlockEmpty(node)) {
+                paddEmptyNode(settings, args, blockElements, node);
+              } else if (elementRule.removeEmpty && isNodeEmpty) {
                 if (blockElements[node.name]) {
                   node.empty().remove();
                 } else {
                   node.unwrap();
                 }
-                node = tempNode;
-                return;
-              }
-              if (elementRule.paddEmpty && (isPaddedWithNbsp(node) || isEmpty(schema, nonEmptyElements, whiteSpaceElements, node))) {
+              } else if (elementRule.paddEmpty && (isPaddedWithNbsp(node) || isNodeEmpty)) {
                 paddEmptyNode(settings, args, blockElements, node);
               }
-              node = node.parent;
+              node = parentNode;
             }
           }
         }, schema);
@@ -26530,6 +26551,32 @@
         return isUndefined(v) === false;
       });
     };
+    var mkSchemaSettings = function (editor) {
+      var settings = editor.settings;
+      return removeUndefined({
+        block_elements: settings.block_elements,
+        boolean_attributes: settings.boolean_attributes,
+        custom_elements: settings.custom_elements,
+        extended_valid_elements: settings.extended_valid_elements,
+        invalid_elements: settings.invalid_elements,
+        invalid_styles: settings.invalid_styles,
+        move_caret_before_on_enter_elements: settings.move_caret_before_on_enter_elements,
+        non_empty_elements: settings.non_empty_elements,
+        schema: settings.schema,
+        self_closing_elements: settings.self_closing_elements,
+        short_ended_elements: settings.short_ended_elements,
+        special: settings.special,
+        text_block_elements: settings.text_block_elements,
+        text_inline_elements: settings.text_inline_elements,
+        valid_children: settings.valid_children,
+        valid_classes: settings.valid_classes,
+        valid_elements: settings.valid_elements,
+        valid_styles: settings.valid_styles,
+        verify_html: settings.verify_html,
+        whitespace_elements: settings.whitespace_elements,
+        padd_empty_block_inline_children: settings.format_empty_lines
+      });
+    };
     var mkParserSettings = function (editor) {
       var settings = editor.settings;
       var blobCache = editor.editorUpload.blobCache;
@@ -26558,7 +26605,7 @@
     };
     var mkSerializerSettings = function (editor) {
       var settings = editor.settings;
-      return __assign(__assign({}, mkParserSettings(editor)), removeUndefined({
+      return __assign(__assign(__assign({}, mkParserSettings(editor)), mkSchemaSettings(editor)), removeUndefined({
         url_converter: settings.url_converter,
         url_converter_scope: settings.url_converter_scope,
         element_format: settings.element_format,
@@ -26566,27 +26613,7 @@
         entity_encoding: settings.entity_encoding,
         indent: settings.indent,
         indent_after: settings.indent_after,
-        indent_before: settings.indent_before,
-        block_elements: settings.block_elements,
-        boolean_attributes: settings.boolean_attributes,
-        custom_elements: settings.custom_elements,
-        extended_valid_elements: settings.extended_valid_elements,
-        invalid_elements: settings.invalid_elements,
-        invalid_styles: settings.invalid_styles,
-        move_caret_before_on_enter_elements: settings.move_caret_before_on_enter_elements,
-        non_empty_elements: settings.non_empty_elements,
-        schema: settings.schema,
-        self_closing_elements: settings.self_closing_elements,
-        short_ended_elements: settings.short_ended_elements,
-        special: settings.special,
-        text_block_elements: settings.text_block_elements,
-        text_inline_elements: settings.text_inline_elements,
-        valid_children: settings.valid_children,
-        valid_classes: settings.valid_classes,
-        valid_elements: settings.valid_elements,
-        valid_styles: settings.valid_styles,
-        verify_html: settings.verify_html,
-        whitespace_elements: settings.whitespace_elements
+        indent_before: settings.indent_before
       }));
     };
     var createParser = function (editor) {
@@ -26809,7 +26836,7 @@
       }
       body.disabled = false;
       editor.editorUpload = EditorUpload(editor);
-      editor.schema = Schema(settings);
+      editor.schema = Schema(mkSchemaSettings(editor));
       editor.dom = DOMUtils(doc, {
         keep_values: true,
         url_converter: editor.convertURL,
@@ -29001,8 +29028,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '10.2',
-      releaseDate: '2021-11-17',
+      minorVersion: '10.7',
+      releaseDate: '2022-12-06',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,

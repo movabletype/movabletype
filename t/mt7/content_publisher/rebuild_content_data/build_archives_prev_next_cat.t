@@ -206,6 +206,8 @@ my $map_ct_archive_author_yearly = MT::Test::Permission->make_templatemap(
     template_id => $tmpl_ct_archive->id,
 );
 
+$test_env->clear_mt_cache;
+
 subtest 'save content_data' => sub {
 
     $app->rebuild_content_data(

@@ -65,6 +65,7 @@ subtest '"bulk_update_folder" method check' => sub {
 
     require Digest::MD5;
     my $make_checksum = sub {
+        $test_env->clear_mt_cache;
         my @old_objects = $cat_class->load({ blog_id => $website->id });
 
         # Test CheckSum
@@ -203,6 +204,7 @@ subtest '"bulk_update_folder" method check' => sub {
         });
         is($cat_class->count(), 2, "Renamed folders");
 
+        $test_env->clear_mt_cache;
         $cat = $cat_class->load({ parent => 0 });
         ok($cat, 'Loaded a parent folder');
         is($cat->label,    'FooBar', 'Folder label is "FooBar"');
@@ -242,6 +244,7 @@ subtest '"bulk_update_folder" method check' => sub {
         });
         is($cat_class->count(), 2, "Swapped folders");
 
+        $test_env->clear_mt_cache;
         $cat = $cat_class->load({ parent => 0 });
         ok($cat, 'Loaded a parent folder');
         is($cat->label,    'Baz', 'Folder label is "Baz"');
@@ -275,6 +278,7 @@ subtest '"bulk_update_folder" method check' => sub {
         });
         is($cat_class->count(), 1, "Removed a child folder");
 
+        $test_env->clear_mt_cache;
         $cat = $cat_class->load();
         ok($cat, 'Loaded a folder');
         is($cat->label,    'Baz', 'Folder label is "Baz"');
@@ -311,6 +315,7 @@ subtest '"bulk_update_folder" method check' => sub {
         });
         is($cat_class->count(), 2, "Added folders");
 
+        $test_env->clear_mt_cache;
         my $cat_foo   = $cat_class->load({ label => 'Foo' });
         my $cat_bar   = $cat_class->load({ label => 'Bar' });
         my $cat_order = join ',', ($cat_foo->id, $cat_bar->id);
@@ -348,6 +353,7 @@ subtest '"bulk_update_folder" method check' => sub {
         });
         is($cat_class->count(), 2, "Swapped folders");
 
+        $test_env->clear_mt_cache;
         $cat_foo = $cat_class->load({ label => 'Foo' });
         $cat_bar = $cat_class->load({ label => 'Bar' });
         my $cat_order = join ',', ($cat_bar->id, $cat_foo->id);

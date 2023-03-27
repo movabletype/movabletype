@@ -22,7 +22,7 @@ sub is_ready {
     GoogleAnalyticsV4::current_plugindata(@_) ? 1 : 0;
 }
 
-sub snipet {
+sub snippet {
     my $self = shift;
     my ($ctx, $args) = @_;
     my $app        = MT->instance;

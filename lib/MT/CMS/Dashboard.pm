@@ -47,7 +47,7 @@ sub dashboard {
     }
 
     if ( defined $blog_id && $blog_id ) {
-        my $blog = MT->model('blog')->load($blog_id);
+        my $blog = $app->blog;
         my $trust;
         if ( $blog->is_blog ) {
             $trust = $user->has_perm( $blog->id );

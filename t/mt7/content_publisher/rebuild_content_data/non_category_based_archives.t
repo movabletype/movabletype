@@ -169,6 +169,8 @@ my $map_ct_archive_content_type_author_monthly
     template_id => $tmpl_ct_archive->id,
     );
 
+$test_env->clear_mt_cache;
+
 subtest 'save content_data' => sub {
     my $fileinfo_count_before_save
         = $app->model('fileinfo')

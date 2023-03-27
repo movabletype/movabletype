@@ -965,7 +965,7 @@ sub load_search_tmpl {
             $tmpl = $tmpl_class->load(
                 { blog_id => $blog_id, type => $app->search_template_type } );
         }
-        unless ($tmpl) {
+        if (!$tmpl or !$tmpl->text) {
 
             # load template from search_template path
             # template_paths method does the magic

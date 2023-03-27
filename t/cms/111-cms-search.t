@@ -366,4 +366,57 @@ subtest 'replace' => sub {
     $_->remove for @entries;
 };
 
+subtest 'multiple site search' => sub {
+
+    my $newblog = MT::Test::Permission->make_blog(parent_id => $website->id);
+
+    my $egawa          = MT::Test::Permission->make_author(name => 'egawa', nickname => 'Shiro Egawa');
+    my $edit_all_posts = MT::Test::Permission->make_role(name => 'Edit All Posts', permissions => "'edit_all_posts'");
+    MT::Association->link($egawa, $edit_all_posts, $website);
+    MT::Association->link($egawa, $edit_all_posts, $blog);
+    my $perm = $egawa->permissions(0);
+    $perm->add_permissions(MT::Test::Permission->make_role(name => 'Designer'));
+    $perm->save;
+
+    my @entries;
+    for my $site ($website, $blog, $newblog) {
+        push @entries, MT::Test::Permission->make_entry(
+            blog_id   => $site->id,
+            author_id => $admin->id,
+            title     => "system-search-test",
+            text      => "text",
+            basename  => "basename",
+        );
+    }
+
+    subtest 'Search in system scope by non super user' => sub {
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($egawa);
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => 0,
+        });
+        $app->search('system-search-test');
+        is_deeply($app->found_site_ids, [$website->id, $blog->id], 'found from multiple sites');
+    };
+
+    subtest 'Super user recursive search without administer_site permission for child' => sub {
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'search_replace',
+            blog_id => $website->id,
+        });
+        $app->search('system-search-test');
+        is_deeply(
+            $app->found_site_ids, [$website->id, $blog->id, $newblog->id],
+            'found child site without administer_site permission'
+        );
+    };
+
+    $_->remove for @entries, $newblog;
+};
+
 done_testing();

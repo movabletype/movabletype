@@ -45,7 +45,7 @@ sub new {
     my $class = shift;
     my ($self) = ref $_[0] ? @_ : {@_};
     bless $self, $class;
-    $self->init();
+    $self->init unless $self->isa('MT::Plugin');
     $self;
 }
 

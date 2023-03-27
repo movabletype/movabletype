@@ -996,60 +996,11 @@ sub do_search_replace {
         if ( exists $api->{setup_terms_args} ) {
             my $code = $app->handler_to_coderef( $api->{setup_terms_args} );
             $code->( \%terms, \%args, $blog_id );
-            if (   !exists $terms{blog_id}
-                && $type ne 'author'
-                && $type ne 'blog' )
-            {
-                if ($blog_id) {
-                    require MT::Blog;
-                    my $blog;
-                    $blog = MT::Blog->load($blog_id) if $blog_id;
-                    if (   $blog
-                        && !$blog->is_blog
-                        && ( $author->permissions($blog_id)
-                            ->has('administer_site')
-                            || $author->is_superuser )
-                        )
-                    {
-                        my @blogs
-                            = MT::Blog->load( { parent_id => $blog->id } );
-                        my @blog_ids = ( $blog->id );
-                        foreach my $b (@blogs) {
-                            push @blog_ids, $b->id
-                                if $author->permissions( $b->id )
-                                ->has('administer_site');
-                        }
-                        $terms{blog_id} = \@blog_ids;
-                    }
-                    else {
-                        $terms{blog_id} = $blog_id;
-                    }
-                }
+            if (!exists $terms{blog_id} && $type ne 'author' && $type ne 'blog') {
+                _set_blog_id_to_terms(\%terms, $author, $blog_id);
             }
-        }
-        else {
-            if ($blog_id) {
-                require MT::Blog;
-                my $blog;
-                $blog = MT::Blog->load($blog_id) if $blog_id;
-                if (   $blog
-                    && !$blog->is_blog
-                    && $author->permissions($blog_id)->has('administer_site')
-                    )
-                {
-                    my @blogs = MT::Blog->load( { parent_id => $blog->id } );
-                    my @blog_ids = ( $blog->id );
-                    foreach my $b (@blogs) {
-                        push @blog_ids, $b->id
-                            if $author->permissions( $b->id )
-                            ->has('administer_site');
-                    }
-                    %terms = ( blog_id => \@blog_ids );
-                }
-                else {
-                    %terms = ( blog_id => $blog_id );
-                }
-            }
+        } else {
+            _set_blog_id_to_terms(\%terms, $author, $blog_id);
             if ( $type ne 'template' ) {
                 %args = ( 'sort' => $date_col, direction => 'descend' );
             }
@@ -1167,94 +1118,20 @@ sub do_search_replace {
             if ( defined $terms && defined $args ) {
                 $iter = $class->load_iter( $terms, $args )
                     or die $class->errstr;
-            }
-            elsif ($blog_id
-                || ( $type eq 'blog' )
-                || ( $app->mode eq 'dialog_grant_role' ) )
-            {
-                $iter
-                    = $class->load_iter( @terms ? \@terms : \%terms, \%args )
-                    or die $class->errstr;
-            }
-            else {
+            } elsif ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
+                $iter = $class->load_iter(@terms ? \@terms : \%terms, \%args) or die $class->errstr;
+            } else {
+                if ( $class->has_column('blog_id') ) {
 
-                my @streams;
-                if ( $author->is_superuser ) {
-                    @streams = (
-                        {   iter => $class->load_iter(
-                                @terms ? \@terms : \%terms, \%args
-                            )
-                        }
+                    # Get an iter for each accessible blog
+                    my @perms = $app->model('permission')->load(
+                        {   blog_id   => { not => 0 },
+                            author_id => $author->id
+                        },
                     );
+                    push @terms, {blog_id => [map {$_->blog_id} @perms]} if @perms;
                 }
-                else {
-                    if ( $class->has_column('blog_id') ) {
-
-                        # Get an iter for each accessible blog
-                        my @perms = $app->model('permission')->load(
-                            {   blog_id   => { not => 0 },
-                                author_id => $author->id
-                            },
-                        );
-                        if (@perms) {
-                            my @blog_terms;
-                            push( @blog_terms,
-                                { blog_id => $_->blog_id, }, '-or' )
-                                foreach @perms;
-                            push @terms, \@blog_terms if @blog_terms;
-                        }
-                    }
-                    @streams = (
-                        { iter => $class->load_iter( \@terms, \%args ) } );
-                }
-
-                # Pull out the head of each iterator
-                # Next: effectively mergesort the various iterators
-                # To call the iterator n times takes time in O(bn)
-                #   with 'b' the number of blogs
-                # we expect to hit the iterator l/p times where 'p' is the
-                #   prob. of the search term appearing and 'l' is $limit
-                $_->{head} = $_->{iter}->() foreach @streams;
-                if ( $type ne 'template' ) {
-                    $iter = sub {
-
-                        # find the head with greatest created_on
-                        my $which = \$streams[0];
-                        foreach my $iter (@streams) {
-                            next
-                                if !exists $iter->{head}
-                                || !$which
-                                || !${$which}->{head}
-                                || !defined( $iter->{head} );
-                            if ( $iter->{head}->created_on
-                                > ${$which}->{head}->created_on )
-                            {
-                                $which = \$iter;
-                            }
-                        }
-
-                        # Advance the chosen one
-                        my $result = ${$which}->{head};
-                        ${$which}->{head} = ${$which}->{iter}->() if $result;
-                        $result;
-                    };
-                }
-                else {
-                    $iter = sub {
-                        return undef unless @streams;
-
-                        # find the head with greatest created_on
-                        my $which = \$streams[0];
-                        while ( @streams && ( !defined ${$which}->{head} ) ) {
-                            shift @streams;
-                            last unless @streams;
-                            $which = \$streams[0];
-                        }
-                        my $result = ${$which}->{head};
-                        ${$which}->{head} = ${$which}->{iter}->() if $result;
-                        $result;
-                    };
-                }
+                $iter = $class->load_iter( \@terms, \%args );
             }
         }
         my $i = 1;
@@ -1731,6 +1608,24 @@ sub do_search_replace {
     $res{search_options} = $search_options;
 
     \%res;
+}
+
+sub _set_blog_id_to_terms {
+    my ($terms, $author, $blog_id) = @_;
+    return unless $blog_id;
+    require MT::Blog;
+    my $blog = MT::Blog->load($blog_id);
+    if ($blog && !$blog->is_blog && ($author->is_superuser || $author->permissions($blog_id)->has('administer_site'))) {
+        my @children = MT::Blog->load({ parent_id => $blog->id });
+        my @blog_ids = ($blog->id);
+        for my $child (@children) {
+            push @blog_ids, $child->id
+                if $author->is_superuser || $author->permissions($child->id)->has('administer_site');
+        }
+        $terms->{blog_id} = \@blog_ids;
+    } else {
+        $terms->{blog_id} = $blog_id;
+    }
 }
 
 sub iter_for_replace {

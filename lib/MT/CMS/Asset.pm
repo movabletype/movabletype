@@ -1347,9 +1347,7 @@ sub _set_start_upload_params {
     if ( my $perms = $app->permissions ) {
         my $blog_id = $app->param('blog_id');
         if ($blog_id) {
-            my $blog = MT->model('blog')->load($blog_id)
-                or return $app->error(
-                $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
+            my $blog = $app->blog or return $app->error( $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
             # Make a list of upload destination
             my @dest_root = _make_upload_destinations( $app, $blog, 1 );
@@ -1509,9 +1507,7 @@ sub _upload_file_compat {
         }
 
         $param{blog_id} = $blog_id;
-        $blog = MT->model('blog')->load($blog_id)
-            or return $app->error(
-            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
+        $blog = $app->blog or return $app->error( $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $fmgr = $blog->file_mgr;
 
         ## Set up the full path to the local file; this path could start
@@ -2102,9 +2098,7 @@ sub _upload_file {
     if ( $blog_id = $app->param('blog_id') ) {
 
         $param{blog_id} = $blog_id;
-        $blog = MT->model('blog')->load($blog_id)
-            or return $app->error(
-            $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
+        $blog = $app->blog or return $app->error( $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
         $fmgr = $blog->file_mgr;
 
         ## Build upload destination path
@@ -3172,8 +3166,7 @@ sub dialog_insert_options {
 
     # Should not allow to insert asset from other site.
     my $blog_id = $app->param('blog_id');
-    my $blog    = MT->model('blog')->load($blog_id)
-        or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
+    my $blog    = $app->blog or return $app->errtrans( "Cannot load blog #[_1].", $blog_id );
     my %blog_ids;
     if ( !$blog->is_blog ) {
         %blog_ids = map { $_->id => 1 } @{ $blog->blogs };

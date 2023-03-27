@@ -170,7 +170,9 @@ sub set {
     # update optimization for metadata columns
     $proxy->lazier_load_objects($col);
 
+    my $old = $proxy->{__objects}{$col};
     $proxy->{__objects}->{$col} = $proxy->create_meta_object( $col, $value );
+    $proxy->{__objects}{$col}{__is_stored} = $old->{__is_stored} if $old;
 
     $proxy->{__loaded}->{$col} = 1;
     if ( %{ $proxy->{__loaded} } ) {
@@ -211,7 +213,7 @@ sub save {
         my $meta_is_blob
             = $meta_col_def ? $meta_col_def->{type} eq 'blob' : 0;
 
-        my $enc = MT->config->PublishCharset || 'UTF-8';
+        my $enc = MT->publish_charset;
         my ( $data, $utf8_data );
         $data = $utf8_data = $meta_obj->$type;
         unless ( ref $data ) {
@@ -309,7 +311,9 @@ sub lazier_load_objects {
         my @objs     = $meta_pkg->search( $proxy->{__pkeys},
             { fetchonly => ['type'] } );
         for my $obj (@objs) {
-            $proxy->{__objects}->{ $obj->type } = $meta_pkg->new;
+            my $meta_obj = $meta_pkg->new;
+            $meta_obj->{__is_stored} = 1;
+            $proxy->{__objects}->{ $obj->type } = $meta_obj;
         }
         $proxy->{__loaded} = {};
     }
@@ -375,7 +379,7 @@ sub bulk_load_meta_objects {
                     $meta_obj->$type( _db2ts( $meta_obj->$type ) );
                 }
 
-                my $enc = MT->config->PublishCharset || 'UTF-8';
+                my $enc = MT->publish_charset;
                 my $data = $meta_obj->$type;
                 unless ( ref $data ) {
                     $data = MT::Util::Encode::decode_unless_flagged( $enc, $data );
@@ -434,7 +438,7 @@ sub prepare_objects {
                 $meta_obj->$type( _db2ts( $meta_obj->$type ) );
             }
 
-            my $enc = MT->config->PublishCharset || 'UTF-8';
+            my $enc = MT->publish_charset;
             my $data = $meta_obj->$type;
             unless ( ref $data ) {
                 $data = MT::Util::Encode::decode_unless_flagged( $enc, $data );
@@ -513,7 +517,7 @@ sub do_unserialization {
         }
     }
     elsif ( $prefix eq 'ASC' ) {
-        my $enc = MT->config('PublishCharset');
+        my $enc = MT->publish_charset;
         $$dataref = MT::Util::Encode::decode_unless_flagged( $enc, $$dataref );
         return $dataref;
     }

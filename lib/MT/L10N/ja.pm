@@ -439,6 +439,7 @@ use vars qw( @ISA %Lexicon );
 	'Bad CGIPath config' => 'CGIPathの設定が不正です。',
 	'Bad LocalLib config ([_1]): [_2]' => 'LocalLibの設定([_1])が不正です: [_2]',
 	'Bad ObjectDriver config' => 'ObjectDriverの設定が不正です。',
+	'Conflicted plugin [_1] [_2] is disabled by the system' => '[_1] [_2] は他のプラグインと衝突するので無効にしました',
 	'Error while creating email: [_1]' => 'メールの再構築中にエラーが発生しました: [_1]',
 	'Fourth argument to add_callback must be a CODE reference.' => 'add_callbackの第4引数はCODEへの参照でなければなりません。',
 	'Google' => 'Google',
@@ -557,7 +558,6 @@ use vars qw( @ISA %Lexicon );
 	'Asset' => 'アセット',
 	'Assets' => 'アセット',
 	'Associations' => '関連付け',
-	'Background Job' => 'バックグラウンドジョブ',
 	'Batch Edit Entries' => '記事の一括編集',
 	'Batch Edit Pages' => 'ウェブページの一括編集',
 	'Blog' => 'ブログ',
@@ -1976,7 +1976,6 @@ use vars qw( @ISA %Lexicon );
 	'If/Else Block' => 'If/Else条件ブロック',
 	'Include Template File' => 'テンプレートファイルのインクルード',
 	'Include Template Module' => 'テンプレートモジュールのインクルード',
-	'Job' => 'ジョブ',
 	'Junk Folder Expiration' => 'スパムコメント/トラックバックの廃棄',
 	'Legacy Quick Filter' => 'クイックフィルタ',
 	'Log' => 'ログ',
@@ -2039,8 +2038,6 @@ use vars qw( @ISA %Lexicon );
 	'Unpublish Past Entries' => '公開期限が過ぎた記事の公開を終了',
 	'Upload File' => 'ファイルアップロード',
 	'View Activity Log' => 'ログの閲覧',
-	'View Background Jobs is disabled by system configuration.' => 'バックグラウンドジョブの管理は環境変数で無効になっています。',
-	'View Background Jobs' => 'バックグラウンドジョブの管理',
 	'View System Activity Log' => 'システムログの閲覧',
 	'Widget Set' => 'ウィジェットセット',
 	'[_1] [_2] between [_3] and [_4]' => '[_2]が[_3]から[_4]の期間内の[_1]',
@@ -2712,15 +2709,7 @@ use vars qw( @ISA %Lexicon );
 	'Job Function' => 'ジョブファンクション',
 
 ## lib/MT/TheSchwartz/Job.pm
-	'Coalesce' => 'グループ名',
-	'Insert Time' => '作成日時',
-	'IsRunning' => '状態',
-	'Job Arg' => 'ジョブの引数',
-	'Priority' => '優先度',
-	'Running from [_1]' => '[_1]から実行中',
-	'Running' => '実行中',
-	'Unique Key' => 'ユニークキー',
-	'Worker' => 'ワーカー名',
+	'Job' => 'ジョブ',
 
 ## lib/MT/Theme.pm
 	'A fatal error occurred while applying element [_1]: [_2].' => '項目「[_1]」を適用する際に、重大なエラーが発生しました: [_2]',
@@ -3664,7 +3653,7 @@ use vars qw( @ISA %Lexicon );
 	'SEARCH/TAG FEED SUBSCRIPTION INFORMATION' => '検索/タグのフィード購読情報',
 	'SET VARIABLES FOR SEARCH vs TAG information' => '検索またはタグ情報を変数に代入',
 	'STRAIGHT SEARCHES GET THE SEARCH QUERY FORM' => '通常の検索では検索クエリ用のフォームを返す',
-	'Search this site' => 'このブログを検索',
+	'Search this site' => 'このサイトを検索',
 	'Showing the first [_1] results.' => '最初の[_1]件の結果を表示',
 	'Site Search Results' => 'サイトの検索結果',
 	'Site search' => 'サイトの検索',
@@ -3680,15 +3669,13 @@ use vars qw( @ISA %Lexicon );
 	'Search Results for [_1]' => '[_1]の検索結果',
 
 ## search_templates/default.tmpl
-	'Blog Search Results' => 'Blog Searchの結果',
-	'Blog search' => 'Blog Search',
 	'Match case' => '大文字小文字を区別する',
-	'Matching entries from [_1]' => 'ブログ[_1]での検索結果',
+	'Matching entries from [_1]' => 'サイト[_1]での検索結果',
 	'Other Tags' => 'その他のタグ',
 	'Posted <MTIfNonEmpty tag="EntryAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]' => '<MTIfNonEmpty tag="EntryAuthorDisplayName">[_1]</MTIfNonEmpty> - ([_2])',
 	'Regex search' => '正規表現',
 	'TAG LISTING FOR TAG SEARCH ONLY' => 'タグ一覧はタグ検索でのみ表示',
-	q{Entries from [_1] tagged with '[_2]'} => q{ブログ[_1]の'[_2]'タグの記事},
+	q{Entries from [_1] tagged with '[_2]'} => q{サイト[_1]の'[_2]'タグの記事},
 	q{Entries matching '[_1]'} => q{'[_1]'で検索された記事},
 	q{Entries tagged with '[_1]'} => q{'[_1]'タグの記事},
 	q{If you use an RSS reader, you can subscribe to a feed of all future entries matching '[_1]'.} => q{RSSリーダーを使うと、'[_1]'を含むすべての記事のフィードを購読することができます。},
@@ -5497,10 +5484,6 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully deleted the selected tags.' => '選択したタグを削除しました。',
 	'Your tag changes and additions have been made.' => 'タグの変更と追加が完了しました。',
 	q{The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all blogs?} => q{タグ「[_2]」は既に存在します。すべてのブログで「[_1]」を「[_2]」にマージしてもよろしいですか?},
-
-## tmpl/cms/listing/ts_job_list_header.tmpl
-	'The job(s) has been deleted from the database.' => 'ジョブをデータベースから削除しました。',
-	q{You can't delete running job(s). (ID: [_1])} => q{実行中のジョブは削除できません(ID: [_1])},
 
 ## tmpl/cms/login.tmpl
 	'Forgot your password?' => 'パスワードをお忘れですか?',

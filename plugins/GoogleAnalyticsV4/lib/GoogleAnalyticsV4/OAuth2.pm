@@ -26,7 +26,7 @@ sub authorize_url {
         redirect_uri    => $redirect_uri,
         scope           => 'https://www.googleapis.com/auth/analytics https://www.googleapis.com/auth/analytics.readonly',
         access_type     => 'offline',
-        approval_prompt => 'force',
+        prompt          => 'select_account consent',
     );
 
     $uri->as_string;

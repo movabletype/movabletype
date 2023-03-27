@@ -635,9 +635,9 @@ sub blog {
     $ct_data->cache_property(
         'blog',
         sub {
-            my $blog_id = $ct_data->blog_id;
+            my $blog_id = $ct_data->blog_id || 0;
             require MT::Blog;
-            MT::Blog->load( $blog_id || 0 )
+            MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
                 or $ct_data->error(
                 MT->translate(
                     "Loading blog '[_1]' failed: [_2]",
@@ -1171,6 +1171,32 @@ sub make_list_props {
                         { column => "id",       desc => $dir },
                     ];
                     return;
+                },
+                html => sub {
+                    my $prop = shift;
+                    my ($obj, $app, $opts) = @_;
+                    my $ts = $prop->raw(@_) or return '';
+                    return '' if $obj->status != MT::ContentStatus::RELEASE() && $obj->status != MT::ContentStatus::FUTURE();
+                    my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
+                    my $blog        = $opts->{blog};
+                    my $is_relative = ($app->user->date_format || 'relative') eq 'relative' ? 1 : 0;
+                    my $date =
+                        $is_relative
+                        ? MT::Util::relative_date($ts, time, $blog)
+                        : MT::Util::format_ts(
+                        $date_format,
+                        $ts,
+                        $blog,
+                        $app->user
+                        ? $app->user->preferred_language
+                        : undef
+                        );
+                    my $timestamp = MT::Util::format_ts(
+                        '%Y-%m-%d %H:%M:%S',
+                        $ts,
+                        $blog,
+                    );
+                    return qq{<span title="$timestamp">$date</span>};
                 },
             },
             created_on => {

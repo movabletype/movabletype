@@ -806,7 +806,7 @@ sub encode_phphere {
 
 sub encode_url {
     my ( $str, $enc ) = @_;
-    $enc ||= MT->config->PublishCharset;
+    $enc ||= MT->publish_charset;
     my $encoded = MT::Util::Encode::encode( $enc, $str );
     $encoded =~ s!([^a-zA-Z0-9_.~-])!uc sprintf "%%%02x", ord($1)!eg;
     $encoded;
@@ -814,7 +814,7 @@ sub encode_url {
 
 sub decode_url {
     my ( $str, $enc ) = @_;
-    $enc ||= MT->config->PublishCharset;
+    $enc ||= MT->publish_charset;
     my $from_enc = MT::I18N::guess_encoding($str) || 'utf8';
     $str = MT::Util::Encode::encode( $from_enc, $str );
     $str =~ s!%([0-9a-fA-F][0-9a-fA-F])!pack("H*",$1)!eg;
@@ -1395,9 +1395,10 @@ sub archive_file_for {
     MT->instance->publisher->archive_file_for(@_);
 }
 
+my $IndexBasename;
 sub strip_index {
     my ( $link, $blog ) = @_;
-    my $index = MT->instance->config('IndexBasename');
+    my $index = $IndexBasename ||= MT->instance->config('IndexBasename');
     my $ext = $blog->file_extension || '';
     $ext = '.' . $ext if $ext ne '';
     $index .= $ext;
@@ -1982,11 +1983,13 @@ sub start_background_task {
             open STDERR, ">", "/dev/null" or die $!;
 
             MT::Object->driver;    # This inititalizes driver
+            MT::ObjectDriverFactory->configure();
             $func->();
             CORE::exit(0) if defined($pid) && !$pid;
         }
         else {
             MT::Object->driver;    # This inititalizes driver
+            MT::ObjectDriverFactory->configure();
             return 1;
         }
     }
@@ -2239,7 +2242,7 @@ sub get_newsbox_html {
     return unless is_url($newsbox_url);
     return unless $kind && ( length($kind) == 2 );
     $cached_only ||= 0;
-    my $enc               = MT->config('PublishCharset');
+    my $enc               = MT->publish_charset;
     my $NEWSCACHE_TIMEOUT = 60 * 60 * 24;
     my $sess_class        = MT->model('session');
     my ($news_object)     = ("");

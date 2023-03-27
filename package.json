@@ -28,9 +28,9 @@
     "copy-jquery-migrate": "cp -rf node_modules/jquery-migrate/dist/jquery-migrate.* mt-static/jquery/",
     "copy-jquery-validation": "cp -rf node_modules/jquery-validation/dist/jquery.validate.* mt-static/jquery/",
     "copy-tinymce": "cp -rf node_modules/tinymce/*.js node_modules/tinymce/themes node_modules/tinymce/skins node_modules/tinymce/plugins node_modules/tinymce/icons node_modules/tinymce/license.txt mt-static/plugins/TinyMCE5/tiny_mce/",
-    "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE5/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE5/tiny_mce/langs; cp -rf node_modules/tinymce-i18N/langs5/* mt-static/plugins/TinyMCE5/tiny_mce/langs/",
+    "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE5/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE5/tiny_mce/langs; cp -rf node_modules/tinymce-i18n/langs5/* mt-static/plugins/TinyMCE5/tiny_mce/langs/",
     "copy-tinymce6": "cp -rf node_modules/tinymce6/*.js node_modules/tinymce6/themes node_modules/tinymce6/skins node_modules/tinymce6/plugins node_modules/tinymce6/icons node_modules/tinymce6/models node_modules/tinymce6/license.txt mt-static/plugins/TinyMCE6/tiny_mce/",
-    "copy-tinymce6-language": "rm -rf mt-static/plugins/TinyMCE6/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE6/tiny_mce/langs; cp -rf node_modules/tinymce6-i18N/langs6/* mt-static/plugins/TinyMCE6/tiny_mce/langs/",
+    "copy-tinymce6-language": "rm -rf mt-static/plugins/TinyMCE6/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE6/tiny_mce/langs; cp -rf node_modules/tinymce6-i18n/langs6/* mt-static/plugins/TinyMCE6/tiny_mce/langs/",
     "copy-codemirror": "cp -rf node_modules/codemirror/addon node_modules/codemirror/keymap node_modules/codemirror/lib node_modules/codemirror/mode node_modules/codemirror/theme mt-static/codemirror/",
     "copy-js-cookie": "cp -rf node_modules/js-cookie/dist/js.cookie.min.js mt-static/js-cookie/",
     "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && yarn build-riot && yarn build-ss\" && test `git status -s | wc -l` = 0"
@@ -46,7 +46,7 @@
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "devDependencies": {
     "autoprefixer": "^9.8.8",
-    "clean-css-cli": "^5.6.0",
+    "clean-css-cli": "^5.6.2",
     "node-sass": "^8.0.0",
     "postcss-cli": "^7.1.2",
     "postcss-flexbugs-fixes": "^5.0.1"
@@ -63,9 +63,9 @@
     "popper.js": "^1.16.1",
     "riot": "3.7.4",
     "svg4everybody": "^2.1.9",
-    "tinymce": "5.10.2",
+    "tinymce": "5.10.7",
     "tinymce-i18n": "20.12.25",
-    "tinymce6": "npm:tinymce@^6.2.0",
+    "tinymce6": "npm:tinymce@^6.3.1",
     "tinymce6-i18n": "npm:tinymce-i18n@^22.5.2",
     "xpath": "0.0.32"
   }

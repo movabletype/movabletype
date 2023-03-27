@@ -388,7 +388,7 @@ sub build {
             unless $ctx->stash('local_blog_id');
         my $blog = $ctx->stash('blog');
         unless ($blog) {
-            $blog = MT->model('blog')->load($blog_id)
+            $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id)
                 or return $tmpl->error(
                 MT->translate(
                     "Load of blog '[_1]' failed: [_2]", $blog_id,
@@ -599,7 +599,8 @@ sub blog {
     my $this = shift;
     return undef unless $this->blog_id;
     return $this->{__blog} if $this->{__blog};
-    return $this->{__blog} = MT::Blog->load( $this->blog_id );
+    my $blog_id = $this->blog_id;
+    return $this->{__blog} = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id);
 }
 
 sub content_type {

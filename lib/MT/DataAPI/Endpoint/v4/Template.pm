@@ -71,7 +71,7 @@ sub update {
     my $new_tmpl = $app->resource_object( 'template', $orig_tmpl )
         or return;
 
-    save_object( $app, 'template', $new_tmpl )
+    save_object( $app, 'template', $new_tmpl, $orig_tmpl )
         or return;
 
     # Remove autosave object

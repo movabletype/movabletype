@@ -85,7 +85,7 @@ sub column_as_datetime {
     my $blog;
     if ( my $blog_id = $ct->blog_id ) {
         require MT::Blog;
-        $blog = MT::Blog->load($blog_id);
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id);
     }
     require MT::DateTime;
     my $four_digit_offset;
