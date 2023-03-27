@@ -112,10 +112,12 @@ subtest 'entry' => sub {
         'right keys'
     );
 
-    is(keys %MT::ListProperty::CachedListProperties, 0, 'cache is not stored');
+    is(keys %MT::ListProperty::CachedListProperties, 1, 'cache is stored');
 };
 
 subtest 'content_data' => sub {
+    %MT::ListProperty::CachedListProperties = ();
+
     my $app  = MT->instance;
     my $prop = MT::ListProperty->list_properties('content_data.content_data_1');
     is_deeply(
@@ -154,6 +156,8 @@ subtest 'content_data' => sub {
         ],
         'right keys'
     );
+
+    is(keys %MT::ListProperty::CachedListProperties, 1, 'cache is stored');
 };
 
 done_testing;
