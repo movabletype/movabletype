@@ -286,14 +286,14 @@ sub list_properties {
         $CachedListProperties{$cls} = \%props;
     }
 
-    my $ret = $CachedListProperties{$cls};
-    $ret = {
-        map  { $_ => $ret->{$_} }
-        grep { !$ret->{$_}->has('condition') || $ret->{$_}->condition }
-        keys %$ret
-    };
+    my $cache = $CachedListProperties{$cls};
+    my %ret;
+    for my $key (keys %$cache) {
+        next if $cache->{$key}->has('condition') && !$cache->{$key}->condition;
+        $ret{$key} = $cache->{$key};
+    }
 
-    return $ret;
+    return \%ret;
 }
 
 sub can_display {
