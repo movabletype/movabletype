@@ -192,6 +192,9 @@
     this.trigger('refresh_view', { notCallListReady: true });
 
     var self = this;
+    if (refreshCurrentFilter) {
+      self.page = 1;
+    }
 
     this.listClient.filteredList({
       columns: self.getCheckedColumnIds(),
