@@ -1420,9 +1420,9 @@ subtest 'change category of the newly-created entry' => sub {
     my @deleted       = @{ $diff->deleted };
     note explain \@added;
     note explain \@deleted;
-    is @added                     => 4, "4 new files are added";
+    is @added                     => 5, "5 new files are added";
     is grep( /compass/, @added )  => 4, "and all of them belong to the compass category";
-    is @deleted                   => 4, "4 old files are deleted";
+    is @deleted                   => 5, "5 old files are deleted";
     is grep( /eraser/, @deleted ) => 4, "and all of them belong to the eraser category";
     push @delta, @added;
     my %deleted_map = map { $_ => 1 } @deleted;
