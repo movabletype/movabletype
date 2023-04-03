@@ -643,6 +643,9 @@ use_ok('MT::DataAPI::Endpoint::v5::ContentData');
 use_ok('MT::DataAPI::Endpoint::v5::Entry');
 use_ok('MT::DataAPI::Endpoint::v5::TextFilter');
 
+use_ok('MT::DataAPI::Endpoint::v6');
+use_ok('MT::DataAPI::Endpoint::v6::Stats');
+
 use_ok('MT::App::Search::Common');
 
 SKIP: {

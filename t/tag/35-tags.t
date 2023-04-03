@@ -4034,7 +4034,7 @@ mt-data-api.cgi
 --- template
 <mt:DataAPIVersion>
 --- expected
-5
+6
 
 === test 739
 --- template

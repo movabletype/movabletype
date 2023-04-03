@@ -1384,6 +1384,321 @@ sub suite {
             error => qr/offset must be a number./,
         },
 
+        # v6
+        # stats - limit - zero
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { limit => 0, },
+            code   => 500,
+            error =>
+                qr/limit must be an integer and between 1 and 2147483647./,
+        },
+
+        # stats - offset - zero
+        {   path     => '/v6/sites/1/stats/path/pageviews',
+            method   => 'GET',
+            params   => { offset => 0, },
+            code     => 200,
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+
+                my $fileinfo
+                    = $app->model('fileinfo')
+                    ->load( { blog_id => $app->blog->id }, { limit => 1 } );
+
+                my $items = $result->{items}[0];
+                is( $items->{entry}{id},
+                    $fileinfo->entry_id, 'stats - offset - zero - entry' );
+                is( $items->{path}, $fileinfo->url,
+                    'stats - offset - zero - path' );
+                is( $items->{category}, $fileinfo->category_id,
+                    'stats - offset - zero - category' );
+                is( $items->{author}, $fileinfo->author_id,
+                    'stats - offset - zero - author' );
+                is( $items->{archiveType}, $fileinfo->archive_type,
+                    'stats - offset - zero - archiveType' );
+                is( $items->{startDate}, $fileinfo->startdate,
+                    'stats - offset - zero - startDate' );
+            },
+        },
+
+        # stats - limit - one
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { limit => 1, },
+            code   => 200,
+            result => +{
+                'items' => [
+                    {   'entry' => { 'id' => '23' },
+                        'path'        => '/nana/download/nightly/page-3.html',
+                        'category'    => undef,
+                        'author'      => undef,
+                        'archiveType' => 'Page',
+                        'startDate'   => undef
+                    }
+                ]
+            },
+        },
+
+        # stats - offset - one
+        {   path     => '/v6/sites/1/stats/path/pageviews',
+            method   => 'GET',
+            params   => { offset => 0, },
+            code     => 200,
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+
+                my $fileinfo
+                    = $app->model('fileinfo')
+                    ->load( { blog_id => $app->blog->id }, { limit => 1 } );
+
+                my $items = $result->{items}[0];
+                is( $items->{entry}{id},
+                    $fileinfo->entry_id, 'stats - offset - zero - entry' );
+                is( $items->{path}, $fileinfo->url,
+                    'stats - offset - zero - path' );
+                is( $items->{category}, $fileinfo->category_id,
+                    'stats - offset - zero - category' );
+                is( $items->{author}, $fileinfo->author_id,
+                    'stats - offset - zero - author' );
+                is( $items->{archiveType}, $fileinfo->archive_type,
+                    'stats - offset - zero - archiveType' );
+                is( $items->{startDate}, $fileinfo->startdate,
+                    'stats - offset - zero - startDate' );
+            },
+        },
+
+        # stats - limit - '1'*100
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { limit => REPEAT_1, },
+            code   => 500,
+            error =>
+                qr/limit must be an integer and between 1 and 2147483647./,
+        },
+
+        # stats - offset - '1'*100
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { offset => REPEAT_1, },
+            code   => 500,
+            error =>
+                qr/offset must be an integer and between 0 and 2147483647./,
+        },
+
+        # stats - limit - '0-9'*10
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { limit => CYCLE_0_9, },
+            code   => 500,
+            error =>
+                qr/limit must be an integer and between 1 and 2147483647./,
+        },
+
+        # stats - offset - '0-9'*10
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { offset => CYCLE_0_9, },
+            code   => 500,
+            error =>
+                qr/offset must be an integer and between 0 and 2147483647./,
+        },
+
+        # stats - limit - Int32 Min
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { limit => INT32_MIN, },
+            code   => 500,
+            error  => qr/limit must be a number./,
+        },
+
+        # stats - offset - Int32 Min
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { offset => INT32_MIN, },
+            code   => 500,
+            error  => qr/offset must be a number./,
+        },
+
+        # stats - limit - Int32 Max
+        {   path     => '/v6/sites/1/stats/path/pageviews',
+            method   => 'GET',
+            params   => { limit => INT32_MAX, },
+            code     => 200,
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+
+                my $fileinfo
+                    = $app->model('fileinfo')
+                    ->load( { blog_id => $app->blog->id }, { limit => 1 } );
+
+                my $items = $result->{items}[0];
+                is( $items->{entry}{id},
+                    $fileinfo->entry_id, 'stats - offset - zero - entry' );
+                is( $items->{path}, $fileinfo->url,
+                    'stats - offset - zero - path' );
+                is( $items->{category}, $fileinfo->category_id,
+                    'stats - offset - zero - category' );
+                is( $items->{author}, $fileinfo->author_id,
+                    'stats - offset - zero - author' );
+                is( $items->{archiveType}, $fileinfo->archive_type,
+                    'stats - offset - zero - archiveType' );
+                is( $items->{startDate}, $fileinfo->startdate,
+                    'stats - offset - zero - startDate' );
+            },
+        },
+
+        # stats - offset - Int32 Max
+        {   path     => '/v6/sites/1/stats/path/pageviews',
+            method   => 'GET',
+            params   => { offset => INT32_MAX, },
+            code     => 200,
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+
+                my $fileinfo
+                    = $app->model('fileinfo')
+                    ->load( { blog_id => $app->blog->id }, { limit => 1 } );
+
+                my $items = $result->{items}[0];
+                is( $items->{entry}{id},
+                    $fileinfo->entry_id, 'stats - offset - zero - entry' );
+                is( $items->{path}, $fileinfo->url,
+                    'stats - offset - zero - path' );
+                is( $items->{category}, $fileinfo->category_id,
+                    'stats - offset - zero - category' );
+                is( $items->{author}, $fileinfo->author_id,
+                    'stats - offset - zero - author' );
+                is( $items->{archiveType}, $fileinfo->archive_type,
+                    'stats - offset - zero - archiveType' );
+                is( $items->{startDate}, $fileinfo->startdate,
+                    'stats - offset - zero - startDate' );
+            },
+        },
+
+        # stats - limit - Int64 Min
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { limit => INT64_MIN, },
+            code   => 500,
+            error  => qr/limit must be a number./,
+        },
+
+        # stats - offset - Int64 Min
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { offset => INT64_MIN, },
+            code   => 500,
+            error  => qr/offset must be a number./,
+        },
+
+        # stats - limit - Int64 Max
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { limit => INT64_MAX, },
+            code   => 500,
+            error =>
+                qr/limit must be an integer and between 1 and 2147483647./,
+        },
+
+        # stats - offset - Int64 Max
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { offset => INT64_MAX, },
+            code   => 500,
+            error =>
+                qr/offset must be an integer and between 0 and 2147483647./,
+        },
+
+        # stats - limit - Decimal
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { limit => 0.6, },
+            code   => 500,
+            error  => qr/limit must be a number./,
+        },
+
+        # stats - offset - Decimal
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { offset => 0.6, },
+            code   => 500,
+            error  => qr/offset must be a number./,
+        },
+
+        # stats - limit - index
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { limit => '0e0', },
+            code   => 500,
+            error  => qr/limit must be a number./,
+        },
+
+        # stats - offset - index
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { offset => '0e0', },
+            code   => 500,
+            error  => qr/offset must be a number./,
+        },
+
+        # stats - limit - Infinity
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { limit => 'inf', },
+            code   => 500,
+            error  => qr/limit must be a number./,
+        },
+
+        # stats - offset - Infinity
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { offset => 'inf', },
+            code   => 500,
+            error  => qr/offset must be a number./,
+        },
+
+        # stats - limit - ascii only
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { limit => 'a', },
+            code   => 500,
+            error  => qr/limit must be a number./,
+        },
+
+        # stats - offset - ascii only
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => { offset => 'a', },
+            code   => 500,
+            error  => qr/offset must be a number./,
+        },
+
+        # stats - limit - ascii and symbol
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => {
+                limit =>
+                    'oprew2347954oirq\'lfad[dsf[d;\dsf\'ermroitru434rosdf|||\\\'',
+            },
+            code  => 500,
+            error => qr/limit must be a number./,
+        },
+
+        # stats - offset - ascii and symbol
+        {   path   => '/v6/sites/1/stats/path/pageviews',
+            method => 'GET',
+            params => {
+                offset => '87934789jfjksdhakjlfdsaljkdsfa89]][[\\ncnlkjashdf',
+            },
+            code  => 500,
+            error => qr/offset must be a number./,
+        },
+
     ];
 }
 
