@@ -14,6 +14,8 @@ use MT::Test 'has_php';
 use MT::I18N;
 use MT::Test::PHP;
 use File::Spec;
+use Socket;
+use Test::TCP;
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
@@ -163,8 +165,8 @@ SKIP: {
                 my $log = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} ||
                           File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
                 my $block_name = $block->name || $block->seq_num;
-                my $php_script = php_test_script( $block_name, $block->blog_id || $blog_id, $template, $text, $log, $extra );
-                my $got = Encode::decode_utf8(MT::Test::PHP->run($php_script));
+                $ENV{REQUEST_URI} = "$0 [$block_name]";
+                my $got = Encode::decode_utf8(_php_daemon($template, $block->blog_id || $blog_id, $extra, $log));
 
                 my $php_error = '';
                 if (open(my $fh, '<', $log)) {
@@ -240,71 +242,46 @@ sub MT::Test::Tag::_filter_vars {
     $str;
 }
 
-sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
-    my ( $block_name, $blog_id, $template, $text, $log, $extra ) = @_;
-    $text ||= '';
+my $PHP_DAEMON;
 
-    $ENV{REQUEST_URI} = "$0 [$block_name]";
+sub MT::Test::Tag::_php_daemon {
+    my ($template, $blog_id, $extra, $log) = @_;
 
-    $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
-    $template =~ s/\$/\\\$/g;
+    $PHP_DAEMON ||= Test::TCP->new(
+        code => sub {
+            my $port    = shift;
+            my $command = MT::Test::PHP::_make_php_ini();
+            my $config  = MT->instance->find_config;
+            my @opts    = (
+                $ENV{MT_HOME} . '/t/lib/MT/Test/Tag/daemon.php',
+                '--port', $port,
+                '--mt_home', ($ENV{MT_HOME} ? $ENV{MT_HOME} : '.'),
+                '--mt_config', $config,
+                '--init_blog_id', $blog_id,
+                $log ? ('--log', $log) : (),
+            );
+            exec join(' ', @$command, @opts);
+        });
 
-    my $test_script = <<PHP;
-<?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
-\$MT_CONFIG = '@{[ MT->instance->find_config ]}';
-\$blog_id   = '$blog_id';
-\$log = '$log';
-\$tmpl = <<<__TMPL__
-$template
-__TMPL__
-;
-\$text = <<<__TMPL__
-$text
-__TMPL__
-;
-PHP
-    $test_script .= <<'PHP';
-include_once($MT_HOME . '/php/mt.php');
-include_once($MT_HOME . '/php/lib/MTUtil.php');
+    socket(my $sock, PF_INET, SOCK_STREAM, getprotobyname('tcp')) or die "Cannot create socket: $!";
+    my $port = $PHP_DAEMON->port;
+    my $packed_remote_host = inet_aton('127.0.0.1');
+    my $sock_addr          = sockaddr_in($port, $packed_remote_host);
+    connect($sock, $sock_addr) or die "Cannot connect to 127.0.0.1:$port: $!";
 
-$mt = MT::get_instance($blog_id, $MT_CONFIG);
-$mt->config('PHPErrorLogFilePath', $log);
+    my $old_handle = select $sock;
+    $| = 1;
+    select $old_handle;
+    require JSON;
+    print $sock JSON::to_json([$blog_id, $template, $extra]);
+    shutdown $sock, 1;
+    my $result = do { local $/; <$sock> };
+    close $sock;
 
-$mt->init_plugins();
+    $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+    Encode::decode_utf8($result);
 
-$db = $mt->db();
-$db->execute("SET time_zone = '+00:00'");
-$ctx =& $mt->context();
-
-$ctx->stash('index_archive', true);
-
-$ctx->stash('blog_id', $blog_id);
-$ctx->stash('local_blog_id', $blog_id);
-
-$blog = $db->fetch_blog($blog_id);
-$ctx->stash('blog', $blog);
-PHP
-
-    $test_script .= $extra if $extra;
-
-    $test_script .= <<'PHP';
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
-    if ($error_no & E_USER_ERROR) {
-        print($error_msg."\n");
-    } else {
-        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
-    }
-});
-
-if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    echo $_var_compiled;
-} else {
-    print('Error compiling template module.');
-}
-
-?>
-PHP
+    return $result;
 }
 
 sub _update_config {
