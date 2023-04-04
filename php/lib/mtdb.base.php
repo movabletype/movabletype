@@ -5448,8 +5448,9 @@ abstract class MTDatabase {
 
     public function content_link($cid, $at = "ContentType", $args = null) {
         $cid = intval($cid);
-        if (isset($this->_content_link_cache[$cid.';'.$at])) {
-            $url = $this->_content_link_cache[$cid.';'.$at];
+        $cache_id = $cid.';'.$at. ';'. (!empty($args['with_index']) ? 1 : 0);
+        if (isset($this->_content_link_cache[$cache_id])) {
+            $url = $this->_content_link_cache[$cache_id];
         } else {
             $extras['join'] = array(
                 'mt_templatemap' => array(
@@ -5519,7 +5520,7 @@ abstract class MTDatabase {
             if(!isset($args['with_index']) || !$args['with_index'] ){
                 $url = _strip_index($url, $blog);
             }
-            $this->_content_link_cache[$cid.';'.$at] = $url;
+            $this->_content_link_cache[$cache_id] = $url;
         }
 
         if ( $at != 'ContentType' && (!$args || !isset($args['no_anchor'])) ) {
