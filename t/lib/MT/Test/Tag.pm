@@ -250,7 +250,7 @@ sub MT::Test::Tag::_php_daemon {
     $PHP_DAEMON ||= Test::TCP->new(
         code => sub {
             my $port    = shift;
-            my $command = MT::Test::PHP::_make_php_ini();
+            my $command = MT::Test::PHP::_make_php_command();
             my $config  = MT->instance->find_config;
             my @opts    = (
                 $ENV{MT_HOME} . '/t/lib/MT/Test/Tag/daemon.php',

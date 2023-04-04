@@ -40,7 +40,7 @@ sub _find_smarty_version {
 
 sub run {
     my ( $class, $script, $stderr ) = @_;
-    my $command = _make_php_ini();
+    my $command = _make_php_command();
     IPC::Run3::run3 $command, \$script, \my $result, $stderr, { binmode_stdin => 1 } or die $?;
     $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
     Encode::decode_utf8($result);
@@ -60,7 +60,7 @@ sub supports_memcached {
 
 my ($INI_FILE, $command);
 
-sub _make_php_ini {
+sub _make_php_command {
     return $command if $INI_FILE;
 
     my $dir = $ENV{MT_TEST_ROOT} || '.';
