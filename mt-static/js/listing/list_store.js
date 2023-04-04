@@ -132,6 +132,7 @@
       this.updateIsLoading(true);
       this.trigger('refresh_view');
 
+      self.page = 1;
       this.listClient.deleteFilter({
         changed: true,
         id: filterId,
