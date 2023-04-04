@@ -32,6 +32,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '_USER_DISABLED'           => 'Disabled',
     '_USER_PENDING'            => 'Pending',
     '_USER_STATUS_CAPTION'     => 'Status',
+    '_external_link_target'    => '_blank',
     '_BLOG_CONFIG_MODE_BASIC'  => 'Basic Mode',
     '_BLOG_CONFIG_MODE_DETAIL' => 'Detailed Mode',
     '_SEARCH_SIDEBAR'          => 'Search',

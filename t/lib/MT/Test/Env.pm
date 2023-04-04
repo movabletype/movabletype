@@ -1200,6 +1200,7 @@ sub _tweak_schema {
     my $schema = shift;
     $schema =~ s/^\-\- Created on .+$//m;
     $schema =~ s/NULL DEFAULT NULL/NULL/g;    ## mariadb 10.2.1+
+    $schema =~ s/\s+COLLATE utf8_\w+_ci//g;   ## for now; better to specify collation explicitly
     $schema;
 }
 

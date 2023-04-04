@@ -164,6 +164,7 @@ sub import_contents {
         $code = $importer->{code} = MT->handler_to_coderef($code);
     }
     if ($code) {
+        $importer->{type}->clear_error;
         if ( not $iter ) {
             $importer->{type}->error( $self->errstr );
             return;
