@@ -107,8 +107,7 @@ function _catx_load_categories(&$ctx, $cat, $class, $args) {
         $sort_by = $ctx_sort_by;
     }
 
-    $category_set = $ctx->stash('category_set');
-    $category_set_id = isset($category_set) ? $category_set->id : 0;
+    $category_set_id = $cat->category_category_set_id;
     $cache_key = "__cat_cache_${class}_${blog_id}_$parent:$sort_by:$category_set_id";
 
     $cats = $ctx->stash($cache_key);
@@ -119,7 +118,7 @@ function _catx_load_categories(&$ctx, $cat, $class, $args) {
         $cats = $ctx->mt->db()->fetch_categories(array(
             'blog_id' => $blog_id,
             'parent' => $parent,
-            'category_set_id' => $cat->category_category_set_id,
+            'category_set_id' => $category_set_id,
             'show_empty' => 1,
             'class' => $class,
             'sort_order' => $sort_order,
