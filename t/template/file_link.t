@@ -14,21 +14,18 @@ BEGIN {
 
 use MT;
 use MT::Blog;
-use MT::Entry;
 use MT::Template;
 use MT::Test;
 use MT::Test::App;
 use Path::Tiny;
 my $linked_file = Path::Tiny::path($test_env->path('linked_file'));
 
-my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
-
 $test_env->prepare_fixture('db');
 
 my $mt = MT->new or die MT->errstr;
 
 my $blog = MT::Blog->load(1);
-$blog->site_path("$test_root/site/");
+$blog->site_path($test_env->path('site'). '/');
 $blog->save;
 
 my $tmpl = MT::Template->new;
