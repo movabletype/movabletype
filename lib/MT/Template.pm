@@ -654,7 +654,7 @@ sub text {
 
     $tmpl->needs_db_sync(0);
     unless (@_) {
-        if ( $tmpl->linked_file ) {
+        if ( $tmpl->linked_file && !$tmpl->is_changed('text')) {
             if ( my $res = $tmpl->_sync_from_disk ) {
                 $text = $res;
                 $tmpl->column( 'text', $text );
