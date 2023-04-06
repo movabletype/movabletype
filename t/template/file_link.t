@@ -40,21 +40,11 @@ my $tmpl_id = $tmpl->id;
 
 my $admin = MT::Author->load(1);
 
-my %common_params = (
-    __mode        => 'save',
-    _type         => 'template',
-    id            => $tmpl_id,
-    blog_id       => $blog->id,
-    name          => 'mytemplate',
-    type          => 'index',
-    rebuild       => '',
-    save_revision => '1',
-);
-
 subtest 'basic' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->post_ok({ %common_params, text => 'testA' });
+    $app->get_ok({ __mode => 'view', _type => 'template', blog_id => $blog->id, type => 'index', id => $tmpl_id });
+    $app->post_form_ok('template-listing-form', { text => 'testA' });
     my $tmpl = MT::Template->load($tmpl_id);
     is($tmpl->column('text'), 'testA', 'right db value');
     is(linked_file(),         "testA", "right text");
@@ -71,7 +61,8 @@ subtest 'file modified before save' => sub {
 
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->post_ok({ %common_params, text => 'testC' });
+    $app->get_ok({ __mode => 'view', _type => 'template', blog_id => $blog->id, type => 'index', id => $tmpl_id });
+    $app->post_form_ok('template-listing-form', { text => 'testC' });
     my $tmpl = MT::Template->load($tmpl_id);
     is($tmpl->column('text'), 'testC', 'right db value');
     is(linked_file(),         "testC", "right text");
@@ -82,7 +73,8 @@ subtest 'file modified before save and rebuild (MTC-28852)' => sub {
 
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->post_ok({ %common_params, text => 'testE', rebuild => 'Y' });
+    $app->get_ok({ __mode => 'view', _type => 'template', blog_id => $blog->id, type => 'index', id => $tmpl_id });
+    $app->post_form_ok('template-listing-form', { text => 'testE', rebuild => 'Y' });
     my $tmpl = MT::Template->load($tmpl_id);
     is($tmpl->column('text'), 'testE', 'right db value');
     is(linked_file(),         "testE", "right text");
