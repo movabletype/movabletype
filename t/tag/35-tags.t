@@ -5020,3 +5020,15 @@ test.jpg
 <MTEntries lastn="1"><MTEntryModifiedAuthorUserpicURL></MTEntries>
 --- expected
 /mt-static/support/assets_c/userpics/userpic-6-100x100.png
+
+=== test no localvar bugs in MTAuthorNext (MTC-28842)
+--- template
+<MTAuthors lastn="1"><MTAuthorNext></MTAuthorNext></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
+--- expected
+[]
+
+=== test no localvar bugs in MTAuthorPrevious (MTC-28842)
+--- template
+<MTAuthors lastn="1"><MTAuthorPrevious></MTAuthorPrevious></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
+--- expected
+[]
