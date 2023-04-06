@@ -809,7 +809,7 @@ sub _sync_to_disk {
     }
     else {
         my ($vol, $dir) = File::Spec->splitpath($lfile);
-        $dir = File::Spec->catpath($vol, $dir);
+        $dir = File::Spec->catpath($vol, $dir, '');
         unless (-d $dir) {
             require File::Path;
             eval { File::Path::mkpath($dir) } or return $tmpl->error(
