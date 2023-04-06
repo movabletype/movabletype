@@ -11,11 +11,7 @@ function smarty_block_mtentryprimarycategory($args, $content, &$ctx, &$repeat) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');
         $cat = $entry->category();
-        if ( empty( $cat ) ) { 
-            $repeat = false;
-            $ctx->restore($localvars);
-            return ''; 
-        }
+        if ( empty( $cat ) ) { $repeat = false; return ''; }
         $ctx->stash('category', $cat);
     } else {
         $ctx->restore($localvars);
