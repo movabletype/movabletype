@@ -18,6 +18,8 @@ use MT::Entry;
 use MT::Template;
 use MT::Test;
 use MT::Test::App;
+use Path::Tiny;
+my $linked_file = Path::Tiny::path($test_env->path('linked_file'));
 
 my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
 
@@ -34,7 +36,7 @@ $tmpl->blog_id($blog->id);
 $tmpl->name('mytemplate');
 $tmpl->text('test');
 $tmpl->type('index');
-$tmpl->linked_file('file_link_test');
+$tmpl->linked_file($linked_file);
 $tmpl->save;
 my $tmpl_id = $tmpl->id;
 
@@ -47,11 +49,11 @@ subtest 'basic' => sub {
     $app->post_form_ok('template-listing-form', { text => 'testA' });
     my $tmpl = MT::Template->load($tmpl_id);
     is($tmpl->column('text'), 'testA', 'right db value');
-    is(linked_file(),         "testA", "right text");
+    is($linked_file->slurp,   "testA", "right text");
 };
 
 subtest 'file modified before save' => sub {
-    linked_file('testB');
+    $linked_file->spew('testB');
 
     subtest 'file modification reflected' => sub {
         my $tmpl = MT::Template->load($tmpl_id);
@@ -65,11 +67,11 @@ subtest 'file modified before save' => sub {
     $app->post_form_ok('template-listing-form', { text => 'testC' });
     my $tmpl = MT::Template->load($tmpl_id);
     is($tmpl->column('text'), 'testC', 'right db value');
-    is(linked_file(),         "testC", "right text");
+    is($linked_file->slurp,   "testC", "right text");
 };
 
 subtest 'file modified before save and rebuild (MTC-28852)' => sub {
-    linked_file('testD');
+    $linked_file->spew('testD');
 
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
@@ -77,20 +79,7 @@ subtest 'file modified before save and rebuild (MTC-28852)' => sub {
     $app->post_form_ok('template-listing-form', { text => 'testE', rebuild => 'Y' });
     my $tmpl = MT::Template->load($tmpl_id);
     is($tmpl->column('text'), 'testE', 'right db value');
-    is(linked_file(),         "testE", "right text");
+    is($linked_file->slurp,   "testE", "right text");
 };
 
 done_testing;
-
-sub linked_file {
-    my $new_text = shift;
-    if (defined $new_text) {
-        open my $fh, '>', "$test_root/site/file_link_test" or die 'failed to open';
-        print $fh $new_text;
-        return $new_text;
-    } else {
-        open my $fh, '<', "$test_root/site/file_link_test" or die 'failed to open';
-        local $/;
-        return <$fh>;
-    }
-}
