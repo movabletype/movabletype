@@ -36,7 +36,6 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
         $cats = _catx_load_categories($ctx, $cat, $class, $args);
         if ($cats == null) {
             $repeat = false;
-            $ctx->localize($localvars);
             return $content;
         }
         $idx = 0;

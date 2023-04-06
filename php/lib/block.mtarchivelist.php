@@ -43,7 +43,6 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
         }
         if (preg_match('/^ContentType/', $at) && !$ctx->stash('content_type')) {
             $repeat = false;
-            $ctx->restore($localvars);
             return $ctx->error(
                 $ctx->mt->translate('No Content Type could be found.')
             );
