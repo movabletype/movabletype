@@ -62,25 +62,7 @@ sub new {
 
     $self->write_config(\%extra_config);
 
-    if ($ENV{MT_TEST_QUERY_LOG}) {
-        require DBIx::QueryLog;
-        DBIx::QueryLog->compact(1);
-        if (my $color = $ENV{MT_TEST_QUERY_LOG_COLOR}) {
-            require Term::ANSIColor;
-            $DBIx::QueryLog::OUTPUT = sub {
-                my %param = @_;
-                (my $sql = $param{sql}) =~ s/[[:^print:]]/ /gs;
-                diag "[$param{time}] " . Term::ANSIColor::colored([$color], $sql);
-            };
-        } else {
-            $DBIx::QueryLog::OUTPUT = sub {
-                my %param = @_;
-                (my $sql = $param{sql}) =~ s/[[:^print:]]/ /gs;
-                diag "[$param{time}] $sql";
-            };
-        }
-        DBIx::QueryLog->enable if $ENV{MT_TEST_QUERY_LOG} > 4;
-    }
+    $self->enable_query_log if $ENV{MT_TEST_QUERY_LOG} && $ENV{MT_TEST_QUERY_LOG} > 4;
 
     $self;
 }
@@ -850,7 +832,7 @@ sub prepare_fixture {
 
     $self->cluck_errors if $ENV{MT_TEST_CLUCK_ERRORS};
 
-    DBIx::QueryLog->enable if $ENV{MT_TEST_QUERY_LOG} && $ENV{MT_TEST_QUERY_LOG} > 1;
+    $self->enable_query_log if $ENV{MT_TEST_QUERY_LOG};
 }
 
 sub slurp {
@@ -1436,6 +1418,41 @@ sub slurp_logfile {
     open my $fh, '<', $logfile or die $!;
     local $/;
     <$fh>;
+}
+
+sub enable_query_log {
+    my $self = shift;
+    require DBIx::QueryLog;
+    return if DBIx::QueryLog->is_enabled;
+    $DBIx::QueryLog::SKIP_PKG_MAP{$_} = 1 for qw(
+        MT::Object
+        MT::ObjectDriver::Driver::DBI
+        Data::ObjectDriver::Driver::DBI
+        Data::ObjectDriver::Driver::BaseCache
+        Data::ObjectDriver::BaseObject
+    );
+    DBIx::QueryLog->compact(1);
+    if (my $color = $ENV{MT_TEST_QUERY_LOG_COLOR}) {
+        require Term::ANSIColor;
+        $DBIx::QueryLog::OUTPUT = sub {
+            my %param = @_;
+            (my $sql = $param{sql}) =~ s/[[:cntrl:]]/ /gs;
+            $sql = Term::ANSIColor::colored([$color], $sql);
+            diag sprintf "[%s] %s at %s line %s", $param{time}, $sql, $param{file}, $param{line};
+        };
+    } else {
+        $DBIx::QueryLog::OUTPUT = sub {
+            my %param = @_;
+            (my $sql = $param{sql}) =~ s/[[:cntrl:]]/ /gs;
+            diag sprintf "[%s] %s at %s line %s", $param{time}, $sql, $param{file}, $param{line};
+        };
+    }
+    DBIx::QueryLog->enable;
+}
+
+sub disable_query_log {
+    my $self = shift;
+    DBIx::QueryLog->disable;
 }
 
 sub DESTROY {
