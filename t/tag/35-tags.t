@@ -5021,7 +5021,7 @@ test.jpg
 --- expected
 /mt-static/support/assets_c/userpics/userpic-6-100x100.png
 
-=== test 902 cache test combining tests of 199, 200, 536 and 537 (MTC-28841)
+=== test 903 cache test combining tests of 199, 200, 536 and 537 (MTC-28841)
 --- template
 <MTCategories show_empty="1" glue=","><MTCategoryLabel>-<MTCategoryNext show_empty="1"><MTCategoryLabel></MTCategoryNext></MTCategories>
 <MTCategories show_empty="1" glue=","><MTCategoryLabel>-<MTCategoryPrevious show_empty="1"><MTCategoryLabel></MTCategoryPrevious></MTCategories>
