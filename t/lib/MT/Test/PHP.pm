@@ -61,7 +61,7 @@ sub supports_memcached {
 my ($INI_FILE, $command);
 
 sub _make_php_command {
-    return $command if $INI_FILE;
+    return $command if $command;
 
     my $dir = $ENV{MT_TEST_ROOT} || '.';
     ( my $fh, $INI_FILE ) = tempfile(
