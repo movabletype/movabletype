@@ -98,6 +98,8 @@ sub dbh_handle {
             }
             else {
                 for my $dr (@MT::ObjectDriverFactory::drivers) {
+                    my $h = $dr->dbh;
+                    $h->disconnect if $h;
                     $dr->dbh(undef);
                 }
                 $dbh = undef;
