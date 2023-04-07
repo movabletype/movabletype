@@ -5023,12 +5023,12 @@ test.jpg
 
 === test no localvar bugs in MTAuthorNext (MTC-28842)
 --- template
-<MTAuthors lastn="1"><MTAuthorNext></MTAuthorNext></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
+<MTAuthors><MTAuthorNext></MTAuthorNext></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
 --- expected
 []
 
 === test no localvar bugs in MTAuthorPrevious (MTC-28842)
 --- template
-<MTAuthors lastn="1"><MTAuthorPrevious></MTAuthorPrevious></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
+<MTAuthors><MTAuthorPrevious></MTAuthorPrevious></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
 --- expected
 []
