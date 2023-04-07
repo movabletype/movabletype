@@ -91,8 +91,4 @@ INI
     return $command;
 }
 
-sub END {
-    unlink $INI_FILE if $INI_FILE;
-}
-
 1;
