@@ -15,6 +15,7 @@ $mt = MT::get_instance($opts['init_blog_id'], $opts['mt_config']);
 $mt->config('PHPErrorLogFilePath', $opts['log'] ?? null);
 $mt->init_plugins();
 $db = $mt->db();
+$db->execute("SET time_zone = '+00:00'");
 $ctx = $mt->context();
 
 set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
