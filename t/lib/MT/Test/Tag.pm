@@ -160,6 +160,12 @@ SKIP: {
                 $template    = Encode::encode_utf8( $template ) if Encode::is_utf8( $template );
                 my $text     = $block->text || '';
                 my $extra    = $callback ? $callback->($block) : '';
+                $extra = <<"PHP". $extra;
+\$text = <<<__TMPL__
+$text
+__TMPL__
+;
+PHP
 
                 require MT::Util::UniqueID;
                 my $log = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} ||
