@@ -173,6 +173,7 @@ sub list_props {
                             }
 
                             $params{thumbnail_url} = $thumbnail_url;
+                            $params{thumb_size}    = $thumb_size;
 
                             if ($thumbnail_width && $thumbnail_height) {
                                 $params{use_thumbnail_offset}    = 1;
