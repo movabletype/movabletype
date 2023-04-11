@@ -3344,7 +3344,7 @@ sub print_status_page {
 
     $app->print_encode( $app->build_page('layout/modal/header.tmpl') );
 
-    my $status_header = $app->load_templ(
+    my $status_header = $app->load_tmpl(
         'cms/include/status_page_header.tmpl', { blog_name_encode => $blog_name_encode })->output();
     $app->print_encode( $status_header );
 
