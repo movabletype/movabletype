@@ -115,6 +115,7 @@ sub list_props {
                     my %params = (
                         created_on => $created_on,
                         class_type => $class_type,
+                        svg_type   => $svg_type,
                         edit_link  => $edit_link,
                         label      => $label,
                         is_userpic => $is_userpic{ $obj->id },
@@ -172,6 +173,7 @@ sub list_props {
                             }
 
                             $params{thumbnail_url} = $thumbnail_url;
+                            $params{thumb_size}    = $thumb_size;
 
                             if ($thumbnail_width && $thumbnail_height) {
                                 $params{use_thumbnail_offset}    = 1;
