@@ -714,8 +714,12 @@
         prefsComments = document.getElementById('clone-prefs-comments'),
         prefsCategories = document.getElementById('clone-prefs-categories'),
         prefsTrackbacks = document.getElementById('clone-prefs-trackbacks');
-    prefsComments.disabled = false;
-    prefsTrackbacks.disabled = false;
+    if (prefsComments) {
+      prefsComments.disabled = false;
+    }
+    if (prefsTrackbacks) {
+      prefsTrackbacks.disabled = false;
+    }
   }
 
   <mt:Ignore>
