@@ -3346,7 +3346,7 @@ sub print_status_page {
 
     my $status_header = $app->load_tmpl(
         'cms/include/status_page_header.tmpl', { blog_name_encode => $blog_name_encode })->output();
-    $app->print_encode( $status_header );
+    $app->print_encode( $app->translate_templatized($status_header) );
 
     my $new_blog;
     eval {
