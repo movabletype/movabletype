@@ -229,10 +229,11 @@ sub build_log_table {
                     $blog = $blogs{ $log->blog_id }
                         ||= $blog_class->load( $log->blog_id,
                         { cache_ok => 1 } );
-                    $row->{weblog_name} = $blog ? $blog->name : '';
+                    $row->{weblog_name}
+                        = $blog ? $blog->name : MT->translate('*Website/Blog deleted*');
                 }
                 else {
-                    $row->{weblog_name} = '';
+                    $row->{weblog_name} = MT->translate('(system)');
                 }
             }
             $row->{created_on_relative} = relative_date( $ts, time );
