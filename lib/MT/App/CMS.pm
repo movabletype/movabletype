@@ -291,16 +291,17 @@ sub core_methods {
             "${pkg}Template::publish_templates_from_search",
 
         ## Dialogs
-        'dialog_restore_upload'    => "${pkg}Tools::dialog_restore_upload",
-        'dialog_adjust_sitepath'   => "${pkg}Tools::dialog_adjust_sitepath",
-        'dialog_select_weblog'     => "${pkg}Blog::dialog_select_weblog",
-        'dialog_select_website'    => "${pkg}Website::dialog_select_website",
-        'dialog_select_sysadmin'   => "${pkg}User::dialog_select_sysadmin",
-        'dialog_grant_role'        => "${pkg}User::dialog_grant_role",
-        'dialog_select_assoc_type' => "${pkg}User::dialog_select_assoc_type",
-        'dialog_select_author'     => "${pkg}User::dialog_select_author",
-        'dialog_list_asset'        => "${pkg}Asset::dialog_list_asset",
-        'dialog_edit_image'        => "${pkg}Asset::dialog_edit_image",
+        'dialog_restore_upload'      => "${pkg}Tools::dialog_restore_upload",
+        'dialog_adjust_sitepath'     => "${pkg}Tools::dialog_adjust_sitepath",
+        'dialog_select_weblog'       => "${pkg}Blog::dialog_select_weblog",
+        'dialog_select_website'      => "${pkg}Website::dialog_select_website",
+        'dialog_select_sysadmin'     => "${pkg}User::dialog_select_sysadmin",
+        'dialog_grant_role'          => "${pkg}User::dialog_grant_role",
+        'dialog_select_assoc_type'   => "${pkg}User::dialog_select_assoc_type",
+        'dialog_select_author'       => "${pkg}User::dialog_select_author",
+        'dialog_list_asset'          => "${pkg}Asset::dialog_list_asset",
+        'dialog_edit_image'          => "${pkg}Asset::dialog_edit_image",
+        'dialog_list_deprecated_log' => "${pkg}Log::dialog_list_deprecated_log",
 
         'thumbnail_image' =>
             "${pkg}Asset::thumbnail_image",    # Used in Edit Image dialog.

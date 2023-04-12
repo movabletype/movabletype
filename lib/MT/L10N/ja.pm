@@ -3877,6 +3877,7 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to enable this plugin?' => 'プラグインを有効にしますか?',
 	'Are you sure you want to reset the settings for this plugin?' => 'このプラグインの設定を元に戻しますか?',
 	'Author of [_1]' => '作成者',
+	'Deprecated warning.' => '削除予定のコードの利用',
 	'Disable Plugins' => 'プラグインを利用しない',
 	'Disable plugin functionality' => 'プラグインの機能を無効化する',
 	'Documentation for [_1]' => '[_1]のドキュメント',
