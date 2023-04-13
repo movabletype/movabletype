@@ -82,8 +82,16 @@ class ADODB_pdo extends ADOConnection {
 	var $_errormsg = false;
 	var $_errorno = false;
 
-	var $stmt = false;
+	var $_stmt = false;
+
+	/** @var ADODB_pdo_base */
 	var $_driver;
+
+	/** @var PDO */
+	var $_connectionID;
+
+	/** @var PDOStatement */
+	var $_queryID;
 
 	/*
 	* Describe parameters passed directly to the PDO driver
@@ -150,9 +158,6 @@ class ADODB_pdo extends ADOConnection {
 				default:
 					$argDSN .= ';dbname='.$argDatabasename;
 			}
-		}
-		if ( $this->port ) {
-			$argDSN .= ';port=' . $this->port;
 		}
 		/*
 		* Configure for persistent connection if required,
@@ -237,7 +242,7 @@ class ADODB_pdo extends ADOConnection {
 			return call_user_func_array(array($this->_driver, 'Concat'), $args);
 		}
 
-		return call_user_func_array('parent::Concat', $args);
+		return call_user_func_array(parent::class . '::Concat', $args);
 	}
 
 	/**
@@ -257,7 +262,7 @@ class ADODB_pdo extends ADOConnection {
 		}
 
 		// No driver specific method defined, use mysql format '?'
-		return call_user_func_array('parent::param', $args);
+		return call_user_func_array(parent::class . '::param', $args);
 	}
 
 	// returns true or false
@@ -664,6 +669,9 @@ class ADODB_pdo extends ADOConnection {
 
 }
 
+/**
+ * Base class for Database-specific PDO drivers.
+ */
 class ADODB_pdo_base extends ADODB_pdo {
 
 	var $sysDate = "'?'";
@@ -781,6 +789,9 @@ class ADORecordSet_pdo extends ADORecordSet {
 	var $bind = false;
 	var $databaseType = "pdo";
 	var $dataProvider = "pdo";
+
+	/** @var PDOStatement */
+	var $_queryID;
 
 	function __construct($id,$mode=false)
 	{
@@ -922,4 +933,7 @@ class ADORecordSet_pdo extends ADORecordSet {
 
 }
 
-class ADORecordSet_array_pdo extends ADORecordSet_array {}
+class ADORecordSet_array_pdo extends ADORecordSet_array {
+	/** @var PDOStatement */
+	var $_queryID;
+}
