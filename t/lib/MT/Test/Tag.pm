@@ -159,7 +159,7 @@ SKIP: {
                 my $template = _filter_vars( $block->template );
                 $template    = Encode::encode_utf8( $template ) if Encode::is_utf8( $template );
                 my $text     = $block->text || '';
-                my $extra    = $callback ? $callback->($block) : '';
+                my $extra    = $callback ? ($callback->($block) || '') : '';
                 $extra = <<"PHP". $extra;
 \$text = <<<__TMPL__
 $text
