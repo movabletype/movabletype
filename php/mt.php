@@ -887,7 +887,7 @@ class MT {
 
         $ts = date('Y-m-d H:i:s');
         $errstr = preg_replace('/\t/', '\\t', $errstr);
-        error_log("timestamp:$ts\tno:$errno\tstr:$errstr\tfile:$errfile\tline:$errline\turi:${_SERVER['REQUEST_URI']}\n", 3, $log_file);
+        error_log("timestamp:$ts\tno:$errno\tstr:$errstr\tfile:$errfile\tline:$errline\turi:{$_SERVER['REQUEST_URI']}\n", 3, $log_file);
     }
 
     function error_handler($errno, $errstr, $errfile, $errline) {

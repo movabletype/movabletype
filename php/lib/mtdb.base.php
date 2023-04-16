@@ -42,6 +42,7 @@ abstract class MTDatabase {
     protected $_content_link_cache = array();
     protected $_adodb_quote_fieldnames = 'NATIVE';
 
+    private $_cd_id_cache = array();
 
     // Construction
     public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
@@ -2966,7 +2967,7 @@ abstract class MTDatabase {
         $ds = $class == 'page' ? 'entry' : $ds;
         $join['mt_objecttag'] = 
             array(
-                "condition" => "${ds}_id = objecttag_object_id and objecttag_object_datasource='$ds'"
+                "condition" => "{$ds}_id = objecttag_object_id and objecttag_object_datasource='$ds'"
                 );
 
         require_once("class.mt_$class.php");
