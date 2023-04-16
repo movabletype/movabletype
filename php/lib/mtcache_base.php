@@ -6,7 +6,7 @@
 # $Id$
 
 class MTCacheBase {
-    var $_ttl = 0;
+    var $ttl = 0;
 
     function __construct ($ttl = 0) {
         $this->ttl = $ttl;

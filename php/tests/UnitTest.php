@@ -6,6 +6,9 @@ include_once("php/lib/captcha_lib.php");
 
 class UnitTest extends TestCase {
 
+    private $mt;
+    private $ctx;
+
     public function testWdayFromTs() {
         include_once("php/lib/MTUtil.php");
         // leap year
