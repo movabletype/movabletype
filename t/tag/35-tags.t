@@ -5032,3 +5032,15 @@ bar-foo,foo-,subfoo-
 bar-,foo-bar,subfoo-
 download-info,info-,nightly-
 download-,info-download,nightly-
+
+=== test 904 no localvar bugs in MTAuthorNext (MTC-28842)
+--- template
+<MTAuthors><MTAuthorNext></MTAuthorNext></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
+--- expected
+[]
+
+=== test 905 no localvar bugs in MTAuthorPrevious (MTC-28842)
+--- template
+<MTAuthors><MTAuthorPrevious></MTAuthorPrevious></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
+--- expected
+[]
