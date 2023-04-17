@@ -280,6 +280,10 @@ class MT {
         return $this->cache_driver;
     }
 
+    public function clear_cache_driver() {
+        $this->cache_driver = null;
+    }
+
     public function config($id, $value = null) {
         $id = strtolower($id);
         if (isset($value))
