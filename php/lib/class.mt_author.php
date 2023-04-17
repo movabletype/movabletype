@@ -48,5 +48,5 @@ class Author extends BaseObject
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Author', 'mt_author_meta','author_meta_author_id');	
+ADODB_Active_Record::ClassHasMany('Author', 'mt_author_meta','author_meta_author_id', 'DynamicProperties');
 ?>

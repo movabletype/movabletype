@@ -11,10 +11,10 @@
 require_once('adodb.inc.php');
 if (!defined('ADODB_ASSOC_CASE')) define('ADODB_ASSOC_CASE', ADODB_ASSOC_CASE_LOWER);
 
-require_once('adodb-active-record.inc.php');
 require_once('adodb-exceptions.inc.php');
+require_once('class.dynamicproperties.php');
 
-abstract class BaseObject extends ADOdb_Active_Record
+abstract class BaseObject extends DynamicProperties
 {
     // Member variables
     protected static $_cache_driver = null;

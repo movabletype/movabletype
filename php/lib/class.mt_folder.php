@@ -20,5 +20,5 @@ class Folder extends Category
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Folder', 'mt_category_meta','category_meta_category_id');	
+ADODB_Active_Record::ClassHasMany('Folder', 'mt_category_meta','category_meta_category_id', 'DynamicProperties');
 ?>
