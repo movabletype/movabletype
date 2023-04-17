@@ -33,7 +33,7 @@ class Session extends BaseObject
 
         // avoid strcmp warnings
         // See https://github.com/ADOdb/ADOdb/blob/bacd08a8232b6d941b9902f02d323f53de81fafe/adodb-active-record.inc.php#L1081
-        $this->session_data ??= '';
+        $this->session_data = $this->session_data ?? '';
 
         $ret = parent::Save();
         if ( $ret ) {
