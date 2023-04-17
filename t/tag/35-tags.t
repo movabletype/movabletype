@@ -5020,3 +5020,15 @@ test.jpg
 <MTEntries lastn="1"><MTEntryModifiedAuthorUserpicURL></MTEntries>
 --- expected
 /mt-static/support/assets_c/userpics/userpic-6-100x100.png
+
+=== test 903 cache test combining tests of 199, 200, 536 and 537 (MTC-28841)
+--- template
+<MTCategories show_empty="1" glue=","><MTCategoryLabel>-<MTCategoryNext show_empty="1"><MTCategoryLabel></MTCategoryNext></MTCategories>
+<MTCategories show_empty="1" glue=","><MTCategoryLabel>-<MTCategoryPrevious show_empty="1"><MTCategoryLabel></MTCategoryPrevious></MTCategories>
+<MTFolders show_empty='1' glue=','><MTFolderLabel>-<MTFolderNext show_empty='1'><MTFolderLabel></MTFolderNext></MTFolders>
+<MTFolders show_empty='1' glue=','><MTFolderLabel>-<MTFolderPrevious show_empty='1'><MTFolderLabel></MTFolderPrevious></MTFolders>
+--- expected
+bar-foo,foo-,subfoo-
+bar-,foo-bar,subfoo-
+download-info,info-,nightly-
+download-,info-download,nightly-
