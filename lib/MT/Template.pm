@@ -654,7 +654,7 @@ sub text {
 
     $tmpl->needs_db_sync(0);
     unless (@_) {
-        if ( $tmpl->linked_file ) {
+        if ( $tmpl->linked_file && !$tmpl->is_changed('text')) {
             if ( my $res = $tmpl->_sync_from_disk ) {
                 $text = $res;
                 $tmpl->column( 'text', $text );
@@ -809,7 +809,7 @@ sub _sync_to_disk {
     }
     else {
         my ($vol, $dir) = File::Spec->splitpath($lfile);
-        $dir = File::Spec->catpath($vol, $dir);
+        $dir = File::Spec->catpath($vol, $dir, '');
         unless (-d $dir) {
             require File::Path;
             eval { File::Path::mkpath($dir) } or return $tmpl->error(

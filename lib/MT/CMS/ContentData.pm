@@ -1440,7 +1440,7 @@ sub _validate_content_fields {
                     {
                     field_id => $f->{id},
                     error =>
-                        $app->translate(qq{"${label}" field is required.}),
+                        $app->translate('"[_1]" field is required.', $label),
                     };
                 next;
             }
