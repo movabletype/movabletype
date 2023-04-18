@@ -573,12 +573,16 @@ sub _mysql_version {
 
     # Convert MariaDB version into MySQL version for simplicity
     # See https://mariadb.com/kb/en/mariadb-vs-mysql-compatibility/ for details
+    my ($maria_major_version, $maria_minor_version);
     if ($is_maria) {
+        $maria_major_version = $major_version;
+        $maria_minor_version = $minor_version;
         if ($major_version == 10) {
-            $major_version = 5;
             if ($minor_version < 2) {
+                $major_version = 5;
                 $minor_version = 6;
             } elsif ($minor_version < 5) {
+                $major_version = 5;
                 $minor_version = 7;
             }
         } elsif ($major_version == 5) {    ## just in case
@@ -587,7 +591,7 @@ sub _mysql_version {
             }
         }
     }
-    return ($major_version, $minor_version, $is_maria);
+    return ($major_version, $minor_version, $is_maria, $maria_major_version, $maria_minor_version);
 }
 
 sub skip_unless_mysql_version_is_greater_than {
