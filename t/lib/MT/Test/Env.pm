@@ -535,6 +535,14 @@ sub _prepare_mysql_database {
 DROP DATABASE IF EXISTS mt_test;
 CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
 END_OF_SQL
+
+    my ($major_version, $minor_version, $is_maria, $maria_major, $maria_minor) = _mysql_version();
+    if ($ENV{MT_TEST_MYSQLPOOL_DSN} && $is_maria && $maria_major == 10 && $maria_minor > 3) {
+        $sql .= <<"END_OF_SQL";
+ALTER USER root\@localhost IDENTIFIED VIA mysql_native_password USING PASSWORD('');
+END_OF_SQL
+    }
+
     for my $statement (split ";\n", $sql) {
         $dbh->do($statement);
     }
@@ -620,11 +628,11 @@ sub my_cnf {
         'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO,ONLY_FULL_GROUP_BY',
     );
 
-    my ($major_version, $minor_version, $is_maria) = _mysql_version();
+    my ($major_version, $minor_version, $is_maria, $maria_major, $maria_minor) = _mysql_version();
     return \%cnf unless $major_version;
 
     # MySQL 8.0+
-    if (!$is_maria && $major_version >= 8) {
+    if ((!$is_maria && $major_version >= 8) or ($is_maria && $maria_major == 10 && $maria_minor > 3)) {
         $cnf{default_authentication_plugin} = 'mysql_native_password';
     }
 
