@@ -557,7 +557,8 @@ END_OF_SQL
 # for App::Prove::Plugin::MySQLPool
 sub prepare {
     my ($class, $mysqld) = @_;
-    my $dbh = DBI->connect($mysqld->dsn);
+    my $dsn = $ENV{MT_TEST_MYSQLPOOL_DSN} = $mysqld->dsn;
+    my $dbh = DBI->connect($dsn);
     $class->_prepare_mysql_database($dbh);
 }
 
