@@ -343,6 +343,8 @@ sub _connect_info_mysql {
         }
         if ($opts{user}) {
             $info{DBUser} = $opts{user};
+        } elsif ($ENV{MT_TEST_MYSQLPOOL_DSN}) {
+            $info{DBUser} = 'root';
         }
         if ($opts{port}) {
             $info{DBPort} = $opts{port};
@@ -535,6 +537,14 @@ sub _prepare_mysql_database {
 DROP DATABASE IF EXISTS mt_test;
 CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
 END_OF_SQL
+
+    my ($major_version, $minor_version, $is_maria, $maria_major, $maria_minor) = _mysql_version();
+    if ($ENV{MT_TEST_MYSQLPOOL_DSN} && $is_maria && $maria_major == 10 && $maria_minor > 3) {
+        $sql .= <<"END_OF_SQL";
+ALTER USER root\@localhost IDENTIFIED VIA mysql_native_password USING PASSWORD('');
+END_OF_SQL
+    }
+
     for my $statement (split ";\n", $sql) {
         $dbh->do($statement);
     }
@@ -557,7 +567,8 @@ END_OF_SQL
 # for App::Prove::Plugin::MySQLPool
 sub prepare {
     my ($class, $mysqld) = @_;
-    my $dbh = DBI->connect($mysqld->dsn);
+    my $dsn = $ENV{MT_TEST_MYSQLPOOL_DSN} = $mysqld->dsn;
+    my $dbh = DBI->connect($dsn);
     $class->_prepare_mysql_database($dbh);
 }
 
@@ -572,12 +583,16 @@ sub _mysql_version {
 
     # Convert MariaDB version into MySQL version for simplicity
     # See https://mariadb.com/kb/en/mariadb-vs-mysql-compatibility/ for details
+    my ($maria_major_version, $maria_minor_version);
     if ($is_maria) {
+        $maria_major_version = $major_version;
+        $maria_minor_version = $minor_version;
         if ($major_version == 10) {
-            $major_version = 5;
             if ($minor_version < 2) {
+                $major_version = 5;
                 $minor_version = 6;
             } elsif ($minor_version < 5) {
+                $major_version = 5;
                 $minor_version = 7;
             }
         } elsif ($major_version == 5) {    ## just in case
@@ -586,7 +601,7 @@ sub _mysql_version {
             }
         }
     }
-    return ($major_version, $minor_version, $is_maria);
+    return ($major_version, $minor_version, $is_maria, $maria_major_version, $maria_minor_version);
 }
 
 sub skip_unless_mysql_version_is_greater_than {
@@ -615,11 +630,11 @@ sub my_cnf {
         'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO,ONLY_FULL_GROUP_BY',
     );
 
-    my ($major_version, $minor_version, $is_maria) = _mysql_version();
+    my ($major_version, $minor_version, $is_maria, $maria_major, $maria_minor) = _mysql_version();
     return \%cnf unless $major_version;
 
     # MySQL 8.0+
-    if (!$is_maria && $major_version >= 8) {
+    if ((!$is_maria && $major_version >= 8) or ($is_maria && $maria_major == 10 && $maria_minor > 3)) {
         $cnf{default_authentication_plugin} = 'mysql_native_password';
     }
 
