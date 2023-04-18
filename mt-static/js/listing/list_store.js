@@ -250,6 +250,7 @@
 
   ListStore.prototype.saveFilter = function () {
     var self = this;
+    self.page = 1;
     this.listClient.saveFilter({
       columns: self.getCheckedColumnIds(),
       filter: self.currentFilter,
