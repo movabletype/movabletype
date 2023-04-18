@@ -53,9 +53,11 @@ sub new {
     $ENV{MT_TEST_ROOT} = $root;
     $ENV{PERL_JSON_BACKEND} ||= 'JSON::PP';
 
+    my $driver = _driver();
+
     my $self = bless {
         root   => $root,
-        driver => _driver(),
+        driver => $driver,
         config => \%extra_config,
         start  => [Time::HiRes::gettimeofday],
     }, $class;
@@ -63,6 +65,8 @@ sub new {
     $self->write_config(\%extra_config);
 
     $self->enable_query_log if $ENV{MT_TEST_QUERY_LOG} && $ENV{MT_TEST_QUERY_LOG} > 4;
+
+    diag "Driver: $driver" unless $driver =~ /mysql/i;
 
     $self;
 }
