@@ -343,6 +343,8 @@ sub _connect_info_mysql {
         }
         if ($opts{user}) {
             $info{DBUser} = $opts{user};
+        } elsif ($ENV{MT_TEST_MYSQLPOOL_DSN}) {
+            $info{DBUser} = 'root';
         }
         if ($opts{port}) {
             $info{DBPort} = $opts{port};
