@@ -343,12 +343,13 @@ sub MT::Test::Tag::_php_daemon {
     connect($sock, $sock_addr) or die "Cannot connect to 127.0.0.1:$port: $!";
 
     if ($text) {
-        $extra =<<"PHP" . $extra
+        $extra =<<"PHP" . $extra;
 \$text = <<<__TMPL__
 $text
 __TMPL__
 ;
 PHP
+    }
 
     my $old_handle = select $sock;
     $| = 1;
