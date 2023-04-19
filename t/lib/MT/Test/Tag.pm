@@ -160,19 +160,19 @@ SKIP: {
                 $template    = Encode::encode_utf8( $template ) if Encode::is_utf8( $template );
                 my $text     = $block->text || '';
                 my $extra    = $callback ? ($callback->($block) || '') : '';
-                $extra = <<"PHP". $extra;
-\$text = <<<__TMPL__
-$text
-__TMPL__
-;
-PHP
 
                 require MT::Util::UniqueID;
                 my $log = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} ||
                           File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
                 my $block_name = $block->name || $block->seq_num;
                 $ENV{REQUEST_URI} = "$0 [$block_name]";
-                my $got = Encode::decode_utf8(_php_daemon($template, $block->blog_id || $blog_id, $extra, $log));
+                my $got;
+                if ($^O eq 'MSWin32') {
+                    my $php_script = php_test_script( $block_name, $block->blog_id || $blog_id, $template, $text, $log, $extra );
+                    $got = Encode::decode_utf8(MT::Test::PHP->run($php_script));
+                } else {
+                    $got = Encode::decode_utf8(_php_daemon($template, $block->blog_id || $blog_id, $extra, $text, $log));
+                }
 
                 my $php_error = '';
                 if (open(my $fh, '<', $log)) {
@@ -248,10 +248,77 @@ sub MT::Test::Tag::_filter_vars {
     $str;
 }
 
+sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
+    my ( $block_name, $blog_id, $template, $text, $log, $extra ) = @_;
+    $text ||= '';
+
+    $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
+    $template =~ s/\$/\\\$/g;
+
+    my $test_script = <<PHP;
+<?php
+\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
+\$MT_CONFIG = '@{[ MT->instance->find_config ]}';
+\$blog_id   = '$blog_id';
+\$log = '$log';
+\$tmpl = <<<__TMPL__
+$template
+__TMPL__
+;
+\$text = <<<__TMPL__
+$text
+__TMPL__
+;
+PHP
+    $test_script .= <<'PHP';
+include_once($MT_HOME . '/php/mt.php');
+include_once($MT_HOME . '/php/lib/MTUtil.php');
+
+$mt = MT::get_instance($blog_id, $MT_CONFIG);
+$mt->config('PHPErrorLogFilePath', $log);
+
+$mt->init_plugins();
+
+$db = $mt->db();
+if (preg_match('/mysql/i', $mt->config('ObjectDriver'))) {
+    $db->execute("SET time_zone = '00:00'");
+}
+$ctx =& $mt->context();
+
+$ctx->stash('index_archive', true);
+
+$ctx->stash('blog_id', $blog_id);
+$ctx->stash('local_blog_id', $blog_id);
+
+$blog = $db->fetch_blog($blog_id);
+$ctx->stash('blog', $blog);
+PHP
+
+    $test_script .= $extra if $extra;
+
+    $test_script .= <<'PHP';
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
+    if ($error_no & E_USER_ERROR) {
+        print($error_msg."\n");
+    } else {
+        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
+    }
+});
+
+if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
+    echo $_var_compiled;
+} else {
+    print('Error compiling template module.');
+}
+
+?>
+PHP
+}
+
 my $PHP_DAEMON;
 
 sub MT::Test::Tag::_php_daemon {
-    my ($template, $blog_id, $extra, $log) = @_;
+    my ($template, $blog_id, $extra, $text, $log) = @_;
 
     $PHP_DAEMON ||= Test::TCP->new(
         code => sub {
@@ -274,6 +341,15 @@ sub MT::Test::Tag::_php_daemon {
     my $packed_remote_host = inet_aton('127.0.0.1');
     my $sock_addr          = sockaddr_in($port, $packed_remote_host);
     connect($sock, $sock_addr) or die "Cannot connect to 127.0.0.1:$port: $!";
+
+    if ($text) {
+        $extra =<<"PHP" . $extra;
+\$text = <<<__TMPL__
+$text
+__TMPL__
+;
+PHP
+    }
 
     my $old_handle = select $sock;
     $| = 1;

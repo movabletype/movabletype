@@ -188,6 +188,10 @@ sub write_config {
     # disable process check
     $config{ProcessMemoryCommand} = 0 unless $config{PerformanceLogging};
 
+    if ($^O eq 'MSWin32' && $config{SendMailPath}) {
+        plan skip_all => 'Sendmail is not supported on Win32';
+    }
+
     $config{$_} = $connect_info{$_} for keys %connect_info;
 
     $self->{_config} = \%config;
@@ -312,7 +316,6 @@ sub connect_info {
                 $connect_info{$key} = $ENV{$env_key};
             }
         }
-        note "DRIVER: $connect_info{ObjectDriver}";
         # TODO: $self->{dsn} = "dbi:$driver:...";
     }
     %connect_info;
