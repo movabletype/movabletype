@@ -556,8 +556,10 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (empty($key))
             return;
 
+        if ($obj->_has_meta) {
         $meta_table = $obj->_table . '_meta';
         $obj->$meta_table = array();
+        }
 
         $this->cache_driver()->set($key, $obj);
     }
