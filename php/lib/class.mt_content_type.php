@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class ContentType extends BaseObject
 {
     public $_table = 'mt_content_type';
-    protected $_prefix = "content_type_";
+    public $_prefix = "content_type_";
 
     # content_type fields generated from perl implementation.
     public $content_type_id;

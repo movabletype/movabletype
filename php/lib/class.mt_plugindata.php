@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class PluginData extends BaseObject
 {
     public $_table = 'mt_plugindata';
-    protected $_prefix = "plugindata_";
+    public $_prefix = "plugindata_";
     private $_data = null;
 
     # plugindata fields generated from perl implementation.

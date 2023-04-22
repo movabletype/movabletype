@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Config extends BaseObject
 {
     public $_table = 'mt_config';
-    protected $_prefix = "config_";
+    public $_prefix = "config_";
     private $_data = array();
 
     # config fields generated from perl implementation.

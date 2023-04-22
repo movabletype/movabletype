@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Template extends BaseObject
 {
     public $_table = 'mt_template';
-    protected $_prefix = "template_";
+    public $_prefix = "template_";
     protected $_has_meta = true;
 
     # template fields generated from perl implementation.

@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class ContentField extends BaseObject
 {
     public $_table = 'mt_cf';
-    protected $_prefix = "cf_";
+    public $_prefix = "cf_";
 
     # content_field fields generated from perl implementation.
     public $cf_id;

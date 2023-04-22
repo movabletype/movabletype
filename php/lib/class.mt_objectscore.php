@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class ObjectScore extends BaseObject
 {
     public $_table = 'mt_objectscore';
-    protected $_prefix = "objectscore_";
+    public $_prefix = "objectscore_";
 
     # objectscore fields generated from perl implementation.
     public $objectscore_id;

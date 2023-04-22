@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class ObjectCategory extends BaseObject
 {
     public $_table = 'mt_objectcategory';
-    protected $_prefix = "objectcategory_";
+    public $_prefix = "objectcategory_";
 
     # objectcategory fields generated from perl implementation.
     public $objectcategory_id;

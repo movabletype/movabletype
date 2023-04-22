@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Author extends BaseObject
 {
     public $_table = 'mt_author';
-    protected $_prefix = "author_";
+    public $_prefix = "author_";
     protected $_has_meta = true;
 
     # author fields generated from perl implementation.

@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class TBPing extends BaseObject
 {
     public $_table = 'mt_tbping';
-    protected $_prefix = "tbping_";
+    public $_prefix = "tbping_";
     protected $_has_meta = true;
 
     # tbping fields generated from perl implementation.

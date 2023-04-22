@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Category extends BaseObject
 {
     public $_table = 'mt_category';
-    protected $_prefix = "category_";
+    public $_prefix = "category_";
     protected $_has_meta = true;
     private $_children = null;
 

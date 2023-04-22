@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Permission extends BaseObject
 {
     public $_table = 'mt_permission';
-    protected $_prefix = "permission_";
+    public $_prefix = "permission_";
 
     # permission fields generated from perl implementation.
     public $permission_id;

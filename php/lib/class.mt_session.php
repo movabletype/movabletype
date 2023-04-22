@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Session extends BaseObject
 {
     public $_table = 'mt_session';
-    protected $_prefix = "session_";
+    public $_prefix = "session_";
 
     # session fields generated from perl implementation.
     public $session_id;

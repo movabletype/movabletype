@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Trackback extends BaseObject
 {
     public $_table = 'mt_trackback';
-    protected $_prefix = "trackback_";
+    public $_prefix = "trackback_";
 
     # trackback fields generated from perl implementation.
     public $trackback_id;

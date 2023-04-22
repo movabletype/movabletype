@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Asset extends BaseObject
 {
     public $_table = 'mt_asset';
-    protected $_prefix = "asset_";
+    public $_prefix = "asset_";
     protected $_has_meta = true;
 
     # asset fields generated from perl implementation.

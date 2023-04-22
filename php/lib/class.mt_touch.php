@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Touch extends BaseObject
 {
     public $_table = 'mt_touch';
-    protected $_prefix = "touch_";
+    public $_prefix = "touch_";
 
     # touch fields generated from perl implementation.
     public $touch_id;

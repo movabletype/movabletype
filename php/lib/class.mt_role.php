@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Role extends BaseObject
 {
     public $_table = 'mt_role';
-    protected $_prefix = "role_";
+    public $_prefix = "role_";
 
     # role fields generated from perl implementation.
     public $role_id;

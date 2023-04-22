@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class ObjectTag extends BaseObject
 {
     public $_table = 'mt_objecttag';
-    protected $_prefix = "objecttag_";
+    public $_prefix = "objecttag_";
 
     # objecttag fields generated from perl implementation.
     public $objecttag_id;

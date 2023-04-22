@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Entry extends BaseObject
 {
     public $_table = 'mt_entry';
-    protected $_prefix = "entry_";
+    public $_prefix = "entry_";
     protected $_has_meta = true;
 
     # entry fields generated from perl implementation.

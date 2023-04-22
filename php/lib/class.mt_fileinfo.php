@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class FileInfo extends BaseObject
 {
     public $_table = 'mt_fileinfo';
-    protected $_prefix = "fileinfo_";
+    public $_prefix = "fileinfo_";
 
     # fileinfo fields generated from perl implementation.
     public $fileinfo_id;

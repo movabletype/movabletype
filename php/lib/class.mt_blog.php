@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Blog extends BaseObject
 {
     public $_table = 'mt_blog';
-    protected $_prefix = "blog_";
+    public $_prefix = "blog_";
     protected $_has_meta = true;
 
     // blog fields generated from perl implementation.

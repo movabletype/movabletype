@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class IPBanList extends BaseObject
 {
     public $_table = 'mt_ipbanlist';
-    protected $_prefix = "ipbanlist_";
+    public $_prefix = "ipbanlist_";
 
     # ipbanlist fields generated from perl implementation.
     public $ipbanlist_id;

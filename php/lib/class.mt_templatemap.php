@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class TemplateMap extends BaseObject
 {
     public $_table = 'mt_templatemap';
-    protected $_prefix = "templatemap_";
+    public $_prefix = "templatemap_";
 
     # templatemap fields generated from perl implementation.
     public $templatemap_id;

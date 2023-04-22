@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Notification extends BaseObject
 {
     public $_table = 'mt_notification';
-    protected $_prefix = "notification_";
+    public $_prefix = "notification_";
 
     # notification fields generated from perl implementation.
     public $notification_id;

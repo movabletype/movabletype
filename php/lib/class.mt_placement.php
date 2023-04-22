@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Placement extends BaseObject
 {
     public $_table = 'mt_placement';
-    protected $_prefix = "placement_";
+    public $_prefix = "placement_";
 
     # placement fields generated from perl implementation.
     public $placement_id;

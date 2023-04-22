@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class ContentData extends BaseObject
 {
     public $_table = 'mt_cd';
-    protected $_prefix = "cd_";
+    public $_prefix = "cd_";
     protected $_has_meta = true;
 
     # content_data fields generated from perl implementation.

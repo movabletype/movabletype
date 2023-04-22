@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Comment extends BaseObject
 {
     public $_table = 'mt_comment';
-    protected $_prefix = "comment_";
+    public $_prefix = "comment_";
     protected $_has_meta = true;
 
     // comment fields generated from perl implementation.

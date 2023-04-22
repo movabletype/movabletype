@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class RebuildTrigger extends BaseObject
 {
     public $_table = 'mt_rebuild_trigger';
-    protected $_prefix = "rebuild_trigger_";
+    public $_prefix = "rebuild_trigger_";
     private $_data = array();
 
     # rebuild_trigger fields generated from perl implementation.

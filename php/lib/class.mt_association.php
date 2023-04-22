@@ -13,7 +13,7 @@ require_once("class.baseobject.php");
 class Association extends BaseObject
 {
     public $_table = 'mt_association';
-    protected $_prefix = "association_";
+    public $_prefix = "association_";
 
     # association fields generated from perl implementation.
     public $association_id;
