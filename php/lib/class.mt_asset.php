@@ -35,6 +35,9 @@ class Asset extends BaseObject
 
     # asset meta fields generated from perl implementation.
     public $asset_mt_asset_meta;
+
+    public $asset_image_height;
+    public $asset_image_width;
 }
 
 // Relations

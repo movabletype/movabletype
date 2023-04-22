@@ -44,6 +44,14 @@ class ContentData extends BaseObject
     public $cd_convert_breaks;
     public $cd_revision;
 
+    public $cd___next;
+    public $cd___previous;
+    public $cd__data;
+
+    // plugins
+    public $cd_comment_count;
+    public $cd_ping_count;
+
     public function label() {
         if ( $this->id ){
             $ct = $this->content_type();

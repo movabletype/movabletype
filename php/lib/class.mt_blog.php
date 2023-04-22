@@ -130,6 +130,8 @@ class Blog extends BaseObject
     public $blog_update_pings;
     public $blog_upload_destination;
 
+    public $folder_order;
+
 	function Save() {
         if (empty($this->blog_class))
             $this->class = 'blog';

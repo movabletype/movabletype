@@ -20,5 +20,7 @@ class Tag extends BaseObject
     public $tag_is_private;
     public $tag_n8d_id;
     public $tag_name;
+
+    public $tag_count;
 }
 ?>

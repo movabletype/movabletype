@@ -43,6 +43,7 @@ abstract class MTDatabase {
     protected $_adodb_quote_fieldnames = 'NATIVE';
 
     private $_cd_id_cache = array();
+    private $_content_type_id_cache; // XXX consider changing the cache storage
 
     // Construction
     public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
