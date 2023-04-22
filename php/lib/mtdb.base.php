@@ -4250,7 +4250,6 @@ abstract class MTDatabase {
 
             if (empty($ct)) break;
 
-            $ct->content_type_authored_on = $this->db2ts($ct->content_type_authored_on);
             $ct->content_type_modified_on = $this->db2ts($ct->content_type_modified_on);
             $content_types[] = $ct;
         }
