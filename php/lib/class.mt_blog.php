@@ -258,5 +258,6 @@ class Blog extends BaseObject
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Blog', 'mt_blog_meta','blog_meta_blog_id');
+require_once("class.mt_meta.php");
+ADODB_Active_Record::ClassHasMany('Blog', 'mt_blog_meta','blog_meta_blog_id', 'Meta');
 ?>
