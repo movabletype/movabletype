@@ -15,6 +15,14 @@ class ObjectTag extends BaseObject
     public $_table = 'mt_objecttag';
     protected $_prefix = "objecttag_";
 
+    # objecttag fields generated from perl implementation.
+    public $objecttag_id;
+    public $objecttag_blog_id;
+    public $objecttag_cf_id;
+    public $objecttag_object_datasource;
+    public $objecttag_object_id;
+    public $objecttag_tag_id;
+
     public function related_object() {
         require_once("class.mt_" . $this->object_datasource . ".php");
         $class = $this->object_datasource;

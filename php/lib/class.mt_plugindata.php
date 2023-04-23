@@ -16,6 +16,12 @@ class PluginData extends BaseObject
     protected $_prefix = "plugindata_";
     private $_data = null;
 
+    # plugindata fields generated from perl implementation.
+    public $plugindata_id;
+    public $plugindata_data;
+    public $plugindata_key;
+    public $plugindata_plugin;
+    
     public function data($name = null) {
         if (empty($this->_data)) {
             $mt = MT::get_instance();

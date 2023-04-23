@@ -17,6 +17,27 @@ class Category extends BaseObject
     protected $_has_meta = true;
     private $_children = null;
 
+    # category fields generated from perl implementation.
+    public $category_allow_pings;
+    public $category_author_id;
+    public $category_basename;
+    public $category_blog_id;
+    public $category_category_set_id;
+    public $category_class;
+    public $category_created_by;
+    public $category_created_on;
+    public $category_description;
+    public $category_id;
+    public $category_label;
+    public $category_modified_by;
+    public $category_modified_on;
+    public $category_parent;
+    public $category_ping_urls;
+
+    # category meta fields generated from perl implementation.
+    public $category_mt_category_meta;
+    public $category_show_fields;
+
     public function children($val = null) {
         if (!empty($val))
             $this->_children[] = $val;

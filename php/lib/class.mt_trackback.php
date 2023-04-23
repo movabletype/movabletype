@@ -15,6 +15,22 @@ class Trackback extends BaseObject
     public $_table = 'mt_trackback';
     protected $_prefix = "trackback_";
 
+    # trackback fields generated from perl implementation.
+    public $trackback_id;
+    public $trackback_blog_id;
+    public $trackback_category_id;
+    public $trackback_created_by;
+    public $trackback_created_on;
+    public $trackback_description;
+    public $trackback_entry_id;
+    public $trackback_is_disabled;
+    public $trackback_modified_by;
+    public $trackback_modified_on;
+    public $trackback_passphrase;
+    public $trackback_rss_file;
+    public $trackback_title;
+    public $trackback_url;
+
     public function category() {
         $col_name = "trackback_category_id";
         $category = null;

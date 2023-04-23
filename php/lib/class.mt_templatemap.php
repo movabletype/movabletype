@@ -15,6 +15,18 @@ class TemplateMap extends BaseObject
     public $_table = 'mt_templatemap';
     protected $_prefix = "templatemap_";
 
+    # templatemap fields generated from perl implementation.
+    public $templatemap_id;
+    public $templatemap_archive_type;
+    public $templatemap_blog_id;
+    public $templatemap_build_interval;
+    public $templatemap_build_type;
+    public $templatemap_cat_field_id;
+    public $templatemap_dt_field_id;
+    public $templatemap_file_template;
+    public $templatemap_is_preferred;
+    public $templatemap_template_id;
+
     public function template() {
         $col_name = "templatemap_template_id";
         $template = null;

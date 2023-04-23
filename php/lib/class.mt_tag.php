@@ -14,5 +14,11 @@ class Tag extends BaseObject
 {
     public $_table = 'mt_tag';
     protected $_prefix = "tag_";
+
+    # tag fields generated from perl implementation.
+    public $tag_id;
+    public $tag_is_private;
+    public $tag_n8d_id;
+    public $tag_name;
 }
 ?>

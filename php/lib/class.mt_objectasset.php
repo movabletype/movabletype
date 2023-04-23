@@ -15,6 +15,15 @@ class ObjectAsset extends BaseObject
     public $_table = 'mt_objectasset';
     protected $_prefix = "objectasset_";
 
+    # objectasset fields generated from perl implementation.
+    public $objectasset_id;
+    public $objectasset_asset_id;
+    public $objectasset_blog_id;
+    public $objectasset_cf_id;
+    public $objectasset_embedded;
+    public $objectasset_object_ds;
+    public $objectasset_object_id;
+
     public function asset () {
         $col_name = "objectasset_asset_id";
         $asset = null;

@@ -14,5 +14,14 @@ class IPBanList extends BaseObject
 {
     public $_table = 'mt_ipbanlist';
     protected $_prefix = "ipbanlist_";
+
+    # ipbanlist fields generated from perl implementation.
+    public $ipbanlist_id;
+    public $ipbanlist_blog_id;
+    public $ipbanlist_created_by;
+    public $ipbanlist_created_on;
+    public $ipbanlist_ip;
+    public $ipbanlist_modified_by;
+    public $ipbanlist_modified_on;
 }
 ?>

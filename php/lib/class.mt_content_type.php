@@ -14,6 +14,21 @@ class ContentType extends BaseObject
 {
     public $_table = 'mt_content_type';
     protected $_prefix = "content_type_";
+
+    # content_type fields generated from perl implementation.
+    public $content_type_id;
+    public $content_type_blog_id;
+    public $content_type_created_by;
+    public $content_type_created_on;
+    public $content_type_data_label;
+    public $content_type_description;
+    public $content_type_fields;
+    public $content_type_modified_by;
+    public $content_type_modified_on;
+    public $content_type_name;
+    public $content_type_unique_id;
+    public $content_type_user_disp_option;
+    public $content_type_version;
 }
 
 ?>

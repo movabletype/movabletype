@@ -16,6 +16,10 @@ class Config extends BaseObject
     protected $_prefix = "config_";
     private $_data = array();
 
+    # config fields generated from perl implementation.
+    public $config_id;
+    public $config_data;
+
     public function data($name = null) {
         if (empty($this->_data)) {
             $data = $this->data;

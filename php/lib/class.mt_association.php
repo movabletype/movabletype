@@ -15,6 +15,18 @@ class Association extends BaseObject
     public $_table = 'mt_association';
     protected $_prefix = "association_";
 
+    # association fields generated from perl implementation.
+    public $association_id;
+    public $association_author_id;
+    public $association_blog_id;
+    public $association_created_by;
+    public $association_created_on;
+    public $association_group_id;
+    public $association_modified_by;
+    public $association_modified_on;
+    public $association_role_id;
+    public $association_type;
+    
     public function role () {
         $col_name = "association_role_id";
         $role = null;

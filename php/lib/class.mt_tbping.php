@@ -16,6 +16,28 @@ class TBPing extends BaseObject
     protected $_prefix = "tbping_";
     protected $_has_meta = true;
 
+    # tbping fields generated from perl implementation.
+    public $tbping_id;
+    public $tbping_blog_id;
+    public $tbping_blog_name;
+    public $tbping_created_by;
+    public $tbping_created_on;
+    public $tbping_excerpt;
+    public $tbping_ip;
+    public $tbping_junk_log;
+    public $tbping_junk_score;
+    public $tbping_junk_status;
+    public $tbping_last_moved_on;
+    public $tbping_modified_by;
+    public $tbping_modified_on;
+    public $tbping_source_url;
+    public $tbping_tb_id;
+    public $tbping_title;
+    public $tbping_visible;
+
+    # tbping meta fields generated from perl implementation.
+    public $tbping_mt_tbping_meta;
+
     public function trackback() {
         $col_name = "tbping_tb_id";
         $tb = null;

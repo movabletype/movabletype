@@ -14,5 +14,15 @@ class CategorySet extends BaseObject
 {
     public $_table = 'mt_category_set';
     protected $_prefix = "category_set_";
+
+    # category_set fields generated from perl implementation.
+    public $category_set_id;
+    public $category_set_blog_id;
+    public $category_set_created_by;
+    public $category_set_created_on;
+    public $category_set_modified_by;
+    public $category_set_modified_on;
+    public $category_set_name;
+    public $category_set_order;
 }
 ?>

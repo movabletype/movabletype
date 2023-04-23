@@ -16,6 +16,34 @@ class ContentData extends BaseObject
     protected $_prefix = "cd_";
     protected $_has_meta = true;
 
+    # content_data fields generated from perl implementation.
+    public $cd_id;
+    public $cd_author_id;
+    public $cd_authored_on;
+    public $cd_blog_id;
+    public $cd_content_type_id;
+    public $cd_created_by;
+    public $cd_created_on;
+    public $cd_ct_unique_id;
+    public $cd_data;
+    public $cd_identifier;
+    public $cd_label;
+    public $cd_modified_by;
+    public $cd_modified_on;
+    public $cd_random;
+    public $cd_status;
+    public $cd_unique_id;
+    public $cd_unpublished_on;
+    public $cd_week_number;
+    public $cd_current_revision;
+
+    # content_data meta fields generated from perl implementation.
+    public $cd_mt_cd_meta;
+    public $cd_blob_convert_breaks;
+    public $cd_block_editor_data;
+    public $cd_convert_breaks;
+    public $cd_revision;
+
     public function label() {
         if ( $this->id ){
             $ct = $this->content_type();
