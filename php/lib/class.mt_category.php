@@ -158,6 +158,6 @@ class Category extends BaseObject
 }
 
 // Relations
-require_once("class.mt_meta.php");
-ADODB_Active_Record::ClassHasMany('Category', 'mt_category_meta','category_meta_category_id', 'Meta');
+require_once("class.mt_category_meta.php");
+ADODB_Active_Record::ClassHasMany('Category', 'mt_category_meta','category_meta_category_id', 'CategoryMeta');
 ?>

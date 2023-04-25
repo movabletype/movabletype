@@ -37,6 +37,6 @@ class Website extends Blog
 }
 
 // Relations
-require_once("class.mt_meta.php");
-ADODB_Active_Record::ClassHasMany('Website', 'mt_blog_meta','blog_meta_blog_id', 'Meta');
+require_once("class.mt_blog_meta.php");
+ADODB_Active_Record::ClassHasMany('Website', 'mt_blog_meta','blog_meta_blog_id', 'BlogMeta');
 ?>
