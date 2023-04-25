@@ -35,6 +35,9 @@ class BaseObjectTest extends TestCase {
     $this->assertNull( $entry->_has_meta );
     $this->assertFalse( isset( $entry->_has_meta ) );
 
+    // ignore E_DEPRECATED for some tests
+    error_reporting(error_reporting() & ~E_DEPRECATED);
+
     // dynamic properties still works (__set/__get/__isset magic methods)
     $entry->unknown = 'val';
     $this->assertTrue( isset( $entry->unknown ) );
@@ -48,6 +51,8 @@ class BaseObjectTest extends TestCase {
     $this->assertEquals( 'my_field1_val', $entry->$meta_field1 );
     $this->assertFalse( isset( $entry->$meta_field2 ) );
     $this->assertNull( $entry->$meta_field2 );
+
+    error_reporting(error_reporting() | E_DEPRECATED);
 
     // fixed Dynamic publishing error occurred with memcached environment. bugid: 113546
     $mt->config('MemcachedServers', '127.0.0.1:11211');
