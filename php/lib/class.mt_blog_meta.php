@@ -7,8 +7,6 @@
 
 require_once('adodb-active-record.inc.php');
 
-// Allow dynamic properties for now since the list is not done yet
-
 class BlogMeta extends ADOdb_Active_Record {
 
     public $blog_meta_blog_id;

@@ -7,8 +7,6 @@
 
 require_once('adodb-active-record.inc.php');
 
-// Allow dynamic properties for now since the list is not done yet
-
 class AssetMeta extends ADOdb_Active_Record {
 
     public $foreignKey;
