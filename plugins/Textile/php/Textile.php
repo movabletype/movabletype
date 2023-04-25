@@ -3,7 +3,7 @@
 
 class Textile {
 
-	var $filers;
+	var $filters;
 	var $charset;
 	var $char_encoding;
 	var $do_quotes;
