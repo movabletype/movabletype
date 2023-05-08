@@ -12,7 +12,8 @@ function get_parent_categories(&$cat, &$ctx, &$list, $class = 'category') {
         else
             $parent = $ctx->mt->db()->fetch_category($cat->category_parent);
         if ($parent) {
-            $cat->parent_category = $parent;
+            // XXX cache should be implemented in the same way as perl.
+            // $cat->parent_category = $parent;
             array_unshift($list, 0); $list[0] =& $parent;
             get_parent_categories($parent, $ctx, $list, $class);
         }

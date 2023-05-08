@@ -3,7 +3,7 @@
 
 class Textile {
 
-	var $filers;
+	var $filters;
 	var $charset;
 	var $char_encoding;
 	var $do_quotes;
@@ -29,6 +29,12 @@ class Textile {
 	var $blocktags;
 	var $qtags;
 	var $qtag;
+	var $_line_open;
+	var $_line_close;
+	var $_blockcode_open;
+	var $_blockcode_close;
+	var $repl;
+	var $links;
 
 	function __construct($opt = array()) {
 		$this->filters = $opt['filters'] or array();

@@ -13,7 +13,16 @@ require_once("class.baseobject.php");
 class Session extends BaseObject
 {
     public $_table = 'mt_session';
-    protected $_prefix = "session_";
+    public $_prefix = "session_";
+
+    # session fields generated from perl implementation.
+    public $session_id;
+    public $session_data;
+    public $session_duration;
+    public $session_email;
+    public $session_kind;
+    public $session_name;
+    public $session_start;
 
     public function data( $val = null ) {
         $mt = MT::get_instance();
