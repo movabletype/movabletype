@@ -129,6 +129,8 @@ my $cd2 = MT::Test::Permission->make_content_data(
 my $cd3 = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct->id,
+    created_on      => '19900115000001',
+    modified_on     => '19950115000001',
     authored_on     => $next_month . '15000000',
     data            => { $cf_datetime->id => $this_month . '03180500', },
 );
