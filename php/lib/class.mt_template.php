@@ -59,6 +59,6 @@ class Template extends BaseObject
 }
 
 // Relations
-require_once("class.mt_meta.php");
-ADODB_Active_Record::ClassHasMany('Template', 'mt_template_meta','template_meta_template_id', 'Meta');
+require_once("class.mt_template_meta.php");
+ADODB_Active_Record::ClassHasMany('Template', 'mt_template_meta','template_meta_template_id', 'TemplateMeta');
 ?>

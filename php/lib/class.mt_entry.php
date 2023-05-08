@@ -144,6 +144,6 @@ class Entry extends BaseObject
 }
 
 // Relations
-require_once("class.mt_meta.php");
-ADODB_Active_Record::ClassHasMany('Entry', 'mt_entry_meta','entry_meta_entry_id', 'Meta');
+require_once("class.mt_entry_meta.php");
+ADODB_Active_Record::ClassHasMany('Entry', 'mt_entry_meta','entry_meta_entry_id', 'EntryMeta');
 ?>

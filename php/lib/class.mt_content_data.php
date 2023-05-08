@@ -104,6 +104,6 @@ class ContentData extends BaseObject
 }
 
 // Relations
-require_once("class.mt_meta.php");
-ADODB_Active_Record::ClassHasMany('ContentData', 'mt_cd_meta','cd_meta_cd_id', 'Meta');
+require_once("class.mt_content_data_meta.php");
+ADODB_Active_Record::ClassHasMany('ContentData', 'mt_cd_meta','cd_meta_cd_id', 'ContentDataMeta');
 ?>

@@ -41,6 +41,6 @@ class Asset extends BaseObject
 }
 
 // Relations
-require_once("class.mt_meta.php");
-ADODB_Active_Record::ClassHasMany('Asset', 'mt_asset_meta','asset_meta_asset_id', 'Meta');
+require_once("class.mt_asset_meta.php");
+ADODB_Active_Record::ClassHasMany('Asset', 'mt_asset_meta','asset_meta_asset_id', 'AssetMeta');
 ?>

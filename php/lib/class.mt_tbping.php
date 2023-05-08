@@ -54,6 +54,6 @@ class TBPing extends BaseObject
 }
 
 // Relations
-require_once("class.mt_meta.php");
-ADODB_Active_Record::ClassHasMany('TBPing', 'mt_tbping_meta','tbping_meta_tbping_id', 'Meta');
+require_once("class.mt_tbping_meta.php");
+ADODB_Active_Record::ClassHasMany('TBPing', 'mt_tbping_meta','tbping_meta_tbping_id', 'TBPingMeta');
 ?>
