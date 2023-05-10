@@ -18,11 +18,8 @@ sub _load_sibling_categories {
     my ( $ctx, $cat, $class_type ) = @_;
     my $blog_id = $cat->blog_id;
     my $r       = MT::Request->instance;
-    my $cats
-        = $r->stash( '__cat_cache_'
-            . $blog_id . '_'
-            . $cat->parent . '_'
-            . $cat->category_set_id );
+    my $cache_key = '__cat_cache_' . $class_type . '_'. $blog_id . '_' . $cat->parent . '_' . $cat->category_set_id;
+    my $cats = $r->stash($cache_key);
     return $cats if $cats;
 
     my $class = MT->model($class_type);
@@ -33,7 +30,7 @@ sub _load_sibling_categories {
         },
         { 'sort' => 'label', direction => 'ascend' },
     );
-    $r->stash( '__cat_cache_' . $blog_id . '_' . $cat->parent, \@cats );
+    $r->stash($cache_key, \@cats);
     \@cats;
 }
 
