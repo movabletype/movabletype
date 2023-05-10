@@ -995,7 +995,7 @@ sub list_props {
             display => 'none',
         },
         label => {
-            base    => '__virtual.label',
+            base    => '__virtual.string',
             display => 'force',
         },
         identifier => {
