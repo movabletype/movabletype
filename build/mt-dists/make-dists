@@ -108,7 +108,7 @@ if ( $skip_rules =~ m/^#\?/m ) {    # conditional rule
 }
 
 my @languages = split( /,/, $langlist );
-@languages = qw( en_US nl fr de es ja ) unless @languages;
+@languages = qw( en_US ja ) unless @languages;
 for my $lang (@languages) {
     $options{language} = $lang;
     $options{package}  = $package;
