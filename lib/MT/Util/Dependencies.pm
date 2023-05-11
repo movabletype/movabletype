@@ -399,8 +399,8 @@ our %Requirements = (
         version => "1.70",
     },
     "XML::Parser" => {
-        label => "This module is required for XML-RPC API.",
-        tags  => ["XMLRPC", "XML"],
+        label => "This module is required to parse XML.",
+        tags  => ["XML"],
         url   => "https://metacpan.org/pod/XML::Parser",
     },
     "XML::SAX" => {
@@ -433,18 +433,6 @@ our %Requirements = (
         tags   => ["AtomAPI", "XML"],
         url    => "https://metacpan.org/pod/XML::XPath",
     },
-    "XMLRPC::Lite" => {
-        extlib  => 0.717,
-        label   => "XMLRPC::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.",
-        tags    => ["XMLRPC", "XML"],
-        url     => "https://metacpan.org/pod/XMLRPC::Lite",
-        version => "0.50",
-    },
-    "XMLRPC::Transport::HTTP::Plack" => {
-        label => "This module and its dependencies are required to run Movable Type under psgi.",
-        tags  => ["XMLRPC", "XML", "PSGI"],
-        url   => "https://metacpan.org/pod/XMLRPC::Transport::HTTP::Plack",
-    },
     "YAML::Syck" => {
         label => "YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.",
         tags  => ["YAML", "Performance"],
@@ -463,11 +451,6 @@ our %ExtLibOnly = (
         extlib  => 1.201,
         url     => "https://metacpan.org/pod/Algorithm::Diff",
         used_in => ["HTML::Diff"],
-    },
-    "Apache::XMLRPC::Lite" => {
-        extlib   => 0.717,
-        not_used => 1,
-        url      => "https://metacpan.org/pod/Apache::XMLRPC::Lite",
     },
     "AutoLoader" => {
         extlib    => "5.70",
@@ -720,11 +703,6 @@ our %ExtLibOnly = (
         note      => "used in many extlib modules",
         perl_core => 0.221,
         url       => "https://metacpan.org/pod/parent",
-    },
-    "SOAP::Lite" => {
-        extlib  => 1.27,
-        url     => "https://metacpan.org/pod/SOAP::Lite",
-        used_in => ["XMLRPC::Lite"],
     },
     "Sub::Uplevel" => {
         extlib  => "0.2800",

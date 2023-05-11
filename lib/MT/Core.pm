@@ -1994,7 +1994,7 @@ BEGIN {
             },
             'FreeTextSearchScript'    => { default => 'mt-ftsearch.cgi', },
             'ContentDataSearchScript' => { default => 'mt-cdsearch.cgi' },
-            'XMLRPCScript'            => { default => 'mt-xmlrpc.cgi', },
+            'XMLRPCScript'            => undef,
             'AtomScript'              => { default => 'mt-atom.cgi', },
             'UpgradeScript'           => { default => 'mt-upgrade.cgi', },
             'CheckScript'             => { default => 'mt-check.cgi', },
@@ -2346,11 +2346,6 @@ BEGIN {
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
-            'xmlrpc' => {
-                handler => 'MT::XMLRPCServer',
-                script  => sub { MT->config->XMLRPCScript },
-                type    => 'xmlrpc',
-            },
             'atom' => {
                 handler => 'MT::AtomServer',
                 script  => sub { MT->config->AtomScript },

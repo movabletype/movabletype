@@ -402,7 +402,7 @@ sub core_tags {
             SearchScript => \&MT::Template::Tags::System::_hdlr_search_script,
             ContentDataSearchScript =>
                 \&MT::Template::Tags::System::_hdlr_cd_search_script,
-            XMLRPCScript => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
+            XMLRPCScript => sub {''},
             AtomScript   => \&MT::Template::Tags::System::_hdlr_atom_script,
             CGIHost      => \&MT::Template::Tags::System::_hdlr_cgi_host,
             CGIPath      => \&MT::Template::Tags::System::_hdlr_cgi_path,
@@ -5591,22 +5591,6 @@ configuration setting. The default for this setting if unassigned is
 sub _hdlr_cd_search_script {
     my ($ctx) = @_;
     return $ctx->{config}->ContentDataSearchScript;
-}
-
-###########################################################################
-
-=head2 XMLRPCScript
-
-Returns the value of the C<XMLRPCScript> configuration setting. The
-default for this setting if unassigned is "mt-xmlrpc.cgi".
-
-=for tags configuration
-
-=cut
-
-sub _hdlr_xmlrpc_script {
-    my ($ctx) = @_;
-    return $ctx->{config}->XMLRPCScript;
 }
 
 ###########################################################################
