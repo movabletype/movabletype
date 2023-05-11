@@ -423,8 +423,6 @@ class MT {
             $cfg['commentscript'] = 'mt-comments.cgi';
         isset($cfg['atomscript']) or
             $cfg['atomscript'] = 'mt-atom.cgi';
-        isset($cfg['xmlrpcscript']) or
-            $cfg['xmlrpcscript'] = 'mt-xmlrpc.cgi';
         isset($cfg['searchscript']) or
             $cfg['searchscript'] = 'mt-search.cgi';
         isset($cfg['defaultlanguage']) or
