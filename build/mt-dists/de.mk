@@ -1,3 +1,0 @@
-BUILD_LANGUAGE = de
-
-VERSION_SUFFIX = -de

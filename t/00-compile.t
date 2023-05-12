@@ -337,12 +337,8 @@ use_ok('MT::TheSchwartz::Job');
 
 # L10N modules
 use_ok('MT::L10N');
-use_ok('MT::L10N::de');
 use_ok('MT::L10N::en_us');
-use_ok('MT::L10N::es');
-use_ok('MT::L10N::fr');
 use_ok('MT::L10N::ja');
-use_ok('MT::L10N::nl');
 
 # I18N modules
 use_ok('MT::I18N');
