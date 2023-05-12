@@ -536,7 +536,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{ trans( 'Select Filter' ) }</h5>
-          <button type="button" class="close btn-close" data-mt-modal-close><span>×</span></button>
+          <button type="button" class="close btn-close" data-bs-dismiss="modal"><span>×</span></button>
         </div>
         <div class="modal-body">
           <div class="filter-list-block">
