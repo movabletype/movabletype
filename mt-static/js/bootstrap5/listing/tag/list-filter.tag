@@ -740,7 +740,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{ trans( saveAs ? 'Save As Filter' : 'Save Filter' ) }</h5>
-          <button type="button" class="close btn-close" aria-label="Close" data-mt-modal-close>
+          <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -758,7 +758,7 @@
           <button class="btn btn-primary" onclick={ saveFilter }>
             { trans('Save') }
           </button>
-          <button class="btn btn-default" onclick={ closeModal }>
+          <button class="btn btn-default" data-bs-dismiss="modal" onclick={ closeModal }>
             { trans('Cancel') }
           </button>
         </div>
