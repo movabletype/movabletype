@@ -59,6 +59,7 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
         <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
       </th>
       <th class="head data-label primary"><span class="col-label"><__trans phrase="Data Label"></span></th>
+      <th class="head identifier"><span class="col-label"><__trans phrase="Basename"></span></th>
       <mt:unless name="is_blog">
       <th class="head blog"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
       </mt:unless>
@@ -116,6 +117,9 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
       </td>
   <mt:unless name="blog_view">
     <mt:unless name="scope_type" eq="blog">
+      <td class="identifier">
+        <mt:var name="identifier" escape="html">
+      </td>
       <td class="blog">
         <a href="<$mt:var name="script_url"$>?__mode=list&_type=<mt:var name="object_type">&amp;blog_id=<$mt:var name="weblog_id"$>&amp;type=content_data_<mt:var name="content_type_id" escape="html">">
           <$mt:var name="weblog_name" escape="html"$>
@@ -155,7 +159,7 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
       </td>
     </tr>
     <tr class="preview-data">
-      <td class="p-0" colspan="8">
+      <td class="p-0" colspan="9">
         <div class="collapse mt-collapse__content" id="content-data-data-<mt:var name="id" escape="html">">
           <mt:var name="preview_data">
         </div>
