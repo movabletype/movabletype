@@ -9,6 +9,13 @@
   border: 1px solid #000000;
 }
 
+td > .ellipsis {
+  max-width:18em;
+  overflow:hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 tr.preview-data {
   background-color: #f4f4f4;
 }
@@ -118,7 +125,7 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
   <mt:unless name="blog_view">
     <mt:unless name="scope_type" eq="blog">
       <td class="identifier">
-        <mt:var name="identifier" escape="html">
+        <div class="ellipsis"><mt:var name="identifier" escape="html"></div>
       </td>
       <td class="blog">
         <a href="<$mt:var name="script_url"$>?__mode=list&_type=<mt:var name="object_type">&amp;blog_id=<$mt:var name="weblog_id"$>&amp;type=content_data_<mt:var name="content_type_id" escape="html">">
@@ -206,6 +213,10 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
         .on('hidden.bs.collapse', function () {
             jQuery(this).parents('tr').hide();
         });
+
+    jQuery('.ellipsis').each(function(){
+      $(this).attr('title', $(this).text());
+    });
 
   <mt:if name="error">
     <mt:if name="replace">
