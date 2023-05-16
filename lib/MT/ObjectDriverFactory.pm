@@ -29,6 +29,7 @@ sub new {
 }
 
 our $DRIVER;
+our $DBI_DRIVER;
 
 sub instance {
     my $pkg = shift;
@@ -48,14 +49,14 @@ sub driver_for_class {
             my $Password = $cfg->DBPassword;
             my $Username = $cfg->DBUser;
             my $dbd      = $pkg->dbd_class;
-            my $driver   = MT::ObjectDriver::Driver::DBI->new(
+            my $driver   = $DBI_DRIVER ||= MT::ObjectDriver::Driver::DBI->new(
                 dbd       => $dbd,
                 dsn       => $dbd->dsn_from_config($cfg),
                 reuse_dbh => 1,
                 ( $Username ? ( username => $Username ) : () ),
                 ( $Password ? ( password => $Password ) : () ),
             );
-            push @drivers, $driver;
+            @drivers = ($driver);
             $driver->configure;
             return $driver;
         },
