@@ -2,6 +2,14 @@
 <mt:setvarblock name="republish_button_title"><__trans phrase="Republish selected [_1] (r)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
 <mt:setvarblock name="delete_button_title"><__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
 
+<mt:setvarblock name="css_include" append="1">
+<style>
+td > p:last-child {
+  margin-bottom:0;
+}
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="action_buttons">
   <mt:if name="can_republish">
 <button
