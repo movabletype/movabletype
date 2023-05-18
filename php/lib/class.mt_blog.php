@@ -130,6 +130,9 @@ class Blog extends BaseObject
     public $blog_update_pings;
     public $blog_upload_destination;
 
+    // XXX Because __set/__get don't allow, we declare it in addition to $blog_blog_content_accessible
+    public $blog_content_accessible;
+
     public $folder_order;
 
 	function Save() {
