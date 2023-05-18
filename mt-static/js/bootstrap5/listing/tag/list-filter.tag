@@ -624,7 +624,7 @@
     }
 
     closeModal() {
-      jQuery('#select-filter').modal('hide')
+      bootstrap.Modal.getInstance(document.getElementById('select-filter')).hide();
     }
 
     createNewFilter(e) {
