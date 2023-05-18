@@ -771,7 +771,7 @@
     this.mixin('listFilterTop')
 
     closeModal(e) {
-      jQuery(this.refs.modal).modal('hide')
+      $bsmodal.hide()
     }
 
     openModal(args) {
@@ -783,7 +783,8 @@
         this.refs.filterName.value = args.filterLabel
       }
       this.saveAs = args.saveAs
-      jQuery(this.refs.modal).modal()
+      $bsmodal = new bootstrap.Modal(this.refs.modal, {});
+      $bsmodal.show();
     }
 
     saveFilter(e) {

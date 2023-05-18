@@ -601,7 +601,7 @@ riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter
     }.bind(this)
 
     this.closeModal = function() {
-      jQuery('#select-filter').modal('hide')
+      bootstrap.Modal.getInstance(document.getElementById('select-filter')).hide();
     }.bind(this)
 
     this.createNewFilter = function(e) {
@@ -691,7 +691,7 @@ riot.tag2('list-filter-save-modal', '<div id="save-filter" class="modal fade" ta
     this.mixin('listFilterTop')
 
     this.closeModal = function(e) {
-      jQuery(this.refs.modal).modal('hide')
+      $bsmodal.hide()
     }.bind(this)
 
     this.openModal = function(args) {
@@ -703,7 +703,8 @@ riot.tag2('list-filter-save-modal', '<div id="save-filter" class="modal fade" ta
         this.refs.filterName.value = args.filterLabel
       }
       this.saveAs = args.saveAs
-      jQuery(this.refs.modal).modal()
+      $bsmodal = new bootstrap.Modal(this.refs.modal, {});
+      $bsmodal.show();
     }.bind(this)
 
     this.saveFilter = function(e) {
