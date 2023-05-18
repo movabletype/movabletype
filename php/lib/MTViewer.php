@@ -168,6 +168,10 @@ class MTViewer extends Smarty {
 
         $this->setDefaultResourceType('mt');
 
+        // Silence "Attempt to read property "nocache" on array" on $this->tpl_vars['vars'] access.
+        // See https://github.com/smarty-php/smarty/issues/855
+        $this->muteUndefinedOrNullWarnings();
+
         $this->smarty = $this;
 
     }
