@@ -703,7 +703,7 @@ riot.tag2('list-filter-save-modal', '<div id="save-filter" class="modal fade" ta
         this.refs.filterName.value = args.filterLabel
       }
       this.saveAs = args.saveAs
-      var $bsmodal = new bootstrap.Modal(this.refs.modal, {});
+      let $bsmodal = new bootstrap.Modal(this.refs.modal, {});
       $bsmodal.show();
     }.bind(this)
 
