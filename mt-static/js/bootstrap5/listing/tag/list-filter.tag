@@ -531,7 +531,7 @@
 </list-filter-item-field>
 
 <list-filter-select-modal>
-  <div class="modal fade" id="select-filter" tabindex="-1">
+  <div class="modal fade" id="select-filter" tabindex="-1" ref="modal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -624,7 +624,7 @@
     }
 
     closeModal() {
-      bootstrap.Modal.getInstance(document.getElementById('select-filter')).hide();
+      bootstrap.Modal.getInstance(this.refs.modal).hide();
     }
 
     createNewFilter(e) {
@@ -771,7 +771,7 @@
     this.mixin('listFilterTop')
 
     closeModal(e) {
-      $bsmodal.hide()
+      bootstrap.Modal.getInstance(this.refs.modal).hide();
     }
 
     openModal(args) {
@@ -783,7 +783,7 @@
         this.refs.filterName.value = args.filterLabel
       }
       this.saveAs = args.saveAs
-      $bsmodal = new bootstrap.Modal(this.refs.modal, {});
+      var $bsmodal = new bootstrap.Modal(this.refs.modal, {});
       $bsmodal.show();
     }
 
