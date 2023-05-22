@@ -15,7 +15,11 @@
 
 CGIPath        <mt:var name="cgi_path">
 StaticWebPath  <mt:var name="static_web_path">
-StaticFilePath <mt:var name="static_file_path"><mt:if name="publish_charset">
+StaticFilePath <mt:var name="static_file_path">
+BaseSitePath   <mt:var name="set_base_site_path_to">
+SupportDirectoryUrl <mt:var name="set_support_directory_url_to">
+SupportDirectoryPath <mt:var name="set_support_directory_path_to">
+PluginPath     <mt:var name="set_plugin_path_to"><mt:if name="publish_charset">
 PublishCharset <mt:var name="publish_charset"></mt:if><mt:if name="non_cgi_suffix">
 
 #======== SCRIPT NAMES ===============<mt:if name="mod_perl">

@@ -5869,6 +5869,20 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 	q{<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.} => q{エラー: '[_1]'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。},
 	q{The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).} => q{[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、[_1]ディレクトリにはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。},
+
+## tmpl/wizard/path.tmpl
+    'Path Configuration' => 'ユーザー領域の設定',
+    'We recommend to set following configurations for separating system and contents.' => 'Movable Type 8 はユーザー領域とシステム領域の明確な分離を目的として次の設定を推奨します。',
+    'Configure Base Site Path' => 'ウェブサイトパスの設定',
+    'Sets the default website path. If this value is specified, Movable Type will limit path settings for all newly created web sites.' => '新規ウェブサイト作成時のパスを指定します。例えば、値に /var/www/vhosts を指定した場合、ウェブサイトパスに /var/www/html を指定することはできません。/var/www/vhosts/example.com のように、初期値のディレクトリ配下への追加は可能です。',
+    'Base site path' => 'ウェブサイトパス',
+    'Configure Support Directory' => 'サポートディレクトリの設定',
+    'MT uploads asset files for CMS, for example, Userpics or theme thumbnails to support directory. To change the directory, need to make the directry and grant permission to write, in advance.' => 'サポートディレクトリには、ユーザーのプロフィール画像や、ダッシュボード上のサイト情報の表示に使用するファイルが保存されます。 サポートディレクトリを初期の場所から変更する場合は、あらかじめ変更先のディレクトリを作成し、書き込み可能な権限を付与しておく必要があります。',
+    'Support directory URL' => 'サポートディレクトリを公開する URL',
+    'Support directory path' => 'サポートディレクトリのパス',
+    'Configure Plugin Path' => 'プラグインディレクトリの設定',
+    'The path to a Movable Type plugins directory. ' => 'プラグインファイルを保管するパスを設定します。',
+    'Plugin path' => 'プラグインファイルを保管するパス',
 );
 
 1;
