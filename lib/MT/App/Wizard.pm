@@ -32,6 +32,7 @@ sub init {
     );
     $app->{template_dir} = 'wizard';
     $app->config->set( 'StaticWebPath', $app->static_path );
+
     return $app;
 }
 
@@ -113,7 +114,8 @@ sub init_core_registry {
                 order   => 0,
                 handler => \&start,
                 params  => [
-                    qw(set_static_uri_to set_static_file_to default_language)
+                    qw(set_static_uri_to set_static_file_to default_language
+                        set_base_site_path_to set_support_directory_url_to set_support_directory_path_to set_plugin_path_to)
                 ],
             },
             configure => {
@@ -348,6 +350,27 @@ sub start {
     $param{default_language} = $app->param('default_language');
     $param{config}           = $app->serialize_config(%param);
     $param{static_file}      = $static_file_path;
+
+    $param{base_site_path}
+        = defined $app->param('set_base_site_path_to')
+        ? $app->param('set_base_site_path_to')
+        : '/var/www/html';
+    $param{support_directory_url}
+        = defined $app->param('set_support_directory_url_to')
+        ? $app->param('set_support_directory_url_to')
+        : $app->base . '/mt-support';
+    $param{support_directory_path}
+        = defined $app->param('set_support_directory_path_to')
+        ? $app->param('set_support_directory_path_to')
+        : '/var/www/html/mt-support';
+    $param{plugin_path}
+        = defined $app->param('set_plugin_path_to')
+        ? $app->param('set_plugin_path_to')
+        : '/var/www/html/mt-plugins';
+
+    unless ( defined $app->param('set_base_site_path_to') ) {
+        return $app->build_page( "path.tmpl", \%param );
+    }
 
     # test for required packages...
     my $req = $app->registry("required_packages");
@@ -880,6 +903,20 @@ sub seed {
     $param{static_web_path} = $uri->path;
     $param{static_uri}      = $uri->path;
     my $drivers = $app->object_drivers;
+
+    my $param_set_base_site_path_to = $app->param('set_base_site_path_to');
+    $uri = URI->new($param_set_base_site_path_to);
+    $param{base_site_path} = $uri->path;
+    my $param_set_support_directory_url_to
+        = $app->param('set_support_directory_url_to');
+    $param{support_directory_url} = $param_set_support_directory_url_to;
+    my $param_set_support_directory_path_to
+        = $app->param('set_support_directory_path_to');
+    $uri = URI->new($param_set_support_directory_path_to);
+    $param{support_directory_path} = $uri->path;
+    my $param_set_plugin_path_to = $app->param('set_plugin_path_to');
+    $uri = URI->new($param_set_plugin_path_to);
+    $param{plugin_path} = $uri->path;
 
     my $r_uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
     if ( MT::Util::is_mod_perl1()
