@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "afb2d65658f945c9447258ea12264fde",
+    "content-hash": "28fbde46a1cde75eff98c47b1fa4f596",
     "packages": [
         {
             "name": "adodb/adodb-php",
-            "version": "v5.22.4",
+            "version": "v5.22.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ADOdb/ADOdb.git",
-                "reference": "bb87e83338c99038986878ac78f680becf9e8091"
+                "reference": "bacd08a8232b6d941b9902f02d323f53de81fafe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/bb87e83338c99038986878ac78f680becf9e8091",
-                "reference": "bb87e83338c99038986878ac78f680becf9e8091",
+                "url": "https://api.github.com/repos/ADOdb/ADOdb/zipball/bacd08a8232b6d941b9902f02d323f53de81fafe",
+                "reference": "bacd08a8232b6d941b9902f02d323f53de81fafe",
                 "shasum": ""
             },
             "require": {
@@ -65,20 +65,20 @@
                 "issues": "https://github.com/ADOdb/ADOdb/issues",
                 "source": "https://github.com/ADOdb/ADOdb"
             },
-            "time": "2022-10-28T17:34:17+00:00"
+            "time": "2023-04-03T21:41:29+00:00"
         },
         {
             "name": "smarty/smarty",
-            "version": "v4.2.1",
+            "version": "v4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smarty-php/smarty.git",
-                "reference": "ffa2b81a8e354a49fd8a2f24742dc9dc399e8007"
+                "reference": "e28cb0915b4e3749bf57d4ebae2984e25395cfe5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/ffa2b81a8e354a49fd8a2f24742dc9dc399e8007",
-                "reference": "ffa2b81a8e354a49fd8a2f24742dc9dc399e8007",
+                "url": "https://api.github.com/repos/smarty-php/smarty/zipball/e28cb0915b4e3749bf57d4ebae2984e25395cfe5",
+                "reference": "e28cb0915b4e3749bf57d4ebae2984e25395cfe5",
                 "shasum": ""
             },
             "require": {
@@ -129,9 +129,9 @@
             "support": {
                 "forum": "https://github.com/smarty-php/smarty/discussions",
                 "issues": "https://github.com/smarty-php/smarty/issues",
-                "source": "https://github.com/smarty-php/smarty/tree/v4.2.1"
+                "source": "https://github.com/smarty-php/smarty/tree/v4.3.1"
             },
-            "time": "2022-09-14T10:59:01+00:00"
+            "time": "2023-03-28T19:47:03+00:00"
         }
     ],
     "packages-dev": [
@@ -1874,5 +1874,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.2.0"
 }

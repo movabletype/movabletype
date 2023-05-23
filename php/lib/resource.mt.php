@@ -37,7 +37,7 @@ class smarty_resource_mt extends Smarty_Resource_Custom {
         $tmpls = $tmpl->Find($query);
         if (!empty($tmpls)) {
             $tmpl = $tmpls[0];
-            $file = trim($tmpl->linked_file);
+            $file = trim($tmpl->linked_file ?? '');
             $text = $tmpl->text;
             $blog = $this->ctx->stash('blog');
             $mtime = datetime_to_timestamp($blog->blog_children_modified_on);
