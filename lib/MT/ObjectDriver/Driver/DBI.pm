@@ -24,6 +24,11 @@ sub init {
     require MT;
     my $mt  = MT->instance;
     my $cfg = $mt->config;
+    if (my $cfg_opts = $cfg->DBIConnectOptions) {
+        for my $key (keys %$cfg_opts) {
+            $opts->{$key} = $cfg_opts->{$key};
+        }
+    }
     $opts->{RaiseError}         = $cfg->DBIRaiseError;
     $opts->{ShowErrorStatement} = $cfg->DBIShowErrorStatement if $MT::DebugMode;
 

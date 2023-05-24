@@ -2009,6 +2009,7 @@ BEGIN {
             'GenerateTrackBackRSS'                   => { default => 0, },
             'DBIRaiseError'                          => { default => 0, },
             'DBIShowErrorStatement'                  => { default => 0, },
+            'DBIConnectOptions'                      => { type => 'HASH' },
             'SearchAlwaysAllowTemplateID'            => { default => 0, },
             'ContentDataSearchAlwaysAllowTemplateID' => {
                 default => sub { $_[0]->SearchAlwaysAllowTemplateID }
