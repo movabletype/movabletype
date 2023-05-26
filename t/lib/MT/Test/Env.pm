@@ -390,7 +390,7 @@ sub _connect_info_pg {
     require DBD::Pg;
     $info{DBIConnectOptions} = "pg_enable_utf8=0" if version->parse(DBD::Pg->VERSION) >= 3;
 
-    if (eval { require Test::PostgreSQL }) {
+    if ($ENV{MT_TEST_USE_TEST_PG} && eval { require Test::PostgreSQL }) {
         my $pg = $self->{pg} = Test::PostgreSQL->new;
         my $dsn = $ENV{MT_TEST_DSN} = $pg->dsn;
         my $dbh = DBI->connect($dsn) or die $DBI::errstr;
