@@ -234,64 +234,39 @@ subtest 'Column name in each scopes' => sub {
 };
 
 subtest 'Search in site scope' => sub {
-    my $app = MT::Test::App->new('MT::App::CMS');
-    $app->login($admin);
-    $app->get_ok({
-        __mode  => 'search_replace',
-        blog_id => $website->id,
-    });
-    $app->search('Day');
+    my $app       = MT::Test::App->new('MT::App::CMS');
+    my $entry_id1 = 1;
 
-    my $a_sunny_day = quotemeta('<a href="' . $app->_app->mt_uri . '?__mode=view&amp;_type=entry&amp;id=' . $website_entry->id . '&amp;blog_id=' . $website->id . '">' . $website_entry->title . '</a>');
-    $app->content_like(
-        qr/$a_sunny_day/,
-        'Search results have "A Sunny Day" entry by admin'
-    );
+    subtest 'search admin' => sub {
+        $app->login($admin);
+        $app->get_ok({ __mode => 'search_replace', blog_id => $website->id });
+        $app->search('Day');
+        is_deeply($app->found_ids, [$entry_id1, $website_entry->id], 'id found');
+        is_deeply($app->found_titles, ['A Rainy Day', 'A Sunny Day'], 'titles found');
+    };
 
-    my $blog_entry  = MT::Entry->load(1);
-    my $a_rainy_day = quotemeta('<a href="' . $app->_app->mt_uri . '?__mode=view&amp;_type=entry&amp;id=' . $blog_entry->id . '&amp;blog_id=' . $blog_id . '">' . $blog_entry->title . '</a>');
-    $app->content_like(
-        qr/$a_rainy_day/,
-        'Search results have "A Rainy Day" entry by admin'
-    );
+    subtest 'search site editr' => sub {
+        $app->login($aikawa);
+        $app->get_ok({ __mode => 'search_replace', blog_id => $website->id });
+        $app->search('Day');
+        is_deeply($app->found_ids,    [$website_entry->id], 'id found');
+        is_deeply($app->found_titles, ['A Sunny Day'],      'titles found');
+    };
 
-    $app->login($aikawa);
-    $app->get_ok({
-        __mode  => 'search_replace',
-        blog_id => $website->id,
-    });
-    $app->search('Day');
-    $app->content_like(
-        qr/$a_sunny_day/,
-        'Search results have "A Sunny Day" entry by permitted user in a site'
-    );
-    $app->content_unlike(
-        qr/$a_rainy_day/,
-        'Search results do not have "A Rainy Day" entry by permitted user in a site'
-    );
+    subtest 'search by child site editor' => sub {
+        $app->login($ichikawa);
+        $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+        $app->search('Day');
+        is_deeply($app->found_ids,    [$entry_id1],    'id found');
+        is_deeply($app->found_titles, ['A Rainy Day'], 'titles found');
+    };
 
-    $app->login($ichikawa);
-    $app->get_ok({
-        __mode  => 'search_replace',
-        blog_id => $blog_id,
-    });
-    $app->search('Day');
-    $app->content_unlike(
-        qr/$a_sunny_day/,
-        'Search results do not have "A Sunny Day" entry by permitted user in a child site'
-    );
-    $app->content_like(
-        qr/$a_rainy_day/,
-        'Search results have "A Rainy Day" entry by permitted user in a child site'
-    );
-
-    $app->login($ukawa);
-    $app->get_ok({
-        __mode  => 'search_replace',
-        blog_id => $blog_id,
-    });
-    $app->search('Day');
-    $app->has_permission_error();
+    subtest 'search by site designer' => sub {
+        $app->login($ukawa);
+        $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+        $app->search('Day');
+        $app->has_permission_error();
+    };
 };
 
 subtest 'replace' => sub {
