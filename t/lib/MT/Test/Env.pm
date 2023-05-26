@@ -566,8 +566,8 @@ sub _prepare_pg_database {
     local $dbh->{PrintWarn}          = 0;
     local $dbh->{ShowErrorStatement} = 1;
     my $sql           = <<"END_OF_SQL";
-DROP DATABASE IF EXISTS mt_test;
-CREATE DATABASE mt_test;
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
 END_OF_SQL
     for my $statement (split ";\n", $sql) {
         $dbh->do($statement);
