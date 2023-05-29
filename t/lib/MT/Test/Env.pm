@@ -387,7 +387,10 @@ sub _connect_info_pg {
         Database     => "mt_test",
     );
 
-    if (eval { require Test::PostgreSQL }) {
+    require DBD::Pg;
+    $info{DBIConnectOptions} = "pg_enable_utf8=0" if version->parse(DBD::Pg->VERSION) >= 3;
+
+    if ($ENV{MT_TEST_USE_TEST_PG} && eval { require Test::PostgreSQL }) {
         my $pg = $self->{pg} = Test::PostgreSQL->new;
         my $dsn = $ENV{MT_TEST_DSN} = $pg->dsn;
         my $dbh = DBI->connect($dsn) or die $DBI::errstr;
@@ -563,8 +566,8 @@ sub _prepare_pg_database {
     local $dbh->{PrintWarn}          = 0;
     local $dbh->{ShowErrorStatement} = 1;
     my $sql           = <<"END_OF_SQL";
-DROP DATABASE IF EXISTS mt_test;
-CREATE DATABASE mt_test;
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
 END_OF_SQL
     for my $statement (split ";\n", $sql) {
         $dbh->do($statement);
