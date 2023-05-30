@@ -688,7 +688,7 @@ sub find_config {
     {
         return $cfg_file if $cfg_file && -r $cfg_file && -f $cfg_file;
     }
-    return undef;
+    return;
 }
 
 sub init_schema {
