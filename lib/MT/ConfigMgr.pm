@@ -110,6 +110,10 @@ sub get_internal {
 sub get {
     my $mgr = shift;
     my $var = lc shift;
+    my $config_key = 'MT_CONFIG_' . uc($var);
+    if (exists $ENV{$config_key}) {
+        return $ENV{$config_key};
+    }
     if ( my $h = $mgr->{__settings}{$var}{handler} ) {
         $h = MT->handler_to_coderef($h) unless ref $h;
         return $h->($mgr);
