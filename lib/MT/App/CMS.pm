@@ -1587,6 +1587,28 @@ sub core_menu_actions {
             order  => 200,
             target => '_blank',
         },
+        search => {
+            icon  => 'ic_search',
+            label => 'Search',
+            href => sub {
+                my $blog_id = $app->blog ? $app->blog->id : 0;
+                my $search_apis = $app->registry("search_apis") or ();
+                my $app_type = $app->param('_type');
+                my $_type;
+                if( $app_type && exists $search_apis->{$app_type}){
+                    $_type = $app_type;
+                }
+                $app->uri(
+                    mode => 'search_replace',
+                    args => {
+                        ( $_type ?  ( _type => $_type ) : () ),
+                        blog_id => $blog_id
+                    }
+                );
+            },
+            mobile => 0,
+            order  => 300,
+        },
     };
 }
 
