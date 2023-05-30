@@ -247,8 +247,11 @@ sub import {
                 # line __LINE__ __FILE__
                 my $cfg = MT::ConfigMgr->instance;    #this is needed
                 $app ||= MT->instance;
-                my $c = $app->find_config;
-                $app->{cfg}->read_config($c);
+                my @files = $app->find_config;
+                for my $file (@files) {
+                    next unless $file;
+                    $app->{cfg}->read_config($file);
+                }
                 $charset = $app->{cfg}->PublishCharset;
             };
             if (   $app

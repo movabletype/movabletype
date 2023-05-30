@@ -335,7 +335,7 @@ sub read_config_file {
     my $class      = shift;
     my ($cfg_file) = @_;
     my $mgr        = $class->instance;
-    $mgr->{__var} = {};
+    $mgr->{__var} ||= {};
     local $_;
     local $/ = "\n";
     die "Cannot read config without config file name" if !$cfg_file;
