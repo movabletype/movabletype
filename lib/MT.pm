@@ -46,7 +46,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.9.8',              '__PRODUCT_VERSION_ID__',
+        '7.9.9',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -64,11 +64,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 8;
+        $RELEASE_NUMBER = 9;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5403';
+        $RELEASE_VERSION_ID = 'r.5404';
     }
 
     $DebugMode = 0;
