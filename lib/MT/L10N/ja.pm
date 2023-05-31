@@ -5615,7 +5615,7 @@ use vars qw( @ISA %Lexicon );
 	'Search Again' => '再検索',
 	'Search For' => '検索',
 	'Show all matches' => 'すべて見る',
-	'Showing first [_1] results.' => '最初の[_1]件の結果を表示します。',
+	'Showing first [_1] results.' => '最初の[_1]件の結果を表示しています。',
 	'Submit search (s)' => '検索 (s)',
 	'Successfully replaced [quant,_1,record,records].' => '[quant,_1,件,件]のデータを置き換えました。',
 	'You must select one or more items to replace.' => '置き換える対象を1つ以上選択してください。',
