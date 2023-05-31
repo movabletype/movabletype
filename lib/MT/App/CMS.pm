@@ -681,6 +681,7 @@ sub init_request {
         if (   ( $mode ne 'logout' )
             && ( $mode ne 'start_recover' )
             && ( $mode ne 'recover' )
+            && ( $mode ne 'new_pw' )
             && ( $mode ne 'upgrade' ) )
         {
             my $schema  = $app->config('SchemaVersion');
