@@ -98,7 +98,7 @@ sub blog {
     unless ($blog) {
         my $blog_id    = $ping->blog_id;
         my $blog_class = MT->model('blog');
-        $blog = $blog_class->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= $blog_class->load($blog_id)
             or return $ping->error(
             MT->translate(
                 "Loading blog '[_1]' failed: [_2]", $blog_id,

@@ -51,12 +51,6 @@ BEGIN {
                 config_package => 'DBI::sqlite',
                 display        => ['dbpath'],
             },
-            'sqlite2' => {
-                label          => 'SQLite Database (v2)',
-                dbd_package    => 'DBD::SQLite2',
-                config_package => 'DBI::sqlite',
-                display        => ['dbpath'],
-            },
         },
         db_form_data => {
             dbserver => {
@@ -793,12 +787,12 @@ BEGIN {
                             = $prop->datasource->has_column('author_id')
                             ? 'author_id'
                             : 'created_by';
-
+                      my $author_id = $obj->$col;
                       # If there's no value in the column then no voter ID was
                       # recorded.
-                        return '' if !$obj->$col;
+                        return '' if !$author_id;
 
-                        my $author = MT->model('author')->load( $obj->$col );
+                        my $author = MT->request->{__stash}{author_cache}{$author_id} ||= MT->model('author')->load($author_id);
                         return $author
                             ? ( $author->nickname || $author->name )
                             : MT->translate('*User deleted*');
@@ -1521,7 +1515,7 @@ BEGIN {
                     my $terms;
                     push @$terms, { author_id => $user->id };
                     if ($blog_id) {
-                        my $blog = MT->model('blog')->load($blog_id);
+                        my $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
                         my @blog_ids;
                         push @blog_ids, $blog_id;
                         if ( $blog && !$blog->is_blog ) {
@@ -2141,7 +2135,6 @@ BEGIN {
             'ActivityFeedsRunTasks'    => { default => 1, },
             'ExportEncoding'           => { default => 'utf-8', },
             'SQLSetNames'              => undef,
-            'UseSQLite2'               => { default => 0, },
 
             #'UseJcodeModule'  => { default => 0, },
             'DefaultTimezone'    => { default => '0', },
@@ -2270,6 +2263,7 @@ BEGIN {
             },
             'DataAPIDisableSite'   => undef,
             'RebuildOffsetSeconds' => { default => 20 },
+            'DisableDataAPI'       => { default => 0 },
 
             # Enterprise.pack
             'LDAPOptions'           => { type => 'HASH' },
@@ -2337,6 +2331,7 @@ BEGIN {
             'PSGIStreaming' => { default => 1 },
             'PSGIServeStatic' => { default => 1 },
             'HideVersion' => { default => 1 },
+            'BuilderModule' => { default => 'MT::Builder' },
             'HideConfigWarnings' => { default => undef },
             'GlobalTemplateMaxRevisions' => { default => 20 },
             'DisableQuickPost' => { default => 0 },
@@ -2346,6 +2341,8 @@ BEGIN {
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
+            'AdminThemeId' => undef,
+            'TrimFilePath' => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2781,6 +2778,12 @@ sub remove_temporary_files {
     my @ids;
     foreach my $f (@files) {
         if ( $fmgr->delete( $f->name ) ) {
+            # MTC-26474
+            require File::Basename;
+            my $dir = File::Basename::dirname($f->name);
+            if (File::Basename::basename($dir) =~ /^mt\-preview\-/ && !glob("$dir/*")) {
+                rmdir($dir);
+            }
             push @ids, $f->id;
         }
     }

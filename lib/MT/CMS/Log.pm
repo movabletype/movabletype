@@ -10,6 +10,7 @@ use warnings;
 
 use MT::Util
     qw( format_ts epoch2ts ts2epoch relative_date offset_time encode_url dirify encode_url );
+use MT::Util::Encode;
 use MT::I18N qw( const );
 
 sub view {
@@ -505,7 +506,7 @@ PERMCHECK: {
         $msg =~ s/[\r\n]+/ /gs;
         push @col, '"' . $msg . '"';
         $csv .= ( join ',', @col ) . "\n";
-        $app->print( Encode::encode( $enc, $csv ) );
+        $app->print( MT::Util::Encode::encode( $enc, $csv ) );
         $csv = '';
     }
 }

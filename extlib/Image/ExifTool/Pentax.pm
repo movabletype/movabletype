@@ -58,7 +58,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 use Image::ExifTool::HP;
 
-$VERSION = '3.38';
+$VERSION = '3.41';
 
 sub CryptShutterCount($$);
 sub PrintFilter($$$);
@@ -171,7 +171,7 @@ sub DecodeAFPoints($$$$;$);
     '3 255.4' => 'Sigma DF EX Aspherical 28-70mm F2.8', #12
     '3 255.5' => 'Sigma AF Tele 400mm F5.6 Multi-coated', #JD
     '3 255.6' => 'Sigma 24-60mm F2.8 EX DG', #PH
-    '3 255.7' => 'Sigma 70-300mm F4-5.6 Macro', #JD
+    '3 255.7' => 'Sigma 70-300mm F4-5.6 Macro', #JD (also DG Macro, ref 27)
     '3 255.8' => 'Sigma 55-200mm F4-5.6 DC', #JD
     '3 255.9' => 'Sigma 18-50mm F2.8 EX DC', #JD (also Macro version - PH)
     '4 1' => 'smc PENTAX-FA SOFT 28mm F2.8',
@@ -340,6 +340,8 @@ sub DecodeAFPoints($$$$;$);
     '8 64' => 'HD PENTAX-D FA* 50mm F1.4 SDM AW', #27
     '8 65' => 'HD PENTAX-D FA 70-210mm F4 ED SDM WR', #PH
     '8 66' => 'HD PENTAX-D FA 85mm F1.4 ED SDM AW', #James O'Neill
+    '8 67' => 'HD PENTAX-D FA 21mm F2.4 ED Limited DC WR', #ChristianShulz
+    '8 195' => 'HD PENTAX DA* 16-50mm F2.8 ED PLM AW', #27
     '8 196' => 'HD PENTAX-DA* 11-18mm F2.8 ED DC AW', #29
     '8 197' => 'HD PENTAX-DA 55-300mm F4.5-6.3 ED PLM WR RE', #29
     '8 198' => 'smc PENTAX-DA L 18-50mm F4-5.6 DC WR RE', #29
@@ -363,10 +365,15 @@ sub DecodeAFPoints($$$$;$);
     '8 255.4' => 'Sigma 4.5mm F2.8 EX DC HSM Circular Fisheye', #PH
     '8 255.5' => 'Sigma 50-200mm F4-5.6 DC OS', #26
     '8 255.6' => 'Sigma 24-70mm F2.8 EX DG HSM', #29
+
+    '9 0' => '645 Manual Lens', #PH (NC)
+    '9 3' => 'HD PENTAX-FA 43mm F1.9 Limited', #IB
+    '9 24' => 'HD PENTAX-FA 77mm F1.8 Limited', #IB
+    '9 39' => 'HD PENTAX-FA 31mm F1.8 AL Limited', #IB
+    '9 247' => 'HD PENTAX-DA FISH-EYE 10-17mm F3.5-4.5 ED [IF]', #IB
 #
 # 645 lenses
 #
-    '9 0' => '645 Manual Lens', #PH (NC)
     '10 0' => '645 A Series Lens', #PH
     '11 1' => 'smc PENTAX-FA 645 75mm F2.8', #PH
     '11 2' => 'smc PENTAX-FA 645 45mm F2.8', #PH
@@ -6313,7 +6320,7 @@ tags, and everyone who helped contribute to the LensType values.
 
 =head1 AUTHOR
 
-Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

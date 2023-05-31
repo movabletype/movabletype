@@ -55,6 +55,12 @@ function doValidateNotifyRecips(f) {
     </ul>
   </mtapp:setting>
   <mtapp:setting
+     id="subject"
+     label="<__trans phrase="Subject">"
+     label_class="top-label">
+        <input type="text" name="subject" id="subject" class="form-control text" value="<mt:var name="subject" escape="html">" />
+  </mtapp:setting>
+  <mtapp:setting
      id="message"
      label="<__trans phrase="Optional Message">"
      label_class="top-label">

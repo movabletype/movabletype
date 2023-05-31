@@ -1,0 +1,110 @@
+<$mt:setvar name="page_title" value="<__trans phrase="Restore: Multiple Files">"$>
+<mt:setvarblock name="js_include" append="1">
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+    <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    var dialog;
+    var panels;
+    function dialog_closed(ok) {
+        if (ok) {
+            var frm = document['restore'];
+            frm.submit();
+        } else {
+    <mt:if name="is_dirty">
+            var a = confirm('<__trans phrase="Canceling the process will create orphaned objects.  Are you sure you want to cancel the restore operation?" escape="js">');
+            if (!a) {
+                return false;
+            }
+    </mt:if>
+    <mt:unless name="start">
+            parent.jQuery.fn.mtDialog.close('<mt:var name="script_url">?__mode=restore_premature_cancel&magic_token=<mt:var name="magic_token">&deferred_json=<mt:var name="deferred_json" escape="url">');
+    <mt:else>
+            parent.jQuery.fn.mtDialog.close();
+    </mt:unless>
+        }
+    }
+
+    function init() {
+        dialog = new Dialog.MultiPanel("restore");
+        panels = [];
+        var panel;
+        panel = new ListingPanel("<mt:var name="name" escape="js">");
+        panel.label = "<mt:var name="name" escape="js">";
+        panels[panels.length] = panel;
+        dialog.setPanels(panels);
+        dialog.open({}, dialog_closed);
+
+        var next = TC.getElementsByTagAndClassName("button", "next", getByID('<mt:var name="name" escape="js">-panel'));
+        if (next) {
+            this.nextButton = next[0];
+            this.nextButton.onclick = function() {
+                document['restore_form'].submit();
+            };
+        }
+    }
+
+    TC.attachLoadEvent(init);
+    /* ]]> */
+    </script>
+</mt:setvarblock>
+
+<mt:setvarblock name="form_header">
+<form name="restore_form" id="restore_form" method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="dialog_restore_upload" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="files" value="<mt:var name="files" escape="html">" />
+    <input type="hidden" name="assets" value="<mt:var name="assets" escape="html">" />
+    <input type="hidden" name="current_file" value="<mt:var name="name" escape="html">" />
+    <input type="hidden" name="last" value="<mt:var name="last" escape="html">" />
+    <input type="hidden" name="is_dirty" value="<mt:var name="is_dirty" escape="html">" />
+    <input type="hidden" name="is_asset" value="<mt:var name="is_asset" escape="html">" />
+    <input type="hidden" name="schema_version" value="<mt:var name="schema_version" escape="html">" />
+    <input type="hidden" name="overwrite_templates" value="<mt:var name="overwrite_templates" escape="html">" />
+    <input type="hidden" name="objects_json" value="<mt:var name="objects_json" escape="html">" />
+    <input type="hidden" name="deferred_json" value="<mt:var name="deferred_json" escape="html">" />
+</mt:setvarblock>
+
+<mt:setvarblock name="form_footer">
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+<mt:if name="error">
+<mtapp:statusmsg
+   id="generic-error"
+   class="error"
+   can_close="0">
+  <mt:var name="error">
+</mtapp:statusmsg>
+</mt:if>
+<mt:setvarblock name="restore_file_label">
+    <__trans phrase="Please upload the file [_1]" params="<em class="upload-file"><$mt:var name="name" escape="html"$></em>">
+</mt:setvarblock>
+<mtapp:setting
+    id="restore_file"
+    label="<$mt:var name="restore_file_label"$>"
+    label_class="top-label">
+    <input name="file" id="restore_file" type="file" size="50" />
+</mtapp:setting>
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Continue (s)">"
+       class="next continue action button primary for-website btn btn-primary"
+       ><__trans phrase="Continue"></button>
+    <button
+       type="submit"
+       accesskey="x"
+       class="cancel action button mt-close-dialog btn btn-default"
+       data-mt-modal-close
+       title="<__trans phrase="Cancel (x)">"
+       ><__trans phrase="Cancel"></button>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use if $] >= 5.019, 'deprecate';
 
-$CGI::Fast::VERSION='2.13';
+$CGI::Fast::VERSION='2.16';
 
 use CGI;
 use CGI::Carp;
@@ -87,15 +87,35 @@ sub _create_fcgi_request {
     }
 
     sub new {
-        my ($self, $initializer, @param) = @_;
 
-        if ( ! defined $initializer ) {
+		#
+		# the interface to the ->new method is unfortunately somewhat
+		# overloaded as it can be passed:
+		#
+		#         nothing
+		#         an upload hook, "something", 0
+		#         an initializer, an upload hook, "something", 0
+		#
+		# these then get passed through to the SUPER class (CGI.pm) that
+		# also has a constructor that can take various order of args
+		#
+        my ($self, @args) = @_;
+
+        if (
+			! $args[0]
+			|| (
+				ref( $args[0] )
+				&& UNIVERSAL::isa( $args[0],'CODE' )
+				&& ! $args[3]
+			)
+		) {
             $Ext_Request ||= _create_fcgi_request( $in_fh,$out_fh,$err_fh );
-            return undef unless $Ext_Request->Accept >= 0;
+			my $accept = $Ext_Request->Accept;
+            return undef unless ( defined $accept && $accept >= 0 );
         }
         CGI->_reset_globals;
         $self->_setup_symbols(@CGI::SAVED_SYMBOLS) if @CGI::SAVED_SYMBOLS;
-        return $CGI::Q = $self->SUPER::new($initializer, @param);
+        return $CGI::Q = $self->SUPER::new(@args);
     }
 }
 
@@ -138,6 +158,10 @@ scripts by turning them into persistently running server processes.
 Scripts that perform time-consuming initialization processes, such as
 loading large modules or opening persistent database connections, will
 see large performance improvements.
+
+Note that as CGI::Fast is based on CGI.pm it is no longer advised as
+a way to write Perl web apps. See L<https://metacpan.org/pod/CGI#CGI.pm-HAS-BEEN-REMOVED-FROM-THE-PERL-CORE>
+for more information about this
 
 =head1 OTHER PIECES OF THE PUZZLE
 

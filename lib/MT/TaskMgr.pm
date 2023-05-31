@@ -66,14 +66,13 @@ sub run_tasks {
         return;
     }
 
+    my @completed;
+    my $app = MT->instance;
     eval {
-        my $app = MT->instance;
-
         $app->run_callbacks('PeriodicTask');
 
         require MT::Log;
         require MT::Session;
-        my @completed;
 
         foreach my $task_name (@tasks_to_run) {
             my $task = $Tasks{$task_name} or next;
@@ -97,13 +96,14 @@ sub run_tasks {
             }
 
             # Run this task
-            my $status;
+            my ($status, $err);
+            $app->run_callbacks('pre_run_task', $app, $task);
             eval {
                 local $app->{session} = $sess;
                 $status = $task->run;
             };
             if ($@) {
-                my $err = $@;
+                $err = $@;
                 $app->log(
                     {   class    => 'system',
                         category => 'tasks',
@@ -121,12 +121,13 @@ sub run_tasks {
                 );
             }
             else {
-                push @completed, $name
+                push @completed, { name => $name, key => $task->key }
                     if ( defined $status )
                     && ( $status ne '' )
                     && ( $status > 0 );
 
             }
+            $app->run_callbacks('post_run_task', $app, $task, $status, $err);
 
             $sess->start(time);
             $sess->save;
@@ -141,11 +142,12 @@ sub run_tasks {
                         . $app->translate("The following tasks were run:")
                         . ' '
                         . join ", ",
-                    @completed
+                    map { $_->{name} } @completed
                 }
             );
         }
     };
+    $app->run_callbacks('PeriodicTaskEnd', $app, [map { $_->{key} } @completed]);
 
     $unlock->();
 }

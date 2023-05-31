@@ -1,0 +1,76 @@
+<mt:var name="pager" value="$hide_pager" default="0">
+<div id="selector-rev" class="selector listing">
+<mtapp:listing
+   hide_pager="$pager"
+   listing_class="mb-3"
+   show_actions="$show_actions"
+   target="_self"
+   empty_message="<__trans phrase="No revisions could be found.">">
+<mt:if name="__first__">
+  <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head datetime"><span class="col-label"><__trans phrase="_REVISION_DATE_"></span></th>
+      <th class="head note primary"><span class="col-label"><__trans phrase="Note"></span></th>
+    <mt:if name="object_type" like="(entry|page|content_data)">
+      <th class="head status"><span class="col-label"><__trans phrase="Status"></span></th>
+    </mt:if>
+      <th class="head created-by d-none d-md-table-cell"><span class="col-label"><__trans phrase="Saved By"></span></th>
+    <mt:loop name="more_column_headers">
+      <mt:var name="__value__">
+    </mt:loop>
+    </tr>
+  </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:if name="is_current"> current-revision highlight mt-table__highlight--current</mt:if>">
+      <td class="datetime"><span class="revision-datetime">
+        <mt:if name="is_broken">
+          <mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S">
+        <mt:else>
+          <a class="revision-number" href="javascript:void(0);" onclick="javascript:<$mt:var name="rev_js"$>;"><mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S"></a>
+        </mt:if>
+      </span></td>
+      <td class="note"><span class="revision-note">
+        <mt:if name="is_broken">
+        <__trans phrase="*Deleted due to data breakage*">
+        <mt:else>
+          <mt:var name="description" escape="html">
+        </mt:if>
+      </span></td>
+    <mt:if name="object_type" like="(entry|page|content_data)">
+      <td class="status">
+      <mt:if name="rev_status" eq="1">
+        <span class="icon-left-wide icon-draft"><__trans phrase="Draft"></span>
+      <mt:else name="rev_status" eq="3">
+        <span class="icon-left-wide icon-warning"><__trans phrase="Review"></span>
+      <mt:else name="rev_status" eq="4">
+        <span class="icon-left-wide icon-future"><__trans phrase="Scheduled"></span>
+      <mt:else name="rev_status" eq="2">
+        <span class="icon-left-wide icon-success"><__trans phrase="Published"></span>
+      <mt:else name="rev_status" eq="5">
+        <span class="icon-left-wide icon-spam"><__trans phrase="Spam"></span>
+      <mt:else name="rev_status" eq="6">
+        <span class="icon-left-wide icon-unpublish"><__trans phrase="Unpublished (End)"></span>
+      </mt:if>
+      </td>
+    </mt:if>
+      <td class="created-by d-none d-md-table-cell"><span class="revision-by"><mt:var name="created_by" escape="html"></span></td>
+    <mt:loop name="more_columns">
+      <mt:var name="__value__">
+    </mt:loop>
+    </tr>
+<mt:if name="__last__">
+  </tbody>
+</mt:if>
+</mtapp:listing>
+
+<div class="row">
+  <div class="col-auto mx-auto">
+    <mt:include name="include/pagination.tmpl">
+  </div>
+</div>
+
+</div>

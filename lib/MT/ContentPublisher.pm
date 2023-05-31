@@ -20,6 +20,7 @@ use File::Spec;
 use MT::PublishOption;
 use MT::Template;
 use MT::TemplateMap;
+use MT::Util qw( trim_path );
 
 our %ArchiveTypes;
 
@@ -109,7 +110,7 @@ sub rebuild {
     my $blog;
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Loading of blog '[_1]' failed: [_2]", $blog_id,
@@ -417,7 +418,7 @@ sub rebuild_content_categories {
 
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Load of blog '[_1]' failed: [_2]", $blog_id,
@@ -1036,7 +1037,7 @@ sub rebuild_file {
         }
     }
 
-    my $tmpl = MT::Template->load($tmpl_id);
+    my $tmpl = MT->request->{__stash}{__obj}{"template:$tmpl_id"} ||= MT::Template->load($tmpl_id);
     return 1 if $tmpl->type eq 'backup';
     $tmpl->context($ctx);
 
@@ -1639,7 +1640,7 @@ sub _rebuild_content_archive_type {
     my $blog;
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $content_data->blog_id;
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Load of blog '[_1]' failed: [_2]", $blog_id,
@@ -1732,6 +1733,13 @@ sub _rebuild_content_archive_type {
             && $map->dt_field_id ? $content_data->data->{ $map->dt_field_id }
             : exists $param{Timestamp} ? $param{Timestamp}
             :                            undef;
+
+        if ($content_data && $map->cat_field_id && !$param{Category}) {
+            my $cat = $content_data->data->{$map->cat_field_id};
+            if ($cat && @$cat) {
+                $param{Category} = MT->model('category')->load($cat->[0]);
+            }
+        }
 
         my $file
             = exists $param{File}
@@ -1906,8 +1914,7 @@ sub _rebuild_content_archive_type {
         );
         if ( $file_tmpl && !$file ) {
             local $ctx->{archive_type} = $at;
-            require MT::Builder;
-            my $build  = MT::Builder->new;
+            my $build  = MT->builder;
             my $tokens = $tokens_cache{$file_tmpl}
                 ||= $build->compile( $ctx, $file_tmpl )
                 or return $blog->error( $build->errstr() );
@@ -1917,6 +1924,7 @@ sub _rebuild_content_archive_type {
         else {
             my $ext = $blog->file_extension;
             $file .= '.' . $ext if $ext;
+            $file = trim_path($file) if MT->config->TrimFilePath;
         }
         $cache_file->{$cache_key} = $file;
         $file;

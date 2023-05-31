@@ -10,6 +10,7 @@ use strict;
 use warnings;
 use base qw( MT::Template::Context );
 use MT::Util qw( encode_url decode_html );
+use MT::Util::Encode;
 
 sub load_core_tags {
     require MT::Template::Context;
@@ -385,6 +386,7 @@ sub _hdlr_results {
         else {
             $blog_footer = 1;
             $footer      = 1;
+            $ctx->stash('results', undef);  # clear finished iterator
         }
 
         my $vars = $ctx->{__stash}{vars} ||= {};
@@ -504,9 +506,9 @@ sub context_script {
 
 sub _decode_utf8_if_needed {
     my $str = shift;
-    my $enc = MT->config->PublishCharset;
-    return $str unless lc($enc) =~ /^utf-?8$/ && !Encode::is_utf8($str);
-    Encode::decode_utf8($str);
+    my $enc = MT->publish_charset;
+    return $str unless lc($enc) =~ /^utf-?8$/ && !MT::Util::Encode::is_utf8($str);
+    MT::Util::Encode::decode_utf8($str);
 }
 
 1;

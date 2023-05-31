@@ -1,0 +1,72 @@
+<div class="row">
+  <div class="mt-footer">
+  <mt:if name="mt_alpha_or_beta">
+    <div id="msg-beta" class="text-center">
+      <p>
+    <mt:if name="mt_alpha">
+        <span class="badge badge-info"><__trans phrase="DEVELOPER PREVIEW"></span>
+        <__trans phrase="This is a alpha version of Movable Type and is not recommended for production use.">
+    <mt:elseif name="mt_beta">
+        <span class="badge badge-info"><__trans phrase="BETA"></span>
+        <__trans phrase="This is a beta version of Movable Type and is not recommended for production use.">
+    </mt:if>
+      </p>
+    </div>
+  </mt:if>
+
+    <ul class="mt-footer__links list-inline">
+      <li class="list-inline-item">
+        <a href="<__trans phrase="https://www.movabletype.org">">
+          <__trans phrase="MovableType.org">
+        </a>
+      </li>
+      <li class="list-inline-item">
+        <a href="<__trans phrase="https://plugins.movabletype.org/">">
+          <__trans phrase="Plugins">
+        </a>
+      </li>
+      <li class="list-inline-item">
+        <a href="<__trans phrase="https://www.movabletype.org/documentation/">">
+          <__trans phrase="Documentation">
+        </a>
+      </li>
+      <li class="list-inline-item">
+        <a href="<mt:var name="mt_support">">
+          <__trans phrase="Support">
+        </a>
+      </li><mt:if name="language_id" eq="ja">
+      <li class="list-inline-item">
+        <a href="<__trans phrase="https://forums.movabletype.org/">">
+          <__trans phrase="Forums">
+        </a>
+      </li></mt:if>
+      <li class="list-inline-item">
+        <a href="<mt:var name="mt_feedback_url">">
+          <__trans phrase="Send Us Feedback">
+        </a>
+      </li>
+    </ul>
+
+    <p>
+      <small>
+        <MT_TRANS phrase="Copyright &copy; 2001 Six Apart. All Rights Reserved."><br>
+        <__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_release_version_id">">
+<mt:if name="packs_installed">
+        <span class="mt-footer__installedAddons">
+          <__trans phrase="with">:
+  <mt:loop name="packs_installed" glue=", ">
+    <mt:if name="link">
+          <a href="<mt:var name="link" escape="html">">
+    </mt:if>
+            <mt:var name="label" escape="html">
+            <mt:var name="version" escape="html">
+    <mt:if name="link">
+          </a>
+    </mt:if>
+  </mt:loop>
+        </span>
+</mt:if>
+      </small>
+    </p>
+  </div>
+</div>

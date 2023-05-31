@@ -363,7 +363,7 @@ package BuildProfiler;
 
 use strict;
 
-use MT::Util qw( epoch2ts );
+use MT::Util;
 use Time::HiRes;
 use Data::Dumper;
 

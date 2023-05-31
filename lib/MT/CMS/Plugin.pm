@@ -163,6 +163,14 @@ sub plugin_control {
                     level    => MT::Log::INFO()
                 }
             );
+
+            if (my $object = $MT::Plugins{$plugin_sig}{object}) {
+                if ($object->name ne $plugin_sig) {
+                    my $alias = $cfg->PluginAlias || {};
+                    $alias->{$object->name} = $plugin_sig;
+                    $cfg->PluginAlias($alias, 1);
+                }
+            }
         }
     }
     $cfg->save_config;
@@ -179,6 +187,9 @@ sub build_plugin_table {
     my $scope = $opt{scope} || 'system';
     my $cfg   = $app->config;
     my $data  = [];
+
+    my $plugin_alias = $app->config->PluginAlias || {};
+    my %alias_map    = map {$plugin_alias->{$_} => $_} keys %$plugin_alias;
 
     # we have to sort the plugin list in an odd fashion...
     #   PLUGINS
@@ -429,14 +440,15 @@ sub build_plugin_table {
 
             # no registered plugin objects--
             $row = {
-                first           => $next_is_first,
-                plugin_major    => $fld ? 0 : 1,
-                plugin_icon     => $icon,
-                plugin_name     => $plugin_sig,
-                plugin_sig      => $plugin_sig,
-                plugin_error    => $profile->{error},
-                plugin_disabled => $profile->{enabled} ? 0 : 1,
-                plugin_id       => $id,
+                first               => $next_is_first,
+                plugin_major        => $fld ? 0 : 1,
+                plugin_icon         => $icon,
+                plugin_name         => $alias_map{$plugin_sig} || $plugin_sig,
+                plugin_sig          => $plugin_sig,
+                plugin_error        => $profile->{error},
+                plugin_system_error => $profile->{system_error},
+                plugin_disabled     => $profile->{enabled} ? 0 : 1,
+                plugin_id           => $id,
             };
             push @$data, $row;
         }

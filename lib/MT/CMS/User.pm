@@ -8,8 +8,7 @@ package MT::CMS::User;
 use strict;
 use warnings;
 
-use MT::Util
-    qw( format_ts relative_date is_valid_email is_url encode_url encode_html );
+use MT::Util qw( is_valid_email is_url encode_html );
 use MT::Author;
 
 sub edit {
@@ -271,14 +270,7 @@ sub edit_role {
             }
         }
         my $assoc_class = $app->model('association');
-        my $user_count  = $assoc_class->count(
-            {   role_id   => $role->id,
-                author_id => [ 1, undef ],
-            },
-            {   unique     => 'author_id',
-                range_incl => { author_id => 1 },
-            }
-        );
+        my $user_count  = $assoc_class->count({ role_id => $role->id });
         $param{members} = $user_count;
     }
     else {

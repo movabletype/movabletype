@@ -97,7 +97,9 @@
             convert_urls: false,
             verify_html: false,
             valid_children:
-                '+a[video|ul|time|table|svg|style|section|ruby|progress|pre|output|ol|noscript|nav|meter|meta|menu|mark|link|keygen|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|dl|div|dialog|details|datalist|command|canvas|blockquote|audio|aside|article|address|area]',
+                '+body[style],+a[video|ul|time|table|svg|style|section|ruby|progress|pre|output|ol|noscript|nav|meter|meta|menu|mark|link|keygen|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|dl|div|dialog|details|datalist|command|canvas|blockquote|audio|aside|article|address|area]',
+
+
 
             cleanup: true,
 
@@ -450,11 +452,6 @@
                         target: adapter.$editorTextarea.get(0)
                     })
                 })
-            })
-
-            ed.on('SaveContent', function (args) {
-                let content = args.content.replace(/\u00a0/g, '\u0020')
-                ed.setContent(content)
             })
 
             ed.addCommand('mtSetFormat', function (format) {

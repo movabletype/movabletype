@@ -100,6 +100,8 @@ $mt->app->user($admin);
 
 MT::PluginData->remove_all;
 
+$mt->request('__restore_in_progress', 1);
+
 use IO::String;
 my $h = IO::String->new( \$backup_data );
 my ( %objects, %deferred, @errors );

@@ -1,0 +1,16 @@
+  <script type="text/javascript">
+  /* <![CDATA[ */
+  jQuery(function() {
+      <mt:var name="jq_js_include">
+
+      // modal
+      jQuery('.mt-modal-open').mtModal();
+      jQuery('[data-mt-modal-close]').mtModalClose();
+<mt:if name="insert_script">
+      parent.jQuery.fn.mtModal.close();
+</mt:if>
+  });
+  /* ]]> */
+  </script>
+</body>
+</html>

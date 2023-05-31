@@ -9,15 +9,9 @@ use strict;
 use warnings;
 
 use MT;
-use MT::Util qw( start_end_day start_end_week
-    start_end_month week2ymd archive_file_for
-    format_ts offset_time_list first_n_words dirify get_entry
-    encode_html encode_js remove_html wday_from_ts days_in
-    spam_protect encode_php encode_url decode_html encode_xml
-    decode_xml relative_date asset_cleanup );
+use MT::Util qw( decode_xml );
+use MT::Util::Encode;
 use MT::Request;
-use Time::Local qw( timegm timelocal );
-use MT::Promise qw( delay );
 use MT::Category;
 use MT::Entry;
 use MT::Asset;
@@ -173,7 +167,7 @@ sub _fltr_nofollowfy {
             $rel = 'rel="nofollow"';
         }
         @attr = grep { !/^rel\s*=/i } @attr;
-        @attr = map { Encode::is_utf8( $_ ) ? $_ : Encode::decode_utf8($_) } @attr;
+        @attr = map { MT::Util::Encode::decode_utf8_unless_flagged($_) } @attr;
         '<a ' . (join ' ', @attr) . ' ' . $rel . '>';
     #xieg;
     $str;

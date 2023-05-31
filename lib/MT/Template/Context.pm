@@ -339,7 +339,7 @@ sub build {
     my $builder = $ctx->stash('builder');
     my $tokens = $builder->compile( $ctx, $tmpl )
         or return $ctx->error( $builder->errstr );
-    local $ctx->{stash}{tokens} = $tokens;
+    local $ctx->{__stash}{tokens} = $tokens;
     my $result = $builder->build( $ctx, $tokens, $cond );
     return $ctx->error( $builder->errstr )
         unless defined $result;
@@ -414,9 +414,15 @@ sub set_blog_load_context {
             ? $blog->website
             : $blog;
         my ( @blogs, $blog_ids );
-        @blogs = MT->model('blog')->load( { parent_id => $website->id } );
+        my $website_id = $website->id;
+        if (my $child_sites = MT->request->{__stash}{__obj}{"child_sites:$website_id"}) {
+            @blogs = @$child_sites;
+        } else {
+            @blogs = MT->model('blog')->load( { parent_id => $website_id } );
+            MT->request->{__stash}{__obj}{"child_sites:$website_id"} = \@blogs;
+        }
         $blog_ids = scalar @blogs ? [ map { $_->id } @blogs ] : [];
-        push @$blog_ids, $website->id
+        push @$blog_ids, $website_id
             if $attr->{include_parent_site} || $attr->{include_with_website};
         $blog_ids = -1
             unless scalar @$blog_ids
@@ -852,23 +858,37 @@ sub set_tag_filter_context {
     require MT::ObjectTag;
 
     my $terms;
+    my $cache_key;
     if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
         my @tags = MT::Tag->split( ',', $tag_arg );
         $terms   = { name => \@tags };
         $tag_arg = join " or ", @tags;
-    }
-    my @tags = MT::Tag->load(
-        $terms,
-        {   ( $terms ? ( binary => { name => 1 } ) : () ),
-            join => MT::ObjectTag->join_on(
-                'tag_id',
-                {   object_datasource => $datasource,
-                    %$blog_terms,
-                },
-                { %$blog_args, unique => 1 }
-            ),
+        if (!%$blog_args and exists $blog_terms->{blog_id} && keys %$blog_terms == 1) {
+            my $blog_ids = $blog_terms->{blog_id};
+            $blog_ids  = ref $blog_ids ? join ',', sort @$blog_ids : $blog_ids;
+            $cache_key = "tag:$blog_ids:$tag_arg";
         }
-    );
+    }
+    my @tags;
+    my $stash = MT->request->{__stash};
+    if ($cache_key && $stash->{__obj}{$cache_key}) {
+        @tags = @{ $stash->{__obj}{$cache_key} };
+    } else {
+        @tags = MT::Tag->load(
+            $terms,
+            {
+                ($terms ? (binary => { name => 1 }) : ()),
+                join => MT::ObjectTag->join_on(
+                    'tag_id',
+                    {
+                        object_datasource => $datasource,
+                        %$blog_terms,
+                    },
+                    { %$blog_args, unique => 1 }
+                ),
+            });
+        $stash->{__obj}{$cache_key} = \@tags if $cache_key;
+    }
 
     my $cexpr = $ctx->compile_tag_filter( $tag_arg, \@tags )
         or return $ctx->error(

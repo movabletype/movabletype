@@ -13,7 +13,6 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Fixture;
-use Test::Deep qw/cmp_bag/;
 use File::Spec;
 use Path::Tiny;
 use utf8;
@@ -132,7 +131,9 @@ TMPL
     }
 );
 
-MT->publisher->rebuild;
+my $blog = $objs->{blog}{my_blog};
+
+MT->publisher->rebuild(BlogID => $blog->id);
 
 my $html = path( $archive_path, 'news/2018/index.html' )->slurp_utf8;
 $html =~ s/(?:\r?\n)+/\n/gs;

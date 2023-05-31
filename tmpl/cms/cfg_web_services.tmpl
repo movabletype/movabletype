@@ -53,6 +53,14 @@
        id="enable-data-api"
        label="<__trans phrase="Data API">">
     <div class="form-group">
+      <mt:unless name="blog_id">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" value="1" name="disable_data_api" id="disable-data-api" class="custom-control-input" <mt:if name="disable_data_api_readonly">disabled="disabled"</mt:if><mt:if name="disable_data_api"> checked="checked"</mt:if> />
+        <label class="custom-control-label" for="disable-data-api">
+          <__trans phrase="Disable Data API">
+        </label>
+      </div>
+      </mt:unless>
       <div class="custom-control custom-checkbox">
         <input type="checkbox" value="1" name="enable_data_api" id="enable-data-api" class="custom-control-input" <mt:if name="data_api_disable_site_readonly">disabled="disabled"</mt:if><mt:if name="enable_data_api"> checked="checked"</mt:if> />
         <label class="custom-control-label" for="enable-data-api">
@@ -74,9 +82,7 @@
       <mt:if name="enabled_plugins{Trackback}">
       <mtapp:setting
          id="ping_blogs"
-         label="<__trans phrase="Notify ping services of [_1] updates" params="<mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if>">"
-         help_page="blog_settings_entry_defaults"
-         help_section="update_pings">
+         label="<__trans phrase="Notify ping services of [_1] updates" params="<mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if>">">
       <mt:if name="system_disabled_notify_pings">
         <p>
           <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />

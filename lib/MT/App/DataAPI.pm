@@ -15,6 +15,7 @@ use MT::DataAPI::Endpoint::v2;
 use MT::DataAPI::Endpoint::v3;
 use MT::DataAPI::Endpoint::v4;
 use MT::DataAPI::Endpoint::v5;
+use MT::DataAPI::Endpoint::v6;
 use MT::DataAPI::Resource;
 use MT::DataAPI::Format;
 use MT::App::CMS;
@@ -27,8 +28,8 @@ our %endpoints = ();
 our %schemas   = ();
 
 sub id                 {'data_api'}
-sub DEFAULT_VERSION () {5}
-sub API_VERSION ()     {5.0}
+sub DEFAULT_VERSION () {6}
+sub API_VERSION ()     {6.0}
 
 sub init {
     my $app = shift;
@@ -73,6 +74,7 @@ sub core_endpoints {
         @{ MT::DataAPI::Endpoint::v3->endpoints },
         @{ MT::DataAPI::Endpoint::v4->endpoints },
         @{ MT::DataAPI::Endpoint::v5->endpoints },
+        @{ MT::DataAPI::Endpoint::v6->endpoints },
     ];
 }
 
@@ -910,6 +912,9 @@ sub load_default_page_prefs {
 
 sub api {
     my ($app) = @_;
+
+    return $app->print_error('DataAPI is disabled', 400) if $app->config->DisableDataAPI;
+
     my ( $version, $path ) = $app->_version_path;
 
     # Special handler for get version information.

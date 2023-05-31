@@ -6,16 +6,21 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+use MT::Test::SendmailMock;
 our $test_env;
 
 BEGIN {
     $test_env = MT::Test::Env->new(
         DefaultLanguage => 'en_US',  ## for now
+        MT::Test::SendmailMock->sendmail_config,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+    $ENV{MT_TEST_MAIL} = 1;
 }
 
 use MT::Test::DataAPI;
+
+my $sendmail = MT::Test::SendmailMock->new(test_env => $test_env);
 
 $test_env->prepare_fixture('db_data');
 
@@ -23,8 +28,6 @@ use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
 use MT::Lockout;
-
-$app->config( 'MailTransfer', 'debug', 1 );
 
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
@@ -710,6 +713,7 @@ sub suite {
         {
             # login by created user
             path      => '/v2/authentication',
+            up_to     => 2,
             method    => 'POST',
             author_id => 0,
             params    => {
@@ -1022,6 +1026,8 @@ sub suite {
                 ok( $user->password_reset_expires > time,
                     'password_reset_expires is set.'
                 );
+                my $mail = $sendmail->last_sent_mail;
+                like $mail => qr/mt.cgi/, "mail has mt.cgi";
             },
         },
 

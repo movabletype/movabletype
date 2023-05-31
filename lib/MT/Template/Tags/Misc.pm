@@ -9,19 +9,10 @@ use strict;
 use warnings;
 
 use MT;
-use MT::Util qw( start_end_day start_end_week
-    start_end_month week2ymd archive_file_for
-    format_ts offset_time_list first_n_words dirify get_entry
-    encode_html encode_js remove_html wday_from_ts days_in
-    spam_protect encode_php encode_url decode_html encode_xml
-    decode_xml relative_date asset_cleanup );
+use MT::Util::Encode;
 use MT::Request;
-use Time::Local qw( timegm timelocal );
-use MT::Promise qw( delay );
 use MT::Category;
 use MT::Entry;
-use MT::I18N
-    qw( first_n_text const uppercase lowercase substr_text length_text wrap_text );
 use MT::Asset;
 
 ###########################################################################
@@ -158,47 +149,45 @@ sub _hdlr_widget_manager {
             }
         }
     }
-    my $tmpl = MT->model('template')->load(
-        {   name    => $tmpl_name,
-            blog_id => $blog_id
-            ? ( exists $args->{parent} && $args->{parent} )
-                    ? $blog_id
-                    : [ 0, $blog_id ]
-            : 0,
-            type => 'widgetset'
-        },
-            {
-            sort      => 'blog_id',
-            direction => 'descend'
-            }
-        )
-        or return $ctx->error(
-        MT->translate( "Specified WidgetSet '[_1]' not found.", $tmpl_name )
-        );
-
-    ## Load all widgets for make cache.
+    my @blog_ids  = $blog_id ? $args->{parent} ? $blog_id : (0, $blog_id) : 0;
+    my $cache_key = join ':', "widgets", $tmpl_name, @blog_ids;
+    my $req       = MT->request;
     my @widgets;
-    if ( my $modulesets = $tmpl->modulesets ) {
-        my @widget_ids = split ',', $modulesets;
-        my $terms
-            = ( scalar @widget_ids ) > 1
-            ? { id => \@widget_ids }
-            : $widget_ids[0];
-        my @objs = MT->model('template')->load($terms);
-        my %widgets = map { $_->id => $_ } @objs;
-        push @widgets, $widgets{$_} for @widget_ids;
-    }
-    elsif ( my $text = $tmpl->text ) {
-        my @widget_names = $text =~ /widget\=\"([^"]+)\"/g;
-        my @objs         = MT->model('template')->load(
-            {   name    => \@widget_names,
-                blog_id => [ $blog_id, 0 ],
-            }
-        );
-        @objs = sort { $a->blog_id <=> $b->blog_id } @objs;
-        my %widgets;
-        $widgets{ $_->name } = $_ for @objs;
-        push @widgets, $widgets{$_} for @widget_names;
+    if (my $cache = $req->{__stash}{__obj}{$cache_key}) {
+        @widgets = @$cache;
+    } else {
+        my $tmpl = MT->model('template')->load({
+                name    => $tmpl_name,
+                blog_id => \@blog_ids,
+                type    => 'widgetset'
+            },
+            {
+                sort      => 'blog_id',
+                direction => 'descend'
+            }) or return $ctx->error(MT->translate("Specified WidgetSet '[_1]' not found.", $tmpl_name));
+
+        ## Load all widgets for make cache.
+        if (my $modulesets = $tmpl->modulesets) {
+            my @widget_ids = split ',', $modulesets;
+            my $terms =
+                  (scalar @widget_ids) > 1
+                ? { id => \@widget_ids }
+                : $widget_ids[0];
+            my @objs    = MT->model('template')->load($terms);
+            my %widgets = map { $_->id => $_ } @objs;
+            push @widgets, $widgets{$_} for @widget_ids;
+        } elsif (my $text = $tmpl->text) {
+            my @widget_names = $text =~ /widget\=\"([^"]+)\"/g;
+            my @objs         = MT->model('template')->load({
+                name    => \@widget_names,
+                blog_id => [$blog_id, 0],
+            });
+            @objs = sort { $a->blog_id <=> $b->blog_id } @objs;
+            my %widgets;
+            $widgets{ $_->name } = $_ for @objs;
+            push @widgets, $widgets{$_} for @widget_names;
+        }
+        $req->{__stash}{__obj}{$cache_key} = \@widgets;
     }
     return '' unless scalar @widgets;
 
@@ -206,14 +195,9 @@ sub _hdlr_widget_manager {
     {
         local $ctx->{__stash}{tag} = 'include';
         for my $widget (@widgets) {
-            my $name     = $widget->name;
-            my $stash_id = Encode::encode_utf8(
-                join( '::', 'template_widget', $blog_id, $name ) );
-            my $req = MT::Request->instance;
-            my $tokens = $ctx->stash('builder')->compile( $ctx, $widget );
-            $req->stash( $stash_id, [ $widget, $tokens ] );
-            my $out = $ctx->invoke_handler( 'include',
-                { %$args, widget => $name, }, $cond, );
+            my $name   = $widget->name;
+            my $tokens = $ctx->stash('builder')->compile($ctx, $widget);
+            my $out    = $ctx->invoke_handler('include', { %$args, widget => $name, }, $cond);
 
             # if error is occurred, pass the include's errstr
             return unless defined $out;
@@ -243,7 +227,7 @@ B<Example:>
 sub _hdlr_captcha_fields {
     my ( $ctx, $args, $cond ) = @_;
     my $blog_id = $ctx->stash('blog_id');
-    my $blog    = MT->model('blog')->load($blog_id);
+    my $blog    = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
     return $ctx->error( MT->translate( 'Cannot load blog #[_1].', $blog_id ) )
         unless $blog;
     if ( my $provider
@@ -269,14 +253,26 @@ If any stats provider was not found, this template tag will return blank string.
 sub _hdlr_stats_snippet {
     my ($ctx, $args) = @_;
     my $blog_id      = $ctx->stash('blog_id');
-    my $blog         = MT->model('blog')->load($blog_id);
+    my $blog         = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
     my $provider_arg = $args->{provider} || '';
+    my $cache_key    = "stats_provider:$provider_arg";
+    my $provider;
+    my $stash = MT->request->{__stash};
+    if (exists $stash->{__obj}{$cache_key}) {
+        $provider = $stash->{__obj}{$cache_key} or return '';
+    } else {
+        require MT::Stats;
+        $provider = $stash->{__obj}{$cache_key} = MT::Stats::readied_provider(MT->instance, $blog, $provider_arg)
+            or return q();
+    }
 
-    require MT::Stats;
-    my $provider = MT::Stats::readied_provider(MT->instance, $blog, $provider_arg)
-        or return q();
-
-    $provider->snipet(@_);
+    if ($provider->can('snipet')) {
+        require MT::Util::Deprecated;
+        my $class = ref $provider;
+        MT::Util::Deprecated::warning( name => "$class\::snipet", alternative => "snippet" );
+        return $provider->snipet(@_);
+    }
+    $provider->snippet(@_);
 }
 
 ###########################################################################

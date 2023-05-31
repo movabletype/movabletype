@@ -13,6 +13,7 @@ use base qw( MT::App );
 use MT::Auth;
 use MT::BasicAuthor;
 use MT::Util;
+use MT::Util::Encode;
 use JSON;
 
 sub id {'upgrade'}
@@ -779,10 +780,7 @@ sub serialize_config {
     my $ser = MT::Serialize->new('MT');
     my %set;
     foreach my $key (@keys) {
-        $set{$key}
-            = Encode::is_utf8( $param{$key} )
-            ? Encode::encode( $app->charset, $param{$key} )
-            : $param{$key};
+        $set{$key} = MT::Util::Encode::encode_if_flagged( $app->charset, $param{$key} );
     }
     my $set = \%set;
     unpack 'H*', $ser->serialize( \$set );
@@ -805,10 +803,7 @@ sub unserialize_config {
             my $saved_cfg = $$thawed;
             if ( keys %$saved_cfg ) {
                 foreach my $p ( keys %$saved_cfg ) {
-                    $config{$p}
-                        = Encode::is_utf8( $saved_cfg->{$p} )
-                        ? $saved_cfg->{$p}
-                        : Encode::decode( $app->charset, $saved_cfg->{$p} );
+                    $config{$p} = MT::Util::Encode::decode_unless_flagged( $app->charset, $saved_cfg->{$p} );
                 }
             }
         }

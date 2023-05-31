@@ -11,7 +11,6 @@ use warnings;
 use MT::ContentStatus;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
-use MT::Util qw( archive_file_for );
 
 sub list_openapi_spec {
     +{

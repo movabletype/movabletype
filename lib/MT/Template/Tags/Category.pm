@@ -11,7 +11,7 @@ use warnings;
 use MT;
 use MT::Category;
 use MT::ContentStatus;
-use MT::Util qw( archive_file_for dirify );
+use MT::Util qw( archive_file_for );
 use MT::Promise qw( delay );
 
 sub _load_sibling_categories {
@@ -277,7 +277,7 @@ sub _hdlr_categories {
     ## Otherwise, counts are collected on an as-needed basis, using the
     ## 'entry_count' method in MT::Category.
     my $counts_fetched   = 0;
-    my $content_count_of = !$args->{category_set_id}
+    my $content_count_of = !($args->{category_set_id} || $ctx->stash('category_set'))
         ? sub {
         my $cat = shift;
         return delay( sub { $cat->entry_count } )
@@ -520,13 +520,16 @@ sub _hdlr_category_prevnext {
     return '' if ( $cat eq '' );
 
     require MT::Placement;
-    my $needs_entries;
-    my $uncompiled = $ctx->stash('uncompiled') || '';
-    $needs_entries
-        = $class_type eq 'category'
-        ? ( ( $uncompiled =~ /<MT:?Entries/i ) ? 1 : 0 )
-        : ( ( $uncompiled =~ /<MT:?Pages/i ) ? 1 : 0 );
-    my $needs_contents = ( $uncompiled =~ /<MT:?Contents/i ) ? 1 : 0;
+    my $uncompiled    = $ctx->stash('uncompiled') || '';
+    my $needs_entries = (
+        $ctx->stash('entries')
+            || (
+            $class_type eq 'category'
+            ? (($uncompiled =~ /<MT:?Entries/i) ? 1 : 0)
+            : (($uncompiled =~ /<MT:?Pages/i)   ? 1 : 0)
+            ),
+    );
+    my $needs_contents = ($ctx->stash('content_type') || ($uncompiled =~ /<MT:?Contents/i)) ? 1 : 0;
     my $blog_id        = $cat->blog_id;
     my $cats           = _load_sibling_categories( $ctx, $cat, $class_type );
 
@@ -575,7 +578,7 @@ sub _hdlr_category_prevnext {
     return '' unless defined $pos;
     $pos += $step;
     while ( $pos >= 0 && $pos < scalar @$cats ) {
-        if ( !exists $cats->[$pos]->{_placement_count} ) {
+        if ( !exists $cats->[$pos]->{_placement_count} or $needs_contents ) {
             if ($needs_entries) {
                 require MT::Entry;
                 my @entries = MT::Entry->load(
@@ -584,7 +587,7 @@ sub _hdlr_category_prevnext {
                     },
                     {   'join' => [
                             'MT::Placement', 'entry_id',
-                            { category_id => $cat->id }
+                            { category_id => $cats->[$pos]->id }
                         ],
                         'sort'    => 'authored_on',
                         direction => 'descend',
@@ -605,7 +608,7 @@ sub _hdlr_category_prevnext {
                             'MT::ObjectCategory',
                             'object_id',
                             {   object_ds   => 'content_data',
-                                category_id => $cat->id,
+                                category_id => $cats->[$pos]->id,
                             },
                         ],
                         'sort'    => 'authored_on',
@@ -708,6 +711,7 @@ sub _hdlr_sub_categories {
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
+    my $blog_id = $ctx->stash('blog_id');
 
     # Do we want the current category?
     my $include_current = $args->{include_current};
@@ -740,18 +744,25 @@ sub _hdlr_sub_categories {
     my $current_cat;
     my @cats;
     if ( $args->{top} ) {
-        @cats = $class->load(
-            {   blog_id         => $ctx->stash('blog_id'),
-                parent          => '0',
-                category_set_id => $category_set_id,
-            },
-            {   (     ( 'user_custom' eq $sort_by )
-                    ? ( sort => 'label' )
-                    : ( sort => $sort_by )
-                ),
-                direction => $sort_order,
-            }
-        );
+        my $cache_key = join ':', ($class_type eq 'category' ? 'top_categories' : 'top_folders'), $blog_id, $category_set_id, $sort_by, $sort_order;
+        my $top_cats = MT->request->{__stash}{__obj}{$cache_key};
+        if ($top_cats) {
+            @cats = @$top_cats;
+        } else {
+            @cats = $class->load({
+                    blog_id         => $blog_id,
+                    parent          => '0',
+                    category_set_id => $category_set_id,
+                },
+                { (
+                          ('user_custom' eq $sort_by)
+                        ? (sort => 'label')
+                        : (sort => $sort_by)
+                    ),
+                    direction => $sort_order,
+                });
+            MT->request->{__stash}{__obj}{$cache_key} = \@cats;
+        }
     }
     else {
 
@@ -760,7 +771,7 @@ sub _hdlr_sub_categories {
 
             # user specified category; list from this category down
             ($current_cat) = $ctx->cat_path_to_category(
-                $args->{category}, $ctx->stash('blog_id'),
+                $args->{category}, $blog_id,
                 $class_type,       $category_set_id
             );
         }
@@ -838,7 +849,7 @@ sub _hdlr_sub_categories {
         local $ctx->{__stash}{'entries'} = delay(
             sub {
                 my @args = (
-                    {   blog_id => $ctx->stash('blog_id'),
+                    {   blog_id => $blog_id,
                         status  => MT::Entry::RELEASE()
                     },
                     {   'join' => [

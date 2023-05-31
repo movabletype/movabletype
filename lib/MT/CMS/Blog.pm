@@ -261,13 +261,7 @@ sub edit {
 
             $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
 
-            if ( $cfg->is_readonly('DataAPIDisableSite') ) {
-                $param->{'data_api_disable_site_readonly'} = 1;
-                $param->{config_warning} = $app->translate(
-                    "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
-                    'DataAPIDisableSite',
-                );
-            }
+            _set_show_data_api_params($app, $cfg, $param);
         }
         elsif ( $output eq 'cfg_feedback.tmpl' ) {
             $param->{email_new_comments_1}
@@ -354,15 +348,10 @@ sub edit {
     elsif ( $param->{output} && $param->{output} eq 'cfg_web_services.tmpl' )
     {
         # System level web services settings.
+        $param->{disable_data_api} = $app->config->DisableDataAPI || grep { 'data_api' eq $_ } $app->config->RestrictedPSGIApp;
         $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
 
-        if ( $app->config->is_readonly('DataAPIDisableSite') ) {
-            $param->{'data_api_disable_site_readonly'} = 1;
-            $param->{config_warning} = $app->translate(
-                "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
-                'DataAPIDisableSite',
-            );
-        }
+        _set_show_data_api_params($app, $cfg, $param);
     }
     else {
         return $app->return_to_dashboard( redirect => 1 )
@@ -1717,10 +1706,6 @@ sub pre_save {
             }
         }
         if ( $screen eq 'cfg_web_services' ) {
-            my $tok = '';
-            ( $tok = $obj->remote_auth_token ) =~ s/\s//g;
-            $obj->remote_auth_token($tok);
-
             my $ping_servers = $app->registry('ping_servers');
             my @pings_list;
             push @pings_list, $_
@@ -1751,9 +1736,6 @@ sub pre_save {
             my $c_old = $obj->commenter_authenticators;
             $obj->commenter_authenticators( join( ',', @authenticators ) );
             my $rebuild = $obj->commenter_authenticators ne $c_old ? 1 : 0;
-            my $tok = '';
-            ( $tok = $obj->remote_auth_token ) =~ s/\s//g;
-            $obj->remote_auth_token($tok);
 
             $app->add_return_arg( need_full_rebuild => 1 ) if $rebuild;
         }
@@ -1978,9 +1960,10 @@ sub _post_save_cfg_screens {
         }
     }
     if ( $screen eq 'cfg_web_services' ) {
-        my $blog_id         = $app->param('id');
-        my $enable_data_api = $app->param('enable_data_api');
-        save_data_api_settings( $app, $blog_id, $enable_data_api );
+        my $blog_id          = $app->param('id');
+        my $disable_data_api = $app->param('disable_data_api');
+        my $enable_data_api  = $app->param('enable_data_api');
+        save_data_api_settings( $app, $blog_id, $disable_data_api, $enable_data_api );
     }
 
     return 1;
@@ -3361,22 +3344,9 @@ sub print_status_page {
 
     $app->print_encode( $app->build_page('layout/modal/header.tmpl') );
 
-    my $page_title = $app->translate('Clone Child Site');
-    $app->print_encode( $app->translate_templatized(<<"HTML" ) );
-
-<div class="modal-header">
-    <h5 class="modal-title">$page_title</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
-      <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-
-<div class="modal-body">
-    <h2><__trans phrase="Cloning child site '[_1]'..." params="$blog_name_encode"></h2>
-    <div class="modal_width card" id="dialog-clone-weblog" style="background-color: #fafafa;">
-        <div id="clone-process" class="process-msg card-block">
-            <ul class="list-unstyled p-3">
-HTML
+    my $status_header = $app->load_tmpl(
+        'cms/include/status_page_header.tmpl', { blog_name_encode => $blog_name_encode })->output();
+    $app->print_encode( $app->translate_templatized($status_header) );
 
     my $new_blog;
     eval {
@@ -3614,6 +3584,7 @@ sub can_view_blog_list {
 sub data_api_is_enabled {
     my ( $app, $blog_id, $blog ) = @_;
 
+    $blog_id ||= 0;
     my $cfg = $app->config;
     my @disable_sites = split ',', defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
     if ($cfg->is_readonly('DataAPIDisableSite')) {
@@ -3628,24 +3599,32 @@ sub data_api_is_enabled {
 }
 
 sub save_data_api_settings {
-    my ( $app, $blog_id, $new_value ) = @_;
+    my ( $app, $blog_id, $disable_data_api, $enable_data_api ) = @_;
 
-    $blog_id   = $app->param('id') || 0         unless defined $blog_id;
-    $new_value = $app->param('enable_data_api') unless defined $new_value;
+    $blog_id          = $app->param('id') || 0             unless defined $blog_id;
+    $disable_data_api = $app->param('disable_data_api') unless defined $disable_data_api;
+    $enable_data_api  = $app->param('enable_data_api')     unless defined $enable_data_api;
 
+    my $cfg = $app->config;
     if ($blog_id == 0) {
-        my $cfg = $app->config;
-        $cfg->DataAPIDisableSite($new_value ? '' : $blog_id, 1);
+        if (!_data_api_disable_site_is_readonly($cfg)) {
+            $cfg->DataAPIDisableSite($enable_data_api ? '' : $blog_id, 1);
+        }
+        if (!_disable_data_api_is_readonly($cfg)) {
+            $cfg->DisableDataAPI($disable_data_api, 1);
+        }
         $cfg->save_config;
     } else {
-        my $blog;
-        if ($app->blog && $app->blog->id == $blog_id) {
-            $blog = $app->blog;
-        } else {
-            $blog = MT->model('blog')->load($blog_id);
+        if (!_data_api_disable_site_is_readonly($cfg)) {
+            my $blog;
+            if ($app->blog && $app->blog->id == $blog_id) {
+                $blog = $app->blog;
+            } else {
+                $blog = MT->model('blog')->load($blog_id);
+            }
+            $blog->allow_data_api($enable_data_api ? 1 : 0);
+            $blog->save;
         }
-        $blog->allow_data_api($new_value ? 1 : 0);
-        $blog->save;
     }
 
     return 1;
@@ -3739,6 +3718,48 @@ sub filtered_list_param {
             $obj->[0] = undef;
         }
     }
+}
+
+sub _set_show_data_api_params {
+    my ($app, $cfg, $param) = @_;
+
+    my @config_warnings;
+    if ($cfg->is_readonly('DisableDataAPI')) {
+        $param->{'disable_data_api_readonly'} = 1;
+        push @config_warnings, 'DisableDataAPI';
+    }
+
+    if ($cfg->DisableDataAPI) {
+        $param->{'data_api_disable_site_readonly'} = 1;
+    }
+
+    if (grep { 'data_api' eq $_ } $cfg->RestrictedPSGIApp) {
+        $param->{'data_api_disable_site_readonly'} = 1;
+        $param->{'disable_data_api_readonly'} = 1;
+        push @config_warnings, 'RestrictedPSGIApp';
+    }
+
+    if ($cfg->is_readonly('DataAPIDisableSite')) {
+        $param->{'data_api_disable_site_readonly'} = 1;
+        push @config_warnings, 'DataAPIDisableSite';
+    }
+
+    if (@config_warnings) {
+        $param->{config_warning} = $app->translate(
+            "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
+            join(", ", @config_warnings),
+        );
+    }
+}
+
+sub _data_api_disable_site_is_readonly {
+    my ($cfg) = @_;
+    return $cfg->DisableDataAPI || grep { $_ && 'data_api' eq $_ } $cfg->RestrictedPSGIApp || $cfg->is_readonly('DataAPIDisableSite');
+}
+
+sub _disable_data_api_is_readonly {
+    my ($cfg) = @_;
+    return $cfg->is_readonly('DisableDataAPI') || grep { 'data_api' eq $_ } $cfg->RestrictedPSGIApp;
 }
 
 1;

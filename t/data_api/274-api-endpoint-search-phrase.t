@@ -15,7 +15,6 @@ BEGIN {
 
 use MT::Test::DataAPI;
 use MT::Test::Fixture;
-use Test::Deep qw/cmp_bag/;
 use JSON;
 
 $test_env->prepare_fixture('db');
@@ -102,7 +101,7 @@ sub expected_titles {
         my $json = eval { decode_json($body) };
         ok !$@, 'json is ok';
         my @got_titles = map { $_->{title} } @{ $json->{items} || [] };
-        cmp_bag( \@got_titles, \@expected_titles, 'expected entry titles' );
+        is_deeply( \@got_titles, \@expected_titles, 'expected entry titles' );
     };
 }
 
@@ -117,15 +116,15 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo Bar',
-                'Foo BigBar',
-                'FooBar',
-                'Bar Foo',
-                'FooFoo Bar',
-                'Big Foo Bar',
-                'Son, Foo Bar',
-                'Jane, Foo Bar',
                 'Foo Bar Doe',
+                'Jane, Foo Bar',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
+                'Bar Foo',
+                'FooBar',
+                'Foo BigBar',
+                'Foo Bar',
             ),
         },
         {    # Simple case, with double quotes
@@ -136,15 +135,15 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo Bar',
-                'Foo BigBar',
-                'FooBar',
-                'Bar Foo',
-                'FooFoo Bar',
-                'Big Foo Bar',
-                'Son, Foo Bar',
-                'Jane, Foo Bar',
                 'Foo Bar Doe',
+                'Jane, Foo Bar',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
+                'Bar Foo',
+                'FooBar',
+                'Foo BigBar',
+                'Foo Bar',
             ),
         },
         {    # Simple case, with parentheses
@@ -155,15 +154,15 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo Bar',
-                'Foo BigBar',
-                'FooBar',
-                'Bar Foo',
-                'FooFoo Bar',
-                'Big Foo Bar',
-                'Son, Foo Bar',
-                'Jane, Foo Bar',
                 'Foo Bar Doe',
+                'Jane, Foo Bar',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
+                'Bar Foo',
+                'FooBar',
+                'Foo BigBar',
+                'Foo Bar',
             ),
         },
         {    # Simple case, with negation
@@ -173,7 +172,7 @@ sub suite {
                 search  => '!Foo',
                 blog_id => $blog_id,
             },
-            complete => expected_titles( 'Quux', 'unknown:Reilly' ),
+            complete => expected_titles( 'unknown:Reilly', 'Quux' ),
         },
         {    # Simple case, with negation and quotes
             path   => '/v2/search',
@@ -182,7 +181,7 @@ sub suite {
                 search  => '!"Foo"',
                 blog_id => $blog_id,
             },
-            complete => expected_titles( 'Quux', 'unknown:Reilly' ),
+            complete => expected_titles( 'unknown:Reilly', 'Quux' ),
         },
         {    # Simple case, with negation and parentheses
             path   => '/v2/search',
@@ -191,7 +190,7 @@ sub suite {
                 search  => '(!Foo)',
                 blog_id => $blog_id,
             },
-            complete => expected_titles( 'Quux', 'unknown:Reilly' ),
+            complete => expected_titles( 'unknown:Reilly', 'Quux' ),
         },
         {    # Phrase
             path   => '/v2/search',
@@ -201,12 +200,12 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo Bar',
-                'FooFoo Bar',
-                'Big Foo Bar',
-                'Son, Foo Bar',
-                'Jane, Foo Bar',
                 'Foo Bar Doe',
+                'Jane, Foo Bar',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
+                'Foo Bar',
             ),
         },
         {    # Phrase with negation
@@ -217,8 +216,7 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo BigBar', 'FooBar', 'Bar Foo', 'Quux',
-                'unknown:Reilly'
+                'unknown:Reilly', 'Quux', 'Bar Foo', 'FooBar', 'Foo BigBar'
             ),
         },
         {    # Phrase OR phrase
@@ -229,13 +227,13 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo Bar',
-                'Bar Foo',
-                'FooFoo Bar',
-                'Big Foo Bar',
-                'Son, Foo Bar',
-                'Jane, Foo Bar',
                 'Foo Bar Doe',
+                'Jane, Foo Bar',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
+                'Bar Foo',
+                'Foo Bar',
             ),
         },
         {    # title (phrase OR phrase)
@@ -246,13 +244,13 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo Bar',
-                'Bar Foo',
-                'FooFoo Bar',
-                'Big Foo Bar',
-                'Son, Foo Bar',
-                'Jane, Foo Bar',
                 'Foo Bar Doe',
+                'Jane, Foo Bar',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
+                'Bar Foo',
+                'Foo Bar',
             ),
         },
         {    # title (!phrase AND !phrase)
@@ -263,7 +261,7 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo BigBar', 'FooBar', 'Quux', 'unknown:Reilly'
+                'unknown:Reilly', 'Quux', 'FooBar', 'Foo BigBar',
             ),
         },
         {    # title (!phrase)
@@ -274,8 +272,7 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo BigBar', 'FooBar', 'Bar Foo', 'Quux',
-                'unknown:Reilly'
+                'unknown:Reilly', 'Quux', 'Bar Foo', 'FooBar', 'Foo BigBar',
             ),
         },
         {    # title -phrase
@@ -286,8 +283,7 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo BigBar', 'FooBar', 'Bar Foo', 'Quux',
-                'unknown:Reilly'
+                'unknown:Reilly', 'Quux', 'Bar Foo', 'FooBar', 'Foo BigBar',
             ),
         },
         {    # unknown field
@@ -314,18 +310,41 @@ sub suite {
             params => {
                 search  => '-unknown:Reilly',
                 blog_id => $blog_id,
+                limit => 20, # default of 10 is too small to test 10 result out of 11.
             },
             complete => expected_titles(
-                'Foo Bar',
-                'Foo BigBar',
-                'FooBar',
-                'Bar Foo',
-                'FooFoo Bar',
-                'Big Foo Bar',
-                'Son, Foo Bar',
-                'Jane, Foo Bar',
-                'Quux',
+                'unknown:Reilly',
                 'Foo Bar Doe',
+                'Quux',
+                'Jane, Foo Bar',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
+                'Bar Foo',
+                'FooBar',
+                'Foo BigBar',
+                'Foo Bar',
+            ),
+        },
+        {    # unknown field inside phrase with negation
+            path   => '/v2/search',
+            method => 'GET',
+            params => {
+                search  => '-"unknown:Reilly"',
+                blog_id => $blog_id,
+                limit => 20, # default of 10 is too small to test 10 result out of 11.
+            },
+            complete => expected_titles(
+                'Foo Bar Doe',
+                'Quux',
+                'Jane, Foo Bar',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
+                'Bar Foo',
+                'FooBar',
+                'Foo BigBar',
+                'Foo Bar',
             ),
         },
         {    # Phrase + author
@@ -336,11 +355,11 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo Bar',
-                'FooFoo Bar',
-                'Big Foo Bar',
-                'Son, Foo Bar',
                 'Foo Bar Doe',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
+                'Foo Bar',
             ),
         },
         {    # Phrase + author with doublequotes
@@ -351,11 +370,11 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo Bar',
-                'FooFoo Bar',
-                'Big Foo Bar',
-                'Son, Foo Bar',
                 'Foo Bar Doe',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
+                'Foo Bar',
             ),
         },
         {    # Phrase + author with negation
@@ -393,7 +412,7 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete =>
-                expected_titles( 'Foo Bar', 'FooFoo Bar', 'Big Foo Bar' ),
+                expected_titles( 'Big Foo Bar', 'FooFoo Bar', 'Foo Bar' ),
         },
         {    # Phrase + author (phrase OR phrase)
             path   => '/v2/search',
@@ -403,10 +422,10 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Foo Bar',
-                'FooFoo Bar',
+                'Son, Foo Bar',
                 'Big Foo Bar',
-                'Son, Foo Bar'
+                'FooFoo Bar',
+                'Foo Bar',
             ),
         },
         {    # Phrase + author (!phrase AND !phrase)
@@ -416,7 +435,7 @@ sub suite {
                 search => '"Foo Bar" author:(!"John Doe" AND !"Johnson Doe")',
                 blog_id => $blog_id,
             },
-            complete => expected_titles( 'Jane, Foo Bar', 'Foo Bar Doe' ),
+            complete => expected_titles( 'Foo Bar Doe', 'Jane, Foo Bar' ),
         },
         {    # Phrase + category
             path   => '/v2/search',
@@ -425,7 +444,7 @@ sub suite {
                 search  => '"Foo Bar" category:apple',
                 blog_id => $blog_id,
             },
-            complete => expected_titles( 'Foo Bar', 'FooFoo Bar', ),
+            complete => expected_titles( 'FooFoo Bar', 'Foo Bar', ),
         },
         {    # Phrase + category with doublequotes
             path   => '/v2/search',
@@ -434,7 +453,7 @@ sub suite {
                 search  => '"Foo Bar" category:"apple"',
                 blog_id => $blog_id,
             },
-            complete => expected_titles( 'Foo Bar', 'FooFoo Bar', ),
+            complete => expected_titles( 'FooFoo Bar', 'Foo Bar', ),
         },
         {    # Phrase + category with negation
             path   => '/v2/search',
@@ -444,11 +463,11 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'FooFoo Bar',
-                'Big Foo Bar',
-                'Son, Foo Bar',
-                'Jane, Foo Bar',
                 'Foo Bar Doe',
+                'Jane, Foo Bar',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
             ),
         },
         {    # Phrase + category with (negation)
@@ -459,11 +478,11 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'FooFoo Bar',
-                'Big Foo Bar',
-                'Son, Foo Bar',
-                'Jane, Foo Bar',
                 'Foo Bar Doe',
+                'Jane, Foo Bar',
+                'Son, Foo Bar',
+                'Big Foo Bar',
+                'FooFoo Bar',
             ),
         },
         {    # Phrase + category with a single quote
@@ -482,7 +501,7 @@ sub suite {
                 search  => '"Foo Bar" category:"big apple"',
                 blog_id => $blog_id,
             },
-            complete => expected_titles( 'Big Foo Bar', 'Jane, Foo Bar' ),
+            complete => expected_titles( 'Jane, Foo Bar', 'Big Foo Bar' ),
         },
         {    # Phrase + category (phrase OR phrase)
             path   => '/v2/search',
@@ -493,9 +512,9 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete => expected_titles(
-                'Big Foo Bar',
-                'Jane, Foo Bar',
                 'Foo Bar Doe',
+                'Jane, Foo Bar',
+                'Big Foo Bar',
             ),
         },
         {    # Phrase + category (!phrase AND !phrase)
@@ -507,7 +526,7 @@ sub suite {
                 blog_id => $blog_id,
             },
             complete =>
-                expected_titles( 'Foo Bar', 'FooFoo Bar', 'Son, Foo Bar', ),
+                expected_titles( 'Son, Foo Bar', 'FooFoo Bar', 'Foo Bar', ),
         },
     ];
 }

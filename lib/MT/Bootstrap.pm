@@ -8,6 +8,7 @@ package MT::Bootstrap;
 
 use strict;
 use warnings;
+use MT::Util::Encode;
 
 sub BEGIN {
     my ( $dir, $orig_dir );
@@ -256,8 +257,7 @@ sub import {
             {
                 require MT::I18N;
                 my $enc = MT::I18N::guess_encoding($err);
-                $err = Encode::decode( $enc, $err )
-                    unless Encode::is_utf8($err);
+                $err = MT::Util::Encode::decode_unless_flagged( $enc, $err );
                 eval {
 
                     # line __LINE__ __FILE__
@@ -297,9 +297,9 @@ sub import {
                 }
                 print "Content-Type: text/plain; charset=$charset\n\n";
                 print $app
-                    ? Encode::encode( $charset,
+                    ? MT::Util::Encode::encode( $charset,
                     $app->translate( "Got an error: [_1]", $err ) )
-                    : "Got an error: " . Encode::encode( $charset, $err );
+                    : "Got an error: " . MT::Util::Encode::encode( $charset, $err );
             }
         }
     }

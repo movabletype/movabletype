@@ -21,7 +21,7 @@ use MT::ContentField;
 use MT::ContentFieldIndex;
 use MT::ContentFieldType::Common
     qw( get_cd_ids_by_inner_join get_cd_ids_by_left_join );
-use MT::ContentStatus qw(status_icon);
+use MT::ContentStatus qw( status_icon ); ## no critic
 use MT::ContentType;
 use MT::ContentType::UniqueID;
 use MT::ObjectAsset;
@@ -604,10 +604,10 @@ sub _remove_objects {
                 $data ? $$data : {};
             }
             else {
-                require Encode;
+                require MT::Util::Encode;
                 require JSON;
                 my $data;
-                if ( Encode::is_utf8($raw_data) ) {
+                if ( MT::Util::Encode::is_utf8($raw_data) ) {
                     $data = eval { JSON::from_json($raw_data) } || {};
                 }
                 else {
@@ -635,9 +635,9 @@ sub blog {
     $ct_data->cache_property(
         'blog',
         sub {
-            my $blog_id = $ct_data->blog_id;
+            my $blog_id = $ct_data->blog_id || 0;
             require MT::Blog;
-            MT::Blog->load( $blog_id || 0 )
+            MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
                 or $ct_data->error(
                 MT->translate(
                     "Loading blog '[_1]' failed: [_2]",
@@ -1172,6 +1172,32 @@ sub make_list_props {
                     ];
                     return;
                 },
+                html => sub {
+                    my $prop = shift;
+                    my ($obj, $app, $opts) = @_;
+                    my $ts = $prop->raw(@_) or return '';
+                    return '' if $obj->status != MT::ContentStatus::RELEASE() && $obj->status != MT::ContentStatus::FUTURE();
+                    my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
+                    my $blog        = $opts->{blog};
+                    my $is_relative = ($app->user->date_format || 'relative') eq 'relative' ? 1 : 0;
+                    my $date =
+                        $is_relative
+                        ? MT::Util::relative_date($ts, time, $blog)
+                        : MT::Util::format_ts(
+                        $date_format,
+                        $ts,
+                        $blog,
+                        $app->user
+                        ? $app->user->preferred_language
+                        : undef
+                        );
+                    my $timestamp = MT::Util::format_ts(
+                        '%Y-%m-%d %H:%M:%S',
+                        $ts,
+                        $blog,
+                    );
+                    return qq{<span title="$timestamp">$date</span>};
+                },
             },
             created_on => {
                 base  => '__virtual.created_on',
@@ -1180,6 +1206,7 @@ sub make_list_props {
             modified_on => {
                 base  => '__virtual.modified_on',
                 order => $order + 300,
+                display => 'default',
             },
             unpublished_on => {
                 auto    => 1,
@@ -1562,7 +1589,7 @@ sub archive_file {
     my $map = MT->publisher->archiver($at)->get_preferred_map({
         blog_id         => $blog->id,
         content_type_id => $self->content_type_id,
-    });
+    }) or return '';
 
     # Load category
     my $cat;

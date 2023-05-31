@@ -8,6 +8,7 @@ package MT::Upgrade::Core;
 
 use strict;
 use warnings;
+use MT::Util::Encode;
 
 MT->add_callback( 'MT::Upgrade::seed_database', 5, undef, \&seed_database );
 MT->add_callback( 'MT::Upgrade::upgrade_end', 5, undef,
@@ -214,7 +215,7 @@ sub seed_database {
 
     # disable system scope data api
     require MT::CMS::Blog;
-    MT::CMS::Blog::save_data_api_settings( $App, 0, 0 );
+    MT::CMS::Blog::save_data_api_settings( $App, 0, 0, 0 );
 
     require MT::Role;
     MT::Role->create_default_roles(%param)
@@ -254,6 +255,7 @@ sub seed_database {
     $cfg->set(DisableActivityFeeds => 1, 1);
     $cfg->set(DisableNotificationPings => 1, 1);
     $cfg->set(DefaultSupportedLanguages => 'en_us,ja', 1);
+    $cfg->set(TrimFilePath => 1, 1);
 
     $cfg->save;
 
@@ -405,8 +407,7 @@ sub _uri_unescape_utf8 {
         use URI::Escape;
         $text = uri_unescape($text);
     }
-    return Encode::decode_utf8($text)
-        unless Encode::is_utf8($text);
+    return MT::Util::Encode::decode_utf8_unless_flagged($text);
 }
 
 1;

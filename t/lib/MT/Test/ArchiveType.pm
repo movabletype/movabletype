@@ -47,6 +47,13 @@ sub MT::Test::ArchiveType::filter_spec {
     %filters;
 }
 
+sub MT::Test::ArchiveType::clear_cache {
+    require MT::Request;
+    require MT::ObjectDriver::Driver::Cache::RAM;
+    MT::Request->instance->reset;
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+}
+
 my $vars = {};
 
 sub vars {
@@ -100,8 +107,7 @@ sub _run_perl_test {
     SKIP: {
             skip $block->skip, 1 if $block->skip;
 
-            MT::Request->instance->reset;
-            MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+            clear_cache();
 
             my $archive_type = $map->archive_type;
             my $archiver     = MT->publisher->archiver($archive_type);
@@ -123,7 +129,7 @@ sub _run_perl_test {
             $ctx->stash( blog          => $blog );
             $ctx->stash( blog_id       => $blog->id );
             $ctx->stash( local_blog_id => $blog->id );
-            $ctx->stash( builder       => MT::Builder->new );
+            $ctx->stash( builder       => MT->builder );
 
             my ( $stash, $skip )
                 = $self->_set_stash( $block, $map, $tmpl, $archiver, $objs );
@@ -222,8 +228,7 @@ sub _run_php_test {
             skip $block->skip, 1 if $block->skip;
             skip 'skip php test', 1 if $block->skip_php;
 
-            MT::Request->instance->reset;
-            MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+            clear_cache();
 
             my $archive_type = $map->archive_type;
             my $archiver     = MT->publisher->archiver($archive_type);

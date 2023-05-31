@@ -7,6 +7,7 @@
 package MT::Meta::Proxy;
 use strict;
 use warnings;
+use MT::Util::Encode;
 
 sub META_CLASS {'MT::Meta'}
 
@@ -169,7 +170,9 @@ sub set {
     # update optimization for metadata columns
     $proxy->lazier_load_objects($col);
 
+    my $old = $proxy->{__objects}{$col};
     $proxy->{__objects}->{$col} = $proxy->create_meta_object( $col, $value );
+    $proxy->{__objects}{$col}{__is_stored} = $old->{__is_stored} if $old;
 
     $proxy->{__loaded}->{$col} = 1;
     if ( %{ $proxy->{__loaded} } ) {
@@ -210,13 +213,12 @@ sub save {
         my $meta_is_blob
             = $meta_col_def ? $meta_col_def->{type} eq 'blob' : 0;
 
-        my $enc = MT->config->PublishCharset || 'UTF-8';
+        my $enc = MT->publish_charset;
         my ( $data, $utf8_data );
         $data = $utf8_data = $meta_obj->$type;
         unless ( ref $data ) {
             my $dbd = $meta_obj->driver->dbd;
-            $data = Encode::encode( $enc, $data )
-                if Encode::is_utf8($data) && $dbd->need_encode;
+            $data = MT::Util::Encode::encode_if_flagged( $enc, $data ) if $dbd->need_encode;
         }
         $meta_obj->$type( $data, { no_changed_flag => 1 } );
 
@@ -309,7 +311,9 @@ sub lazier_load_objects {
         my @objs     = $meta_pkg->search( $proxy->{__pkeys},
             { fetchonly => ['type'] } );
         for my $obj (@objs) {
-            $proxy->{__objects}->{ $obj->type } = $meta_pkg->new;
+            my $meta_obj = $meta_pkg->new;
+            $meta_obj->{__is_stored} = 1;
+            $proxy->{__objects}->{ $obj->type } = $meta_obj;
         }
         $proxy->{__loaded} = {};
     }
@@ -326,7 +330,7 @@ sub bulk_load_meta_objects {
     my $meta_pkg = $first->meta_pkg;
 
     # Supported only for single primary key.
-    return if scalar keys %{ $first->{__pkeys} } > 1;
+    return if scalar keys %{ $first->{__pkeys} } != 1;
 
     my ($primary_key_col) = %{ $first->{__pkeys} };
     my @primary_keys      = ();
@@ -375,11 +379,10 @@ sub bulk_load_meta_objects {
                     $meta_obj->$type( _db2ts( $meta_obj->$type ) );
                 }
 
-                my $enc = MT->config->PublishCharset || 'UTF-8';
+                my $enc = MT->publish_charset;
                 my $data = $meta_obj->$type;
                 unless ( ref $data ) {
-                    $data = Encode::decode( $enc, $data )
-                        unless Encode::is_utf8($data);
+                    $data = MT::Util::Encode::decode_unless_flagged( $enc, $data );
                 }
                 $meta_obj->$type( $data, { no_changed_flag => 1 } );
             }
@@ -397,6 +400,7 @@ sub bulk_load_meta_objects {
                 = { not => [ keys %{ $proxy->{__loaded} } ] };
         }
         $proxy->{__loaded_all_objects} = 1;
+        $proxy->{__objects} ||= {};
     }
 
     if ( MT::Memcached->is_available ) {
@@ -434,11 +438,10 @@ sub prepare_objects {
                 $meta_obj->$type( _db2ts( $meta_obj->$type ) );
             }
 
-            my $enc = MT->config->PublishCharset || 'UTF-8';
+            my $enc = MT->publish_charset;
             my $data = $meta_obj->$type;
             unless ( ref $data ) {
-                $data = Encode::decode( $enc, $data )
-                    unless Encode::is_utf8($data);
+                $data = MT::Util::Encode::decode_unless_flagged( $enc, $data );
             }
             $meta_obj->$type( $data, { no_changed_flag => 1 } );
         }
@@ -514,9 +517,8 @@ sub do_unserialization {
         }
     }
     elsif ( $prefix eq 'ASC' ) {
-        my $enc = MT->config('PublishCharset');
-        $$dataref = Encode::decode( $enc, $$dataref )
-            unless Encode::is_utf8($$dataref);
+        my $enc = MT->publish_charset;
+        $$dataref = MT::Util::Encode::decode_unless_flagged( $enc, $$dataref );
         return $dataref;
     }
     else {

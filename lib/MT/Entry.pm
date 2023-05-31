@@ -21,8 +21,7 @@ use MT::Memcached;
 use MT::Placement;
 use MT::Comment;
 use MT::TBPing;
-use MT::Util qw( archive_file_for start_end_period extract_domain
-    extract_domains weaken first_n_words remove_html encode_html trim );
+use MT::Util qw( archive_file_for weaken remove_html trim );
 use MT::I18N qw( first_n_text const );
 
 use MT::EntryStatus qw(:all);
@@ -598,6 +597,32 @@ sub list_props {
                 ];
                 return;
             },
+            html => sub {
+                my $prop = shift;
+                my ($obj, $app, $opts) = @_;
+                my $ts = $prop->raw(@_) or return '';
+                return '' if $obj->status != MT::EntryStatus::RELEASE() && $obj->status != MT::EntryStatus::FUTURE();
+                my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
+                my $blog        = $opts->{blog};
+                my $is_relative = ($app->user->date_format || 'relative') eq 'relative' ? 1 : 0;
+                my $date =
+                    $is_relative
+                    ? MT::Util::relative_date($ts, time, $blog)
+                    : MT::Util::format_ts(
+                    $date_format,
+                    $ts,
+                    $blog,
+                    $app->user
+                    ? $app->user->preferred_language
+                    : undef
+                    );
+                my $timestamp = MT::Util::format_ts(
+                    '%Y-%m-%d %H:%M:%S',
+                    $ts,
+                    $blog,
+                );
+                return qq{<span title="$timestamp">$date</span>};
+            },
         },
         modified_on => {
             base  => '__virtual.modified_on',
@@ -950,30 +975,27 @@ sub modified_author {
 }
 
 sub __load_category_data {
-    my $entry = shift;
-    return unless $entry->id;
+    my $entry    = shift;
+    my $entry_id = $entry->id or return;
     my $t     = MT->get_timer;
     $t->pause_partial if $t;
-    my $cache  = MT::Memcached->instance;
-    my $memkey = $entry->cache_key($entry->id, 'categories');
-    my $rows;
-    unless ( $rows = $cache->get($memkey) ) {
+    my $stash = MT->request->{__stash};
+    my $rows  = $stash->{__obj}{"category_data:$entry_id"};
+    unless ($rows) {
         require MT::Placement;
         my @maps = MT::Placement->search( { entry_id => $entry->id } );
         $rows = [ map { [ $_->category_id, $_->is_primary ] } @maps ];
-        $cache->set( $memkey, $rows, CATEGORY_CACHE_TIME );
     }
     $t->mark('MT::Entry::__load_category_data') if $t;
-    return $rows;
+    return $stash->{__obj}{"category_data:$entry_id"} = $rows;
 }
 
 sub flush_category_cache {
     my ( $copy, $place ) = @_;
-    MT::Memcached->instance->delete(
-        MT::Entry->cache_key( $place->entry_id, 'categories' ) );
     my $entry = MT::Entry->load( $place->entry_id ) or return;
     $entry->clear_cache('category');
     $entry->clear_cache('categories');
+    delete MT->request->{__stash}{__obj}{"category_data:".$entry->id};
 }
 
 MT::Placement->add_trigger( post_save   => \&flush_category_cache );
@@ -1070,8 +1092,10 @@ sub archive_file {
             qw( Individual Daily Weekly Author-Monthly Category-Monthly Monthly Category )
             )
         {
-            $at = $tat if $at{$tat};
-            last;
+            if ($at{$tat}) {
+                $at = $tat;
+                last;
+            }
         }
     }
     my $file = archive_file_for( $entry, $blog, $at );
@@ -1331,7 +1355,7 @@ sub blog {
         sub {
             my $blog_id = $entry->blog_id;
             require MT::Blog;
-            MT::Blog->load($blog_id)
+            MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
                 or $entry->error(
                 MT->translate(
                     "Loading blog '[_1]' failed: [_2]",
@@ -1647,10 +1671,9 @@ sub update_categories {
         MT::Placement->remove( { entry_id => $obj->id, } )
             or return $obj->error( MT::Placement->errstr );
 
-        MT::Memcached->instance->delete(
-            MT::Entry->cache_key( $obj->id, 'categories' ) );
         $obj->clear_cache('category');
         $obj->clear_cache('categories');
+        delete MT->request->{__stash}{__obj}{"category_data:".$obj->id};
 
         return [];
     }

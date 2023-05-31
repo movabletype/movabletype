@@ -8,6 +8,7 @@ package MT::Author;
 
 use strict;
 use warnings;
+use MT::Util::Encode;
 
 use MT::Summary;    # Holds MT::Summarizable
 use base qw( MT::Object MT::Scorable MT::Summarizable );
@@ -705,7 +706,7 @@ sub set_password {
         $crypt_sha
             = '$6$'
             . $salt . '$'
-            . MT::Util::Digest::SHA::sha512_base64( $salt . Encode::encode_utf8($pass) );
+            . MT::Util::Digest::SHA::sha512_base64( $salt . MT::Util::Encode::encode_utf8($pass) );
     }
     else {
 
@@ -920,10 +921,12 @@ sub is_superuser {
                 $author->permissions(0)->$name(@_);
             }
         }
+        delete $author->{__is_superuser};
     }
-    else {
-        $author->permissions(0)->can_administer();
+    if (!defined $author->{__is_superuser}) {
+        $author->{__is_superuser} = $author->permissions(0)->can_administer() ? 1 : 0;
     }
+    $author->{__is_superuser};
 }
 
 sub can_create_blog {
@@ -1622,7 +1625,7 @@ sub rebuild_favorite_sites {
     if (@current_blog) {
         @current_blog = grep { $user->has_perm($_) } @current_blog;
         foreach my $blog_id (@current_blog) {
-            if ( my $blog = MT->model('blog')->load( $blog_id ) ) {
+            if ( my $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load( $blog_id ) ) {
                 push @parents, $blog->parent_id if $blog->parent_id;
             }
         }

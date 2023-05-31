@@ -11,6 +11,7 @@ use warnings;
 use base qw( MT::App );
 
 use MT::Util qw( encode_html encode_url perl_sha1_digest_hex );
+use MT::Util::Encode;
 use MT::App::Search::Common;
 
 sub id                   {'new_search'}
@@ -413,9 +414,9 @@ sub check_cache {
         my $content_type = $cache->{ $app->{cache_keys}{content_type} };
         $app->{response_content_type} = $content_type;
     }
-    if ( $result and !Encode::is_utf8($result) ) {
+    if ( $result and !MT::Util::Encode::is_utf8($result) ) {
         my $enc = MT->config->PublishCharset;
-        $result = Encode::decode( $enc, $result );
+        $result = MT::Util::Encode::decode( $enc, $result );
     }
     ( $count, $result );
 }
@@ -647,11 +648,7 @@ sub search_terms {
             }
         }
     }
-    push @sort,
-        {
-        desc   => $desc,
-        column => $sort
-        };
+    push @sort, { desc => $desc, column => $sort }, { desc => $desc, column => 'id' };
 
     my %args = (
         exists( $parsed->{args} ) ? %{ $parsed->{args} } : (),
@@ -702,9 +699,9 @@ sub _cache_out {
     else {
         $result = $out;
     }
-    if ( Encode::is_utf8($result) ) {
+    if ( MT::Util::Encode::is_utf8($result) ) {
         my $enc = MT->config->PublishCharset;
-        $result = Encode::encode( $enc, $result );
+        $result = MT::Util::Encode::encode( $enc, $result );
     }
     my $cache_driver = $app->{cache_driver};
     $cache_driver->set( $app->{cache_keys}{result},
@@ -968,7 +965,7 @@ sub load_search_tmpl {
             $tmpl = $tmpl_class->load(
                 { blog_id => $blog_id, type => $app->search_template_type } );
         }
-        unless ($tmpl) {
+        if (!$tmpl or !$tmpl->text) {
 
             # load template from search_template path
             # template_paths method does the magic

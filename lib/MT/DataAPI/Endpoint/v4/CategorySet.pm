@@ -286,7 +286,7 @@ sub update {
         = $app->resource_object( 'category_set', $orig_category_set )
         or return;
 
-    save_object( $app, 'category_set', $new_category_set ) or return;
+    save_object( $app, 'category_set', $new_category_set, $orig_category_set ) or return;
 
     $new_category_set;
 }

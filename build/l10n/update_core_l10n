@@ -8,7 +8,6 @@ use File::Find;
 use File::Basename;
 use Getopt::Long;
 use MTL10NUpdater;
-use Data::Dump qw/dump/;
 
 GetOptions(\my %opts,
     'name=s@',

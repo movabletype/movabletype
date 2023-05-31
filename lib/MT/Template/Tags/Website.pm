@@ -9,7 +9,7 @@ use strict;
 use warnings;
 
 use MT;
-use MT::Util qw( encode_xml );
+use MT::Util;
 
 ###########################################################################
 
@@ -644,9 +644,12 @@ sub _hdlr_website_has_blog {
     my ($ctx) = @_;
     my $blog = $ctx->stash('blog');
     return 0 unless $blog;
+    if (exists $blog->{__has_children}) {
+        return $blog->{__has_children};
+    }
 
     if ( $blog->is_blog ) {
-        return 1 if $blog->website;
+        return $blog->{__has_children} = 1 if $blog->website;
         return $ctx->_no_parent_website_error;
     }
 
@@ -654,7 +657,7 @@ sub _hdlr_website_has_blog {
     my %terms;
     $terms{parent_id} = $blog->id;
     $terms{class}     = 'blog';
-    return $blog_class->exist( \%terms ) ? 1 : 0;
+    return $blog->{__has_children} = $blog_class->exist( \%terms ) ? 1 : 0;
 }
 
 ###########################################################################

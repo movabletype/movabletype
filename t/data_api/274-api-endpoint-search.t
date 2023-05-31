@@ -82,7 +82,7 @@ sub suite {
                         status  => MT::Entry::RELEASE(),
                         class   => '*'
                     },
-                    { sort => 'authored_on', direction => 'descend' },
+                    { sort => [{ column => 'authored_on', desc => 'DESC' }, { column => 'id', desc => 'DESC' }] },
                 );
 
                 my $entry_title = $entry->title;
@@ -133,7 +133,7 @@ sub suite {
                         status  => MT::Entry::RELEASE(),
                         class   => '*'
                     },
-                    { sort => 'authored_on', direction => 'descend' },
+                    { sort => [{ column => 'authored_on', desc => 'DESC' }, { column => 'id', desc => 'DESC' }] },
                 );
 
                 my $entry_title = $entry->title;
@@ -170,7 +170,7 @@ sub suite {
                         status  => MT::Entry::RELEASE(),
                         class   => '*'
                     },
-                    { sort => 'authored_on', direction => 'descend' },
+                    { sort => [{ column => 'authored_on', desc => 'DESC' }, { column => 'id', desc => 'DESC' }] },
                 );
 
                 my $entry_title = $entry->title;
@@ -209,7 +209,7 @@ sub suite {
                         status  => MT::Entry::RELEASE(),
                         class   => '*'
                     },
-                    { sort => 'authored_on', direction => 'descend' },
+                    { sort => [{ column => 'authored_on', desc => 'DESC' }, { column => 'id', desc => 'DESC' }] },
                 );
 
                 my @greped_entries;
@@ -246,7 +246,7 @@ sub suite {
                         status  => MT::Entry::RELEASE(),
                         class   => '*'
                     },
-                    { sort => 'authored_on', direction => 'descend' },
+                    { sort => [{ column => 'authored_on', desc => 'DESC' }, { column => 'id', desc => 'DESC' }] },
                 );
 
                 my @greped_entries;
@@ -279,7 +279,7 @@ sub suite {
                         status  => MT::Entry::RELEASE(),
                         class   => '*'
                     },
-                    { sort => 'authored_on', direction => 'descend' },
+                    { sort => [{ column => 'authored_on', desc => 'DESC' }, { column => 'id', desc => 'DESC' }] },
                 );
 
                 my @greped_entries;
@@ -316,7 +316,7 @@ sub suite {
         {   path    => '/v2/search',
             method  => 'GET',
             params  => { tagSearch => 1, tag => 'tag' },
-            results => sub { +{ totalResults => 0, items => [] } },
+            result => sub { +{ totalResults => 0, items => [] } },
         },
     ];
 }

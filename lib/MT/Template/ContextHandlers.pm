@@ -10,6 +10,7 @@ use strict;
 use warnings;
 
 use MT::Util qw( format_ts relative_date );
+use MT::Util::Encode;
 use Time::Local qw( timelocal );
 
 sub init_default_handlers { }
@@ -1256,7 +1257,7 @@ sub build_date {
     unless ( ref $blog ) {
         my $blog_id = $blog || $args->{offset_blog_id};
         if ($blog_id) {
-            $blog = MT->model('blog')->load($blog_id);
+            $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
             return $ctx->error(
                 MT->translate( 'Cannot load blog #[_1].', $blog_id ) )
                 unless $blog;
@@ -3110,14 +3111,6 @@ Set hind_id which is added to form element.
 
 Controls whether the inline help 'hint' label is shown or not.
 
-=item * help_page
-
-Identifies a specific page of the MT help documentation for this setting.
-
-=item * help_section
-
-Identifies a section name of the MT help documentation for this setting.
-
 =back
 
 =for tags application
@@ -3129,92 +3122,28 @@ sub _hdlr_app_setting {
     my $id = $args->{id};
     return $ctx->error("'id' attribute missing") unless $id;
 
-    my $label       = $args->{label};
-    my $label_for   = $args->{label_for};
-    my $show_label  = exists $args->{show_label} ? $args->{show_label} : 1;
-    my $shown       = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
-    my $label_class = $args->{label_class} || "";
-    my $hint        = $args->{hint} || "";
-    my $hint_id     = $args->{hint_id} || "";
-    my $show_hint   = $args->{show_hint} || 0;
-    my $indent      = $args->{indent};
-    my $help        = "";
+    my $shown = exists $args->{shown} ? ( $args->{shown} ? 1 : 0 ) : 1;
 
-    my $label_help = "";
-    if ( $label && $show_label ) {
-        if ( defined $label_for && $label_for ne '' ) {
-            $label_for = qq{ for="$label_for"};
-        }
-        else {
-            $label_for = '';
-        }
-    }
-    else {
-        $label     = '';    # zero it out, because the user turned it off
-        $label_for = '';
-    }
-    if ( $hint && $show_hint ) {
-        if ( $hint_id ne "" ) {
-            $hint_id = " id=\"$hint_id\" ";
-        }
-        $hint
-            = "\n<small ${hint_id}class=\"form-text text-muted\">$hint$help</small>";
-    }
-    else {
-        $hint = ''
-            ;  # hiding hint because it is either empty or should not be shown
-    }
-    unless ($label_class) {
-        $label_class = 'field-left-label';
-    }
-    else {
-        $label_class = 'field-' . $label_class;
-    }
+    my %param = (
+        class        => $args->{class} || '',
+        field_header => $args->{field_header} ? 1 : 0,
+        label_class  => $args->{label_class} || '',
+        label_for    => $args->{label_for} || '',
+        label        => $args->{label} || '',
+        hint         => $args->{hint} || '',
+        hint_id      => $args->{hint_id} || '',
+        id           => $args->{id},
+        indent       => $args->{indent} || '',
+        insides      => $ctx->slurp( $args, $cond ),
+        required     => $args->{required} ? 1 : 0,
+        show_hint    => $args->{hint} && $args->{show_hint} ? 1 : 0,
+        show_label   => exists $args->{show_label} ? $args->{show_label} : 1,
+        shown        => $shown,
+        use_style    => $args->{indent} || !$shown ? 1 : 0,
+    );
 
-    my $style = "";
-    if ($indent) {
-        if ( !$shown ) {
-            $style = qq{ style="padding-left: ${indent}px; display: none;"};
-        }
-        else {
-            $style = qq{ style="padding-left: ${indent}px;"};
-        }
-    }
-    elsif ( !$shown ) {
-        $style = ' style="display: none;"';
-    }
-
-    # 'Required' indicator plus CSS class
-    my $req
-        = $args->{required}
-        ? qq{ <span class="badge badge-danger">}
-        . MT->translate('Required')
-        . qq{</span>}
-        : "";
-    my $req_class = $args->{required} ? " required" : "";
-
-    my $insides = $ctx->slurp( $args, $cond );
-
-    my $class = $args->{class} || "";
-
-    if ( $args->{field_header} ) {
-        return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
-        <div class="field-header">
-          <label$label_for>$label$req</label>
-        </div>
-        $insides$hint
-    </div>
-EOT
-    }
-    else {
-        return $ctx->build(<<"EOT");
-    <div id="$id-field" class="field field-content form-group$req_class $label_class $class"$style>
-        <label$label_for>$label$req</label>
-        $insides$hint
-    </div>
-EOT
-    }
+    my $tmpl = MT->instance->load_tmpl( 'cms/include/mtapp_setting.tmpl', \%param );
+    return $ctx->build( $tmpl->output() );
 }
 
 ###########################################################################
@@ -3409,77 +3338,40 @@ Accepted values: "all", "index".
 sub _hdlr_app_statusmsg {
     my ( $ctx, $args, $cond ) = @_;
     my $app = MT->instance;
-    my $id  = $args->{id};
+    my $id  = $args->{id} || '';
 
     my $class = $args->{class} || 'info';
     $class =~ s/\balert\b/warning/;
     $class =~ s/\berror\b/danger/;
 
-    my $hidden = $args->{hidden};
-    my $style = $hidden ? ' style="display: none;"' : '';
-
-    my $msg     = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
-    my $no_link = $args->{no_link} || '';
     my $blog_id = $ctx->var('blog_id');
     my $blog    = $ctx->stash('blog');
     if ( !$blog && $blog_id ) {
-        $blog = MT->model('blog')->load($blog_id);
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
     }
-    if ( $id && $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/ ) {
-        my $link_l
-            = $no_link
-            ? ''
-            : '<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">';
-        my $link_r = $no_link ? '' : '</a>';
-        my $obj_type
-            = $rebuild eq 'blog'
-            ? MT->translate('blog(s)')
-            : MT->translate('website(s)');
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your [_3] to see these changes take effect." params="$link_l%%$link_r%%$obj_type">};
-    }
-    elsif (
-        $blog && $app->user
-        and $app->user->can_do(
-            'rebuild',
-            at_least_one => 1,
-            blog_id      => $blog->id,
-        )
-        )
-    {
-        $rebuild = ''
-            if $rebuild ne 'cfg_prefs'
-            && $blog
-            && $blog->custom_dynamic_templates eq 'all';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
-            if $rebuild eq 'cfg_prefs';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
-            if $rebuild eq 'all';
-        $rebuild
-            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild alert-link">%%</a>">}
-            if $rebuild eq 'index';
-    }
-    else {
-        $rebuild = '';
-    }
-    $id    = defined $id    ? qq{ id="$id"}          : "";
-    $class = defined $class ? qq{alert alert-$class} : "alert alert-info";
-    my $close = '';
-    if ( $id && ( $args->{can_close} || ( !exists $args->{can_close} ) ) ) {
-        $class .= ' alert-dismissable';
-        $close
-            = qq{<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>};
-    }
-    my $role = '';
-    if ( $class =~ /\bwarning|\bdanger/ ) {
-        $role = ' role="alert"';
-    }
-    return $ctx->build(<<"EOT");
-    <div$id class="$class"$style$role>$close $msg $rebuild</div>
-EOT
+
+    my %param = (
+        blog_id     => $blog_id,
+        can_close   => 0,
+        can_rebuild => 0,
+        class       => $class,
+        did_replace => 0,
+        dynamic_all => 0,
+        hidden      => $args->{hidden} || '',
+        id          => $id,
+        msg         => $ctx->slurp,
+        no_link     => $args->{no_link} || '',
+        rebuild     => $rebuild,
+    );
+
+    $param{can_close}   = 1 if $id && ( $args->{can_close} || !exists $args->{can_close} );
+    $param{can_rebuild} = 1 if $blog && ( $app->user and $app->user->can_do( 'rebuild', at_least_one => 1, blog_id => $blog->id ) );
+    $param{did_replace} = 1 if $id && $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/;
+    $param{dynamic_all} = 1 if $blog && $blog->custom_dynamic_templates eq 'all';
+
+    my $tmpl = $app->load_tmpl( 'cms/include/mtapp_statusmsg.tmpl', \%param );
+    return $ctx->build( $tmpl->output() );
 }
 
 ###########################################################################
@@ -4477,7 +4369,7 @@ package MT::Template::Tags::System;
 use strict;
 
 use MT;
-use MT::Util qw( offset_time_list encode_html );
+use MT::Util qw( offset_time_list encode_html trim_path );
 use MT::Request;
 
 {
@@ -4734,8 +4626,8 @@ B<Example:> Passing Parameters to a Template Module
                 )
             ) if $arg->{local};
 
-            my $local_blog
-                = MT->model('blog')->load( $ctx->stash('local_blog_id') );
+            my $local_blog_id = $ctx->stash('local_blog_id');
+            my $local_blog    = MT->request->{__stash}{__obj}{"site:$local_blog_id"} ||= MT->model('blog')->load($local_blog_id);
 
             if ($local_blog->is_blog) {
                 $blog_id = $local_blog->parent_id or return; # skip if data is broken
@@ -4745,7 +4637,7 @@ B<Example:> Passing Parameters to a Template Module
         }
 
         ## Don't know why but hash key has to be encoded
-        my $stash_id = Encode::encode_utf8(
+        my $stash_id = MT::Util::Encode::encode_utf8(
             'template_' . $type . '::' . $blog_id . '::' . $tmpl_name );
         return $ctx->error(
             MT->translate(
@@ -4800,7 +4692,8 @@ B<Example:> Passing Parameters to a Template Module
             $req->stash( $stash_id, [ $tmpl, undef ] );
         }
 
-        my $blog = $ctx->stash('blog') || MT->model('blog')->load($blog_id);
+        my $blog = $ctx->stash('blog');
+        $blog ||= MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
 
         my %include_recipe;
         my $use_ssi
@@ -4830,7 +4723,7 @@ B<Example:> Passing Parameters to a Template Module
         }
 
         # Try to read from cache
-        my $enc               = MT->config->PublishCharset;
+        my $enc               = MT->publish_charset;
         my $cache_expire_type = 0;
         my $cache_enabled     = 0;
 
@@ -4905,7 +4798,7 @@ B<Example:> Passing Parameters to a Template Module
                 expirable => 1
             );
             my $cache_value = $cache_driver->get($cache_key);
-            $cache_value = Encode::decode( $enc, $cache_value );
+            $cache_value = MT::Util::Encode::decode( $enc, $cache_value );
             if ($cache_value) {
                 return $cache_value if !$use_ssi;
 
@@ -4946,7 +4839,7 @@ B<Example:> Passing Parameters to a Template Module
         }
 
         if ($cache_enabled) {
-            $cache_driver->set( $cache_key, Encode::encode( $enc, $ret ),
+            $cache_driver->set( $cache_key, MT::Util::Encode::encode( $enc, $ret ),
                 $ttl_for_set );
         }
 
@@ -5018,7 +4911,7 @@ B<Example:> Passing Parameters to a Template Module
         else {
             my $blog = $ctx->stash('blog');
             if ( $blog && $blog->id != $blog_id ) {
-                $blog = MT::Blog->load($blog_id)
+                $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
                     or return $ctx->error(
                     MT->translate(
                         "Cannot find blog for id '[_1]", $blog_id
@@ -5187,7 +5080,7 @@ sub _hdlr_section {
     my $app = MT->instance;
     my $out;
     my $cache_require;
-    my $enc = MT->config->PublishCharset || 'UTF-8';
+    my $enc = MT->publish_charset;
 
     # make cache id
     my $cache_id = $args->{cache_prefix} || '';
@@ -5220,7 +5113,7 @@ sub _hdlr_section {
                 ## need to decode by hand for blob typed column.
                 my $data = $sess->data();
                 $data = MT::I18N::utf8_off($data) if MT::I18N::is_utf8($data);
-                my $out = Encode::decode( $enc, $data );
+                my $out = MT::Util::Encode::decode( $enc, $data );
                 if ($out) {
                     if ( my $wrap_tag = $args->{html_tag} ) {
                         my $id = $args->{id};
@@ -5253,7 +5146,7 @@ sub _hdlr_section {
             {   id    => $cache_id,
                 kind  => 'CO',
                 start => time,
-                data  => Encode::encode( $enc, $out )
+                data  => MT::Util::Encode::encode( $enc, $out )
             }
         );
         $sess->save();
@@ -5322,7 +5215,7 @@ sub _hdlr_link {
             : $curr_blog;
         my $blog_id = $blog->id;
         require MT::Template;
-        my $tmpl = MT::Template->load(
+        my $tmpl = MT->request->{__stash}{__obj}{"$tmpl_name:$blog_id"} ||= MT::Template->load(
             {   identifier => $tmpl_name,
                 type       => 'index',
                 blog_id    => $blog_id
@@ -6365,6 +6258,7 @@ B<Example:>
             or return $ctx->error( $builder->errstr );
         $file =~ s!/{2,}!/!g;
         $file =~ s!(^/|/$)!!g;
+        $file = trim_path($file) if MT->config->TrimFilePath;
         $file;
     }
 }

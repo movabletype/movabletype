@@ -15,7 +15,7 @@ use Archive::Zip;
 use constant ARCHIVE_TYPE => 'zip';
 
 use MT::FileMgr::Local;
-use Encode;
+use MT::Util::Encode;
 
 sub new {
     my $pkg = shift;
@@ -122,7 +122,7 @@ sub extract {
 
     $path ||= MT->config->TempDir;
     for my $file ($obj->files) {
-        my $file_enc = Encode::decode('Shift_JIS', $file);
+        my $file_enc = MT::Util::Encode::decode('Shift_JIS', $file);
         my $f        = File::Spec->catfile($path, $file_enc);
         $obj->{_arc}->extractMember($file, MT::FileMgr::Local::_local($f));
     }
@@ -135,8 +135,7 @@ sub add_file {
     return $obj->error(MT->translate('Cannot write to the object'))
         if 'r' eq $obj->{_mode};
     my $filename = File::Spec->catfile($path, $file_path);
-    $file_path = Encode::encode('Shift_JIS', $file_path)
-        if Encode::is_utf8($file_path);
+    $file_path = MT::Util::Encode::encode_if_flagged('Shift_JIS', $file_path);
     $obj->{_arc}->addFile($filename, $file_path);
 }
 
@@ -147,8 +146,7 @@ sub add_string {
         if 'r' eq $obj->{_mode};
     return $obj->error(MT->translate('Both data and file name must be specified.'))
         unless $string && $file_name;
-    $file_name = Encode::encode('Shift_JIS', $file_name)
-        if Encode::is_utf8($file_name);
+    $file_name = MT::Util::Encode::encode_if_flagged('Shift_JIS', $file_name);
     $obj->{_arc}->addString($string, $file_name);
 }
 

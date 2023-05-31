@@ -416,6 +416,7 @@ sub call {
 
 sub is_restricted_app {
     my ( $self, $app ) = @_;
+    return 1 if $app eq 'data_api' && $mt->config->DisableDataAPI;
     ( grep { $app eq $_ } $mt->config->RestrictedPSGIApp ) ? 1 : 0;
 }
 

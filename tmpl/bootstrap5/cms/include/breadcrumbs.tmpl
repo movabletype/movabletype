@@ -1,0 +1,65 @@
+<div class="mt-breadcrumb">
+
+<mt:if name="scope_type" ne="user">
+  <a href="<mt:var name="mt_url">?__mode=dashboard">
+</mt:if>
+    <__trans phrase="Dashboard">
+<mt:if name="scope_type" ne="user">
+  </a>
+  <span class="mt-gts">&gt;</span>
+</mt:if>
+
+<mt:if name="breadcrumbs">
+  <mt:if name="scope_type" eq="system">
+    <mt:if name="can_access_to_system_dashboard">
+  <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=0">
+    <__trans phrase="System">
+  </a>
+    <mt:else>
+    <__trans phrase="System">
+    </mt:if>
+  <mt:else>
+    <mt:if name="scope_type" eq="blog">
+      <mt:if name="curr_website_can_link">
+  <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="curr_website_id">">
+    <mt:var name="curr_website_name" escape="html">
+  </a>
+      <mt:else>
+  <mt:var name="curr_website_name" escape="html">
+      </mt:if>
+  <span class="mt-gts">&gt;</span>
+    </mt:if>
+  <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="blog_id">">
+    <mt:var name="blog_name" escape="html">
+  </a>
+  </mt:if>
+
+  <mt:loop name="breadcrumbs">
+  <span class="mt-gts">&gt;</span>
+    <mt:if name="bc_uri">
+  <a href="<mt:var name="bc_uri" escape="html">">
+    <mt:var name="bc_name" escape="html">
+  </a>
+    <mt:else>
+  <mt:var name="bc_name" escape="html">
+    </mt:if>
+  </mt:loop>
+<mt:else>
+  <mt:if name="scope_type" eq="system">
+  <__trans phrase="System">
+  <mt:elseif name="scope_type" eq="website">
+  <mt:var name="blog_name" escape="html">
+  <mt:elseif name="scope_type" eq="blog">
+    <mt:if name="curr_website_can_link">
+  <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="curr_website_id">">
+    <mt:var name="curr_website_name" escape="html">
+  </a>
+    <mt:else>
+  <mt:var name="curr_website_name" escape="html">
+    </mt:if>
+  <span class="mt-gts">&gt;</span>
+  <mt:var name="blog_name" escape="html">
+  </mt:if>
+</mt:if>
+</div>
+

@@ -53,10 +53,8 @@ MT::Test::Permission->make_templatemap(
     template_id  => $tmpl_ct1_listing->id,
 );
 
-my $cache_key = 'has_archive_type::blog:' . $blog->id;
-
 subtest 'some archive type with content_type_id' => sub {
-    $mt->request->reset;
+    $blog->flush_has_archive_type_cache;
 
     my %blog_archive_type = map { $_ => 1 } split ',', $blog->archive_type;
 
@@ -71,14 +69,14 @@ subtest 'some archive type with content_type_id' => sub {
     }
 
     is_deeply(
-        $mt->request->cache($cache_key),
-        +{ map { $_ => { 0 => 1 } } keys %blog_archive_type },
+        $blog->{__has_archive_type},
+        +{ map { $_ => 1 } keys %blog_archive_type },
         'check cache'
     );
 };
 
 subtest 'no archive type' => sub {
-    $mt->request->reset;
+    $blog->flush_has_archive_type_cache;
 
     $blog->archive_type('');
 
@@ -86,11 +84,11 @@ subtest 'no archive type' => sub {
         ok( !$blog->has_archive_type($type), "$type does not exist" );
     }
 
-    is( $mt->request->cache($cache_key), undef, 'check cache' );
+    is( $blog->{__has_archive_type}, undef, 'check cache' );
 };
 
 subtest 'content_type related archive type' => sub {
-    $mt->request->reset;
+    $blog->flush_has_archive_type_cache;
 
     $blog->archive_type('ContentType,ContentType-Daily');
 
@@ -109,17 +107,14 @@ subtest 'content_type related archive type' => sub {
     }
 
     is_deeply(
-        $mt->request->cache($cache_key),
-        {   ContentType => {
-                0        => 1,
-                $ct1->id => 1,
-                $ct2->id => 0,
-            },
-            'ContentType-Daily' => {
-                0        => 1,
-                $ct1->id => 1,
-                $ct2->id => 0,
-            },
+        $blog->{__has_archive_type},
+        {
+            'ContentType'                   => 1,
+            'ContentType:' . $ct1->id       => 1,
+            'ContentType:' . $ct2->id       => 0,
+            'ContentType-Daily'             => 1,
+            'ContentType-Daily:' . $ct1->id => 1,
+            'ContentType-Daily:' . $ct2->id => 0,
         },
         'check cache'
     );

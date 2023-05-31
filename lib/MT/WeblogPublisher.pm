@@ -108,7 +108,7 @@ sub rebuild {
     my $blog;
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Loading of blog '[_1]' failed: [_2]", $blog_id,
@@ -282,7 +282,7 @@ sub rebuild_categories {
 
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Load of blog '[_1]' failed: [_2]", $blog_id,
@@ -329,7 +329,7 @@ sub rebuild_authors {
 
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Load of blog '[_1]' failed: [_2]", $blog_id,
@@ -462,7 +462,7 @@ sub rebuild_deleted_entry {
     unless ( $blog = $param{Blog} ) {
         require MT::Blog;
         my $blog_id = $entry->blog_id;
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Load of blog '[_1]' failed: [_2]", $blog_id,
@@ -691,7 +691,7 @@ sub rebuild_entry {
     my $blog;
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $entry->blog_id;
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Load of blog '[_1]' failed: [_2]", $blog_id,
@@ -1126,7 +1126,7 @@ sub _rebuild_entry_archive_type {
     my $blog;
     unless ( $blog = $param{Blog} ) {
         my $blog_id = $entry->blog_id;
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Load of blog '[_1]' failed: [_2]", $blog_id,
@@ -1406,7 +1406,7 @@ sub rebuild_file {
         }
     }
 
-    my $tmpl = MT::Template->load($tmpl_id);
+    my $tmpl = MT->request->{__stash}{__obj}{"template:$tmpl_id"} ||= MT::Template->load($tmpl_id);
     return 1 if $tmpl->type eq 'backup';
     $tmpl->context($ctx);
 
@@ -1795,7 +1795,7 @@ sub rebuild_indexes {
         if defined $param{Blog};
     if ( !$blog && defined $param{BlogID} ) {
         my $blog_id = $param{BlogID};
-        $blog = MT::Blog->load($blog_id)
+        $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
             or return $mt->error(
             MT->translate(
                 "Load of blog '[_1]' failed: [_2]", $blog_id,
@@ -2631,8 +2631,7 @@ sub _delete_archive_file {
         );
         if ( $file_tmpl && !$file ) {
             local $ctx->{archive_type} = $at;
-            require MT::Builder;
-            my $build  = MT::Builder->new;
+            my $build  = MT->builder;
             my $tokens = $tokens_cache{$file_tmpl}
                 ||= $build->compile( $ctx, $file_tmpl )
                 or return $blog->error( $build->errstr() );

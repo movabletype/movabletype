@@ -31,7 +31,8 @@ GetOptions(\\my \%opts => "from|f", "oi", "t");
 my \$mail = do { local \$/; <STDIN> };
 
 print STDERR "MAIL: \$mail\\n" if \$ENV{TEST_VERBOSE};
-open my \$fh, '>', "$ENV{MT_TEST_ROOT}/mail";
+my \$file = "\$ENV{MT_TEST_ROOT}/mail";
+open my \$fh, '>', \$file or die "\$file: \$!";
 print \$fh \$mail, "\\n";
 SENDMAIL
     chmod 0755, $command;
@@ -39,7 +40,8 @@ SENDMAIL
 }
 
 sub last_sent_mail {
-    return do { open my $fh, '<', _last_mail_file() or return; local $/; <$fh> }
+    my $file = _last_mail_file();
+    return do { open my $fh, '<', $file or die "Last sent mail $file not found: $!"; local $/; <$fh> }
 }
 
 sub _last_mail_file { "$ENV{MT_TEST_ROOT}/mail" }

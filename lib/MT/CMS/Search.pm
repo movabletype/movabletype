@@ -7,7 +7,7 @@ package MT::CMS::Search;
 
 use strict;
 use warnings;
-use MT::Util qw( is_valid_date encode_html first_n_words );
+use MT::Util qw( encode_html first_n_words );
 
 sub core_search_apis {
     my $app = shift;
@@ -33,50 +33,32 @@ sub core_search_apis {
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
 
-                my $cnt = MT->model('permission')->count(
-                    [   [   {   (     ($blog_id)
-                                    ? ( blog_id => $blog_id )
-                                    : ( blog_id => \'> 0' )
-                                ),
-                                author_id => $author->id,
-                            },
-                            '-and',
-                            [   {   permissions => {
-                                        like => "\%'manage_content_data'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like => "\%'manage_content_data:\%'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like => "\%'create_content_data:\%'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like =>
-                                            "\%'edit_all_content_data:\%'\%"
-                                    },
-                                },
-                                '-or',
-                                {   permissions => {
-                                        like =>
-                                            "\%'publish_content_data:\%'\%"
-                                    },
-                                },
-                            ],
-                        ],
-                        '-or',
-                        {   author_id => $author->id,
-                            permissions =>
-                                { like => "\%'manage_content_data'\%" },
-                            blog_id => 0,
+                my @terms = ({
+                    author_id   => $author->id,
+                    permissions => { like => "\%'manage_content_data'\%" },
+                    blog_id     => 0,
+                });
+                if ($blog_id) {
+                    push @terms, '-or', [{
+                            blog_id   => $blog_id,
+                            author_id => $author->id,
                         },
-                    ]
-                );
+                        '-and',
+                        [
+                            { permissions => { like => "\%'manage_content_data'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'manage_content_data:\%'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'create_content_data:\%'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'edit_all_content_data:\%'\%" } },
+                            '-or',
+                            { permissions => { like => "\%'publish_content_data:\%'\%" } },
+                        ],
+                    ];
+                }
+
+                my $cnt = MT->model('permission')->count(\@terms);
 
                 return ( $cnt && $cnt > 0 ) ? 1 : 0;
             },
@@ -662,7 +644,7 @@ sub can_search_replace {
             {   author_id => $app->user->id,
                 (   $blog_ids
                     ? ( blog_id => $blog_ids )
-                    : ( blog_id => { not => 0 } )
+                    : ( blog_id => 0 )
                 ),
             }
         );
@@ -701,17 +683,25 @@ sub search_replace {
     return $app->return_to_dashboard( redirect => 1 )
         if !$app->can_do('use_tools:search') && $app->param('blog_id');
 
+    my $search_tabs = $app->search_apis( $blog_id ? 'blog' : 'system' );
+    return $app->permission_denied() unless @{$search_tabs || []};
+
     my $param = do_search_replace( $app, @_ ) or return;
     $app->add_breadcrumb( $app->translate('Search & Replace') );
     $param->{nav_search}   = 1;
     $param->{screen_class} = "search-replace";
     $param->{screen_id}    = "search-replace";
-    $param->{search_tabs} = $app->search_apis( $blog_id ? 'blog' : 'system' );
+    $param->{search_tabs} = $search_tabs;
     $param->{entry_type}  = $app->param('entry_type');
 
-    if (   $app->param('_type')
-        && $app->param('_type') =~ /entry|page|comment|ping|template/ )
-    {
+    my $type  = $app->param('_type');
+
+    if ($type) {
+        my $model = $app->model($type);
+        $param->{is_revisable} = $model && $model->isa('MT::Revisable') ? 1 : 0;
+    }
+
+    if ( $type && $type =~ /entry|page|comment|ping|template/ ) {
         if ( $app->param('blog_id') ) {
             my $perms = $app->permissions
                 or return $app->permission_denied();
@@ -834,16 +824,15 @@ sub do_search_replace {
     my ($search,       $replace,            $do_replace,
         $case,         $is_regex,           $is_limited,
         $type,         $is_junk,            $is_dateranged,
-        $ids,          $datefrom_year,      $datefrom_month,
-        $datefrom_day, $dateto_year,        $dateto_month,
-        $dateto_day,   $date_time_field_id, $from,
+        $ids,          $date_time_field_id, $from,
         $to,           $timefrom,           $timeto,
         $show_all,     $do_search,          $orig_search,
         $quicksearch,  $publish_status,     $my_posts,
-        $search_type,  $filter,             $filter_val
+        $search_type,  $filter,             $filter_val,
+        $change_note,
         )
         = map scalar $app->param($_),
-        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
+        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids date_time_field_id from to timefrom timeto show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val change_note );
 
     # trim 'search' parameter
     $search = '' unless defined($search);
@@ -940,33 +929,7 @@ sub do_search_replace {
         $quicksearch_id = $search;
         unshift @cols, 'id';
     }
-    foreach (
-        $datefrom_year, $datefrom_month, $datefrom_day,
-        $dateto_year,   $dateto_month,   $dateto_day
-        )
-    {
-        s!\D!!g if $_;
-    }
-    if ( $is_dateranged && $datefrom_year ) {
-        $datefrom = sprintf( "%04d%02d%02d",
-            $datefrom_year, $datefrom_month, $datefrom_day );
-        $dateto = sprintf( "%04d%02d%02d",
-            $dateto_year, $dateto_month, $dateto_day );
-        if ( ( $datefrom eq '00000000' ) && ( $dateto eq '00000000' ) ) {
-            $is_dateranged = 0;
-        }
-        else {
-            if (   !is_valid_date( $datefrom . '000000' )
-                || !is_valid_date( $dateto . '000000' ) )
-            {
-                return $app->error(
-                    $app->translate(
-                        "Invalid date(s) specified for date range.")
-                );
-            }
-        }
-    }
-    elsif ($is_dateranged) {
+    if ($is_dateranged) {
         if ( $from && $to ) {
             s!\D!!g foreach ( $from, $to );
             $datefrom = substr( $from, 0, 8 );
@@ -1033,60 +996,11 @@ sub do_search_replace {
         if ( exists $api->{setup_terms_args} ) {
             my $code = $app->handler_to_coderef( $api->{setup_terms_args} );
             $code->( \%terms, \%args, $blog_id );
-            if (   !exists $terms{blog_id}
-                && $type ne 'author'
-                && $type ne 'blog' )
-            {
-                if ($blog_id) {
-                    require MT::Blog;
-                    my $blog;
-                    $blog = MT::Blog->load($blog_id) if $blog_id;
-                    if (   $blog
-                        && !$blog->is_blog
-                        && ( $author->permissions($blog_id)
-                            ->has('administer_site')
-                            || $author->is_superuser )
-                        )
-                    {
-                        my @blogs
-                            = MT::Blog->load( { parent_id => $blog->id } );
-                        my @blog_ids = ( $blog->id );
-                        foreach my $b (@blogs) {
-                            push @blog_ids, $b->id
-                                if $author->permissions( $b->id )
-                                ->has('administer_site');
-                        }
-                        $terms{blog_id} = \@blog_ids;
-                    }
-                    else {
-                        $terms{blog_id} = $blog_id;
-                    }
-                }
+            if (!exists $terms{blog_id} && $type ne 'author' && $type ne 'blog') {
+                _set_blog_id_to_terms(\%terms, $author, $blog_id);
             }
-        }
-        else {
-            if ($blog_id) {
-                require MT::Blog;
-                my $blog;
-                $blog = MT::Blog->load($blog_id) if $blog_id;
-                if (   $blog
-                    && !$blog->is_blog
-                    && $author->permissions($blog_id)->has('administer_site')
-                    )
-                {
-                    my @blogs = MT::Blog->load( { parent_id => $blog->id } );
-                    my @blog_ids = ( $blog->id );
-                    foreach my $b (@blogs) {
-                        push @blog_ids, $b->id
-                            if $author->permissions( $b->id )
-                            ->has('administer_site');
-                    }
-                    %terms = ( blog_id => \@blog_ids );
-                }
-                else {
-                    %terms = ( blog_id => $blog_id );
-                }
-            }
+        } else {
+            _set_blog_id_to_terms(\%terms, $author, $blog_id);
             if ( $type ne 'template' ) {
                 %args = ( 'sort' => $date_col, direction => 'descend' );
             }
@@ -1204,94 +1118,20 @@ sub do_search_replace {
             if ( defined $terms && defined $args ) {
                 $iter = $class->load_iter( $terms, $args )
                     or die $class->errstr;
-            }
-            elsif ($blog_id
-                || ( $type eq 'blog' )
-                || ( $app->mode eq 'dialog_grant_role' ) )
-            {
-                $iter
-                    = $class->load_iter( @terms ? \@terms : \%terms, \%args )
-                    or die $class->errstr;
-            }
-            else {
+            } elsif ($blog_id || ( $type eq 'blog' ) || ( $app->mode eq 'dialog_grant_role' ) || $author->is_superuser) {
+                $iter = $class->load_iter(@terms ? \@terms : \%terms, \%args) or die $class->errstr;
+            } else {
+                if ( $class->has_column('blog_id') ) {
 
-                my @streams;
-                if ( $author->is_superuser ) {
-                    @streams = (
-                        {   iter => $class->load_iter(
-                                @terms ? \@terms : \%terms, \%args
-                            )
-                        }
+                    # Get an iter for each accessible blog
+                    my @perms = $app->model('permission')->load(
+                        {   blog_id   => { not => 0 },
+                            author_id => $author->id
+                        },
                     );
+                    push @terms, {blog_id => [map {$_->blog_id} @perms]} if @perms;
                 }
-                else {
-                    if ( $class->has_column('blog_id') ) {
-
-                        # Get an iter for each accessible blog
-                        my @perms = $app->model('permission')->load(
-                            {   blog_id   => { not => 0 },
-                                author_id => $author->id
-                            },
-                        );
-                        if (@perms) {
-                            my @blog_terms;
-                            push( @blog_terms,
-                                { blog_id => $_->blog_id, }, '-or' )
-                                foreach @perms;
-                            push @terms, \@blog_terms if @blog_terms;
-                        }
-                    }
-                    @streams = (
-                        { iter => $class->load_iter( \@terms, \%args ) } );
-                }
-
-                # Pull out the head of each iterator
-                # Next: effectively mergesort the various iterators
-                # To call the iterator n times takes time in O(bn)
-                #   with 'b' the number of blogs
-                # we expect to hit the iterator l/p times where 'p' is the
-                #   prob. of the search term appearing and 'l' is $limit
-                $_->{head} = $_->{iter}->() foreach @streams;
-                if ( $type ne 'template' ) {
-                    $iter = sub {
-
-                        # find the head with greatest created_on
-                        my $which = \$streams[0];
-                        foreach my $iter (@streams) {
-                            next
-                                if !exists $iter->{head}
-                                || !$which
-                                || !${$which}->{head}
-                                || !defined( $iter->{head} );
-                            if ( $iter->{head}->created_on
-                                > ${$which}->{head}->created_on )
-                            {
-                                $which = \$iter;
-                            }
-                        }
-
-                        # Advance the chosen one
-                        my $result = ${$which}->{head};
-                        ${$which}->{head} = ${$which}->{iter}->() if $result;
-                        $result;
-                    };
-                }
-                else {
-                    $iter = sub {
-                        return undef unless @streams;
-
-                        # find the head with greatest created_on
-                        my $which = \$streams[0];
-                        while ( @streams && ( !defined ${$which}->{head} ) ) {
-                            shift @streams;
-                            last unless @streams;
-                            $which = \$streams[0];
-                        }
-                        my $result = ${$which}->{head};
-                        ${$which}->{head} = ${$which}->{iter}->() if $result;
-                        $result;
-                    };
-                }
+                $iter = $class->load_iter( \@terms, \%args );
             }
         }
         my $i = 1;
@@ -1510,12 +1350,11 @@ sub do_search_replace {
                     my $max = $blog->$col;
                     $obj->handle_max_revisions($max);
 
-                    my $msg
-                        = $app->translate(
+                    $change_note ||= $app->translate(
                         "Searched for: '[_1]' Replaced with: '[_2]'",
                         $plain_search, $replace );
 
-                    my $revision = $obj->save_revision($msg);
+                    my $revision = $obj->save_revision($change_note);
                     $obj->current_revision($revision);
 
                     # call update to bypass instance save method
@@ -1646,15 +1485,9 @@ sub do_search_replace {
         }
     }
     if ($is_dateranged) {
-        if ( $from && $to ) {
-            ( $datefrom_year, $datefrom_month, $datefrom_day )
-                = $datefrom =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
-            ( $dateto_year, $dateto_month, $dateto_day )
-                = $dateto =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
-            $from = sprintf "%s-%s-%s", $datefrom_year, $datefrom_month,
-                $datefrom_day;
-            $to = sprintf "%s-%s-%s", $dateto_year, $dateto_month,
-                $dateto_day;
+        if ($from && $to) {
+            $from =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
+            $to   =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
         }
         if ( $timefrom && $timeto ) {
             $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
@@ -1694,16 +1527,10 @@ sub do_search_replace {
         do_replace         => $do_replace,
         case               => $case,
         from               => $from,
-        datefrom_year      => $datefrom_year,
-        datefrom_month     => $datefrom_month,
-        datefrom_day       => $datefrom_day,
         to                 => $to,
         date_time_field_id => $date_time_field_id,
         timefrom           => $timefrom,
         timeto             => $timeto,
-        dateto_year        => $dateto_year,
-        dateto_month       => $dateto_month,
-        dateto_day         => $dateto_day,
         is_regex           => $is_regex,
         is_limited         => $is_limited,
         is_dateranged      => $is_dateranged,
@@ -1772,21 +1599,6 @@ sub do_search_replace {
     $search_options .= '&amp;is_dateranged=' . encode_html($is_dateranged)
         if defined $is_dateranged;
 
-    if ($is_dateranged) {
-        $search_options .= '&amp;datefrom_year=' . encode_html($datefrom_year)
-            if defined $datefrom_year;
-        $search_options
-            .= '&amp;datefrom_month=' . encode_html($datefrom_month)
-            if defined $datefrom_month;
-        $search_options .= '&amp;datefrom_day=' . encode_html($datefrom_day)
-            if defined $datefrom_day;
-        $search_options .= '&amp;dateto_year=' . encode_html($dateto_year)
-            if defined $dateto_year;
-        $search_options .= '&amp;dateto_month=' . encode_html($dateto_month)
-            if defined $dateto_month;
-        $search_options .= '&amp;dateto_day=' . encode_html($dateto_day)
-            if defined $dateto_day;
-    }
     if ($is_limited) {
         foreach (@cols) {
             $search_options .= '&amp;search_cols=' . encode_html($_);
@@ -1796,6 +1608,24 @@ sub do_search_replace {
     $res{search_options} = $search_options;
 
     \%res;
+}
+
+sub _set_blog_id_to_terms {
+    my ($terms, $author, $blog_id) = @_;
+    return unless $blog_id;
+    require MT::Blog;
+    my $blog = MT::Blog->load($blog_id);
+    if ($blog && !$blog->is_blog && ($author->is_superuser || $author->permissions($blog_id)->has('administer_site'))) {
+        my @children = MT::Blog->load({ parent_id => $blog->id });
+        my @blog_ids = ($blog->id);
+        for my $child (@children) {
+            push @blog_ids, $child->id
+                if $author->is_superuser || $author->permissions($child->id)->has('administer_site');
+        }
+        $terms->{blog_id} = \@blog_ids;
+    } else {
+        $terms->{blog_id} = $blog_id;
+    }
 }
 
 sub iter_for_replace {

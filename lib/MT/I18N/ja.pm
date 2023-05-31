@@ -8,7 +8,8 @@ package MT::I18N::ja;
 
 use strict;
 use warnings;
-use MT::Util qw(remove_html);
+use MT::Util;
+use MT::Util::Encode;
 use vars qw( @ISA );
 @ISA = qw( MT::I18N::default );
 
@@ -97,7 +98,7 @@ sub wrap_text_encode {
     my $class = shift;
     my ( $text, $cols, $tab_init, $tab_sub, $enc ) = @_;
     return $text if !defined($text) || ( $text eq q() );
-    $text = Encode::encode_utf8($text);
+    $text = MT::Util::Encode::encode_utf8($text);
     eval {
 
         #FULLWIDTH TILDE to WAVE DASH
@@ -120,7 +121,7 @@ sub wrap_text_encode {
     };
 
     $cols ||= 72;
-    Encode::from_to( $text, 'UTF-8', 'EUC-JP' );
+    MT::Util::Encode::from_to( $text, 'UTF-8', 'EUC-JP' );
     my $out = '';
     my $str = '';
     my $b   = 0;
@@ -152,7 +153,7 @@ sub wrap_text_encode {
         }
         $out .= $str;
     }
-    return Encode::decode( 'EUC-JP', $out );
+    return MT::Util::Encode::decode( 'EUC-JP', $out );
 }
 
 sub first_n_encode {

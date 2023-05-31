@@ -1,0 +1,126 @@
+<mt:setvarblock name="page_title"><mt:var name="dialog_title"></mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+
+var win = window.parent;
+function returnBlogSelection(ok) {
+    if (!ok) // user cancelled
+        return jQuery.fn.mtModal.close();
+    var el_id = getByID("<mt:var name="idfield" escape="js">", win.document);
+    var el_name = getByID("<mt:var name="namefield" escape="js">", win.document);
+    var el_link = getByID("<mt:var name="namefield" escape="js">_link", win.document);
+    var return_url = "<mt:var name="return_url" escape="js">";
+    if (el_id && el_name) {
+<mt:if name="panel_multi">
+        var ids = new Array();
+        var names = new Array();
+
+        var inputs = dialog.panels[0].tableSelect.selected();
+        if (inputs.length == 0) return;
+        jQuery.each(inputs, function() {
+            var inp = this;
+            var row = TC.getParentByTagName( inp, "tr" );
+            if (!row) return;
+
+            var labels = jQuery(row).find('.panel-label');
+            if (labels.length == 0) return;
+
+            var id = jQuery(inp).attr('id');
+            id = id.replace(/\D/g, '');
+            if (!id) return;
+
+            ids.push(id);
+
+            var name = labels.get(0).innerHTML;
+            names.push(name + '(' + id + ')');
+        });
+        el_id.value = ids.join(',');
+        el_name.innerHTML = names.join(',');
+<mt:else>
+        var inputs = dialog.panels[0].tableSelect.selected();
+        if (inputs.length == 0) return;
+        var inp = inputs[0];
+        var row = TC.getParentByTagName( inp, "tr" );
+        if (!row) return;
+        var labels = jQuery(row).find('.panel-label');
+        if (labels.length == 0) return;
+        var blog_name = labels.get(0).innerHTML;
+        el_id.value = inp.value;
+        if (blog_name)
+            el_name.innerHTML = blog_name + ' (' + inp.value + ')';
+</mt:if>
+        if ( el_link )
+            jQuery(el_link).show();
+        jQuery.fn.mtModal.close();
+    } else if (return_url) {
+        var inputs = dialog.panels[0].tableSelect.selected();
+        if (inputs.length == 0) return;
+        var inp = inputs[0];
+        var id = inp.value;
+        if (return_url.match(/\bblog_id=(\d+)/)) {
+            return_url = return_url.replace(/\bblog_id=(\d+)/, "blog_id=" + id);
+        } else {
+            return_url = return_url.replace(/\b__mode=([:\w-]+)/, '__mode=$1&blog_id=' + id);
+        }
+        jQuery.fn.mtModal.close(return_url);
+    } else {
+        alert("couldn't find required form elements");
+    }
+}
+
+function savedFavorite(id) {
+    var return_url = "<mt:var name="return_url" escape="js">";
+    if (return_url.match(/\bblog_id=(\d+)/)) {
+        return_url = return_url.replace(/\bblog_id=(\d+)/, "blog_id=" + id);
+    } else {
+        return_url = return_url.replace(/\b__mode=([:\w-]+)/, '__mode=$1&blog_id=' + id);
+    }
+    parent.jQuery.fn.mtDialog.close(return_url);
+}
+
+function saveFavorite(ok) {
+    if (!ok) return parent.jQuery.fn.mtDialog.close();
+    var inputs = dialog.panels[0].tableSelect.selected();
+    if (inputs.length == 0) return;
+    var id = inputs[0].value;
+    var param = '__mode=save_favorite_blogs'
+        + '&id=' + id
+        + '&magic_token=<mt:var name="magic_token">';
+    var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: function() { savedFavorite(id) } };
+    TC.Client.call(params);
+}
+
+function init() {
+    // setup
+    dialog = new Dialog.MultiPanel("select-weblog");
+    var blogPanel = new ListingPanel("blog", "<mt:var name="search_type" default="blog">");
+    blogPanel.pager.setState(<mt:var name="pager_json">);
+    dialog.setPanels([blogPanel]);
+<mt:if name="save_favorite">
+    dialog.open({}, saveFavorite);
+<mt:else>
+    dialog.open({}, returnBlogSelection);
+</mt:if>
+}
+
+TC.attachLoadEvent( init );
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+<div class="modal_width" id="select-weblog-dialog">
+
+<mt:include name="include/listing_panel.tmpl">
+
+</div>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

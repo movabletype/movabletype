@@ -30,9 +30,7 @@ sub fields {
         $MT::DataAPI::Resource::Common::fields{modifiedBy},
         {   name        => 'updatable',
             type        => 'MT::DataAPI::Resource::DataType::Boolean',
-            from_object => sub {
-
-            },
+            from_object => undef,
             bulk_from_object => sub {
                 my ( $objs, $hashs ) = @_;
                 my $app  = MT->instance;

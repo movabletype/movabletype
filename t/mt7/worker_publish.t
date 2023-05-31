@@ -156,6 +156,8 @@ $blog->site_path($site_root);
 $blog->archive_path($archive_root);
 $blog->save;
 
+$test_env->clear_mt_cache;
+
 # create FileInfo entries
 require MT::ContentPublisher;
 my $publisher = MT::ContentPublisher->new;

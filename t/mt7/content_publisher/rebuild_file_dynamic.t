@@ -32,8 +32,7 @@ $test_env->prepare_fixture('archive_type');
 my $objs = MT::Test::Fixture::ArchiveType->load_objs;
 my $blog_id = $objs->{blog_id} or die;
 
-MT::Request->instance->reset;
-MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+$test_env->clear_mt_cache;
 
 my @ct_maps = grep { $_->archive_type =~ /^ContentType/ }
     MT::Test::ArchiveType->template_maps;

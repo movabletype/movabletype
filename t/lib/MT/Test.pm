@@ -261,7 +261,12 @@ sub init_upgrade {
     MT::Upgrade->do_upgrade(
         Install => 1,
         App     => __PACKAGE__,
-        User    => {},
+        User    => {
+            user_name     => 'Melody',
+            user_password => 'Nelson',
+            user_nickname => 'Melody',
+            user_email    => 'test@localhost.localdomain',
+        },
         Blog    => {}
     );
     eval {
@@ -285,14 +290,19 @@ sub init_upgrade {
     };
     warn $@ if $@;
 
-    require MT::ObjectDriver::Driver::Cache::RAM;
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     if (lc($ENV{MT_TEST_BACKEND} // '') eq 'oracle') {
         MT::Test::Env->update_sequences;
     }
 
     1;
+}
+
+sub clear_cache {
+    require MT::ObjectDriver::Driver::Cache::RAM;
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    MT->request->reset;
 }
 
 sub init_db {
@@ -352,11 +362,12 @@ sub init_data {
     $classic_website->apply($website);
     $website->save() or die "Couldn't save blog 1: " . $website->errstr;
 
-    require MT::ObjectDriver::Driver::Cache::RAM;
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     require MT::Blog;
-    my $blog = MT::Blog->new();
+    my $blog;
+    $blog = MT::Blog->load(1);
+    $blog ||= MT::Blog->new();
     $blog->set_values(
         {   name         => 'none',
             site_url     => '/::/nana/',
@@ -398,7 +409,7 @@ sub init_data {
     $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
 
     #    $blog->create_default_templates('mt_blog');
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    clear_cache();
 
     MT::Author->load(1)->set_score( 'unit test', MT::Author->load(1), 1, 1 );
 
@@ -509,8 +520,7 @@ sub init_data {
             $role->role_mask( $r->{role_mask} ) if exists $r->{role_mask};
             $role->save;
         }
-        require MT::Object;
-        MT::Object->driver->clear_cache;
+        clear_cache();
         ( $admin_role, $author_role )
             = map { MT::Role->load( { name => MT->translate($_) } ) }
             ( 'Site Administrator', 'Author' );
@@ -1432,6 +1442,7 @@ sub init_data {
         MT::Comment->count( { entry_id => 24, visible => 1 } ) || 0 );
     $page->save() or die "Couldn't save page record 24: " . $page->errstr;
 
+    clear_cache();
     MT->instance->rebuild( BlogID => 1, );
 
     ### Make ObjectAsset mappings
@@ -1552,7 +1563,7 @@ sub _run_app {
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
         [ abs_path( $app->config->SearchTemplatePath ) ] );
-    $app->config( 'MailTransfer', 'debug' );
+    $app->config( 'MailTransfer', 'debug' ) unless $ENV{MT_TEST_MAIL};
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be
@@ -1584,9 +1595,7 @@ sub _run_app {
                 foreach ( grep {/^__test/} keys %$params );
 
             # nix any any all caches!!
-            require MT::Object;
-            MT::Object->driver->clear_cache;
-            $app->request->reset;
+            clear_cache();
 
             # anything else here??
             delete $app->{__test_output};

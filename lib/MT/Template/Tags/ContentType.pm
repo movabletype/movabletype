@@ -14,7 +14,7 @@ use MT::ContentData;
 use MT::ContentField;
 use MT::ContentStatus;
 use MT::ContentType;
-use MT::Util qw( offset_time_list encode_html remove_html );
+use MT::Util qw( encode_html remove_html );
 use MT::Util::ContentType;
 use MT::Template::Tags::Common;
 
@@ -769,6 +769,9 @@ sub _hdlr_contents {
             }
             else {
                 @contents = @$archive_contents;
+            }
+            if ($args->{limit}) {
+                @contents = splice @contents, 0, $args->{limit};
             }
         }
     }
@@ -1757,7 +1760,7 @@ sub _hdlr_content_calendar {
                     $datetime = $left[0]->data->{$dt_field_id} || '';
                 }
                 else {
-                    $datetime = $left[0]->authored_on;
+                    $datetime = $left[0]->$dt_field;
                 }
                 if ( $datetime && substr( $datetime, 0, 8 ) eq $this_day ) {
                     @cds  = @left;
@@ -1775,7 +1778,7 @@ sub _hdlr_content_calendar {
                         $datetime = $cd->data->{$dt_field_id} || '';
                     }
                     else {
-                        $datetime = $cd->authored_on;
+                        $datetime = $cd->$dt_field;
                     }
                     my $cd_day = $datetime ? substr( $datetime, 0, 8 ) : '';
                     push( @left, $cd ), last

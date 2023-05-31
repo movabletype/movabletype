@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.10.2 (2021-11-17)
+ * Version: 5.10.7 (2022-12-06)
  */
 (function () {
     'use strict';
@@ -921,7 +921,7 @@
       return true;
     };
     var isAbsoluteUrl = function (url) {
-      return /^https?:\/\/[\w\?\-\/+=.&%@~#]+$/i.test(url);
+      return /^https?:\/\/[\w\-\/+=.,!;:&%@^~(){}?#]+$/i.test(url);
     };
     var isImageUrl = function (editor, url) {
       return isAbsoluteUrl(url) && exists(getAllowedImageFileTypes(editor), function (type) {

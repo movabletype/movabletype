@@ -14,6 +14,7 @@ use File::Spec;
 use File::Basename;
 use MT::Util qw( weaken );
 use MT::I18N qw( const );
+use MT::Util::Encode;
 
 our ( $VERSION, $SCHEMA_VERSION );
 our (
@@ -24,7 +25,8 @@ our ( $MT_DIR, $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX );
 our (
     $plugin_sig, $plugin_envelope, $plugin_registry,
     %Plugins,    @Components,      %Components,
-    $DebugMode,  $mt_inst,         %mt_inst
+    $DebugMode,  $mt_inst,         %mt_inst,
+    $Builder,    $Publisher,
 );
 my %Text_filters;
 
@@ -44,7 +46,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.9.6',              '__PRODUCT_VERSION_ID__',
+        '7.9.9',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -62,11 +64,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 6;
+        $RELEASE_NUMBER = 9;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5401';
+        $RELEASE_VERSION_ID = 'r.5404';
     }
 
     $DebugMode = 0;
@@ -1335,7 +1337,11 @@ sub init_plugins {
         }
         $mt->config->PluginAlias( \%PluginAlias, 1 );
 
-        $mt->config->save_config unless $mt->isa('MT::App::Wizard');
+        if (my $model = $mt->model('config')) {
+            if (!$mt->isa('MT::App::Wizard') && $model->driver->table_exists($model)) {
+                $mt->config->save_config;
+            }
+        }
     }
     return 1;
 }
@@ -1372,14 +1378,6 @@ sub init_plugins {
         $plugin->path($plugin_full_path);
         unless ( $plugin->{registry} && ( %{ $plugin->{registry} } ) ) {
             $plugin->{registry} = $plugin_registry;
-        }
-        if ( $plugin->{registry} ) {
-            if ( my $settings = $plugin->{registry}{config_settings} ) {
-                $settings = $plugin->{registry}{config_settings}
-                    = $settings->()
-                    if ref($settings) eq 'CODE';
-                $class->config->define($settings) if $settings;
-            }
         }
         push @Components, $plugin;
         1;
@@ -1424,14 +1422,10 @@ sub init_plugins {
                     }
                 );
             };
-            return 0;
+            return;
         }
         else {
-            if ( my $obj = $Plugins{$plugin_sig}{object} ) {
-                $obj->init_callbacks();
-            }
-            else {
-
+            if ( !$Plugins{$plugin_sig}{object} ) {
                 # A plugin did not register itself, so
                 # create a dummy plugin object which will
                 # cause it to show up in the plugin listing
@@ -1441,7 +1435,7 @@ sub init_plugins {
         }
         $Plugins{$plugin_sig}{enabled} = 1;
         $PluginSwitch->{$plugin_sig} = 1;
-        return 1;
+        return $Plugins{$plugin_sig}{object};
     }
 
     sub __load_plugin_with_yaml {
@@ -1477,7 +1471,7 @@ sub init_plugins {
         local $plugin_sig = $plugin_dir;
         $PluginSwitch->{$plugin_sig} = 1;
         MT->add_plugin($p);
-        $p->init_callbacks();
+        return $p;
     }
 
     sub _init_plugins_core {
@@ -1489,6 +1483,7 @@ sub init_plugins {
             $timer = $mt->get_timer();
         }
 
+        my @loaded_plugins;
         foreach my $PluginPath (@$PluginPaths) {
             my $plugin_lastdir = $PluginPath;
             $plugin_lastdir =~ s![\\/]$!!;
@@ -1504,9 +1499,10 @@ sub init_plugins {
                         = File::Spec->catfile( $PluginPath, $plugin );
                     if ( -f $plugin_full_path ) {
                         $plugin_envelope = $plugin_lastdir;
-                        __load_plugin( $mt, $timer, $PluginSwitch,
-                            $use_plugins, $plugin_full_path, $plugin )
-                            if $plugin_full_path =~ /\.pl$/;
+                        if ($plugin_full_path =~ /\.pl$/) {
+                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
+                            push @loaded_plugins, $obj if $obj;
+                        }
                         next;
                     }
 
@@ -1524,8 +1520,8 @@ sub init_plugins {
                         'config.yaml' );
 
                     if ( -f $yaml ) {
-                        __load_plugin_with_yaml( $use_plugins, $PluginSwitch,
-                            $plugin_dir );
+                        my $obj = __load_plugin_with_yaml( $use_plugins, $PluginSwitch, $plugin_dir );
+                        push @loaded_plugins, $obj if $obj;
                         next;
                     }
 
@@ -1543,13 +1539,58 @@ sub init_plugins {
                             = File::Spec->catfile( $plugin_full_path,
                             $plugin );
                         if ( -f $plugin_file ) {
-                            __load_plugin( $mt, $timer, $PluginSwitch,
-                                $use_plugins, $plugin_file,
-                                $plugin_dir . '/' . $plugin );
+                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $plugin_dir . '/' . $plugin );
+                            push @loaded_plugins, $obj if $obj;
                         }
                     }
                 }
             }
+        }
+
+        # Drop conflicting plugins
+        my %deduped_plugins;
+        for my $plugin (@loaded_plugins) {
+            my $name = $plugin->name;
+            if (my $dup = $deduped_plugins{$name}) {
+                require version;
+                my $dup_version = eval { version->parse($dup->version    || 0) } || 0;
+                my $cur_version = eval { version->parse($plugin->version || 0) } || 0;
+                my ($version_to_drop, $sig_to_drop);
+                if ($cur_version > $dup_version) {
+                    $deduped_plugins{$name} = $plugin;
+                    $version_to_drop        = $dup->version || '';
+                    $sig_to_drop            = $dup->{plugin_sig};
+                } else {
+                    $version_to_drop = $plugin->version || '';
+                    $sig_to_drop     = $plugin->{plugin_sig};
+                }
+                my $error = $mt->translate("Conflicted plugin [_1] [_2] is disabled by the system", $name, $version_to_drop);
+                eval {
+                    require MT::Util::Log;
+                    MT::Util::Log::init();
+                    MT::Util::Log->error($error);
+                };
+                $Plugins{$sig_to_drop}{enabled} = 0;
+                $Plugins{$sig_to_drop}{system_error} = $error;
+                delete $Plugins{$sig_to_drop}{object};
+                delete $PluginSwitch->{$sig_to_drop};
+                @Components = grep { ($_->{plugin_sig} || '') ne $sig_to_drop } @Components;
+                next;
+            }
+            $deduped_plugins{$name} = $plugin;
+        }
+
+        for my $plugin (values %deduped_plugins) {
+            if ($plugin->isa('MT::Plugin')) {
+                $plugin->init;
+            }
+            if ($plugin->{registry}) {
+                if (my $settings = $plugin->{registry}{config_settings}) {
+                    $settings = $plugin->{registry}{config_settings} = $settings->() if ref($settings) eq 'CODE';
+                    $mt->config->define($settings)                                   if $settings;
+                }
+            }
+            $plugin->init_callbacks;
         }
 
         # Reset the Text_filters hash in case it was preloaded by plugins by
@@ -1632,10 +1673,30 @@ sub component {
 
 sub publisher {
     my $mt = shift;
-    $mt = $mt->instance unless ref $mt;
-    require MT::ContentPublisher;
-    $mt->request('ContentPublisher')
-        || $mt->request( 'ContentPublisher', new MT::ContentPublisher() );
+    if (!$Publisher) {
+        require MT::ContentPublisher;
+        $Publisher = MT::ContentPublisher->new;
+    }
+    $Publisher;
+}
+
+sub builder {
+    my $mt = shift;
+    if (!$Builder) {
+        $mt = $mt->instance unless ref $mt;
+        for my $builder ($mt->config->BuilderModule, 'MT::Builder') {
+            if (eval "require $builder; 1") {
+                $Builder = $builder;
+                last;
+            }
+            if ($@) {
+                require MT::Util::Log;
+                MT::Util::Log::init();
+                MT::Util::Log->error($@);
+            }
+        }
+    }
+    $Builder->new;
 }
 
 sub rebuild {
@@ -1732,15 +1793,14 @@ sub update_ping_list {return}
         #  * decode the strings captured by regexp
         #  * encode the translated string from translate()
         #  * decode again for return
-        $text = Encode::encode( 'utf8', $text )
-            if Encode::is_utf8($text);
+        $text = MT::Util::Encode::encode_utf8_if_flagged($text);
         while (1) {
             return '' unless $text;
             $text
                 =~ s!(<(/)?(?:_|MT)_TRANS(_SECTION)?(?:(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\5]+?)*?\5))+?\s*/?)?>)!
             my($msg, $close, $section, %args) = ($1, $2, $3);
             while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\2])*?)?\2/g) {  #"
-                $args{$1} = Encode::decode_utf8($3);
+                $args{$1} = MT::Util::Encode::decode_utf8($3);
             }
             if ($section) {
                 if ($close) {
@@ -1762,8 +1822,7 @@ sub update_ping_list {return}
                 my @p = split /\s*%%\s*/, $args{params}, -1;
                 @p = ('') unless @p;
                 my $phrase = $args{phrase};
-                $phrase = Encode::decode('utf8', $phrase)
-                    unless Encode::is_utf8($phrase);
+                $phrase = MT::Util::Encode::decode_utf8_unless_flagged($phrase);
                 my $translation = $mt->translate($phrase, @p);
                 if (exists $args{escape}) {
                     if (lc($args{escape}) eq 'html') {
@@ -1775,15 +1834,11 @@ sub update_ping_list {return}
                         $translation = MT::Util::encode_js($translation);
                     }
                 }
-                $translation = Encode::encode('utf8', $translation)
-                    if Encode::is_utf8($translation);
-                $translation;
+                $translation = MT::Util::Encode::encode_utf8_if_flagged($translation);
             }
             !igem or last;
         }
-        $text = Encode::decode_utf8($text)
-            unless Encode::is_utf8($text);
-        return $text;
+        return MT::Util::Encode::decode_utf8_unless_flagged($text);
     }
 
     sub current_language { $LH->language_tag }
@@ -1795,6 +1850,12 @@ sub update_ping_list {return}
         return $mt->{charset} if $mt->{charset};
         $mt->{charset} = $mt->config->PublishCharset
             || $mt->language_handle->encoding;
+    }
+
+    sub publish_charset {
+        my $mt = shift;
+        $mt = $mt->instance unless ref $mt;
+        $mt->{publish_charset} ||= $mt->config->PublishCharset || 'UTF-8';
     }
 }
 
@@ -1878,9 +1939,7 @@ sub apply_text_filters {
         }
         $str = $code->( $str, @extra );
     }
-    $str = Encode::decode_utf8($str)
-        if !Encode::is_utf8($str);
-    return $str;
+    return MT::Util::Encode::decode_utf8_unless_flagged($str);
 }
 
 sub static_path {
@@ -1951,47 +2010,51 @@ sub support_directory_path {
 sub template_paths {
     my $mt = shift;
     my @paths;
+
+    my $admin_theme_id = $mt->config('AdminThemeId');
+
     if ( $mt->{plugin_template_path} ) {
-        if (File::Spec->file_name_is_absolute( $mt->{plugin_template_path} ) )
-        {
-            push @paths, $mt->{plugin_template_path}
-                if -d $mt->{plugin_template_path};
+        if (File::Spec->file_name_is_absolute( $mt->{plugin_template_path} ) ) {
+            push @paths, File::Spec->catdir($mt->{plugin_template_path}, $admin_theme_id) if $admin_theme_id;
+            push @paths, $mt->{plugin_template_path};
         }
         else {
-            my $dir = File::Spec->catdir( $mt->app_dir,
-                $mt->{plugin_template_path} );
-            if ( -d $dir ) {
-                push @paths, $dir;
-            }
-            else {
-                $dir = File::Spec->catdir( $mt->mt_dir,
-                    $mt->{plugin_template_path} );
-                push @paths, $dir if -d $dir;
-            }
+            push @paths, File::Spec->catdir( $mt->app_dir, $mt->{plugin_template_path}, $admin_theme_id ) if $admin_theme_id;
+            push @paths, File::Spec->catdir( $mt->app_dir, $mt->{plugin_template_path} );
+            push @paths, File::Spec->catdir( $mt->mt_dir, $mt->{plugin_template_path}, $admin_theme_id ) if $admin_theme_id;
+            push @paths, File::Spec->catdir( $mt->mt_dir, $mt->{plugin_template_path} );
         }
     }
     my @alt_paths = $mt->config('AltTemplatePath');
     foreach my $alt_path (@alt_paths) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
-            push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
-                if $mt->{template_dir};
+            if ($mt->{template_dir}) {
+                push @paths, File::Spec->catdir( $alt_path, $admin_theme_id, $mt->{template_dir} ) if $admin_theme_id;
+                push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} );
+            }
+            push @paths, File::Spec->catdir($alt_path, $admin_theme_id) if $admin_theme_id;
             push @paths, $alt_path;
         }
     }
 
     for my $addon ( @{ $mt->find_addons('pack') } ) {
-        push @paths,
-            File::Spec->catdir( $addon->{path}, 'tmpl', $mt->{template_dir} )
-            if $mt->{template_dir};
+        if ($mt->{template_dir}) {
+            push @paths, File::Spec->catdir( $addon->{path}, 'tmpl', $admin_theme_id, $mt->{template_dir} ) if $admin_theme_id;
+            push @paths, File::Spec->catdir( $addon->{path}, 'tmpl', $mt->{template_dir} );
+        }
+        push @paths, File::Spec->catdir( $addon->{path}, 'tmpl', $admin_theme_id ) if $admin_theme_id;
         push @paths, File::Spec->catdir( $addon->{path}, 'tmpl' );
     }
 
     my $path = $mt->config->TemplatePath;
-    push @paths, File::Spec->catdir( $path, $mt->{template_dir} )
-        if $mt->{template_dir};
+    if ($mt->{template_dir}) {
+        push @paths, File::Spec->catdir( $path, $admin_theme_id, $mt->{template_dir} ) if $admin_theme_id;
+        push @paths, File::Spec->catdir( $path, $mt->{template_dir} );
+    }
+    push @paths, File::Spec->catdir($path, $admin_theme_id) if $admin_theme_id;
     push @paths, $path;
 
-    return @paths;
+    return grep {-d $_} @paths;
 }
 
 sub find_file {

@@ -395,6 +395,7 @@ sub recover_password {
 
     require MT::App::CMS;
     my $cms = MT::App::CMS->new;
+    $cms->{query} = $app->{query};
     my ( $rc, $res ) = MT::CMS::Tools::reset_password( $cms, $user );
 
     if ($rc) {

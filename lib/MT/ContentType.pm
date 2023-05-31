@@ -344,10 +344,9 @@ sub label_field {
 }
 
 sub field_objs {
-    my $obj = shift;
-    my @field_objs
-        = map { MT->model('content_field')->load( $_->{id} || 0 ) }
-        @{ $obj->fields };
+    my $obj        = shift;
+    my @field_objs = MT->model('content_field')->load({ id => [map { $_->{id} || 0 } @{ $obj->fields }] });
+    $_->{__content_type_obj} = $obj for @field_objs;
     return \@field_objs;
 }
 
@@ -494,7 +493,7 @@ sub blog {
         sub {
             my $blog_id = $obj->blog_id;
             require MT::Blog;
-            MT::Blog->load($blog_id)
+            MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id)
                 or $obj->error(
                 MT->translate(
                     "Loading blog '[_1]' failed: [_2]",
@@ -528,6 +527,10 @@ sub _eval_if_mssql_server_or_oracle {
 # class method
 sub all_permissions {
     my $class = shift;
+
+    my $driver = $class->driver;
+    return {} unless $driver && $driver->table_exists($class);
+
     my @all_permissions;
     my @content_types
         = _eval_if_mssql_server_or_oracle( sub { @{ $class->load_all } } );

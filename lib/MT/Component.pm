@@ -9,7 +9,8 @@ package MT::Component;
 use strict;
 use warnings;
 use base qw( Class::Accessor::Fast MT::ErrorHandler );
-use MT::Util qw( encode_js weaken );
+use MT::Util qw( encode_js weaken ); ## no critic
+use MT::Util::Encode;
 
 __PACKAGE__->mk_accessors(qw( id path envelope version schema_version ));
 
@@ -44,7 +45,7 @@ sub new {
     my $class = shift;
     my ($self) = ref $_[0] ? @_ : {@_};
     bless $self, $class;
-    $self->init();
+    $self->init unless $self->isa('MT::Plugin');
     $self;
 }
 
@@ -335,51 +336,65 @@ sub template_paths {
     my $mt   = MT->instance;
     my $path = $mt->config('TemplatePath');
 
+    my $admin_theme_id = $mt->config('AdminThemeId');
+
     my @paths;
-    my $dir = File::Spec->catdir( $c->path, 'tmpl' );
-    push @paths, $dir if -d $dir;
+
+    my $dir = File::Spec->catdir($c->path, 'tmpl');
+    push @paths, File::Spec->catdir($dir, $admin_theme_id) if $admin_theme_id;
+    push @paths, $dir;
+
     $dir = $c->path;
-    push @paths, $dir if -d $dir;
-    if ( $mt->{plugin_template_path} ) {
-        if (File::Spec->file_name_is_absolute( $mt->{plugin_template_path} ) )
-        {
-            push @paths, $mt->{plugin_template_path}
-                if -d $mt->{plugin_template_path};
-        }
-        else {
-            my $dir = File::Spec->catdir( $mt->app_dir,
-                $mt->{plugin_template_path} );
-            if ( -d $dir ) {
-                push @paths, $dir;
-            }
-            else {
-                $dir = File::Spec->catdir( $mt->mt_dir,
-                    $mt->{plugin_template_path} );
-                push @paths, $dir if -d $dir;
-            }
+    push @paths, File::Spec->catdir($dir, $admin_theme_id) if $admin_theme_id;
+    push @paths, $dir;
+    if ($mt->{plugin_template_path}) {
+        if (File::Spec->file_name_is_absolute($mt->{plugin_template_path})) {
+            push @paths, File::Spec->catdir($mt->{plugin_template_path}, $admin_theme_id)
+                if $admin_theme_id;
+            push @paths, $mt->{plugin_template_path};
+        } else {
+            my $dir = File::Spec->catdir(
+                $mt->app_dir,
+                $mt->{plugin_template_path});
+            push @paths, File::Spec->catdir($dir, $admin_theme_id) if $admin_theme_id;
+            push @paths, $dir;
+            $dir = File::Spec->catdir(
+                $mt->mt_dir,
+                $mt->{plugin_template_path});
+            push @paths, File::Spec->catdir($dir, $admin_theme_id) if $admin_theme_id;
+            push @paths, $dir                                      if -d $dir;
         }
     }
     my @alt_paths = $mt->config('AltTemplatePath');
     foreach my $alt_path (@alt_paths) {
-        if ( -d $alt_path ) {    # AltTemplatePath is absolute
-            push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
-                if $mt->{template_dir};
-            push @paths, $alt_path;
+        if ($mt->{template_dir}) {
+            push @paths, File::Spec->catdir($alt_path, $mt->{template_dir}, $admin_theme_id) if $admin_theme_id;
+            push @paths, File::Spec->catdir($alt_path, $mt->{template_dir});
+        }
+        push @paths, File::Spec->catdir($alt_path, $admin_theme_id) if $admin_theme_id;
+        push @paths, $alt_path;
+    }
+    if (UNIVERSAL::isa($c, 'MT::Plugin')) {
+        for my $addon (@{ $mt->find_addons('pack') }) {
+            if ($mt->{template_dir}) {
+                push @paths, File::Spec->catdir($addon->{path}, 'tmpl', $mt->{template_dir}, $admin_theme_id) if $admin_theme_id;
+                push @paths,
+                    File::Spec->catdir(
+                    $addon->{path}, 'tmpl',
+                    $mt->{template_dir});
+            }
+            push @paths, File::Spec->catdir($addon->{path}, 'tmpl', $admin_theme_id) if $admin_theme_id;
+            push @paths, File::Spec->catdir($addon->{path}, 'tmpl');
         }
     }
-    if ( UNIVERSAL::isa( $c, 'MT::Plugin' ) ) {
-        for my $addon ( @{ $mt->find_addons('pack') } ) {
-            push @paths,
-                File::Spec->catdir( $addon->{path}, 'tmpl',
-                $mt->{template_dir} )
-                if $mt->{template_dir};
-            push @paths, File::Spec->catdir( $addon->{path}, 'tmpl' );
-        }
+    if ($mt->{template_dir}) {
+        push @paths, File::Spec->catdir($path, $admin_theme_id, $mt->{template_dir} )
+            if $admin_theme_id;
+        push @paths, File::Spec->catdir($path, $mt->{template_dir});
     }
-    push @paths, File::Spec->catdir( $path, $mt->{template_dir} )
-        if $mt->{template_dir};
+    push @paths, File::Spec->catdir($path, $admin_theme_id) if $admin_theme_id;
     push @paths, $path;
-    return @paths;
+    return grep { -d $_ } @paths;
 }
 
 sub load_tmpl {
@@ -582,15 +597,14 @@ sub translate_templatized {
     #  * decode the strings captured by regexp
     #  * encode the translated string from translate()
     #  * decode again for return
-    $text = Encode::encode( 'utf8', $text )
-        if Encode::is_utf8($text);
+    $text = MT::Util::Encode::encode_utf8_if_flagged($text);
     my @cstack;
     while (1) {
         $text
             =~ s!(<(/)?(?:_|MT)_TRANS(_SECTION)?(?:(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\5]+?)*?\5))+?\s*/?)?>)!
         my($msg, $close, $section, %args) = ($1, $2, $3);
         while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\2])*?)?\2/g) {  #"
-            $args{$1} = Encode::is_utf8($3) ? $3 : Encode::decode_utf8($3);
+            $args{$1} = MT::Util::Encode::decode_utf8_unless_flagged($3);
         }
         if ($section) {
             if ($close) {
@@ -610,7 +624,7 @@ sub translate_templatized {
             my @p = split /\s*%%\s*/, $args{params}, -1;
             @p = ('') unless @p;
             my $phrase = $args{phrase};
-            $phrase = Encode::decode_utf8($phrase) unless Encode::is_utf8($phrase);
+            $phrase = MT::Util::Encode::decode_utf8_unless_flagged($phrase);
             my $translation = $c->translate($phrase, @p);
             if (exists $args{escape}) {
                 if (lc($args{escape}) eq 'html') {
@@ -622,14 +636,11 @@ sub translate_templatized {
                     $translation = encode_js($translation);
                 }
             }
-            $translation = Encode::encode('utf8', $translation)
-                if Encode::is_utf8($translation);
-            $translation;
+            $translation = MT::Util::Encode::encode_utf8_if_flagged($translation);
         }
         !igem or last;
     }
-    $text = Encode::decode_utf8($text) unless Encode::is_utf8($text);
-    return $text;
+    return MT::Util::Encode::decode_utf8_unless_flagged($text);
 }
 
 sub l10n_filter { $_[0]->translate_templatized( $_[1] ) }

@@ -15,6 +15,7 @@ use URI;
 use boolean ();
 use MT::Session;
 use MT::Util;
+use MT::Util::Encode;
 
 sub APP_HOST ()  {'app'}
 sub BLOG_HOST () {'blog'}
@@ -271,7 +272,7 @@ sub _authentication {
         my $remember = $session->get('remember') || '';
         my %arg = (
             -name  => $app->user_cookie,
-            -value => Encode::encode(
+            -value => MT::Util::Encode::encode(
                 $app->charset,
                 join( '::', $author->name, $session->id, $remember )
             ),

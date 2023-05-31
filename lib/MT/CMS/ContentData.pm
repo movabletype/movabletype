@@ -224,7 +224,14 @@ sub edit {
                 blog_id      => $content_type->blog_id,
                 archive_type => 'ContentType',
                 is_preferred => 1,
-            }
+            }, {
+                join => MT->model('template')->join_on(
+                    undef, {
+                        id              => \'= templatemap_template_id',
+                        content_type_id => $content_type->id,
+                    },
+                ),
+            },
         );
 
         $param->{authored_on_date} = $app->param('authored_on_date')
@@ -1761,7 +1768,7 @@ sub _build_content_data_preview {
     $ctx->stash( 'blog',         $blog );
     $ctx->stash( 'blog_id',      $blog->id ) if $blog;
     $ctx->{current_timestamp}    = $content_data->authored_on;
-    $ctx->{curernt_archive_type} = $at;
+    $ctx->{current_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
     $ctx->stash('current_mapping_url', $archive_url);
 
@@ -1888,6 +1895,8 @@ sub _build_content_data_preview {
         save_revision
         unpublished_on_date
         unpublished_on_time
+
+        block_editor_data
     );
 
     for my $col (@cols) {

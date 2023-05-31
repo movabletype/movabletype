@@ -8,8 +8,7 @@ package MT::CMS::Dashboard;
 use strict;
 use warnings;
 use MT::version;
-use MT::Util
-    qw( ts2epoch epoch2ts encode_html relative_date offset_time format_ts );
+use MT::Util qw( ts2epoch epoch2ts offset_time format_ts );
 use MT::Stats qw(readied_provider);
 use MT::I18N qw( const );
 
@@ -48,7 +47,7 @@ sub dashboard {
     }
 
     if ( defined $blog_id && $blog_id ) {
-        my $blog = MT->model('blog')->load($blog_id);
+        my $blog = $app->blog;
         my $trust;
         if ( $blog->is_blog ) {
             $trust = $user->has_perm( $blog->id );

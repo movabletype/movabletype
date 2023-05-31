@@ -22,7 +22,7 @@ sub fields {
     [   @{ MT::DataAPI::Resource::v1::Entry::fields() },
         @{ MT::DataAPI::Resource::v2::Entry::fields() },
         {   name        => 'categories',
-            from_object => sub { },        # Do nothing.
+            from_object => undef,
         },
         {   name        => 'folder',
             from_object => sub {

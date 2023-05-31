@@ -55,6 +55,7 @@ sub suite {
         },
         {   note   => 'Date filter is enabled with Data API v3 or later.',
             path   => '/v2/sites/1/entries',
+            up_to  => 2,
             method => 'GET',
             params => { dateTo => 'invalid', },
         },

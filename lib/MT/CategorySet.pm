@@ -313,10 +313,11 @@ sub remove {
 
 sub blog {
     my $self = shift;
+    my $blog_id = $self->blog_id || 0;
     $self->cache_property(
         'blog',
         sub {
-            MT::Blog->load( $self->blog_id || 0 );
+            MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id);
         },
     );
 }

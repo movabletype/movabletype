@@ -1,0 +1,123 @@
+        <!-- /Main Content --></div>
+
+      <mt:if name="related_content">
+        <div id="related-content">
+          <mt:var name="related_content">
+        <!-- /Related Content --></div>
+      </mt:if>
+
+      <!-- /Content Body --></div>
+    <!-- /Main --></div>
+
+    <mt:var name="form_footer">
+  <!-- /Content --></div>
+
+  <div id="footer">
+
+  <mt:if name="mt_beta">
+    <div id="msg-beta">
+      <p><__trans phrase="This is a beta version of Movable Type and is not recommended for production use."></p>
+    </div>
+  </mt:if>
+
+  <mt:if name="author_name">
+    <ul id="footer-nav" class="inline-nav">
+      <li><a href="<__trans phrase="https://www.movabletype.org">"><__trans phrase="MovableType.org"></a></li>
+      <li><a href="<__trans phrase="https://plugins.movabletype.org/">"><__trans phrase="Plugins"></a></li>
+      <li><a href="<__trans phrase="https://www.movabletype.org/documentation/">"><__trans phrase="Documentation"></a></li>
+      <li><a href="<__trans phrase="https://wiki.movabletype.org/">"><__trans phrase="Wiki"></a></li>
+      <li><a href="<mt:var name="mt_support">"><__trans phrase="Support"></a></li>
+      <li><a href="<__trans phrase="https://forums.movabletype.org/">"><__trans phrase="Forums"></a></li>
+      <li><a href="<mt:var name="mt_feedback_url">"><__trans phrase="Send Us Feedback"></a></li>
+    </ul>
+  </mt:if>
+
+  <mt:include name="include/copyright.tmpl">
+
+    <p id="version">
+      <strong><__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version_id">"></strong>
+    <mt:if name="packs_installed">
+      <__trans phrase="with">: <mt:loop name="packs_installed" glue=", "><mt:if name="link"><a href="<mt:var name="link" escape="html">"></mt:if><mt:var name="label" escape="html"> <mt:var name="version" escape="html"><mt:if name="link"></a></mt:if></mt:loop>
+    </mt:if>
+    </p>
+  <!-- /Footer --></div>
+
+  <mt:var name="html_body_footer">
+
+<!-- /container --></div>
+
+<div id="bootstrapper" class="hidden"></div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+<mt:if name="open_dialog">
+jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&amp;<mt:var name="dialog_params">');
+</mt:if>
+<mt:unless name="delayed_bootstrap">
+App.bootstrapInline( false );
+</mt:unless>
+jQuery(function() {
+<mt:var name="jq_js_include">
+    if (typeof document.body.style.maxHeight == "undefined") {
+        if (jQuery.fn.pngfix) jQuery('#brand a span, .nav-link a, .search-submit img, .welcome-widget img').pngfix();
+    }
+    jQuery.mtAddEdgeClass();
+    jQuery.mtMenu();
+    jQuery.mtSelector();
+    jQuery('a.mt-open-dialog').mtDialog();
+    jQuery('a.mt-rebuild').mtRebuild(<mt:if name="blog_id">{blog_id: '<$mt:var name="blog_id"$>'}</mt:if>);
+    jQuery('#main').on('click','.mt-close-msg',function(){
+        jQuery(this).parents('div.msg').remove();
+    });
+    jQuery('input.mt-edit-field').mtEditInput({
+        edit: '<__trans phrase="Edit">'
+    });
+    jQuery('.msg, .display-options').mtToggleField();
+    jQuery('.fav-actions-nav').mtToggleField({hide_clicked: true});
+    jQuery('#cms-search').mtToggleField({hide_clicked: true}, function(){
+        jQuery('#quick-search').trigger('focus');
+    });
+    jQuery('input.text-date').datepicker({
+        dateFormat: 'yy-mm-dd',
+        dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
+        monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
+        showMonthAfterYear: true,
+        prevText: '<',
+        nextText: '>',
+        onClose: function(dateText, inst){
+          var $this = jQuery(this);
+          var ns = jQuery.data( this, 'mtValidator' );
+          if ( !ns ) {
+            if ($this.attr('mt:watch-change') && inst.lastVal !== $this.val()) {
+              log('found dirty from: ' + $this.attr('id'));
+              (app.getIndirectMethod('setDirty'))();
+            }
+            return true;
+          }
+          $this.mtValid({ focus: false });
+        }
+    });
+    jQuery('.button.toolbar').button();
+    jQuery('#brand > a').on({
+        'mouseenter': function() {
+            jQuery(this).after('<span class="tips"><__trans phrase="Your Dashboard"></span>');
+        },
+        'mouseleave': function(){
+            jQuery('#brand span.tips').remove();
+        }
+    });
+    jQuery('input').each(function() {
+        jQuery(this).addClass(jQuery(this).attr('type'));
+    });
+    jQuery('#quick-search').mtPlaceholder();
+
+    jQuery("#notification_dashboard li span.detail").css("display","none");
+    jQuery('#notification_dashboard li').on('click', function() {
+        jQuery(this).find("span.detail").toggle("fast");
+    });
+});
+/* ]]> */
+</script>
+
+</body>
+</html>

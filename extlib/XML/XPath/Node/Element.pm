@@ -1,16 +1,14 @@
 package XML::XPath::Node::Element;
 
-$VERSION = '1.44';
+use strict;
+use warnings;
+use parent qw/XML::XPath::Node/;
 
-use strict; use warnings;
-use vars qw/@ISA/;
-
-@ISA = ('XML::XPath::Node');
+our $VERSION = '1.48';
 
 package XML::XPath::Node::ElementImpl;
 
-use vars qw/@ISA/;
-@ISA = ('XML::XPath::NodeImpl', 'XML::XPath::Node::Element');
+use parent qw/-norequire XML::XPath::NodeImpl XML::XPath::Node::Element/;
 use XML::XPath::Node ':node_keys';
 
 sub new {

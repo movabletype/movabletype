@@ -47,7 +47,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '2.68';
+$VERSION = '2.80';
 
 sub ProcessMOV($$;$);
 sub ProcessKeys($$$);
@@ -66,6 +66,7 @@ sub ProcessRIFFTrailer($$$);
 sub ProcessTTAD($$$);
 sub ProcessNMEA($$$);
 sub ProcessGPSLog($$$);
+sub ProcessGarminGPS($$$);
 sub SaveMetaKeys($$$);
 # ++^^^^^^^^^^^^++
 sub ParseItemLocation($$);
@@ -483,6 +484,17 @@ my %eeBox2 = (
             Condition => '$$valPt =~ /^\0\0..(cprt|sttm|ptnm|ptrh|thum|gps |3gf )/s',
             SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::Pittasoft' },
         },{
+            Name => 'ThumbnailImage',
+            # (DJI Zenmuse XT2 thermal camera)
+            Groups => { 2 => 'Preview' },
+            Condition => '$$valPt =~ /^.{4}mdat\xff\xd8\xff/s',
+            RawConv => q{
+                my $len = unpack('N', $val);
+                return undef if $len <= 8 or $len > length($val);
+                return substr($val, 8, $len-8);
+            },
+            Binary => 1,
+        },{
             Unknown => 1,
             Binary => 1,
         },
@@ -509,6 +521,12 @@ my %eeBox2 = (
                 return undef unless length($val) >= $len + 12;
                 return substr($val, 12, $len);
             },
+        },
+        {
+            Name => 'SkipInfo', # (found in 70mai Pro Plus+ MP4 videos)
+            # (look for something that looks like a QuickTime atom header)
+            Condition => '$$valPt =~ /^\0[\0-\x04]..[a-zA-Z ]{4}/s',
+            SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::SkipInfo' },
         },
         { Name => 'Skip', Unknown => 1, Binary => 1 },
     ],
@@ -545,12 +563,16 @@ my %eeBox2 = (
     mdat => { Name => 'MediaData', Unknown => 1, Binary => 1 },
     'mdat-size' => {
         Name => 'MediaDataSize',
+        RawConv => '$$self{MediaDataSize} = $val',
         Notes => q{
             not a real tag ID, this tag represents the size of the 'mdat' data in bytes
             and is used in the AvgBitrate calculation
         },
     },
-    'mdat-offset' => 'MediaDataOffset',
+    'mdat-offset' => {
+        Name  => 'MediaDataOffset',
+        RawConv => '$$self{MediaDataOffset} = $val',
+    },
     junk => { Unknown => 1, Binary => 1 }, #8
     uuid => [
         { #9 (MP4 files)
@@ -558,6 +580,7 @@ my %eeBox2 = (
             # *** this is where ExifTool writes XMP in MP4 videos (as per XMP spec) ***
             Condition => '$$valPt=~/^\xbe\x7a\xcf\xcb\x97\xa9\x42\xe8\x9c\x71\x99\x94\x91\xe3\xaf\xac/',
             WriteGroup => 'XMP',    # (write main XMP tags here)
+            PreservePadding => 1,
             SubDirectory => {
                 TagTable => 'Image::ExifTool::XMP::Main',
                 Start => 16,
@@ -607,6 +630,7 @@ my %eeBox2 = (
             Name => 'PreviewImage',
             Condition => '$$valPt=~/^\xea\xf4\x2b\x5e\x1c\x98\x4b\x88\xb9\xfb\xb7\xdc\x40\x6e\x4d\x16/',
             Groups => { 2 => 'Preview' },
+            PreservePadding => 1,
             # 0x00 - undef[16]: UUID
             # 0x10 - int32u[2]: "0 1" (version and/or item count?)
             # 0x18 - int32u: PRVW atom size
@@ -737,6 +761,20 @@ my %eeBox2 = (
     sefd => {
         Name => 'SamsungTrailer',
         SubDirectory => { TagTable => 'Image::ExifTool::Samsung::Trailer' },
+    },
+    # 'samn'? - seen in Vantrue N2S sample video
+);
+
+# stuff seen in 'skip' atom (70mai Pro Plus+ MP4 videos)
+%Image::ExifTool::QuickTime::SkipInfo = (
+    PROCESS_PROC => \&ProcessMOV,
+    GROUPS => { 2 => 'Video' },
+    'ver ' => 'Version',
+    # tima - int32u: seen 0x3c
+    thma => {
+        Name => 'ThumbnailImage',
+        Groups => { 2 => 'Preview' },
+        Binary => 1,
     },
 );
 
@@ -883,7 +921,7 @@ my %eeBox2 = (
     },
     colr => {
         Name => 'ColorRepresentation',
-        ValueConv => 'join(" ", substr($val,0,4), unpack("x4n*",$val))',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::ColorRep' },
     },
     pasp => {
         Name => 'PixelAspectRatio',
@@ -1102,6 +1140,23 @@ my %eeBox2 = (
             SubDirectory => {
                 TagTable => 'Image::ExifTool::Canon::uuid',
                 Start => 16,
+            },
+        },
+        {
+            Name => 'GarminGPS',
+            Condition => '$$valPt=~/^\x9b\x63\x0f\x8d\x63\x74\x40\xec\x82\x04\xbc\x5f\xf5\x09\x17\x28/ and $$self{OPTIONS}{ExtractEmbedded}',
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::QuickTime::Stream',
+                ProcessProc => \&ProcessGarminGPS,
+            },
+        },
+        {
+            Name => 'GarminGPS',
+            Condition => '$$valPt=~/^\x9b\x63\x0f\x8d\x63\x74\x40\xec\x82\x04\xbc\x5f\xf5\x09\x17\x28/',
+            Notes => 'Garmin GPS sensor data',
+            RawConv => q{
+                $self->WarnOnce('Use the ExtractEmbedded option to decode timed Garmin GPS',3);
+                return \$val;
             },
         },
         {
@@ -2218,7 +2273,7 @@ my %eeBox2 = (
     #  4 ? - "1e 00"
     #  6 int16u - record length in bytes
     #  8 ? - "23 01 00 00 00 00 00 00"
-    #  16 - start of records (each record ends in an int64u timestamp in ns)
+    #  16 - start of records (each record ends in an int64u timestamp "ts" in ns)
     # RDTA - float[4],ts: "-0.31289672 -0.2245330 11.303817 0 775.780"
     # RDTB - float[4],ts: "-0.04841613 -0.2166595 0.0724792 0 775.780"
     # RDTC - float[4],ts: "27.60925 -27.10037 -13.27285 0 775.829"
@@ -2718,7 +2773,7 @@ my %eeBox2 = (
         },
     },{
         Name => 'ColorRepresentation',
-        ValueConv => 'join(" ", substr($val,0,4), unpack("x4n*",$val))',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::ColorRep' },
     }],
     irot => {
         Name => 'Rotation',
@@ -2775,6 +2830,78 @@ my %eeBox2 = (
     av1C => {
         Name => 'AV1Configuration',
         SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::AV1Config' },
+    },
+);
+
+# ref https://aomediacodec.github.io/av1-spec/av1-spec.pdf
+%Image::ExifTool::QuickTime::ColorRep = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 2 => 'Video' },
+    FIRST_ENTRY => 0,
+    0 => { Name => 'ColorProfiles', Format => 'undef[4]' },
+    4 => {
+        Name => 'ColorPrimaries',
+        Format => 'int16u',
+        PrintConv => {
+                1 => 'BT.709',
+                2 => 'Unspecified',
+                4 => 'BT.470 System M (historical)',
+                5 => 'BT.470 System B, G (historical)',
+                6 => 'BT.601',
+                7 => 'SMPTE 240',
+                8 => 'Generic film (color filters using illuminant C)',
+                9 => 'BT.2020, BT.2100',
+                10 => 'SMPTE 428 (CIE 1921 XYZ)',
+                11 => 'SMPTE RP 431-2',
+                12 => 'SMPTE EG 432-1',
+                22 => 'EBU Tech. 3213-E',
+            },
+    },
+    6 => {
+        Name => 'TransferCharacteristics',
+        Format => 'int16u',
+        PrintConv => {
+                0 => 'For future use (0)',
+                1 => 'BT.709',
+                2 => 'Unspecified',
+                3 => 'For future use (3)',
+                4 => 'BT.470 System M (historical)',
+                5 => 'BT.470 System B, G (historical)',
+                6 => 'BT.601',
+                7 => 'SMPTE 240 M',
+                8 => 'Linear',
+                9 => 'Logarithmic (100 : 1 range)',
+                10 => 'Logarithmic (100 * Sqrt(10) : 1 range)',
+                11 => 'IEC 61966-2-4',
+                12 => 'BT.1361',
+                13 => 'sRGB or sYCC',
+                14 => 'BT.2020 10-bit systems',
+                15 => 'BT.2020 12-bit systems',
+                16 => 'SMPTE ST 2084, ITU BT.2100 PQ',
+                17 => 'SMPTE ST 428',
+                18 => 'BT.2100 HLG, ARIB STD-B67',
+            },
+    },
+    8 => {
+        Name => 'MatrixCoefficients',
+        Format => 'int16u',
+        PrintConv => {
+                0 => 'Identity matrix',
+                1 => 'BT.709',
+                2 => 'Unspecified',
+                3 => 'For future use (3)',
+                4 => 'US FCC 73.628',
+                5 => 'BT.470 System B, G (historical)',
+                6 => 'BT.601',
+                7 => 'SMPTE 240 M',
+                8 => 'YCgCo',
+                9 => 'BT.2020 non-constant luminance, BT.2100 YCbCr',
+                10 => 'BT.2020 constant luminance',
+                11 => 'SMPTE ST 2085 YDzDx',
+                12 => 'Chromaticity-derived non-constant luminance',
+                13 => 'Chromaticity-derived constant luminance',
+                14 => 'BT.2100 ICtCp',
+            },
     },
 );
 
@@ -6356,7 +6483,7 @@ my %eeBox2 = (
     'player.movie.visual.tint'      => 'Tint',
     'player.movie.visual.contrast'  => 'Contrast',
     'player.movie.audio.gain'       => 'AudioGain',
-    'player.movie.audio.treble'     => 'Trebel',
+    'player.movie.audio.treble'     => 'Treble',
     'player.movie.audio.bass'       => 'Bass',
     'player.movie.audio.balance'    => 'Balance',
     'player.movie.audio.pitchshift' => 'PitchShift',
@@ -6450,10 +6577,12 @@ my %eeBox2 = (
 # iTunes info ('----') atoms
 %Image::ExifTool::QuickTime::iTunesInfo = (
     PROCESS_PROC => \&ProcessMOV,
-    GROUPS => { 2 => 'Audio' },
+    GROUPS => { 1 => 'iTunes', 2 => 'Audio' },
+    VARS => { LONG_TAGS => 0 }, # (hack for discrepancy in the way long tags are counted in BuildTagLookup)
     NOTES => q{
         ExifTool will extract any iTunesInfo tags that exist, even if they are not
-        defined in this table.
+        defined in this table.  These tags belong to the family 1 "iTunes" group,
+        and are not currently writable.
     },
     # 'mean'/'name'/'data' atoms form a triplet, but unfortunately
     # I haven't been able to find any documentation on this.
@@ -6514,9 +6643,45 @@ my %eeBox2 = (
         SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::EncodingParams' },
     },
     # also heard about 'iTunPGAP', but I haven't seen a sample
-    DISCNUMBER => 'DiscNumber', #PH
-    TRACKNUMBER => 'TrackNumber', #PH
-    popularimeter => 'Popularimeter', #PH
+    # all tags below were added based on samples I have seen - PH
+    DISCNUMBER          => 'DiscNumber',
+    TRACKNUMBER         => 'TrackNumber',
+    ARTISTS             => 'Artists',
+    CATALOGNUMBER       => 'CatalogNumber',
+    RATING              => 'Rating',
+    MEDIA               => 'Media',
+    SCRIPT              => 'Script', # character set? (seen 'Latn')
+    BARCODE             => 'Barcode',
+    LABEL               => 'Label',
+    MOOD                => 'Mood',
+    popularimeter       => 'Popularimeter',
+    'Dynamic Range (DR)'=> 'DynamicRange',
+    initialkey          => 'InitialKey',
+    originalyear        => 'OriginalYear',
+    originaldate        => 'OriginalDate',
+    '~length'           => 'Length', # play length? (ie. duration?)
+    replaygain_track_gain=>'ReplayTrackGain',
+    replaygain_track_peak=>'ReplayTrackPeak',
+   'Volume Level (ReplayGain)'=> 'ReplayVolumeLevel',
+   'Dynamic Range (R128)'=> 'DynamicRangeR128',
+   'Volume Level (R128)' => 'VolumeLevelR128',
+   'Peak Level (Sample)' => 'PeakLevelSample',
+   'Peak Level (R128)'   => 'PeakLevelR128',
+    # also seen (many from forum12777):
+    # 'MusicBrainz Album Release Country'
+    # 'MusicBrainz Album Type'
+    # 'MusicBrainz Album Status'
+    # 'MusicBrainz Track Id'
+    # 'MusicBrainz Release Track Id'
+    # 'MusicBrainz Album Id'
+    # 'MusicBrainz Album Artist Id'
+    # 'MusicBrainz Artist Id'
+    # 'Acoustid Id' (sic)
+    # 'Tool Version'
+    # 'Tool Name'
+    # 'ISRC'
+    # 'HDCD'
+    # 'Waveform'
 );
 
 # iTunes audio encoding parameters
@@ -7464,6 +7629,12 @@ my %eeBox2 = (
         Format => 'undef[4]',
         RawConv => '$$self{MetaFormat} = $val',
     },
+    8 => { # starts at 8 for MetaFormat eq 'camm', and 17 for 'mett'
+        Name => 'MetaType',
+        Format => 'undef[$size-8]',
+        # may start at various locations!
+        RawConv => '$$self{MetaType} = ($val=~/(application[^\0]+)/ ? $1 : undef)',
+    },
 #
 # Observed offsets for child atoms of various MetaFormat types:
 #
@@ -7495,6 +7666,11 @@ my %eeBox2 = (
         Name => 'OtherFormat',
         Format => 'undef[4]',
         RawConv => '$$self{MetaFormat} = $val', # (yes, use MetaFormat for this too)
+    },
+    24 => {
+        Condition => '$$self{MetaFormat} eq "tmcd"',
+        Name => 'PlaybackFrameRate', # (may differ from recorded FrameRate eg. ../pics/FujiFilmX-H1.mov)
+        Format => 'rational64u',
     },
 #
 # Observed offsets for child atoms of various OtherFormat types:
@@ -7948,9 +8124,12 @@ sub AUTOLOAD
 # Returns: 9-element rotation matrix as a string (with 0 x/y offsets)
 sub GetRotationMatrix($)
 {
-    my $ang = 3.1415926536 * shift() / 180;
+    my $ang = 3.14159265358979323846264 * shift() / 180;
     my $cos = cos $ang;
     my $sin = sin $ang;
+    # round to zero
+    $cos = 0 if abs($cos) < 1e-12;
+    $sin = 0 if abs($sin) < 1e-12;
     my $msn = -$sin;
     return "$cos $sin 0 $msn $cos 0 0 0 1";
 }
@@ -8531,7 +8710,7 @@ sub HandleItemInfo($)
                 $et->VPrint(0, "$$et{INDENT}Item $id) '${type}' ($len bytes)\n");
             }
             # get ExifTool name for this item
-            my $name = { Exif => 'EXIF', 'application/rdf+xml' => 'XMP' }->{$type} || '';
+            my $name = { Exif => 'EXIF', 'application/rdf+xml' => 'XMP', jpeg => 'PreviewImage' }->{$type} || '';
             my ($warn, $extent);
             $warn = "Can't currently decode encoded $type metadata" if $$item{ContentEncoding};
             $warn = "Can't currently decode protected $type metadata" if $$item{ProtectionIndex};
@@ -8608,6 +8787,21 @@ sub HandleItemInfo($)
                 }
                 $subTable = GetTagTable('Image::ExifTool::Exif::Main');
                 $proc = \&Image::ExifTool::ProcessTIFF;
+            } elsif ($name eq 'PreviewImage') {
+                # take a quick stab at determining the size of the image
+                # (based on JPEG previews found in Fuji X-H2S HIF images)
+                my $type = 'PreviewImage';
+                if ($buff =~ /^.{556}\xff\xc0\0\x11.(.{4})/s) {
+                    my ($h, $w) = unpack('n2', $1);
+                    # (not sure if $h is ever the long dimension, but test it just in case)
+                    if ($w == 160 or $h == 160) {
+                        $type = 'ThumbnailImage';
+                    } elsif ($w == 1920 or $h == 1920) {
+                        $type = 'OtherImage'; # (large preview)
+                    } # (PreviewImage is 640x480)
+                }
+                $et->FoundTag($type => $buff);
+                next;
             } else {
                 $start = 0;
                 $subTable = GetTagTable('Image::ExifTool::XMP::Main');
@@ -8743,15 +8937,19 @@ sub ProcessSampleDesc($$$)
 
     my $num = Get32u($dataPt, 4);   # get number of sample entries in table
     $pos += 8;
-    my $i;
+    my ($i, $err);
     for ($i=0; $i<$num; ++$i) {     # loop through sample entries
-        last if $pos + 8 > $dirLen;
+        $pos + 8 > $dirLen and $err = 1, last;
         my $size = Get32u($dataPt, $pos);
-        last if $pos + $size > $dirLen;
+        $pos + $size > $dirLen and $err = 1, last;
         $$dirInfo{DirStart} = $pos;
         $$dirInfo{DirLen} = $size;
         ProcessHybrid($et, $dirInfo, $tagTablePtr);
         $pos += $size;
+    }
+    if ($err and $$et{HandlerType}) {
+        my $grp = $$et{SET_GROUP1} || $$dirInfo{Parent} || 'unknown';
+        $et->Warn("Truncated $$et{HandlerType} sample table for $grp");
     }
     return 1;
 }
@@ -9044,12 +9242,13 @@ sub ProcessMOV($$;$)
             # temporarily set ExtractEmbedded option for CRX files
             $saveOptions{ExtractEmbedded} = $et->Options(ExtractEmbedded => 1) if $fileType eq 'CRX';
         } else {
-            $et->SetFileType();       # MOV
+            $et->SetFileType();     # MOV
         }
         SetByteOrder('MM');
         $$et{PRIORITY_DIR} = 'XMP';   # have XMP take priority
     }
-    $$raf{NoBuffer} = 1 if $et->Options('FastScan'); # disable buffering in FastScan mode
+    my $fast = $$et{OPTIONS}{FastScan} || 0;
+    $$raf{NoBuffer} = 1 if $fast;   # disable buffering in FastScan mode
 
     my $ee = $$et{OPTIONS}{ExtractEmbedded};
     if ($ee) {
@@ -9075,6 +9274,14 @@ sub ProcessMOV($$;$)
                 } else {
                     my $t = PrintableTagID($tag,2);
                     $et->VPrint(0,"$$et{INDENT}Tag '${t}' extends to end of file");
+                    if ($$tagTablePtr{"$tag-size"}) {
+                        my $pos = $raf->Tell();
+                        unless ($fast) {
+                            $raf->Seek(0, 2);
+                            $et->HandleTag($tagTablePtr, "$tag-size", $raf->Tell() - $pos);
+                        }
+                        $et->HandleTag($tagTablePtr, "$tag-offset", $pos) if $$tagTablePtr{"$tag-offset"};
+                    }
                 }
                 last;
             }
@@ -9175,6 +9382,8 @@ sub ProcessMOV($$;$)
             $et->HandleTag($tagTablePtr, "$tag-size", $size);
             $et->HandleTag($tagTablePtr, "$tag-offset", $raf->Tell()) if $$tagTablePtr{"$tag-offset"};
         }
+        # stop processing at mdat/idat if -fast2 is used
+        last if $fast > 1 and ($tag eq 'mdat' or $tag eq 'idat');
         # load values only if associated with a tag (or verbose) and not too big
         if ($size > 0x2000000) {    # start to get worried above 32 MB
             # check for RIFF trailer (written by Auto-Vox dashcam)
@@ -9301,6 +9510,7 @@ ItemID:         foreach $id (keys %$items) {
                             Name => $name,
                             Description => $desc,
                         };
+                        $et->VPrint(0, $$et{INDENT}, "[adding QuickTime:$name]\n");
                         AddTagToTable($tagTablePtr, $tag, $tagInfo);
                     }
                     # ignore 8-byte header
@@ -9312,9 +9522,9 @@ ItemID:         foreach $id (keys %$items) {
                             $val = \$buff;
                         }
                     }
-                    undef %triplet;
+                    $$tagInfo{List} = 1; # (allow any of these tags to have multiple data elements)
+                    $et->VerboseInfo($tag, $tagInfo, Value => $val) if $verbose;
                 } else {
-                    undef %triplet if $tag eq 'mean';
                     $triplet{$tag} = substr($val,4) if length($val) > 4;
                     undef $tagInfo;  # don't store this tag
                 }
@@ -9380,7 +9590,7 @@ ItemID:         foreach $id (keys %$items) {
                     for (;;) {
                         last if $pos + 16 > $size;
                         my ($len, $type, $flags, $ctry, $lang) = unpack("x${pos}Na4Nnn", $val);
-                        last if $pos + $len > $size;
+                        last if $pos + $len > $size or not $len;
                         my ($value, $langInfo, $oldDir);
                         my $format = $$tagInfo{Format};
                         if ($type eq 'data' and $len >= 16) {
@@ -9492,10 +9702,14 @@ ItemID:         foreach $id (keys %$items) {
                                     require Image::ExifTool::Font;
                                     $lang = $Image::ExifTool::Font::ttLang{Macintosh}{$lang};
                                 }
+                            } else {
+                                # for the default language code of 0x0000, use UTF-8 instead
+                                # of the CharsetQuickTime setting if obviously UTF8
+                                $enc = 'UTF8' if Image::ExifTool::IsUTF8(\$str) > 0;
                             }
                             # the spec says only "Macintosh text encoding", but
                             # allow this to be configured by the user
-                            $enc = $charsetQuickTime;
+                            $enc = $charsetQuickTime unless $enc;
                         } else {
                             # convert language code to ASCII (ignore read-only bit)
                             $lang = UnpackLang($lang);
@@ -9536,8 +9750,7 @@ ItemID:         foreach $id (keys %$items) {
                         if (not ref $$vp and length($$vp) <= 65536 and $$vp =~ /[\x80-\xff]/) {
                             # the encoding of this is not specified, so use CharsetQuickTime
                             # unless the string is valid UTF-8
-                            require Image::ExifTool::XMP;
-                            my $enc = Image::ExifTool::XMP::IsUTF8($vp) > 0 ? 'UTF8' : $charsetQuickTime;
+                            my $enc = Image::ExifTool::IsUTF8($vp) > 0 ? 'UTF8' : $charsetQuickTime;
                             $$vp = $et->Decode($$vp, $enc);
                         }
                     }
@@ -9626,7 +9839,7 @@ information from QuickTime and MP4 video, M4A audio, and HEIC image files.
 
 =head1 AUTHOR
 
-Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

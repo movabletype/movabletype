@@ -12,7 +12,7 @@ use base
     qw( MT::ArchiveType::ContentTypeAuthor MT::ArchiveType::ContentTypeDaily MT::ArchiveType::AuthorDaily );
 
 use MT::ContentStatus;
-use MT::Util qw( dirify start_end_day );
+use MT::Util qw( start_end_day );
 
 sub name {
     return 'ContentType-Author-Daily';

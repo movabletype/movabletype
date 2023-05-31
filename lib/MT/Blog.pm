@@ -842,13 +842,13 @@ sub archive_url {
         $blog->column( 'archive_url', $url ) || $blog->site_url;
     }
     else {
+        my $archive_url = $blog->column('archive_url');
+        return $blog->site_url unless $archive_url;
+        return $archive_url if $archive_url =~ m!^https?://!;
         my $url = $blog->site_url;
         if ( my $website = $blog->website() ) {
             $url = $website->column('site_url');
         }
-        my $archive_url = $blog->column('archive_url');
-        return $blog->site_url unless $archive_url;
-        return $archive_url if $archive_url =~ m!^https?://!;
         my @paths = $blog->raw_archive_url;
         if ( 2 == @paths ) {
             if ( $paths[0] ) {
@@ -1056,12 +1056,7 @@ sub remove {
 
 sub flush_has_archive_type_cache {
     my $blog = shift;
-    my ($type) = @_;
-
-    my $cache_key = 'has_archive_type::blog:' . $blog->id;
-    my $cache = MT->request($cache_key) or return;
-    delete $cache->{$type}
-        if exists $cache->{$type};
+    delete $blog->{__has_archive_type};
     1;
 }
 
@@ -1071,19 +1066,16 @@ sub has_archive_type {
     my %at = map { lc $_ => 1 } split( /,/, $blog->archive_type );
     return 0 unless exists $at{ lc $type };
 
-    my $cache_key = 'has_archive_type::blog:' . $blog->id;
-
-    if ( $content_type_id && $type !~ /^ContentType/ ) {
+    my $cache_key = $type;
+    if ($content_type_id && $type =~ /^ContentType/) {
+        $cache_key .= ':' . $content_type_id;
+    } else {
         $content_type_id = 0;
     }
-    $content_type_id ||= 0;
 
-    my $r = MT->request;
-    my $cache = $r->cache($cache_key) || {};
-    $cache->{$type} ||= {};
-
-    return $cache->{$type}{$content_type_id}
-        if $cache->{$type}{$content_type_id};
+    if (exists $blog->{__has_archive_type}{$cache_key}) {
+        return $blog->{__has_archive_type}{$cache_key};
+    }
 
     my $join_args;
     if ($content_type_id) {
@@ -1105,10 +1097,7 @@ sub has_archive_type {
         },
         $join_args,
     );
-    $cache->{$type}{$content_type_id} = $count;
-    $r->cache( $cache_key, $cache );
-
-    return $cache->{$type}{$content_type_id};
+    $blog->{__has_archive_type}{$cache_key} = $count;
 }
 
 sub accepts_registered_comments {
