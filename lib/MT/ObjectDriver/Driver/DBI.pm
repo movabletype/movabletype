@@ -102,7 +102,12 @@ sub dbh_handle {
                 $dbh->{private_last_ping} = time;
             }
             else {
-                $driver->dbh( $dbh = undef );
+                for my $dr (@MT::ObjectDriverFactory::drivers) {
+                    my $h = $dr->dbh;
+                    $h->disconnect if $h;
+                    $dr->dbh(undef);
+                }
+                $dbh = undef;
             }
         }
     }
@@ -831,6 +836,8 @@ sub search {
     my $driver = shift;
     $driver->SUPER::search(@_);
 }
+
+sub clear_cache {}
 
 1;
 __END__
