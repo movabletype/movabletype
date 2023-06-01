@@ -197,7 +197,6 @@ sub _hdlr_widget_manager {
         for my $widget (@widgets) {
             my $name     = $widget->name;
             my $stash_id = MT::Util::Encode::encode_utf8(join('::', 'template_widget', $blog_id, $name));
-            my $req      = MT::Request->instance;
             my $tokens   = $ctx->stash('builder')->compile($ctx, $widget);
             $req->stash($stash_id, [$widget, $tokens]);
             my $out = $ctx->invoke_handler('include', { %$args, widget => $name, }, $cond);
