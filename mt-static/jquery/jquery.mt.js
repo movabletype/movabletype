@@ -1194,10 +1194,23 @@ $.mtValidator('dialog', {
 
 $.mtValidateRules = {
     '.date': function ($e) {
-        return !$e.val() || /^\d{4}\-\d{2}\-\d{2}$/.test($e.val());
+        if ( $e.val() ) {
+          var matches = $e.val().match(/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/);
+          if ( !matches ) {
+            return false;
+          }
+          var y = Number(matches[1]);
+          var m = Number(matches[2]) - 1;
+          var d = Number(matches[3]);
+          var date = new Date(y, m, d);
+          if ( date.getFullYear() !== y || date.getMonth() !== m || date.getDate() !== d ) {
+            return false;
+          }
+        }
+        return true;
     },
     '.time': function ($e) {
-        return !$e.val() || /^\d{2}:\d{2}:\d{2}$/.test($e.val());
+        return !$e.val() || /^(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test($e.val());
     },
 
     // RegExp code taken from http://bassistance.de/jquery-plugins/jquery-plugin-validation/
