@@ -486,7 +486,7 @@ function toggleContentTypeDateTimeInputs() {
 </mt:if>
 
 <mt:if name="have_more">
-  <div class="mt-5">
+  <div id="have-more-count-bottom" class="mt-5">
     <mtapp:svgicon id="ic_info">
     <__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">">
     <a href="#" onclick="return unLimit('all')" class="alert-link"><__trans phrase="Show all matches"></a>
