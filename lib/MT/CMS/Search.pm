@@ -475,7 +475,7 @@ sub core_search_apis {
                 'description' => sub { $app->translate('Description') },
             },
             'replace_cols'       => [qw(name site_url site_path description)],
-            'can_replace'        => $user_not_to_be_bound->is_superuser(),
+            'can_replace'        => $user_not_to_be_bound && $user_not_to_be_bound->is_superuser(),
             'can_search_by_date' => 0,
             'setup_terms_args'   => sub {
                 my ( $terms, $args, $blog_id ) = @_;
@@ -512,7 +512,7 @@ sub core_search_apis {
                 'description' => sub { $app->translate('Description') },
             },
             'replace_cols'       => [qw(name site_url site_path description)],
-            'can_replace'        => $user_not_to_be_bound->is_superuser(),
+            'can_replace'        => $user_not_to_be_bound && $user_not_to_be_bound->is_superuser(),
             'can_search_by_date' => 0,
             'view'               => 'system',
             'setup_terms_args'   => sub {
