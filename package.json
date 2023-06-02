@@ -23,7 +23,7 @@
     "rename-riot-compiler": "cd mt-static/riot && mv riot+compiler.js riot-compiler.js && mv riot+compiler.min.js riot-compiler.min.js",
     "copy-svg4everybody": "cd node_modules/svg4everybody/dist && cp -f svg4everybody.js svg4everybody.min.js ../../../mt-static/svg4everybody/",
     "copy-mt-data-api-sdk": "cp -rf node_modules/mt-data-api-sdk/mt-static/data-api/v4 mt-static/data-api",
-    "copy-jquery": "yarn copy-jquery-core && yarn copy-jquery-migrate && yarn copy-jquery-json && yarn copy-jquery-validation",
+    "copy-jquery": "yarn copy-jquery-core && yarn copy-jquery-migrate && yarn copy-jquery-validation",
     "copy-jquery-core": "cp -rf node_modules/jquery/dist/jquery.js mt-static/jquery/ && cp -rf node_modules/jquery/dist/jquery.min.* mt-static/jquery/",
     "copy-jquery-migrate": "cp -rf node_modules/jquery-migrate/dist/jquery-migrate.* mt-static/jquery/",
     "copy-jquery-validation": "cp -rf node_modules/jquery-validation/dist/jquery.validate.* mt-static/jquery/",
@@ -54,7 +54,7 @@
   "dependencies": {
     "bootstrap": "~4.3.1",
     "codemirror": "^5.61.1",
-    "jquery": "^3.6.0",
+    "jquery": "^3.7.0",
     "jquery-migrate": "^3.4.0",
     "jquery-ui-touch-punch": "^0.2.3",
     "jquery-validation": "^1.19.5",
