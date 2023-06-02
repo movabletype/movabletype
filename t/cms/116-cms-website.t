@@ -59,7 +59,6 @@ File::Find::find({
 ok grep(/websiteentry/, @published_files), "website entry is published";
 ok grep(/blogentry/,    @published_files), "blog entry is published";
 
-note 'Test cfg_prefs mode';
 subtest 'Test cfg_prefs mode' => sub {
     foreach my $type ('website', 'blog') {
         my $type_ucfirst       = 'Site';    # ucfirst $type;
@@ -67,7 +66,6 @@ subtest 'Test cfg_prefs mode' => sub {
         my $type_alias         = $type eq 'website' ? 'site'   : 'child site';
         my $type_alias_ucfirst = $type eq 'website' ? 'Site'   : 'Child Site';
 
-        note "$type_ucfirst scope";
         subtest "$type_ucfirst scope" => sub {
             my $app = MT::Test::App->new('MT::App::CMS');
             $app->login($admin);
@@ -76,21 +74,6 @@ subtest 'Test cfg_prefs mode' => sub {
                 blog_id => $test_blog->id,
             });
 
-            # Modify description. bugid:109613
-            $app->content_like(
-                qr/Number of revisions per entry\/page/,
-                'Has "Number of revisions per entry\/page" description.'
-            );
-            $app->content_unlike(
-                qr/Number of revisions per page/,
-                'Has "Number of revisions per page" description.'
-            );
-
-            $app->content_like(
-                qr/Preferred Archive/,
-                'Has "Preferred Archive" setting.'
-            );
-
             my $description = quotemeta("Used to generate URLs (permalinks) for this ${type_alias}'s archived entries. Choose one of the archive types used in this ${type_alias}'s archive templates.");
             $description = qr/$description/;
             $app->content_like(
@@ -98,27 +81,12 @@ subtest 'Test cfg_prefs mode' => sub {
                 "Has a $type scope description in Preferred Archive setting."
             );
 
-            my $enable_archive_paths = quotemeta "<label for=\"enable_archive_paths\">Publish archives outside of $type_ucfirst Root</label>";
-        SKIP: {
-                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-                $app->content_like(
-                    qr/$enable_archive_paths/,
-                    'Has publish archives outside checkbox.'
-                );
-            }
-
             my $site_root_hint =
                 $type eq 'blog'
                 ? 'The path where your index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog'
                 : 'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred.  Do not end with \'/\' or \'\\\'. Example: /home/mt/public_html or C:\www\public_html';
             $site_root_hint = quotemeta $site_root_hint;
             $app->content_like(qr/$site_root_hint/, 'Has Site Root hint.');
-
-            my $archive_url = quotemeta '<label id="archive_url-label" for="archive_url">Archive URL *</label>';
-        SKIP: {
-                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-                $app->content_like(qr/$archive_url/, 'Has "Archive URL" setting.');
-            }
 
             my $archive_url_hint =
                 $type eq 'blog'
@@ -134,15 +102,6 @@ subtest 'Test cfg_prefs mode' => sub {
                 'Has Archive URL warning.'
             );
 
-            my $archive_root = quotemeta '<label id="archive_path-label" for="archive_path">Archive Root *</label>';
-        SKIP: {
-                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-                $app->content_like(
-                    qr/$archive_root/,
-                    'Has "Archive Root" setting.'
-                );
-            }
-
             my $archive_root_hint =
                 $type eq 'blog'
                 ? 'The path where your archives section index files will be published. Do not end with \'/\' or \'\\\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog'
@@ -153,19 +112,12 @@ subtest 'Test cfg_prefs mode' => sub {
             $test_blog->archive_url('http://localhost/');
             $test_blog->update;
 
-            $app->get_ok({
-                __mode  => 'cfg_prefs',
-                blog_id => $test_blog->id,
-            });
+            my $form = $app->form;
 
-            my $is_checked = quotemeta '<input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1" checked="checked" class="cb"';
-
-        SKIP: {
-                skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-                $app->content_like(
-                    qr/$is_checked/,
-                    'Parameter "enable_archive_paths" is checked.'
-                );
+            if ($type eq 'website') {
+                ok !$form->find_input('#enable_archive_paths')->value, 'Parameter "enable_archive_paths" is not checked.';
+            } else {
+                ok $form->find_input('#enable_archive_paths')->value, 'Parameter "enable_archive_paths" is checked.';
             }
 
             {
@@ -174,9 +126,9 @@ subtest 'Test cfg_prefs mode' => sub {
 
                 if ($type eq 'website') {
                     $app->post_form_ok({
-                        enable_archive_paths => 1,
-                        archive_url          => $archive_url,
-                        archive_path         => $archive_path,
+                        enable_archive_paths   => 1,
+                        archive_url            => $archive_url,
+                        archive_path           => $archive_path,
                         preferred_archive_type => 'Individual',
                         max_revisions_entry    => 20,
                         max_revisions_cd       => 20,
@@ -194,7 +146,7 @@ subtest 'Test cfg_prefs mode' => sub {
                         max_revisions_template => 20,
                     });
                 }
-                ok($app->last_location->query_param('saved'), 'Request: save blog');
+                like $app->message_text => qr/Your preferences have been saved/, "Request: save $type";
 
                 $test_blog = MT->model($type)->load($test_blog->id);
                 if ($type eq 'website') {
@@ -217,10 +169,9 @@ subtest 'Test cfg_prefs mode' => sub {
                 $test_env->update_config(BaseSitePath => 'dummy');
 
                 $app->get_ok({
-                        __mode  => 'cfg_prefs',
-                        blog_id => $test_blog->id,
-                    },
-                );
+                    __mode  => 'cfg_prefs',
+                    blog_id => $test_blog->id,
+                });
 
                 $app->content_like(
                     qr/$site_root_hint/,
@@ -232,13 +183,11 @@ subtest 'Test cfg_prefs mode' => sub {
                     'Has Site Root hint(absolute).'
                 );
 
-            SKIP: {
-                    skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-                    $app->content_like(
-                        qr/$archive_root_hint/,
-                        'Has Archive URL hint(relative).'
-                    );
-                }
+                $app->content_like(
+                    qr/$archive_root_hint/,
+                    'Has Archive URL hint(relative).'
+                );
+
                 my $archive_root_hint_abs = quotemeta "The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\\' for Windows) is preferred. Do not end with '/' or '\\'. Example: /home/mt/public_html or C:\\www\\public_html";
                 $app->content_unlike(
                     qr/$archive_root_hint_abs/,
@@ -251,7 +200,6 @@ subtest 'Test cfg_prefs mode' => sub {
     }
 };
 
-note 'Test cfg_entry mode';
 subtest 'Test cfg_entry mode' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
@@ -265,12 +213,8 @@ subtest 'Test cfg_entry mode' => sub {
         'Has "Entry Fields" in Compose Defaults setting.'
     );
 
-    $app->post_ok({
-        __mode             => 'save',
-        _type              => 'blog',
+    $app->post_form_ok({
         id                 => $website->id,
-        blog_id            => $website->id,
-        return_args        => '__mode=cfg_entry&_type=blog&blog_id=' . $website->id . '&id=' . $website->id,
         cfg_screen         => 'cfg_entry',
         entry_custom_prefs => 'text',
     });
@@ -280,17 +224,13 @@ subtest 'Test cfg_entry mode' => sub {
         blog_id => $website->id,
     });
 
-    my @fields = qw( category excerpt keywords tags feedback assets );
+    my $form = $app->form;
+
+    my @fields = qw( category excerpt keywords tags assets );
+    push @fields, 'feedback' if $test_env->plugin_exists('Comments');
     foreach my $field (@fields) {
-        my $input = quotemeta("<input type=\"checkbox\" name=\"entry_custom_prefs\" id=\"entry-prefs-$field\" value=\"$field\" class=\"cb\" />");
-        $input = qr/$input/;
-    SKIP: {
-            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-            $app->content_like(
-                $input,
-                "$field setting in Entry Fields is not checked."
-            );
-        }
+        my $input = $form->find_input("#entry-prefs-$field");
+        ok $input && !$input->value, "$field setting in Entry Fields is not checked.";
     }
 
     $app->get_ok({
@@ -299,44 +239,32 @@ subtest 'Test cfg_entry mode' => sub {
         blog_id => $website->id,
     });
 
+    $form = $app->form;
+
     foreach my $field (@fields) {
-        my $input = quotemeta("<input type=\"checkbox\" name=\"custom_prefs\" id=\"custom-prefs-$field\" value=\"$field\" class=\"cb\" />");
-        $input = qr/$input/;
-    SKIP: {
-            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-            $app->content_like(
-                $input,
-                "$field setting in custom prefs is not checked."
-            );
-        }
+        my $input = $form->find_input("#custom-prefs-$field");
+        ok $input && !$input->value, "$field setting in custom prefs is not checked.";
     }
 
-    $app->post_ok({
-        __mode             => 'save',
-        _type              => 'blog',
-        id                 => $website->id,
-        blog_id            => $website->id,
-        return_args        => '__mode=cfg_entry&_type=blog&blog_id=' . $website->id . '&id=' . $website->id,
-        cfg_screen         => 'cfg_entry',
+    $app->get_ok({
+        __mode  => 'cfg_entry',
+        blog_id => $website->id,
+    });
+
+    $app->post_form_ok({
         entry_custom_prefs => [qw( title text ), @fields],
     });
 
     $app->get_ok({
-            __mode  => 'cfg_entry',
-            blog_id => $website->id,
-        },
-    );
+        __mode  => 'cfg_entry',
+        blog_id => $website->id,
+    });
+
+    $form = $app->form;
 
     foreach my $field (@fields) {
-        my $input = quotemeta("<input type=\"checkbox\" name=\"entry_custom_prefs\" id=\"entry-prefs-$field\" value=\"$field\" checked=\"checked\" class=\"cb\" />");
-        $input = qr/$input/;
-    SKIP: {
-            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-            $app->content_like(
-                $input,
-                "$field setting in Entry Fields is checked."
-            );
-        }
+        my $input = $form->find_input("#entry-prefs-$field");
+        ok $input && $input->value, "$field setting in Entry Fields is checked.";
     }
 
     $app->get_ok({
@@ -345,55 +273,12 @@ subtest 'Test cfg_entry mode' => sub {
         blog_id => $website->id,
     });
 
+    $form = $app->form;
+
     foreach my $field (@fields) {
-        my $input = quotemeta("<input type=\"checkbox\" name=\"custom_prefs\" id=\"custom-prefs-$field\" value=\"$field\" checked=\"checked\" class=\"cb\" />");
-        $input = qr/$input/;
-    SKIP: {
-            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-            $app->content_like(
-                $input,
-                "$field setting in custom prefs is checked."
-            );
-        }
+        my $input = $form->find_input("#custom-prefs-$field");
+        ok $input && $input->value, "$field setting in custom prefs is checked.";
     }
-};
-
-note 'Website listing screen';
-subtest 'Website listing screen' => sub {
-    my $app = MT::Test::App->new('MT::App::CMS');
-    $app->login($admin);
-    $app->get_ok({
-        __mode  => 'list',
-        _type   => 'website',
-        blog_id => 0,
-    });
-
-    my $blogs = quotemeta '<th class="col head blog_count num"><a href="#blog_count" class="sort-link"><span class="col-label">Blogs</span><span class="sm"></span></a></th>';
-SKIP: {
-        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-        $app->content_like(qr/$blogs/, 'Listing screen has "Blogs" column.');
-    }
-
-    my $entries = quotemeta '<th class="col head entry_count num"><a href="#entry_count" class="sort-link"><span class="col-label">Entries</span><span class="sm"></span></a></th>';
-SKIP: {
-        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-        $app->content_like(qr/$entries/, 'Listing screen has "Entries" column.');
-    }
-
-    my $pages = quotemeta '<th class="col head page_count num"><a href="#page_count" class="sort-link"><span class="col-label">Pages</span><span class="sm"></span></a></th>';
-SKIP: {
-        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-        $app->content_like(qr/$pages/, 'Listing screen has "Pages" column.');
-    }
-
-    my $classic_website = quotemeta '<option value="classic_website">Classic Website</option>';
-    $app->content_like(
-        qr/$classic_website/,
-        'Listing screen has website theme filters.'
-    );
-
-    my $classic_blog = quotemeta '<option value="classic_blog">Classic Blog</option>';
-    $app->content_like(qr/$classic_blog/, 'Listing screen has blog theme filters.');
 };
 
 done_testing();

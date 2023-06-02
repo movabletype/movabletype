@@ -564,7 +564,7 @@ sub save {
         unless ( $fmgr->exists($site_path) ) {
             $fmgr->mkpath($site_path);
         }
-        $app->add_return_arg( no_writedir => 1 )
+        $app->flash(no_writedir => 1)
             unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
     }
     elsif ( $type eq 'template' && $app->param('rebuild') ) {
@@ -586,8 +586,8 @@ sub save {
                 $app->param( 'tmpl_id',         $obj->id );
                 $app->param( 'single_template', 1 );
                 $app->param( 'ott' => $token );
-                $app->add_return_arg( 'saved'     => 1 );
-                $app->add_return_arg( 'published' => 1 );
+                $app->flash( 'saved'     => 1 );
+                $app->flash( 'published' => 1 );
                 return $app->forward('start_rebuild');
             }
             else {
@@ -660,9 +660,8 @@ sub save {
     }
 
     $app->add_return_arg( 'id'    => $obj->id ) if !$original->id;
-    $app->add_return_arg( 'saved' => 1 );
-    $app->add_return_arg(
-        ( $original->id ? 'saved_changes' : 'saved_added' ) => 1 );
+    $app->flash( 'saved' => 1 );
+    $app->flash( ( $original->id ? 'saved_changes' : 'saved_added' ) => 1 );
     $app->call_return;
 }
 
@@ -2409,10 +2408,10 @@ sub save_snapshot {
             $app, $obj, undef )
             or return $app->error( $app->errstr() );
 
-        $app->add_return_arg( 'saved_snapshot' => 1 );
+        $app->flash('saved_snapshot' => 1);
     }
     else {
-        $app->add_return_arg( 'no_snapshot' => 1 );
+        $app->flash('no_snapshot' => 1);
     }
 
     $app->add_return_arg( 'id' => $obj->id ) if !$original->id;

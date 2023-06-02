@@ -1132,6 +1132,7 @@ sub rebuild_pages {
                 or return $app->errtrans( 'Cannot load blog #[_1].',
                 $content_data->blog_id );
             $app->publisher->remove_marked_files( $blog, 1 );
+            $app->flash($is_new ? (saved_added => 1) : (saved_changes => 1));
             return $app->redirect(
                 $app->uri(
                     mode => 'view',
@@ -1142,9 +1143,6 @@ sub rebuild_pages {
                         type            => 'content_data_'
                             . $content_data->content_type_id,
                         id => $content_data->id,
-                        $is_new
-                        ? ( saved_added => 1 )
-                        : ( saved_changes => 1 ),
                     }
                 )
             );
