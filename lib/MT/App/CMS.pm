@@ -1612,7 +1612,22 @@ sub core_menu_actions {
 
                 my $_type;
                 if ($app_type && exists $search_apis->{$app_type}) {
-                    $_type = $app_type;
+                    my $set_type = 1;
+                    if (my $view = $search_apis->{$app_type}{view}) {
+                        if ($blog_id) {
+                            $set_type = 0 if $view ne 'blog';
+                        } else {
+                            $set_type = 0 if $view ne 'system';
+                        }
+                    }
+                    my $cond = $search_apis->{$app_type}{condition};
+                    if ($cond) {
+                        $cond = MT->handler_to_coderef($cond);
+                        $set_type = 0 unless $cond->();
+                    }
+                    if ($set_type) {
+                        $_type = $app_type;
+                    }
                 }
 
                 # get content type id
