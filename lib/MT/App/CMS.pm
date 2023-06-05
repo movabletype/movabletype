@@ -1608,7 +1608,7 @@ sub core_menu_actions {
                     'member'       => 'author',
                     'group_member' => 'author'
                 );
-                $app_type = $replace_type{$app_type} if exists $replace_type{$app_type};
+                $app_type = $replace_type{$app_type} if $app_type && exists $replace_type{$app_type};
 
                 my $_type;
                 if ($app_type && exists $search_apis->{$app_type}) {
@@ -1632,7 +1632,7 @@ sub core_menu_actions {
 
                 # get content type id
                 my $_content_type_id;
-                if ($_type eq 'content_data') {
+                if ($_type && $_type eq 'content_data') {
                     ($_content_type_id = $app->param('type')) =~ s/^content_data_(\d+)$/$1/;
                 }
                 $app->uri(
