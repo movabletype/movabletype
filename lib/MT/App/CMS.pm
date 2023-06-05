@@ -1591,20 +1591,42 @@ sub core_menu_actions {
             icon  => 'ic_search',
             label => 'Search',
             href => sub {
-                my $blog_id = $app->blog ? $app->blog->id : 0;
+                my $blog_id     = $app->blog ? $app->blog->id : 0;
                 my $search_apis = $app->registry("search_apis") or ();
-                my $app_type = $app->param('_type');
+                my $app_type    = $app->param('_type');
+                if (!$app_type) {
+                    my $mode = $app->param('__mode');
+                    # Replace list_*
+                    if (!$app_type && $mode =~ /^list_/) {
+                        ($app_type = $mode) =~ s/^list_(.*)$/$1/;
+                    }
+                    my %mode_replace = ('start_upload' => 'asset');
+                    $app_type = $mode_replace{$mode} if exists $mode_replace{$mode};
+                }
+                # Replace type for model
+                my %replace_type = (
+                    'member'       => 'author',
+                    'group_member' => 'author'
+                );
+                $app_type = $replace_type{$app_type} if exists $replace_type{$app_type};
+
                 my $_type;
-                if( $app_type && exists $search_apis->{$app_type}){
+                if ($app_type && exists $search_apis->{$app_type}) {
                     $_type = $app_type;
+                }
+
+                # get content type id
+                my $_content_type_id;
+                if ($_type eq 'content_data') {
+                    ($_content_type_id = $app->param('type')) =~ s/^content_data_(\d+)$/$1/;
                 }
                 $app->uri(
                     mode => 'search_replace',
                     args => {
-                        ( $_type ?  ( _type => $_type ) : () ),
+                        ($_type            ? (_type           => $_type)            : ()),
+                        ($_content_type_id ? (content_type_id => $_content_type_id) : ()),
                         blog_id => $blog_id
-                    }
-                );
+                    });
             },
             mobile => 0,
             order  => 300,
