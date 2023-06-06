@@ -31,6 +31,10 @@ sub init {
     }
     $opts->{RaiseError}         = $cfg->DBIRaiseError;
     $opts->{ShowErrorStatement} = $cfg->DBIShowErrorStatement if $MT::DebugMode;
+    if ($cfg->DatabaseEnableUTF8) {
+        my $key = $driver->dbd->enable_utf8_option_name;
+        $opts->{$key} = 1 if $key;
+    }
 
     $driver->connect_options($opts);
     $driver;

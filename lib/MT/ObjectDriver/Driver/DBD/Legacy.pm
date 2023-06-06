@@ -14,6 +14,8 @@ use warnings;
 ## _attributes with the D::OD::DBD::bind_param_attributes we'd inherit.
 use base qw();
 
+my $NeedEncode;
+
 sub ts2db { $_[1] }
 sub db2ts { $_[1] }
 
@@ -57,7 +59,12 @@ sub db_column_name {
 
 sub configure { }
 
-sub need_encode { 1; }
+sub enable_utf8_option_name { }
+
+sub need_encode {
+    return $NeedEncode if defined $NeedEncode;
+    $NeedEncode = MT->config->DatabaseEnableUTF8 ? 0 : 1;
+}
 
 1;
 __END__

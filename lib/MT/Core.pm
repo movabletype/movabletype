@@ -2360,6 +2360,7 @@ BEGIN {
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
+            'DatabaseEnableUTF8' => { default => 0 },
             'TrimFilePath' => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
