@@ -1677,11 +1677,13 @@ sub gather_changed_cols {
 }
 
 sub preview_data {
-    my $self         = shift;
+    my ($self, $params) = @_;
     my $content_type = $self->content_type;
     return [] unless $content_type;
 
     my $registry = MT->registry('content_field_types');
+
+    my $tmpl = MT->app->load_tmpl('search_replace_cf_data.tmpl', {});
 
     my $data = '';
     for my $f ( @{ $content_type->fields } ) {
@@ -1706,8 +1708,7 @@ sub preview_data {
 
         my $escaped_field_label = MT::Util::encode_html($field_label);
 
-        $data
-            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$escaped_field_data</div></div>};
+        $data .= $tmpl->output({cf_id => $f->{id}, label => $escaped_field_label, data => $escaped_field_data, %$params});
     }
     $data;
 }

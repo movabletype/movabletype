@@ -30,6 +30,9 @@ td.data a[aria-expanded="false"] .mt-icon--secondary{
 td.data a[aria-expanded="true"] .mt-icon--secondary{
   transform: rotate(0deg);
 }
+[data-search-highlight="1"] {
+  background-color:#fbbe5f;
+}
 </style>
 </mt:setvarblock>
 
@@ -94,7 +97,7 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
   <mt:unless name="blog_view">
     <mt:unless name="scope_type" eq="blog">
       <td class="identifier">
-        <div class="ellipsis"><mt:var name="identifier" escape="html"></div>
+        <div <mt:if name="search_highlight{identifier}">data-search-highlight="1"</mt:if> class="ellipsis"><mt:var name="identifier" escape="html"></div>
       </td>
       <td class="blog">
         <a href="<$mt:var name="script_url"$>?__mode=list&_type=<mt:var name="object_type">&amp;blog_id=<$mt:var name="weblog_id"$>&amp;type=content_data_<mt:var name="content_type_id" escape="html">">

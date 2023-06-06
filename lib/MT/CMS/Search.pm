@@ -1171,6 +1171,7 @@ sub do_search_replace {
                     next if $do_replace && !$replace_cols{$col};
                     my $text;
                     my ( $content_field_id, $field_data, $field_registry );
+                    my $match_field = 0;
                     if ( $col =~ /^__field:(\d+)$/ ) {
                         $content_field_id = $1;
                         $field_data
@@ -1268,7 +1269,7 @@ sub do_search_replace {
                             elsif ( !$content_field_id ) {
                                 $obj->$col($text);
                             }
-                            $match++;
+                            $match_field++;
                         }
                     }
                     else {
@@ -1278,14 +1279,17 @@ sub do_search_replace {
                         {
                             my $search_handler = $app->handler_to_coderef(
                                 $field_registry->{search_handler} );
-                            $match = $search_handler && $search_handler->(
+                            $match_field += $search_handler && $search_handler->(
                                 $re, $field_data, $text, $obj
                             );
                         }
                         else {
-                            $match = $search ne '' ? $text =~ m!$re! : 1;
+                            $match_field += $search ne '' ? $text =~ m!$re! : 1;
                         }
-                        last if $match;
+                    }
+                    $match += $match_field;
+                    if ($match_field) {
+                        push @{$obj->{__search_result_fields}}, $col;
                     }
                 }
             }
