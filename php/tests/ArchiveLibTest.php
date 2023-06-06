@@ -3,7 +3,7 @@
 use PHPUnit\Framework\TestCase;
 include_once('php/lib/archive_lib.php');
 
-class ArchiveListTest extends TestCase {
+class ArchiveLibTest extends TestCase {
     
     public function testDecTs() {
         foreach (array(new TestArchiver(), new TestArchiver2()) as $archiver) {

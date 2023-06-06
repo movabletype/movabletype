@@ -108,7 +108,7 @@ function _catx_load_categories(&$ctx, $cat, $class, $args) {
     }
 
     $category_set_id = $cat->category_category_set_id;
-    $cache_key = "__cat_cache_${class}_${blog_id}_$parent:$sort_by:$category_set_id";
+    $cache_key = "__cat_cache_{$class}_{$blog_id}_$parent:$sort_by:$category_set_id";
 
     $cats = $ctx->stash($cache_key);
     if (!$cats) {

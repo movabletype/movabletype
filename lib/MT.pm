@@ -250,6 +250,21 @@ sub construct {
         }
         return @matches;
     }
+
+    sub loaded_models {
+        my $pkg = shift;
+        values %object_types;
+    }
+
+    sub clear_cache_of_loaded_models {
+        my $pkg = shift;
+        for my $model (values %object_types) {
+            # avoid loading a new driver here
+            my $props = $model->properties or next;
+            my $driver = $props->{driver} or next;
+            $driver->clear_cache if $driver->can('clear_cache');
+        }
+    }
 }
 
 sub all_models {
@@ -989,7 +1004,6 @@ sub init_config_from_db {
     require MT::ObjectDriverFactory;
     if ( MT->config('ObjectDriver') ) {
         my $driver = MT::ObjectDriverFactory->instance;
-        $driver->configure if $driver;
     }
     else {
         MT::ObjectDriverFactory->configure();

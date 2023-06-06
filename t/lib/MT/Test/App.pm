@@ -393,7 +393,11 @@ sub _create_cgi_object {
 
 sub _clear_cache {
     my $self = shift;
-    MT::Object->driver->clear_cache unless MT->config->DisableObjectCache;
+    unless (MT->config->DisableObjectCache) {
+        for my $model (MT->loaded_models) {
+            $model->driver->clear_cache;
+        }
+    }
     MT->instance->request->reset;
 }
 

@@ -38,12 +38,12 @@ function multiblog_MTInclude(&$args, &$_smarty_tpl) {
             }
             else if (! empty($args['local'])) {
                 $args['blog_id'] = $ctx->stash('local_blog_id');
-                $args['blog_id'] or $args['blog_id'] = $ctx->mt->blog->id;
+                $args['blog_id'] or $args['blog_id'] = $ctx->mt->blog_id(); // XXX Consider the line is not needed(MTC-28598)
             }
         }
         else {
             $args['blog_id'] = $ctx->stash('local_blog_id');
-            $args['blog_id'] or $args['blog_id'] = $ctx->mt->blog->id;
+            $args['blog_id'] or $args['blog_id'] = $ctx->mt->blog_id(); // XXX Consider the line is not needed(MTC-28598)
         }
     }
 }

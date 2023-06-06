@@ -2065,6 +2065,12 @@ sub delete {
                 next;
             }
         }
+        elsif ($type eq 'ts_job') {
+            if ($obj->grabbed_until) {
+                push @not_deleted, $obj->jobid;
+                next;
+            }
+        }
 
         $obj->remove
             or return $app->errtrans(

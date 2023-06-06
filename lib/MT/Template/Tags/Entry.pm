@@ -504,7 +504,7 @@ sub _hdlr_entries {
                 } else {
                     @cats = $cat_class->load( \%blog_terms, \%blog_args );
                     if ($cache_key) {
-                        $stash->{__obj}{$cache_key} = \@cats;
+                        $stash->{__obj}{$cache_key} = [@cats];
                     }
                 }
                 if (@cats) {
