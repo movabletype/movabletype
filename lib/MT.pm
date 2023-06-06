@@ -1419,23 +1419,6 @@ sub init_plugins {
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if ($@) {
             $Plugins{$plugin_sig}{error} = $@;
-
-            # Issue MT log within another eval block in the
-            # event that the plugin error is happening before
-            # the database has been initialized...
-            eval {
-                require MT::Log;
-                $mt->log(
-                    {   message => $mt->translate(
-                            "Plugin error: [_1] [_2]", $plugin,
-                            $Plugins{$plugin_sig}{error}
-                        ),
-                        class    => 'system',
-                        category => 'plugin',
-                        level    => MT::Log::ERROR()
-                    }
-                );
-            };
             return;
         }
         else {
@@ -1498,6 +1481,7 @@ sub init_plugins {
         }
 
         my @loaded_plugins;
+        my @errors;
         foreach my $PluginPath (@$PluginPaths) {
             my $plugin_lastdir = $PluginPath;
             $plugin_lastdir =~ s![\\/]$!!;
@@ -1516,6 +1500,7 @@ sub init_plugins {
                         if ($plugin_full_path =~ /\.pl$/) {
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
                             push @loaded_plugins, $obj if $obj;
+                            push @errors, [$plugin_full_path, $Plugins{$plugin}{error}] if $Plugins{$plugin}{error};
                         }
                         next;
                     }
@@ -1553,8 +1538,10 @@ sub init_plugins {
                             = File::Spec->catfile( $plugin_full_path,
                             $plugin );
                         if ( -f $plugin_file ) {
-                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $plugin_dir . '/' . $plugin );
+                            my $sig = $plugin_dir . '/' . $plugin;
+                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @loaded_plugins, $obj if $obj;
+                            push @errors, [$plugin_full_path, $Plugins{$sig}{error}] if $Plugins{$sig}{error};
                         }
                     }
                 }
@@ -1605,6 +1592,25 @@ sub init_plugins {
                 }
             }
             $plugin->init_callbacks;
+        }
+
+        # $mt->log calls init_schema internally, so $mt->log it must be called after $plugin->init_callbacks all plugins that do not cause errors
+        for my $error (@errors) {
+            # Issue MT log within another eval block in the
+            # event that the plugin error is happening before
+            # the database has been initialized...
+            eval {
+                require MT::Log;
+                $mt->log(
+                    {   message => $mt->translate(
+                            "Plugin error: [_1] [_2]", @$error,
+                        ),
+                        class    => 'system',
+                        category => 'plugin',
+                        level    => MT::Log::ERROR()
+                    }
+                );
+            } or last;
         }
 
         # Reset the Text_filters hash in case it was preloaded by plugins by
