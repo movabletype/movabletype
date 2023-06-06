@@ -1708,6 +1708,7 @@ sub preview_data {
 
         my $escaped_field_label = MT::Util::encode_html($field_label);
 
+        $params ||= {};
         $data .= $tmpl->output({cf_id => $f->{id}, label => $escaped_field_label, data => $escaped_field_data, %$params});
     }
     $data;
