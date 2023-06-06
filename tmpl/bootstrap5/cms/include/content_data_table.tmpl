@@ -18,6 +18,10 @@ td > .ellipsis {
 
 tr.preview-data {
   background-color: #f4f4f4;
+  display:none;
+}
+tr.preview-data.show {
+  display:table-row;
 }
 
 td.data .mt-icon--secondary{
@@ -123,14 +127,14 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
         </span>
       </td>
       <td class="data">
-        <a class="d-inline-block" data-bs-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
+        <a class="d-inline-block" data-bs-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="<mt:if name="preview_data_show">true<mt:else>false</mt:if>" aria-controls="content-data-data-<mt:var name="id" escape="html">">
           <mtapp:svgicon title="Collapse" color="secondary" id="ic_collapse">
         </a>
       </td>
     </tr>
-    <tr class="preview-data">
+    <tr class="preview-data <mt:if name="preview_data_show">show</mt:if>">
       <td class="p-0" colspan="7">
-        <div class="collapse mt-collapse__content" id="content-data-data-<mt:var name="id" escape="html">">
+        <div class="mt-collapse__content <mt:if name="preview_data_show">show</mt:if>" id="content-data-data-<mt:var name="id" escape="html">">
           <mt:var name="preview_data">
         </div>
       </td>
@@ -168,13 +172,12 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
 
     jQuery('#content_data-listing-form').prepend('<input type="hidden" name="content_type_id" value="<mt:var name="content_type_id" escape="html">">');
 
-    jQuery('#content_data-listing-table tr.preview-data').hide();
     jQuery('#content_data-listing-table tr.preview-data div')
         .on('show.bs.collapse', function () {
-            jQuery(this).parents('tr').show();
+            jQuery(this).parents('tr').addClass('show');
         })
         .on('hidden.bs.collapse', function () {
-            jQuery(this).parents('tr').hide();
+            jQuery(this).parents('tr').removeClass('show');
         });
 
     jQuery('.ellipsis').each(function(){

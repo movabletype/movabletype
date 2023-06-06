@@ -2223,6 +2223,7 @@ sub build_content_data_table {
             for my $field (@$fields) {
                 if ($field =~ /^__field:(\d*)/) {
                     $highlight_cfs{$1} = 1;
+                    $row->{preview_data_show} = 1;
                 }
             }
             $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/ if $highlight_fields{label};
