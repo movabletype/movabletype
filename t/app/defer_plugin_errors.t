@@ -18,7 +18,6 @@ die "BROKEN!";
 1;
 PLUGIN
 
-   my $plugin_dir = File::Spec->catdir($test_env->root, "plugins");
    $test_env->save_file("plugins/MyPlugin/MyPlugin.pl", <<"PLUGIN" );
 package MyPlugin;
 our \$VERSION = '1.0';
