@@ -8,11 +8,7 @@ BUILD_PACKAGE ?= MTOS
 BUILD_VERSION_ID ?= $(PRODUCT_VERSION)
 
 local_js = mt-static/mt_en_us.js \
-        mt-static/mt_de.js \
-        mt-static/mt_fr.js \
-        mt-static/mt_nl.js \
-        mt-static/mt_ja.js \
-        mt-static/mt_es.js
+        mt-static/mt_ja.js
 
 core_js = mt-static/js/common/Core.js \
           mt-static/js/common/Timer.js \
@@ -161,8 +157,7 @@ code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/css/simple.css
 
 code: check code-$(BUILD_LANGUAGE)
-code-en_US code-de code-fr code-nl code-es: check $(code_common) \
-	$(local_js)
+code-en_US: check $(code_common) $(local_js)
 code-ja: check $(code_common) mt-static/mt_ja.js
 
 build-language-stamp:
