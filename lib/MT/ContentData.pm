@@ -1701,7 +1701,18 @@ sub preview_data {
             ? $preview_handler->( $f, $self->data->{ $f->{id} }, $self )
             : $self->data->{ $f->{id} };
         $field_data = '' unless defined $field_data && $field_data ne '';
-        my $escaped_field_data = MT::Util::encode_html($field_data);
+
+        my $escaped_field_data;
+        if (my $search_term = $self->{__search_term}) {
+            my @parts = split /($search_term)/, $field_data;
+            $escaped_field_data = join '',
+                map {
+                my $encoded = MT::Util::encode_html($_);
+                $_ =~ /^$search_term$/ ? "<b>$encoded</b>" : $encoded
+                } @parts;
+        } else {
+            $escaped_field_data = MT::Util::encode_html($field_data);
+        }
 
         my $field_label = ( $f->{options} || +{} )->{label}
             || MT->translate('(No label)');
@@ -1709,7 +1720,7 @@ sub preview_data {
         my $escaped_field_label = MT::Util::encode_html($field_label);
 
         $params ||= {};
-        $data .= $tmpl->output({cf_id => $f->{id}, label => $escaped_field_label, data => $escaped_field_data, %$params});
+        $data .= $tmpl->output({cf_id => $f->{id}, label => $escaped_field_label, data => $escaped_field_data});
     }
     $data;
 }

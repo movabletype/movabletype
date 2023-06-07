@@ -1163,6 +1163,8 @@ sub do_search_replace {
                 unless $author->is_superuser
                 || $app->handler_to_coderef( $api->{perm_check} )->($obj);
             my $match = 0;
+            delete $obj->{__search_term};
+            delete $obj->{__search_result_fields};
 
             # For cms_pre_save callback and revisioning
             my $orig_obj;
@@ -1290,6 +1292,7 @@ sub do_search_replace {
                     $match += $match_field;
                     if ($match_field) {
                         push @{$obj->{__search_result_fields}}, $col;
+                        $obj->{__search_term} = $search;
                     }
                 }
             }
