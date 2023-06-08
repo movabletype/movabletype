@@ -346,8 +346,11 @@ sub overview_handler {
     my @ret;
     for my $v (@$values) {
         my $obj   = $content_data{$v} or next;
+        my $id    = $obj->id;
         my $label = $obj->label;
-        push @ret, MT::Util::encode_html($label) if (defined $label && $label ne '');
+        my $label_id = "(ID:$id)";
+        $label_id = MT::Util::encode_html($label). ' '. $label_id if defined $label && $label ne '';
+        push @ret, $label_id;
     }
     return join ', ', @ret;
 }
