@@ -2217,10 +2217,15 @@ sub build_content_data_table {
 
         my %highlight_fields;
         my %highlight_cfs;
-        if (my $fields = $content_data->{__search_result_fields}) {
+        if ($content_data->{__search_result_fields}) {
+            my $fields = $content_data->{__search_result_fields};
             %highlight_fields = map { $_ => 1 } @$fields;
-            %highlight_cfs = map { $_ => 1} grep { $_ =~ /^__field:(\d*)/} @$fields;
-            $row->{preview_data_show} = !!scalar(%highlight_cfs);
+            for my $field (@$fields) {
+                if ($field =~ /^__field:(\d*)/) {
+                    $highlight_cfs{$1} = 1;
+                    $row->{preview_data_show} = 1;
+                }
+            }
             $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/ if $highlight_fields{label};
             $row->{search_highlight}{identifier} = 1 if $highlight_fields{identifier};
         }
