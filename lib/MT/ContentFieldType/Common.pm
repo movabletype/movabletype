@@ -491,7 +491,7 @@ sub feed_value_handler_multiple {
 }
 
 sub preview_handler_multiple {
-    my ($field_data, $values, $content_data, $params) = @_;
+    my ($field_data, $values, $content_data) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -500,8 +500,6 @@ sub preview_handler_multiple {
 
     my %value_label_hash = map { $_->{value} => $_->{label} }
         @{ $field_data->{options}{values} || [] };
-
-    return _prevew_plain(\%value_label_hash, $values) if $params && $params->{plain};
 
     my $contents = '';
     for my $v (@$values) {
@@ -512,11 +510,19 @@ sub preview_handler_multiple {
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
-sub _prevew_plain {
-    my ($hash, $values) = @_;
+sub overview_handler_multiple {
+    my ($field_data, $values, $content_data) = @_;
+    return '' unless $values;
+    unless (ref $values eq 'ARRAY') {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my %value_label_hash = map { $_->{value} => $_->{label} } @{ $field_data->{options}{values} || [] };
+
     my @ret;
     for my $v (@$values) {
-        my $label = $hash->{$v};
+        my $label = $value_label_hash{$v};
         push @ret, MT::Util::encode_html($label) if defined $label && $label ne '';
     }
     return join ', ', @ret;

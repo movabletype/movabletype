@@ -1690,16 +1690,14 @@ sub preview_data {
         next unless defined $f->{type} && $f->{type} ne '';
         next unless $registry->{ $f->{type} };
 
-        my $preview_handler = $registry->{ $f->{type} }{preview_handler};
-        if ( $preview_handler && !ref $preview_handler ) {
-            $preview_handler = MT->handler_to_coderef($preview_handler)
-                or next;
+        my $handler;
+        $handler = $registry->{ $f->{type} }{overview_handler} if !!$self->{__search_term};
+        $handler ||= $registry->{ $f->{type} }{preview_handler};
+        if ($handler && !ref $handler) {
+            $handler = MT->handler_to_coderef($handler) or next;
         }
 
-        my $field_data
-            = $preview_handler
-            ? $preview_handler->( $f, $self->data->{ $f->{id} }, $self, {plain => !!$self->{__search_term}} )
-            : $self->data->{ $f->{id} };
+        my $field_data = $handler ? $handler->($f, $self->data->{ $f->{id} }, $self) : $self->data->{ $f->{id} };
         $field_data = '' unless defined $field_data && $field_data ne '';
 
         my $escaped_field_data =

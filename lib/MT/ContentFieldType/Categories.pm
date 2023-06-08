@@ -455,7 +455,7 @@ sub field_type_validation_handler {
 }
 
 sub preview_handler {
-    my ($field_data, $values, $content_data, $params) = @_;
+    my ($field_data, $values, $content_data) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -469,8 +469,6 @@ sub preview_handler {
     my %label_hash = map { $_->id => $_->label } @categories;
 
     my $static_uri = MT->static_path;
-
-    return _prevew_plain(\%label_hash, $values) if $params && $params->{plain};
 
     my $contents   = '';
     my $is_primary = 1;
@@ -492,11 +490,20 @@ sub preview_handler {
 
 }
 
-sub _prevew_plain {
-    my ($hash, $values) = @_;
+sub overview_handler {
+    my ($field_data, $values, $content_data) = @_;
+    return '' unless $values;
+    unless (ref $values eq 'ARRAY') {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my @categories = MT->model('category')->load({ id => $values }, { fetchonly => { id => 1, label => 1 } },);
+    my %label_hash = map { $_->id => $_->label } @categories;
+
     my @ret;
     for my $v (@$values) {
-        my $label = $hash->{$v};
+        my $label = $label_hash{$v};
         push @ret, MT::Util::encode_html($label) if defined $label && $label ne '';
     }
     return join ', ', @ret;

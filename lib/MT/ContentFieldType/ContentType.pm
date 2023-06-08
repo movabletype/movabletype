@@ -311,8 +311,6 @@ sub preview_handler {
 
     require MT::Util;
 
-    return _prevew_plain(\%content_data, $values) if $params && $params->{plain};
-
     my $contents = '';
     for my $v (@$values) {
         my $cd    = $content_data{$v};
@@ -329,11 +327,25 @@ sub preview_handler {
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
-sub _prevew_plain {
-    my ($hash, $values) = @_;
+sub overview_handler {
+    my ($field_data, $values, $content_data) = @_;
+    return '' unless $values;
+    unless (ref $values eq 'ARRAY') {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my %content_data;
+    my $iter = MT->model('content_data')->load_iter({ id => $values });
+    while (my $cd = $iter->()) {
+        $content_data{ $cd->id } = $cd;
+    }
+
+    require MT::Util;
+
     my @ret;
     for my $v (@$values) {
-        my $obj   = $hash->{$v} or next;
+        my $obj   = $content_data{$v} or next;
         my $label = $obj->label;
         push @ret, MT::Util::encode_html($label) if (defined $label && $label ne '');
     }

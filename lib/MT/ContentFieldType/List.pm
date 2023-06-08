@@ -123,29 +123,27 @@ sub feed_value_handler {
 }
 
 sub preview_handler {
-    my ($field_data, $values, $content_data, $params) = @_;
+    my ($field_data, $values, $content_data) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
     }
     return '' unless @$values;
 
-    return join ', ', map { MT::Util::encode_html($_) } @$values if $params && $params->{plain};
-
     my $contents = join '',
         map { '<li>' . MT::Util::encode_html($_) . '</li>' } @$values;
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
-sub _prevew_plain {
-    my ($hash, $values) = @_;
-    my @ret;
-    for my $v (@$values) {
-        my $obj   = $hash->{$v} or next;
-        my $label = $obj->label;
-        push @ret, MT::Util::encode_html($label) if defined $label && $label ne '';
+sub overview_handler {
+    my ($field_data, $values, $content_data) = @_;
+    return '' unless $values;
+    unless (ref $values eq 'ARRAY') {
+        $values = [$values];
     }
-    return join ', ', @ret;
+    return '' unless @$values;
+
+    return join ', ', map { MT::Util::encode_html($_) } @$values;
 }
 
 sub replace_handler {
