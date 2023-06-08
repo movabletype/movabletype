@@ -567,6 +567,8 @@ sub _asset_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
+        overview_handler =>
+            '$Core::MT::ContentFieldType::Asset::overview_handler',
         search_class   => 'asset',
         search_columns => [qw( description file_name label )],
         search_handler =>
@@ -801,6 +803,8 @@ sub _video_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
+        overview_handler =>
+            '$Core::MT::ContentFieldType::Asset::overview_handler',
         search_class   => 'asset',
         search_columns => [qw( description file_name label )],
         search_handler =>
@@ -917,6 +921,8 @@ sub _image_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
+        overview_handler =>
+            '$Core::MT::ContentFieldType::Asset::overview_handler',
         search_class   => 'asset',
         search_columns => [qw( description file_name label )],
         search_handler =>
