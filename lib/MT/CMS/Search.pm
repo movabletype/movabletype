@@ -1165,6 +1165,7 @@ sub do_search_replace {
             my $match = 0;
             delete $obj->{__search_term};
             delete $obj->{__search_result_fields};
+            delete $obj->{__search_result_fields_index};
 
             # For cms_pre_save callback and revisioning
             my $orig_obj;

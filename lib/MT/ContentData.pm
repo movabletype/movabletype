@@ -1677,7 +1677,7 @@ sub gather_changed_cols {
 }
 
 sub preview_data {
-    my ($self, $params) = @_;
+    my ($self) = @_;
     my $content_type = $self->content_type;
     return [] unless $content_type;
 
@@ -1701,7 +1701,7 @@ sub preview_data {
         $field_data = '' unless defined $field_data && $field_data ne '';
 
         my $escaped_field_data =
-            !$self->{__search_term}
+            !$self->{__search_term} || !$self->{__search_result_fields_index}->{'__field:'. $f->{id}}
             ? MT::Util::encode_html($field_data)
             : search_highlight($field_data, $self->{__search_term});
 
@@ -1710,7 +1710,6 @@ sub preview_data {
 
         my $escaped_field_label = MT::Util::encode_html($field_label);
 
-        $params ||= {};
         $data .= $tmpl->output({cf_id => $f->{id}, label => $escaped_field_label, data => $escaped_field_data});
     }
     $data;

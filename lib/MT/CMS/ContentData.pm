@@ -2219,6 +2219,7 @@ sub build_content_data_table {
         my %highlight_cfs;
         if (my $fields = $content_data->{__search_result_fields}) {
             %highlight_fields = map { $_ => 1 } @$fields;
+            $content_data->{__search_result_fields_index} = \%highlight_fields;
             my $found;
             for my $field (@$fields) {
                 if ($field =~ /^__field:(\d*)/) {
