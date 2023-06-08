@@ -110,7 +110,6 @@ sub _table_text_contents {
     $table_body =~ s/>\s+</></g;
     $table_body =~ s/\A\s*//g;
     $table_body =~ s/\s*\z//g;
-    $table_body =~ s/<br>//g; # XXX consider removing trailing <br> on save
     return grep {$_} split /<[^>]+>/, $table_body;
 }
 
