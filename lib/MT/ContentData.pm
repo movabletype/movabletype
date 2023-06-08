@@ -1724,7 +1724,7 @@ sub search_highlight {
     my $ret   = join '',
         map {
         my $encoded = MT::Util::encode_html($_);
-        $_ =~ /^$term$/ ? "<b>$encoded</b>" : $encoded
+        $_ =~ /^$term$/ ? qq{<span data-search-highlight="1">$encoded</span>} : $encoded
         } @parts;
     return $ret;
 }
