@@ -324,7 +324,7 @@ sub feed_value_handler {
 }
 
 sub preview_handler {
-    my ( $field_data, $values, $content_data ) = @_;
+    my ($field_data, $values, $content_data, $params) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -335,6 +335,8 @@ sub preview_handler {
         ->load( { id => $values }, { fetchonly => { id => 1, name => 1 } }, );
     my %name_hash = map { $_->id => $_->name } @tags;
 
+    return _prevew_plain(\%name_hash, $values) if $params && $params->{plain};
+
     my $contents = '';
     for my $id (@$values) {
         my $name = $name_hash{$id};
@@ -344,6 +346,16 @@ sub preview_handler {
     }
 
     return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
+sub _prevew_plain {
+    my ($hash, $values) = @_;
+    my @ret;
+    for my $v (@$values) {
+        my $label = $hash->{$v};
+        push @ret, MT::Util::encode_html($label) if defined $label && $label ne '';
+    }
+    return join ', ', @ret;
 }
 
 sub site_data_import_handler {
