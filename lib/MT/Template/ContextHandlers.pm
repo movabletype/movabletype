@@ -403,7 +403,7 @@ sub core_tags {
             ContentDataSearchScript =>
                 \&MT::Template::Tags::System::_hdlr_cd_search_script,
             XMLRPCScript => sub {''},
-            AtomScript   => \&MT::Template::Tags::System::_hdlr_atom_script,
+            AtomScript   => sub {''},
             CGIHost      => \&MT::Template::Tags::System::_hdlr_cgi_host,
             CGIPath      => \&MT::Template::Tags::System::_hdlr_cgi_path,
             AdminCGIPath =>
@@ -5591,22 +5591,6 @@ configuration setting. The default for this setting if unassigned is
 sub _hdlr_cd_search_script {
     my ($ctx) = @_;
     return $ctx->{config}->ContentDataSearchScript;
-}
-
-###########################################################################
-
-=head2 AtomScript
-
-Returns the value of the C<AtomScript> configuration setting. The
-default for this setting if unassigned is "mt-atom.cgi".
-
-=for tags configuration
-
-=cut
-
-sub _hdlr_atom_script {
-    my ($ctx) = @_;
-    return $ctx->{config}->AtomScript;
 }
 
 ###########################################################################

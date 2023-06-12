@@ -1012,7 +1012,6 @@ mt.cgi
 --- template
 <MTAtomScript>
 --- expected
-mt-atom.cgi
 
 === test 193
 --- template

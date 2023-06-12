@@ -421,8 +421,6 @@ class MT {
             $cfg['adminscript'] = 'mt.cgi';
         isset($cfg['commentscript']) or
             $cfg['commentscript'] = 'mt-comments.cgi';
-        isset($cfg['atomscript']) or
-            $cfg['atomscript'] = 'mt-atom.cgi';
         isset($cfg['searchscript']) or
             $cfg['searchscript'] = 'mt-search.cgi';
         isset($cfg['defaultlanguage']) or

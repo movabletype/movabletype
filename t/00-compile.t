@@ -395,12 +395,6 @@ use_ok('MT::ArchiveType::Page');
 use_ok('MT::ArchiveType::Weekly');
 use_ok('MT::ArchiveType::Yearly');
 
-# Atom support
-if ( eval { require XML::Parser } ) {
-    use_ok('MT::Atom');
-    use_ok('MT::AtomServer');
-}
-
 # Backup/Restore
 use_ok('MT::BackupRestore');
 use_ok('MT::BackupRestore::BackupFileHandler');

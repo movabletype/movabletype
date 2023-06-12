@@ -770,7 +770,6 @@ use vars qw( @ISA %Lexicon );
 	'XML::Atom is required in order to use the Atom API.' => 'XML::AtomはAtom APIを利用する場合に必要となります。',
 	'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.' => 'XML::SAXは復元の機能を利用する場合に必要となります。',
 	'XML::Simple is optional. It is used to parse configuration file of the IIS.' => 'XML::Simpleは、あればIISの設定ファイルを解析するのに使われます。',
-	'XML::XPath is required if you want to use the Atom API.' => 'XML::XPathはAtom APIを利用する際に必要となります。',
 	'YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => 'YAML::Syckのインストールは必須ではありません。YAML::Tinyよりも、軽量で高速に動作します。',
 	'YAML::Tiny is the default YAML parser.' => 'YAML::TinyはデフォルトのYAMLパーサーです。',
 	'local::lib is optional. It is used to load modules from different locations.' => 'local::libは、あれば標準とは異なる場所からモジュールを読み込むのに使えます。',

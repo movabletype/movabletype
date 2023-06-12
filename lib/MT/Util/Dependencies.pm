@@ -386,12 +386,6 @@ our %Requirements = (
         tags   => ["HTTP", "URI"],
         url    => "https://metacpan.org/pod/URI",
     },
-    "XML::Atom" => {
-        extlib => 0.43,
-        label  => "XML::Atom is required in order to use the Atom API.",
-        tags   => ["AtomAPI", "XML"],
-        url    => "https://metacpan.org/pod/XML::Atom",
-    },
     "XML::LibXML::SAX" => {
         label   => "This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.",
         tags    => ["XML", "Backup"],
@@ -426,12 +420,6 @@ our %Requirements = (
         label  => "XML::Simple is optional. It is used to parse configuration file of the IIS.",
         tags   => ["Win32", "XML"],
         url    => "https://metacpan.org/pod/XML::Simple",
-    },
-    "XML::XPath" => {
-        extlib => 1.44,
-        label  => "XML::XPath is required if you want to use the Atom API.",
-        tags   => ["AtomAPI", "XML"],
-        url    => "https://metacpan.org/pod/XML::XPath",
     },
     "YAML::Syck" => {
         label => "YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.",
