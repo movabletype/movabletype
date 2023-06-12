@@ -3242,6 +3242,8 @@ sub build_menus {
                 && !$theme_modify->{$sub_id};
             my $sub = $menus->{$sub_id};
             $sub->{current} = 0;
+            $sub->{order} ||= 0;
+            $sub->{mode}  ||= '';
 
             ## Keep a compatibility
             $sub->{view} = [ 'blog', 'system' ]
