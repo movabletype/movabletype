@@ -1377,7 +1377,6 @@ use vars qw( @ISA %Lexicon );
 	'This basename has already been used. You should use an unique basename.' => 'ファイル名はすでに使用されています。一意の名前を指定してください。',
 	'authored on' => '公開日',
 	'modified on' => '更新日',
-	q{<a href="[_1]">QuickPost to [_2]</a> - Drag this bookmarklet to your browser's toolbar, then click it when you are visiting a site that you want to blog about.} => q{<a href="[_1]">クイック投稿</a>: このリンクをブラウザのツールバーにドラッグし、興味のあるウェブページでクリックすると、ブログへ簡単に投稿できます。},
 	q{Invalid date '[_1]'; 'Published on' dates should be earlier than the corresponding 'Unpublished on' date '[_2]'.} => q{公開日: '[_1]'は、公開終了日: '[_2]'より前の日時を指定してください},
 	q{Invalid date '[_1]'; [_2] dates must be in the format YYYY-MM-DD HH:MM:SS.} => q{[_2]: '[_1]'は不正な日付です。YYYY-MM-DD HH:MM:SSの形式で入力してください。},
 	q{Saving entry '[_1]' failed: [_2]} => q{記事「[_1]」を保存できませんでした: [_2]},

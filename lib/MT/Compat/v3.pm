@@ -60,7 +60,7 @@ BEGIN {
             qw( mt_blog_stats_widget mt_blog_stats_widget_entry_tab new_version_widget get_lmt_content mt_blog_stats_widget_comment_tab generate_dashboard_stats get_newsbox_content dashboard mt_news_widget generate_dashboard_stats_comment_tab this_is_you_widget create_dashboard_stats_file generate_dashboard_stats_entry_tab )
         ],
         Entry => [
-            qw( cfg_entry draft_entries save_entries build_entry_table send_pings ping_continuation pinged_urls quickpost_js save_entry_prefs open_batch_editor update_entry_status publish_entries )
+            qw( cfg_entry draft_entries save_entries build_entry_table send_pings ping_continuation pinged_urls save_entry_prefs open_batch_editor update_entry_status publish_entries )
         ],    # _finish_rebuild_ping
         Export => [qw( start_export )],
         Import => [qw( do_import start_import )],

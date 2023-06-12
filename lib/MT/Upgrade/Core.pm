@@ -251,7 +251,6 @@ sub seed_database {
     @restricted_apps = grep {!$seen_apps{$_}++} @restricted_apps, qw(xmlrpc atom feeds ft_search);
     $cfg->set(RestrictedPSGIApp => \@restricted_apps, 1);
 
-    $cfg->set(DisableQuickPost => 1, 1);
     $cfg->set(DisableActivityFeeds => 1, 1);
     $cfg->set(DisableNotificationPings => 1, 1);
     $cfg->set(DefaultSupportedLanguages => 'en_us,ja', 1);
