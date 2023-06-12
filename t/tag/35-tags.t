@@ -3105,6 +3105,7 @@ Foo
 FooFoo
 
 === test 578-2
+--- ignore_php_warnings
 --- template
 <MTSetVarBlock name="foo">FooBar</MTSetVarBlock><MTGetVar name="foo" replace="Bar","$undef">
 --- expected
