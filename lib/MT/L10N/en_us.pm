@@ -58,16 +58,6 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'Requested data has been exported successfully in the [_1] directory.  Make sure that you download and <strong>then delete</strong> files listed above from [_1] by clicking each link or with the help of an FTP client.',
     '_BACKUP_DOWNLOAD_MESSAGE' =>
         'Downloading of the exported file will start automatically in a few seconds.  If for some reason it does not, click <a href="javascript:(void)" onclick="submit_form()">here</a> to start downloading manually.  Please note that you can download the exported file only once for a session.',
-    '_USAGE_BOOKMARKLET_1' =>
-        'Setting up QuickPost to post to Movable Type allows you to perform one-click posting and publishing without ever entering through the main Movable Type interface.',
-    '_USAGE_BOOKMARKLET_2' =>
-        'Movable Type\'s QuickPost structure allows you to customize the layout and fields on your QuickPost page. For example, you may wish to add the ability to add excerpts through the QuickPost window. By default, a QuickPost window will always have: a pulldown menu for the weblog to post to; a pulldown menu to select the Post Status (Draft or Publish) of the new entry; a text entry box for the Title of the entry; and a text entry box for the entry body.',
-    '_USAGE_BOOKMARKLET_3' =>
-        'To install the Movable Type QuickPost bookmark, drag the following link to your browser\'s menu or Favorites toolbar:',
-    '_USAGE_BOOKMARKLET_4' =>
-        'After installing QuickPost, you can post from anywhere on the web. When viewing a page that you want to post about, click the "QuickPost" QuickPost to open a popup window with a special Movable Type editing window. From that window you can select a weblog to post the entry to, then enter you post, and publish.',
-    '_USAGE_BOOKMARKLET_5' =>
-        'Alternatively, if you are running Internet Explorer on Windows, you can install a "QuickPost" option into the Windows right-click menu. Click on the link below and accept the browser prompt to "Open" the file. Then quit and restart your browser to add the link to the right-click menu.',
     '_USAGE_ARCHIVE_MAPS' =>
         'This advanced feature allows you to map any archive template to multiple archive types. For example, you may want to create two different views of your monthly archives: one in which the entries for a particular month are presented as a list, and the other representing the entries in a calendar view of that month.',
     '_USAGE_ARCHIVING_1' =>
