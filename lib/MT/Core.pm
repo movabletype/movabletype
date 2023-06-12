@@ -1992,7 +1992,7 @@ BEGIN {
                 default => 'mt-search.cgi',
                 handler => \&SearchScript,
             },
-            'FreeTextSearchScript'    => { default => 'mt-ftsearch.cgi', },
+            'FreeTextSearchScript'    => undef,
             'ContentDataSearchScript' => { default => 'mt-cdsearch.cgi' },
             'XMLRPCScript'            => { default => 'mt-xmlrpc.cgi', },
             'AtomScript'              => { default => 'mt-atom.cgi', },
@@ -2372,16 +2372,6 @@ BEGIN {
             'new_search' => {
                 handler => 'MT::App::Search',
                 script  => sub { MT->config->SearchScript },
-                tags    => sub {
-                    require MT::Template::Context::Search;
-                    return MT::Template::Context::Search->load_core_tags();
-                },
-                methods => sub { MT->app->core_methods() },
-                default => sub { MT->app->core_parameters() },
-            },
-            'ft_search' => {
-                handler => 'MT::App::Search::FreeText',
-                script  => sub { MT->config->FreeTextSearchScript },
                 tags    => sub {
                     require MT::Template::Context::Search;
                     return MT::Template::Context::Search->load_core_tags();
@@ -3758,10 +3748,7 @@ sub SearchScript {
 
     return $mgr->set_internal( 'SearchScript', @_ ) if @_;
 
-    if ( MT->app && MT->app->isa('MT::App::Search::FreeText') ) {
-        return $mgr->get_internal('FreeTextSearchScript');
-    }
-    elsif ( MT->app && MT->app->isa('MT::App::Search::ContentData') ) {
+    if ( MT->app && MT->app->isa('MT::App::Search::ContentData') ) {
         return $mgr->get_internal('ContentDataSearchScript');
     }
     else {
