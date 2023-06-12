@@ -143,6 +143,7 @@ mt-tb.cgi
 mt-search.cgi
 
 === test 8
+--- SKIP
 --- template
 <MTXMLRPCScript>
 --- expected
@@ -1011,7 +1012,6 @@ mt.cgi
 --- template
 <MTAtomScript>
 --- expected
-mt-atom.cgi
 
 === test 193
 --- template

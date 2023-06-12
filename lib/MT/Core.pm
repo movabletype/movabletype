@@ -1816,14 +1816,7 @@ BEGIN {
         backup_instructions => \&load_backup_instructions,
         permissions         => \&load_core_permissions,
         config_settings     => {
-            'AtomApp' => {
-                type    => 'HASH',
-                default => {
-                    weblog   => 'MT::AtomServer::Weblog::Legacy',
-                    '1.0'    => 'MT::AtomServer::Weblog',
-                    comments => 'MT::AtomServer::Comments',
-                },
-            },
+            'AtomApp'                      => { type => 'HASH' },
             'SchemaVersion'                => undef,
             'MTVersion'                    => undef,
             'MTReleaseNumber'              => undef,
@@ -1994,8 +1987,8 @@ BEGIN {
             },
             'FreeTextSearchScript'    => undef,
             'ContentDataSearchScript' => { default => 'mt-cdsearch.cgi' },
-            'XMLRPCScript'            => { default => 'mt-xmlrpc.cgi', },
-            'AtomScript'              => { default => 'mt-atom.cgi', },
+            'XMLRPCScript'            => undef,
+            'AtomScript'              => undef,
             'UpgradeScript'           => { default => 'mt-upgrade.cgi', },
             'CheckScript'             => { default => 'mt-check.cgi', },
             'DataAPIScript'           => { default => 'mt-data-api.cgi', },
@@ -2345,16 +2338,6 @@ BEGIN {
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
-            'xmlrpc' => {
-                handler => 'MT::XMLRPCServer',
-                script  => sub { MT->config->XMLRPCScript },
-                type    => 'xmlrpc',
-            },
-            'atom' => {
-                handler => 'MT::AtomServer',
-                script  => sub { MT->config->AtomScript },
-                type    => 'run_once',
-            },
             'feeds' => {
                 handler => 'MT::App::ActivityFeeds',
                 script  => sub { MT->config->ActivityFeedScript },

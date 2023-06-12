@@ -394,15 +394,6 @@ use_ok('MT::ArchiveType::Page');
 use_ok('MT::ArchiveType::Weekly');
 use_ok('MT::ArchiveType::Yearly');
 
-# XMLRPC support
-use_ok('MT::XMLRPCServer');
-
-# Atom support
-if ( eval { require XML::Parser } ) {
-    use_ok('MT::Atom');
-    use_ok('MT::AtomServer');
-}
-
 # Backup/Restore
 use_ok('MT::BackupRestore');
 use_ok('MT::BackupRestore::BackupFileHandler');
@@ -645,7 +636,7 @@ use_ok('MT::App::Search::Common');
 
 SKIP: {
     my @modules
-        = qw( parent Plack CGI::PSGI CGI::Parse::PSGI XMLRPC::Transport::HTTP::Plack );
+        = qw( parent Plack CGI::PSGI CGI::Parse::PSGI );
     my $eval_string = join( ';', map {"require $_"} @modules );
     if ( eval $eval_string ) {
         use_ok('MT::PSGI');

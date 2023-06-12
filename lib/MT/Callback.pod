@@ -323,7 +323,7 @@ In addition to the above callbacks, I<MT::App> also provides a set of
 "Transformer" callbacks that are documented in their own section,
 L<Transformer Callbacks>.
 
-=head2 MT::AtomServer and MT::XMLRPCServer
+=head2 MT::AtomServer
 
 =over 4
 
