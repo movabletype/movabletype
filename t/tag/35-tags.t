@@ -143,11 +143,9 @@ mt-tb.cgi
 mt-search.cgi
 
 === test 8
---- SKIP
 --- template
 <MTXMLRPCScript>
 --- expected
-mt-xmlrpc.cgi
 
 === test 9
 --- template
