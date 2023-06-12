@@ -32,7 +32,6 @@ sub init {
     );
     $app->{template_dir} = 'wizard';
     $app->config->set( 'StaticWebPath', $app->static_path );
-
     return $app;
 }
 
@@ -351,10 +350,19 @@ sub start {
     $param{config}           = $app->serialize_config(%param);
     $param{static_file}      = $static_file_path;
 
+    my $cfg = $app->config;
+
+    my $default_base_site_path
+        = $cfg->BaseSitePath
+        ? $cfg->BaseSitePath
+        : $app->document_root;
+    $default_base_site_path =~ s!([\\/])cgi(?:-bin)?([\\/].*)?$!$1!;
+    $default_base_site_path =~ s!([\\/])mt[\\/]?$!$1!i;
+
     $param{base_site_path}
         = defined $app->param('set_base_site_path_to')
         ? $app->param('set_base_site_path_to')
-        : '/var/www/html';
+        : $default_base_site_path;
     $param{support_directory_url}
         = defined $app->param('set_support_directory_url_to')
         ? $app->param('set_support_directory_url_to')
