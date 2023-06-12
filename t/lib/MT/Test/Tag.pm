@@ -282,7 +282,7 @@ $mt->init_plugins();
 
 $db = $mt->db();
 if (preg_match('/mysql/i', $mt->config('ObjectDriver'))) {
-    $db->execute("SET time_zone = '00:00'");
+    $db->execute("SET time_zone = '+00:00'");
 }
 $ctx =& $mt->context();
 
