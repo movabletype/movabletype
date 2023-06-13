@@ -254,4 +254,11 @@ sub found_site_ids {
     return \@site_ids;
 }
 
+sub found_highlighted_count {
+    my $self = shift;
+    my @titles;
+    my $type  = $self->current_tab or return [];
+    return $self->wq_find(qq!form#${type}-listing-form table tbody [data-search-highlight="1"]!)->size;
+}
+
 1;
