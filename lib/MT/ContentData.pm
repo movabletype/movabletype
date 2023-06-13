@@ -1691,7 +1691,7 @@ sub preview_data {
         next unless $registry->{ $f->{type} };
 
         my $handler;
-        $handler = $registry->{ $f->{type} }{overview_handler} if !!$self->{__search_term};
+        $handler = $registry->{ $f->{type} }{search_result_handler} if !!$self->{__search_term};
         $handler ||= $registry->{ $f->{type} }{preview_handler};
         if ($handler && !ref $handler) {
             $handler = MT->handler_to_coderef($handler) or next;

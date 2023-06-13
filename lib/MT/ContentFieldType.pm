@@ -55,8 +55,8 @@ sub _content_type_registry {
             '$Core::MT::ContentFieldType::ContentType::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::ContentType::preview_handler',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::ContentType::overview_handler',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::ContentType::search_result_handler',
         search_handler =>
             '$Core::MT::ContentFieldType::ContentType::search_handler',
         site_data_import_handler =>
@@ -410,8 +410,8 @@ sub _select_box_registry {
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::Common::overview_handler_multiple',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::Common::search_result_handler_multiple',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_multiple',
         list_props => {
@@ -461,8 +461,8 @@ sub _radio_button_registry {
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::Common::overview_handler_multiple',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::Common::search_result_handler_multiple',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_multiple',
         list_props => {
@@ -511,8 +511,8 @@ sub _checkboxes_registry {
             '$Core::MT::ContentFieldType::Common::feed_value_handler_multiple',
         preview_handler =>
             '$Core::MT::ContentFieldType::Common::preview_handler_multiple',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::Common::overview_handler_multiple',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::Common::search_result_handler_multiple',
         search_handler =>
             '$Core::MT::ContentFieldType::Common::search_handler_multiple',
         list_props => {
@@ -567,8 +567,8 @@ sub _asset_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::Asset::overview_handler',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_result_handler',
         search_class   => 'asset',
         search_columns => [qw( description file_name label )],
         search_handler =>
@@ -686,8 +686,8 @@ sub _audio_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::Asset::overview_handler',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_result_handler',
         search_class   => 'asset',
         search_columns => [qw( description file_name label )],
         search_handler =>
@@ -803,8 +803,8 @@ sub _video_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::Asset::overview_handler',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_result_handler',
         search_class   => 'asset',
         search_columns => [qw( description file_name label )],
         search_handler =>
@@ -921,8 +921,8 @@ sub _image_registry {
             '$Core::MT::ContentFieldType::Asset::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Asset::preview_handler',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::Asset::overview_handler',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::Asset::search_result_handler',
         search_class   => 'asset',
         search_columns => [qw( description file_name label )],
         search_handler =>
@@ -1081,8 +1081,8 @@ sub _categories_registry {
             '$Core::MT::ContentFieldType::Categories::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Categories::preview_handler',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::Categories::overview_handler',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::Categories::search_result_handler',
         search_class   => 'category',
         search_columns => [qw( basename description label )],
         search_handler =>
@@ -1144,8 +1144,8 @@ sub _tags_registry {
             '$Core::MT::ContentFieldType::Tags::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Tags::preview_handler',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::Tags::overview_handler',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::Tags::search_result_handler',
         search_class   => 'tag',
         search_columns => [qw( name )],
         search_handler =>
@@ -1198,8 +1198,8 @@ sub _list_registry {
             '$Core::MT::ContentFieldType::List::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::List::preview_handler',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::List::overview_handler',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::List::search_result_handler',
         replace_handler =>
             '$Core::MT::ContentFieldType::List::replace_handler',
         search_handler => '$Core::MT::ContentFieldType::List::search_handler',
@@ -1240,8 +1240,8 @@ sub _table_registry {
             '$Core::MT::ContentFieldType::Table::feed_value_handler',
         preview_handler =>
             '$Core::MT::ContentFieldType::Table::preview_handler',
-        overview_handler =>
-            '$Core::MT::ContentFieldType::Table::overview_handler',
+        search_result_handler =>
+            '$Core::MT::ContentFieldType::Table::search_result_handler',
 
         # search_handler =>
         #     '$Core::MT::ContentFieldType::Table::search_handler',

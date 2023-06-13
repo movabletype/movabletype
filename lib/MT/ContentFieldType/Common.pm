@@ -510,7 +510,7 @@ sub preview_handler_multiple {
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
-sub overview_handler_multiple {
+sub search_result_handler_multiple {
     my ($field_data, $values, $content_data) = @_;
     return '' unless $values;
     unless (ref $values eq 'ARRAY') {

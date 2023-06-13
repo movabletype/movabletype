@@ -135,7 +135,7 @@ sub preview_handler {
     return qq{<ul class="list-unstyled">$contents</ul>};
 }
 
-sub overview_handler {
+sub search_result_handler {
     my ($field_data, $values, $content_data) = @_;
     return '' unless $values;
     unless (ref $values eq 'ARRAY') {

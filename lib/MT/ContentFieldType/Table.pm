@@ -97,7 +97,7 @@ sub preview_handler {
     return qq{<table border="1" cellpadding="3">$value</table>};
 }
 
-sub overview_handler {
+sub search_result_handler {
     my ($field_data, $value, $content_data) = @_;
     return '' unless $value;
     return join ' | ', _table_text_contents($value);
