@@ -3220,7 +3220,7 @@ sub build_menus {
             $sub->{current} = 0;
 
             ## Keep a compatibility
-            $sub->{view} = [ 'blog', 'system' ]
+            $sub->{view} = [ 'website', 'blog', 'system' ]
                 unless $sub->{view};
 
             if ( $sub->{view} ) {
