@@ -2415,7 +2415,7 @@ Then later:
 sub _hdlr_set_vars {
     my ( $ctx, $args ) = @_;
     my $tag = lc $ctx->stash('tag');
-    my $val = $ctx->slurp($args);
+    my $val = $ctx->slurp($args) || '';
     $val =~ s/(^\s+|\s+$)//g;
     my @pairs = split /\r?\n/, $val;
     foreach my $line (@pairs) {
