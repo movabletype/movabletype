@@ -2216,23 +2216,15 @@ sub build_content_data_table {
         $row->{object}       = $content_data;
 
         my %highlight_fields;
-        my %highlight_cfs;
         if (my $fields = $content_data->{__search_result_fields}) {
             %highlight_fields = map { $_ => 1 } @$fields;
             $content_data->{__search_result_fields_index} = \%highlight_fields;
-            my $found;
-            for my $field (@$fields) {
-                if ($field =~ /^__field:(\d*)/) {
-                    $highlight_cfs{$1} = 1;
-                    $found = 1;
-                }
-            }
-            $row->{preview_data_show} = $found;
+            $row->{preview_data_show} = !!grep { $_ =~ /^__field:(\d*)/ } @$fields;
             $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/ if $highlight_fields{label};
             $row->{search_highlight}{identifier} = 1 if $highlight_fields{identifier};
         }
 
-        $row->{preview_data} = $content_data->preview_data({highlight_cfs => \%highlight_cfs});
+        $row->{preview_data} = $content_data->preview_data;
 
         $row->{status_text}
             = MT::ContentStatus::status_text( $content_data->status );
