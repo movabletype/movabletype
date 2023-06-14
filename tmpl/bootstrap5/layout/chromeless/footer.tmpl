@@ -1,0 +1,32 @@
+  </div>
+
+  <mt:var name="js_include">
+
+  <script type="text/javascript">
+  /* <![CDATA[ */
+if (window.jQuery) {
+<mt:unless name="cfg_exists">
+  jQuery.mtAddEdgeClass();
+  function showByID(id) {
+    jQuery('#'+id).show();
+  }
+  function hideByID(id) {
+    jQuery('#'+id).hide();
+  }
+  jQuery('input').each(function () {
+    jQuery(this).addClass(jQuery(this).attr('type'));
+  });
+</mt:unless>
+  jQuery(function() {
+  <mt:var name="jq_js_include">
+  });
+  if (window.top && (window.top.location != window.location)) {
+    jQuery(document).ready(function () {
+      window.top.jQuery.fn.mtDialogReady();
+    });
+  }
+}
+  /* ]]> */
+  </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<mt:setvarblock name="system_msg" append="1">
+    <mt:if name="request.saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="all"
+            can_close="0">
+            <__trans phrase="Your changes have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.approved">
+        <mtapp:statusmsg
+            id="approved"
+            class="success">
+            <__trans phrase="The selected TrackBack(s) has been approved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.emptied">
+        <mtapp:statusmsg
+            id="emptied"
+            class="success">
+            <__trans phrase="All TrackBacks reported as spam have been removed.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.unapproved">
+        <mtapp:statusmsg
+            id="unapproved"
+            class="success">
+            <__trans phrase="The selected TrackBack(s) has been unapproved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.junked">
+        <mtapp:statusmsg
+            id="junked"
+            class="success">
+            <__trans phrase="The selected TrackBack(s) has been reported as spam.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.unjunked">
+        <mtapp:statusmsg
+            id="unjunked"
+            class="success">
+            <__trans phrase="The selected TrackBack(s) has been recovered from spam.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.saved_deleted_ping">
+        <mtapp:statusmsg
+            id="saved-deleted-ping"
+            class="success">
+            <__trans phrase="The selected TrackBack(s) has been deleted from the database.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.no_junk_found">
+        <mtapp:statusmsg
+            id="no-junk-found"
+            class="info">
+            <__trans phrase="No TrackBacks appeared to be spam.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>

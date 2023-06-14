@@ -24,40 +24,48 @@ sub find_encoding {
 
 sub encode {
     my $enc = shift;
+    return undef unless defined $_[0];
     ($Encoding{$enc} ||= find_encoding($enc))->encode(@_);
 }
 
 sub decode {
     my $enc = shift;
+    return undef unless defined $_[0];
     ($Encoding{$enc} ||= find_encoding($enc))->decode(@_);
 }
 
 sub encode_utf8 {
+    return undef unless defined $_[0];
     $utf8->encode(@_);
 }
 
 sub decode_utf8 {
+    return undef unless defined $_[0];
     $utf8->decode(@_);
 }
 
 sub encode_if_flagged {
     my $enc = shift;
+    return undef unless defined $_[0];
     return $_[0] unless Encode::is_utf8($_[0]);
     ($Encoding{$enc} ||= find_encoding($enc))->encode(@_);
 }
 
 sub decode_unless_flagged {
     my $enc = shift;
+    return undef unless defined $_[0];
     return $_[0] if Encode::is_utf8($_[0]);
     ($Encoding{$utf8} ||= find_encoding($enc))->decode(@_);
 }
 
 sub encode_utf8_if_flagged {
+    return undef unless defined $_[0];
     return $_[0] unless Encode::is_utf8($_[0]);
     $utf8->encode(@_);
 }
 
 sub decode_utf8_unless_flagged {
+    return undef unless defined $_[0];
     return $_[0] if Encode::is_utf8($_[0]);
     $utf8->decode(@_);
 }

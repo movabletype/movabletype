@@ -1,0 +1,23 @@
+<div class="pull-left d-none d-md-inline">
+    <img alt="link1" src="<$mt:var name="thumbnail_url">" class="img-thumbnail" width="<$mt:var name="thumb_size">" height="<$mt:var name="thumb_size">" <mt:if name="use_thumbnail_offset">style="padding: <$mt:var name="thumbnail_height_offset">px <$mt:var name="thumbnail_width_offset">px"</mt:if> loading="lazy" decoding="async" />
+    <span class="title ms-4 me-2"><a href="<$mt:var name="edit_link">" style="vertical-align: top; line-height: normal;"><$mt:var name="label"></a></span>
+    <mt:if name="is_usrpic">
+        <span class="badge badge-default" style="vertical-align: top; line-height: normal; margin-top: -3px;">Userpic</span>
+    </mt:if>
+</div>
+<div class="d-md-none row">
+    <div class="col-auto mb-2 pl-0">
+        <img alt="link2" src="<$mt:var name="thumbnail_url">" class="img-thumbnail" width="<$mt:var name="thumb_size">" height="<$mt:var name="thumb_size">" <mt:if name="use_thumbnail_offset">style="padding: <$mt:var name="thumbnail_height_offset">px <$mt:var name="thumbnail_width_offset">px"</mt:if> loading="lazy" decoding="async" />
+    </div>
+    <div class="col pl-0">
+        <span class="title"><a href="<$mt:var name="edit_link">" style="vertical-align: top; line-height: normal;"><$mt:var name="label"></a></span>
+    </div>
+    <div class="col-12 pl-0">
+        <span class="font-weight-light">
+            <$mt:var name="created_on">
+        </span>
+        <mt:if name="is_usrpic">
+            <span class="badge badge-default" style="vertical-align: top; line-height: normal; margin-top: -3px;">Userpic</span>
+        </mt:if>
+    </div>
+</div>

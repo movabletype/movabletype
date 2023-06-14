@@ -105,25 +105,12 @@ sub list_props {
                 $desc = $desc->() if ref $desc eq 'CODE';
                 $desc = '' unless defined $desc;
                 $desc = '' if $msg eq $desc;
-                $desc = MT::Util::encode_html($desc);
-                $msg  = MT::Util::encode_html($msg);
-                my $id = $obj->id;
-                return $desc
-                    ? qq{
-                    <div class="log-message can-select">
-                      <a href="#log-detail-$id" class="dropdown-toggle toggle-link icon-left icon-spinner detail-link" data-toggle="collapse" aria-expanded="false" aria-controls="log-detail-$id">
-                        $msg
-                      </a>
-                      <div id="log-detail-$id" class="collapse log-metadata detail">
-                        <div class="card card-block bg-light mt-2 p-2">
-                          <pre class="pre-scrollable"><code>$desc</code></pre>
-                        </div>
-                      </div>
-                    </div>
-                }
-                    : qq{
-                    <div class="log-message can-select">$msg</div>
-                };
+                my %params = (
+                    id   => $obj->id,
+                    desc => MT::Util::encode_html($desc),
+                    msg  => MT::Util::encode_html($msg),
+                );
+                return $app->load_tmpl('cms/include/mt_log_list_props_message.tmpl', \%params)->output();
             },
         },
         blog_name => {

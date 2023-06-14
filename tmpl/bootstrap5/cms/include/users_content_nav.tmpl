@@ -1,0 +1,15 @@
+<mt:setvartemplate name="line_items" function="unshift">
+<mt:if name="user_menus">
+<mt:loop name="user_menus">
+  <mt:if name="link">
+    <li<mt:if name="is_active"> class="active"</mt:if> id="menu-list-item-<mt:var name="id" escape="html">"><a href="<mt:var name="link">"><mt:var name="label"></a></li>
+  <mt:else>
+    <li<mt:if name="is_active"> class="active"</mt:if> id="menu-list-item-<mt:var name="id" escape="html">"><mt:var name="label"></li>
+  </mt:if>
+</mt:loop>
+</mt:if>
+</mt:setvartemplate>
+
+<ul class="list-unstyled">
+<mt:loop name="line_items"><mt:var name="__value__"></mt:loop>
+</ul>

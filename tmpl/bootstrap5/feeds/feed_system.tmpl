@@ -1,0 +1,29 @@
+  <entry>
+    <title type="text"><mt:var name="log.message"></title>
+    <published><mt:var name="log.created_on_iso"></published>
+    <updated><mt:var name="log.created_on_iso"></updated>
+    <id><mt:var name="log.atom_id"></id>
+    <link type="text/html" rel="alternate" href="<mt:var name="log.permalink">"/>
+    <author>
+    <mt:if name="log.author.name">
+      <name><mt:var name="log.author.name"></name>
+      <mt:if name="log.author.email"><email><mt:var name="log.author.email"></email></mt:if>
+      <mt:if name="log.author.url"><uri><mt:var name="log.author.url"></uri></mt:if>
+    <mt:else>
+      <name>(system)</name>
+    </mt:if>
+    </author>
+    <content type="html">
+      &lt;div class="content"&gt;
+        <mt:var name="log.description" escape="html">
+      &lt;/div&gt;
+
+      <mt:if name="loop_actions">
+      &lt;div class="actions"&gt;
+        <mt:loop name="loop_actions">
+          &lt;a href="<mt:var name="link">"&gt;<mt:var name="label" escape="html">&lt;/a&gt;
+        </mt:loop>
+      &lt;/div&gt;
+      </mt:if>
+    </content>
+  </entry>

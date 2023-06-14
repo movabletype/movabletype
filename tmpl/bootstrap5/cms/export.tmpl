@@ -1,0 +1,28 @@
+<mt:setvarblock name="page_title"><__trans phrase="Export [_1] Entries" params="<mt:var name="scope_label">"></mt:setvarblock>
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="export" value="1">
+<mt:setvarblock name="export_label"><__trans phrase="[_1] to Export" params="<mt:var name="scope_label">"></mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<p><__trans phrase="_USAGE_EXPORT_1" params="<mt:var name="scope_label" lower_case="1">"></p>
+
+<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+  <input type="hidden" name="__mode" value="export" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+  <mt:setvarblock name="action_buttons">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Export [_1] Entries" params="<mt:var name="scope_label">">"
+       class="export action primary button btn btn-primary">
+      <__trans phrase="Export [_1] Entries" params="<mt:var name="scope_label">">
+    </button>
+  </mt:setvarblock>
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

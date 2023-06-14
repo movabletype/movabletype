@@ -139,8 +139,6 @@ function toggleFile() {
        label="<__trans phrase="_CATEGORY_BASENAME">"
        label_for="basename"
        hint="<__trans phrase="This is the basename assigned to your category.">"
-       help_page="categories"
-       help_section="category_basename"
        required="1">
       <div class="form-group">
         <input type="text" name="basename" id="basename" class="form-control mt-edit-field text basename" maxlength="250" value="<mt:var name="basename" escape="html">" />
@@ -169,9 +167,7 @@ function toggleFile() {
 
       <mtapp:setting
          id="allow_pings"
-         label="<__trans phrase="Accept Trackbacks">"
-         help_page="categories"
-         help_section="accept_category_pings">
+         label="<__trans phrase="Accept Trackbacks">">
         <div class="form-group">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" name="allow_pings" id="allow_pings" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb custom-control-input" />
@@ -210,9 +206,7 @@ function toggleFile() {
            id="tb_passphrase"
            label="<__trans phrase="Passphrase Protection">"
            label_for="tb_passphrase"
-           hint="<__trans phrase="Optional">"
-           help_page="categories"
-           help_section="trackback_passphrase_protection">
+           hint="<__trans phrase="Optional">">
           <input type="text" name="tb_passphrase" id="tb_passphrase" class="form-control text" value="<mt:var name="tb_passphrase" escape="html">" />
         </mtapp:setting>
       </mt:if>
@@ -226,9 +220,7 @@ function toggleFile() {
       <mtapp:setting
          id="ping_urls"
          label="<__trans phrase="Trackback URLs">"
-         label_for="ping_urls"
-         help_page="categories"
-         help_section="categories_urls_to_ping">
+         label_for="ping_urls">
         <textarea name="ping_urls" id="ping_urls" cols="" rows="" class="form-control text low"><mt:var name="ping_urls" escape="html"></textarea>
       </mtapp:setting>
     </mtapp:settinggroup>

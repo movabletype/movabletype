@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="<mt:var name="language_tag">"<mt:if name="screen_id"> data-screen-id="<mt:var name="screen_id" escape="html">"</mt:if>>
+<head>
+  <meta charset="<mt:var name="language_encoding">"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+
+  <mt:unless name="optimize_ui">
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:else>
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/mt.min.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  </mt:unless>
+  <mt:unless name="screen_type" eq="popup-screen">
+    <mt:unless name="screen_type" eq="chromeless-screen">
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/chromeless.css?v=<mt:var name="mt_version_id" escape="URL">" />
+    </mt:unless>
+  </mt:unless>
+  <mt:var name="css_include">
+
+  <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
+
+  <mt:include name="include/chromeless_libjs.tmpl">
+
+  <mt:var name="html_head">
+
+  <script type="text/javascript" src="<mt:var name="static_uri">js/mt/util.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</head>
+<body>
+
+  <div class="container body mt-4 <mt:var name="screen_id" escape="html"><mt:if name="template_filename" eq="signup"> signup</mt:if>">
+
+    <mt:unless name="no_brand">
+    <div class="row">
+      <div id="brand" class="col-12<mt:unless name="screen_type" eq="popup-screen"> text-center text-md-left</mt:unless>">
+        <img alt="Movable Type" src="<mt:var name="static_uri">images/logo-fullname-color.svg" width="238" height="52" />
+      </div>
+    </div>
+    </mt:unless>
+
+    <div id="nav">
+  <mt:if name="wizard_steps">
+    <mt:unless name="complete">
+      <mt:if name="step" ne="pre_start">
+    <mt:loop name="wizard_steps">
+    <mt:unless name="__last__">
+      <div class="step<mt:if name="active">_active</mt:if>"></div>
+    </mt:unless>
+    </mt:loop>
+      </mt:if>
+    </mt:unless>
+  </mt:if>
+    </div>
+
+    <mt:include name="include/page_title.tmpl" chromeless_layout="1">
