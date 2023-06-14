@@ -25,7 +25,7 @@ use MT::Test::App;
 $test_env->prepare_fixture(sub {
     MT::Test->init_db;
 
-    MT::Test::Fixture->prepare({
+    my $objs = MT::Test::Fixture->prepare({
         author => [qw/author/],
         blog   => [{
             name     => 'my_blog',
@@ -73,7 +73,7 @@ TMPL
         ],
     });
 
-    MT->publisher->rebuild;
+    MT->publisher->rebuild(BlogID => $objs->{blog}{my_blog}->id);
 });
 
 my $author = MT->model('author')->load({ name => 'author' });

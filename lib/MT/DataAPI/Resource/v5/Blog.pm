@@ -34,6 +34,31 @@ sub fields {
         {
             name => 'listOnIndex',
             type => 'MT::DataAPI::Resource::DataType::Integer',
+            type_from_object => sub {
+                my ($objs, $hashes, $f, $stash) = @_;
+                my $name = $f->{name};
+                for my $i (0 .. @$hashes - 1) {
+                    my $hash = $hashes->[$i];
+                    my $obj  = $objs->[$i];
+                    $hash->{$name} = $obj->entries_on_index || $obj->days_on_index || 0;
+                }
+                return;
+            },
+            type_to_object => sub {
+                my ($hashes, $objs, $f, $stash) = @_;
+                for my $i (0 .. @$objs - 1) {
+                    my $hash = $hashes->[$i];
+                    my $obj  = $objs->[$i];
+                    if ( $hash->{daysOrPosts} && $hash->{daysOrPosts} eq 'posts' ) {
+                        $obj->entries_on_index( $hash->{listOnIndex} || 0 );
+                        $obj->days_on_index(0);
+                    } else {
+                        $obj->entries_on_index(0);
+                        $obj->days_on_index( $hash->{listOnIndex} || 0 );
+                    }
+                }
+                return;
+            },
         },
         {
             name => 'maxRevisionsEntry',

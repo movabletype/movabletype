@@ -8,8 +8,7 @@ package MT::CMS::User;
 use strict;
 use warnings;
 
-use MT::Util
-    qw( format_ts relative_date is_valid_email is_url encode_url encode_html );
+use MT::Util qw( is_valid_email is_url encode_html );
 use MT::Author;
 
 sub edit {

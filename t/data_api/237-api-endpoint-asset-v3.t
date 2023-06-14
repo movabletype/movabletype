@@ -55,6 +55,7 @@ $test_env->prepare_fixture(sub {
     $uploader->set_password("bass");
     $uploader->type( MT::Author::AUTHOR() );
     $uploader->id(100);
+    $uploader->can_sign_in_data_api(1);
     $uploader->save()
         or die "Couldn't save author record 100: " . $uploader->errstr;
 
@@ -438,6 +439,7 @@ sub suite {
             method => 'GET',
             setup  => sub {
                 my $asset = $app->model('asset')->load(1);
+                $asset = $asset->clone;
                 $asset->set_values(
                     {   id     => 100,
                         parent => 1,
@@ -1123,12 +1125,14 @@ sub suite {
 
                 # add grandchilden
                 my $asset = $app->model('asset')->load(100) or die $!;
+                $asset = $asset->clone;
                 $asset->set_values(
                     {   id     => 1000,
                         parent => 100,
                     }
                 );
                 $asset->save or die $asset->errstr;
+                $asset = $asset->clone;
                 $asset->set_values(
                     {   id     => 10000,
                         parent => 1000,

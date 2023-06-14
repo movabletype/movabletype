@@ -1,0 +1,46 @@
+          </code>
+        </pre>
+      </div>
+    </div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var progress = MT.Util.getByID("progressbar");
+if (progress) {
+    progress.style.display = "none";
+}
+
+function RestoredAssetIds () {
+  return '<$mt:var name="asset_ids"$>';
+}
+
+<mt:if name="open_dialog">
+jQuery.fn.mtModal.open(
+  '<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&<mt:var name="dialog_params">',
+  { large: true }
+);
+</mt:if>
+
+/* ]]> */
+</script>
+
+<mt:unless name="open_dialog">
+  <mt:if name="restore_success">
+<h2><__trans phrase="All data imported successfully!"></h2>
+    <mt:unless name="restore_upload">
+<p><__trans phrase="Make sure that you remove the files that you imported from the 'import' folder, so that if/when you run the import process again, those files will not be re-imported."></p>
+    </mt:unless>
+  <mt:else>
+<mtapp:statusmsg
+   id="error"
+   class="danger"
+   can_close="0">
+  <__trans phrase="An error occurred during the import process: [_1] Please check activity log for more details." params="<mt:var name="error">">
+</mtapp:statusmsg>
+  </mt:if>
+</mt:unless>
+
+  </div>
+</div>
+
+<mt:include name="layout/common/footer.tmpl">

@@ -68,8 +68,7 @@ package MT::XMLRPCServer;
 use strict;
 
 use MT;
-use MT::Util
-    qw( first_n_words decode_html start_background_task archive_file_for );
+use MT::Util qw( decode_html start_background_task archive_file_for );
 use base qw( MT::ErrorHandler );
 
 our $MT_DIR;

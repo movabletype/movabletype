@@ -32,8 +32,7 @@ my $blog    = $app->model('blog')->load($blog_id) or die;
 
 rmtree($blog->site_path);
 
-MT::Request->instance->reset;
-MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+$test_env->clear_mt_cache;
 
 my $ct = $app->model('content_type')->load(
     {   blog_id => $blog_id,

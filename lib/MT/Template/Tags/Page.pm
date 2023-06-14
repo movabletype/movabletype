@@ -82,7 +82,15 @@ sub _hdlr_pages {
     if ( $args->{no_folder} ) {
         require MT::Folder;
         my $blog_id = $ctx->stash('blog_id');
-        my @fols = MT::Folder->load( { blog_id => $blog_id } );
+        my @fols;
+        my $stash = MT->request->{__stash};
+        my $cached = $stash->{__obj}{"folders:$blog_id"};
+        if ($cached) {
+            @fols = @$cached;
+        } else {
+            @fols = MT::Folder->load( { blog_id => $blog_id } );
+            $stash->{__obj}{"folders:$blog_id"} = \@fols;
+        }
         my $not_folder;
         foreach my $folder (@fols) {
             if ($not_folder) {

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:fb="http://www.facebook.com/2008/fbml" lang="<$mt:var name="language_tag"$>">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta charset="<$mt:var name="language_encoding"$>" />
+  <title><mt:if name="html_title"><mt:var name="html_title"><mt:else><mt:var name="page_title"></mt:if> | <$mt:var name="mt_product_name"$></title>
+
+<mt:setvarblock name="html_head" prepend="1">
+<mt:unless name="cfg_exists">
+  <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
+  <mt:unless name="optimize_ui">
+  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/reset.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/chromeless.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/form.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/messaging.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/utilities.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/listing.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <mt:else>
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/simple.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  </mt:unless>
+  <!--[if IE]>
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <![endif]-->
+  <mt:if name="local_lang_id" ne="en-us">
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
+  </mt:if>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:unless>
+<mt:unless name="optimize_ui">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery-migrate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<mt:else>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery-migrate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+</mt:unless>
+<mt:unless name="cfg_exists">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:unless>
+</mt:setvarblock>
+
+<$mt:var name="html_head"$>
+
+<mt:unless name="cfg_exists">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:if name="local_lang_id" eq="en-us">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_en_us.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+  <mt:else>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+  </mt:if>
+  <mt:unless name="optimize_ui">
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:else>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  </mt:unless>
+</mt:unless>
+
+<$mt:var name="js_include"$>
+
+</head>
+
+<body <mt:if name="screen_id">id="<$mt:var name="screen_id" escape="html"$>" </mt:if>class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"> chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if><mt:if name="screen_class"> <mt:var name="screen_class"></mt:if>">
+  <div id="container">
+    <div id="brand">
+      <img alt="Movable Type" src="<mt:var name="static_uri">images/chromeless/mt_logo.png" />
+    </div>
+    <div id="nav">
+  <mt:if name="wizard_steps">
+    <mt:unless name="complete">
+      <mt:if name="step" ne="pre_start">
+    <mt:loop name="wizard_steps">
+    <mt:unless name="__last__">
+      <div class="step<mt:if name="active">_active</mt:if>"></div>
+    </mt:unless>
+    </mt:loop>
+      </mt:if>
+    </mt:unless>
+  </mt:if>
+    </div>
+
+    <h1 id="page-title"><$mt:var name="page_title"$></h1>

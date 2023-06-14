@@ -16,7 +16,6 @@ use MT::Test::Fixture;
 use MT::Test::App;
 use File::Spec;
 use File::Path;
-use Test::Deep qw(cmp_bag);
 use utf8;
 
 $test_env->prepare_fixture('db');
@@ -82,6 +81,8 @@ TMPL
         },
     ],
 });
+
+$test_env->clear_mt_cache;
 
 my $admin = MT::Author->load(1);
 my $site  = $objs->{website}{my_site};

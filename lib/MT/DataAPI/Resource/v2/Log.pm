@@ -80,8 +80,7 @@ sub fields {
                 my ($obj) = @_;
                 my $app  = MT->instance or return;
                 my $user = $app->user   or return;
-                return MT::DataAPI::Callback::Log::can_save( undef, $app,
-                    $obj );
+                return MT::DataAPI::Callback::Log::can_save( undef, $app, $obj->id, $obj );
             },
         },
         {   name             => 'by',

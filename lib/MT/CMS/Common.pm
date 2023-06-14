@@ -8,7 +8,7 @@ package MT::CMS::Common;
 use strict;
 use warnings;
 
-use MT::Util qw( format_ts offset_time_list relative_date remove_html);
+use MT::Util qw( format_ts relative_date );
 
 sub save {
     my $app             = shift;

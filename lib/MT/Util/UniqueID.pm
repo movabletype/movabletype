@@ -12,7 +12,7 @@ use MT::Util::Digest::SHA ();
 use MT::Util::Digest::MD5 ();
 use Exporter qw/import/;
 
-use constant {
+use constant { ## no critic
     MT_CONTENT_TYPE_NS  => 'b00eedad-1360-4e36-afa9-337cd764e611',
     MT_CONTENT_FIELD_NS => 'f9db3d31-12d7-465b-b354-a36f396f6ab6',
     MT_CONTENT_DATA_NS  => 'e1ed48bb-26f9-4728-b373-cf43d116fdce',

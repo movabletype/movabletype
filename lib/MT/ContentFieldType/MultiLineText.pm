@@ -8,7 +8,7 @@ use strict;
 use warnings;
 
 use JSON ();
-use MT::I18N qw( first_n_text const );
+use MT::I18N qw( first_n_text );
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;

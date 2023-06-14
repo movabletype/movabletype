@@ -1,0 +1,60 @@
+<mt:setvarblock name="page_title"><mt:var name="label"></mt:setvarblock>
+
+<mt:setvarblock name="html_head" append="1">
+  <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+</mt:setvarblock>
+
+<mt:setvarblock name="form_header">
+<form name="detail" id="detail" method="post" action="<mt:var name="script_url">">
+  <input type="hidden" name="__mode" value="save_theme_detail">
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">">
+  <input type="hidden" name="exporter_id" value="<mt:var name="exporter_id">">
+  <input type="hidden" value="<mt:var name="exporter_id">" name="changed" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+  <mt:var name="template" mteval="1">
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_footer">
+  <div class="actions-bar actions-bar-bottom">
+    <button
+       type="submit"
+       id="submit-button"
+       title="<__trans phrase="Continue (s)">"
+       class="save action button primary btn btn-primary">
+      <__trans phrase="Continue"></button>
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Cancel (x)">"
+       data-mt-modal-close
+       class="cancel action button mt-close-dialog btn btn-default">
+      <__trans phrase="Cancel"></button>
+  </div>
+</mt:setvarblock>
+
+<mt:setvarblock name="form_footer">
+  </form>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function dialog_closed(ok) {
+    if (ok) {
+        var frm = document['detail'];
+        // commit!
+        frm.submit();
+    } else {
+        parent.jQuery.fn.mtDialog.close();
+    }
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

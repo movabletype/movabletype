@@ -125,9 +125,7 @@ function selectBlog() {
 
     <mtapp:setting
        id="file"
-       label="<__trans phrase="Upload import file (optional)">"
-       help_page="entry_import"
-       help_section="source_file">
+       label="<__trans phrase="Upload import file (optional)">">
       <input name="file" id="file" type="file" class="form-control-file" />
     </mtapp:setting>
 
@@ -146,9 +144,7 @@ function selectBlog() {
 
     <mtapp:setting
        id="encoding"
-       label="<__trans phrase="Import File Encoding">"
-       help_page="entry_import"
-       help_section="source_file_encoding">
+       label="<__trans phrase="Import File Encoding">">
       <select name="encoding" id="encoding" class="custom-select form-control">
       <mt:loop name="encoding_names">
         <option value="<mt:var name="name" escape="html">"><__trans phrase="<mt:var name="display_name" escape="html">"></option>
@@ -158,9 +154,7 @@ function selectBlog() {
 
     <mtapp:setting
        id="default_cat_id"
-       label="<__trans phrase="Default category for entries (optional)">"
-       help_page="entry_import"
-       help_section="default_category_for_entries">
+       label="<__trans phrase="Default category for entries (optional)">">
       <select name="default_cat_id" id="default_cat_id" class="custom-select form-control">
         <option value=""><__trans phrase="Select a category"></option>
       <mt:loop name="category_loop">

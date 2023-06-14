@@ -146,7 +146,7 @@ sub remove {
         }
         my $iter;
         if ($blog_id) {
-            my $blog = MT::Blog->load($blog_id);
+            my $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id);
             $iter = sub { my $ret = $blog; $blog = undef; $ret; }
         }
         else {

@@ -273,40 +273,27 @@ sub _scope_filter {
 sub list_properties {
     my $pkg = shift;
     my $cls = shift;
-    my %props;
 
-    return $CachedListProperties{$cls} if exists $CachedListProperties{$cls};
-
-    my $cacheable = 1;
-    my $local_props = MT->registry( 'list_properties', $cls );
-    if ($local_props) {
-        for my $key ( keys %$local_props ) {
-            my $prop = MT::ListProperty->instance( $cls, $key );
-            if ( $prop->has('condition') ) {
-                $cacheable = 0;
-                next unless $prop->condition;
+    unless (exists $CachedListProperties{$cls}) {
+        my %props;
+        for my $name ($cls, '__common') {
+            my $seed = MT->registry('list_properties', $name) || next;
+            for my $key (keys %$seed) {
+                next if $props{$key};
+                $props{$key} = MT::ListProperty->instance($cls, $key);
             }
-            $props{$key} = $prop;
         }
-    }
-
-    my $common_props = MT->registry( 'list_properties', '__common' );
-    if ($common_props) {
-        for my $key ( keys %$common_props ) {
-            next if $props{$key};
-            my $prop = MT::ListProperty->instance( $cls, $key );
-            if ( $prop->has('condition') ) {
-                $cacheable = 0;
-                next unless $prop->condition;
-            }
-            $props{$key} = $prop if $prop;
-        }
-    }
-    if ($cacheable) {
         $CachedListProperties{$cls} = \%props;
     }
 
-    return \%props;
+    my $cache = $CachedListProperties{$cls};
+    my %ret;
+    for my $key (keys %$cache) {
+        next if $cache->{$key}->has('condition') && !$cache->{$key}->condition;
+        $ret{$key} = $cache->{$key};
+    }
+
+    return \%ret;
 }
 
 sub can_display {

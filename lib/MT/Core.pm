@@ -787,12 +787,12 @@ BEGIN {
                             = $prop->datasource->has_column('author_id')
                             ? 'author_id'
                             : 'created_by';
-
+                      my $author_id = $obj->$col;
                       # If there's no value in the column then no voter ID was
                       # recorded.
-                        return '' if !$obj->$col;
+                        return '' if !$author_id;
 
-                        my $author = MT->model('author')->load( $obj->$col );
+                        my $author = MT->request->{__stash}{author_cache}{$author_id} ||= MT->model('author')->load($author_id);
                         return $author
                             ? ( $author->nickname || $author->name )
                             : MT->translate('*User deleted*');
@@ -1515,7 +1515,7 @@ BEGIN {
                     my $terms;
                     push @$terms, { author_id => $user->id };
                     if ($blog_id) {
-                        my $blog = MT->model('blog')->load($blog_id);
+                        my $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id);
                         my @blog_ids;
                         push @blog_ids, $blog_id;
                         if ( $blog && !$blog->is_blog ) {
@@ -2341,6 +2341,7 @@ BEGIN {
             'WaitAfterReboot' => { default => '1.0' },
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
+            'AdminThemeId' => undef,
             'TrimFilePath' => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,

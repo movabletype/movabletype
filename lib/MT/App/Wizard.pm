@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use base qw( MT::App );
 
-use MT::Util qw( trim browser_language );
+use MT::Util qw( browser_language );
 
 sub id {'wizard'}
 
@@ -145,8 +145,8 @@ sub init_core_registry {
                 handler => \&seed,
             },
         },
-        optional_packages => MT::Util::Dependencies->optional_packages_for_wizard($app),
-        required_packages => MT::Util::Dependencies->required_packages_for_wizard($app),
+        optional_packages => MT::Util::Dependencies->optional_packages_for_wizard,
+        required_packages => MT::Util::Dependencies->required_packages_for_wizard,
         database_options => {
             'mysql' => {
                 options          => { login_required => 1, },

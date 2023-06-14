@@ -5,6 +5,8 @@ updates:
     schedule:
       interval: monthly
     target-branch: develop
+    ignore:
+      - dependency-name: "riot"
   - package-ecosystem: composer
     directory: /
     schedule:

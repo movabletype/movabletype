@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use MT::Tag;    # Holds MT::Taggable
 use base qw( MT::Object MT::Taggable MT::Scorable );
-use MT::Util qw( encode_js );
+use MT::Util;
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -61,7 +61,6 @@ sub list_props {
             bulk_html => sub {
                 my $prop = shift;
                 my ( $objs, $app ) = @_;
-                my $static_uri = MT->static_path;
                 my @userpics   = MT->model('objecttag')->load(
                     {   blog_id           => 0,
                         object_datasource => 'asset',
@@ -109,13 +108,19 @@ sub list_props {
                     my $file_path = $obj->file_path;
                     ## FIXME: Hardcoded
                     my $thumb_size = 60;
-                    my $userpic_sticker
-                        = $is_userpic{ $obj->id }
-                        ? q{<span class="badge badge-default" style="vertical-align: top; line-height: normal; margin-top: -3px;">Userpic</span>}
-                        : '';
                     my $created_on
                         = MT::Util::date_for_listing( $obj->created_on,
                         $app );
+
+                    my %params = (
+                        created_on => $created_on,
+                        class_type => $class_type,
+                        svg_type   => $svg_type,
+                        edit_link  => $edit_link,
+                        label      => $label,
+                        is_userpic => $is_userpic{ $obj->id },
+                        static_uri => MT->static_path,
+                    );
 
                     if ( $file_path && $fmgr->exists($file_path) ) {
                         if (   $obj->has_thumbnail
@@ -167,147 +172,25 @@ sub list_props {
                                     );
                             }
 
-                            my $style = '';
-                            if ($thumbnail_width && $thumbnail_height) {
-                                my $thumbnail_width_offset = int( ( $thumb_size - $thumbnail_width ) / 2 );
-                                my $thumbnail_height_offset = int( ( $thumb_size - $thumbnail_height ) / 2 );
-                                $style = qq{style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px"};
-                            }
+                            $params{thumbnail_url} = $thumbnail_url;
+                            $params{thumb_size}    = $thumb_size;
 
-                            push @rows, qq{
-                                <div class="pull-left d-none d-md-inline">
-                                    <img alt="link1" src="$thumbnail_url" class="img-thumbnail" width="$thumb_size" height="$thumb_size" $style loading="lazy" decoding="async" />
-                                    <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
-                                </div>
-                                <div class="d-md-none row">
-                                    <div class="col-auto mb-2 pl-0">
-                                        <img alt="link2" src="$thumbnail_url" class="img-thumbnail" width="$thumb_size" height="$thumb_size" $style loading="lazy" decoding="async" />
-                                    </div>
-                                    <div class="col pl-0">
-                                        <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
-                                    </div>
-                                    <div class="col-12 pl-0">
-                                        <span class="font-weight-light">
-                                            $created_on
-                                        </span>
-                                        $userpic_sticker
-                                    </div>
-                                </div>
-                            };
+                            if ($thumbnail_width && $thumbnail_height) {
+                                $params{use_thumbnail_offset}    = 1;
+                                $params{thumbnail_width_offset}  = int( ( $thumb_size - $thumbnail_width ) / 2 );
+                                $params{thumbnail_height_offset} = int( ( $thumb_size - $thumbnail_height ) / 2 );
+                            }
+                            push @rows, $app->load_tmpl('cms/include/mt_asset_list_props_label_with_thumbnail.tmpl', \%params)->output();
                         }
                         elsif ( $class_type eq 'image' ) {
-                            my $svg = qq{
-                                    <div class="mt-thumbnail">
-                                        <img src="${static_uri}images/file-image.svg" width="60" height="60" loading="lazy" decoding="async">
-                                    </div>
-                                };
-                            push @rows, qq{
-                                <div class="pull-left d-none d-md-inline">
-                                    <div class="mt-user">
-                                        $svg
-                                        <div class="mt-user__badge--warning">
-                                            <svg class="mt-icon--inverse mt-icon--sm">
-                                                <title>Warning</title>
-                                                <use xlink:href="${static_uri}images/sprite.svg#ic_error"></use>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
-                                </div>
-                                <div class="d-md-none row">
-                                    <div class="col-auto mb-2 pl-0">
-                                        <div class="mt-user">
-                                            $svg
-                                            <div class="mt-user__badge--warning">
-                                                <svg class="mt-icon--inverse mt-icon--sm">
-                                                    <title>Warning</title>
-                                                    <use xlink:href="${static_uri}images/sprite.svg#ic_error"></use>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col pl-0">
-                                        <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
-                                    </div>
-                                    <div class="col-12 pl-0">
-                                        <span class="font-weight-light">
-                                            $created_on
-                                        </span>
-                                        $userpic_sticker
-                                    </div>
-                                </div>
-                            };
+                            push @rows, $app->load_tmpl('cms/include/mt_asset_list_props_label_image.tmpl', \%params)->output();
                         }
                         else {
-                            my $svg = qq{
-                                    <div class="mt-thumbnail">
-                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60" loading="lazy" decoding="async">
-                                    </div>
-                                };
-                            push @rows, qq{
-                                <div class="pull-left d-none d-md-inline">
-                                    $svg
-                                    <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
-                                </div>
-                                <div class="d-md-none row">
-                                    <div class="col-auto mb-2 pl-0">
-                                        <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60" loading="lazy" decoding="async">
-                                    </div>
-                                    <div class="col pl-0">
-                                        <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
-                                    </div>
-                                    <div class="col-12 pl-0">
-                                        <span class="font-weight-light">
-                                            $created_on
-                                        </span>
-                                        $userpic_sticker
-                                    </div>
-                                </div>
-                            };
+                            push @rows, $app->load_tmpl('cms/include/mt_asset_list_props_label_file.tmpl', \%params)->output();
                         }
                     }
                     else {
-                        my $svg = qq{
-                                <div class="mt-thumbnail">
-                                    <img src="${static_uri}images/file-$svg_type.svg" width="60" height="60" loading="lazy" decoding="async">
-                                </div>
-                            };
-                        push @rows, qq{
-                            <div class="pull-left d-none d-md-inline">
-                                <div class="mt-user">
-                                    $svg
-                                    <div class="mt-user__badge--warning">
-                                        <svg class="mt-icon--inverse mt-icon--sm">
-                                            <title>Warning</title>
-                                            <use xlink:href="${static_uri}images/sprite.svg#ic_error"></use>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <span class="title ml-4 mr-2"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>$userpic_sticker
-                            </div>
-                            <div class="d-md-none row">
-                                <div class="col-auto mb-2 pl-0">
-                                    <div class="mt-user">
-                                        $svg
-                                        <div class="mt-user__badge--warning">
-                                            <svg class="mt-icon--inverse mt-icon--sm">
-                                                <title>Warning</title>
-                                                <use xlink:href="${static_uri}images/sprite.svg#ic_error"></use>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col pl-0">
-                                    <span class="title"><a href="$edit_link" style="vertical-align: top; line-height: normal;">$label</a></span>
-                                </div>
-                                <div class="col-12 pl-0">
-                                    <span class="font-weight-light">
-                                        $created_on
-                                    </span>
-                                    $userpic_sticker
-                                </div>
-                            </div>
-                        };
+                        push @rows, $app->load_tmpl('cms/include/mt_asset_list_props_label_no_file.tmpl', \%params)->output();
                     }
                 }
                 @rows;
@@ -733,11 +616,11 @@ sub extensions {
     return \@$ext unless MT->config('AssetFileTypes');
 
     my @custom_ext = map {qr/$_/i}
-        split( /\s*,\s*/, MT->config('AssetFileTypes')->{$this_pkg} );
+        split( /\s*,\s*/, MT->config('AssetFileTypes')->{$this_pkg} || '' );
     my %seen;
-    my ($new_ext) = grep { ++$seen{$_} < 2 }[ @$ext, @custom_ext ];
+    my @new_ext = grep { !$seen{$_}++ } (@$ext, @custom_ext);
 
-    return \@$new_ext;
+    return \@new_ext;
 }
 
 # This property is a meta-property.

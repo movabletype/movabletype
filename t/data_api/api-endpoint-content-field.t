@@ -1150,12 +1150,20 @@ sub normal_tests_for_delete {
                     count => 1,
                 },
             ],
-            result   => sub { $cf; },
+            # can't compare the result with $cf as options are not available after deletion
+            result => sub { $cf },
             complete => sub {
+                my ($data, $body) = @_;
+                my $json = JSON::decode_json($body);
+                is $json->{id} => $cf->id;
                 ok( !MT->model('content_field')->load( $cf->id ) );
+                my $content_type = MT->model('content_type')->load($content_type_id);
+                ok !grep {$_->{id} == $cf->id} @{$content_type->fields};
             },
         }
     );
+
+    $test_env->clear_mt_cache;
 
     $cf = MT->model('content_field')
         ->load( { content_type_id => $content_type_id } );
@@ -1182,12 +1190,19 @@ sub normal_tests_for_delete {
                     count => 1,
                 },
             ],
-            result   => sub { $cf; },
+            result => sub { $cf },
             complete => sub {
+                my ($data, $body) = @_;
+                my $json = JSON::decode_json($body);
+                is $json->{id} => $cf->id;
                 ok( !MT->model('content_field')->load( $cf->id ) );
+                my $content_type = MT->model('content_type')->load($content_type_id);
+                ok !grep {$_->{id} == $cf->id} @{$content_type->fields};
             },
         }
     );
+
+    $test_env->clear_mt_cache;
 
     $cf = MT->model('content_field')
         ->load( { content_type_id => $content_type_id } );
@@ -1218,9 +1233,14 @@ sub normal_tests_for_delete {
                     count => 1,
                 },
             ],
-            result   => sub { $cf; },
+            result => sub { $cf },
             complete => sub {
+                my ($data, $body) = @_;
+                my $json = JSON::decode_json($body);
+                is $json->{id} => $cf->id;
                 ok( !MT->model('content_field')->load( $cf->id ) );
+                my $content_type = MT->model('content_type')->load($content_type_id);
+                ok !grep {$_->{id} == $cf->id} @{$content_type->fields};
             },
         }
     );

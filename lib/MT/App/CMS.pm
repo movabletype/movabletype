@@ -11,8 +11,7 @@ use warnings;
 use base qw( MT::App );
 
 use MT::CMS::ContentData;
-use MT::Util qw( format_ts epoch2ts perl_sha1_digest_hex perl_sha1_digest
-    remove_html );
+use MT::Util qw( perl_sha1_digest_hex );
 use MT::App::CMS::Common;
 
 sub LISTING_DATE_FORMAT ()      {'%b %e, %Y'}
@@ -2224,7 +2223,7 @@ sub core_menus {
                 my $terms;
                 push @$terms, { author_id => $user->id };
                 if ($blog_id) {
-                    my $blog = MT->model('blog')->load($blog_id);
+                    my $blog = $app->blog;
                     my @blog_ids;
                     push @blog_ids, $blog_id;
                     if ( $blog && !$blog->is_blog ) {
@@ -2650,8 +2649,7 @@ sub is_authorized {
     my $blog_id = $app->param('blog_id');
     return 1 unless $blog_id;
 
-    my $blog = MT->model('blog')->load($blog_id)
-        or return $app->errtrans( 'Cannot load blog (ID:[_1])', $blog_id );
+    my $blog = $app->blog or return $app->errtrans( 'Cannot load blog (ID:[_1])', $blog_id );
 
     # Return true if user has any permissions for a specified
     # blog or parent website.
@@ -2717,8 +2715,7 @@ sub set_default_tmpl_params {
 
     my $blog_id = $app->param('blog_id') || 0;
     my $blog;
-    my $blog_class = $app->model('blog');
-    $blog ||= $blog_class->load($blog_id) if $blog_id;
+    $blog = $app->blog if $blog_id;
     if ( my $auth = $app->user ) {
         $param->{is_administrator} = $auth->is_superuser;
         $param->{can_access_to_system_dashboard}

@@ -73,8 +73,7 @@ $blog->site_path($test_env->root . '/site');
 $blog->archive_path(join "/", $test_env->root, "site/archive");
 $blog->save;
 
-MT::Request->instance->reset;
-MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+$test_env->clear_mt_cache;
 
 subtest 'create entry' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');

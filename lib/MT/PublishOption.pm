@@ -23,11 +23,12 @@ sub get_throttle {
     require MT::TemplateMap;
     my $throttle = { type => DISABLED, interval => 0, };
     my $obj;
-    if ( $finfo->templatemap_id ) {
-        $obj = MT::TemplateMap->load( $finfo->templatemap_id );
+    if ( my $map_id = $finfo->templatemap_id ) {
+        $obj = MT->request->{__stash}{__obj}{"templatemap:$map_id"} ||= MT::TemplateMap->load($map_id);
     }
     else {
-        $obj = MT::Template->load( $finfo->template_id );
+        my $tmpl_id = $finfo->template_id;
+        $obj = MT->request->{__stash}{__obj}{"template:$tmpl_id"} ||= MT::Template->load($tmpl_id);
     }
     return $throttle unless $obj;
     $throttle->{type}     = $obj->build_type;

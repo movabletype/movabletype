@@ -115,7 +115,9 @@ my %writableType = (
     PS  => [ 'PostScript',  'WritePS'  ],
     PSD =>   'Photoshop',
     RAF => [ 'FujiFilm',    'WriteRAF' ],
+    RIFF=> [ 'RIFF',        'WriteRIFF'],
     VRD =>   'CanonVRD',
+    WEBP=> [ 'RIFF',        'WriteRIFF'],
     X3F =>   'SigmaRaw',
     XMP => [ undef,         'WriteXMP' ],
 );
@@ -240,7 +242,7 @@ my %intRange = (
     'int64s' => [-9223372036854775808, 9223372036854775807],
 );
 # lookup for file types with block-writable EXIF
-my %blockExifTypes = map { $_ => 1 } qw(JPEG PNG JP2 MIE EXIF FLIF MOV MP4);
+my %blockExifTypes = map { $_ => 1 } qw(JPEG PNG JP2 MIE EXIF FLIF MOV MP4 RIFF);
 
 my $maxSegmentLen = 0xfffd;     # maximum length of data in a JPEG segment
 my $maxXMPLen = $maxSegmentLen; # maximum length of XMP data in JPEG
@@ -975,7 +977,7 @@ TAG: foreach $tagInfo (@matchingTags) {
                 } else {
                     $wgrp = '';
                 }
-                foreach $wtag (keys %{$$tagInfo{WriteAlso}}) {
+                foreach $wtag (sort keys %{$$tagInfo{WriteAlso}}) {
                     my ($n,$e) = $self->SetNewValue($wgrp . $wtag, undef, Replace=>2);
                     $numSet += $n;
                 }
@@ -1123,7 +1125,7 @@ WriteAlso:
                 $wgrp = '';
             }
             local $SIG{'__WARN__'} = \&SetWarning;
-            foreach $wtag (keys %$writeAlso) {
+            foreach $wtag (sort keys %$writeAlso) {
                 my %opts = (
                     Type => 'ValueConv',
                     Protected   => $protected | 0x02,
@@ -1270,6 +1272,7 @@ sub SetNewValuesFromFile($$;@)
         GlobalTimeShift => $$options{GlobalTimeShift},
         HexTagIDs       => $$options{HexTagIDs},
         IgnoreMinorErrors=>$$options{IgnoreMinorErrors},
+        IgnoreTags      => $$options{IgnoreTags},
         Lang            => $$options{Lang},
         LargeFileSupport=> $$options{LargeFileSupport},
         List            => 1,
@@ -4241,7 +4244,12 @@ sub WriteDirectory($$$;$)
     $$self{DIR_NAME} = $oldDir;
     @$self{'Compression','SubfileType'} = @save;
     SetByteOrder($saveOrder);
-    print $out "  Deleting $name\n" if $out and defined $newData and not length $newData;
+    if ($out) {
+        print $out "  Deleting $name\n" if defined $newData and not length $newData;
+        if ($$self{CHANGED} == $oldChanged and $$self{OPTIONS}{Verbose} > 2) {
+            print $out "$$self{INDENT}  [nothing changed in $dirName]\n";
+        }
+    }
     return $newData;
 }
 
@@ -4530,7 +4538,7 @@ sub DumpUnknownTrailer($$)
         # add to Preview block list if valid and in the trailer
         $image{$prePos} = [$tag, $preLen] if $prePos and $preLen and $prePos+$preLen > $pos;
         last if $lastOne;   # checked all images
-        # look for MPF images (in the the proper order)
+        # look for MPF images (in the proper order)
         ++$mpImageNum;
         $prePos = $$self{VALUE}{"MPImageStart ($mpImageNum)"};
         if (defined $prePos) {

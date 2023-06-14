@@ -87,8 +87,7 @@ isa_ok( $mt, 'MT' );
     );
     ok( $author->save(), "Author with modified widgets can be saved" );
 
-    require MT::ObjectDriver::Driver::Cache::RAM;
-    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    $test_env->clear_mt_cache;
 
     $author = MT::Author->load( { name => 'Chuck D' } );
 

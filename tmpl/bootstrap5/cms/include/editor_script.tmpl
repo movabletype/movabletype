@@ -1,0 +1,53 @@
+<mt:if name="editors">
+
+<mt:setvarblock name="js_include" append="1">
+<mt:unless name="optimize_ui">
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_manager.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command/wysiwyg.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor_command/source.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/single.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/multi.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/app/editor_strategy/separator.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor/editor/source.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<mt:else>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/editor.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+</mt:unless>
+<script type="text/javascript">
+(function() {
+
+MT.EditorManager.updateMap({
+    wysiwyg: '<mt:var name="wysiwyg_editor" escape="js" />',
+    source: '<mt:var name="source_editor" escape="js" />'
+});
+MT.App.setDefaultEditorStrategy('<mt:var name="editor_strategy" escape="js" />');
+
+var opts = {
+    body_class_list: ['wysiwyg', '<mt:var name="object_type" escape="js" />'],
+    tainted_input: <mt:If name="tainted_input">true<mt:Else>false</mt:If>
+};
+<mt:if name="content_css">
+opts['content_css_list'] = ['<mt:var name="content_css" escape="js" />'];
+</mt:if>
+MT.Editor.updateDefaultCommonOptions(opts);
+
+})();
+</script>
+</mt:setvarblock>
+<mt:loop name="editors">
+  <mt:var name="__value__" key="templates" setvar="templates" />
+  <mt:var name="__value__" key="extensions" setvar="extensions" />
+  <mt:var name="__value__" key="config" setvar="config" />
+
+  <mt:loop name="templates">
+    <mt:var name="tmpl" config="$config" />
+  </mt:loop>
+  <mt:loop name="extensions">
+    <mt:var name="tmpl" config="$config" />
+  </mt:loop>
+</mt:loop>
+
+</mt:if>

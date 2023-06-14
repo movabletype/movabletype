@@ -17,7 +17,7 @@
  ##########  <MT_TRANS phrase="SEARCH FEED AUTODISCOVERY LINK IS PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED">
 </MTIgnore>
 <MTNoSearch><MTElse>
-    <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Blog Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStatic><MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch></MTIfStatic>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
+    <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Site Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStatic><MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch></MTIfStatic>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
 </MTElse></MTNoSearch>      
     <title><MT_TRANS phrase="Search Results"></title>
 </head>
@@ -27,7 +27,7 @@
       
          <div id="banner">
             <div id="banner-inner" class="pkg">
-               <h1 id="banner-header"><MT_TRANS phrase="Blog search"></h1>
+               <h1 id="banner-header"><MT_TRANS phrase="Site search"></h1>
             </div>
          </div>
 

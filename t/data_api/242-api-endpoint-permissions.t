@@ -45,6 +45,7 @@ sub suite {
 
     return +[
         {   path      => '/v1/users/me/permissions',
+            up_to     => 1,
             method    => 'GET',
             callbacks => [
                 {   name  => 'data_api_pre_load_filtered_list.permission',

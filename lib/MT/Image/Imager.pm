@@ -13,6 +13,7 @@ use base qw( MT::Image );
 sub load_driver {
     my $image = shift;
 
+    eval { require Imager::File::WEBP };
     eval { require Imager };
     if ( my $err = $@ ) {
         return $image->error(

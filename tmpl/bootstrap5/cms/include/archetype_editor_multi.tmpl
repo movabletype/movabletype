@@ -1,0 +1,67 @@
+<mt:setvarblock name="js_include" append="1">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/archetype_editor_multi.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+</mt:setvarblock>
+<mt:setvarblock name="html_head" prepend="1">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/DOM/Proxy.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/SelectionRange.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Editor.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Editor/Iframe.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Editor/Textarea.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Editor/Toolbar.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>css/editor/editor.css?v=<$mt:var name="mt_version_id" escape="url"$>" />
+</mt:setvarblock>
+<mt:setvartemplate name="editor_content">
+<div class="formatted editor-panel">
+  <div class="entry-body-field field">
+    <div class="field-content">
+      <div id="editor-input-content-field-<mt:var name="content_field_id">-toolbar" class="editor-content-toolbar editor-toolbar toolbar">
+        <div class="field-buttons-formatting">
+          <span class="font-style">
+            <button type="button" title="<__trans phrase="Decrease Text Size" escape="html">" class="command-font-size-smaller toolbar button"><span class="button-label"><__trans phrase="Decrease Text Size"></button>
+            <button type="button" title="<__trans phrase="Increase Text Size" escape="html">" class="command-font-size-larger toolbar button"><span class="button-label"><__trans phrase="Increase Text Size"></span></button>
+            <button type="button" title="<__trans phrase="Bold" escape="html">" class="command-bold toolbar button"><span class="button-label"><__trans phrase="Bold"></span></button>
+            <button type="button" title="<__trans phrase="Italic" escape="html">" class="command-italic toolbar button"><span class="button-label"><__trans phrase="Italic"></span></button>
+            <button type="button" title="<__trans phrase="Underline" escape="html">" class="command-underline toolbar button"><span class="button-label"><__trans phrase="Underline"></span></button>
+            <button type="button" title="<__trans phrase="Strikethrough" escape="html">" class="command-strikethrough toolbar button"><span class="button-label"><__trans phrase="Strikethrough"></span></button>
+          </span>
+          <span class="add-link">
+            <button type="button" title="<__trans phrase="Link" escape="html">" class="command-insert-link toolbar button"><span class="button-label"><__trans phrase="Link"></span></button>
+            <button type="button" title="<__trans phrase="Email Link" escape="html">" class="command-insert-email toolbar button"><span class="button-label"><__trans phrase="Email Link"></span></button>
+          </span>
+          <span class="text-style">
+            <button type="button" title="<__trans phrase="Begin Blockquote" escape="html">" class="command-indent toolbar button"><span class="button-label"><__trans phrase="Begin Blockquote"></span></button>
+            <button type="button" title="<__trans phrase="End Blockquote" escape="html">" class="command-outdent toolbar button"><span class="button-label"><__trans phrase="End Blockquote"></span></button>
+            <button type="button" title="<__trans phrase="Bulleted List" escape="html">" class="command-insert-unordered-list toolbar button"><span class="button-label"><__trans phrase="Bulleted List"></span></button>
+            <button type="button" title="<__trans phrase="Numbered List" escape="html">" class="command-insert-ordered-list toolbar button"><span class="button-label"><__trans phrase="Numbered List"></span></button>
+          <mt:ignore>
+            <button type="button" title="<__trans phrase="Left Align Item" escape="html">" class="command-enclosure-align-left toolbar button"><span class="button-label"><__trans phrase="Left Align Item"></span></button>
+            <button type="button" title="<__trans phrase="Center Item" escape="html">" class="command-enclosure-align-center toolbar button"><span class="button-label"><__trans phrase="Center Item"></span></button>
+            <button type="button" title="<__trans phrase="Right Align Item" escape="html">" class="command-enclosure-align-right toolbar button"><span class="button-label"><__trans phrase="Right Align Item"></span></button>
+          </mt:ignore>
+          </span>
+          <span class="text-align">
+            <button type="button" title="<__trans phrase="Left Align Text" escape="html">" class="command-justify-left toolbar button"><span class="button-label"><__trans phrase="Left Align Text"></span></button>
+            <button type="button" title="<__trans phrase="Center Text" escape="html">" class="command-justify-center toolbar button"><span class="button-label"><__trans phrase="Center Text"></span></button>
+            <button type="button" title="<__trans phrase="Right Align Text" escape="html">" class="command-justify-right toolbar button"><span class="button-label"><__trans phrase="Right Align Text"></span></button>
+          </span>
+          <span class="add-enclosure">
+            <a href="<mt:var name="script_url">?__mode=list_asset&amp;_type=asset&amp;edit_field=editor-input-content-field-<mt:var name="content_field_id">&amp;blog_id=<mt:var name="blog_id">&amp;filter=class&amp;filter_val=image&amp;dialog_view=1&amp;can_multi=1" title="<__trans phrase="Insert Image" escape="html">" class="command-insert-image toolbar button mt-open-dialog mt-modal-open" data-mt-modal-large><span class="button-label"><__trans phrase="Insert Image"></span></a>
+            <a href="<mt:var name="script_url">?__mode=list_asset&amp;_type=asset&amp;edit_field=editor-input-content-field-<mt:var name="content_field_id">&amp;blog_id=<mt:var name="blog_id">&amp;dialog_view=1&amp;can_multi=1" title="<__trans phrase="Insert File" escape="html">" class="command-insert-file toolbar button mt-open-dialog mt-modal-open" data-mt-modal-large><span class="button-label"><__trans phrase="Insert File"></span></a>
+          </span>
+          <span class="edit-mode">
+            <button type="button" title="<__trans phrase="WYSIWYG Mode" escape="html">" mt:command="set-mode-iframe" class="command-toggle-wysiwyg toolbar button"><span class="button-label"><__trans phrase="WYSIWYG Mode"></span></button>
+            <button type="button" title="<__trans phrase="HTML Mode" escape="html">" mt:command="set-mode-textarea" class="command-toggle-html toolbar button"><span class="button-label"><__trans phrase="HTML Mode"></span></button>
+          </span>
+        </div>
+      </div>
+      <div class="editor-content-enclosure editor">
+        <textarea name="content-field-<mt:var name="content_field_id">" id="editor-input-content-field-<mt:var name="content_field_id">-textarea" class="editor-content-textarea text full"></textarea>
+        <!-- the iframe bootstraps the js -->
+        <$mt:setvar name="delayed_bootstrap" value="1"$>
+        <iframe id="editor-input-content-field-<mt:var name="content_field_id">-iframe" class="editor-content-iframe" frameborder="0" scrolling="yes" src="<$mt:var name="static_uri"$>html/editor-content.html?cs=<$mt:var name="language_encoding"$>" style="height: <$mt:var name="editor_content_height"$>px"></iframe>
+        <input type="hidden" id="editor-input-content-field-<mt:var name="content_field_id">-content" name="editor-input-content-field-<mt:var name="content_field_id">" value="<mt:var name="value" escape="html">" />
+      </div>
+    </div>
+  </div>
+</div>
+</mt:setvartemplate>

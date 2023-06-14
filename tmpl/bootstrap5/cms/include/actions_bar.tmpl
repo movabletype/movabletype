@@ -1,0 +1,21 @@
+<mt:unless name="screen_class" eq="search-replace">
+
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.align-right {
+  text-align: right !important;
+}
+</style>
+</mt:setvarblock>
+
+<div class="actions-bar actions-bar-<$mt:var name="bar_position" default="top"$> line<mt:if name="align_right"> align-right</mt:if>">
+<mt:unless name="hide_pager">
+  <mt:include name="include/pagination.tmpl">
+</mt:unless>
+  <mt:var name="action_buttons">
+<mt:if name="has_list_actions">
+  <mt:include name="include/itemset_action_widget.tmpl">
+</mt:if>
+</div>
+
+</mt:unless>

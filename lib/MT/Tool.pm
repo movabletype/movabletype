@@ -10,7 +10,6 @@ use strict;
 use warnings;
 use charnames qw( :full );
 
-use Carp qw( croak );
 use English qw( -no_match_vars );
 use Getopt::Long;
 

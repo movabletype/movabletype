@@ -1,0 +1,30 @@
+        <div id="bootstrapper" class="hidden"></div>
+      <!-- /Content Body --></div>
+    <!-- /Content --></div>
+  <!-- /Container --></div>
+<script type="text/javascript">
+/* <![CDATA[ */
+App.bootstrapInline( false );
+jQuery(function() {
+<mt:var name="jq_js_include">
+    jQuery.mtAddEdgeClass();
+    jQuery('button.mt-close-dialog').on('click', function() {
+        parent.jQuery.fn.mtDialog.close();
+        return false;
+    });
+    jQuery('input').each(function() {
+        jQuery(this).addClass(jQuery(this).attr('type'));
+    });
+    <mt:if name="mt_debug">
+    if(jQuery('.debug-panel').length && jQuery('.dialog .actions-bar').length){
+      jQuery('.debug-panel').addClass('dialog-with-actions-bar');
+    }
+    </mt:if>
+<mt:if name="insert_script">
+    parent.jQuery.fn.mtDialog.close();
+</mt:if>
+});
+/* ]]> */
+</script>
+</body>
+</html>

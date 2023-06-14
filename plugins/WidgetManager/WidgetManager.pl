@@ -13,9 +13,8 @@ package MT::Plugin::WidgetManager;
 use strict;
 
 use base qw( MT::Plugin );
-use constant DEBUG => 0;
 use MT::Template;
-use MT::Util qw( escape_unicode );
+use MT::Util;
 
 our $VERSION = '1.1';
 
