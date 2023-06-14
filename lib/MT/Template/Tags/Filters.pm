@@ -28,6 +28,7 @@ The argument for the numify attribute is the separator character to use
 
 sub _fltr_numify {
     my ( $str, $arg, $ctx ) = @_;
+    return '' unless defined $str;
     $arg = ',' if ( !defined $arg ) || ( $arg eq '1' );
     $str =~ s/(^[-+]?\d+?(?=(?>(?:\d{3})+)(?!\d))|\G\d{3}(?=\d))/$1$arg/g;
     return $str;
@@ -269,6 +270,7 @@ B<Example:>
 
 sub _fltr_trim {
     my ( $str, $val, $ctx ) = @_;
+    return '' unless defined $str;
     $str =~ s/^\s+|\s+$//gs;
     $str;
 }
@@ -287,6 +289,7 @@ B<Example:>
 
 sub _fltr_ltrim {
     my ( $str, $val, $ctx ) = @_;
+    return '' unless defined $str;
     $str =~ s/^\s+//s;
     $str;
 }
@@ -305,6 +308,7 @@ B<Example:>
 
 sub _fltr_rtrim {
     my ( $str, $val, $ctx ) = @_;
+    return '' unless defined $str;
     $str =~ s/\s+$//s;
     $str;
 }
@@ -632,6 +636,8 @@ title field.
 sub _fltr_regex_replace {
     my ( $str, $val, $ctx ) = @_;
 
+    return '' unless defined $str;
+
     # This one requires an array
     return $str unless ref($val) eq 'ARRAY';
     my $patt    = $val->[0];
@@ -670,6 +676,7 @@ Uppercases the first letter of each word in the input.
 
 sub _fltr_capitalize {
     my ( $str, $val, $ctx ) = @_;
+    return '' unless defined $str;
     $str =~ s/\b(\w+)\b/\u\L$1/g;
     return $str;
 }
@@ -774,6 +781,7 @@ A very simple email obfuscation technique.
 
 sub _fltr_escape {
     my ( $str, $val, $ctx ) = @_;
+    return '' unless defined $str;
 
     # val can be one of: html, htmlall, url, urlpathinfo, quotes,
     # hex, hexentity, decentity, javascript, mail, nonstd
@@ -840,6 +848,7 @@ value.
 
 sub _fltr_indent {
     my ( $str, $val, $ctx ) = @_;
+    return '' unless defined $str;
     if ( ( my $len = int($val) ) > 0 ) {
         my $space = ' ' x $len;
         $str =~ s/^/$space/mg;
@@ -859,6 +868,7 @@ of the C<br> tag.
 
 sub _fltr_nl2br {
     my ( $str, $val, $ctx ) = @_;
+    return '' unless defined $str;
     if ( $val eq 'xhtml' ) {
         $str =~ s/\r?\n/<br \/>/g;
     }
@@ -928,6 +938,7 @@ B<Example:>
 
 sub _fltr_strip {
     my ( $str, $val, $ctx ) = @_;
+    return '' unless defined $str;
     $val = ' ' unless defined $val;
     $str =~ s/\s+/$val/g;
     return $str;
