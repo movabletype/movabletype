@@ -877,6 +877,7 @@ B<Example:>
 sub _fltr_replace {
     my ( $str, $val, $ctx ) = @_;
 
+    return '' unless defined $str;
     # This one requires an array
     return $str unless ref($val) eq 'ARRAY';
     my $search  = $val->[0];
