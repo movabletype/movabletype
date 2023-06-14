@@ -13,8 +13,45 @@ require_once("class.baseobject.php");
 class Entry extends BaseObject
 {
     public $_table = 'mt_entry';
-    protected $_prefix = "entry_";
+    public $_prefix = "entry_";
     protected $_has_meta = true;
+
+    # entry fields generated from perl implementation.
+    public $entry_id;
+    public $entry_allow_comments;
+    public $entry_allow_pings;
+    public $entry_atom_id;
+    public $entry_author_id;
+    public $entry_authored_on;
+    public $entry_basename;
+    public $entry_blog_id;
+    public $entry_category_id;
+    public $entry_class;
+    public $entry_comment_count;
+    public $entry_convert_breaks;
+    public $entry_created_by;
+    public $entry_created_on;
+    public $entry_excerpt;
+    public $entry_keywords;
+    public $entry_modified_by;
+    public $entry_modified_on;
+    public $entry_ping_count;
+    public $entry_pinged_urls;
+    public $entry_status;
+    public $entry_tangent_cache;
+    public $entry_template_id;
+    public $entry_text;
+    public $entry_text_more;
+    public $entry_title;
+    public $entry_to_ping_urls;
+    public $entry_unpublished_on;
+    public $entry_week_number;
+    public $entry_current_revision;
+
+    # entry meta fields generated from perl implementation.
+    public $entry_mt_entry_meta;
+    public $entry_junk_log;
+    public $entry_revision;
 
     public function category () {
         $places = $this->placement(true);
@@ -107,5 +144,6 @@ class Entry extends BaseObject
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Entry', 'mt_entry_meta','entry_meta_entry_id');
+require_once("class.mt_entry_meta.php");
+ADODB_Active_Record::ClassHasMany('Entry', 'mt_entry_meta','entry_meta_entry_id', 'EntryMeta');
 ?>
