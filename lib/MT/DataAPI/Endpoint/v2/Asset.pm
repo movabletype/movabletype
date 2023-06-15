@@ -597,39 +597,6 @@ sub _list_for_entry {
     };
 }
 
-sub list_for_tag {
-    my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
-    my $tag = MT::DataAPI::Endpoint::v2::Tag::_retrieve_tag($app) or return;
-
-    run_permission_filter( $app, 'data_api_view_permission_filter',
-        'tag', $tag->id, obj_promise($tag) )
-        or return;
-
-    my %terms = ( class => '*' );
-    my %args = (
-        join => MT->model('objecttag')->join_on(
-            undef,
-            {   object_id         => \'= asset_id',
-                object_datasource => 'asset',
-                blog_id           => \'= asset_blog_id',
-                tag_id            => $tag->id,
-            },
-        ),
-    );
-    my $res = filtered_list( $app, $endpoint, 'asset', \%terms, \%args )
-        or return;
-
-    return +{
-        totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
-    };
-}
-
 sub list_for_site_and_tag_openapi_spec {
     +{
         tags       => ['Assets', 'Tags'],
