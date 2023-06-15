@@ -74,7 +74,7 @@
     "svg4everybody": "^2.1.9",
     "tinymce": "5.10.7",
     "tinymce-i18n": "20.12.25",
-    "tinymce6": "npm:tinymce@^6.3.1",
+    "tinymce6": "npm:tinymce@^6.5.0",
     "tinymce6-i18n": "npm:tinymce-i18n@^22.5.2",
     "xpath": "0.0.32"
   }
