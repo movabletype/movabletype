@@ -3232,6 +3232,7 @@ sub build_menus {
         $menu->{allowed} = 1;
         $menu->{current} = 0;
         $menu->{'id'}    = $id;
+        $menu->{order}   ||= 0;
 
         my @sub_ids = grep {m/^$id:/} keys %$menus;
         my @sub;
