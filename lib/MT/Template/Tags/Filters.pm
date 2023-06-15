@@ -81,15 +81,9 @@ sub _fltr_mteval {
 
     my $builder = $ctx->stash('builder');
     my $tokens = $builder->compile( $ctx, $str );
-    if (!defined $tokens) {
-        $ctx->error( $builder->errstr );
-        return '';
-    }
+    return $ctx->error( $builder->errstr ) unless defined $tokens;
     my $out = $builder->build( $ctx, $tokens );
-    if (!defined $out) {
-        $ctx->error( $builder->errstr );
-        return '';
-    }
+    return $ctx->error( $builder->errstr ) unless defined $out;
     return $out;
 }
 
@@ -658,8 +652,7 @@ sub _fltr_regex_replace {
             $replace =~ s/(@|\$(?![\d\&]))/\\$1/g;
             eval '$str =~ s/$re/' . $replace . '/' . ( $global ? 'g' : '' );
             if ($@) {
-                $ctx->error("Invalid regular expression: $@");
-                return $str;
+                return $ctx->error("Invalid regular expression: $@");
             }
         }
     }
