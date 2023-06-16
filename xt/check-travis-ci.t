@@ -19,6 +19,7 @@ use File::Spec;
 
 my $search_dir = 't';
 my @allowed_sub_dirs = qw(
+    admin_theme_id
     app
     class
     cms
