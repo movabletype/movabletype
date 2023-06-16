@@ -4182,7 +4182,10 @@ sub autosave_session_obj {
         $ident .= ':blog_id=' . $blog->id;
     }
     if ( $type eq 'content_data' ) {
-        my $content_type_id = $app->param('content_type_id') or return;
+        my $content_type_id = $app->param('content_type_id');
+        if (!$content_type_id && ($app->param('type') || '') =~ /^content_data_(\d+)$/) {
+            $content_type_id = $1;
+        }
         $ident .= ':content_type_id=' . $content_type_id;
     }
     require MT::Session;
