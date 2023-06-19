@@ -13,7 +13,16 @@ require_once("class.baseobject.php");
 class Session extends BaseObject
 {
     public $_table = 'mt_session';
-    protected $_prefix = "session_";
+    public $_prefix = "session_";
+
+    # session fields generated from perl implementation.
+    public $session_id;
+    public $session_data;
+    public $session_duration;
+    public $session_email;
+    public $session_kind;
+    public $session_name;
+    public $session_start;
 
     public function data( $val = null ) {
         $mt = MT::get_instance();
@@ -30,6 +39,11 @@ class Session extends BaseObject
     public function Save() {
         $val = $this->data;
         $this->data = null;
+
+        // avoid strcmp warnings
+        // See https://github.com/ADOdb/ADOdb/blob/bacd08a8232b6d941b9902f02d323f53de81fafe/adodb-active-record.inc.php#L1081
+        $this->session_data = $this->session_data ?? '';
+
         $ret = parent::Save();
         if ( $ret ) {
             $mt = MT::get_instance();

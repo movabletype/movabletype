@@ -3530,8 +3530,7 @@ sub takedown {
         for qw( cookies perms session trace response_content _blog
         WeblogPublisher init_request );
 
-    my $driver = $MT::Object::DRIVER;
-    $driver->clear_cache if $driver && $driver->can('clear_cache');
+    MT->clear_cache_of_loaded_models;
 
     require MT::Auth;
     MT::Auth->release;
@@ -3576,6 +3575,7 @@ sub load_widgets {
         || $scope_type eq 'website' ? 'blog:' . $blog_id
         : $scope_type eq 'user'     ? 'user:' . $user->id
         :                             'system';
+    my $resave_widgets = 0;
     my $widget_set     = $page . ':' . $scope;
 
     my $widget_store = $user->widgets;
@@ -3583,7 +3583,8 @@ sub load_widgets {
     $widgets = $widget_store->{$widget_set} if $widget_store;
 
     unless ($widgets) {
-        $widgets = $app->default_widgets_for_dashboard($scope_type);
+        $resave_widgets = 1;
+        $widgets        = $app->default_widgets_for_dashboard($scope_type);
     }
 
     my $reg_widgets = $app->registry("widgets");
@@ -3607,25 +3608,34 @@ sub load_widgets {
         }
     }
 
-    my $max = 0;
-    my @ordered_list =
-        map  { $_->[0] }
-        sort { ($a->[1] || $max + 1 <=> $b->[1] || $max + 1) or $a->[0] cmp $b->[0] }
-        map {
-        my $param = $all_widgets->{$_};
-        my $order;
-        if (ref $param eq 'HASH' && $param->{order}) {
-            if (ref $param->{order} eq 'HASH') {
-                $order = $param->{order}{$scope_type};
-            } else {
-                $order = $param->{order};
-            }
-        } else {
-            $order = 0;
+    my @ordered_list;
+    my %orders;
+    my $order_num = 0;
+    foreach my $widget_id ( keys %$widgets ) {
+        next unless defined $all_widgets->{$widget_id};
+        my $widget_param = $widgets->{$widget_id} ||= {};
+        if ( my $order = $widget_param->{order} ) {
+            $order_num = $order_num < $order ? $order : $order_num;
         }
-        $max = $order if $order > $max;
-        [$_, $order]
-        } keys %$all_widgets;
+    }
+    foreach my $widget_id ( keys %$widgets ) {
+        next unless defined $all_widgets->{$widget_id};
+        my $widget_param = $widgets->{$widget_id} ||= {};
+        my $order;
+        if ( !( $order = $widget_param->{order} ) ) {
+            $order = $all_widgets->{$widget_id}{order};
+            $order
+                = $order && ref $order eq 'HASH'
+                ? $all_widgets->{$widget_id}{order}{$scope_type}
+                : $order * 100;
+            $order = $order_num = $order_num + 100 unless defined $order;
+            $widget_param->{order} = $order;
+            $resave_widgets = 1;
+        }
+        push @ordered_list, $widget_id;
+        $orders{$widget_id} = $order;
+    }
+    @ordered_list = sort { $orders{$a} <=> $orders{$b} } @ordered_list;
 
     $app->build_widgets(
         set         => $widget_set,
@@ -3635,6 +3645,12 @@ sub load_widgets {
         order       => \@ordered_list,
     ) or return;
 
+    if ($resave_widgets) {
+        my $widget_store = $user->widgets();
+        $widget_store->{$widget_set} = $widgets;
+        $user->widgets($widget_store);
+        $user->save;
+    }
     return $param;
 }
 
@@ -4576,8 +4592,6 @@ sub DESTROY {
     ## a persistent environment, the object will not go out of scope.
     ## Same with the ConfigMgr object and ObjectDriver.
     MT::Request->finish();
-    undef $MT::Object::DRIVER;
-    undef $MT::Object::DBI_DRIVER;
     undef $MT::ConfigMgr::cfg;
 }
 

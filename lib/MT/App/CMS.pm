@@ -291,16 +291,17 @@ sub core_methods {
             "${pkg}Template::publish_templates_from_search",
 
         ## Dialogs
-        'dialog_restore_upload'    => "${pkg}Tools::dialog_restore_upload",
-        'dialog_adjust_sitepath'   => "${pkg}Tools::dialog_adjust_sitepath",
-        'dialog_select_weblog'     => "${pkg}Blog::dialog_select_weblog",
-        'dialog_select_website'    => "${pkg}Website::dialog_select_website",
-        'dialog_select_sysadmin'   => "${pkg}User::dialog_select_sysadmin",
-        'dialog_grant_role'        => "${pkg}User::dialog_grant_role",
-        'dialog_select_assoc_type' => "${pkg}User::dialog_select_assoc_type",
-        'dialog_select_author'     => "${pkg}User::dialog_select_author",
-        'dialog_list_asset'        => "${pkg}Asset::dialog_list_asset",
-        'dialog_edit_image'        => "${pkg}Asset::dialog_edit_image",
+        'dialog_restore_upload'      => "${pkg}Tools::dialog_restore_upload",
+        'dialog_adjust_sitepath'     => "${pkg}Tools::dialog_adjust_sitepath",
+        'dialog_select_weblog'       => "${pkg}Blog::dialog_select_weblog",
+        'dialog_select_website'      => "${pkg}Website::dialog_select_website",
+        'dialog_select_sysadmin'     => "${pkg}User::dialog_select_sysadmin",
+        'dialog_grant_role'          => "${pkg}User::dialog_grant_role",
+        'dialog_select_assoc_type'   => "${pkg}User::dialog_select_assoc_type",
+        'dialog_select_author'       => "${pkg}User::dialog_select_author",
+        'dialog_list_asset'          => "${pkg}Asset::dialog_list_asset",
+        'dialog_edit_image'          => "${pkg}Asset::dialog_edit_image",
+        'dialog_list_deprecated_log' => "${pkg}Log::dialog_list_deprecated_log",
 
         'thumbnail_image' =>
             "${pkg}Asset::thumbnail_image",    # Used in Edit Image dialog.
@@ -681,6 +682,7 @@ sub init_request {
         if (   ( $mode ne 'logout' )
             && ( $mode ne 'start_recover' )
             && ( $mode ne 'recover' )
+            && ( $mode ne 'new_pw' )
             && ( $mode ne 'upgrade' ) )
         {
             my $schema  = $app->config('SchemaVersion');
@@ -1558,7 +1560,17 @@ sub core_list_actions {
                 },
             },
         },
-
+        'ts_job' => {
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+                mobile     => 1,
+            },
+        }
     };
 }
 
@@ -2320,6 +2332,18 @@ sub core_menus {
             },
             view => [qw( system website blog )],
         },
+        'tools:ts_job' => {
+            label     => "Background Job",
+            order     => 700,
+            mode      => 'list',
+            args      => { _type => 'ts_job' },
+            condition => sub {
+                return 0 unless $app->config->ShowTsJob;
+                return 1 if $app->user->is_superuser;
+                return 0;
+            },
+            view => ['system'],
+        },
 
         'category_set:manage' => {
             label      => 'Manage',
@@ -2563,7 +2587,8 @@ sub core_enable_object_methods {
         group => {
             delete => 1,
             save   => 1,
-        }
+        },
+        ts_job => { delete => 1 },
     };
 }
 
@@ -3220,7 +3245,7 @@ sub build_menus {
             $sub->{current} = 0;
 
             ## Keep a compatibility
-            $sub->{view} = [ 'blog', 'system' ]
+            $sub->{view} = [ 'website', 'blog', 'system' ]
                 unless $sub->{view};
 
             if ( $sub->{view} ) {

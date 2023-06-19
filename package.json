@@ -54,7 +54,7 @@
   "devDependencies": {
     "autoprefixer": "^9.8.8",
     "clean-css-cli": "^5.6.2",
-    "node-sass": "^8.0.0",
+    "node-sass": "^9.0.0",
     "postcss-cli": "^7.1.2",
     "postcss-flexbugs-fixes": "^5.0.1"
   },
@@ -70,7 +70,7 @@
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
     "popper.js": "^1.16.1",
     "riot": "3.7.4",
-    "sass-loader": "^13.2.0",
+    "sass-loader": "^13.3.0",
     "svg4everybody": "^2.1.9",
     "tinymce": "5.10.7",
     "tinymce-i18n": "20.12.25",

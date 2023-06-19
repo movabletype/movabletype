@@ -26,7 +26,7 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
             $blog = $ctx->stash('blog');
             $is_include = isset( $blog->default_mt_sites_action )
                 ? $blog->default_mt_sites_actio : 1;
-            $blogs = $blog->default_mtsites_blogs || '';
+            $blogs = $blog->default_mt_sites_sites || '';
 
             if ($blogs && isset($is_include)) {
                 $args[$is_include ? 'include_blogs' : 'exclude_blogs'] = $blogs;
