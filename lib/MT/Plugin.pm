@@ -241,6 +241,11 @@ sub get_config_value {
     return exists $config->{ $_[0] } ? $config->{ $_[0] } : undef;
 }
 
+sub log_category_for_deprecated_fn {
+    my $plugin = shift;
+    return $plugin->{plugin_sig} . '_' . $plugin->version;
+}
+
 package MT::PluginSettings;
 
 sub new {

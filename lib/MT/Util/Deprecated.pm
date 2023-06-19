@@ -17,8 +17,9 @@ our @EXPORT_OK = qw(
 
 sub warning {
     my (%args) = @_;
+    my ($filename, $subroutine) = (caller 1)[1, 3];
 
-    $args{name} ||= (caller 1)[3];
+    $args{name} ||= $subroutine;
 
     my $msg;
     local $Carp::CarpLevel = 1;
@@ -26,6 +27,22 @@ sub warning {
         $msg = Carp::shortmess sprintf("%s is deprecated and will be removed in the future. Use %s instead.", $args{name}, $args{alterative});
     } else {
         $msg = Carp::shortmess sprintf("%s is deprecated and will be removed in the future.", $args{name});
+    }
+
+    for my $sig (keys %MT::Plugins) {
+        my $plugin = $MT::Plugins{$sig}{object};
+        if ( $plugin && $plugin->path ) {
+            my $plugin_path = $plugin->path;
+            if ( $filename =~ m/^$plugin_path/ ) {
+                MT->log(
+                    {   class    => 'plugin',
+                        category => $plugin->log_category_for_deprecated_fn,
+                        message  => MT->translate( "[_1] plugin is using deprecated call.", $sig ),
+                        metadata => $msg,
+                    }
+                );
+            }
+        }
     }
     require MT::Util::Log;
     MT::Util::Log::init();

@@ -333,27 +333,34 @@ sub build_plugin_table {
                 $next_is_first = 1;
             }
 
+            my $deprecated_log_count = MT::Log->count(
+                {   class    => 'plugin',
+                    category => $plugin->log_category_for_deprecated_fn,
+                }
+            );
+
             my $registry = $plugin->registry;
             my $row      = {
-                first                => $next_is_first,
-                plugin_name          => $plugin_name,
-                plugin_page          => $plugin_page,
-                plugin_major         => 1,
-                plugin_icon          => $plugin_icon,
-                plugin_desc          => $plugin->description(),
-                plugin_version       => $plugin->version(),
-                plugin_author_name   => $plugin->author_name(),
-                plugin_author_link   => $plugin->author_link(),
-                plugin_plugin_link   => $plugin->plugin_link(),
-                plugin_full_path     => $plugin->{full_path},
-                plugin_doc_link      => $doc_link,
-                plugin_sig           => $plugin_sig,
-                plugin_key           => $plugin->key(),
-                plugin_config_link   => $plugin->config_link(),
-                plugin_config_html   => $config_html,
-                plugin_settings_id   => $settings->id,
-                plugin_id            => $id,
-                plugin_compat_errors => $registry->{compat_errors},
+                first                        => $next_is_first,
+                plugin_name                  => $plugin_name,
+                plugin_page                  => $plugin_page,
+                plugin_major                 => 1,
+                plugin_icon                  => $plugin_icon,
+                plugin_desc                  => $plugin->description(),
+                plugin_version               => $plugin->version(),
+                plugin_author_name           => $plugin->author_name(),
+                plugin_author_link           => $plugin->author_link(),
+                plugin_plugin_link           => $plugin->plugin_link(),
+                plugin_full_path             => $plugin->{full_path},
+                plugin_doc_link              => $doc_link,
+                plugin_sig                   => $plugin_sig,
+                plugin_key                   => $plugin->key(),
+                plugin_config_link           => $plugin->config_link(),
+                plugin_config_html           => $config_html,
+                plugin_settings_id           => $settings->id,
+                plugin_id                    => $id,
+                plugin_compat_errors         => $registry->{compat_errors},
+                plugin_deprecated_log_exists => $deprecated_log_count > 0 ? 1 : 0,
             };
             my $block_tags    = $plugin->registry( 'tags', 'block' );
             my $function_tags = $plugin->registry( 'tags', 'function' );
