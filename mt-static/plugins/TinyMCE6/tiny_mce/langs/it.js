@@ -1,9 +1,3 @@
-/*!
- * TinyMCE Language Pack
- *
- * Copyright (c) 2022 Ephox Corporation DBA Tiny Technologies, Inc.
- * Licensed under the Tiny commercial license. See https://www.tiny.cloud/legal/
- */
 tinymce.addI18n("it", {
     "Redo": "Ripristina",
     "Undo": "Annulla",
@@ -198,8 +192,8 @@ tinymce.addI18n("it", {
     "Height": "Altezza",
     "Cell spacing": "Spaziatura tra celle",
     "Cell padding": "Spaziatura interna celle",
-    "Row clipboard actions": "",
-    "Column clipboard actions": "",
+    "Row clipboard actions": "Azioni appunti riga",
+    "Column clipboard actions": "Azioni appunti colonna",
     "Table styles": "Stili tabella",
     "Cell styles": "Stili cella",
     "Column header": "Intestazione colonna",
