@@ -10,7 +10,7 @@ our $test_env;
 my $admin_theme_id;
 
 BEGIN {
-    $admin_theme_id = 'bootstrap5';
+    $admin_theme_id = 'admin2023';
     $test_env       = MT::Test::Env->new(
         DefaultLanguage => 'en_US',           ## for now
         AdminThemeId    => $admin_theme_id,
