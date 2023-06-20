@@ -46,7 +46,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.9.8',              '__PRODUCT_VERSION_ID__',
+        '7.9.9',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -64,11 +64,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 8;
+        $RELEASE_NUMBER = 9;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5403';
+        $RELEASE_VERSION_ID = 'r.5404';
     }
 
     $DebugMode = 0;
@@ -1419,23 +1419,6 @@ sub init_plugins {
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if ($@) {
             $Plugins{$plugin_sig}{error} = $@;
-
-            # Issue MT log within another eval block in the
-            # event that the plugin error is happening before
-            # the database has been initialized...
-            eval {
-                require MT::Log;
-                $mt->log(
-                    {   message => $mt->translate(
-                            "Plugin error: [_1] [_2]", $plugin,
-                            $Plugins{$plugin_sig}{error}
-                        ),
-                        class    => 'system',
-                        category => 'plugin',
-                        level    => MT::Log::ERROR()
-                    }
-                );
-            };
             return;
         }
         else {
@@ -1498,6 +1481,7 @@ sub init_plugins {
         }
 
         my @loaded_plugins;
+        my @errors;
         foreach my $PluginPath (@$PluginPaths) {
             my $plugin_lastdir = $PluginPath;
             $plugin_lastdir =~ s![\\/]$!!;
@@ -1516,6 +1500,7 @@ sub init_plugins {
                         if ($plugin_full_path =~ /\.pl$/) {
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
                             push @loaded_plugins, $obj if $obj;
+                            push @errors, [$plugin_full_path, $Plugins{$plugin}{error}] if $Plugins{$plugin}{error};
                         }
                         next;
                     }
@@ -1553,8 +1538,10 @@ sub init_plugins {
                             = File::Spec->catfile( $plugin_full_path,
                             $plugin );
                         if ( -f $plugin_file ) {
-                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $plugin_dir . '/' . $plugin );
+                            my $sig = $plugin_dir . '/' . $plugin;
+                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @loaded_plugins, $obj if $obj;
+                            push @errors, [$plugin_full_path, $Plugins{$sig}{error}] if $Plugins{$sig}{error};
                         }
                     }
                 }
@@ -1605,6 +1592,25 @@ sub init_plugins {
                 }
             }
             $plugin->init_callbacks;
+        }
+
+        # $mt->log calls init_schema internally, so $mt->log it must be called after $plugin->init_callbacks all plugins that do not cause errors
+        for my $error (@errors) {
+            # Issue MT log within another eval block in the
+            # event that the plugin error is happening before
+            # the database has been initialized...
+            eval {
+                require MT::Log;
+                $mt->log(
+                    {   message => $mt->translate(
+                            "Plugin error: [_1] [_2]", @$error,
+                        ),
+                        class    => 'system',
+                        category => 'plugin',
+                        level    => MT::Log::ERROR()
+                    }
+                );
+            } or last;
         }
 
         # Reset the Text_filters hash in case it was preloaded by plugins by
@@ -2024,47 +2030,51 @@ sub support_directory_path {
 sub template_paths {
     my $mt = shift;
     my @paths;
+
+    my $admin_theme_id = $mt->config('AdminThemeId');
+
     if ( $mt->{plugin_template_path} ) {
-        if (File::Spec->file_name_is_absolute( $mt->{plugin_template_path} ) )
-        {
-            push @paths, $mt->{plugin_template_path}
-                if -d $mt->{plugin_template_path};
+        if (File::Spec->file_name_is_absolute( $mt->{plugin_template_path} ) ) {
+            push @paths, File::Spec->catdir($mt->{plugin_template_path}, $admin_theme_id) if $admin_theme_id;
+            push @paths, $mt->{plugin_template_path};
         }
         else {
-            my $dir = File::Spec->catdir( $mt->app_dir,
-                $mt->{plugin_template_path} );
-            if ( -d $dir ) {
-                push @paths, $dir;
-            }
-            else {
-                $dir = File::Spec->catdir( $mt->mt_dir,
-                    $mt->{plugin_template_path} );
-                push @paths, $dir if -d $dir;
-            }
+            push @paths, File::Spec->catdir( $mt->app_dir, $mt->{plugin_template_path}, $admin_theme_id ) if $admin_theme_id;
+            push @paths, File::Spec->catdir( $mt->app_dir, $mt->{plugin_template_path} );
+            push @paths, File::Spec->catdir( $mt->mt_dir, $mt->{plugin_template_path}, $admin_theme_id ) if $admin_theme_id;
+            push @paths, File::Spec->catdir( $mt->mt_dir, $mt->{plugin_template_path} );
         }
     }
     my @alt_paths = $mt->config('AltTemplatePath');
     foreach my $alt_path (@alt_paths) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
-            push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
-                if $mt->{template_dir};
+            if ($mt->{template_dir}) {
+                push @paths, File::Spec->catdir( $alt_path, $admin_theme_id, $mt->{template_dir} ) if $admin_theme_id;
+                push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} );
+            }
+            push @paths, File::Spec->catdir($alt_path, $admin_theme_id) if $admin_theme_id;
             push @paths, $alt_path;
         }
     }
 
     for my $addon ( @{ $mt->find_addons('pack') } ) {
-        push @paths,
-            File::Spec->catdir( $addon->{path}, 'tmpl', $mt->{template_dir} )
-            if $mt->{template_dir};
+        if ($mt->{template_dir}) {
+            push @paths, File::Spec->catdir( $addon->{path}, 'tmpl', $admin_theme_id, $mt->{template_dir} ) if $admin_theme_id;
+            push @paths, File::Spec->catdir( $addon->{path}, 'tmpl', $mt->{template_dir} );
+        }
+        push @paths, File::Spec->catdir( $addon->{path}, 'tmpl', $admin_theme_id ) if $admin_theme_id;
         push @paths, File::Spec->catdir( $addon->{path}, 'tmpl' );
     }
 
     my $path = $mt->config->TemplatePath;
-    push @paths, File::Spec->catdir( $path, $mt->{template_dir} )
-        if $mt->{template_dir};
+    if ($mt->{template_dir}) {
+        push @paths, File::Spec->catdir( $path, $admin_theme_id, $mt->{template_dir} ) if $admin_theme_id;
+        push @paths, File::Spec->catdir( $path, $mt->{template_dir} );
+    }
+    push @paths, File::Spec->catdir($path, $admin_theme_id) if $admin_theme_id;
     push @paths, $path;
 
-    return @paths;
+    return grep {-d $_} @paths;
 }
 
 sub find_file {

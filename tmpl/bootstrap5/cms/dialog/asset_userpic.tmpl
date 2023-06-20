@@ -1,0 +1,19 @@
+<mt:setvarblock name="page_content">
+<script type="text/javascript">
+/* <![CDATA[ */
+var field = window.parent.getByID( '<mt:var name="edit_field" escape="js">' );
+if (field) field.value = '<mt:var name="asset_id" escape="JS">';
+var author_userpic = '<mt:var name="author_userpic" escape="JS">';
+if (author_userpic != '') {
+    var preview = window.parent.getByID( 'userpic-preview-userpic' );
+    preview.innerHTML = author_userpic;
+    window.parent.jQuery('#remove-userpic').show();
+    window.parent.jQuery('#userpic-preview').show();
+}
+jQuery.fn.mtModal.close();
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

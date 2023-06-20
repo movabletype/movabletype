@@ -25,9 +25,7 @@
     <input type="hidden" id="blog_id" name="blog_id" value="0" />
     <mtapp:setting
        id="backup_what"
-       label="<__trans phrase="What to Export">"
-       help_page="backup_restore"
-       help_section="backup_what">
+       label="<__trans phrase="What to Export">">
       <div>
         <input type="hidden" id="selected_blog_ids" name="backup_what" value="" />
         <span id="selected_blogs"><__trans phrase="Everything"></span>
@@ -41,9 +39,7 @@
 
     <mtapp:setting
        id="backup_archive_format"
-       label="<__trans phrase="Archive Format">"
-       help_page="backup_restore"
-       help_section="backup_format">
+       label="<__trans phrase="Archive Format">">
       <div class="form-group">
       <mt:loop name="archive_formats">
         <div class="custom-control custom-radio">
@@ -65,9 +61,7 @@
     <mtapp:setting
        id="size_limit"
        label="<__trans phrase="Target File Size">"
-       label_for="size_limit"
-       help_page="backup_restore"
-       help_section="backup_num_size">
+       label_for="size_limit">
       <select name="size_limit" id="size_limit" class="custom-select form-control">
         <option value="0" selected="selected"><__trans phrase="No size limit"></option>
       <mt:if name="OVER_300">

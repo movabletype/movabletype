@@ -1,0 +1,20 @@
+<mt:app:ContentFieldOptionGroup type="text_label">
+
+  <mtapp:ContentFieldOption
+     id="text_label-text"
+     label="<__trans phrase="__TEXT_LABEL_TEXT">"
+     hint="※<__trans phrase="This block is only visible in the administration screen for comments.">"
+     show_hint="1">
+    <textarea ref="text" name="text" id="text_label-text" class="form-control" >{ options.text }</textarea>
+  </mtapp:ContentFieldOption>
+  
+
+  <mt:app:ContentFieldOptionScript>
+  this.on('mount', function() {
+    // description, required, display field is hidden.
+    document.getElementById('text-label-description-field-' + this.id).style.display ="none";
+    document.getElementById('text-label-required-field-' + this.id).style.display ="none";
+    document.getElementById('text-label-display-field-' + this.id).style.display ="none";
+  });
+  </mt:app:ContentFieldOptionScript>
+</mt:app:ContentFieldOptionGroup>

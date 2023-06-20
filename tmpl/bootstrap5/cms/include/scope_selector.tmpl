@@ -1,0 +1,154 @@
+<div id="selector-nav" class="unit size2of3">
+
+  <div id="current-scope">
+    <ol id="selector-nav-list" class="line">
+    <mt:if name="scope_type" eq="user">
+      <li id="user-dashboard" class="current scope user">
+        <em class="scope-label"><__trans phrase="User Dashboard"></em>
+      </li>
+    <mt:elseif name="scope_type" eq="system">
+      <li id="system-overview" class="current scope system">
+      <mt:if name="can_access_overview">
+        <em class="scope-label"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=0"><__trans phrase="System Overview"></a></em>
+      <mt:else>
+        <em class="scope-label"><__trans phrase="System Overview"></em>
+      </mt:if>
+      </li>
+    <mt:elseif name="scope_type" eq="website">
+      <li id="current-website" class="current scope website">
+      <mt:if name="curr_website_can_link">
+        <em class="scope-label"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id"$>"><mt:var name="curr_website_name" escape="html"></a></em>
+      <mt:else>
+        <em class="scope-label"><mt:var name="curr_website_name" escape="html"></em>
+      </mt:if>
+      </li>
+    <mt:elseif name="scope_type" eq="blog">
+      <li id="current-website" class="current scope website">
+      <mt:if name="curr_website_can_link">
+        <em class="scope-label"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id"$>"><mt:var name="curr_website_name" escape="html"></a></em>
+      <mt:else>
+        <em class="scope-label"><mt:var name="curr_website_name" escape="html"></em>
+      </mt:if>
+      </li>
+      <li id="current-blog" class="current scope blog">
+        <em class="scope-label"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_blog_id"$>"><mt:var name="curr_blog_name" escape="html"></a></em>
+      </li>
+    </mt:if>
+    </ol>
+  </div>
+
+  <div id="scope-selector" class="scope-selector">
+    <div id="system-scope-list" class="scope-list system">
+      <ul>
+  <mt:unless name="scope_type" eq="user">
+        <li class="user-dashboard">
+          <a href="<$mt:var name="mt_url"$>?__mode=dashboard" class="scope-link"><__trans phrase="User Dashboard"></a>
+        </li>
+  </mt:unless>
+  <mt:unless name="scope_type" eq="system">
+    <mt:if name="can_access_overview">
+        <li class="system-overview">
+          <a href="<$mt:var name="mt_url">?blog_id=0&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link"><__trans phrase="System Overview"></a>
+        </li>
+    </mt:if>
+  </mt:unless>
+      </ul>
+    </div>
+  <mt:if name="fav_website_loop">
+  <mt:loop name="fav_website_loop">
+    <mt:if name="__first__">
+    <div id="fav-website-list" class="scope-list website">
+      <span class="sticky-label scope-level website"><__trans phrase="Websites"></span>
+      <ul>
+    </mt:if>
+        <li>
+        <mt:if name="fav_website_can_link">
+          <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link"><mt:var name="fav_website_name" escape="html"></a>
+        <mt:else>
+          <mt:var name="fav_website_name" escape="html">
+        </mt:if>
+        </li>
+    <mt:if name="__last__">
+      <mt:unless name="selector_hide_website_chooser">
+        <li id="select-website" class="select-another">
+          <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link"><__trans phrase="Select another website..."></a>
+        </li>
+      </mt:unless>
+      </ul>
+    </div>
+    </mt:if>
+  </mt:loop>
+  <mt:else>
+    <mt:unless name="selector_hide_website_chooser">
+    <div id="fav-website-list" class="scope-list website">
+      <span class="sticky-label scope-level website"><__trans phrase="Websites"></span>
+      <ul>
+        <li id="select-website" class="select-website">
+          <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link"><__trans phrase="Select another website..."></a>
+        </li>
+      </ul>
+    </div>
+    </mt:unless>
+  </mt:if>
+
+  <mt:if name="fav_blog_loop">
+  <mt:loop name="fav_blog_loop">
+    <mt:if name="__first__">
+    <div id="fav-blog-list" class="scope-list blog">
+      <span class="sticky-label scope-level blog"><__trans phrase="Blogs"></span>
+      <ul>
+    </mt:if>
+        <li>
+          <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>" class="scope-link"><mt:var name="fav_blog_name" escape="html"> <span class="parent"><__trans phrase="(on [_1])" params="<mt:var name="fav_parent_name" escape="html" escape="html">"></span></a>
+        </li>
+    <mt:if name="__last__">
+      <mt:unless name="selector_hide_blog_chooser">
+        <li id="select-blog" class="select-another">
+          <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link"><__trans phrase="Select another blog..."></a>
+        </li>
+      </mt:unless>
+      </ul>
+    </div>
+    </mt:if>
+  </mt:loop>
+  <mt:else>
+    <mt:unless name="selector_hide_blog_chooser">
+    <div id="fav-blog-list" class="scope-list blog">
+      <span class="sticky-label scope-level blog"><__trans phrase="Blogs"></span>
+      <ul>
+        <li id="select-blog" class="select-another">
+          <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link"><__trans phrase="Select another blog..."></a>
+        </li>
+      </ul>
+    </div>
+    </mt:unless>
+  </mt:if>
+
+  <mt:if name="can_create_website">
+    <div id="create-website-action">
+      <ul class="create-action">
+        <li id="create-website">
+          <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0" class="create-link website"><__trans phrase="Create Website"></a>
+        </li>
+      </ul>
+    </div>
+  </mt:if>
+  <mt:if name="can_create_blog">
+    <div id="create-blog-action">
+      <ul class="create-action">
+    <mt:if name="scope_type" eq="website">
+        <li id="create-blog">
+          <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>" class="create-link website"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a>
+        </li>
+    <mt:elseif name="scope_type" eq="blog">
+        <li id="create-blog">
+          <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id"$>" class="create-link blog"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a>
+        </li>
+    </mt:if>
+      </ul>
+    </div>
+  </mt:if>
+ 
+  <!-- /Scope Selector --></div>
+
+<!-- /Selector Nav --></div>

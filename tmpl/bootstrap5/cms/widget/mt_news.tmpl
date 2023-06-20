@@ -1,0 +1,19 @@
+<mtapp:widget class="news-widget" label="<__trans phrase="News">" can_close="1">
+  <mt:if name="news_html">
+    <mt:var name="news_html">
+  <mt:elseif name="news_json">
+  <ul class="mt-widget__list">
+    <mt:Loop name="news_json_news">
+    <li>
+      <span class="mt-widget__info d-block"><mt:var name="date"></span>
+      <a href="<mt:var name="url">" title="<mt:var name="title" escape="html">" target="_blank"><mt:var name="title" escape="html"></a>
+    </li>
+    </mt:Loop>
+  </ul>
+    <mt:Loop name="news_json_links">
+    <div><a<mt:if name="style" eq="button"> class="btn btn-default d-block"</mt:if> href="<mt:var name="url">" title="<mt:var name="title" escape="html">" target="_blank"><mt:var name="title" escape="html"></a></div>
+    </mt:Loop>
+  <mt:else>
+    <p><__trans phrase="No Movable Type news available."></p>
+  </mt:if>
+</mtapp:widget>
