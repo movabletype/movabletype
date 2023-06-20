@@ -1604,7 +1604,7 @@ sub core_menu_actions {
             label => 'Search',
             href => sub {
                 my $blog_id     = $app->blog ? $app->blog->id : 0;
-                my $mode        = $app->param('__mode');
+                my $mode        = $app->param('__mode') || '';
 
                 return $app->uri(mode => 'search_replace', args => {blog_id => $blog_id}) if $mode eq 'search_replace';
 
