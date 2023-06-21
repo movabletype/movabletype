@@ -182,6 +182,7 @@ sub construct {
     sub model {
         my $pkg = shift;
         my ($k) = @_;
+        return undef unless $k;
 
         $object_types{$k} = $_[1] if scalar @_ > 1;
         return $object_types{$k} if exists $object_types{$k};
