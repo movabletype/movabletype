@@ -1,9 +1,3 @@
-/*!
- * TinyMCE Language Pack
- *
- * Copyright (c) 2022 Ephox Corporation DBA Tiny Technologies, Inc.
- * Licensed under the Tiny commercial license. See https://www.tiny.cloud/legal/
- */
 tinymce.addI18n("ru", {
     "Redo": "\u0412\u0435\u0440\u043d\u0443\u0442\u044c",
     "Undo": "\u041e\u0442\u043c\u0435\u043d\u0438\u0442\u044c",
@@ -230,10 +224,10 @@ tinymce.addI18n("ru", {
     "Dotted": "\u0422\u043e\u0447\u043a\u0430\u043c\u0438",
     "Dashed": "\u0427\u0435\u0440\u0442\u043e\u0447\u043a\u0430\u043c\u0438",
     "Double": "\u0414\u0432\u043e\u0439\u043d\u043e\u0439",
-    "Groove": "",
-    "Ridge": "",
-    "Inset": "",
-    "Outset": "",
+    "Groove": "\u041f\u0430\u0437",
+    "Ridge": "\u0428\u0438\u043f",
+    "Inset": "\u0412\u0441\u0442\u0430\u0432\u043a\u0430",
+    "Outset": "\u0412\u044b\u0440\u0435\u0437\u043a\u0430",
     "Hidden": "\u0421\u043a\u0440\u044b\u0442\u044b\u0439",
     "Insert template...": "\u0412\u0441\u0442\u0430\u0432\u0438\u0442\u044c \u0448\u0430\u0431\u043b\u043e\u043d...",
     "Templates": "\u0428\u0430\u0431\u043b\u043e\u043d\u044b",
@@ -270,7 +264,7 @@ tinymce.addI18n("ru", {
     "Warn": "\u041f\u0440\u0435\u0434\u0443\u043f\u0440\u0435\u0436\u0434\u0435\u043d\u0438\u0435",
     "Valid": "\u0414\u043e\u043f\u0443\u0441\u0442\u0438\u043c\u044b\u0439",
     "To open the popup, press Shift+Enter": "\u0427\u0442\u043e\u0431\u044b \u043e\u0442\u043a\u0440\u044b\u0442\u044c \u0432\u0441\u043f\u043b\u044b\u0432\u0430\u044e\u0449\u0435\u0435 \u043e\u043a\u043d\u043e, \u043d\u0430\u0436\u043c\u0438\u0442\u0435 Shift+Enter",
-    "Rich Text Area": "",
+    "Rich Text Area": "\u041f\u043e\u043b\u0435 \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u043e\u0433\u043e \u0442\u0435\u043a\u0441\u0442\u0430",
     "Rich Text Area. Press ALT-0 for help.": "\u041f\u043e\u043b\u0435 \u0444\u043e\u0440\u043c\u0430\u0442\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u043e\u0433\u043e \u0442\u0435\u043a\u0441\u0442\u0430. \u041d\u0430\u0436\u043c\u0438\u0442\u0435 ALT-0, \u0447\u0442\u043e\u0431\u044b \u043e\u0442\u043a\u0440\u044b\u0442\u044c \u0441\u043f\u0440\u0430\u0432\u043a\u0443.",
     "System Font": "\u0421\u0438\u0441\u0442\u0435\u043c\u043d\u044b\u0439 \u0448\u0440\u0438\u0444\u0442",
     "Failed to upload image: {0}": "\u041e\u0448\u0438\u0431\u043a\u0430 \u043f\u0440\u0438 \u043f\u0435\u0440\u0435\u0434\u0430\u0447\u0435 \u0438\u0437\u043e\u0431\u0440\u0430\u0436\u0435\u043d\u0438\u044f: {0}",
@@ -343,11 +337,11 @@ tinymce.addI18n("ru", {
     "Color Picker": "\u041f\u0438\u043f\u0435\u0442\u043a\u0430 \u0446\u0432\u0435\u0442\u0430",
     "Invalid hex color code: {0}": "\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 HEX-\u043a\u043e\u0434 \u0446\u0432\u0435\u0442\u0430: {0}",
     "Invalid input": "\u041d\u0435\u0432\u0435\u0440\u043d\u043e\u0435 \u0437\u043d\u0430\u0447\u0435\u043d\u0438\u0435",
-    "R": "",
+    "R": "R",
     "Red component": "\u041a\u0440\u0430\u0441\u043d\u0430\u044f \u043a\u043e\u043c\u043f\u043e\u043d\u0435\u043d\u0442\u0430",
-    "G": "",
+    "G": "G",
     "Green component": "\u0417\u0435\u043b\u0435\u043d\u0430\u044f \u043a\u043e\u043c\u043f\u043e\u043d\u0435\u043d\u0442\u0430",
-    "B": "",
+    "B": "B",
     "Blue component": "\u0421\u0438\u043d\u044f\u044f \u043a\u043e\u043c\u043f\u043e\u043d\u0435\u043d\u0442\u0430",
     "#": "#",
     "Hex color code": "HEX-\u043a\u043e\u0434 \u0446\u0432\u0435\u0442\u0430",
@@ -403,8 +397,8 @@ tinymce.addI18n("ru", {
     "List properties...": "\u0421\u043f\u0438\u0441\u043e\u043a \u0441\u0432\u043e\u0439\u0441\u0442\u0432...",
     "Start list at number": "\u041d\u0430\u0447\u0430\u0442\u044c \u043d\u0443\u043c\u0435\u0440\u0430\u0446\u0438\u044e \u0441",
     "Line height": "\u0412\u044b\u0441\u043e\u0442\u0430 \u0441\u0442\u0440\u043e\u043a\u0438",
-    "Dropped file type is not supported": "",
-    "Loading...": "",
+    "Dropped file type is not supported": "\u0422\u0438\u043f \u0444\u0430\u0439\u043b\u0430 \u043d\u0435 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442\u0441\u044f",
+    "Loading...": "\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430...",
     "ImageProxy HTTP error: Rejected request": "",
     "ImageProxy HTTP error: Could not find Image Proxy": "",
     "ImageProxy HTTP error: Incorrect Image Proxy URL": "",
