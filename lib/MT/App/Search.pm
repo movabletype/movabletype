@@ -210,6 +210,9 @@ sub init_request {
     $app->{searchparam}{SearchMaxResults} =~ s/\D//g
         if defined( $app->{searchparam}{SearchMaxResults} );
 
+    # make sure it's numeric
+    $app->{searchparam}{SearchMaxResults} ||= 0;
+
     $app->{searchparam}{Type} = $app->default_type;
     if ( my $type = $app->param('type') ) {
         return $app->errtrans( 'Invalid type: [_1]', encode_html($type) )
