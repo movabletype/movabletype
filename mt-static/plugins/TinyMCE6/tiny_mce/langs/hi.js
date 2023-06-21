@@ -1,9 +1,3 @@
-/*!
- * TinyMCE Language Pack
- *
- * Copyright (c) 2022 Ephox Corporation DBA Tiny Technologies, Inc.
- * Licensed under the Tiny commercial license. See https://www.tiny.cloud/legal/
- */
 tinymce.addI18n("hi", {
     "Redo": "\u0906\u0917\u0947",
     "Undo": "\u092a\u0940\u091b\u0947",
@@ -22,7 +16,7 @@ tinymce.addI18n("hi", {
     "Superscript": "\u0909\u092a\u0930\u093f\u0932\u093f\u0916\u093f\u0924",
     "Subscript": "\u0928\u093f\u091a\u0932\u0940\u0932\u093f\u0916\u093f\u0924",
     "Clear formatting": "\u092a\u094d\u0930\u093e\u0930\u0942\u092a\u0923 \u0939\u091f\u093e\u090f\u0901",
-    "Remove": "",
+    "Remove": "\u0939\u091f\u093e\u0928\u093e",
     "Align left": "\u092c\u093e\u090f\u0901 \u0938\u0902\u0930\u0947\u0916\u0923",
     "Align center": "\u092e\u0927\u094d\u092f \u0938\u0902\u0930\u0947\u0916\u0923",
     "Align right": "\u0926\u093e\u090f\u0901 \u0938\u0902\u0930\u0947\u0916\u0923",
