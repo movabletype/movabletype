@@ -1648,7 +1648,8 @@ sub core_menu_actions {
                 # get content type id
                 my $_content_type_id;
                 if ($_type && $_type eq 'content_data') {
-                    ($_content_type_id = $app->param('type')) =~ s/^content_data_(\d+)$/$1/;
+                    $_content_type_id = $app->param('content_type_id');
+                    $_content_type_id ||= (($app->param('type') || '') =~ /^content_data_(\d+)$/)[0];
                 }
                 $app->uri(
                     mode => 'search_replace',
