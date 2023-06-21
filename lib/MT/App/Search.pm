@@ -1040,6 +1040,7 @@ sub query_parse {
     my (%columns) = @_;
 
     my $search = $app->{search_string};
+    $search = '' unless defined($search);
 
     # MTC-25640
     # Replace field:name:term_or_phrase with field__name:term_or_phrase
