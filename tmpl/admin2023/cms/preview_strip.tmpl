@@ -1,16 +1,26 @@
-<mt:setvarblock name="escaped_object_label"><mt:var name="object_label" escape="html"></mt:setvarblock>
 <mt:setvar name="edit_button_value" value="<__trans phrase="Return to the compose screen">">
 <mt:setvar name="edit_button_title" value="<__trans phrase="Return to the compose screen (e)">">
-
-<mt:if name="status" eq="2">
-  <mt:setvarblock name="save_button_value"><__trans phrase="Publish this [_1]" params="<mt:var name="escaped_object_label">"></mt:setvarblock>
-  <mt:setvarblock name="save_button_title"><__trans phrase="Publish this [_1] (s)" params="<mt:var name="escaped_object_label">"></mt:setvarblock>
+<mt:if name="object_type" eq="entry">
+  <mt:if name="status" eq="2">
+    <mt:setvar name="save_button_value" value="<__trans phrase="Publish this entry">">
+    <mt:setvar name="save_button_title" value="<__trans phrase="Publish this entry (s)">">
+  <mt:else>
+    <mt:setvar name="save_button_value" value="<__trans phrase="Save this entry">">
+    <mt:setvar name="save_button_title" value="<__trans phrase="Save this entry (s)">">
+  </mt:if>
+    <mt:setvar name="edit_button_value" value="<__trans phrase="Re-Edit this entry">">
+    <mt:setvar name="edit_button_title" value="<__trans phrase="Re-Edit this entry (e)">">
 <mt:else>
-  <mt:setvarblock name="save_button_value"><__trans phrase="Save this [_1]" params="<mt:var name="escaped_object_label">"></mt:setvarblock>
-  <mt:setvarblock name="save_button_title"><__trans phrase="Save this [_1] (s)" params="<mt:var name="escaped_object_label">"></mt:setvarblock>
+  <mt:if name="status" eq="2">
+    <mt:setvar name="save_button_value" value="<__trans phrase="Publish this page">">
+    <mt:setvar name="save_button_title" value="<__trans phrase="Publish this page (s)">">
+  <mt:else>
+    <mt:setvar name="save_button_value" value="<__trans phrase="Save this page">">
+    <mt:setvar name="save_button_title" value="<__trans phrase="Save this page (s)">">
+  </mt:if>
+    <mt:setvar name="edit_button_value" value="<__trans phrase="Re-Edit this page">">
+    <mt:setvar name="edit_button_title" value="<__trans phrase="Re-Edit this page (e)">">
 </mt:if>
-  <mt:setvarblock name="edit_button_value"><__trans phrase="Re-Edit this [_1]" params="<mt:var name="escaped_object_label">"></mt:setvarblock>
-  <mt:setvarblock name="edit_button_title"><__trans phrase="Re-Edit this [_1] (e)" params="<mt:var name="escaped_object_label">"></mt:setvarblock>
 
 <!DOCTYPE html>
 <html lang="<$mt:var name="language_tag"$>">
@@ -66,7 +76,7 @@
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Template.js?v=<mt:var name="mt_version_id" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/bootstrap5/tc/tableselect.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/admin2023/tc/tableselect.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <mt:if name="use_jquery_json">
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
@@ -78,7 +88,7 @@
 <mt:else>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery-migrate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/bootstrap5/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/admin2023/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <mt:if name="use_mt_common_json">
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/JSON.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:if>
@@ -112,20 +122,19 @@
     <table id="entry-preview-layout" class="preview-layout">
       <tr>
         <td id="entry-preview-control-strip" class="preview-control-strip">
-          <p id="entry-preview-label" class="preview-label"><__trans phrase="You are previewing &ldquo;[_1]&rdquo; content data entitled &ldquo;[_2]&rdquo;" params="<$mt:var name="object_label" escape="html"$>%%<$mt:var name="title" remove_html="1" escape="html"$>"></p>
+          <p id="entry-preview-label" class="preview-label"><mt:if name="object_type" eq="entry"><__trans phrase="You are previewing the entry entitled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"><mt:else><__trans phrase="You are previewing the page entitled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"></mt:if></p>
           <form method="post" action="<$mt:var name="script_url"$>" mt:once="1">
-            <input type="hidden" name="__mode" value="save" />
+            <input type="hidden" name="__mode" value="save_entry" />
             <input type="hidden" name="_type" value="<$mt:var name="object_type"$>" />
             <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
             <input type="hidden" name="_preview_file" value="<$mt:var name="preview_file" escape="html"$>" />
-            <input type="hidden" name="from_preview" value="1" />
             <input type="hidden" name="dirty" value="1" />
-<mt:loop name="content_data_loop">
+<mt:loop name="entry_loop">
             <input type="hidden" name="<$mt:var name="data_name" escape="html"$>" value="<$mt:var name="data_value" escape="html"$>" />
 </mt:loop>
 <mt:setvarblock name="action_buttons">
   <button
-     mt:mode="save"
+     mt:mode="save_entry"
      type="submit"
      name="save"
      value="save"
