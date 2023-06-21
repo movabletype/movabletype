@@ -484,6 +484,7 @@ sub build {
                             $filter;
                         };
                         $out = $code->($out, $val, $ctx);
+                        $out = '' unless defined($out);
                     }
                 }
                 $res .= $out
