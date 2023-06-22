@@ -22,8 +22,6 @@ BEGIN {
 use MT::Test 'has_php';
 use MT::Test::Permission;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture(
     sub {
         MT::Test->init_db;
