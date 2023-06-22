@@ -40,7 +40,13 @@
     "copy-tinymce6-language": "rm -rf mt-static/plugins/TinyMCE6/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE6/tiny_mce/langs; cp -rf node_modules/tinymce6-i18n/langs6/* mt-static/plugins/TinyMCE6/tiny_mce/langs/",
     "copy-codemirror": "cp -rf node_modules/codemirror/addon node_modules/codemirror/keymap node_modules/codemirror/lib node_modules/codemirror/mode node_modules/codemirror/theme mt-static/codemirror/",
     "copy-js-cookie": "cp -rf node_modules/js-cookie/dist/js.cookie.min.js mt-static/js-cookie/",
-    "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && yarn build-riot && yarn build-ss\" && test `git status -s | wc -l` = 0"
+    "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && yarn build-riot && yarn build-ss\" && test `git status -s | wc -l` = 0",
+    "build-svelte:app": "rollup --config rollup.config.ts --configPlugin typescript",
+    "build-svelte": "npm run build-svelte:app",
+    "svelte-dev": "rollup --config rollup.config.ts --configPlugin typescript -w",
+    "svelte-check-types": "tsc",
+    "svelte-format": "prettier --write mt-static/svelte/src/**/*.{ts,tsx,svelte} mt-static/svelte/svelte/**/*.{ts,tsx,svelte}",
+    "svelte-lint": "eslint --fix --ext .ts --ext .tsx --ext .svelte mt-static/svelte/src mt-static/svelte/svelte"
   },
   "repository": {
     "type": "git",
@@ -56,7 +62,29 @@
     "clean-css-cli": "^5.6.2",
     "node-sass": "^9.0.0",
     "postcss-cli": "^7.1.2",
-    "postcss-flexbugs-fixes": "^5.0.1"
+    "postcss-flexbugs-fixes": "^5.0.1",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-commonjs": "^25.0.2",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-typescript": "^11.1.1",
+    "@rollup/plugin-replace": "^5.0.2",
+    "@tsconfig/svelte": "^4.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
+    "eslint": "^8.43.0",
+    "eslint-plugin-svelte3": "^4.0.0",
+    "glob": "^7.2.0",
+    "prettier": "^2.8.8",
+    "prettier-plugin-svelte": "^2.10.1",
+    "rollup": "^3.25.1",
+    "rollup-plugin-css-only": "^4.3.0",
+    "rollup-plugin-esbuild": "^5.0.0",
+    "rollup-plugin-livereload": "^2.0.5",
+    "rollup-plugin-svelte": "^7.1.5",
+    "svelte": "^3.59.1",
+    "svelte-check": "^3.4.3",
+    "svelte-preprocess": "^5.0.4",
+    "typescript": "^5.1.3"
   },
   "dependencies": {
     "bootstrap": "~4.3.1",
@@ -76,6 +104,8 @@
     "tinymce-i18n": "^23.6.19",
     "tinymce6": "npm:tinymce@^6.5.0",
     "tinymce6-i18n": "npm:tinymce-i18n@^23.6.19",
-    "xpath": "0.0.32"
+    "xpath": "0.0.32",
+    "sirv-cli": "^2.0.2",
+    "tslib": "^2.5.3"
   }
 }
