@@ -1,9 +1,3 @@
-/*!
- * TinyMCE Language Pack
- *
- * Copyright (c) 2022 Ephox Corporation DBA Tiny Technologies, Inc.
- * Licensed under the Tiny commercial license. See https://www.tiny.cloud/legal/
- */
 tinymce.addI18n("cs", {
     "Redo": "Znovu",
     "Undo": "Zp\u011bt",
@@ -403,7 +397,7 @@ tinymce.addI18n("cs", {
     "List properties...": "Vlastnosti seznamu...",
     "Start list at number": "Po\u010d\xe1te\u010dn\xed \u010d\xedslo seznamu",
     "Line height": "V\xfd\u0161ka \u0159\xe1dku",
-    "Dropped file type is not supported": "Dropped file type is not supported",
+    "Dropped file type is not supported": "Nahr\xe1van\xfd soubor nen\xed podporov\xe1n",
     "Loading...": "Nahr\xe1v\xe1n\xed...",
     "ImageProxy HTTP error: Rejected request": "Chyba ImageProxy HTTP: Po\u017eadavek zam\xedtnut",
     "ImageProxy HTTP error: Could not find Image Proxy": "Chyba ImageProxy HTTP: Nelze nalest Image Proxy",

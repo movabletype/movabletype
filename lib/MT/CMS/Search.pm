@@ -475,7 +475,7 @@ sub core_search_apis {
                 'description' => sub { $app->translate('Description') },
             },
             'replace_cols'       => [qw(name site_url site_path description)],
-            'can_replace'        => $user_not_to_be_bound->is_superuser(),
+            'can_replace'        => $user_not_to_be_bound && $user_not_to_be_bound->is_superuser(),
             'can_search_by_date' => 0,
             'setup_terms_args'   => sub {
                 my ( $terms, $args, $blog_id ) = @_;
@@ -512,7 +512,7 @@ sub core_search_apis {
                 'description' => sub { $app->translate('Description') },
             },
             'replace_cols'       => [qw(name site_url site_path description)],
-            'can_replace'        => $user_not_to_be_bound->is_superuser(),
+            'can_replace'        => $user_not_to_be_bound && $user_not_to_be_bound->is_superuser(),
             'can_search_by_date' => 0,
             'view'               => 'system',
             'setup_terms_args'   => sub {
@@ -1163,6 +1163,9 @@ sub do_search_replace {
                 unless $author->is_superuser
                 || $app->handler_to_coderef( $api->{perm_check} )->($obj);
             my $match = 0;
+            delete $obj->{__search_term};
+            delete $obj->{__search_result_fields};
+            delete $obj->{__search_result_fields_index};
 
             # For cms_pre_save callback and revisioning
             my $orig_obj;
@@ -1171,6 +1174,7 @@ sub do_search_replace {
                     next if $do_replace && !$replace_cols{$col};
                     my $text;
                     my ( $content_field_id, $field_data, $field_registry );
+                    my $match_field = 0;
                     if ( $col =~ /^__field:(\d+)$/ ) {
                         $content_field_id = $1;
                         $field_data
@@ -1268,7 +1272,7 @@ sub do_search_replace {
                             elsif ( !$content_field_id ) {
                                 $obj->$col($text);
                             }
-                            $match++;
+                            $match_field++;
                         }
                     }
                     else {
@@ -1278,14 +1282,18 @@ sub do_search_replace {
                         {
                             my $search_handler = $app->handler_to_coderef(
                                 $field_registry->{search_handler} );
-                            $match = $search_handler && $search_handler->(
+                            $match_field += $search_handler && $search_handler->(
                                 $re, $field_data, $text, $obj
                             );
                         }
                         else {
-                            $match = $search ne '' ? $text =~ m!$re! : 1;
+                            $match_field += $search ne '' ? $text =~ m!$re! : 1;
                         }
-                        last if $match;
+                    }
+                    $match += $match_field;
+                    if ($match_field) {
+                        push @{$obj->{__search_result_fields}}, $col;
+                        $obj->{__search_term} = $search;
                     }
                 }
             }

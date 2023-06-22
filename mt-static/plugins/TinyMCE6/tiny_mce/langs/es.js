@@ -1,9 +1,3 @@
-/*!
- * TinyMCE Language Pack
- *
- * Copyright (c) 2022 Ephox Corporation DBA Tiny Technologies, Inc.
- * Licensed under the Tiny commercial license. See https://www.tiny.cloud/legal/
- */
 tinymce.addI18n("es", {
     "Redo": "Rehacer",
     "Undo": "Deshacer",
@@ -230,10 +224,10 @@ tinymce.addI18n("es", {
     "Dotted": "Puntos",
     "Dashed": "Guiones",
     "Double": "Doble",
-    "Groove": "",
-    "Ridge": "",
-    "Inset": "",
-    "Outset": "",
+    "Groove": "Groove",
+    "Ridge": "Cresta",
+    "Inset": "Insertar",
+    "Outset": "Comienzo",
     "Hidden": "Oculto",
     "Insert template...": "Insertar plantilla...",
     "Templates": "Plantillas",

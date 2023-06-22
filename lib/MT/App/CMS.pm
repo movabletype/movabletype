@@ -1599,6 +1599,65 @@ sub core_menu_actions {
             order  => 200,
             target => '_blank',
         },
+        search => {
+            icon  => 'ic_search',
+            label => 'Search',
+            href => sub {
+                my $blog_id     = $app->blog ? $app->blog->id : 0;
+                my $search_apis = $app->registry("search_apis") or ();
+                my $app_type    = $app->param('_type');
+                if (!$app_type) {
+                    my $mode = $app->param('__mode');
+                    # Replace list_*
+                    if (!$app_type && $mode =~ /^list_/) {
+                        ($app_type = $mode) =~ s/^list_(.*)$/$1/;
+                    }
+                    my %mode_replace = ('start_upload' => 'asset');
+                    $app_type = $mode_replace{$mode} if exists $mode_replace{$mode};
+                }
+                # Replace type for model
+                my %replace_type = (
+                    'member'       => 'author',
+                    'group_member' => 'author'
+                );
+                $app_type = $replace_type{$app_type} if $app_type && exists $replace_type{$app_type};
+
+                my $_type;
+                if ($app_type && exists $search_apis->{$app_type}) {
+                    my $set_type = 1;
+                    if (my $view = $search_apis->{$app_type}{view}) {
+                        if ($blog_id) {
+                            $set_type = 0 if $view ne 'blog';
+                        } else {
+                            $set_type = 0 if $view ne 'system';
+                        }
+                    }
+                    my $cond = $search_apis->{$app_type}{condition};
+                    if ($cond) {
+                        $cond = MT->handler_to_coderef($cond);
+                        $set_type = 0 unless $cond->();
+                    }
+                    if ($set_type) {
+                        $_type = $app_type;
+                    }
+                }
+
+                # get content type id
+                my $_content_type_id;
+                if ($_type && $_type eq 'content_data') {
+                    ($_content_type_id = $app->param('type')) =~ s/^content_data_(\d+)$/$1/;
+                }
+                $app->uri(
+                    mode => 'search_replace',
+                    args => {
+                        ($_type            ? (_type           => $_type)            : ()),
+                        ($_content_type_id ? (content_type_id => $_content_type_id) : ()),
+                        blog_id => $blog_id
+                    });
+            },
+            mobile => 0,
+            order  => 300,
+        },
     };
 }
 
@@ -4184,6 +4243,9 @@ sub autosave_session_obj {
     }
     if ( $type eq 'content_data' ) {
         my $content_type_id = $app->param('content_type_id');
+        if (!$content_type_id && ($app->param('type') || '') =~ /^content_data_(\d+)$/) {
+            $content_type_id = $1;
+        }
         $ident .= ':content_type_id=' . $content_type_id;
     }
     require MT::Session;

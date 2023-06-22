@@ -296,7 +296,7 @@ sub field_type_validation_handler {
 }
 
 sub preview_handler {
-    my ( $field_data, $values, $content_data ) = @_;
+    my ($field_data, $values, $content_data, $params) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -325,6 +325,37 @@ sub preview_handler {
         }
     }
     return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
+sub search_result_handler {
+    my ($field_data, $values, $content_data) = @_;
+    return '' unless $values;
+    unless (ref $values eq 'ARRAY') {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my %content_data;
+    my $iter = MT->model('content_data')->load_iter({ id => $values });
+    while (my $cd = $iter->()) {
+        $content_data{ $cd->id } = $cd;
+    }
+
+    require MT::Util;
+
+    my @ret;
+    for my $v (@$values) {
+        my $obj   = $content_data{$v} or next;
+        my $label = $obj->label;
+        my $id    = '(ID:' . $obj->id . ')';
+        if (defined $label && $label ne '') {
+            $label = MT::Util::encode_html($label) . ' ' . $id;
+        } else {
+            $label = $id;
+        }
+        push @ret, $label;
+    }
+    return join ', ', @ret;
 }
 
 sub search_handler {

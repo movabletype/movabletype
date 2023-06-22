@@ -1,9 +1,3 @@
-/*!
- * TinyMCE Language Pack
- *
- * Copyright (c) 2022 Ephox Corporation DBA Tiny Technologies, Inc.
- * Licensed under the Tiny commercial license. See https://www.tiny.cloud/legal/
- */
 tinymce.addI18n("pt_BR", {
     "Redo": "Refazer",
     "Undo": "Desfazer",
@@ -12,7 +6,7 @@ tinymce.addI18n("pt_BR", {
     "Paste": "Colar",
     "Select all": "Selecionar tudo",
     "New document": "Novo documento",
-    "Ok": "Ok",
+    "Ok": "OK",
     "Cancel": "Cancelar",
     "Visual aids": "Ajuda visual",
     "Bold": "Negrito",
@@ -43,7 +37,7 @@ tinymce.addI18n("pt_BR", {
     "Heading 5": "T\xedtulo 5",
     "Heading 6": "T\xedtulo 6",
     "Preformatted": "Pr\xe9-formatado",
-    "Div": "Div",
+    "Div": "Se\xe7\xe3o (div)",
     "Pre": "Pr\xe9-formatado (pre)",
     "Code": "Monoespa\xe7ada",
     "Paragraph": "Simples",
@@ -109,7 +103,7 @@ tinymce.addI18n("pt_BR", {
     "Alternative description": "Descri\xe7\xe3o alternativa",
     "Accessibility": "Acessibilidade",
     "Image is decorative": "A imagem \xe9 decorativa",
-    "Source": "Origem",
+    "Source": "Endere\xe7o",
     "Dimensions": "Dimens\xf5es",
     "Constrain proportions": "Restringir propor\xe7\xf5es",
     "General": "Geral",
@@ -136,9 +130,9 @@ tinymce.addI18n("pt_BR", {
     "Anchors": "\xc2ncoras",
     "Link...": "Link...",
     "Paste or type a link": "Cole ou digite um link",
-    "The URL you entered seems to be an email address. Do you want to add the required mailto: prefix?": "A URL que voc\xea informou parece ser um endere\xe7o de e-mail. Deseja adicionar o prefixo requerido mailto:?",
+    "The URL you entered seems to be an email address. Do you want to add the required mailto: prefix?": "A URL que voc\xea informou parece ser um endere\xe7o de e-mail. Deseja adicionar o prefixo obrigat\xf3rio mailto:?",
     "The URL you entered seems to be an external link. Do you want to add the required http:// prefix?": "A URL que voc\xea informou parece ser um link externo. Deseja incluir o prefixo http://?",
-    "The URL you entered seems to be an external link. Do you want to add the required https:// prefix?": "A URL informada parece ser um link externo. Deseja adicionar o prefixo requerido https://?",
+    "The URL you entered seems to be an external link. Do you want to add the required https:// prefix?": "A URL informada parece ser um link externo. Deseja adicionar o prefixo obrigat\xf3rio https://?",
     "Link list": "Lista de links",
     "Insert video": "Inserir v\xeddeo",
     "Insert/edit video": "Inserir/editar v\xeddeo",

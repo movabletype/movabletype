@@ -207,7 +207,7 @@ sub found_ids {
 }
 
 my $TitleContainerSelectors = {
-    bootstrap5 => {
+    admin2023 => {
         content_data => 'td.id a.label',
         template     => 'td:nth-of-type(2) a',
         entry        => 'td.title > span.title',
@@ -252,6 +252,13 @@ sub found_site_ids {
         push @site_ids, $1;
     });
     return \@site_ids;
+}
+
+sub found_highlighted_count {
+    my $self = shift;
+    my @titles;
+    my $type  = $self->current_tab or return [];
+    return $self->wq_find(qq!form#${type}-listing-form table tbody [data-search-highlight="1"]!)->size;
 }
 
 1;

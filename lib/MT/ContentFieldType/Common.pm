@@ -491,7 +491,7 @@ sub feed_value_handler_multiple {
 }
 
 sub preview_handler_multiple {
-    my ( $field_data, $values, $content_data ) = @_;
+    my ($field_data, $values, $content_data) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -508,6 +508,24 @@ sub preview_handler_multiple {
         $contents .= "<li>$encoded_label ($encoded_v)</li>";
     }
     return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
+sub search_result_handler_multiple {
+    my ($field_data, $values, $content_data) = @_;
+    return '' unless $values;
+    unless (ref $values eq 'ARRAY') {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my %value_label_hash = map { $_->{value} => $_->{label} } @{ $field_data->{options}{values} || [] };
+
+    my @ret;
+    for my $v (@$values) {
+        my $label = $value_label_hash{$v};
+        push @ret, MT::Util::encode_html($label) if defined $label && $label ne '';
+    }
+    return join ', ', @ret;
 }
 
 sub search_handler_multiple {
