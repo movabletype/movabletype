@@ -273,24 +273,21 @@ sub save_config {
         my $type = ( $mgr->{__settings}{$_}{type} || '' );
         delete $mgr->{__settings}{$_}{dirty}
             if exists $mgr->{__settings}{$_}{dirty};
+        my $key = $mgr->{__settings}{$_}{key} or next;
         if ( $type eq 'HASH' ) {
             my $h = $settings->{$_};
             foreach my $k ( sort keys %$h ) {
-                $data
-                    .= $mgr->{__settings}{$_}{key} . ' '
-                    . $k . '='
-                    . $h->{$k} . "\n";
+                $data .= $key . ' ' . $k . '=' . $h->{$k} . "\n";
             }
         }
         elsif ( $type eq 'ARRAY' ) {
             my $a = $settings->{$_};
             foreach my $v (@$a) {
-                $data .= $mgr->{__settings}{$_}{key} . ' ' . $v . "\n";
+                $data .= $key . ' ' . $v . "\n";
             }
         }
         elsif ( defined $settings->{$_} and $settings->{$_} ne '' ) {
-            $data
-                .= $mgr->{__settings}{$_}{key} . ' ' . $settings->{$_} . "\n";
+            $data .= $key . ' ' . $settings->{$_} . "\n";
         }
     }
 
