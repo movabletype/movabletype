@@ -607,44 +607,6 @@ sub recover_lockout {
     $app->load_tmpl( 'recover_lockout.tmpl', $params );
 }
 
-## DEPRECATED: v6.2
-sub upload_userpic {
-    my $app = shift;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.8');
-
-    $app->validate_magic() or return;
-    return $app->errtrans("Invalid request.")
-        if $app->param('blog_id');
-
-    my $user_id = $app->param('user_id');
-    my $user    = MT->model('author')->load($user_id)
-        or return $app->errtrans("Invalid request.");
-
-    my $appuser = $app->user;
-    if (   ( !$appuser->can_manage_users_groups )
-        && ( $user->id != $appuser->id ) )
-    {
-        return $app->permission_denied();
-    }
-
-    require MT::CMS::Asset;
-    my ( $asset, $bytes )
-        = MT::CMS::Asset::_upload_file( $app, @_, require_type => 'image', );
-    return if !defined $asset;
-    return $asset if !defined $bytes;    # whatever it is
-
-    ## TODO: should this be layered into _upload_file somehow, so we don't
-    ## save the asset twice?
-    $asset->tags('@userpic');
-    $asset->created_by($user_id);
-    $asset->save;
-
-    $app->forward( 'asset_userpic',
-        { asset => $asset, user_id => $user_id } );
-}
-
 sub cfg_system_users {
     my $app = shift;
     my %param;
@@ -1568,35 +1530,6 @@ PERMCHECK: {
 
         $app->load_tmpl( 'dialog/create_association.tmpl', $params );
     }
-}
-
-sub dialog_select_assoc_type {
-    my $app = shift;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
-    my $blog_id   = $app->param('blog_id');
-    my $this_user = $app->user;
-PERMCHECK: {
-        last PERMCHECK
-            if $app->can_do('grant_role_for_all_blogs');
-        last PERMCHECK
-            if $blog_id
-            && $this_user->permissions($blog_id)
-            ->can_do('grant_role_for_blog');
-        return $app->permission_denied();
-    }
-
-    my $params;
-
-    $params->{return_args} = $app->param('return_args')
-        || '__mode=list&_type=association&blog_id=0';
-
-    my $group = MT->registry( 'object_types', 'group' );
-    $params->{has_group} = $group ? 1 : 0;
-
-    $app->load_tmpl( 'dialog/select_association_type.tmpl', $params );
 }
 
 sub remove_userpic {
