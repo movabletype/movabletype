@@ -1649,7 +1649,9 @@ sub core_menu_actions {
                 my $_content_type_id;
                 if ($_type && $_type eq 'content_data') {
                     $_content_type_id = $app->param('content_type_id');
-                    $_content_type_id ||= (($app->param('type') || '') =~ /^content_data_(\d+)$/)[0];
+                    if (!$_content_type_id && (($app->param('type') || '') =~ /^content_data_(\d+)$/)) {
+                        $_content_type_id = $1;
+                    }
                 }
                 $app->uri(
                     mode => 'search_replace',
