@@ -12,12 +12,12 @@ BEGIN {
         PluginPath => [qw(
             MT_HOME/plugins
             TEST_ROOT/plugins
-        )]
+        )],
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 
     my $config_yaml = 'plugins/CallbackTest/config.yaml';
-    $test_env->save_file( $config_yaml, <<'YAML' );
+    $test_env->save_file($config_yaml, <<'YAML' );
 name: CallbackTest
 id: CallbackTest
 
@@ -57,8 +57,8 @@ use MT::Test;
 use MT;
 use MT::Theme;
 use Mock::MonkeyPatch;
+use MT::Test::App;
 
-MT::Test->init_app;
 $test_env->prepare_fixture('db');
 
 my $admin = MT->model('author')->load(1);
@@ -95,44 +95,32 @@ sub reset_counter {
 subtest 'save_config in MT::App::CMS' => sub {
     reset_counter();
 
-    my $app = _run_app(
-        'MT::App::CMS',
-        { __mode => 'save_config_test' });
-
-    like $app->{__test_output}, qr/Status: 200/;
-    like $app->{__test_output}, qr/Save Config OK/;
+    my $app = MT::Test::App->new('CMS');
+    $app->get_ok({ __mode => 'save_config_test' });
+    $app->content_like(qr/Save Config OK/);
     is_deeply \%reboot_counter, { 'MT::App::CMS' => 1 };
 };
 
 subtest 'save_config in MT::App::DataAPI' => sub {
     reset_counter();
 
-    my $app = _run_app(
-        'MT::App::DataAPI',
-        {
-            __path_info      => '/v4/save_config_test',
-            __request_method => 'GET',
-        });
-
-    like $app->{__test_output}, qr/Status: 200/;
-    like $app->{__test_output}, qr/Save Config OK/;
+    my $app = MT::Test::App->new('DataAPI');
+    $app->get_ok({ __path_info => '/v4/save_config_test' });
+    $app->content_like(qr/Save Config OK/);
     is_deeply \%reboot_counter, { 'MT::App::DataAPI' => 1 };
 };
 
 subtest 'pre_build in MT::App::CMS' => sub {
     reset_counter();
 
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user => $admin,
-            __mode      => 'rebuild',
-            blog_id     => $site->id,
-            type        => 'index',
-            start_time  => time,
-        });
-
-    like $app->{__test_output}, qr/Status: 200/;
+    my $app = MT::Test::App->new(app_class => 'CMS', no_redirect => 1);
+    $app->login($admin);
+    $app->post_ok({
+        __mode     => 'rebuild',
+        blog_id    => $site->id,
+        type       => 'index',
+        start_time => time,
+    });
     is_deeply \%touch_counter, { 'MT::App::CMS' => 1 };
 };
 
@@ -141,14 +129,10 @@ subtest 'pre_build in MT::App::DataAPI' => sub {
 
     my $authenticate_guard = Mock::MonkeyPatch->patch('MT::App::DataAPI::authenticate' => sub { $admin });
 
-    my $app = _run_app(
-        'MT::App::DataAPI',
-        {
-            __path_info      => "/v4/sites/@{[$site->id]}/templates/@{[$index_template->id]}/publish",
-            __request_method => 'POST',
-        });
-
-    like $app->{__test_output}, qr/Status: 200/;
+    my $app = MT::Test::App->new('DataAPI');
+    $app->post_ok({
+        __path_info => "/v4/sites/@{[$site->id]}/templates/@{[$index_template->id]}/publish",
+    });
     is_deeply \%touch_counter, { 'MT::App::DataAPI' => 1 };
 };
 

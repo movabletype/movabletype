@@ -18,8 +18,6 @@ use MT;
 use MT::Test;
 use MT::Test::Fixture;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture(
     sub {
         MT::Test->init_db;
