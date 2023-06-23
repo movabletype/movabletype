@@ -311,6 +311,12 @@ sub process_scenarios {
             $panels[$j]->is_displayed &&
             (@visible_options = grep { $_->is_displayed } $panels[$j]->children('.listing tbody tr', 'css'))
         };
+
+        # Workarround for modal size initialization bug(MTC-28952)
+        my $size_org = $s->driver->get_window_size();
+        $s->driver->set_window_size(1, 1);
+        $s->driver->set_window_size($size_org->{'height'}, $size_org->{'width'});
+
         $s->screenshot_full("page$j", 1200, 900) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         assert_no_browser_errors();
         my $next_button = $panels[$j]->child('.modal-footer button.btn-primary', 'css');
@@ -319,7 +325,7 @@ sub process_scenarios {
         is($current_panel[0],       $panels[$j],       'panel is visible');
         is(scalar @current_panel,   1,                 'other panels are hidden');
         is(scalar @visible_options, $pages->[$j]->[0], 'right number of options');
-        $visible_options[$pages->[$j]->[1] - 1]->click();
+        $visible_options[$pages->[$j]->[1] - 1]->click();        
         $next_button->click();
         assert_no_browser_errors();
     }
