@@ -612,12 +612,12 @@ sub js_upload_file {
     return $app->json_result( { asset => $metadata } );
 }
 
-### DEPRECATED: v6.2
+### DEPRECATED: v6.2; but still used via DataAPI
 sub upload_file {
     my $app = shift;
 
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.8');
+    # require MT::Util::Deprecated;
+    # MT::Util::Deprecated::warning(since => '7.8');
 
     if ( my $perms = $app->permissions ) {
         return $app->error( $app->translate("Permission denied.") )
