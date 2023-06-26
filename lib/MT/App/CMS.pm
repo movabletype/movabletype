@@ -1604,10 +1604,13 @@ sub core_menu_actions {
             label => 'Search',
             href => sub {
                 my $blog_id     = $app->blog ? $app->blog->id : 0;
+                my $mode        = $app->param('__mode') || '';
+
+                return $app->uri(mode => 'search_replace', args => {blog_id => $blog_id}) if $mode eq 'search_replace';
+
                 my $search_apis = $app->registry("search_apis") or ();
                 my $app_type    = $app->param('_type');
                 if (!$app_type) {
-                    my $mode = $app->param('__mode');
                     # Replace list_*
                     if (!$app_type && $mode =~ /^list_/) {
                         ($app_type = $mode) =~ s/^list_(.*)$/$1/;
@@ -1645,7 +1648,10 @@ sub core_menu_actions {
                 # get content type id
                 my $_content_type_id;
                 if ($_type && $_type eq 'content_data') {
-                    ($_content_type_id = $app->param('type')) =~ s/^content_data_(\d+)$/$1/;
+                    $_content_type_id = $app->param('content_type_id');
+                    if (!$_content_type_id && (($app->param('type') || '') =~ /^content_data_(\d+)$/)) {
+                        $_content_type_id = $1;
+                    }
                 }
                 $app->uri(
                     mode => 'search_replace',
