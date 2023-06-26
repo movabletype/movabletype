@@ -327,9 +327,6 @@ sub core_methods {
         'update_widget_prefs' =>
             sub { return shift->update_widget_prefs(@_) },
 
-        ## DEPRECATED ##
-        'upload_userpic' => "${pkg}User::upload_userpic",
-
         ## MT7 - Content Data
         'view_content_data'    => "${pkg}ContentData::edit",
         'edit_content_data'    => "${pkg}ContentData::edit",
