@@ -103,11 +103,13 @@ sub has_thumbnail {
     my $asset = shift;
 
     return unless -f $asset->file_path;
-    return 0 if $asset->file_ext =~ /tiff?$/;
+
+    my $file_ext = $asset->file_ext || '';
+    return 0 if $file_ext =~ /tiff?$/;
 
     require MT::Image;
     my $image = MT::Image->new(
-        ( ref $asset ? ( Type => $asset->file_ext ) : () ) );
+        ( ref $asset ? ( Type => $file_ext ) : () ) );
     $image ? 1 : 0;
 }
 
@@ -201,7 +203,7 @@ sub thumbnail_file {
     my $file_path = $asset->file_path;
     return undef unless $fmgr->file_size($file_path);
 
-    return undef if $asset->file_ext =~ /tiff?$/;
+    return undef if ($asset->file_ext || '') =~ /tiff?$/;
 
     require MT::Util;
     my $asset_cache_path = $asset->_make_cache_path( $param{Path} );
@@ -931,16 +933,17 @@ sub _transform {
     require MT::Image;
 
     my $file_path = $asset->file_path;
+    my $file_ext  = $asset->file_ext || '';
     my $fmgr
         = $asset->blog ? $asset->blog->file_mgr : MT::FileMgr->new('Local');
     my $img_data = $fmgr->get_data( $file_path, 'upload' );
 
-    my $img = MT::Image->new( Data => $img_data, Type => $asset->file_ext );
+    my $img = MT::Image->new( Data => $img_data, Type => $file_ext );
 
     # Preserve metadata.
     my ( $exif, $next_exif );
     my $update_metadata
-        = lc( $asset->file_ext ) =~ /^(jpe?g|tiff?|webp)$/
+        = lc( $file_ext ) =~ /^(jpe?g|tiff?|webp)$/
         && $asset->has_metadata
         && !$asset->is_metadata_broken;
     if ($update_metadata) {
@@ -989,7 +992,7 @@ sub _transform {
 
 sub change_quality {
     my ( $asset, $quality ) = @_;
-    my $type = lc $asset->file_ext;
+    my $type = lc( $asset->file_ext || '' );
 
     if ( $type ne 'jpg' && $type ne 'jpeg' && $type ne 'png' ) {
         return 1;
@@ -998,7 +1001,7 @@ sub change_quality {
     # Preserve metadata. ImageDriver other than ImageMagick removes metadata.
     my $new_exif;
     my $update_metadata
-        = lc( $asset->file_ext ) =~ /^jpe?g$/
+        = $type =~ /^jpe?g$/
         && $asset->has_metadata
         && !$asset->is_metadata_broken;
     if ($update_metadata) {
@@ -1079,7 +1082,7 @@ sub exif {
 sub has_gps_metadata {
     my ($asset) = @_;
 
-    return 0 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?|webp)$/;
+    return 0 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp)$/;
 
     my $exif = $asset->exif or return;
     $exif->Options( Group1 => 'GPS' );
@@ -1137,7 +1140,7 @@ sub _set_mandatory_exif_tags {
 sub remove_gps_metadata {
     my ($asset) = @_;
 
-    return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?|webp)$/;
+    return 1 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp)$/;
     return 1 if $asset->is_metadata_broken;
 
     require Image::ExifTool;
@@ -1156,7 +1159,7 @@ sub remove_gps_metadata {
 sub remove_all_metadata {
     my ($asset) = @_;
 
-    return 1 if lc( $asset->file_ext ) !~ /^(jpe?g|tiff?|webp)$/;
+    return 1 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp)$/;
     return 1 if $asset->is_metadata_broken;
 
     my $exif = $asset->exif or return;
@@ -1164,7 +1167,7 @@ sub remove_all_metadata {
     my $orientation = $exif->GetValue('Orientation');
 
     $exif->SetNewValue('*');
-    if (lc($asset->file_ext) =~ /^(jpe?g|webp)$/) {
+    if (lc($asset->file_ext || '') =~ /^(jpe?g|webp)$/) {
         $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
         $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
         $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
