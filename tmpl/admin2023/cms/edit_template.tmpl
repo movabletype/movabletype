@@ -360,14 +360,6 @@ Editor.strings.unsavedChanges = '<__trans phrase="You have unsaved changes to th
 
 var fieldStorage = {};
 var dirty = false;
-function setDirty () {
-    log.warn('deprecated function setDirty(), call app.setDirty instead');
-    app.setDirty();
-}
-function clearDirty () {
-    log.warn('deprecated function clearDirty(), call app.clearDirty instead');
-    app.clearDirty();
-}
 
 function setRebuild(f) {
     f['rebuild'].value = 'Y';
