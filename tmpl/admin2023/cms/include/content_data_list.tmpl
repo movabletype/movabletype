@@ -144,10 +144,9 @@ function toggleClassOfPaginationContainer() {
 
 function loadContentDataList(offset) {
   jQuery('.indicator, #listing-table-overlay').show();
-  jQuery('ul.pagination').hide();
-  jQuery('ul.pagination__mobile').hide();
   jQuery('#search').attr('disabled', 'disabled');
   jQuery('#search-button').attr('disabled', 'disabled');
+  paginationHide();
 
   var opts = {
     offset: offset,
@@ -190,8 +189,9 @@ function loadContentDataList(offset) {
     complete: function () {
       jQuery('.indicator, #listing-table-overlay').hide();
       if (canPagenate) {
-        jQuery('ul.pagination').show();
-        jQuery('ul.pagination__mobile').show();
+        paginationShow();
+      } else {
+        paginationHide();
       }
       jQuery('#search').prop('disabled', false);
       jQuery('#search-button').prop('disabled', false);
@@ -217,6 +217,16 @@ function loadContentDataList(offset) {
       console.log('error: ' + status + ':' + error);
     }
   });
+}
+
+function paginationShow() {
+  jQuery('ul.pagination').removeClass('d-md-none').addClass('d-md-flex');
+  jQuery('ul.pagination__mobile').removeClass('block').addClass('none');
+}
+
+function paginationHide() {
+  jQuery('ul.pagination').removeClass('d-md-flex').addClass('d-none');
+  jQuery('ul.pagination__mobile').removeClass('none').addClass('block');
 }
 
 function renderPagination(pager) {
