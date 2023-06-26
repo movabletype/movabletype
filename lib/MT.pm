@@ -1948,6 +1948,7 @@ sub apply_text_filters {
     my ( $str, $filters, @extra ) = @_;
     my $all_filters = $mt->all_text_filters;
     for my $filter (@$filters) {
+        next unless defined $filter;
         my $f = $all_filters->{$filter} or next;
         my $code = $f->{code} || $f->{handler};
         unless ( ref($code) eq 'CODE' ) {

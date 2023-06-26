@@ -226,7 +226,8 @@ SKIP: {
                 } else {
                     is($got, $expected, $name);
                 }
-                if ($ENV{MT_TEST_IGNORE_PHP_WARNINGS} && $php_error) {
+                my $ignore_php_warnings = __PACKAGE__->_check_ignore_php_warnings($block) || $ENV{MT_TEST_IGNORE_PHP_WARNINGS};
+                if ($ignore_php_warnings && $php_error) {
                     SKIP: {
                         local $TODO = 'for now';
                         ok !$php_error, 'no php warnings';
@@ -386,6 +387,19 @@ sub _check_skip_php {
     if (defined($skip_php)) {
         if (length($skip_php)) {
             return _filter_vars($skip_php);
+        } else {
+            return 1;
+        }
+    }
+    return;
+}
+
+sub _check_ignore_php_warnings {
+    my $block  = shift;
+    my $ignore = $block->ignore_php_warnings;
+    if (defined($ignore)) {
+        if (length($ignore)) {
+            return _filter_vars($ignore);
         } else {
             return 1;
         }

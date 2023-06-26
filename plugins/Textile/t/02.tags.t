@@ -19,8 +19,6 @@ BEGIN {
 
 use MT::Test 'has_php';
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db');
 
 use IPC::Open2;
