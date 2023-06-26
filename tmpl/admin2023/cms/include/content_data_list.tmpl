@@ -166,6 +166,8 @@ function loadContentDataList(offset) {
     opts.search = jQuery('#search').val();
   }
 
+  jQuery('#content-data-table tbody').remove();
+
   var canPagenate = true;
   jQuery.ajax({
     type: 'POST',
@@ -175,7 +177,6 @@ function loadContentDataList(offset) {
     data: opts,
     success: function (data) {
       if (data.html) {
-        jQuery('#content-data-table tbody').remove();
         jQuery('#content-data-table').append(data.html);
         if (data.pager) {
           renderPagination(data.pager);
