@@ -634,6 +634,7 @@ sub listing {
         my $data = {
             html  => $html,
             pager => $param->{pager_json},
+            $param->{have_more} ? (have_more => {limit => $param->{count_matches}}) : (),
         };
         $app->send_http_header("text/javascript+json");
         $app->print_encode( MT::Util::to_json($data) );

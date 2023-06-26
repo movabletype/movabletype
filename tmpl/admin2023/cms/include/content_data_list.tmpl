@@ -13,6 +13,10 @@
 </div>
 
   <mt:setvarblock name="list_actions">
+        <div id="have-more-count" class="mt-3">
+          <mtapp:svgicon id="ic_info">
+          <__trans phrase="Showing first [_1] results." params="<span id="have-more-limit"></span>">
+        </div>
         <div class="col indicator">
           <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" witdh="16" height="16" />
           <__trans phrase="Loading...">
@@ -147,6 +151,7 @@ function loadContentDataList(offset) {
   jQuery('#search').attr('disabled', 'disabled');
   jQuery('#search-button').attr('disabled', 'disabled');
   paginationHide();
+  jQuery('#have-more-count').hide();
 
   var opts = {
     offset: offset,
@@ -183,6 +188,12 @@ function loadContentDataList(offset) {
           renderPaginationForMobile(data.pager);
         } else {
           canPagenate = false;
+        }
+        if (data.have_more) {
+          jQuery('#have-more-limit').text(data.have_more.limit);
+          jQuery('#have-more-count').show();
+        } else {
+          jQuery('#have-more-count').hide();
         }
       }
       jQuery('tr.content-data-preview-data').hide();
