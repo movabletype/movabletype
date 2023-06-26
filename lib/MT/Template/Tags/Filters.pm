@@ -628,8 +628,7 @@ sub _fltr_regex_replace {
 
     # This one requires an array
     return $str unless ref($val) eq 'ARRAY';
-    my $patt    = $val->[0];
-    my $replace = $val->[1];
+    my ($patt, $replace) = map { defined $_ ? $_ : '' } @$val;
     if ( $patt =~ m!^(/)(.+)\1([A-Za-z]+)?$! ) {
         $patt = $2;
         my $global;
@@ -879,8 +878,7 @@ sub _fltr_replace {
 
     # This one requires an array
     return $str unless ref($val) eq 'ARRAY';
-    my $search  = $val->[0];
-    my $replace = $val->[1];
+    my ($search, $replace) = map { defined $_ ? $_ : '' } @$val;
     $str =~ s/\Q$search\E/$replace/g;
     return $str;
 }

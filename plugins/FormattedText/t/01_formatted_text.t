@@ -16,8 +16,6 @@ use MT::Test;
 use MT::Test::Permission;
 use MT;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db');
 
 my $mt = MT->instance;
