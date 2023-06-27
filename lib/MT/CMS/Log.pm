@@ -154,16 +154,10 @@ PERMCHECK: {
     }
     $param{'reset'}        = $app->param('reset');
     $param{nav_log}        = 1;
-    $param{feed_name}      = $app->translate("System Activity Feed");
     $param{screen_class}   = "list-log";
     $param{screen_id}      = "list-log";
     $param{listing_screen} = 1;
-    $param{feed_url}       = $app->make_feed_link( 'system',
-        $blog_id ? { blog_id => $blog_id } : undef );
 
-    if ( $param{feed_url} && $param{filter_args} ) {
-        $param{feed_url} .= $param{filter_args};
-    }
     $app->add_breadcrumb( $app->translate('Activity Log') );
     unless ( $app->param('blog_id') ) {
         $param{system_overview_nav} = 1;

@@ -24,7 +24,6 @@ BEGIN {
         'MT::App::CMS'           => 'cms',
         'MT::App::Comments'      => 'comments',
         'MT::App::Search'        => 'search',
-        'MT::App::ActivityFeeds' => 'feeds',
     );
     %api_map = (
         'MT::Template::Context::add_tag' => "Registry (path: tags, function)",

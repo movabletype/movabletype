@@ -1435,30 +1435,6 @@ BEGIN {
                 permission          => "access_to_entry_list",
                 data_api_permission => undef,
                 view                => [ 'website', 'blog' ],
-                feed_link           => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-
-                    if ( $app->blog ) {
-                        return 1
-                            if $app->user->can_do( 'get_entry_feed',
-                            at_least_one => 1 );
-                    }
-                    else {
-                        my $iter = MT->model('permission')->load_iter(
-                            {   author_id => $app->user->id,
-                                blog_id   => { not => 0 },
-                            }
-                        );
-                        my $cond;
-                        while ( my $p = $iter->() ) {
-                            $cond = 1, last
-                                if $p->can_do('get_entry_feed');
-                        }
-                        return $cond ? 1 : 0;
-                    }
-                    0;
-                },
             },
             page => {
                 object_label        => 'Page',
@@ -1468,30 +1444,6 @@ BEGIN {
                 permission          => 'access_to_page_list',
                 data_api_permission => undef,
                 view                => [ 'website', 'blog' ],
-                feed_link           => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-
-                    if ( $app->blog ) {
-                        return 1
-                            if $app->user->can_do( 'get_page_feed',
-                            at_least_one => 1 );
-                    }
-                    else {
-                        my $iter = MT->model('permission')->load_iter(
-                            {   author_id => $app->user->id,
-                                blog_id   => { not => 0 },
-                            }
-                        );
-                        my $cond;
-                        while ( my $p = $iter->() ) {
-                            $cond = 1, last
-                                if $p->can_do('get_page_feed');
-                        }
-                        return $cond ? 1 : 0;
-                    }
-                    0;
-                },
             },
             asset => {
                 object_label        => 'Asset',
@@ -1551,33 +1503,6 @@ BEGIN {
                     my $cnt = MT->model('permission')->count($terms);
                     return ( $cnt && $cnt > 0 ) ? 1 : 0;
                 },
-                feed_link => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-                    return 1 if $app->can_do('get_all_system_feed');
-
-                    if ( $app->blog ) {
-                        return 1
-                            if $app->user->can_do( 'get_system_feed',
-                            at_least_one => 1 );
-                    }
-                    else {
-                        my $iter = MT->model('permission')->load_iter(
-                            {   author_id => $app->user->id,
-                                blog_id   => { not => 0 },
-                            }
-                        );
-                        my $cond;
-                        while ( my $p = $iter->() ) {
-                            $cond = 1, last
-                                if $p->can_do('get_system_feed');
-                        }
-                        return $cond ? 1 : 0;
-                    }
-
-                    0;
-                },
-                feed_label   => 'Activity Feed',
                 screen_label => 'Activity Log',
             },
             category => {
@@ -1994,8 +1919,6 @@ BEGIN {
             'AutoChangeImageQuality' => { default => 1 },
             'NetPBMPath'             => undef,
             'AdminScript'            => { default => 'mt.cgi', },
-            'ActivityFeedScript'     => { default => 'mt-feed.cgi', },
-            'ActivityFeedItemLimit'  => { default => 50, },
             'CommentScript'          => { default => 'mt-comments.cgi', },
             'TrackbackScript'        => { default => 'mt-tb.cgi', },
             'SearchScript'           => {
@@ -2144,7 +2067,6 @@ BEGIN {
             'OutboundTrackbackDomains' => { type    => 'ARRAY', },
             'IndexBasename'            => { default => 'index', },
             'LogExportEncoding'        => { default => 'utf-8', },
-            'ActivityFeedsRunTasks'    => { default => 1, },
             'ExportEncoding'           => { default => 'utf-8', },
             'SQLSetNames'              => undef,
 
@@ -2346,7 +2268,6 @@ BEGIN {
             'BuilderModule' => { default => 'MT::Builder' },
             'HideConfigWarnings' => { default => undef },
             'GlobalTemplateMaxRevisions' => { default => 20 },
-            'DisableActivityFeeds' => { default => 0 },
             'DefaultStatsProvider' => { default => 'GoogleAnalyticsV4' },
             'DefaultListLimit' => { default => '50' },
             'WaitAfterReboot' => { default => '1.0' },
@@ -2357,10 +2278,6 @@ BEGIN {
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
-            'feeds' => {
-                handler => 'MT::App::ActivityFeeds',
-                script  => sub { MT->config->ActivityFeedScript },
-            },
             'wizard' => {
                 handler => 'MT::App::Wizard',
                 script  => sub {'mt-wizard.cgi'},

@@ -57,7 +57,6 @@ use_ok('MT::CMS::RebuildTrigger');
 use_ok('MT::CMS::Group');
 
 # Supporting applications
-use_ok('MT::App::ActivityFeeds');
 use_ok('MT::App::Upgrader');
 use_ok('MT::App::Wizard');
 
