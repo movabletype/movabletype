@@ -802,11 +802,6 @@ sub dialog_list_content_data {
 
     # TODO: permission check
 
-    my $search = $app->param('search');
-    if (defined $search && $search ne '') {
-        $app->param('is_limited',  1);
-        $app->param('search_cols', 'label,identifier');
-    }
     my $terms = {
         blog_id         => $blog->id,
         content_type_id => $content_field->related_content_type_id,
