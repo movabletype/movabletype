@@ -3863,22 +3863,6 @@ sub list_pref {
     $app->request( "list_pref_$list", $list_pref );
 }
 
-sub make_feed_link {
-    my $app = shift;
-    my ( $view, $params ) = @_;
-    my $user = $app->user;
-    return if ( $user->api_password || '' ) eq '';
-
-    $params ||= {};
-    $params->{view}     = $view;
-    $params->{username} = $user->name;
-    $params->{token} = perl_sha1_digest_hex( 'feed:' . $user->api_password );
-    $app->base
-        . $app->mt_path
-        . $app->config('ActivityFeedScript')
-        . $app->uri_params( args => $params );
-}
-
 sub show_error {
     my $app = shift;
     my ($param) = @_;

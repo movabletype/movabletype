@@ -726,43 +726,6 @@ not be saved. The callback has the following signature:
 
 =back
 
-=head2 MT::App::ActivityFeeds
-
-The Activity Feeds application handles the generation of various system
-activity feeds, based on the contents of the system activity log. The
-application uses callbacks to dispatch the creation of the feed. The
-callbacks that are used include:
-
-=over 4
-
-=item * ActivityFeed
-
-=item * ActivityFeed.system
-
-=item * ActivityFeed.comment
-
-=item * ActivityFeed.ping
-
-=item * ActivityFeed.entry
-
-=item * ActivityFeed.debug
-
-=item * ActivityFeed.blog
-
-All ActivityFeed callbacks have the same callback signature:
-
-    callback($cb, $app, $view, $feed)
-
-The C<$view> parameter is one of 'system', 'comment', 'ping', 'entry', 'blog',
-'debug', or whatever is given using the 'view' parameter to the activity
-feed script.
-
-The C<$feed> parameter is a scalar reference to a string-- the contents
-of the generated feed. Upon return, this value is printed out. The content
-should be an Atom-based feed.
-
-=back
-
 =head1 API Callbacks
 
 =head2 Publishing
