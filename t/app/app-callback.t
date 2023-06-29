@@ -53,6 +53,8 @@ applications:
 YAML
 }
 
+plan skip_all => 'Mockery does not work under RUN_APP_AS_CGI=1' if $ENV{MT_TEST_RUN_APP_AS_CGI};
+
 use MT::Test;
 use MT;
 use MT::Theme;
