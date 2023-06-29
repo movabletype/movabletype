@@ -394,6 +394,7 @@ sub read_config_db {
 }
 
 sub DESTROY {
+    return if defined ${^GLOBAL_PHASE} && ${^GLOBAL_PHASE} eq 'DESTRUCT';
 
     # save_config here so not to miss any dirty config change to persist
     # particularly for those which does not construct MT::App.
