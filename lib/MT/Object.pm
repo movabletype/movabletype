@@ -1169,14 +1169,22 @@ sub _assign_audited_fields {
         if ( $app && $app->can('user') ) {
             if ( my $user = $app->user ) {
                 if ( !defined $obj->created_on ) {
-                    $obj->created_by( $user->id );
-                    $orig_obj->created_by( $obj->created_by );
+                    # update only if the obj is new (without id) or at least has a column value
+                    # (ie. the obj is not fetched using fetchonly)
+                    if (!$obj->id or exists $obj->{column_values}{created_by}) {
+                        $obj->created_by( $user->id );
+                        $orig_obj->created_by( $obj->created_by );
+                    }
                 }
             }
         }
         unless ( $obj->created_on ) {
-            $obj->created_on($ts);
-            $orig_obj->created_on($ts);
+            # update only if the obj is new (without id) or at least has a column value
+            # (ie. the obj is not fetched using fetchonly)
+            if (!$obj->id or exists $obj->{column_values}{created_on}) {
+                $obj->created_on($ts);
+                $orig_obj->created_on($ts);
+            }
 
             # intentionally not calling modified_by to distinguish
             $obj->modified_on($ts);
