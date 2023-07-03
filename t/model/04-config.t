@@ -102,7 +102,7 @@ $cfg->clear_dirty;
 
 mkdir $db_dir;
 
-undef $MT::ConfigMgr::cfg;
+local $MT::ConfigMgr::cfg;
 ## Test that config file gets read correctly when passed to
 ## constructor.
 my $new_mt  = MT->construct(Config => $cfg_file, Directory => ".") or die MT->errstr;
