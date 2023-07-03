@@ -761,14 +761,14 @@ sub dialog_content_data_modal {
         content_field_id => [qw/ID/],
     }) or return;
 
-    my ( $can_multi, $content_type_id, $content_type_name );
+    my ( $can_multi, $content_type, $content_type_id, $content_type_name );
     my $content_field_id = $app->param('content_field_id');
     if ($content_field_id) {
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
             my $options = $content_field->options;
             $can_multi = $options->{multiple} ? 1 : 0;
             $content_type_id = $content_field->related_content_type_id;
-            if ( my $content_type = $content_field->related_content_type ) {
+            if ( $content_type = $content_field->related_content_type ) {
                 $content_type_name = $content_type->name;
             }
         }
@@ -779,9 +779,38 @@ sub dialog_content_data_modal {
         content_field_id  => $content_field_id,
         content_type_id   => $content_type_id,
         content_type_name => $content_type_name,
+        search_cols       => _search_cols($app, $content_type),
     };
 
     $app->load_tmpl( 'dialog/content_data_modal.tmpl', $param );
+}
+
+sub _search_cols {
+    my ($app, $content_type) = @_;
+    my $search_api  = $app->registry("search_apis")->{content_data};
+    my $search_cols = $search_api->{search_cols};
+    my @ret;
+    for my $key (keys %$search_cols) {
+        next if $key eq 'plugin';
+        my $field = $search_cols->{$key};
+        my %attr;
+        $attr{field} = $key;
+        if (ref($field) eq 'CODE') {
+            $attr{label} = $field->();
+        } elsif (exists($search_api->{plugin})) {
+            $attr{label} = $search_api->{plugin}->translate($field);
+        } else {
+            $attr{label} = $app->translate($field);
+        }
+        push @ret, \%attr;
+    }
+    for my $f (@{ $content_type->searchable_fields }) {
+        push @ret, {
+            field => '__field:' . $f->{id},
+            label => $f->{options}{label},
+        };
+    }
+    return \@ret;
 }
 
 sub dialog_list_content_data {

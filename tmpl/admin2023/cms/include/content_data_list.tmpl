@@ -3,6 +3,11 @@
 
 <div>
   <form action="" method="get" id="modal-search" class="form-inline">
+    <select id="search_cols" name="search_cols" class="list-inline-item m-2 custom-select form-control form-select">
+      <mt:loop name="search_cols">
+        <option class="form-check-label form-label" value="<mt:var name="field" escape="html">"><mt:var name="label" escape="html">
+      </mt:loop>
+    </select>
     <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="" placeholder="<__trans phrase="Search">" />
     <a href="#" class="d-inline-block" onclick="jQuery('#search-button:enabled').trigger('click'); return false;">
       <mtapp:svgicon id="ic_search" title="Search">
@@ -168,6 +173,8 @@ function loadContentDataList(offset) {
   };
 
   if (jQuery('#search').val().length > 0) {
+    opts.is_limited = 1;
+    opts.search_cols = jQuery('#search_cols').val();
     opts.search = jQuery('#search').val();
   }
 
