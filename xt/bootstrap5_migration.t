@@ -147,14 +147,14 @@ $filter->add_callbacks(
     },
 );
 
-my @lib_dirs = (
+my @lib_dirs = grep { -d $_ } (
     'lib',
     glob("plugins/*/lib"),
     glob("plugins/*/*.pl"),
     glob("plugins/*/config.yaml"),
-#    glob("addons/*/lib"),
-#    glob("addons/*/*.pl"),
-#    glob("addons/*/config.yaml"),
+    glob("addons/*/lib"),
+    glob("addons/*/*.pl"),
+    glob("addons/*/config.yaml"),
     glob("../movabletype-addons/addons/*/lib"),
     glob("../movabletype-addons/addons/*/*.pl"),
     glob("../movabletype-addons/addons/*/config.yaml"),
