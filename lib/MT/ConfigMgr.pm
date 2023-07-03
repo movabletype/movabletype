@@ -152,6 +152,7 @@ sub set_internal {
     my ( $var, $val, $db_flag ) = @_;
     $var = lc $var;
     $mgr->set_dirty() if defined($db_flag) && $db_flag;
+    $val = '' if $val eq q{''} or $val eq q{""};
     my $set = $db_flag ? '__dbvar' : '__var';
     if ( defined( my $alias = $mgr->{__settings}{$var}{alias} ) ) {
         if ( $max_depth < $depth ) {
@@ -336,7 +337,8 @@ sub stringify_config {
                 $data .= $key . ' ' . $v . "\n";
             }
         }
-        elsif ( defined $settings->{$_} and $settings->{$_} ne '' ) {
+        elsif ( defined $settings->{$_} ) {
+            $settings->{$_} = q{''} if $settings->{$_} eq '';
             $data .= $key . ' ' . $settings->{$_} . "\n";
         }
     }
