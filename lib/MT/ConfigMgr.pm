@@ -269,33 +269,6 @@ sub save_config {
     # prevent saving when the db row wasn't read already
     return 0 unless $mgr->{__read_db};
     return 0 unless $mgr->is_dirty();
-    my $data     = '';
-    my $settings = $mgr->{__dbvar};
-    foreach ( sort keys %$settings ) {
-        my $type = ( $mgr->{__settings}{$_}{type} || '' );
-        my $key  = $mgr->{__settings}{$_}{key};
-        if (!$key) {
-            warn "Config directive '$_' is not defined" if $MT::DebugMode;
-            next;
-        }
-        delete $mgr->{__settings}{$_}{dirty}
-            if exists $mgr->{__settings}{$_}{dirty};
-        if ( $type eq 'HASH' ) {
-            my $h = $settings->{$_};
-            foreach my $k ( sort keys %$h ) {
-                $data .= $key . ' ' . $k . '=' . $h->{$k} . "\n";
-            }
-        }
-        elsif ( $type eq 'ARRAY' ) {
-            my $a = $settings->{$_};
-            foreach my $v (@$a) {
-                $data .= $key . ' ' . $v . "\n";
-            }
-        }
-        elsif ( defined $settings->{$_} and $settings->{$_} ne '' ) {
-            $data .= $key . ' ' . $settings->{$_} . "\n";
-        }
-    }
 
     my $cfg_class = MT->model('config') or return;
 
@@ -308,6 +281,8 @@ sub save_config {
     unless ($config) {
         $config = $cfg_class->new;
     }
+
+    my $data = $mgr->stringify_config;
 
     if ( $data !~ m/^schemaversion/im ) {
         if ( $config->id
@@ -332,6 +307,36 @@ sub save_config {
     $config->save;
     $mgr->clear_dirty;
     1;
+}
+
+sub stringify_config {
+    my $mgr      = shift;
+    my $data     = '';
+    my $settings = $mgr->{__dbvar};
+    foreach ( sort keys %$settings ) {
+        my $type = $mgr->{__settings}{$_}{type} || '';
+        my $key  = $mgr->{__settings}{$_}{key};
+        if (!$key) {
+            warn "Config directive '$_' is not defined" if $MT::DebugMode;
+            next;
+        }
+        if ( $type eq 'HASH' ) {
+            my $h = $settings->{$_};
+            foreach my $k ( sort keys %$h ) {
+                $data .= $key . ' ' . $k . '=' . $h->{$k} . "\n";
+            }
+        }
+        elsif ( $type eq 'ARRAY' ) {
+            my $a = $settings->{$_};
+            foreach my $v (@$a) {
+                $data .= $key . ' ' . $v . "\n";
+            }
+        }
+        elsif ( defined $settings->{$_} and $settings->{$_} ne '' ) {
+            $data .= $key . ' ' . $settings->{$_} . "\n";
+        }
+    }
+    return $data;
 }
 
 sub read_config_file {
