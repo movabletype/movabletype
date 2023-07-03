@@ -271,6 +271,12 @@ sub seed_database {
               $website->errstr
           )
           );
+
+      # disable data api by default
+      require MT::CMS::Blog;
+      MT::CMS::Blog::save_data_api_settings( $App, $website->id, 0 );
+      MT::CMS::Blog::save_data_api_settings( $App, 0, 0 );
+
       MT->run_callbacks( 'blog_template_set_change', { blog => $website } );
       $author->save;
 
