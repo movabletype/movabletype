@@ -43,6 +43,7 @@ ok !$mt_config->is_dirty, "not dirty";
 
 my $cfg = MT::ConfigMgr->new;
 isa_ok($cfg, 'MT::ConfigMgr');
+isnt $cfg => $mt_config, "new config is different from the config stored in the MT instance";
 $cfg->define($mt->registry('config_settings'));
 ok($cfg->read_config($cfg_file), "read '$cfg_file'");
 
@@ -109,6 +110,8 @@ my $new_cfg = $new_mt->{cfg};
 isa_ok($new_mt,  'MT');
 isa_ok($new_cfg, 'MT::ConfigMgr');
 is($new_cfg->Database, $db_dir . '/mt.db', "DataSource=$db_dir");
+isnt $new_cfg => $cfg,       "new config is different from the previous config";
+isnt $new_cfg => $mt_config, "new config is also different from the config stored in the first MT instance";
 
 foreach my $key (
     qw{ UserSessionCookiePath UserSessionCookieName ProcessMemoryCommand SecretToken }
