@@ -19,7 +19,6 @@ use MT::Test;
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );
-plan tests => 42;
 
 use MT;
 use MT::ConfigMgr;
@@ -135,3 +134,5 @@ is_deeply(
 );
 
 unlink $cfg_file or die "Can't unlink '$cfg_file': $!";
+
+done_testing;
