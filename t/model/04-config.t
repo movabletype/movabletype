@@ -23,10 +23,8 @@ use File::Temp qw( tempfile );
 use MT;
 use MT::ConfigMgr;
 
-my ( $cfg_file, $cfg, $mt );
-
 my $db_dir = $test_env->path('db');
-( my ($fh), $cfg_file ) = tempfile();
+my ($fh, $cfg_file) = tempfile();
 print $fh <<CFG;
 Database $db_dir/mt.db
 ObjectDriver DBI::SQLite 
@@ -37,9 +35,13 @@ AltTemplatePath alt-bar
 CFG
 close $fh;
 
-$cfg = MT->config;
-isa_ok( $cfg, 'MT::ConfigMgr' );
-ok( $cfg->read_config($cfg_file), "read '$cfg_file'" );
+my $mt        = MT->instance;
+my $mt_config = $mt->config;
+
+my $cfg = MT::ConfigMgr->new;
+isa_ok($cfg, 'MT::ConfigMgr');
+$cfg->define($mt->registry('config_settings'));
+ok($cfg->read_config($cfg_file), "read '$cfg_file'");
 
 ## Test standard get/set
 is( $cfg->get('Database'), $db_dir . '/mt.db', "get(DataSource)=$db_dir" );
@@ -97,38 +99,40 @@ mkdir $db_dir;
 undef $MT::ConfigMgr::cfg;
 ## Test that config file gets read correctly when passed to
 ## constructor.
-$mt = MT->new( Config => $cfg_file, Directory => "." ) or die MT->errstr;
-if ( !$mt ) { print "# MT constructor returned error: ", MT->errstr(); }
-isa_ok( $mt,        'MT' );
-isa_ok( $mt->{cfg}, 'MT::ConfigMgr' );
-is( $mt->{cfg}->Database, $db_dir . '/mt.db', "DataSource=$db_dir" );
+my $new_mt  = MT->construct(Config => $cfg_file, Directory => ".") or die MT->errstr;
+my $new_cfg = $new_mt->{cfg};
+isa_ok($new_mt,  'MT');
+isa_ok($new_cfg, 'MT::ConfigMgr');
+is($new_cfg->Database, $db_dir . '/mt.db', "DataSource=$db_dir");
 
 foreach my $key (
     qw{ UserSessionCookiePath UserSessionCookieName ProcessMemoryCommand SecretToken }
     )
 {
-    my $value = $cfg->get($key);
+    my $value = $new_cfg->get($key);
     ok( length($value), "Config $key is not empty" );
-    is_deeply( $cfg->get($key), $value,
-        "Config $key returns the same value twice" );
+    is_deeply(
+        $new_cfg->get($key), $value,
+        "Config $key returns the same value twice"
+    );
     if ( $key eq 'SecretToken' ) {
         like( $value, qr/^[a-zA-Z0-9]{40}$/, 'Secret Token Generated' );
     }
-    $cfg->set( $key, 'Avocado' );
-    is( $cfg->get($key), 'Avocado', "Config $key is set-able" );
+    $new_cfg->set($key, 'Avocado');
+    is($new_cfg->get($key), 'Avocado', "Config $key is set-able");
 }
 
 ## Test init_config path conversion
-$mt->init_config;
-my @altpaths = $mt->{cfg}->AltTemplatePath;
-is( $mt->{cfg}->type('AltTemplatePath'), 'ARRAY', 'AltTemplatePath=ARRAY' );
+$new_mt->init_config;
+my @altpaths = $new_cfg->AltTemplatePath;
+is($new_cfg->type('AltTemplatePath'), 'ARRAY', 'AltTemplatePath=ARRAY');
 is( @altpaths,                    2,       'paths=2' );
 ok( File::Spec->file_name_is_absolute($altpaths[0]),  'alt-foo becomes absolute' );
 ok( File::Spec->file_name_is_absolute($altpaths[1]),  'alt-bar becomes absolute' );
 
 ## Test FTPSOptions default (MTC-26629)
 is_deeply(
-    $cfg->FTPSOptions,
+    $new_cfg->FTPSOptions,
     { ReuseSession => 1 },
     'FTPSOptions ReuseSession=>1'
 );
