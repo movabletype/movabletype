@@ -32,6 +32,7 @@ AltTemplate foo bar
 AltTemplate baz quux
 AltTemplatePath alt-foo
 AltTemplatePath alt-bar
+EmptyString ''
 CFG
 close $fh;
 
@@ -140,6 +141,16 @@ is_deeply(
     { ReuseSession => 1 },
     'FTPSOptions ReuseSession=>1'
 );
+
+## Test empty string conversion
+is $new_cfg->get('EmptyString') => '', "got an empty string";
+
+$new_cfg->set('AdminThemeId', '', 1), "set AdminThemeId to an empty string";
+
+my $data = $new_cfg->stringify_config;
+like $data => qr/AdminThemeId ''/, "empty string is correctly stringified";
+
+$new_cfg->clear_dirty;
 
 unlink $cfg_file or die "Can't unlink '$cfg_file': $!";
 
