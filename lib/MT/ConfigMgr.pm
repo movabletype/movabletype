@@ -358,6 +358,7 @@ sub read_config_file {
         MT->translate( "Error opening file '[_1]': [_2]", $cfg_file, "$!" ) );
     my $line = 0;
 
+    my $was_dirty = $mgr->is_dirty;
     while (<$FH>) {
         chomp;
         $line++;
@@ -374,6 +375,8 @@ sub read_config_file {
         $mgr->set( $var, $val );
     }
     close $FH;
+
+    $mgr->clear_dirty unless $was_dirty;
     1;
 }
 
