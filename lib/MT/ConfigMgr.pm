@@ -139,7 +139,7 @@ sub default {
         }
         elsif ( $type eq 'HASH' ) {
             if ( ref $def ne 'HASH' ) {
-                ( my ($key), my ($val) ) = split /=/, $def;
+                my ($key, $val) = split /=/, $def, 2;
                 return { $key => $val };
             }
         }
@@ -175,9 +175,13 @@ sub set_internal {
             if ( ref $val eq 'HASH' ) {
                 $mgr->{$set}{$var} = $val;
             }
-            else {
-                ( my ($key), $val ) = split /=/, $val;
+            elsif ($val && $val =~ /=/) {
+                ( my ($key), $val ) = split /=/, $val, 2;
                 $mgr->{$set}{$var}{$key} = $val;
+            }
+            else {
+                $val = '' unless defined $val;
+                warn "Illegal value for hash-typed config directive '$var': $val" if $MT::DebugMode;
             }
         }
         else {
