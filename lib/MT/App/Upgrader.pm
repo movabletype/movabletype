@@ -471,11 +471,11 @@ sub init_website {
         $param{languages}
           = MT::I18N::languages_list( $app, $app->current_language );
 
-        return $app->build_page( 'site.tmpl', \%param );
+        return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
     if ( $param{'support_unwritable'} ) {
-        return $app->build_page( 'site.tmpl', \%param );
+        return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
     # check to publishing path (writable?)
@@ -499,7 +499,7 @@ sub init_website {
         if ( $s_path !~ m/^$l_path/i ) {
             $param{error} = $app->translate(
                 "The 'Website Root' provided below is not allowed");
-            return $app->build_page( 'site.tmpl', \%param );
+            return $app->build_page( 'setup_initial_website.tmpl', \%param );
         }
     }
     if ( !-w $site_path ) {
@@ -507,7 +507,7 @@ sub init_website {
             "The 'Website Root' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click 'Finish Install' again.",
             $param{website_path}
         );
-        return $app->build_page( 'site.tmpl', \%param );
+        return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
     my %config = $app->unserialize_config();
