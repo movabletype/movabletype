@@ -37,6 +37,8 @@ close $fh;
 
 my $mt        = MT->instance;
 my $mt_config = $mt->config;
+$mt_config->clear_dirty;
+ok !$mt_config->is_dirty, "not dirty";
 
 my $cfg = MT::ConfigMgr->new;
 isa_ok($cfg, 'MT::ConfigMgr');
@@ -93,6 +95,8 @@ is_deeply(
 ok( !$cfg->is_readonly('ObjectDriver'),
     'Now, the "ObjectDriver" is writable'
 );
+
+$cfg->clear_dirty;
 
 mkdir $db_dir;
 
