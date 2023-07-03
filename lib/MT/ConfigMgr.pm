@@ -273,26 +273,27 @@ sub save_config {
     my $settings = $mgr->{__dbvar};
     foreach ( sort keys %$settings ) {
         my $type = ( $mgr->{__settings}{$_}{type} || '' );
+        my $key  = $mgr->{__settings}{$_}{key};
+        if (!$key) {
+            warn "Config directive '$_' is not defined" if $MT::DebugMode;
+            next;
+        }
         delete $mgr->{__settings}{$_}{dirty}
             if exists $mgr->{__settings}{$_}{dirty};
         if ( $type eq 'HASH' ) {
             my $h = $settings->{$_};
             foreach my $k ( sort keys %$h ) {
-                $data
-                    .= $mgr->{__settings}{$_}{key} . ' '
-                    . $k . '='
-                    . $h->{$k} . "\n";
+                $data .= $key . ' ' . $k . '=' . $h->{$k} . "\n";
             }
         }
         elsif ( $type eq 'ARRAY' ) {
             my $a = $settings->{$_};
             foreach my $v (@$a) {
-                $data .= $mgr->{__settings}{$_}{key} . ' ' . $v . "\n";
+                $data .= $key . ' ' . $v . "\n";
             }
         }
         elsif ( defined $settings->{$_} and $settings->{$_} ne '' ) {
-            $data
-                .= $mgr->{__settings}{$_}{key} . ' ' . $settings->{$_} . "\n";
+            $data .= $key . ' ' . $settings->{$_} . "\n";
         }
     }
 
