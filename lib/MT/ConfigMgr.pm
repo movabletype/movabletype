@@ -203,10 +203,11 @@ sub set {
 }
 
 sub is_readonly {
-    my $class = shift;
+    my $mgr = shift;
+    $mgr = $mgr->instance unless ref $mgr;
     my ($var) = @_;
-    return ( !$class->is_overwritable($var)
-            && defined $class->instance->{__var}{ lc $var } ) ? 1 : 0;
+    return ( !$mgr->is_overwritable($var)
+            && defined $mgr->{__var}{ lc $var } ) ? 1 : 0;
 }
 
 sub overwritable_keys {
@@ -222,14 +223,15 @@ sub overwritable_keys {
 }
 
 sub is_overwritable {
-    my $class = shift;
-    my $var   = lc shift;
-    return $class->instance->{__overwritable_keys}{$var};
+    my $mgr = shift;
+    my $var = lc shift;
+    $mgr = $mgr->instance unless ref $mgr;
+    return $mgr->{__overwritable_keys}{$var};
 }
 
 sub read_config {
-    my $class = shift;
-    return $class->read_config_file(@_);
+    my $mgr = shift;
+    return $mgr->read_config_file(@_);
 }
 
 sub set_dirty {
@@ -261,8 +263,8 @@ sub is_dirty {
 }
 
 sub save_config {
-    my $class = shift;
-    my $mgr   = $class->instance;
+    my $mgr = shift;
+    $mgr = $mgr->instance unless ref $mgr;
 
     # prevent saving when the db row wasn't read already
     return 0 unless $mgr->{__read_db};
@@ -332,15 +334,15 @@ sub save_config {
 }
 
 sub read_config_file {
-    my $class      = shift;
+    my $mgr        = shift;
     my ($cfg_file) = @_;
-    my $mgr        = $class->instance;
+    $mgr = $mgr->instance unless ref $mgr;
     $mgr->{__var} = {};
     local $_;
     local $/ = "\n";
     die "Cannot read config without config file name" if !$cfg_file;
     open my $FH, "<", $cfg_file
-        or return $class->error(
+        or return $mgr->error(
         MT->translate( "Error opening file '[_1]': [_2]", $cfg_file, "$!" ) );
     my $line = 0;
 
@@ -349,7 +351,7 @@ sub read_config_file {
         $line++;
         next if !/\S/ || /^#/;
         my ( $var, $val ) = $_ =~ /^\s*(\S+)\s+(.*)$/;
-        return $class->error(
+        return $mgr->error(
             MT->translate(
                 "Config directive [_1] without value at [_2] line [_3]",
                 $var, $cfg_file, $line
@@ -364,9 +366,9 @@ sub read_config_file {
 }
 
 sub read_config_db {
-    my $class     = shift;
-    my $mgr       = $class->instance;
+    my $mgr       = shift;
     my $cfg_class = MT->model('config') or return;
+    $mgr = $mgr->instance unless ref $mgr;
 
     $mgr->{__dbvar} = {};
 
