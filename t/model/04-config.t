@@ -3,13 +3,13 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
-        DefaultLanguage => 'en_US',  ## for now
+        DefaultLanguage => 'en_US',    ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -48,53 +48,62 @@ $cfg->define($mt->registry('config_settings'));
 ok($cfg->read_config($cfg_file), "read '$cfg_file'");
 
 ## Test standard get/set
-is( $cfg->get('Database'), $db_dir . '/mt.db', "get(DataSource)=$db_dir" );
-$cfg->set( 'DataSource', './db2' );
-is( $cfg->get('DataSource'), './db2', 'get(DataSource)=./db2' );
+is($cfg->get('Database'), $db_dir . '/mt.db', "get(DataSource)=$db_dir");
+$cfg->set('DataSource', './db2');
+is($cfg->get('DataSource'), './db2', 'get(DataSource)=./db2');
 
 ## Test autoloaded methods
-is( $cfg->DataSource, './db2', 'autoloaded DataSource=./db2' );
+is($cfg->DataSource, './db2', 'autoloaded DataSource=./db2');
 $cfg->DataSource('./db');
-is( $cfg->DataSource, './db', 'autoloaded DataSource=./db2' );
+is($cfg->DataSource, './db', 'autoloaded DataSource=./db2');
 
 ## Test defaults
-is( $cfg->Serializer, 'MT', 'Serializer=MT' );
-is( $cfg->TimeOffset, 0,    'TimeOffset=0' );
+is($cfg->Serializer, 'MT', 'Serializer=MT');
+is($cfg->TimeOffset, 0,    'TimeOffset=0');
 
 ## Test that multiple settings (AltTemplate) work.
 my @paths = $cfg->AltTemplate;
-is( $cfg->type('AltTemplate'), 'ARRAY', 'AltTemplate=ARRAY' );
-is( @paths,                    2,       'paths=2' );
-is( ( $cfg->AltTemplate )[0], 'foo bar',  'foo bar' );
-is( ( $cfg->AltTemplate )[1], 'baz quux', 'baz quux' );
+is($cfg->type('AltTemplate'), 'ARRAY',    'AltTemplate=ARRAY');
+is(@paths,                    2,          'paths=2');
+is(($cfg->AltTemplate)[0],    'foo bar',  'foo bar');
+is(($cfg->AltTemplate)[1],    'baz quux', 'baz quux');
 
 ## Test bug in early version of ConfigMgr where space was not
 ## stripped from the ends of values
-is( $cfg->ObjectDriver, 'DBI::SQLite', 'ObjectDriver=SQLite' );
+is($cfg->ObjectDriver, 'DBI::SQLite', 'ObjectDriver=SQLite');
 
-is( $cfg->AdminCGIPath, $cfg->CGIPath,
-    'By default, AdminCGIPath is CGIPath' );
-$cfg->set( 'AdminCGIPath', '/cgi-bin/mt/' );
-isnt( $cfg->AdminCGIPath, $cfg->CGIPath,
-    'after change, AdminCGIPath is not CGIPath' );
-is( $cfg->AdminCGIPath, '/cgi-bin/mt/', 'AdminCGIPath is now set' );
+is(
+    $cfg->AdminCGIPath, $cfg->CGIPath,
+    'By default, AdminCGIPath is CGIPath'
+);
+$cfg->set('AdminCGIPath', '/cgi-bin/mt/');
+isnt(
+    $cfg->AdminCGIPath, $cfg->CGIPath,
+    'after change, AdminCGIPath is not CGIPath'
+);
+is($cfg->AdminCGIPath, '/cgi-bin/mt/', 'AdminCGIPath is now set');
 
 # Read / Write settings
-ok( $cfg->is_readonly('ObjectDriver'),
-    'The key specified by file is readonly by default' );
-ok( !$cfg->is_readonly('UserSessionCookiePath'),
-    'The key specified by program or database is not readonly' );
+ok(
+    $cfg->is_readonly('ObjectDriver'),
+    'The key specified by file is readonly by default'
+);
+ok(
+    !$cfg->is_readonly('UserSessionCookiePath'),
+    'The key specified by program or database is not readonly'
+);
 is_deeply(
     $cfg->overwritable_keys('ObjectDriver'),
-    [ lc 'ObjectDriver' ],
+    [lc 'ObjectDriver'],
     'Update overwritable_keys by list'
 );
 is_deeply(
-    $cfg->overwritable_keys( ['ObjectDriver'] ),
-    [ lc 'ObjectDriver' ],
+    $cfg->overwritable_keys(['ObjectDriver']),
+    [lc 'ObjectDriver'],
     'Update overwritable_keys by reference'
 );
-ok( !$cfg->is_readonly('ObjectDriver'),
+ok(
+    !$cfg->is_readonly('ObjectDriver'),
     'Now, the "ObjectDriver" is writable'
 );
 
@@ -113,18 +122,15 @@ is($new_cfg->Database, $db_dir . '/mt.db', "DataSource=$db_dir");
 isnt $new_cfg => $cfg,       "new config is different from the previous config";
 isnt $new_cfg => $mt_config, "new config is also different from the config stored in the first MT instance";
 
-foreach my $key (
-    qw{ UserSessionCookiePath UserSessionCookieName ProcessMemoryCommand SecretToken }
-    )
-{
+foreach my $key (qw{ UserSessionCookiePath UserSessionCookieName ProcessMemoryCommand SecretToken }) {
     my $value = $new_cfg->get($key);
-    ok( length($value), "Config $key is not empty" );
+    ok(length($value), "Config $key is not empty");
     is_deeply(
         $new_cfg->get($key), $value,
         "Config $key returns the same value twice"
     );
-    if ( $key eq 'SecretToken' ) {
-        like( $value, qr/^[a-zA-Z0-9]{40}$/, 'Secret Token Generated' );
+    if ($key eq 'SecretToken') {
+        like($value, qr/^[a-zA-Z0-9]{40}$/, 'Secret Token Generated');
     }
     $new_cfg->set($key, 'Avocado');
     is($new_cfg->get($key), 'Avocado', "Config $key is set-able");
@@ -134,9 +140,9 @@ foreach my $key (
 $new_mt->init_config;
 my @altpaths = $new_cfg->AltTemplatePath;
 is($new_cfg->type('AltTemplatePath'), 'ARRAY', 'AltTemplatePath=ARRAY');
-is( @altpaths,                    2,       'paths=2' );
-ok( File::Spec->file_name_is_absolute($altpaths[0]),  'alt-foo becomes absolute' );
-ok( File::Spec->file_name_is_absolute($altpaths[1]),  'alt-bar becomes absolute' );
+is(@altpaths,                         2,       'paths=2');
+ok(File::Spec->file_name_is_absolute($altpaths[0]), 'alt-foo becomes absolute');
+ok(File::Spec->file_name_is_absolute($altpaths[1]), 'alt-bar becomes absolute');
 
 ## Test FTPSOptions default (MTC-26629)
 is_deeply(
