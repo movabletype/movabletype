@@ -338,8 +338,9 @@ sub stringify_config {
             }
         }
         elsif ( defined $settings->{$_} ) {
-            $settings->{$_} = q{''} if $settings->{$_} eq '';
-            $data .= $key . ' ' . $settings->{$_} . "\n";
+            my $value = $settings->{$_};
+            $value = q{''} if $value eq '';
+            $data .= $key . ' ' . $value . "\n";
         }
     }
     return $data;
