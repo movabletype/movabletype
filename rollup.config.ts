@@ -12,7 +12,7 @@ import css from "rollup-plugin-css-only";
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
-  input: ["mt-static/svelte/src/bootstrap.ts"].concat(glob.sync("mt-static/svelte/src/api/*.ts")),
+  input: ["mt-static/svelte/src/bootstrap.ts", "mt-static/svelte/src/listing.ts"].concat(glob.sync("mt-static/svelte/src/api/*.ts")),
   output: {
     dir: "mt-static/svelte/build",
     format: "esm",
