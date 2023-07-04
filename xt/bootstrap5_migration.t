@@ -83,7 +83,7 @@ $filter->add_callbacks(
                 info "$file: replace custom-select with form-select: $html" if grep /custom-select/, @classes;
 
                 if ($name eq 'label') {
-                    fail "$file: $name has no form-label: $html" unless $class_map{'form-label'};
+                    fail "$file: $name has no form-label: $html" unless $class_map{'form-label'} || $class_map{'form-check-label'};
                 }
                 if ($name eq 'select') {
                     fail "$file: $name has no form-select: $html" unless $class_map{'form-select'};
