@@ -492,8 +492,4 @@ sub setup {
 
     #my $multiblog = MT->component('multiblog');
     #$multiblog->save_config( undef, 'system' );
-
-    if (my $slu = MT->component('spamlookup/spamlookup.pl')) {
-        $slu->save_config( undef, 'system' );
-    }
 }
