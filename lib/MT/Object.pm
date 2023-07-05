@@ -1169,9 +1169,9 @@ sub _assign_audited_fields {
         if ( $app && $app->can('user') ) {
             if ( my $user = $app->user ) {
                 if ( !defined $obj->created_on ) {
-                    # update only if the obj is new (without id) or at least has a column value
+                    # update only if the obj is new (not stored) or at least has a column value
                     # (ie. the obj is not fetched using fetchonly)
-                    if (!$obj->id or exists $obj->{column_values}{created_by}) {
+                    if (!$obj->object_is_stored or exists $obj->{column_values}{created_by}) {
                         $obj->created_by( $user->id );
                         $orig_obj->created_by( $obj->created_by );
                     }
@@ -1179,9 +1179,9 @@ sub _assign_audited_fields {
             }
         }
         unless ( $obj->created_on ) {
-            # update only if the obj is new (without id) or at least has a column value
+            # update only if the obj is new (not stored) or at least has a column value
             # (ie. the obj is not fetched using fetchonly)
-            if (!$obj->id or exists $obj->{column_values}{created_on}) {
+            if (!$obj->object_is_stored or exists $obj->{column_values}{created_on}) {
                 $obj->created_on($ts);
                 $orig_obj->created_on($ts);
             }
