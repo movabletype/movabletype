@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.3.1 (2022-12-06)
+ * TinyMCE version 6.5.1 (2023-06-19)
  */
 
 (function () {
@@ -383,7 +383,39 @@
       return true;
     };
 
-    typeof window !== 'undefined' ? window : Function('return this;')();
+    const Global = typeof window !== 'undefined' ? window : Function('return this;')();
+
+    const path = (parts, scope) => {
+      let o = scope !== undefined && scope !== null ? scope : Global;
+      for (let i = 0; i < parts.length && o !== undefined && o !== null; ++i) {
+        o = o[parts[i]];
+      }
+      return o;
+    };
+    const resolve$2 = (p, scope) => {
+      const parts = p.split('.');
+      return path(parts, scope);
+    };
+
+    const unsafe = (name, scope) => {
+      return resolve$2(name, scope);
+    };
+    const getOrDie = (name, scope) => {
+      const actual = unsafe(name, scope);
+      if (actual === undefined || actual === null) {
+        throw new Error(name + ' not available on this browser');
+      }
+      return actual;
+    };
+
+    const getPrototypeOf = Object.getPrototypeOf;
+    const sandHTMLElement = scope => {
+      return getOrDie('HTMLElement', scope);
+    };
+    const isPrototypeOf = x => {
+      const scope = resolve$2('ownerDocument.defaultView', x);
+      return isObject(x) && (sandHTMLElement(scope).prototype.isPrototypeOf(x) || /^HTML\w*Element$/.test(getPrototypeOf(x).constructor.name));
+    };
 
     const COMMENT = 8;
     const DOCUMENT = 9;
@@ -398,6 +430,7 @@
     const type = element => element.dom.nodeType;
     const isType = t => element => type(element) === t;
     const isComment = element => type(element) === COMMENT || name(element) === '#comment';
+    const isHTMLElement = element => isElement(element) && isPrototypeOf(element.dom);
     const isElement = isType(ELEMENT);
     const isText = isType(TEXT);
     const isDocument = isType(DOCUMENT);
@@ -2173,13 +2206,14 @@
 
     const getEnd = element => name(element) === 'img' ? 1 : getOption(element).fold(() => children$2(element).length, v => v.length);
     const isTextNodeWithCursorPosition = el => getOption(el).filter(text => text.trim().length !== 0 || text.indexOf(nbsp) > -1).isSome();
+    const isContentEditableFalse = elem => isHTMLElement(elem) && get$b(elem, 'contenteditable') === 'false';
     const elementsWithCursorPosition = [
       'img',
       'br'
     ];
     const isCursorPosition = elem => {
       const hasCursorPosition = isTextNodeWithCursorPosition(elem);
-      return hasCursorPosition || contains$2(elementsWithCursorPosition, name(elem));
+      return hasCursorPosition || contains$2(elementsWithCursorPosition, name(elem)) || isContentEditableFalse(elem);
     };
 
     const first = element => descendant$1(element, isCursorPosition);
@@ -2245,7 +2279,6 @@
         });
         return foldr(parents, (last, parent) => {
           const clonedFormat = shallow(parent);
-          remove$7(clonedFormat, 'contenteditable');
           append$1(last, clonedFormat);
           return clonedFormat;
         }, newCell);
@@ -2323,6 +2356,150 @@
     };
     const fromDom = nodes => map$1(nodes, SugarElement.fromDom);
 
+    const option = name => editor => editor.options.get(name);
+    const defaultWidth = '100%';
+    const getPixelForcedWidth = editor => {
+      var _a;
+      const dom = editor.dom;
+      const parentBlock = (_a = dom.getParent(editor.selection.getStart(), dom.isBlock)) !== null && _a !== void 0 ? _a : editor.getBody();
+      return getInner(SugarElement.fromDom(parentBlock)) + 'px';
+    };
+    const determineDefaultTableStyles = (editor, defaultStyles) => {
+      if (isTableResponsiveForced(editor) || !shouldStyleWithCss(editor)) {
+        return defaultStyles;
+      } else if (isTablePixelsForced(editor)) {
+        return {
+          ...defaultStyles,
+          width: getPixelForcedWidth(editor)
+        };
+      } else {
+        return {
+          ...defaultStyles,
+          width: defaultWidth
+        };
+      }
+    };
+    const determineDefaultTableAttributes = (editor, defaultAttributes) => {
+      if (isTableResponsiveForced(editor) || shouldStyleWithCss(editor)) {
+        return defaultAttributes;
+      } else if (isTablePixelsForced(editor)) {
+        return {
+          ...defaultAttributes,
+          width: getPixelForcedWidth(editor)
+        };
+      } else {
+        return {
+          ...defaultAttributes,
+          width: defaultWidth
+        };
+      }
+    };
+    const register = editor => {
+      const registerOption = editor.options.register;
+      registerOption('table_clone_elements', { processor: 'string[]' });
+      registerOption('table_use_colgroups', {
+        processor: 'boolean',
+        default: true
+      });
+      registerOption('table_header_type', {
+        processor: value => {
+          const valid = contains$2([
+            'section',
+            'cells',
+            'sectionCells',
+            'auto'
+          ], value);
+          return valid ? {
+            value,
+            valid
+          } : {
+            valid: false,
+            message: 'Must be one of: section, cells, sectionCells or auto.'
+          };
+        },
+        default: 'section'
+      });
+      registerOption('table_sizing_mode', {
+        processor: 'string',
+        default: 'auto'
+      });
+      registerOption('table_default_attributes', {
+        processor: 'object',
+        default: { border: '1' }
+      });
+      registerOption('table_default_styles', {
+        processor: 'object',
+        default: { 'border-collapse': 'collapse' }
+      });
+      registerOption('table_column_resizing', {
+        processor: value => {
+          const valid = contains$2([
+            'preservetable',
+            'resizetable'
+          ], value);
+          return valid ? {
+            value,
+            valid
+          } : {
+            valid: false,
+            message: 'Must be preservetable, or resizetable.'
+          };
+        },
+        default: 'preservetable'
+      });
+      registerOption('table_resize_bars', {
+        processor: 'boolean',
+        default: true
+      });
+      registerOption('table_style_by_css', {
+        processor: 'boolean',
+        default: true
+      });
+      registerOption('table_merge_content_on_paste', {
+        processor: 'boolean',
+        default: true
+      });
+    };
+    const getTableCloneElements = editor => {
+      return Optional.from(editor.options.get('table_clone_elements'));
+    };
+    const hasTableObjectResizing = editor => {
+      const objectResizing = editor.options.get('object_resizing');
+      return contains$2(objectResizing.split(','), 'table');
+    };
+    const getTableHeaderType = option('table_header_type');
+    const getTableColumnResizingBehaviour = option('table_column_resizing');
+    const isPreserveTableColumnResizing = editor => getTableColumnResizingBehaviour(editor) === 'preservetable';
+    const isResizeTableColumnResizing = editor => getTableColumnResizingBehaviour(editor) === 'resizetable';
+    const getTableSizingMode = option('table_sizing_mode');
+    const isTablePercentagesForced = editor => getTableSizingMode(editor) === 'relative';
+    const isTablePixelsForced = editor => getTableSizingMode(editor) === 'fixed';
+    const isTableResponsiveForced = editor => getTableSizingMode(editor) === 'responsive';
+    const hasTableResizeBars = option('table_resize_bars');
+    const shouldStyleWithCss = option('table_style_by_css');
+    const shouldMergeContentOnPaste = option('table_merge_content_on_paste');
+    const getTableDefaultAttributes = editor => {
+      const options = editor.options;
+      const defaultAttributes = options.get('table_default_attributes');
+      return options.isSet('table_default_attributes') ? defaultAttributes : determineDefaultTableAttributes(editor, defaultAttributes);
+    };
+    const getTableDefaultStyles = editor => {
+      const options = editor.options;
+      const defaultStyles = options.get('table_default_styles');
+      return options.isSet('table_default_styles') ? defaultStyles : determineDefaultTableStyles(editor, defaultStyles);
+    };
+    const tableUseColumnGroup = option('table_use_colgroups');
+
+    const closest = target => closest$1(target, '[contenteditable]');
+    const isEditable$1 = (element, assumeEditable = false) => {
+      if (inBody(element)) {
+        return element.dom.isContentEditable;
+      } else {
+        return closest(element).fold(constant(assumeEditable), editable => getRaw(editable) === 'true');
+      }
+    };
+    const getRaw = element => element.dom.contentEditable;
+
     const getBody = editor => SugarElement.fromDom(editor.getBody());
     const getIsRoot = editor => element => eq$1(element, getBody(editor));
     const removeDataStyle = table => {
@@ -2341,6 +2518,7 @@
     };
     const isPercentage$1 = value => /^(\d+(\.\d+)?)%$/.test(value);
     const isPixel = value => /^(\d+(\.\d+)?)px$/.test(value);
+    const isInEditableContext$1 = cell => closest$2(cell, isTag('table')).exists(isEditable$1);
 
     const inSelection = (bounds, detail) => {
       const leftEdge = detail.column;
@@ -2860,7 +3038,7 @@
                 return name(content) !== 'meta';
               });
               const isTable = isTag('table');
-              if (elements.length === 1 && isTable(elements[0])) {
+              if (shouldMergeContentOnPaste(editor) && elements.length === 1 && isTable(elements[0])) {
                 e.preventDefault();
                 const doc = SugarElement.fromDom(editor.getDoc());
                 const generators = paste$1(doc);
@@ -3151,16 +3329,6 @@
       cells,
       fallback
     };
-
-    const closest = target => closest$1(target, '[contenteditable]');
-    const isEditable$1 = (element, assumeEditable = false) => {
-      if (inBody(element)) {
-        return element.dom.isContentEditable;
-      } else {
-        return closest(element).fold(constant(assumeEditable), editable => getRaw(editable) === 'true');
-      }
-    };
-    const getRaw = element => element.dom.contentEditable;
 
     const setIfNot = (element, property, value, ignore) => {
       if (value === ignore) {
@@ -4605,135 +4773,6 @@
       style: true
     };
 
-    const option = name => editor => editor.options.get(name);
-    const defaultWidth = '100%';
-    const getPixelForcedWidth = editor => {
-      var _a;
-      const dom = editor.dom;
-      const parentBlock = (_a = dom.getParent(editor.selection.getStart(), dom.isBlock)) !== null && _a !== void 0 ? _a : editor.getBody();
-      return getInner(SugarElement.fromDom(parentBlock)) + 'px';
-    };
-    const determineDefaultTableStyles = (editor, defaultStyles) => {
-      if (isTableResponsiveForced(editor) || !shouldStyleWithCss(editor)) {
-        return defaultStyles;
-      } else if (isTablePixelsForced(editor)) {
-        return {
-          ...defaultStyles,
-          width: getPixelForcedWidth(editor)
-        };
-      } else {
-        return {
-          ...defaultStyles,
-          width: defaultWidth
-        };
-      }
-    };
-    const determineDefaultTableAttributes = (editor, defaultAttributes) => {
-      if (isTableResponsiveForced(editor) || shouldStyleWithCss(editor)) {
-        return defaultAttributes;
-      } else if (isTablePixelsForced(editor)) {
-        return {
-          ...defaultAttributes,
-          width: getPixelForcedWidth(editor)
-        };
-      } else {
-        return {
-          ...defaultAttributes,
-          width: defaultWidth
-        };
-      }
-    };
-    const register = editor => {
-      const registerOption = editor.options.register;
-      registerOption('table_clone_elements', { processor: 'string[]' });
-      registerOption('table_use_colgroups', {
-        processor: 'boolean',
-        default: true
-      });
-      registerOption('table_header_type', {
-        processor: value => {
-          const valid = contains$2([
-            'section',
-            'cells',
-            'sectionCells',
-            'auto'
-          ], value);
-          return valid ? {
-            value,
-            valid
-          } : {
-            valid: false,
-            message: 'Must be one of: section, cells, sectionCells or auto.'
-          };
-        },
-        default: 'section'
-      });
-      registerOption('table_sizing_mode', {
-        processor: 'string',
-        default: 'auto'
-      });
-      registerOption('table_default_attributes', {
-        processor: 'object',
-        default: { border: '1' }
-      });
-      registerOption('table_default_styles', {
-        processor: 'object',
-        default: { 'border-collapse': 'collapse' }
-      });
-      registerOption('table_column_resizing', {
-        processor: value => {
-          const valid = contains$2([
-            'preservetable',
-            'resizetable'
-          ], value);
-          return valid ? {
-            value,
-            valid
-          } : {
-            valid: false,
-            message: 'Must be preservetable, or resizetable.'
-          };
-        },
-        default: 'preservetable'
-      });
-      registerOption('table_resize_bars', {
-        processor: 'boolean',
-        default: true
-      });
-      registerOption('table_style_by_css', {
-        processor: 'boolean',
-        default: true
-      });
-    };
-    const getTableCloneElements = editor => {
-      return Optional.from(editor.options.get('table_clone_elements'));
-    };
-    const hasTableObjectResizing = editor => {
-      const objectResizing = editor.options.get('object_resizing');
-      return contains$2(objectResizing.split(','), 'table');
-    };
-    const getTableHeaderType = option('table_header_type');
-    const getTableColumnResizingBehaviour = option('table_column_resizing');
-    const isPreserveTableColumnResizing = editor => getTableColumnResizingBehaviour(editor) === 'preservetable';
-    const isResizeTableColumnResizing = editor => getTableColumnResizingBehaviour(editor) === 'resizetable';
-    const getTableSizingMode = option('table_sizing_mode');
-    const isTablePercentagesForced = editor => getTableSizingMode(editor) === 'relative';
-    const isTablePixelsForced = editor => getTableSizingMode(editor) === 'fixed';
-    const isTableResponsiveForced = editor => getTableSizingMode(editor) === 'responsive';
-    const hasTableResizeBars = option('table_resize_bars');
-    const shouldStyleWithCss = option('table_style_by_css');
-    const getTableDefaultAttributes = editor => {
-      const options = editor.options;
-      const defaultAttributes = options.get('table_default_attributes');
-      return options.isSet('table_default_attributes') ? defaultAttributes : determineDefaultTableAttributes(editor, defaultAttributes);
-    };
-    const getTableDefaultStyles = editor => {
-      const options = editor.options;
-      const defaultStyles = options.get('table_default_styles');
-      return options.isSet('table_default_styles') ? defaultStyles : determineDefaultTableStyles(editor, defaultStyles);
-    };
-    const tableUseColumnGroup = option('table_use_colgroups');
-
     const get$5 = (editor, table) => {
       if (isTablePercentagesForced(editor)) {
         return TableSize.percentageSize(table);
@@ -5290,8 +5329,8 @@
     const getColumns = () => getData(tableTypeColumn);
     const clearColumns = () => clearData(tableTypeColumn);
 
-    const getSelectionStartCellOrCaption = editor => getSelectionCellOrCaption(getSelectionStart(editor), getIsRoot(editor));
-    const getSelectionStartCell = editor => getSelectionCell(getSelectionStart(editor), getIsRoot(editor));
+    const getSelectionStartCellOrCaption = editor => getSelectionCellOrCaption(getSelectionStart(editor), getIsRoot(editor)).filter(isInEditableContext$1);
+    const getSelectionStartCell = editor => getSelectionCell(getSelectionStart(editor), getIsRoot(editor)).filter(isInEditableContext$1);
     const registerCommands = (editor, actions) => {
       const isRoot = getIsRoot(editor);
       const eraseTable = () => getSelectionStartCellOrCaption(editor).each(cellOrCaption => {
@@ -5438,7 +5477,7 @@
         if (!isObject(args)) {
           return;
         }
-        const cells = getCellsFromSelection(editor);
+        const cells = filter$2(getCellsFromSelection(editor), isInEditableContext$1);
         if (cells.length === 0) {
           return;
         }
@@ -6259,6 +6298,7 @@
     };
 
     const findCell = (target, isRoot) => closest$1(target, 'td,th', isRoot);
+    const isInEditableContext = cell => parentElement(cell).exists(isEditable$1);
     const MouseSelection = (bridge, container, isRoot, annotations) => {
       const cursor = value();
       const clearstate = cursor.clear;
@@ -6286,7 +6326,7 @@
       };
       const mousedown = event => {
         annotations.clear(container);
-        findCell(event.target, isRoot).each(cursor.set);
+        findCell(event.target, isRoot).filter(isInEditableContext).each(cursor.set);
       };
       const mouseover = event => {
         applySelection(event);
@@ -6628,6 +6668,8 @@
         mouseup: handlers.mouseup
       };
     };
+    const isEditableNode = node => closest$2(node, isHTMLElement).exists(isEditable$1);
+    const isEditableSelection = (start, finish) => isEditableNode(start) || isEditableNode(finish);
     const keyboard = (win, container, isRoot, annotations) => {
       const bridge = WindowBridge(win);
       const clearToNavigate = () => {
@@ -6642,7 +6684,9 @@
           if (isNavigation(keycode) && !shiftKey) {
             annotations.clearBeforeUpdate(container);
           }
-          if (isDown(keycode) && shiftKey) {
+          if (isNavigation(keycode) && shiftKey && !isEditableSelection(start, finish)) {
+            return Optional.none;
+          } else if (isDown(keycode) && shiftKey) {
             return curry(select, bridge, container, isRoot, down, finish, start, annotations.selectRange);
           } else if (isUp(keycode) && shiftKey) {
             return curry(select, bridge, container, isRoot, up, finish, start, annotations.selectRange);
@@ -6671,7 +6715,9 @@
               });
             };
           };
-          if (isDown(keycode) && shiftKey) {
+          if (isNavigation(keycode) && shiftKey && !isEditableSelection(start, finish)) {
+            return Optional.none;
+          } else if (isDown(keycode) && shiftKey) {
             return update$1([rc(+1, 0)]);
           } else if (isUp(keycode) && shiftKey) {
             return update$1([rc(-1, 0)]);
@@ -6701,7 +6747,7 @@
           if (!shiftKey) {
             return Optional.none();
           }
-          if (isNavigation(keycode)) {
+          if (isNavigation(keycode) && isEditableSelection(start, finish)) {
             return sync(container, isRoot, start, soffset, finish, foffset, annotations.selectRange);
           } else {
             return Optional.none();
@@ -7335,6 +7381,7 @@
       const off = () => {
         active = false;
       };
+      const isActive = () => active;
       const runIfActive = f => {
         return (...args) => {
           if (active) {
@@ -7356,6 +7403,7 @@
         go,
         on,
         off,
+        isActive,
         destroy,
         events: events.registry
       };
@@ -7679,8 +7727,10 @@
             destroy(wire);
           }
         }, table => {
-          hoverTable = Optional.some(table);
-          refresh(wire, table);
+          if (resizing.isActive()) {
+            hoverTable = Optional.some(table);
+            refresh(wire, table);
+          }
         });
       });
       const destroy$1 = () => {
@@ -7929,6 +7979,17 @@
           if (editor.mode.isReadOnly()) {
             resize.hideBars();
           } else {
+            resize.showBars();
+          }
+        });
+      });
+      editor.on('dragstart dragend', e => {
+        tableResize.on(resize => {
+          if (e.type === 'dragstart') {
+            resize.hideBars();
+            resize.off();
+          } else {
+            resize.on();
             resize.showBars();
           }
         });

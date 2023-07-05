@@ -163,6 +163,7 @@ sub list_props {
                         = map { $all_perms->{ 'blog.' . $_ } } @perms;
                     $detail = join ', ', (
                         sort
+                            grep { defined $_ && $_ ne '' }
                             map {
                             ref $_->{label}
                                 ? $_->{label}->()

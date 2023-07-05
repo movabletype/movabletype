@@ -1,9 +1,3 @@
-/*!
- * TinyMCE Language Pack
- *
- * Copyright (c) 2022 Ephox Corporation DBA Tiny Technologies, Inc.
- * Licensed under the Tiny commercial license. See https://www.tiny.cloud/legal/
- */
 tinymce.addI18n("nl", {
     "Redo": "Opnieuw uitvoeren",
     "Undo": "Ongedaan maken",
@@ -48,7 +42,7 @@ tinymce.addI18n("nl", {
     "Code": "Broncode",
     "Paragraph": "Alinea",
     "Blockquote": "Quote",
-    "Inline": "",
+    "Inline": "Inline",
     "Blocks": "Blokken",
     "Paste is now in plain text mode. Contents will now be pasted as plain text until you toggle this option off.": "Plakken gebeurt nu zonder opmaak. De tekst zal dus zonder opmaak worden geplakt tenzij je deze optie uit zet.",
     "Fonts": "Lettertypes",
@@ -223,7 +217,7 @@ tinymce.addI18n("nl", {
     "Column group": "Kolomgroep",
     "Row type": "Rijtype",
     "Header": "Koptekst ",
-    "Body": "",
+    "Body": "Body",
     "Footer": "Voettekst",
     "Border color": "Randkleur",
     "Solid": "Massief",
@@ -232,8 +226,8 @@ tinymce.addI18n("nl", {
     "Double": "Dubbel",
     "Groove": "Groef",
     "Ridge": "Ribbel",
-    "Inset": "",
-    "Outset": "",
+    "Inset": "Inzet",
+    "Outset": "Begin",
     "Hidden": "Verborgen",
     "Insert template...": "Sjabloon invoegen...",
     "Templates": "Sjablonen",
@@ -270,7 +264,7 @@ tinymce.addI18n("nl", {
     "Warn": "Waarschuwen",
     "Valid": "Geldig",
     "To open the popup, press Shift+Enter": "Druk op Shift+Enter om de pop-up te openen",
-    "Rich Text Area": "",
+    "Rich Text Area": "Rijk Tekst Gebied",
     "Rich Text Area. Press ALT-0 for help.": " Gebied met opgemaakte tekst. Druk op ALT-0 voor hulp.",
     "System Font": "Systeemlettertype",
     "Failed to upload image: {0}": "Niet gelukt om afbeelding te uploaden: {0}",

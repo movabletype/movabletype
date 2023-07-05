@@ -113,9 +113,8 @@ sub list_props {
                 $label;
             },
         },
-        created_on  => { base => 'entry.created_on', order => 600, },
+        created_on  => { base => 'entry.created_on' },
         modified_on => {
-            order   => 700,
             base    => 'entry.modified_on',
             display => 'default',
         },

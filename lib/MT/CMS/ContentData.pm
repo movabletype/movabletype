@@ -2214,7 +2214,18 @@ sub build_content_data_table {
         $row->{label_html}   = $list_properties{$ds}{label}->html($content_data, $app);
         $row->{identifier}   = $content_data->identifier;
         $row->{object}       = $content_data;
+
+        my %highlight_fields;
+        if (my $fields = $content_data->{__search_result_fields}) {
+            %highlight_fields = map { $_ => 1 } @$fields;
+            $content_data->{__search_result_fields_index} = \%highlight_fields;
+            $row->{preview_data_show} = !!grep { $_ =~ /^__field:(\d*)/ } @$fields;
+            $row->{label_html} =~ s/class="label"/data-search-highlight="1" class="label"/ if $highlight_fields{label};
+            $row->{search_highlight}{identifier} = 1 if $highlight_fields{identifier};
+        }
+
         $row->{preview_data} = $content_data->preview_data;
+
         $row->{status_text}
             = MT::ContentStatus::status_text( $content_data->status );
         $row->{ 'status_'

@@ -3890,6 +3890,7 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to enable this plugin?' => 'プラグインを有効にしますか?',
 	'Are you sure you want to reset the settings for this plugin?' => 'このプラグインの設定を元に戻しますか?',
 	'Author of [_1]' => '作成者',
+	'Deprecated warning.' => '削除予定のコードの利用',
 	'Disable Plugins' => 'プラグインを利用しない',
 	'Disable plugin functionality' => 'プラグインの機能を無効化する',
 	'Documentation for [_1]' => '[_1]のドキュメント',
@@ -5635,7 +5636,7 @@ use vars qw( @ISA %Lexicon );
 	'Search Again' => '再検索',
 	'Search For' => '検索',
 	'Show all matches' => 'すべて見る',
-	'Showing first [_1] results.' => '最初の[_1]件の結果を表示します。',
+	'Showing first [_1] results.' => '最初の[_1]件の結果を表示しています。',
 	'Submit search (s)' => '検索 (s)',
 	'Successfully replaced [quant,_1,record,records].' => '[quant,_1,件,件]のデータを置き換えました。',
 	'You must select one or more items to replace.' => '置き換える対象を1つ以上選択してください。',
@@ -5888,6 +5889,9 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 	q{<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.} => q{エラー: '[_1]'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。},
 	q{The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).} => q{[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、[_1]ディレクトリにはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。},
+
+## lib/MT/Util/Deprecated.pm
+    '[_1] plugin is using deprecated call.' => '[_1]プラグインが削除予定のコードを利用しています。',
 );
 
 1;

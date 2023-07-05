@@ -1,9 +1,3 @@
-/*!
- * TinyMCE Language Pack
- *
- * Copyright (c) 2022 Ephox Corporation DBA Tiny Technologies, Inc.
- * Licensed under the Tiny commercial license. See https://www.tiny.cloud/legal/
- */
 tinymce.addI18n("pl", {
     "Redo": "Powt\xf3rz",
     "Undo": "Cofnij",
@@ -43,8 +37,8 @@ tinymce.addI18n("pl", {
     "Heading 5": "Nag\u0142\xf3wek 5",
     "Heading 6": "Nag\u0142\xf3wek 6",
     "Preformatted": "Wst\u0119pne formatowanie",
-    "Div": "",
-    "Pre": "",
+    "Div": "Div",
+    "Pre": "Pre",
     "Code": "Kod",
     "Paragraph": "Akapit",
     "Blockquote": "Blok cytatu",
@@ -198,13 +192,13 @@ tinymce.addI18n("pl", {
     "Height": "Wysoko\u015b\u0107",
     "Cell spacing": "Odst\u0119py kom\xf3rek",
     "Cell padding": "Dope\u0142nienie kom\xf3rki",
-    "Row clipboard actions": "",
-    "Column clipboard actions": "",
+    "Row clipboard actions": "Akcje schowka dla wiersza",
+    "Column clipboard actions": "Akcje schowka dla kolumny",
     "Table styles": "Style tabel",
     "Cell styles": "Style kom\xf3rek",
     "Column header": "Nag\u0142\xf3wek kolumny",
     "Row header": "Nag\u0142\xf3wek wiersza",
-    "Table caption": "",
+    "Table caption": "Tytu\u0142 tabeli",
     "Caption": "Tytu\u0142",
     "Show caption": "Poka\u017c podpis",
     "Left": "Lewo",
@@ -230,10 +224,10 @@ tinymce.addI18n("pl", {
     "Dotted": "Kropkowane",
     "Dashed": "Kreskowane",
     "Double": "Podw\xf3jne",
-    "Groove": "",
-    "Ridge": "",
-    "Inset": "",
-    "Outset": "",
+    "Groove": "Rowkowane",
+    "Ridge": "Grzbietowe",
+    "Inset": "Wstawione",
+    "Outset": "Zewn\u0119trzne",
     "Hidden": "Ukryte",
     "Insert template...": "Wstaw szablon...",
     "Templates": "Szablony",
@@ -405,8 +399,8 @@ tinymce.addI18n("pl", {
     "Line height": "Wysoko\u015b\u0107 Linii",
     "Dropped file type is not supported": "Dodany typ pliku nie jest obs\u0142ugiwany",
     "Loading...": "Wczytywanie...",
-    "ImageProxy HTTP error: Rejected request": "",
-    "ImageProxy HTTP error: Could not find Image Proxy": "",
-    "ImageProxy HTTP error: Incorrect Image Proxy URL": "",
-    "ImageProxy HTTP error: Unknown ImageProxy error": ""
+    "ImageProxy HTTP error: Rejected request": "ImageProxy HTTP b\u0142\u0105d: Odrzucono \u017c\u0105danie",
+    "ImageProxy HTTP error: Could not find Image Proxy": "ImageProxy HTTP b\u0142\u0105d: Nie znaleziono Image Proxy",
+    "ImageProxy HTTP error: Incorrect Image Proxy URL": "ImageProxy HTTP b\u0142\u0105d: Nieprawid\u0142owy adres URL Image Proxy",
+    "ImageProxy HTTP error: Unknown ImageProxy error": "ImageProxy HTTP b\u0142\u0105d: Nieznany b\u0142\u0105d ImageProxy"
 });
