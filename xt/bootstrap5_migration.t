@@ -79,14 +79,15 @@ $filter->add_callbacks(
                 info "$file: drop form-group: $html" if grep /form-group/, @classes;
                 info "$file: drop form-inline: $html" if grep /form-inline/, @classes;
 
-                # .form-inline .custom-select is defined in scss/admin2023/_modifier.scss
-                info "$file: replace custom-select with form-select: $html" if grep /custom-select/, @classes;
-
                 if ($name eq 'label') {
                     fail "$file: $name has no form-label: $html" unless $class_map{'form-label'} || $class_map{'form-check-label'};
                 }
                 if ($name eq 'select') {
                     fail "$file: $name has no form-select: $html" unless $class_map{'form-select'};
+
+                    # .form-inline .custom-select is defined in scss/admin2023/_modifier.scss
+                    # both custom-select and form-select are needed
+                    warning "$file: $name has no custom-select: $html" unless $class_map{'custom-select'};
                 }
             }
 
