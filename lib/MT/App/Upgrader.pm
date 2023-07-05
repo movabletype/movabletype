@@ -458,7 +458,7 @@ sub init_website {
     if ( $app->param('back') ) {
         return $app->init_user;
     }
-    if ( !$app->param('finish') ) {
+    if ( !$app->param('finish') && !$app->param('skip') ) {
 
         # suggest site_path & site_url
         my $path = $param{'sitepath_limited'} || $app->document_root();
