@@ -154,7 +154,7 @@ is_deeply(
 ## Test empty string conversion
 is $new_cfg->get('EmptyString') => '', "got an empty string";
 
-$new_cfg->set('AdminThemeId', '', 1), "set AdminThemeId to an empty string";
+$new_cfg->set('AdminThemeId', '', 1);   # set AdminThemeId to an empty string
 
 my $data = $new_cfg->stringify_config;
 like $data => qr/AdminThemeId ''/, "empty string is correctly stringified";
