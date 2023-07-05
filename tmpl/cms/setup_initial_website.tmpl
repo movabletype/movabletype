@@ -216,15 +216,18 @@ jQuery(function() {
 </mt:if>
     jQuery('button#skip_button').click(function() {
         jQuery('#website_form > input[name=skip]').val('1');
-        jQuery('#website_form > input[name=finish]').val('1');
+        jQuery('#website_form > input[name=back]').val('0');
+        jQuery('#website_form > input[name=finish]').val('0');
         jQuery('#website_form').submit();
     });
     jQuery('button#finish_button').click(function() {
+        jQuery('#website_form > input[name=skip]').val('0');
         jQuery('#website_form > input[name=back]').val('0');
         jQuery('#website_form > input[name=finish]').val('1');
         jQuery('#website_form').submit();
     });
     jQuery('button#back_button').click(function() {
+        jQuery('#website_form > input[name=skip]').val('0');
         jQuery('#website_form > input[name=back]').val('1');
         jQuery('#website_form > input[name=finish]').val('0');
         jQuery('#website_form').submit();
