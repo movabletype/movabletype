@@ -859,6 +859,8 @@ sub prepare_fixture {
     $self->cluck_errors if $ENV{MT_TEST_CLUCK_ERRORS};
 
     $self->enable_query_log if $ENV{MT_TEST_QUERY_LOG};
+
+    MT->config->clear_dirty;
 }
 
 sub slurp {

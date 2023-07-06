@@ -14,11 +14,13 @@ BEGIN {
 
 use MT::Test;
 use MT;
+use MT::ConfigMgr;
 
 $test_env->prepare_fixture('db');
 
 my $mt  = MT->instance;
-my $cfg = $mt->config;
+my $cfg = MT::ConfigMgr->new;
+$cfg->define($mt->registry('config_settings'));
 
 subtest 'invoke read_config_db multiple time' => sub {
     my $domain = 'example.com';
