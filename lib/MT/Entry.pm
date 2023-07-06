@@ -624,6 +624,10 @@ sub list_props {
                 return qq{<span title="$timestamp">$date</span>};
             },
         },
+        created_on => {
+            base  => '__virtual.created_on',
+            order => 650,
+        },
         modified_on => {
             base  => '__virtual.modified_on',
             order => 700,
@@ -688,10 +692,6 @@ sub list_props {
         modified_by => {
             base    => '__virtual.modified_by',
             display => 'optional',
-        },
-        created_on => {
-            base    => '__virtual.created_on',
-            display => 'none',
         },
         basename => {
             label   => 'Basename',
