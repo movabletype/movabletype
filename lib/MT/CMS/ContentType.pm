@@ -835,9 +835,15 @@ sub dialog_list_content_data {
         blog_id         => $blog->id,
         content_type_id => $content_field->related_content_type_id,
     };
+    my $limit;
+    if (defined $app->param('search') && $app->param('search') ne '') {
+        $limit = MT->config->CMSSearchLimit || MT->config->default('CMSSearchLimit');
+    }
+
     my $args = {
         sort      => 'modified_on',
         direction => 'descend',
+        $limit ? (limit => $limit) : (),
     };
     my $hasher = _build_content_data_hasher($app);
 
@@ -847,6 +853,7 @@ sub dialog_list_content_data {
     $app->listing(
         {   terms    => $terms,
             args     => $args,
+            no_limit => 0,
             type     => 'content_data',
             code     => $hasher,
             template => 'include/content_data_list.tmpl',
