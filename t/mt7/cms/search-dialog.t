@@ -109,6 +109,7 @@ subtest 'content_data' => sub {
     my $ct_id2 = $objs->{content_type}{ct2}{content_type}->id;
     my $cf_id  = $objs->{content_type}{ct}{content_field}{cf_content_type}->id;
     my $cd_id  = $objs->{content_data}{cd2}->id;
+    my $cf_id2 = $objs->{content_type}{ct2}{content_field}{cf_single_line_text}->id;
 
     for my $num (1 .. 27) {
         my $datetime = sprintf('202207040102%02d', $num);
@@ -120,6 +121,7 @@ subtest 'content_data' => sub {
             content_type_id => $ct_id2,
             identifier      => sprintf("cd-%02d-id",    $num),
             label           => sprintf("cd-%02d-label", $num),
+            data => { $cf_id2 => sprintf("cd-%02d-cf", $num) },
         );
     }
 
@@ -173,6 +175,28 @@ subtest 'content_data' => sub {
         is_deeply($labels, ['cd-27-label', 'cd-26-label', 'cd-25-label']);
         is $pager,              undef;
         is $have_more->{limit}, 3;
+    };
+
+    subtest 'ajax search within content field' => sub {
+        $app->post_ok({
+            __mode           => 'dialog_list_content_data',
+            offset           => 0,
+            blog_id          => $blog_id,
+            content_field_id => $cf_id,
+            dialog           => 1,
+            dialog_view      => 1,
+            json             => 1,
+            is_limited       => 1,
+            search_cols      => '__field:'. $cf_id2,
+            search           => '-cf',
+        });
+        my ($labels, $pager, $have_more) = search_result_cd($app);
+        is_deeply($labels, ['cd-27-label', 'cd-26-label', 'cd-25-label']);
+        is $pager,              undef;
+        TODO: {
+            local $TODO = q!have_more isn't always given because the search loop may reduce data into less than CMSSearchLimit!;
+            is $have_more->{limit}, 3;
+        }
     };
 
     for my $label ('cd-27-label', 'cd-01-label') {
