@@ -172,10 +172,10 @@ subtest 'content_data' => sub {
         my ($labels, $pager, $have_more) = search_result_cd($app);
         is_deeply($labels, ['cd-27-label', 'cd-26-label', 'cd-25-label']);
         is $pager,              undef;
-        is $have_more, undef;
+        is $have_more->{limit}, 3;
     };
 
-    for my $label ('cd-27-label') {
+    for my $label ('cd-27-label', 'cd-01-label') {
         subtest qq(ajax search beyond CMSSearchLimit "$label") => sub {
             $app->post_ok({
                 __mode           => 'dialog_list_content_data',

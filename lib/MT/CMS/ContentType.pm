@@ -835,6 +835,14 @@ sub dialog_list_content_data {
         blog_id         => $blog->id,
         content_type_id => $content_field->related_content_type_id,
     };
+    if (my $search_cols = $app->param('search_cols')) {
+        my @cols = split(',', $search_cols);
+        if (!grep { $_ =~ /^__field:/ } @cols) {
+            my $plain_search = $app->param('search');
+            require MT::CMS::Search;
+            $terms = MT::CMS::Search::plain_terms($terms, \@cols, $plain_search);
+        }
+    }
     my $limit;
     if (defined $app->param('search') && $app->param('search') ne '') {
         $limit = MT->config->CMSSearchLimit || MT->config->default('CMSSearchLimit');

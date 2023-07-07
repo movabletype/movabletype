@@ -1081,31 +1081,7 @@ sub do_search_replace {
 
         my @terms;
         if ( !$is_regex && $type ne 'content_data' ) {
-
-            # MT::Object doesn't like multi-term hashes within arrays
-            if (%terms) {
-                for my $key ( keys %terms ) {
-                    push( @terms, { $key => $terms{$key} } );
-                }
-            }
-            if ( scalar @cols ) {
-                push( @terms, '-and' );
-                my @col_terms;
-                my $query_string = "%$plain_search%";
-                for my $col (@cols) {
-                    if ( 'id' eq $col ) {
-
-                        # Direct ID search
-                        push( @col_terms, { $col => $plain_search }, '-or' );
-                    }
-                    elsif ( $col !~ /^__field:\d+$/ ) {
-                        push( @col_terms,
-                            { $col => { like => $query_string } }, '-or' );
-                    }
-                }
-                delete $col_terms[$#col_terms];
-                push( @terms, \@col_terms );
-            }
+            @terms = @{plain_terms(\%terms, \@cols, $plain_search)};
         }
         $args{limit} = $limit + 1 if $limit ne 'all';
         my $iter;
@@ -1616,6 +1592,31 @@ sub do_search_replace {
     $res{search_options} = $search_options;
 
     \%res;
+}
+
+sub plain_terms {
+    my ($term, $cols_ref, $plain_search) = @_;
+    my @ret;
+
+    if ($term) {
+        # MT::Object doesn't like multi-term hashes within arrays
+        push @ret, { $_ => $term->{$_} } for keys %$term;
+    }
+
+    if (my @cols = @$cols_ref) {
+        my $query_string = "%$plain_search%";
+        my @sub;
+        for my $col (@cols) {
+            if ('id' eq $col) {
+                push(@sub, { $col => $plain_search }, '-or');
+            } elsif ($col !~ /^__field:\d+$/) {
+                push(@sub, { $col => { like => $query_string } }, '-or');
+            }
+        }
+        delete $sub[$#sub];
+        push(@ret, '-and', \@sub);
+    }
+    return \@ret;
 }
 
 sub _set_blog_id_to_terms {
