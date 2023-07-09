@@ -12,9 +12,9 @@ import css from "rollup-plugin-css-only";
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
-  input: ["mt-static/svelte/src/bootstrap.ts"].concat(glob.sync("mt-static/svelte/src/api/*.ts")),
+  input: ["src/bootstrap.ts"].concat(glob.sync("src/api/*.ts")),
   output: {
-    dir: "mt-static/svelte/build",
+    dir: "mt-static/js/build",
     format: "esm",
     sourcemap: true
   },
@@ -39,7 +39,7 @@ export default {
 
     // Watch the `public` directory and refresh the
     // browser on changes when not in production
-    !production && livereload("mt-static/svelte/build"),
+    !production && livereload("mt-static/js/build"),
     typescript({ sourceMap: !production })
   ],
 };

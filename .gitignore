@@ -81,4 +81,4 @@ cover_db/
 
 t/selenium/**/evidence
 
-mt-static/svelte/build
+mt-static/js/build

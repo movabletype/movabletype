@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { UIComponent } from "../src/ui";
+  import type { UIComponent } from "../ui";
   import HtmlElement from "./HtmlElement.svelte";
   export let namespace;
   export let detail;
