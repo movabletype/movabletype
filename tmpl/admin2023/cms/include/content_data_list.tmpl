@@ -41,8 +41,11 @@
         <table id="content-data-table" class="table mt-table listing-table">
           <thead>
             <th class="head cb mt-table__control">&nbsp;</th>
-            <th class="head string" scope="col">
+            <th class="head string content-data-label" scope="col">
               <span class="col-label"><__trans phrase="Data Label"></span>
+            </th>
+            <th class="head string content-data-identifier" scope="col">
+              <span class="col-label"><__trans phrase="Basename"></span>
             </th>
             <th class="head string d-none d-md-table-cell" scope="col">
               <span class="col-label"><__trans phrase="Date Modified"></span>
@@ -68,6 +71,9 @@
               </td>
               <td class="content-data-label primary">
                 <mt:var name="label" escape="html">
+              </td>
+              <td class="content-data-identifier primary">
+                <mt:var name="identifier" escape="html">
               </td>
               <td class="content-data-modified-date d-none d-md-table-cell">
                 <mt:var name="modified_date" escape="html">
@@ -201,6 +207,13 @@ function loadContentDataList(offset) {
         } else {
           jQuery('#have-more-count').hide();
         }
+      }
+      jQuery('.content-data-label').hide();
+      jQuery('.content-data-identifier').hide();
+      if (opts.search_cols) {
+        jQuery('.content-data-' + opts.search_cols).show();
+      } else {
+        jQuery('.content-data-label').show();
       }
       jQuery('tr.content-data-preview-data').hide();
     },
@@ -489,7 +502,7 @@ if (MT.Util.isIos()) {
   jQuery(window).on('resize', toggleClassOfPaginationContainer);
 }
 
-jQuery('#content-data-table').on('click', 'td.cb + td.content-data-label', function (e) {
+jQuery('#content-data-table').on('click', 'td.content-data-label, td.content-data-identifier', function (e) {
   if (!MT.Util.isMobileView()) {
     return;
   }
