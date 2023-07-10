@@ -246,7 +246,6 @@ sub seed_database {
     }
     $cfg->PluginSwitch($switch, 1);
 
-    my %seen_apps;
     my @restricted_apps = $cfg->get('RestrictedPSGIApp');
     $cfg->set(RestrictedPSGIApp => \@restricted_apps, 1);
 
