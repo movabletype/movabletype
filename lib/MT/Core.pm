@@ -1758,7 +1758,6 @@ BEGIN {
         backup_instructions => \&load_backup_instructions,
         permissions         => \&load_core_permissions,
         config_settings     => {
-            'AtomApp'                      => { type => 'HASH' },
             'SchemaVersion'                => undef,
             'MTVersion'                    => undef,
             'MTReleaseNumber'              => undef,
@@ -1925,10 +1924,7 @@ BEGIN {
                 default => 'mt-search.cgi',
                 handler => \&SearchScript,
             },
-            'FreeTextSearchScript'    => undef,
             'ContentDataSearchScript' => { default => 'mt-cdsearch.cgi' },
-            'XMLRPCScript'            => undef,
-            'AtomScript'              => undef,
             'UpgradeScript'           => { default => 'mt-upgrade.cgi', },
             'CheckScript'             => { default => 'mt-check.cgi', },
             'DataAPIScript'           => { default => 'mt-data-api.cgi', },
