@@ -848,13 +848,17 @@ sub dialog_list_content_data {
     }
     my $limit;
     if (defined $app->param('search') && $app->param('search') ne '') {
-        $limit = MT->config->CMSSearchLimit || MT->config->default('CMSSearchLimit');
+        $limit =
+               MT->config->CMSSearchLimitContent_Data
+            || MT->config->CMSSearchLimit
+            || MT->config->default('CMSSearchLimit');
+        $limit =~ s/\D//g;
     }
 
     my $args = {
         sort      => 'modified_on',
         direction => 'descend',
-        $limit ? (limit => $limit) : (),
+        defined($limit) ? (limit => $limit) : (),
     };
     my $hasher = _build_content_data_hasher($app);
 
