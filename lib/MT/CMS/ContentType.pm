@@ -843,7 +843,7 @@ sub dialog_list_content_data {
         if (!grep { $_ =~ /^__field:/ } @cols) {
             my $plain_search = $app->param('search');
             require MT::CMS::Search;
-            $terms = MT::CMS::Search::plain_terms($terms, \@cols, $plain_search);
+            $terms = MT::CMS::Search::make_terms_for_plain_search($terms, \@cols, $plain_search);
         }
     }
     my $limit;

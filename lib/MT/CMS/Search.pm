@@ -1081,7 +1081,7 @@ sub do_search_replace {
 
         my @terms;
         if ( !$is_regex && $type ne 'content_data' ) {
-            @terms = @{plain_terms(\%terms, \@cols, $plain_search)};
+            @terms = @{make_terms_for_plain_search(\%terms, \@cols, $plain_search)};
         }
         $args{limit} = $limit + 1 if $limit ne 'all';
         my $iter;
@@ -1594,13 +1594,13 @@ sub do_search_replace {
     \%res;
 }
 
-sub plain_terms {
-    my ($term, $cols_ref, $plain_search) = @_;
-    my @ret;
+sub make_terms_for_plain_search {
+    my ($terms_ref, $cols_ref, $plain_search) = @_;
+    my @new_terms;
 
-    if ($term) {
+    if ($terms_ref) {
         # MT::Object doesn't like multi-term hashes within arrays
-        push @ret, { $_ => $term->{$_} } for keys %$term;
+        push @new_terms, { $_ => $terms_ref->{$_} } for keys %$terms_ref;
     }
 
     if (my @cols = @$cols_ref) {
@@ -1614,9 +1614,9 @@ sub plain_terms {
             }
         }
         delete $sub[$#sub];
-        push(@ret, '-and', \@sub);
+        push(@new_terms, '-and', \@sub);
     }
-    return \@ret;
+    return \@new_terms;
 }
 
 sub _set_blog_id_to_terms {
