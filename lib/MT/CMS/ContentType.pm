@@ -817,26 +817,23 @@ sub dialog_list_content_data {
     my $app              = shift;
 
     $app->validate_param({
-        content_field_id => [qw/ID/],
+        content_type_id  => [qw/ID/],
         dialog           => [qw/MAYBE_STRING/],
         no_insert        => [qw/MAYBE_STRING/],
     }) or return;
 
-    my $blog                    = $app->blog;
-    my $content_field_id        = $app->param('content_field_id') || 0;
-    my $content_field           = MT::ContentField->load($content_field_id);
-    my $related_content_type_id = $content_field->related_content_type_id;
+    my $blog            = $app->blog;
+    my $content_type_id = $app->param('content_type_id');
 
     return $app->return_to_dashboard( redirect => 1 )
-        unless $blog && $related_content_type_id;
+        unless $blog && $content_type_id;
 
     # TODO: permission check
 
     my $terms = {
         blog_id         => $blog->id,
-        content_type_id => $related_content_type_id,
+        content_type_id => $content_type_id,
     };
-    $app->param('content_type_id', $related_content_type_id);
     
     if (my $search_cols = $app->param('search_cols')) {
         my @cols = split(',', $search_cols);
@@ -864,6 +861,7 @@ sub dialog_list_content_data {
 
     my $dialog    = $app->param('dialog')    ? 1 : 0;
     my $no_insert = $app->param('no_insert') ? 1 : 0;
+    my $can_multi = $app->param('can_multi');
 
     $app->listing(
         {   terms    => $terms,
@@ -881,7 +879,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi => $content_field->options->{multiple} ? 1 : 0,
+                can_multi   => $can_multi,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,
