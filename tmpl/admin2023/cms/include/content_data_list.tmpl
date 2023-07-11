@@ -210,7 +210,7 @@ function loadContentDataList(offset) {
       }
       jQuery('.content-data-label').hide();
       jQuery('.content-data-identifier').hide();
-      if (opts.search_cols) {
+      if (opts.search_cols && /^__field:/.test(opts.search_cols) === false) {
         jQuery('.content-data-' + opts.search_cols).show();
       } else {
         jQuery('.content-data-label').show();
