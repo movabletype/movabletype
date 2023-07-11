@@ -846,7 +846,7 @@ sub dialog_list_content_data {
     my $limit;
     if (defined $app->param('search') && $app->param('search') ne '') {
         $limit =
-               MT->config->CMSSearchLimitContent_Data
+               MT->config->CMSSearchLimitContent_data
             || MT->config->CMSSearchLimit
             || MT->config->default('CMSSearchLimit');
         $limit =~ s/\D//g;
