@@ -4,11 +4,18 @@ module.exports = {
     es6: true,
   },
   parser: "@typescript-eslint/parser",
-  plugins: ["svelte3", "@typescript-eslint"],
+  parserOptions: {
+    project: "tsconfig.json",
+    extraFileExtensions: [".svelte"]
+  },
+  plugins: ["svelte", "@typescript-eslint"],
   overrides: [
     {
       files: ["*.svelte"],
-      processor: "svelte3/svelte3",
+      parser: "svelte-eslint-parser",
+      parserOptions: {
+        parser: "@typescript-eslint/parser",
+      },
     },
   ],
   extends: [
@@ -27,6 +34,6 @@ module.exports = {
     ],
   },
   settings: {
-    "svelte3/typescript": true,
+    "svelte/typescript": true,
   },
 };

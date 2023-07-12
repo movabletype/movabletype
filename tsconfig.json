@@ -15,13 +15,13 @@
     // Import non-ES modules as default imports.
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "typeRoots": ["node_modules/@types", "mt-static/svelte/src/@types"],
+    "typeRoots": ["node_modules/@types", "src/@types"],
     "noImplicitAny": false,
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "*": ["mt-static/svelte/src/*", "mt-static/svelte/svelte/*"]
+      "*": ["src/*"]
     }
   },
-  "include": ["mt-static/svelte/src", "mt-static/svelte/svelte"]
+  "include": ["src"]
 }
