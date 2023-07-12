@@ -42,6 +42,8 @@ abstract class MTDatabase {
     protected $_content_link_cache = array();
     protected $_adodb_quote_fieldnames = 'NATIVE';
 
+    private $_cd_id_cache = array();
+    private $_content_type_id_cache; // XXX consider changing the cache storage
 
     // Construction
     public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
@@ -2966,7 +2968,7 @@ abstract class MTDatabase {
         $ds = $class == 'page' ? 'entry' : $ds;
         $join['mt_objecttag'] = 
             array(
-                "condition" => "${ds}_id = objecttag_object_id and objecttag_object_datasource='$ds'"
+                "condition" => "{$ds}_id = objecttag_object_id and objecttag_object_datasource='$ds'"
                 );
 
         require_once("class.mt_$class.php");
@@ -4249,7 +4251,6 @@ abstract class MTDatabase {
 
             if (empty($ct)) break;
 
-            $ct->content_type_authored_on = $this->db2ts($ct->content_type_authored_on);
             $ct->content_type_modified_on = $this->db2ts($ct->content_type_modified_on);
             $content_types[] = $ct;
         }
@@ -5448,8 +5449,9 @@ abstract class MTDatabase {
 
     public function content_link($cid, $at = "ContentType", $args = null) {
         $cid = intval($cid);
-        if (isset($this->_content_link_cache[$cid.';'.$at])) {
-            $url = $this->_content_link_cache[$cid.';'.$at];
+        $cache_id = $cid.';'.$at. ';'. (!empty($args['with_index']) ? 1 : 0);
+        if (isset($this->_content_link_cache[$cache_id])) {
+            $url = $this->_content_link_cache[$cache_id];
         } else {
             $extras['join'] = array(
                 'mt_templatemap' => array(
@@ -5519,7 +5521,7 @@ abstract class MTDatabase {
             if(!isset($args['with_index']) || !$args['with_index'] ){
                 $url = _strip_index($url, $blog);
             }
-            $this->_content_link_cache[$cid.';'.$at] = $url;
+            $this->_content_link_cache[$cache_id] = $url;
         }
 
         if ( $at != 'ContentType' && (!$args || !isset($args['no_anchor'])) ) {
@@ -5528,6 +5530,10 @@ abstract class MTDatabase {
         }
 
         return $url;
+    }
+
+    public function flush_cache() {
+        $this->_blog_id_cache = array();
     }
 }
 ?>

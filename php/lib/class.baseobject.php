@@ -110,6 +110,8 @@ abstract class BaseObject extends ADOdb_Active_Record
         );
     protected $_has_meta = false;
 
+    protected $_extra = [];
+
     // Override functions
     public function __get( $name ) {
         if (is_null($this->_prefix))
@@ -118,6 +120,11 @@ abstract class BaseObject extends ADOdb_Active_Record
         $pattern = '/^' . $this->_prefix . "/i";
         if (!preg_match($pattern, $name))
             $name = $this->_prefix . $name;
+
+        if (preg_match('/^'. $this->_prefix. 'field\./', $name)) {
+            // Workarround for dynamic properties warnings
+            return $this->_extra[$name];
+        }
 
         return property_exists($this, $name) ? $this->$name : null;
     }
@@ -130,6 +137,12 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (!preg_match($pattern, $name))
             $name = $this->_prefix . $name;
 
+        if (preg_match('/^'. $this->_prefix. 'field\./', $name)) {
+            // Workarround for dynamic properties warnings
+            $this->_extra[$name] = $value;
+            return;
+        }
+        
         parent::__set($name, $value);
     }
 
@@ -140,6 +153,11 @@ abstract class BaseObject extends ADOdb_Active_Record
         $pattern = '/^' . $this->_prefix . "/i";
         if (!preg_match($pattern, $name))
             $name = $this->_prefix . $name;
+
+        if (preg_match('/^'. $this->_prefix. 'field\./', $name)) {
+            // Workarround for dynamic properties warnings
+            return isset($this->_extra[$name]);
+        }
 
         $value = property_exists($this, $name) ? $this->$name : null;
         return isset( $value );
@@ -556,8 +574,10 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (empty($key))
             return;
 
-        $meta_table = $obj->_table . '_meta';
-        $obj->$meta_table = array();
+        if ($obj->_has_meta) {
+            $meta_table = $obj->_table . '_meta';
+            $obj->$meta_table = array();
+        }
 
         $this->cache_driver()->set($key, $obj);
     }

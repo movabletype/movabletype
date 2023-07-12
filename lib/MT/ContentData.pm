@@ -995,7 +995,7 @@ sub list_props {
             display => 'none',
         },
         label => {
-            base    => '__virtual.label',
+            base    => '__virtual.string',
             display => 'force',
         },
         identifier => {
@@ -1343,7 +1343,7 @@ sub _make_label_html {
             <span class="icon status $lc_status_class">
               <a href="$edit_link" class="d-inline-block">$status_img</a>
             </span>
-            <a href="$edit_link">$label</a>
+            <a class="label" href="$edit_link">$label</a>
             $view_link
         };
     }

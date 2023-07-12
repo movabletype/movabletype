@@ -113,10 +113,13 @@ sub login {
         if
         eval { MT::Lockout->is_locked_out( $app, $app->remote_ip, $user ) };
 
-    my $driver = $MT::Object::DRIVER;
-    $driver->clear_cache if $driver && $driver->can('clear_cache');
+    MT->clear_cache_of_loaded_models;
+
     if ( my @author = MT::BasicAuthor->load( { name => $user } ) ) {
         foreach my $author (@author) {
+            # MT::Author::magic_token is removed by MT::Compat::v3.
+            # So force BasicAuthor if necessary
+            bless $author, 'MT::BasicAuthor' if ref $author eq 'MT::Author';
 
             # skip any possible non-authors...
             if ( MT::Auth->password_exists ) {

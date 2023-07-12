@@ -2413,6 +2413,9 @@ sub build_entry_table {
     my %blog_perms;
     $blog_perms{ $perms->blog_id } = $perms if $perms;
 
+    require MT::ListProperty;
+    my $list_properties = MT::ListProperty->list_properties('entry');
+
     while ( my $obj = $iter->() ) {
         my $blog_perms;
         if ( !$app_author->is_superuser() ) {
@@ -2469,6 +2472,7 @@ sub build_entry_table {
                 = substr( $row->{title_short}, 0, $title_max_len + 3 ) . '...'
                 if length( $row->{title_short} ) > $title_max_len;
         }
+        $row->{title_html} = $list_properties->{title}->html($obj, $app);
         if ( $row->{excerpt} ) {
             $row->{excerpt} = remove_html( $row->{excerpt} );
         }

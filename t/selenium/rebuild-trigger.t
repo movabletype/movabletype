@@ -122,7 +122,7 @@ subtest 'site context' => sub {
         $s->screenshot_full("scenarios$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
-        $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+        $s->scroll_and_click('.mt-mainContent button.save');
         $s->wait_until_ready;
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
@@ -155,7 +155,7 @@ subtest 'duplication' => sub {
         $s->screenshot_full("scenarios$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
-        $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+        $s->scroll_and_click('.mt-mainContent button.save');
         $s->wait_until_ready;
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
@@ -189,7 +189,7 @@ subtest 'duplication with content type' => sub {
         $s->screenshot_full("scenarios$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
-        $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+        $s->scroll_and_click('.mt-mainContent button.save');
         $s->wait_until_ready;
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
@@ -219,7 +219,7 @@ subtest 'two cases saved at once' => sub {
     $s->screenshot_full("added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
     wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
     assert_no_browser_errors();
-    $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+    $s->scroll_and_click('.mt-mainContent button.save');
     $s->wait_until_ready;
     assert_no_browser_errors();
     my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
@@ -243,7 +243,7 @@ subtest 'remove' => sub {
     }
 
     wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
-    $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+    $s->scroll_and_click('.mt-mainContent button.save');
     $s->wait_until_ready;
     my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs, 2, 'triggers are added');
@@ -257,7 +257,7 @@ subtest 'remove' => sub {
     my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs2, 0, 'triggers are removed');
     $s->screenshot_full("removed") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
-    $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+    $s->scroll_and_click('.mt-mainContent button.save');
     $s->wait_until_ready;
     my @trs3 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs3, 0, 'triggers are removed and saved');

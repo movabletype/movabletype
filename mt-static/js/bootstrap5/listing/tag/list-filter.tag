@@ -531,7 +531,7 @@
 </list-filter-item-field>
 
 <list-filter-select-modal>
-  <div class="modal fade" id="select-filter" tabindex="-1">
+  <div class="modal fade" id="select-filter" tabindex="-1" ref="modal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -624,7 +624,7 @@
     }
 
     closeModal() {
-      jQuery('#select-filter').modal('hide')
+      bootstrap.Modal.getInstance(this.refs.modal).hide();
     }
 
     createNewFilter(e) {
@@ -740,7 +740,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{ trans( saveAs ? 'Save As Filter' : 'Save Filter' ) }</h5>
-          <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close" data-mt-modal-close>
+          <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -758,7 +758,7 @@
           <button class="btn btn-primary" onclick={ saveFilter }>
             { trans('Save') }
           </button>
-          <button class="btn btn-default" onclick={ closeModal }>
+          <button class="btn btn-default" data-bs-dismiss="modal" onclick={ closeModal }>
             { trans('Cancel') }
           </button>
         </div>
@@ -771,7 +771,7 @@
     this.mixin('listFilterTop')
 
     closeModal(e) {
-      jQuery(this.refs.modal).modal('hide')
+      bootstrap.Modal.getInstance(this.refs.modal).hide();
     }
 
     openModal(args) {
@@ -783,7 +783,8 @@
         this.refs.filterName.value = args.filterLabel
       }
       this.saveAs = args.saveAs
-      jQuery(this.refs.modal).modal()
+      let $bsmodal = new bootstrap.Modal(this.refs.modal, {});
+      $bsmodal.show();
     }
 
     saveFilter(e) {

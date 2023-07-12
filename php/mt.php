@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '7.9');
-define('PRODUCT_VERSION', '7.9.9');
+define('VERSION', '7.901');
+define('PRODUCT_VERSION', '7.901.0');
 define('DATA_API_DEFAULT_VERSION', '6');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 9;
+    $RELEASE_NUMBER = 0;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -278,6 +278,10 @@ class MT {
             $this->cache_driver = CacheProviderFactory::get_provider('session');
         }
         return $this->cache_driver;
+    }
+
+    public function clear_cache_driver() {
+        $this->cache_driver = null;
     }
 
     public function config($id, $value = null) {
@@ -883,7 +887,7 @@ class MT {
 
         $ts = date('Y-m-d H:i:s');
         $errstr = preg_replace('/\t/', '\\t', $errstr);
-        error_log("timestamp:$ts\tno:$errno\tstr:$errstr\tfile:$errfile\tline:$errline\turi:${_SERVER['REQUEST_URI']}\n", 3, $log_file);
+        error_log("timestamp:$ts\tno:$errno\tstr:$errstr\tfile:$errfile\tline:$errline\turi:{$_SERVER['REQUEST_URI']}\n", 3, $log_file);
     }
 
     function error_handler($errno, $errstr, $errfile, $errline) {

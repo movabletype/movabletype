@@ -25,13 +25,34 @@ class BaseObjectTest extends TestCase {
     $author->Load();
     $this->assertTrue( isset( $author->id ) );
 
-    // protected variable call (bugid:113105)
     require_once( "php/lib/class.mt_entry.php" );
     $entry     = new Entry;
     $entry->id = 1;
     $this->assertTrue( isset( $entry->id ) );
-    $this->assertNull( $entry->_prefix );
-    $this->assertFalse( isset( $entry->_prefix ) );
+    $this->assertEquals( 'entry_', $entry->_prefix );
+
+    // protected variable call (bugid:113105, MTC-9543)
+    $this->assertNull( $entry->_has_meta );
+    $this->assertFalse( isset( $entry->_has_meta ) );
+
+    // ignore E_DEPRECATED for some tests
+    error_reporting(error_reporting() & ~E_DEPRECATED);
+
+    // dynamic properties still works (__set/__get/__isset magic methods)
+    $entry->unknown = 'val';
+    $this->assertTrue( isset( $entry->unknown ) );
+    $this->assertEquals( 'val', $entry->unknown );
+
+    // meta field in the form of order_by MT tag attributes work
+    $meta_field1 = 'field:my_field1';
+    $meta_field2 = 'field:my_field2';
+    $entry->$meta_field1 = 'my_field1_val';
+    $this->assertTrue( isset( $entry->$meta_field1 ) );
+    $this->assertEquals( 'my_field1_val', $entry->$meta_field1 );
+    $this->assertFalse( isset( $entry->$meta_field2 ) );
+    $this->assertNull( $entry->$meta_field2 );
+
+    error_reporting(error_reporting() | E_DEPRECATED);
 
     // fixed Dynamic publishing error occurred with memcached environment. bugid: 113546
     $mt->config('MemcachedServers', '127.0.0.1:11211');

@@ -450,4 +450,34 @@ sub wait_until_ready {
     wait_until { $self->driver->execute_script("return document.readyState === 'complete'") };
 }
 
+sub scroll_to_element {
+    my ($self, $selector) = @_;
+    my $do_scroll = $self->driver->execute_script(qq{
+        var button = document.querySelector('$selector');
+        var rect = button.getBoundingClientRect();
+        if (!((rect.top >= 0) && (rect.bottom < document.documentElement.clientHeight))) {
+            window.scrollTo(0, rect.top + document.documentElement.scrollTop);
+            return 1;
+        } else {
+            return 0;
+        }
+    });
+
+    return unless $do_scroll;
+
+    wait_until {
+        my $is_finished = $self->driver->execute_script(qq{
+            var rect = document.querySelector('$selector').getBoundingClientRect();
+            return ((rect.top >= 0) && (rect.bottom < document.documentElement.clientHeight));
+        });
+        $is_finished;
+    };
+}
+
+sub scroll_and_click {
+    my ($self, $selector) = @_;
+    $self->scroll_to_element($selector);
+    $self->driver->find_element($selector, 'css')->click;
+}
+
 1;
