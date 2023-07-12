@@ -97,6 +97,8 @@ my @removed_from_core = qw(
     IfRegistrationRequired IfRequireCommentEmails IfTypeKeyToken
     PingEntry Pings PingsFooter PingsHeader PingsSent
     SiteIfCommentsOpen WebsiteIfCommentsOpen
+
+    XMLRPCScript AtomScript
 );
 
 my %is_removed = map { $_ => 1 } @removed_from_core;

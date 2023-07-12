@@ -246,9 +246,7 @@ sub seed_database {
     }
     $cfg->PluginSwitch($switch, 1);
 
-    my %seen_apps;
     my @restricted_apps = $cfg->get('RestrictedPSGIApp');
-    @restricted_apps = grep {!$seen_apps{$_}++} @restricted_apps, qw(xmlrpc atom ft_search);
     $cfg->set(RestrictedPSGIApp => \@restricted_apps, 1);
 
     $cfg->set(DisableNotificationPings => 1, 1);
