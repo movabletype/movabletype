@@ -1588,13 +1588,7 @@ sub _v7_migrate_data_api_disable_site {
         }
         my %data_api_disable_site = map { $_ => 1 } split /,/, $data_api_disable_site || '';
 
-        my @sites = MT->model('website')->load({
-                class => '*',
-            },
-            {
-                fetchonly => { id => 1 },
-            },
-        );
+        my @sites = MT->model('website')->load({ class => '*' });
         my $from = int( MT->config->SchemaVersion || 0 );
         for my $site (@sites) {
             if ($from < 6) {
