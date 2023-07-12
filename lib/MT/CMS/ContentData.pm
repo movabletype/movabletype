@@ -2192,6 +2192,9 @@ sub build_content_data_table {
     my $date_format     = MT::App::CMS::LISTING_DATE_FORMAT();
     my $datetime_format = MT::App::CMS::LISTING_DATETIME_FORMAT();
 
+    require MT::ListProperty;
+    my %list_properties;
+
     require MT::ContentStatus;
     my @data;
     while ( my $content_data = $iter->() ) {
@@ -2206,6 +2209,10 @@ sub build_content_data_table {
             = defined $content_data->label && $content_data->label ne ''
             ? $content_data->label
             : $app->translate('(No Label)');
+        my $ds = 'content_data.content_data_' . $content_data->content_type_id;
+        $list_properties{$ds} ||= MT::ListProperty->list_properties($ds);
+        $row->{label_html}   = $list_properties{$ds}{label}->html($content_data, $app);
+        $row->{identifier}   = $content_data->identifier;
         $row->{object}       = $content_data;
         $row->{preview_data} = $content_data->preview_data;
         $row->{status_text}

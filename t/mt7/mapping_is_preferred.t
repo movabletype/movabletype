@@ -70,7 +70,7 @@ subtest 'Add 1st TemplateMap' => sub {
     });
 
     $app->content_like(
-        qr/<div id="templatemap-listing" class="form-group">/,
+        qr/<div id="templatemap-listing" class="/,
         'Added 1st TemplateMap.'
     );
 
@@ -91,7 +91,7 @@ subtest 'Add 2nd TemplateMap' => sub {
     });
 
     $app->content_like(
-        qr/<div id="templatemap-listing" class="form-group">/,
+        qr/<div id="templatemap-listing" class="/,
         'Added 2nd TemplateMap.'
     );
 
@@ -118,7 +118,7 @@ subtest 'Add 3rd TemplateMap' => sub {
     });
 
     $app->content_like(
-        qr/<div id="templatemap-listing" class="form-group">/,
+        qr/<div id="templatemap-listing" class="/,
         'Added 3rd TemplateMap.'
     );
 
@@ -151,7 +151,7 @@ subtest 'Add Another Content Type\'s TemplateMap 01' => sub {
     });
 
     $app->content_like(
-        qr/<div id="templatemap-listing" class="form-group">/,
+        qr/<div id="templatemap-listing" class="/,
         'Added Another Content Type\'s TemplateMap 01.'
     );
 
@@ -190,7 +190,7 @@ subtest 'Add Another Content Type\'s TemplateMap 02' => sub {
     });
 
     $app->content_like(
-        qr/<div id="templatemap-listing" class="form-group">/,
+        qr/<div id="templatemap-listing" class="/,
         'Added Another Content Type\'s TemplateMap 02.'
     );
 
@@ -285,7 +285,7 @@ subtest 'Remove Preferred TemplateMap' => sub {
     });
 
     $app->content_like(
-        qr/<div id="templatemap-listing" class="form-group">/,
+        qr/<div id="templatemap-listing" class="/,
         'Removed Preferred TemplateMap 02.'
     );
 

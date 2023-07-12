@@ -48,7 +48,7 @@
    <div class="modal-content">
      <div class="modal-header">
        <h4 class="modal-title"></h4>
-       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+       <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
          <span aria-hidden="true">&times;</span>
        </button>
      </div>
@@ -66,7 +66,7 @@
     <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/jquery.blockeditor.js?v=<mt:var name="mt_version_id" escape="url">"></script>
     <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field_manager.js?v=<mt:var name="mt_version_id" escape="url">"></script>
     <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/modal_window.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/bootstrap5/modal_window.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
     <mt:loop name="blockeditor_fields">
     <script src="<mt:if name="path"><$mt:var name="static_uri"$><$mt:var name="path"$><mt:else><$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/fields/<$mt:var name="type"$>.js</mt:if>?v=<mt:var name="mt_version_id" escape="url">"></script>
