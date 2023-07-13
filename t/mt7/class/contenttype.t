@@ -127,7 +127,7 @@ subtest 'fields: change fields' => sub {
     $ct->fields($new_fields);
 
     # cache does not match
-    isn't $json->encode( $ct->{__cached_fields} ) =>
+    isnt $json->encode( $ct->{__cached_fields} ) =>
         $json->encode($new_fields),
         "cached fields doesn't match fields";
 
@@ -172,7 +172,7 @@ subtest 'fields: change fields via column' => sub {
     $ct->column( fields => $serialized_fields );
 
     # cache does not match
-    isn't $json->encode( $ct->{__cached_fields} ) =>
+    isnt $json->encode( $ct->{__cached_fields} ) =>
         $json->encode($new_fields),
         "cached fields doesn't match fields";
 
