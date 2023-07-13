@@ -207,7 +207,7 @@ sub found_ids {
 }
 
 my $TitleContainerSelectors = {
-    bootstrap5 => {
+    admin2023 => {
         content_data => 'td.id a.label',
         template     => 'td:nth-of-type(2) a',
         entry        => 'td.title > span.title',
