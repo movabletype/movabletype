@@ -233,7 +233,7 @@ sub found_titles {
     my $found    = $self->found or return [];
     $found->each(sub {
         my ($i, $row) = @_;
-        my $text = $row->find($selector)->text;
+        my $text = $row->find($selector)->text // '';
         $text =~ s{^\s+|\s+$}{}g;
         push @titles, $text;
     });
