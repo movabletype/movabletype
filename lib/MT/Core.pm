@@ -1792,7 +1792,6 @@ BEGIN {
                 path    => 1,
                 type    => 'ARRAY',
             },
-            'CSSPath'    => { default => 'css', },
             'ImportPath' => {
                 default => 'import',
                 path    => 1,
@@ -1825,14 +1824,12 @@ BEGIN {
             'SupportDirectoryURL'  => { default => '' },
             'ObjectDriver'         => undef,
             'ObjectCacheLimit'     => { default => 1000 },
-            'ObjectCacheDisabled'  => undef,
             'DisableObjectCache'   => { default => 0, },
             'AllowedTextFilters'   => undef,
             'Serializer'           => { default => 'MT', },
             'SendMailPath'         => { default => '/usr/lib/sendmail', },
             'RsyncPath'            => undef,
             'TimeOffset'           => { default => 0, },
-            'WSSETimeout'          => { default => 120, },
             'StaticWebPath'        => { default => '', },
             'StaticFilePath'       => undef,
             'CGIPath'              => { default => '/cgi-bin/', },
@@ -1843,8 +1840,6 @@ BEGIN {
             'BaseTemplatePath'               => { default => undef },
             'HideBaseSitePath'               => { default => 0, },
             'HidePerformanceLoggingSettings' => { default => 0, },
-            'HidePaformanceLoggingSettings' =>
-                { alias => 'HidePerformanceLoggingSettings' },
             'CookieDomain'          => undef,
             'CookiePath'            => undef,
             'MailModule'            => { default => 'MIME::Lite', },
@@ -1873,9 +1868,6 @@ BEGIN {
             'SSLVerifyNone'     => undef,
             'SSLVersion'        => undef,
             'DebugEmailAddress' => undef,
-            'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
-            'MTPingURL' =>
-                { default => 'http://www.movabletype.org/update/', },
             'CGIMaxUpload' => {
                 handler => \&CGIMaxUpload,
                 default => 20_480_000,
@@ -1899,8 +1891,6 @@ BEGIN {
             'NoLocking'              => { default => 0, },
             'NoHTMLEntities'         => { default => 1, },
             'NoCDATA'                => { default => 0, },
-            'NoPlacementCache'       => { default => 0, },
-            'NoPublishMeansDraft'    => { default => 0, },
             'IgnoreISOTimezones'     => { default => 0, },
             'PingTimeout'            => { default => 60, },
             'HTTPTimeout'            => { default => 60 },
@@ -1948,12 +1938,8 @@ BEGIN {
 
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
-            'NoOverride'              => { default => '', },
-            'RegexSearch'             => { default => 0, },
-            'CaseSearch'              => { default => 0, },
             'ResultDisplay'           => { default => 'descend', },
             'ExcerptWords'            => { default => 40, },
-            'SearchElement'           => { default => 'entries', },
             'ExcludeBlogs'            => undef,
             'ContentDataExcludeBlogs' => {
                 default => sub { $_[0]->ExcludeBlogs }
@@ -1963,10 +1949,7 @@ BEGIN {
                 default => sub { $_[0]->IncludeBlogs }
             },
             'DefaultTemplate'     => { default => 'default.tmpl', },
-            'Type'                => { default => 'straight', },
             'MaxResults'          => { default => '20', },
-            'SearchCutoff'        => { default => '9999999', },
-            'CommentSearchCutoff' => { default => '30', },
             'AltTemplate'         => {
                 type    => 'ARRAY',
                 default => 'feed results_feed.tmpl',
@@ -1975,7 +1958,6 @@ BEGIN {
             'ContentDataSearchSortBy' => {
                 default => sub { $_[0]->SearchSortBy }
             },
-            'SearchSortOrder'  => { default => 'ascend', },
             'SearchNoOverride' => { default => 'SearchMaxResults', },
             'ContentDataSearchNoOverride' => {
                 default => sub { $_[0]->SearchNoOverride }
@@ -2002,8 +1984,6 @@ BEGIN {
             'BulkLoadMetaObjectsLimit'  => { default => 100 },
             'DisableMetaObjectCache'    => { default => 1, },
             'ReturnToURL'               => undef,
-            'DynamicComments'           => { default => 0, },
-            'SignOnPublicKey'           => { default => '', },
             'ThrottleSeconds'           => { default => 20, },
             'SearchCacheTTL'            => { default => 20, },
             'ContentDataSearchCacheTTL' => {
@@ -2082,9 +2062,7 @@ BEGIN {
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
             'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
-            'NewUserBlogTheme'        => undef,                  ## DEPRECATED
             'NewUserDefaultWebsiteId' => undef,                  ## DEPRECATED
-            'NewUserTemplateBlogId'   => undef,                  ## DEPRECATED
             'DefaultSiteURL'          => undef,                  ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
@@ -2123,7 +2101,6 @@ BEGIN {
             'SyncTarget'               => { type    => 'ARRAY' },
             'RsyncOptions'             => undef,
             'UserpicAllowRect'         => { default => 0 },
-            'UserpicMaxUpload'         => { default => 0 },
             'UserpicThumbnailSize'     => { default => 100 },
 
             ## Stats settings
@@ -2140,7 +2117,6 @@ BEGIN {
             'PublishCommenterIcon' => { default => 1 },
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
-            'DefaultTemplateSet'   => { default => 'mt_blog' },
             'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
             'DefaultBlogTheme'     => { default => 'mont-blanc' },
             'ThemeStaticFileExtensions' => {
@@ -2174,8 +2150,6 @@ BEGIN {
             'IPLockoutLimit'                 => { default => 10 },
             'IPLockoutInterval'              => { default => 1800 },
             'FailedLoginExpirationFrequency' => { default => 86400 },
-            'LockoutExpireFrequency' =>
-                { alias => 'FailedLoginExpirationFrequency' },
             'LockoutIPWhitelist' => undef,
             'LockoutNotifyTo'    => undef,
 
@@ -2206,10 +2180,6 @@ BEGIN {
             },
             'LDAPUserSearchBase'    => { type  => 'ARRAY' },
             'LDAPGroupSearchBase'   => { type  => 'ARRAY' },
-            'AuthLDAPURL'           => { alias => 'LDAPAuthURL' },
-            'AuthLDAPBindDN'        => { alias => 'LDAPAuthBindDN' },
-            'AuthLDAPPassword'      => { alias => 'LDAPAuthPassword' },
-            'AuthLDAPSASLMechanism' => { alias => 'LDAPAuthSASLMechanism' },
 
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
