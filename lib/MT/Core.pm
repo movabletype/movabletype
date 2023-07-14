@@ -1892,14 +1892,10 @@ BEGIN {
             'NoHTMLEntities'         => { default => 1, },
             'NoCDATA'                => { default => 0, },
             'IgnoreISOTimezones'     => { default => 0, },
-            'PingTimeout'            => { default => 60, },
             'HTTPTimeout'            => { default => 60 },
-            'PingInterface'          => undef,
             'HTTPInterface'          => undef,
-            'PingProxy'              => undef,
             'HTTPProxy'              => undef,
             'HTTPSProxy'             => undef,
-            'PingNoProxy'            => { default => 'localhost', },
             'HTTPNoProxy'            => { default => 'localhost', },
             'HeaderCacheControl'     => undef,
             'ImageDriver'            => { default => 'ImageMagick', },
@@ -1938,8 +1934,6 @@ BEGIN {
 
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
-            'ResultDisplay'           => { default => 'descend', },
-            'ExcerptWords'            => { default => 40, },
             'ExcludeBlogs'            => undef,
             'ContentDataExcludeBlogs' => {
                 default => sub { $_[0]->ExcludeBlogs }
@@ -1948,12 +1942,7 @@ BEGIN {
             'ContentDataIncludeBlogs' => {
                 default => sub { $_[0]->IncludeBlogs }
             },
-            'DefaultTemplate'     => { default => 'default.tmpl', },
             'MaxResults'          => { default => '20', },
-            'AltTemplate'         => {
-                type    => 'ARRAY',
-                default => 'feed results_feed.tmpl',
-            },
             'SearchSortBy'            => undef,
             'ContentDataSearchSortBy' => {
                 default => sub { $_[0]->SearchSortBy }
@@ -1962,19 +1951,22 @@ BEGIN {
             'ContentDataSearchNoOverride' => {
                 default => sub { $_[0]->SearchNoOverride }
             },
-            'SearchResultDisplay'            => { alias => 'ResultDisplay', },
+            'SearchResultDisplay'            => { default => 'descend', },
             'ContentDataSearchResultDisplay' => {
                 default => sub { $_[0]->SearchResultDisplay }
             },
-            'SearchExcerptWords'    => { alias => 'ExcerptWords', },
-            'SearchDefaultTemplate' => { alias => 'DefaultTemplate', },
+            'SearchExcerptWords'    => { default => 40, },
+            'SearchDefaultTemplate' => { default => 'default.tmpl', },
             'ContentDataSearchDefaultTemplate' =>
                 { default => 'content_data_default.tmpl' },
             'SearchMaxResults'            => { alias => 'MaxResults', },
             'ContentDataSearchMaxResults' => {
                 default => sub { $_[0]->SearchMaxResults }
             },
-            'SearchAltTemplate'            => { alias => 'AltTemplate' },
+            'SearchAltTemplate'  => {
+                type    => 'ARRAY',
+                default => 'feed results_feed.tmpl',
+            },
             'ContentDataSearchAltTemplate' => {
                 type    => 'ARRAY',
                 default => 'feed content_data_results_feed.tmpl',
