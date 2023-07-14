@@ -9542,5 +9542,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0054; formattedtext 1.00; tinymce 1; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; contenttypecolumn 0.01; core 7.0054; formattedtext 1.00; tinymce 1; tinymce5 1; tinymce6 1"
 }
