@@ -5,6 +5,7 @@ author_link: http://www.movabletype.org/
 author_name: Six Apart Ltd.
 description: <MT_TRANS phrase="Block Editor.">
 l10n_class: BlockEditor::L10N
+schema_version: 1
 
 text_filters:
     blockeditor:
@@ -50,3 +51,25 @@ blockeditor_fields:
     order: 40
   horizon:
     order: 50
+
+callbacks:
+    MT::Upgrade::upgrade_end: |
+        sub {
+            my ( $cb, $self, %param ) = @_;
+            # explicitly enabled or disabled
+            return 1 if do {
+                my $cfg = MT->model('config')->load(1);
+                $cfg
+                    && $cfg->data =~ /PluginSchemaVersion BlockEditor=/i
+                    && $cfg->data =~ /PluginSwitch BlockEditor=/i;
+            };
+
+            # enabled by upgrade
+            return 1 if $param{from};
+
+            # disable by install
+            my $cfg = MT->config;
+            $cfg->PluginSwitch( 'BlockEditor=0', 1 );
+            $cfg->PluginSchemaVersion('BlockEditor=1', 1);
+            $cfg->save_config;
+        }
