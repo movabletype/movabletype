@@ -28,8 +28,8 @@ my ($fh, $cfg_file) = tempfile();
 print $fh <<CFG;
 Database $db_dir/mt.db
 ObjectDriver DBI::SQLite 
-AltTemplate foo bar
-AltTemplate baz quux
+SearchAltTemplate foo bar
+SearchAltTemplate baz quux
 AltTemplatePath alt-foo
 AltTemplatePath alt-bar
 EmptyString ''
@@ -61,12 +61,12 @@ is($cfg->DataSource, './db', 'autoloaded DataSource=./db2');
 is($cfg->Serializer, 'MT', 'Serializer=MT');
 is($cfg->TimeOffset, 0,    'TimeOffset=0');
 
-## Test that multiple settings (AltTemplate) work.
-my @paths = $cfg->AltTemplate;
-is($cfg->type('AltTemplate'), 'ARRAY',    'AltTemplate=ARRAY');
+## Test that multiple settings (SearchAltTemplate) work.
+my @paths = $cfg->SearchAltTemplate;
+is($cfg->type('SearchAltTemplate'), 'ARRAY',    'SearchAltTemplate=ARRAY');
 is(@paths,                    2,          'paths=2');
-is(($cfg->AltTemplate)[0],    'foo bar',  'foo bar');
-is(($cfg->AltTemplate)[1],    'baz quux', 'baz quux');
+is(($cfg->SearchAltTemplate)[0],    'foo bar',  'foo bar');
+is(($cfg->SearchAltTemplate)[1],    'baz quux', 'baz quux');
 
 ## Test bug in early version of ConfigMgr where space was not
 ## stripped from the ends of values
