@@ -1362,6 +1362,7 @@ my @apis = (
                 'blockeditor'               => 1,
             );
             delete $tf{textile_2} unless MT->config->PluginSwitch->{"Textile/textile2.pl"};
+            delete $tf{blockeditor} unless MT->config->PluginSwitch->{"BlockEditor"};
 
             # __sanitize__ may come from the community pack
             @$result = grep { $_->{key} ne '__sanitize__' } @$result;
