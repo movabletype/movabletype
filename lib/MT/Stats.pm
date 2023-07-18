@@ -9,7 +9,7 @@ package MT::Stats;
 use strict;
 use warnings;
 
-our @EXPORT_OK = qw(readied_provider);
+our @EXPORT_OK = qw(readied_provider default_provider_has);
 use base qw(Exporter);
 
 our %providers;
@@ -36,6 +36,23 @@ sub readied_provider {
     }
 
     return undef;
+}
+
+sub default_provider_has {
+    my $method = shift;
+    my $name   = MT->config->DefaultStatsProvider or return;
+    my $provider;
+    if (!%providers) {
+        my $reg = MT->instance->registry('stats_providers', $name) or return;
+        $provider = $reg->{provider};
+        return unless eval "require $provider; 1";
+    } else {
+        $provider = $providers{$name};
+    }
+    if ($provider->can($method)) {
+        return $provider->$method;
+    }
+    return;
 }
 
 1;
