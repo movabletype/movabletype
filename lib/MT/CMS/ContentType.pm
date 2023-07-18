@@ -761,14 +761,14 @@ sub dialog_content_data_modal {
         content_field_id => [qw/ID/],
     }) or return;
 
-    my ( $can_multi, $content_type_id, $content_type_name );
+    my ( $can_multi, $content_type, $content_type_id, $content_type_name );
     my $content_field_id = $app->param('content_field_id');
     if ($content_field_id) {
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
             my $options = $content_field->options;
             $can_multi = $options->{multiple} ? 1 : 0;
             $content_type_id = $content_field->related_content_type_id;
-            if ( my $content_type = $content_field->related_content_type ) {
+            if ( $content_type = $content_field->related_content_type ) {
                 $content_type_name = $content_type->name;
             }
         }
@@ -779,45 +779,94 @@ sub dialog_content_data_modal {
         content_field_id  => $content_field_id,
         content_type_id   => $content_type_id,
         content_type_name => $content_type_name,
+        search_cols       => _search_cols($app, $content_type),
     };
 
     $app->load_tmpl( 'dialog/content_data_modal.tmpl', $param );
+}
+
+sub _search_cols {
+    my ($app, $content_type) = @_;
+    my $search_api  = $app->registry("search_apis")->{content_data};
+    my $search_cols = $search_api->{search_cols};
+    my @ret;
+    for my $key (keys %$search_cols) {
+        next if $key eq 'plugin';
+        my $field = $search_cols->{$key};
+        my %attr;
+        $attr{field} = $key;
+        if (ref($field) eq 'CODE') {
+            $attr{label} = $field->();
+        } elsif (exists($search_api->{plugin})) {
+            $attr{label} = $search_api->{plugin}->translate($field);
+        } else {
+            $attr{label} = $app->translate($field);
+        }
+        push @ret, \%attr;
+    }
+    for my $f (@{ $content_type->searchable_fields }) {
+        push @ret, {
+            field => '__field:' . $f->{id},
+            label => $f->{options}{label},
+        };
+    }
+    return \@ret;
 }
 
 sub dialog_list_content_data {
     my $app              = shift;
 
     $app->validate_param({
-        content_field_id => [qw/ID/],
+        content_type_id  => [qw/ID/],
         dialog           => [qw/MAYBE_STRING/],
         no_insert        => [qw/MAYBE_STRING/],
     }) or return;
 
-    my $blog             = $app->blog;
-    my $content_field_id = $app->param('content_field_id') || 0;
-    my $content_field    = MT::ContentField->load($content_field_id);
+    my $blog            = $app->blog;
+    my $content_type_id = $app->param('content_type_id');
 
     return $app->return_to_dashboard( redirect => 1 )
-        unless $blog && $content_field->related_content_type_id;
+        unless $blog && $content_type_id;
 
     # TODO: permission check
 
     my $terms = {
         blog_id         => $blog->id,
-        content_type_id => $content_field->related_content_type_id,
+        content_type_id => $content_type_id,
     };
+    
+    if (my $search_cols = $app->param('search_cols')) {
+        my @cols = split(',', $search_cols);
+        if (!grep { $_ =~ /^__field:/ } @cols) {
+            my $plain_search = $app->param('search');
+            require MT::CMS::Search;
+            $terms = MT::CMS::Search::make_terms_for_plain_search($terms, \@cols, $plain_search);
+        }
+    }
+    my $limit;
+    if (defined $app->param('search') && $app->param('search') ne '') {
+        $limit =
+               MT->config->CMSSearchLimitContent_data
+            || MT->config->CMSSearchLimit
+            || MT->config->default('CMSSearchLimit');
+        $limit =~ s/\D//g;
+    }
+
     my $args = {
         sort      => 'modified_on',
         direction => 'descend',
+        defined($limit) ? (limit => $limit) : (),
     };
     my $hasher = _build_content_data_hasher($app);
 
     my $dialog    = $app->param('dialog')    ? 1 : 0;
     my $no_insert = $app->param('no_insert') ? 1 : 0;
+    my $can_multi = $app->param('can_multi');
 
     $app->listing(
         {   terms    => $terms,
             args     => $args,
+            no_limit => 0,
             type     => 'content_data',
             code     => $hasher,
             template => 'include/content_data_list.tmpl',
@@ -830,7 +879,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi => $content_field->options->{multiple} ? 1 : 0,
+                can_multi   => $can_multi,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,

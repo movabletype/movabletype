@@ -1,17 +1,27 @@
 <mt:unless name="json">
   <mt:var name="screen_type" value="dialog-screen insert-content-data-dialog">
 
-<div style="display: none;">
+<div>
   <form action="" method="get" id="modal-search" class="form-inline">
-    <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
-    <input type="image" id="search-button" class="search-command search-submit" src="<mt:var name="static_uri">images/search-submit-dialog.png" title="<__trans phrase="Search">" />
-    <a href="javascript:void(0)" class="search-reset hidden">
-      <__trans phrase="Reset">
+    <select id="search_cols" name="search_cols" class="list-inline-item m-2 custom-select form-control form-select">
+      <mt:loop name="search_cols">
+        <option class="form-check-label form-label" value="<mt:var name="field" escape="html">"><mt:var name="label" escape="html">
+      </mt:loop>
+    </select>
+    <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="" placeholder="<__trans phrase="Search">" />
+    <a href="#" class="d-inline-block" onclick="jQuery('#search-button:enabled').trigger('click'); return false;">
+      <mtapp:svgicon id="ic_search" title="Search">
     </a>
+    <button id="search-button" class="search-command search-submit" style="display: none;"></button>
+    <a href="#" class="search-reset hidden ms-4" style="display: none;" onclick="return false"><__trans phrase="Reset"></a>
   </form>
 </div>
 
   <mt:setvarblock name="list_actions">
+        <div id="have-more-count" class="mt-3">
+          <mtapp:svgicon id="ic_info">
+          <__trans phrase="Showing first [_1] results." params="<span id="have-more-limit"></span>">
+        </div>
         <div class="col indicator">
           <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" witdh="16" height="16" />
           <__trans phrase="Loading...">
@@ -23,8 +33,7 @@
           </nav>
         </div>
   </mt:setvarblock>
-
-<div id="listing" class="listing line has-filter">
+<div id="listing" class="listing line has-filter mt-3">
   <div class="unit size1of1">
     <div id="listing-table" class="listing-table-block">
       <div id="listing-table-overlay" class="overlay"></div>
@@ -32,8 +41,11 @@
         <table id="content-data-table" class="table mt-table listing-table">
           <thead>
             <th class="head cb mt-table__control">&nbsp;</th>
-            <th class="head string" scope="col">
-              <span class="col-label"><__trans phrase="Label"></span>
+            <th class="head string content-data-label" scope="col">
+              <span class="col-label"><__trans phrase="Data Label"></span>
+            </th>
+            <th class="head string content-data-identifier" scope="col">
+              <span class="col-label"><__trans phrase="Basename"></span>
             </th>
             <th class="head string d-none d-md-table-cell" scope="col">
               <span class="col-label"><__trans phrase="Date Modified"></span>
@@ -60,6 +72,9 @@
               <td class="content-data-label primary">
                 <mt:var name="label" escape="html">
               </td>
+              <td class="content-data-identifier primary">
+                <mt:var name="identifier" escape="html">
+              </td>
               <td class="content-data-modified-date d-none d-md-table-cell">
                 <mt:var name="modified_date" escape="html">
               </td>
@@ -73,7 +88,7 @@
               </td>
             </tr>
             <tr class="content-data-preview-data">
-              <td class="p-0" colspan="5">
+              <td class="p-0" colspan="6">
                 <div class="collapse mt-collapse__content" id="content-data-data-<mt:var name="id" escape="html">">
                   <mt:var name="preview_data" _default="<__trans phrase="No field data.">">
                 </div>
@@ -82,7 +97,7 @@
 </mt:loop>
 <mt:unless name="object_loop">
             <tr class="odd">
-              <td class="fullwidth-row" colspan="5">
+              <td class="fullwidth-row" colspan="6">
                 <__trans phrase="No [_1] could be found." params="<mt:var name="content_type_name" _default="Content Data">">
               </td>
             </tr>
@@ -144,10 +159,10 @@ function toggleClassOfPaginationContainer() {
 
 function loadContentDataList(offset) {
   jQuery('.indicator, #listing-table-overlay').show();
-  jQuery('ul.pagination').hide();
-  jQuery('ul.pagination__mobile').hide();
   jQuery('#search').attr('disabled', 'disabled');
   jQuery('#search-button').attr('disabled', 'disabled');
+  paginationHide();
+  jQuery('#have-more-count').hide();
 
   var opts = {
     offset: offset,
@@ -155,17 +170,20 @@ function loadContentDataList(offset) {
   <mt:if name="blog_id">
     blog_id: <mt:var name="blog_id" escape="js">,
   </mt:if>
-  <mt:if name="content_field_id">
-    content_field_id: <mt:var name="content_field_id" escape="js">,
-  </mt:if>
+    content_type_id: <mt:var name="content_type_id" escape="js">,
+    can_multi: <mt:var name="can_multi" escape="js">,
     dialog: 1,
     dialog_view: 1,
     json: 1
   };
 
   if (jQuery('#search').val().length > 0) {
+    opts.is_limited = 1;
+    opts.search_cols = jQuery('#search_cols').val();
     opts.search = jQuery('#search').val();
   }
+
+  jQuery('#content-data-table tbody').remove();
 
   var canPagenate = true;
   jQuery.ajax({
@@ -176,7 +194,6 @@ function loadContentDataList(offset) {
     data: opts,
     success: function (data) {
       if (data.html) {
-        jQuery('#content-data-table tbody').remove();
         jQuery('#content-data-table').append(data.html);
         if (data.pager) {
           renderPagination(data.pager);
@@ -184,14 +201,28 @@ function loadContentDataList(offset) {
         } else {
           canPagenate = false;
         }
+        if (data.have_more) {
+          jQuery('#have-more-limit').text(data.have_more.limit);
+          jQuery('#have-more-count').show();
+        } else {
+          jQuery('#have-more-count').hide();
+        }
+      }
+      jQuery('.content-data-label').hide();
+      jQuery('.content-data-identifier').hide();
+      if (opts.search_cols && /^__field:/.test(opts.search_cols) === false) {
+        jQuery('.content-data-' + opts.search_cols).show();
+      } else {
+        jQuery('.content-data-label').show();
       }
       jQuery('tr.content-data-preview-data').hide();
     },
     complete: function () {
       jQuery('.indicator, #listing-table-overlay').hide();
       if (canPagenate) {
-        jQuery('ul.pagination').show();
-        jQuery('ul.pagination__mobile').show();
+        paginationShow();
+      } else {
+        paginationHide();
       }
       jQuery('#search').prop('disabled', false);
       jQuery('#search-button').prop('disabled', false);
@@ -217,6 +248,16 @@ function loadContentDataList(offset) {
       console.log('error: ' + status + ':' + error);
     }
   });
+}
+
+function paginationShow() {
+  jQuery('ul.pagination').removeClass('d-md-none').addClass('d-md-flex');
+  jQuery('ul.pagination__mobile').removeClass('block').addClass('none');
+}
+
+function paginationHide() {
+  jQuery('ul.pagination').removeClass('d-md-flex').addClass('d-none');
+  jQuery('ul.pagination__mobile').removeClass('none').addClass('block');
 }
 
 function renderPagination(pager) {
@@ -461,7 +502,7 @@ if (MT.Util.isIos()) {
   jQuery(window).on('resize', toggleClassOfPaginationContainer);
 }
 
-jQuery('#content-data-table').on('click', 'td.cb + td.content-data-label', function (e) {
+jQuery('#content-data-table').on('click', 'td.content-data-label, td.content-data-identifier', function (e) {
   if (!MT.Util.isMobileView()) {
     return;
   }

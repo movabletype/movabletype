@@ -663,6 +663,7 @@ sub prepare_content_type {
                         content_type_id => $ct->id,
                         name            => $cf_arg{name}        || $cf_name,
                         description     => $cf_arg{description} || $cf_name,
+                        $cf_type eq 'content_type' ? (related_content_type_id => $options{source}) : (),
                         %cf_arg,
                     );
                     $objs->{content_type}{$ct_name}{content_field}{$cf_name} = $cf;
