@@ -11,6 +11,10 @@ use Path::Tiny;
 use HTML::Filter::Callbacks;
 use Term::ANSIColor;
 
+BEGIN {
+    plan skip_all => 'requires MT_TEST_BS_MIGRATION for now' unless exists $ENV{MT_TEST_BS_MIGRATION};
+}
+
 my %map = map {lc $_ => 1} split /\s+/, $ENV{MT_TEST_BS_MIGRATION} // '';
 
 sub info    ($) { note colored(shift, "cyan") }
