@@ -1203,7 +1203,7 @@ sub do_search_replace {
                             }
                             if ($replace_handler) {
                                 ($replaced, $replaced_text) = $replace_handler->(
-                                    $re, $replace, $field_data, $text, $obj
+                                    $re, $replace, $field_data, $text, $obj, ($is_regex ? () : $plain_search)
                                 );
                                 $text = $replaced_text if defined $replaced_text;
                             }
@@ -1279,7 +1279,7 @@ sub do_search_replace {
                             my $search_handler = $app->handler_to_coderef(
                                 $field_registry->{search_handler} );
                             $match = $search_handler && $search_handler->(
-                                $re, $field_data, $text, $obj
+                                $re, $field_data, $text, $obj, ($is_regex ? () : $plain_search)
                             );
                         }
                         else {

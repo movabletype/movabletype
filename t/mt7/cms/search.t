@@ -26,6 +26,35 @@ my $author  = MT->model('author')->load(1);
 my $blog_id = $objs->{blog_id};
 my $ct_id   = $objs->{content_type}{ct_multi}{content_type}->id;
 
+subtest 'searchable are replaceable' => sub {
+    require MT::ContentType;
+    my %searchable = map { $_ => 1 } qw(
+        select_box
+        checkboxes
+        radio_button
+        content_type
+        list
+        number
+        single_line_text
+        multi_line_text
+        url
+        embedded_text
+        tags
+        categories
+        asset
+        asset_audio
+        asset_video
+        asset_image
+    );
+    for my $type (keys %{MT->registry('content_field_types')}) {
+        my $searchable = MT::ContentType->_is_searchable_field_type($type) ? 1 : 0;
+        is $searchable, $searchable{$type} || 0, $type. ($searchable ? ' is searchable' : ' is not searchable');
+        my $registry = MT->registry( 'content_field_types', $type );
+        my $replaceable = ($registry->{replaceable} || $registry->{replace_handler}) ? 1 : 0;
+        is $replaceable, $searchable, $type. ($replaceable ? ' is replaceable' : ' is not replaceable');
+    }
+};
+
 subtest 'content_data' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($author);
@@ -382,6 +411,193 @@ subtest 'content_data replace' => sub {
     };
 
     $_->remove for @cds;
+};
+
+subtest 'content_data content_data field replace' => sub {
+    my $cf_id = $objs->{content_type}{ct_multi}{content_field}{cf_content_type}->id;
+    my $ct     = $objs->{content_type}{ct_multi}{content_type};
+    my $ct2     = $objs->{content_type}{ct2}{content_type};
+
+    my @cd;
+    for my $num (0, 1, 2) {
+        push @cd, MT::Test::Permission->make_content_data(
+            authored_on     => '20181128181600',
+            blog_id         => $blog_id,
+            content_type_id => $ct2->id,
+            identifier      => "ReplaceTestRefered $num identifier",
+            label           => "ReplaceTestRefered $num label",
+        );
+    }
+    my @cd_id = map { $_->id } @cd;
+
+    my @cd_multi;
+    my @testdata = (
+        [$cd_id[0], $cd_id[1]],
+        [$cd_id[0]],
+    );
+    for my $num (0 .. scalar @testdata - 1) {
+        push @cd_multi, MT::Test::Permission->make_content_data(
+            authored_on     => '20181128181600',
+            blog_id         => $blog_id,
+            content_type_id => $ct->id,
+            identifier      => "ReplaceTest $num identifier",
+            label           => "ReplaceTest $num label",
+            data            => { $cf_id => $testdata[$num] },
+        );
+    }
+    my @cd_multi_id = map { $_->id } @cd_multi;
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+    $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+    $app->change_tab('content_data');
+    $app->change_content_type($ct->id);
+
+    subtest 'replace with an unavailable option' => sub {
+        $app->search('ReplaceTestRefered 0 label', { is_limited => 1, search_cols => ['__field:' . $cf_id] });
+        is_deeply($app->found_ids, [@cd_multi_id[0, 1]], 'found');
+        $app->replace('wrong_option', [$cd_multi_id[0]]);
+        is_deeply($app->found_ids, [], 'no replacement occured');
+
+        my @reloaded = MT::ContentData->load({ id => \@cd_multi_id });
+        is_deeply($reloaded[0]->data->{$cf_id}, $testdata[0], 'unchecked field is not replaced');
+        is_deeply($reloaded[1]->data->{$cf_id}, $testdata[1], 'unchecked cd is not replaced');
+    };
+
+    subtest 'replace with an available label' => sub {
+        $app->search('ReplaceTestRefered 0 label', { is_limited => 1, search_cols => ['__field:' . $cf_id] });
+        $app->replace('ReplaceTestRefered 2 label', [$cd_multi_id[0]]);
+        is_deeply($app->found_ids,    [$cd_multi_id[0]],            'replaced');
+        is_deeply($app->found_titles, ["ReplaceTest 0 label"], 'selected ones are replaced');
+
+        my @reloaded = MT::ContentData->load({ id => \@cd_multi_id });
+        is_deeply($reloaded[0]->data->{$cf_id}, [$cd_id[2], $cd_id[1]], 'replaced');
+        is_deeply($reloaded[1]->data->{$cf_id}, $testdata[1], 'unchecked cd is not replaced');
+    };
+
+    $_->remove for @cd_multi, @cd;
+};
+
+subtest 'content_data form parts replace' => sub {
+    my $cf_id1 = $objs->{content_type}{ct_multi}{content_field}{cf_radio}->id;
+    my $cf_id2 = $objs->{content_type}{ct_multi}{content_field}{cf_checkboxes}->id;
+    my $cf_id3 = $objs->{content_type}{ct_multi}{content_field}{cf_select_box}->id;
+    my $ct     = $objs->{content_type}{ct_multi}{content_type}->clone;
+    $ct->name('form_part_test');
+    $ct->id(undef);
+    $ct->unique_id(undef);
+    $ct->save;
+
+    my @cds;
+    my $opts     = { abc => 1, def => 2, ghi => 3 };    # available by fixture
+    my $original = [$opts->{abc}, $opts->{def}];
+
+    for my $num (1, 2) {
+        push @cds, MT::Test::Permission->make_content_data(
+            authored_on     => '20181128181600',
+            blog_id         => $blog_id,
+            content_type_id => $ct->id,
+            identifier      => "ReplaceTest $num identifier",
+            label           => "ReplaceTest $num label",
+            data            => { $cf_id1 => $original, $cf_id2 => $original, $cf_id3 => $original },
+        );
+    }
+    my @cd_ids = map { $_->id } @cds;
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+    $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+    $app->change_tab('content_data');
+    $app->change_content_type($ct->id);
+
+    subtest 'replace with an unavailable option' => sub {
+        $app->search('def', { is_limited => 1, search_cols => ['__field:' . $cf_id2] });
+        is_deeply($app->found_ids, [@cd_ids[0, 1]], 'found one');
+        $app->replace('wrong_option', [$cd_ids[0]]);
+        is_deeply($app->found_ids, [], 'no replacement occured');
+
+        my @reloaded = MT::ContentData->load({ id => \@cd_ids });
+        is_deeply($reloaded[0]->data->{$cf_id1}, $original, 'unchecked field is not replaced');
+        is_deeply($reloaded[0]->data->{$cf_id2}, $original, 'unchecked field is not replaced');
+        is_deeply($reloaded[0]->data->{$cf_id3}, $original, 'unchecked field is not replaced');
+        is_deeply($reloaded[1]->data->{$cf_id1}, $original, 'unchecked cd is not replaced');
+        is_deeply($reloaded[1]->data->{$cf_id2}, $original, 'unchecked cd is not replaced');
+        is_deeply($reloaded[1]->data->{$cf_id3}, $original, 'unchecked cd is not replaced');
+    };
+
+    subtest 'replace with an available label' => sub {
+        $app->search('def', { is_limited => 1, search_cols => ['__field:' . $cf_id2] });
+        $app->replace('ghi', [$cd_ids[0]]);
+        is_deeply($app->found_ids,    [$cd_ids[0]],            'replaced');
+        is_deeply($app->found_titles, ["ReplaceTest 1 label"], 'selected ones are replaced');
+
+        my @reloaded = MT::ContentData->load({ id => \@cd_ids });
+        is_deeply($reloaded[0]->data->{$cf_id1}, $original,                    'replaced');
+        is_deeply($reloaded[0]->data->{$cf_id2}, [$opts->{abc}, $opts->{ghi}], 'unchecked field is not replaced');
+        is_deeply($reloaded[0]->data->{$cf_id3}, $original,                    'unchecked field is not replaced');
+        is_deeply($reloaded[1]->data->{$cf_id1}, $original,                    'unchecked cd is not replaced');
+        is_deeply($reloaded[1]->data->{$cf_id2}, $original,                    'unchecked cd is not replaced');
+        is_deeply($reloaded[1]->data->{$cf_id3}, $original,                    'unchecked cd is not replaced');
+    };
+
+    $_->remove for @cds;
+    $ct->remove;
+};
+
+subtest 'content_data asset field replace' => sub {
+    my $cf_id = $objs->{content_type}{ct_multi}{content_field}{cf_image}->id;
+    my $ct     = $objs->{content_type}{ct_multi}{content_type}->clone;
+    $ct->name('form_part_test');
+    $ct->id(undef);
+    $ct->unique_id(undef);
+    $ct->save;
+    my $asset1 = $objs->{image}{'test.jpg'};
+    my $asset2 = $objs->{image}{'test2.jpg'};
+    my $asset3 = $objs->{image}{'test3.png'};
+    note 'asset1 is '. $asset1;
+    note 'asset2 is '. $asset2;
+    note 'asset3 is '. $asset3;
+
+    my @cd_multi;
+    for my $asset ($asset1, $asset2) {
+        push @cd_multi, MT::Test::Permission->make_content_data(
+            authored_on     => '20181128181600',
+            blog_id         => $blog_id,
+            content_type_id => $ct->id,
+            identifier      => "ReplaceTest $asset identifier",
+            label           => "ReplaceTest $asset label",
+            data            => { $cf_id => [$asset1->id, $asset2->id] },
+        );
+    }
+    my @cd_multi_id = map { $_->id } @cd_multi;
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+    $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+    $app->change_tab('content_data');
+    $app->change_content_type($ct->id);
+
+    subtest 'replace with an unavailable option' => sub {
+        $app->search('Sample Image 1', { is_limited => 1, search_cols => ['__field:' . $cf_id] });
+        is_deeply($app->found_ids, [@cd_multi_id[0, 1]], 'found');
+        $app->replace('wrong_option', [$cd_multi_id[0]]);
+        is_deeply($app->found_ids, [], 'no replacement occured');
+
+        my @reloaded = MT::ContentData->load({ id => \@cd_multi_id });
+        is_deeply($reloaded[0]->data->{$cf_id}, [$asset1->id, $asset2->id], 'unchecked field is not replaced');
+        is_deeply($reloaded[1]->data->{$cf_id}, [$asset1->id, $asset2->id], 'unchecked cd is not replaced');
+    };
+
+    subtest 'replace with an available label' => sub {
+        $app->search('Sample Image 1', { is_limited => 1, search_cols => ['__field:' . $cf_id] });
+        $app->replace("Sample Image 3", [$cd_multi_id[0]]);
+        is_deeply($app->found_ids,    [$cd_multi_id[0]],            'replaced');
+        is_deeply($app->found_titles, ["ReplaceTest $asset1 label"], 'selected ones are replaced');
+
+        my @reloaded = MT::ContentData->load({ id => \@cd_multi_id });
+        is_deeply($reloaded[0]->data->{$cf_id}, [$asset3->id, $asset2->id], 'replaced');
+        is_deeply($reloaded[1]->data->{$cf_id}, [$asset1->id, $asset2->id], 'unchecked cd is not replaced');
+    };
+
+    $_->remove for @cd_multi;
 };
 
 subtest 'dialog_grant_role' => sub {

@@ -150,7 +150,7 @@ sub replace_handler {
 
 sub search_handler {
     my ( $search_regex, $field_data, $values, $content_data ) = @_;
-    return 0 unless defined $values;
+    return 0 if $values eq '';
     $values = [$values] unless ref $values eq 'ARRAY';
     ( grep { defined $_ ? $_ =~ /$search_regex/ : 0 } @$values ) ? 1 : 0;
 }
