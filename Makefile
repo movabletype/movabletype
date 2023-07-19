@@ -135,8 +135,6 @@ code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/js/editor.js \
         mt-static/jquery/jquery.mt.min.js \
         mt-static/js/admin2023/jquery/jquery.mt.min.js \
-        mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js \
-        mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js \
         mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js \
         mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js \
         mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js \
