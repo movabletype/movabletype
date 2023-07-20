@@ -256,15 +256,6 @@ C<tools/run-periodic-tasks> script provided with Movable Type. This script
 now invokes the task subsystem to execute B<all> available tasks instead of
 just the one for publishing scheduled posts.
 
-=item * By fetching an activity feed
-
-With the activity feeds MT serves, it will invoke the task subsystem first,
-then return the feed. This allows users without access to cron service to
-run scheduled tasks. Note however, that this mode is reliant upon the feed
-being pulled by some client. If the feed is not being accessed, then the
-tasks won't run either. A user can utilize a feed-reading online service to
-achieve "24x7" task service to keep their tasks running smoothly.
-
 =item * Other requests
 
 Some tasks, such as the expiration of junk records, may be conditionally

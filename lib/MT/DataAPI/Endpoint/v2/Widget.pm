@@ -84,23 +84,6 @@ sub list {
     };
 }
 
-sub list_all {
-    my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
-    my %terms = ( type => 'widget', );
-
-    my $res = filtered_list( $app, $endpoint, 'template', \%terms ) or return;
-
-    return +{
-        totalResults => ( $res->{count} || 0 ),
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
-    };
-}
-
 sub list_for_widgetset_openapi_spec {
     +{
         tags       => ['Widgets', 'WidgetSets'],

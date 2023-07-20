@@ -184,10 +184,7 @@ sub search {
         );
     }
 
-    my $search_class
-        = $app->param('freeText')
-        ? 'MT::App::Search::FreeText'
-        : 'MT::App::Search';
+    my $search_class = 'MT::App::Search';
     local @MT::App::DataAPI::ISA = ($search_class);
 
     MT::App::Search::init_request($app);

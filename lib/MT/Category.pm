@@ -288,6 +288,7 @@ sub category_label_path {
     $orig->{__label_path} = $result;
 }
 
+### DEPRECATED AS WELL? (cache_obj, clear_cache, cache)
 sub cache_obj {
     my $pkg     = shift;
     my (%param) = @_;

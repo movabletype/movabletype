@@ -313,37 +313,6 @@ abstract class MTDatabase {
         return "extract($part from $column)";
     }
 
-    // Deprecated method
-    public function get_row($query = null, $output = OBJECT, $y = 0) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('get_row was Deprecated.');
-    }
-
-    public function get_results($query = null, $output = ARRAY_A) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('get_results was Deprecated.');
-    }
-
-    public function convert_fieldname($array) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('convert_fieldname was Deprecated.');
-    }
-
-    public function expand_meta($rows) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('expand_meta was Deprecated.');
-    }
-
-    public function get_meta($obj_type, $obj_id) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('get_meta was Deprecated.');
-    }
-
-    function apply_limit_sql($sql, $limit, $offset = 0) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('apply_limit_sql was Deprecated.');
-    }
-
     // Public method
     public function resolve_url($path, $blog_id, $build_type = 3) {
         $path = preg_replace('!/$!', '', $path);

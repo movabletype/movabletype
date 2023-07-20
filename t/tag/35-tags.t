@@ -142,12 +142,6 @@ mt-tb.cgi
 --- expected
 mt-search.cgi
 
-=== test 8
---- template
-<MTXMLRPCScript>
---- expected
-mt-xmlrpc.cgi
-
 === test 9
 --- template
 <MTEntries lastn='1'><MTEntryDate></MTEntries>
@@ -1006,12 +1000,6 @@ CFG_FILE
 <MTAdminScript>
 --- expected
 mt.cgi
-
-=== test 192
---- template
-<MTAtomScript>
---- expected
-mt-atom.cgi
 
 === test 193
 --- template

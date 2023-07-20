@@ -327,9 +327,6 @@ sub core_methods {
         'update_widget_prefs' =>
             sub { return shift->update_widget_prefs(@_) },
 
-        ## DEPRECATED ##
-        'upload_userpic' => "${pkg}User::upload_userpic",
-
         ## MT7 - Content Data
         'view_content_data'    => "${pkg}ContentData::edit",
         'edit_content_data'    => "${pkg}ContentData::edit",
@@ -3864,22 +3861,6 @@ sub list_pref {
         $list_pref->{ 'order_' . $list_pref->{'order'} } = 1;
     }
     $app->request( "list_pref_$list", $list_pref );
-}
-
-sub make_feed_link {
-    my $app = shift;
-    my ( $view, $params ) = @_;
-    my $user = $app->user;
-    return if ( $user->api_password || '' ) eq '';
-
-    $params ||= {};
-    $params->{view}     = $view;
-    $params->{username} = $user->name;
-    $params->{token} = perl_sha1_digest_hex( 'feed:' . $user->api_password );
-    $app->base
-        . $app->mt_path
-        . $app->config('ActivityFeedScript')
-        . $app->uri_params( args => $params );
 }
 
 sub show_error {

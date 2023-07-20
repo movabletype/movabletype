@@ -1435,30 +1435,6 @@ BEGIN {
                 permission          => "access_to_entry_list",
                 data_api_permission => undef,
                 view                => [ 'website', 'blog' ],
-                feed_link           => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-
-                    if ( $app->blog ) {
-                        return 1
-                            if $app->user->can_do( 'get_entry_feed',
-                            at_least_one => 1 );
-                    }
-                    else {
-                        my $iter = MT->model('permission')->load_iter(
-                            {   author_id => $app->user->id,
-                                blog_id   => { not => 0 },
-                            }
-                        );
-                        my $cond;
-                        while ( my $p = $iter->() ) {
-                            $cond = 1, last
-                                if $p->can_do('get_entry_feed');
-                        }
-                        return $cond ? 1 : 0;
-                    }
-                    0;
-                },
             },
             page => {
                 object_label        => 'Page',
@@ -1468,30 +1444,6 @@ BEGIN {
                 permission          => 'access_to_page_list',
                 data_api_permission => undef,
                 view                => [ 'website', 'blog' ],
-                feed_link           => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-
-                    if ( $app->blog ) {
-                        return 1
-                            if $app->user->can_do( 'get_page_feed',
-                            at_least_one => 1 );
-                    }
-                    else {
-                        my $iter = MT->model('permission')->load_iter(
-                            {   author_id => $app->user->id,
-                                blog_id   => { not => 0 },
-                            }
-                        );
-                        my $cond;
-                        while ( my $p = $iter->() ) {
-                            $cond = 1, last
-                                if $p->can_do('get_page_feed');
-                        }
-                        return $cond ? 1 : 0;
-                    }
-                    0;
-                },
             },
             asset => {
                 object_label        => 'Asset',
@@ -1551,33 +1503,6 @@ BEGIN {
                     my $cnt = MT->model('permission')->count($terms);
                     return ( $cnt && $cnt > 0 ) ? 1 : 0;
                 },
-                feed_link => sub {
-                    my ($app) = @_;
-                    return 1 if $app->user->is_superuser;
-                    return 1 if $app->can_do('get_all_system_feed');
-
-                    if ( $app->blog ) {
-                        return 1
-                            if $app->user->can_do( 'get_system_feed',
-                            at_least_one => 1 );
-                    }
-                    else {
-                        my $iter = MT->model('permission')->load_iter(
-                            {   author_id => $app->user->id,
-                                blog_id   => { not => 0 },
-                            }
-                        );
-                        my $cond;
-                        while ( my $p = $iter->() ) {
-                            $cond = 1, last
-                                if $p->can_do('get_system_feed');
-                        }
-                        return $cond ? 1 : 0;
-                    }
-
-                    0;
-                },
-                feed_label   => 'Activity Feed',
                 screen_label => 'Activity Log',
             },
             category => {
@@ -1833,14 +1758,6 @@ BEGIN {
         backup_instructions => \&load_backup_instructions,
         permissions         => \&load_core_permissions,
         config_settings     => {
-            'AtomApp' => {
-                type    => 'HASH',
-                default => {
-                    weblog   => 'MT::AtomServer::Weblog::Legacy',
-                    '1.0'    => 'MT::AtomServer::Weblog',
-                    comments => 'MT::AtomServer::Comments',
-                },
-            },
             'SchemaVersion'                => undef,
             'MTVersion'                    => undef,
             'MTReleaseNumber'              => undef,
@@ -1875,7 +1792,6 @@ BEGIN {
                 path    => 1,
                 type    => 'ARRAY',
             },
-            'CSSPath'    => { default => 'css', },
             'ImportPath' => {
                 default => 'import',
                 path    => 1,
@@ -1908,14 +1824,12 @@ BEGIN {
             'SupportDirectoryURL'  => { default => '' },
             'ObjectDriver'         => undef,
             'ObjectCacheLimit'     => { default => 1000 },
-            'ObjectCacheDisabled'  => undef,
             'DisableObjectCache'   => { default => 0, },
             'AllowedTextFilters'   => undef,
             'Serializer'           => { default => 'MT', },
             'SendMailPath'         => { default => '/usr/lib/sendmail', },
             'RsyncPath'            => undef,
             'TimeOffset'           => { default => 0, },
-            'WSSETimeout'          => { default => 120, },
             'StaticWebPath'        => { default => '', },
             'StaticFilePath'       => undef,
             'CGIPath'              => { default => '/cgi-bin/', },
@@ -1926,8 +1840,6 @@ BEGIN {
             'BaseTemplatePath'               => { default => undef },
             'HideBaseSitePath'               => { default => 0, },
             'HidePerformanceLoggingSettings' => { default => 0, },
-            'HidePaformanceLoggingSettings' =>
-                { alias => 'HidePerformanceLoggingSettings' },
             'CookieDomain'          => undef,
             'CookiePath'            => undef,
             'MailModule'            => { default => 'MIME::Lite', },
@@ -1956,9 +1868,6 @@ BEGIN {
             'SSLVerifyNone'     => undef,
             'SSLVersion'        => undef,
             'DebugEmailAddress' => undef,
-            'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
-            'MTPingURL' =>
-                { default => 'http://www.movabletype.org/update/', },
             'CGIMaxUpload' => {
                 handler => \&CGIMaxUpload,
                 default => 20_480_000,
@@ -1982,17 +1891,11 @@ BEGIN {
             'NoLocking'              => { default => 0, },
             'NoHTMLEntities'         => { default => 1, },
             'NoCDATA'                => { default => 0, },
-            'NoPlacementCache'       => { default => 0, },
-            'NoPublishMeansDraft'    => { default => 0, },
             'IgnoreISOTimezones'     => { default => 0, },
-            'PingTimeout'            => { default => 60, },
             'HTTPTimeout'            => { default => 60 },
-            'PingInterface'          => undef,
             'HTTPInterface'          => undef,
-            'PingProxy'              => undef,
             'HTTPProxy'              => undef,
             'HTTPSProxy'             => undef,
-            'PingNoProxy'            => { default => 'localhost', },
             'HTTPNoProxy'            => { default => 'localhost', },
             'HeaderCacheControl'     => undef,
             'ImageDriver'            => { default => 'ImageMagick', },
@@ -2001,18 +1904,13 @@ BEGIN {
             'AutoChangeImageQuality' => { default => 1 },
             'NetPBMPath'             => undef,
             'AdminScript'            => { default => 'mt.cgi', },
-            'ActivityFeedScript'     => { default => 'mt-feed.cgi', },
-            'ActivityFeedItemLimit'  => { default => 50, },
             'CommentScript'          => { default => 'mt-comments.cgi', },
             'TrackbackScript'        => { default => 'mt-tb.cgi', },
             'SearchScript'           => {
                 default => 'mt-search.cgi',
                 handler => \&SearchScript,
             },
-            'FreeTextSearchScript'    => { default => 'mt-ftsearch.cgi', },
             'ContentDataSearchScript' => { default => 'mt-cdsearch.cgi' },
-            'XMLRPCScript'            => { default => 'mt-xmlrpc.cgi', },
-            'AtomScript'              => { default => 'mt-atom.cgi', },
             'UpgradeScript'           => { default => 'mt-upgrade.cgi', },
             'CheckScript'             => { default => 'mt-check.cgi', },
             'DataAPIScript'           => { default => 'mt-data-api.cgi', },
@@ -2036,12 +1934,6 @@ BEGIN {
 
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
-            'NoOverride'              => { default => '', },
-            'RegexSearch'             => { default => 0, },
-            'CaseSearch'              => { default => 0, },
-            'ResultDisplay'           => { default => 'descend', },
-            'ExcerptWords'            => { default => 40, },
-            'SearchElement'           => { default => 'entries', },
             'ExcludeBlogs'            => undef,
             'ContentDataExcludeBlogs' => {
                 default => sub { $_[0]->ExcludeBlogs }
@@ -2050,37 +1942,31 @@ BEGIN {
             'ContentDataIncludeBlogs' => {
                 default => sub { $_[0]->IncludeBlogs }
             },
-            'DefaultTemplate'     => { default => 'default.tmpl', },
-            'Type'                => { default => 'straight', },
             'MaxResults'          => { default => '20', },
-            'SearchCutoff'        => { default => '9999999', },
-            'CommentSearchCutoff' => { default => '30', },
-            'AltTemplate'         => {
-                type    => 'ARRAY',
-                default => 'feed results_feed.tmpl',
-            },
             'SearchSortBy'            => undef,
             'ContentDataSearchSortBy' => {
                 default => sub { $_[0]->SearchSortBy }
             },
-            'SearchSortOrder'  => { default => 'ascend', },
             'SearchNoOverride' => { default => 'SearchMaxResults', },
             'ContentDataSearchNoOverride' => {
                 default => sub { $_[0]->SearchNoOverride }
             },
-            'SearchResultDisplay'            => { alias => 'ResultDisplay', },
+            'SearchResultDisplay'            => { default => 'descend', },
             'ContentDataSearchResultDisplay' => {
                 default => sub { $_[0]->SearchResultDisplay }
             },
-            'SearchExcerptWords'    => { alias => 'ExcerptWords', },
-            'SearchDefaultTemplate' => { alias => 'DefaultTemplate', },
+            'SearchExcerptWords'    => { default => 40, },
+            'SearchDefaultTemplate' => { default => 'default.tmpl', },
             'ContentDataSearchDefaultTemplate' =>
                 { default => 'content_data_default.tmpl' },
             'SearchMaxResults'            => { alias => 'MaxResults', },
             'ContentDataSearchMaxResults' => {
                 default => sub { $_[0]->SearchMaxResults }
             },
-            'SearchAltTemplate'            => { alias => 'AltTemplate' },
+            'SearchAltTemplate'  => {
+                type    => 'ARRAY',
+                default => 'feed results_feed.tmpl',
+            },
             'ContentDataSearchAltTemplate' => {
                 type    => 'ARRAY',
                 default => 'feed content_data_results_feed.tmpl',
@@ -2090,8 +1976,6 @@ BEGIN {
             'BulkLoadMetaObjectsLimit'  => { default => 100 },
             'DisableMetaObjectCache'    => { default => 1, },
             'ReturnToURL'               => undef,
-            'DynamicComments'           => { default => 0, },
-            'SignOnPublicKey'           => { default => '', },
             'ThrottleSeconds'           => { default => 20, },
             'SearchCacheTTL'            => { default => 20, },
             'ContentDataSearchCacheTTL' => {
@@ -2151,7 +2035,6 @@ BEGIN {
             'OutboundTrackbackDomains' => { type    => 'ARRAY', },
             'IndexBasename'            => { default => 'index', },
             'LogExportEncoding'        => { default => 'utf-8', },
-            'ActivityFeedsRunTasks'    => { default => 1, },
             'ExportEncoding'           => { default => 'utf-8', },
             'SQLSetNames'              => undef,
 
@@ -2171,9 +2054,7 @@ BEGIN {
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
             'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
-            'NewUserBlogTheme'        => undef,                  ## DEPRECATED
             'NewUserDefaultWebsiteId' => undef,                  ## DEPRECATED
-            'NewUserTemplateBlogId'   => undef,                  ## DEPRECATED
             'DefaultSiteURL'          => undef,                  ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
@@ -2212,7 +2093,6 @@ BEGIN {
             'SyncTarget'               => { type    => 'ARRAY' },
             'RsyncOptions'             => undef,
             'UserpicAllowRect'         => { default => 0 },
-            'UserpicMaxUpload'         => { default => 0 },
             'UserpicThumbnailSize'     => { default => 100 },
 
             ## Stats settings
@@ -2229,7 +2109,6 @@ BEGIN {
             'PublishCommenterIcon' => { default => 1 },
             'EnableAddressBook'    => { default => 0 },
             'SingleCommunity'      => { default => 1 },
-            'DefaultTemplateSet'   => { default => 'mt_blog' },
             'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
             'DefaultBlogTheme'     => { default => 'mont-blanc' },
             'ThemeStaticFileExtensions' => {
@@ -2263,8 +2142,6 @@ BEGIN {
             'IPLockoutLimit'                 => { default => 10 },
             'IPLockoutInterval'              => { default => 1800 },
             'FailedLoginExpirationFrequency' => { default => 86400 },
-            'LockoutExpireFrequency' =>
-                { alias => 'FailedLoginExpirationFrequency' },
             'LockoutIPWhitelist' => undef,
             'LockoutNotifyTo'    => undef,
 
@@ -2295,10 +2172,6 @@ BEGIN {
             },
             'LDAPUserSearchBase'    => { type  => 'ARRAY' },
             'LDAPGroupSearchBase'   => { type  => 'ARRAY' },
-            'AuthLDAPURL'           => { alias => 'LDAPAuthURL' },
-            'AuthLDAPBindDN'        => { alias => 'LDAPAuthBindDN' },
-            'AuthLDAPPassword'      => { alias => 'LDAPAuthPassword' },
-            'AuthLDAPSASLMechanism' => { alias => 'LDAPAuthSASLMechanism' },
 
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
@@ -2353,8 +2226,6 @@ BEGIN {
             'BuilderModule' => { default => 'MT::Builder' },
             'HideConfigWarnings' => { default => undef },
             'GlobalTemplateMaxRevisions' => { default => 20 },
-            'DisableQuickPost' => { default => 0 },
-            'DisableActivityFeeds' => { default => 0 },
             'DefaultStatsProvider' => { default => 'GoogleAnalyticsV4' },
             'DefaultListLimit' => { default => '50' },
             'WaitAfterReboot' => { default => '1.0' },
@@ -2365,20 +2236,6 @@ BEGIN {
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
-            'xmlrpc' => {
-                handler => 'MT::XMLRPCServer',
-                script  => sub { MT->config->XMLRPCScript },
-                type    => 'xmlrpc',
-            },
-            'atom' => {
-                handler => 'MT::AtomServer',
-                script  => sub { MT->config->AtomScript },
-                type    => 'run_once',
-            },
-            'feeds' => {
-                handler => 'MT::App::ActivityFeeds',
-                script  => sub { MT->config->ActivityFeedScript },
-            },
             'wizard' => {
                 handler => 'MT::App::Wizard',
                 script  => sub {'mt-wizard.cgi'},
@@ -2391,16 +2248,6 @@ BEGIN {
             'new_search' => {
                 handler => 'MT::App::Search',
                 script  => sub { MT->config->SearchScript },
-                tags    => sub {
-                    require MT::Template::Context::Search;
-                    return MT::Template::Context::Search->load_core_tags();
-                },
-                methods => sub { MT->app->core_methods() },
-                default => sub { MT->app->core_parameters() },
-            },
-            'ft_search' => {
-                handler => 'MT::App::Search::FreeText',
-                script  => sub { MT->config->FreeTextSearchScript },
                 tags    => sub {
                     require MT::Template::Context::Search;
                     return MT::Template::Context::Search->load_core_tags();
@@ -3777,10 +3624,7 @@ sub SearchScript {
 
     return $mgr->set_internal( 'SearchScript', @_ ) if @_;
 
-    if ( MT->app && MT->app->isa('MT::App::Search::FreeText') ) {
-        return $mgr->get_internal('FreeTextSearchScript');
-    }
-    elsif ( MT->app && MT->app->isa('MT::App::Search::ContentData') ) {
+    if ( MT->app && MT->app->isa('MT::App::Search::ContentData') ) {
         return $mgr->get_internal('ContentDataSearchScript');
     }
     else {

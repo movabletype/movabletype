@@ -1448,19 +1448,6 @@ sub list {
         $template = 'list_common.tmpl';
     }
 
-    my $feed_link = $screen_settings->{feed_link};
-    $feed_link = $feed_link->($app)
-        if 'CODE' eq ref $feed_link;
-    if ($feed_link and !MT->config->DisableActivityFeeds) {
-        my $view = $subtype ? $app->param('type') : $type;
-        $param{feed_url} = $app->make_feed_link( $view,
-            $blog_id ? { blog_id => $blog_id } : undef );
-        $param{object_type_feed}
-            = $screen_settings->{feed_label}
-            ? $screen_settings->{feed_label}
-            : $app->translate( "[_1] Feed", $obj_class->class_label );
-    }
-
     if ( $param{use_actions} ) {
         $app->load_list_actions( ( $type . $subtype ), \%param );
         $app->load_content_actions( ( $type . $subtype ), \%param );

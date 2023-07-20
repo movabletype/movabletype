@@ -2389,19 +2389,15 @@ sub new_ua {
     return undef if $@;
     my $cfg      = $class->config;
     my $max_size = exists $opt->{max_size} ? $opt->{max_size} : 100_000;
-    my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout
-        || $cfg->PingTimeout;
-    my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy
-        || $cfg->PingProxy;
+    my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout;
+    my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy;
     my $sec_proxy
         = exists $opt->{sec_proxy} ? $opt->{sec_proxy} : $cfg->HTTPSProxy;
     my $no_proxy
-        = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy
-        || $cfg->PingNoProxy;
+        = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy;
     my $agent = $opt->{agent} || $MT::PRODUCT_NAME . '/' . $MT::VERSION;
     my $interface
-        = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface
-        || $cfg->PingInterface;
+        = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface;
 
     if ( my $localaddr = $interface ) {
         @LWP::Protocol::http::EXTRA_SOCK_OPTS = (
