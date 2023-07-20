@@ -3144,7 +3144,7 @@ sub _hdlr_app_setting {
     );
 
     my $tmpl = MT->instance->load_core_tmpl( 'cms/include/mtapp_setting.tmpl', \%param );
-    return $tmpl->output();
+    return $ctx->build( $tmpl->output() );
 }
 
 ###########################################################################
@@ -3372,7 +3372,7 @@ sub _hdlr_app_statusmsg {
     $param{dynamic_all} = 1 if $blog && $blog->custom_dynamic_templates eq 'all';
 
     my $tmpl = $app->load_core_tmpl( 'cms/include/mtapp_statusmsg.tmpl', \%param );
-    return $tmpl->output();
+    return $ctx->build( $tmpl->output() );
 }
 
 ###########################################################################
