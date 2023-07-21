@@ -70,6 +70,6 @@ callbacks:
             # disable by install
             my $cfg = MT->config;
             $cfg->PluginSwitch( 'BlockEditor=0', 1 );
-            $cfg->PluginSchemaVersion('BlockEditor=1', 1);
+            $cfg->PluginSchemaVersion('blockeditor=1', 1);
             $cfg->save_config;
         }
