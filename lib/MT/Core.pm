@@ -1993,15 +1993,10 @@ BEGIN {
             'CMSSearchLimit'     => { default => 125 },
             'OneHourMaxPings'    => { default => 10, },
             'OneDayMaxPings'     => { default => 50, },
-            'SupportURL'         => {
-                default => 'http://www.sixapart.com/movabletype/support/',
-            },
-            'NewsURL' =>
-                { default => 'http://www.sixapart.com/movabletype/news/', },
-            'NewsboxURL' => {
-                default => 'https://www.movabletype.org/news/newsbox.json',
-            },
-            'FeedbackURL' => { default => 'http://www.movabletype.org/feedback.html', },
+            'SupportURL'         => undef,
+            'NewsURL'            => undef,
+            'NewsboxURL'         => undef,
+            'FeedbackURL'        => undef,
 
             'EmailAddressMain'         => undef,
             'EmailReplyTo'             => undef,
@@ -2113,7 +2108,7 @@ BEGIN {
             'DefaultBlogTheme'     => { default => 'mont-blanc' },
             'ThemeStaticFileExtensions' => {
                 default =>
-                    'html jpg jpeg gif png js css ico flv swf otf ttf svg'
+                    'html jpg jpeg gif png js css ico flv swf otf ttf svg webp map json'
             },
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },
