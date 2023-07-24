@@ -1612,6 +1612,7 @@ $.fn.mtModal.open = function (url, options) {
 $.fn.mtModal.close = function (url) {
   var $modal = window.top.jQuery('.mt-modal');
   $modal.modal('hide');
+  $(window.top).trigger('dialogDisposed');
   if (url) window.top.location = url;
   return false;
 };
