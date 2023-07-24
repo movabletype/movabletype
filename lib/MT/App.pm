@@ -634,6 +634,7 @@ sub listing {
         my $data = {
             html  => $html,
             pager => $param->{pager_json},
+            $param->{have_more} ? (have_more => {limit => $param->{count_matches}}) : (),
         };
         $app->send_http_header("text/javascript+json");
         $app->print_encode( MT::Util::to_json($data) );
@@ -4196,12 +4197,6 @@ sub app_path {
     }
     $path .= '/' unless substr( $path, -1, 1 ) eq '/';
     $app->{__path} = $path;
-}
-
-sub envelope {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.8');
-    '';
 }
 
 sub script {

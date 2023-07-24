@@ -402,8 +402,8 @@ sub core_tags {
             SearchScript => \&MT::Template::Tags::System::_hdlr_search_script,
             ContentDataSearchScript =>
                 \&MT::Template::Tags::System::_hdlr_cd_search_script,
-            XMLRPCScript => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
-            AtomScript   => \&MT::Template::Tags::System::_hdlr_atom_script,
+            XMLRPCScript => sub {''},
+            AtomScript   => sub {''},
             CGIHost      => \&MT::Template::Tags::System::_hdlr_cgi_host,
             CGIPath      => \&MT::Template::Tags::System::_hdlr_cgi_path,
             AdminCGIPath =>
@@ -3143,7 +3143,7 @@ sub _hdlr_app_setting {
         use_style    => $args->{indent} || !$shown ? 1 : 0,
     );
 
-    my $tmpl = MT->instance->load_tmpl( 'cms/include/mtapp_setting.tmpl', \%param );
+    my $tmpl = MT->instance->load_core_tmpl( 'cms/include/mtapp_setting.tmpl', \%param );
     return $ctx->build( $tmpl->output() );
 }
 
@@ -3371,7 +3371,7 @@ sub _hdlr_app_statusmsg {
     $param{did_replace} = 1 if $id && $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/;
     $param{dynamic_all} = 1 if $blog && $blog->custom_dynamic_templates eq 'all';
 
-    my $tmpl = $app->load_tmpl( 'cms/include/mtapp_statusmsg.tmpl', \%param );
+    my $tmpl = $app->load_core_tmpl( 'cms/include/mtapp_statusmsg.tmpl', \%param );
     return $ctx->build( $tmpl->output() );
 }
 
@@ -5592,38 +5592,6 @@ configuration setting. The default for this setting if unassigned is
 sub _hdlr_cd_search_script {
     my ($ctx) = @_;
     return $ctx->{config}->ContentDataSearchScript;
-}
-
-###########################################################################
-
-=head2 XMLRPCScript
-
-Returns the value of the C<XMLRPCScript> configuration setting. The
-default for this setting if unassigned is "mt-xmlrpc.cgi".
-
-=for tags configuration
-
-=cut
-
-sub _hdlr_xmlrpc_script {
-    my ($ctx) = @_;
-    return $ctx->{config}->XMLRPCScript;
-}
-
-###########################################################################
-
-=head2 AtomScript
-
-Returns the value of the C<AtomScript> configuration setting. The
-default for this setting if unassigned is "mt-atom.cgi".
-
-=for tags configuration
-
-=cut
-
-sub _hdlr_atom_script {
-    my ($ctx) = @_;
-    return $ctx->{config}->AtomScript;
 }
 
 ###########################################################################

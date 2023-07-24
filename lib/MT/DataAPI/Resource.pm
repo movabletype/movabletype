@@ -306,10 +306,18 @@ sub core_resources {
                 version => 1,
                 fields  => '$Core::MT::DataAPI::Resource::v1::StatisticsDate::fields',
             },
+            {
+                version => 6,
+                fields  => '$Core::MT::DataAPI::Resource::v6::StatisticsDate::fields',
+            },
         ],
         statisticspath => [{
                 version => 1,
                 fields  => '$Core::MT::DataAPI::Resource::v1::StatisticsPath::fields',
+            },
+            {
+                version => 6,
+                fields  => '$Core::MT::DataAPI::Resource::v6::StatisticsPath::fields',
             },
         ],
         theme => [{

@@ -39,14 +39,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.9', '7.0054' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.901', '7.0054' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.9.9',              '__PRODUCT_VERSION_ID__',
+        '7.901.0',            '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -64,11 +64,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 9;
+        $RELEASE_NUMBER = 0;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5404';
+        $RELEASE_VERSION_ID = 'r.5405';
     }
 
     $DebugMode = 0;
@@ -2122,6 +2122,12 @@ sub load_global_tmpl {
     $tmpl;
 }
 
+sub load_core_tmpl {
+    my $mt = shift;
+    local $mt->{component} = 'core';
+    $mt->load_tmpl(@_);
+}
+
 sub load_tmpl {
     my $mt = shift;
     if ( exists( $mt->{component} ) && ( lc( $mt->{component} ) ne 'core' ) )
@@ -2389,19 +2395,15 @@ sub new_ua {
     return undef if $@;
     my $cfg      = $class->config;
     my $max_size = exists $opt->{max_size} ? $opt->{max_size} : 100_000;
-    my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout
-        || $cfg->PingTimeout;
-    my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy
-        || $cfg->PingProxy;
+    my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout;
+    my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy;
     my $sec_proxy
         = exists $opt->{sec_proxy} ? $opt->{sec_proxy} : $cfg->HTTPSProxy;
     my $no_proxy
-        = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy
-        || $cfg->PingNoProxy;
+        = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy;
     my $agent = $opt->{agent} || $MT::PRODUCT_NAME . '/' . $MT::VERSION;
     my $interface
-        = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface
-        || $cfg->PingInterface;
+        = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface;
 
     if ( my $localaddr = $interface ) {
         @LWP::Protocol::http::EXTRA_SOCK_OPTS = (

@@ -12,22 +12,6 @@ use warnings;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
-sub list {
-    my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
-    my $res = filtered_list( $app, $endpoint, 'tag' )
-        or return;
-
-    return +{
-        totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
-    };
-}
-
 sub list_for_site_openapi_spec {
     +{
         tags       => ['Tags'],
@@ -96,21 +80,6 @@ sub list_for_site {
     };
 }
 
-sub get {
-    my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
-    my $tag = _retrieve_tag($app) or return;
-
-    run_permission_filter( $app, 'data_api_view_permission_filter',
-        'tag', $tag->id, obj_promise($tag) )
-        or return;
-
-    return $tag;
-}
-
 sub get_for_site_openapi_spec {
     +{
         tags       => ['Tags'],
@@ -153,47 +122,6 @@ sub get_for_site {
         or return;
 
     return $tag;
-}
-
-sub rename {
-    my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
-    my ($orig_tag) = _retrieve_tag($app) or return;
-
-    my $new_tag = $app->resource_object( 'tag', $orig_tag )
-        or return;
-
-    my $same_name_tag = MT->model('tag')
-        ->load( { name => $new_tag->name }, { binary => { name => 1 } } );
-
-    if ($same_name_tag) {
-        run_permission_filter( $app, 'data_api_save_permission_filter',
-            'tag' )
-            or return;
-
-        return $app->error(304) if $same_name_tag->id == $new_tag->id;
-
-        my @ots = MT->model('objecttag')->load( { tag_id => $new_tag->id } );
-        for my $ot (@ots) {
-            $ot->tag_id( $same_name_tag->id );
-            $ot->save
-                or return $app->error(
-                $app->translate( 'Saving object failed: [_1]', $ot->errstr ),
-                500
-                );
-        }
-
-        return $same_name_tag;
-    }
-    else {
-
-        # Do not change IDs.
-        save_object( $app, 'tag', $new_tag, $orig_tag, ) or return;
-        return $new_tag;
-    }
 }
 
 sub rename_for_site_openapi_spec {
@@ -278,46 +206,6 @@ sub rename_for_site {
         save_object( $app, 'tag', $new_tag, $orig_tag, ) or return;
         return $new_tag;
     }
-}
-
-sub delete {
-    my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
-    my ($tag) = _retrieve_tag($app) or return;
-
-    run_permission_filter( $app, 'data_api_delete_permission_filter',
-        'tag', $tag )
-        or return;
-
-    if ( $tag->is_private ) {
-        my $exist = MT->model('objecttag')
-            ->exist( { tag_id => $tag->id, blog_id => 0 }, );
-        if ($exist) {
-            return $app->error(
-                $app->translate(
-                    'Cannot delete private tag associated with objects in system scope.'
-                ),
-                403
-            );
-        }
-    }
-
-    # Remove relations too.
-    $tag->remove
-        or return $app->error(
-        $app->translate(
-            'Removing [_1] failed: [_2]',
-            $tag->class_label, $tag->errstr
-        ),
-        500
-        );
-
-    $app->run_callbacks( 'data_api_post_delete.tag', $app, $tag );
-
-    return $tag;
 }
 
 sub delete_for_site_openapi_spec {

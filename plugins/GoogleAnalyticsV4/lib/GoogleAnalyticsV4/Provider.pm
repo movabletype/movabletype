@@ -234,4 +234,84 @@ sub visits_for_date {
         });
 }
 
+sub path_key { 'pagePath' }
+
+sub metric_spec_for_pageviews {
+    return {
+        screenPageViews => {
+            type        => 'integer',
+            description => 'The sum total of the pageviews in the specified period.',
+        },
+    };
+}
+
+sub metric_spec_for_visits {
+    return {
+        sessions => {
+            type        => 'integer',
+            description => 'The sum total of the sessions in the specified period.',
+        },
+    };
+}
+
+sub fields_for_statistics_date {
+    return [{
+            name   => 'date',
+            schema => {
+                type        => 'string',
+                format      => 'date',
+                description => 'The date of the target. The format is "YYYY-MM-DD".',
+            },
+        },
+        {
+            name   => 'screenPageViews',
+            schema => {
+                type        => 'integer',
+                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "pageviews"',
+            },
+        },
+        {
+            name   => 'sessions',
+            schema => {
+                type        => 'integer',
+                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "visits"',
+
+            },
+        },
+    ];
+}
+
+sub fields_for_statistics_path {
+    return [{
+            name   => 'pagePath',
+            schema => {
+                type        => 'string',
+                description => 'The relative path of the target.',
+            },
+        },
+        {
+            name   => 'pageTitle',
+            schema => {
+                type        => 'string',
+                description => 'The title for the path.',
+            },
+        },
+        {
+            name   => 'screenPageViews',
+            schema => {
+                type        => 'integer',
+                description => 'The pageviews for the path. This property exists only if the metrics to retrieve is "pageviews"',
+            },
+        },
+        {
+            name   => 'sessions',
+            schema => {
+                type        => 'integer',
+                description => 'The number of sessions for the path. This property exists only if the metrics to retrieve is "visits"',
+
+            },
+        },
+    ];
+}
+
 1;

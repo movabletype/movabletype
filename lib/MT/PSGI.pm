@@ -269,35 +269,6 @@ sub make_app {
     if ( $type eq 'run_once' ) {
         my $filepath = File::Spec->catfile( $FindBin::Bin, $script );
         $psgi_app = $mt_cgi->($filepath);
-    }
-    elsif ( $type eq 'xmlrpc' ) {
-        my $handler = $app->{handler};
-        my $server;
-        require XMLRPC::Transport::HTTP::Plack;
-        $server = XMLRPC::Transport::HTTP::Plack->new;
-        $server->dispatch_with( {
-            'mt'         => 'MT::XMLRPCServer',
-            'blogger'    => 'blogger',
-            'metaWeblog' => 'metaWeblog',
-            'wp'         => 'wp',
-        } );
-        $server->on_action(sub {
-            my ($action, $method_uri, $method_name) = @_;
-
-            my $class =
-                   $server->dispatch_with->{$method_uri}
-                || $server->dispatch_with->{ $action || '' }
-                || defined($action) && $action =~ /^"(.+)"$/ && $server->dispatch_with->{$1};
-
-            die "Denied access to method ($method_name)\n"
-                unless $class && $class->can($method_name);
-        });
-        $psgi_app = sub {
-            eval "require $handler";
-            my $env = shift;
-            my $req = Plack::Request->new($env);
-            $server->handle($req);
-        };
     } elsif ($streaming and $type eq 'psgi_streaming') {
         my $handler = $app->{handler};
         $psgi_app = $mt_app_streaming->($handler);
@@ -492,7 +463,7 @@ By default, the value of CGIPath config directive will be used.
 
 =item applications/YOURAPP/type
 
-Specify the application type. Only 'run_once' and 'xmlrpc' are acceptable value.
+Specify the application type. Only 'run_once' is acceptable value.
 If type is not given, standard persistent PSGI application will be compiled.
 
 =over 8
@@ -502,11 +473,6 @@ If type is not given, standard persistent PSGI application will be compiled.
 Run as non-persistent CGI script with C<fork>/C<exec> model. It's good for
 the kind of applications which be excuted infrequently like MT::Upgrader.
 Also usable to run old script who have no good cleanup process at exiting.
-
-=item xmlrpc
-
-Special mode for apps which constructed on XMLRPC::Lite. Make PSGI app with
-using XMLRPC::Transport::HTTP::Plack.
 
 =back
 

@@ -14,7 +14,7 @@ use MT::I18N qw( const );
 use Time::Local;
 use List::Util qw( sum );
 
-use MT::Util::Deprecated qw( bin2dec dec2bin dsa_verify perl_sha1_digest perl_sha1_digest_hex perl_sha1_digest_base64 ); ## no critic
+use MT::Util::Deprecated qw( perl_sha1_digest_hex ); ## no critic
 use MT::Util::Encode;
 
 our @EXPORT_OK
