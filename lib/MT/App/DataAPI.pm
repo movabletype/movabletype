@@ -338,10 +338,14 @@ sub fields_to_schema {
     };
     my $resource = MT::DataAPI::Resource->resource($resource_name);
     for my $field (@{ $resource->{fields} }) {
-        if ($field->{schema}) {
-            $schema->{properties}{ $field->{name} } = {
-                %{ $field->{schema} },
-            };
+        if (exists $field->{schema}) {
+            if (defined $field->{schema}) {
+                $schema->{properties}{ $field->{name} } = {
+                    %{ $field->{schema} },
+                };
+            } else {
+                delete $schema->{properties}{ $field->{name} };
+            }
         } elsif (defined $field->{type} && $field->{type} =~ m/MT::DataAPI::Resource::DataType::Object\z/) {
             $schema->{properties}{ $field->{name} }{type} = 'object';
             for my $key (@{ $field->{fields} }) {

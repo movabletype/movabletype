@@ -195,6 +195,8 @@ use_ok('MT::DataAPI::Resource::v4::ContentField');
 use_ok('MT::DataAPI::Resource::v4::ContentType');
 use_ok('MT::DataAPI::Resource::v4::Template');
 use_ok('MT::DataAPI::Resource::v4::Website');
+use_ok('MT::DataAPI::Resource::v6::StatisticsDate');
+use_ok('MT::DataAPI::Resource::v6::StatisticsPath');
 use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
