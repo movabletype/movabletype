@@ -3143,7 +3143,7 @@ sub _hdlr_app_setting {
         use_style    => $args->{indent} || !$shown ? 1 : 0,
     );
 
-    my $tmpl = MT->instance->load_tmpl( 'cms/include/mtapp_setting.tmpl', \%param );
+    my $tmpl = MT->instance->load_core_tmpl( 'cms/include/mtapp_setting.tmpl', \%param );
     return $ctx->build( $tmpl->output() );
 }
 
@@ -3371,7 +3371,7 @@ sub _hdlr_app_statusmsg {
     $param{did_replace} = 1 if $id && $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/;
     $param{dynamic_all} = 1 if $blog && $blog->custom_dynamic_templates eq 'all';
 
-    my $tmpl = $app->load_tmpl( 'cms/include/mtapp_statusmsg.tmpl', \%param );
+    my $tmpl = $app->load_core_tmpl( 'cms/include/mtapp_statusmsg.tmpl', \%param );
     return $ctx->build( $tmpl->output() );
 }
 

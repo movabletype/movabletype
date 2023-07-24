@@ -2122,6 +2122,12 @@ sub load_global_tmpl {
     $tmpl;
 }
 
+sub load_core_tmpl {
+    my $mt = shift;
+    local $mt->{component} = 'core';
+    $mt->load_tmpl(@_);
+}
+
 sub load_tmpl {
     my $mt = shift;
     if ( exists( $mt->{component} ) && ( lc( $mt->{component} ) ne 'core' ) )
