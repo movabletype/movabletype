@@ -226,7 +226,8 @@ sub event_loop {
     return [
         { id => MT::RebuildTrigger::EVENT_SAVE(),      name => $app->translate('Save') },
         { id => MT::RebuildTrigger::EVENT_PUBLISH(),   name => $app->translate('Publish') },
-        { id => MT::RebuildTrigger::EVENT_UNPUBLISH(), name => $app->translate('__UNPUBLISHED') }];
+        { id => MT::RebuildTrigger::EVENT_UNPUBLISH(), name => $app->translate('__UNPUBLISHED') },
+    ];
 }
 
 sub object_type_loop {
@@ -235,7 +236,8 @@ sub object_type_loop {
         { id => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(), name => $app->translate('Entry/Page') },
         { id => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),  name => $app->translate('Content Type') },
         { id => MT::RebuildTrigger::TYPE_COMMENT(),       name => $app->translate('Comment') },
-        { id => MT::RebuildTrigger::TYPE_PING(),          name => $app->translate('TrackBack') }];
+        { id => MT::RebuildTrigger::TYPE_PING(),          name => $app->translate('TrackBack') },
+    ];
 }
 
 sub load_config {
