@@ -218,7 +218,7 @@ sub action_loop {
     my $app = shift;
     return [
         { id => MT::RebuildTrigger::ACTION_RI(),  name => $app->translate('rebuild indexes.') },
-        { id => MT::RebuildTrigger::ACTION_RIP(), name => $app->translate('rebuild indexes and send pings.') }];
+    ];
 }
 
 sub event_loop {
