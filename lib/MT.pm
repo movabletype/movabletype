@@ -73,11 +73,6 @@ BEGIN {
 
     $DebugMode = 0;
 
-    # Alias lowercase to uppercase package; note: this is an equivalence
-    # as opposed to having @mt::ISA set to 'MT'. so @mt::Plugins would
-    # resolve as well as @MT::Plugins.
-    *{mt::} = *{MT::};
-
     # Alias these; Components is the preferred array for MT 4
     *Plugins = \@Components;
 
