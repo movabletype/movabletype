@@ -78,7 +78,7 @@ use vars qw( @ISA %Lexicon );
 	q{The '[_1]' of the template tag '[_2]' that is already in use in [_3] is [_4].} => q{'[_2]'というテンプレートタグが[_3]に既に存在していますが、[_1]が異なるため、重複して作成する事が出来ません。テンプレートタグ名を変えるか、[_1]を同じにする必要があります。([_1]: [_4])},
 	q{The template tag '[_1]' is already in use in [_2]} => q{[_1]というタグは既に[_2]に存在します。},
 	q{The template tag '[_1]' is already in use in the system level} => q{[_1]というタグは既にシステムに存在します。},
-	q{The template tag '[_1]' is already in use in this blog} => q{[_1]というタグは既にこのブログに存在します。},
+	q{The template tag '[_1]' is already in use in this site} => q{[_1]というタグは既にこのサイトに存在します。},
 
 ## addons/Commercial.pack/lib/CustomFields/Template/ContextHandlers.pm
 	q{Are you sure you have used a '[_1]' tag in the correct context? We could not find the [_2]} => q{[_2]が見つかりませんでした。[_1]タグを正しいコンテキストで使用しているか確認してください。},
@@ -192,17 +192,25 @@ use vars qw( @ISA %Lexicon );
 	'Trigger' => 'トリガー',
 	q{[_1] in [_2]: [_3]} => q{[_2]が '[_3]' である[_1]},
 
+## addons/Sync.pack/lib/MT/SyncQueue.pm
+	'Sync Queue' => '配信キュー',
+
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'サーバー配信の設定',
 
 ## addons/Sync.pack/lib/MT/SyncStatus.pm
 	'Sync Status' => '配信状況',
 
+## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
+	'SyncNow' => '即時配信',
+	'SyncScheduled' => '日時指定配信',
+
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
 	'Create Sync Setting' => 'サーバー配信設定の作成',
 	'Deleting sync file list failed "[_1]": [_2]' => '[_1]の配信ファイルリスト削除に失敗しました: [_2]',
 	'Invalid request.' => '不正な要求です。',
 	'Permission denied: [_1]' => '権限がありません: [_1]',
+	'Register immediate sync job failed: [_1]' => '即時配信をスケジュール登録できませんでした: [_1]',
 	'Save failed: [_1]' => '保存できませんでした: [_1]',
 	'Sync Settings' => 'サーバー配信設定',
 	'The previous synchronization file list has been cleared. [_1] by [_2].' => '[_2] が、[_1]の過去の配信ファイルリストを削除しました。',
@@ -2998,6 +3006,7 @@ use vars qw( @ISA %Lexicon );
 	'This module is required for Google Analytics site statistics and for verification of SSL certificates.' => 'このモジュールは、Google Analytics などで SSL 証明書の検証に必要です。',
 	'This module is required for profiling.' => 'このモジュールはプロファイリングの際に必要となります。',
 	'This module is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.' => 'このモジュールはGoogle AnalyticsやSSL/TLS経由のSMTP認証など、あらゆるSSL/TLS接続の際に必要となります。',
+	'This module is required to parse XML.' => 'このモジュールはXML解析の際に必要となります。',
 	'This module is required to run background jobs.' => 'このモジュールはバックグラウンドジョブの実行に必要です。',
 	'This module is sometimes used to parse URI.' => 'このモジュールはURIのパースに使うことがあります。',
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'MT:Ifタグの機能で使われます。',
@@ -3455,6 +3464,7 @@ use vars qw( @ISA %Lexicon );
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
 	'Archive Root' => 'アーカイブパス',
 	'No Site' => 'サイトがありません',
+	q{Invalid extra path '[_1]'} => q{追加パス'[_1]'が不正です。},
 
 ## plugins/WidgetManager/WidgetManager.pl
 	'Failed.' => '失敗',
@@ -5466,7 +5476,14 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2023/cms/setup_initial_website.tmpl
 	'Finish install (s)' => 'インストール (s)',
 	'Finish install' => 'インストール',
+	'My First Site' => 'My First Site',
 	'Skip' => 'スキップ',
+	'Support directory does not exist or not writable by the web server. Change the ownership or permissions on this directory' => 'サポートディレクトリが存在しないか、ウェブサーバーから書き込めません。サポートディレクトリの書き込み権限を確認してから、もう一度実行してください',
+	'The publishing path is required.' => 'サイトパスは必須です。',
+	'The site URL is required.' => 'サイトURLは必須です。',
+	'The site name is required.' => 'サイト名は必須です。',
+	'The timezone is required.' => 'タイムゾーンは必須です。',
+	'Your site URL is not valid.' => 'サイトURLが正しくありません。',
 	q{Enter the URL of your site. Exclude the filename (i.e. index.html). Example:http://www.example.com/} => q{サイトを公開するURLを入力してください。ファイル名(index.htmlなど)は含めず、末尾は'/'で終わります。例: http://www.example.com/blog/},
 
 ## tmpl/admin2023/cms/system_check.tmpl
