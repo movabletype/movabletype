@@ -284,13 +284,19 @@ sub load_current_l10n {
     my $package = $self->l10n_class($name) . "::$lang";
     my $file    = $self->l10n_file($name, $lang) or die "No l10n file: $name $lang";
     my $module  = $self->slurp($file);
-    $module =~ s/\A(.+?)(\%Lexicon\s*=)/package $package; use utf8; our $2/s;
+    $module =~ s/\A(.+?)(\%Lexicon\s*=)/"package $package; use utf8; "._tweak_l10n_preamble($1)."our $2"/se;
     my $preamble = $1 or die "No preamble? $name $lang";
     $module =~ s/^\s*use base.+$//m;
     eval $module or die "Failed to load current l10n module $name $lang: $@";
     no strict 'refs';
     my %lexicon = %{"$package\::Lexicon"};
     ($preamble, \%lexicon);
+}
+
+sub _tweak_l10n_preamble {
+    my $preamble = shift;
+    my @left = grep {$_ and !/^(?:#|package|use|our\s*$|\@ISA)/} split /\n/, $preamble;
+    return join "", @left;
 }
 
 sub load_core_l10n {
