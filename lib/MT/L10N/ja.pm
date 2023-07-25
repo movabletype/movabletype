@@ -524,20 +524,6 @@ use vars qw( @ISA %Lexicon );
 	q{User '[_1]' (ID:[_2]) logged in successfully} => q{ユーザー'[_1]'(ID[_2])がサインインしました。},
 	q{User '[_1]' (ID:[_2]) logged out} => q{ユーザー'[_1]'(ID[_2])がサインアウトしました。},
 
-## lib/MT/App/ActivityFeeds.pm
-	'All "[_1]" Content Data' => 'すべての"[_1]"',
-	'All Activity' => 'すべてのログ',
-	'All Entries' => 'すべての記事',
-	'All Pages' => 'すべてのウェブページ',
-	'An error occurred while generating the activity feed: [_1].' => 'ログフィードの生成中にエラーが発生しました: [_1]',
-	'Error loading [_1]: [_2]' => '[_1]をロードできませんでした: [_2]',
-	'Movable Type Debug Activity' => 'Movable Typeのデバッグログ',
-	'Movable Type System Activity' => 'Movable Typeのシステムログ',
-	'[_1] "[_2]" Content Data' => '[_1]の"[_2]"',
-	'[_1] Activity' => '[_1]のログ',
-	'[_1] Entries' => '[_1]の記事',
-	'[_1] Pages' => '[_1]のウェブページ',
-
 ## lib/MT/App/CMS.pm
 	'Activity Log' => 'ログ',
 	'Add Contact' => '連絡先の追加',
@@ -931,16 +917,6 @@ use vars qw( @ISA %Lexicon );
 	'association' => '関連付け',
 	'associations' => '関連付け',
 
-## lib/MT/AtomServer.pm
-	'Invalid image file format.' => '画像ファイルフォーマットが不正です。',
-	'Perl module Image::Size is required to determine the width and height of uploaded images.' => 'Image::Sizeをインストールしないと、画像の幅と高さを検出できません。',
-	'PreSave failed [_1]' => 'PreSaveでエラーがありました: [_1]',
-	'[_1]: Entries' => '[_1]: 記事一覧',
-	q{Entry '[_1]' ([lc,_5] #[_2]) deleted by '[_3]' (user #[_4]) from atom api} => q{[_1]記事([lc,_5]#[_2])は[_3](ID: [_4])によって削除されました。},
-	q{Invalid blog ID '[_1]'} => q{ブログIDが不正です([_1])。},
-	q{User '[_1]' (user #[_2]) added [lc,_4] #[_3]} => q{[_1] (ID: [_2])が[_4] (ID: [_3])を追加しました。},
-	q{User '[_1]' (user #[_2]) edited [lc,_4] #[_3]} => q{[_1] (ID: [_2])が[_4] (ID: [_3])を編集しました。},
-
 ## lib/MT/Auth.pm
 	'Bad AuthenticationModule config' => 'AuthenticationModuleの設定が正しくありません',
 	q{Bad AuthenticationModule config '[_1]': [_2]} => q{AuthenticationModule([_1])の設定が正しくありません: [_2]},
@@ -1221,7 +1197,6 @@ use vars qw( @ISA %Lexicon );
 	'The website root directory must be within [_1].' => 'ウェブサイトパスは、[_1]以下のディレクトリを指定してください。',
 	'Unknown list type' => '不明なタイプです。',
 	'Web Services Settings' => 'Webサービス設定',
-	'[_1] Feed' => '[_1]のフィード',
 	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_2](id:[_3])の壊れたリビジョン[_1]件が削除されました。',
 	'__SELECT_FILTER_VERB' => 'が',
 	q{'[_1]' edited the global template '[_2]'} => q{[_1]がグローバルテンプレート([_2])を編集しました},
@@ -1372,7 +1347,6 @@ use vars qw( @ISA %Lexicon );
 	'*Website/Blog deleted*' => '*削除されました*',
 	'All Feedback' => 'すべて',
 	'Publishing' => '公開',
-	'System Activity Feed' => 'システムログ',
 	q{Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])のログをリセットしました。},
 	q{Activity log reset by '[_1]'} => q{'[_1]'がログをリセットしました。},
 
@@ -1416,7 +1390,6 @@ use vars qw( @ISA %Lexicon );
 	'Extended Entry' => '続き',
 	'Extended Page' => '追記',
 	'IP Address' => 'IPアドレス',
-	'Invalid date(s) specified for date range.' => '日付の範囲指定が不正です。',
 	'Keywords' => 'キーワード',
 	'Linked Filename' => 'リンクされたファイル名',
 	'Log Message' => 'ログ',
@@ -1862,7 +1835,6 @@ use vars qw( @ISA %Lexicon );
 	'Cannot generate unique unique_id' => 'ユニークIDの生成に失敗しました',
 
 ## lib/MT/Core.pm
-	'Activity Feed' => 'ログフィード',
 	'Add Summary Watcher to queue' => 'サマリー監視タスクをキューに追加',
 	'Address Book is disabled by system configuration.' => 'アドレス帳の管理は、設定により無効にされています。',
 	'Adds Summarize workers to queue.' => 'キューにワーカーサマリーを追加します。',
@@ -2099,7 +2071,6 @@ use vars qw( @ISA %Lexicon );
 	'Plugin not found' => '指定されたプラグインが見つかりません',
 
 ## lib/MT/DataAPI/Endpoint/v2/Tag.pm
-	'Cannot delete private tag associated with objects in system scope.' => 'システムで利用されているプライベートタグは削除できません。',
 	'Cannot delete private tag in system scope.' => 'システムで利用されているプライベートタグは削除できません。',
 	'Tag not found' => '指定されたタグが見つかりません',
 
@@ -3087,23 +3058,6 @@ use vars qw( @ISA %Lexicon );
 	'Done syncing files to [_1] ([_2])' => '[_1]へファイルを同期しました。([_2])',
 	qq{Error during rsync of files in [_1]:\n} => qq{ファイル'[_1]'のrsync中にエラーが発生しました: },
 
-## lib/MT/XMLRPCServer.pm
-	'Error writing uploaded file: [_1]' => 'アップロードされたファイルを書き込めませんでした: [_1]',
-	'Invalid timestamp format' => 'timestampの形式が不正です。',
-	'No blog_id' => 'No blog_id',
-	'No filename provided' => 'ファイル名がありません。',
-	'No web services password assigned.  Please see your user profile to set it.' => 'Webサービスパスワードを設定していません。ユーザー情報の編集の画面で設定してください。',
-	'Not allowed to edit entry' => '記事を編集する権限がありません。',
-	'Not allowed to get entry' => '記事を取得する権限がありません。',
-	'Not allowed to set entry categories' => 'カテゴリを設定する権限がありません。',
-	'Not allowed to upload files' => 'ファイルをアップロードする権限がありません。',
-	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Image::Sizeをインストールしないと、画像の幅と高さを検出できません。',
-	'Saving folder failed: [_1]' => 'フォルダを保存できませんでした: [_1]',
-	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Templateメソッドは実装されていません。',
-	q{Invalid entry ID '[_1]'} => q{不正な記事ID (ID: [_1]) です},
-	q{Requested permalink '[_1]' is not available for this page} => q{[_1]というパーマリンクはこのページにはありません。},
-	q{Value for 'mt_[_1]' must be either 0 or 1 (was '[_2]')} => q{mt_[_1]の値は0か1です([_2]を設定しようとしました)。},
-
 ## mt-check.cgi
 	'(Probably) running under cgiwrap or suexec' => 'cgiwrapまたはsuexec環境下で動作していると思われます。',
 	'Checking for' => '確認中',
@@ -3116,7 +3070,6 @@ use vars qw( @ISA %Lexicon );
 	'Movable Type System Check Successful' => 'システムのチェックを完了しました。',
 	'Movable Type System Check' => 'Movable Type システムチェック',
 	'Movable Type version:' => 'Movable Type バージョン',
-	'Not installed' => '未インストール',
 	'Operating system:' => 'オペレーティングシステム',
 	'Perl include path:' => 'Perl の インクルードパス',
 	'Perl version:' => 'Perl のバージョン',
@@ -3295,43 +3248,23 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/plugins/FormattedTextForTinyMCE/extension.js
 	'Insert Boilerplate' => '定型文の挿入',
 
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/compat3x/utils/editable_selects.js
-	'value' => 'value',
-
 ## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/langs/plugin.js
-	'Align Center' => '中央揃え',
-	'Align Left' => '左揃え',
-	'Align Right' => '右揃え',
 	'Block Quotation' => '引用ブロック',
-	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
-	'Class Name' => 'クラス名',
 	'Copy column' => '列のコピー',
 	'Cut column' => '列の切り取り',
 	'Emphasis' => '斜体',
-	'Horizontal Line' => '水平線を挿入',
-	'Indent' => '字下げを増やす',
 	'Horizontal align' => '横配置',
 	'Insert Asset Link' => 'アセットの挿入',
 	'Insert HTML' => 'HTMLの挿入',
 	'Insert Image Asset' => '画像の挿入',
 	'Insert Link' => 'リンクの挿入',
-	'Insert/Edit Link' => 'リンクの挿入/編集',
-	'Italic (Ctrl+I)' => '斜体 (Ctrl+I)',
 	'List Item' => 'リスト要素',
 	'Ordered List' => '番号付きリスト',
-	'Outdent' => '字下げを減らす',
-	'Redo (Ctrl+Y)' => 'やり直す (Ctrl+Y)',
-	'Remove Formatting' => '書式の削除',
-	'Select Background Color' => '背景色',
-	'Select Text Color' => 'テキスト色',
 	'Paste column after' => '列の後に貼り付け',
 	'Paste column before' => '列の前に貼り付け',
 	'Strong Emphasis' => '太字',
 	'Toggle Fullscreen Mode' => '全画面表示の切り替え',
 	'Toggle HTML Edit Mode' => 'HTML編集モードの切り替え',
-	'Underline (Ctrl+U)' => '下線 (Ctrl+U)',
-	'Undo (Ctrl+Z)' => '元に戻す (Ctrl+Z)',
-	'Unlink' => 'リンクを解除',
 	'Unordered List' => '番号なしリスト',
 	'Vertical align' => '縦配置',
 
@@ -3402,10 +3335,6 @@ use vars qw( @ISA %Lexicon );
 	'__ANONYMOUS_COMMENTER' => '匿名ユーザー',
 	'__COMMENTER_APPROVED' => '承認',
 	q{All comments by [_1] '[_2]'} => q{[_1]'[_2]'のコメント},
-
-## plugins/Comments/lib/Comments/App/ActivityFeed.pm
-	'All Comments' => 'すべてのコメント',
-	'[_1] Comments' => '[_1]へのコメント',
 
 ## plugins/Comments/lib/Comments/App/CMS.pm
 	'Are you sure you want to remove all comments reported as spam?' => 'スパムコメントをすべて削除しますか?',
@@ -3489,9 +3418,6 @@ use vars qw( @ISA %Lexicon );
 ## plugins/Comments/php/function.mtcommenternamethunk.php
 	q{The '[_1]' tag has been deprecated. Please use the '[_2]' tag in its place.} => q{テンプレートタグ '[_1]' は廃止されました。代わりに '[_2]'を使用してください。},
 
-## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
-	'The login could not be confirmed because of no/invalid blog_id' => 'サイトIDが正しくないため、サインインできません。',
-
 ## plugins/FormattedText/lib/FormattedText/App.pm
 	'Are you sure you want to delete the selected boilerplates?' => '定型文を削除してもよろしいですか？',
 	'Boilerplates' => '定型文',
@@ -3510,7 +3436,6 @@ use vars qw( @ISA %Lexicon );
 ## plugins/GoogleAnalyticsV4/lib/GoogleAnalyticsV4/App.pm
 	'A Perl module required for using Google Analytics API is missing: [_1].' => 'Google アナリティクス APIを利用するのに必要なPerlモジュールのうちいくつかがありません: [_1]',
 	'The name of the profile' => 'プロファイル名',
-	'The web property ID of the profile' => 'ウェブ プロパティ ID',
 	'The resource name of the property | The measurement id of the WebStreamData' => 'プロパティのリソース名 | データストリームのID',
 	'You did not specify a client ID.' => 'Client IDが指定されていません。',
 	'You did not specify a code.' => 'codeが指定されていません。',
@@ -3524,83 +3449,8 @@ use vars qw( @ISA %Lexicon );
 ## plugins/GoogleAnalyticsV4/lib/GoogleAnalyticsV4/Provider.pm
 	'An error occurred when retrieving statistics data: [_1]: [_2]' => '統計データの取得ができません: [_1]: [_2]',
 
-## plugins/GoogleAnalyticsV4/lib/GoogleAnalyticsV4/App.pm
-	'The resource name of the property | The measurement id of the WebStreamData' => 'プロパティのリソース名 | データストリームのID',
-
-## plugins/OpenID/lib/MT/Auth/GoogleOpenId.pm
-	'A Perl module required for Google ID commenter authentication is missing: [_1].' => 'Google ID認証を利用するのに必要なPerlモジュールのうちいくつがありません: [_1]',
-
-## plugins/OpenID/lib/MT/Auth/OpenID.pm
-	'Could not load Net::OpenID::Consumer.' => 'Net::OpenID::Consumerをロードできませんでした。',
-	'Could not save the session' => 'セッションを保存できませんでした。',
-	'Could not verify the OpenID provided: [_1]' => 'OpenIDを検証できませんでした: [_1]',
-	'The address entered does not appear to be an OpenID endpoint.' => '入力されたアドレスはOpenIDではありません。',
-	'The text entered does not appear to be a valid web address.' => '正しいURLを入力してください。',
-	'Unable to connect to [_1]: [_2]' => '[_1]に接続できません: [_2]',
-
 ## plugins/Textile/textile2.pl
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'https://www.movabletype.org/documentation/appendices/tags/%t.html',
-
-## plugins/Trackback/lib/MT/App/Trackback.pm
-	'This TrackBack item is disabled.' => 'トラックバックは無効に設定されています。',
-	'This TrackBack item is protected by a passphrase.' => 'トラックバックはパスワードで保護されています。',
-	'TrackBack ID (tb_id) is required.' => 'トラックバックIDが必要です。',
-	'Trackback pings must use HTTP POST' => 'Trackback pings must use HTTP POST',
-	'You are not allowed to send TrackBack pings.' => 'トラックバック送信を許可されていません。',
-	'You are sending TrackBack pings too quickly. Please try again later.' => '短い期間にトラックバックを送信しすぎです。少し間をあけても
- 一度送信してください。',
-	'You must define a Ping template in order to display pings.' => '表示するにはトラックバックテンプレートを定義する必要があります。',
-	'You need to provide a Source URL (url).' => 'URLが必要です。',
-	q{Cannot create RSS feed '[_1]': } => q{フィード([_1])を作成できません: },
-	q{Invalid TrackBack ID '[_1]'} => q{トラックバックID([_1])が不正です。},
-	q{New TrackBack ping to '[_1]'} => q{'[_1]'に新しいトラックバックがありました},
-	q{New TrackBack ping to category '[_1]'} => q{カテゴリ'[_1]'にの新しいトラックバックがありました},
-	q{TrackBack on "[_1]" from "[_2]".} => q{[_2]から'[_1]'にトラックバックがありました。},
-	q{TrackBack on category '[_1]' (ID:[_2]).} => q{カテゴリ'[_1]' (ID:[_2])にトラックバックがありました。},
-
-## plugins/Trackback/lib/MT/CMS/TrackBack.pm
-	'(Unlabeled category)' => '(無名カテゴリ)',
-	'(Untitled entry)' => '(タイトルなし)',
-	'Edit TrackBack' => 'トラックバックの編集',
-	'No Excerpt' => '抜粋なし',
-	'Orphaned TrackBack' => '対応する記事のないトラックバック',
-	'category' => 'カテゴリ',
-	q{Ping (ID:[_1]) from '[_2]' deleted by '[_3]' from category '[_4]'} => q{'[_3]'が'[_2]'のトラックバック(ID:[_1])をカテゴリ'[_4]'から削除しました。},
-	q{Ping (ID:[_1]) from '[_2]' deleted by '[_3]' from entry '[_4]'} => q{'[_3]'が'[_2]'のトラックバック(ID:[_1])を記事'[_4]'から削除しました。},
-
-## plugins/Trackback/lib/MT/Template/Tags/Ping.pm
-	q{<\$MTCategoryTrackbackLink\$> must be used in the context of a category, or with the 'category' attribute to the tag.} => q{<\$MTCategoryTrackbackLink\$>はカテゴリのコンテキストかまたはcategory属性とともに利用してください。},
-
-## plugins/Trackback/lib/MT/XMLRPC.pm
-	'HTTP error: [_1]' => 'HTTPエラー: [_1]',
-	'No MTPingURL defined in the configuration file' => '構成ファイルにMTPingURLが設定されていません。',
-	'No WeblogsPingURL defined in the configuration file' => '構成ファイルにWeblogsPingURLが設定されていません。',
-	'Ping error: [_1]' => 'Pingエラー: [_1]',
-
-## plugins/Trackback/lib/Trackback.pm
-	'<a href="[_1]">Ping from: [_2] - [_3]</a>' => '<a href="[_1]">[_2] - [_3]からのトラックバック</a>',
-	q{Trackbacks on [_1]: [_2]} => q{[_1] '[_2]'のトラックバック},
-
-## plugins/Trackback/lib/Trackback/App/ActivityFeed.pm
-	'All TrackBacks' => 'すべてのトラックバック',
-	'[_1] TrackBacks' => '[_1]へのトラックバック',
-
-## plugins/Trackback/lib/Trackback/App/CMS.pm
-	'Are you sure you want to remove all trackbacks reported as spam?' => 'スパムとして報告したすべてのトラックバックを削除しますか?',
-
-## plugins/Trackback/lib/Trackback/Blog.pm
-	'Cloning TrackBack pings for blog...' => 'トラックバックを複製しています...',
-	'Cloning TrackBacks for blog...' => 'トラックバックを複製しています...',
-
-## plugins/Trackback/lib/Trackback/CMS/Entry.pm
-	q{Ping '[_1]' failed: [_2]} => q{[_1]へトラックバックできませんでした: [_2]},
-
-## plugins/Trackback/lib/Trackback/CMS/Search.pm
-	'Source URL' => '送信元のURL',
-
-## plugins/Trackback/lib/Trackback/Import.pm
-	'Saving ping failed: [_1]' => 'トラックバックを保存できませんでした: [_1]',
-	q{Creating new ping ('[_1]')...} => q{'[_1]'のトラックバックをインポートしています...},
 
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
 	'Archive Root' => 'アーカイブパス',
@@ -3609,21 +3459,6 @@ use vars qw( @ISA %Lexicon );
 ## plugins/WidgetManager/WidgetManager.pl
 	'Failed.' => '失敗',
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
-
-## plugins/spamlookup/lib/spamlookup.pm
-	'Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'ドメインのIPアドレス「[_2]」と送信元「[_1]」のIPアドレス「[_3]」が合致しません',
-	'E-mail was previously published (comment id [_1]).' => '公開済みのメールアドレス (コメントID: [_1])',
-	'Failed to resolve IP address for source URL [_1]' => 'ソースURL[_1]の解決に失敗しました。',
-	'Link was previously published (TrackBack id [_1]).' => '公開済みのリンク (トラックバックID:[_1])',
-	'Link was previously published (comment id [_1]).' => '公開済みのリンク (コメントID:[_1])',
-	'Moderating: Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'ドメインのIPアドレス「[_2]」と送信元「[_1]」のIPアドレス「[_3]」が合致しないため、「未公開」にします。',
-	'No links are present in feedback' => 'リンクが含まれていない',
-	'Number of links exceed junk limit ([_1])' => 'スパム - リンク数超過 (制限値:[_1])',
-	'Number of links exceed moderation limit ([_1])' => '保留 - リンク数超過 (制限値:[_1])',
-	'[_1] found on service [_2]' => 'サービス[_2]で[_1]が見つかりました。',
-	q{Moderating for Word Filter match on '[_1]': '[_2]'.} => q{ワードフィルタ'[_1]'にマッチしたため公開を保留しました: '[_2]'。},
-	q{Word Filter match on '[_1]': '[_2]'.} => q{'[_1]'がワードフィルタ一致: '[_2]'},
-	q{domain '[_1]' found on service [_2]} => q{ドメイン'[_1]'一致(サービス: [_2])},
 
 ## search_templates/comments.tmpl
 	'Find new comments' => '新しいコメントを検索',
@@ -5130,9 +4965,6 @@ use vars qw( @ISA %Lexicon );
 	'No entries could be found.' => '記事がありません。',
 	'No pages could be found. <a href="[_1]" class="alert-link">Create a page</a> now.' => 'ウェブページが見つかりませんでした。<a href="[_1]" class="alert-link">ウェブページの作成</a>',
 
-## tmpl/cms/include/feed_link.tmpl
-	'Set Web Services Password' => 'Webサービスのパスワードを設定',
-
 ## tmpl/admin2023/cms/include/footer.tmpl
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]',
 	'BETA' => 'BETA',
@@ -5241,9 +5073,6 @@ use vars qw( @ISA %Lexicon );
 	'Saved By' => '保存したユーザー',
 	'_REVISION_DATE_' => '保存した日',
 
-## tmpl/cms/include/rpt_log_table.tmpl
-	'Schwartz Message' => 'Schwartzメッセージ',
-
 ## tmpl/admin2023/cms/include/scope_selector.tmpl
 	'(on [_1])' => '([_1])',
 	'Create Blog (on [_1])' => 'ブログの作成 ([_1])',
@@ -5329,11 +5158,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/list_common.tmpl
 	'<mt:var name="js_message">' => '<mt:var name="js_message">',
-	'Feed' => 'フィード',
 
 ## tmpl/admin2023/cms/list_entry.tmpl
-	'Entries Feed' => '記事フィード',
-	'Pages Feed' => 'ウェブページフィード',
 	'Quickfilters' => 'クイックフィルタ',
 	'Recent Users...' => '最近のユーザー',
 	'Remove filter' => 'フィルタしない',
@@ -5345,7 +5171,6 @@ use vars qw( @ISA %Lexicon );
 	'The entry has been deleted from the database.' => '記事をデータベースから削除しました。',
 	'The page has been deleted from the database.' => 'ウェブページをデータベースから削除しました。',
 	'User Search...' => 'ユーザーを検索',
-	'[_1] (Disabled)' => '[_1] (無効)',
 	'[_1] where [_2] is [_3]' => '[_2]が[_3]の[_1]',
 	'asset' => 'アセット',
 	'change' => '絞り込み',
@@ -5654,7 +5479,6 @@ use vars qw( @ISA %Lexicon );
 	'configured' => '設定済み',
 	'disabled' => '無効',
 	'unavailable' => '利用不可',
-	q{Movable Type could not find the script named 'mt-check.cgi'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly.} => q{mt-check.cgiが見つかりませんでした。mt-check.cgiが存在すること、名前を変えた場合は構成ファイルのCheckScriptディレクティブに名前を指定してください。},
 
 ## tmpl/admin2023/cms/theme_export_replace.tmpl
 	'Overwrite' => '上書き保存',
@@ -5685,8 +5509,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/view_log.tmpl
 	'Download Filtered Log (CSV)' => 'フィルタしたログをダウンロード(CSV)',
-	'Filtered Activity Feed' => 'フィルタしたフィード',
-	'Filtered' => 'フィルタ',
 	'Show log records where' => 'ログレコードの',
 	'Showing all log records' => 'すべてのログレコードを表示',
 	'Showing log records where' => 'ログレコード',
@@ -5694,10 +5516,6 @@ use vars qw( @ISA %Lexicon );
 	'The activity log has been reset.' => 'ログをリセットしました。',
 	'classification' => '分類',
 	'level' => 'レベル',
-
-## tmpl/cms/view_rpt_log.tmpl
-	'Schwartz Error Log' => 'Schwartzエラーログ',
-	'Showing all Schwartz errors' => '全Schwartzエラー参照',
 
 ## tmpl/admin2023/cms/widget/mt_news.tmpl
 	'News' => 'ニュース',
@@ -5757,31 +5575,6 @@ use vars qw( @ISA %Lexicon );
 	'_ERROR_CGI_PATH' => '環境設定ファイルの CGIPath の項目の設定に問題があるか、または設定がありません。詳細については、Movable Type マニュアルの<a href="javascript:void(0)">インストールと設定</a>の章を確認してください。',
 	'_ERROR_CONFIG_FILE' => 'Movable Type の環境設定ファイルが存在しないか、または読み込みに失敗しました。詳細については、Movable Type マニュアルの<a href="javascript:void(0)">インストールと設定</a>の章を確認してください。',
 	'_ERROR_DATABASE_CONNECTION' => '環境設定ファイルのデータベース設定に問題があるか、または設定がありません。詳細については、Movable Type マニュアルの<a href="javascript:void(0)">インストールと設定</a>の章を確認してください。',
-
-## tmpl/feeds/error.tmpl
-	'Movable Type Activity Log' => 'Movable Type システムログ',
-
-## tmpl/feeds/feed_comment.tmpl
-	'By commenter URL' => 'コメント投稿者のURL',
-	'By commenter email' => 'コメント投稿者のメールアドレス',
-	'By commenter identity' => 'コメント投稿者のID',
-	'By commenter name' => 'コメント投稿者の名前',
-	'From this [_1]' => 'この[_1]から',
-	'More like this' => '他にも...',
-	'On this day' => 'この日付から',
-	'On this entry' => 'この記事に対する',
-
-## tmpl/feeds/feed_content_data.tmpl
-	'From this author' => 'このユーザーから',
-
-## tmpl/feeds/feed_ping.tmpl
-	'By source URL' => '送信元のURL',
-	'By source blog' => '送信元のブログ',
-	'By source title' => '送信元記事のタイトル',
-	'Source [_1]' => '送信元の[_1]',
-
-## tmpl/feeds/login.tmpl
-	'This link is invalid. Please resubscribe to your activity feed.' => 'このリンクは無効です。フィードの購読をやり直してください。',
 
 ## tmpl/admin2023/wizard/cfg_dir.tmpl
 	'TempDir is required.' => 'TempDirが必要です。',
