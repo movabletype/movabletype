@@ -341,8 +341,10 @@ sub find_phrases {
     }
 
     my $ignore_re = _gen_re(qw(
+        plugins/MTBlockEditor
         fabric.js
         chart-api/mtchart.js
+        tiny_mce/plugins/accordion/plugin.js
         tiny_mce/plugins/insertdatetime/plugin.js
         tiny_mce/plugins/save/plugin.js
         tiny_mce/plugins/spellchecker/plugin.js
