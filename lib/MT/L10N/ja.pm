@@ -220,11 +220,6 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/tmpl/admin2023/cfg_contents_sync.tmpl
 	'Are you sure you want to remove this settings?' => 'この設定を削除しますか？',
-	'Invalid date.' => '無効な日付フォーマットです。',
-	'Invalid time.' => '無効な時刻指定です。',
-	'Sync name is required.' => '設定名は必須です。',
-	'Sync name should be shorter than [_1] characters.' => '設定名が長すぎます。[_1]文字以内で指定してください。',
-	'The sync date must be in the future.' => 'サーバー配信日時は、未来の日時を指定してください。',
 	'You must make one or more destination settings.' => 'サーバー配信先が設定されていません。',
 
 ## default_templates/about_this_page.mtml
@@ -538,7 +533,6 @@ use vars qw( @ISA %Lexicon );
 	'Error loading [_1]: [_2]' => '[_1]をロードできませんでした: [_2]',
 	'Movable Type Debug Activity' => 'Movable Typeのデバッグログ',
 	'Movable Type System Activity' => 'Movable Typeのシステムログ',
-	'No permissions.' => '権限がありません。',
 	'[_1] "[_2]" Content Data' => '[_1]の"[_2]"',
 	'[_1] Activity' => '[_1]のログ',
 	'[_1] Entries' => '[_1]の記事',
@@ -941,10 +935,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid image file format.' => '画像ファイルフォーマットが不正です。',
 	'Perl module Image::Size is required to determine the width and height of uploaded images.' => 'Image::Sizeをインストールしないと、画像の幅と高さを検出できません。',
 	'PreSave failed [_1]' => 'PreSaveでエラーがありました: [_1]',
-	'Removing stats cache failed.' => 'アクセス統計データのキャッシュを削除できませんでした。',
 	'[_1]: Entries' => '[_1]: 記事一覧',
-	q{'[_1]' is not allowed to upload by system settings.: [_2]} => q{'[_1]'のアップロードはシステム設定にて許可されていません。: [_2]},
-	q{Cannot make path '[_1]': [_2]} => q{パス'[_1]'を作成できませんでした: [_2]},
 	q{Entry '[_1]' ([lc,_5] #[_2]) deleted by '[_3]' (user #[_4]) from atom api} => q{[_1]記事([lc,_5]#[_2])は[_3](ID: [_4])によって削除されました。},
 	q{Invalid blog ID '[_1]'} => q{ブログIDが不正です([_1])。},
 	q{User '[_1]' (user #[_2]) added [lc,_4] #[_3]} => q{[_1] (ID: [_2])が[_4] (ID: [_3])を追加しました。},
@@ -1086,6 +1077,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/AddressBook.pm
 	'Error sending mail ([_1]): Try another MailTransfer setting?' => 'メールを送信できませんでした。MailTransferの設定を見直してください: [_1]',
 	'No entry ID was provided' => '記事のIDが指定されていません。',
+	'No permissions.' => '権限がありません。',
 	'No valid recipients were found for the entry notification.' => '通知するメールアドレスがありません。',
 	'Please select a blog.' => 'ブログを選択してください。',
 	'The e-mail address you entered is already on the Notification List for this blog.' => '入力したメールアドレスはすでに通知リストに含まれています。',
@@ -1122,6 +1114,8 @@ use vars qw( @ISA %Lexicon );
 	'basename of user' => 'ユーザーのベースネーム',
 	'none' => 'なし',
 	'unassigned' => '(未設定)',
+	q{'[_1]' is not allowed to upload by system settings.: [_2]} => q{'[_1]'のアップロードはシステム設定にて許可されていません。: [_2]},
+	q{Cannot make path '[_1]': [_2]} => q{パス'[_1]'を作成できませんでした: [_2]},
 	q{Could not create upload path '[_1]': [_2]} => q{[_1]を作成できませんでした: [_2]},
 	q{Error creating a temporary file; The webserver should be able to write to this folder.  Please check the TempDir setting in your configuration file, it is currently '[_1]'. } => q{テンポラリファイルを作成できませんでした。構成ファイルでTempDirの設定を確認してください。現在は[_1]に設定されています。},
 	q{Error deleting '[_1]': [_2]} => q{'[_1]'を削除できませんでした: [_2]},
@@ -1177,7 +1171,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1] changed from [_2] to [_3]' => '[_1]は[_2]から[_3]に変更されました',
 	q{'[_1]' (ID:[_2]) has been copied as '[_3]' (ID:[_4]) by '[_5]' (ID:[_6]).} => q{'[_1]' (ID:[_2]) が '[_3]' (ID:[_4]) として '[_5]' (ID: [_6]) によって複製されました。},
 	q{Blog '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])を削除しました。},
-	q{Cloning child site '[_1]'...} => q{サイト「[_1]」を複製しています...},
 	q{The '[_1]' provided below is not writable by the web server. Change the directory ownership or permissions and try again.} => q{ウェブサーバーから書き込めません。[_1]の書き込み権限を確認してから、もう一度実行してください。},
 	q{[_1] '[_2]' (ID:[_3]) created by '[_4]'} => q{[_4]によって[_1]の「[_2]」(ID:[_3])が作成されました},
 	q{[_1] '[_2]'} => q{[_1]「[_2]」},
@@ -1235,6 +1228,7 @@ use vars qw( @ISA %Lexicon );
 	q{'[_1]' edited the template '[_2]' in the blog '[_3]'} => q{[_1]がブログ([_3])のテンプレート([_2])を編集しました},
 
 ## lib/MT/CMS/ContentData.pm
+	'"[_1]" field is required.' => '"[_1]"フィールドは入力必須です。',
 	'(No Label)' => '(ラベルなし)',
 	'(untitled)' => 'タイトルなし',
 	'Cannot load content field (UniqueID:[_1]).' => 'コンテンツフィールドをロードできません (ユニークID: [_1])',
@@ -1246,6 +1240,7 @@ use vars qw( @ISA %Lexicon );
 	'No Label (ID:[_1])' => 'ラベルがありません (ID:[_1])',
 	'One of the content data ([_1]) did not exist' => 'コンテンツデータ (ID: [_1]) が見つかりません',
 	'Publish error: [_1]' => '再構築エラー: [_1]',
+	'Removing stats cache failed.' => 'アクセス統計データのキャッシュを削除できませんでした。',
 	'The value of [_1] is automatically used as a data label.' => '[_1]の値がデータ識別ラベルとして利用されます',
 	'Unable to create preview files in this location: [_1]' => 'プレビュー用のファイルをこの場所に作成できませんでした: [_1]',
 	'Unpublish Contents' => 'コンテンツデータの公開を取り消し',
@@ -1373,6 +1368,8 @@ use vars qw( @ISA %Lexicon );
 	'You need to provide a password if you are going to create new users for each user listed in your site.' => 'サイトにユーザーを追加するためには、パスワードを指定する必要があります。',
 
 ## lib/MT/CMS/Log.pm
+	'(system)' => 'システム',
+	'*Website/Blog deleted*' => '*削除されました*',
 	'All Feedback' => 'すべて',
 	'Publishing' => '公開',
 	'System Activity Feed' => 'システムログ',
@@ -1410,7 +1407,6 @@ use vars qw( @ISA %Lexicon );
 	'rebuild indexes.' => 'インデックスを再構築する',
 
 ## lib/MT/CMS/Search.pm
-	'"[_1]" field is required.' => '"[_1]"フィールドは入力必須です。',
 	'"[_1]" is invalid for "[_2]" field of "[_3]" (ID:[_4]): [_5]' => '"[_1]"は、コンテンツタイプ "[_3]" (ID:[_4])の"[_2]"フィールドの入力として無効です: [_5]',
 	'Basename' => '出力ファイル名',
 	'Data Label' => 'データ識別ラベル',
@@ -1866,8 +1862,6 @@ use vars qw( @ISA %Lexicon );
 	'Cannot generate unique unique_id' => 'ユニークIDの生成に失敗しました',
 
 ## lib/MT/Core.pm
-	'(system)' => 'システム',
-	'*Website/Blog deleted*' => '*削除されました*',
 	'Activity Feed' => 'ログフィード',
 	'Add Summary Watcher to queue' => 'サマリー監視タスクをキューに追加',
 	'Address Book is disabled by system configuration.' => 'アドレス帳の管理は、設定により無効にされています。',
@@ -1914,6 +1908,7 @@ use vars qw( @ISA %Lexicon );
 	'If/Else Block' => 'If/Else条件ブロック',
 	'Include Template File' => 'テンプレートファイルのインクルード',
 	'Include Template Module' => 'テンプレートモジュールのインクルード',
+	'Invalid date.' => '無効な日付フォーマットです。',
 	'Job' => 'ジョブ',
 	'Junk Folder Expiration' => 'スパムコメント/トラックバックの廃棄',
 	'Legacy Quick Filter' => 'クイックフィルタ',
@@ -2566,15 +2561,10 @@ use vars qw( @ISA %Lexicon );
 	'You used an [_1] tag without a date context set up.' => '[_1]を日付コンテキストの外部で利用しようとしました。',
 	'You used an [_1] tag without a valid [_2] attribute.' => '[_1]タグでは[_2]属性は必須です。',
 	'[_1] is not a hash.' => '[_1]はハッシュではありません。',
-	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '変更を反映するために、対象の[_3]を[_1]再構築[_2]してください。',
-	'[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing.' => 'ダイナミック・パブリッシングを利用している場合でも、設定を反映するために[_1]再構築[_2]してください。',
-	'[_1]Publish[_2] your site to see these changes take effect.' => '設定を有効にするために[_1]再構築[_2]してください。',
-	'blog(s)' => 'ブログ',
 	'https://www.movabletype.org/documentation/appendices/tags/%t.html' => 'https://www.movabletype.jp/documentation/appendices/tags/%t.html',
 	'id attribute is required' => 'idモディファイアを指定する必要があります',
 	'minimum length of [_1]' => '[_1]文字以上',
 	'records' => 'オブジェクト',
-	'website(s)' => 'ウェブサイト',
 	q{'[_1]' is not a hash.} => q{[_1]はハッシュではありません。},
 	q{'[_1]' is not a valid function for a hash.} => q{[_1]はハッシュで利用できる関数ではありません。},
 	q{'[_1]' is not a valid function for an array.} => q{[_1]は配列で利用できる関数ではありません。},
@@ -2748,6 +2738,7 @@ use vars qw( @ISA %Lexicon );
 	'Error creating role record: [_1].' => 'ロールレコード作成エラー: [_1]',
 	'Error saving record: [_1].' => 'レコードを保存できません: [_1]',
 	'Expiring cached MT News widget...' => 'MTニュースのキャッシュを破棄しています...',
+	'First Website' => 'First Website',
 	'Mapping templates to blog archive types...' => 'テンプレートをブログのアーカイブタイプに適用しています...',
 	'Upgrading asset path information...' => 'アセットパス情報を更新しています...',
 	q{Creating new template: '[_1]'.} => q{新しいテンプレート[_1]を作成しています...},
@@ -3046,6 +3037,9 @@ use vars qw( @ISA %Lexicon );
 	'YAML::Tiny is the default YAML parser.' => 'YAML::TinyはデフォルトのYAMLパーサーです。',
 	'local::lib is optional. It is used to load modules from different locations.' => 'local::libは、あれば標準とは異なる場所からモジュールを読み込むのに使えます。',
 
+## lib/MT/Util/Deprecated.pm
+	'[_1] plugin is using deprecated call.' => '[_1]プラグインが削除予定のコードを利用しています。',
+
 ## lib/MT/Util/Log.pm
 	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
 	'Logger configuration for Log module [_1] seems problematic' => 'ログモジュール [_1] の設定に問題がありそうです',
@@ -3058,6 +3052,12 @@ use vars qw( @ISA %Lexicon );
 	'Recipient: [_1]' => '送信先: [_1]',
 	'Subject: [_1]' => '件名: [_1]',
 	q{MT::Mail doesn't support file attachments. Please change MailModule setting.} => q{MT::Mail は添付ファイルをサポートしていません。MailModule の設定を変更してください。},
+
+## lib/MT/Util/SystemCheck.pm
+	'Supported format: [_1]' => '対応している形式: [_1]',
+	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'お使いのサーバーにインストールされている DBD::mysqlのバージョンは、Movable Type と互換性がありません。CPAN に公開されている最新バージョンをインストールしてください。',
+	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1]はインストールされていますが、新しいDBIが必要です。上記を参考に必要なDBIを確認してください。',
+	'unknown' => '不明',
 
 ## lib/MT/Util/YAML.pm
 	'Cannot load YAML module: [_1]' => 'YAMLモジュールをロードできません: [_1]',
@@ -3073,7 +3073,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Website.pm
 	'Child Site Count' => '子サイト数',
-	'First Website' => 'First Website',
 	'Show only Child Site' => '子サイトだけを表示',
 	'Show only Parent Site' => '親サイトだけを表示',
 
@@ -3090,10 +3089,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/XMLRPCServer.pm
 	'Error writing uploaded file: [_1]' => 'アップロードされたファイルを書き込めませんでした: [_1]',
-	'Invalid login' => 'サインインできません',
 	'Invalid timestamp format' => 'timestampの形式が不正です。',
 	'No blog_id' => 'No blog_id',
-	'No entry_id' => '記事IDがありません',
 	'No filename provided' => 'ファイル名がありません。',
 	'No web services password assigned.  Please see your user profile to set it.' => 'Webサービスパスワードを設定していません。ユーザー情報の編集の画面で設定してください。',
 	'Not allowed to edit entry' => '記事を編集する権限がありません。',
@@ -3101,7 +3098,6 @@ use vars qw( @ISA %Lexicon );
 	'Not allowed to set entry categories' => 'カテゴリを設定する権限がありません。',
 	'Not allowed to upload files' => 'ファイルをアップロードする権限がありません。',
 	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Image::Sizeをインストールしないと、画像の幅と高さを検出できません。',
-	'Publishing failed: [_1]' => '再構築できません: [_1]',
 	'Saving folder failed: [_1]' => 'フォルダを保存できませんでした: [_1]',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Templateメソッドは実装されていません。',
 	q{Invalid entry ID '[_1]'} => q{不正な記事ID (ID: [_1]) です},
@@ -3125,9 +3121,6 @@ use vars qw( @ISA %Lexicon );
 	'Perl include path:' => 'Perl の インクルードパス',
 	'Perl version:' => 'Perl のバージョン',
 	'Please consult the installation instructions for help in installing [_1].' => '[_1]のインストールはインストールマニュアルに沿って行ってください。',
-	'Supported format: [_1]' => '対応している形式: [_1]',
-	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'お使いのサーバーにインストールされている DBD::mysqlのバージョンは、Movable Type と互換性がありません。CPAN に公開されている最新バージョンをインストールしてください。',
-	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1]はインストールされていますが、新しいDBIが必要です。上記を参考に必要なDBIを確認してください。',
 	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.' => 'これらのモジュールのインストールは<strong>任意</strong>です。お使いのサーバーにこれらのモジュールがインストールされていない場合でも、Movable Type の基本機能は動作します。これらのモジュールの機能が必要となった場合にはインストールを行ってください。',
 	'The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly.' => 'これらのモジュールは、Movable Type がデータを保存するために必要なモジュールです。DBIと、1つ以上のデータベース用のモジュールをインストールする必要があります。',
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされているPerl ([_1])は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlを[_2]以上にアップグレードしてください。',
@@ -3137,13 +3130,16 @@ use vars qw( @ISA %Lexicon );
 	'Your server has [_1] installed (version [_2]).' => 'サーバーに [_1] がインストールされています(バージョン [_2])。',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'お使いのサーバーには、Movable Type の動作に必要なすべてのモジュールがインストールされています。モジュールを追加インストール作業は必要はありません。マニュアルに従い、インストールを続けてください。',
 	'[_1] [_2] Modules' => '[_1]: [_2]モジュール',
-	'unknown' => '不明',
 	q{The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)} => q{構成ファイル(mt-config.cgi)がすでに存在するため、'mt-check.cgi' スクリプトは無効になっています。},
 	q{The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type.} => q{mt-check.cgiはシステムの構成を確認し、Movable Typeを実行するために必要なコンポーネントがそろっていることを確認するためのスクリプトです。},
 	q{You're ready to go!} => q{Movable Typeを利用できます。},
 
 ## mt-static/addons/Sync.pack/js/cms.js
 	'Continue' => '次へ',
+	'Invalid time.' => '無効な時刻指定です。',
+	'Sync name is required.' => '設定名は必須です。',
+	'Sync name should be shorter than [_1] characters.' => '設定名が長すぎます。[_1]文字以内で指定してください。',
+	'The sync date must be in the future.' => 'サーバー配信日時は、未来の日時を指定してください。',
 	'You have unsaved changes to this page that will be lost.' => '保存されていない変更は失われます。',
 
 ## mt-static/jquery/jquery.mt.js
@@ -3163,11 +3159,6 @@ use vars qw( @ISA %Lexicon );
 	'This field must be an integer' => 'このフィールドには整数の値を入力して下さい',
 	'You have an error in your input.' => '入力内容に誤りがあります。',
 
-## mt-static/js/assetdetail.js
-	'Dimensions' => '大きさ',
-	'File Name' => 'ファイル名',
-	'No Preview Available.' => 'プレビューは利用できません。',
-
 ## mt-static/js/admin2023/contenttype/contenttype.js
 	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
 	'Duplicate' => '複製',
@@ -3184,9 +3175,6 @@ use vars qw( @ISA %Lexicon );
 	'Show input field to enter data label' => 'ユーザーが入力する',
 	'Unique ID' => 'ユニークID',
 	'close' => '閉じる',
-
-## mt-static/js/dialog.js
-	'(None)' => '(なし)',
 
 ## mt-static/js/admin2023/listing/list_data.js
 	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
@@ -3244,9 +3232,30 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/admin2023/mt.js
 	'Are you certain you want to remove these [_1] roles? By doing so you will be taking away the permissions currently assigned to any users and groups associated with these roles.' => 'これら[_1]つのロールをしてもよろしいですか? 削除してしまうと、これらのロールを通じて権限を付与されているすべてのユーザーとグループから権限を剥奪することになります。',
 	'Are you certain you want to remove this role? By doing so you will be taking away the permissions currently assigned to any users and groups associated with this role.' => 'このロールを本当に削除してもよろしいですか? ロールを通じて権限を付与されているすべてのユーザーとグループから権限を剥奪することになります。',
+	'Enter URL:' => 'URLを入力:',
+	'Enter email address:' => 'メールアドレスを入力:',
+	'Same name tag already exists.' => '同名のタグがすでに存在します',
 	'You did not select any [_1] [_2].' => '[_2]する[_1]が選択されていません。',
 	'You must select an action.' => 'アクションを選択してください。',
+	'[_1]Publish[_2] your site to see these changes take effect.' => '設定を有効にするために[_1]再構築[_2]してください。',
 	'delete' => '削除',
+	'disable' => '無効に',
+	'enable' => '有効に',
+	'publish' => '公開',
+	'remove' => '削除',
+	'to mark as spam' => 'スパムに指定',
+	'to remove spam status' => 'スパム指定を解除',
+	'unlock' => 'ロック解除してサインイン可能に',
+	q{The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all weblogs?} => q{タグ'[_2]'はすでに存在します。'[_1]'を'[_2]'に統合してもよろしいですか?},
+	q{The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]'?} => q{タグ'[_2]'はすでに存在します。'[_1]'を'[_2]'に統合してもよろしいですか? },
+
+## mt-static/js/assetdetail.js
+	'Dimensions' => '大きさ',
+	'File Name' => 'ファイル名',
+	'No Preview Available.' => 'プレビューは利用できません。',
+
+## mt-static/js/dialog.js
+	'(None)' => '(なし)',
 
 ## mt-static/js/tc/mixer/display.js
 	'Author:' => '作者:',
@@ -3258,20 +3267,6 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/upload_settings.js
 	'You must set a path beginning with %s or %a.' => '%s（サイトパス）か %a（アーカイブパス）から始まるパス名を指定してください。',
 	'You must set a valid path.' => '有効なパス名を指定してください。',
-
-## mt-static/mt.js
-	'Enter URL:' => 'URLを入力:',
-	'Enter email address:' => 'メールアドレスを入力:',
-	'Same name tag already exists.' => '同名のタグがすでに存在します',
-	'disable' => '無効に',
-	'enable' => '有効に',
-	'publish' => '公開',
-	'remove' => '削除',
-	'to mark as spam' => 'スパムに指定',
-	'to remove spam status' => 'スパム指定を解除',
-	'unlock' => 'ロック解除してサインイン可能に',
-	q{The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all weblogs?} => q{タグ'[_2]'はすでに存在します。'[_1]'を'[_2]'に統合してもよろしいですか?},
-	q{The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]'?} => q{タグ'[_2]'はすでに存在します。'[_1]'を'[_2]'に統合してもよろしいですか? },
 
 ## mt-static/plugins/BlockEditor/lib/js/blockeditor_field.js
 	'Edit [_1] block' => '[_1]ブロックの編集',
@@ -3300,22 +3295,22 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/plugins/FormattedTextForTinyMCE/extension.js
 	'Insert Boilerplate' => '定型文の挿入',
 
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/autosave/plugin.js
-	'You have unsaved changes are you sure you want to navigate away?' => '保存していない変更があります。移動してもよろしいですか？',
-
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/compat3x/utils/editable_selects.js
 	'value' => 'value',
 
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/plugin.js
+## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/langs/plugin.js
 	'Align Center' => '中央揃え',
 	'Align Left' => '左揃え',
 	'Align Right' => '右揃え',
 	'Block Quotation' => '引用ブロック',
 	'Bold (Ctrl+B)' => '太字  (Ctrl+B)',
 	'Class Name' => 'クラス名',
+	'Copy column' => '列のコピー',
+	'Cut column' => '列の切り取り',
 	'Emphasis' => '斜体',
 	'Horizontal Line' => '水平線を挿入',
 	'Indent' => '字下げを増やす',
+	'Horizontal align' => '横配置',
 	'Insert Asset Link' => 'アセットの挿入',
 	'Insert HTML' => 'HTMLの挿入',
 	'Insert Image Asset' => '画像の挿入',
@@ -3329,7 +3324,8 @@ use vars qw( @ISA %Lexicon );
 	'Remove Formatting' => '書式の削除',
 	'Select Background Color' => '背景色',
 	'Select Text Color' => 'テキスト色',
-	'Strikethrough' => '取り消し線',
+	'Paste column after' => '列の後に貼り付け',
+	'Paste column before' => '列の前に貼り付け',
 	'Strong Emphasis' => '太字',
 	'Toggle Fullscreen Mode' => '全画面表示の切り替え',
 	'Toggle HTML Edit Mode' => 'HTML編集モードの切り替え',
@@ -3337,6 +3333,7 @@ use vars qw( @ISA %Lexicon );
 	'Undo (Ctrl+Z)' => '元に戻す (Ctrl+Z)',
 	'Unlink' => 'リンクを解除',
 	'Unordered List' => '番号なしリスト',
+	'Vertical align' => '縦配置',
 
 ## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.js
 	'HTML' => 'HTML',
@@ -3344,13 +3341,8 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => '全画面表示',
 
-## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/langs/plugin.js
-	'Copy column' => '列のコピー',
-	'Cut column' => '列の切り取り',
-	'Horizontal align' => '横配置',
-	'Paste column after' => '列の後に貼り付け',
-	'Paste column before' => '列の前に貼り付け',
-	'Vertical align' => '縦配置',
+## mt-static/plugins/TinyMCE5/tiny_mce/plugins/autosave/plugin.js
+	'You have unsaved changes are you sure you want to navigate away?' => '保存していない変更があります。移動してもよろしいですか？',
 
 ## php/lib/block.mtarchives.php
 	'ArchiveType not found - [_1]' => 'アーカイブタイプが見つかりません - [_1]',
@@ -3441,11 +3433,14 @@ use vars qw( @ISA %Lexicon );
 	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => '[_1]からのコメントが[_2]秒間に8個続いたため、このIPアドレスを禁止リストに登録しました。',
 	'Invalid commenter login attempt from [_1] to blog [_2](ID: [_3]) which does not allow Movable Type native authentication.' => '[_1]がブログ[_2](ID:[_3])にサインインしようとしましたが、このブログではMovable Type認証が有効になっていません。',
 	'Invalid entry ID provided' => '記事のIDが不正です。',
+	'Invalid login' => 'サインインできません',
 	'Movable Type Account Confirmation' => 'Movable Type アカウント登録確認',
 	'Name and E-mail address are required.' => '名前とメールアドレスは必須です。',
 	'No entry was specified; perhaps there is a template problem?' => '記事が指定されていません。テンプレートに問題があるかもしれません。',
+	'No entry_id' => '記事IDがありません',
 	'No id' => 'IDがありません。',
 	'No such comment' => 'コメントがありません。',
+	'Publishing failed: [_1]' => '再構築できません: [_1]',
 	'Registration is required.' => '登録しなければなりません。',
 	'Signing up is not allowed.' => '登録はできません。',
 	'Somehow, the entry you tried to comment on does not exist' => 'コメントしようとした記事がありません。',
@@ -3516,6 +3511,7 @@ use vars qw( @ISA %Lexicon );
 	'A Perl module required for using Google Analytics API is missing: [_1].' => 'Google アナリティクス APIを利用するのに必要なPerlモジュールのうちいくつかがありません: [_1]',
 	'The name of the profile' => 'プロファイル名',
 	'The web property ID of the profile' => 'ウェブ プロパティ ID',
+	'The resource name of the property | The measurement id of the WebStreamData' => 'プロパティのリソース名 | データストリームのID',
 	'You did not specify a client ID.' => 'Client IDが指定されていません。',
 	'You did not specify a code.' => 'codeが指定されていません。',
 
@@ -3538,7 +3534,6 @@ use vars qw( @ISA %Lexicon );
 	'Could not load Net::OpenID::Consumer.' => 'Net::OpenID::Consumerをロードできませんでした。',
 	'Could not save the session' => 'セッションを保存できませんでした。',
 	'Could not verify the OpenID provided: [_1]' => 'OpenIDを検証できませんでした: [_1]',
-	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDプラグインを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
 	'The address entered does not appear to be an OpenID endpoint.' => '入力されたアドレスはOpenIDではありません。',
 	'The text entered does not appear to be a valid web address.' => '正しいURLを入力してください。',
 	'Unable to connect to [_1]: [_2]' => '[_1]に接続できません: [_2]',
@@ -4061,6 +4056,7 @@ use vars qw( @ISA %Lexicon );
 	'Registration Not Enabled' => 'ユーザー登録は無効です。',
 	'Select a role that you want assigned to users that are created in the future.' => 'これから作成されるユーザーに割り当てられるロールを選択します。',
 	'Select roles' => 'ロール選択',
+	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDプラグインを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
 	'User Registration' => 'ユーザー登録',
 	'Your site preferences have been saved.' => 'サイトの設定を保存しました。',
 
@@ -4998,6 +4994,7 @@ use vars qw( @ISA %Lexicon );
 	'Numbered List' => '番号付きリスト',
 	'Right Align Item' => 'アセット右揃え',
 	'Right Align Text' => 'テキスト右揃え',
+	'Strikethrough' => '取り消し線',
 	'Text Color' => 'フォントカラー',
 	'Underline' => '下線',
 	'WYSIWYG Mode' => 'WYSIWYGモード',
@@ -5117,10 +5114,12 @@ use vars qw( @ISA %Lexicon );
 	'Last Commented' => '最近のコメント',
 	'View this commenter&rsquo;s profile' => 'このコメント投稿者のユーザー情報を見る',
 
+## tmpl/admin2023/cms/include/content_data_list.tmpl
+	'Showing first [_1] results.' => '最初の[_1]件の結果を表示しています。',
+
 ## tmpl/admin2023/cms/include/content_data_table.tmpl
 	'Created' => '作成',
 	'Republish selected [_1] (r)' => '選択した[_1]の再構築',
-	'Unpublish' => '公開取り消し',
 
 ## tmpl/admin2023/cms/include/copyright.tmpl
 	'Copyright &copy; 2001 Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001 Six Apart. All Rights Reserved.',
@@ -5130,8 +5129,6 @@ use vars qw( @ISA %Lexicon );
 	'Last Modified' => '最終更新',
 	'No entries could be found.' => '記事がありません。',
 	'No pages could be found. <a href="[_1]" class="alert-link">Create a page</a> now.' => 'ウェブページが見つかりませんでした。<a href="[_1]" class="alert-link">ウェブページの作成</a>',
-	'View entry' => '記事を見る',
-	'View page' => 'ウェブページを表示',
 
 ## tmpl/cms/include/feed_link.tmpl
 	'Set Web Services Password' => 'Webサービスのパスワードを設定',
@@ -5202,6 +5199,12 @@ use vars qw( @ISA %Lexicon );
 	'Select another child site...' => '他の子サイトを選択...',
 	'Select another site...' => '他のサイトを選択...',
 
+## tmpl/admin2023/cms/include/mtapp_statusmsg.tmpl
+	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '変更を反映するために、対象の[_3]を[_1]再構築[_2]してください。',
+	'[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing.' => 'ダイナミック・パブリッシングを利用している場合でも、設定を反映するために[_1]再構築[_2]してください。',
+	'blog(s)' => 'ブログ',
+	'website(s)' => 'ウェブサイト',
+
 ## tmpl/admin2023/cms/include/notification_table.tmpl
 	'Date Added' => '日付',
 	'Save changes' => '変更を保存',
@@ -5250,6 +5253,9 @@ use vars qw( @ISA %Lexicon );
 	'User Dashboard' => 'ユーザーダッシュボード',
 	'Websites' => 'ウェブサイト',
 
+## tmpl/admin2023/cms/include/status_page_header.tmpl
+	q{Cloning child site '[_1]'...} => q{サイト「[_1]」を複製しています...},
+
 ## tmpl/admin2023/cms/include/status_widget.tmpl
 	'[_1] - Edited by [_2]' => '編集: [_2] - [_1]',
 	'[_1] - Published by [_2]' => '公開: [_2] - [_1]',
@@ -5286,8 +5292,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2023/cms/install.tmpl
 	'Create Your Account' => 'アカウントの作成',
 	'Do you want to proceed with the installation anyway?' => 'インストールを続けますか?',
-	'Finish install (s)' => 'インストール (s)',
-	'Finish install' => 'インストール',
 	'Please create an administrator account for your system. When you are done, Movable Type will initialize your database.' => 'システム管理者のアカウントを作成してください。作成が完了すると、データベースを初期化します。',
 	'Select a password for your account.' => 'パスワードを入力してください。',
 	'System Email' => 'システムのメールアドレス',
@@ -5495,10 +5499,6 @@ use vars qw( @ISA %Lexicon );
 	'Your tag changes and additions have been made.' => 'タグの変更と追加が完了しました。',
 	q{The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all blogs?} => q{タグ「[_2]」は既に存在します。すべてのブログで「[_1]」を「[_2]」にマージしてもよろしいですか?},
 
-## tmpl/cms/listing/ts_job_list_header.tmpl
-	'The job(s) has been deleted from the database.' => 'ジョブをデータベースから削除しました。',
-	q{You can't delete running job(s). (ID: [_1])} => q{実行中のジョブは削除できません(ID: [_1])},
-
 ## tmpl/admin2023/cms/login.tmpl
 	'Forgot your password?' => 'パスワードをお忘れですか?',
 	'Sign In (s)' => 'サインイン (s)',
@@ -5579,9 +5579,6 @@ use vars qw( @ISA %Lexicon );
 	'There are no categories in this blog.  Limited preview of category archive templates is possible with a virtual category displayed.  Normal, non-preview output cannot be generated by this template unless at least one category is created.' => 'このブログにはカテゴリが存在しないため、仮のカテゴリを利用しています。正しいプレビューを表示したい場合は、カテゴリを作成して下さい。',
 	'You are previewing the template named &ldquo;[_1]&rdquo;' => 'テンプレート「[_1]」をプレビューしています。',
 
-## tmpl/cms/site.tmpl
-    q{Enter the URL of your site. Exclude the filename (i.e. index.html). Example:http://www.example.com/} => q{サイトを公開するURLを入力してください。ファイル名(index.htmlなど)は含めず、末尾は'/'で終わります。例: http://www.example.com/blog/},
-
 ## tmpl/admin2023/cms/rebuilding.tmpl
 	'Complete [_1]%' => '[_1]% 終了',
 	'Publishing <em>[_1]</em>...' => '<em>[_1]</em> を再構築中...',
@@ -5632,7 +5629,6 @@ use vars qw( @ISA %Lexicon );
 	'Search Again' => '再検索',
 	'Search For' => '検索',
 	'Show all matches' => 'すべて見る',
-	'Showing first [_1] results.' => '最初の[_1]件の結果を表示しています。',
 	'Submit search (s)' => '検索 (s)',
 	'Successfully replaced [quant,_1,record,records].' => '[quant,_1,件,件]のデータを置き換えました。',
 	'You must select one or more items to replace.' => '置き換える対象を1つ以上選択してください。',
@@ -5641,6 +5637,12 @@ use vars qw( @ISA %Lexicon );
 	'_DATE_TO' => '終了日',
 	'_TIME_FROM' => '開始時刻',
 	'_TIME_TO' => '終了時刻',
+
+## tmpl/admin2023/cms/setup_initial_website.tmpl
+	'Finish install (s)' => 'インストール (s)',
+	'Finish install' => 'インストール',
+	'Skip' => 'スキップ',
+	q{Enter the URL of your site. Exclude the filename (i.e. index.html). Example:http://www.example.com/} => q{サイトを公開するURLを入力してください。ファイル名(index.htmlなど)は含めず、末尾は'/'で終わります。例: http://www.example.com/blog/},
 
 ## tmpl/admin2023/cms/system_check.tmpl
 	'Memcached Server is [_1].' => 'Memcachedサーバーは[_1]です。',
@@ -5837,7 +5839,6 @@ use vars qw( @ISA %Lexicon );
 	'Send mail via:' => 'メール送信プログラム',
 	'Sendmail Path' => 'sendmailのパス',
 	'Show current mail settings' => '現在のメール設定を表示',
-	'Skip' => 'スキップ',
 	'This field must be an integer.' => 'このフィールドには整数の値を入力して下さい',
 	'Use SMTP Auth' => 'SMTP認証を利用する',
 	'Use SSL' => 'SSLで接続する',
@@ -5886,8 +5887,16 @@ use vars qw( @ISA %Lexicon );
 	q{<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.} => q{エラー: '[_1]'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。},
 	q{The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).} => q{[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、[_1]ディレクトリにはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。},
 
-## lib/MT/Util/Deprecated.pm
-    '[_1] plugin is using deprecated call.' => '[_1]プラグインが削除予定のコードを利用しています。',
+## tmpl/cms/include/content_data_table.tmpl
+	'Unpublish' => '公開取り消し',
+
+## tmpl/cms/include/entry_table.tmpl
+	'View entry' => '記事を見る',
+	'View page' => 'ウェブページを表示',
+
+## tmpl/cms/listing/ts_job_list_header.tmpl
+	'The job(s) has been deleted from the database.' => 'ジョブをデータベースから削除しました。',
+	q{You can't delete running job(s). (ID: [_1])} => q{実行中のジョブは削除できません(ID: [_1])},
 );
 
 1;
