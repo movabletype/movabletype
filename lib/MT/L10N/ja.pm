@@ -3994,6 +3994,8 @@ use vars qw( @ISA %Lexicon );
 	'Note: This option is currently ignored because outbound notification pings are disabled system-wide.' => '備考: システム外部ping通知がシステムレベルで無効のため、このオプションは現在無効となっています。',
 	'Notify ping services of [_1] updates' => 'サイト更新pingサービス通知',
 	'Others:' => 'その他:',
+	'child site' => '子サイト',
+	'site' => 'サイト',
 
 ## tmpl/admin2023/cms/content_data/select_list.tmpl
 	'No Content Type.' => 'コンテンツタイプがありません',
@@ -4229,8 +4231,6 @@ use vars qw( @ISA %Lexicon );
 	'Publishing Profile' => '公開プロファイル',
 	'Static Publishing' => 'スタティックパブリッシング',
 	'This new publishing profile will update your publishing settings.' => '公開プロファイルの設定内容を使って、すべてのテンプレートの設定を更新します。',
-	'child site' => '子サイト',
-	'site' => 'サイト',
 
 ## tmpl/admin2023/cms/dialog/recover.tmpl
 	'Back (x)' => '戻る (x)',
@@ -5490,6 +5490,7 @@ use vars qw( @ISA %Lexicon );
 	'Memcached Server is [_1].' => 'Memcachedサーバーは[_1]です。',
 	'Memcached Status' => 'Memcachedの状態',
 	'Memcached is [_1].' => 'Memcachedは[_1]です。',
+	'Not installed' => '未インストール',
 	'Server Model' => 'サーバーモデル',
 	'Total Users' => '全ユーザー数',
 	'available' => '利用可能',
