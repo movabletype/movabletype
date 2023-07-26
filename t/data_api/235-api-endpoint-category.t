@@ -524,7 +524,7 @@ sub suite {
                 my $cat = $app->model('category')->load(1);
                 return +{
                     'totalResults' => '1',
-                    'items' => mt::DataAPI::Resource->from_object( [$cat] ),
+                    'items' => MT::DataAPI::Resource->from_object( [$cat] ),
                 };
             },
         },
@@ -600,7 +600,7 @@ sub suite {
 
                 return +{
                     'totalResults' => scalar @cat,
-                    'items' => mt::DataAPI::Resource->from_object( \@cat ),
+                    'items' => MT::DataAPI::Resource->from_object( \@cat ),
                 };
             },
         },
@@ -651,7 +651,7 @@ sub suite {
                     { id => { not => 3 }, blog_id => 1, parent => 1 } );
                 return +{
                     'totalResults' => '1',
-                    'items' => mt::DataAPI::Resource->from_object( [$cat] ),
+                    'items' => MT::DataAPI::Resource->from_object( [$cat] ),
                 };
             },
         },
