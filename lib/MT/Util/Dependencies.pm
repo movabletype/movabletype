@@ -934,8 +934,8 @@ sub _modify_hash {
         $hash{$module}{url} = $CustomURL{$module} || $url;
 
         my $version = $hash{$module}{version};
-        if (Module::CoreList::is_core($module, $version, '5.010001') && Module::CoreList::is_core($module, $version)) {
-            $hash{$module}{perl_core} = $Module::CoreList::version{'5.010001'}{$module};
+        if (Module::CoreList::is_core($module, $version, '5.016000') && Module::CoreList::is_core($module, $version)) {
+            $hash{$module}{perl_core} = $Module::CoreList::version{'5.016000'}{$module};
         } else {
             delete $hash{$module}{perl_core};
         }
