@@ -414,6 +414,24 @@ sub _find_phrases {
         } else {
             push @phrases, $phrase;
         }
+
+        # params may have yet another <__trans...>
+        my $params = $args{params} or next;
+        while ($params =~ m!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!igm) {
+            my ($msg, %args) = ($1);
+            while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<[^>]+?>|[^\2])*?)?\2/g) {    #'
+                $args{$1} = $3;
+            }
+            next unless exists $args{phrase};
+            my $phrase = $args{phrase};
+            $phrase =~ s/(?<!\\)\\"/"/g;
+            $phrase =~ s/(?<![':\\])\\'/'/g;
+            if ($check_component) {
+                push @phrases, [$phrase, 'tmpl'];
+            } else {
+                push @phrases, $phrase;
+            }
+        }
     }
 
     while ($content =~ /(?:(\S+)\->)?(?:translate|errtrans|trans_error|trans|translate_escape|maketext)\s*\(((?:\s*(?:"(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*'|q\{(?:[^}\\]+|\\.)*})\s*\.?\s*){1,})[,\)]/gs) {
