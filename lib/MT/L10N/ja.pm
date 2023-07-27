@@ -3538,7 +3538,6 @@ use vars qw( @ISA %Lexicon );
 	'Could not load Net::OpenID::Consumer.' => 'Net::OpenID::Consumerをロードできませんでした。',
 	'Could not save the session' => 'セッションを保存できませんでした。',
 	'Could not verify the OpenID provided: [_1]' => 'OpenIDを検証できませんでした: [_1]',
-	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDプラグインを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
 	'The address entered does not appear to be an OpenID endpoint.' => '入力されたアドレスはOpenIDではありません。',
 	'The text entered does not appear to be a valid web address.' => '正しいURLを入力してください。',
 	'Unable to connect to [_1]: [_2]' => '[_1]に接続できません: [_2]',

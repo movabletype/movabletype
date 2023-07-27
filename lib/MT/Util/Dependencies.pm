@@ -36,11 +36,6 @@ our %Requirements = (
         tags  => ["Mail", "Performance"],
         url   => "https://metacpan.org/pod/Authen::SASL::XS",
     },
-    "Cache::File" => {
-        label => "This module is optional. It is used to allow commenters to be authenticated by OpenID.",
-        tags  => ["Cache", "OpenID"],
-        url   => "https://metacpan.org/pod/Cache::File",
-    },
     "Cache::Memcached" => {
         label => "Cache::Memcached and a memcached server are optional. They are used to cache in-memory objects.",
         tags  => ["Cache"],
@@ -111,11 +106,6 @@ our %Requirements = (
         perl_core => 5.47,
         tags      => ["Digest"],
         url       => "https://metacpan.org/pod/Digest::SHA",
-    },
-    "Digest::SHA1" => {
-        label => "This module is optional. It is used to allow commenters to be authenticated by OpenID.",
-        tags  => ["Digest", "OpenID"],
-        url   => "https://metacpan.org/pod/Digest::SHA1",
     },
     "Email::MIME" => {
         label => "This module and its dependencies are optional. It is an alternative module to create mail.",
@@ -495,12 +485,6 @@ our %ExtLibOnly = (
         extlib  => 0.01,
         url     => "https://metacpan.org/pod/constant::override",
         used_in => ["MT"],
-    },
-    "Crypt::DH" => {
-        extlib  => 0.06,
-        note    => "in OpenID plugin",
-        url     => "https://metacpan.org/pod/Crypt::DH",
-        used_in => ["Net::OpenID::Consumer"],
     },
     "Crypt::URandom" => {
         extlib  => 0.36,
