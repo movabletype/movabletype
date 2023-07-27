@@ -2382,10 +2382,6 @@ sub new_ua {
     my ($opt) = @_;
     $opt ||= {};
     my $lwp_class = 'LWP::UserAgent';
-    if ( $opt->{paranoid} ) {
-        eval { require LWPx::ParanoidAgent; };
-        $lwp_class = 'LWPx::ParanoidAgent' unless $@;
-    }
     eval "require $lwp_class;";
     return undef if $@;
     my $cfg      = $class->config;

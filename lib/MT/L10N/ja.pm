@@ -726,7 +726,6 @@ use vars qw( @ISA %Lexicon );
 	'JSON::XS accelerates JSON processing.' => 'JSON::XSはJSONの処理を高速化します。',
 	'LWP::Protocol::https is optional. It provides https support for LWP::UserAgent.' => 'LWP::Protocol::httpsは、あればLWP::UserAgentのhttps対応に使われます。',
 	'LWP::UserAgent is optional. It is used to fetch information from local and external servers.' => 'LWP::UserAgentは、あればローカルおよび外部のサーバーから情報を取得するのに使われます。',
-	'LWPx::ParanoidAgent is an alternative to LWP::UserAgent.' => 'LWPx::ParanoidAgentはLWP::UserAgentの代替になるものです。',
 	'List::Util is required to manipulate a list of numbers.' => 'List::Utilは数値のリストを操作するのに必要です。',
 	'MIME::Base64 is required to send mail and handle blobs during backup/restore operations.' => 'MIME::Base64はメールの送信やバックアップのバイナリオブジェクトを扱うときに必要です。',
 	'MIME::Lite is an alternative module to create mail.' => 'MIME::Liteはメール作成の際に使われる代替モジュールのひとつです。',
