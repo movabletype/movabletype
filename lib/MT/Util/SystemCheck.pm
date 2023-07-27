@@ -22,7 +22,7 @@ sub check_all {
 sub check_mt {
     my ($class, $param) = @_;
     require MT;
-    $param->{release_version}           = MT->release_version_id;
+    $param->{version}                   = MT->version_id;
     $param->{mt_home}                   = $ENV{MT_HOME};
     $param->{os}                        = $^O;
     $param->{current_working_directory} = _mt_getcwd();

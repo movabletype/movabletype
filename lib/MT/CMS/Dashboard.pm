@@ -1193,8 +1193,6 @@ sub updates_widget {
         if ( !$@ ) {
             if ( $latest_version > $mt_version ) {
                 $param->{available_version} = $version_info->{version};
-                $param->{available_release_version}
-                    = $version_info->{release_version};
                 $param->{news_url} = $version_info->{news_url};
             }
 
@@ -1209,8 +1207,6 @@ sub updates_widget {
                     }
                 );
                 $cache->set( 'version', $version_info->{version} );
-                $cache->set( 'release_version',
-                    $version_info->{release_version} );
                 $cache->set( 'news_url', $version_info->{news_url} );
                 $cache->save;
             }
