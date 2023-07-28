@@ -472,6 +472,8 @@ subtest 'MultiBlogMigration' => sub {
     is(MT::Blog->load($child3->id)->blog_content_accessible,  undef);
     is(MT::RebuildTrigger->count,                             3);
 
+    $test_env->clear_mt_cache;
+
     my @triggers = MT::RebuildTrigger->load();
     is($triggers[0]->target,         MT::RebuildTrigger::TARGET_ALL);
     is($triggers[0]->action,         MT::RebuildTrigger::ACTION_RI);
@@ -486,7 +488,7 @@ subtest 'MultiBlogMigration' => sub {
     is($triggers[1]->target_blog_id, 123);
     is($triggers[1]->event,          MT::RebuildTrigger::EVENT_UNPUBLISH);
     is($triggers[2]->target,         MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE);
-    is($triggers[2]->action,         MT::RebuildTrigger::ACTION_RIP);
+    is($triggers[2]->action,         MT::RebuildTrigger::ACTION_RI);
     is($triggers[2]->blog_id,        5);
     is($triggers[2]->object_type,    MT::RebuildTrigger::TYPE_COMMENT);
     is($triggers[2]->target_blog_id, 0);
