@@ -1458,9 +1458,9 @@ div.mce-notification-error {
        label="<__trans phrase="Fields">"
        label_class="display-options">
       <div>
-        <div class="form-check form-check-inline">
         <mt:loop name="field_loop">
           <mt:unless name="system_field">
+            <div class="form-check form-check-inline">
             <mt:unless name="lock_field">
               <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="form-check-input cb" />
               <label class="form-check-label form-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
@@ -1468,9 +1468,9 @@ div.mce-notification-error {
               <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="form-check-input cb" />
               <label class="form-check-label form-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
             </mt:unless>
+            </div>
           </mt:unless>
         </mt:loop>
-        </div>
       </div>
     </mtapp:setting>
 

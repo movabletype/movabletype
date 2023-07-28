@@ -257,6 +257,11 @@ sub upgrade_functions {
             priority      => 3.2,
             code          => \&_v7_fill_with_missing_system_templates,
         },
+        'v7_migrate_rebuildtrigger_action_rip' => {
+            version_limit => '7.0055',
+            priority      => 3.3,
+            code          => \&_v7_migrate_rebuildtrigger_action_rip,
+        },
     };
 }
 
@@ -1647,6 +1652,17 @@ sub _v7_fill_with_missing_system_templates {
             }
             $obj->save;
         }
+    }
+}
+
+sub _v7_migrate_rebuildtrigger_action_rip {
+    my $self = shift;
+
+    $self->progress($self->translate_escape('Migrating rebuild trigger actions...'));
+    my $iter = MT->model('rebuild_trigger')->search({ action => MT::RebuildTrigger::ACTION_RIP() });
+    while(my $row = $iter->()) {
+        $row->action(MT::RebuildTrigger::ACTION_RI());
+        $row->save;
     }
 }
 
