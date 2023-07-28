@@ -1385,7 +1385,6 @@ use vars qw( @ISA %Lexicon );
 	'Select to apply this trigger to all sites and child sites in this system.' => 'システム内のすべてのサイトと子サイトでトリガーを有効にする',
 	'TrackBack' => 'トラックバック',
 	'__UNPUBLISHED' => '公開終了',
-	'rebuild indexes and send pings.' => 'インデックスを再構築して更新pingを送信する',
 	'rebuild indexes.' => 'インデックスを再構築する',
 
 ## lib/MT/CMS/Search.pm
@@ -2871,6 +2870,7 @@ use vars qw( @ISA %Lexicon );
 	'Migrating data column of MT::ContentData...' => 'コンテンツデータのdataカラムを移行しています...',
 	'Migrating fields column of MT::ContentType...' => 'コンテンツタイプのFieldsカラムを移行しています...',
 	'Migrating filters that have conditions on the log level...' => 'ログレベルに対する条件を持つフィルターを移行しています...',
+	'Migrating rebuild trigger actions...' => '再構築トリガーのアクションを移行しています...',
 	'MultiBlog migration for site(ID:[_1]) is skipped due to the data breakage.' => 'データが破損しているためサイト(ID:[_1])のマルチブログの設定の移行をスキップします。',
 	'MultiBlog migration is skipped due to the data breakage.' => 'データが破損しているためマルチブログの設定の移行をスキップします。',
 	'Rebuilding Content Type count of Category Sets...' => 'カテゴリセットの情報を再構築しています...',
@@ -2976,7 +2976,6 @@ use vars qw( @ISA %Lexicon );
 	'JSON::XS accelerates JSON processing.' => 'JSON::XSはJSONの処理を高速化します。',
 	'LWP::Protocol::https is optional. It provides https support for LWP::UserAgent.' => 'LWP::Protocol::httpsは、あればLWP::UserAgentのhttps対応に使われます。',
 	'LWP::UserAgent is optional. It is used to fetch information from local and external servers.' => 'LWP::UserAgentは、あればローカルおよび外部のサーバーから情報を取得するのに使われます。',
-	'LWPx::ParanoidAgent is an alternative to LWP::UserAgent.' => 'LWPx::ParanoidAgentはLWP::UserAgentの代替になるものです。',
 	'List::Util is required to manipulate a list of numbers.' => 'List::Utilは数値のリストを操作するのに必要です。',
 	'MIME::Base64 is required to send mail and handle blobs during backup/restore operations.' => 'MIME::Base64はメールの送信やバックアップのバイナリオブジェクトを扱うときに必要です。',
 	'MIME::Lite is an alternative module to create mail.' => 'MIME::Liteはメール作成の際に使われる代替モジュールのひとつです。',
@@ -2989,7 +2988,6 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required to run Movable Type under psgi.' => 'PSGI環境下でMovable Typeを実行する場合に必要となります。',
 	'This module is one of the image processors that you can use to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成するときに使われる画像処理モジュールのひとつです。',
 	'This module is optional. It enhances performance of Authen::SASL.' => 'このモジュールは、あればAuthen::SASLを高速化します。',
-	'This module is optional. It is used to allow commenters to be authenticated by OpenID.' => 'このモジュールは、あればOpenID認証の際に使われます。',
 	'This module is optional. It is used to customize the logging behavior.' => 'このモジュールは、あればログの挙動をカスタマイズするのに使えます。',
 	'This module is optional. It is used to download assets from a website.' => 'このモジュールは、あればウェブサイトからアセットをダウンロードするのに使われます。',
 	'This module is optional. It is used to know the encoding of the terminal to log.' => 'このモジュールは、あればログを出力する端末のエンコーディングを調べるのに使われます。',
@@ -3901,7 +3899,6 @@ use vars qw( @ISA %Lexicon );
 	'Registration Not Enabled' => 'ユーザー登録は無効です。',
 	'Select a role that you want assigned to users that are created in the future.' => 'これから作成されるユーザーに割り当てられるロールを選択します。',
 	'Select roles' => 'ロール選択',
-	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDプラグインを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
 	'User Registration' => 'ユーザー登録',
 	'Your site preferences have been saved.' => 'サイトの設定を保存しました。',
 
@@ -5555,7 +5552,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/widget/updates.tmpl
 	'Available updates (Ver. [_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail.' => '利用可能なアップデート(Ver. [_1])があります。詳しくは<a href="[_2]" target="_blank">Movable Typeニュース</a>をご覧ください。',
-	'Available updates ([_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail.' => '利用可能なアップデート([_1])があります。詳しくは<a href="[_2]" target="_blank">Movable Typeニュース</a>をご覧ください。',
 	'Movable Type is up to date.' => '最新のMovable Typeです。',
 	'Update check failed. Please check server network settings.' => 'アップデートの確認ができません。ネットワーク設定を見直してください。',
 	'Update check is disabled.' => 'アップデートの確認は無効です。',

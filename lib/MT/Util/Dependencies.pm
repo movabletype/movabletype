@@ -268,11 +268,6 @@ our %Requirements = (
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::UserAgent",
     },
-    "LWPx::ParanoidAgent" => {
-        label => "LWPx::ParanoidAgent is an alternative to LWP::UserAgent.",
-        tags  => ["HTTP"],
-        url   => "https://metacpan.org/pod/LWPx::ParanoidAgent",
-    },
     "MIME::Base64" => {
         label     => "MIME::Base64 is required to send mail and handle blobs during backup/restore operations.",
         perl_core => 3.08,
