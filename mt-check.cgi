@@ -115,11 +115,6 @@ $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
     $version = '7.901.0';
 }
-my $release_version = '__RELEASE_VERSION_ID__';
-if ( $release_version eq '__RELEASE' . '_VERSION_ID__' ) {
-    $release_version = 'r.5405';
-}
-
 my ( $mt, $LH );
 my $lang = $cgi->param("language") || $cgi->param("__lang");
 
@@ -483,11 +478,11 @@ print_encode( trans_templ(<<INFO) );
 <h2 id="system-info"><__trans phrase="System Information"></h2>
 $perl_ver_check
 INFO
-if ($release_version) {
+if ($version) {
 
     print_encode( trans_templ(<<INFO) );
 <ul class="list-unstyled version">
-    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$release_version</code></li>
+    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$version</code></li>
 </ul>
 INFO
 }
