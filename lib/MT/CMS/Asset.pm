@@ -1485,7 +1485,7 @@ sub _upload_file_compat {
         unless ($has_overwrite) {
             if (my $ext_new = MT::Image->get_image_type($fh)) {
                 my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
-                if ($asset_class eq 'MT::Asset::Image') {
+                if ($asset_class eq 'MT::Asset::Image' && !MT->config->DisableFileExtensionConversion) {
                     my $ext_old = (File::Basename::fileparse($basename, qr/[A-Za-z0-9]+$/))[2];
                     if (   $ext_new ne lc($ext_old)
                         && !(lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg')
@@ -2031,7 +2031,7 @@ sub _upload_file {
     # Change to real file extension
     if (my $ext_new = MT::Image->get_image_type($fh)) {
         my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
-        if ($asset_class eq 'MT::Asset::Image') {
+        if ($asset_class eq 'MT::Asset::Image' && !MT->config->DisableFileExtensionConversion) {
             my $ext_old = (File::Basename::fileparse($basename, qr/[A-Za-z0-9]+$/))[2];
 
             if (   $ext_new ne lc($ext_old)
