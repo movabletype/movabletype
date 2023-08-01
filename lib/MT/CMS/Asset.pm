@@ -1393,6 +1393,7 @@ sub _upload_file_compat {
 
     my (%upload_param) = @_;
     require MT::Image;
+    require MT::Asset;
 
     my $app_id = $app->id;
     my $eh = $upload_param{error_handler} || sub {
@@ -1452,7 +1453,6 @@ sub _upload_file_compat {
         File::Basename::basename($basename) );
 
     if ( my $asset_type = $upload_param{require_type} ) {
-        require MT::Asset;
         my $asset_pkg = MT::Asset->handler_for_file($basename);
 
         my %settings_for = (
@@ -1987,6 +1987,7 @@ sub _upload_file {
     my $app = shift;
     my (%upload_param) = @_;
 
+    require MT::Asset;
     require MT::Image;
     my $app_id = $app->id;
 
@@ -2064,7 +2065,6 @@ sub _upload_file {
     };
 
     if ( my $asset_type = $upload_param{require_type} ) {
-        require MT::Asset;
         my $asset_pkg = MT::Asset->handler_for_file($basename);
 
         my %settings_for = (
