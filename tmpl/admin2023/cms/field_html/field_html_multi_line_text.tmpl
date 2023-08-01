@@ -17,7 +17,7 @@
     <div class="mt-contentblock" id="contentblock<mt:var name="content_field_id">">
       <div class="mb-3 mb-4">
         <label for="formGroup-<mt:var name="content_field_id">" class="form-label"><__trans phrase="Format:"></label>
-        <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="custom-select form-control convert_breaks form-select" id="formGroup-<mt:var name="content_field_id">" data-bs-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
+        <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="custom-select form-control convert_breaks form-select" id="formGroup-<mt:var name="content_field_id">" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
         <mt:loop name="text_filters">
           <option value="<$mt:var name="filter_key"$>"<mt:if name="convert_breaks" eq="$filter_key"$> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
         </mt:loop>
@@ -65,7 +65,7 @@ div.group-container.multi_line_text-field-container>.mb-3 {
     app.editors = {};
     jQuery.each(ids, function() {
         jQuery('#' + this).show();
-        var format = jQuery('.convert_breaks[data-bs-target='+this+']').val();
+        var format = jQuery('.convert_breaks[data-target='+this+']').val();
         app.editors[this] = new MT.EditorManager(this, {
             format: format,
             wrap: true
@@ -99,12 +99,12 @@ function convertedText(response) {
     var field_id = response.result.field;
     <mt:unless name="editors">
     jQuery('#editor-input-content-field-'+field_id).val(response.result[field_id]);
-    jQuery('.convert_breaks[data-bs-target=editor-input-content-field-'+field_id+']').attr('data-orig_text_format', 'richtext');
+    jQuery('.convert_breaks[data-target=editor-input-content-field-'+field_id+']').attr('data-orig_text_format', 'richtext');
     jQuery('#'+field_id).removeClass('editor-plaintext');
     app.setEditorIframeHTML(field_id);
     <mt:else>
     jQuery('#'+field_id).html(response.result[field_id]);
-    jQuery('.convert_breaks[data-bs-target='+field_id+']').attr('data-orig_text_format', 'richtext');
+    jQuery('.convert_breaks[data-target='+field_id+']').attr('data-orig_text_format', 'richtext');
     jQuery('#'+field_id).parents('.editor-content').removeClass('editor-plaintext').show();
     app.editor.reload();
     </mt:unless>
@@ -174,7 +174,7 @@ function changedTextFormat(e, noConfirm) {
         </mt:if>
         app.editor.focus();
     }
-    jQuery('.convert_breaks[data-bs-target='+editor_id+']').attr('data-orig_text_format', option);
+    jQuery('.convert_breaks[data-target='+editor_id+']').attr('data-orig_text_format', option);
 }
 
 jQuery(document).on('change', '.convert_breaks', changedTextFormat);
@@ -232,7 +232,7 @@ jQuery(window).on('load change_to_mobile_view change_to_pc_view', function () {
   jQuery('.multi_line_text-field-container select.convert_breaks').each(function (index, element) {
     if (isMobileView) {
       // mobile is full rich text mode.
-      $('#' + $(this).attr('data-bs-target')).attr('data-full_rich_text', 1);
+      $('#' + $(this).attr('data-target')).attr('data-full_rich_text', 1);
     }
   });
 });
