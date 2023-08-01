@@ -145,7 +145,10 @@ $filter->add_callbacks(
                     mt id role destination blockeditor asset orig_text placement full_rich screen label children panel
                     is can-data field archive rebuild search test child
                 );
-                fail "$file: replace data-* with data-bs-*: $html" if grep {/^data-$known/} @attrs;
+                for my $name (qw(toggle target parent dismiss container)) {
+                    fail "$file: replace data-$name with data-bs-$name: $html" if grep(/^data-$name/, @attrs) && $c->stash->{content} !~ /jQuery.*?data\([^)]*$name/;
+                    fail "$file: replace data-bs-$name with data-$name: $html" if grep(/^data-bs-$name/, @attrs) && $c->stash->{content} =~ /jQuery.*?data\([^)]*$name/;
+                }
                 info "$file: replace data-* with data-bs-*: $html" if grep {/^data-(?!bs)/ && !/^data-$known/ && !/^data-(?:$mt_attr)/} @attrs;
             }
         },
@@ -212,6 +215,7 @@ sub test {
     return unless $content =~ /<\w+/;
     $filter->stash->{file} = $file;
     $content = make_harmless($content);
+    $filter->stash->{content} = $content;
     $filter->process($content);
     while (my $retry = delete $filter->stash->{retry}) {
         for my $org (sort keys %$retry) {
