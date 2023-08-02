@@ -450,6 +450,7 @@ use_ok('MT::Upgrade::v4');
 use_ok('MT::Upgrade::v5');
 use_ok('MT::Upgrade::v6');
 use_ok('MT::Upgrade::v7');
+use_ok('MT::Upgrade::v8');
 
 # Revision Management Framework
 use_ok('MT::Revisable');
