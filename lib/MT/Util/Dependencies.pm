@@ -790,6 +790,17 @@ our %ExtLibOnly = (
     },
 );
 
+sub required_modules {
+    my $self = shift;
+    my %res;
+    for my $module (keys %Requirements) {
+        my $hash = $Requirements{$module};
+        next unless $hash->{required};
+        $res{$module} = $hash->{version};
+    }
+    \%res;
+}
+
 sub optional_packages_for_wizard {
     my ($class) = @_;
     my %packages;

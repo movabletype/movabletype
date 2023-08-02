@@ -1359,6 +1359,8 @@ use vars qw( @ISA %Lexicon );
 	'Page Views' => 'ページビュー',
 	'Please contact your Movable Type system administrator.' => 'システム管理者に問い合わせてください。',
 	'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.' => 'このメッセージを消すには、Mozilla::CA モジュールをインストールするか、mt-config.cgi に "SSLVerifyNone 1" を指定してください。',
+	'Required module [_1] (ver [_2]) is missing.' => '必須モジュール [_1] (バージョン [_2]) がインストールされていません。',
+	'Required module [_1] (ver [_2]) is too old (ver [_3]).' => '必須モジュール [_1] (バージョン [_2]) が古すぎます(バージョン [_3])。',
 	'System' => 'システム',
 	'The support directory is not writable.' => 'サポートディレクトリに書き込めません。',
 	'Unknown Content Type' => '不明なコンテンツタイプ',
