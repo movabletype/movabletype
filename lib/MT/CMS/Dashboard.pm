@@ -615,18 +615,26 @@ sub notification_widget {
     for my $req (sort keys %$requirements) {
         next unless $req =~ /^\w+(::\w+)*$/;
         my $version = $requirements->{$req};
+        my $message;
         if (!eval "require $req; 1") {
-            push @messages, {
+            $message = {
                 level => 'warning',
                 text  => $app->translate('Required module [_1] (ver [_2]) is missing.', $req, $version),
             };
         } elsif ($version && !eval "$req->VERSION($version); 1") {
             my $installed = $req->VERSION;
-            push @messages, {
+            $message = {
                 level => 'warning',
                 text  => $app->translate('Required module [_1] (ver [_2]) is too old (ver [_3]).', $req, $version, $installed),
             };
         }
+        next unless $message;
+        if ($user && $user->is_superuser) {
+            $message->{detail} = $app->translate('Please install the required module.');
+        } else {
+            $message->{text} .= $trail_msg;
+        }
+        push @messages, $message;
     }
 
     # Notification center callback
