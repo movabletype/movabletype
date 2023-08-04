@@ -11,7 +11,7 @@
 require_once('lib/class.exception.php');
 
 define('VERSION', '8.000000');
-define('PRODUCT_VERSION', '8.000.000');
+define('PRODUCT_VERSION', '8.0.0');
 define('DATA_API_DEFAULT_VERSION', '6');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
