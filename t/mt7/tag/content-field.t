@@ -387,6 +387,13 @@ categories
 asset_image
 content_type
 
+=== mt:ContentFieldFormat
+--- template
+<mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentField><mt:ContentFieldHeader><mt:ContentFieldFormat></mt:ContentFieldHeader></mt:ContentField>
+</mt:ContentFields></mt:Contents>
+--- expected
+__default__
+
 === mt:ContentField single_line_text value 0
 --- template
 <mt:Contents content_type="case 0">

@@ -2080,6 +2080,26 @@ sub _hdlr_content_field_type {
     $field_data->{type} || '';
 }
 
+=head2 ContentFieldFormat
+
+The function tag which outputs a format of a content field in context of content field.
+
+=cut
+
+sub _hdlr_content_field_format {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $content_type = $ctx->stash('content_type')
+        or return $ctx->_no_content_type_error;
+    my $content_data = $ctx->stash('content')
+        or return $ctx->_no_content_error;
+    my $field_data = $ctx->stash('content_field_data')
+        or return $ctx->_no_content_field_error;
+
+    my $convert_breaks = MT::Serialize->unserialize( $content_data->convert_breaks );
+    $$convert_breaks->{ $field_data->{id} } || '';
+}
+
 =head2 ContentLabel
 
 Outputs the label of the current content data in context.

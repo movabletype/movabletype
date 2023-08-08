@@ -1068,6 +1068,8 @@ sub core_tags {
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_field_label',
             ContentFieldType =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_field_type',
+            ContentFieldFormat =>
+                '$Core::MT::Template::Tags::ContentType::_hdlr_content_field_format',
 
             ContentTypeDescription =>
                 '$Core::MT::Template::Tags::ContentType::_hdlr_content_type_description',
