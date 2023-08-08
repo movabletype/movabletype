@@ -202,6 +202,7 @@
                 config['quickbars_insert_toolbar'] = config['plugin_mt_wysiwyg_insert_toolbar']
                 config['quickbars_selection_toolbar'] = config['plugin_mt_wysiwyg_selection_toolbar']
                 config['verify_html'] = true
+                delete config['content_css'];
             } else {
                 if ($('#' + adapter.id).prop('nodeName') == 'DIV') {
                     var div = $('#' + adapter.id)
