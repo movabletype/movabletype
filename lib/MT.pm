@@ -1316,7 +1316,7 @@ sub init_plugins {
 
     my $cfg          = $mt->config;
     my $use_plugins  = $cfg->UsePlugins;
-    my @PluginPaths  = $cfg->PluginPath;
+    my @PluginPaths  = ($cfg->UserPluginPath, $cfg->PluginPath);
     my $PluginSwitch = $cfg->PluginSwitch || {};
     my $plugin_sigs  = join ',', sort keys %$PluginSwitch;
     $mt->_init_plugins_core( $PluginSwitch, $use_plugins, \@PluginPaths );
@@ -2042,7 +2042,7 @@ sub template_paths {
             push @paths, File::Spec->catdir( $mt->mt_dir, $mt->{plugin_template_path} );
         }
     }
-    my @alt_paths = $mt->config('AltTemplatePath');
+    my @alt_paths = ($mt->config('UserTemplatePath'), $mt->config('AltTemplatePath'));
     foreach my $alt_path (@alt_paths) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
             if ($mt->{template_dir}) {

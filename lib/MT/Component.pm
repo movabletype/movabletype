@@ -365,7 +365,7 @@ sub template_paths {
             push @paths, $dir                                      if -d $dir;
         }
     }
-    my @alt_paths = $mt->config('AltTemplatePath');
+    my @alt_paths = ($mt->config('UserTemplatePath'), $mt->config('AltTemplatePath'));
     foreach my $alt_path (@alt_paths) {
         if ($mt->{template_dir}) {
             push @paths, File::Spec->catdir($alt_path, $mt->{template_dir}, $admin_theme_id) if $admin_theme_id;
