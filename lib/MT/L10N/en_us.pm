@@ -285,6 +285,8 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '__TEXT_LABEL_TEXT' => 'Text',
 
     '__UNPUBLISHED' => 'Unpublish',
+
+    '_BASE_SITE_PATH' => 'Base Site Path',
 );
 
 1;
