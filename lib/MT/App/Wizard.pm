@@ -1436,9 +1436,9 @@ sub is_valid_static_path {
 
     # If the hostname of $path is same with $app->cgipath,
     # do not verify SSL certificate.
-    my ($cgihost) = ( $app->cgipath =~ m/^(https?:\/\/[^\/]+)(?:\/|$)/ );
-    $cgihost =~ s/^http:/https:/;
-    my $ssl_verify_peer = $path !~ m/^$cgihost/ ? 1 : 0;
+    require URI;
+    my ($cgihost) = URI->new($app->cgipath)->host;
+    my $ssl_verify_peer = URI->new($path)->host ne $cgihost ? 1 : 0;
     my %ssl_opts        = (
         verify_hostname => $ssl_verify_peer,
         SSL_version     => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
