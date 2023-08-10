@@ -1332,6 +1332,9 @@ sub cgipath {
     my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || 'localhost';
     $host =~ s/:\d+//;    # eliminate any port that may be present
     my $port = $ENV{SERVER_PORT};
+    if ($ENV{HTTP_X_FORWARDED_HOST}) {
+        $host = (split ',', $ENV{HTTP_X_FORWARDED_HOST})[-1];
+    }
 
     # REQUEST_URI for CGI-compliant servers; SCRIPT_NAME for IIS.
     my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME} || '';
