@@ -1792,12 +1792,20 @@ BEGIN {
                 path    => 1,
                 type    => 'ARRAY',
             },
+            'UserTemplatePath' => {
+                path    => 1,
+                type    => 'ARRAY',
+            },
             'ImportPath' => {
                 default => 'import',
                 path    => 1,
             },
             'PluginPath' => {
                 default => 'plugins',
+                path    => 1,
+                type    => 'ARRAY',
+            },
+            'UserPluginPath' => {
                 path    => 1,
                 type    => 'ARRAY',
             },
@@ -1820,6 +1828,7 @@ BEGIN {
                 path    => 1,
                 type    => 'ARRAY',
             },
+            'UserThemesDirectory'  => { path => 1 },
             'SupportDirectoryPath' => { default => '', },
             'SupportDirectoryURL'  => { default => '' },
             'ObjectDriver'         => undef,
