@@ -1131,6 +1131,9 @@ sub seed {
     $param{static_file_path} = $param{set_static_file_to};
     my $param_set_static_uri_to = $app->param('set_static_uri_to') || '';
 
+    # set static web path
+    $app->config->set('StaticWebPath', $param{set_static_uri_to});
+
     require URI;
     my $uri = URI->new( $app->cgipath );
     $param{cgi_path}        = $uri->path;
