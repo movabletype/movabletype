@@ -69,6 +69,8 @@ sub new {
         eval "require $module";
         my $new_hook = $module->can('_new');
         $new_hook->($self, \%extra_config) if $new_hook;
+        my $prepare_hook = $module->can('_prepare_fixture');
+        $self->{prepare_hooks}{$module} = $prepare_hook if $prepare_hook;
     }
 
     $self->write_config(\%extra_config);
@@ -868,6 +870,10 @@ sub prepare_fixture {
     $self->cluck_errors if $ENV{MT_TEST_CLUCK_ERRORS};
 
     $self->enable_query_log if $ENV{MT_TEST_QUERY_LOG};
+
+    for my $hook (values %{$self->{prepare_hooks} || {}}) {
+        $hook->($self);
+    }
 }
 
 sub slurp {
