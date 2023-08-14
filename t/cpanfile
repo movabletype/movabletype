@@ -112,6 +112,7 @@ on 'test' => sub {
     requires 'Log::Minimal';
     requires 'MIME::Head';
     requires 'Mock::MonkeyPatch';
+    requires 'Module::Find';
     requires 'Mojolicious';
     requires 'Net::Server::SS::PreFork' unless $^O eq 'MSWin32';
     requires 'Net::SFTP';

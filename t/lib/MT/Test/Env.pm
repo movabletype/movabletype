@@ -19,6 +19,7 @@ use String::CamelCase qw/decamelize camelize/;
 use Mock::MonkeyPatch;
 use Sub::Name;
 use Time::HiRes qw/time/;
+use Module::Find qw/usesub/;
 
 our $MT_HOME;
 
@@ -32,6 +33,8 @@ use lib glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib");
 use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
 use Term::Encoding qw(term_encoding);
+
+my @extra_modules = do { local @Module::Find::ModuleDirs = grep {m!\bt[\\/]lib\b!} @INC; usesub 'MT::Test::Env'; };
 
 my $enc = term_encoding() || 'utf8';
 
@@ -61,6 +64,11 @@ sub new {
         config => \%extra_config,
         start  => [Time::HiRes::gettimeofday],
     }, $class;
+
+    for my $module (@extra_modules) {
+        my $new_hook = $module->can('_new') or next;
+        $new_hook->($self, \%extra_config);
+    }
 
     $self->write_config(\%extra_config);
 
