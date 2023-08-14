@@ -19,7 +19,7 @@ use String::CamelCase qw/decamelize camelize/;
 use Mock::MonkeyPatch;
 use Sub::Name;
 use Time::HiRes qw/time/;
-use Module::Find qw/usesub/;
+use Module::Find qw/findsubmod/;
 
 our $MT_HOME;
 
@@ -29,12 +29,12 @@ BEGIN {
     $ENV{MT_HOME} = $MT_HOME;
 }
 use lib "$MT_HOME/lib", "$MT_HOME/extlib";
-use lib glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib");
-use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
+use lib grep -d $_, glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib"), glob("$MT_HOME/addons/*/t/lib");
+use lib grep -d $_, glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
 use Term::Encoding qw(term_encoding);
 
-my @extra_modules = do { local @Module::Find::ModuleDirs = grep {m!\bt[\\/]lib\b!} @INC; usesub 'MT::Test::Env'; };
+my @extra_modules = do { local @Module::Find::ModuleDirs = grep {m!\bt[\\/]lib\b!} @INC; findsubmod 'MT::Test::Env'; };
 
 my $enc = term_encoding() || 'utf8';
 
@@ -66,8 +66,11 @@ sub new {
     }, $class;
 
     for my $module (@extra_modules) {
-        my $new_hook = $module->can('_new') or next;
-        $new_hook->($self, \%extra_config);
+        eval "require $module";
+        my $new_hook = $module->can('_new');
+        $new_hook->($self, \%extra_config) if $new_hook;
+        my $prepare_hook = $module->can('_prepare_fixture');
+        $self->{prepare_hooks}{$module} = $prepare_hook if $prepare_hook;
     }
 
     $self->write_config(\%extra_config);
@@ -867,6 +870,10 @@ sub prepare_fixture {
     $self->cluck_errors if $ENV{MT_TEST_CLUCK_ERRORS};
 
     $self->enable_query_log if $ENV{MT_TEST_QUERY_LOG};
+
+    for my $hook (values %{$self->{prepare_hooks} || {}}) {
+        $hook->($self);
+    }
 }
 
 sub slurp {
