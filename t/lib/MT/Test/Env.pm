@@ -29,8 +29,8 @@ BEGIN {
     $ENV{MT_HOME} = $MT_HOME;
 }
 use lib "$MT_HOME/lib", "$MT_HOME/extlib";
-use lib glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib");
-use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
+use lib grep -d $_, glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib"), glob("$MT_HOME/addons/*/t/lib");
+use lib grep -d $_, glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
 use Term::Encoding qw(term_encoding);
 
