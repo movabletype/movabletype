@@ -159,7 +159,66 @@ sub suite {
                 my $dummy_json = MT::Util::to_json($dummy_res);
                 $dummy_response->content($dummy_json);
             },
-        }
+        },
+        # multiple metrics
+        {
+            path   => '/v4/sites/1/stats/date/pageviews',
+            params => { 
+                startDate => '2022-03-01', 
+                endDate => '2022-04-01', 
+                dimensions  => [{ name => 'pagePath' }],
+                metrics     => [{ name => 'screenPageViews' }, { name => 'sessions' }],
+            },
+            method => 'GET',
+            code   => 200,
+            setup  => sub {
+                $dummy_response->content(MT::Util::to_json({
+                    dimensionHeaders => [{ name => 'path' }],
+                    metricHeaders    => [{ name => 'screenPageViews' }, { name => 'sessions' }],
+                    rows             => [
+                        { dimensionValues => [{ value => 'Dummy' }], metricValues => [{ value => 1 }, { value => 10 }] },
+                        { dimensionValues => [{ value => 'Dummy' }], metricValues => [{ value => 2 }, { value => 20 }] },
+                    ],
+                    rowCount => 2,
+                }));
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $result = MT::Util::from_json($body);
+                is_deeply $result->{headers}, ['path', 'screenPageViews', 'sessions'], 'right headers';
+                is $result->{totalResults},              2, 'right total results';
+                is $result->{totals}->{screenPageViews}, 3,  'right totals';
+                is $result->{totals}->{sessions},        30, 'right totals';
+                is $result->{colLength},                 3,  'right colLength';
+                note explain($result);
+            },
+        },
+        # set limit
+        {
+            path   => '/v4/sites/1/stats/date/pageviews',
+            params => { startDate => '2022-03-01', endDate => '2022-04-01', limit => 1 },
+            method => 'GET',
+            code   => 200,
+            setup  => sub {
+                $dummy_response->content(MT::Util::to_json({
+                    dimensionHeaders => [{ name => 'date' }],
+                    metricHeaders    => [{ name => 'screenPageViews' }],
+                    rows             => [
+                        { dimensionValues => [{ value => 'Dummy' }], metricValues => [{ value => 1 }] },    # limit applied here?
+                    ],
+                    rowCount => 1,
+                }));
+            },
+            complete => sub {
+                my ($data, $body) = @_;
+                my $result = MT::Util::from_json($body);
+                is_deeply $result->{headers}, ['date', 'screenPageViews'], 'right headers';
+                is $result->{totalResults},              1, 'right total results';
+                is $result->{totals}->{screenPageViews}, 1, 'right totals';
+                is $result->{colLength},                 2, 'right colLength';
+                note explain($result);
+            },
+        },
 
     ]
 }
