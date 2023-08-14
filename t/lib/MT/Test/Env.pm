@@ -19,7 +19,7 @@ use String::CamelCase qw/decamelize camelize/;
 use Mock::MonkeyPatch;
 use Sub::Name;
 use Time::HiRes qw/time/;
-use Module::Find qw/usesub/;
+use Module::Find qw/findsubmod/;
 
 our $MT_HOME;
 
@@ -34,7 +34,7 @@ use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
 use Term::Encoding qw(term_encoding);
 
-my @extra_modules = do { local @Module::Find::ModuleDirs = grep {m!\bt[\\/]lib\b!} @INC; usesub 'MT::Test::Env'; };
+my @extra_modules = do { local @Module::Find::ModuleDirs = grep {m!\bt[\\/]lib\b!} @INC; findsubmod 'MT::Test::Env'; };
 
 my $enc = term_encoding() || 'utf8';
 
@@ -66,8 +66,9 @@ sub new {
     }, $class;
 
     for my $module (@extra_modules) {
-        my $new_hook = $module->can('_new') or next;
-        $new_hook->($self, \%extra_config);
+        eval "require $module";
+        my $new_hook = $module->can('_new');
+        $new_hook->($self, \%extra_config) if $new_hook;
     }
 
     $self->write_config(\%extra_config);
