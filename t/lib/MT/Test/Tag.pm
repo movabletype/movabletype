@@ -16,6 +16,7 @@ use MT::Test::PHP;
 use File::Spec;
 use Socket;
 use Test::TCP;
+use Text::Diff 'diff';
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
@@ -121,7 +122,7 @@ sub run_perl_tests {
                 if ($expected_ref && $expected_ref eq 'Regexp') {
                     like($got, $expected, $name);
                 } else {
-                    is($got, $expected, $name);
+                    ok($got eq $expected, $name) or diag diff(\$expected, \$got, {STYLE => 'Unified'});
                 }
             }
             __PACKAGE__->_update_config($prev_config);
