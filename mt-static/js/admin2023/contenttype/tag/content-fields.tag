@@ -8,7 +8,7 @@
     <input type="hidden" name="id" value={ opts.id }>
     <input if={ data } type="hidden" name="data" value={ data }>
 
-    <div class="row">
+    <div class="row gx-5">
       <div class="col">
         <div if={ opts.id }  id="name-field" class="form-group">
           <h3>{opts.name} <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#editDetail">{ trans('Edit') }</button></h3>
