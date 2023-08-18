@@ -1683,7 +1683,7 @@ sub preview_data {
 
     my $registry = MT->registry('content_field_types');
 
-    my $tmpl = MT->app->load_tmpl('search_replace_cf_data.tmpl', {});
+    my $tmpl = MT->app->load_cached_tmpl('search_replace_cf_data.tmpl', {});
 
     my $data = '';
     for my $f ( @{ $content_type->fields } ) {

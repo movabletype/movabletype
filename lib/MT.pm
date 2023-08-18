@@ -2123,6 +2123,36 @@ sub load_core_tmpl {
     $mt->load_tmpl(@_);
 }
 
+sub load_cached_tmpl {
+    my $mt = shift;
+    if ( exists( $mt->{component} ) && ( lc( $mt->{component} ) ne 'core' ) )
+    {
+        if ( my $c = $mt->component( $mt->{component} ) ) {
+            return $c->load_cached_tmpl(@_);
+        }
+    }
+
+    my ( $file, @p ) = @_;
+    my $param;
+    if ( @p && ( ref( $p[$#p] ) eq 'HASH' ) ) {
+        $param = pop @p;
+    }
+    my ($tmpl, $cache);
+    if (!ref $file) {
+        require MT::Request;
+        $cache = MT::Request->instance->{__stash}{load_tmpl_file_cache} ||= {};
+        if ($cache->{core}{$file}) {
+            $tmpl = $cache->{core}{$file};
+        }
+    }
+    $tmpl ||= $mt->load_tmpl($file, @p) or return;
+    if ($cache) {
+        $cache->{core}{$file} = $tmpl;
+    }
+    $tmpl->param($param) if $param;
+    $tmpl;
+}
+
 sub load_tmpl {
     my $mt = shift;
     if ( exists( $mt->{component} ) && ( lc( $mt->{component} ) ne 'core' ) )

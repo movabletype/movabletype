@@ -397,6 +397,26 @@ sub template_paths {
     return grep { -d $_ } @paths;
 }
 
+sub load_cached_tmpl {
+    my $c = shift;
+    my ( $file, $param ) = @_;
+
+    my ($tmpl, $cache);
+    if (!ref $file) {
+        require MT::Request;
+        $cache = MT::Request->instance->{__stash}{load_tmpl_file_cache} ||= {};
+        if ($cache->{$c->id}{$file}) {
+            $tmpl = $cache->{$c->id}{$file};
+        }
+    }
+    $tmpl ||= $c->load_tmpl($file) or return;
+    if ($cache) {
+        $cache->{$c->id}{$file} = $tmpl;
+    }
+    $tmpl->param($param) if $param;
+    $tmpl;
+}
+
 sub load_tmpl {
     my $c = shift;
     my ( $file, $param ) = @_;
