@@ -280,7 +280,7 @@
   function generateMobilePageLink(page, setMrAuto, current) {
     var mrAutoClass = setMrAuto ? ' mr-auto' : '';
     if (current) {
-      return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
+      return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="visually-hidden">(current)</span></a></li>';
     } else {
       return '<li class="page-item' + mrAutoClass + '"><a href="#" class="page-link">' + page + '</a></li>';
     }
@@ -427,7 +427,7 @@
     <input type="hidden" id="asset-class" name="asset-class" value="image">
     <div class="form-row align-items-center w-100">
       <div class="form-group">
-        <label class="sr-only" for="search"><__trans phrase="Search"></label>
+        <label class="visually-hidden" for="search"><__trans phrase="Search"></label>
         <input type="text" id="search" name="search" class="form-control search-input text" value="" placeholder="<__trans phrase="Search">" />
       </div>
       <div class="form-group ml-3">
@@ -435,7 +435,7 @@
           <mtapp:svgicon id="ic_search" title="Search">
         </a>
         <button id="search-button" class="search-command search-submit" style="display: none;">
-          <span class="sr-only">
+          <span class="visually-hidden">
             <__trans phrase="Search">
           </span>
         </button>
