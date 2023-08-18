@@ -139,7 +139,7 @@ $filter->add_callbacks(
 
             ## Helpers
             if (!%map or grep /helper/, keys %map) {
-                fail "$file: replace sr-only with visually-hidden: $html" if grep /^sr-only/, @classes;
+                fail "$file: replace sr-only with visually-hidden: $html" if grep /^sr-only/, @classes && !grep /^visually-hidden/, @classes;
             }
 
             ## JavaScript
