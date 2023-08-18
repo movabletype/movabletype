@@ -3941,16 +3941,19 @@ sub _hdlr_app_action_bar {
         ? qq{<div class="float-left mr-3 button-actions actions">$buttons</div>}
         : '';
 
-    return $ctx->build(<<EOT);
-$form_id
-<div id="actions-bar-$pos-$args->{form_id}" class="row form-inline mb-3 actions-bar actions-bar-$pos $pager_class">
-  <div class="col">
-    $pager
-    $buttons_html
-    <mt:include name="include/itemset_action_widget.tmpl">
-  </div>
-</div>
-EOT
+    my %param = (
+        form_id      => $form_id,
+        pos          => $pos,
+        form_id_raw  => $args->{form_id},
+        pager_class  => $pager_class,
+        pager        => $pager,
+        buttons_html => $buttons_html,
+        buttons      => $ctx->var('action_buttons') || '',
+    );
+    
+    my $tmpl = MT->instance->load_core_tmpl( 'cms/include/mtapp_actions_bar.tmpl' );
+    $tmpl->context($ctx);
+    return $ctx->build( $tmpl->output(\%param) );
 }
 
 ###########################################################################
