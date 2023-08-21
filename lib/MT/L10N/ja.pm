@@ -2632,8 +2632,8 @@ use vars qw( @ISA %Lexicon );
 	'Worker' => 'ワーカー名',
 
 ## lib/MT/Theme.pm
-	'A fatal error occurred while applying element [_1]: [_2].' => '項目「[_1]」を適用する際に、重大なエラーが発生しました: [_2]',
-	'An error occurred while applying element [_1]: [_2].' => '項目「[_1]」を適用する際に、エラーが発生しました: [_2]',
+	'A fatal error occurred while applying element [_1]: [_2]' => '項目「[_1]」を適用する際に、重大なエラーが発生しました: [_2]',
+	'An error occurred while applying element [_1]: [_2]' => '項目「[_1]」を適用する際に、エラーが発生しました: [_2]',
 	'Default Content Data' => '既定のコンテンツデータ',
 	'Default Pages' => '既定のページ',
 	'Default Prefs' => '既定の設定',
@@ -2670,10 +2670,10 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Theme/Element.pm
 	'Internal error: the importer is not found.' => '内部エラー : インポーターが見つかりません。',
-	q{An Error occurred while applying '[_1]': [_2].} => q{[_1]の適用中にエラーが発生しました: [_2]。},
-	q{Compatibility error occurred while applying '[_1]': [_2].} => q{次の項目の適用時にエラーが発生しました: [_1]: [_2]},
+	q{An Error occurred while applying '[_1]': [_2]} => q{[_1]の適用中にエラーが発生しました: [_2]},
+	q{Compatibility error occurred while applying '[_1]': [_2]} => q{次の項目の適用時にエラーが発生しました: [_1]: [_2]},
 	q{Component '[_1]' is not found.} => q{次の項目が見つかりません: [_1]},
-	q{Fatal error occurred while applying '[_1]': [_2].} => q{次の項目の適用時に重大なエラーが発生しました: [_1]: [_2]},
+	q{Fatal error occurred while applying '[_1]': [_2]} => q{次の項目の適用時に重大なエラーが発生しました: [_1]: [_2]},
 	q{Importer for '[_1]' is too old.} => q{次の項目のインポーターが古すぎます: [_1]},
 	q{Theme element '[_1]' is too old for this environment.} => q{次の項目が、この環境では古すぎます: [_1]},
 
