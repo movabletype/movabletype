@@ -82,3 +82,7 @@ cover_db/
 t/selenium/**/evidence
 
 mt-static/js/build
+
+CHECKSUMS
+
+*.bak
