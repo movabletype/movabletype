@@ -12,10 +12,6 @@ function smarty_function_mttextformat($args, &$ctx) {
             return $ctx->error($ctx->mt->translate("You used an '[_1]' tag outside of the context of a 'Multi Line Text' field.", "mtTextFormat" ) );
         }
 
-        $content_type = $ctx->stash('content_type');
-        if (!is_object($content_type))
-            return $ctx->error($ctx->mt->translate("No Content Type could be found.") );
-
         $content = $ctx->stash('content');
         if (!isset($content))
             return $ctx->error($ctx->mt->translate(
