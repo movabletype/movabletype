@@ -280,7 +280,7 @@
   function generateMobilePageLink(page, setMrAuto, current) {
     var mrAutoClass = setMrAuto ? ' mr-auto' : '';
     if (current) {
-      return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
+      return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="visually-hidden">(current)</span></a></li>';
     } else {
       return '<li class="page-item' + mrAutoClass + '"><a href="#" class="page-link">' + page + '</a></li>';
     }
@@ -425,25 +425,25 @@
   <div class="border-bottom pb-3">
   <form action="" method="get" id="modal-search" class="form-inline">
     <input type="hidden" id="asset-class" name="asset-class" value="image">
-    <div class="form-row align-items-center w-100">
-      <div class="form-group">
-        <label class="sr-only" for="search"><__trans phrase="Search"></label>
+    <div class="row align-items-center w-100">
+      <div class="col-auto ps-0">
+        <label class="visually-hidden" for="search"><__trans phrase="Search"></label>
         <input type="text" id="search" name="search" class="form-control search-input text" value="" placeholder="<__trans phrase="Search">" />
       </div>
-      <div class="form-group ml-3">
+      <div class="col-auto ps-0">
         <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').trigger('click'); return false;">
           <mtapp:svgicon id="ic_search" title="Search">
         </a>
         <button id="search-button" class="search-command search-submit" style="display: none;">
-          <span class="sr-only">
+          <span class="visually-hidden">
             <__trans phrase="Search">
           </span>
         </button>
       </div>
-      <div class="form-group">
+      <div class="col-auto ps-0">
         <a href="javascript:void(0)" class="search-reset" style="display: none;"><__trans phrase="Reset"></a>
       </div>
-      <div class="page-status ml-auto mt-auto mb-0"></div>
+      <div class="col-auto page-status ml-auto mt-auto mb-0"></div>
     </div>
   </form>
   </div>
