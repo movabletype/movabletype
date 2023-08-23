@@ -94,6 +94,6 @@ You used an 'mtTextFormat' tag outside of the context of the correct content;
 <mt:ContentField content_field="single line text"><mt:TextFormat></mt:ContentField>
 </mt:Contents>
 --- expected_error
-Error in <mtContentField> tag: You used an 'mtTextFormat' tag outside of the context of an 'Multi Line Text' field.
+Error in <mtContentField> tag: You used an 'mtTextFormat' tag outside of the context of a 'Multi Line Text' field.
 --- expected_php_error
-You used an 'mtTextFormat' tag outside of the context of an 'Multi Line Text' field.
+You used an 'mtTextFormat' tag outside of the context of a 'Multi Line Text' field.

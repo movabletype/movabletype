@@ -67,7 +67,7 @@ sub _hdlr_text_format {
     $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
 
     if (my $field_data = $ctx->stash('content_field_data')) {
-        return $ctx->error( MT->translate("You used an '[_1]' tag outside of the context of an 'Multi Line Text' field.", $tag_name) )
+        return $ctx->error( MT->translate("You used an '[_1]' tag outside of the context of a 'Multi Line Text' field.", $tag_name) )
             if $field_data->{type} ne 'multi_line_text';
         my $content_data = $ctx->stash('content')
             or return $ctx->_no_content_error;

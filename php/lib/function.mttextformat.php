@@ -9,7 +9,7 @@ function smarty_function_mttextformat($args, &$ctx) {
     $field_data = $ctx->stash('content_field_data');
     if ($field_data) {
         if ($field_data['type'] !== 'multi_line_text') {
-            return $ctx->error($ctx->mt->translate("You used an '[_1]' tag outside of the context of an 'Multi Line Text' field.", "mtTextFormat" ) );
+            return $ctx->error($ctx->mt->translate("You used an '[_1]' tag outside of the context of a 'Multi Line Text' field.", "mtTextFormat" ) );
         }
 
         $content_type = $ctx->stash('content_type');
