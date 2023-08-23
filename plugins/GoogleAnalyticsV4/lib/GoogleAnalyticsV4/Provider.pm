@@ -118,42 +118,44 @@ sub _request {
 
     my $data = MT::Util::from_json(MT::Util::Encode::decode('utf-8', $res->content));
 
-    my @headers = map { $_->{name} } @{ $data->{dimensionHeaders} };
-    push @headers, map { $_->{name} } @{ $data->{metricHeaders} };
+    my @d_headers = map { $_->{name} } @{ $data->{dimensionHeaders} };
+    my @m_headers = map { $_->{name} } @{ $data->{metricHeaders} };
 
-    my $date_index = undef;
-    for (my $i = 0; $i <= $#headers; $i++) {
-        if ($headers[$i] eq 'date') {
-            $date_index = $i;
-            last;
+    for my $i (0 .. $#d_headers) {
+        if ($d_headers[$i] eq 'date') {
+            $_->{dimensionValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-$2-/ for @{ $data->{rows} };
         }
     }
-    my $metric_totals;
-    foreach my $row (@{ $data->{rows} }) {
-        $metric_totals += $row->{metricValues}->[0]->{value};
+    for my $i (0 .. $#m_headers) {
+        if ($m_headers[$i] eq 'date') {
+            $_->{metricValues}->[$i]->{value} =~ s/(\d{4})(\d{2})/$1-$2-/ for @{ $data->{rows} };
+        }
+    }
+
+    my %totals = ();
+    if (exists $data->{totals}) {
+        %totals = map { $data->{metricHeaders}->[$_]->{name} => $data->{totals}->[0]->{metricValues}->[$_]->{value} } 0 .. $#m_headers;
+    } else {
+        my @metric_totals;
+        for my $i (0 .. $#m_headers) {
+            $metric_totals[$i] = 0;
+            $metric_totals[$i] += $_->{metricValues}->[$i]->{value} for @{ $data->{rows} };
+        }
+        %totals = map { $data->{metricHeaders}->[$_]->{name} => $metric_totals[$_] } 0 .. $#m_headers;
     }
 
     +{
         totalResults => $data->{rowCount},
-        totals       => { $headers[$#headers] => $metric_totals },
-        headers      => \@headers,
-        colLength    => $#headers,
+        totals       => \%totals,
+        headers      => [@d_headers, @m_headers],
+        colLength    => ($#d_headers + $#m_headers),
         items        => [
             map {
                 my $row = $_;
-                my @cols;
-                if ($#headers == 2) {
-                    $cols[0] = $row->{dimensionValues}->[0]->{value};
-                    $cols[1] = $row->{dimensionValues}->[1]->{value};
-                    $cols[2] = $row->{metricValues}->[0]->{value};
-                } else {
-                    $cols[0] = $row->{dimensionValues}->[0]->{value};
-                    $cols[1] = $row->{metricValues}->[0]->{value};
-                }
-                if (defined($date_index)) {
-                    $cols[$date_index] =~ s/(\d{4})(\d{2})/$1-$2-/;
-                }
-                +{ map { $headers[$_] => $cols[$_], } (0 .. $#headers) }
+                my %item;
+                $item{ $d_headers[$_] } = $row->{dimensionValues}->[$_]->{value} for (0 .. $#d_headers);
+                $item{ $m_headers[$_] } = $row->{metricValues}->[$_]->{value}    for (0 .. $#m_headers);
+                \%item;
             } @{ $data->{rows} }
         ],
         (
