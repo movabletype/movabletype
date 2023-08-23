@@ -201,6 +201,7 @@ use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
 use_ok('MT::Util::BlessedString');
+use_ok('MT::Util::Checksums');
 use_ok('MT::Util::ContentType');
 use_ok('MT::Util::Dependencies');
 use_ok('MT::Util::Deprecated');
