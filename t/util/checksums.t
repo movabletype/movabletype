@@ -78,7 +78,7 @@ $test_env->save_file('lib/Baz.pm',              'package Baz; 1');
     eq_or_diff $res => { modified => ['plugins/Test/lib/Bar.pm'], untracked => [] }, "test_checksums with a target directory works fine";
 }
 
-unless (`git --version` =~ /git version/) {
+unless (`git --version` =~ /git version/ && `git config --global user.email` =~ /\w+\@\w+/) {
     done_testing;
     exit;
 }
