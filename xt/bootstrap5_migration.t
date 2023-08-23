@@ -137,6 +137,11 @@ $filter->add_callbacks(
                 warning "$file: drop rounded-lg with rounded-[0-3]: $html" if grep /rounded-lg/, @classes;
             }
 
+            ## Helpers
+            if (!%map or grep /helper/, keys %map) {
+                fail "$file: replace sr-only with visually-hidden: $html" if grep /^sr-only/, @classes && !grep /^visually-hidden/, @classes;
+            }
+
             ## JavaScript
             if (!%map or grep /java|js/, keys %map) {
                 # typically, data-bs-toggle, data-bs-target, data-bs-parent, data-bs-dismiss, data-bs-container etc...
