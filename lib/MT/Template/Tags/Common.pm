@@ -76,7 +76,11 @@ sub _hdlr_text_format {
     }
     elsif (my $entry = $ctx->stash('entry')) {
         my $convert_breaks = $entry->convert_breaks;
-        return defined $convert_breaks ? $convert_breaks : 1;
+        if (!defined($convert_breaks) && (my $blog = $ctx->stash('blog'))) {
+            $convert_breaks = $blog->convert_paras;
+        }
+        $convert_breaks = '__default__' if !defined($convert_breaks) || $convert_breaks eq '1';
+        return $convert_breaks;
     }
     else {
         return $ctx->error( MT->translate("You used an '[_1]' tag outside of the context of the correct content; ", $tag_name) );

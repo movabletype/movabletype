@@ -31,6 +31,15 @@ function smarty_function_mttextformat($args, &$ctx) {
     }
 
     $convert_breaks = $entry->convert_breaks;
-    return isset($convert_breaks) ? $convert_breaks : 1;
+    if (!isset($convert_breaks)) {
+        $blog = $ctx->stash('blog');
+        if (!empty($blog)) {
+            $convert_breaks = $blog->convert_paras;
+        }
+    }
+    if (!isset($convert_breaks) || $convert_breaks == 1) {
+        $convert_breaks = '__default__';
+    }
+    return $convert_breaks;
 }
 ?>

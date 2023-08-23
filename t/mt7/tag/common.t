@@ -52,14 +52,25 @@ my $blog    = MT->model('blog')->load({ name => 'My Site' });
 my $blog_id = $blog->id;
 my $author  = MT->model('author')->load({ name => 'Melody' });
 
-my $entry = MT->model('entry')->new(
-    blog_id        => $blog->id,
-    author_id      => $author->id,
-    status         => MT->model('entry')->RELEASE(),
-    title          => 'Test Entry',
-    convert_breaks => 'block_editor',
+my $blog_richtext = MT->model('blog')->new(
+    name          => 'RichText Blog',
+    convert_paras => 'richtext',
 );
-$entry->save or die $entry->errstr;
+$blog_richtext->save or die $blog_richtext->errstr;
+MT::Test::Tag->vars->{blog_richtext_id} = $blog_richtext->id;
+
+for my $b ($blog, $blog_richtext) {
+    for my $convert_breaks (0, undef, 1, '__default__', 'richtext', 'block_editor') {
+        my $entry = MT->model('entry')->new(
+            blog_id   => $b->id,
+            author_id => $author->id,
+            status    => MT->model('entry')->RELEASE(),
+            title     => 'Test Entry',
+            defined($convert_breaks) ? (convert_breaks => $convert_breaks) : (),
+        );
+        $entry->save or die $entry->errstr;
+    }
+}
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);
@@ -74,13 +85,17 @@ __END__
 --- expected
 __default__
 
-=== mt:TextFormat for an entry
+=== mt:TextFormat for each entry
 --- template
-<mt:Entries>
-<mt:TextFormat>
-</mt:Entries>
+<mt:Entries sort_by="id" sort_order="ascend"><mt:TextFormat>,</mt:Entries>
 --- expected
-block_editor
+0,__default__,__default__,__default__,richtext,block_editor,
+
+=== mt:TextFormat for each entry in richtext blog
+--- template
+<mt:Entries sort_by="id" sort_order="ascend" blog_ids="[% blog_richtext_id %]"><mt:TextFormat>,</mt:Entries>
+--- expected
+0,richtext,__default__,__default__,richtext,block_editor,
 
 === mt:TextFormat in top level context
 --- template
