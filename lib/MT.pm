@@ -46,7 +46,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '8.000.000',          '__PRODUCT_VERSION_ID__',
+        '8.0.0',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
