@@ -304,7 +304,7 @@ function toggleContentTypeDateTimeInputs() {
           <div class="form-inline p-2">
             <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="from">0<mt:else>1</mt:if>" />
     <mt:if name="object_type" eq="content_data">
-            <div class="mb-3 mx-3">
+            <div class="form-group mb-3 mx-3">
               <label for="date_time_field_id" class="form-label">
                 <__trans phrase="Field">:
               </label>
@@ -341,20 +341,20 @@ function toggleContentTypeDateTimeInputs() {
               </select>
             </div>
     </mt:if>
-            <div class="mb-3"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
+            <div class="form-group mb-3"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
               <label for="datefrom" class="form-label"><__trans phrase="_DATE_FROM">:</label>
               <input placeholder="YYYY-MM-DD" type="text" name="from" id="datefrom" class="form-control text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
             </div>
-            <div class="mb-3 mx-3"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
+            <div class="form-group mb-3 mx-3"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
               <label for="dateto" class="form-label"><__trans phrase="_DATE_TO">:</label>
               <input placeholder="YYYY-MM-DD" type="text" name="to" id="dateto" class="form-control text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
             </div>
     <mt:if name="object_type" eq="content_data">
-            <div class="mb-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
+            <div class="form-group mb-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
               <label for="timefrom" class="form-label"><__trans phrase="_TIME_FROM">:</label>
               <input placeholder="HH:mm:ss" type="text" name="timefrom" id="timefrom" class="form-control text-time text time" value="<mt:if name="timefrom"><mt:var name="timefrom" escape="html"></mt:if>">
             </div>
-            <div class="mb-3 mx-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
+            <div class="form-group mb-3 mx-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
               <label for="timeto" class="form-label"><__trans phrase="_TIME_TO">:</label>
               <input placeholder="HH:mm:ss" type="text" name="timeto" id="timeto" class="form-control text-time text time" value="<mt:if name="timeto"><mt:var name="timeto" escape="html"></mt:if>">
             </div>
