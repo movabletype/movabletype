@@ -315,7 +315,9 @@
               <span class="text-muted disabled">[#|h trans("None selected") #]</span>
               [#* return #]
           [# } #]
+          [# if (MT.App.objectType == 'entry') { #]
           <p class="h5 py-3">[#|h trans("Selected Categories") #]</p>
+          [# } #]
           <ul class="list-unstyled <$mt:var name="container_type" lower_case="1"$>-list">
           [# var map = {}; #]
           [# for ( var i = 0; i < items.length; i++ ) { #]
