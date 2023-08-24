@@ -2683,6 +2683,9 @@ use vars qw( @ISA %Lexicon );
 	'[_1] cannot be used without publishing [_2] archive.' => '[_2]アーカイブを公開していないので[_1]は使えません。',
 	'[_1] used outside of [_2]' => '[_1]を[_2]の外部で利用しようとしました。',
 
+## lib/MT/Template/Tags/Common.pm
+    q{You used an '[_1]' tag outside of the context of a 'Multi Line Text' field.} => '[_1]を「テキスト（複数行）」以外のフィールドのコンテキストで利用しようとしています。',
+
 ## lib/MT/Template/Tags/ContentType.pm
 	'Content Type was not found. Blog ID: [_1]' => 'サイト (ID: [_1]) でコンテンツタイプが見つかりません。',
 	'Invalid field_value_handler of [_1].' => '[_1] の field_value_handler は不正です。',

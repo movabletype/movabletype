@@ -1081,6 +1081,10 @@ sub core_tags {
             ## Category Set
             CategorySetName =>
                 '$Core::MT::Template::Tags::CategorySet::_hdlr_category_set_name',
+
+            # Common in Entry, Page and Content Type
+            TextFormat =>
+                '$Core::MT::Template::Tags::Common::_hdlr_text_format',
         },
         modifier => {
             'numify'  => '$Core::MT::Template::Tags::Filters::_fltr_numify',
