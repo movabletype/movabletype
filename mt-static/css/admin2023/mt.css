@@ -13708,11 +13708,6 @@ label {
   overflow-y: scroll;
 }
 
-.col, .mt-productHeader, .mt-mobileGlobalMenu__name, .mt-mobileGlobalMenu__name--invert, .mt-widget__data, .col-auto, .mt-footer, .mt-mobileGlobalMenu__dropdown, .mt-mobileGlobalMenu__menuActions {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
 /* padding and margin left,right to start,end */
 .form-inline {
   display: flex;
