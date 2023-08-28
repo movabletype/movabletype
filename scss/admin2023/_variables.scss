@@ -436,12 +436,12 @@ $gradient: linear-gradient(180deg, rgba($white, .15), rgba($white, 0)) !default;
 $spacer: 1rem !default;
 $spacers: (
   0: 0,
-  1: $spacer * .25,
-  2: $spacer * .5,
-  3: $spacer,
+  1: $spacer * .125,
+  2: $spacer * .25,
+  3: $spacer * .5,
   4: $spacer * 1.5,
-  5: $spacer * 3,
-) !default;
+  5: $spacer * 2,
+);
 // scss-docs-end spacer-variables-maps
 
 // Position
@@ -526,7 +526,7 @@ $container-max-widths: (
 // Set the number of columns and specify the width of the gutters.
 
 $grid-columns:                12 !default;
-$grid-gutter-width:           1.5rem !default;
+$grid-gutter-width:           0;
 $grid-row-columns:            6 !default;
 
 // Container padding
@@ -558,8 +558,8 @@ $border-radius:               .375rem !default;
 $border-radius-sm:            .25rem !default;
 $border-radius-lg:            .5rem !default;
 $border-radius-xl:            1rem !default;
-$border-radius-xxl:           2rem !default;
-$border-radius-pill:          50rem !default;
+$border-radius-2xl:           2rem !default;
+$border-radius-pill:          1rem;
 // scss-docs-end border-radius-variables
 
 // scss-docs-start box-shadow-variables
@@ -709,7 +709,7 @@ $legend-font-weight:          null !default;
 
 $dt-font-weight:              $font-weight-bold !default;
 
-$list-inline-padding:         .5rem !default;
+$list-inline-padding:         5px;
 
 $mark-padding:                .1875em !default;
 $mark-bg:                     $yellow-100 !default;
@@ -747,7 +747,7 @@ $table-hover-bg-factor:       .075 !default;
 $table-hover-bg:              rgba($black, $table-hover-bg-factor) !default;
 
 $table-border-factor:         .1 !default;
-$table-border-width:          var(--#{$prefix}border-width) !default;
+$table-border-width:          $border-width !default;
 $table-border-color:          $gray-200;
 
 $table-striped-order:         odd !default;
@@ -799,7 +799,7 @@ $input-btn-padding-y-lg:      .5rem !default;
 $input-btn-padding-x-lg:      1rem !default;
 $input-btn-font-size-lg:      $font-size-lg !default;
 
-$input-btn-border-width:      var(--#{$prefix}border-width) !default;
+$input-btn-border-width:      $border-width !default;
 // scss-docs-end input-btn-variables
 
 
@@ -837,9 +837,9 @@ $btn-link-hover-color:        var(--#{$prefix}link-hover-color) !default;
 $btn-link-disabled-color:     $gray-600 !default;
 
 // Allows for customizing button radius independently from global border radius
-$btn-border-radius:           var(--#{$prefix}border-radius) !default;
-$btn-border-radius-sm:        var(--#{$prefix}border-radius-sm) !default;
-$btn-border-radius-lg:        var(--#{$prefix}border-radius-lg) !default;
+$btn-border-radius:           0.28rem;
+$btn-border-radius-sm:        0.28rem;
+$btn-border-radius-lg:        0.28rem;
 
 $btn-transition:              color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out !default;
 
@@ -898,9 +898,9 @@ $input-border-color:                    $gray-400 !default;
 $input-border-width:                    $input-btn-border-width !default;
 $input-box-shadow:                      inset 0 0 0 transparent;
 
-$input-border-radius:                   var(--#{$prefix}border-radius) !default;
-$input-border-radius-sm:                var(--#{$prefix}border-radius-sm) !default;
-$input-border-radius-lg:                var(--#{$prefix}border-radius-lg) !default;
+$input-border-radius:                   $border-radius !default;
+$input-border-radius-sm:                $border-radius-sm !default;
+$input-border-radius-lg:                $border-radius-lg !default;
 
 $input-focus-bg:                        $input-bg !default;
 $input-focus-border-color:              $info;
@@ -911,7 +911,7 @@ $input-focus-box-shadow:                $input-box-shadow, $btn-focus-box-shadow
 $input-placeholder-color:               $gray-600 !default;
 $input-plaintext-color:                 $body-color !default;
 
-$input-height-border:                   calc(#{$input-border-width} * 2) !default; // stylelint-disable-line function-disallowed-list
+$input-height-border:                   $input-btn-border-width * 2;
 
 $input-height-inner:                    add($input-line-height * 1em, $input-padding-y * 2) !default;
 $input-height-inner-half:               add($input-line-height * .5em, $input-padding-y) !default;
@@ -930,7 +930,7 @@ $form-color-width:                      3rem !default;
 $form-check-input-width:                  1em !default;
 $form-check-min-height:                   $font-size-base * $line-height-base !default;
 $form-check-padding-start:                $form-check-input-width + .5em !default;
-$form-check-margin-bottom:                .125rem !default;
+$form-check-margin-bottom:                .5rem;
 $form-check-label-color:                  null !default;
 $form-check-label-cursor:                 null !default;
 $form-check-transition:                   null !default;
@@ -1130,7 +1130,7 @@ $nav-link-transition:               color .15s ease-in-out, background-color .15
 $nav-link-disabled-color:           $gray-600 !default;
 
 $nav-tabs-border-color:             #ddd;
-$nav-tabs-border-width:             var(--#{$prefix}border-width) !default;
+$nav-tabs-border-width:             $border-width !default;
 $nav-tabs-border-radius:            $border-radius !default;
 $nav-tabs-link-hover-border-color:  $gray-200 $gray-200 $nav-tabs-border-color !default;
 $nav-tabs-link-active-color:        $gray-700 !default;
@@ -1201,8 +1201,8 @@ $dropdown-color:                    $body-color !default;
 $dropdown-bg:                       $white !default;
 $dropdown-border-color:             var(--#{$prefix}border-color-translucent) !default;
 $dropdown-border-radius:            $border-radius !default;
-$dropdown-border-width:             var(--#{$prefix}border-width) !default;
-$dropdown-inner-border-radius:      calc(#{$dropdown-border-radius} - #{$dropdown-border-width}) !default; // stylelint-disable-line function-disallowed-list
+$dropdown-border-width:             $border-width !default;
+$dropdown-inner-border-radius:      subtract($dropdown-border-radius, $dropdown-border-width) !default;
 $dropdown-divider-bg:               $dropdown-border-color !default;
 $dropdown-divider-margin-y:         $spacer * .5 !default;
 $dropdown-box-shadow:               $box-shadow !default;
@@ -1258,8 +1258,8 @@ $pagination-font-size:              $font-size-base !default;
 $pagination-color:                  var(--#{$prefix}link-color) !default;
 $pagination-bg:                     $white !default;
 $pagination-border-radius:          $border-radius !default;
-$pagination-border-width:           var(--#{$prefix}border-width) !default;
-$pagination-margin-start:           calc(#{$pagination-border-width} * -1) !default; // stylelint-disable-line function-disallowed-list
+$pagination-border-width:           $border-width !default;
+$pagination-margin-start:           ($pagination-border-width * -1) !default;
 $pagination-border-color:           $gray-300 !default;
 
 $pagination-focus-color:            var(--#{$prefix}link-hover-color) !default;
@@ -1281,8 +1281,8 @@ $pagination-disabled-border-color:  $gray-300 !default;
 
 $pagination-transition:              color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out !default;
 
-$pagination-border-radius-sm:       var(--#{$prefix}border-radius-sm) !default;
-$pagination-border-radius-lg:       var(--#{$prefix}border-radius-lg) !default;
+$pagination-border-radius-sm:       $border-radius-sm !default;
+$pagination-border-radius-lg:       $border-radius-lg !default;
 // scss-docs-end pagination-variables
 
 
@@ -1299,9 +1299,9 @@ $placeholder-opacity-min:           .2 !default;
 $card-spacer-y:                     $spacer !default;
 $card-spacer-x:                     $spacer !default;
 $card-title-spacer-y:               $spacer * .5 !default;
-$card-border-width:                 var(--#{$prefix}border-width) !default;
+$card-border-width:                 1px;
 $card-border-color:                 var(--#{$prefix}border-color-translucent) !default;
-$card-border-radius:                var(--#{$prefix}border-radius) !default;
+$card-border-radius:                $border-radius !default;
 $card-box-shadow:                   null !default;
 $card-inner-border-radius:          subtract($card-border-radius, $card-border-width) !default;
 $card-cap-padding-y:                $card-spacer-y * .5 !default;
@@ -1322,7 +1322,7 @@ $accordion-padding-y:                     1rem !default;
 $accordion-padding-x:                     1.25rem !default;
 $accordion-color:                         $body-color !default; // Sass variable because of $accordion-button-icon
 $accordion-bg:                            $body-bg !default;
-$accordion-border-width:                  var(--#{$prefix}border-width) !default;
+$accordion-border-width:                  $border-width !default;
 $accordion-border-color:                  var(--#{$prefix}border-color) !default;
 $accordion-border-radius:                 $border-radius !default;
 $accordion-inner-border-radius:           subtract($accordion-border-radius, $accordion-border-width) !default;
@@ -1388,10 +1388,10 @@ $form-feedback-tooltip-border-radius: $tooltip-border-radius !default;
 $popover-font-size:                 $font-size-sm !default;
 $popover-bg:                        $white !default;
 $popover-max-width:                 276px !default;
-$popover-border-width:              var(--#{$prefix}border-width) !default;
+$popover-border-width:              $border-width !default;
 $popover-border-color:              var(--#{$prefix}border-color-translucent) !default;
-$popover-border-radius:             var(--#{$prefix}border-radius-lg) !default;
-$popover-inner-border-radius:       calc(#{$popover-border-radius} - #{$popover-border-width}) !default; // stylelint-disable-line function-disallowed-list
+$popover-border-radius:             $border-radius-lg !default;
+$popover-inner-border-radius:       subtract($popover-border-radius, $popover-border-width) !default;
 $popover-box-shadow:                $box-shadow !default;
 
 $popover-header-font-size:          $font-size-base !default;
@@ -1424,9 +1424,9 @@ $toast-padding-y:                   .5rem !default;
 $toast-font-size:                   .875rem !default;
 $toast-color:                       null !default;
 $toast-background-color:            rgba($white, .85) !default;
-$toast-border-width:                var(--#{$prefix}border-width) !default;
+$toast-border-width:                $border-width !default;
 $toast-border-color:                var(--#{$prefix}border-color-translucent) !default;
-$toast-border-radius:               var(--#{$prefix}border-radius) !default;
+$toast-border-radius:               $border-radius !default;
 $toast-box-shadow:                  $box-shadow !default;
 $toast-spacing:                     $container-padding-x !default;
 
@@ -1443,7 +1443,7 @@ $badge-font-size:                   0.8rem;
 $badge-font-weight:                 $font-weight-bold !default;
 $badge-color:                       $white !default;
 $badge-padding-y:                   .35em !default;
-$badge-padding-x:                   .65em !default;
+$badge-padding-x:                   .5em;
 $badge-border-radius:               0;
 // scss-docs-end badge-variables
 
@@ -1455,15 +1455,15 @@ $modal-inner-padding:               $spacer !default;
 
 $modal-footer-margin-between:       .5rem !default;
 
-$modal-dialog-margin:               .5rem !default;
-$modal-dialog-margin-y-sm-up:       1.75rem !default;
+$modal-dialog-margin:               1rem;
+$modal-dialog-margin-y-sm-up:       2rem;
 
 $modal-title-line-height:           $line-height-base !default;
 
 $modal-content-color:               null !default;
 $modal-content-bg:                  $white !default;
 $modal-content-border-color:        var(--#{$prefix}border-color-translucent) !default;
-$modal-content-border-width:        var(--#{$prefix}border-width) !default;
+$modal-content-border-width:        $border-width !default;
 $modal-content-border-radius:       $border-radius-lg !default;
 $modal-content-inner-border-radius: subtract($modal-content-border-radius, $modal-content-border-width) !default;
 $modal-content-box-shadow-xs:       0 3px 9px rgba($black,.5);
@@ -1504,7 +1504,7 @@ $alert-padding-x:               $spacer !default;
 $alert-margin-bottom:           1rem !default;
 $alert-border-radius:           $border-radius !default;
 $alert-link-font-weight:        $font-weight-bold !default;
-$alert-border-width:            var(--#{$prefix}border-width) !default;
+$alert-border-width:            $border-width !default;
 $alert-bg-scale:                -80% !default;
 $alert-border-scale:            -70% !default;
 $alert-color-scale:             40% !default;
@@ -1533,7 +1533,7 @@ $progress-bar-transition:           width .6s ease !default;
 $list-group-color:                  $gray-900 !default;
 $list-group-bg:                     $white !default;
 $list-group-border-color:           rgba($black, .125) !default;
-$list-group-border-width:           var(--#{$prefix}border-width) !default;
+$list-group-border-width:           $border-width !default;
 $list-group-border-radius:          $border-radius !default;
 
 $list-group-item-padding-y:         $spacer * .5 !default;
@@ -1562,7 +1562,7 @@ $list-group-action-active-bg:       $gray-200 !default;
 // scss-docs-start thumbnail-variables
 $thumbnail-padding:                 .25rem !default;
 $thumbnail-bg:                      $body-bg !default;
-$thumbnail-border-width:            var(--#{$prefix}border-width) !default;
+$thumbnail-border-width:            $border-width !default;
 $thumbnail-border-color:            #ddd;
 $thumbnail-border-radius:           $border-radius !default;
 $thumbnail-box-shadow:              $box-shadow-sm !default;

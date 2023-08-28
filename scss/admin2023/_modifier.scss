@@ -2097,6 +2097,10 @@ label {
 .text-right {
   @extend .text-end;
 }
+.col, .col-auto {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
 /* padding and margin left,right to start,end */
 $target_properties: ("m", "p");
 $target_sides : (
