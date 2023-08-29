@@ -356,6 +356,7 @@ sub run_next_step {
         my $step = $steps->[$i];
         if ($step->{active}) {
             my $next = $steps->[$i + 1]{key};
+            $app->param('step', $step->{key});
             $app->param('next_step', $next);
             return $app->run_step;
         }
@@ -387,6 +388,8 @@ sub start {
     $static_path =~ s#(^\s+|\s+$)##;
     $static_path .= '/' unless $static_path =~ m!/$!;
 
+    $param{mt_static_exists} = $app->mt_static_exists;
+
     unless ( $app->param('uri_valid')
         || $app->is_valid_static_path($static_path) )
     {
@@ -414,7 +417,11 @@ sub start {
     $param{config}           = $app->serialize_config(%param);
     $param{static_file}      = $static_file_path;
 
-    $app->run_next_step(%param);
+    if ($app->param('__mode') eq 'previous_step') {
+        return $app->build_page( "start.tmpl", \%param );
+    } else {
+        $app->run_next_step(%param);
+    }
 }
 
 sub content_separation {
