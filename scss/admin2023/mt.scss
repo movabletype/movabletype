@@ -18,12 +18,14 @@
 // Optional Bootstrap components here
 @import "../../node_modules/bootstrap5/scss/maps";
 @import "../../node_modules/bootstrap5/scss/mixins";
+@import "../../node_modules/bootstrap5/scss/utilities";
 @import "../../node_modules/bootstrap5/scss/root";
 
 // 6. Optionally include any other parts as needed
 @import "../../node_modules/bootstrap5/scss/reboot";
 @import "../../node_modules/bootstrap5/scss/type";
 @import "../../node_modules/bootstrap5/scss/images";
+@import "../../node_modules/bootstrap5/scss/containers";
 @import "../../node_modules/bootstrap5/scss/grid";
 @import "../../node_modules/bootstrap5/scss/tables";
 @import "../../node_modules/bootstrap5/scss/forms";
@@ -44,7 +46,6 @@
 @import "../../node_modules/bootstrap5/scss/modal";
 @import "../../node_modules/bootstrap5/scss/tooltip";
 @import "../../node_modules/bootstrap5/scss/popover";
-@import "../../node_modules/bootstrap5/scss/utilities";
 @import "../../node_modules/bootstrap5/scss/utilities/api";
 @import "../../node_modules/bootstrap5/scss/helpers";
 
