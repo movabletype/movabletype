@@ -436,11 +436,12 @@ $gradient: linear-gradient(180deg, rgba($white, .15), rgba($white, 0)) !default;
 $spacer: 1rem !default;
 $spacers: (
   0: 0,
-  1: $spacer * .25,
-  2: $spacer * .5,
-  3: $spacer,
-  4: $spacer * 1.5,
-  5: $spacer * 3,
+  1: ($spacer * .125),
+  2: ($spacer * .25),
+  3: ($spacer * .5),
+  4: $spacer,
+  5: ($spacer * 1.5),
+  6: ($spacer * 2)
 ) !default;
 // scss-docs-end spacer-variables-maps
 
@@ -526,7 +527,7 @@ $container-max-widths: (
 // Set the number of columns and specify the width of the gutters.
 
 $grid-columns:                12 !default;
-$grid-gutter-width:           1.5rem !default;
+$grid-gutter-width: 28px !default;
 $grid-row-columns:            6 !default;
 
 // Container padding
