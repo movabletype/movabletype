@@ -19,9 +19,11 @@ sub edit_template_param {
     }
     return unless $config->{$type};
 
+    my $admin_theme_id = MT->config->AdminThemeId || '';
+
     my $elements = $tmpl->getElementsByName('related_content') or return;
     my $related  = $elements->[0];
-    my $path     = File::Spec->catfile( $plugin->path, 'tmpl', 'widget.tmpl' );
+    my $path     = File::Spec->catfile( $plugin->path, 'tmpl', $admin_theme_id, 'widget.tmpl' );
     my $include  = $tmpl->createElement( 'include', { name => $path } );
     $related->appendChild($include);
 
