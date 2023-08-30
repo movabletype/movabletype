@@ -19,12 +19,9 @@ sub edit_template_param {
     }
     return unless $config->{$type};
 
-    my $admin_theme_id = MT->config->AdminThemeId || '';
-
     my $elements = $tmpl->getElementsByName('related_content') or return;
     my $related  = $elements->[0];
-    my $path     = File::Spec->catfile( $plugin->path, 'tmpl', $admin_theme_id, 'widget.tmpl' );
-    my $include  = $tmpl->createElement( 'include', { name => $path } );
+    my $include  = $tmpl->createElement( 'include', { name => 'widget.tmpl', component => $plugin->id } );
     $related->appendChild($include);
 
     # Content Type Selector
