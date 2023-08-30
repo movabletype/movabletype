@@ -1431,6 +1431,9 @@ sub is_valid_static_path {
     elsif ( $static_uri =~ m#^/# ) {
         my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || 'localhost';
         $host =~ s/:\d+//;    # eliminate any port that may be present
+        if ($ENV{HTTP_X_FORWARDED_HOST}) {
+            $host = (split ',', $ENV{HTTP_X_FORWARDED_HOST})[-1];
+        }
         my $port = $ENV{SERVER_PORT};
         $path = ( $port and $port == 443 ) ? 'https' : 'http';
         $path .= '://' . $host;
