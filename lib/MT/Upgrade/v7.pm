@@ -1633,7 +1633,7 @@ sub _v7_fill_with_missing_system_templates {
 
     my @blog_ids = map { $_->id } MT->model('site')->load({ class => '*' }, { fetchonly => ['id'] });
 
-    my @templates = MT->model('template')->load({ type => [keys %tmpls] }, { fetchonly => ['blog_id', 'type'] });
+    my @templates = MT->model('template')->load({ type => [map {(split ':', $_)[0]} keys %tmpls] }, { fetchonly => ['blog_id', 'type'] });
     my %map       = map { $_->blog_id . ':' . $_->type . ':' . $_->type => 1 } @templates;
 
     require MT::Template;
