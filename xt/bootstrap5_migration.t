@@ -86,7 +86,7 @@ $filter->add_callbacks(
                 info "$file: drop form-group: $html" if grep /form-group/, @classes;
                 info "$file: drop form-inline: $html" if grep /form-inline/, @classes;
 
-                if ($name eq 'label') {
+                if ($name eq 'label' && !$class_map{'visually-hidden'}) {
                     fail "$file: $name has no form-label: $html" unless $class_map{'form-label'} || $class_map{'form-check-label'};
                     warning "$file: $name has two types of form-labels: $html" if $class_map{'form-label'} && $class_map{'form-check-label'};
                 }
