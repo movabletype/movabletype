@@ -23,7 +23,7 @@
         <th class="head cb">
           <div class="form-check">
             <input id="select_all_<mt:var name="template_type" escape="html">" type="checkbox" name="id-head" value="all" class="form-check-input select" />
-            <label class="form-check-label form-label" for="select_all_<mt:var name="template_type" escape="html">"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
+            <label class="form-check-label" for="select_all_<mt:var name="template_type" escape="html">"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
           </div>
         </th>
         <th class="head template-name primary"><span class="col-label"><__trans phrase="Template Name"></span></th>
@@ -54,7 +54,7 @@
                  <mt:if name="includes">tmpl_includes="<mt:loop includes glue=","><mt:var name="__value__"></mt:loop>"</mt:if>
                  <mt:if name="checked">checked="checked"</mt:if>
                  />
-              <label class="form-check-label form-label" for="select_<mt:var name="template_type" escape="html">_<mt:var name="tmpl_id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+              <label class="form-check-label" for="select_<mt:var name="template_type" escape="html">_<mt:var name="tmpl_id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
             </div>
           </td>
           <td class="template-name"><mt:var name="tmpl_label" escape="html"></td>
