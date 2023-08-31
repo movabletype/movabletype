@@ -160,6 +160,20 @@ $filter->add_callbacks(
                 }
                 info "$file: replace data-* with data-bs-*: $html" if grep {/^data-(?!bs)/ && !/^data-$known/ && !/^data-(?:$mt_attr)/} @attrs;
             }
+
+            if (!%map or grep /common/, keys %map) {
+
+                ## Spacing classes
+                for my $pos ( qw{ mt mb ms me pt pb ps pe } ) {
+                    warning "$file: better to dedupe spacer for $pos\-\*: $html" if scalar(grep /${pos}\-\d/, @classes) > 1;
+                }
+
+                my %seen;
+                for my $class (@classes) {
+                    next if ++$seen{$class} == 1;
+                    warning "$file: better to dedupe class $class: $html" if $seen{$class} == 2;
+                }
+            }
         },
     },
 );
