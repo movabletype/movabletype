@@ -36,7 +36,10 @@ $filter->add_callbacks(
             }
             $html = delete $filter->stash->{org} if $filter->stash->{org};
             my $file = $c->stash->{file};
-            my @classes = split /\s/, $tag->attr('class') // '';
+            my $class_raw = $tag->attr('class') // '';
+            $class_raw =~ s{\[%.+?%\]}{ }g; # remove [% ... %]
+            my @classes = split /\s+/, $class_raw;
+            @classes = grep { $_ =~ /^-?[_a-zA-Z]+[_a-zA-Z0-9-]*$/ } @classes; # remove invalid class names
             my %class_map = map { $_ => 1 } @classes;
             my @attrs = @{$tag->{attrs}};
 
