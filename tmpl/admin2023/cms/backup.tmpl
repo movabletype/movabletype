@@ -40,7 +40,7 @@
     <mtapp:setting
        id="backup_archive_format"
        label="<__trans phrase="Archive Format">">
-      <div class="mb-3">
+      <div class="form-group">
       <mt:loop name="archive_formats">
         <div class="custom-control custom-radio">
           <input type="radio" id="<mt:var name="key">" class="form-check-input" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="error"> disabled="disabled"<mt:elseif name="__first__"> checked="checked"</mt:if> />
