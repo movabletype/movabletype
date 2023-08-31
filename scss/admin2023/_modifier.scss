@@ -994,6 +994,9 @@ fieldset.form-group{
     padding: 2px 4px;
   }
 }
+.form-check-label{
+    margin-bottom: 0;
+}
 .text.low {
     min-height: 5em;
 }
@@ -2063,6 +2066,10 @@ ul.asset-list li img.list-image {
     border-radius: 3px;
 }
 .custom-control .custom-control-label input[type=text] {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.custom-control .form-check-label input[type=text] {
   padding-top: 0;
   padding-bottom: 0;
 }
