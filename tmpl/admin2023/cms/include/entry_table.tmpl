@@ -36,7 +36,7 @@ td > p:last-child {
       <th class="head cb">
         <div class="form-check">
           <input id="select_all" type="checkbox" name="id-head" value="all" class="form-check-input select" />
-          <label class="form-check-label form-label" for="select_all"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
+          <label class="form-check-label" for="select_all"><span class="visually-hidden"><__trans phrase="Select All"></span></label>
         </div>
       </th>
       <th class="head title primary"><span class="col-label"><__trans phrase="Title"></span></th>
@@ -58,7 +58,7 @@ td > p:last-child {
   <mt:if name="has_edit_access">
         <div class="form-check">
           <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<$mt:var name="id"$>" class="form-check-input select" />
-          <label class="form-check-label form-label" for="select_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+          <label class="form-check-label" for="select_<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
         </div>
   <mt:else>
         &#160;

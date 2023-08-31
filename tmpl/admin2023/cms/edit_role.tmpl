@@ -145,7 +145,7 @@ function init() {
       <mt:if name="group" eq="blog_admin">
         <div class="form-check form-check-inline">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <label class="form-check-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+            <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
         </div>
       </mt:if>
       </mt:loop>
@@ -160,7 +160,7 @@ function init() {
       <mt:if name="group" eq="auth_pub">
         <div class="form-check form-check-inline">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <label class="form-check-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+            <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
         </div>
       </mt:if>
       </mt:loop>
@@ -175,7 +175,7 @@ function init() {
       <mt:if name="group" eq="blog_design">
         <div class="form-check form-check-inline">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <label class="form-check-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+            <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
         </div>
       </mt:if>
       </mt:loop>
@@ -190,7 +190,7 @@ function init() {
       <mt:if name="group" eq="blog_upload">
         <div class="form-check form-check-inline">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <label class="form-check-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+            <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
         </div>
       </mt:if>
       </mt:loop>
@@ -206,7 +206,7 @@ function init() {
       <mt:if name="group" eq="blog_comment">
         <div class="form-check form-check-inline">
             <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
-            <label class="form-check-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+            <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
         </div>
       </mt:if>
       </mt:loop>
@@ -228,7 +228,7 @@ function init() {
                 <mt:setvarblock name="all">
                 <div class="form-check">
                         <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
-                        <label class="form-check-label form-label" for="<mt:var name="id" escape="html">"><span class="h4"><mt:var name="label" escape="html"></span></label>
+                        <label class="form-check-label" for="<mt:var name="id" escape="html">"><span class="h4"><mt:var name="label" escape="html"></span></label>
                 </div>
                 </mt:setvarblock>
 
@@ -236,7 +236,7 @@ function init() {
                 <mt:setvarblock name="manage_content_data" append="1">
                 <div class="form-check">
                         <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
-                        <label class="form-check-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+                        <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
                 </div>
                 </mt:setvarblock>
 
@@ -244,7 +244,7 @@ function init() {
                 <mt:setvarblock name="manage_content_field" append="1">
                 <div class="form-check mb-3" style="">
                         <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb form-check-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
-                        <label class="form-check-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+                        <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
                 </div>
                 </mt:setvarblock>
             </mt:if>
