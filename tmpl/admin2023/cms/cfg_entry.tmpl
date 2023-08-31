@@ -199,7 +199,7 @@
     <mtapp:setting
        id="entry_prefs"
        label="<__trans phrase="Entry Fields">">
-      <div class="mb-3 align-items-center fixed-width multiple-selection">
+      <div class="mb-3 align-items-center fixed-width multiple-selection form-inline">
         <div class="form-check form-check-inline">
           <div class="form-check">
             <input type="checkbox" name="entry_custom_prefs" id="entry-prefs-title" value="title" checked="checked" disabled="disabled" class="form-check-input cb" />
@@ -258,7 +258,7 @@
   <mtapp:setting
      id="page_prefs"
      label="<__trans phrase="Page Fields">">
-    <div class="mb-3 align-items-center fixed-width multiple-selection">
+    <div class="mb-3 align-items-center fixed-width multiple-selection form-inline">
       <div class="form-check form-check-inline">
         <div class="form-check">
           <input type="checkbox" name="page_custom_prefs" id="page-prefs-title" value="title" checked="checked" disabled="disabled" class="form-check-input cb" />
@@ -354,7 +354,7 @@
     <mtapp:setting
        id="replace-fields"
        label="<__trans phrase="Replace Fields">">
-      <div class="mb-3 align-items-center multiple-selection">
+      <div class="mb-3 align-items-center multiple-selection form-inline">
         <div class="form-check form-check-inline">
           <div class="form-check">
             <input type="checkbox" value="1" name="nwc_title" id="nwc_title"<mt:if name="nwc_title"> checked="checked"</mt:if> class="form-check-input cb"/>
@@ -403,6 +403,7 @@
        id="image_default_thumb"
        label="<__trans phrase="Use thumbnail">"
      >
+      <div class="form-inline">
       <div class="form-check">
         <input type="checkbox" name="image_default_thumb" id="image_default_thumb" class="form-check-input" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
         <label class="form-check-label form-inline form-label" for="image_default_thumb">
@@ -412,6 +413,7 @@
           <__trans phrase="pixels">
           )
         </label>
+      </div>
       </div>
       <div id="image_default_thumb-field-msg-block" style="display: none;"></div>
     </mtapp:setting>
