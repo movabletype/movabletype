@@ -88,6 +88,7 @@ $filter->add_callbacks(
 
                 if ($name eq 'label') {
                     fail "$file: $name has no form-label: $html" unless $class_map{'form-label'} || $class_map{'form-check-label'};
+                    warning "$file: $name has two types of form-labels: $html" if $class_map{'form-label'} && $class_map{'form-check-label'};
                 }
                 if ($name eq 'select') {
                     fail "$file: $name has no form-select: $html" unless $class_map{'form-select'};
