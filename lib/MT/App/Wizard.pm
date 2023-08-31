@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use base qw( MT::App );
 
-use MT::Util qw( browser_language );
+use MT::Util qw( browser_language is_within_a_directory );
 
 sub id {'wizard'}
 
@@ -115,6 +115,55 @@ sub init_core_registry {
                 params  => [
                     qw(set_static_uri_to set_static_file_to default_language)
                 ],
+            },
+            content_separation => {
+                order   => 10,
+                handler => \&content_separation,
+                params  => [qw( skip_content_separation )],
+            },
+            base_user_directory => {
+                order     => 20,
+                handler   => \&base_user_directory,
+                params    => [qw( base_user_directory force_content_separation )],
+                condition => sub {
+                    my ($app, $param) = @_;
+                    return $param->{skip_content_separation} ? 0 : 1;
+                },
+            },
+            base_site_path => {
+                order     => 30,
+                handler   => \&base_site_path,
+                params    => [qw( base_site_path )],
+                condition => sub {
+                    my ($app, $param) = @_;
+                    return $param->{skip_content_separation} ? 0 : 1;
+                },
+            },
+            support_directory => {
+                order     => 40,
+                handler   => \&support_directory,
+                params    => [qw( support_directory_path support_directory_url )],
+                condition => sub {
+                    my ($app, $param) = @_;
+                    return $param->{skip_content_separation} ? 0 : 1;
+                },
+            },
+            other_paths => {
+                order   => 50,
+                handler => \&other_paths,
+                params  => [qw(
+                    user_plugin_path user_themes_directory
+                    import_path user_template_path
+                )],
+                condition => sub {
+                    my ($app, $param) = @_;
+                    return $param->{skip_content_separation} ? 0 : 1;
+                },
+            },
+            packages => {
+                order   => 80,
+                handler => \&packages,
+                params  => [],
             },
             configure => {
                 order   => 100,
@@ -297,6 +346,23 @@ sub build_page {
     return $app->SUPER::build_page( $tmpl, $param );
 }
 
+sub run_next_step {
+    my ($app, %param) = @_;
+    $app->param(config => $app->serialize_config(%param));
+
+    my $steps = $app->wizard_steps;
+    $app->delete_param('test');
+    for my $i (0 .. @$steps - 1) {
+        my $step = $steps->[$i];
+        if ($step->{active}) {
+            my $next = $steps->[$i + 1]{key};
+            $app->param('step', $step->{key});
+            $app->param('next_step', $next);
+            return $app->run_step;
+        }
+    }
+}
+
 sub start {
     my $app   = shift;
     my %param = @_;
@@ -321,6 +387,8 @@ sub start {
         unless $static_path =~ m#^(https?:/)?/#;
     $static_path =~ s#(^\s+|\s+$)##;
     $static_path .= '/' unless $static_path =~ m!/$!;
+
+    $param{mt_static_exists} = $app->mt_static_exists;
 
     unless ( $app->param('uri_valid')
         || $app->is_valid_static_path($static_path) )
@@ -348,6 +416,203 @@ sub start {
     $param{default_language} = $app->param('default_language');
     $param{config}           = $app->serialize_config(%param);
     $param{static_file}      = $static_file_path;
+
+    if ($app->param('__mode') eq 'previous_step') {
+        return $app->build_page( "start.tmpl", \%param );
+    } else {
+        $app->run_next_step(%param);
+    }
+}
+
+sub content_separation {
+    my $app   = shift;
+    my %param = @_;
+
+    $param{set_static_uri_to} = $app->param('set_static_uri_to');
+
+    # set static web path
+    $app->config->set('StaticWebPath', $param{set_static_uri_to});
+
+    $param{config} = $app->serialize_config(%param);
+
+    if ($app->param('test')) {
+        return $app->run_next_step(%param);
+    }
+
+    return $app->build_page("content_separation.tmpl", \%param);
+}
+
+sub base_user_directory {
+    my $app   = shift;
+    my %param = @_;
+
+    $param{set_static_uri_to} = $app->param('set_static_uri_to');
+
+    # set static web path
+    $app->config->set('StaticWebPath', $param{set_static_uri_to});
+
+    $param{config} = $app->serialize_config(%param);
+
+    if ($app->param('test')) {
+        return $app->run_next_step(%param) if $app->_test_user_directory('base_user_directory', \%param);
+    }
+    return $app->build_page("base_user_directory.tmpl", \%param);
+}
+
+sub _test_user_directory {
+    my ($app, $name, $param) = @_;
+
+    my $dir = $app->param($name) or return 1;
+
+    require File::Spec;
+    if (!File::Spec->file_name_is_absolute($dir)) {
+        $param->{ $name . '_is_relative' } = 1;
+        return;
+    }
+
+    if (!-d $dir) {
+        $param->{ $name . '_does_not_exist' } = 1;
+        return;
+    }
+
+    if (is_within_a_directory($dir, $app->mt_dir)) {
+        $param->{ $name . '_is_within_mt_dir' } = 1;
+        return;
+    }
+
+    return 1;
+}
+
+sub base_site_path {
+    my $app   = shift;
+    my %param = @_;
+
+    $param{set_static_uri_to} = $app->param('set_static_uri_to');
+
+    # set static web path
+    $app->config->set('StaticWebPath', $param{set_static_uri_to});
+
+    $param{config} = $app->serialize_config(%param);
+
+    if ($app->param('test')) {
+        return $app->run_next_step(%param) if $app->_test_user_directory('base_site_path', \%param);
+    }
+    if ($param{base_user_directory} && !defined $param{base_site_path}) {
+        $param{base_site_path} = File::Spec->catdir($param{base_user_directory}, 'sites');
+    }
+    return $app->build_page("base_site_path.tmpl", \%param);
+}
+
+sub support_directory {
+    my $app   = shift;
+    my %param = @_;
+
+    $param{set_static_uri_to} = $app->param('set_static_uri_to');
+
+    # set static web path
+    $app->config->set('StaticWebPath', $param{set_static_uri_to});
+
+    $param{config} = $app->serialize_config(%param);
+
+    if ($app->param('test')) {
+        return $app->run_next_step(%param) if $app->_test_support_directory(\%param);
+    }
+    if ($param{base_user_directory} && !defined $param{support_directory_path}) {
+        $param{support_directory_path} = File::Spec->catdir($param{base_user_directory}, 'support');
+    }
+    return $app->build_page("support_directory.tmpl", \%param);
+}
+
+sub _test_support_directory {
+    my ($app, $param) = @_;
+    my $support_directory_path = $app->param('support_directory_path');
+    my $support_directory_url  = $app->param('support_directory_url');
+
+    return 1 if !$support_directory_path && !$support_directory_url;
+
+    if ($support_directory_path && !$support_directory_url or !$support_directory_path && $support_directory_url) {
+        $param->{support_directory_path_and_url_are_needed} = 1;
+        return;
+    }
+
+    return unless $app->_test_user_directory('support_directory_path', $param);
+
+    if (!-w $support_directory_path) {
+        $param->{support_directory_path_is_not_writable} = 1;
+        return;
+    }
+    my $static_file_path = $param->{set_static_file_to} || File::Spec->catdir($app->mt_dir, 'mt-static');
+    my $mt_js            = File::Spec->catfile($static_file_path,       'mt.js');
+    my $mt_js_copy       = File::Spec->catfile($support_directory_path, 'mt.js');
+    my $mt_js_copied;
+    if (-e $mt_js && !-e $mt_js_copy) {
+        require File::Copy;
+        if (File::Copy::copy($mt_js, $mt_js_copy)) {
+            $mt_js_copied = 1;
+        }
+    }
+    my $ok          = 1;
+    my $support_url = $app->param('support_directory_url');
+    $support_url .= '/' unless substr($support_url, -1, 1) eq '/';
+    unless ($app->is_valid_static_path($support_url)) {
+        $param->{support_directory_url_is_invalid} = 1;
+        $ok = 0;
+    }
+    unlink $mt_js_copy if $mt_js_copied;
+
+    return $ok;
+}
+
+sub other_paths {
+    my $app   = shift;
+    my %param = @_;
+
+    $param{set_static_uri_to} = $app->param('set_static_uri_to');
+
+    # set static web path
+    $app->config->set('StaticWebPath', $param{set_static_uri_to});
+
+    $param{config} = $app->serialize_config(%param);
+
+    if ($app->param('test')) {
+        return $app->run_next_step(%param) if _test_other_paths($app, \%param);
+    }
+    if ($param{base_user_directory}) {
+        my %default = (
+            user_plugin_path      => 'plugins',
+            user_themes_directory => 'themes',
+            user_template_path    => 'tmpl',
+            import_path           => 'import',
+        );
+        for my $name (keys %default) {
+            $param{$name} = File::Spec->catdir($param{base_user_directory}, $default{$name}) if !defined $param{$name};
+        }
+    }
+    return $app->build_page("other_paths.tmpl", \%param);
+}
+
+sub _test_other_paths {
+    my ($app, $param) = @_;
+
+    my $ok = 1;
+    $ok = 0 unless $app->_test_user_directory('user_plugin_path',      $param);
+    $ok = 0 unless $app->_test_user_directory('user_themes_directory', $param);
+    $ok = 0 unless $app->_test_user_directory('user_template_path',    $param);
+    $ok = 0 unless $app->_test_user_directory('import_path',           $param);
+
+    return $ok;
+}
+
+sub packages {
+    my $app   = shift;
+    my %param = @_;
+
+    $param{set_static_uri_to} = $app->param('set_static_uri_to');
+
+    # set static web path
+    $app->config->set('StaticWebPath', $param{set_static_uri_to});
+
+    $param{config} = $app->serialize_config(%param);
 
     # test for required packages...
     my $req = $app->registry("required_packages");
@@ -873,6 +1138,9 @@ sub seed {
     $param{static_file_path} = $param{set_static_file_to};
     my $param_set_static_uri_to = $app->param('set_static_uri_to') || '';
 
+    # set static web path
+    $app->config->set('StaticWebPath', $param{set_static_uri_to});
+
     require URI;
     my $uri = URI->new( $app->cgipath );
     $param{cgi_path}        = $uri->path;
@@ -1071,6 +1339,9 @@ sub cgipath {
     my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || 'localhost';
     $host =~ s/:\d+//;    # eliminate any port that may be present
     my $port = $ENV{SERVER_PORT};
+    if ($ENV{HTTP_X_FORWARDED_HOST}) {
+        $host = (split ',', $ENV{HTTP_X_FORWARDED_HOST})[-1];
+    }
 
     # REQUEST_URI for CGI-compliant servers; SCRIPT_NAME for IIS.
     my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME} || '';
@@ -1160,6 +1431,9 @@ sub is_valid_static_path {
     elsif ( $static_uri =~ m#^/# ) {
         my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST} || 'localhost';
         $host =~ s/:\d+//;    # eliminate any port that may be present
+        if ($ENV{HTTP_X_FORWARDED_HOST}) {
+            $host = (split ',', $ENV{HTTP_X_FORWARDED_HOST})[-1];
+        }
         my $port = $ENV{SERVER_PORT};
         $path = ( $port and $port == 443 ) ? 'https' : 'http';
         $path .= '://' . $host;
@@ -1172,9 +1446,9 @@ sub is_valid_static_path {
 
     # If the hostname of $path is same with $app->cgipath,
     # do not verify SSL certificate.
-    my ($cgihost) = ( $app->cgipath =~ m/^(https?:\/\/[^\/]+)(?:\/|$)/ );
-    $cgihost =~ s/^http:/https:/;
-    my $ssl_verify_peer = $path !~ m/^$cgihost/ ? 1 : 0;
+    require URI;
+    my ($cgihost) = URI->new($app->cgipath)->host;
+    my $ssl_verify_peer = URI->new($path)->host ne $cgihost ? 1 : 0;
     my %ssl_opts        = (
         verify_hostname => $ssl_verify_peer,
         SSL_version     => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',

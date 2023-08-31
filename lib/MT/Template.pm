@@ -746,7 +746,9 @@ sub _sync_from_disk {
         else {
 
             # use MT path to base relative paths
-            my $base_path = MT->config->BaseTemplatePath || MT->instance->server_path;
+            my $base_path = MT->config->BaseTemplatePath;
+            $base_path ||= (MT->config->UserTemplatePath)[0];
+            $base_path ||= MT->instance->server_path;
             $lfile = File::Spec->catfile( $base_path, $lfile );
         }
     }

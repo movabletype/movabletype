@@ -134,7 +134,7 @@ sub load_theme_loop {
 
 sub _theme_packages {
     my $pkg      = shift;
-    my @dir_list = MT->config('ThemesDirectory');
+    my @dir_list = grep {defined $_ and $_ ne ''} (MT->config('UserThemesDirectory'), MT->config('ThemesDirectory'));
     my @ids;
     foreach my $base_dir (@dir_list) {
         require DirHandle;
