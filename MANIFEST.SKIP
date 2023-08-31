@@ -283,7 +283,7 @@ themes/broken_blog_theme
 \.old$
 \.swp$
 \.tmp$
-^\.DS_Store$
+(^|/)\.DS_Store$
 
 # Packages
 ^lib/MT/FileMgr/SFTP.pm$

@@ -212,9 +212,14 @@ pass "walked through";
 
 done_testing;
 
+my $MANIFEST_SKIP_REGEX;
+
 sub test {
     my $file = shift;
-    return if $file =~ /swp/;
+
+    $MANIFEST_SKIP_REGEX ||= load_manifest_skip();
+    return if $file =~ $MANIFEST_SKIP_REGEX;
+
 #    note $file;
     my $content = path($file)->slurp_utf8;
     return unless $content =~ /<\w+/;
@@ -228,4 +233,11 @@ sub test {
             $filter->process($retry->{$org});
         }
     }
+}
+
+sub load_manifest_skip {
+    # Not skipping lines with rules is ok for testing purpose.
+    my @lines = map { chomp($_); $_ } grep { $_ =~ /^[^#\s]/ } path('MANIFEST.SKIP')->lines;
+    my $regex = join('|', @lines);
+    return qr/$regex/;
 }
