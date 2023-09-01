@@ -6,7 +6,7 @@
         Template.templates.categorySelectorList = '<mt:section encode_js="1">
                 [# if ( item.path == null ) item.path = [] #]
                 <div class="row" style="text-align:left; margin-left:[#= item.path.length * 10 #]px; margin-right: 0;">
-                    <div class="col text-break custom-control <mt:if name="object_type" eq="page">form-check<mt:else>custom-checkbox</mt:if>" style="">
+                    <div class="col text-break custom-control form-check" style="">
                         <input type="<mt:if name="object_type" eq="page">radio<mt:else>checkbox</mt:if>" id="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" name="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" class="form-check-input add-category-checkbox" <mt:if name="category_is_selected">checked="checked"</mt:if> />
                         <label class="form-check-label" for="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>">[#|h item.label #]</label>
                     </div>
