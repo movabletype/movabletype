@@ -1483,6 +1483,10 @@ $modal-footer-bg:                   null !default;
 $modal-footer-border-color:         $modal-header-border-color !default;
 $modal-footer-border-width:         $modal-header-border-width !default;
 
+.modal-footer {
+  --bs-modal-footer-gap: 0.5rem;
+}
+
 $modal-sm:                          300px !default;
 $modal-md:                          500px !default;
 $modal-lg:                          800px !default;
