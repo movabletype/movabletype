@@ -1454,7 +1454,7 @@ $badge-border-radius:               0;
 // scss-docs-start modal-variables
 $modal-inner-padding:               $spacer !default;
 
-$modal-footer-margin-between:       .5rem;
+$modal-footer-margin-between:       .5rem !default;
 
 $modal-dialog-margin:               .5rem !default;
 $modal-dialog-margin-y-sm-up:       1.75rem !default;
@@ -1482,6 +1482,10 @@ $modal-header-padding:              $modal-header-padding-y $modal-header-paddin
 $modal-footer-bg:                   null !default;
 $modal-footer-border-color:         $modal-header-border-color !default;
 $modal-footer-border-width:         $modal-header-border-width !default;
+
+.modal-footer {
+  --bs-modal-footer-gap: 0.5rem;
+}
 
 $modal-sm:                          300px !default;
 $modal-md:                          500px !default;
