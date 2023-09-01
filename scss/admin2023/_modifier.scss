@@ -1176,6 +1176,15 @@ fieldset.form-group{
 }
 
 /* Tables */
+.table{
+  th, td{
+    vertical-align: top;
+  }
+  thead th{
+    vertical-align: bottom;
+  }
+}
+
 .mt-table--outline{
   @extend .card;
 }
