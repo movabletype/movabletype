@@ -1059,8 +1059,8 @@ function saveTemplatePrefs( sync ) {
         });
     }
     function toggleEditMapping(mapid) {
-      var content = jQuery("#edit-mapping-" + mapid);
-      if (content.hasClass('show')) {
+      var link = jQuery("#toggle_edit_mapping_" + mapid);
+      if (link.prop('ariaExpanded') == true) {
         jQuery("#archive_file_sel_" + mapid).css("display", "none");
         jQuery("#archive_file_tmpl_" + mapid).css("display", "none");
         var label = jQuery("#archive_file_sel_" + mapid).val() ? jQuery("#archive_file_sel_" + mapid + " option:selected").text() : jQuery("#archive_file_tmpl_" + mapid).val();
