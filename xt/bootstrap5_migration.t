@@ -164,8 +164,9 @@ $filter->add_callbacks(
             if (!%map or grep /common/, keys %map) {
 
                 ## Spacing classes
-                for my $pos ( qw{ mt mb ms me pt pb ps pe } ) {
-                    warning "$file: better to dedupe spacer for $pos\-\*: $html" if scalar(grep /${pos}\-\d/, @classes) > 1;
+                for my $pos ( qw{ m mx my p px py mt mb ms me pt pb ps pe } ) {
+                    # movabletype defines sizes up to 6
+                    warning "$file: better to dedupe spacer for $pos\-\*: $html" if scalar(grep /${pos}\-([0123456]|auto)/, @classes) > 1;
                 }
 
                 my %seen;
