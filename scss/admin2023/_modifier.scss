@@ -1016,6 +1016,7 @@ fieldset.form-group{
   height: 0;
   width: 0;
   visibility: hidden;
+  padding: 0;
   + label {
     position: relative;
     width: 3rem;
@@ -1175,6 +1176,15 @@ fieldset.form-group{
 }
 
 /* Tables */
+.table{
+  th, td{
+    vertical-align: top;
+  }
+  thead th{
+    vertical-align: bottom;
+  }
+}
+
 .mt-table--outline{
   @extend .card;
 }
