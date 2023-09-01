@@ -1,0 +1,38 @@
+<mtapp:setting
+  id="contentinfowidget-template_type"
+  label="<__trans phrase="Template Type">">
+  <ul class="list-unstyled">
+    <li>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="ct" id="contentinfowidget-ct" class="custom-control-input" value="1"<mt:if name="ct"> checked="checked"</mt:if> >
+        <label class="custom-control-label" for="contentinfowidget-ct"><__trans phrase="Content Type Archive"></label>
+      </div>
+    </li>
+    <li>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="ct_archive" id="contentinfowidget-ct_archive" class="custom-control-input" value="1"<mt:if name="ct_archive"> checked="checked"</mt:if> >
+        <label class="custom-control-label" for="contentinfowidget-ct_archive"><__trans phrase="Content Type Listing Archive"></label>
+      </div>
+    </li>
+    <li>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="index" id="contentinfowidget-index" class="custom-control-input" value="1"<mt:if name="index"> checked="checked"</mt:if> >
+        <label class="custom-control-label" for="contentinfowidget-index"><__trans phrase="Index"></label>
+      </div>
+    </li>
+    <li>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="widget" id="contentinfowidget-widget" class="custom-control-input" value="1"<mt:if name="widget"> checked="checked"</mt:if> >
+        <label class="custom-control-label" for="contentinfowidget-widget"><__trans phrase="Widget"></label>
+      </div>
+    </li>
+    <li>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="cd_search_results" id="contentinfowidget-cd_search_results" class="custom-control-input" value="1"<mt:if name="cd_search_results"> checked="checked"</mt:if> >
+        <label class="custom-control-label" for="contentinfowidget-cd_search_results"><__trans phrase="Search Results for Content Data"></label>
+      </div>
+    </li>
+  </ul>
+  <label for="contentinfowidget-others"><__trans phrase="Others"></label>
+  <input type="text" name="others" id="contentinfowidget-others" class="form-control w-100" value="<mt:var name="others" escape="html">">
+</mtapp:setting>
