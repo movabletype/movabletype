@@ -168,8 +168,8 @@
      label="<__trans phrase="Status">"
      label_for="status"
      label_class="left-label">
-    <div class="form-row align-items-center">
-      <div class="col">
+    <div class="row align-items-center">
+      <div class="col pe-0">
   <mt:if name="has_publish_access">
         <select id="status" name="status" class="custom-select form-control comment-status form-select">
           <option value="publish" <mt:if name="comment_approved">selected="selected"</mt:if>><__trans phrase="Approved"></option>
@@ -215,8 +215,8 @@
       <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter=commenter_id&amp;blog_id=<mt:var name="blog_id">&amp;filter_val=<mt:var name="commenter_id" escape="html">" class="d-none d-md-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
     </div>
   <mt:else>
-    <div class="form-row align-items-center">
-      <div class="col">
+    <div class="row align-items-center">
+      <div class="col pe-0">
         <input type="text" name="author" id="author" class="form-control text" value="<mt:var name="author" escape="html">" />
       </div>
       <div class="col-1 d-none d-md-block">
@@ -301,8 +301,8 @@
       <em><__trans phrase="Unavailable for OpenID user"></em>
     </mt:if>
   <mt:else>
-    <div class="form-row align-items-center">
-      <div class="col">
+    <div class="row align-items-center">
+      <div class="col pe-0">
         <input type="text" name="email" id="email" class="form-control text" value="<mt:var name="email" escape="html">" />
       </div>
       <div class="col-1">
@@ -329,8 +329,8 @@
       <__trans phrase="No url in profile">
     </mt:if>
   <mt:else>
-    <div class="form-row align-items-center">
-      <div class="col">
+    <div class="row align-items-center">
+      <div class="col pe-0">
         <input type="text" name="url" id="url" class="form-control text" value="<mt:var name="url" escape="html">" />
       </div>
       <div class="col-1">
