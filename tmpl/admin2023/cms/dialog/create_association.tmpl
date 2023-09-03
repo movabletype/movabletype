@@ -312,7 +312,7 @@ function init() {
         history.pushState(args, '', CMSScriptURI + '?' + args);
     });
     if ( jQuery('#modal-search-author').length ) {
-      jQuery('#modal-search-author').prepend(jQuery('.select_assoc_type'));
+      jQuery('#modal-search-author div.form-inline').prepend(jQuery('.select_assoc_type_wrapper'));
       jQuery('.select_assoc_type').trigger('change');
     }
     else {
@@ -403,11 +403,13 @@ TC.attachLoadEvent(init);
 </div>
 <mt:else>
     <mt:if name="has_group">
+    <div class="col-auto pe-0 select_assoc_type_wrapper">
       <select class="custom-select form-control select_assoc_type me-3 form-select">
         <option value="both" selected><__trans phrase="all"></option>
         <option value="group"><__trans phrase="Groups"></option>
         <option value="author"><__trans phrase="Users"></option>
       </select>
+    </div>
     </mt:if>
 
     <mt:loop name="panel_loop">
