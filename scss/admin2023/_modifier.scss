@@ -2208,6 +2208,12 @@ $target_sides : (
   }
 }
 
+@include media-breakpoint-down(md) {
+  .modal-dialog {
+    max-width: 100%;
+  }
+}
+
 li.nav-item {
   margin-bottom: -1px;
 }
