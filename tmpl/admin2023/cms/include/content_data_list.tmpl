@@ -167,7 +167,7 @@ function loadContentDataList(offset) {
     opts.search = jQuery('#search').val();
   }
 
-  var canPagenate = true;
+  var canPaginate = true;
   jQuery.ajax({
     type: 'POST',
     contentType: 'application/x-www-form-urlencoded: charset=utf-8',
@@ -182,14 +182,14 @@ function loadContentDataList(offset) {
           renderPagination(data.pager);
           renderPaginationForMobile(data.pager);
         } else {
-          canPagenate = false;
+          canPaginate = false;
         }
       }
       jQuery('tr.content-data-preview-data').hide();
     },
     complete: function () {
       jQuery('.indicator, #listing-table-overlay').hide();
-      if (canPagenate) {
+      if (canPaginate) {
         jQuery('ul.pagination').show();
         jQuery('ul.pagination__mobile').show();
       }
