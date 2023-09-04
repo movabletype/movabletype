@@ -53,12 +53,12 @@ parameters:
 <mt:if name="panel_searchable">
   <div class="align-items-center p-4 border rounded" style="background:#F4F4F4;">
     <form action="" method="get" id="modal-search-<mt:var name="panel_type">">
-      <div class="row form-inline">
-        <div class="col-auto pe-0">
+      <div class="row form-inline ps-4">
+        <div class="col-auto ps-0 pe-0">
           <input type="text" class="form-control search-input text med" value="" placeholder="<__trans phrase="Search">" />
         </div>
         <div class="col-auto ps-0 pe-0">
-          <input type="image" class="search-command search-submit ms-3 me-3" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
+          <input type="image" class="search-command search-submit ms-3 me-3 align-middle" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
         </div>
         <div class="col-auto ps-0">
           <a href="javascript:void(0)" class="search-reset" style="display: none;"><__trans phrase="Reset"></a>
