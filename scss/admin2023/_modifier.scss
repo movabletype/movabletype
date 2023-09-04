@@ -1650,7 +1650,7 @@ fieldset.form-group{
 }
 
 /* Modal */
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
   .modal-dialog {
     margin: 0.25rem;
     max-width: 100%;
@@ -2205,12 +2205,6 @@ $target_sides : (
   }
   .form-inline .custom-control-label {
     margin-bottom: 0;
-  }
-}
-
-@include media-breakpoint-down(md) {
-  .modal-dialog {
-    max-width: 100%;
   }
 }
 
