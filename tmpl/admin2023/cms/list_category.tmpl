@@ -242,12 +242,14 @@ function handleMessages( data ) {
 }
 
 function fixInteractions( options ) {
+  console.log('fixInteractions');
   var defaults = {
     sortable: true,
     closeInlineForms: true
   };
   var opts = jQuery.extend(defaults, options);
   if ( opts.closeInlineForms ) {
+    console.log('closeInlineForms');
     jQuery('div.edit-form button.cancel').trigger('click');
     jQuery('div.add-form button.cancel').trigger('click');
   }
