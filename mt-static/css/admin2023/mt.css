@@ -12397,7 +12397,7 @@ fieldset.form-group {
 }
 
 /* Modal */
-@media (max-width: 575.98px) {
+@media (max-width: 767.98px) {
   .modal-dialog {
     margin: 0.25rem;
     max-width: 100%;
