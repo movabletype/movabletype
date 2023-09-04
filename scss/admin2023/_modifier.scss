@@ -1117,6 +1117,11 @@ fieldset.form-group{
     border-color: map-get($theme-colors, "info");
     box-shadow: 0 0 0 2px map-get($theme-colors, "info");
 }
+.btn:focus {
+  border-color: #5FBCEB;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(0, 75, 154, 0.25);
+}
 
 /* Inline Editor */
 .mt-editor{
