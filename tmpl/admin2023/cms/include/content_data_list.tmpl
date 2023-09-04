@@ -16,7 +16,7 @@
           <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" witdh="16" height="16" />
           <__trans phrase="Loading...">
         </div>
-        <div class="col-auto mx-auto mt-5 mt-md-3">
+        <div class="pagination_container col-auto mx-auto mt-5 mt-md-3">
           <nav aria-label="<mt:var name="object_type" escape="html"> list">
             <ul class="pagination d-none d-md-flex"></ul>
             <ul class="pagination__mobile d-md-none d-flex"></ul>
@@ -144,8 +144,7 @@ function toggleClassOfPaginationContainer() {
 
 function loadContentDataList(offset) {
   jQuery('.indicator, #listing-table-overlay').show();
-  jQuery('ul.pagination').hide();
-  jQuery('ul.pagination__mobile').hide();
+  jQuery('.pagination_container').hide();
   jQuery('#search').attr('disabled', 'disabled');
   jQuery('#search-button').attr('disabled', 'disabled');
 
@@ -190,8 +189,7 @@ function loadContentDataList(offset) {
     complete: function () {
       jQuery('.indicator, #listing-table-overlay').hide();
       if (canPaginate) {
-        jQuery('ul.pagination').show();
-        jQuery('ul.pagination__mobile').show();
+        jQuery('.pagination_container').show();
       }
       jQuery('#search').prop('disabled', false);
       jQuery('#search-button').prop('disabled', false);
