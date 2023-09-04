@@ -1075,7 +1075,7 @@ fieldset.form-group{
 }
 .btn__mobile {
   @extend .btn;
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     margin-bottom: 0.5rem;
     width: 100%;
   }
@@ -1650,7 +1650,7 @@ fieldset.form-group{
 }
 
 /* Modal */
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
   .modal-dialog {
     margin: 0.25rem;
     max-width: 100%;
