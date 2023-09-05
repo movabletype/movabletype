@@ -661,6 +661,7 @@ li{
     li {
       @extend .list-group-item;
       @extend .p-0;
+      @extend .m-0;
       border-radius: 0 !important;
       a, span {
         @include text-truncate;
