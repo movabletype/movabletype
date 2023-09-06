@@ -21,8 +21,7 @@ sub edit_template_param {
 
     my $elements = $tmpl->getElementsByName('related_content') or return;
     my $related  = $elements->[0];
-    my $path     = File::Spec->catfile( $plugin->path, 'tmpl', 'widget.tmpl' );
-    my $include  = $tmpl->createElement( 'include', { name => $path } );
+    my $include  = $tmpl->createElement( 'include', { name => 'widget.tmpl', component => $plugin->id } );
     $related->appendChild($include);
 
     # Content Type Selector

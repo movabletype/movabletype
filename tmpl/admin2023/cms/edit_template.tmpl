@@ -620,7 +620,7 @@ function setSyntaxHighlight(on_or_off) {
            label_for="new_archive_type"
            label_class="top-label">
         <mt:if name="type" eq="ct">
-          <div class="font-weight-bold">
+          <div class="fw-bold">
           <__trans phrase="CONTENTTYPE_ADV">
           <input type="hidden" name="new_archive_type" id="new_archive_type" value="ContentType" />
           </div>
@@ -735,7 +735,7 @@ function setSyntaxHighlight(on_or_off) {
       <div class="mb-3">
         <div class="form-check">
           <input type="checkbox" id="server-side-include" name="include_with_ssi" class="form-check-input" value="1" onclick="toggleHidden('include_cache_path-field')"<mt:if name="include_with_ssi"> checked</mt:if> />
-          <label class="form-check-label form-label" for="server-side-include"><__trans phrase="Process as <strong>[_1]</strong> include" params="<$mt:var name="ssi_type"$>"></label>
+          <label class="form-check-label" for="server-side-include"><__trans phrase="Process as <strong>[_1]</strong> include" params="<$mt:var name="ssi_type"$>"></label>
         </div>
       </div>
     </mtapp:setting>
@@ -764,7 +764,7 @@ function setSyntaxHighlight(on_or_off) {
         <li>
           <div class="custom-control custom-radio">
             <input type="radio" value="0" name="cache_expire_type" id="no-cache" class="form-check-input" onclick="toggleCache('cache-none');"<mt:if name="cache_expire_type" eq="0"> checked="checked"</mt:if>>
-            <label class="form-check-label form-label" for="no-cache"><__trans phrase="No caching"></label>
+            <label class="form-check-label" for="no-cache"><__trans phrase="No caching"></label>
           </div>
         </li>
         <li>
@@ -772,7 +772,7 @@ function setSyntaxHighlight(on_or_off) {
             <div class="col">
               <div class="custom-control custom-radio">
                 <input type="radio" value="1" name="cache_expire_type" id="expire-time" class="form-check-input" onclick="toggleCache('expire-time');"<mt:if name="cache_expire_type" eq="1"> checked="checked"</mt:if>>
-                <label class="form-check-label form-label" for="expire-time"><__trans phrase="Expire after"></label>
+                <label class="form-check-label" for="expire-time"><__trans phrase="Expire after"></label>
               </div>
             </div>
             <div class="col">
@@ -792,20 +792,20 @@ function setSyntaxHighlight(on_or_off) {
         <li>
           <div class="custom-control custom-radio">
             <input type="radio" value="2" name="cache_expire_type" id="expire-event" class="form-check-input" onclick="toggleCache('expire-event');"<mt:if name="cache_expire_type" eq="2"> checked="checked"</mt:if>>
-            <label class="form-check-label form-label" for="expire-event"><__trans phrase="Expire upon creation or modification of:"></label>
+            <label class="form-check-label" for="expire-event"><__trans phrase="Expire upon creation or modification of:"></label>
           </div>
           <div id="cache-events" class="mb-3">
             <div class="form-check form-check-inline">
               <div class="form-check">
                 <input type="checkbox" value="entry" name="cache_expire_event" id="cache-event-entry" class="form-check-input" onclick=""<mt:if name="cache_expire_event_entry"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <label class="form-check-label form-label" for="cache-event-entry"><__trans phrase="Entry"></label>
+                <label class="form-check-label" for="cache-event-entry"><__trans phrase="Entry"></label>
               </div>
             </div>
             <mt:if name="enabled_plugins{Comments}">
             <div class="form-check form-check-inline">
               <div class="form-check">
                 <input type="checkbox" value="comment" name="cache_expire_event" id="cache-event-comment" class="form-check-input" onclick=""<mt:if name="cache_expire_event_comment"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <label class="form-check-label form-label" for="cache-event-comment"><__trans phrase="Comment"></label>
+                <label class="form-check-label" for="cache-event-comment"><__trans phrase="Comment"></label>
               </div>
             </div>
             </mt:if>
@@ -813,45 +813,45 @@ function setSyntaxHighlight(on_or_off) {
             <div class="form-check form-check-inline">
               <div class="form-check">
                 <input type="checkbox" value="tbping" name="cache_expire_event" id="cache-event-trackback" class="form-check-input" onclick=""<mt:if name="cache_expire_event_tbping"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <label class="form-check-label form-label" for="cache-event-trackback"><__trans phrase="TrackBack"></label>
+                <label class="form-check-label" for="cache-event-trackback"><__trans phrase="TrackBack"></label>
               </div>
             </div>
             </mt:if>
             <div class="form-check form-check-inline">
               <div class="form-check">
                 <input type="checkbox" value="page" name="cache_expire_event" id="cache-event-page" class="form-check-input" onclick=""<mt:if name="cache_expire_event_page"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <label class="form-check-label form-label" for="cache-event-page"><__trans phrase="Page"></label>
+                <label class="form-check-label" for="cache-event-page"><__trans phrase="Page"></label>
               </div>
             </div>
             <div class="form-check form-check-inline">
               <div class="form-check">
                 <input type="checkbox" value="author" name="cache_expire_event" id="cache-event-author" class="form-check-input" onclick=""<mt:if name="cache_expire_event_author"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <label class="form-check-label form-label" for="cache-event-author"><__trans phrase="User"></label>
+                <label class="form-check-label" for="cache-event-author"><__trans phrase="User"></label>
               </div>
             </div>
             <div class="form-check form-check-inline">
               <div class="form-check">
                 <input type="checkbox" value="category" name="cache_expire_event" id="cache-event-category" class="form-check-input" onclick=""<mt:if name="cache_expire_event_category"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <label class="form-check-label form-label" for="cache-event-category"><__trans phrase="Category"></label>
+                <label class="form-check-label" for="cache-event-category"><__trans phrase="Category"></label>
               </div>
             </div>
             <div class="form-check form-check-inline">
               <div class="form-check">
                 <input type="checkbox" value="folder" name="cache_expire_event" id="cache-event-folder" class="form-check-input" onclick=""<mt:if name="cache_expire_event_folder"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <label class="form-check-label form-label" for="cache-event-folder"><__trans phrase="Folder"></label>
+                <label class="form-check-label" for="cache-event-folder"><__trans phrase="Folder"></label>
               </div>
             </div>
             <div class="form-check form-check-inline">
               <div class="form-check">
                 <input type="checkbox" value="asset" name="cache_expire_event" id="cache-event-asset" class="form-check-input" onclick=""<mt:if name="cache_expire_event_asset"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <label class="form-check-label form-label" for="cache-event-asset"><__trans phrase="Asset"></label>
+                <label class="form-check-label" for="cache-event-asset"><__trans phrase="Asset"></label>
               </div>
             </div>
       <mt:loop name="cache_expire_event_ct_loop">
             <div class="form-check form-check-inline">
               <div class="form-check">
                 <input type="checkbox" value="<mt:var name="type" escape="html">" name="cache_expire_event" id="cache-event-<mt:var name="type" escape="html">" class="form-check-input"<mt:if name="enabled"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>>
-                <label class="form-check-label form-label" for="cache-event-<mt:var name="type" escape="html">"><mt:var name="label" escape="html"></Label>
+                <label class="form-check-label" for="cache-event-<mt:var name="type" escape="html">"><mt:var name="label" escape="html"></Label>
               </div>
             </div>
       </mt:loop>
@@ -1051,8 +1051,8 @@ function saveTemplatePrefs( sync ) {
         });
     }
     function toggleEditMapping(mapid) {
-      var content = jQuery("#edit-mapping-" + mapid);
-      if (content.hasClass('show')) {
+      var link = jQuery("#toggle_edit_mapping_" + mapid);
+      if (link.attr('aria-expanded') == 'false') {
         jQuery("#archive_file_sel_" + mapid).css("display", "none");
         jQuery("#archive_file_tmpl_" + mapid).css("display", "none");
         var label = jQuery("#archive_file_sel_" + mapid).val() ? jQuery("#archive_file_sel_" + mapid + " option:selected").text() : jQuery("#archive_file_tmpl_" + mapid).val();

@@ -4148,7 +4148,7 @@ sub _hdlr_app_contentfield_option_group {
      required="1"
      show_hint="1"
      hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-    <select ref="display" name="display" id="$type-display" class="custom-select form-control">
+    <select ref="display" name="display" id="$type-display" class="custom-select form-control form-select">
       <option value="force" selected={ options.displays.force }><__trans phrase="Force"></option>
       <option value="default"  selected={ options.displays.default }><__trans phrase="Default"></option>
       <option value="optional" selected={ options.displays.optional }><__trans phrase="Optional"></option>

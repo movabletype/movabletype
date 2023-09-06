@@ -864,7 +864,7 @@
         <li>
           <div class="form-check">
             <input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="form-check-input cb" />
-            <label class="form-check-label form-label" for="allow_comments"><__trans phrase="Accept Comments"></label>
+            <label class="form-check-label" for="allow_comments"><__trans phrase="Accept Comments"></label>
           </div>
         <mt:unless name="new_object">
           <span class="comments-link feedback-count">
@@ -878,7 +878,7 @@
         <li>
           <div class="form-check">
             <input type="checkbox" name="allow_pings" id="allow_pings" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="form-check-input cb" />
-            <label class="form-check-label form-label" for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
+            <label class="form-check-label" for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
           </div>
         <mt:unless name="new_object">
           <span class="pings-link feedback-count">
@@ -1465,10 +1465,10 @@ div.mce-notification-error {
             <div class="form-check form-check-inline">
             <mt:unless name="lock_field">
               <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="form-check-input cb" />
-              <label class="form-check-label form-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
+              <label class="form-check-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
             <mt:else>
               <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="form-check-input cb" />
-              <label class="form-check-label form-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
+              <label class="form-check-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
             </mt:unless>
             </div>
           </mt:unless>
@@ -1485,18 +1485,18 @@ div.mce-notification-error {
       <mt:if name="object_type" ne="page">
         <div class="form-check form-check-inline">
           <input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="form-check-input cb form-check-input" />
-          <label class="form-check-label form-label form-check-label" for="custom-prefs-category"><__trans phrase="Categories"></label>
+          <label class="form-check-label" for="custom-prefs-category"><__trans phrase="Categories"></label>
         </div>
       </mt:if>
       <mt:if name="enabled_plugins{Comments}">
         <div class="form-check form-check-inline">
           <input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="form-check-input cb form-check-input" />
-          <label class="form-check-label form-label form-check-label" for="custom-prefs-feedback"><__trans phrase="Comments"></label>
+          <label class="form-check-label" for="custom-prefs-feedback"><__trans phrase="Comments"></label>
         </div>
       </mt:if>
         <div class="form-check form-check-inline">
           <input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="form-check-input cb form-check-input" />
-          <label class="form-check-label form-label form-check-label" for="custom-prefs-assets"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label>
+          <label class="form-check-label" for="custom-prefs-assets"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label>
         </div>
       </div>
     </mtapp:setting>

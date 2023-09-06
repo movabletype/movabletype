@@ -24,12 +24,12 @@
     </div>
     <mt:if name="content_types">
     <div class="row mt-collapse mt-widget__contenttype__block">
-      <div class="col pe-0">
+      <div class="col ps-0 pe-0">
         <div class="row">
           <div><svg role="img" class="mt-icon--sm mt-icon--secondary me-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_contentdata"></use></svg><a data-bs-toggle="collapse" href="#collapseContentDataList_<mt:var name="blog_id">" aria-expanded="true" aria-controls="collapseContentDataList_<mt:var name="blog_id">"><__trans phrase="Content Data"><svg role="img" class="mt-icon--secondary"><title>Collapse</title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_collapse"></use></svg></a></div>
         </div>
 
-        <div class="row collapse show" id="collapseContentDataList_<mt:var name="blog_id">">
+        <div class="row ps-4 collapse show" id="collapseContentDataList_<mt:var name="blog_id">">
           <div class="col pe-0">
           <mt:Loop name="content_types">
             <div class="row mt-widget__contenttype">

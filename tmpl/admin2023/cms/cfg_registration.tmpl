@@ -42,7 +42,7 @@
   </mt:if>
     <div class="form-check">
       <input type="checkbox" id="allow_commenter_regist" name="allow_commenter_regist" value="1"<mt:if name="allow_commenter_regist"> checked="checked"</mt:if> class="form-check-input cb" />
-      <label class="form-check-label form-label" for="allow_commenter_regist">
+      <label class="form-check-label" for="allow_commenter_regist">
         <__trans phrase="Allow visitors to register as members of this site using one of the Authentication Methods selected below.">
       </label>
     </div>
@@ -94,7 +94,7 @@
       <li>
         <div class="form-check">
           <input type="checkbox" id="enabled_MovableType" class="form-check-input" name="enabled_MovableType" value="1"<mt:if name="enabled_MovableType"> checked="checked"</mt:if> />
-          <label class="form-check-label form-label" for="enabled_MovableType"><__trans phrase="Movable Type"></label>
+          <label class="form-check-label" for="enabled_MovableType"><__trans phrase="Movable Type"></label>
         </div>
       </li>
   <mt:if name="cmtauth_loop">
@@ -103,7 +103,7 @@
       <li>
         <div class="form-check">
           <input class="form-check-input" type="<mt:if name="label">checkbox<mt:else>hidden</mt:if>" id="enabled_<mt:var name="key" escape="html">" name="enabled_<mt:var name="key" escape="html">" value="1"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> />
-          <label class="form-check-label form-label" for="enabled_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label>
+          <label class="form-check-label" for="enabled_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label>
         </div>
         <mt:if name="disabled">
           (<mt:var name="disabled_reason" default="<__trans phrase="One or more Perl modules may be missing to use this authentication method.">">)
