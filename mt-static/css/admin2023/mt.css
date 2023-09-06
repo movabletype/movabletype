@@ -11335,6 +11335,7 @@ li {
 
 .mt-mobileGlobalMenu__dropdownMenu ul li {
   border-radius: 0 !important;
+  margin-bottom: 0;
 }
 
 .mt-mobileGlobalMenu__dropdownMenu ul li a, .mt-mobileGlobalMenu__dropdownMenu ul li span {
