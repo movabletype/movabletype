@@ -161,7 +161,7 @@ jQuery('.top-menu-item').on('click', function () {
   var event = new jQuery.Event('changePanel');
 
   var panelIdSelector = jQuery(this).data('panelId');
-  jQuery('a.left-menu-item[href=' + panelIdSelector + ']').trigger('click');
+  document.querySelector("a.left-menu-item[href='" + panelIdSelector + "']").click();
 
   jQuery('a.top-menu-item.btn-primary')
     .removeClass('btn-primary')

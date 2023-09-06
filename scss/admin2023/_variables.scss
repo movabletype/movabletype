@@ -63,7 +63,7 @@ $gray-200: #e9ecef !default;
 $gray-300: #dee2e6 !default;
 $gray-400: #ced4da !default;
 $gray-500: #adb5bd !default;
-$gray-600: #868e96 !default;
+$gray-600: #6c757d !default;
 $gray-700: #495057 !default;
 $gray-800: #343a40 !default;
 $gray-900: #212529 !default;
@@ -436,11 +436,12 @@ $gradient: linear-gradient(180deg, rgba($white, .15), rgba($white, 0)) !default;
 $spacer: 1rem !default;
 $spacers: (
   0: 0,
-  1: $spacer * .25,
-  2: $spacer * .5,
-  3: $spacer,
-  4: $spacer * 1.5,
-  5: $spacer * 3,
+  1: ($spacer * .125),
+  2: ($spacer * .25),
+  3: ($spacer * .5),
+  4: $spacer,
+  5: ($spacer * 1.5),
+  6: ($spacer * 2)
 ) !default;
 // scss-docs-end spacer-variables-maps
 
@@ -469,10 +470,10 @@ $body-text-align:           null !default;
 // Style anchor elements.
 
 $link-color:                              $primary !default;
-$link-decoration:                         underline !default;
+$link-decoration:                         none !default;
 $link-shade-percentage:                   20% !default;
 $link-hover-color:                        shift-color($link-color, $link-shade-percentage) !default;
-$link-hover-decoration:                   null !default;
+$link-hover-decoration:                   underline !default;
 
 $stretched-link-pseudo-element:           after !default;
 $stretched-link-z-index:                  1 !default;
@@ -526,7 +527,7 @@ $container-max-widths: (
 // Set the number of columns and specify the width of the gutters.
 
 $grid-columns:                12 !default;
-$grid-gutter-width:           1.5rem !default;
+$grid-gutter-width: 28px !default;
 $grid-row-columns:            6 !default;
 
 // Container padding
@@ -868,7 +869,7 @@ $form-text-color:                       $text-muted !default;
 $form-label-margin-bottom:              .5rem !default;
 $form-label-font-size:                  null !default;
 $form-label-font-style:                 null !default;
-$form-label-font-weight:                null !default;
+$form-label-font-weight:                600 !default;
 $form-label-color:                      null !default;
 // scss-docs-end form-label-variables
 
@@ -1481,6 +1482,10 @@ $modal-header-padding:              $modal-header-padding-y $modal-header-paddin
 $modal-footer-bg:                   null !default;
 $modal-footer-border-color:         $modal-header-border-color !default;
 $modal-footer-border-width:         $modal-header-border-width !default;
+
+.modal-footer {
+  --bs-modal-footer-gap: 0.5rem;
+}
 
 $modal-sm:                          300px !default;
 $modal-md:                          500px !default;

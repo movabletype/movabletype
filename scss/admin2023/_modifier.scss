@@ -662,6 +662,7 @@ li{
       @extend .list-group-item;
       @extend .p-0;
       border-radius: 0 !important;
+      margin-bottom: 0;
       a, span {
         @include text-truncate;
         display: block;
@@ -994,6 +995,9 @@ fieldset.form-group{
     padding: 2px 4px;
   }
 }
+.form-check-label{
+    margin-bottom: 0;
+}
 .text.low {
     min-height: 5em;
 }
@@ -1013,6 +1017,7 @@ fieldset.form-group{
   height: 0;
   width: 0;
   visibility: hidden;
+  padding: 0;
   + label {
     position: relative;
     width: 3rem;
@@ -1071,7 +1076,7 @@ fieldset.form-group{
 }
 .btn__mobile {
   @extend .btn;
-  @include media-breakpoint-down(sm) {
+  @include media-breakpoint-down(md) {
     margin-bottom: 0.5rem;
     width: 100%;
   }
@@ -1083,6 +1088,16 @@ fieldset.form-group{
   &:hover{
     border-color: map-get($theme-colors, "primary");
     background: $gray-lightest;
+  }
+  &:focus{
+    box-shadow: $input-focus-box-shadow;
+    border-color: $gray;
+    background: $white;
+  }
+  &:focus-visible{
+    outline: -webkit-focus-ring-color auto 1px;
+    border-color: $gray;
+    background: $white;
   }
 }
 .btn-group-space{
@@ -1172,6 +1187,15 @@ fieldset.form-group{
 }
 
 /* Tables */
+.table{
+  th, td{
+    vertical-align: top;
+  }
+  thead th{
+    vertical-align: bottom;
+  }
+}
+
 .mt-table--outline{
   @extend .card;
 }
@@ -1637,7 +1661,7 @@ fieldset.form-group{
 }
 
 /* Modal */
-@include media-breakpoint-down(sm) {
+@include media-breakpoint-down(md) {
   .modal-dialog {
     margin: 0.25rem;
     max-width: 100%;
@@ -2066,13 +2090,17 @@ ul.asset-list li img.list-image {
   padding-top: 0;
   padding-bottom: 0;
 }
+.custom-control .form-check-label input[type=text] {
+  padding-top: 0;
+  padding-bottom: 0;
+}
 
 .panel-description {
   .view-site-link {
     float: right;
     margin: 4px 2px 0 4px;
     img {
-      background-image: url(../images/status_icons/view.gif);
+      background-image: url(../../images/status_icons/view.gif);
     }
   }
 }
@@ -2193,4 +2221,8 @@ $target_sides : (
 
 li.nav-item {
   margin-bottom: -1px;
+}
+
+.app-setting {
+  margin-bottom: 2rem;
 }

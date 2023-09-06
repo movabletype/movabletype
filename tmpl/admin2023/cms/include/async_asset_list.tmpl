@@ -38,10 +38,10 @@
           <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" width="16" height="16" />
           <__trans phrase="Loading...">
         </div>
-        <div class="col-auto mx-auto mt-5 mt-md-3">
+        <div class="pagination_container col-auto mx-auto mt-5 mt-md-3">
           <nav aria-label="Asset List">
             <ul class="pagination d-none d-md-flex"></ul>
-            <ul class="pagination__mobile d-md-none"></ul>
+            <ul class="pagination__mobile d-md-none d-flex"></ul>
           </nav>
         </div>
 </mt:setvarblock>
@@ -72,7 +72,7 @@
                 <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
                 <div class="form-check">
                   <input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="form-check-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
-                  <label class="form-check-label form-label" for="asset-select-<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+                  <label class="form-check-label" for="asset-select-<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
                 </div>
               </td>
     <mt:else>
@@ -80,7 +80,7 @@
                 <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
                 <div class="custom-control custom-radio">
                   <input type="radio" name="id" value="<mt:var name="id" escape="html">" class="form-check-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
-                  <label class="form-check-label form-label" for="asset-select-<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
+                  <label class="form-check-label" for="asset-select-<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
                 </div>
               </td>
     </mt:if>
@@ -145,8 +145,7 @@ var currentPage = 1;
 
 function loadAssetList(offset) {
   jQuery('.indicator, #listing-table-overlay').show();
-  jQuery('ul.pagination').hide();
-  jQuery('ul.pagination__mobile').hide();
+  jQuery('.pagination_container').hide();
   jQuery('#asset-class').attr("disabled", "disabled");
   jQuery('#search').attr("disabled", "disabled");
   jQuery('#search-button').attr("disabled", "disabled");
@@ -217,8 +216,7 @@ function loadAssetList(offset) {
     complete: function() {
       jQuery('.indicator, #listing-table-overlay').hide();
       if (canPaginate) {
-        jQuery('ul.pagination').show();
-        jQuery('ul.pagination__mobile').show();
+        jQuery('.pagination_container').show();
       }
       jQuery('#asset-class').prop('disabled', false);
       jQuery('#search').prop('disabled', false);
