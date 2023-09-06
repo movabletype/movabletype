@@ -96,7 +96,7 @@ function toggleHidden( ids ) {
         <div class="mb-3 field-header">
             <div class="custom-control custom-radio">
               <input type="radio" name="refresh_type" id="refresh_type_refresh" class="form-check-input" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" aria-describedby="refreshTemplates" />
-              <label class="form-check-label form-label" for="refresh_type_refresh"><$mt:var name="refresh_label"$></label>
+              <label class="form-check-label" for="refresh_type_refresh"><$mt:var name="refresh_label"$></label>
             </div>
         </div>
     </mtapp:setting>
@@ -112,7 +112,7 @@ function toggleHidden( ids ) {
         <div class="mb-3 field-header">
             <div class="custom-control custom-radio">
               <input type="radio" name="refresh_type" id="refresh_type_clean" class="form-check-input" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" />
-              <label class="form-check-label form-label" for="refresh_type_clean"><$mt:var name="new_label"$></label>
+              <label class="form-check-label" for="refresh_type_clean"><$mt:var name="new_label"$></label>
             </div>
         </div>
     </mtapp:setting>
@@ -120,7 +120,7 @@ function toggleHidden( ids ) {
         <div class="mb-3">
             <div class="form-check">
                 <input type="checkbox" id="backup" class="form-check-input" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" aria-describedby="cleanStart" />
-                <label class="form-check-label form-label" for="backup">
+                <label class="form-check-label" for="backup">
                     <__trans phrase="Make backups of existing templates first">
                 </label>
             </div>

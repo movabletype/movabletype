@@ -218,7 +218,7 @@
       <div class="use-subdomain option">
         <div class="form-check">
           <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="form-check-input cb" />
-          <label class="form-check-label form-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+          <label class="form-check-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
         </div>
       </div>
       </mt:unless>
@@ -240,7 +240,7 @@
       <div class="use-subdomain option">
         <div class="form-check">
           <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1"<mt:if name="use_subdomain"> checked="checked"</mt:if> class="form-check-input cb" />
-          <label class="form-check-label form-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+          <label class="form-check-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
         </div>
       </div>
       </mt:unless>
@@ -262,7 +262,7 @@
       <div class="use-subdomain option">
         <div class="form-check">
           <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1"<mt:if name="use_subdomain"> checked="checked"</mt:if> class="form-check-input cb" />
-          <label class="form-check-label form-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+          <label class="form-check-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
         </div>
       </div>
       </mt:unless>
@@ -302,7 +302,7 @@
       <div class="use-absolute option">
         <div class="form-check">
           <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="form-check-input cb" />
-          <label class="form-check-label form-label" for="use_absolute"><__trans phrase="Use absolute path"></label>
+          <label class="form-check-label" for="use_absolute"><__trans phrase="Use absolute path"></label>
         </div>
       </div>
       </mt:if></mt:if>
@@ -332,7 +332,7 @@
        show_label="0">
       <div class="form-check">
         <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="form-check-input cb" data-bs-target="#enable_archive_paths_prefs" data-bs-toggle="collapse" aria-expanded="<mt:if name="eanble_archive_paths">true<mt:else>false</mt:if>" aria-controls="enable_archive_paths_prefs" />
-        <label class="form-check-label form-label" for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
+        <label class="form-check-label" for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
       </div>
     </mtapp:setting>
 
@@ -363,7 +363,7 @@
         <div class="use-subdomain option">
           <div class="form-check">
             <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" checked="checked" class="form-check-input cb" />
-            <label class="form-check-label form-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+            <label class="form-check-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
           </div>
         </div>
         </mt:unless>
@@ -385,7 +385,7 @@
         <div class="use-subdomain option">
           <div class="form-check">
             <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="form-check-input cb" />
-            <label class="form-check-label form-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+            <label class="form-check-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
           </div>
         </div>
         </mt:unless>
@@ -409,7 +409,7 @@
         <div class="use-subdomain option">
           <div class="form-check">
             <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="form-check-input cb" />
-            <label class="form-check-label form-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+            <label class="form-check-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
           </div>
         </div>
         </mt:unless>
@@ -431,7 +431,7 @@
         <div class="use-subdomain option">
           <div class="form-check">
             <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="form-check-input cb" />
-            <label class="form-check-label form-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+            <label class="form-check-label" for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
           </div>
         </div>
         </mt:unless>
@@ -472,7 +472,7 @@
         <div class="use-absolute option">
           <div class="form-check">
             <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> class="form-check-input cb" />
-            <label class="form-check-label form-label" for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
+            <label class="form-check-label" for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
           </div>
         </div>
           </mt:unless>
@@ -515,13 +515,13 @@
         <li>
           <div class="form-check">
             <input type="checkbox" id="dynamic_cache" class="form-check-input" name="dynamic_cache" <mt:if name="dynamic_caching">checked="checked"</mt:if>/>
-            <label class="form-check-label form-label" for="dynamic_cache"><__trans phrase="Enable dynamic cache"></label>
+            <label class="form-check-label" for="dynamic_cache"><__trans phrase="Enable dynamic cache"></label>
           </div>
         </li>
         <li>
           <div class="form-check">
             <input type="checkbox" id="dynamic_conditional" class="form-check-input" name="dynamic_conditional" <mt:if name="dynamic_conditional">checked="checked"</mt:if>/>
-            <label class="form-check-label form-label" for="dynamic_conditional"><__trans phrase="Enable conditional retrieval"></label>
+            <label class="form-check-label" for="dynamic_conditional"><__trans phrase="Enable conditional retrieval"></label>
           </div>
         </li>
       </ul>
@@ -573,7 +573,7 @@
       <div class="mb-3">
         <div class="form-check">
           <input id="publish_empty_archive" class="form-check-input" type="checkbox" name="publish_empty_archive" value="1"<mt:if name="publish_empty_archive"> checked="checked"</mt:if> />
-          <label class="form-check-label form-label" for="publish_empty_archive"><__trans phrase="Publish category archive without entries/content data"></label>
+          <label class="form-check-label" for="publish_empty_archive"><__trans phrase="Publish category archive without entries/content data"></label>
         </div>
       </div>
     </mtapp:setting>
@@ -601,7 +601,7 @@
       <div class="mb-3">
         <div class="form-check">
           <input id="include_cache" class="form-check-input" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if> />
-          <label class="form-check-label form-label" for="include_cache">
+          <label class="form-check-label" for="include_cache">
             <__trans phrase="Allow properly configured template modules to be cached to enhance publishing performance.">
           </label>
         </div>
@@ -626,7 +626,7 @@
       <div class="mb-3">
         <div class="form-check">
           <input type="checkbox" value="1" name="use_revision" class="form-check-input" id="use-revision"<mt:if name="use_revision"> checked="checked"</mt:if><mt:unless name="master_revision_switch"> disabled="disabled"</mt:unless> data-bs-toggle="collapse" data-bs-target="#use-revision-option" aria-expanded="<mt:if name="use_revision">true<mt:else>false</mt:if>" aria-controls="use-revision-option" />
-          <label class="form-check-label form-label" for="use-revision"><__trans phrase="Enable revision history"></label>
+          <label class="form-check-label" for="use-revision"><__trans phrase="Enable revision history"></label>
         </div>
       </div>
     </mtapp:setting>
@@ -681,7 +681,7 @@
         <div class="mb-3 col">
           <div class="form-check">
             <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="form-check-input cb" />
-            <label class="form-check-label form-label" for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>
+            <label class="form-check-label" for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>
           </div>
         </div>
       </div>
@@ -693,7 +693,7 @@
       <div class="mb-3">
         <div class="form-check">
           <input type="checkbox" name="auto_rename_non_ascii" id="auto_rename_non_ascii" value="1"<mt:if name="auto_rename_non_ascii"> checked="checked"</mt:if> class="form-check-input cb" />
-          <label class="form-check-label form-label" for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
+          <label class="form-check-label" for="auto_rename_non_ascii"><__trans phrase="Rename non-ascii filename automatically"></label>
         </div>
       </div>
     </mtapp:setting>
@@ -713,7 +713,7 @@
       <div class="mb-3">
         <div class="form-check">
           <input type="checkbox" name="normalize_orientation" id="normalize_orientation" value="1"<mt:if name="normalize_orientation"> checked="checked"</mt:if> class="form-check-input cb" />
-          <label class="form-check-label form-label" for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
+          <label class="form-check-label" for="normalize_orientation"><__trans phrase="Enable orientation normalization"></label>
         </div>
       </div>
     </mtapp:setting>
