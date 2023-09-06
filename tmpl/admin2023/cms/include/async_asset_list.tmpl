@@ -504,7 +504,7 @@ jQuery('#asset-table').on('click', 'td.cb', function (e) {
   if (e.target.tagName == 'INPUT' && (e.target.type == 'checkbox' || e.target.type == 'radio')) {
     return;
   }
-  var $input = jQuery(this).find('div.custom-control input');
+  var $input = jQuery(this).find('div.form-check input');
   $input.trigger('click');
 
   MT.Util.refreshModalBodyOnIos();
