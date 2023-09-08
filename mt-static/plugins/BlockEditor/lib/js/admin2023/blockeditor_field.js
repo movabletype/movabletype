@@ -44,15 +44,15 @@
             field_content.attr('id', 'contentblock-' + id + '-wrapper');
             field_content.append(edit_field_input);
 
-            var popover_content = '<ul class="mt-contentblock__popover"><li><a href="#" class="remove_field">' + trans('Delete') + '</a>';
-            if(field_instance.get_edit_field){
-                popover_content += '<li><a href="#" class="edit_field">' + trans('Edit') + '</a></li>';
+            var popover_content = $('<ul class="mt-contentblock__popover"></ul>');
+            popover_content.append('<li><a href="#" class="remove_field">' + trans('Delete') + '</a></li>');
+            if (field_instance.get_edit_field) {
+                popover_content.append('<li><a href="#" class="edit_field">' + trans('Edit') + '</a></li>');
             }
-            popover_content += '</ul>';
 
 
             field_content.popover({
-                content: popover_content,
+                content: popover_content.get(0),
                 placement: 'top',
                 html: true
             });
