@@ -39,7 +39,7 @@
             if (edit_field_input.find('.mt-contentblock__embed').length > 0){
                 class_name = 'mt-contentblock__block w-100'
             }
-            var field_content = $('<div data-toggle="popover"' + self.id + '"></div>');
+            var field_content = $('<div></div>');
             field_content.addClass(class_name);
             field_content.attr('id', 'contentblock-' + id + '-wrapper');
             field_content.append(edit_field_input);
