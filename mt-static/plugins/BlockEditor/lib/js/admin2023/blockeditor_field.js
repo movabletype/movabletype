@@ -50,30 +50,30 @@
                 popover_content.append('<li><a href="#" class="edit_field">' + trans('Edit') + '</a></li>');
             }
 
+            // remove field
+            popover_content.find('.remove_field').on('click', function(){
+                field_content.popover('hide');
+                $('#contentblock-'+ id + '-wrapper').remove();
+                delete_clallback(id);
+                return false;
+            });
+            // edit field
+            popover_content.find('.edit_field').on('click', function(){
+                field_content.popover('hide');
+                var modal = new MT.ModalWindow();
+                field_instance.edit_field(modal,field_instance,id, data);
+                return false;
+            });
 
             field_content.popover({
                 content: popover_content.get(0),
                 placement: 'top',
                 html: true
             });
+
             field_content.on('shown.bs.popover', function () {
-                var popover = $(this);
-                // remove field
-                $('.popover').find('.remove_field').on('click', function(){
-                    popover.popover('hide');
-                    $('#contentblock-'+ id + '-wrapper').remove();
-                    delete_clallback(id);
-                    return false;
-                });
-                // edit field
-                $('.popover').find('.edit_field').on('click', function(){
-                    popover.popover('hide');
-                    var modal = new MT.ModalWindow();
-                    field_instance.edit_field(modal,field_instance,id, data);
-                    return false;
-                });
                 $(document).one('click', function(){
-                    popover.popover('hide');
+                    field_content.popover('hide');
                     return false;
                 });
             });
