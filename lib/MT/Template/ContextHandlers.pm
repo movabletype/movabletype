@@ -3775,9 +3775,9 @@ sub _hdlr_app_form {
     my @fields;
     my $token     = $ctx->var('magic_token');
     my $return    = $ctx->var('return_args');
-    my $id        = $args->{object_id} || $ctx->var('id');
-    my $blog_id   = $args->{blog_id} || $ctx->var('blog_id');
-    my $type      = $args->{object_type} || $ctx->var('type');
+    my $id        = encode_html($args->{object_id} || $ctx->var('id'));
+    my $blog_id   = encode_html($args->{blog_id} || $ctx->var('blog_id'));
+    my $type      = encode_html($args->{object_type} || $ctx->var('type'));
     my $form_id   = $args->{id} || $type . '-form';
     my $form_name = $args->{name} || $args->{id};
     my $enctype
