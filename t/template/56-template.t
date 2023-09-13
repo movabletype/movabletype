@@ -12,23 +12,92 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test;
 use MT::Template;
+use MT::Template::Node ':constants';
+MT->instance;
 
-use MT::App::CMS;
-my $app = MT->new;
+subtest 'getElementsByTagName' => sub {
+    my $tmpl = MT::Template->new_string( \<<__TMPL__);
+    <mt:setvar name="foo" value="foo_value">
+    <mt:setvar name="bar" value="bar_value">
 
-{
-    note('getElementsByName:');
+    <mt:if name="foo">
+      <mt:if name="bar">
+        <mt:var name="foo">
 
+        Contents
+
+        <mt:var name="bar">
+        <mt:include name="include/actions_bar.tmpl">
+      </mt:if>
+    </mt:if>
+
+    <mt:var name="bar">
+__TMPL__
+
+    my %map = (
+        'setvar'  => 2,
+        'var'     => 3,
+        'unknown' => undef,
+    );
+
+    for my $tag ( sort keys %map ) {
+        my $expected = $map{$tag};
+        my $elms     = $tmpl->getElementsByTagName($tag);
+        if ( defined($expected) ) {
+            is( scalar @$elms, $expected, qq(for "$tag" is $expected) );
+        }
+        else {
+            is( $elms, undef, qq(for "$tag" is undef) );
+        }
+    }
+};
+
+subtest 'getElementsByClassName' => sub {
+    my $tmpl = MT::Template->new_string( \<<__TMPL__);
+    <mtapp:statusmsg id="generic-error" class="error">Error</mtapp:statusmsg>
+    <mtapp:statusmsg id="saved" class="success">Saved</mtapp:statusmsg>
+    <mtapp:statusmsg id="deleted" class="success">Deleted</mtapp:statusmsg>
+
+    <mt:if name="foo">
+      <mt:if name="bar">
+        <mtapp:statusmsg id="changed" class="success">Changed</mtapp:statusmsg>
+        <mtapp:statusmsg id="not_found" class="error">Not Found</mtapp:statusmsg>
+      </mt:if>
+    </mt:if>
+__TMPL__
+
+    my %map = (
+        'success' => 3,
+        'error'   => 2,
+        'unknown' => undef,
+    );
+
+    for my $class ( sort keys %map ) {
+        my $expected = $map{$class};
+        my @elms     = $tmpl->getElementsByClassName($class);
+        if ( defined($expected) ) {
+            is( scalar @elms, $expected, qq(for "$class" is $expected) );
+        }
+        else {
+            is( scalar @elms, 0, qq(for "$class" is 0) );
+        }
+    }
+};
+
+subtest 'getElementsByName' => sub {
     my $tmpl = MT::Template->new_string( \<<__TMPL__);
     <mt:include name="include/header.tmpl" />
 
-    <mt:include name="include/actions_bar.tmpl" />
+    <mt:if name="foo">
+      <mt:if name="bar">
+        <mt:include name="include/actions_bar.tmpl" />
 
-    Contents
+        Contents
 
-    <mt:include name="include/actions_bar.tmpl" />
+        <mt:include name="include/actions_bar.tmpl" />
+      </mt:if>
+    </mt:if>
 
     <mt:include name="include/footer.tmpl" />
 __TMPL__
@@ -49,6 +118,152 @@ __TMPL__
             is( $elms, undef, qq(for "$name" is undef) );
         }
     }
-}
+};
+
+subtest 'getElementById' => sub {
+    my $tmpl = MT::Template->new_string( \<<__TMPL__);
+    <mt:setvarblock id="header" name="header"></mt:setvarblock>
+    <mt:if name="foo">
+      <mt:if name="bar">
+        <mt:setvarblock id="content" name="content">
+          Content
+        </mt:setvarblock>
+      </mt:if>
+    </mt:if>
+    <mt:setvarblock id="footer" name="footer"></mt:setvarblock>
+__TMPL__
+
+    my %map = (
+        'header'  => 1,
+        'footer'  => 1,
+        'content' => 1,
+        'unknown' => undef,
+    );
+
+    for my $id ( sort keys %map ) {
+        my $expected = $map{$id};
+        my $elm      = $tmpl->getElementById($id);
+        if ($expected) {
+            ok( $elm && (ref $elm eq 'MT::Template::Node'), qq(for "$id" is a node) );
+        }
+        else {
+            ok( !$elm, qq(for "$id" is undef) );
+        }
+    }
+};
+
+subtest 'insertAfter' => sub {
+    my $tmpl = MT::Template->new_string( \<<__TMPL__);
+    <mt:setvarblock name="foo">
+      <div>Foo</div>
+    </mt:setvarblock>
+    <mt:setvarblock name="bar">
+      <div>Bar
+      <mt:if name="foo">
+        <mt:setvarblock name="inside_bar">
+          <div>Inside Bar</div>
+        </mt:setvarblock>
+        <mt:var id="inside_bar" name="inside_bar">
+      </mt:if>
+      </div>
+    </mt:setvarblock>
+    <mt:setvarblock name="baz">
+      <div>Baz</div>
+    </mt:setvarblock>
+    <mt:var name="foo">
+    <mt:var id="bar" name="bar">
+    <mt:var name="baz">
+__TMPL__
+
+    subtest 'insert into the top' => sub {
+        ok my $new  = $tmpl->createTextNode('<div>First</div>'), 'created a node';
+        ok my $node = $tmpl->getElementById('bar'), 'found a node';
+        ok $tmpl->insertAfter($new, $node), "insertAfter succeeds";
+        my $html = $tmpl->output;
+        $html =~ s/\s//gs;
+        is $html => '<div>Foo</div><div>Bar<div>InsideBar</div></div><div>First</div><div>Baz</div>', 'new node is inserted';
+    };
+
+    subtest 'insert into a child' => sub {
+        ok my $new  = $tmpl->createTextNode('<div>Second</div>'), 'created a node';
+        ok my $node = $tmpl->getElementById('inside_bar'), 'found a node';
+        ok $tmpl->insertAfter($new, $node), "insertAfter succeeds";
+        my $html = $tmpl->output;
+        $html =~ s/\s//gs;
+        is $html => '<div>Foo</div><div>Bar<div>InsideBar</div><div>Second</div></div><div>First</div><div>Baz</div>', 'new node is inserted';
+    }
+};
+
+subtest 'insertBefore' => sub {
+    my $tmpl = MT::Template->new_string( \<<__TMPL__);
+    <mt:setvarblock name="foo">
+      <div>Foo</div>
+    </mt:setvarblock>
+    <mt:setvarblock name="bar">
+      <div>Bar
+      <mt:if name="foo">
+        <mt:setvarblock name="inside_bar">
+          <div>Inside Bar</div>
+        </mt:setvarblock>
+        <mt:var id="inside_bar" name="inside_bar">
+      </mt:if>
+      </div>
+    </mt:setvarblock>
+    <mt:setvarblock name="baz">
+      <div>Baz</div>
+    </mt:setvarblock>
+    <mt:var name="foo">
+    <mt:var id="bar" name="bar">
+    <mt:var name="baz">
+__TMPL__
+
+    subtest 'insert into the top' => sub {
+        ok my $new  = $tmpl->createTextNode('<div>First</div>'), 'created a node';
+        ok my $node = $tmpl->getElementById('bar'), 'found a node';
+        ok $tmpl->insertBefore($new, $node), "insertBefore succeeds";
+        my $html = $tmpl->output;
+        $html =~ s/\s//gs;
+        is $html => '<div>Foo</div><div>First</div><div>Bar<div>InsideBar</div></div><div>Baz</div>', 'new node is inserted';
+    };
+
+    subtest 'insert into a child' => sub {
+        ok my $new  = $tmpl->createTextNode('<div>Second</div>'), 'created a node';
+        ok my $node = $tmpl->getElementById('inside_bar'), 'found a node';
+        ok $tmpl->insertBefore($new, $node), "insertBefore succeeds";
+        my $html = $tmpl->output;
+        $html =~ s/\s//gs;
+        is $html => '<div>Foo</div><div>First</div><div>Bar<div>Second</div><div>InsideBar</div></div><div>Baz</div>', 'new node is inserted';
+    }
+};
+
+subtest 'appendChild' => sub {
+    my $tmpl = MT::Template->new_string( \<<__TMPL__);
+    <mt:setvarblock name="foo">
+      <div>Foo</div>
+    </mt:setvarblock>
+    <mt:setvarblock name="bar">
+      <div>Bar
+      <mt:if name="foo">
+        <mt:setvarblock name="inside_bar">
+          <div>Inside Bar</div>
+        </mt:setvarblock>
+        <mt:var id="inside_bar" name="inside_bar">
+      </mt:if>
+      </div>
+    </mt:setvarblock>
+    <mt:setvarblock name="baz">
+      <div>Baz</div>
+    </mt:setvarblock>
+    <mt:var name="foo">
+    <mt:var id="bar" name="bar">
+    <mt:var name="baz">
+__TMPL__
+
+    ok my $new = $tmpl->createTextNode('<div>Appended</div>'), 'created a node';
+    ok $tmpl->appendChild($new), "appendChild succeeds";
+    my $html = $tmpl->output;
+    $html =~ s/\s//gs;
+    is $html => '<div>Foo</div><div>Bar<div>InsideBar</div></div><div>Baz</div><div>Appended</div>', 'new node is inserted';
+};
 
 done_testing();
