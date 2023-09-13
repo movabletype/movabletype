@@ -1066,7 +1066,7 @@ sub insertAfter {
     my ( $node1, $node2 ) = @_;
     my $parent_node
         = $node2 && $node2->[EL_NODE_PARENT] ? $node2->[EL_NODE_PARENT] : $tmpl;
-    my $parent_array = ref $parent_node eq 'ARRAY' ? $parent_node->[EL_NODE_PARENT] : $parent_node->childNodes;
+    my $parent_array = ref $parent_node eq 'ARRAY' ? $parent_node->[EL_NODE_CHILDREN] : $parent_node->childNodes;
     if (ref $parent_array eq 'MT::Template') {
         $parent_array = $parent_array->childNodes;
     }
