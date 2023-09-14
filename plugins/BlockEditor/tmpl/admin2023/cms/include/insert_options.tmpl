@@ -12,9 +12,9 @@
 
   <mt:if name="do_thumb">
   <div class="form-group">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="asset-option-thumbnail" name="thumb-<$mt:var name="id"$>" value="1" <mt:if name="make_thumb">checked="checked" </mt:if> onclick="MT.Util.refreshModalBodyOnIos();">
-        <label class="custom-control-label" for="asset-option-thumbnail"><__trans phrase="Use thumbnail"></label>
+      <div class="custom-control custom-checkbox form-check">
+        <input type="checkbox" class="form-check-input" id="asset-option-thumbnail" name="thumb-<$mt:var name="id"$>" value="1" <mt:if name="make_thumb">checked="checked" </mt:if> onclick="MT.Util.refreshModalBodyOnIos();">
+        <label class="form-check-label" for="asset-option-thumbnail"><__trans phrase="Use thumbnail"></label>
       </div>
   </div>
   </mt:if>
