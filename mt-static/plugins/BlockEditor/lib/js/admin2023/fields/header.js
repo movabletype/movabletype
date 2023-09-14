@@ -43,7 +43,7 @@
         get_edit_field: function(){
             var self = this;
             self.options_field = $('<div class="edit_field form-group"></div>');
-            var elm_select = $('<div class="form-group"><label class="form-control-label" for="' + self.id + '-element">' + trans('Heading Level') + '</label><select class="custom-select form-control w-100" name="' + self.id + '-element"  mt:watch-change="1"></select></div>');
+            var elm_select = $('<div class="form-group"><label class="form-control-label" for="' + self.id + '-element">' + trans('Heading Level') + '</label><select class="custom-select form-control form-select w-100" name="' + self.id + '-element"  mt:watch-change="1"></select></div>');
 
             var elms = ['h1','h2','h3','h4','h5','h6'];
             elms.forEach(function(elm){
