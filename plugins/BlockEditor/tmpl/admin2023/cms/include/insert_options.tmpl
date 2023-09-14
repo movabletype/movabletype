@@ -1,0 +1,81 @@
+<div class="col-12 col-md">
+
+  <div class="form-group">
+    <label class="form-control-label"><__trans phrase="Alt"></label>
+    <input type="text" name="asset-option-alt-<$mt:var name="id"$>" id="asset-option-alt" value="<mt:var name="alt" escape="html">" class="form-control">
+  </div>
+
+  <div class="form-group">
+    <label class="form-control-label"><__trans phrase="Title"></label>
+    <input type="text" name="asset-option-title-<$mt:var name="id"$>" id="asset-option-title" value="<mt:var name="title" escape="html">" class="form-control">
+  </div>
+
+  <mt:if name="do_thumb">
+  <div class="form-group">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="asset-option-thumbnail" name="thumb-<$mt:var name="id"$>" value="1" <mt:if name="make_thumb">checked="checked" </mt:if> onclick="MT.Util.refreshModalBodyOnIos();">
+        <label class="custom-control-label" for="asset-option-thumbnail"><__trans phrase="Use thumbnail"></label>
+      </div>
+  </div>
+  </mt:if>
+</div>
+<div class="col-12 col-md">
+  <div class="form-group">
+      <label class="form-control-label"><__trans phrase="width:"></label>
+      <div class="input-group">
+        <input type="number" name="thumb_width-<$mt:var name="id"$>" class="form-control" name="asset-option-width" id="asset-option-width" value="<mt:var name="width" escape="html">" mt:watch-change="1">
+        <div class="input-group-append"><span class="input-group-text">px</span></div>
+      </div>
+  </div>
+  <div class="form-group alignbutton">
+    <button type="button" class="btn btn-default p-1 alignleft<mt:if name="align" eq="left"> active</mt:if>" data-align="left" title="<__trans phrase="Align Left">" data-toggle="button" aria-pressed="false" >
+      <svg role="img" class="mt-icon">
+        <title><__trans phrase="Align Left"></title>
+        <use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_alignleft"></use>
+      </svg>
+    </button>
+    <button type="button" class="btn btn-default p-1 aligncenter<mt:if name="align" eq="center"> active</mt:if>" data-align="center" title="<__trans phrase="Align Center">" data-toggle="button" aria-pressed="false" >
+      <svg role="img" class="mt-icon">
+        <title><__trans phrase="Align Center"></title>
+        <use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_aligncenter"></use>
+      </svg>
+    </button>
+    <button type="button" class="btn btn-default p-1 alignright<mt:if name="align" eq="right"> active</mt:if>" data-align="right" title="<__trans phrase="Align Right">" data-toggle="button" aria-pressed="false" >
+      <svg role="img" class="mt-icon">
+        <title><__trans phrase="Align Right"></title>
+        <use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_alignright"></use>
+      </svg>
+    </button>
+    <button type="button" class="btn btn-default p-1 alignnone<mt:if name="align" eq="noen"> active</mt:if>" data-align="none" title="<__trans phrase="None">" data-toggle="button" aria-pressed="false" >
+      <svg role="img" class="mt-icon">
+        <title><__trans phrase="None"></title>
+        <use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_alignnone"></use>
+      </svg>
+    </button>
+    <input type="hidden" name="asset-option-align-<$mt:var name="id"$>" value="<mt:if name="align"><mt:var name="align" escape="html"></mt:if>">
+  </div>
+  <div class="form-group">
+    <label class="form-control-label"><__trans phrase="Caption"></label>
+    <input type="text" name="asset-option-caption-<$mt:var name="id"$>" id="asset-option-caption-<$mt:var name="id"$>" value="<mt:var name="caption" escape="html">" class="form-control">
+  </div>
+
+</div>
+<script>
+jQuery('.alignbutton button').each(function(){
+  jQuery(this).on('click', function(){
+    jQuery('.alignbutton button').removeClass('btn-contentblock--selected');
+    jQuery(this).addClass('btn-contentblock--selected');
+    jQuery('[name="asset-option-align-<$mt:var name="id"$>"]').val(jQuery(this).data("align"));
+    return false;
+  });
+});
+<mt:if name="align">
+setTimeout(function(){
+  jQuery('[data-align="<mt:var name="align" escape="html">"]').trigger('click');
+},0);
+</mt:if>
+
+jQuery(function () {
+  jQuery('.modal-blockeditor .modal-body:visible').scrollTop(0);
+});
+</script>
