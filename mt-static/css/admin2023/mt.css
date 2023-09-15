@@ -12582,6 +12582,11 @@ button.close, .btn-close {
   background: none !important;
 }
 
+button.close:hover, .btn-close:hover {
+  color: #000000;
+  text-shadow: 0 1px 0 #FFFFFF;
+}
+
 .mt-icon, .mt-icon--primary, .mt-icon--secondary, .mt-icon--success, .mt-icon--info, .mt-icon--warning, .mt-icon--danger, .mt-icon--inverse {
   position: relative;
   height: 24px;
