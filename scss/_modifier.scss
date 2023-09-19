@@ -1632,6 +1632,25 @@ fieldset.form-group{
     color: $black;
   }
 }
+.multi_line_text-field-container {
+  .nav-tabs {
+    .nav-item {
+      margin-bottom: -2px;
+    }
+    .nav-link {
+      &.active{
+        border-color: $input-border-color $input-border-color #fff;
+        &:hover{
+          border-color: $input-border-color $input-border-color #fff;
+        }
+      }
+      &:hover{
+        border-color: $gray $gray #fff;
+      }
+    }
+  }
+}
+
 
 /* Modal */
 @include media-breakpoint-down(sm) {
