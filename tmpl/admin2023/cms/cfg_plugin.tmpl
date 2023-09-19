@@ -235,7 +235,7 @@ function toggleAdvancedPrefs(evt, c) {
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-if ( location.hash ) {
+if ( location.hash && location.hash.search(/^#plugin-[0-9a-f]{40}$/) != -1 ) {
   // Open plugin contents.
   jQuery('a'+location.hash).get(0).click();
 
