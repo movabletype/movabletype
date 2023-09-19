@@ -1645,7 +1645,7 @@ fieldset.form-group{
         }
       }
       &:hover{
-        border-color: $gray $gray #fff;
+        border-color: $input-border-color $input-border-color #fff;
       }
     }
   }
