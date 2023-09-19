@@ -1089,15 +1089,8 @@ fieldset.form-group{
     border-color: map-get($theme-colors, "primary");
     background: $gray-lightest;
   }
-  &:focus{
-    box-shadow: $input-focus-box-shadow;
-    border-color: $gray;
-    background: $white;
-  }
   &:focus-visible{
-    outline: -webkit-focus-ring-color auto 1px;
-    border-color: $gray;
-    background: $white;
+    box-shadow: $input-focus-box-shadow;
   }
 }
 .btn-group-space{
