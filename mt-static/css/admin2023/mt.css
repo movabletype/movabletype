@@ -11757,16 +11757,8 @@ fieldset.form-group {
   background: #F4F4F4;
 }
 
-.btn-default:focus, .mt-mobilePrimaryMenu__dropdownMenuButton:focus {
-  box-shadow: inset 0 0 0 transparent, 0 0 0 0.25rem rgba(0, 75, 154, 0.25);
-  border-color: #A5A5A5;
-  background: #FFFFFF;
-}
-
 .btn-default:focus-visible, .mt-mobilePrimaryMenu__dropdownMenuButton:focus-visible {
-  outline: -webkit-focus-ring-color auto 1px;
-  border-color: #A5A5A5;
-  background: #FFFFFF;
+  box-shadow: inset 0 0 0 transparent, 0 0 0 0.25rem rgba(0, 75, 154, 0.25);
 }
 
 .btn-group-space .btn + .btn, .btn-group-space .mt-primaryNavigation__footer + .btn, .btn-group-space .mt-primaryNavigation__footer--invert + .btn, .btn-group-space .mt-mobilePrimaryMenu__dropdownMenuButton + .btn, .btn-group-space .btn__mobile + .btn, .btn-group-space .btn + .mt-primaryNavigation__footer, .btn-group-space .mt-primaryNavigation__footer + .mt-primaryNavigation__footer, .btn-group-space .mt-primaryNavigation__footer--invert + .mt-primaryNavigation__footer, .btn-group-space .mt-mobilePrimaryMenu__dropdownMenuButton + .mt-primaryNavigation__footer, .btn-group-space .btn__mobile + .mt-primaryNavigation__footer, .btn-group-space .btn + .mt-primaryNavigation__footer--invert, .btn-group-space .mt-primaryNavigation__footer + .mt-primaryNavigation__footer--invert, .btn-group-space .mt-primaryNavigation__footer--invert + .mt-primaryNavigation__footer--invert, .btn-group-space .mt-mobilePrimaryMenu__dropdownMenuButton + .mt-primaryNavigation__footer--invert, .btn-group-space .btn__mobile + .mt-primaryNavigation__footer--invert, .btn-group-space .btn + .mt-mobilePrimaryMenu__dropdownMenuButton, .btn-group-space .mt-primaryNavigation__footer + .mt-mobilePrimaryMenu__dropdownMenuButton, .btn-group-space .mt-primaryNavigation__footer--invert + .mt-mobilePrimaryMenu__dropdownMenuButton, .btn-group-space .mt-mobilePrimaryMenu__dropdownMenuButton + .mt-mobilePrimaryMenu__dropdownMenuButton, .btn-group-space .btn__mobile + .mt-mobilePrimaryMenu__dropdownMenuButton, .btn-group-space .btn + .btn__mobile, .btn-group-space .mt-primaryNavigation__footer + .btn__mobile, .btn-group-space .mt-primaryNavigation__footer--invert + .btn__mobile, .btn-group-space .mt-mobilePrimaryMenu__dropdownMenuButton + .btn__mobile, .btn-group-space .btn__mobile + .btn__mobile,
