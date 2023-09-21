@@ -29,7 +29,7 @@
       jQuery.mtAddEdgeClass();
       jQuery.mtMenu();
       jQuery.mtSelector();
-      jQuery('a.mt-rebuild').mtRebuild(<mt:if name="blog_id">{blog_id: '<$mt:var name="blog_id"$>'}</mt:if>);
+      jQuery('a.mt-rebuild').mtRebuild(<mt:if name="blog_id">{blog_id: '<$mt:var name="blog_id" escape="js"$>'}</mt:if>);
       jQuery('#main').on('click','.mt-close-msg',function(){
           jQuery(this).parents('div.msg').remove();
       });
