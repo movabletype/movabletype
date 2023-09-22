@@ -213,7 +213,7 @@ function stopPropagation(e) {
 <mt:loop name="fav_website_loop">
             <li>
   <mt:if name="fav_website_can_link">
-              <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;__mode=dashboard" class="scope-link text-light">
+              <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id" escape="html"$>&amp;__mode=dashboard" class="scope-link text-light">
                 <mt:var name="fav_website_name" escape="html">
               </a>
   <mt:else>
@@ -226,7 +226,7 @@ function stopPropagation(e) {
               <ul class="list-unstyled">
     </mt:if>
                 <li>
-                  <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;__mode=dashboard" class="scope-link text-light">
+                  <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id" escape="html"$>&amp;__mode=dashboard" class="scope-link text-light">
                     <mt:var name="fav_blog_name" escape="html">
                   </a>
                 </li>
