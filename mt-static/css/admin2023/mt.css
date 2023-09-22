@@ -12315,6 +12315,7 @@ fieldset.form-group {
 
 /* Content Block */
 .mt-contentblock {
+  border-color: #ced4da;
   padding: 1rem;
 }
 
@@ -12399,6 +12400,18 @@ fieldset.form-group {
 .mt-tabs .nav-link.active {
   border-bottom: 4px solid #0176BF;
   color: #000000;
+}
+
+.multi_line_text-field-container .nav-tabs .nav-item, .multi_line_text-field-container .nav-tabs .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav .mt-sharedPreviewNav__item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav .multi_line_text-field-container .nav-tabs .mt-sharedPreviewNav__item {
+  margin-bottom: -2px;
+}
+
+.multi_line_text-field-container .nav-tabs .nav-link.active {
+  border-color: #ced4da #ced4da #fff;
+}
+
+.multi_line_text-field-container .nav-tabs .nav-link:hover {
+  border-color: #ced4da #ced4da #fff;
 }
 
 /* Modal */

@@ -1579,6 +1579,7 @@ fieldset.form-group{
 /* Content Block */
 .mt-contentblock{
   @extend %mt-collapse;
+  border-color: $input-border-color;
   padding: 1rem;
 }
 .mt-contentblock__textarea{
@@ -1650,6 +1651,21 @@ fieldset.form-group{
   .nav-link.active{
     border-bottom: 4px solid $lochmara;
     color: $black;
+  }
+}
+.multi_line_text-field-container {
+  .nav-tabs {
+    .nav-item {
+      margin-bottom: -2px;
+    }
+    .nav-link {
+      &.active{
+        border-color: $input-border-color $input-border-color #fff;
+      }
+      &:hover{
+        border-color: $input-border-color $input-border-color #fff;
+      }
+    }
   }
 }
 
