@@ -78,7 +78,7 @@
     <mt:else>
               <td class="cb">
                 <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
-                <div class="custom-control custom-radio">
+                <div class="form-check">
                   <input type="radio" name="id" value="<mt:var name="id" escape="html">" class="form-check-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
                   <label class="form-check-label" for="asset-select-<mt:var name="id" escape="html">"><span class="visually-hidden"><__trans phrase="Select"></span></label>
                 </div>
@@ -504,7 +504,7 @@ jQuery('#asset-table').on('click', 'td.cb', function (e) {
   if (e.target.tagName == 'INPUT' && (e.target.type == 'checkbox' || e.target.type == 'radio')) {
     return;
   }
-  var $input = jQuery(this).find('div.custom-control input');
+  var $input = jQuery(this).find('div.form-check input');
   $input.trigger('click');
 
   MT.Util.refreshModalBodyOnIos();

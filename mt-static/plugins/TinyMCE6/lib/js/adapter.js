@@ -34,6 +34,7 @@
             resize: true,
             icons: 'mt',
             icons_url: StaticURI + 'plugins/TinyMCE6/lib/js/icons.js',
+            skin: 'tinymce-5',
 
             // Buttons using both in source and wysiwyg modes.
             plugin_mt_common_buttons1: 'mt_source_mode',
