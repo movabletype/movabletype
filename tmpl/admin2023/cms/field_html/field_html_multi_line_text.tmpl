@@ -2,15 +2,9 @@
   <div class="mb-3">
     <div class="row no-gutters align-items-center">
       <div class="col">
-        <ul class="nav nav-tabs d-flex mb-3" data-role="tablist">
-          <li class="me-auto">
-            <label for="contentblock1" class="form-label"><mt:var name="options{label}" escape="html">
-  <mt:if name="options{required}">
-              <span class="badge badge-danger"><__trans phrase="Required"></span>
-  </mt:if>
-            </label>
-          </li>
-        </ul>
+        <label for="contentblock<mt:var name="content_field_id">" class="form-label first-child"><mt:var name="options{label}" escape="html">
+          <mt:if name="options{required}"><span class="badge badge-danger"><__trans phrase="Required"></span></mt:if>
+        </label>
       </div>
     </div>
 
