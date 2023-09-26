@@ -235,12 +235,12 @@ function toggleAdvancedPrefs(evt, c) {
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-if ( location.hash ) {
+if ( location.hash && location.hash.search(/^#plugin-[0-9a-f]{40}$/) != -1 ) {
   // Open plugin contents.
-  jQuery('a'+location.hash).trigger('click');
+  jQuery('a'+location.hash).get(0).click();
 
   // If there is Settings tab, open it.
-  jQuery('a'+location.hash+'-config-tab').trigger('click');
+  jQuery('a'+location.hash+'-config-tab').get(0).click();
 }
 
 jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
