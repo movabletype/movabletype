@@ -528,18 +528,19 @@ sub _eval_if_mssql_server_or_oracle {
 sub all_permissions {
     my $class = shift;
 
+    my $cache_key = 'MT::ContentType::all_permissions';
+    my $ret = MT->request->{__stash}{$cache_key};
+    return $ret if $ret;
+
     my $driver = $class->driver;
     return {} unless $driver && $driver->table_exists($class);
-
-    my @all_permissions;
+    MT->request->{__stash}{$cache_key} = $ret = {};
     my @content_types
         = _eval_if_mssql_server_or_oracle( sub { @{ $class->load_all } } );
     for my $content_type (@content_types) {
-        push( @all_permissions, $content_type->permissions )
-            if $content_type->blog;
+        %$ret = (%$ret, %{ $content_type->permissions }) if $content_type->blog;
     }
-    my %all_permission = map { %{$_} } @all_permissions;
-    return \%all_permission;
+    return $ret;
 }
 
 sub _post_save {
