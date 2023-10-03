@@ -392,7 +392,8 @@ sub _manage_content_data_permission {
 
 sub _create_content_data_permission {
     my $self            = shift;
-    my $permission_name = 'blog.create_content_data:' . $self->unique_id;
+    my $unique_id       = $self->unique_id;
+    my $permission_name = 'blog.create_content_data:' . $unique_id;
     (   $permission_name => {
             group => $self->permission_group,
             label => sub {
@@ -400,15 +401,15 @@ sub _create_content_data_permission {
             },
             order            => 200,
             permitted_action => {
-                'access_to_content_data_list_' . $self->unique_id       => 1,
-                'create_new_content_data_' . $self->unique_id           => 1,
-                'search_content_data_' . $self->unique_id               => 1,
-                'edit_own_unpublished_content_data_' . $self->unique_id => 1,
+                'access_to_content_data_list_' . $unique_id       => 1,
+                'create_new_content_data_' . $unique_id           => 1,
+                'search_content_data_' . $unique_id               => 1,
+                'edit_own_unpublished_content_data_' . $unique_id => 1,
                 'access_to_insert_asset_list'                           => 1,
                 'insert_asset'                                          => 1,
                 'use_tools:search'                                      => 1,
             },
-            content_type_unique_id => $self->unique_id,
+            content_type_unique_id => $unique_id,
         }
     );
 }
@@ -418,8 +419,9 @@ sub _publish_content_data_permission {
 
     my @permissions = ( $self->_create_content_data_permission, );
     my @perms = grep { ref $_ ne 'HASH' } @permissions;
+    my $unique_id = $self->unique_id;
 
-    my $permission_name = 'blog.publish_content_data:' . $self->unique_id;
+    my $permission_name = 'blog.publish_content_data:' . $unique_id;
     (   $permission_name => {
             group => $self->permission_group,
             label => sub {
@@ -427,15 +429,15 @@ sub _publish_content_data_permission {
             },
             order            => 300,
             permitted_action => {
-                'access_to_content_data_list_' . $self->unique_id     => 1,
-                'edit_own_published_content_data_' . $self->unique_id => 1,
-                'publish_own_content_data_' . $self->unique_id        => 1,
-                'set_entry_draft_via_list_' . $self->unique_id        => 1,
-                'publish_content_data_via_list_' . $self->unique_id   => 1,
-                'search_content_data_' . $self->unique_id             => 1,
+                'access_to_content_data_list_' . $unique_id     => 1,
+                'edit_own_published_content_data_' . $unique_id => 1,
+                'publish_own_content_data_' . $unique_id        => 1,
+                'set_entry_draft_via_list_' . $unique_id        => 1,
+                'publish_content_data_via_list_' . $unique_id   => 1,
+                'search_content_data_' . $unique_id             => 1,
                 'use_tools:search'                                    => 1,
             },
-            content_type_unique_id => $self->unique_id,
+            content_type_unique_id => $unique_id,
             inherit_from           => \@perms,
         }
     );
@@ -443,7 +445,8 @@ sub _publish_content_data_permission {
 
 sub _edit_all_content_data_permission {
     my $self            = shift;
-    my $permission_name = 'blog.edit_all_content_data:' . $self->unique_id;
+    my $unique_id       = $self->unique_id;
+    my $permission_name = 'blog.edit_all_content_data:' . $unique_id;
     (   $permission_name => {
             group => $self->permission_group,
             label => sub {
@@ -451,18 +454,18 @@ sub _edit_all_content_data_permission {
             },
             order            => 400,
             permitted_action => {
-                'access_to_content_data_list_' . $self->unique_id       => 1,
-                'edit_all_content_data_' . $self->unique_id             => 1,
-                'edit_all_published_content_data_' . $self->unique_id   => 1,
-                'edit_all_unpublished_content_data_' . $self->unique_id => 1,
-                'publish_all_content_data_' . $self->unique_id          => 1,
-                'set_entry_draft_via_list_' . $self->unique_id          => 1,
-                'search_content_data_' . $self->unique_id               => 1,
-                'access_to_insert_asset_list'                           => 1,
-                'insert_asset'                                          => 1,
-                'use_tools:search'                                      => 1,
+                'access_to_content_data_list_' . $unique_id       => 1,
+                'edit_all_content_data_' . $unique_id             => 1,
+                'edit_all_published_content_data_' . $unique_id   => 1,
+                'edit_all_unpublished_content_data_' . $unique_id => 1,
+                'publish_all_content_data_' . $unique_id          => 1,
+                'set_entry_draft_via_list_' . $unique_id          => 1,
+                'search_content_data_' . $unique_id               => 1,
+                'access_to_insert_asset_list'                     => 1,
+                'insert_asset'                                    => 1,
+                'use_tools:search'                                => 1,
             },
-            content_type_unique_id => $self->unique_id,
+            content_type_unique_id => $unique_id,
         }
     );
 }

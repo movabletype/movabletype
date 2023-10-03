@@ -175,9 +175,10 @@ sub content_type {
 sub permission {
     my ( $obj, $order ) = @_;
     my $content_type = $obj->content_type;
+    my $ct_unique_id = $content_type->unique_id;
     my $permitted_action
         = 'content_type:'
-        . $content_type->unique_id
+        . $ct_unique_id
         . '-content_field:'
         . $obj->unique_id;
     my $name = 'blog.' . $permitted_action;
@@ -187,7 +188,7 @@ sub permission {
             label => $obj->name,
             permitted_action => { $permitted_action => 1 },
             $order ? ( order => $order ) : (),
-            content_type_unique_id => $content_type->unique_id,
+            content_type_unique_id => $ct_unique_id,
         }
     };
 }
