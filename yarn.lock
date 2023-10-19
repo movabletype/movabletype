@@ -2980,10 +2980,10 @@ tinymce-i18n@20.12.25:
   resolved "https://registry.npmjs.org/tinymce/-/tinymce-6.3.2.tgz"
   integrity sha512-nOVHk4FhHKQj48hi7fEptS1Se6CNzPtfIcDzTO70KoTcSiQIFzhhZjS5bPotSzFnQ4dIQJ4QPOd7sqNs6fXUrA==
 
-tinymce@5.10.7:
-  version "5.10.7"
-  resolved "https://registry.npmjs.org/tinymce/-/tinymce-5.10.7.tgz"
-  integrity sha512-9UUjaO0R7FxcFo0oxnd1lMs7H+D0Eh+dDVo5hKbVe1a+VB0nit97vOqlinj+YwgoBDt6/DSCUoWqAYlLI8BLYA==
+tinymce@5.10.8:
+  version "5.10.8"
+  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-5.10.8.tgz#c85758fa3cca2cbb4b14dd037a0b315b6462c50e"
+  integrity sha512-iyoo3VGMAJhLMDdblAefKvYgBRk9kQi58GTwAmoieqsyggGsKZWlQl/YY6nTILFHUCA1FhYu0HdmM5YYjs17UQ==
 
 to-object-path@^0.3.0:
   version "0.3.0"
