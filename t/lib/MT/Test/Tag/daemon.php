@@ -47,7 +47,8 @@ while ($remote = stream_socket_accept($socket)) {
     # fix tests with local config
     $mt->configure_from_db();
 
-    list($blog_id, $tmpl, $extra) = json_decode($stream);
+    list($blog_id, $tmpl, $extra, $log) = json_decode($stream);
+    $mt->config('PHPErrorLogFilePath', $log);
     $blog = $db->fetch_blog($blog_id);
     $ctx->stash('blog', $blog);
     $ctx->stash('blog_id', $blog_id);
