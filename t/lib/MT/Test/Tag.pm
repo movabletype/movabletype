@@ -357,7 +357,7 @@ PHP
     $| = 1;
     select $old_handle;
     require JSON;
-    print $sock JSON::to_json([$blog_id, $template, $extra]);
+    print $sock JSON::to_json([$blog_id, $template, $extra, $log]);
     shutdown $sock, 1;
     my $result = do { local $/; <$sock> };
     close $sock;
