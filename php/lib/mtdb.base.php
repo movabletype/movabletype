@@ -44,6 +44,7 @@ abstract class MTDatabase {
 
     private $_cd_id_cache = array();
     private $_content_type_id_cache; // XXX consider changing the cache storage
+    private $_content_field_id_cache;
 
     // Construction
     public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
