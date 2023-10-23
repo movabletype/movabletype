@@ -10,6 +10,16 @@ include_once($opts['mt_home'] . '/php/lib/MTUtil.php');
 # fix following tests by using first blog_id for init.
 # - t/tag/35-tags-assets.t
 # - t/mt7/tag/archive/archive-type-label.t
+$mt = null;
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use (&$mt) {
+    if ($error_no & E_USER_ERROR) {
+        print($error_msg."\n");
+    } else if (!$mt) {
+        print(implode(':', [$error_no, $error_msg, $error_file, $error_line]). "\n");
+    } else {
+        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
+    }
+});
 $mt = MT::get_instance($opts['init_blog_id'], $opts['mt_config']);
 
 $mt->config('PHPErrorLogFilePath', $opts['log'] ?? null);
@@ -21,14 +31,6 @@ if (is_a($db, 'MTDatabaseoracle')) {
     $db->execute("SET time_zone = '+00:00'");
 }
 $ctx = $mt->context();
-
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
-    if ($error_no & E_USER_ERROR) {
-        print($error_msg."\n");
-    } else {
-        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
-    }
-});
 
 while ($remote = stream_socket_accept($socket)) {
     
