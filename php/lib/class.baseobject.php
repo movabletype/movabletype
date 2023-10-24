@@ -14,6 +14,7 @@ if (!defined('ADODB_ASSOC_CASE')) define('ADODB_ASSOC_CASE', ADODB_ASSOC_CASE_LO
 require_once('adodb-active-record.inc.php');
 require_once('adodb-exceptions.inc.php');
 
+#[AllowDynamicProperties]
 abstract class BaseObject extends ADOdb_Active_Record
 {
     // Member variables
