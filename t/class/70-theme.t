@@ -16,6 +16,7 @@ use MT::Test;
 use YAML::Tiny;
 use File::Spec;
 use MT;
+use MT::Serialize;
 
 $test_env->prepare_fixture('db_data');
 
@@ -382,7 +383,7 @@ subtest 'default_content_types element' => sub {
         );
         ok( $child_content_type, 'child_content_type is created' );
         is( scalar( @{ $child_content_type->fields } ),
-            1, 'child_content_type has 1 field' );
+            3, 'child_content_type has 3 fields' );
         my $field = $child_content_type->fields->[0];
         is( $field->{type}, 'single_line_text',
             'field type is single_line_text' );
@@ -737,8 +738,33 @@ subtest 'default_content_data element' => sub {
             name            => 'single_line_text',
         }
     ) or die 'cannot load single_line_text field';
-    is_deeply( $content_data->data,
-        { $single_line_text_field->id => 'abcde' } );
+
+    my $multi_line_text_1_field = MT->model('content_field')->load(
+        {   content_type_id => $child_content_type->id,
+            name            => 'multi_line_text_1',
+        }
+    ) or die 'cannot load multi_line_text_1 field';
+
+    my $multi_line_text_2_field = MT->model('content_field')->load(
+        {   content_type_id => $child_content_type->id,
+            name            => 'multi_line_text_2',
+        }
+    ) or die 'cannot load multi_line_text_2 field';
+
+    is_deeply(
+        $content_data->data,
+        {
+            $single_line_text_field->id  => 'abcde',
+            $multi_line_text_1_field->id => '<p>fghij</p>',
+            $multi_line_text_2_field->id => "klmno\npqrst\n",
+        });
+
+    is_deeply(
+        ${MT::Serialize->unserialize($content_data->convert_breaks)},
+        {
+            $multi_line_text_1_field->id => 'richtext',
+            $multi_line_text_2_field->id => 'markdown',
+        });
 };
 
 ## ============================ Tests for loading theme package
@@ -943,6 +969,18 @@ MyTheme:
                       - label: single_line_text
                         type: single_line_text
                         display: default
+                      - label: multi_line_text_1
+                        type: multi_line_text
+                        display: default
+                        initial_value: |
+                            aaa
+                            bbb
+                        input_format: __default__
+                      - label: multi_line_text_2
+                        type: multi_line_text
+                        display: default
+                        initial_value: "<p>test</p>"
+                        input_format: richtext
                 - name: test_content_type
                   fields:
                       - label: single
@@ -1176,6 +1214,14 @@ MyTheme:
                     test1:
                         data:
                             single_line_text: abcde
+                            multi_line_text_1:
+                              value: <p>fghij</p>
+                              convert_breaks: richtext
+                            multi_line_text_2:
+                              value: |
+                                klmno
+                                pqrst
+                              convert_breaks: markdown
 
 very_old_theme:
     id: old_theme

@@ -2683,6 +2683,9 @@ use vars qw( @ISA %Lexicon );
 	'[_1] cannot be used without publishing [_2] archive.' => '[_2]アーカイブを公開していないので[_1]は使えません。',
 	'[_1] used outside of [_2]' => '[_1]を[_2]の外部で利用しようとしました。',
 
+## lib/MT/Template/Tags/Common.pm
+    q{You used an '[_1]' tag outside of the context of a 'Multi Line Text' field.} => '[_1]を「テキスト（複数行）」以外のフィールドのコンテキストで利用しようとしています。',
+
 ## lib/MT/Template/Tags/ContentType.pm
 	'Content Type was not found. Blog ID: [_1]' => 'サイト (ID: [_1]) でコンテンツタイプが見つかりません。',
 	'Invalid field_value_handler of [_1].' => '[_1] の field_value_handler は不正です。',
@@ -5631,7 +5634,7 @@ use vars qw( @ISA %Lexicon );
 	'Search Again' => '再検索',
 	'Search For' => '検索',
 	'Show all matches' => 'すべて見る',
-	'Showing first [_1] results.' => '最初の[_1]件の結果を表示します。',
+	'Showing first [_1] results.' => '最初の[_1]件の結果を表示しています。',
 	'Submit search (s)' => '検索 (s)',
 	'Successfully replaced [quant,_1,record,records].' => '[quant,_1,件,件]のデータを置き換えました。',
 	'You must select one or more items to replace.' => '置き換える対象を1つ以上選択してください。',

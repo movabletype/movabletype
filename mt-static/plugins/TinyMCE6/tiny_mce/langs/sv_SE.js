@@ -1,9 +1,3 @@
-/*!
- * TinyMCE Language Pack
- *
- * Copyright (c) 2022 Ephox Corporation DBA Tiny Technologies, Inc.
- * Licensed under the Tiny commercial license. See https://www.tiny.cloud/legal/
- */
 tinymce.addI18n("sv_SE", {
     "Redo": "G\xf6r om",
     "Undo": "\xc5ngra",
@@ -229,11 +223,11 @@ tinymce.addI18n("sv_SE", {
     "Solid": "Solid",
     "Dotted": "Prickad",
     "Dashed": "Streckad",
-    "Double": "",
-    "Groove": "",
-    "Ridge": "",
+    "Double": "Dubbel",
+    "Groove": "Urholkad",
+    "Ridge": "Rygg",
     "Inset": "Indrag",
-    "Outset": "",
+    "Outset": "Utst\xe4lld",
     "Hidden": "Dold",
     "Insert template...": "Infoga mall...",
     "Templates": "Mallar",

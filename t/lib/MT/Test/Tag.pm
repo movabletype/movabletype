@@ -16,6 +16,7 @@ use MT::Test::PHP;
 use File::Spec;
 use Socket;
 use Test::TCP;
+use Text::Diff 'diff';
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
@@ -121,7 +122,7 @@ sub run_perl_tests {
                 if ($expected_ref && $expected_ref eq 'Regexp') {
                     like($got, $expected, $name);
                 } else {
-                    is($got, $expected, $name);
+                    ok($got eq $expected, $name) or diag diff(\$expected, \$got, {STYLE => 'Unified'});
                 }
             }
             __PACKAGE__->_update_config($prev_config);
@@ -226,7 +227,8 @@ SKIP: {
                 } else {
                     is($got, $expected, $name);
                 }
-                if ($ENV{MT_TEST_IGNORE_PHP_WARNINGS} && $php_error) {
+                my $ignore_php_warnings = __PACKAGE__->_check_ignore_php_warnings($block) || $ENV{MT_TEST_IGNORE_PHP_WARNINGS};
+                if ($ignore_php_warnings && $php_error) {
                     SKIP: {
                         local $TODO = 'for now';
                         ok !$php_error, 'no php warnings';
@@ -281,7 +283,7 @@ $mt->init_plugins();
 
 $db = $mt->db();
 if (preg_match('/mysql/i', $mt->config('ObjectDriver'))) {
-    $db->execute("SET time_zone = '00:00'");
+    $db->execute("SET time_zone = '+00:00'");
 }
 $ctx =& $mt->context();
 
@@ -386,6 +388,19 @@ sub _check_skip_php {
     if (defined($skip_php)) {
         if (length($skip_php)) {
             return _filter_vars($skip_php);
+        } else {
+            return 1;
+        }
+    }
+    return;
+}
+
+sub _check_ignore_php_warnings {
+    my $block  = shift;
+    my $ignore = $block->ignore_php_warnings;
+    if (defined($ignore)) {
+        if (length($ignore)) {
+            return _filter_vars($ignore);
         } else {
             return 1;
         }

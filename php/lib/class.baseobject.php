@@ -123,7 +123,7 @@ abstract class BaseObject extends ADOdb_Active_Record
 
         if (preg_match('/^'. $this->_prefix. 'field\./', $name)) {
             // Workarround for dynamic properties warnings
-            return $this->_extra[$name];
+            return array_key_exists($name, $this->_extra) ? $this->_extra[$name] : null;
         }
 
         return property_exists($this, $name) ? $this->$name : null;

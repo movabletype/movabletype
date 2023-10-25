@@ -3232,6 +3232,7 @@ sub build_menus {
         $menu->{allowed} = 1;
         $menu->{current} = 0;
         $menu->{'id'}    = $id;
+        $menu->{order}   ||= 0;
 
         my @sub_ids = grep {m/^$id:/} keys %$menus;
         my @sub;
@@ -3242,6 +3243,8 @@ sub build_menus {
                 && !$theme_modify->{$sub_id};
             my $sub = $menus->{$sub_id};
             $sub->{current} = 0;
+            $sub->{order} ||= 0;
+            $sub->{mode}  ||= '';
 
             ## Keep a compatibility
             $sub->{view} = [ 'blog', 'system' ]
@@ -4183,6 +4186,9 @@ sub autosave_session_obj {
     }
     if ( $type eq 'content_data' ) {
         my $content_type_id = $app->param('content_type_id');
+        if (!$content_type_id && ($app->param('type') || '') =~ /^content_data_(\d+)$/) {
+            $content_type_id = $1;
+        }
         $ident .= ':content_type_id=' . $content_type_id;
     }
     require MT::Session;

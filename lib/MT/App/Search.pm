@@ -210,6 +210,9 @@ sub init_request {
     $app->{searchparam}{SearchMaxResults} =~ s/\D//g
         if defined( $app->{searchparam}{SearchMaxResults} );
 
+    # make sure it's numeric
+    $app->{searchparam}{SearchMaxResults} ||= 0;
+
     $app->{searchparam}{Type} = $app->default_type;
     if ( my $type = $app->param('type') ) {
         return $app->errtrans( 'Invalid type: [_1]', encode_html($type) )
@@ -402,6 +405,8 @@ sub create_blog_list {
 sub check_cache {
     my $app = shift;
 
+    return unless $app->{cache_keys};
+
     my $cache
         = $app->{cache_driver}->get_multi( values %{ $app->{cache_keys} } );
 
@@ -500,15 +505,21 @@ sub process {
 sub count {
     my $app = shift;
     my ( $class, $terms, $args ) = @_;
-    my $count = $app->{cache_driver}->get( $app->{cache_keys}{count} );
-    return $count if defined $count;
+    my $count;
+
+    if ($app->{cache_keys}) {
+        $count = $app->{cache_driver}->get( $app->{cache_keys}{count} );
+        return $count if defined $count;
+    }
 
     $count = $class->count( $terms, $args );
     return $app->error( $class->errstr ) unless defined $count;
 
-    my $cache_driver = $app->{cache_driver};
-    $cache_driver->set( $app->{cache_keys}{count},
-        $count, $app->SearchCacheTTL );
+    if ($app->{cache_keys}) {
+        my $cache_driver = $app->{cache_driver};
+        $cache_driver->set( $app->{cache_keys}{count},
+            $count, $app->SearchCacheTTL );
+    }
 
     $count;
 }
@@ -690,6 +701,8 @@ sub search_terms {
 
 sub _cache_out {
     my ( $cb, $app, $count, $out ) = @_;
+
+    return unless $app->{cache_keys};
 
     my $result;
     if ( ref($out) && eval { $out->isa('MT::Template') } ) {
@@ -1037,6 +1050,7 @@ sub query_parse {
     my (%columns) = @_;
 
     my $search = $app->{search_string};
+    $search = '' unless defined($search);
 
     # MTC-25640
     # Replace field:name:term_or_phrase with field__name:term_or_phrase

@@ -1081,6 +1081,10 @@ sub core_tags {
             ## Category Set
             CategorySetName =>
                 '$Core::MT::Template::Tags::CategorySet::_hdlr_category_set_name',
+
+            # Common in Entry, Page and Content Type
+            TextFormat =>
+                '$Core::MT::Template::Tags::Common::_hdlr_text_format',
         },
         modifier => {
             'numify'  => '$Core::MT::Template::Tags::Filters::_fltr_numify',
@@ -2416,6 +2420,7 @@ sub _hdlr_set_vars {
     my ( $ctx, $args ) = @_;
     my $tag = lc $ctx->stash('tag');
     my $val = $ctx->slurp($args);
+    return '' unless defined($val);
     $val =~ s/(^\s+|\s+$)//g;
     my @pairs = split /\r?\n/, $val;
     foreach my $line (@pairs) {
@@ -3142,7 +3147,7 @@ sub _hdlr_app_setting {
         use_style    => $args->{indent} || !$shown ? 1 : 0,
     );
 
-    my $tmpl = MT->instance->load_tmpl( 'cms/include/mtapp_setting.tmpl', \%param );
+    my $tmpl = MT->instance->load_core_tmpl( 'cms/include/mtapp_setting.tmpl', \%param );
     return $ctx->build( $tmpl->output() );
 }
 
@@ -3370,7 +3375,7 @@ sub _hdlr_app_statusmsg {
     $param{did_replace} = 1 if $id && $id eq 'replace-count' && $rebuild =~ /^(website|blog)$/;
     $param{dynamic_all} = 1 if $blog && $blog->custom_dynamic_templates eq 'all';
 
-    my $tmpl = $app->load_tmpl( 'cms/include/mtapp_statusmsg.tmpl', \%param );
+    my $tmpl = $app->load_core_tmpl( 'cms/include/mtapp_statusmsg.tmpl', \%param );
     return $ctx->build( $tmpl->output() );
 }
 
@@ -3780,12 +3785,18 @@ sub _hdlr_app_form {
     my $mode = $args->{mode};
     push @fields, qq{<input type="hidden" name="__mode" value="$mode" />}
         if defined $mode;
-    push @fields, qq{<input type="hidden" name="_type" value="$type" />}
-        if defined $type;
-    push @fields, qq{<input type="hidden" name="id" value="$id" />}
-        if defined $id;
-    push @fields, qq{<input type="hidden" name="blog_id" value="$blog_id" />}
-        if defined $blog_id;
+    if (defined $type) {
+        $type = encode_html($type);
+        push @fields, qq{<input type="hidden" name="_type" value="$type" />};
+    }
+    if (defined $id) {
+        $id = encode_html($id);
+        push @fields, qq{<input type="hidden" name="id" value="$id" />};
+    }
+    if (defined $blog_id) {
+        $blog_id = encode_html($blog_id);
+        push @fields, qq{<input type="hidden" name="blog_id" value="$blog_id" />};
+    }
     push @fields,
         qq{<input type="hidden" name="magic_token" value="$token" />}
         if defined $token;
@@ -4143,7 +4154,7 @@ sub _hdlr_app_contentfield_option_group {
      required="1"
      show_hint="1"
      hint="<__trans phrase="Choose the display options for this content field in the listing screen.">">
-    <select ref="display" name="display" id="$type-display" class="custom-select form-control">
+    <select ref="display" name="display" id="$type-display" class="custom-select form-control form-select">
       <option value="force" selected={ options.displays.force }><__trans phrase="Force"></option>
       <option value="default"  selected={ options.displays.default }><__trans phrase="Default"></option>
       <option value="optional" selected={ options.displays.optional }><__trans phrase="Optional"></option>

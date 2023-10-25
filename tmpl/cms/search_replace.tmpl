@@ -461,7 +461,8 @@ function toggleContentTypeDateTimeInputs() {
   <mtapp:statusmsg
      id="have-more-count"
      class="success">
-    <__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false" class="alert-link"><__trans phrase="Show all matches"></a>
+    <__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">">
+    <a href="#" onclick="return unLimit('all')" class="alert-link"><__trans phrase="Show all matches"></a>
   </mtapp:statusmsg>
 <mt:else>
   <mt:unless name="replace_count">
@@ -478,6 +479,15 @@ function toggleContentTypeDateTimeInputs() {
 <mt:if name="searched" id="search_results">
 <mt:ignore>Search results will be placed here from app code.</mt:ignore>
 </mt:if>
+
+<mt:if name="have_more">
+  <div id="have-more-count-bottom" class="mt-5">
+    <mtapp:svgicon id="ic_info">
+    <__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">">
+    <a href="#" onclick="return unLimit('all')" class="alert-link"><__trans phrase="Show all matches"></a>
+  </div>
+</mt:if>
+
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">

@@ -73,6 +73,7 @@ function ADODB_SetDatabaseAdapter(&$db, $index=false)
 	return sizeof($_ADODB_ACTIVE_DBS)-1;
 }
 
+
 class ADODB_Active_Record {
 	static $_changeNames = true; // dynamically pluralize table names
 

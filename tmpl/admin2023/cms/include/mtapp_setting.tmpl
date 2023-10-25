@@ -1,0 +1,19 @@
+<div id="<$mt:var name="id">-field" class="app-setting field field-content<mt:if name="required"> required</mt:if><mt:if name="label_class"> field-<$mt:var name="label_class"><mt:else> field-left-label</mt:if> <$mt:var name="class">" <mt:if name="use_style">style="<mt:if name="indent">padding-left: <$mt:var name="indent">px; </mt:if><mt:unless name="shown">display: none;</mt:unless>"</mt:if>>
+    <mt:if name="field_header">
+        <div class="field-header">
+            <label <mt:if name="show_label"><mt:if name="label_for"> for="<$mt:var name="label_for">"</mt:if></mt:if>>
+                <mt:if name="show_label"><mt:var name="label"></mt:if>
+                <mt:if name="required"><span class="badge badge-danger"><__trans phrase="Required"></span></mt:if>
+            </label>
+        </div>
+    <mt:else>
+        <label <mt:if name="show_label"><mt:if name="label_for"> for="<$mt:var name="label_for">"</mt:if></mt:if> class="form-label">
+            <mt:if name="show_label"><mt:var name="label"></mt:if>
+            <mt:if name="required"><span class="badge badge-danger"><__trans phrase="Required"></span></mt:if>
+        </label>
+    </mt:if>
+    <$mt:var name="insides">
+    <mt:if name="show_hint">
+        <small<mt:if name="hint_id"> id="<$mt:var name="hint_id">"</mt:if> class="form-text text-muted"><$mt:var name="hint"><$mt:var name="help"></small>
+    </mt:if>
+</div>

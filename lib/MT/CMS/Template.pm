@@ -254,7 +254,7 @@ sub edit {
 
                         my %terms
                             = $attr->{identifier}
-                            ? ( identifier => $mod )
+                            ? ( identifier => $mod, blog_id => $inc_blog_id )
                             : (
                             blog_id => $inc_blog_id,
                             name    => $mod,

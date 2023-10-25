@@ -304,6 +304,7 @@ sub invoke_handler {
                     $code = MT->handler_to_coderef($code);
                 }
                 $str = $code->( $str, $val, $ctx );
+                $str = '' unless defined($str);
             }
         }
         $str;

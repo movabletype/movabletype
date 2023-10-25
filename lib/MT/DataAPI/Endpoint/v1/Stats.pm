@@ -497,7 +497,7 @@ sub fill_in_archive_info {
             $i->{$k} = undef;
         }
 
-        my $path = $i->{path};
+        my $path = $i->{pagePath} || $i->{path};
         if ( $items{$path} ) {
             push @{ $items{$path} }, $i;
             next;
