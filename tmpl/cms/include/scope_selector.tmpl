@@ -17,7 +17,7 @@
     <mt:elseif name="scope_type" eq="website">
       <li id="current-website" class="current scope website">
       <mt:if name="curr_website_can_link">
-        <em class="scope-label"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id"$>"><mt:var name="curr_website_name" escape="html"></a></em>
+        <em class="scope-label"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id" escape="html"$>"><mt:var name="curr_website_name" escape="html"></a></em>
       <mt:else>
         <em class="scope-label"><mt:var name="curr_website_name" escape="html"></em>
       </mt:if>
@@ -25,7 +25,7 @@
     <mt:elseif name="scope_type" eq="blog">
       <li id="current-website" class="current scope website">
       <mt:if name="curr_website_can_link">
-        <em class="scope-label"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id"$>"><mt:var name="curr_website_name" escape="html"></a></em>
+        <em class="scope-label"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id" escape="html"$>"><mt:var name="curr_website_name" escape="html"></a></em>
       <mt:else>
         <em class="scope-label"><mt:var name="curr_website_name" escape="html"></em>
       </mt:if>
@@ -142,7 +142,7 @@
         </li>
     <mt:elseif name="scope_type" eq="blog">
         <li id="create-blog">
-          <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id"$>" class="create-link blog"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a>
+          <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id" escape="html"$>" class="create-link blog"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a>
         </li>
     </mt:if>
       </ul>
