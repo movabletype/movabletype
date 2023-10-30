@@ -544,9 +544,9 @@ class MT {
         }
 
         // IIS request by error document...
-        if (preg_match('/IIS/', $_SERVER['SERVER_SOFTWARE'])) {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && preg_match('/IIS/', $_SERVER['SERVER_SOFTWARE'])) {
             // assume 404 handler
-            if (preg_match('/^\d+;(.*)$/', $_SERVER['QUERY_STRING'], $matches)) {
+            if (isset($_SERVER['QUERY_STRING']) && preg_match('/^\d+;(.*)$/', $_SERVER['QUERY_STRING'], $matches)) {
                 $path = $matches[1];
                 $path = preg_replace('!^http://[^/]+!', '', $path);
                 if (preg_match('/\?(.+)?/', $path, $matches)) {
