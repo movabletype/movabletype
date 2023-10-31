@@ -4665,7 +4665,7 @@ abstract class MTDatabase {
                                     }
                                     $cmap[$oid][$o->objectcategory_category_id]++;
                                     if (!$not_clause)
-                                        $content_list[$o->objectcategory_oject_id] = 1;
+                                        $content_list[$oid] = 1;
                                 }
                             }
                             $filter_ctx = array();
