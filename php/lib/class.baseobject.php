@@ -122,7 +122,8 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (!preg_match($pattern, $name))
             $name = $this->_prefix . $name;
 
-        if (preg_match('/^'. $this->_prefix. 'field\./', $name)) {
+        if (preg_match('/^'. $this->_prefix. 'field\./', $name) ||
+            preg_match('/^'. $this->_prefix. '__(next|previous):/', $name)) {
             // Workarround for dynamic properties warnings
             return array_key_exists($name, $this->_extra) ? $this->_extra[$name] : null;
         }
@@ -143,7 +144,8 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (!preg_match($pattern, $name))
             $name = $this->_prefix . $name;
 
-        if (preg_match('/^'. $this->_prefix. 'field\./', $name)) {
+        if (preg_match('/^'. $this->_prefix. 'field\./', $name) ||
+            preg_match('/^'. $this->_prefix. '__(next|previous):/', $name)) {
             // Workarround for dynamic properties warnings
             $this->_extra[$name] = $value;
             return;
@@ -166,7 +168,8 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (!preg_match($pattern, $name))
             $name = $this->_prefix . $name;
 
-        if (preg_match('/^'. $this->_prefix. 'field\./', $name)) {
+        if (preg_match('/^'. $this->_prefix. 'field\./', $name) ||
+            preg_match('/^'. $this->_prefix. '__(next|previous):/', $name)) {
             // Workarround for dynamic properties warnings
             return isset($this->_extra[$name]);
         }
