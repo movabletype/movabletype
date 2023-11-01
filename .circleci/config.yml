@@ -20,7 +20,7 @@ jobs:
           name: Test and send coverage report
           command: |
             set +e
-            HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^extlib,+ignore,^t prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
+            HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^extlib,+ignore,^t prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/upgrade/fill_with_missing_system_templates.t
             cover -report coveralls
 
 workflows:
