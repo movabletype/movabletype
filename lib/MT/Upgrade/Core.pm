@@ -149,8 +149,18 @@ sub seed_database {
     require MT::Author;
     return undef if MT::Author->exist;
 
-    $self->progress(
-        $self->translate_escape("Creating initial user records...") );
+    my $create_website = exists $param{website_theme} ? 1 : 0;
+
+    if ($create_website) {
+      $self->progress(
+        $self->translate_escape("Creating initial site and user records...")
+      );
+    }
+    else {
+      $self->progress(
+        $self->translate_escape("Creating initial user records...")
+      );
+    }
 
     local $MT::CallbacksEnabled = 1;
 
@@ -225,7 +235,57 @@ sub seed_database {
             MT::Role->errstr
         )
         );
-    $author->save;
+
+    if ($create_website) {
+      require MT::Website;
+      $param{website_name}
+          = exists $param{website_name}
+          ? _uri_unescape_utf8( $param{website_name} )
+          : MT->translate('First Website');
+      $param{website_path}
+          = exists $param{website_path}
+          ? _uri_unescape_utf8( $param{website_path} )
+          : '';
+      $param{website_url}
+          = exists $param{website_url}
+          ? _uri_unescape_utf8( $param{website_url} )
+          : '';
+      my $website = MT::Website->create_default_website(
+          $param{website_name},
+          site_theme    => $param{website_theme},
+          site_url      => $param{website_url},
+          site_path     => $param{website_path},
+          site_timezone => $param{website_timezone},
+          site_language => $param{website_language},
+          )
+          or return $self->error(
+          $self->translate_escape(
+              "Error saving record: [_1].",
+              MT::Website->errstr
+          )
+          );
+      $website->save
+          or return $self->error(
+          $self->translate_escape(
+              "Error saving record: [_1].",
+              $website->errstr
+          )
+          );
+
+      # disable data api by default
+      MT::CMS::Blog::save_data_api_settings( $App, $website->id, 0, 0 );
+
+      MT->run_callbacks( 'blog_template_set_change', { blog => $website } );
+      $author->save;
+
+      require MT::Association;
+      require MT::Role;
+      my ($website_admin_role)
+          = MT::Role->load_by_permission("administer_site");
+      MT::Association->link( $website => $website_admin_role => $author );
+    } else {
+      $author->save;
+    }
 
     my $cfg = MT->config;
     if ( $param{use_system_email} ) {
@@ -246,18 +306,14 @@ sub seed_database {
     }
     $cfg->PluginSwitch($switch, 1);
 
-    my %seen_apps;
     my @restricted_apps = $cfg->get('RestrictedPSGIApp');
-    @restricted_apps = grep {!$seen_apps{$_}++} @restricted_apps, qw(xmlrpc atom feeds ft_search);
     $cfg->set(RestrictedPSGIApp => \@restricted_apps, 1);
 
-    $cfg->set(DisableQuickPost => 1, 1);
-    $cfg->set(DisableActivityFeeds => 1, 1);
     $cfg->set(DisableNotificationPings => 1, 1);
     $cfg->set(DefaultSupportedLanguages => 'en_us,ja', 1);
     $cfg->set(TrimFilePath => 1, 1);
 
-    $cfg->save;
+    $cfg->save_config;
 
     1;
 }

@@ -34,6 +34,11 @@ sub page_title {
     _trim( $self->_find_text("#page-title") );
 }
 
+sub modal_title {
+    my $self = shift;
+    _trim($self->_find_text(".modal-title"));
+}
+
 sub message_text {
     my $self = shift;
     my $message_class = MT->version_number >= 7 ? '.alert' : '.msg';

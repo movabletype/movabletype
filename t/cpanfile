@@ -52,7 +52,6 @@ requires 'Crypt::DSA';
 
 requires 'MIME::Base64';
 requires 'Email::MIME';
-requires 'XML::Atom';
 requires 'Cache::Memcached';
 requires 'Archive::Tar';
 requires 'IO::Compress::Gzip';
@@ -97,6 +96,7 @@ on 'test' => sub {
     requires 'Devel::GlobalDestruction';
     requires 'DBD::SQLite';
     requires 'DBI', '1.633';
+    requires 'File::pushd';
     requires 'File::Temp', '0.23';
     requires 'File::Which';
     requires 'HTML::Filter::Callbacks';
@@ -112,6 +112,7 @@ on 'test' => sub {
     requires 'Log::Minimal';
     requires 'MIME::Head';
     requires 'Mock::MonkeyPatch';
+    requires 'Module::Find';
     requires 'Mojolicious';
     requires 'Net::Server::SS::PreFork' unless $^O eq 'MSWin32';
     requires 'Net::SFTP';
@@ -136,6 +137,7 @@ on 'test' => sub {
     requires 'Test::Class';
     requires 'Test::Data';
     requires 'Test::Deep';
+    requires 'Test::Differences';
     requires 'Test::File';
     requires 'Test::LeakTrace';
     requires 'Test::Memcached';

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 use strict;
 use warnings;
 use lib qw( lib extlib ../lib ../extlib );
@@ -22,13 +22,13 @@ DESCRIPTION:
     check all l10n Lexicons has valid syntax for translation.
 
 SYNOPSIS:
-  $ ./build/l10n/validate.pl -c=core,enterprise -l=en_us,ja,de,fr
+  $ ./build/l10n/validate.pl -c=core,enterprise -l=en_us,ja
 
 OPTIONS:
   -c, --components=COMP[,..]  specify commponent to validate.
                               by default, validate all installed components.
   -l, --langs=LANG[,...]      specify languages to validate.
-                              by default, validate for en_us, ja, es, fr, de and nl.
+                              by default, validate for en_us, ja.
   -t, --themes                if set to 1, load all installed theme components.
   -h, --help                  show help(this message).
   -v, --verbose               show error details.
@@ -46,7 +46,7 @@ if ( $themes ) {
 @components = map { $_->id } @MT::Components unless scalar @components;
 
 @langs      = split(/,/, join(',', @langs ));
-@langs = qw( en_us ja es fr de nl ) unless scalar @langs;
+@langs = qw( en_us ja ) unless scalar @langs;
 
 my $total_errors = 0;
 my $total_phrases = 0;

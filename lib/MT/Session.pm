@@ -201,10 +201,6 @@ Active user sessions are held in 'US' records.
 The cached contents of the newsbox in the dashboard widget
 is held in the I<single> record of kind 'NW'.
 
-=item AF
-
-Session data for Activity Feeds.
-
 =item AS
 
 AutoSave data for entry and template.

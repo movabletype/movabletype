@@ -111,7 +111,7 @@ sub apply {
                         $data->{ $f->{id} } );
                 }
 
-                if ( my $handler = $f->{theme_data_import_handler} ) {
+                if ( my $handler = $cf_type->{theme_data_import_handler} ) {
                     if ( !ref $handler ) {
                         $handler = MT->handler_to_coderef($handler);
                     }

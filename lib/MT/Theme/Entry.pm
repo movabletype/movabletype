@@ -31,6 +31,7 @@ sub _add_entries {
     );
     for my $basename ( keys %$entries ) {
         my $entry = $entries->{$basename};
+        $basename = $entry->{basename} if $entry->{basename};
         next
             if MT->model($class)->count(
             {   basename => $basename,

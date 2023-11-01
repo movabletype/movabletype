@@ -1,9 +1,3 @@
-/*!
- * TinyMCE Language Pack
- *
- * Copyright (c) 2022 Ephox Corporation DBA Tiny Technologies, Inc.
- * Licensed under the Tiny commercial license. See https://www.tiny.cloud/legal/
- */
 tinymce.addI18n("dv", {
     "Redo": "\u0783\u07a9\u0791\u07ab",
     "Undo": "\u0787\u07a6\u0782\u07b0\u0791\u07ab",

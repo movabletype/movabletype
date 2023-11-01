@@ -624,6 +624,10 @@ sub list_props {
                 return qq{<span title="$timestamp">$date</span>};
             },
         },
+        created_on => {
+            base  => '__virtual.created_on',
+            order => 650,
+        },
         modified_on => {
             base  => '__virtual.modified_on',
             order => 700,
@@ -688,10 +692,6 @@ sub list_props {
         modified_by => {
             base    => '__virtual.modified_by',
             display => 'optional',
-        },
-        created_on => {
-            base    => '__virtual.created_on',
-            display => 'none',
         },
         basename => {
             label   => 'Basename',
@@ -1220,56 +1220,6 @@ sub make_atom_id {
     }
     return unless $host && $year && $path && $blog_id && $entry_id;
     qq{tag:$host,$year:$path/$blog_id.$entry_id};
-}
-
-# Deprecated (case #112321).
-sub sync_assets {
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.8');
-
-    my $entry = shift;
-    my $text = ( $entry->text || '' ) . "\n" . ( $entry->text_more || '' );
-
-    require MT::ObjectAsset;
-    my @assets = MT::ObjectAsset->load(
-        {   object_id => $entry->id,
-            blog_id   => $entry->blog_id,
-            object_ds => $entry->datasource,
-            embedded  => 1,
-        }
-    );
-    my %assets = map { $_->asset_id => $_->id } @assets;
-    while ( $text
-        =~ m!<form[^>]*?\smt:asset-id=["'](\d+)["'][^>]*?>(.+?)</form>!gis )
-    {
-        my $id      = $1;
-        my $innards = $2;
-
-        # reference to an existing asset...
-        if ( exists $assets{$id} ) {
-            $assets{$id} = 0;
-        }
-        else {
-
-            # is asset exists?
-            my $asset = MT->model('asset')->load( { id => $id } ) or next;
-
-            my $map = new MT::ObjectAsset;
-            $map->blog_id( $entry->blog_id );
-            $map->asset_id($id);
-            $map->object_ds( $entry->datasource );
-            $map->object_id( $entry->id );
-            $map->embedded(1);
-            $map->save;
-            $assets{$id} = 0;
-        }
-    }
-    if ( my @old_maps = grep { $assets{ $_->asset_id } } @assets ) {
-        my @old_ids = map { $_->id } grep { $_->embedded } @old_maps;
-        MT::ObjectAsset->remove( { id => \@old_ids } )
-            if @old_ids;
-    }
-    return 1;
 }
 
 sub save {

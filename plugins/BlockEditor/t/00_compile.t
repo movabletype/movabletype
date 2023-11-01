@@ -30,9 +30,5 @@ use_ok('BlockEditor::BlockEditorFieldType::Image');
 use_ok('BlockEditor::L10N');
 use_ok('BlockEditor::L10N::en_us');
 use_ok('BlockEditor::L10N::ja');
-use_ok('BlockEditor::L10N::es');
-use_ok('BlockEditor::L10N::fr');
-use_ok('BlockEditor::L10N::ja');
-use_ok('BlockEditor::L10N::nl');
 
 done_testing();

@@ -13,6 +13,17 @@ require_once("class.baseobject.php");
 class Notification extends BaseObject
 {
     public $_table = 'mt_notification';
-    protected $_prefix = "notification_";
+    public $_prefix = "notification_";
+
+    # notification fields generated from perl implementation.
+    public $notification_id;
+    public $notification_blog_id;
+    public $notification_created_by;
+    public $notification_created_on;
+    public $notification_email;
+    public $notification_modified_by;
+    public $notification_modified_on;
+    public $notification_name;
+    public $notification_url;
 }
 ?>

@@ -654,7 +654,7 @@ sub text {
 
     $tmpl->needs_db_sync(0);
     unless (@_) {
-        if ( $tmpl->linked_file ) {
+        if ( $tmpl->linked_file && !$tmpl->is_changed('text')) {
             if ( my $res = $tmpl->_sync_from_disk ) {
                 $text = $res;
                 $tmpl->column( 'text', $text );
@@ -746,7 +746,9 @@ sub _sync_from_disk {
         else {
 
             # use MT path to base relative paths
-            my $base_path = MT->config->BaseTemplatePath || MT->instance->server_path;
+            my $base_path = MT->config->BaseTemplatePath;
+            $base_path ||= (MT->config->UserTemplatePath)[0];
+            $base_path ||= MT->instance->server_path;
             $lfile = File::Spec->catfile( $base_path, $lfile );
         }
     }
@@ -809,7 +811,7 @@ sub _sync_to_disk {
     }
     else {
         my ($vol, $dir) = File::Spec->splitpath($lfile);
-        $dir = File::Spec->catpath($vol, $dir);
+        $dir = File::Spec->catpath($vol, $dir, '');
         unless (-d $dir) {
             require File::Path;
             eval { File::Path::mkpath($dir) } or return $tmpl->error(
@@ -1066,7 +1068,7 @@ sub insertAfter {
     my ( $node1, $node2 ) = @_;
     my $parent_node
         = $node2 && $node2->[EL_NODE_PARENT] ? $node2->[EL_NODE_PARENT] : $tmpl;
-    my $parent_array = ref $parent_node eq 'ARRAY' ? $parent_node->[EL_NODE_PARENT] : $parent_node->childNodes;
+    my $parent_array = ref $parent_node eq 'ARRAY' ? $parent_node->[EL_NODE_CHILDREN] : $parent_node->childNodes;
     if (ref $parent_array eq 'MT::Template') {
         $parent_array = $parent_array->childNodes;
     }

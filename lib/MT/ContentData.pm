@@ -995,7 +995,7 @@ sub list_props {
             display => 'none',
         },
         label => {
-            base    => '__virtual.label',
+            base    => '__virtual.string',
             display => 'force',
         },
         identifier => {
@@ -1343,7 +1343,7 @@ sub _make_label_html {
             <span class="icon status $lc_status_class">
               <a href="$edit_link" class="d-inline-block">$status_img</a>
             </span>
-            <a href="$edit_link">$label</a>
+            <a class="label" href="$edit_link">$label</a>
             $view_link
         };
     }
@@ -1440,9 +1440,18 @@ sub _make_field_list_props {
 
                         my $child_ret;
                         {
-                            local $db_terms->{content_type_id}
-                                = $content_type->id;
-                            $child_ret = $terms->( $prop, @_ );
+                            my $ct_terms = $db_terms;
+                            if (ref $db_terms eq 'ARRAY') {
+                                for my $t (@$db_terms) {
+                                    next unless ref $t eq 'HASH';
+                                    if (exists $t->{content_type_id}) {
+                                        $ct_terms = $t;
+                                        last;
+                                    }
+                                }
+                            }
+                            local $ct_terms->{content_type_id} = $content_type->id;
+                            $child_ret = $terms->($prop, @_);
                         }
                         return $child_ret
                             unless $child_ret && $child_ret->{id};
@@ -1677,39 +1686,53 @@ sub gather_changed_cols {
 }
 
 sub preview_data {
-    my $self         = shift;
+    my ($self) = @_;
     my $content_type = $self->content_type;
     return [] unless $content_type;
 
     my $registry = MT->registry('content_field_types');
+
+    my $tmpl = MT->app->load_cached_tmpl('search_replace_cf_data.tmpl', {});
 
     my $data = '';
     for my $f ( @{ $content_type->fields } ) {
         next unless defined $f->{type} && $f->{type} ne '';
         next unless $registry->{ $f->{type} };
 
-        my $preview_handler = $registry->{ $f->{type} }{preview_handler};
-        if ( $preview_handler && !ref $preview_handler ) {
-            $preview_handler = MT->handler_to_coderef($preview_handler)
-                or next;
+        my $handler;
+        $handler = $registry->{ $f->{type} }{search_result_handler} if !!$self->{__search_term};
+        $handler ||= $registry->{ $f->{type} }{preview_handler};
+        if ($handler && !ref $handler) {
+            $handler = MT->handler_to_coderef($handler) or next;
         }
 
-        my $field_data
-            = $preview_handler
-            ? $preview_handler->( $f, $self->data->{ $f->{id} }, $self )
-            : $self->data->{ $f->{id} };
+        my $field_data = $handler ? $handler->($f, $self->data->{ $f->{id} }, $self) : $self->data->{ $f->{id} };
         $field_data = '' unless defined $field_data && $field_data ne '';
-        my $escaped_field_data = MT::Util::encode_html($field_data);
+
+        my $escaped_field_data =
+            !$self->{__search_term} || !$self->{__search_result_fields_index}->{'__field:'. $f->{id}}
+            ? MT::Util::encode_html($field_data)
+            : search_highlight($field_data, $self->{__search_term});
 
         my $field_label = ( $f->{options} || +{} )->{label}
             || MT->translate('(No label)');
 
         my $escaped_field_label = MT::Util::encode_html($field_label);
 
-        $data
-            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$escaped_field_data</div></div>};
+        $data .= $tmpl->output({cf_id => $f->{id}, label => $escaped_field_label, data => $escaped_field_data});
     }
     $data;
+}
+
+sub search_highlight {
+    my ($value, $term) = @_;
+    my @parts = split /($term)/, $value;
+    my $ret   = join '',
+        map {
+        my $encoded = MT::Util::encode_html($_);
+        $_ =~ /^$term$/ ? qq{<span data-search-highlight="1">$encoded</span>} : $encoded
+        } @parts;
+    return $ret;
 }
 
 sub search {

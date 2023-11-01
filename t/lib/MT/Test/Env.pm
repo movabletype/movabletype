@@ -19,6 +19,7 @@ use String::CamelCase qw/decamelize camelize/;
 use Mock::MonkeyPatch;
 use Sub::Name;
 use Time::HiRes qw/time/;
+use Module::Find qw/findsubmod/;
 
 our $MT_HOME;
 
@@ -28,10 +29,12 @@ BEGIN {
     $ENV{MT_HOME} = $MT_HOME;
 }
 use lib "$MT_HOME/lib", "$MT_HOME/extlib";
-use lib glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib");
-use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
+use lib grep -d $_, glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib"), glob("$MT_HOME/addons/*/t/lib");
+use lib grep -d $_, glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
 use Term::Encoding qw(term_encoding);
+
+my @extra_modules = do { local @Module::Find::ModuleDirs = grep {m!\bt[\\/]lib\b!} @INC; findsubmod 'MT::Test::Env'; };
 
 my $enc = term_encoding() || 'utf8';
 
@@ -53,14 +56,28 @@ sub new {
     $ENV{MT_TEST_ROOT} = $root;
     $ENV{PERL_JSON_BACKEND} ||= 'JSON::PP';
 
+    my $driver = _driver();
+
     my $self = bless {
         root   => $root,
-        driver => _driver(),
+        driver => $driver,
         config => \%extra_config,
         start  => [Time::HiRes::gettimeofday],
     }, $class;
 
+    for my $module (@extra_modules) {
+        eval "require $module";
+        my $new_hook = $module->can('_new');
+        $new_hook->($self, \%extra_config) if $new_hook;
+        my $prepare_hook = $module->can('_prepare_fixture');
+        $self->{prepare_hooks}{$module} = $prepare_hook if $prepare_hook;
+    }
+
     $self->write_config(\%extra_config);
+
+    $self->enable_query_log if $ENV{MT_TEST_QUERY_LOG} && $ENV{MT_TEST_QUERY_LOG} > 4;
+
+    diag "Driver: $driver" unless $driver =~ /mysql/i;
 
     $self;
 }
@@ -161,6 +178,7 @@ sub write_config {
         DebugMode              => $ENV{MT_TEST_DEBUG_MODE} || 0,
         BuilderModule          => $ENV{MT_TEST_BUILDER} || 'MT::Builder',
         DisableObjectCache     => $ENV{MT_TEST_DISABLE_OBJECT_CACHE} || 0,
+        $ENV{MT_TEST_ADMIN_THEME_ID} ? (AdminThemeId => $ENV{MT_TEST_ADMIN_THEME_ID}) : (),
     );
 
     if ($extra) {
@@ -181,6 +199,10 @@ sub write_config {
     }
     # disable process check
     $config{ProcessMemoryCommand} = 0 unless $config{PerformanceLogging};
+
+    if ($^O eq 'MSWin32' && $config{SendMailPath}) {
+        plan skip_all => 'Sendmail is not supported on Win32';
+    }
 
     $config{$_} = $connect_info{$_} for keys %connect_info;
 
@@ -306,7 +328,6 @@ sub connect_info {
                 $connect_info{$key} = $ENV{$env_key};
             }
         }
-        note "DRIVER: $connect_info{ObjectDriver}";
         # TODO: $self->{dsn} = "dbi:$driver:...";
     }
     %connect_info;
@@ -341,6 +362,8 @@ sub _connect_info_mysql {
         }
         if ($opts{user}) {
             $info{DBUser} = $opts{user};
+        } elsif ($ENV{MT_TEST_MYSQLPOOL_DSN}) {
+            $info{DBUser} = 'root';
         }
         if ($opts{port}) {
             $info{DBPort} = $opts{port};
@@ -376,7 +399,10 @@ sub _connect_info_pg {
         Database     => "mt_test",
     );
 
-    if (eval { require Test::PostgreSQL }) {
+    require DBD::Pg;
+    $info{DBIConnectOptions} = "pg_enable_utf8=0" if version->parse(DBD::Pg->VERSION) >= 3;
+
+    if ($ENV{MT_TEST_USE_TEST_PG} && eval { require Test::PostgreSQL }) {
         my $pg = $self->{pg} = Test::PostgreSQL->new;
         my $dsn = $ENV{MT_TEST_DSN} = $pg->dsn;
         my $dbh = DBI->connect($dsn) or die $DBI::errstr;
@@ -533,6 +559,14 @@ sub _prepare_mysql_database {
 DROP DATABASE IF EXISTS mt_test;
 CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
 END_OF_SQL
+
+    my ($major_version, $minor_version, $is_maria, $maria_major, $maria_minor) = _mysql_version();
+    if ($ENV{MT_TEST_MYSQLPOOL_DSN} && $is_maria && $maria_major == 10 && $maria_minor > 3) {
+        $sql .= <<"END_OF_SQL";
+ALTER USER root\@localhost IDENTIFIED VIA mysql_native_password USING PASSWORD('');
+END_OF_SQL
+    }
+
     for my $statement (split ";\n", $sql) {
         $dbh->do($statement);
     }
@@ -544,8 +578,8 @@ sub _prepare_pg_database {
     local $dbh->{PrintWarn}          = 0;
     local $dbh->{ShowErrorStatement} = 1;
     my $sql           = <<"END_OF_SQL";
-DROP DATABASE IF EXISTS mt_test;
-CREATE DATABASE mt_test;
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
 END_OF_SQL
     for my $statement (split ";\n", $sql) {
         $dbh->do($statement);
@@ -555,7 +589,8 @@ END_OF_SQL
 # for App::Prove::Plugin::MySQLPool
 sub prepare {
     my ($class, $mysqld) = @_;
-    my $dbh = DBI->connect($mysqld->dsn);
+    my $dsn = $ENV{MT_TEST_MYSQLPOOL_DSN} = $mysqld->dsn;
+    my $dbh = DBI->connect($dsn);
     $class->_prepare_mysql_database($dbh);
 }
 
@@ -570,12 +605,16 @@ sub _mysql_version {
 
     # Convert MariaDB version into MySQL version for simplicity
     # See https://mariadb.com/kb/en/mariadb-vs-mysql-compatibility/ for details
+    my ($maria_major_version, $maria_minor_version);
     if ($is_maria) {
+        $maria_major_version = $major_version;
+        $maria_minor_version = $minor_version;
         if ($major_version == 10) {
-            $major_version = 5;
             if ($minor_version < 2) {
+                $major_version = 5;
                 $minor_version = 6;
             } elsif ($minor_version < 5) {
+                $major_version = 5;
                 $minor_version = 7;
             }
         } elsif ($major_version == 5) {    ## just in case
@@ -584,7 +623,7 @@ sub _mysql_version {
             }
         }
     }
-    return ($major_version, $minor_version, $is_maria);
+    return ($major_version, $minor_version, $is_maria, $maria_major_version, $maria_minor_version);
 }
 
 sub skip_unless_mysql_version_is_greater_than {
@@ -613,11 +652,11 @@ sub my_cnf {
         'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO,ONLY_FULL_GROUP_BY',
     );
 
-    my ($major_version, $minor_version, $is_maria) = _mysql_version();
+    my ($major_version, $minor_version, $is_maria, $maria_major, $maria_minor) = _mysql_version();
     return \%cnf unless $major_version;
 
     # MySQL 8.0+
-    if (!$is_maria && $major_version >= 8) {
+    if ((!$is_maria && $major_version >= 8) or ($is_maria && $maria_major == 10 && $maria_minor > 3)) {
         $cnf{default_authentication_plugin} = 'mysql_native_password';
     }
 
@@ -829,6 +868,14 @@ sub prepare_fixture {
     $ENV{MT_TEST_LOADED_FIXTURE} = 1;
 
     $self->cluck_errors if $ENV{MT_TEST_CLUCK_ERRORS};
+
+    $self->enable_query_log if $ENV{MT_TEST_QUERY_LOG};
+
+    for my $hook (values %{$self->{prepare_hooks} || {}}) {
+        $hook->($self);
+    }
+
+    MT->config->clear_dirty;
 }
 
 sub slurp {
@@ -1414,6 +1461,41 @@ sub slurp_logfile {
     open my $fh, '<', $logfile or die $!;
     local $/;
     <$fh>;
+}
+
+sub enable_query_log {
+    my $self = shift;
+    require DBIx::QueryLog;
+    return if DBIx::QueryLog->is_enabled;
+    $DBIx::QueryLog::SKIP_PKG_MAP{$_} = 1 for qw(
+        MT::Object
+        MT::ObjectDriver::Driver::DBI
+        Data::ObjectDriver::Driver::DBI
+        Data::ObjectDriver::Driver::BaseCache
+        Data::ObjectDriver::BaseObject
+    );
+    DBIx::QueryLog->compact(1);
+    if (my $color = $ENV{MT_TEST_QUERY_LOG_COLOR}) {
+        require Term::ANSIColor;
+        $DBIx::QueryLog::OUTPUT = sub {
+            my %param = @_;
+            (my $sql = $param{sql}) =~ s/[[:cntrl:]]/ /gs;
+            $sql = Term::ANSIColor::colored([$color], $sql);
+            diag sprintf "[%s] %s at %s line %s", $param{time}, $sql, $param{file}, $param{line};
+        };
+    } else {
+        $DBIx::QueryLog::OUTPUT = sub {
+            my %param = @_;
+            (my $sql = $param{sql}) =~ s/[[:cntrl:]]/ /gs;
+            diag sprintf "[%s] %s at %s line %s", $param{time}, $sql, $param{file}, $param{line};
+        };
+    }
+    DBIx::QueryLog->enable;
+}
+
+sub disable_query_log {
+    my $self = shift;
+    DBIx::QueryLog->disable;
 }
 
 sub DESTROY {

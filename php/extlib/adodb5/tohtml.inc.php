@@ -113,7 +113,8 @@ GLOBAL $gSQLMaxRows,$gSQLBlockRows,$ADODB_ROUND;
 				else
 					$v = round($v,$ADODB_ROUND);
 			case 'I':
-				$vv = stripslashes((trim($v)));
+				$vv = $v ? stripslashes(trim($v)) : '';
+				$vv = $vv ?: '&nbsp;';
 				if (strlen($vv) == 0) $vv .= '&nbsp;';
 				$s .= "	<TD align=right>".$vv ."</TD>\n";
 
@@ -140,7 +141,10 @@ GLOBAL $gSQLMaxRows,$gSQLBlockRows,$ADODB_ROUND;
 
 			default:
 				if ($v) {
-					$v = htmlspecialchars(stripslashes(trim($v)));
+					$v = trim($v);
+					if ($htmlspecialchars) {
+						$v = htmlspecialchars($v);
+					}
 				} elseif ($v === null) {
 					$v = '(NULL)';
 				} else {

@@ -612,12 +612,12 @@ sub js_upload_file {
     return $app->json_result( { asset => $metadata } );
 }
 
-### DEPRECATED: v6.2
+### DEPRECATED: v6.2; but still used via DataAPI
 sub upload_file {
     my $app = shift;
 
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.8');
+    # require MT::Util::Deprecated;
+    # MT::Util::Deprecated::warning(since => '7.8');
 
     if ( my $perms = $app->permissions ) {
         return $app->error( $app->translate("Permission denied.") )
@@ -1393,6 +1393,7 @@ sub _upload_file_compat {
 
     my (%upload_param) = @_;
     require MT::Image;
+    require MT::Asset;
 
     my $app_id = $app->id;
     my $eh = $upload_param{error_handler} || sub {
@@ -1452,7 +1453,6 @@ sub _upload_file_compat {
         File::Basename::basename($basename) );
 
     if ( my $asset_type = $upload_param{require_type} ) {
-        require MT::Asset;
         my $asset_pkg = MT::Asset->handler_for_file($basename);
 
         my %settings_for = (
@@ -1483,25 +1483,24 @@ sub _upload_file_compat {
     );
     if ( $blog_id = $app->param('blog_id') ) {
         unless ($has_overwrite) {
-            if ( my $ext_new = MT::Image->get_image_type($fh) ) {
-                my $ext_old
-                    = (
-                    File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ )
-                    )[2];
-                if (   $ext_new ne lc($ext_old)
-                    && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
-                    && !( lc($ext_old) eq 'ico'  && $ext_new =~ /^(bmp|png|gif)$/ )
-                    && !( lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg' )
-                    && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
-                {
-                    if ( $basename eq $ext_old ) {
-                        $basename .= '.' . $ext_new;
-                        $ext_old = $app->translate('none');
+            if (my $ext_new = MT::Image->get_image_type($fh)) {
+                my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
+                if ($asset_class eq 'MT::Asset::Image' && !MT->config->DisableFileExtensionConversion) {
+                    my $ext_old = (File::Basename::fileparse($basename, qr/[A-Za-z0-9]+$/))[2];
+                    if (   $ext_new ne lc($ext_old)
+                        && !(lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg')
+                        && !(lc($ext_old) eq 'ico'  && $ext_new =~ /^(bmp|png|gif)$/)
+                        && !(lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg')
+                        && !(lc($ext_old) eq 'swf'  && $ext_new eq 'cws'))
+                    {
+                        if ($basename eq $ext_old) {
+                            $basename .= '.' . $ext_new;
+                            $ext_old = $app->translate('none');
+                        } else {
+                            $basename =~ s/$ext_old$/$ext_new/;
+                        }
+                        $app->param("changed_file_ext", "$ext_old,$ext_new");
                     }
-                    else {
-                        $basename =~ s/$ext_old$/$ext_new/;
-                    }
-                    $app->param( "changed_file_ext", "$ext_old,$ext_new" );
                 }
             }
         }
@@ -1988,6 +1987,7 @@ sub _upload_file {
     my $app = shift;
     my (%upload_param) = @_;
 
+    require MT::Asset;
     require MT::Image;
     my $app_id = $app->id;
 
@@ -2029,25 +2029,25 @@ sub _upload_file {
         File::Basename::basename($basename) );
 
     # Change to real file extension
-    if ( my $ext_new = MT::Image->get_image_type($fh) ) {
-        my $ext_old
-            = ( File::Basename::fileparse( $basename, qr/[A-Za-z0-9]+$/ ) )
-            [2];
+    if (my $ext_new = MT::Image->get_image_type($fh)) {
+        my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
+        if ($asset_class eq 'MT::Asset::Image' && !MT->config->DisableFileExtensionConversion) {
+            my $ext_old = (File::Basename::fileparse($basename, qr/[A-Za-z0-9]+$/))[2];
 
-        if (   $ext_new ne lc($ext_old)
-            && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
-            && !( lc($ext_old) eq 'ico'  && $ext_new =~ /^(?:bmp|png|gif)$/ )
-            && !( lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg' )
-            && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
-        {
-            if ( $basename eq $ext_old ) {
-                $basename .= '.' . $ext_new;
-                $ext_old = $app->translate('none');
+            if (   $ext_new ne lc($ext_old)
+                && !(lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg')
+                && !(lc($ext_old) eq 'ico'  && $ext_new =~ /^(?:bmp|png|gif)$/)
+                && !(lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg')
+                && !(lc($ext_old) eq 'swf'  && $ext_new eq 'cws'))
+            {
+                if ($basename eq $ext_old) {
+                    $basename .= '.' . $ext_new;
+                    $ext_old = $app->translate('none');
+                } else {
+                    $basename =~ s/$ext_old$/$ext_new/;
+                }
+                $app->param("changed_file_ext", "$ext_old,$ext_new");
             }
-            else {
-                $basename =~ s/$ext_old$/$ext_new/;
-            }
-            $app->param( "changed_file_ext", "$ext_old,$ext_new" );
         }
     }
 
@@ -2065,7 +2065,6 @@ sub _upload_file {
     };
 
     if ( my $asset_type = $upload_param{require_type} ) {
-        require MT::Asset;
         my $asset_pkg = MT::Asset->handler_for_file($basename);
 
         my %settings_for = (

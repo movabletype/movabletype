@@ -113,13 +113,8 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '7.9.9';
+    $version = '8.0.2';
 }
-my $release_version = '__RELEASE_VERSION_ID__';
-if ( $release_version eq '__RELEASE' . '_VERSION_ID__' ) {
-    $release_version = 'r.5404';
-}
-
 my ( $mt, $LH );
 my $lang = $cgi->param("language") || $cgi->param("__lang");
 
@@ -471,7 +466,7 @@ my $ver
     ? $^V->normal
     : ( $^V ? join( '.', unpack 'C*', $^V ) : $] );
 my $perl_ver_check = '';
-if ( $] < 5.010001 ) {    # our minimal requirement for support
+if ( $] < 5.016000 ) {    # our minimal requirement for support
     $perl_ver_check = <<EOT;
 <div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.10.1"></p></div>
 EOT
@@ -483,11 +478,11 @@ print_encode( trans_templ(<<INFO) );
 <h2 id="system-info"><__trans phrase="System Information"></h2>
 $perl_ver_check
 INFO
-if ($release_version) {
+if ($version) {
 
     print_encode( trans_templ(<<INFO) );
 <ul class="list-unstyled version">
-    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$release_version</code></li>
+    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$version</code></li>
 </ul>
 INFO
 }

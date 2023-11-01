@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.3.1 (2022-12-06)
+ * TinyMCE version 6.5.1 (2023-06-19)
  */
 
 (function () {
@@ -407,7 +407,7 @@
     };
     const trimCaretContainers = text => text.replace(/\uFEFF/g, '');
     const getAnchorElement = (editor, selectedElm) => {
-      selectedElm = selectedElm || editor.selection.getNode();
+      selectedElm = selectedElm || getLinksInSelection(editor.selection.getRng())[0] || editor.selection.getNode();
       if (isImageFigure(selectedElm)) {
         return Optional.from(editor.dom.select('a[href]', selectedElm)[0]);
       } else {
@@ -419,8 +419,10 @@
       const text = anchorElm.fold(() => selection.getContent({ format: 'text' }), anchorElm => anchorElm.innerText || anchorElm.textContent || '');
       return trimCaretContainers(text);
     };
-    const hasLinks = elements => global$4.grep(elements, isLink).length > 0;
-    const hasLinksInSelection = rng => collectNodesInRange(rng, isLink).length > 0;
+    const getLinksInSelection = rng => collectNodesInRange(rng, isLink);
+    const getLinks$1 = elements => global$4.grep(elements, isLink);
+    const hasLinks = elements => getLinks$1(elements).length > 0;
+    const hasLinksInSelection = rng => getLinksInSelection(rng).length > 0;
     const isOnlyTextSelected = editor => {
       const inlineTextElements = editor.schema.getTextInlineElements();
       const isElement = elm => elm.nodeType === 1 && !isAnchor(elm) && !has(inlineTextElements, elm.nodeName.toLowerCase());
@@ -1041,21 +1043,38 @@
       editor.on('NodeChange', toggler);
       return () => editor.off('NodeChange', toggler);
     };
-    const toggleActiveState = editor => api => {
-      const updateState = () => api.setActive(!editor.mode.isReadOnly() && isInAnchor(editor, editor.selection.getNode()));
+    const toggleLinkState = editor => api => {
+      const updateState = () => {
+        api.setActive(!editor.mode.isReadOnly() && isInAnchor(editor, editor.selection.getNode()));
+        api.setEnabled(editor.selection.isEditable());
+      };
       updateState();
       return toggleState(editor, updateState);
     };
-    const toggleEnabledState = editor => api => {
-      const updateState = () => api.setEnabled(isInAnchor(editor, editor.selection.getNode()));
+    const toggleLinkMenuState = editor => api => {
+      const updateState = () => {
+        api.setEnabled(editor.selection.isEditable());
+      };
+      updateState();
+      return toggleState(editor, updateState);
+    };
+    const hasExactlyOneLinkInSelection = editor => {
+      const links = editor.selection.isCollapsed() ? getLinks$1(editor.dom.getParents(editor.selection.getStart())) : getLinksInSelection(editor.selection.getRng());
+      return links.length === 1;
+    };
+    const toggleGotoLinkState = editor => api => {
+      const updateState = () => api.setEnabled(hasExactlyOneLinkInSelection(editor));
       updateState();
       return toggleState(editor, updateState);
     };
     const toggleUnlinkState = editor => api => {
       const hasLinks$1 = parents => hasLinks(parents) || hasLinksInSelection(editor.selection.getRng());
       const parents = editor.dom.getParents(editor.selection.getStart());
-      api.setEnabled(hasLinks$1(parents));
-      return toggleState(editor, e => api.setEnabled(hasLinks$1(e.parents)));
+      const updateEnabled = parents => {
+        api.setEnabled(hasLinks$1(parents) && editor.selection.isEditable());
+      };
+      updateEnabled(parents);
+      return toggleState(editor, e => updateEnabled(e.parents));
     };
 
     const setup = editor => {
@@ -1069,13 +1088,13 @@
         icon: 'link',
         tooltip: 'Insert/edit link',
         onAction: openDialog(editor),
-        onSetup: toggleActiveState(editor)
+        onSetup: toggleLinkState(editor)
       });
       editor.ui.registry.addButton('openlink', {
         icon: 'new-tab',
         tooltip: 'Open link',
         onAction: gotoSelectedLink(editor),
-        onSetup: toggleEnabledState(editor)
+        onSetup: toggleGotoLinkState(editor)
       });
       editor.ui.registry.addButton('unlink', {
         icon: 'unlink',
@@ -1089,12 +1108,13 @@
         text: 'Open link',
         icon: 'new-tab',
         onAction: gotoSelectedLink(editor),
-        onSetup: toggleEnabledState(editor)
+        onSetup: toggleGotoLinkState(editor)
       });
       editor.ui.registry.addMenuItem('link', {
         icon: 'link',
         text: 'Link...',
         shortcut: 'Meta+K',
+        onSetup: toggleLinkMenuState(editor),
         onAction: openDialog(editor)
       });
       editor.ui.registry.addMenuItem('unlink', {
@@ -1107,7 +1127,15 @@
     const setupContextMenu = editor => {
       const inLink = 'link unlink openlink';
       const noLink = 'link';
-      editor.ui.registry.addContextMenu('link', { update: element => hasLinks(editor.dom.getParents(element, 'a')) ? inLink : noLink });
+      editor.ui.registry.addContextMenu('link', {
+        update: element => {
+          const isEditable = editor.dom.isEditable(element);
+          if (!isEditable) {
+            return '';
+          }
+          return hasLinks(editor.dom.getParents(element, 'a')) ? inLink : noLink;
+        }
+      });
     };
     const setupContextToolbars = editor => {
       const collapseSelectionToEnd = editor => {
@@ -1123,7 +1151,7 @@
         const onlyText = isOnlyTextSelected(editor);
         if (anchor.isNone() && onlyText) {
           const text = getAnchorText(editor.selection, anchor);
-          return Optional.some(text.length > 0 ? text : value);
+          return someIf(text.length === 0, value);
         } else {
           return Optional.none();
         }
@@ -1133,7 +1161,7 @@
           type: 'contextformtogglebutton',
           icon: 'link',
           tooltip: 'Link',
-          onSetup: toggleActiveState(editor)
+          onSetup: toggleLinkState(editor)
         },
         label: 'Link',
         predicate: node => hasContextToolbar(editor) && isInAnchor(editor, node),
@@ -1150,7 +1178,7 @@
             onSetup: buttonApi => {
               const node = editor.selection.getNode();
               buttonApi.setActive(isInAnchor(editor, node));
-              return toggleActiveState(editor)(buttonApi);
+              return toggleLinkState(editor)(buttonApi);
             },
             onAction: formApi => {
               const value = formApi.getValue();

@@ -132,6 +132,7 @@
       this.updateIsLoading(true);
       this.trigger('refresh_view');
 
+      self.page = 1;
       this.listClient.deleteFilter({
         changed: true,
         id: filterId,
@@ -192,6 +193,9 @@
     this.trigger('refresh_view', { notCallListReady: true });
 
     var self = this;
+    if (refreshCurrentFilter) {
+      self.page = 1;
+    }
 
     this.listClient.filteredList({
       columns: self.getCheckedColumnIds(),
@@ -246,6 +250,7 @@
 
   ListStore.prototype.saveFilter = function () {
     var self = this;
+    self.page = 1;
     this.listClient.saveFilter({
       columns: self.getCheckedColumnIds(),
       filter: self.currentFilter,

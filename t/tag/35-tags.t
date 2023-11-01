@@ -142,12 +142,6 @@ mt-tb.cgi
 --- expected
 mt-search.cgi
 
-=== test 8
---- template
-<MTXMLRPCScript>
---- expected
-mt-xmlrpc.cgi
-
 === test 9
 --- template
 <MTEntries lastn='1'><MTEntryDate></MTEntries>
@@ -1006,12 +1000,6 @@ CFG_FILE
 <MTAdminScript>
 --- expected
 mt.cgi
-
-=== test 192
---- template
-<MTAtomScript>
---- expected
-mt-atom.cgi
 
 === test 193
 --- template
@@ -3104,6 +3092,13 @@ Foo
 --- expected
 FooFoo
 
+=== test 578-2
+--- ignore_php_warnings
+--- template
+<MTSetVarBlock name="foo">FooBar</MTSetVarBlock><MTGetVar name="foo" replace="Bar","$undef">
+--- expected
+Foo
+
 === test 579
 --- template
 [
@@ -5020,3 +5015,27 @@ test.jpg
 <MTEntries lastn="1"><MTEntryModifiedAuthorUserpicURL></MTEntries>
 --- expected
 /mt-static/support/assets_c/userpics/userpic-6-100x100.png
+
+=== test 903 cache test combining tests of 199, 200, 536 and 537 (MTC-28841)
+--- template
+<MTCategories show_empty="1" glue=","><MTCategoryLabel>-<MTCategoryNext show_empty="1"><MTCategoryLabel></MTCategoryNext></MTCategories>
+<MTCategories show_empty="1" glue=","><MTCategoryLabel>-<MTCategoryPrevious show_empty="1"><MTCategoryLabel></MTCategoryPrevious></MTCategories>
+<MTFolders show_empty='1' glue=','><MTFolderLabel>-<MTFolderNext show_empty='1'><MTFolderLabel></MTFolderNext></MTFolders>
+<MTFolders show_empty='1' glue=','><MTFolderLabel>-<MTFolderPrevious show_empty='1'><MTFolderLabel></MTFolderPrevious></MTFolders>
+--- expected
+bar-foo,foo-,subfoo-
+bar-,foo-bar,subfoo-
+download-info,info-,nightly-
+download-,info-download,nightly-
+
+=== test 904 no localvar bugs in MTAuthorNext (MTC-28842)
+--- template
+<MTAuthors><MTAuthorNext></MTAuthorNext></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
+--- expected
+[]
+
+=== test 905 no localvar bugs in MTAuthorPrevious (MTC-28842)
+--- template
+<MTAuthors><MTAuthorPrevious></MTAuthorPrevious></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
+--- expected
+[]

@@ -8,11 +8,7 @@ BUILD_PACKAGE ?= MTOS
 BUILD_VERSION_ID ?= $(PRODUCT_VERSION)
 
 local_js = mt-static/mt_en_us.js \
-        mt-static/mt_de.js \
-        mt-static/mt_fr.js \
-        mt-static/mt_nl.js \
-        mt-static/mt_ja.js \
-        mt-static/mt_es.js
+        mt-static/mt_ja.js
 
 core_js = mt-static/js/common/Core.js \
           mt-static/js/common/Timer.js \
@@ -42,7 +38,7 @@ bs5_core_js = mt-static/js/common/Core.js \
           mt-static/js/common/Client.js \
           mt-static/js/common/Template.js \
           mt-static/js/tc.js \
-          mt-static/js/bootstrap5/tc/tableselect.js
+          mt-static/js/admin2023/tc/tableselect.js
 
 editor_js = mt-static/js/editor/editor_manager.js \
           mt-static/js/editor/editor_command.js \
@@ -58,11 +54,7 @@ editor_js = mt-static/js/editor/editor_manager.js \
 
 jquery_js = mt-static/jquery/jquery.mt.js
 
-bs5_jquery_js = mt-static/js/bootstrap5/jquery/jquery.mt.js
-
-tinymce_plugin_mt_js = mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.js
-
-tinymce_plugin_mt_fullscreen_js = mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.js
+bs5_jquery_js = mt-static/js/admin2023/jquery/jquery.mt.js
 
 tinymce5_plugin_mt_js = mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.js
 
@@ -95,9 +87,9 @@ mt-static/js/mt_core_compact.js: $(core_js)
 	cat $(core_js) > mt-static/js/mt_core_compact.js
 	./build/minifier.pl mt-static/js/mt_core_compact.js
 
-mt-static/js/bootstrap5/mt_core_compact.js: $(bs5_core_js)
-	cat $(bs5_core_js) > mt-static/js/bootstrap5/mt_core_compact.js
-	./build/minifier.pl mt-static/js/bootstrap5/mt_core_compact.js
+mt-static/js/admin2023/mt_core_compact.js: $(bs5_core_js)
+	cat $(bs5_core_js) > mt-static/js/admin2023/mt_core_compact.js
+	./build/minifier.pl mt-static/js/admin2023/mt_core_compact.js
 
 mt-static/js/editor.js: $(editor_js)
 	cat $(editor_js) > mt-static/js/editor.js
@@ -107,17 +99,9 @@ mt-static/jquery/jquery.mt.min.js: $(jquery_js)
 	cat $(jquery_js) > mt-static/jquery/jquery.mt.min.js
 	./build/minifier.pl mt-static/jquery/jquery.mt.min.js
 
-mt-static/js/bootstrap5/jquery/jquery.mt.min.js: $(bs5_jquery_js)
-	cat $(bs5_jquery_js) > mt-static/js/bootstrap5/jquery/jquery.mt.min.js
-	./build/minifier.pl mt-static/js/bootstrap5/jquery/jquery.mt.min.js
-
-mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js: $(tinymce_plugin_mt_js)
-	cat $(tinymce_plugin_mt_js) > mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
-	./build/minifier.pl mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
-
-mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js: $(tinymce_plugin_mt_fullscreen_js)
-	cat $(tinymce_plugin_mt_fullscreen_js) > mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js
-	./build/minifier.pl mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js
+mt-static/js/admin2023/jquery/jquery.mt.min.js: $(bs5_jquery_js)
+	cat $(bs5_jquery_js) > mt-static/js/admin2023/jquery/jquery.mt.min.js
+	./build/minifier.pl mt-static/js/admin2023/jquery/jquery.mt.min.js
 
 mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js: $(tinymce5_plugin_mt_js)
 	cat $(tinymce5_plugin_mt_js) > mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js
@@ -147,12 +131,10 @@ mt-static/css/simple.css: $(simple_css)
 	code-es code-ja
 code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/js/mt_core_compact.js \
-        mt-static/js/bootstrap5/mt_core_compact.js \
+        mt-static/js/admin2023/mt_core_compact.js \
         mt-static/js/editor.js \
         mt-static/jquery/jquery.mt.min.js \
-        mt-static/js/bootstrap5/jquery/jquery.mt.min.js \
-        mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js \
-        mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js \
+        mt-static/js/admin2023/jquery/jquery.mt.min.js \
         mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js \
         mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js \
         mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js \
@@ -161,8 +143,7 @@ code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/css/simple.css
 
 code: check code-$(BUILD_LANGUAGE)
-code-en_US code-de code-fr code-nl code-es: check $(code_common) \
-	$(local_js)
+code-en_US: check $(code_common) $(local_js)
 code-ja: check $(code_common) mt-static/mt_ja.js
 
 build-language-stamp:
@@ -233,12 +214,10 @@ me:
 clean:
 	-rm -rf $(local_js)
 	-rm -rf mt-static/js/mt_core_compact.js
-	-rm -rf mt-static/js/bootstrap5/mt_core_compact.js
+	-rm -rf mt-static/js/admin2023/mt_core_compact.js
 	-rm -rf mt-static/js/editor.js
 	-rm -f mt-static/jquery/jquery.mt.min.js
-	-rm -f mt-static/js/bootstrap5/jquery/jquery.mt.min.js
-	-rm -f mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
-	-rm -f mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js
+	-rm -f mt-static/js/admin2023/jquery/jquery.mt.min.js
 	-rm -f mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js
 	-rm -f mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js
 	-rm -f mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js

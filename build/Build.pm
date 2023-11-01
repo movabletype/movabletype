@@ -83,7 +83,7 @@ sub get_options {
         'http-user=s' => undef,
         'http-pass=s' => undef,
         'ldap'        => 0,    # Use LDAP (and don't initialize the database).
-        'lang=s' => $ENV{BUILD_LANGUAGE} || 'en_US',    # de,es,en_US,fr,ja,nl
+        'lang=s' => $ENV{BUILD_LANGUAGE} || 'en_US',    # en_US,ja
         'language=s@' => undef,    # Constructed below.
         'lang-stamp!' => 1,        # Toggle language stampimg
         'local'       => 0,        # Command-line --option alias
@@ -136,7 +136,7 @@ sub get_options {
     $self->{'plugin=s@'} ||= [];
 
     # Construct the list of languages to build.
-    $self->{'lang=s'} = 'de,en_US,es,fr,ja,nl'
+    $self->{'lang=s'} = 'en_US,ja'
         if lc( $self->{'lang=s'} ) eq 'all';
     push @{ $self->{'language=s@'} }, split /,/, $self->{'lang=s'};
 }

@@ -163,6 +163,7 @@ sub list_props {
                         = map { $all_perms->{ 'blog.' . $_ } } @perms;
                     $detail = join ', ', (
                         sort
+                            grep { defined $_ && $_ ne '' }
                             map {
                             ref $_->{label}
                                 ? $_->{label}->()
@@ -429,7 +430,7 @@ sub blog {
         'blog',
         sub {
             require MT::Blog;
-            $blog_id ? MT->requst->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id) : undef;
+            $blog_id ? MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT::Blog->load($blog_id) : undef;
         }
     );
 }

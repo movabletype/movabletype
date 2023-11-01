@@ -39,14 +39,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.9', '7.0054' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '8.000002', '8.0000' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.9.9',              '__PRODUCT_VERSION_ID__',
+        '8.0.2',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -64,19 +64,14 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 9;
+        $RELEASE_NUMBER = 0;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5404';
+        $RELEASE_VERSION_ID = '';
     }
 
     $DebugMode = 0;
-
-    # Alias lowercase to uppercase package; note: this is an equivalence
-    # as opposed to having @mt::ISA set to 'MT'. so @mt::Plugins would
-    # resolve as well as @MT::Plugins.
-    *{mt::} = *{MT::};
 
     # Alias these; Components is the preferred array for MT 4
     *Plugins = \@Components;
@@ -182,6 +177,7 @@ sub construct {
     sub model {
         my $pkg = shift;
         my ($k) = @_;
+        return undef unless $k;
 
         $object_types{$k} = $_[1] if scalar @_ > 1;
         return $object_types{$k} if exists $object_types{$k};
@@ -249,6 +245,21 @@ sub construct {
             }
         }
         return @matches;
+    }
+
+    sub loaded_models {
+        my $pkg = shift;
+        values %object_types;
+    }
+
+    sub clear_cache_of_loaded_models {
+        my $pkg = shift;
+        for my $model (values %object_types) {
+            # avoid loading a new driver here
+            my $props = $model->properties or next;
+            my $driver = $props->{driver} or next;
+            $driver->clear_cache if $driver->can('clear_cache');
+        }
     }
 }
 
@@ -989,7 +1000,6 @@ sub init_config_from_db {
     require MT::ObjectDriverFactory;
     if ( MT->config('ObjectDriver') ) {
         my $driver = MT::ObjectDriverFactory->instance;
-        $driver->configure if $driver;
     }
     else {
         MT::ObjectDriverFactory->configure();
@@ -1306,7 +1316,7 @@ sub init_plugins {
 
     my $cfg          = $mt->config;
     my $use_plugins  = $cfg->UsePlugins;
-    my @PluginPaths  = $cfg->PluginPath;
+    my @PluginPaths  = ($cfg->UserPluginPath, $cfg->PluginPath);
     my $PluginSwitch = $cfg->PluginSwitch || {};
     my $plugin_sigs  = join ',', sort keys %$PluginSwitch;
     $mt->_init_plugins_core( $PluginSwitch, $use_plugins, \@PluginPaths );
@@ -1405,23 +1415,6 @@ sub init_plugins {
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if ($@) {
             $Plugins{$plugin_sig}{error} = $@;
-
-            # Issue MT log within another eval block in the
-            # event that the plugin error is happening before
-            # the database has been initialized...
-            eval {
-                require MT::Log;
-                $mt->log(
-                    {   message => $mt->translate(
-                            "Plugin error: [_1] [_2]", $plugin,
-                            $Plugins{$plugin_sig}{error}
-                        ),
-                        class    => 'system',
-                        category => 'plugin',
-                        level    => MT::Log::ERROR()
-                    }
-                );
-            };
             return;
         }
         else {
@@ -1484,6 +1477,7 @@ sub init_plugins {
         }
 
         my @loaded_plugins;
+        my @errors;
         foreach my $PluginPath (@$PluginPaths) {
             my $plugin_lastdir = $PluginPath;
             $plugin_lastdir =~ s![\\/]$!!;
@@ -1502,6 +1496,7 @@ sub init_plugins {
                         if ($plugin_full_path =~ /\.pl$/) {
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
                             push @loaded_plugins, $obj if $obj;
+                            push @errors, [$plugin_full_path, $Plugins{$plugin}{error}] if $Plugins{$plugin}{error};
                         }
                         next;
                     }
@@ -1539,8 +1534,10 @@ sub init_plugins {
                             = File::Spec->catfile( $plugin_full_path,
                             $plugin );
                         if ( -f $plugin_file ) {
-                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $plugin_dir . '/' . $plugin );
+                            my $sig = $plugin_dir . '/' . $plugin;
+                            my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @loaded_plugins, $obj if $obj;
+                            push @errors, [$plugin_full_path, $Plugins{$sig}{error}] if $Plugins{$sig}{error};
                         }
                     }
                 }
@@ -1591,6 +1588,25 @@ sub init_plugins {
                 }
             }
             $plugin->init_callbacks;
+        }
+
+        # $mt->log calls init_schema internally, so $mt->log it must be called after $plugin->init_callbacks all plugins that do not cause errors
+        for my $error (@errors) {
+            # Issue MT log within another eval block in the
+            # event that the plugin error is happening before
+            # the database has been initialized...
+            eval {
+                require MT::Log;
+                $mt->log(
+                    {   message => $mt->translate(
+                            "Plugin error: [_1] [_2]", @$error,
+                        ),
+                        class    => 'system',
+                        category => 'plugin',
+                        level    => MT::Log::ERROR()
+                    }
+                );
+            } or last;
         }
 
         # Reset the Text_filters hash in case it was preloaded by plugins by
@@ -1927,6 +1943,7 @@ sub apply_text_filters {
     my ( $str, $filters, @extra ) = @_;
     my $all_filters = $mt->all_text_filters;
     for my $filter (@$filters) {
+        next unless defined $filter;
         my $f = $all_filters->{$filter} or next;
         my $code = $f->{code} || $f->{handler};
         unless ( ref($code) eq 'CODE' ) {
@@ -2025,7 +2042,7 @@ sub template_paths {
             push @paths, File::Spec->catdir( $mt->mt_dir, $mt->{plugin_template_path} );
         }
     }
-    my @alt_paths = $mt->config('AltTemplatePath');
+    my @alt_paths = ($mt->config('UserTemplatePath'), $mt->config('AltTemplatePath'));
     foreach my $alt_path (@alt_paths) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
             if ($mt->{template_dir}) {
@@ -2097,6 +2114,42 @@ sub load_global_tmpl {
     require MT::Template;
     my $tmpl = MT::Template->load( $terms, $args );
     $app->set_default_tmpl_params($tmpl) if $tmpl;
+    $tmpl;
+}
+
+sub load_core_tmpl {
+    my $mt = shift;
+    local $mt->{component} = 'core';
+    $mt->load_tmpl(@_);
+}
+
+sub load_cached_tmpl {
+    my $mt = shift;
+    if ( exists( $mt->{component} ) && ( lc( $mt->{component} ) ne 'core' ) )
+    {
+        if ( my $c = $mt->component( $mt->{component} ) ) {
+            return $c->load_cached_tmpl(@_);
+        }
+    }
+
+    my ( $file, @p ) = @_;
+    my $param;
+    if ( @p && ( ref( $p[$#p] ) eq 'HASH' ) ) {
+        $param = pop @p;
+    }
+    my ($tmpl, $cache);
+    if (!ref $file) {
+        require MT::Request;
+        $cache = MT::Request->instance->{__stash}{load_tmpl_file_cache} ||= {};
+        if ($cache->{core}{$file}) {
+            $tmpl = $cache->{core}{$file};
+        }
+    }
+    $tmpl ||= $mt->load_tmpl($file, @p) or return;
+    if ($cache) {
+        $cache->{core}{$file} = $tmpl;
+    }
+    $tmpl->param($param) if $param;
     $tmpl;
 }
 
@@ -2359,27 +2412,19 @@ sub new_ua {
     my ($opt) = @_;
     $opt ||= {};
     my $lwp_class = 'LWP::UserAgent';
-    if ( $opt->{paranoid} ) {
-        eval { require LWPx::ParanoidAgent; };
-        $lwp_class = 'LWPx::ParanoidAgent' unless $@;
-    }
     eval "require $lwp_class;";
     return undef if $@;
     my $cfg      = $class->config;
     my $max_size = exists $opt->{max_size} ? $opt->{max_size} : 100_000;
-    my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout
-        || $cfg->PingTimeout;
-    my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy
-        || $cfg->PingProxy;
+    my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout;
+    my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy;
     my $sec_proxy
         = exists $opt->{sec_proxy} ? $opt->{sec_proxy} : $cfg->HTTPSProxy;
     my $no_proxy
-        = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy
-        || $cfg->PingNoProxy;
+        = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy;
     my $agent = $opt->{agent} || $MT::PRODUCT_NAME . '/' . $MT::VERSION;
     my $interface
-        = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface
-        || $cfg->PingInterface;
+        = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface;
 
     if ( my $localaddr = $interface ) {
         @LWP::Protocol::http::EXTRA_SOCK_OPTS = (

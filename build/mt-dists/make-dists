@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl -w
 
 # Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
@@ -108,7 +108,7 @@ if ( $skip_rules =~ m/^#\?/m ) {    # conditional rule
 }
 
 my @languages = split( /,/, $langlist );
-@languages = qw( en_US nl fr de es ja ) unless @languages;
+@languages = qw( en_US ja ) unless @languages;
 for my $lang (@languages) {
     $options{language} = $lang;
     $options{package}  = $package;
@@ -141,6 +141,9 @@ for my $lang (@languages) {
     make_manifest_skip( $skip_rules, $skip );
 
     mkmanifest();
+
+    require MT::Util::Checksums;
+    MT::Util::Checksums::update_checksums();
 
     # Copy files for non-GPL license since we will be modifying the content
     manicopy( maniread(), $distname, ( $license eq 'GPL' ? 'best' : 'cp' ) );

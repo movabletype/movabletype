@@ -127,6 +127,7 @@ sub create_default_website {
     my $site_url   = $params{site_url} || '';
     my $site_path  = $params{site_path} || '';
     my $timezone   = $params{site_timezone} || 0;
+    my $language   = $params{site_language} || MT->config->DefaultLanguage;
 
     $class = ref $class if ref $class;
 
@@ -148,6 +149,7 @@ sub create_default_website {
     $website->site_path($site_path);
     $website->site_url($site_url);
     $website->server_offset($timezone);
+    $website->language($language);
 
     $website->save or return $class->error( $website->errstr );
 

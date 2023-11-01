@@ -110,7 +110,7 @@ sub list_props {
                     desc => MT::Util::encode_html($desc),
                     msg  => MT::Util::encode_html($msg),
                 );
-                return $app->load_tmpl('cms/include/mt_log_list_props_message.tmpl', \%params)->output();
+                return $app->load_cached_tmpl('cms/include/mt_log_list_props_message.tmpl', \%params)->output();
             },
         },
         blog_name => {

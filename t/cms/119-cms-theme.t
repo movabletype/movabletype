@@ -8,9 +8,7 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        ThemesDirectory => 'TEST_ROOT/themes',
-    );
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 
     $test_env->save_file('themes/MyWebsiteTheme/theme.yaml', <<'YAML');
@@ -140,7 +138,6 @@ subtest 'Check applying a blog theme' => sub {
     $app->has_no_permission_error;
     ok($app->last_location->query_param('applied'), 'Theme has been applied.');
 
-    $test_env->clear_mt_cache;
     $website = MT->model('website')->load($website->id);
     is(
         $website->theme_id, 'MyBlogTheme',

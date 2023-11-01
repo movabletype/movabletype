@@ -226,3 +226,11 @@ foo
 --- expected
 foo
 --- should_not_be_called_object_tag_load
+
+=== Category cache doesn't break following tags MTC-28906
+--- template
+<mt:Entries categories="bar" include_subcategories="1">[<mt:EntryTitle>]</mt:Entries>
+<mt:Entries categories="baz" include_subcategories="1">[<mt:EntryTitle>]</mt:Entries>
+--- expected
+[bar]
+[baz]

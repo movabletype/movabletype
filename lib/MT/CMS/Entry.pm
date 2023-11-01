@@ -682,9 +682,6 @@ sub edit {
         } @ordered
     ];
 
-    unless (MT->config->DisableQuickPost) {
-        $param->{quickpost_js} = MT::CMS::Entry::quickpost_js( $app, $type );
-    }
     $param->{object_label_plural} = $param->{search_label}
         = $class->class_label_plural;
     if ( 'page' eq $type ) {
@@ -2413,6 +2410,9 @@ sub build_entry_table {
     my %blog_perms;
     $blog_perms{ $perms->blog_id } = $perms if $perms;
 
+    require MT::ListProperty;
+    my $list_properties = MT::ListProperty->list_properties('entry');
+
     while ( my $obj = $iter->() ) {
         my $blog_perms;
         if ( !$app_author->is_superuser() ) {
@@ -2469,6 +2469,7 @@ sub build_entry_table {
                 = substr( $row->{title_short}, 0, $title_max_len + 3 ) . '...'
                 if length( $row->{title_short} ) > $title_max_len;
         }
+        $row->{title_html} = $list_properties->{title}->html($obj, $app);
         if ( $row->{excerpt} ) {
             $row->{excerpt} = remove_html( $row->{excerpt} );
         }
@@ -2551,26 +2552,6 @@ sub build_entry_table {
     $app->load_list_actions( $type, \%$param )
         unless $is_power_edit;
     \@data;
-}
-
-sub quickpost_js {
-    my $app     = shift;
-    my ($type)  = @_;
-    my $blog_id = $app->blog->id;
-    my $blog    = $app->model('blog')->load($blog_id)
-        or return $app->error(
-        $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
-    my %args = ( '_type' => $type, blog_id => $blog_id, qp => 1 );
-    my $uri = $app->base . $app->uri( 'mode' => 'view', args => \%args );
-    my $script
-        = qq!javascript:d=document;w=window;t='';if(d.selection)t=d.selection.createRange().text;else{if(d.getSelection)t=d.getSelection();else{if(w.getSelection)t=w.getSelection()}}void(w.open('$uri&title='+encodeURIComponent(d.title)+'&text='+encodeURIComponent(d.location.href)+encodeURIComponent('<br/><br/>')+encodeURIComponent(t),'_blank','scrollbars=yes,status=yes,resizable=yes,location=yes'))!;
-
-    # Translate the phrase here to avoid ActivePerl DLL bug.
-    $app->translate(
-        '<a href="[_1]">QuickPost to [_2]</a> - Drag this bookmarklet to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.',
-        encode_html($script),
-        encode_html( $blog->name )
-    );
 }
 
 sub can_save {

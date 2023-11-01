@@ -479,43 +479,6 @@ sub list_for_asset_common {
     };
 }
 
-sub list_for_tag {
-    my ( $app, $endpoint ) = @_;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.9');
-
-    list_for_tag_common( $app, $endpoint, 'entry' );
-}
-
-sub list_for_tag_common {
-    my ( $app, $endpoint, $class ) = @_;
-
-    require MT::DataAPI::Endpoint::v2::Tag;
-    my $tag = MT::DataAPI::Endpoint::v2::Tag::_retrieve_tag($app) or return;
-
-    run_permission_filter( $app, 'data_api_view_permission_filter',
-        'tag', $tag->id, obj_promise($tag) )
-        or return;
-
-    my %args = (
-        join => MT->model('objecttag')->join_on(
-            undef,
-            {   object_datasource => 'entry',
-                object_id         => \'= entry_id',
-                tag_id            => $tag->id,
-            },
-        ),
-    );
-    my $res = filtered_list( $app, $endpoint, $class, undef, \%args );
-
-    +{  totalResults => ( $res ? $res->{count} : 0 ) + 0,
-        items => MT::DataAPI::Resource::Type::ObjectList->new(
-            $res ? $res->{objects} : {}
-        ),
-    };
-}
-
 sub list_for_site_and_tag_openapi_spec {
     +{
         tags        => ['Entries', 'Tags'],

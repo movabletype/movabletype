@@ -10,7 +10,7 @@ our $test_env;
 my $admin_theme_id;
 
 BEGIN {
-    $admin_theme_id = 'bootstrap5';
+    $admin_theme_id = 'admin2023';
     $test_env       = MT::Test::Env->new(
         DefaultLanguage => 'en_US',           ## for now
         AdminThemeId    => $admin_theme_id,
@@ -51,7 +51,7 @@ subtest 'MT::template_paths' => sub {
     my $mt = MT->instance;
     $mt->{template_dir} = 'cms';
 
-    my @paths = $mt->template_paths;
+    my @paths = map { File::Spec->canonpath($_) } $mt->template_paths;
     note explain \@paths;
 
     cmp_deeply \@paths, superbagof(
@@ -70,7 +70,7 @@ subtest 'Component::template_paths' => sub {
     my $component = 'BlockEditor';
     my $c         = $mt->component($component);
 
-    my @cpaths = $c->template_paths;
+    my @cpaths = map { File::Spec->canonpath($_) } $c->template_paths;
     note explain \@cpaths;
 
     cmp_deeply \@cpaths, superbagof(

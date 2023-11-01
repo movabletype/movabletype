@@ -113,10 +113,13 @@ sub login {
         if
         eval { MT::Lockout->is_locked_out( $app, $app->remote_ip, $user ) };
 
-    my $driver = $MT::Object::DRIVER;
-    $driver->clear_cache if $driver && $driver->can('clear_cache');
+    MT->clear_cache_of_loaded_models;
+
     if ( my @author = MT::BasicAuthor->load( { name => $user } ) ) {
         foreach my $author (@author) {
+            # MT::Author::magic_token is removed by MT::Compat::v3.
+            # So force BasicAuthor if necessary
+            bless $author, 'MT::BasicAuthor' if ref $author eq 'MT::Author';
 
             # skip any possible non-authors...
             if ( MT::Auth->password_exists ) {
@@ -207,10 +210,10 @@ sub upgrade {
 
     my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
-    if ( $] < 5.010001 ) {    # our minimal requirement for support
+    if ( $] < 5.016000 ) {    # our minimal requirement for support
         $param{version_warning} = 1;
         $param{perl_version}    = $ver;
-        $param{perl_minimum}    = '5.10.1';
+        $param{perl_minimum}    = '5.16.0';
     }
 
     my $method = $app->request_method;
@@ -402,59 +405,7 @@ sub init_user {
     $param{initial_use_system}  = $initial_use_system;
     $param{config}              = $app->serialize_config(%param);
 
-    my $new_user;
-    use URI::Escape;
-    $new_user = {
-        user_name        => uri_escape_utf8( $param{initial_user} ),
-        user_nickname    => uri_escape_utf8( $param{initial_nickname} ),
-        user_password    => uri_escape_utf8( $param{initial_password} ),
-        user_email       => uri_escape_utf8( $param{initial_email} ),
-        user_lang        => $param{initial_lang},
-        user_external_id => $param{initial_external_id},
-    };
-
-    if ( my $email_system = $param{initial_use_system}
-        || $param{use_system_email} )
-    {
-        $new_user->{'use_system_email'} = $email_system;
-    }
-    my $steps;
-    my $install_mode = 1;
-    eval {
-        local $app->{upgrading} = 1;
-        require MT::Upgrade;
-        MT::Upgrade->do_upgrade(
-            Install => $install_mode,
-            DryRun  => 1,
-            App     => $app,
-            (   $install_mode
-                ? ( User => $new_user )
-                : ()
-            )
-        );
-        my $steps = $app->response->{steps};
-        my $fn    = \%MT::Upgrade::functions;
-        if ( $steps && @$steps ) {
-            @$steps = sort {
-                $fn->{ $a->[0] }->{priority} <=> $fn->{ $b->[0] }->{priority}
-            } @$steps;
-        }
-    };
-    die $@ if $@;
-    $steps = $app->response->{steps};
-    my $json_steps;
-    if ( $steps && @$steps ) {
-        $json_steps = MT::Util::to_json($steps);
-    }
-
-    $param{installing}    = $install_mode;
-    $param{up_to_date}    = $json_steps ? 0 : 1;
-    $param{initial_steps} = $json_steps;
-    $param{mt_admin_url}
-        = ( $app->config->AdminCGIPath || $app->config->CGIPath )
-        . $app->config->AdminScript;
-
-    return $app->build_page( 'upgrade_runner.tmpl', \%param );
+    $app->init_website( \%param );
 }
 
 sub init_website {
@@ -476,6 +427,7 @@ sub init_website {
     $param{website_path}     = $app->param('website_path') || '';
     $param{website_timezone} = $app->param('website_timezone');
     $param{website_theme}    = $app->param('website_theme');
+    $param{website_language} = $app->param('website_language');
     $param{website_path} =~ s!$sep+$!!;
     $param{website_url} .= '/' if $param{website_url} !~ m!/$!;
 
@@ -506,7 +458,7 @@ sub init_website {
     if ( $app->param('back') ) {
         return $app->init_user;
     }
-    if ( !$app->param('finish') ) {
+    if ( !$app->param('finish') && !$app->param('skip') ) {
 
         # suggest site_path & site_url
         my $path = $param{'sitepath_limited'} || $app->document_root();
@@ -516,6 +468,8 @@ sub init_website {
         $url =~ s!/cgi(?:-bin)?(/.*)?$!/!;
         $url =~ s!/mt/?$!/!i;
         $param{website_url} = $url;
+        $param{languages}
+          = MT::I18N::languages_list( $app, $app->current_language );
 
         return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
@@ -583,6 +537,7 @@ sub init_website {
         website_path     => uri_escape_utf8( $param{website_path} ),
         website_timezone => $param{website_timezone},
         website_theme    => $param{website_theme} || '',
+        website_language => $param{website_language} || '',
     };
 
     my $steps;
@@ -590,15 +545,27 @@ sub init_website {
     eval {
         local $app->{upgrading} = 1;
         require MT::Upgrade;
-        MT::Upgrade->do_upgrade(
-            Install => $install_mode,
-            DryRun  => 1,
-            App     => $app,
-            (   $install_mode
-                ? ( User => $new_user, Website => $new_website )
-                : ()
-            )
-        );
+        if ( $app->param('skip') ) {
+          MT::Upgrade->do_upgrade(
+              Install => $install_mode,
+              DryRun  => 1,
+              App     => $app,
+              (   $install_mode
+                  ? ( User => $new_user )
+                  : ()
+              )
+          );
+        } else {
+          MT::Upgrade->do_upgrade(
+              Install => $install_mode,
+              DryRun  => 1,
+              App     => $app,
+              (   $install_mode
+                  ? ( User => $new_user, Website => $new_website )
+                  : ()
+              )
+          );
+        }
         my $steps = $app->response->{steps};
         my $fn    = \%MT::Upgrade::functions;
         if ( $steps && @$steps ) {
@@ -817,10 +784,10 @@ sub main {
 
     my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
-    if ( $] < 5.010001 ) {    # our minimal requirement for support
+    if ( $] < 5.016000 ) {    # our minimal requirement for support
         $param->{version_warning} = 1;
         $param->{perl_version}    = $ver;
-        $param->{perl_minimum}    = '5.10.1';
+        $param->{perl_minimum}    = '5.16.0';
     }
 
     my $driver       = MT::Object->driver;
@@ -873,7 +840,7 @@ sub main {
         MT->log(
             {   message => MT->translate(
                     "Movable Type has been upgraded to version [_1].",
-                    $app->release_version_id,
+                    $app->version_id,
                 ),
                 level    => MT::Log::NOTICE(),
                 class    => 'system',
@@ -888,7 +855,7 @@ sub main {
     $param->{help_url}    = $app->help_url();
     $param->{to_schema}   = $cur_schema;
     $param->{from_schema} = $schema;
-    $param->{mt_version}  = $app->release_version_id;
+    $param->{mt_version}  = $app->version_id;
 
     my @plugins;
     my $plugin_ver = $app->{cfg}->PluginSchemaVersion;

@@ -206,24 +206,34 @@ sub found_ids {
     return \@ids;
 }
 
-my %TitleContainerSelectors = (
-    content_data => 'td.id strong',
-    template     => 'td:nth-of-type(2) a',
-    entry        => 'td.title strong',
-    asset        => 'td:nth-of-type(3) a',
-    blog         => 'td:nth-of-type(2) a',
-    website      => 'td:nth-of-type(2) a',
-);
+my $TitleContainerSelectors = {
+    admin2023 => {
+        content_data => 'td.id a.label',
+        template     => 'td:nth-of-type(2) a',
+        entry        => 'td.title > span.title',
+        asset        => 'td:nth-of-type(3) a',
+        blog         => 'td:nth-of-type(2) a',
+        website      => 'td:nth-of-type(2) a',
+    },
+    mt7 => {
+        content_data => 'td.id strong',
+        template     => 'td:nth-of-type(2) a',
+        entry        => 'td.title strong',
+        asset        => 'td:nth-of-type(3) a',
+        blog         => 'td:nth-of-type(2) a',
+        website      => 'td:nth-of-type(2) a',
+    },
+};
 
 sub found_titles {
     my $self = shift;
     my @titles;
     my $type     = $self->current_tab or return [];
-    my $selector = $TitleContainerSelectors{$type};
+    my $selector = $TitleContainerSelectors->{MT->config('AdminThemeId') || 'mt7'}{$type};
     my $found    = $self->found or return [];
     $found->each(sub {
         my ($i, $row) = @_;
-        my $text = $row->find($selector)->text;
+        my $text = $row->find($selector)->text // '';
         $text =~ s{^\s+|\s+$}{}g;
         push @titles, $text;
     });
@@ -242,6 +252,13 @@ sub found_site_ids {
         push @site_ids, $1;
     });
     return \@site_ids;
+}
+
+sub found_highlighted_count {
+    my $self = shift;
+    my @titles;
+    my $type  = $self->current_tab or return [];
+    return $self->wq_find(qq!form#${type}-listing-form table tbody [data-search-highlight="1"]!)->size;
 }
 
 1;

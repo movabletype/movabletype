@@ -30,7 +30,15 @@ sub DISPLAY_LENGTH_EDIT_ENTRY_TITLE ()                 {11}
 sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_FROM_EXCERPT ()     {25}
 sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP ()         {30}
 
-sub PORTAL_URL()   {'https://www.sixapart.jp/movabletype/'}
+sub PORTAL_URL {
+    if ($MT::PRODUCT_NAME eq 'Movable Type Advanced') {
+        return 'https://www.sixapart.jp/movabletype/solutions/mta.html';
+    } elsif ($MT::PRODUCT_NAME =~ /Movable Type Premium/) {
+        return 'https://www.sixapart.jp/movabletype/solutions/mtpremium.html';
+    } else {
+        return 'https://www.sixapart.jp/movabletype/';
+    }
+}
 sub SUPPORT_URL()  {'https://www.sixapart.jp/movabletype/support/'}
 sub NEWS_URL()     {'https://www.sixapart.jp/movabletype/'}
 sub NEWSBOX_URL()  {'https://www.sixapart.jp/movabletype/news/newsbox.json'}

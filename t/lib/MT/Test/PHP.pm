@@ -40,40 +40,10 @@ sub _find_smarty_version {
 
 sub run {
     my ( $class, $script, $stderr ) = @_;
-
-    my $dir = $ENV{MT_TEST_ROOT} || '.';
-
-    my ( $fh, $ini_file ) = tempfile(
-        DIR    => $dir,
-        SUFFIX => '.ini',
-    );
-    print $fh <<'INI';
-date.timezone = Asia/Tokyo;
-error_reporting = E_ALL;
-display_startup_errors = On;
-display_errors = On;
-log_errors = On;
-opcache.jit = On;
-opcache.jit_buffer_size = 100M;
-INI
-    close $fh;
-
-    my @args;
-    my $ini_setting = `php --ini`;
-    if ($ini_setting =~ /Scan for additional .ini files in: \(none\)/) {
-        $ENV{PHP_INI_SCAN_DIR} = $dir;
-        @args = ();
-    }
-    else {
-        @args = ( '--php-ini', $ini_file );
-    }
-
-
-    IPC::Run3::run3 [ 'php', @args ], \$script, \my $result, $stderr, { binmode_stdin => 1 } or die $?;
+    my $command = _make_php_command();
+    IPC::Run3::run3 $command, \$script, \my $result, $stderr, { binmode_stdin => 1 } or die $?;
     $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
     Encode::decode_utf8($result);
-
-    unlink $ini_file;
 
     return $result;
 }
@@ -86,6 +56,39 @@ sub supports_gd {
 sub supports_memcached {
     my $result = shift->run('<?php phpinfo(); ?>');
     $result =~ /memcache support\s*=>\s*enabled/ ? 1 : 0;
+}
+
+my ($INI_FILE, $command);
+
+sub _make_php_command {
+    return $command if $command;
+
+    my $dir = $ENV{MT_TEST_ROOT} || '.';
+    ( my $fh, $INI_FILE ) = tempfile(
+        DIR    => $dir,
+        SUFFIX => '.ini',
+    );
+    print $fh <<'INI';
+date.timezone = Asia/Tokyo;
+error_reporting = E_ALL;
+display_startup_errors = On;
+display_errors = On;
+log_errors = On;
+opcache.jit = On;
+opcache.jit_buffer_size = 100M;
+opcache.enable_cli = 1;
+INI
+    close $fh;
+
+    my $ini_setting = `php --ini`;
+    if ($ini_setting =~ /Scan for additional .ini files in: \(none\)/) {
+        $ENV{PHP_INI_SCAN_DIR} = $dir;
+        $command = ['php'];
+    }
+    else {
+        $command = ['php', '--php-ini', $INI_FILE];
+    }
+    return $command;
 }
 
 1;

@@ -124,14 +124,14 @@ sub terms_multiple {
 sub filter_tmpl_multiple {
     return <<'__TMPL__';
 <mt:setvarblock name="select_options">
-<select class="custom-select form-control <mt:var name="type">-option">
+<select class="custom-select form-control <mt:var name="type">-option form-select">
   <option value="is_selected"><__trans phrase="is selected" encode_html="1"></option>
   <option value="is_not_selected"><__trans phrase="is not selected" encode_html="1"></option>
 </select>
 </mt:setvarblock>
 <__trans phrase="In [_1] column, [_2] [_3]"
          params="<mt:var name="label">%%
-                 <select class="custom-select form-control <mt:var name="type">-value">
+                 <select class="custom-select form-control <mt:var name="type">-value form-select">
                  <mt:loop name="single_select_options">
                    <option value="<mt:var name="value" encode_html="1">"><mt:var name="label" encode_html="1" ></option>
                  </mt:loop>
@@ -491,7 +491,7 @@ sub feed_value_handler_multiple {
 }
 
 sub preview_handler_multiple {
-    my ( $field_data, $values, $content_data ) = @_;
+    my ($field_data, $values, $content_data) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -508,6 +508,24 @@ sub preview_handler_multiple {
         $contents .= "<li>$encoded_label ($encoded_v)</li>";
     }
     return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
+sub search_result_handler_multiple {
+    my ($field_data, $values, $content_data) = @_;
+    return '' unless $values;
+    unless (ref $values eq 'ARRAY') {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my %value_label_hash = map { $_->{value} => $_->{label} } @{ $field_data->{options}{values} || [] };
+
+    my @ret;
+    for my $v (@$values) {
+        my $label = $value_label_hash{$v};
+        push @ret, MT::Util::encode_html($label) if defined $label && $label ne '';
+    }
+    return join ', ', @ret;
 }
 
 sub search_handler_multiple {

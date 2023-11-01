@@ -1,0 +1,77 @@
+    <input type="hidden" name="fname-<mt:var name="id">" value="<mt:var name="filename" escape="html">" />
+<mt:if name="do_thumb">
+  <mtapp:setting
+     id="create_thumbnail-<mt:var name="id">"
+     label="<__trans phrase="Use thumbnail">">
+    <div class="mb-3">
+      <div class="form-check">
+        <input type="checkbox" name="thumb" id="create_thumbnail-<mt:var name="id">" class="form-check-input" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
+        <label class="form-check-label" for="create_thumbnail-<mt:var name="id" escape="html">">
+          <__trans phrase="Use thumbnail">
+        </label>
+      </div>
+      <div class="mb-3 form-inline mt-3 ms-5">
+        (<__trans phrase="width:">
+        <input type="text" name="thumb_width" id="thumb_width-<mt:var name="id">" class="form-control text num required number w-10 mx-2" value="<mt:var name="thumb_width" escape="html">" style="min-width: 70px;"/>
+        <__trans phrase="pixels">)
+      </div>
+      <input type="hidden" name="thumb_height" value="<mt:var name="thumb_height" escape="html">" />
+    </div>
+  </mtapp:setting>
+</mt:if>
+<mtapp:setting
+   id="image_alignment-<mt:var name="id">"
+   label="<__trans phrase="Alignment">"
+   label_class="top-header">
+  <div id="alignment-<mt:var name="id">" class="mb-3">
+    <div class="custom-control custom-radio icon-left icon-left-xwide icon-align icon-align-none">
+      <input type="radio" name="align-<mt:var name="id">" id="align-none-<mt:var name="id">" class="form-check-input rb" value="none" <mt:if name="align_none">checked="checked" </mt:if>/>
+      <label class="form-check-label" for="align-none-<mt:var name="id" escape="html">">
+        <mtapp:svgicon id="ic_alignnone" title="<__trans phrase="None">" size="sm">
+        <__trans phrase="None">
+      </label>
+    </div>
+    <div class="custom-control custom-radio icon-left-xwide icon-align icon-align-left">
+      <input type="radio" name="align-<mt:var name="id">" id="align-left-<mt:var name="id">" class="form-check-input rb" value="left" <mt:if name="align_left">checked="checked" </mt:if>/>
+      <label class="form-check-label" for="align-left-<mt:var name="id" escape="html">">
+        <mtapp:svgicon id="ic_alignleft" title="<__trans phrase="Left">" size="sm">
+        <__trans phrase="Left">
+      </label>
+    </div>
+    <div class="custom-control custom-radio icon-left-xwide icon-align icon-align-center">
+      <input type="radio" name="align-<mt:var name="id">" id="align-center-<mt:var name="id">" class="form-check-input rb" value="center" <mt:if name="align_center">checked="checked" </mt:if>/>
+      <label class="form-check-label" for="align-center-<mt:var name="id" escape="html">">
+        <mtapp:svgicon id="ic_aligncenter" title="<__trans phrase="Center">" size="sm">
+        <__trans phrase="Center">
+      </label>
+    </div>
+    <div class="custom-control custom-radio icon-left-xwide icon-align icon-align-right">
+      <input type="radio" name="align-<mt:var name="id">" id="align-right-<mt:var name="id">" class="form-check-input rb" value="right" <mt:if name="align_right">checked="checked" </mt:if>/>
+      <label class="form-check-label" for="align-right-<mt:var name="id" escape="html">">
+        <mtapp:svgicon id="ic_alignright" title="<__trans phrase="Right">" size="sm">
+        <__trans phrase="Right">
+      </label>
+    </div>
+  </div>
+</mtapp:setting>
+<mtapp:setting
+   id="link_to_popup-<mt:var name="id">"
+   label="<__trans phrase="Link from image">">
+  <div class="mb-3">
+    <div class="form-check">
+      <input type="checkbox" name="popup-<mt:var name="id">" id="link_to_popup-<mt:var name="id">" class="form-check-input" value="1" <mt:if name="popup">checked="checked" </mt:if>/>
+      <label class="form-check-label" for="link_to_popup-<mt:var name="id" escape="html">"><__trans phrase="Link to original image"></label>
+    </div>
+    <mt:unless name="disabled_popup">
+    <div class="custom-control custom-radio" style="margin-left:2.5rem;">
+      <input type="radio" value="2" name="image_default_link-<mt:var name="id">" class="form-check-input" id="image_default_link_new_tab-<mt:var name="id">" <mt:if name="popup_link" eq="2">checked="checked"</mt:if> />
+      <label class="form-check-label" for="image_default_link_new_tab-<mt:var name="id">"><__trans phrase="Display on the same screen"></label>
+    </div>
+    <div class="custom-control custom-radio" style="margin-left:2.5rem;">
+      <input type="radio" value="1" name="image_default_link-<mt:var name="id">" class="form-check-input" id="image_default_link_popup-<mt:var name="id">" <mt:if name="popup_link" eq="1">checked="checked"</mt:if><mt:unless name="can_popup"> disabled="disabled"</mt:unless> />
+      <label class="form-check-label" for="image_default_link_popup-<mt:var name="id">"><__trans phrase="Display in popup"></label>
+      <mt:unless name="can_popup"><p class="alert alert-warning" role="alert"><__trans phrase="'Popup image' template does not exist or is empty and cannot be selected."></p></mt:unless>
+    </div>
+    </mt:unless>
+  </div>
+</mtapp:setting>

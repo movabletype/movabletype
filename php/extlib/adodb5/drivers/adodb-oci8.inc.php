@@ -321,10 +321,6 @@ END;
 
 	protected function _insertID($table = '', $column = '')
 	{
-
-		if (!$this->seqField)
-			return false;
-
 		if ($this->schema)
 		{
 			$t = strpos($table,'.');
@@ -975,16 +971,6 @@ END;
 		return $rez;
 	}
 
-	/**
-	 * Execute SQL
-	 *
-	 * @param string|array $sql     SQL statement to execute, or possibly an array holding
-	 *                              prepared statement ($sql[0] will hold sql text).
-	 * @param array|false $inputarr holds the input data to bind to.
-	 *                              Null elements will be set to null.
-	 *
-	 * @return ADORecordSet|false
-	 */
 	function Execute($sql,$inputarr=false)
 	{
 		if ($this->fnExecute) {
@@ -1151,10 +1137,11 @@ END;
 		} else
 			$hasref = false;
 
+		/** @var ADORecordset_oci8 $rs */
 		$rs = $this->Execute($stmt);
 		if ($rs) {
 			if ($rs->databaseType == 'array') {
-				oci_free_cursor($stmt[4]);
+				oci_free_statement($stmt[4]);
 			}
 			elseif ($hasref) {
 				$rs->_refcursor = $stmt[4];
@@ -1285,7 +1272,8 @@ END;
 	}
 
 	/**
-	 * returns query ID if successful, otherwise false
+	 * Execute a query.
+	 *
 	 * this version supports:
 	 *
 	 * 1. $db->execute('select * from table');
@@ -1298,6 +1286,11 @@ END;
 	 * 4. $db->prepare('insert into table (a,b,c) values (:0,:1,:2)');
 	 *    $db->bind($stmt,1); $db->bind($stmt,2); $db->bind($stmt,3);
 	 *    $db->execute($stmt);
+	 *
+	 * @param string|array $sql        Query to execute.
+	 * @param array        $inputarr   An optional array of parameters.
+	 *
+	 * @return mixed|bool Query identifier or true if execution successful, false if failed.
 	 */
 	function _query($sql,$inputarr=false)
 	{
@@ -1603,6 +1596,9 @@ class ADORecordset_oci8 extends ADORecordSet {
 	var $databaseType = 'oci8';
 	var $bind=false;
 	var $_fieldobjs;
+
+	/** @var resource Cursor reference */
+	var $_refcursor;
 
 	function __construct($queryID,$mode=false)
 	{

@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '7.9');
-define('PRODUCT_VERSION', '7.9.9');
+define('VERSION', '8.000002');
+define('PRODUCT_VERSION', '8.0.2');
 define('DATA_API_DEFAULT_VERSION', '6');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 9;
+    $RELEASE_NUMBER = 0;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -280,6 +280,10 @@ class MT {
         return $this->cache_driver;
     }
 
+    public function clear_cache_driver() {
+        $this->cache_driver = null;
+    }
+
     public function config($id, $value = null) {
         $id = strtolower($id);
         if (isset($value))
@@ -417,10 +421,6 @@ class MT {
             $cfg['adminscript'] = 'mt.cgi';
         isset($cfg['commentscript']) or
             $cfg['commentscript'] = 'mt-comments.cgi';
-        isset($cfg['atomscript']) or
-            $cfg['atomscript'] = 'mt-atom.cgi';
-        isset($cfg['xmlrpcscript']) or
-            $cfg['xmlrpcscript'] = 'mt-xmlrpc.cgi';
         isset($cfg['searchscript']) or
             $cfg['searchscript'] = 'mt-search.cgi';
         isset($cfg['defaultlanguage']) or
@@ -883,7 +883,7 @@ class MT {
 
         $ts = date('Y-m-d H:i:s');
         $errstr = preg_replace('/\t/', '\\t', $errstr);
-        error_log("timestamp:$ts\tno:$errno\tstr:$errstr\tfile:$errfile\tline:$errline\turi:${_SERVER['REQUEST_URI']}\n", 3, $log_file);
+        error_log("timestamp:$ts\tno:$errno\tstr:$errstr\tfile:$errfile\tline:$errline\turi:{$_SERVER['REQUEST_URI']}\n", 3, $log_file);
     }
 
     function error_handler($errno, $errstr, $errfile, $errline) {

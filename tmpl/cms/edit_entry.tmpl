@@ -315,7 +315,9 @@
               <span class="text-muted disabled">[#|h trans("None selected") #]</span>
               [#* return #]
           [# } #]
+          [# if (MT.App.objectType == 'entry') { #]
           <p class="h5 py-3">[#|h trans("Selected Categories") #]</p>
+          [# } #]
           <ul class="list-unstyled <$mt:var name="container_type" lower_case="1"$>-list">
           [# var map = {}; #]
           [# for ( var i = 0; i < items.length; i++ ) { #]
@@ -1256,14 +1258,6 @@ div.mce-notification-error {
       }
 
       var tag_delim = '<$mt:var name="auth_pref_tag_delim"$>';
-      function setDirty () {
-          log.warn('deprecated function setDirty(), call app.setDirty instead');
-          app.setDirty();
-      }
-      function clearDirty () {
-          log.warn('deprecated function clearDirty(), call app.clearDirty instead');
-          app.clearDirty();
-      }
 
       // array of tag names
       var tagList;
@@ -1734,10 +1728,6 @@ div.mce-notification-error {
 </mt:loop>
 <!-- / Sortable --></div>
 
-
-  <div id="quickpost" class="mt-3 d-none d-md-block">
-    <p><mt:var name="quickpost_js"></p>
-  </div>
 
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 

@@ -53,39 +53,39 @@ $s->login($author);
 # Single scenarios contains multiple panels in array ref and single panel has two values.
 # For instance [7, 3] indicates the panel has 7 options and instructs to click on the 3rd one.
 my $scenarios_full = [
-    [[7, 1], [1, 1], [], [3, 1], [2, 1]], [[7, 1], [1, 1], [], [3, 1], [2, 2]],
-    [[7, 1], [1, 1], [], [3, 2], [2, 1]], [[7, 1], [1, 1], [], [3, 2], [2, 2]],
-    [[7, 1], [1, 1], [], [3, 3], [2, 1]], [[7, 1], [1, 1], [], [3, 3], [2, 2]],
-    [[7, 2], [1, 1], [], [3, 1], [2, 1]], [[7, 2], [1, 1], [], [3, 1], [2, 2]],
-    [[7, 2], [1, 1], [], [3, 2], [2, 1]], [[7, 2], [1, 1], [], [3, 2], [2, 2]],
-    [[7, 2], [1, 1], [], [3, 3], [2, 1]], [[7, 2], [1, 1], [], [3, 3], [2, 2]],
-    [[7, 3], [2, 1], [], [3, 1], [2, 1]], [[7, 3], [2, 1], [], [3, 1], [2, 2]],
-    [[7, 3], [2, 1], [], [3, 2], [2, 1]], [[7, 3], [2, 1], [], [3, 2], [2, 2]],
-    [[7, 3], [2, 1], [], [3, 3], [2, 1]], [[7, 3], [2, 1], [], [3, 3], [2, 2]],
-    [[7, 3], [2, 2], [1, 1], [3, 1], [2, 1]], [[7, 3], [2, 2], [1, 1], [3, 1], [2, 2]],
-    [[7, 3], [2, 2], [1, 1], [3, 2], [2, 1]], [[7, 3], [2, 2], [1, 1], [3, 2], [2, 2]],
-    [[7, 3], [2, 2], [1, 1], [3, 3], [2, 1]], [[7, 3], [2, 2], [1, 1], [3, 3], [2, 2]],
-    [[7, 4], [2, 1], [],     [3, 1], [2, 1]], [[7, 4], [2, 1], [],     [3, 1], [2, 2]],
-    [[7, 4], [2, 1], [],     [3, 2], [2, 1]], [[7, 4], [2, 1], [],     [3, 2], [2, 2]],
-    [[7, 4], [2, 1], [],     [3, 3], [2, 1]], [[7, 4], [2, 1], [],     [3, 3], [2, 2]],
-    [[7, 4], [2, 2], [2, 1], [3, 1], [2, 1]], [[7, 4], [2, 2], [2, 1], [3, 1], [2, 2]],
-    [[7, 4], [2, 2], [2, 1], [3, 2], [2, 1]], [[7, 4], [2, 2], [2, 1], [3, 2], [2, 2]],
-    [[7, 4], [2, 2], [2, 1], [3, 3], [2, 1]], [[7, 4], [2, 2], [2, 1], [3, 3], [2, 2]],
-    [[7, 4], [2, 2], [2, 2], [3, 1], [2, 1]], [[7, 4], [2, 2], [2, 2], [3, 1], [2, 2]],
-    [[7, 4], [2, 2], [2, 2], [3, 2], [2, 1]], [[7, 4], [2, 2], [2, 2], [3, 2], [2, 2]],
-    [[7, 4], [2, 2], [2, 2], [3, 3], [2, 1]], [[7, 4], [2, 2], [2, 2], [3, 3], [2, 2]],
-    [[7, 5], [1, 1], [],     [3, 1], [2, 1]], [[7, 5], [1, 1], [],     [3, 1], [2, 2]],
-    [[7, 5], [1, 1], [],     [3, 2], [2, 1]], [[7, 5], [1, 1], [],     [3, 2], [2, 2]],
-    [[7, 5], [1, 1], [],     [3, 3], [2, 1]], [[7, 5], [1, 1], [],     [3, 3], [2, 2]],
-    [[7, 6], [2, 1], [],     [3, 1], [2, 1]], [[7, 6], [2, 1], [],     [3, 1], [2, 2]],
-    [[7, 6], [2, 1], [],     [3, 2], [2, 1]], [[7, 6], [2, 1], [],     [3, 2], [2, 2]],
-    [[7, 6], [2, 1], [],     [3, 3], [2, 1]], [[7, 6], [2, 1], [],     [3, 3], [2, 2]],
-    [[7, 6], [2, 2], [1, 1], [3, 1], [2, 1]], [[7, 6], [2, 2], [1, 1], [3, 1], [2, 2]],
-    [[7, 6], [2, 2], [1, 1], [3, 2], [2, 1]], [[7, 6], [2, 2], [1, 1], [3, 2], [2, 2]],
-    [[7, 6], [2, 2], [1, 1], [3, 3], [2, 1]], [[7, 6], [2, 2], [1, 1], [3, 3], [2, 2]],
-    [[7, 7], [1, 1], [],     [3, 1], [2, 1]], [[7, 7], [1, 1], [],     [3, 1], [2, 2]],
-    [[7, 7], [1, 1], [],     [3, 2], [2, 1]], [[7, 7], [1, 1], [],     [3, 2], [2, 2]],
-    [[7, 7], [1, 1], [],     [3, 3], [2, 1]], [[7, 7], [1, 1], [],     [3, 3], [2, 2]],
+    [[7, 1], [1, 1], [], [3, 1], [1, 1]],
+    [[7, 1], [1, 1], [], [3, 2], [1, 1]],
+    [[7, 1], [1, 1], [], [3, 3], [1, 1]],
+    [[7, 2], [1, 1], [], [3, 1], [1, 1]],
+    [[7, 2], [1, 1], [], [3, 2], [1, 1]],
+    [[7, 2], [1, 1], [], [3, 3], [1, 1]],
+    [[7, 3], [2, 1], [], [3, 1], [1, 1]],
+    [[7, 3], [2, 1], [], [3, 2], [1, 1]],
+    [[7, 3], [2, 1], [], [3, 3], [1, 1]],
+    [[7, 3], [2, 2], [1, 1], [3, 1], [1, 1]],
+    [[7, 3], [2, 2], [1, 1], [3, 2], [1, 1]],
+    [[7, 3], [2, 2], [1, 1], [3, 3], [1, 1]],
+    [[7, 4], [2, 1], [],     [3, 1], [1, 1]],
+    [[7, 4], [2, 1], [],     [3, 2], [1, 1]],
+    [[7, 4], [2, 1], [],     [3, 3], [1, 1]],
+    [[7, 4], [2, 2], [2, 1], [3, 1], [1, 1]],
+    [[7, 4], [2, 2], [2, 1], [3, 2], [1, 1]],
+    [[7, 4], [2, 2], [2, 1], [3, 3], [1, 1]],
+    [[7, 4], [2, 2], [2, 2], [3, 1], [1, 1]],
+    [[7, 4], [2, 2], [2, 2], [3, 2], [1, 1]],
+    [[7, 4], [2, 2], [2, 2], [3, 3], [1, 1]],
+    [[7, 5], [1, 1], [],     [3, 1], [1, 1]],
+    [[7, 5], [1, 1], [],     [3, 2], [1, 1]],
+    [[7, 5], [1, 1], [],     [3, 3], [1, 1]],
+    [[7, 6], [2, 1], [],     [3, 1], [1, 1]],
+    [[7, 6], [2, 1], [],     [3, 2], [1, 1]],
+    [[7, 6], [2, 1], [],     [3, 3], [1, 1]],
+    [[7, 6], [2, 2], [1, 1], [3, 1], [1, 1]],
+    [[7, 6], [2, 2], [1, 1], [3, 2], [1, 1]],
+    [[7, 6], [2, 2], [1, 1], [3, 3], [1, 1]],
+    [[7, 7], [1, 1], [],     [3, 1], [1, 1]],
+    [[7, 7], [1, 1], [],     [3, 2], [1, 1]],
+    [[7, 7], [1, 1], [],     [3, 3], [1, 1]],
 ];
 
 subtest 'system context' => sub {
@@ -104,7 +104,7 @@ subtest 'site context' => sub {
 
     if (!$ENV{EXTENDED_TESTING}) {
         # Only tests random 15 cases to save time. Do not randomize on runtime because it's confusing.
-        $scenarios = [@$scenarios_full[10, 11, 14, 22, 25, 28, 31, 36, 41, 43, 44, 49, 50, 61, 63]];
+        $scenarios = [@$scenarios_full[5, 6, 7, 11, 13, 14, 16, 18, 21, 22, 25, 31, 32]];
     }
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
@@ -122,7 +122,7 @@ subtest 'site context' => sub {
         $s->screenshot_full("scenarios$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
-        $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+        $s->scroll_and_click('.mt-mainContent button.save');
         $s->wait_until_ready;
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
@@ -155,7 +155,7 @@ subtest 'duplication' => sub {
         $s->screenshot_full("scenarios$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
-        $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+        $s->scroll_and_click('.mt-mainContent button.save');
         $s->wait_until_ready;
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
@@ -169,7 +169,7 @@ subtest 'duplication with content type' => sub {
 
     set_up();
 
-    my $scenarios = [@$scenarios_full[18, 18]];
+    my $scenarios = [@$scenarios_full[9, 9]];
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
     $s->wait_until_ready;
@@ -189,7 +189,7 @@ subtest 'duplication with content type' => sub {
         $s->screenshot_full("scenarios$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
-        $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+        $s->scroll_and_click('.mt-mainContent button.save');
         $s->wait_until_ready;
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
@@ -203,7 +203,7 @@ subtest 'two cases saved at once' => sub {
 
     set_up();
 
-    my $scenarios = [@$scenarios_full[18, 19]];
+    my $scenarios = [@$scenarios_full[9, 10]];
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
     $s->wait_until_ready;
@@ -219,7 +219,7 @@ subtest 'two cases saved at once' => sub {
     $s->screenshot_full("added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
     wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
     assert_no_browser_errors();
-    $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+    $s->scroll_and_click('.mt-mainContent button.save');
     $s->wait_until_ready;
     assert_no_browser_errors();
     my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
@@ -231,7 +231,7 @@ subtest 'remove' => sub {
 
     set_up();
 
-    my $scenarios = [@$scenarios_full[18, 19]];
+    my $scenarios = [@$scenarios_full[9, 10]];
 
     $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
     $s->wait_until_ready;
@@ -243,7 +243,7 @@ subtest 'remove' => sub {
     }
 
     wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
-    $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+    $s->scroll_and_click('.mt-mainContent button.save');
     $s->wait_until_ready;
     my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs, 2, 'triggers are added');
@@ -257,7 +257,7 @@ subtest 'remove' => sub {
     my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs2, 0, 'triggers are removed');
     $s->screenshot_full("removed") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
-    $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+    $s->scroll_and_click('.mt-mainContent button.save');
     $s->wait_until_ready;
     my @trs3 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs3, 0, 'triggers are removed and saved');
@@ -311,6 +311,12 @@ sub process_scenarios {
             $panels[$j]->is_displayed &&
             (@visible_options = grep { $_->is_displayed } $panels[$j]->children('.listing tbody tr', 'css'))
         };
+
+        # Workarround for modal size initialization bug(MTC-28952)
+        my $size_org = $s->driver->get_window_size();
+        $s->driver->set_window_size(1, 1);
+        $s->driver->set_window_size($size_org->{'height'}, $size_org->{'width'});
+
         $s->screenshot_full("page$j", 1200, 900) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         assert_no_browser_errors();
         my $next_button = $panels[$j]->child('.modal-footer button.btn-primary', 'css');
@@ -319,7 +325,7 @@ sub process_scenarios {
         is($current_panel[0],       $panels[$j],       'panel is visible');
         is(scalar @current_panel,   1,                 'other panels are hidden');
         is(scalar @visible_options, $pages->[$j]->[0], 'right number of options');
-        $visible_options[$pages->[$j]->[1] - 1]->click();
+        $visible_options[$pages->[$j]->[1] - 1]->click();        
         $next_button->click();
         assert_no_browser_errors();
     }
