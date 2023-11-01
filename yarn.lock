@@ -4068,20 +4068,20 @@ tinydate@^1.0.0:
   resolved "https://registry.npmjs.org/tinymce-i18n/-/tinymce-i18n-23.6.19.tgz"
   integrity sha512-+Enfbvje/L0E8wdt0TdMVPyZBRHVUIT/3BeKCPM/HVAxK4OZ0imkUoc54gttCxvelEAXTas5FeZ1LbKXOYFplw==
 
-"tinymce5@npm:tinymce@5.10.7":
-  version "5.10.7"
-  resolved "https://registry.npmjs.org/tinymce/-/tinymce-5.10.7.tgz"
-  integrity sha512-9UUjaO0R7FxcFo0oxnd1lMs7H+D0Eh+dDVo5hKbVe1a+VB0nit97vOqlinj+YwgoBDt6/DSCUoWqAYlLI8BLYA==
+"tinymce5@npm:tinymce@5.10.8":
+  version "5.10.8"
+  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-5.10.8.tgz#c85758fa3cca2cbb4b14dd037a0b315b6462c50e"
+  integrity sha512-iyoo3VGMAJhLMDdblAefKvYgBRk9kQi58GTwAmoieqsyggGsKZWlQl/YY6nTILFHUCA1FhYu0HdmM5YYjs17UQ==
 
 "tinymce6-i18n@npm:tinymce-i18n@^23.6.19":
   version "23.7.17"
   resolved "https://registry.yarnpkg.com/tinymce-i18n/-/tinymce-i18n-23.7.17.tgz#9f2be8ba2b43407ebd8d365c6eeda66cceaa03dd"
   integrity sha512-Ivj6Ohs9gFTLONciVQQHhxuRXSTbcQsQn5OGIQjdNlx2abBGnag00GmQ0E8VaD/TcmrEt4QDrtUbH66k+RVYoA==
 
-"tinymce6@npm:tinymce@^6.5.1":
-  version "6.6.0"
-  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-6.6.0.tgz#daf0e8c04c6834c03b64efb4bda024e7f5bcf614"
-  integrity sha512-b9Mb7z8ryFOwLm8WCmlpwzdgOt1xD1u5Jjdh68B4QjkIyTLyHRBsfsrbiCUGonnVTymDlkexPkaP8sj24zexKQ==
+"tinymce6@npm:tinymce@^6.7.2":
+  version "6.7.2"
+  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-6.7.2.tgz#39b077d26c171cb41341b2eef126e7811bb78697"
+  integrity sha512-6h/02jHmXyghekFzmzccZxUUEFtlPEKHxOd+gd49bjno3ybavZInPIaDd/pp2GeEwsFm20oGgJCL7UiebXm9dw==
 
 to-object-path@^0.3.0:
   version "0.3.0"
