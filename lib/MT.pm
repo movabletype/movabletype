@@ -39,14 +39,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.902', '7.0055' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '8.000002', '8.0000' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.902.0',            '__PRODUCT_VERSION_ID__',
+        '8.0.2',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -68,15 +68,10 @@ BEGIN {
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5501';
+        $RELEASE_VERSION_ID = '';
     }
 
     $DebugMode = 0;
-
-    # Alias lowercase to uppercase package; note: this is an equivalence
-    # as opposed to having @mt::ISA set to 'MT'. so @mt::Plugins would
-    # resolve as well as @MT::Plugins.
-    *{mt::} = *{MT::};
 
     # Alias these; Components is the preferred array for MT 4
     *Plugins = \@Components;
@@ -1321,7 +1316,7 @@ sub init_plugins {
 
     my $cfg          = $mt->config;
     my $use_plugins  = $cfg->UsePlugins;
-    my @PluginPaths  = $cfg->PluginPath;
+    my @PluginPaths  = ($cfg->UserPluginPath, $cfg->PluginPath);
     my $PluginSwitch = $cfg->PluginSwitch || {};
     my $plugin_sigs  = join ',', sort keys %$PluginSwitch;
     $mt->_init_plugins_core( $PluginSwitch, $use_plugins, \@PluginPaths );
@@ -2047,7 +2042,7 @@ sub template_paths {
             push @paths, File::Spec->catdir( $mt->mt_dir, $mt->{plugin_template_path} );
         }
     }
-    my @alt_paths = $mt->config('AltTemplatePath');
+    my @alt_paths = ($mt->config('UserTemplatePath'), $mt->config('AltTemplatePath'));
     foreach my $alt_path (@alt_paths) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
             if ($mt->{template_dir}) {
@@ -2126,6 +2121,36 @@ sub load_core_tmpl {
     my $mt = shift;
     local $mt->{component} = 'core';
     $mt->load_tmpl(@_);
+}
+
+sub load_cached_tmpl {
+    my $mt = shift;
+    if ( exists( $mt->{component} ) && ( lc( $mt->{component} ) ne 'core' ) )
+    {
+        if ( my $c = $mt->component( $mt->{component} ) ) {
+            return $c->load_cached_tmpl(@_);
+        }
+    }
+
+    my ( $file, @p ) = @_;
+    my $param;
+    if ( @p && ( ref( $p[$#p] ) eq 'HASH' ) ) {
+        $param = pop @p;
+    }
+    my ($tmpl, $cache);
+    if (!ref $file) {
+        require MT::Request;
+        $cache = MT::Request->instance->{__stash}{load_tmpl_file_cache} ||= {};
+        if ($cache->{core}{$file}) {
+            $tmpl = $cache->{core}{$file};
+        }
+    }
+    $tmpl ||= $mt->load_tmpl($file, @p) or return;
+    if ($cache) {
+        $cache->{core}{$file} = $tmpl;
+    }
+    $tmpl->param($param) if $param;
+    $tmpl;
 }
 
 sub load_tmpl {
@@ -2387,27 +2412,19 @@ sub new_ua {
     my ($opt) = @_;
     $opt ||= {};
     my $lwp_class = 'LWP::UserAgent';
-    if ( $opt->{paranoid} ) {
-        eval { require LWPx::ParanoidAgent; };
-        $lwp_class = 'LWPx::ParanoidAgent' unless $@;
-    }
     eval "require $lwp_class;";
     return undef if $@;
     my $cfg      = $class->config;
     my $max_size = exists $opt->{max_size} ? $opt->{max_size} : 100_000;
-    my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout
-        || $cfg->PingTimeout;
-    my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy
-        || $cfg->PingProxy;
+    my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout;
+    my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy;
     my $sec_proxy
         = exists $opt->{sec_proxy} ? $opt->{sec_proxy} : $cfg->HTTPSProxy;
     my $no_proxy
-        = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy
-        || $cfg->PingNoProxy;
+        = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy;
     my $agent = $opt->{agent} || $MT::PRODUCT_NAME . '/' . $MT::VERSION;
     my $interface
-        = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface
-        || $cfg->PingInterface;
+        = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface;
 
     if ( my $localaddr = $interface ) {
         @LWP::Protocol::http::EXTRA_SOCK_OPTS = (

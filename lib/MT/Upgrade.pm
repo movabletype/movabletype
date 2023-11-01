@@ -1020,7 +1020,7 @@ sub core_finish {
     }
     if ($cfg->NotifyUpgrade && $version_upgraded) {
         MT->log({
-            message  => MT->translate("Movable Type has been upgraded to version [_1].", MT->release_version_id),
+            message  => MT->translate("Movable Type has been upgraded to version [_1].", MT->version_id),
             level    => MT::Log::NOTICE(),
             class    => 'system',
             category => 'upgrade',

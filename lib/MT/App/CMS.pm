@@ -291,16 +291,17 @@ sub core_methods {
             "${pkg}Template::publish_templates_from_search",
 
         ## Dialogs
-        'dialog_restore_upload'    => "${pkg}Tools::dialog_restore_upload",
-        'dialog_adjust_sitepath'   => "${pkg}Tools::dialog_adjust_sitepath",
-        'dialog_select_weblog'     => "${pkg}Blog::dialog_select_weblog",
-        'dialog_select_website'    => "${pkg}Website::dialog_select_website",
-        'dialog_select_sysadmin'   => "${pkg}User::dialog_select_sysadmin",
-        'dialog_grant_role'        => "${pkg}User::dialog_grant_role",
-        'dialog_select_assoc_type' => "${pkg}User::dialog_select_assoc_type",
-        'dialog_select_author'     => "${pkg}User::dialog_select_author",
-        'dialog_list_asset'        => "${pkg}Asset::dialog_list_asset",
-        'dialog_edit_image'        => "${pkg}Asset::dialog_edit_image",
+        'dialog_restore_upload'      => "${pkg}Tools::dialog_restore_upload",
+        'dialog_adjust_sitepath'     => "${pkg}Tools::dialog_adjust_sitepath",
+        'dialog_select_weblog'       => "${pkg}Blog::dialog_select_weblog",
+        'dialog_select_website'      => "${pkg}Website::dialog_select_website",
+        'dialog_select_sysadmin'     => "${pkg}User::dialog_select_sysadmin",
+        'dialog_grant_role'          => "${pkg}User::dialog_grant_role",
+        'dialog_select_assoc_type'   => "${pkg}User::dialog_select_assoc_type",
+        'dialog_select_author'       => "${pkg}User::dialog_select_author",
+        'dialog_list_asset'          => "${pkg}Asset::dialog_list_asset",
+        'dialog_edit_image'          => "${pkg}Asset::dialog_edit_image",
+        'dialog_list_deprecated_log' => "${pkg}Log::dialog_list_deprecated_log",
 
         'thumbnail_image' =>
             "${pkg}Asset::thumbnail_image",    # Used in Edit Image dialog.
@@ -325,9 +326,6 @@ sub core_methods {
         # declared in MT::App
         'update_widget_prefs' =>
             sub { return shift->update_widget_prefs(@_) },
-
-        ## DEPRECATED ##
-        'upload_userpic' => "${pkg}User::upload_userpic",
 
         ## MT7 - Content Data
         'view_content_data'    => "${pkg}ContentData::edit",
@@ -1597,6 +1595,73 @@ sub core_menu_actions {
             },
             order  => 200,
             target => '_blank',
+        },
+        search => {
+            icon  => 'ic_search',
+            label => 'Search',
+            href => sub {
+                my $blog_id     = $app->blog ? $app->blog->id : 0;
+                my $mode        = $app->param('__mode') || '';
+
+                return $app->uri(mode => 'search_replace', args => {blog_id => $blog_id}) if $mode eq 'search_replace';
+
+                my $search_apis = $app->registry("search_apis") or ();
+                my $app_type    = $app->param('_type');
+                if (!$app_type) {
+                    # Replace list_*
+                    if (!$app_type && $mode =~ /^list_/) {
+                        ($app_type = $mode) =~ s/^list_(.*)$/$1/;
+                    }
+                    my %mode_replace = ('start_upload' => 'asset');
+                    $app_type = $mode_replace{$mode} if exists $mode_replace{$mode};
+                }
+                # Replace type for model
+                my %replace_type = (
+                    'member'       => 'author',
+                    'group_member' => 'author'
+                );
+                $app_type = $replace_type{$app_type} if $app_type && exists $replace_type{$app_type};
+
+                my $_type;
+                if ($app_type && exists $search_apis->{$app_type}) {
+                    my $set_type = 1;
+                    if (ref $search_apis->{$app_type}) {
+                        if (my $view = $search_apis->{$app_type}{view}) {
+                            if ($blog_id) {
+                                $set_type = 0 if $view ne 'blog';
+                            } else {
+                                $set_type = 0 if $view ne 'system';
+                            }
+                        }
+                        my $cond = $search_apis->{$app_type}{condition};
+                        if ($cond) {
+                            $cond = MT->handler_to_coderef($cond);
+                            $set_type = 0 unless $cond->();
+                        }
+                    }
+                    if ($set_type) {
+                        $_type = $app_type;
+                    }
+                }
+
+                # get content type id
+                my $_content_type_id;
+                if ($_type && $_type eq 'content_data') {
+                    $_content_type_id = $app->param('content_type_id');
+                    if (!$_content_type_id && (($app->param('type') || '') =~ /^content_data_(\d+)$/)) {
+                        $_content_type_id = $1;
+                    }
+                }
+                $app->uri(
+                    mode => 'search_replace',
+                    args => {
+                        ($_type            ? (_type           => $_type)            : ()),
+                        ($_content_type_id ? (content_type_id => $_content_type_id) : ()),
+                        blog_id => $blog_id
+                    });
+            },
+            mobile => 0,
+            order  => 300,
         },
     };
 }
@@ -3247,7 +3312,7 @@ sub build_menus {
             $sub->{mode}  ||= '';
 
             ## Keep a compatibility
-            $sub->{view} = [ 'blog', 'system' ]
+            $sub->{view} = [ 'website', 'blog', 'system' ]
                 unless $sub->{view};
 
             if ( $sub->{view} ) {
@@ -3798,22 +3863,6 @@ sub list_pref {
         $list_pref->{ 'order_' . $list_pref->{'order'} } = 1;
     }
     $app->request( "list_pref_$list", $list_pref );
-}
-
-sub make_feed_link {
-    my $app = shift;
-    my ( $view, $params ) = @_;
-    my $user = $app->user;
-    return if ( $user->api_password || '' ) eq '';
-
-    $params ||= {};
-    $params->{view}     = $view;
-    $params->{username} = $user->name;
-    $params->{token} = perl_sha1_digest_hex( 'feed:' . $user->api_password );
-    $app->base
-        . $app->mt_path
-        . $app->config('ActivityFeedScript')
-        . $app->uri_params( args => $params );
 }
 
 sub show_error {

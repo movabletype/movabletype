@@ -3,15 +3,11 @@
     <mt:if name="is_power_edit">
         <$mt:setvar name="page_title" value="<__trans phrase="Batch Edit Entries">"$>
     </mt:if>
-    <mt:if name="is_blog">
-        <$mt:setvar name="object_type_feed" value="<__trans phrase="Entries Feed">"$>
-    </mt:if>
 <mt:else>
     <$mt:setvar name="page_title" value="<__trans phrase="Manage Pages">"$>
     <mt:if name="is_power_edit">
         <$mt:setvar name="page_title" value="<__trans phrase="Batch Edit Pages">"$>
     </mt:if>
-    <$mt:setvar name="object_type_feed" value="<__trans phrase="Pages Feed">"$>
 </mt:if>
 <mt:setvarblock name="system_msg">
     <div id="msg-container">
@@ -71,19 +67,6 @@
         id="quickfilters"
         label="<__trans phrase="Quickfilters">">
         <$mtapp:ListFilters$>
-<mt:if name="scope_type" eq="blog">
-        <ul>
-            <li>
-        <mt:if name="feed_url">
-            <mt:if name="object_type_feed">
-                <a href="<$mt:var name="feed_url" escape="html"$>" class="icon-feed icon-left" title="<$mt:var name="feed_name" escape="html"$>"><$mt:var name="object_type_feed"$></a>
-            </mt:if>
-        <mt:else>
-                <a href="<$mt:var name="mt_url">?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id" escape="url"$>" class="icon-feed-disabled icon-left" title="<__trans phrase="[_1] (Disabled)" params="<$mt:var name="feed_name" escape="html"$>">"><__trans phrase="Set Web Services Password"></a>
-        </mt:if>
-            </li>
-        </ul>
-</mt:if>
     </mtapp:widget>
     <$mtapp:PageActions from="$mode"$>
 </mt:setvarblock>

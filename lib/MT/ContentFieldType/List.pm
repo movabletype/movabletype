@@ -123,7 +123,7 @@ sub feed_value_handler {
 }
 
 sub preview_handler {
-    my ( $field_data, $values, $content_data ) = @_;
+    my ($field_data, $values, $content_data) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -133,6 +133,17 @@ sub preview_handler {
     my $contents = join '',
         map { '<li>' . MT::Util::encode_html($_) . '</li>' } @$values;
     return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
+sub search_result_handler {
+    my ($field_data, $values, $content_data) = @_;
+    return '' unless $values;
+    unless (ref $values eq 'ARRAY') {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    return join ', ', map { MT::Util::encode_html($_) } @$values;
 }
 
 sub replace_handler {

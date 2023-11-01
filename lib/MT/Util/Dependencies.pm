@@ -36,11 +36,6 @@ our %Requirements = (
         tags  => ["Mail", "Performance"],
         url   => "https://metacpan.org/pod/Authen::SASL::XS",
     },
-    "Cache::File" => {
-        label => "This module is optional. It is used to allow commenters to be authenticated by OpenID.",
-        tags  => ["Cache", "OpenID"],
-        url   => "https://metacpan.org/pod/Cache::File",
-    },
     "Cache::Memcached" => {
         label => "Cache::Memcached and a memcached server are optional. They are used to cache in-memory objects.",
         tags  => ["Cache"],
@@ -111,11 +106,6 @@ our %Requirements = (
         perl_core => 5.47,
         tags      => ["Digest"],
         url       => "https://metacpan.org/pod/Digest::SHA",
-    },
-    "Digest::SHA1" => {
-        label => "This module is optional. It is used to allow commenters to be authenticated by OpenID.",
-        tags  => ["Digest", "OpenID"],
-        url   => "https://metacpan.org/pod/Digest::SHA1",
     },
     "Email::MIME" => {
         label => "This module and its dependencies are optional. It is an alternative module to create mail.",
@@ -278,11 +268,6 @@ our %Requirements = (
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::UserAgent",
     },
-    "LWPx::ParanoidAgent" => {
-        label => "LWPx::ParanoidAgent is an alternative to LWP::UserAgent.",
-        tags  => ["HTTP"],
-        url   => "https://metacpan.org/pod/LWPx::ParanoidAgent",
-    },
     "MIME::Base64" => {
         label     => "MIME::Base64 is required to send mail and handle blobs during backup/restore operations.",
         perl_core => 3.08,
@@ -386,12 +371,6 @@ our %Requirements = (
         tags   => ["HTTP", "URI"],
         url    => "https://metacpan.org/pod/URI",
     },
-    "XML::Atom" => {
-        extlib => 0.43,
-        label  => "XML::Atom is required in order to use the Atom API.",
-        tags   => ["AtomAPI", "XML"],
-        url    => "https://metacpan.org/pod/XML::Atom",
-    },
     "XML::LibXML::SAX" => {
         label   => "This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.",
         tags    => ["XML", "Backup"],
@@ -399,8 +378,8 @@ our %Requirements = (
         version => "1.70",
     },
     "XML::Parser" => {
-        label => "This module is required for XML-RPC API.",
-        tags  => ["XMLRPC", "XML"],
+        label => "This module is required to parse XML.",
+        tags  => ["XML"],
         url   => "https://metacpan.org/pod/XML::Parser",
     },
     "XML::SAX" => {
@@ -427,24 +406,6 @@ our %Requirements = (
         tags   => ["Win32", "XML"],
         url    => "https://metacpan.org/pod/XML::Simple",
     },
-    "XML::XPath" => {
-        extlib => 1.44,
-        label  => "XML::XPath is required if you want to use the Atom API.",
-        tags   => ["AtomAPI", "XML"],
-        url    => "https://metacpan.org/pod/XML::XPath",
-    },
-    "XMLRPC::Lite" => {
-        extlib  => 0.717,
-        label   => "XMLRPC::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.",
-        tags    => ["XMLRPC", "XML"],
-        url     => "https://metacpan.org/pod/XMLRPC::Lite",
-        version => "0.50",
-    },
-    "XMLRPC::Transport::HTTP::Plack" => {
-        label => "This module and its dependencies are required to run Movable Type under psgi.",
-        tags  => ["XMLRPC", "XML", "PSGI"],
-        url   => "https://metacpan.org/pod/XMLRPC::Transport::HTTP::Plack",
-    },
     "YAML::Syck" => {
         label => "YAML::Syck is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.",
         tags  => ["YAML", "Performance"],
@@ -463,11 +424,6 @@ our %ExtLibOnly = (
         extlib  => 1.201,
         url     => "https://metacpan.org/pod/Algorithm::Diff",
         used_in => ["HTML::Diff"],
-    },
-    "Apache::XMLRPC::Lite" => {
-        extlib   => 0.717,
-        not_used => 1,
-        url      => "https://metacpan.org/pod/Apache::XMLRPC::Lite",
     },
     "AutoLoader" => {
         extlib    => "5.70",
@@ -524,12 +480,6 @@ our %ExtLibOnly = (
         extlib  => 0.01,
         url     => "https://metacpan.org/pod/constant::override",
         used_in => ["MT"],
-    },
-    "Crypt::DH" => {
-        extlib  => 0.06,
-        note    => "in OpenID plugin",
-        url     => "https://metacpan.org/pod/Crypt::DH",
-        used_in => ["Net::OpenID::Consumer"],
     },
     "Crypt::URandom" => {
         extlib  => 0.36,
@@ -721,11 +671,6 @@ our %ExtLibOnly = (
         perl_core => 0.221,
         url       => "https://metacpan.org/pod/parent",
     },
-    "SOAP::Lite" => {
-        extlib  => 1.27,
-        url     => "https://metacpan.org/pod/SOAP::Lite",
-        used_in => ["XMLRPC::Lite"],
-    },
     "Sub::Uplevel" => {
         extlib  => "0.2800",
         url     => "https://metacpan.org/pod/Sub::Uplevel",
@@ -789,6 +734,17 @@ our %ExtLibOnly = (
         used_in => ["MT::BackupRestore::BackupFileScanner"],
     },
 );
+
+sub required_modules {
+    my $self = shift;
+    my %res;
+    for my $module (keys %Requirements) {
+        my $hash = $Requirements{$module};
+        next unless $hash->{required};
+        $res{$module} = $hash->{version};
+    }
+    \%res;
+}
 
 sub optional_packages_for_wizard {
     my ($class) = @_;
@@ -934,8 +890,8 @@ sub _modify_hash {
         $hash{$module}{url} = $CustomURL{$module} || $url;
 
         my $version = $hash{$module}{version};
-        if (Module::CoreList::is_core($module, $version, '5.010001') && Module::CoreList::is_core($module, $version)) {
-            $hash{$module}{perl_core} = $Module::CoreList::version{'5.010001'}{$module};
+        if (Module::CoreList::is_core($module, $version, '5.016000') && Module::CoreList::is_core($module, $version)) {
+            $hash{$module}{perl_core} = $Module::CoreList::version{'5.016000'}{$module};
         } else {
             delete $hash{$module}{perl_core};
         }

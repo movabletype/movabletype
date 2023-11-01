@@ -570,7 +570,7 @@ sub feed_value_handler {
 }
 
 sub preview_handler {
-    my ( $field_data, $values, $content_data ) = @_;
+    my ($field_data, $values, $content_data) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -645,6 +645,26 @@ sub preview_handler {
     }
 
     return qq{<ul class="list-unstyled">$contents</ul>};
+}
+
+sub search_result_handler {
+    my ($field_data, $values, $content_data) = @_;
+    return '' unless $values;
+    unless (ref $values eq 'ARRAY') {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my @assets     = MT->model('asset')->load({ id => $values, class => '*' });
+    my %asset_hash = map { $_->id => $_ } @assets;
+
+    my @ret;
+    for my $v (@$values) {
+        my $obj   = $asset_hash{$v} or next;
+        my $label = $obj->label;
+        push @ret, MT::Util::encode_html($label) if (defined $label && $label ne '');
+    }
+    return join ', ', @ret;
 }
 
 sub site_data_import_handler {

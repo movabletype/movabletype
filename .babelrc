@@ -1,0 +1,25 @@
+{
+  "ignore": ["/node_modules/"],
+  "presets": [
+      [
+        "@babel/preset-env", {
+          "targets": {
+            "browsers": "defaults"
+          },
+          "useBuiltIns": "usage",
+          "corejs": {
+            "version": 3,
+            "proposals": true
+          }
+        }
+      ],
+      "@babel/preset-react",
+      "@babel/preset-typescript"
+  ],
+  "plugins": [
+      "@babel/plugin-transform-runtime",
+      "@babel/plugin-proposal-class-properties",
+      "@babel/plugin-proposal-logical-assignment-operators",
+      "@babel/plugin-proposal-private-methods"
+  ]
+}

@@ -874,6 +874,8 @@ sub prepare_fixture {
     for my $hook (values %{$self->{prepare_hooks} || {}}) {
         $hook->($self);
     }
+
+    MT->config->clear_dirty;
 }
 
 sub slurp {

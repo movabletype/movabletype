@@ -80,11 +80,6 @@
   <mtapp:setting
      id="setting-auth-status"
      label="<__trans phrase="Authentication Methods">">
-  <mt:unless name="openid_enabled">
-    <p class="alert-warning-inline icon-left icon-warning">
-      <__trans phrase="The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.">
-    </p>
-  </mt:unless>
   <mt:unless name="commenter_authenticators">
     <mt:if name="allow_reg_comments">
       <mt:unless name="allow_unreg_comments">

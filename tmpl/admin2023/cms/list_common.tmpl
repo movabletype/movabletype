@@ -42,20 +42,7 @@
   </mt:if>
 </mt:if>
 
-<mt:setvarblock name="listing_footer_content"><mt:if name="feed_url">
-  <mt:if name="object_type_feed">
-  <li class="footer-link-item list-group-item">
-    <a href="<$mt:var name="feed_url" escape="html"$>"
-      class="icon-feed icon-left d-inline-block"
-      title="<$mt:var name="feed_name" escape="html"$>"
-      target="_blank"
-    >
-      <mtapp:svgicon id="ic_rss" size="sm" color="warning" title="<__trans phrase="Feed">">
-      <$mt:var name="object_type_feed"$>
-    </a>
-  </li>
-  </mt:if>
-</mt:if></mt:setvarblock>
+<mt:setvarblock name="listing_footer_content"></mt:setvarblock>
 
 <mt:loop name="list_headers">
   <mt:if name="filename">
