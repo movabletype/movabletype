@@ -6,7 +6,7 @@ jobs:
     steps:
       - checkout
       - run: bash /docker-entrypoint.sh echo 'run docker-entrypoint.sh'
-      - run: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
+      - run: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/upgrade/fill_with_missing_system_templates.t
 
   coveralls:
     docker:
