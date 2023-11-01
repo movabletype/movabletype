@@ -23,7 +23,7 @@ sub build_schema {
         openapi => '3.0.0',
         info    => {
             title   => 'Movable Type Data API',
-            version => $app->release_version_id,
+            version => $app->version_id,
         },
         externalDocs => {
             description => 'Find out more about Movable Type Data API',

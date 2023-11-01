@@ -455,7 +455,7 @@ sub field_type_validation_handler {
 }
 
 sub preview_handler {
-    my ( $field_data, $values, $content_data ) = @_;
+    my ($field_data, $values, $content_data) = @_;
     return '' unless $values;
     unless ( ref $values eq 'ARRAY' ) {
         $values = [$values];
@@ -488,6 +488,25 @@ sub preview_handler {
 
     return qq{<ul class="list-unstyled">$contents</ul>};
 
+}
+
+sub search_result_handler {
+    my ($field_data, $values, $content_data) = @_;
+    return '' unless $values;
+    unless (ref $values eq 'ARRAY') {
+        $values = [$values];
+    }
+    return '' unless @$values;
+
+    my @categories = MT->model('category')->load({ id => $values }, { fetchonly => { id => 1, label => 1 } },);
+    my %label_hash = map { $_->id => $_->label } @categories;
+
+    my @ret;
+    for my $v (@$values) {
+        my $label = $label_hash{$v};
+        push @ret, MT::Util::encode_html($label) if defined $label && $label ne '';
+    }
+    return join ', ', @ret;
 }
 
 sub site_import_handler {

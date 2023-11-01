@@ -11,8 +11,32 @@ BEGIN {
 
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        PluginPath => ['TEST_ROOT/plugins'],
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file('plugins/GoogleAnalytics/config.yaml', <<'YAML');
+id: GoogleAnalytics
+name: GoogleAnalytics
+version: 1.3
+
+stats_providers:
+    GoogleAnalytics:
+        provider: GoogleAnalytics::Provider
+YAML
+
+    $test_env->save_file('plugins/GoogleAnalytics/lib/GoogleAnalytics/Provider.pm', <<'PM');
+package GoogleAnalytics::Provider;
+
+use strict;
+use warnings;
+
+use base qw(MT::Stats::Provider);
+
+sub is_ready { 1 }
+1;
+PM
 }
 $test_env->prepare_fixture('db');
 
@@ -23,8 +47,6 @@ my $blog = MT::Website->load(1);
 
 use MT::Stats qw(readied_provider);
 
-my $ga_provider_mock = Test::MockModule->new('GoogleAnalytics::Provider');
-$ga_provider_mock->mock('is_ready', sub { 1 });
 my $ga4_provider_mock = Test::MockModule->new('GoogleAnalyticsV4::Provider');
 $ga4_provider_mock->mock('is_ready', sub { 1 });
 

@@ -51,7 +51,7 @@ sub suite {
                 }
                 is($result->{openapi}, '3.0.0', 'OpenAPI Specification version');
                 is($result->{info}{title}, 'Movable Type Data API');
-                is($result->{info}{version}, $app->release_version_id);
+                is($result->{info}{version}, $app->version_id);
                 is($result->{servers}->[0]->{url}, $app->base . $app->uri . '/v' . $version);
 
                 # Components

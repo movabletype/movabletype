@@ -180,17 +180,17 @@ sub list_props {
                                 $params{thumbnail_width_offset}  = int( ( $thumb_size - $thumbnail_width ) / 2 );
                                 $params{thumbnail_height_offset} = int( ( $thumb_size - $thumbnail_height ) / 2 );
                             }
-                            push @rows, $app->load_tmpl('cms/include/mt_asset_list_props_label_with_thumbnail.tmpl', \%params)->output();
+                            push @rows, $app->load_cached_tmpl('cms/include/mt_asset_list_props_label_with_thumbnail.tmpl', \%params)->output();
                         }
                         elsif ( $class_type eq 'image' ) {
-                            push @rows, $app->load_tmpl('cms/include/mt_asset_list_props_label_image.tmpl', \%params)->output();
+                            push @rows, $app->load_cached_tmpl('cms/include/mt_asset_list_props_label_image.tmpl', \%params)->output();
                         }
                         else {
-                            push @rows, $app->load_tmpl('cms/include/mt_asset_list_props_label_file.tmpl', \%params)->output();
+                            push @rows, $app->load_cached_tmpl('cms/include/mt_asset_list_props_label_file.tmpl', \%params)->output();
                         }
                     }
                     else {
-                        push @rows, $app->load_tmpl('cms/include/mt_asset_list_props_label_no_file.tmpl', \%params)->output();
+                        push @rows, $app->load_cached_tmpl('cms/include/mt_asset_list_props_label_no_file.tmpl', \%params)->output();
                     }
                 }
                 @rows;

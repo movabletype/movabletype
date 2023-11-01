@@ -14,7 +14,7 @@ use MT::I18N qw( const );
 use Time::Local;
 use List::Util qw( sum );
 
-use MT::Util::Deprecated qw( bin2dec dec2bin dsa_verify perl_sha1_digest perl_sha1_digest_hex perl_sha1_digest_base64 ); ## no critic
+use MT::Util::Deprecated qw( perl_sha1_digest_hex ); ## no critic
 use MT::Util::Encode;
 
 our @EXPORT_OK
@@ -35,7 +35,7 @@ our @EXPORT_OK
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
     encode_json build_upload_destination is_mod_perl1 asset_from_url
-    date_for_listing );
+    date_for_listing is_within_a_directory );
 
 push @EXPORT_OK, @MT::Util::Deprecated::EXPORT_OK;
 
@@ -2710,7 +2710,7 @@ sub build_upload_destination {
 
 sub asset_from_url {
     my ($image_url) = @_;
-    my $ua = MT->new_ua( { paranoid => 1, timeout => 10 } ) or return;
+    my $ua = MT->new_ua( { timeout => 10 } ) or return;
     my $resp = $ua->get($image_url);
     return undef unless $resp->is_success;
     my $image = $resp->content;
@@ -2837,6 +2837,17 @@ sub date_for_listing {
         : MT::Util::format_ts( $date_format, $ts, $blog,
         $app->user ? $app->user->preferred_language
         : undef );
+}
+
+sub is_within_a_directory {
+    my ($dir, $parent) = @_;
+    Carp::croak("requires two directories") unless 2 == grep {defined $_ && $_ ne ''} @_;
+    require File::Spec;
+    $dir    = File::Spec->catdir($dir, "PATH");
+    $dir    =~ s/PATH$//;
+    $parent = File::Spec->catdir($parent, "PATH");
+    $parent =~ s/PATH$//;
+    return $dir =~ m/^\Q$parent\E/i;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;

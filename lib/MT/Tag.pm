@@ -504,6 +504,7 @@ sub cache_obj {
     $tag_cache;
 }
 
+### DEPRECATED AS WELL?
 sub clear_cache {
     my $pkg     = shift;
     my (%param) = @_;

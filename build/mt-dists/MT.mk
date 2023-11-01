@@ -1,2 +1,2 @@
-PRODUCT_NAME = Movable Type Pro
+PRODUCT_NAME = Movable Type
 PRODUCT_CODE = MT

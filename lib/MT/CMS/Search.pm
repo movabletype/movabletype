@@ -475,7 +475,7 @@ sub core_search_apis {
                 'description' => sub { $app->translate('Description') },
             },
             'replace_cols'       => [qw(name site_url site_path description)],
-            'can_replace'        => $user_not_to_be_bound->is_superuser(),
+            'can_replace'        => $user_not_to_be_bound && $user_not_to_be_bound->is_superuser(),
             'can_search_by_date' => 0,
             'setup_terms_args'   => sub {
                 my ( $terms, $args, $blog_id ) = @_;
@@ -512,7 +512,7 @@ sub core_search_apis {
                 'description' => sub { $app->translate('Description') },
             },
             'replace_cols'       => [qw(name site_url site_path description)],
-            'can_replace'        => $user_not_to_be_bound->is_superuser(),
+            'can_replace'        => $user_not_to_be_bound && $user_not_to_be_bound->is_superuser(),
             'can_search_by_date' => 0,
             'view'               => 'system',
             'setup_terms_args'   => sub {
@@ -1081,31 +1081,7 @@ sub do_search_replace {
 
         my @terms;
         if ( !$is_regex && $type ne 'content_data' ) {
-
-            # MT::Object doesn't like multi-term hashes within arrays
-            if (%terms) {
-                for my $key ( keys %terms ) {
-                    push( @terms, { $key => $terms{$key} } );
-                }
-            }
-            if ( scalar @cols ) {
-                push( @terms, '-and' );
-                my @col_terms;
-                my $query_string = "%$plain_search%";
-                for my $col (@cols) {
-                    if ( 'id' eq $col ) {
-
-                        # Direct ID search
-                        push( @col_terms, { $col => $plain_search }, '-or' );
-                    }
-                    elsif ( $col !~ /^__field:\d+$/ ) {
-                        push( @col_terms,
-                            { $col => { like => $query_string } }, '-or' );
-                    }
-                }
-                delete $col_terms[$#col_terms];
-                push( @terms, \@col_terms );
-            }
+            @terms = @{make_terms_for_plain_search(\%terms, \@cols, $plain_search)};
         }
         $args{limit} = $limit + 1 if $limit ne 'all';
         my $iter;
@@ -1163,6 +1139,9 @@ sub do_search_replace {
                 unless $author->is_superuser
                 || $app->handler_to_coderef( $api->{perm_check} )->($obj);
             my $match = 0;
+            delete $obj->{__search_term};
+            delete $obj->{__search_result_fields};
+            delete $obj->{__search_result_fields_index};
 
             # For cms_pre_save callback and revisioning
             my $orig_obj;
@@ -1171,6 +1150,7 @@ sub do_search_replace {
                     next if $do_replace && !$replace_cols{$col};
                     my $text;
                     my ( $content_field_id, $field_data, $field_registry );
+                    my $match_field = 0;
                     if ( $col =~ /^__field:(\d+)$/ ) {
                         $content_field_id = $1;
                         $field_data
@@ -1268,7 +1248,7 @@ sub do_search_replace {
                             elsif ( !$content_field_id ) {
                                 $obj->$col($text);
                             }
-                            $match++;
+                            $match_field++;
                         }
                     }
                     else {
@@ -1278,14 +1258,18 @@ sub do_search_replace {
                         {
                             my $search_handler = $app->handler_to_coderef(
                                 $field_registry->{search_handler} );
-                            $match = $search_handler && $search_handler->(
+                            $match_field += $search_handler && $search_handler->(
                                 $re, $field_data, $text, $obj
                             );
                         }
                         else {
-                            $match = $search ne '' ? $text =~ m!$re! : 1;
+                            $match_field += $search ne '' ? $text =~ m!$re! : 1;
                         }
-                        last if $match;
+                    }
+                    $match += $match_field;
+                    if ($match_field) {
+                        push @{$obj->{__search_result_fields}}, $col;
+                        $obj->{__search_term} = $search;
                     }
                 }
             }
@@ -1608,6 +1592,31 @@ sub do_search_replace {
     $res{search_options} = $search_options;
 
     \%res;
+}
+
+sub make_terms_for_plain_search {
+    my ($terms_ref, $cols_ref, $plain_search) = @_;
+    my @new_terms;
+
+    if ($terms_ref) {
+        # MT::Object doesn't like multi-term hashes within arrays
+        push @new_terms, { $_ => $terms_ref->{$_} } for keys %$terms_ref;
+    }
+
+    if (my @cols = @$cols_ref) {
+        my $query_string = "%$plain_search%";
+        my @sub;
+        for my $col (@cols) {
+            if ('id' eq $col) {
+                push(@sub, { $col => $plain_search }, '-or');
+            } elsif ($col !~ /^__field:\d+$/) {
+                push(@sub, { $col => { like => $query_string } }, '-or');
+            }
+        }
+        delete $sub[$#sub];
+        push(@new_terms, '-and', \@sub);
+    }
+    return \@new_terms;
 }
 
 sub _set_blog_id_to_terms {
