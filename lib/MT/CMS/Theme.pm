@@ -433,6 +433,7 @@ sub do_export {
             @dir_list
                 = ( $default_dir, grep( $_ ne $default_dir, @dir_list ) );
         }
+        unshift @dir_list, $cfg->UserThemesDirectory if $cfg->UserThemesDirectory;
 
         foreach my $dir (@dir_list) {
             my $path = File::Spec->catdir( $dir, $theme_id );

@@ -154,16 +154,10 @@ PERMCHECK: {
     }
     $param{'reset'}        = $app->param('reset');
     $param{nav_log}        = 1;
-    $param{feed_name}      = $app->translate("System Activity Feed");
     $param{screen_class}   = "list-log";
     $param{screen_id}      = "list-log";
     $param{listing_screen} = 1;
-    $param{feed_url}       = $app->make_feed_link( 'system',
-        $blog_id ? { blog_id => $blog_id } : undef );
 
-    if ( $param{feed_url} && $param{filter_args} ) {
-        $param{feed_url} .= $param{filter_args};
-    }
     $app->add_breadcrumb( $app->translate('Activity Log') );
     unless ( $app->param('blog_id') ) {
         $param{system_overview_nav} = 1;
@@ -229,10 +223,11 @@ sub build_log_table {
                     $blog = $blogs{ $log->blog_id }
                         ||= $blog_class->load( $log->blog_id,
                         { cache_ok => 1 } );
-                    $row->{weblog_name} = $blog ? $blog->name : '';
+                    $row->{weblog_name}
+                        = $blog ? $blog->name : MT->translate('*Website/Blog deleted*');
                 }
                 else {
-                    $row->{weblog_name} = '';
+                    $row->{weblog_name} = MT->translate('(system)');
                 }
             }
             $row->{created_on_relative} = relative_date( $ts, time );
@@ -601,6 +596,79 @@ sub cms_pre_load_filtered_list {
     $terms->{blog_id} = $blog_ids
         if $blog_ids;
     $load_options->{terms} = $terms;
+}
+
+sub dialog_list_deprecated_log {
+    my $app = shift;
+    my $blog_id = $app->param('blog_id');
+
+    $app->validate_param({
+        dialog     => [qw/MAYBE_STRING/],
+        plugin_sig => [qw/MAYBE_STRING/],
+    }) or return;
+
+    my $plugin_sig = $app->param('plugin_sig');
+    my $plugin = $MT::Plugins{$plugin_sig}{object};
+    return $app->return_to_dashboard( redirect => 1 ) unless $plugin;
+
+    my $registory = MT->registry( listing_screens => 'log' );
+    my $cond = $registory->{condition};
+    $cond = MT->handler_to_coderef($cond)
+        if 'CODE' ne ref $cond;
+    $app->clear_error();
+    unless ( $cond->($app) ) {
+        if ( $app->errstr ) {
+            return $app->error( $app->errstr );
+        }
+        return $app->permission_denied();
+    }
+
+    my $list_pref = $app->list_pref('log');
+    my $limit     = $list_pref->{rows};
+    my $offset    = $app->param('offset') || 0;;
+    my %terms = (
+        class    => 'plugin',
+        category => $plugin->log_category_for_deprecated_fn,
+    );
+    my %args = (
+        sort      => 'created_on',
+        direction => 'descend',
+        limit     => $limit,
+        offset    => $offset,
+    );
+
+    if ( $blog_id && $app->blog ) {
+        my $blog_ids = $app->_load_child_blog_ids($blog_id);
+        push @$blog_ids, $blog_id;
+        $terms{blog_id} = $blog_ids;
+    }
+
+    my %param       = (%$list_pref);
+    my $log_class   = $app->model('log');
+    my $iter        = $log_class->load_iter( \%terms, \%args );
+    my $log         = build_log_table( $app, iter => $iter, param => \%param );
+    my $total_count = $log_class->count( \%terms );
+
+    template_param_list( undef, $app, \%param, undef );
+
+    my $list_end = $offset + ( scalar @$log );
+
+    $param{object_type}     = 'log';
+    $param{list_start}      = $offset + 1;
+    $param{list_total}      = $total_count,
+    $param{list_end}        = $list_end,
+    $param{offset}          = $offset;
+    $param{next_offset}     = $list_end < $total_count ? 1 : 0;
+    $param{next_offset_val} = $list_end;
+    $param{next_max}        = $param{next_offset} ? int( $total_count / $limit ) * $limit : 0;
+    $param{return_args}     = $app->make_return_args . "&dialog=1&plugin_sig=${plugin_sig}";
+
+    if ( $offset > 0 ) {
+        $param{prev_offset}     = 1;
+        $param{prev_offset_val} = $list_end < 0 ? 0 : $offset - $limit;
+    }
+
+    $app->load_tmpl('dialog/list_deprecated_log.tmpl', \%param);
 }
 
 1;

@@ -92,20 +92,30 @@ sub feed_value_handler {
 }
 
 sub preview_handler {
-    my ( $field_data, $value, $content_data ) = @_;
+    my ($field_data, $value, $content_data) = @_;
     return '' unless $value;
     return qq{<table border="1" cellpadding="3">$value</table>};
+}
+
+sub search_result_handler {
+    my ($field_data, $value, $content_data) = @_;
+    return '' unless $value;
+    return join ' | ', _table_text_contents($value);
 }
 
 sub search_handler {
     my ( $search_regex, $field_data, $table_body, $content_data ) = @_;
     return 0 unless defined $table_body;
+    my @cell = _table_text_contents($table_body);
+    ( grep {/$search_regex/} @cell ) ? 1 : 0;
+}
+
+sub _table_text_contents {
+    my $table_body = shift;
     $table_body =~ s/>\s+</></g;
     $table_body =~ s/\A\s*//g;
     $table_body =~ s/\s*\z//g;
-    my @cell = split /<tr>|<\/tr>|<th[^>]*>|<\/th>|<td[^>]*>|<\/td>/,
-        $table_body;
-    ( grep {/$search_regex/} @cell ) ? 1 : 0;
+    return grep { $_ } split /<[^>]+>/, $table_body;
 }
 
 1;

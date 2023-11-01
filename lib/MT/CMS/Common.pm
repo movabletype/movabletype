@@ -1024,21 +1024,27 @@ sub list {
             || $_->registry( system_filters  => $type . $subtype )
     } MT::Component->select;
 
+    my $cfg            = MT->config;
     my @theme_ids      = ("");
-    my $admin_theme_id = MT->config->AdminThemeId;
+    my $admin_theme_id = $cfg->AdminThemeId;
     unshift @theme_ids, $admin_theme_id if $admin_theme_id;
+
     my @list_headers;
-    for my $theme_id (@theme_ids) {
-        my $core_include = File::Spec->catfile(
-            MT->config->TemplatePath, $theme_id,
-            $app->{template_dir},     'listing', $type . '_list_header.tmpl'
-        );
-        if (-e $core_include) {
-            push @list_headers, {
-                filename  => $core_include,
-                component => 'Core'
-            };
-            last;
+    my @template_paths = grep { defined $_ and $_ ne '' } ($cfg->UserTemplatePath, $cfg->AltTemplatePath, $cfg->TemplatePath);
+LOOP:
+    for my $template_path (@template_paths) {
+        for my $theme_id (@theme_ids) {
+            my $core_include = File::Spec->catfile(
+                $template_path, $theme_id,
+                $app->{template_dir}, 'listing', $type . '_list_header.tmpl'
+            );
+            if (-e $core_include) {
+                push @list_headers, {
+                    filename  => $core_include,
+                    component => 'Core'
+                };
+                last LOOP;
+            }
         }
     }
 
@@ -1446,19 +1452,6 @@ sub list {
     }
     else {
         $template = 'list_common.tmpl';
-    }
-
-    my $feed_link = $screen_settings->{feed_link};
-    $feed_link = $feed_link->($app)
-        if 'CODE' eq ref $feed_link;
-    if ($feed_link and !MT->config->DisableActivityFeeds) {
-        my $view = $subtype ? $app->param('type') : $type;
-        $param{feed_url} = $app->make_feed_link( $view,
-            $blog_id ? { blog_id => $blog_id } : undef );
-        $param{object_type_feed}
-            = $screen_settings->{feed_label}
-            ? $screen_settings->{feed_label}
-            : $app->translate( "[_1] Feed", $obj_class->class_label );
     }
 
     if ( $param{use_actions} ) {

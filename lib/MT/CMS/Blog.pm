@@ -571,12 +571,8 @@ sub cfg_registration {
     return $app->permission_denied()
         unless $app->can_do('edit_config');
 
-    eval { require Digest::SHA1; };
-    my $openid_available = $@ ? 0 : 1;
-
     my %param = ();
     $param{id}                       = $blog->id;
-    $param{openid_enabled}           = $openid_available;
     $param{screen_class}             = 'settings-screen registration-screen';
     $param{commenter_authenticators} = $blog->commenter_authenticators;
     my $registration = $app->config->CommenterRegistration;

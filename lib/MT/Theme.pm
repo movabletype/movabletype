@@ -134,7 +134,7 @@ sub load_theme_loop {
 
 sub _theme_packages {
     my $pkg      = shift;
-    my @dir_list = MT->config('ThemesDirectory');
+    my @dir_list = grep {defined $_ and $_ ne ''} (MT->config('UserThemesDirectory'), MT->config('ThemesDirectory'));
     my @ids;
     foreach my $base_dir (@dir_list) {
         require DirHandle;
@@ -359,7 +359,7 @@ sub apply {
             if ( $element->{require} ) {
                 return $theme->error(
                     MT->translate(
-                        'A fatal error occurred while applying element [_1]: [_2].',
+                        'A fatal error occurred while applying element [_1]: [_2]',
                         $element->{label} || $element->{id},
                         $element->errstr,
                     )
@@ -371,7 +371,7 @@ sub apply {
                 my $log = MT::Log->new;
                 $log->message(
                     MT->translate(
-                        'An error occurred while applying element [_1]: [_2].',
+                        'An error occurred while applying element [_1]: [_2]',
                         $element->{label} || $element->{id},
                         $element->errstr,
                     )

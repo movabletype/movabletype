@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '7.902');
-define('PRODUCT_VERSION', '7.902.0');
+define('VERSION', '8.000002');
+define('PRODUCT_VERSION', '8.0.2');
 define('DATA_API_DEFAULT_VERSION', '6');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -421,10 +421,6 @@ class MT {
             $cfg['adminscript'] = 'mt.cgi';
         isset($cfg['commentscript']) or
             $cfg['commentscript'] = 'mt-comments.cgi';
-        isset($cfg['atomscript']) or
-            $cfg['atomscript'] = 'mt-atom.cgi';
-        isset($cfg['xmlrpcscript']) or
-            $cfg['xmlrpcscript'] = 'mt-xmlrpc.cgi';
         isset($cfg['searchscript']) or
             $cfg['searchscript'] = 'mt-search.cgi';
         isset($cfg['defaultlanguage']) or

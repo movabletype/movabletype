@@ -13,7 +13,7 @@ Before You Begin
 
 Movable Type requires the following applications:
 
-* Perl 5.10.1 or greater, with its core modules;
+* Perl 5.16.0 or greater, with its core modules;
 * A web server like nginx, Apache or Windows IIS;
 * Access to a database like MySQL;
 * The following Perl modules:

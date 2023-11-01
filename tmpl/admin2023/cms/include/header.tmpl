@@ -9,9 +9,6 @@
 
 <mt:setvarblock name="html_head" prepend="1">
   <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
-<mt:if name="feed_url">
-  <link type="application/atom+xml" rel="alternate" <mt:if name="feed_name">title="<mt:var name="feed_name" escape="html">" </mt:if>href="<mt:var name="feed_url" escape="html">" />
-</mt:if>
 <mt:unless name="optimize_ui">
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
 <mt:else>
@@ -20,9 +17,6 @@
   <!--[if IE]>
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
   <![endif]-->
-<mt:if name="local_lang_id" ne="en-us">
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
-</mt:if>
   <script type="text/javascript">
   /* <![CDATA[ */
        __blankURI__ = '<$mt:var name="static_uri">html/blank.html';
