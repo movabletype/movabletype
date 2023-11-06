@@ -529,18 +529,18 @@ sub all_permissions {
     my $class = shift;
 
     my $cache_key = 'MT::ContentType::all_permissions';
-    my $ret = MT->request->{__stash}{$cache_key};
-    return $ret if $ret;
+    my $cache = MT->request->{__stash}{$cache_key};
+    return $cache if $cache;
 
     my $driver = $class->driver;
     return {} unless $driver && $driver->table_exists($class);
-    MT->request->{__stash}{$cache_key} = $ret = {};
+    my %ret;
     my @content_types
         = _eval_if_mssql_server_or_oracle( sub { @{ $class->load_all } } );
     for my $content_type (@content_types) {
-        %$ret = (%$ret, %{ $content_type->permissions }) if $content_type->blog;
+        %ret = (%ret, %{ $content_type->permissions }) if $content_type->blog;
     }
-    return $ret;
+    return MT->request->{__stash}{$cache_key} = \%ret;
 }
 
 sub _post_save {
