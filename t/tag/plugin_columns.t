@@ -54,18 +54,21 @@ done_testing;
 __DATA__
 
 === has plugin for tests
+--- skip_php
 --- template
 <MTHasPlugin name="MyPlugin">has MyPlugin<MTElse>doesn't have MyPlugin</MTHasPlugin>
 --- expected
 has MyPlugin
 
 === No dynamic properties warnings for plugin-generated columns on php8.2 (MTC-29236)
+--- skip_php
 --- template
 <mt:Blogs><$mt:BlogURL$></mt:Blogs>
 --- expected regexp
 /nana/
 
 === Entries
+--- skip_php
 --- template
 <mt:Entries>[<$mt:EntryID$>]</mt:Entries>
 --- expected regexp

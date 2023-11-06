@@ -127,7 +127,12 @@ abstract class BaseObject extends ADOdb_Active_Record
             return array_key_exists($name, $this->_extra) ? $this->_extra[$name] : null;
         }
 
-        return property_exists($this, $name) ? $this->$name : null;
+        if (!property_exists($this, $name)) {
+            if (isset($_ENV['MT_TEST_ROOT'])) {
+                trigger_error(sprintf('Dynamic property %s::%s is deprecated', get_class($this), $name), E_USER_DEPRECATED);
+            }
+        }
+        return $this->$name;
     }
 
     public function __set($name, $value) {
@@ -144,6 +149,12 @@ abstract class BaseObject extends ADOdb_Active_Record
             return;
         }
         
+        if (!property_exists($this, $name)) {
+            if (isset($_ENV['MT_TEST_ROOT'])) {
+                trigger_error(sprintf('Dynamic property %s::%s is deprecated', get_class($this), $name), E_USER_DEPRECATED);
+            } 
+        }
+
         parent::__set($name, $value);
     }
 
@@ -160,8 +171,12 @@ abstract class BaseObject extends ADOdb_Active_Record
             return isset($this->_extra[$name]);
         }
 
-        $value = property_exists($this, $name) ? $this->$name : null;
-        return isset( $value );
+        if (!property_exists($this, $name)) {
+            if (isset($_ENV['MT_TEST_ROOT'])) {
+                trigger_error(sprintf('Dynamic property %s::%s is deprecated', get_class($this), $name), E_USER_DEPRECATED);
+            } 
+        }
+        return isset($this->$name);
     }
 
     public function Load( $where = null, $bindarr = false, $lock = false ) {
