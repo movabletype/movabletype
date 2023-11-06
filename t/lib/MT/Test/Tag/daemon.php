@@ -12,7 +12,9 @@ include_once($opts['mt_home'] . '/php/lib/MTUtil.php');
 # - t/mt7/tag/archive/archive-type-label.t
 $mt = null;
 set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use (&$mt) {
-    if ($error_no & E_USER_ERROR) {
+    if ($error_no & E_NOTICE) {
+        return;
+    } else if ($error_no & E_USER_ERROR) {
         print($error_msg."\n");
     } else if (!$mt) {
         print(implode(':', [$error_no, $error_msg, $error_file, $error_line]). "\n");
