@@ -7,6 +7,8 @@ use MT::Test::Env;
 
 our $test_env;
 BEGIN {
+    plan skip_all => 'set MT_TEST_TAG_WITH_PLUGIN_COLUMNS to test' unless $ENV{MT_TEST_TAG_WITH_PLUGIN_COLUMNS};
+
     $test_env = MT::Test::Env->new(PluginPath => ['TEST_ROOT/plugins']);
     $ENV{MT_CONFIG} = $test_env->config_file;
 
@@ -54,21 +56,18 @@ done_testing;
 __DATA__
 
 === has plugin for tests
---- skip_php
 --- template
 <MTHasPlugin name="MyPlugin">has MyPlugin<MTElse>doesn't have MyPlugin</MTHasPlugin>
 --- expected
 has MyPlugin
 
 === No dynamic properties warnings for plugin-generated columns on php8.2 (MTC-29236)
---- skip_php
 --- template
 <mt:Blogs><$mt:BlogURL$></mt:Blogs>
 --- expected regexp
 /nana/
 
 === Entries
---- skip_php
 --- template
 <mt:Entries>[<$mt:EntryID$>]</mt:Entries>
 --- expected regexp
