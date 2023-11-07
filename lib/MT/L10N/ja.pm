@@ -1230,7 +1230,7 @@ use vars qw( @ISA %Lexicon );
 	'Site URL must be an absolute URL.' => 'サイトURLは絶対URLでなければなりません。',
 	'The number of revisions to store must be a positive integer.' => '更新履歴番号は整数でなければなりません。',
 	'These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'MTの設定ファイルによって設定されている値([_1])が優先されます。このページで設定した値を利用するためには、設定ファイルでの設定を削除してください。',
-	'This action can only be run on a single child site at a time.' => 'このアクションは同時に1つのブログでしか実行できません。',
+	'This action can only be run on a single child site at a time.' => 'このアクションは同時に1つの子サイトでしか実行できません。',
 	'This action can only clone a child site.' => 'このアクションで複製できるのは子サイトのみです',
 	'Website Root' => 'ウェブサイトパス',
 	'You did not specify a blog name.' => 'ブログの名前を指定してください。',
