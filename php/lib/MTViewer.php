@@ -1062,9 +1062,7 @@ EOT;
         $this->unregisterPlugin('block', $block);
 
         if($block_impl == ''){
-            if (file_exists($this->mt->config('phplibdir'). '/block.' . $block . '.php')) {
-                @include_once 'block.' . $block . '.php';
-            }
+            @include_once 'block.' . $block . '.php';
             $block_impl = array($this,'block_wrapper');
         }
         else {
