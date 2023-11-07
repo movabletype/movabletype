@@ -129,7 +129,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         }
 
         if (!property_exists($this, $name)) {
-            if (isset($_ENV['MT_TEST_ROOT'])) {
+            if (isset($_ENV['MT_PROHIBIT_PHP_DYNAMIC_PROPERTY'])) {
                 trigger_error(sprintf('Dynamic property %s::%s is deprecated', get_class($this), $name), E_USER_DEPRECATED);
             }
         }
@@ -152,7 +152,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         }
         
         if (!property_exists($this, $name)) {
-            if (isset($_ENV['MT_TEST_ROOT'])) {
+            if (isset($_ENV['MT_PROHIBIT_PHP_DYNAMIC_PROPERTY'])) {
                 trigger_error(sprintf('Dynamic property %s::%s is deprecated', get_class($this), $name), E_USER_DEPRECATED);
             } 
         }
@@ -175,7 +175,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         }
 
         if (!property_exists($this, $name)) {
-            if (isset($_ENV['MT_TEST_ROOT'])) {
+            if (isset($_ENV['MT_PROHIBIT_PHP_DYNAMIC_PROPERTY'])) {
                 trigger_error(sprintf('Dynamic property %s::%s is deprecated', get_class($this), $name), E_USER_DEPRECATED);
             } 
         }
