@@ -131,6 +131,55 @@ subtest 'Test in website scope' => sub {
             $app->content_like($checkbox, 'Has "Entries" setting in Display Options');
         }
     };
+
+    note 'Rename tag check';
+    subtest 'Rename tag check' => sub {
+        my $entry = MT::Entry->load({ blog_id => $website->id, author_id => $admin->id });
+        $entry->tags('Alpha one');
+        $entry->save;
+        my $tag = MT::Tag->load({ name => 'Alpha one' });
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->post_ok({
+            __mode   => 'rename_tag',
+            blog_id  => $entry->id,
+            tag_name => 'Alpha two',
+            __id     => $tag->id,
+        });
+    };
+
+    note 'Rename tag check: exists tagname';
+    subtest 'Rename tag check' => sub {
+        my $entry = MT::Entry->load({ blog_id => $website->id, author_id => $admin->id });
+        $entry->tags('Alpha one');
+        $entry->save;
+        my $tag = MT::Tag->load({ name => 'Alpha one' });
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->post_ok({
+            __mode   => 'rename_tag',
+            blog_id  => $entry->id,
+            tag_name => '@entry',
+            __id     => $tag->id,
+        });
+    };
+
+    note 'Rename tag check: only entry';
+    subtest 'Rename tag check' => sub {
+        my $entry = MT::Entry->load({ blog_id => $website->id, author_id => $admin->id });
+        $entry->tags('Alpha one');
+        $entry->save;
+        my $tag = MT::Tag->load({ name => 'Alpha one' });
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->post_ok({
+            __mode   => 'rename_tag',
+            __type   => 'entry',
+            blog_id  => $entry->id,
+            tag_name => 'Alpha two',
+            __id     => $tag->id,
+        });
+    };
 };
 
 done_testing();
