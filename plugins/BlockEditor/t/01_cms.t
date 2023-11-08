@@ -9,7 +9,9 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        PluginSwitch => ['BlockEditor=1'],
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
