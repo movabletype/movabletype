@@ -6,14 +6,20 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        DefaultLanguage => 'en_US',    ## for now
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
+$test_env->prepare_fixture('db');
 
 use MT::Test;
+use MT::Test::Permission;
 use MT::ContentFieldType::Date;
 
-my $app = MT->new;
+my $blog = MT::Test::Permission->make_blog;
+my $app = MT->instance;
+$app->blog($blog);
 
 subtest 'options_validation_handler' => sub {
 
@@ -53,6 +59,69 @@ subtest 'options_validation_handler' => sub {
             }
         };
     }
+};
+
+subtest 'options_pre_save_handler' => sub {
+    my @test_cases = (
+        { initial_date => '2001-01-01', expected => '2001-01-01 00:00:00' },
+        { initial_date => '',           expected => undef },
+    );
+    for my $i (0..$#test_cases)  {
+        my $case = $test_cases[$i];
+        my $options = {
+            description   => '',
+            display       => 'default',
+            id            => '10',
+            initial_date  => $case->{initial_date},
+            label         => 'mydate',
+            required      => 0,
+        };
+        MT::ContentFieldType::Date::options_pre_save_handler( $app, 'date_only', $options );
+        is $options->{initial_value}, $case->{expected}, "case=${i}";
+    }
+};
+
+subtest 'options_pre_load_handler' => sub {
+    my @test_cases = (
+        { initial_value => '2001-01-01 00:00:00', expected => '2001-01-01' },
+        { initial_value => '',                    expected => undef },
+    );
+    for my $i (0..$#test_cases)  {
+        my $case = $test_cases[$i];
+        my $options = {
+            description   => '',
+            display       => 'default',
+            id            => '10',
+            initial_value => $case->{initial_value},
+            label         => 'mydate',
+            required      => 0,
+        };
+        MT::ContentFieldType::Date::options_pre_load_handler( $app, 'date_only', undef, $options );
+        is $options->{initial_date}, $case->{expected}, "case=${i}";
+    }
+};
+
+subtest 'feed_value_handler' => sub {
+    my $field_data = {
+        id      => 1,
+        order   => 1,
+        options => {
+            description   => '',
+            display       => 'default',
+            id            => '10',
+            initial_value => '1970-01-01',
+            label         => 'mydate',
+            required      => 0,
+        },
+    };
+
+    my $result = MT::ContentFieldType::Date::feed_value_handler( $app, $field_data, '20010101000000' );
+    is $result, '2001-01-01';
+};
+
+subtest 'preview_handler' => sub {
+    my $result = MT::ContentFieldType::Date::preview_handler( $app, '20010101000000' );
+    is $result, '2001-01-01';
 };
 
 done_testing;
