@@ -3040,13 +3040,13 @@ sub clone {
 
     if ( !@id ) {
         return $app->error(
-            $app->translate("No blog was selected to clone.") );
+            $app->translate("No child site was selected to clone.") );
     }
 
     if ( scalar @id > 1 ) {
         return $app->error(
             $app->translate(
-                "This action can only be run on a single blog at a time.")
+                "This action can only be run on a single child site at a time.")
         );
     }
 
@@ -3056,7 +3056,7 @@ sub clone {
     my $blog_class = $app->model('blog');
     my $blog       = $blog_class->load($blog_id)
         or return $app->error( $app->translate("Invalid blog_id") );
-    return $app->error( $app->translate("This action cannot clone website.") )
+    return $app->error( $app->translate("This action can only clone a child site.") )
         unless $blog->is_blog && $blog->parent_id;
 
     return $app->permission_denied()
