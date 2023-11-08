@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.10.7 (2022-12-06)
+ * Version: 5.10.8 (2023-10-19)
  */
 (function () {
     'use strict';
@@ -806,7 +806,7 @@
         return s.replace(r, '');
       };
     };
-    var trim$4 = blank(/^\s+|\s+$/g);
+    var trim$5 = blank(/^\s+|\s+$/g);
     var lTrim = blank(/^\s+/g);
     var rTrim = blank(/\s+$/g);
     var isNotEmpty = function (s) {
@@ -1109,7 +1109,7 @@
     };
 
     var whiteSpaceRegExp$2 = /^\s*|\s*$/g;
-    var trim$3 = function (str) {
+    var trim$4 = function (str) {
       return str === null || str === undefined ? '' : ('' + str).replace(whiteSpaceRegExp$2, '');
     };
     var is$3 = function (obj, type) {
@@ -1255,7 +1255,7 @@
       if (!s || is$3(s, 'array')) {
         return s;
       }
-      return map$1(s.split(d || ','), trim$3);
+      return map$1(s.split(d || ','), trim$4);
     };
     var _addCacheSuffix = function (url) {
       var cacheSuffix = Env.cacheSuffix;
@@ -1265,7 +1265,7 @@
       return url;
     };
     var Tools = {
-      trim: trim$3,
+      trim: trim$4,
       isArray: isArray,
       is: is$3,
       toArray: toArray$1,
@@ -3089,7 +3089,7 @@
 
     var ZWSP$1 = zeroWidth;
     var isZwsp = isZwsp$1;
-    var trim$2 = removeZwsp;
+    var trim$3 = removeZwsp;
 
     var isElement$4 = isElement$5;
     var isText$6 = isText$7;
@@ -5857,7 +5857,7 @@
       return -1;
     };
     var whiteSpaceRegExp = /^\s*|\s*$/g;
-    var trim$1 = function (str) {
+    var trim$2 = function (str) {
       return str === null || str === undefined ? '' : ('' + str).replace(whiteSpaceRegExp, '');
     };
     var each$g = function (obj, callback) {
@@ -6254,7 +6254,7 @@
             if (classState !== state) {
               var existingClassName = node.className;
               if (classState) {
-                node.className = trim$1((' ' + existingClassName + ' ').replace(' ' + className + ' ', ' '));
+                node.className = trim$2((' ' + existingClassName + ' ').replace(' ' + className + ' ', ' '));
               } else {
                 node.className += existingClassName ? ' ' + className : className;
               }
@@ -6377,7 +6377,7 @@
       inArray: inArray$1,
       isArray: Tools.isArray,
       each: each$g,
-      trim: trim$1,
+      trim: trim$2,
       grep: grep$2,
       find: Sizzle,
       expr: Sizzle.selectors,
@@ -8982,7 +8982,7 @@
     };
     var getBookmark$2 = function (selection, type, normalized) {
       if (type === 2) {
-        return getOffsetBookmark(trim$2, normalized, selection);
+        return getOffsetBookmark(trim$3, normalized, selection);
       } else if (type === 3) {
         return getCaretBookmark(selection);
       } else if (type) {
@@ -9110,7 +9110,7 @@
     var getContentCss = function (editor) {
       var contentCss = editor.getParam('content_css');
       if (isString$1(contentCss)) {
-        return map$3(contentCss.split(','), trim$4);
+        return map$3(contentCss.split(','), trim$5);
       } else if (isArray$1(contentCss)) {
         return contentCss;
       } else if (contentCss === false || editor.inline) {
@@ -9121,7 +9121,7 @@
     };
     var getFontCss = function (editor) {
       var fontCss = editor.getParam('font_css', []);
-      return isArray$1(fontCss) ? fontCss : map$3(fontCss.split(','), trim$4);
+      return isArray$1(fontCss) ? fontCss : map$3(fontCss.split(','), trim$5);
     };
     var getDirectionality = function (editor) {
       return editor.getParam('directionality', I18n.isRtl() ? 'rtl' : undefined);
@@ -9242,7 +9242,7 @@
       }
     };
     var trimCount = function (text) {
-      var trimmedText = trim$2(text);
+      var trimmedText = trim$3(text);
       return {
         count: text.length - trimmedText.length,
         text: trimmedText
@@ -12887,773 +12887,65 @@
       return AstNode;
     }();
 
-    var extractBase64DataUris = function (html) {
-      var dataImageUri = /data:[^;<"'\s]+;base64,([a-z0-9\+\/=\s]+)/gi;
-      var chunks = [];
-      var uris = {};
-      var prefix = generate('img');
-      var matches;
-      var index = 0;
-      var count = 0;
-      while (matches = dataImageUri.exec(html)) {
-        var uri = matches[0];
-        var imageId = prefix + '_' + count++;
-        uris[imageId] = uri;
-        if (index < matches.index) {
-          chunks.push(html.substr(index, matches.index - index));
-        }
-        chunks.push(imageId);
-        index = matches.index + uri.length;
-      }
-      var re = new RegExp(prefix + '_[0-9]+', 'g');
-      if (index === 0) {
-        return {
-          prefix: prefix,
-          uris: uris,
-          html: html,
-          re: re
-        };
-      } else {
-        if (index < html.length) {
-          chunks.push(html.substr(index));
-        }
-        return {
-          prefix: prefix,
-          uris: uris,
-          html: chunks.join(''),
-          re: re
-        };
-      }
+    var getTemporaryNodeSelector = function (tempAttrs) {
+      return (tempAttrs.length === 0 ? '' : map$3(tempAttrs, function (attr) {
+        return '[' + attr + ']';
+      }).join(',') + ',') + '[data-mce-bogus="all"]';
     };
-    var restoreDataUris = function (html, result) {
-      return html.replace(result.re, function (imageId) {
-        return get$9(result.uris, imageId).getOr(imageId);
+    var getTemporaryNodes = function (body, tempAttrs) {
+      return body.querySelectorAll(getTemporaryNodeSelector(tempAttrs));
+    };
+    var createCommentWalker = function (body) {
+      return document.createTreeWalker(body, NodeFilter.SHOW_COMMENT, null, false);
+    };
+    var hasComments = function (body) {
+      return createCommentWalker(body).nextNode() !== null;
+    };
+    var hasTemporaryNodes = function (body, tempAttrs) {
+      return body.querySelector(getTemporaryNodeSelector(tempAttrs)) !== null;
+    };
+    var trimTemporaryNodes = function (body, tempAttrs) {
+      each$k(getTemporaryNodes(body, tempAttrs), function (elm) {
+        var element = SugarElement.fromDom(elm);
+        if (get$6(element, 'data-mce-bogus') === 'all') {
+          remove$7(element);
+        } else {
+          each$k(tempAttrs, function (attr) {
+            if (has$1(element, attr)) {
+              remove$6(element, attr);
+            }
+          });
+        }
       });
     };
-    var parseDataUri$1 = function (uri) {
-      var matches = /data:([^;]+);base64,([a-z0-9\+\/=\s]+)/i.exec(uri);
-      if (matches) {
-        return Optional.some({
-          type: matches[1],
-          data: decodeURIComponent(matches[2])
-        });
-      } else {
-        return Optional.none();
-      }
-    };
-
-    var each$d = Tools.each, trim = Tools.trim;
-    var queryParts = 'source protocol authority userInfo user password host port relative path directory file query anchor'.split(' ');
-    var DEFAULT_PORTS = {
-      ftp: 21,
-      http: 80,
-      https: 443,
-      mailto: 25
-    };
-    var safeSvgDataUrlElements = [
-      'img',
-      'video'
-    ];
-    var blockSvgDataUris = function (allowSvgDataUrls, tagName) {
-      if (isNonNullable(allowSvgDataUrls)) {
-        return !allowSvgDataUrls;
-      } else {
-        return isNonNullable(tagName) ? !contains$3(safeSvgDataUrlElements, tagName) : true;
-      }
-    };
-    var isInvalidUri = function (settings, uri, tagName) {
-      if (settings.allow_html_data_urls) {
-        return false;
-      } else if (/^data:image\//i.test(uri)) {
-        return blockSvgDataUris(settings.allow_svg_data_urls, tagName) && /^data:image\/svg\+xml/i.test(uri);
-      } else {
-        return /^data:/i.test(uri);
-      }
-    };
-    var URI = function () {
-      function URI(url, settings) {
-        url = trim(url);
-        this.settings = settings || {};
-        var baseUri = this.settings.base_uri;
-        var self = this;
-        if (/^([\w\-]+):([^\/]{2})/i.test(url) || /^\s*#/.test(url)) {
-          self.source = url;
-          return;
-        }
-        var isProtocolRelative = url.indexOf('//') === 0;
-        if (url.indexOf('/') === 0 && !isProtocolRelative) {
-          url = (baseUri ? baseUri.protocol || 'http' : 'http') + '://mce_host' + url;
-        }
-        if (!/^[\w\-]*:?\/\//.test(url)) {
-          var baseUrl = this.settings.base_uri ? this.settings.base_uri.path : new URI(document.location.href).directory;
-          if (this.settings.base_uri && this.settings.base_uri.protocol == '') {
-            url = '//mce_host' + self.toAbsPath(baseUrl, url);
-          } else {
-            var match = /([^#?]*)([#?]?.*)/.exec(url);
-            url = (baseUri && baseUri.protocol || 'http') + '://mce_host' + self.toAbsPath(baseUrl, match[1]) + match[2];
-          }
-        }
-        url = url.replace(/@@/g, '(mce_at)');
-        var urlMatch = /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@\/]*):?([^:@\/]*))?@)?(\[[a-zA-Z0-9:.%]+\]|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/.exec(url);
-        each$d(queryParts, function (v, i) {
-          var part = urlMatch[i];
-          if (part) {
-            part = part.replace(/\(mce_at\)/g, '@@');
-          }
-          self[v] = part;
-        });
-        if (baseUri) {
-          if (!self.protocol) {
-            self.protocol = baseUri.protocol;
-          }
-          if (!self.userInfo) {
-            self.userInfo = baseUri.userInfo;
-          }
-          if (!self.port && self.host === 'mce_host') {
-            self.port = baseUri.port;
-          }
-          if (!self.host || self.host === 'mce_host') {
-            self.host = baseUri.host;
-          }
-          self.source = '';
-        }
-        if (isProtocolRelative) {
-          self.protocol = '';
-        }
-      }
-      URI.parseDataUri = function (uri) {
-        var type;
-        var uriComponents = decodeURIComponent(uri).split(',');
-        var matches = /data:([^;]+)/.exec(uriComponents[0]);
-        if (matches) {
-          type = matches[1];
-        }
-        return {
-          type: type,
-          data: uriComponents[1]
-        };
-      };
-      URI.isDomSafe = function (uri, context, options) {
-        if (options === void 0) {
-          options = {};
-        }
-        if (options.allow_script_urls) {
-          return true;
-        } else {
-          var decodedUri = Entities.decode(uri).replace(/[\s\u0000-\u001F]+/g, '');
-          try {
-            decodedUri = decodeURIComponent(decodedUri);
-          } catch (ex) {
-            decodedUri = unescape(decodedUri);
-          }
-          if (/((java|vb)script|mhtml):/i.test(decodedUri)) {
-            return false;
-          }
-          return !isInvalidUri(options, decodedUri, context);
-        }
-      };
-      URI.getDocumentBaseUrl = function (loc) {
-        var baseUrl;
-        if (loc.protocol.indexOf('http') !== 0 && loc.protocol !== 'file:') {
-          baseUrl = loc.href;
-        } else {
-          baseUrl = loc.protocol + '//' + loc.host + loc.pathname;
-        }
-        if (/^[^:]+:\/\/\/?[^\/]+\//.test(baseUrl)) {
-          baseUrl = baseUrl.replace(/[\?#].*$/, '').replace(/[\/\\][^\/]+$/, '');
-          if (!/[\/\\]$/.test(baseUrl)) {
-            baseUrl += '/';
-          }
-        }
-        return baseUrl;
-      };
-      URI.prototype.setPath = function (path) {
-        var pathMatch = /^(.*?)\/?(\w+)?$/.exec(path);
-        this.path = pathMatch[0];
-        this.directory = pathMatch[1];
-        this.file = pathMatch[2];
-        this.source = '';
-        this.getURI();
-      };
-      URI.prototype.toRelative = function (uri) {
-        var output;
-        if (uri === './') {
-          return uri;
-        }
-        var relativeUri = new URI(uri, { base_uri: this });
-        if (relativeUri.host !== 'mce_host' && this.host !== relativeUri.host && relativeUri.host || this.port !== relativeUri.port || this.protocol !== relativeUri.protocol && relativeUri.protocol !== '') {
-          return relativeUri.getURI();
-        }
-        var tu = this.getURI(), uu = relativeUri.getURI();
-        if (tu === uu || tu.charAt(tu.length - 1) === '/' && tu.substr(0, tu.length - 1) === uu) {
-          return tu;
-        }
-        output = this.toRelPath(this.path, relativeUri.path);
-        if (relativeUri.query) {
-          output += '?' + relativeUri.query;
-        }
-        if (relativeUri.anchor) {
-          output += '#' + relativeUri.anchor;
-        }
-        return output;
-      };
-      URI.prototype.toAbsolute = function (uri, noHost) {
-        var absoluteUri = new URI(uri, { base_uri: this });
-        return absoluteUri.getURI(noHost && this.isSameOrigin(absoluteUri));
-      };
-      URI.prototype.isSameOrigin = function (uri) {
-        if (this.host == uri.host && this.protocol == uri.protocol) {
-          if (this.port == uri.port) {
-            return true;
-          }
-          var defaultPort = DEFAULT_PORTS[this.protocol];
-          if (defaultPort && (this.port || defaultPort) == (uri.port || defaultPort)) {
-            return true;
-          }
-        }
-        return false;
-      };
-      URI.prototype.toRelPath = function (base, path) {
-        var breakPoint = 0, out = '', i, l;
-        var normalizedBase = base.substring(0, base.lastIndexOf('/')).split('/');
-        var items = path.split('/');
-        if (normalizedBase.length >= items.length) {
-          for (i = 0, l = normalizedBase.length; i < l; i++) {
-            if (i >= items.length || normalizedBase[i] !== items[i]) {
-              breakPoint = i + 1;
-              break;
-            }
-          }
-        }
-        if (normalizedBase.length < items.length) {
-          for (i = 0, l = items.length; i < l; i++) {
-            if (i >= normalizedBase.length || normalizedBase[i] !== items[i]) {
-              breakPoint = i + 1;
-              break;
-            }
-          }
-        }
-        if (breakPoint === 1) {
-          return path;
-        }
-        for (i = 0, l = normalizedBase.length - (breakPoint - 1); i < l; i++) {
-          out += '../';
-        }
-        for (i = breakPoint - 1, l = items.length; i < l; i++) {
-          if (i !== breakPoint - 1) {
-            out += '/' + items[i];
-          } else {
-            out += items[i];
-          }
-        }
-        return out;
-      };
-      URI.prototype.toAbsPath = function (base, path) {
-        var i, nb = 0, o = [], outPath;
-        var tr = /\/$/.test(path) ? '/' : '';
-        var normalizedBase = base.split('/');
-        var normalizedPath = path.split('/');
-        each$d(normalizedBase, function (k) {
-          if (k) {
-            o.push(k);
-          }
-        });
-        normalizedBase = o;
-        for (i = normalizedPath.length - 1, o = []; i >= 0; i--) {
-          if (normalizedPath[i].length === 0 || normalizedPath[i] === '.') {
-            continue;
-          }
-          if (normalizedPath[i] === '..') {
-            nb++;
-            continue;
-          }
-          if (nb > 0) {
-            nb--;
-            continue;
-          }
-          o.push(normalizedPath[i]);
-        }
-        i = normalizedBase.length - nb;
-        if (i <= 0) {
-          outPath = reverse(o).join('/');
-        } else {
-          outPath = normalizedBase.slice(0, i).join('/') + '/' + reverse(o).join('/');
-        }
-        if (outPath.indexOf('/') !== 0) {
-          outPath = '/' + outPath;
-        }
-        if (tr && outPath.lastIndexOf('/') !== outPath.length - 1) {
-          outPath += tr;
-        }
-        return outPath;
-      };
-      URI.prototype.getURI = function (noProtoHost) {
-        if (noProtoHost === void 0) {
-          noProtoHost = false;
-        }
-        var s;
-        if (!this.source || noProtoHost) {
-          s = '';
-          if (!noProtoHost) {
-            if (this.protocol) {
-              s += this.protocol + '://';
-            } else {
-              s += '//';
-            }
-            if (this.userInfo) {
-              s += this.userInfo + '@';
-            }
-            if (this.host) {
-              s += this.host;
-            }
-            if (this.port) {
-              s += ':' + this.port;
-            }
-          }
-          if (this.path) {
-            s += this.path;
-          }
-          if (this.query) {
-            s += '?' + this.query;
-          }
-          if (this.anchor) {
-            s += '#' + this.anchor;
-          }
-          this.source = s;
-        }
-        return this.source;
-      };
-      return URI;
-    }();
-
-    var filteredClobberElements = Tools.makeMap('button,fieldset,form,iframe,img,image,input,object,output,select,textarea');
-    var isValidPrefixAttrName = function (name) {
-      return name.indexOf('data-') === 0 || name.indexOf('aria-') === 0;
-    };
-    var lazyTempDocument$1 = cached(function () {
-      return document.implementation.createHTMLDocument('parser');
-    });
-    var findMatchingEndTagIndex = function (schema, html, startIndex) {
-      var startTagRegExp = /<([!?\/])?([A-Za-z0-9\-_:.]+)/g;
-      var endTagRegExp = /(?:\s(?:[^'">]+(?:"[^"]*"|'[^']*'))*[^"'>]*(?:"[^">]*|'[^'>]*)?|\s*|\/)>/g;
-      var shortEndedElements = schema.getShortEndedElements();
-      var count = 1, index = startIndex;
-      while (count !== 0) {
-        startTagRegExp.lastIndex = index;
-        while (true) {
-          var startMatch = startTagRegExp.exec(html);
-          if (startMatch === null) {
-            return index;
-          } else if (startMatch[1] === '!') {
-            if (startsWith(startMatch[2], '--')) {
-              index = findCommentEndIndex(html, false, startMatch.index + '!--'.length);
-            } else {
-              index = findCommentEndIndex(html, true, startMatch.index + 1);
-            }
-            break;
-          } else {
-            endTagRegExp.lastIndex = startTagRegExp.lastIndex;
-            var endMatch = endTagRegExp.exec(html);
-            if (isNull(endMatch) || endMatch.index !== startTagRegExp.lastIndex) {
-              continue;
-            }
-            if (startMatch[1] === '/') {
-              count -= 1;
-            } else if (!has$2(shortEndedElements, startMatch[2])) {
-              count += 1;
-            }
-            index = startTagRegExp.lastIndex + endMatch[0].length;
-            break;
-          }
-        }
-      }
-      return index;
-    };
-    var isConditionalComment = function (html, startIndex) {
-      return /^\s*\[if [\w\W]+\]>.*<!\[endif\](--!?)?>/.test(html.substr(startIndex));
-    };
-    var findCommentEndIndex = function (html, isBogus, startIndex) {
-      if (startIndex === void 0) {
-        startIndex = 0;
-      }
-      var lcHtml = html.toLowerCase();
-      if (lcHtml.indexOf('[if ', startIndex) !== -1 && isConditionalComment(lcHtml, startIndex)) {
-        var endIfIndex = lcHtml.indexOf('[endif]', startIndex);
-        return lcHtml.indexOf('>', endIfIndex);
-      } else {
-        if (isBogus) {
-          var endIndex = lcHtml.indexOf('>', startIndex);
-          return endIndex !== -1 ? endIndex : lcHtml.length;
-        } else {
-          var endCommentRegexp = /--!?>/g;
-          endCommentRegexp.lastIndex = startIndex;
-          var match = endCommentRegexp.exec(html);
-          return match ? match.index + match[0].length : lcHtml.length;
+    var removeCommentsContainingZwsp = function (body) {
+      var walker = createCommentWalker(body);
+      var nextNode = walker.nextNode();
+      while (nextNode !== null) {
+        var comment = walker.currentNode;
+        nextNode = walker.nextNode();
+        if (isString$1(comment.nodeValue) && comment.nodeValue.indexOf(ZWSP$1) !== -1) {
+          remove$7(SugarElement.fromDom(comment));
         }
       }
     };
-    var checkBogusAttribute = function (regExp, attrString) {
-      var matches = regExp.exec(attrString);
-      if (matches) {
-        var name_1 = matches[1];
-        var value = matches[2];
-        return typeof name_1 === 'string' && name_1.toLowerCase() === 'data-mce-bogus' ? value : null;
-      } else {
-        return null;
-      }
+    var deepClone = function (body) {
+      return body.cloneNode(true);
     };
-    var SaxParser = function (settings, schema) {
-      if (schema === void 0) {
-        schema = Schema();
+    var trim$1 = function (body, tempAttrs) {
+      var trimmed = body;
+      if (hasComments(body)) {
+        trimmed = deepClone(body);
+        removeCommentsContainingZwsp(trimmed);
+        if (hasTemporaryNodes(trimmed, tempAttrs)) {
+          trimTemporaryNodes(trimmed, tempAttrs);
+        }
+      } else if (hasTemporaryNodes(body, tempAttrs)) {
+        trimmed = deepClone(body);
+        trimTemporaryNodes(trimmed, tempAttrs);
       }
-      settings = settings || {};
-      var doc = lazyTempDocument$1();
-      var form = doc.createElement('form');
-      if (settings.fix_self_closing !== false) {
-        settings.fix_self_closing = true;
-      }
-      var comment = settings.comment ? settings.comment : noop;
-      var cdata = settings.cdata ? settings.cdata : noop;
-      var text = settings.text ? settings.text : noop;
-      var start = settings.start ? settings.start : noop;
-      var end = settings.end ? settings.end : noop;
-      var pi = settings.pi ? settings.pi : noop;
-      var doctype = settings.doctype ? settings.doctype : noop;
-      var parseInternal = function (base64Extract, format) {
-        if (format === void 0) {
-          format = 'html';
-        }
-        var html = base64Extract.html;
-        var matches, index = 0, value, endRegExp;
-        var stack = [];
-        var attrList, i, textData, name;
-        var isInternalElement, isShortEnded;
-        var elementRule, isValidElement, attr, attribsValue, validAttributesMap, validAttributePatterns;
-        var attributesRequired, attributesDefault, attributesForced;
-        var anyAttributesRequired, attrValue, idCount = 0;
-        var decode = Entities.decode;
-        var filteredUrlAttrs = Tools.makeMap('src,href,data,background,action,formaction,poster,xlink:href');
-        var parsingMode = format === 'html' ? 0 : 1;
-        var processEndTag = function (name) {
-          var pos, i;
-          pos = stack.length;
-          while (pos--) {
-            if (stack[pos].name === name) {
-              break;
-            }
-          }
-          if (pos >= 0) {
-            for (i = stack.length - 1; i >= pos; i--) {
-              name = stack[i];
-              if (name.valid) {
-                end(name.name);
-              }
-            }
-            stack.length = pos;
-          }
-        };
-        var processText = function (value, raw) {
-          return text(restoreDataUris(value, base64Extract), raw);
-        };
-        var processComment = function (value) {
-          if (value === '') {
-            return;
-          }
-          if (value.charAt(0) === '>') {
-            value = ' ' + value;
-          }
-          if (!settings.allow_conditional_comments && value.substr(0, 3).toLowerCase() === '[if') {
-            value = ' ' + value;
-          }
-          comment(restoreDataUris(value, base64Extract));
-        };
-        var processAttr = function (value) {
-          return restoreDataUris(value, base64Extract);
-        };
-        var processMalformedComment = function (value, startIndex) {
-          var startTag = value || '';
-          var isBogus = !startsWith(startTag, '--');
-          var endIndex = findCommentEndIndex(html, isBogus, startIndex);
-          value = html.substr(startIndex, endIndex - startIndex);
-          processComment(isBogus ? startTag + value : value);
-          return endIndex + 1;
-        };
-        var parseAttribute = function (tagName, name, value, val2, val3) {
-          name = name.toLowerCase();
-          value = processAttr(name in fillAttrsMap ? name : decode(value || val2 || val3 || ''));
-          if (validate && !isInternalElement && isValidPrefixAttrName(name) === false) {
-            var attrRule = validAttributesMap[name];
-            if (!attrRule && validAttributePatterns) {
-              var i_1 = validAttributePatterns.length;
-              while (i_1--) {
-                attrRule = validAttributePatterns[i_1];
-                if (attrRule.pattern.test(name)) {
-                  break;
-                }
-              }
-              if (i_1 === -1) {
-                attrRule = null;
-              }
-            }
-            if (!attrRule) {
-              return;
-            }
-            if (attrRule.validValues && !(value in attrRule.validValues)) {
-              return;
-            }
-          }
-          var isNameOrId = name === 'name' || name === 'id';
-          if (isNameOrId && tagName in filteredClobberElements && (value in doc || value in form)) {
-            return;
-          }
-          if (filteredUrlAttrs[name] && !URI.isDomSafe(value, tagName, settings)) {
-            return;
-          }
-          if (isInternalElement && (name in filteredUrlAttrs || name.indexOf('on') === 0)) {
-            return;
-          }
-          attrList.map[name] = value;
-          attrList.push({
-            name: name,
-            value: value
-          });
-        };
-        var tokenRegExp = new RegExp('<(?:' + '(?:!--([\\w\\W]*?)--!?>)|' + '(?:!\\[CDATA\\[([\\w\\W]*?)\\]\\]>)|' + '(?:![Dd][Oo][Cc][Tt][Yy][Pp][Ee]([\\w\\W]*?)>)|' + '(?:!(--)?)|' + '(?:\\?([^\\s\\/<>]+) ?([\\w\\W]*?)[?/]>)|' + '(?:\\/([A-Za-z][A-Za-z0-9\\-_\\:\\.]*)>)|' + '(?:([A-Za-z][A-Za-z0-9\\-_:.]*)(\\s(?:[^\'">]+(?:"[^"]*"|\'[^\']*\'))*[^"\'>]*(?:"[^">]*|\'[^\'>]*)?|\\s*|\\/)>)' + ')', 'g');
-        var attrRegExp = /([\w:\-]+)(?:\s*=\s*(?:(?:\"((?:[^\"])*)\")|(?:\'((?:[^\'])*)\')|([^>\s]+)))?/g;
-        var shortEndedElements = schema.getShortEndedElements();
-        var selfClosing = settings.self_closing_elements || schema.getSelfClosingElements();
-        var fillAttrsMap = schema.getBoolAttrs();
-        var validate = settings.validate;
-        var removeInternalElements = settings.remove_internals;
-        var fixSelfClosing = settings.fix_self_closing;
-        var specialElements = schema.getSpecialElements();
-        var processHtml = html + '>';
-        while (matches = tokenRegExp.exec(processHtml)) {
-          var matchText = matches[0];
-          if (index < matches.index) {
-            processText(decode(html.substr(index, matches.index - index)));
-          }
-          if (value = matches[7]) {
-            value = value.toLowerCase();
-            if (value.charAt(0) === ':') {
-              value = value.substr(1);
-            }
-            processEndTag(value);
-          } else if (value = matches[8]) {
-            if (matches.index + matchText.length > html.length) {
-              processText(decode(html.substr(matches.index)));
-              index = matches.index + matchText.length;
-              continue;
-            }
-            value = value.toLowerCase();
-            if (value.charAt(0) === ':') {
-              value = value.substr(1);
-            }
-            isShortEnded = value in shortEndedElements;
-            if (fixSelfClosing && selfClosing[value] && stack.length > 0 && stack[stack.length - 1].name === value) {
-              processEndTag(value);
-            }
-            var bogusValue = checkBogusAttribute(attrRegExp, matches[9]);
-            if (bogusValue !== null) {
-              if (bogusValue === 'all') {
-                index = findMatchingEndTagIndex(schema, html, tokenRegExp.lastIndex);
-                tokenRegExp.lastIndex = index;
-                continue;
-              }
-              isValidElement = false;
-            }
-            if (!validate || (elementRule = schema.getElementRule(value))) {
-              isValidElement = true;
-              if (validate) {
-                validAttributesMap = elementRule.attributes;
-                validAttributePatterns = elementRule.attributePatterns;
-              }
-              if (attribsValue = matches[9]) {
-                isInternalElement = attribsValue.indexOf('data-mce-type') !== -1;
-                if (isInternalElement && removeInternalElements) {
-                  isValidElement = false;
-                }
-                attrList = [];
-                attrList.map = {};
-                attribsValue.replace(attrRegExp, function (match, name, val, val2, val3) {
-                  parseAttribute(value, name, val, val2, val3);
-                  return '';
-                });
-              } else {
-                attrList = [];
-                attrList.map = {};
-              }
-              if (validate && !isInternalElement) {
-                attributesRequired = elementRule.attributesRequired;
-                attributesDefault = elementRule.attributesDefault;
-                attributesForced = elementRule.attributesForced;
-                anyAttributesRequired = elementRule.removeEmptyAttrs;
-                if (anyAttributesRequired && !attrList.length) {
-                  isValidElement = false;
-                }
-                if (attributesForced) {
-                  i = attributesForced.length;
-                  while (i--) {
-                    attr = attributesForced[i];
-                    name = attr.name;
-                    attrValue = attr.value;
-                    if (attrValue === '{$uid}') {
-                      attrValue = 'mce_' + idCount++;
-                    }
-                    attrList.map[name] = attrValue;
-                    attrList.push({
-                      name: name,
-                      value: attrValue
-                    });
-                  }
-                }
-                if (attributesDefault) {
-                  i = attributesDefault.length;
-                  while (i--) {
-                    attr = attributesDefault[i];
-                    name = attr.name;
-                    if (!(name in attrList.map)) {
-                      attrValue = attr.value;
-                      if (attrValue === '{$uid}') {
-                        attrValue = 'mce_' + idCount++;
-                      }
-                      attrList.map[name] = attrValue;
-                      attrList.push({
-                        name: name,
-                        value: attrValue
-                      });
-                    }
-                  }
-                }
-                if (attributesRequired) {
-                  i = attributesRequired.length;
-                  while (i--) {
-                    if (attributesRequired[i] in attrList.map) {
-                      break;
-                    }
-                  }
-                  if (i === -1) {
-                    isValidElement = false;
-                  }
-                }
-                if (attr = attrList.map['data-mce-bogus']) {
-                  if (attr === 'all') {
-                    index = findMatchingEndTagIndex(schema, html, tokenRegExp.lastIndex);
-                    tokenRegExp.lastIndex = index;
-                    continue;
-                  }
-                  isValidElement = false;
-                }
-              }
-              if (isValidElement) {
-                start(value, attrList, isShortEnded);
-              }
-            } else {
-              isValidElement = false;
-            }
-            if (endRegExp = specialElements[value]) {
-              endRegExp.lastIndex = index = matches.index + matchText.length;
-              if (matches = endRegExp.exec(html)) {
-                if (isValidElement) {
-                  textData = html.substr(index, matches.index - index);
-                }
-                index = matches.index + matches[0].length;
-              } else {
-                textData = html.substr(index);
-                index = html.length;
-              }
-              if (isValidElement) {
-                if (textData.length > 0) {
-                  processText(textData, true);
-                }
-                end(value);
-              }
-              tokenRegExp.lastIndex = index;
-              continue;
-            }
-            if (!isShortEnded) {
-              if (!attribsValue || attribsValue.indexOf('/') !== attribsValue.length - 1) {
-                stack.push({
-                  name: value,
-                  valid: isValidElement
-                });
-              } else if (isValidElement) {
-                end(value);
-              }
-            }
-          } else if (value = matches[1]) {
-            processComment(value);
-          } else if (value = matches[2]) {
-            var isValidCdataSection = parsingMode === 1 || settings.preserve_cdata || stack.length > 0 && schema.isValidChild(stack[stack.length - 1].name, '#cdata');
-            if (isValidCdataSection) {
-              cdata(value);
-            } else {
-              index = processMalformedComment('', matches.index + 2);
-              tokenRegExp.lastIndex = index;
-              continue;
-            }
-          } else if (value = matches[3]) {
-            doctype(value);
-          } else if ((value = matches[4]) || matchText === '<!') {
-            index = processMalformedComment(value, matches.index + matchText.length);
-            tokenRegExp.lastIndex = index;
-            continue;
-          } else if (value = matches[5]) {
-            if (parsingMode === 1) {
-              pi(value, matches[6]);
-            } else {
-              index = processMalformedComment('?', matches.index + 2);
-              tokenRegExp.lastIndex = index;
-              continue;
-            }
-          }
-          index = matches.index + matchText.length;
-        }
-        if (index < html.length) {
-          processText(decode(html.substr(index)));
-        }
-        for (i = stack.length - 1; i >= 0; i--) {
-          value = stack[i];
-          if (value.valid) {
-            end(value.name);
-          }
-        }
-      };
-      var parse = function (html, format) {
-        if (format === void 0) {
-          format = 'html';
-        }
-        parseInternal(extractBase64DataUris(html), format);
-      };
-      return { parse: parse };
+      return trimmed;
     };
-    SaxParser.findEndTag = findMatchingEndTagIndex;
-
-    var trimHtml = function (tempAttrs, html) {
-      var trimContentRegExp = new RegExp(['\\s?(' + tempAttrs.join('|') + ')="[^"]+"'].join('|'), 'gi');
-      return html.replace(trimContentRegExp, '');
-    };
-    var trimInternal = function (serializer, html) {
-      var bogusAllRegExp = /<(\w+) [^>]*data-mce-bogus="all"[^>]*>/g;
-      var schema = serializer.schema;
-      var content = trimHtml(serializer.getTempAttrs(), html);
-      var shortEndedElements = schema.getShortEndedElements();
-      var matches;
-      while (matches = bogusAllRegExp.exec(content)) {
-        var index = bogusAllRegExp.lastIndex;
-        var matchLength = matches[0].length;
-        var endTagIndex = void 0;
-        if (shortEndedElements[matches[1]]) {
-          endTagIndex = index;
-        } else {
-          endTagIndex = SaxParser.findEndTag(schema, content, index);
-        }
-        content = content.substring(0, index - matchLength) + content.substring(endTagIndex);
-        bogusAllRegExp.lastIndex = index - matchLength;
-      }
-      return trim$2(content);
-    };
-    var trimExternal = trimInternal;
 
     var trimEmptyContents = function (editor, html) {
       var blockName = getForcedRootBlock(editor);
@@ -13672,9 +12964,9 @@
       var updatedArgs = args.no_events ? defaultedArgs : editor.fire('BeforeGetContent', defaultedArgs);
       var content;
       if (updatedArgs.format === 'raw') {
-        content = Tools.trim(trimExternal(editor.serializer, body.innerHTML));
+        content = Tools.trim(trim$3(trim$1(body, editor.serializer.getTempAttrs()).innerHTML));
       } else if (updatedArgs.format === 'text') {
-        content = editor.dom.isEmpty(body) ? '' : trim$2(body.innerText || body.textContent);
+        content = editor.dom.isEmpty(body) ? '' : trim$3(body.innerText || body.textContent);
       } else if (updatedArgs.format === 'tree') {
         content = editor.serializer.serialize(body, updatedArgs);
       } else {
@@ -13700,7 +12992,7 @@
       });
     };
 
-    var each$c = Tools.each;
+    var each$d = Tools.each;
     var ElementUtils = function (dom) {
       var compare = function (node1, node2) {
         if (node1.nodeName !== node2.nodeName) {
@@ -13708,7 +13000,7 @@
         }
         var getAttribs = function (node) {
           var attribs = {};
-          each$c(dom.getAttribs(node), function (attr) {
+          each$d(dom.getAttribs(node), function (attr) {
             var name = attr.nodeName.toLowerCase();
             if (name.indexOf('_') !== 0 && name !== 'style' && name.indexOf('data-') !== 0) {
               attribs[name] = dom.getAttrib(node, name);
@@ -15889,7 +15181,7 @@
 
     var postProcessHooks = {};
     var filter = filter$2;
-    var each$b = each$i;
+    var each$c = each$i;
     var addPostProcessHook = function (name, hook) {
       var hooks = postProcessHooks[name];
       if (!hooks) {
@@ -15898,7 +15190,7 @@
       postProcessHooks[name].push(hook);
     };
     var postProcess$1 = function (name, editor) {
-      each$b(postProcessHooks[name], function (hook) {
+      each$c(postProcessHooks[name], function (hook) {
         hook(editor);
       });
     };
@@ -15915,13 +15207,13 @@
       var isPre = matchNodeNames(['pre']);
       if (!rng.collapsed) {
         blocks = editor.selection.getSelectedBlocks();
-        each$b(filter(filter(blocks, isPre), hasPreSibling), function (pre) {
+        each$c(filter(filter(blocks, isPre), hasPreSibling), function (pre) {
           joinPre(pre.previousSibling, pre);
         });
       }
     });
 
-    var each$a = Tools.each;
+    var each$b = Tools.each;
     var isElementNode$1 = function (node) {
       return isElement$5(node) && !isBookmarkNode$1(node) && !isCaretNode(node) && !isBogus$2(node);
     };
@@ -15965,9 +15257,9 @@
     var clearChildStyles = function (dom, format, node) {
       if (format.clear_child_styles) {
         var selector = format.links ? '*:not(a)' : '*';
-        each$a(dom.select(selector, node), function (node) {
+        each$b(dom.select(selector, node), function (node) {
           if (isElementNode$1(node)) {
-            each$a(format.styles, function (value, name) {
+            each$b(format.styles, function (value, name) {
               dom.setStyle(node, name, '');
             });
           }
@@ -15975,7 +15267,7 @@
       }
     };
     var processChildElements = function (node, filter, process) {
-      each$a(node.childNodes, function (node) {
+      each$b(node.childNodes, function (node) {
         if (isElementNode$1(node)) {
           if (filter(node)) {
             process(node);
@@ -16012,7 +15304,7 @@
       { removed: [] }
     ]);
     var MCE_ATTR_RE = /^(src|href|style)$/;
-    var each$9 = Tools.each;
+    var each$a = Tools.each;
     var isEq$2 = isEq$5;
     var isTableCellOrRow = function (node) {
       return /^(TR|TH|TD)$/.test(node.nodeName);
@@ -16146,7 +15438,7 @@
         }
       }
       if (format.remove !== 'all') {
-        each$9(format.styles, function (value, name) {
+        each$a(format.styles, function (value, name) {
           value = normalizeStyleValue(dom, replaceVars(value, vars), name + '');
           if (isNumber(name)) {
             name = value;
@@ -16161,7 +15453,7 @@
           elm.removeAttribute('style');
           elm.removeAttribute('data-mce-style');
         }
-        each$9(format.attributes, function (value, name) {
+        each$a(format.attributes, function (value, name) {
           var valueOut;
           value = replaceVars(value, vars);
           if (isNumber(name)) {
@@ -16198,7 +15490,7 @@
             elm.removeAttribute(name);
           }
         });
-        each$9(format.classes, function (value) {
+        each$a(format.classes, function (value) {
           value = replaceVars(value, vars);
           if (!compareNode || dom.hasClass(compareNode, value)) {
             dom.removeClass(elm, value);
@@ -16454,7 +15746,7 @@
       fireFormatRemove(ed, name, node, vars);
     };
 
-    var each$8 = Tools.each;
+    var each$9 = Tools.each;
     var mergeTextDecorationsAndColor = function (dom, format, vars, node) {
       var processTextDecorationsAndColor = function (n) {
         if (n.nodeType === 1 && n.parentNode && n.parentNode.nodeType === 1) {
@@ -16483,9 +15775,9 @@
       }
     };
     var mergeWithChildren = function (editor, formatList, vars, node) {
-      each$8(formatList, function (format) {
+      each$9(formatList, function (format) {
         if (isInlineFormat(format)) {
-          each$8(editor.dom.select(format.inline, node), function (child) {
+          each$9(editor.dom.select(format.inline, node), function (child) {
             if (!isElementNode$1(child)) {
               return;
             }
@@ -16511,7 +15803,7 @@
       }
     };
 
-    var each$7 = Tools.each;
+    var each$8 = Tools.each;
     var isElementNode = function (node) {
       return isElement$5(node) && !isBookmarkNode$1(node) && !isCaretNode(node) && !isBogus$2(node);
     };
@@ -16539,7 +15831,7 @@
         if (isFunction(fmt.onformat)) {
           fmt.onformat(elm, fmt, vars, node);
         }
-        each$7(fmt.styles, function (value, name) {
+        each$8(fmt.styles, function (value, name) {
           dom.setStyle(elm, name, replaceVars(value, vars));
         });
         if (fmt.styles) {
@@ -16548,10 +15840,10 @@
             dom.setAttrib(elm, 'data-mce-style', styleVal);
           }
         }
-        each$7(fmt.attributes, function (value, name) {
+        each$8(fmt.attributes, function (value, name) {
           dom.setAttrib(elm, name, replaceVars(value, vars));
         });
-        each$7(fmt.classes, function (value) {
+        each$8(fmt.classes, function (value) {
           value = replaceVars(value, vars);
           if (!dom.hasClass(elm, value)) {
             dom.addClass(elm, value);
@@ -16560,7 +15852,7 @@
       };
       var applyNodeStyle = function (formatList, node) {
         var found = false;
-        each$7(formatList, function (format) {
+        each$8(formatList, function (format) {
           if (!isSelectorFormat(format)) {
             return false;
           }
@@ -17127,7 +16419,7 @@
       return index >= 0 && index < text.length && isWhiteSpace(text.charAt(index));
     };
     var getInnerText = function (bin, shouldTrim) {
-      var text = trim$2(bin.innerText);
+      var text = trim$3(bin.innerText);
       return shouldTrim ? trimLeadingCollapsibleText(text) : text;
     };
     var getContextNodeName = function (parentBlockOpt) {
@@ -17146,7 +16438,7 @@
           'style': 'overflow: hidden; opacity: 0;'
         }, rng.cloneContents());
         var text = getInnerText(bin, shouldTrimSpaces);
-        var nonRenderedText = trim$2(bin.textContent);
+        var nonRenderedText = trim$3(bin.textContent);
         editor.dom.remove(bin);
         if (isCollapsibleWhitespace(nonRenderedText, 0) || isCollapsibleWhitespace(nonRenderedText, nonRenderedText.length - 1)) {
           var parentBlock = parentBlockOpt.getOr(body);
@@ -17373,8 +16665,8 @@
         }
       });
     };
-    var read$2 = function (elm) {
-      return filter$4(map$3(from(elm.childNodes), getOuterHtml), function (item) {
+    var read$2 = function (elm, trimZwsp) {
+      return filter$4(map$3(from(elm.childNodes), trimZwsp ? compose(trim$3, getOuterHtml) : getOuterHtml), function (item) {
         return item.length > 0;
       });
     };
@@ -17384,11 +16676,11 @@
       return elm;
     };
 
-    var lazyTempDocument = cached(function () {
+    var lazyTempDocument$1 = cached(function () {
       return document.implementation.createHTMLDocument('undo');
     });
-    var hasIframes = function (html) {
-      return html.indexOf('</iframe>') !== -1;
+    var hasIframes = function (body) {
+      return body.querySelector('iframe') !== null;
     };
     var createFragmentedLevel = function (fragments) {
       return {
@@ -17409,13 +16701,9 @@
       };
     };
     var createFromEditor = function (editor) {
-      var fragments = read$2(editor.getBody());
-      var trimmedFragments = bind(fragments, function (html) {
-        var trimmed = trimInternal(editor.serializer, html);
-        return trimmed.length > 0 ? [trimmed] : [];
-      });
-      var content = trimmedFragments.join('');
-      return hasIframes(content) ? createFragmentedLevel(trimmedFragments) : createCompleteLevel(content);
+      var tempAttrs = editor.serializer.getTempAttrs();
+      var body = trim$1(editor.getBody(), tempAttrs);
+      return hasIframes(body) ? createFragmentedLevel(read$2(body, true)) : createCompleteLevel(trim$3(body.innerHTML));
     };
     var applyToEditor = function (editor, level, before) {
       var bookmark = before ? level.beforeBookmark : level.bookmark;
@@ -17433,7 +16721,7 @@
       return level.type === 'fragmented' ? level.fragments.join('') : level.content;
     };
     var getCleanLevelContent = function (level) {
-      var elm = SugarElement.fromTag('body', lazyTempDocument());
+      var elm = SugarElement.fromTag('body', lazyTempDocument$1());
       set(elm, getLevelContent(level));
       each$k(descendants(elm, '*[data-mce-bogus]'), unwrap);
       return get$3(elm);
@@ -18501,7 +17789,7 @@
         }
       });
     };
-    var parseDataUri = function (uri) {
+    var parseDataUri$1 = function (uri) {
       var type;
       var uriParts = decodeURIComponent(uri).split(',');
       var matches = /data:([^;]+)/.exec(uriParts[0]);
@@ -18528,7 +17816,7 @@
     };
     var dataUriToBlob = function (uri) {
       return new promiseObj(function (resolve) {
-        var _a = parseDataUri(uri), type = _a.type, data = _a.data;
+        var _a = parseDataUri$1(uri), type = _a.type, data = _a.data;
         buildBlob(type, data).fold(function () {
           return resolve(new Blob([]));
         }, resolve);
@@ -18569,7 +17857,7 @@
         } else {
           uriToBlob(img.src).then(function (blob) {
             blobToDataUri(blob).then(function (dataUri) {
-              base64 = parseDataUri(dataUri).data;
+              base64 = parseDataUri$1(dataUri).data;
               blobInfo = blobCache.create(uniqueId(), blob, base64);
               blobCache.add(blobInfo);
               resolve({
@@ -18583,7 +17871,7 @@
         }
         return;
       }
-      var _a = parseDataUri(img.src), data = _a.data, type = _a.type;
+      var _a = parseDataUri$1(img.src), data = _a.data, type = _a.type;
       base64 = data;
       blobInfo = blobCache.getByData(base64, type);
       if (blobInfo) {
@@ -18666,6 +17954,61 @@
       return { findAll: findAll };
     };
 
+    var extractBase64DataUris = function (html) {
+      var dataImageUri = /data:[^;<"'\s]+;base64,([a-z0-9\+\/=\s]+)/gi;
+      var chunks = [];
+      var uris = {};
+      var prefix = generate('img');
+      var matches;
+      var index = 0;
+      var count = 0;
+      while (matches = dataImageUri.exec(html)) {
+        var uri = matches[0];
+        var imageId = prefix + '_' + count++;
+        uris[imageId] = uri;
+        if (index < matches.index) {
+          chunks.push(html.substr(index, matches.index - index));
+        }
+        chunks.push(imageId);
+        index = matches.index + uri.length;
+      }
+      var re = new RegExp(prefix + '_[0-9]+', 'g');
+      if (index === 0) {
+        return {
+          prefix: prefix,
+          uris: uris,
+          html: html,
+          re: re
+        };
+      } else {
+        if (index < html.length) {
+          chunks.push(html.substr(index));
+        }
+        return {
+          prefix: prefix,
+          uris: uris,
+          html: chunks.join(''),
+          re: re
+        };
+      }
+    };
+    var restoreDataUris = function (html, result) {
+      return html.replace(result.re, function (imageId) {
+        return get$9(result.uris, imageId).getOr(imageId);
+      });
+    };
+    var parseDataUri = function (uri) {
+      var matches = /data:([^;]+);base64,([a-z0-9\+\/=\s]+)/i.exec(uri);
+      if (matches) {
+        return Optional.some({
+          type: matches[1],
+          data: decodeURIComponent(matches[2])
+        });
+      } else {
+        return Optional.none();
+      }
+    };
+
     var paddEmptyNode = function (settings, args, blockElements, node) {
       var brPreferred = settings.padd_empty_with_br || args.insert;
       if (brPreferred && blockElements[node.name]) {
@@ -18718,7 +18061,7 @@
         if (isInternalImageSource(img) || isBogusImage(img)) {
           return;
         }
-        parseDataUri$1(inputSrc).filter(function () {
+        parseDataUri(inputSrc).filter(function () {
           return isValidDataImg(img, settings);
         }).bind(function (_a) {
           var type = _a.type, data = _a.data;
@@ -18893,6 +18236,693 @@
       }
       registerBase64ImageFilter(parser, settings);
     };
+
+    var each$7 = Tools.each, trim = Tools.trim;
+    var queryParts = 'source protocol authority userInfo user password host port relative path directory file query anchor'.split(' ');
+    var DEFAULT_PORTS = {
+      ftp: 21,
+      http: 80,
+      https: 443,
+      mailto: 25
+    };
+    var safeSvgDataUrlElements = [
+      'img',
+      'video'
+    ];
+    var blockSvgDataUris = function (allowSvgDataUrls, tagName) {
+      if (isNonNullable(allowSvgDataUrls)) {
+        return !allowSvgDataUrls;
+      } else {
+        return isNonNullable(tagName) ? !contains$3(safeSvgDataUrlElements, tagName) : true;
+      }
+    };
+    var isInvalidUri = function (settings, uri, tagName) {
+      if (settings.allow_html_data_urls) {
+        return false;
+      } else if (/^data:image\//i.test(uri)) {
+        return blockSvgDataUris(settings.allow_svg_data_urls, tagName) && /^data:image\/svg\+xml/i.test(uri);
+      } else {
+        return /^data:/i.test(uri);
+      }
+    };
+    var URI = function () {
+      function URI(url, settings) {
+        url = trim(url);
+        this.settings = settings || {};
+        var baseUri = this.settings.base_uri;
+        var self = this;
+        if (/^([\w\-]+):([^\/]{2})/i.test(url) || /^\s*#/.test(url)) {
+          self.source = url;
+          return;
+        }
+        var isProtocolRelative = url.indexOf('//') === 0;
+        if (url.indexOf('/') === 0 && !isProtocolRelative) {
+          url = (baseUri ? baseUri.protocol || 'http' : 'http') + '://mce_host' + url;
+        }
+        if (!/^[\w\-]*:?\/\//.test(url)) {
+          var baseUrl = this.settings.base_uri ? this.settings.base_uri.path : new URI(document.location.href).directory;
+          if (this.settings.base_uri && this.settings.base_uri.protocol == '') {
+            url = '//mce_host' + self.toAbsPath(baseUrl, url);
+          } else {
+            var match = /([^#?]*)([#?]?.*)/.exec(url);
+            url = (baseUri && baseUri.protocol || 'http') + '://mce_host' + self.toAbsPath(baseUrl, match[1]) + match[2];
+          }
+        }
+        url = url.replace(/@@/g, '(mce_at)');
+        var urlMatch = /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@\/]*):?([^:@\/]*))?@)?(\[[a-zA-Z0-9:.%]+\]|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/.exec(url);
+        each$7(queryParts, function (v, i) {
+          var part = urlMatch[i];
+          if (part) {
+            part = part.replace(/\(mce_at\)/g, '@@');
+          }
+          self[v] = part;
+        });
+        if (baseUri) {
+          if (!self.protocol) {
+            self.protocol = baseUri.protocol;
+          }
+          if (!self.userInfo) {
+            self.userInfo = baseUri.userInfo;
+          }
+          if (!self.port && self.host === 'mce_host') {
+            self.port = baseUri.port;
+          }
+          if (!self.host || self.host === 'mce_host') {
+            self.host = baseUri.host;
+          }
+          self.source = '';
+        }
+        if (isProtocolRelative) {
+          self.protocol = '';
+        }
+      }
+      URI.parseDataUri = function (uri) {
+        var type;
+        var uriComponents = decodeURIComponent(uri).split(',');
+        var matches = /data:([^;]+)/.exec(uriComponents[0]);
+        if (matches) {
+          type = matches[1];
+        }
+        return {
+          type: type,
+          data: uriComponents[1]
+        };
+      };
+      URI.isDomSafe = function (uri, context, options) {
+        if (options === void 0) {
+          options = {};
+        }
+        if (options.allow_script_urls) {
+          return true;
+        } else {
+          var decodedUri = Entities.decode(uri).replace(/[\s\u0000-\u001F]+/g, '');
+          try {
+            decodedUri = decodeURIComponent(decodedUri);
+          } catch (ex) {
+            decodedUri = unescape(decodedUri);
+          }
+          if (/((java|vb)script|mhtml):/i.test(decodedUri)) {
+            return false;
+          }
+          return !isInvalidUri(options, decodedUri, context);
+        }
+      };
+      URI.getDocumentBaseUrl = function (loc) {
+        var baseUrl;
+        if (loc.protocol.indexOf('http') !== 0 && loc.protocol !== 'file:') {
+          baseUrl = loc.href;
+        } else {
+          baseUrl = loc.protocol + '//' + loc.host + loc.pathname;
+        }
+        if (/^[^:]+:\/\/\/?[^\/]+\//.test(baseUrl)) {
+          baseUrl = baseUrl.replace(/[\?#].*$/, '').replace(/[\/\\][^\/]+$/, '');
+          if (!/[\/\\]$/.test(baseUrl)) {
+            baseUrl += '/';
+          }
+        }
+        return baseUrl;
+      };
+      URI.prototype.setPath = function (path) {
+        var pathMatch = /^(.*?)\/?(\w+)?$/.exec(path);
+        this.path = pathMatch[0];
+        this.directory = pathMatch[1];
+        this.file = pathMatch[2];
+        this.source = '';
+        this.getURI();
+      };
+      URI.prototype.toRelative = function (uri) {
+        var output;
+        if (uri === './') {
+          return uri;
+        }
+        var relativeUri = new URI(uri, { base_uri: this });
+        if (relativeUri.host !== 'mce_host' && this.host !== relativeUri.host && relativeUri.host || this.port !== relativeUri.port || this.protocol !== relativeUri.protocol && relativeUri.protocol !== '') {
+          return relativeUri.getURI();
+        }
+        var tu = this.getURI(), uu = relativeUri.getURI();
+        if (tu === uu || tu.charAt(tu.length - 1) === '/' && tu.substr(0, tu.length - 1) === uu) {
+          return tu;
+        }
+        output = this.toRelPath(this.path, relativeUri.path);
+        if (relativeUri.query) {
+          output += '?' + relativeUri.query;
+        }
+        if (relativeUri.anchor) {
+          output += '#' + relativeUri.anchor;
+        }
+        return output;
+      };
+      URI.prototype.toAbsolute = function (uri, noHost) {
+        var absoluteUri = new URI(uri, { base_uri: this });
+        return absoluteUri.getURI(noHost && this.isSameOrigin(absoluteUri));
+      };
+      URI.prototype.isSameOrigin = function (uri) {
+        if (this.host == uri.host && this.protocol == uri.protocol) {
+          if (this.port == uri.port) {
+            return true;
+          }
+          var defaultPort = DEFAULT_PORTS[this.protocol];
+          if (defaultPort && (this.port || defaultPort) == (uri.port || defaultPort)) {
+            return true;
+          }
+        }
+        return false;
+      };
+      URI.prototype.toRelPath = function (base, path) {
+        var breakPoint = 0, out = '', i, l;
+        var normalizedBase = base.substring(0, base.lastIndexOf('/')).split('/');
+        var items = path.split('/');
+        if (normalizedBase.length >= items.length) {
+          for (i = 0, l = normalizedBase.length; i < l; i++) {
+            if (i >= items.length || normalizedBase[i] !== items[i]) {
+              breakPoint = i + 1;
+              break;
+            }
+          }
+        }
+        if (normalizedBase.length < items.length) {
+          for (i = 0, l = items.length; i < l; i++) {
+            if (i >= normalizedBase.length || normalizedBase[i] !== items[i]) {
+              breakPoint = i + 1;
+              break;
+            }
+          }
+        }
+        if (breakPoint === 1) {
+          return path;
+        }
+        for (i = 0, l = normalizedBase.length - (breakPoint - 1); i < l; i++) {
+          out += '../';
+        }
+        for (i = breakPoint - 1, l = items.length; i < l; i++) {
+          if (i !== breakPoint - 1) {
+            out += '/' + items[i];
+          } else {
+            out += items[i];
+          }
+        }
+        return out;
+      };
+      URI.prototype.toAbsPath = function (base, path) {
+        var i, nb = 0, o = [], outPath;
+        var tr = /\/$/.test(path) ? '/' : '';
+        var normalizedBase = base.split('/');
+        var normalizedPath = path.split('/');
+        each$7(normalizedBase, function (k) {
+          if (k) {
+            o.push(k);
+          }
+        });
+        normalizedBase = o;
+        for (i = normalizedPath.length - 1, o = []; i >= 0; i--) {
+          if (normalizedPath[i].length === 0 || normalizedPath[i] === '.') {
+            continue;
+          }
+          if (normalizedPath[i] === '..') {
+            nb++;
+            continue;
+          }
+          if (nb > 0) {
+            nb--;
+            continue;
+          }
+          o.push(normalizedPath[i]);
+        }
+        i = normalizedBase.length - nb;
+        if (i <= 0) {
+          outPath = reverse(o).join('/');
+        } else {
+          outPath = normalizedBase.slice(0, i).join('/') + '/' + reverse(o).join('/');
+        }
+        if (outPath.indexOf('/') !== 0) {
+          outPath = '/' + outPath;
+        }
+        if (tr && outPath.lastIndexOf('/') !== outPath.length - 1) {
+          outPath += tr;
+        }
+        return outPath;
+      };
+      URI.prototype.getURI = function (noProtoHost) {
+        if (noProtoHost === void 0) {
+          noProtoHost = false;
+        }
+        var s;
+        if (!this.source || noProtoHost) {
+          s = '';
+          if (!noProtoHost) {
+            if (this.protocol) {
+              s += this.protocol + '://';
+            } else {
+              s += '//';
+            }
+            if (this.userInfo) {
+              s += this.userInfo + '@';
+            }
+            if (this.host) {
+              s += this.host;
+            }
+            if (this.port) {
+              s += ':' + this.port;
+            }
+          }
+          if (this.path) {
+            s += this.path;
+          }
+          if (this.query) {
+            s += '?' + this.query;
+          }
+          if (this.anchor) {
+            s += '#' + this.anchor;
+          }
+          this.source = s;
+        }
+        return this.source;
+      };
+      return URI;
+    }();
+
+    var filteredClobberElements = Tools.makeMap('button,fieldset,form,iframe,img,image,input,object,output,select,textarea');
+    var isValidPrefixAttrName = function (name) {
+      return name.indexOf('data-') === 0 || name.indexOf('aria-') === 0;
+    };
+    var lazyTempDocument = cached(function () {
+      return document.implementation.createHTMLDocument('parser');
+    });
+    var findMatchingEndTagIndex = function (schema, html, startIndex) {
+      var startTagRegExp = /<([!?\/])?([A-Za-z0-9\-_:.]+)/g;
+      var endTagRegExp = /(?:\s(?:[^'">]+(?:"[^"]*"|'[^']*'))*[^"'>]*(?:"[^">]*|'[^'>]*)?|\s*|\/)>/g;
+      var shortEndedElements = schema.getShortEndedElements();
+      var count = 1, index = startIndex;
+      while (count !== 0) {
+        startTagRegExp.lastIndex = index;
+        while (true) {
+          var startMatch = startTagRegExp.exec(html);
+          if (startMatch === null) {
+            return index;
+          } else if (startMatch[1] === '!') {
+            if (startsWith(startMatch[2], '--')) {
+              index = findCommentEndIndex(html, false, startMatch.index + '!--'.length);
+            } else {
+              index = findCommentEndIndex(html, true, startMatch.index + 1);
+            }
+            break;
+          } else {
+            endTagRegExp.lastIndex = startTagRegExp.lastIndex;
+            var endMatch = endTagRegExp.exec(html);
+            if (isNull(endMatch) || endMatch.index !== startTagRegExp.lastIndex) {
+              continue;
+            }
+            if (startMatch[1] === '/') {
+              count -= 1;
+            } else if (!has$2(shortEndedElements, startMatch[2])) {
+              count += 1;
+            }
+            index = startTagRegExp.lastIndex + endMatch[0].length;
+            break;
+          }
+        }
+      }
+      return index;
+    };
+    var isConditionalComment = function (html, startIndex) {
+      return /^\s*\[if [\w\W]+\]>.*<!\[endif\](--!?)?>/.test(html.substr(startIndex));
+    };
+    var findCommentEndIndex = function (html, isBogus, startIndex) {
+      if (startIndex === void 0) {
+        startIndex = 0;
+      }
+      var lcHtml = html.toLowerCase();
+      if (lcHtml.indexOf('[if ', startIndex) !== -1 && isConditionalComment(lcHtml, startIndex)) {
+        var endIfIndex = lcHtml.indexOf('[endif]', startIndex);
+        return lcHtml.indexOf('>', endIfIndex);
+      } else {
+        if (isBogus) {
+          var endIndex = lcHtml.indexOf('>', startIndex);
+          return endIndex !== -1 ? endIndex : lcHtml.length;
+        } else {
+          var endCommentRegexp = /--!?>/g;
+          endCommentRegexp.lastIndex = startIndex;
+          var match = endCommentRegexp.exec(html);
+          return match ? match.index + match[0].length : lcHtml.length;
+        }
+      }
+    };
+    var checkBogusAttribute = function (regExp, attrString) {
+      var matches = regExp.exec(attrString);
+      if (matches) {
+        var name_1 = matches[1];
+        var value = matches[2];
+        return typeof name_1 === 'string' && name_1.toLowerCase() === 'data-mce-bogus' ? value : null;
+      } else {
+        return null;
+      }
+    };
+    var SaxParser = function (settings, schema) {
+      if (schema === void 0) {
+        schema = Schema();
+      }
+      settings = settings || {};
+      var doc = lazyTempDocument();
+      var form = doc.createElement('form');
+      if (settings.fix_self_closing !== false) {
+        settings.fix_self_closing = true;
+      }
+      var comment = settings.comment ? settings.comment : noop;
+      var cdata = settings.cdata ? settings.cdata : noop;
+      var text = settings.text ? settings.text : noop;
+      var start = settings.start ? settings.start : noop;
+      var end = settings.end ? settings.end : noop;
+      var pi = settings.pi ? settings.pi : noop;
+      var doctype = settings.doctype ? settings.doctype : noop;
+      var parseInternal = function (base64Extract, format) {
+        if (format === void 0) {
+          format = 'html';
+        }
+        var html = base64Extract.html;
+        var matches, index = 0, value, endRegExp;
+        var stack = [];
+        var attrList, i, textData, name;
+        var isInternalElement, isShortEnded;
+        var elementRule, isValidElement, attr, attribsValue, validAttributesMap, validAttributePatterns;
+        var attributesRequired, attributesDefault, attributesForced;
+        var anyAttributesRequired, attrValue, idCount = 0;
+        var decode = Entities.decode;
+        var filteredUrlAttrs = Tools.makeMap('src,href,data,background,action,formaction,poster,xlink:href');
+        var parsingMode = format === 'html' ? 0 : 1;
+        var processEndTag = function (name) {
+          var pos, i;
+          pos = stack.length;
+          while (pos--) {
+            if (stack[pos].name === name) {
+              break;
+            }
+          }
+          if (pos >= 0) {
+            for (i = stack.length - 1; i >= pos; i--) {
+              name = stack[i];
+              if (name.valid) {
+                end(name.name);
+              }
+            }
+            stack.length = pos;
+          }
+        };
+        var processText = function (value, raw) {
+          return text(restoreDataUris(value, base64Extract), raw);
+        };
+        var processComment = function (value) {
+          if (value === '') {
+            return;
+          }
+          if (value.charAt(0) === '>') {
+            value = ' ' + value;
+          }
+          if (!settings.allow_conditional_comments && value.substr(0, 3).toLowerCase() === '[if') {
+            value = ' ' + value;
+          }
+          comment(restoreDataUris(value, base64Extract));
+        };
+        var processAttr = function (value) {
+          return restoreDataUris(value, base64Extract);
+        };
+        var processMalformedComment = function (value, startIndex) {
+          var startTag = value || '';
+          var isBogus = !startsWith(startTag, '--');
+          var endIndex = findCommentEndIndex(html, isBogus, startIndex);
+          value = html.substr(startIndex, endIndex - startIndex);
+          processComment(isBogus ? startTag + value : value);
+          return endIndex + 1;
+        };
+        var parseAttribute = function (tagName, name, value, val2, val3) {
+          name = name.toLowerCase();
+          value = processAttr(name in fillAttrsMap ? name : decode(value || val2 || val3 || ''));
+          if (validate && !isInternalElement && isValidPrefixAttrName(name) === false) {
+            var attrRule = validAttributesMap[name];
+            if (!attrRule && validAttributePatterns) {
+              var i_1 = validAttributePatterns.length;
+              while (i_1--) {
+                attrRule = validAttributePatterns[i_1];
+                if (attrRule.pattern.test(name)) {
+                  break;
+                }
+              }
+              if (i_1 === -1) {
+                attrRule = null;
+              }
+            }
+            if (!attrRule) {
+              return;
+            }
+            if (attrRule.validValues && !(value in attrRule.validValues)) {
+              return;
+            }
+          }
+          var isNameOrId = name === 'name' || name === 'id';
+          if (isNameOrId && tagName in filteredClobberElements && (value in doc || value in form)) {
+            return;
+          }
+          if (filteredUrlAttrs[name] && !URI.isDomSafe(value, tagName, settings)) {
+            return;
+          }
+          if (isInternalElement && (name in filteredUrlAttrs || name.indexOf('on') === 0)) {
+            return;
+          }
+          attrList.map[name] = value;
+          attrList.push({
+            name: name,
+            value: value
+          });
+        };
+        var tokenRegExp = new RegExp('<(?:' + '(?:!--([\\w\\W]*?)--!?>)|' + '(?:!\\[CDATA\\[([\\w\\W]*?)\\]\\]>)|' + '(?:![Dd][Oo][Cc][Tt][Yy][Pp][Ee]([\\w\\W]*?)>)|' + '(?:!(--)?)|' + '(?:\\?([^\\s\\/<>]+) ?([\\w\\W]*?)[?/]>)|' + '(?:\\/([A-Za-z][A-Za-z0-9\\-_\\:\\.]*)>)|' + '(?:([A-Za-z][A-Za-z0-9\\-_:.]*)(\\s(?:[^\'">]+(?:"[^"]*"|\'[^\']*\'))*[^"\'>]*(?:"[^">]*|\'[^\'>]*)?|\\s*|\\/)>)' + ')', 'g');
+        var attrRegExp = /([\w:\-]+)(?:\s*=\s*(?:(?:\"((?:[^\"])*)\")|(?:\'((?:[^\'])*)\')|([^>\s]+)))?/g;
+        var shortEndedElements = schema.getShortEndedElements();
+        var selfClosing = settings.self_closing_elements || schema.getSelfClosingElements();
+        var fillAttrsMap = schema.getBoolAttrs();
+        var validate = settings.validate;
+        var removeInternalElements = settings.remove_internals;
+        var fixSelfClosing = settings.fix_self_closing;
+        var specialElements = schema.getSpecialElements();
+        var processHtml = html + '>';
+        while (matches = tokenRegExp.exec(processHtml)) {
+          var matchText = matches[0];
+          if (index < matches.index) {
+            processText(decode(html.substr(index, matches.index - index)));
+          }
+          if (value = matches[7]) {
+            value = value.toLowerCase();
+            if (value.charAt(0) === ':') {
+              value = value.substr(1);
+            }
+            processEndTag(value);
+          } else if (value = matches[8]) {
+            if (matches.index + matchText.length > html.length) {
+              processText(decode(html.substr(matches.index)));
+              index = matches.index + matchText.length;
+              continue;
+            }
+            value = value.toLowerCase();
+            if (value.charAt(0) === ':') {
+              value = value.substr(1);
+            }
+            isShortEnded = value in shortEndedElements;
+            if (fixSelfClosing && selfClosing[value] && stack.length > 0 && stack[stack.length - 1].name === value) {
+              processEndTag(value);
+            }
+            var bogusValue = checkBogusAttribute(attrRegExp, matches[9]);
+            if (bogusValue !== null) {
+              if (bogusValue === 'all') {
+                index = findMatchingEndTagIndex(schema, html, tokenRegExp.lastIndex);
+                tokenRegExp.lastIndex = index;
+                continue;
+              }
+              isValidElement = false;
+            }
+            if (!validate || (elementRule = schema.getElementRule(value))) {
+              isValidElement = true;
+              if (validate) {
+                validAttributesMap = elementRule.attributes;
+                validAttributePatterns = elementRule.attributePatterns;
+              }
+              if (attribsValue = matches[9]) {
+                isInternalElement = attribsValue.indexOf('data-mce-type') !== -1;
+                if (isInternalElement && removeInternalElements) {
+                  isValidElement = false;
+                }
+                attrList = [];
+                attrList.map = {};
+                attribsValue.replace(attrRegExp, function (match, name, val, val2, val3) {
+                  parseAttribute(value, name, val, val2, val3);
+                  return '';
+                });
+              } else {
+                attrList = [];
+                attrList.map = {};
+              }
+              if (validate && !isInternalElement) {
+                attributesRequired = elementRule.attributesRequired;
+                attributesDefault = elementRule.attributesDefault;
+                attributesForced = elementRule.attributesForced;
+                anyAttributesRequired = elementRule.removeEmptyAttrs;
+                if (anyAttributesRequired && !attrList.length) {
+                  isValidElement = false;
+                }
+                if (attributesForced) {
+                  i = attributesForced.length;
+                  while (i--) {
+                    attr = attributesForced[i];
+                    name = attr.name;
+                    attrValue = attr.value;
+                    if (attrValue === '{$uid}') {
+                      attrValue = 'mce_' + idCount++;
+                    }
+                    attrList.map[name] = attrValue;
+                    attrList.push({
+                      name: name,
+                      value: attrValue
+                    });
+                  }
+                }
+                if (attributesDefault) {
+                  i = attributesDefault.length;
+                  while (i--) {
+                    attr = attributesDefault[i];
+                    name = attr.name;
+                    if (!(name in attrList.map)) {
+                      attrValue = attr.value;
+                      if (attrValue === '{$uid}') {
+                        attrValue = 'mce_' + idCount++;
+                      }
+                      attrList.map[name] = attrValue;
+                      attrList.push({
+                        name: name,
+                        value: attrValue
+                      });
+                    }
+                  }
+                }
+                if (attributesRequired) {
+                  i = attributesRequired.length;
+                  while (i--) {
+                    if (attributesRequired[i] in attrList.map) {
+                      break;
+                    }
+                  }
+                  if (i === -1) {
+                    isValidElement = false;
+                  }
+                }
+                if (attr = attrList.map['data-mce-bogus']) {
+                  if (attr === 'all') {
+                    index = findMatchingEndTagIndex(schema, html, tokenRegExp.lastIndex);
+                    tokenRegExp.lastIndex = index;
+                    continue;
+                  }
+                  isValidElement = false;
+                }
+              }
+              if (isValidElement) {
+                start(value, attrList, isShortEnded);
+              }
+            } else {
+              isValidElement = false;
+            }
+            if (endRegExp = specialElements[value]) {
+              endRegExp.lastIndex = index = matches.index + matchText.length;
+              if (matches = endRegExp.exec(html)) {
+                if (isValidElement) {
+                  textData = html.substr(index, matches.index - index);
+                }
+                index = matches.index + matches[0].length;
+              } else {
+                textData = html.substr(index);
+                index = html.length;
+              }
+              if (isValidElement) {
+                if (textData.length > 0) {
+                  processText(textData, true);
+                }
+                end(value);
+              }
+              tokenRegExp.lastIndex = index;
+              continue;
+            }
+            if (!isShortEnded) {
+              if (!attribsValue || attribsValue.indexOf('/') !== attribsValue.length - 1) {
+                stack.push({
+                  name: value,
+                  valid: isValidElement
+                });
+              } else if (isValidElement) {
+                end(value);
+              }
+            }
+          } else if (value = matches[1]) {
+            processComment(value);
+          } else if (value = matches[2]) {
+            var isValidCdataSection = parsingMode === 1 || settings.preserve_cdata || stack.length > 0 && schema.isValidChild(stack[stack.length - 1].name, '#cdata');
+            if (isValidCdataSection) {
+              cdata(value);
+            } else {
+              index = processMalformedComment('', matches.index + 2);
+              tokenRegExp.lastIndex = index;
+              continue;
+            }
+          } else if (value = matches[3]) {
+            doctype(value);
+          } else if ((value = matches[4]) || matchText === '<!') {
+            index = processMalformedComment(value, matches.index + matchText.length);
+            tokenRegExp.lastIndex = index;
+            continue;
+          } else if (value = matches[5]) {
+            if (parsingMode === 1) {
+              pi(value, matches[6]);
+            } else {
+              index = processMalformedComment('?', matches.index + 2);
+              tokenRegExp.lastIndex = index;
+              continue;
+            }
+          }
+          index = matches.index + matchText.length;
+        }
+        if (index < html.length) {
+          processText(decode(html.substr(index)));
+        }
+        for (i = stack.length - 1; i >= 0; i--) {
+          value = stack[i];
+          if (value.valid) {
+            end(value.name);
+          }
+        }
+      };
+      var parse = function (html, format) {
+        if (format === void 0) {
+          format = 'html';
+        }
+        parseInternal(extractBase64DataUris(html), format);
+      };
+      return { parse: parse };
+    };
+    SaxParser.findEndTag = findMatchingEndTagIndex;
 
     var makeMap = Tools.makeMap, each$6 = Tools.each, explode$2 = Tools.explode, extend$4 = Tools.extend;
     var DomParser = function (settings, schema) {
@@ -19599,7 +19629,7 @@
       }
     };
     var getHtmlFromNode = function (dom, node, args) {
-      var html = trim$2(args.getInner ? node.innerHTML : dom.getOuterHTML(node));
+      var html = trim$3(args.getInner ? node.innerHTML : dom.getOuterHTML(node));
       return args.selection || isWsPreserveElement(SugarElement.fromDom(node)) ? html : Tools.trim(html);
     };
     var parseHtml = function (htmlParser, html, args) {
@@ -19841,7 +19871,7 @@
     };
     var normalizePlugins = function (plugins) {
       var pluginNames = isArray$1(plugins) ? plugins.join(' ') : plugins;
-      var trimmedPlugins = map$3(isString$1(pluginNames) ? pluginNames.split(' ') : [], trim$4);
+      var trimmedPlugins = map$3(isString$1(pluginNames) ? pluginNames.split(' ') : [], trim$5);
       return filter$4(trimmedPlugins, function (item) {
         return item.length > 0;
       });
@@ -24416,7 +24446,7 @@
     var trimZwsp = function (fragment) {
       each$k(descendants$1(SugarElement.fromDom(fragment), isText$8), function (text) {
         var rawNode = text.dom;
-        rawNode.nodeValue = trim$2(rawNode.nodeValue);
+        rawNode.nodeValue = trim$3(rawNode.nodeValue);
       });
     };
     var isEmptyAnchor = function (dom, elm) {
@@ -29028,8 +29058,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '10.7',
-      releaseDate: '2022-12-06',
+      minorVersion: '10.8',
+      releaseDate: '2023-10-19',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,
