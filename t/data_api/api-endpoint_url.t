@@ -39,6 +39,7 @@ my @suite = (
     },
 );
 
+
 note('endpoint_url');
 for my $d (@suite) {
     MT::App::DataAPI->current_api_version( $d->{api_version} );
@@ -49,5 +50,32 @@ for my $d (@suite) {
     my $url = MT::App::DataAPI->endpoint_url(@args);
     is( $url, $d->{url}, $d->{url} );
 }
+
+require MT::Test::DataAPI;
+$test_env->prepare_fixture('db_data');
+MT::Test::DataAPI::test_data_api({
+    path => '/v1/endpoints',
+    method => 'GET',
+    code => 200,
+    complete => sub {
+        my ($data, $body, $headers) = @_;
+        my $result = MT::Util::from_json($body);
+
+        my $version = $ENV{MT_TEST_FORCE_DATAAPI_VERSION} || '1';
+
+        # OpeAPI Object fields
+        for my $field (qw/items totalResults/) {
+            ok(grep { $_ eq $field } keys(%$result));
+        }
+
+        for my $field (qw/id component format route verb version/) {
+            ok(grep { $_ eq $field } keys(%{$result->{items}[0]}));
+        }
+
+        for my $field (qw/id name/) {
+            ok(grep { $_ eq $field } keys(%{$result->{items}[0]->{component}}));
+        }
+    }
+});
 
 done_testing();
