@@ -85,4 +85,50 @@ subtest 'Load images by dialog_list_asset' => sub {
     is($json->{pager}{rows}, 1, "Retrieve assets include website and children with content field");
 };
 
+subtest 'Show dialog edit asset' => sub {
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->get_ok({
+        __mode  => 'dialog_edit_asset',
+        blog_id => $blog->id,
+        id      => $newest_asset->id,
+    });
+};
+
+subtest 'Show dialog edit image' => sub {
+    my $newest_asset = MT::Asset->load(
+        { class => 'image' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->get_ok({
+        __mode  => 'dialog_edit_image',
+        blog_id => $blog->id,
+        id      => $newest_asset->id,
+    });
+};
+
+subtest 'Transform image' => sub {
+    my $newest_asset = MT::Asset->load(
+        { class => 'image' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'transform_image',
+        blog_id => $blog->id,
+        id      => $newest_asset->id,
+        actions => '[{"resize":{"width":100,"height":100}}]',
+    });
+};
+
 done_testing;
