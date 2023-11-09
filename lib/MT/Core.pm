@@ -2237,6 +2237,7 @@ BEGIN {
             'DisableMetaRefresh' => { default => 1 },
             'DynamicTemplateAllowPHP' => { default => 1 },
             'AdminThemeId' => { default => 'admin2023' },
+            'PHPErrorLogFilePath' => undef,
             'TrimFilePath' => { default => 0 },
         },
         upgrade_functions => \&load_upgrade_fns,
