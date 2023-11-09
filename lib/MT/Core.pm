@@ -1793,7 +1793,6 @@ BEGIN {
                 type    => 'ARRAY',
             },
             'UserTemplatePath' => {
-                path    => 1,
                 type    => 'ARRAY',
             },
             'ImportPath' => {
@@ -1806,7 +1805,6 @@ BEGIN {
                 type    => 'ARRAY',
             },
             'UserPluginPath' => {
-                path    => 1,
                 type    => 'ARRAY',
             },
             'LocalLib' => {
@@ -1828,7 +1826,7 @@ BEGIN {
                 path    => 1,
                 type    => 'ARRAY',
             },
-            'UserThemesDirectory'  => { path => 1 },
+            'UserThemesDirectory'  => undef,
             'SupportDirectoryPath' => { default => '', },
             'SupportDirectoryURL'  => { default => '' },
             'ObjectDriver'         => undef,
