@@ -111,11 +111,9 @@ sub options_validation_handler {
     my $valid_min;
     my $min_value = $options->{min_value};
     if ($min_value) {
-        $min_value =~ /^[+\-]?\d+(\.\d+)?$/;
-
         return $app->translate(
             "A minimum value must be an integer, or must be set with decimal places to use decimal value."
-        ) if !$decimal_places and defined $1;
+        ) if $min_value !~ /^[+\-]?\d+(\.\d+)?$/ || ( !$decimal_places and defined $1 );
 
         return $app->translate(
             "A minimum value must be an integer and between [_1] and [_2]",
@@ -128,11 +126,9 @@ sub options_validation_handler {
     my $valid_max;
     my $max_value = $options->{max_value};
     if ($max_value) {
-        $max_value =~ /^[+\-]?\d+(\.\d+)?$/;
-
         return $app->translate(
             "A maximum value must be an integer, or must be set with decimal places to use decimal value."
-        ) if !$decimal_places and defined $1;
+        ) if $max_value !~ /^[+\-]?\d+(\.\d+)?$/ || ( !$decimal_places and defined $1 );
 
         return $app->translate(
             "A maximum value must be an integer and between [_1] and [_2]",
@@ -150,11 +146,9 @@ sub options_validation_handler {
 
     my $initial_value = $options->{initial_value};
     if ($initial_value) {
-        $initial_value =~ /^[+\-]?\d+(\.\d+)?$/;
-
         return $app->translate(
             "An initial value must be an integer, or must be set with decimal places to use decimal value."
-        ) if !$decimal_places and defined $1;
+        ) if $initial_value !~ /^[+\-]?\d+(\.\d+)?$/ || ( !$decimal_places and defined $1 );
 
         my $min = '' ne $min_value ? $min_value : $cfg_min_value;
         my $max = '' ne $max_value ? $max_value : $cfg_max_value;
