@@ -50,7 +50,7 @@ sub ss_validator {
         ? $options->{min_value}
         : $app->config->NumberFieldMinValue;
 
-    if ( $data !~ /^[+\-]?\d+(\.\d+)?$/ ) {
+    if ( $data !~ /^[+\-]?[0-9]+(\.[0-9]+)?$/ ) {
         return $app->translate( '"[_1]" field value must be a number.',
             $field_label );
     }
@@ -101,7 +101,7 @@ sub options_validation_handler {
     if ($decimal_places) {
         return $app->translate(
             "Number of decimal places must be a positive integer.")
-            unless $decimal_places =~ /^\d+$/;
+            unless $decimal_places =~ /^[0-9]+$/;
         return $app->translate(
             "Number of decimal places must be a positive integer and between 0 and [_1].",
             $cfg_decimal_places
@@ -113,7 +113,7 @@ sub options_validation_handler {
     if ($min_value) {
         return $app->translate(
             "A minimum value must be an integer, or must be set with decimal places to use decimal value."
-        ) if $min_value !~ /^[+\-]?\d+(\.\d+)?$/ || ( !$decimal_places and defined $1 );
+        ) if $min_value !~ /^[+\-]?[0-9]+(\.[0-9]+)?$/ || ( !$decimal_places and defined $1 );
 
         return $app->translate(
             "A minimum value must be an integer and between [_1] and [_2]",
@@ -128,7 +128,7 @@ sub options_validation_handler {
     if ($max_value) {
         return $app->translate(
             "A maximum value must be an integer, or must be set with decimal places to use decimal value."
-        ) if $max_value !~ /^[+\-]?\d+(\.\d+)?$/ || ( !$decimal_places and defined $1 );
+        ) if $max_value !~ /^[+\-]?[0-9]+(\.[0-9]+)?$/ || ( !$decimal_places and defined $1 );
 
         return $app->translate(
             "A maximum value must be an integer and between [_1] and [_2]",
@@ -148,7 +148,7 @@ sub options_validation_handler {
     if ($initial_value) {
         return $app->translate(
             "An initial value must be an integer, or must be set with decimal places to use decimal value."
-        ) if $initial_value !~ /^[+\-]?\d+(\.\d+)?$/ || ( !$decimal_places and defined $1 );
+        ) if $initial_value !~ /^[+\-]?[0-9]+(\.[0-9]+)?$/ || ( !$decimal_places and defined $1 );
 
         my $min = '' ne $min_value ? $min_value : $cfg_min_value;
         my $max = '' ne $max_value ? $max_value : $cfg_max_value;
