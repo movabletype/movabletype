@@ -10,7 +10,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test;
 use MT::ContentFieldType::Number;
 
 my $app = MT->new;
