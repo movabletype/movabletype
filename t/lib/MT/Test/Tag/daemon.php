@@ -10,6 +10,26 @@ include_once($opts['mt_home'] . '/php/lib/MTUtil.php');
 # fix following tests by using first blog_id for init.
 # - t/tag/35-tags-assets.t
 # - t/mt7/tag/archive/archive-type-label.t
+$mt = null;
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use (&$mt) {
+
+    // We can detect and ignore errors from functions with an error control operator (e.g. @include_once) by 
+    // seeing if the error_reporting level is 0 (on php-7.x) or 4437 (on php-8.x).
+    $level = error_reporting();
+    if ($level === 0 || $level === (E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR | E_PARSE)) {
+        return true;
+    }
+
+    if ($error_no & E_NOTICE) {
+        return;
+    } else if ($error_no & E_USER_ERROR) {
+        print($error_msg."\n");
+    } else if (!$mt) {
+        print(implode(':', [$error_no, $error_msg, $error_file, $error_line]). "\n");
+    } else {
+        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
+    }
+});
 $mt = MT::get_instance($opts['init_blog_id'], $opts['mt_config']);
 
 $mt->config('PHPErrorLogFilePath', $opts['log'] ?? null);
@@ -21,14 +41,6 @@ if (is_a($db, 'MTDatabaseoracle')) {
     $db->execute("SET time_zone = '+00:00'");
 }
 $ctx = $mt->context();
-
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
-    if ($error_no & E_USER_ERROR) {
-        print($error_msg."\n");
-    } else {
-        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
-    }
-});
 
 while ($remote = stream_socket_accept($socket)) {
     
@@ -47,7 +59,8 @@ while ($remote = stream_socket_accept($socket)) {
     # fix tests with local config
     $mt->configure_from_db();
 
-    list($blog_id, $tmpl, $extra) = json_decode($stream);
+    list($blog_id, $tmpl, $extra, $log) = json_decode($stream);
+    $mt->config('PHPErrorLogFilePath', $log);
     $blog = $db->fetch_blog($blog_id);
     $ctx->stash('blog', $blog);
     $ctx->stash('blog_id', $blog_id);

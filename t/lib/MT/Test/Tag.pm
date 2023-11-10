@@ -175,10 +175,7 @@ SKIP: {
                     $got = Encode::decode_utf8(_php_daemon($template, $block->blog_id || $blog_id, $extra, $text, $log));
                 }
 
-                my $php_error = '';
-                if (open(my $fh, '<', $log)) {
-                    $php_error = do { local $/; <$fh> };
-                }
+                my $php_error = __PACKAGE__->_retrieve_php_logs($log);
 
                 ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
@@ -357,7 +354,7 @@ PHP
     $| = 1;
     select $old_handle;
     require JSON;
-    print $sock JSON::to_json([$blog_id, $template, $extra]);
+    print $sock JSON::to_json([$blog_id, $template, $extra, $log]);
     shutdown $sock, 1;
     my $result = do { local $/; <$sock> };
     close $sock;
@@ -366,6 +363,17 @@ PHP
     Encode::decode_utf8($result);
 
     return $result;
+}
+
+sub _retrieve_php_logs {
+    my $file = shift;
+    open(my $fh, '<', $file) or return '';
+    my $ret = '';
+    while (<$fh>) {
+        next if $_ =~ /str:Creation of dynamic property Memcache::\$connection is deprecated/;
+        $ret .= $_;
+    }
+    return $ret;
 }
 
 sub _update_config {
