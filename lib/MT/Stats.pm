@@ -44,16 +44,14 @@ sub readied_provider {
 }
 
 sub default_provider_has {
-    my $method = shift;
-    my $name   = MT->config->DefaultStatsProvider or return;
-    my $provider;
-    if (!%providers) {
-        my $reg = MT->instance->registry('stats_providers', $name) or return;
-        $provider = $reg->{provider};
-        return unless eval "require $provider; 1";
-    } else {
-        $provider = $providers{$name};
+    my $method   = shift;
+    my $name     = MT->config->DefaultStatsProvider                 or return;
+    my $reg      = MT->instance->registry('stats_providers', $name) or return;
+    my $provider = $reg->{provider}                                 or return;
+    if (!exists $loaded{$name}) {
+        $loaded{$name} = eval "require $provider; 1" ? 1 : 0;
     }
+    return unless $loaded{$name};
     if ($provider->can($method)) {
         return $provider->$method;
     }
