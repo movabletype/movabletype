@@ -1,0 +1,34 @@
+#!/usr/bin/perl
+
+# FIXME: authenticated commenters aren't created
+
+use strict;
+use warnings;
+
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use Data::Dumper;
+use Getopt::Long;
+use MT;
+use MT::Author;
+use MT::Permission;
+
+my $mt = MT->new() or die "No MT object " . MT->errstr();
+
+use lib 't/lib';
+use MT::Test::Permission;
+
+my $image = MT->model('asset')->load(7);
+
+for my $num (1..50) {
+    MT::Test::Permission->make_asset(
+        class        => 'image',
+        blog_id      => 41,
+        url          => "%s/images/populated-". $num,
+        file_path    => $image->file_path,
+        # file_ext     => $info->{FileTypeExtension},
+        # image_width  => $info->{ImageWidth},
+        # image_height => $info->{ImageHeight},
+        # mime_type    => $info->{MIMEType},
+    );
+}

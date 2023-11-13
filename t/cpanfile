@@ -82,6 +82,9 @@ requires 'YAML::Syck';
 requires 'Net::CIDR';
 requires 'Net::IP';
 
+# Profiling
+requires 'Devel::NYTProf';
+
 on 'test' => sub {
     requires 'Acme::RandomEmoji';
     requires 'AnyEvent::SMTP::Server';

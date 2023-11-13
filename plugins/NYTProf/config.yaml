@@ -1,0 +1,9 @@
+id: MTNYTProf
+name: MTNYTProf
+version: 0.01
+author_link: https://www.movabletype.org/
+author_name: Six Apart Ltd.
+description: Activate a plack middleware for profiling MT app
+
+# plack_middlewares:
+#     - name: "+MT::Plack::Middleware::NYTProf"
