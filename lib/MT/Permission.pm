@@ -829,13 +829,17 @@ sub load_same {
 }
 
 sub to_hash {
-    my $perms     = shift;
-    my $hash      = {};                        # $perms->SUPER::to_hash(@_);
-    my $all_perms = MT::Permission->perms();
-    foreach (@$all_perms) {
-        my $perm = $_->[0];
-        $perm = 'can_' . $perm;
-        $hash->{"permission.$perm"} = $perms->$perm();
+    my $perms = shift;
+    my $hash;
+    my $cache_key = 'permission_hash:'. $perms->id;
+    unless ($hash = MT->request->{__stash}{$cache_key}) {
+        MT->request->{__stash}{$cache_key} = $hash = {};    # $perms->SUPER::to_hash(@_);
+        my $all_perms = MT::Permission->perms();
+        foreach (@$all_perms) {
+            my $perm = $_->[0];
+            $perm = 'can_' . $perm;
+            $hash->{"permission.$perm"} = $perms->$perm();
+        }
     }
     $hash;
 }
