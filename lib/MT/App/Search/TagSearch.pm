@@ -13,6 +13,10 @@ use HTTP::Date qw( str2time );
 
 sub process {
     my $app = shift;
+
+    # do nothing if init_request has already returned an error
+    return if $app->errstr;
+
     return $app->errtrans('TagSearch works with MT::App::Search.')
         unless $app->isa('MT::App::Search') || $app->isa('MT::App::DataAPI');
 
