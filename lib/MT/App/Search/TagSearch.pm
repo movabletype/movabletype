@@ -75,7 +75,7 @@ sub _process_lucene_query {
 
         if ( ( 'TERM' eq $term->{query} ) || ( 'PHRASE' eq $term->{query} ) )
         {
-            if ( 'OR' eq $term->{conj} ) {
+            if ( 'OR' eq ( $term->{conj} || '') ) {
                 if ( my $prev = pop @or_tags ) {
                     push @or_tags, $prev . ',' . $term->{term};
                     next;
@@ -247,7 +247,7 @@ sub search_terms {
 
     # Override SearchCutoff if If-Modified-Since header is present
     if ( ( my $mod_since = $app->get_header('If-Modified-Since') )
-        && $app->param('Template') eq 'feed' )
+        && ( $app->param('Template') || '') eq 'feed' )
     {
         my $tz_offset = 15;    # Start with maximum possible offset to UTC
         my $blog_selected;
