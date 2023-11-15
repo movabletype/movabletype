@@ -108,6 +108,9 @@ on 'test' => sub {
     requires 'IPC::Run3';
     requires 'JSON::XS';  # For speed
     requires 'JSON::Validator' unless $] < 5.016;
+    requires 'Log::Dispatch';
+    requires 'Log::Dispatch::Configurator::Perl';
+    requires 'Log::Dispatch::Configurator::YAML';
     requires 'Log::Log4perl';
     requires 'Log::Minimal';
     requires 'MIME::Head';
