@@ -4458,6 +4458,11 @@ sub log {
         unless defined $log->level;
     $log->class('system')
         unless defined $log->class;
+    my $message = $log->message;
+    if ($message =~ /Can't locate/) {
+        $message =~ s!\(you may need to install [^)]+\)\s+\(\@INC [^)]+\)!!s;
+        $log->message($message);
+    }
     $log->save;
 
     require MT::Util::Log;
@@ -4470,7 +4475,7 @@ sub log {
         : $log->level == MT::Log::ERROR()    ? 'error'
         : $log->level == MT::Log::SECURITY() ? 'error'
         :                                      'none';
-    MT::Util::Log->$method( $log->message );
+    MT::Util::Log->$method($message);
 }
 
 sub trace {
