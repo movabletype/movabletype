@@ -328,6 +328,14 @@ SKIP: {
         skip( 'Log::Minimal is not installed', 1 );
     }
 }
+SKIP: {
+    if ( eval { require Log::Dispatch::Config } ) {
+        use_ok('MT::Util::Log::Dispatch');
+    }
+    else {
+        skip( 'Log::Dispatch::Config is not installed', 1 );
+    }
+}
 
 # TheSchwartz support
 use_ok('MT::TheSchwartz');
