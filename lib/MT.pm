@@ -414,6 +414,10 @@ sub log {
         : $log->level == MT::Log::SECURITY() ? 'error'
         :                                      'none';
     my $message  = $log->message;
+    if ($message =~ /Can't locate/) {
+        $message =~ s!\(you may need to install [^)]+\)\s+\(\@INC [^)]+\)!!s;
+        $log->message($message);
+    }
     my $metadata = $log->metadata;
     $message .= " ($metadata)" if defined $metadata && $metadata ne '';
     MT::Util::Log->$method($message);
