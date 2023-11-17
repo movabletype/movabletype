@@ -33,6 +33,7 @@ for my $type (qw(default perl yaml)) {
     unlink $logfile if -f $logfile;
     unlink $logfile2 if -f $logfile2;
 
+    no warnings 'once';
     $MT::Util::Log::Initialized = 0;
     MT::Util::Log::init();
     MT::Util::Log->info("Some information");
