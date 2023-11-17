@@ -25,11 +25,11 @@ sub _get_config {
     return if !$config or !-f $config;
 
     if ($config =~ /\.pl$/) {
-        eval { require Log::Dispatch::Configurator::Perl; 1 } or return;
+        require Log::Dispatch::Configurator::Perl;
         return Log::Dispatch::Configurator::Perl->new($config);
     }
     if ($config =~ /\.yaml$/) {
-        eval { require Log::Dispatch::Configurator::YAML; 1 } or return;
+        require Log::Dispatch::Configurator::YAML;
         return Log::Dispatch::Configurator::YAML->new($config);
     }
     # suppose it's AppConfig formatted file
