@@ -4468,6 +4468,11 @@ sub log {
         $message =~ s!\(you may need to install [^)]+\)\s+\(\@INC [^)]+\)!!s;
         $log->message($message);
     }
+    my $metadata = $log->metadata;
+    if ($metadata and $metadata =~ /Can't locate/) {
+        $metadata =~ s!\(you may need to install [^)]+\)\s+\(\@INC [^)]+\)!!s;
+        $log->metadata($metadata);
+    }
     $log->save;
 
     require MT::Util::Log;
