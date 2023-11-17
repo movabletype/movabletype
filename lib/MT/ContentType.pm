@@ -222,6 +222,7 @@ sub save {
         MT::ContentType::UniqueID::set_unique_id($self);
     }
     delete $self->{__cached_fields};
+    delete $self->{__cached_field_permissions};
 
     $self->SUPER::save(@_);
 }
@@ -235,6 +236,7 @@ sub save {
             my @fields        = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
             my $sorted_fields = _sort_fields( \@fields );
             my $data          = $ser->serialize( \$sorted_fields );
+            delete $obj->{__cached_field_permissions};
             $obj->column( 'fields', $data );
         }
         else {
@@ -469,13 +471,16 @@ sub _edit_all_content_data_permission {
 
 sub field_permissions {
     my $obj = shift;
+
+    return $obj->{__cached_field_permissions} if $obj->{__cached_field_permissions};
+
     my %permissions;
     my $order = 500;
     for my $f ( @{ $obj->field_objs } ) {
         %permissions = ( %permissions, %{ $f->permission($order) } );
         $order += 100;
     }
-    return \%permissions;
+    return $obj->{__cached_field_permissions} = \%permissions;
 }
 
 sub permission_group {
