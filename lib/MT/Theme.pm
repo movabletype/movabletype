@@ -773,7 +773,7 @@ sub core_theme_element_handlers {
                 info   => '$Core::MT::Theme::ContentData::info',
             },
         },
-        blog_static_files => {
+        static_files => {
             label    => 'Static Files',
             order    => 600,
             importer => {
