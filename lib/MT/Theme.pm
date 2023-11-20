@@ -773,6 +773,20 @@ sub core_theme_element_handlers {
                 info   => '$Core::MT::Theme::ContentData::info',
             },
         },
+        blog_static_files => {
+            label    => 'Static Files',
+            order    => 602,
+            importer => {
+                import => '$Core::MT::Theme::StaticFiles::apply',
+            },
+        },
+        site_static_files => {
+            label    => 'Static Files',
+            order    => 601,
+            importer => {
+                import => '$Core::MT::Theme::StaticFiles::apply',
+            },
+        },
         static_files => {
             label    => 'Static Files',
             order    => 600,
