@@ -11,11 +11,14 @@ use MT;
 sub apply {
     my ( $element, $theme, $blog ) = @_;
     my $dirs = $element->{data} or return 1;
-    for my $dir (@$dirs) {
-        next if $dir =~ /[^\w\-\.]/;
-        my $src = File::Spec->catdir( $theme->path, 'blog_static', $dir );
-        my $dst = File::Spec->catdir( $blog->site_path, $dir );
-        my $result = $theme->install_static_files( $src, $dst );
+    for my $static_path ('static', 'site_static', 'blog_static') {
+        next unless -d File::Spec->catdir($theme->path, $static_path);
+        for my $dir (@$dirs) {
+            next if $dir =~ /[^\w\-\.]/;
+            my $src = File::Spec->catdir( $theme->path, $static_path, $dir );
+            my $dst = File::Spec->catdir( $blog->site_path, $dir );
+            my $result = $theme->install_static_files( $src, $dst );
+        }
     }
     return 1;
 }
