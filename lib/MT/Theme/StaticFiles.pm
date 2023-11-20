@@ -57,13 +57,13 @@ sub export {
 sub finalize {
     my $app = shift;
     my ( $blog, $theme_hash, $tmpdir, $setting ) = @_;
-    my $sf_hash = $theme_hash->{elements}{blog_static_files}
+    my $sf_hash = $theme_hash->{elements}{static_files}
         or return 1;
     my $dirs = $sf_hash->{data};
     for my $dir (@$dirs) {
         next if $dir =~ /[^\w\-\.]/;
         my $src = File::Spec->catdir( $blog->site_path, $dir );
-        my $dst = File::Spec->catdir( $tmpdir, 'blog_static', $dir );
+        my $dst = File::Spec->catdir( $tmpdir, 'static', $dir );
         require MT::Theme;
         my $result = MT::Theme->install_static_files( $src, $dst );
     }
