@@ -16,7 +16,7 @@ sub _convert_params {
     if ( blessed $params && $params->isa('HTTP::Request') ) {
         my $c = HTTP::Request::AsCGI->new($params)->setup;
         my $param_method = CGI->VERSION < 4 ? 'param' : 'multi_param';
-        my $cgi = CGI->new( $params->content );
+        my $cgi = CGI->new;
         my %hash;
         for my $name ( $cgi->$param_method ) {
             my @values = $cgi->$param_method($name);
