@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.7.2 (2023-10-25)
+ * TinyMCE version 6.7.3 (2023-11-15)
  */
 
 (function () {
@@ -2171,6 +2171,7 @@
     const ZWSP$1 = zeroWidth;
     const isZwsp$1 = isZwsp$2;
     const trim$2 = removeZwsp;
+    const insert$5 = editor => editor.insertContent(ZWSP$1, { preserve_zwsp: true });
 
     const isElement$5 = isElement$6;
     const isText$9 = isText$a;
@@ -11168,13 +11169,24 @@
       }
     }
 
+    const unescapedTextParents = Tools.makeMap('NOSCRIPT STYLE SCRIPT XMP IFRAME NOEMBED NOFRAMES PLAINTEXT', ' ');
+    const containsZwsp = node => isString(node.nodeValue) && node.nodeValue.includes(ZWSP$1);
     const getTemporaryNodeSelector = tempAttrs => `${ tempAttrs.length === 0 ? '' : `${ map$3(tempAttrs, attr => `[${ attr }]`).join(',') },` }[data-mce-bogus="all"]`;
-    const getTemporaryNodes = (body, tempAttrs) => body.querySelectorAll(getTemporaryNodeSelector(tempAttrs));
-    const createCommentWalker = body => document.createTreeWalker(body, NodeFilter.SHOW_COMMENT, null);
-    const hasComments = body => createCommentWalker(body).nextNode() !== null;
-    const hasTemporaryNodes = (body, tempAttrs) => body.querySelector(getTemporaryNodeSelector(tempAttrs)) !== null;
-    const trimTemporaryNodes = (body, tempAttrs) => {
-      each$e(getTemporaryNodes(body, tempAttrs), elm => {
+    const getTemporaryNodes = (tempAttrs, body) => body.querySelectorAll(getTemporaryNodeSelector(tempAttrs));
+    const createZwspCommentWalker = body => document.createTreeWalker(body, NodeFilter.SHOW_COMMENT, node => containsZwsp(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP);
+    const createUnescapedZwspTextWalker = body => document.createTreeWalker(body, NodeFilter.SHOW_TEXT, node => {
+      if (containsZwsp(node)) {
+        const parent = node.parentNode;
+        return parent && has$2(unescapedTextParents, parent.nodeName) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+      } else {
+        return NodeFilter.FILTER_SKIP;
+      }
+    });
+    const hasZwspComment = body => createZwspCommentWalker(body).nextNode() !== null;
+    const hasUnescapedZwspText = body => createUnescapedZwspTextWalker(body).nextNode() !== null;
+    const hasTemporaryNode = (tempAttrs, body) => body.querySelector(getTemporaryNodeSelector(tempAttrs)) !== null;
+    const trimTemporaryNodes = (tempAttrs, body) => {
+      each$e(getTemporaryNodes(tempAttrs, body), elm => {
         const element = SugarElement.fromDom(elm);
         if (get$9(element, 'data-mce-bogus') === 'all') {
           remove$5(element);
@@ -11187,30 +11199,41 @@
         }
       });
     };
-    const removeCommentsContainingZwsp = body => {
-      const walker = createCommentWalker(body);
-      let nextNode = walker.nextNode();
-      while (nextNode !== null) {
-        const comment = walker.currentNode;
-        nextNode = walker.nextNode();
-        if (isString(comment.nodeValue) && comment.nodeValue.includes(ZWSP$1)) {
-          remove$5(SugarElement.fromDom(comment));
-        }
+    const emptyAllNodeValuesInWalker = walker => {
+      let curr = walker.nextNode();
+      while (curr !== null) {
+        curr.nodeValue = null;
+        curr = walker.nextNode();
       }
     };
-    const deepClone = body => body.cloneNode(true);
+    const emptyZwspComments = compose(emptyAllNodeValuesInWalker, createZwspCommentWalker);
+    const emptyUnescapedZwspTexts = compose(emptyAllNodeValuesInWalker, createUnescapedZwspTextWalker);
     const trim$1 = (body, tempAttrs) => {
-      let trimmed = body;
-      if (hasComments(body)) {
-        trimmed = deepClone(body);
-        removeCommentsContainingZwsp(trimmed);
-        if (hasTemporaryNodes(trimmed, tempAttrs)) {
-          trimTemporaryNodes(trimmed, tempAttrs);
+      const conditionalTrims = [
+        {
+          condition: curry(hasTemporaryNode, tempAttrs),
+          action: curry(trimTemporaryNodes, tempAttrs)
+        },
+        {
+          condition: hasZwspComment,
+          action: emptyZwspComments
+        },
+        {
+          condition: hasUnescapedZwspText,
+          action: emptyUnescapedZwspTexts
         }
-      } else if (hasTemporaryNodes(body, tempAttrs)) {
-        trimmed = deepClone(body);
-        trimTemporaryNodes(trimmed, tempAttrs);
-      }
+      ];
+      let trimmed = body;
+      let cloned = false;
+      each$e(conditionalTrims, ({condition, action}) => {
+        if (condition(trimmed)) {
+          if (!cloned) {
+            trimmed = body.cloneNode(true);
+            cloned = true;
+          }
+          action(trimmed);
+        }
+      });
       return trimmed;
     };
 
@@ -12873,6 +12896,9 @@
       const merge = details.merge;
       const serializer = HtmlSerializer({ validate: true }, editor.schema);
       const bookmarkHtml = '<span id="mce_marker" data-mce-type="bookmark">&#xFEFF;</span>';
+      if (!details.preserve_zwsp) {
+        value = trim$2(value);
+      }
       if (value.indexOf('{$caret}') === -1) {
         value += '{$caret}';
       }
@@ -12983,6 +13009,7 @@
       }
     };
     const setContentString = (editor, body, content, args) => {
+      content = trim$2(content);
       if (content.length === 0 || /^\s+$/.test(content)) {
         const padd = '<br data-mce-bogus="1">';
         if (body.nodeName === 'TABLE') {
@@ -13020,7 +13047,7 @@
     const setContentTree = (editor, body, content, args) => {
       filter$2(editor.parser.getNodeFilters(), editor.parser.getAttributeFilters(), content);
       const html = HtmlSerializer({ validate: false }, editor.schema).serialize(content);
-      const trimmedHtml = isWsPreserveElement(SugarElement.fromDom(body)) ? html : Tools.trim(html);
+      const trimmedHtml = trim$2(isWsPreserveElement(SugarElement.fromDom(body)) ? html : Tools.trim(html));
       setEditorHtml(editor, trimmedHtml, args.no_selection);
       return {
         content,
@@ -27616,7 +27643,7 @@
           editor.undoManager.extra(() => {
             editor.execCommand('mceInsertNewLine');
           }, () => {
-            editor.insertContent(zeroWidth);
+            insert$5(editor);
             applyMatches(editor, inlineMatches);
             applyMatches$1(editor, blockMatches);
             const range = editor.selection.getRng();
@@ -30875,8 +30902,8 @@
       documentBaseURL: null,
       suffix: null,
       majorVersion: '6',
-      minorVersion: '7.2',
-      releaseDate: '2023-10-25',
+      minorVersion: '7.3',
+      releaseDate: '2023-11-15',
       i18n: I18n,
       activeEditor: null,
       focusedEditor: null,
