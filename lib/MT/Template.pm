@@ -404,6 +404,8 @@ sub build {
         }
         MT->request( 'time_offset', $blog->server_offset );
         $page_layout = $blog->page_layout;
+    } elsif ($ctx->stash('blog_id') && !$ctx->stash('local_blog_id')) {
+        $ctx->stash('local_blog_id', $ctx->stash('blog_id'));
     }
     my $type = $tmpl->type;
     if (   $type
