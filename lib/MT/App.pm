@@ -4480,6 +4480,10 @@ sub log {
         : $log->level == MT::Log::ERROR()    ? 'error'
         : $log->level == MT::Log::SECURITY() ? 'error'
         :                                      'none';
+
+    $message .= " ($metadata)" if defined $metadata && $metadata ne '';
+    my $class_category = join ':', grep {defined $_ and $_ ne ''} ($log->class, $log->category);
+    $message = "[$class_category] $message" if $class_category;
     MT::Util::Log->$method($message);
 }
 

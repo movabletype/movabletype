@@ -424,6 +424,8 @@ sub log {
         $log->metadata($metadata);
     }
     $message .= " ($metadata)" if defined $metadata && $metadata ne '';
+    my $class_category = join ':', grep {defined $_ and $_ ne ''} ($log->class, $log->category);
+    $message = "[$class_category] $message" if $class_category;
     MT::Util::Log->$method($message);
 
     $log->save();
