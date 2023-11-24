@@ -27,6 +27,12 @@ my $entry = MT->model('entry')->load({
     status  => MT::Entry::RELEASE(),
 });
 
+my $template = MT->model('template')->load({name => 'Search Results', blog_id => $blog->id});
+my $text = $template->text;
+$text =~ s!(<\$mt:Include module="Entry Summary" )!$1 parent="2"!;
+$template->text($text);
+$template->save;
+
 my @suite = ({
         label  => 'Found an entry',
         params => {
@@ -80,6 +86,51 @@ my @suite = ({
         },
         expected   => qr|<h1[^>]*>Instructions</h1>|,
         unexpected => _create_qr_for_undefined_error(),
+    },
+    {
+        label  => 'No uuv with bogus SearchMaxResults',
+        params => {
+            search           => $entry->title,
+            IncludeBlogs     => $blog->id,
+            limit            => 20,
+            SearchMaxResults => 'test',
+        },
+        generic_error => 1,
+        no_warnings   => 1,
+    },
+    {
+        label  => 'No uuv with bogus SearchMaxResults and valid tags',
+        params => {
+            IncludeBlogs     => $blog->id,
+            limit            => 20,
+            tag              => 'rain',
+            SearchMaxResults => 'test',
+        },
+        generic_error => 1,
+        no_warnings   => 1,
+    },
+    {
+        label  => 'No uuv with if-modified-since and valid tags',
+        params => {
+            IncludeBlogs => $blog->id,
+            limit        => 20,
+            tag          => 'rain',
+        },
+        headers     => { if_modified_since => HTTP::Date::time2str(time) },
+        expected    => qr/id="entry-@{[ $entry->id ]}"/,
+        no_warnings => 1,
+    },
+    {
+        label  => 'No uuv with format=js',
+        params => {
+            IncludeBlogs => $blog->id,
+            search       => $entry->title,
+            limit        => 20,
+            format       => 'js',
+        },
+        headers     => { if_modified_since => HTTP::Date::time2str(time) },
+        expected    => qr/id=\\"entry-@{[ $entry->id ]}\\"/,
+        no_warnings => 1,
     },
 );
 
