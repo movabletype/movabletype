@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.10.8 (2023-10-19)
+ * Version: 5.10.9 (2023-11-15)
  */
 (function () {
     'use strict';
@@ -12887,25 +12887,47 @@
       return AstNode;
     }();
 
+    var unescapedTextParents = Tools.makeMap('NOSCRIPT STYLE SCRIPT XMP IFRAME NOEMBED NOFRAMES PLAINTEXT', ' ');
+    var containsZwsp = function (node) {
+      return isString$1(node.nodeValue) && contains$2(node.nodeValue, ZWSP$1);
+    };
     var getTemporaryNodeSelector = function (tempAttrs) {
       return (tempAttrs.length === 0 ? '' : map$3(tempAttrs, function (attr) {
         return '[' + attr + ']';
       }).join(',') + ',') + '[data-mce-bogus="all"]';
     };
-    var getTemporaryNodes = function (body, tempAttrs) {
+    var getTemporaryNodes = function (tempAttrs, body) {
       return body.querySelectorAll(getTemporaryNodeSelector(tempAttrs));
     };
-    var createCommentWalker = function (body) {
-      return document.createTreeWalker(body, NodeFilter.SHOW_COMMENT, null, false);
+    var createWalker = function (body, whatToShow, filter) {
+      return document.createTreeWalker(body, whatToShow, filter, false);
     };
-    var hasComments = function (body) {
-      return createCommentWalker(body).nextNode() !== null;
+    var createZwspCommentWalker = function (body) {
+      return createWalker(body, NodeFilter.SHOW_COMMENT, function (node) {
+        return containsZwsp(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+      });
     };
-    var hasTemporaryNodes = function (body, tempAttrs) {
+    var createUnescapedZwspTextWalker = function (body) {
+      return createWalker(body, NodeFilter.SHOW_TEXT, function (node) {
+        if (containsZwsp(node)) {
+          var parent_1 = node.parentNode;
+          return parent_1 && has$2(unescapedTextParents, parent_1.nodeName) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
+        } else {
+          return NodeFilter.FILTER_SKIP;
+        }
+      });
+    };
+    var hasZwspComment = function (body) {
+      return createZwspCommentWalker(body).nextNode() !== null;
+    };
+    var hasUnescapedZwspText = function (body) {
+      return createUnescapedZwspTextWalker(body).nextNode() !== null;
+    };
+    var hasTemporaryNode = function (tempAttrs, body) {
       return body.querySelector(getTemporaryNodeSelector(tempAttrs)) !== null;
     };
-    var trimTemporaryNodes = function (body, tempAttrs) {
-      each$k(getTemporaryNodes(body, tempAttrs), function (elm) {
+    var trimTemporaryNodes = function (tempAttrs, body) {
+      each$k(getTemporaryNodes(tempAttrs, body), function (elm) {
         var element = SugarElement.fromDom(elm);
         if (get$6(element, 'data-mce-bogus') === 'all') {
           remove$7(element);
@@ -12918,32 +12940,42 @@
         }
       });
     };
-    var removeCommentsContainingZwsp = function (body) {
-      var walker = createCommentWalker(body);
-      var nextNode = walker.nextNode();
-      while (nextNode !== null) {
-        var comment = walker.currentNode;
-        nextNode = walker.nextNode();
-        if (isString$1(comment.nodeValue) && comment.nodeValue.indexOf(ZWSP$1) !== -1) {
-          remove$7(SugarElement.fromDom(comment));
-        }
+    var emptyAllNodeValuesInWalker = function (walker) {
+      var curr = walker.nextNode();
+      while (curr !== null) {
+        curr.nodeValue = null;
+        curr = walker.nextNode();
       }
     };
-    var deepClone = function (body) {
-      return body.cloneNode(true);
-    };
+    var emptyZwspComments = compose(emptyAllNodeValuesInWalker, createZwspCommentWalker);
+    var emptyUnescapedZwspTexts = compose(emptyAllNodeValuesInWalker, createUnescapedZwspTextWalker);
     var trim$1 = function (body, tempAttrs) {
-      var trimmed = body;
-      if (hasComments(body)) {
-        trimmed = deepClone(body);
-        removeCommentsContainingZwsp(trimmed);
-        if (hasTemporaryNodes(trimmed, tempAttrs)) {
-          trimTemporaryNodes(trimmed, tempAttrs);
+      var conditionalTrims = [
+        {
+          condition: curry(hasTemporaryNode, tempAttrs),
+          action: curry(trimTemporaryNodes, tempAttrs)
+        },
+        {
+          condition: hasZwspComment,
+          action: emptyZwspComments
+        },
+        {
+          condition: hasUnescapedZwspText,
+          action: emptyUnescapedZwspTexts
         }
-      } else if (hasTemporaryNodes(body, tempAttrs)) {
-        trimmed = deepClone(body);
-        trimTemporaryNodes(trimmed, tempAttrs);
-      }
+      ];
+      var trimmed = body;
+      var cloned = false;
+      each$k(conditionalTrims, function (_a) {
+        var condition = _a.condition, action = _a.action;
+        if (condition(trimmed)) {
+          if (!cloned) {
+            trimmed = body.cloneNode(true);
+            cloned = true;
+          }
+          action(trimmed);
+        }
+      });
       return trimmed;
     };
 
@@ -14515,6 +14547,9 @@
         return;
       }
       value = args.content;
+      if (!details.preserve_zwsp) {
+        value = trim$3(value);
+      }
       if (value.indexOf('{$caret}') === -1) {
         value += '{$caret}';
       }
@@ -14676,6 +14711,7 @@
       }
     };
     var setContentString = function (editor, body, content, args) {
+      content = trim$3(content);
       if (content.length === 0 || /^\s+$/.test(content)) {
         var padd = '<br data-mce-bogus="1">';
         if (body.nodeName === 'TABLE') {
@@ -14710,7 +14746,7 @@
     var setContentTree = function (editor, body, content, args) {
       filter$1(editor.parser.getNodeFilters(), editor.parser.getAttributeFilters(), content);
       var html = HtmlSerializer({ validate: editor.validate }, editor.schema).serialize(content);
-      args.content = isWsPreserveElement(SugarElement.fromDom(body)) ? html : Tools.trim(html);
+      args.content = trim$3(isWsPreserveElement(SugarElement.fromDom(body)) ? html : Tools.trim(html));
       setEditorHtml(editor, args.content, args.no_selection);
       if (!args.no_events) {
         editor.fire('SetContent', args);
@@ -29058,8 +29094,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '10.8',
-      releaseDate: '2023-10-19',
+      minorVersion: '10.9',
+      releaseDate: '2023-11-15',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,
