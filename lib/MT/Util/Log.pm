@@ -25,6 +25,7 @@ use constant \%LoggerLevels; ## no critic
 
 our ( $Initialized, $Logger, $LoggerLevel, $LoggerLevelStr, $LoggerPathDate );
 
+sub uses_config   { 0 }
 sub requires_path { 1 }
 
 sub init {
@@ -106,7 +107,7 @@ sub _find_module {
     return if $logger_module eq 'MT::Util::Log::Stderr';
 
     my $config = MT->config('LoggerConfig');
-    if ( $config && $logger_module->can('use_config') ) {
+    if ( $config && $logger_module->uses_config ) {
         if ( !-f $config ) {
             MT->log(
                 {   class    => 'system',
