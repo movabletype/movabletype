@@ -25,6 +25,8 @@ use constant \%LoggerLevels; ## no critic
 
 our ( $Initialized, $Logger, $LoggerLevel, $LoggerLevelStr, $LoggerPathDate );
 
+sub requires_path { 1 }
+
 sub init {
     if ($Initialized) {
         return unless $Logger && $LoggerPathDate;
@@ -135,7 +137,8 @@ sub _find_module {
         return 1;
     }
 
-    my $logfile_path = _get_logfile_path() or return;
+    my $logfile_path = _get_logfile_path();
+    return if !$logfile_path && $logger_module->requires_path;
 
     $Logger = eval { $logger_module->new( $logger_level, $logfile_path ) };
     if ($@) {
