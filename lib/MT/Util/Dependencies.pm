@@ -144,6 +144,11 @@ our %Requirements = (
         tags  => ["Filesys"],
         url   => "https://metacpan.org/pod/Filesys::DfPortable",
     },
+    "Fluent::Logger" => {
+        label => "This module is optional. It is used to customize the logging behavior.",
+        tags  => ["Log"],
+        url   => "https://metacpan.org/pod/Fluent::Logger",
+    },
     "GD" => {
         label => "This module is one of the image processors that you can use to create thumbnails of uploaded images.",
         tags  => ["ImageDriver"],
