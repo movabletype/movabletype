@@ -633,6 +633,7 @@ SKIP: {
     my $eval_string = join( ';', map {"require $_"} @modules );
     if ( eval $eval_string ) {
         use_ok('MT::PSGI');
+        use_ok('MT::PSGI::ServeStatic');
     }
     else {
         my $last_module = pop @modules;
