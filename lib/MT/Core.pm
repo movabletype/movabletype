@@ -2189,6 +2189,8 @@ BEGIN {
             'LoggerFileName' => undef,
             'LoggerConfig'   => undef,
 
+            'FluentLoggerOption' => { type => 'HASH' },
+
             # Notification Center
             'NotificationCacheTTL' => { default => 3600 },
 
