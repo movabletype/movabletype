@@ -82,7 +82,7 @@
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-svelte": "^7.1.6",
     "svelte": "^4.0.1",
-    "svelte-check": "^3.5.2",
+    "svelte-check": "^3.6.2",
     "svelte-preprocess": "^5.0.4",
     "typescript": "^5.2.2"
   },
