@@ -46,7 +46,6 @@ eval {
     my @warnings;
     local $SIG{__WARN__} = sub { push @warnings, @_ };
     mkdir $test_env->path("tmp");
-    mkdir $test_env->path("tmp");
     MT::Util::Log->error("$!");
     ok !@warnings, "Log a Japanese error without warnings" or note explain \@warnings;
 };
