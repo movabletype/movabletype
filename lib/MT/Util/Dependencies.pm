@@ -246,6 +246,21 @@ our %Requirements = (
         tags  => ["System"],
         url   => "https://metacpan.org/pod/local::lib",
     },
+    "Log::Dispatch::Config" => {
+        label => "This module is optional. It is used to customize the logging behavior.",
+        tags  => ["Log"],
+        url   => "https://metacpan.org/pod/Log::Dispatch::Config",
+    },
+    "Log::Dispatch::Configurator::Perl" => {
+        label => "This module is optional. It is used to customize the logging behavior.",
+        tags  => ["Log"],
+        url   => "https://metacpan.org/pod/Log::Dispatch::Configurator::Perl",
+    },
+    "Log::Dispatch::Configurator::YAML" => {
+        label => "This module is optional. It is used to customize the logging behavior.",
+        tags  => ["Log"],
+        url   => "https://metacpan.org/pod/Log::Dispatch::Configurator::YAML",
+    },
     "Log::Log4perl" => {
         label => "This module is optional. It is used to customize the logging behavior.",
         tags  => ["Log"],

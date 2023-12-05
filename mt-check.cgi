@@ -113,7 +113,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '8.0.0';
+    $version = '8.0.2';
 }
 my ( $mt, $LH );
 my $lang = $cgi->param("language") || $cgi->param("__lang");
@@ -468,7 +468,7 @@ my $ver
 my $perl_ver_check = '';
 if ( $] < 5.016000 ) {    # our minimal requirement for support
     $perl_ver_check = <<EOT;
-<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.10.1"></p></div>
+<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.16.3"></p></div>
 EOT
 }
 

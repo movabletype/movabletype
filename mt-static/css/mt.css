@@ -1828,11 +1828,6 @@ pre code {
   opacity: 1;
 }
 
-.form-control:-ms-input-placeholder, .mt-contentblock__textarea:-ms-input-placeholder {
-  color: #868e96;
-  opacity: 1;
-}
-
 .form-control::placeholder, .mt-contentblock__textarea::placeholder {
   color: #868e96;
   opacity: 1;
@@ -2291,7 +2286,6 @@ textarea.form-control, textarea.mt-contentblock__textarea {
   vertical-align: middle;
   -webkit-user-select: none;
      -moz-user-select: none;
-      -ms-user-select: none;
           user-select: none;
   background-color: transparent;
   border: 1px solid transparent;
@@ -5231,15 +5225,6 @@ a.badge-dark:focus, a.badge-dark.focus {
   color: #040505;
 }
 
-@-webkit-keyframes progress-bar-stripes {
-  from {
-    background-position: 1rem 0;
-  }
-  to {
-    background-position: 0 0;
-  }
-}
-
 @keyframes progress-bar-stripes {
   from {
     background-position: 1rem 0;
@@ -5281,14 +5266,12 @@ a.badge-dark:focus, a.badge-dark.focus {
 }
 
 .progress-bar-animated {
-  -webkit-animation: progress-bar-stripes 1s linear infinite;
-          animation: progress-bar-stripes 1s linear infinite;
+  animation: progress-bar-stripes 1s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .progress-bar-animated {
-    -webkit-animation: none;
-            animation: none;
+    animation: none;
   }
 }
 
@@ -7231,7 +7214,6 @@ button.bg-dark:focus {
 }
 
 .position-sticky {
-  position: -webkit-sticky !important;
   position: sticky !important;
 }
 
@@ -7251,9 +7233,8 @@ button.bg-dark:focus {
   z-index: 1030;
 }
 
-@supports ((position: -webkit-sticky) or (position: sticky)) {
+@supports (position: sticky) {
   .sticky-top {
-    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 1020;
@@ -11475,6 +11456,22 @@ fieldset.form-group {
 .mt-tabs .nav-link.active {
   border-bottom: 4px solid #0176BF;
   color: #000000;
+}
+
+.multi_line_text-field-container .nav-tabs .nav-item, .multi_line_text-field-container .nav-tabs .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav .mt-sharedPreviewNav__item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav .multi_line_text-field-container .nav-tabs .mt-sharedPreviewNav__item {
+  margin-bottom: -2px;
+}
+
+.multi_line_text-field-container .nav-tabs .nav-link.active {
+  border-color: #A5A5A5 #A5A5A5 #fff;
+}
+
+.multi_line_text-field-container .nav-tabs .nav-link.active:hover {
+  border-color: #A5A5A5 #A5A5A5 #fff;
+}
+
+.multi_line_text-field-container .nav-tabs .nav-link:hover {
+  border-color: #A5A5A5 #A5A5A5 #fff;
 }
 
 /* Modal */

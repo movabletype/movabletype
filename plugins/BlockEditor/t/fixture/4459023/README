@@ -1,0 +1,12 @@
+plugins/BlockEditor
+plugins/ContentInfoWidget
+plugins/FormattedText
+plugins/FormattedTextForTinyMCE5
+plugins/FormattedTextForTinyMCE6
+plugins/GoogleAnalyticsV4
+plugins/Markdown
+plugins/Textile
+plugins/TinyMCE5
+plugins/TinyMCE6
+plugins/WXRImporter
+plugins/WidgetManager

@@ -383,9 +383,7 @@ sub build {
     my $build = $ctx->{__stash}{builder} || MT->builder;
     my $page_layout;
     if ( my $blog_id = $tmpl->blog_id ) {
-        $ctx->stash( 'blog_id',       $blog_id );
-        $ctx->stash( 'local_blog_id', $blog_id )
-            unless $ctx->stash('local_blog_id');
+        $ctx->stash( 'blog_id', $blog_id );
         my $blog = $ctx->stash('blog');
         unless ($blog) {
             $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id)
@@ -398,12 +396,13 @@ sub build {
             $ctx->stash( 'blog', $blog );
         }
         else {
-            $ctx->stash( 'blog_id',       $blog->id );
-            $ctx->stash( 'local_blog_id', $blog->id )
-                unless $ctx->stash('local_blog_id');
+            $ctx->stash( 'blog_id', $blog->id );
         }
         MT->request( 'time_offset', $blog->server_offset );
         $page_layout = $blog->page_layout;
+    }
+    if ($ctx->stash('blog_id') && !$ctx->stash('local_blog_id')) {
+        $ctx->stash('local_blog_id', $ctx->stash('blog_id'));
     }
     my $type = $tmpl->type;
     if (   $type
@@ -1068,7 +1067,7 @@ sub insertAfter {
     my ( $node1, $node2 ) = @_;
     my $parent_node
         = $node2 && $node2->[EL_NODE_PARENT] ? $node2->[EL_NODE_PARENT] : $tmpl;
-    my $parent_array = ref $parent_node eq 'ARRAY' ? $parent_node->[EL_NODE_PARENT] : $parent_node->childNodes;
+    my $parent_array = ref $parent_node eq 'ARRAY' ? $parent_node->[EL_NODE_CHILDREN] : $parent_node->childNodes;
     if (ref $parent_array eq 'MT::Template') {
         $parent_array = $parent_array->childNodes;
     }

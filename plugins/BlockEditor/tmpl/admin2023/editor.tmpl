@@ -1,0 +1,12 @@
+<mt:setvarblock name="js_include" append="1">
+  <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/jquery.blockeditor.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field_manager.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/modal_window.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:loop name="blockeditor_fields">
+    <script src="<mt:if name="path"><$mt:var name="static_uri"$><$mt:var name="path"$><mt:else><$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/fields/<$mt:var name="type"$>.js</mt:if>?v=<mt:var name="mt_version_id" escape="url">"></script>
+  </mt:loop>
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>plugins/BlockEditor/css/blockeditor.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+</mt:setvarblock>

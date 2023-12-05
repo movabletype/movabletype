@@ -222,6 +222,7 @@ sub save {
         MT::ContentType::UniqueID::set_unique_id($self);
     }
     delete $self->{__cached_fields};
+    delete $self->{__cached_field_permissions};
 
     $self->SUPER::save(@_);
 }
@@ -235,6 +236,7 @@ sub save {
             my @fields        = ref $_[0] eq 'ARRAY' ? @{ $_[0] } : @_;
             my $sorted_fields = _sort_fields( \@fields );
             my $data          = $ser->serialize( \$sorted_fields );
+            delete $obj->{__cached_field_permissions};
             $obj->column( 'fields', $data );
         }
         else {
@@ -469,13 +471,16 @@ sub _edit_all_content_data_permission {
 
 sub field_permissions {
     my $obj = shift;
+
+    return $obj->{__cached_field_permissions} if $obj->{__cached_field_permissions};
+
     my %permissions;
     my $order = 500;
     for my $f ( @{ $obj->field_objs } ) {
         %permissions = ( %permissions, %{ $f->permission($order) } );
         $order += 100;
     }
-    return \%permissions;
+    return $obj->{__cached_field_permissions} = \%permissions;
 }
 
 sub permission_group {
@@ -528,18 +533,19 @@ sub _eval_if_mssql_server_or_oracle {
 sub all_permissions {
     my $class = shift;
 
+    my $cache_key = 'MT::ContentType::all_permissions';
+    my $cache = MT->request->{__stash}{$cache_key};
+    return $cache if $cache;
+
     my $driver = $class->driver;
     return {} unless $driver && $driver->table_exists($class);
-
-    my @all_permissions;
+    my %ret;
     my @content_types
         = _eval_if_mssql_server_or_oracle( sub { @{ $class->load_all } } );
     for my $content_type (@content_types) {
-        push( @all_permissions, $content_type->permissions )
-            if $content_type->blog;
+        %ret = (%ret, %{ $content_type->permissions }) if $content_type->blog;
     }
-    my %all_permission = map { %{$_} } @all_permissions;
-    return \%all_permission;
+    return MT->request->{__stash}{$cache_key} = \%ret;
 }
 
 sub _post_save {

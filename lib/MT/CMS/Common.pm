@@ -185,7 +185,7 @@ sub save {
     my $site_path_absolute = $app->param('site_path_absolute');
 
     my $original = $obj->clone();
-    my $names    = $obj->column_names;
+    my $names    = [ grep { !$obj->is_primary_key($_) } @{$obj->column_names} ];
     my %values   = map { $_ => ( scalar $app->param($_) ) } @$names;
     if (   $type eq 'blog'
         && $obj->class eq 'blog'

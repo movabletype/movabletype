@@ -1089,15 +1089,8 @@ fieldset.form-group{
     border-color: map-get($theme-colors, "primary");
     background: $gray-lightest;
   }
-  &:focus{
-    box-shadow: $input-focus-box-shadow;
-    border-color: $gray;
-    background: $white;
-  }
   &:focus-visible{
-    outline: -webkit-focus-ring-color auto 1px;
-    border-color: $gray;
-    background: $white;
+    box-shadow: $input-focus-box-shadow;
   }
 }
 .btn-group-space{
@@ -1586,6 +1579,7 @@ fieldset.form-group{
 /* Content Block */
 .mt-contentblock{
   @extend %mt-collapse;
+  border-color: $input-border-color;
   padding: 1rem;
 }
 .mt-contentblock__textarea{
@@ -1657,6 +1651,21 @@ fieldset.form-group{
   .nav-link.active{
     border-bottom: 4px solid $lochmara;
     color: $black;
+  }
+}
+.multi_line_text-field-container {
+  .nav-tabs {
+    .nav-item {
+      margin-bottom: -2px;
+    }
+    .nav-link {
+      &.active{
+        border-color: $input-border-color $input-border-color #fff;
+      }
+      &:hover{
+        border-color: $input-border-color $input-border-color #fff;
+      }
+    }
   }
 }
 
@@ -1817,6 +1826,10 @@ button.close, .btn-close {
   border: none;
   background-color: transparent;
   background: none !important;
+  &:hover{
+    color: $black;
+    text-shadow: 0 1px 0 $white;
+  }
 }
 .mt-icon{
   position: relative;

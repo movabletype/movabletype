@@ -1440,9 +1440,18 @@ sub _make_field_list_props {
 
                         my $child_ret;
                         {
-                            local $db_terms->{content_type_id}
-                                = $content_type->id;
-                            $child_ret = $terms->( $prop, @_ );
+                            my $ct_terms = $db_terms;
+                            if (ref $db_terms eq 'ARRAY') {
+                                for my $t (@$db_terms) {
+                                    next unless ref $t eq 'HASH';
+                                    if (exists $t->{content_type_id}) {
+                                        $ct_terms = $t;
+                                        last;
+                                    }
+                                }
+                            }
+                            local $ct_terms->{content_type_id} = $content_type->id;
+                            $child_ret = $terms->($prop, @_);
                         }
                         return $child_ret
                             unless $child_ret && $child_ret->{id};

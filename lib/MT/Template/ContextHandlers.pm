@@ -3785,12 +3785,18 @@ sub _hdlr_app_form {
     my $mode = $args->{mode};
     push @fields, qq{<input type="hidden" name="__mode" value="$mode" />}
         if defined $mode;
-    push @fields, qq{<input type="hidden" name="_type" value="$type" />}
-        if defined $type;
-    push @fields, qq{<input type="hidden" name="id" value="$id" />}
-        if defined $id;
-    push @fields, qq{<input type="hidden" name="blog_id" value="$blog_id" />}
-        if defined $blog_id;
+    if (defined $type) {
+        $type = encode_html($type);
+        push @fields, qq{<input type="hidden" name="_type" value="$type" />};
+    }
+    if (defined $id) {
+        $id = encode_html($id);
+        push @fields, qq{<input type="hidden" name="id" value="$id" />};
+    }
+    if (defined $blog_id) {
+        $blog_id = encode_html($blog_id);
+        push @fields, qq{<input type="hidden" name="blog_id" value="$blog_id" />};
+    }
     push @fields,
         qq{<input type="hidden" name="magic_token" value="$token" />}
         if defined $token;
