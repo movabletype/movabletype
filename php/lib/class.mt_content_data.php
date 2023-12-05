@@ -48,6 +48,22 @@ class ContentData extends BaseObject
     public $cd___previous;
     public $cd__data;
 
+    public $cd_cf_idx_id;
+    public $cd_cf_idx_content_data_id;
+    public $cd_cf_idx_content_field_id;
+    public $cd_cf_idx_content_type_id;
+    public $cd_cf_idx_created_by;
+    public $cd_cf_idx_created_on;
+    public $cd_cf_idx_modified_by;
+    public $cd_cf_idx_modified_on;
+    public $cd_cf_idx_value_blob;
+    public $cd_cf_idx_value_datetime;
+    public $cd_cf_idx_value_double;
+    public $cd_cf_idx_value_float;
+    public $cd_cf_idx_value_integer;
+    public $cd_cf_idx_value_text;
+    public $cd_cf_idx_value_varchar;
+
     // plugins
     public $cd_comment_count;
     public $cd_ping_count;

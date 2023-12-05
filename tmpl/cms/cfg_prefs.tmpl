@@ -8,7 +8,7 @@
      id="error"
      class="error"
      can_close="0">
-    <mt:var name="error">
+    <mt:var name="error" escape="html">
   </mtapp:statusmsg>
 </mt:if>
 <mt:if name="no_writedir">
@@ -163,7 +163,7 @@
        label="<__trans phrase="License">">
       <div id="has-license" style="display: none;">
       <mt:if name="cc_license">
-        <a href="<mt:var name="cc_license_url">"><img src="<mt:var name="cc_license_image_url">" /></a>
+        <a href="<mt:var name="cc_license_url" escape="html">"><img src="<mt:var name="cc_license_image_url" escape="html">" /></a>
       </mt:if>
         <p>
       <mt:if name="is_blog">

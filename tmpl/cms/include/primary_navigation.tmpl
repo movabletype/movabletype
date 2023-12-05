@@ -34,7 +34,7 @@
   <mt:loop name="user_actions">
         <mt:setvarblock name="user_action_href"><mt:if name="href"><mt:var name="href" escape="html"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="html"><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
         <li id="menu-<mt:var name="id" escape="html">">
-          <a href="<mt:var name="user_action_href">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if> class="dropdown-item">
+          <a href="<mt:var name="user_action_href" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if> class="dropdown-item">
             <mt:var name="label" escape="html">
           </a>
         </li>
@@ -104,7 +104,7 @@ function stopPropagation(e) {
       <mt:setvarblock name="menu_action_href"><mt:if name="href"><mt:var name="href" escape="html"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="html"><mt:if name="blog_id" ne="">&blog_id=<mt:var name="blog_id"></mt:if><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
       <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
 
-      <a id="menu-<mt:var name="id" escape="html">" href="<mt:var name="menu_action_href">" class="btn btn-default <mt:var name="class" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if>>
+      <a id="menu-<mt:var name="id" escape="html">" href="<mt:var name="menu_action_href" escape="html">" class="btn btn-default <mt:var name="class" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if>>
         <mtapp:svgicon id="$icon" title="$escaped_menu_action_label">
         <mt:var name="escaped_menu_action_label">
       </a>
@@ -116,7 +116,7 @@ function stopPropagation(e) {
       <ul id="primaryNavigation" class="mt-primaryNavigation__list" data-children=".item">
   <mt:loop name="top_nav_loop">
         <li id="menu-<mt:var name="id" escape="html">" class="item mt-primaryNavigation__item">
-          <a data-toggle="collapse" data-parent="#primaryNavigation" href="#primayNavigation-item<mt:var name="__counter__">" aria-expanded="<mt:if name="screen_group" eq="$id">true<mt:else>false</mt:if>" aria-controls="primayNavigation-item<mt:var name="__counter__">">
+          <a data-toggle="collapse" data-parent="#primaryNavigation" href="#primaryNavigation-item<mt:var name="__counter__">" aria-expanded="<mt:if name="screen_group" eq="$id">true<mt:else>false</mt:if>" aria-controls="primaryNavigation-item<mt:var name="__counter__">">
     <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
     <mt:if name="icon">
       <mt:setvarblock name="escaped_icon"><mt:var name="icon" escape="html"></mt:setvarblock>
@@ -126,7 +126,7 @@ function stopPropagation(e) {
     </mt:if>
             <mt:var name="escaped_label">
           </a>
-          <div id="primayNavigation-item<mt:var name="__counter__">" class="collapse<mt:if name="screen_group" eq="$id"> show</mt:if>" data-role="tabpanel">
+          <div id="primaryNavigation-item<mt:var name="__counter__">" class="collapse<mt:if name="screen_group" eq="$id"> show</mt:if>" data-role="tabpanel">
             <ul class="mt-primaryNavigation__child">
     <mt:loop name="sub_nav_loop">
       <mt:if name="allowed">
@@ -202,7 +202,7 @@ function stopPropagation(e) {
 <mt:loop name="fav_website_loop">
             <li>
   <mt:if name="fav_website_can_link">
-              <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;__mode=dashboard" class="scope-link text-light">
+              <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id" escape="html"$>&amp;__mode=dashboard" class="scope-link text-light">
                 <mt:var name="fav_website_name" escape="html">
               </a>
   <mt:else>
@@ -215,7 +215,7 @@ function stopPropagation(e) {
               <ul class="list-unstyled">
     </mt:if>
                 <li>
-                  <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;__mode=dashboard" class="scope-link text-light">
+                  <a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id" escape="html"$>&amp;__mode=dashboard" class="scope-link text-light">
                     <mt:var name="fav_blog_name" escape="html">
                   </a>
                 </li>

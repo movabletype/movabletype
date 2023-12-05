@@ -1263,20 +1263,6 @@ PERMCHECK: {
             && !$app->can_do('grant_role_for_all_blogs')
             && !$this_user->permissions($blog_id)
             ->can_do('grant_role_for_blog');
-        if (   $type
-            && $type eq 'blog'
-            && UNIVERSAL::isa( $obj, 'MT::Role' )
-            && $obj->has('administer_site') )
-        {
-            $row->{disabled} = 1;
-        }
-        if (   $type
-            && $type eq 'website'
-            && UNIVERSAL::isa( $obj, 'MT::Role' )
-            && $obj->has('administer_site') )
-        {
-            $row->{disabled} = 1;
-        }
         if ( UNIVERSAL::isa( $obj, 'MT::Author' ) ) {
             if ( $obj->userpic_url ) {
                 $row->{icon} = $obj->userpic_url();

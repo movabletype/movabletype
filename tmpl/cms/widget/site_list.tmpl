@@ -11,7 +11,7 @@
       <mt:If name="parent_site_name">
           <p class="mt-widget__sitename"><__trans phrase="(on [_1])" params="<mt:Var name="parent_site_name" escape="html">"></p>
       </mt:If>
-        <p class="mt-widget__url"><a href="<mt:Var name="site_url">" target="_blank"><mt:Var name="site_url"></a></p>
+        <p class="mt-widget__url"><a href="<mt:Var name="site_url" escape="html">" target="_blank"><mt:Var name="site_url" escape="html"></a></p>
         <div class="btn-group" data-role="group">
       <mt:If name="can_edit_template">
           <a class="btn btn-default" href="<mt:var name="mt_url">?__mode=list_template&blog_id=<mt:var name="blog_id">"><__trans phrase="Design"></a>

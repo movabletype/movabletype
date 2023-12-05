@@ -11757,16 +11757,8 @@ fieldset.form-group {
   background: #F4F4F4;
 }
 
-.btn-default:focus, .mt-mobilePrimaryMenu__dropdownMenuButton:focus {
-  box-shadow: inset 0 0 0 transparent, 0 0 0 0.25rem rgba(0, 75, 154, 0.25);
-  border-color: #A5A5A5;
-  background: #FFFFFF;
-}
-
 .btn-default:focus-visible, .mt-mobilePrimaryMenu__dropdownMenuButton:focus-visible {
-  outline: -webkit-focus-ring-color auto 1px;
-  border-color: #A5A5A5;
-  background: #FFFFFF;
+  box-shadow: inset 0 0 0 transparent, 0 0 0 0.25rem rgba(0, 75, 154, 0.25);
 }
 
 .btn-group-space .btn + .btn, .btn-group-space .mt-primaryNavigation__footer + .btn, .btn-group-space .mt-primaryNavigation__footer--invert + .btn, .btn-group-space .mt-mobilePrimaryMenu__dropdownMenuButton + .btn, .btn-group-space .btn__mobile + .btn, .btn-group-space .btn + .mt-primaryNavigation__footer, .btn-group-space .mt-primaryNavigation__footer + .mt-primaryNavigation__footer, .btn-group-space .mt-primaryNavigation__footer--invert + .mt-primaryNavigation__footer, .btn-group-space .mt-mobilePrimaryMenu__dropdownMenuButton + .mt-primaryNavigation__footer, .btn-group-space .btn__mobile + .mt-primaryNavigation__footer, .btn-group-space .btn + .mt-primaryNavigation__footer--invert, .btn-group-space .mt-primaryNavigation__footer + .mt-primaryNavigation__footer--invert, .btn-group-space .mt-primaryNavigation__footer--invert + .mt-primaryNavigation__footer--invert, .btn-group-space .mt-mobilePrimaryMenu__dropdownMenuButton + .mt-primaryNavigation__footer--invert, .btn-group-space .btn__mobile + .mt-primaryNavigation__footer--invert, .btn-group-space .btn + .mt-mobilePrimaryMenu__dropdownMenuButton, .btn-group-space .mt-primaryNavigation__footer + .mt-mobilePrimaryMenu__dropdownMenuButton, .btn-group-space .mt-primaryNavigation__footer--invert + .mt-mobilePrimaryMenu__dropdownMenuButton, .btn-group-space .mt-mobilePrimaryMenu__dropdownMenuButton + .mt-mobilePrimaryMenu__dropdownMenuButton, .btn-group-space .btn__mobile + .mt-mobilePrimaryMenu__dropdownMenuButton, .btn-group-space .btn + .btn__mobile, .btn-group-space .mt-primaryNavigation__footer + .btn__mobile, .btn-group-space .mt-primaryNavigation__footer--invert + .btn__mobile, .btn-group-space .mt-mobilePrimaryMenu__dropdownMenuButton + .btn__mobile, .btn-group-space .btn__mobile + .btn__mobile,
@@ -12323,6 +12315,7 @@ fieldset.form-group {
 
 /* Content Block */
 .mt-contentblock {
+  border-color: #ced4da;
   padding: 1rem;
 }
 
@@ -12407,6 +12400,18 @@ fieldset.form-group {
 .mt-tabs .nav-link.active {
   border-bottom: 4px solid #0176BF;
   color: #000000;
+}
+
+.multi_line_text-field-container .nav-tabs .nav-item, .multi_line_text-field-container .nav-tabs .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav .mt-sharedPreviewNav__item, .mt-sharedPreviewNav .mt-sharedPreviewNav__rightNav .multi_line_text-field-container .nav-tabs .mt-sharedPreviewNav__item {
+  margin-bottom: -2px;
+}
+
+.multi_line_text-field-container .nav-tabs .nav-link.active {
+  border-color: #ced4da #ced4da #fff;
+}
+
+.multi_line_text-field-container .nav-tabs .nav-link:hover {
+  border-color: #ced4da #ced4da #fff;
 }
 
 /* Modal */
@@ -12580,6 +12585,11 @@ button.close, .btn-close {
   border: none;
   background-color: transparent;
   background: none !important;
+}
+
+button.close:hover, .btn-close:hover {
+  color: #000000;
+  text-shadow: 0 1px 0 #FFFFFF;
 }
 
 .mt-icon, .mt-icon--primary, .mt-icon--secondary, .mt-icon--success, .mt-icon--info, .mt-icon--warning, .mt-icon--danger, .mt-icon--inverse {

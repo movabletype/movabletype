@@ -366,7 +366,7 @@ jQuery(window).on('load', function () {
 
       // Change to upload asset panel.
       if (isDialog) {
-        jQuery('.left-menu-item[data-panel-id="#upload-asset-panel"]').trigger('click');
+        jQuery('.left-menu-item[data-panel-id="#upload-asset-panel"]').get(0).click();
       }
 
       uploadFiles(e.originalEvent.dataTransfer.files, e.originalEvent.dataTransfer.items);
