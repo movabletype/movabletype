@@ -1781,8 +1781,8 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
         $args['category_id'] = $cat_id;
 
         $mt = MT::get_instance();
-        list($entry) = $mt->db()->fetch_entries($args);
-        return $entry;
+        $entries = $mt->db()->fetch_entries($args);
+        return isset($entries[0]) ? $entries[0] : null;
     }
 
     public function get_template_params() {
