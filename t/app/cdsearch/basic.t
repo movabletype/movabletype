@@ -170,4 +170,18 @@ subtest 'OR-ed string names' => sub {
     is_deeply [map { $_->attr('class') } @divs] => [qw/cd cd_multi2 cd_multi/];
 };
 
+subtest 'No uuv with bogus SearchMaxResults' => sub {
+    my @warnings;
+    local $SIG{__WARN__} = sub { push @warnings, @_ };
+    my $app = MT::Test::App->new('MT::App::Search::ContentData');
+    $app->get_ok({
+        search             => 'test',
+        blog_id            => $blog_id,
+        SearchContentTypes => qq{"$ct_name" OR "$ct_multi_name"},
+        SearchMaxResults   => 'test',
+    });
+    ok !@warnings, "no warnings" or note explain \@warnings;
+    ok $app->generic_error, "showed an error message: " . $app->generic_error;
+};
+
 done_testing;
