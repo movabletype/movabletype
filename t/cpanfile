@@ -99,6 +99,7 @@ on 'test' => sub {
     requires 'File::pushd';
     requires 'File::Temp', '0.23';
     requires 'File::Which';
+    requires 'Fluent::Logger';
     requires 'HTML::Filter::Callbacks';
     requires 'HTML::Form';
     requires 'HTTP::DAV';

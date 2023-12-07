@@ -10,7 +10,7 @@ use MT;
 use base qw(MT::Util::Log);
 use Log::Dispatch::Config;
 
-sub use_config { 1 }
+sub uses_config { 1 }
 
 sub new {
     my ($self, $logger_level, $log_file) = @_;

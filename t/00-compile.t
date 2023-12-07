@@ -336,6 +336,14 @@ SKIP: {
         skip( 'Log::Dispatch::Config is not installed', 1 );
     }
 }
+SKIP: {
+    if ( eval { require Fluent::Logger } ) {
+        use_ok('MT::Util::Log::Fluentd');
+    }
+    else {
+        skip( 'Fluent::Logger is not installed', 1 );
+    }
+}
 
 # TheSchwartz support
 use_ok('MT::TheSchwartz');

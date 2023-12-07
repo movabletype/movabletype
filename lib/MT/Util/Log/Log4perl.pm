@@ -14,7 +14,7 @@ BEGIN {
     use Log::Log4perl::Level;
 }
 
-sub use_config { 1 }
+sub uses_config { 1 }
 
 sub new {
     my ( $self, $logger_level, $log_file ) = @_;
