@@ -1849,7 +1849,7 @@ sub search {
 }
 
 sub _as_operator {
-    if ( lc MT->config->ObjectDriver eq 'oracle' ) {
+    if ( lc(MT->config->ObjectDriver) =~ /oracle/ ) {
         '';
     }
     else {
@@ -1941,7 +1941,7 @@ sub _prepare_statement_for_normal_sort {
     for my $col ( reverse $class->_sort_columns ) {
         my $db_col = $driver->_decorate_column_name(
             MT->model('content_field_index'), $col );
-        if ( lc MT->config->ObjectDriver eq 'oracle' ) {
+        if ( lc(MT->config->ObjectDriver) =~ /oracle/ ) {
             if ( $col eq 'value_blob' ) {
                 $sort_col
                     = "NVL(LISTAGG(UTL_RAW.CAST_TO_NVARCHAR2(DBMS_LOB.SUBSTR($db_col, 4000, 1)), ',') WITHIN GROUP (ORDER BY $content_data_id_db_col), $sort_col)";
@@ -2014,7 +2014,7 @@ sub _prepare_statement_for_sub_on_mssql {
     my $stmt = $dbd->sql_class->new;
 
     my $convert_to
-        = lc( MT->config->ObjectDriver ) eq 'umssqlserver'
+        = lc( MT->config->ObjectDriver ) =~ /umssqlserver/
         ? 'nvarchar'
         : 'varchar';
     my $decimal_s = _get_decimal_s();
