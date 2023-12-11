@@ -52,17 +52,17 @@ sub apply {
         my $content_fields      = $ct->fields;
 
         my $content_data = $data->{$ct_name_or_unique_id};
-        for my $ct_key ( keys %{$content_data} ) {
-            my $ct_value = $content_data->{$ct_key};
+        for my $cd_key ( keys %{$content_data} ) {
+            my $cd_value = $content_data->{$cd_key};
 
             my $label
-                = defined( $ct_value->{label} )
-                ? $theme->translate_templatized( $ct_value->{label} )
+                = defined( $cd_value->{label} )
+                ? $theme->translate_templatized( $cd_value->{label} )
                 : '';
             my $identifier
-                = defined $ct_value->{identifier}
-                ? $ct_value->{identifier}
-                : $ct_key;
+                = defined $cd_value->{identifier}
+                ? $cd_value->{identifier}
+                : $cd_key;
 
             next
                 if MT::ContentData->exist(
@@ -84,13 +84,13 @@ sub apply {
                     content_type_id => $ct->id,
                     ct_unique_id    => $ct->unique_id,
                     identifier      => $identifier,
-                    authored_on     => $ct_value->{authored_on},
-                    unpublished_on  => $ct_value->{unpublished_on},
-                    convert_breaks  => $ct_value->{convert_breaks},
-                    status          => $ct_value->{status}
+                    authored_on     => $cd_value->{authored_on},
+                    unpublished_on  => $cd_value->{unpublished_on},
+                    convert_breaks  => $cd_value->{convert_breaks},
+                    status          => $cd_value->{status}
                         || MT::ContentStatus::RELEASE(),
-                    label => defined( $ct_value->{label} )
-                    ? $theme->translate_templatized( $ct_value->{label} )
+                    label => defined( $cd_value->{label} )
+                    ? $theme->translate_templatized( $cd_value->{label} )
                     : '',
                 }
             );
@@ -104,13 +104,13 @@ sub apply {
                     ? $f->{options}{label}
                     : '';
 
-                next unless $ct_value->{data}{$cf_name};
+                next unless $cd_value->{data}{$cf_name};
 
-                if ( ref $ct_value->{data}{$cf_name} eq 'HASH' ) {
-                    $data->{ $f->{id} } = $ct_value->{data}{$cf_name}{value};
+                if ( ref $cd_value->{data}{$cf_name} eq 'HASH' ) {
+                    $data->{ $f->{id} } = $cd_value->{data}{$cf_name}{value};
                 }
                 else {
-                    $data->{ $f->{id} } = $ct_value->{data}{$cf_name};
+                    $data->{ $f->{id} } = $cd_value->{data}{$cf_name};
                 }
                 unless ( ref $data->{ $f->{id} } ) {
                     $data->{ $f->{id} }
@@ -129,7 +129,7 @@ sub apply {
                     }
                     $handler->(
                         $theme, $blog, $ct, $cf_type, $f,
-                        $ct_value->{data}{$cf_name},
+                        $cd_value->{data}{$cf_name},
                         $data, $convert_breaks
                     );
                 }
