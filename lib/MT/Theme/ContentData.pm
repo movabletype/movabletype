@@ -25,13 +25,18 @@ sub apply {
     my $current_lang = MT->current_language;
     MT->set_language( $blog->language );
 
-    for my $ct_name_or_unique_id ( keys %{$data} ) {
+    for my $key ( keys %{$data} ) {
+        my ($ct_name, $ct_unique_id) = ($key, $key);
+        if (exists $data->{$key}{__ct_name}) {
+            $ct_name = delete $data->{$key}{__ct_name};
+        }
+        my $ct_name_or_unique_id = $key;
 
         my $ct
             = MT::ContentType->load( { unique_id => $ct_name_or_unique_id } );
         $ct ||= MT::ContentType->load(
             {   blog_id => $blog->id,
-                name => $theme->translate_templatized($ct_name_or_unique_id),
+                name => $theme->translate_templatized($ct_name),
             }
         );
 
