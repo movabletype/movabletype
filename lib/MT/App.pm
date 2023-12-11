@@ -3117,35 +3117,41 @@ sub do_reboot {
         }
     }
     if ( my $pidfile = MT->config->PIDFilePath ) {
-        require MT::FileMgr;
-        my $fmgr = MT::FileMgr->new('Local');
-        my $pid;
-        unless ( $pid = $fmgr->get_data($pidfile) ) {
-            $app->log(
-                $app->translate(
-                    "Failed to open pid file [_1]: [_2]", $pidfile,
-                    $fmgr->errstr,
-                )
-            );
-            return 1;
-        }
-        chomp $pid;
-        unless ( kill 'HUP', int($pid) ) {
-            $app->log(
-                $app->translate( "Failed to send reboot signal: [_1]", $!, )
-            );
-            return 1;
-        }
-        if (my $wait = MT->config->WaitAfterReboot) {
-            require Time::HiRes;
-            if (MT->config->DisableMetaRefresh) {
-                my $until = Time::HiRes::time() + $wait;
-                while ((my $sleep = $until - Time::HiRes::time()) > 0) {
-                    Time::HiRes::sleep($sleep);
-                }
-            } else {
-                Time::HiRes::sleep $wait;
+        $app->_send_hup_to($pidfile);
+    }
+    return 1;
+}
+
+sub _send_hup_to {
+    my ($app, $pidfile) = @_;
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    my $pid;
+    unless ( $pid = $fmgr->get_data($pidfile) ) {
+        $app->log(
+            $app->translate(
+                "Failed to open pid file [_1]: [_2]", $pidfile,
+                $fmgr->errstr,
+            )
+        );
+        return 1;
+    }
+    chomp $pid;
+    unless ( kill 'HUP', int($pid) ) {
+        $app->log(
+            $app->translate( "Failed to send reboot signal: [_1]", $!, )
+        );
+        return 1;
+    }
+    if (my $wait = MT->config->WaitAfterReboot) {
+        require Time::HiRes;
+        if (MT->config->DisableMetaRefresh) {
+            my $until = Time::HiRes::time() + $wait;
+            while ((my $sleep = $until - Time::HiRes::time()) > 0) {
+                Time::HiRes::sleep($sleep);
             }
+        } else {
+            Time::HiRes::sleep $wait;
         }
     }
     1;
