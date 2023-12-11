@@ -32,8 +32,10 @@ sub apply {
         }
         my $ct_name_or_unique_id = $key;
 
-        my $ct
-            = MT::ContentType->load( { unique_id => $ct_name_or_unique_id } );
+        my $ct;
+        if ($ct_unique_id =~ /\A[a-zA-Z0-9]{40}\z/) {
+            $ct = MT::ContentType->load( { unique_id => $ct_unique_id } );
+        }
         $ct ||= MT::ContentType->load(
             {   blog_id => $blog->id,
                 name => $theme->translate_templatized($ct_name),
