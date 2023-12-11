@@ -1424,7 +1424,10 @@ sub init_plugins {
         eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin';";
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if ($@) {
-            $Plugins{$plugin_sig}{error} = $@;
+            $Plugins{$plugin_sig}{error} = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
+            $Plugins{$plugin_sig}{system_error} = $@;
+            $Plugins{$plugin_sig}{enabled} = 0;
+            delete $PluginSwitch->{$plugin_sig};
             return;
         }
         else {
