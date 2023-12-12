@@ -3126,18 +3126,14 @@ sub _send_hup_to {
     my ($app, $pidfile) = @_;
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
-    my $pid;
-    unless ( $pid = $fmgr->get_data($pidfile) ) {
-        $app->log(
-            $app->translate(
-                "Failed to open pid file [_1]: [_2]", $pidfile,
-                $fmgr->errstr,
-            )
-        );
+    my $pid = $fmgr->get_data($pidfile);
+    chomp $pid;
+    if (!$pid or $pid !~ /^[0-9]+$/) {
+        $app->log($app->translate("Invalid pid file: [_1]", $pidfile));
         return 1;
     }
-    chomp $pid;
-    unless ( kill 'HUP', int($pid) ) {
+
+    unless ( kill 'HUP', $pid ) {
         $app->log(
             $app->translate( "Failed to send reboot signal: [_1]", $!, )
         );
