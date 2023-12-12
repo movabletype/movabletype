@@ -33,7 +33,7 @@
 
     <mt:setvarblock name="action_buttons">
       <button
-         type="submit"
+         type="submit" <mt:if name="warnings">disabled="disabled"</mt:if>
          accesskey="r"
          title="<__trans phrase="Reboot (r)">"
          class="action primary button btn btn-primary">
