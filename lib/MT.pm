@@ -1427,7 +1427,10 @@ sub init_plugins {
         eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin';";
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if ($@) {
-            $Plugins{$plugin_sig}{error} = $@;
+            $Plugins{$plugin_sig}{error} = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
+            $Plugins{$plugin_sig}{system_error} = $@;
+            $Plugins{$plugin_sig}{enabled} = 0;
+            delete $PluginSwitch->{$plugin_sig};
             return;
         }
         else {
@@ -1505,6 +1508,7 @@ sub init_plugins {
                     $plugin_full_path
                         = File::Spec->catfile( $PluginPath, $plugin );
                     if ( -f $plugin_full_path ) {
+                        next if exists $Plugins{$plugin} && $Plugins{$plugin}{error};
                         $plugin_envelope = $plugin_lastdir;
                         if ($plugin_full_path =~ /\.pl$/) {
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
@@ -1548,6 +1552,7 @@ sub init_plugins {
                             $plugin );
                         if ( -f $plugin_file ) {
                             my $sig = $plugin_dir . '/' . $plugin;
+                            next if exists $Plugins{$sig} && $Plugins{$sig}{error};
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @loaded_plugins, $obj if $obj;
                             push @errors, [$plugin_full_path, $Plugins{$sig}{error}] if $Plugins{$sig}{error};
