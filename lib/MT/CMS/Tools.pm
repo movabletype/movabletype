@@ -2681,7 +2681,7 @@ sub _find_pidfiles {
 
     return {
         pidfile  => $pidfile,
-        warnings => [map "$_: $warning{$_}", sort keys %warning],
+        warnings => [map {$warning{$_}} sort keys %warning],
     };
 }
 
