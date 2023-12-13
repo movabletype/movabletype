@@ -251,6 +251,7 @@ themes/broken_blog_theme
 #?package=MTPCLOUD ^addons/Community.pack
 #?package=MTPCLOUD ^mt-static/addons/Community.pack
 #?package=MTPCLOUD ^plugins/PremiumSearch
+#?package=MTPCLOUD ^plugins/PremiumOpenSearch
 #?package=MTPCLOUD ^plugins/LicenseVerification
 
 #?language=ja ^plugins/zemanta
