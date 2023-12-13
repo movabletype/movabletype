@@ -523,6 +523,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] contains an invalid character: [_2]' => '[_1]には不正な文字が含まれています: [_2]',
 	q{Failed login attempt by deleted user '[_1]'} => q{削除済みのユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by disabled user '[_1]'} => q{無効なユーザー [_1] がサインインしようとしました。},
+	q{Failed login attempt by ip-locked-out user '[_1]'} => q{IPロックされたユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by locked-out user '[_1]'} => q{ロックされたユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by pending user '[_1]'} => q{保留中のユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by unknown user '[_1]'} => q{未登録のユーザー [_1] がサインインしようとしました。},

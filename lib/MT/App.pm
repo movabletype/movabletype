@@ -2243,7 +2243,19 @@ sub login {
             )
         );
     }
-    elsif ( $res == MT::Auth::LOCKED_OUT() ) {
+    elsif ( $res == MT::Auth::LOCKED_OUT_IP() ) {
+        $app->log(
+            {   message => $app->translate(
+                    "Failed login attempt by ip-locked-out user '[_1]'", $user
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            }
+        );
+        return $app->error( $app->translate('Invalid login.') );
+    }
+    elsif ( $res == MT::Auth::LOCKED_OUT_USER() or $res == MT::Auth::LOCKED_OUT() ) {
         $app->log(
             {   message => $app->translate(
                     "Failed login attempt by locked-out user '[_1]'", $user
