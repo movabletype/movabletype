@@ -1,0 +1,50 @@
+<mt:setvarblock name="page_title"><__trans phrase="Reboot"></mt:setvarblock>
+<mt:setvar name="position_actions_bottom" value="1">
+
+<mt:setvarblock name="page_content">
+
+<mt:if name="warnings">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="danger"
+     can_close="0">
+    <ul class="mb-0 ps-5">
+    <mt:loop name="warnings">
+        <li><mt:var name="__value__" escape="html"></li>
+    </mt:loop>
+    </ul>
+  </mtapp:statusmsg>
+</mt:if>
+
+<p class="page-desc">
+<mt:if name="no_pidfile">
+<__trans phrase="PIDFilePath is required to reboot.">
+<mt:else>
+<__trans phrase="Send HUP to MT to reboot.">
+<__trans phrase="If problems linger, set the WaitAfterReboot environmental variable to wait for the backend server to restart.">
+</mt:if>
+</p>
+
+<mt:unless name="no_pidfile">
+<div id="reboot-panel">
+  <form method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="reboot" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+    <mt:setvarblock name="action_buttons">
+      <button
+         type="submit" <mt:if name="warnings">disabled="disabled"</mt:if>
+         accesskey="r"
+         title="<__trans phrase="Reboot (r)">"
+         class="action primary button btn btn-primary">
+        <__trans phrase="Reboot">
+      </button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+  </form>
+</div>
+</mt:unless>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">
