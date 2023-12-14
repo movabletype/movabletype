@@ -148,7 +148,7 @@ sub _request {
         totalResults => $data->{rowCount},
         totals       => \%totals,
         headers      => [@d_headers, @m_headers],
-        colLength    => ($#d_headers + $#m_headers),
+        colLength    => ($#d_headers + 1 + $#m_headers + 1),
         items        => [
             map {
                 my $row = $_;
