@@ -335,7 +335,7 @@ sub mount_applications {
             MT::PSGI::ServeStatic->new( { root => \@staticpaths } )->to_app );
 
         ## Mount support directory
-        my $supporturl = MT->config->SupportURL;
+        my $supporturl = MT->config->SupportDirectoryURL;
         $supporturl =~ s!^https?://[^/]*!!;
         my $supportpath = MT->config->SupportDirectoryPath;
         $urlmap->map( $supporturl,
