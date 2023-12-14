@@ -379,7 +379,12 @@
                             editor.off('CloseWindow')
                         })
                     })
+
+                    var selectedText = editor.mtProxies['source'].editor.getSelectedText()
+                    editor.setContent('<div>' + selectedText + '</div>')
+                    editor.selection.select(editor.dom.select('div')[0])
                     editor.execCommand('mceLink')
+
                     editor.once('CloseWindow', function (dialog) {
                         var data = dialog.dialog.getData()
                         if (data.url.value)
