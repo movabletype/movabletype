@@ -336,10 +336,12 @@ sub mount_applications {
 
         ## Mount support directory
         my $supporturl = MT->config->SupportDirectoryURL;
-        $supporturl =~ s!^https?://[^/]*!!;
-        my $supportpath = MT->config->SupportDirectoryPath;
-        $urlmap->map( $supporturl,
-            Plack::App::Directory->new( { root => $supportpath } )->to_app );
+        if ($supporturl) {
+            $supporturl =~ s!^https?://[^/]*!!;
+            my $supportpath = MT->config->SupportDirectoryPath;
+            $urlmap->map( $supporturl,
+                Plack::App::Directory->new( { root => $supportpath } )->to_app );
+        }
 
         ## Mount favicon.ico
         for my $staticpath (@staticpaths) {
