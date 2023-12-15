@@ -335,11 +335,13 @@ sub mount_applications {
             MT::PSGI::ServeStatic->new( { root => \@staticpaths } )->to_app );
 
         ## Mount support directory
-        my $supporturl = MT->config->SupportURL;
-        $supporturl =~ s!^https?://[^/]*!!;
-        my $supportpath = MT->config->SupportDirectoryPath;
-        $urlmap->map( $supporturl,
-            Plack::App::Directory->new( { root => $supportpath } )->to_app );
+        my $supporturl = MT->config->SupportDirectoryURL;
+        if ($supporturl) {
+            $supporturl =~ s!^https?://[^/]*!!;
+            my $supportpath = MT->config->SupportDirectoryPath;
+            $urlmap->map( $supporturl,
+                Plack::App::Directory->new( { root => $supportpath } )->to_app );
+        }
 
         ## Mount favicon.ico
         for my $staticpath (@staticpaths) {

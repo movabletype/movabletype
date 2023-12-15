@@ -14,6 +14,9 @@ BEGIN {
     $test_env = MT::Test::Env->new(
         PSGIServeStatic => 1,
         StaticFilePath  => 'TEST_ROOT/my_static',
+
+        SupportDirectoryURL  => '/my_support',
+        SupportDirectoryPath => 'TEST_ROOT/my_support',
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -39,6 +42,14 @@ my $my_favicon_file = $test_env->path('my_static/images/favicon.ico');
 my $my_favicon      = MT::Test::Image->write(
     file => $my_favicon_file,
     type => 'gif',
+);
+
+mkpath($test_env->path('my_support/uploads'));
+my $uploaded_file = $test_env->path('my_support/uploads/uploaded_image.png');
+
+my $uploaded_image = MT::Test::Image->write(
+    file => $uploaded_file,
+    type => 'png',
 );
 
 subtest 'StaticFilePath is set' => sub {
@@ -78,6 +89,15 @@ subtest 'StaticFilePath is not set' => sub {
         ok $res->is_success;
         my $size = $res->content_length;
         isnt $size => -s $my_favicon_file, "got favicon from MT_HOME";
+    };
+};
+
+subtest 'SupportDirectoryURL is set' => sub {
+    my $apps      = MT::PSGI->new->to_app;
+    my $test_apps = Plack::Test->create($apps);
+    subtest 'file under SupportDirectoryPath' => sub {
+        my $res = $test_apps->request(GET '/my_support/uploads/uploaded_image.png');
+        ok $res->is_success, "got an image from SupportDirectoryURL";
     };
 };
 
