@@ -256,8 +256,14 @@ subtest 'mode = delete' => sub {
 };
 
 subtest 'mode = dialog_list_deprecated_log' => sub {
-    my $sig = (keys %MT::Plugins)[0];
-    my $plugin = $MT::Plugins{$sig}{object};
+    my ($sig, $plugin);
+    for (keys %MT::Plugins) {
+        $plugin = $MT::Plugins{$_}{object} or next;
+        if ($plugin->isa('MT::Plugin')) {
+            $sig = $_;
+            last;
+        }
+    }
     MT::Test::Permission->make_log(
         blog_id  => 0,
         class    => 'plugin',
