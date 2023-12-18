@@ -3,13 +3,14 @@ use strict;
 use warnings;
 use utf8;
 use FindBin;
-use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use lib ("$FindBin::Bin/../../lib", "$FindBin::Bin/../../extlib", "$FindBin::Bin/../../plugins/Diagnosis/lib");
 use Getopt::Long;
 use MT::Bootstrap;
 use MT;
 use MT::PluginData;
-binmode STDOUT, ":utf8";
-binmode STDERR, ":utf8";
+use MT::Plugin::Diagnosis::Department::PluginData;
+binmode STDOUT, ":encoding(UTF-8)";
+binmode STDERR, ":encoding(UTF-8)";
 
 GetOptions(
     'd|delete'  => \my ($delete),
@@ -22,8 +23,8 @@ my $mt = MT->new;
 
 MT->config('LoggerLevel', 'NONE') unless $debug;
 
-my $pd_plugins = pd_plugins();
-my $installed  = installed_plugins();
+my $pd_plugins = MT::Plugin::Diagnosis::Department::PluginData::pd_plugins();
+my $installed  = MT::Plugin::Diagnosis::Department::PluginData::installed_plugins();
 
 for my $pname (keys %$pd_plugins) {
 
@@ -70,7 +71,7 @@ for my $pname (keys %$pd_plugins) {
         MT->log({
             message  => $msg,
             level    => MT::Log::INFO(),
-            metadata => 'keys:'. join(',', @fixed_duplication),
+            metadata => 'keys:' . join(',', @fixed_duplication),
         });
     }
 
@@ -80,7 +81,7 @@ for my $pname (keys %$pd_plugins) {
         MT->log({
             message  => $msg,
             level    => MT::Log::INFO(),
-            metadata => 'keys:'. join(',', @fixed_breakage),
+            metadata => 'keys:' . join(',', @fixed_breakage),
         });
     }
 
@@ -89,34 +90,13 @@ for my $pname (keys %$pd_plugins) {
 
 printf("No plugin data is found.\n") unless (%$pd_plugins);
 
-sub installed_plugins {
-    my $plugins;
-    for my $k (keys %MT::Plugins) {
-        if (my $p = $MT::Plugins{$k}->{object}) {
-            next unless $p->isa('MT::Plugin');
-            $plugins->{ $p->key || $p->name } = $p;
-        }
-    }
-    return $plugins;
-}
-
-sub pd_plugins {
-    my $plugins = {};
-    my $iter    = MT::PluginData->count_group_by(undef, { group => ['plugin', 'key'] });
-    while (my ($count, $plugin, $key) = $iter->()) {
-        $plugins->{$plugin} ||= {};
-        $plugins->{$plugin}->{$key} = $count;
-    }
-    return $plugins;
-}
-
 sub usage {
     print STDERR << "EOT";
 usage: $0
 
 These options are available:
 
--d, --delete    Delete on detecting data breakage or duplication.
+-d, --delete    Delete plugindata breakage or duplication.
 -v, --verbose   Verbose output.
     --debug     debug output.
 EOT
