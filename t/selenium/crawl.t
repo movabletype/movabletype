@@ -91,14 +91,15 @@ sub add_queue {
     }
 }
 
+my $browser_error_ignore_regex;
+
 sub assert_no_errors {
     my ($job, $num, $summary, $extra) = @_;
+
+    $browser_error_ignore_regex ||= compile_browser_error_ignore_regex($ENV{MT_TEST_BROWSER_ERROR_IGNORE_LEVEL} || 'normal');
+
     my @logs = $s->get_browser_error_log();
-    @logs = grep {
-        $_->{message} !~ /Scripts may close only the windows that were opened by them/ &&
-        $_->{message} !~ /Blocked attempt to show a 'beforeunload' confirmation panel for a frame that never had a user gesture since its load./ &&
-        $_->{message} !~ /Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING/
-    } @logs;
+    @logs = grep { $_->{message} !~ $browser_error_ignore_regex } @logs;
 
     ok(!scalar(@logs), 'no browser error occurs');
     ok(!$extra->{error}, 'no generic errors');
@@ -118,6 +119,22 @@ sub assert_no_errors {
 undef $s;
 
 done_testing;
+
+sub compile_browser_error_ignore_regex {
+    my $level = shift;
+    my %level_defs;
+    $level_defs{severe} = [
+        'Scripts may close only the windows that were opened by them',
+        q!Blocked attempt to show a 'beforeunload' confirmation panel for a frame that never had a user gesture since its load.!,
+        'Failed to load resource: net::ERR_INCOMPLETE_CHUNKED_ENCODING',
+    ];
+    $level_defs{moderate} = [
+        @{ $level_defs{severe} },
+        q!Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience.!,
+    ];
+    my $regex = join('|', map { qr/\Q$_\E/ } @{ $level_defs{$level} });
+    return qr/$regex/;
+}
 
 package MT::Test::Selenium::Crawler::Job;
 use strict;
