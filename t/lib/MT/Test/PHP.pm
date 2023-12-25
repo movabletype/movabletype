@@ -74,9 +74,6 @@ error_reporting = E_ALL;
 display_startup_errors = On;
 display_errors = On;
 log_errors = On;
-opcache.jit = On;
-opcache.jit_buffer_size = 100M;
-opcache.enable_cli = 1;
 INI
     close $fh;
 
