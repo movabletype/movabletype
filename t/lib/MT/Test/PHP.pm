@@ -81,6 +81,7 @@ INI
 opcache.jit = On;
 opcache.jit_buffer_size = 100M;
 opcache.enable_cli = 1;
+INI
     }
 
     close $fh;
