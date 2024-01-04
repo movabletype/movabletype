@@ -82,6 +82,8 @@ if ( $ENV{MT_TEST_PUBLISH_ASYNC} ) {
     }
 }
 
+my $special_case;
+
 my @initial_files = list_files();
 my @prev_files    = @initial_files;
 my @delta;
@@ -231,6 +233,12 @@ subtest 'create a new entry' => sub {
     run_rpt_if_async();
 
     diff_should_be($entry_diff);
+
+    my @years = uniq map { my ($year) = $_ =~ /site\/archive\/(\d+)/; $year ? $year : () } @delta;
+    if (@years == 2) {
+        # new year
+        $special_case = 1;
+    }
 };
 
 subtest 'delete the newly-created entry' => sub {
@@ -1296,7 +1304,10 @@ subtest 'change authored_on of the newly-created entry' => sub {
     is @added                      => 9, "9 new files are added";
     is grep( /$new_year/, @added ) => 9, "and all of them belong to the new year";
     is @deleted                    => 9, "9 old files are deleted";
-    is grep( /$year/, @deleted )   => 9, "and all of them belong to the current year";
+    SKIP: {
+        skip 'special case', 1 if $special_case;
+        is grep( /$year/, @deleted )   => 9, "and all of them belong to the current year";
+    }
     push @delta, @added;
     my %deleted_map = map { $_ => 1 } @deleted;
     @delta      = grep !$deleted_map{$_}, @delta;
@@ -1555,7 +1566,10 @@ subtest 'change authored_on of the newly-created content data' => sub {
     is @added                      => 13, "13 new files are added";
     is grep( /$new_year/, @added ) => 13, "and all of them belong to the new year";
     is @deleted                    => 13, "13 old files are deleted";
-    is grep( /$year/, @deleted )   => 13, "and all of them belong to the current year";
+    SKIP: {
+        skip 'special case', 1 if $special_case;
+        is grep( /$year/, @deleted )   => 13, "and all of them belong to the current year";
+    }
     push @delta, @added;
     my %deleted_map = map { $_ => 1 } @deleted;
     @delta      = grep !$deleted_map{$_}, @delta;
@@ -1806,7 +1820,10 @@ subtest 'change authored_on of the newly-created entry by DataAPI' => sub {
     is @added                      => 9, "9 new files are added";
     is grep( /$new_year/, @added ) => 9, "and all of them belong to the new year";
     is @deleted                    => 9, "9 old files are deleted";
-    is grep( /$year/, @deleted )   => 9, "and all of them belong to the current year";
+    SKIP: {
+        skip 'special case', 1 if $special_case;
+        is grep( /$year/, @deleted )   => 9, "and all of them belong to the current year";
+    }
     push @delta, @added;
     my %deleted_map = map { $_ => 1 } @deleted;
     @delta      = grep !$deleted_map{$_}, @delta;
@@ -1927,7 +1944,10 @@ subtest 'change authored_on of the newly-created content data by DataAPI' => sub
     is @added                      => 13, "13 new files are added";
     is grep( /$new_year/, @added ) => 13, "and all of them belong to the new year";
     is @deleted                    => 13, "13 old files are deleted";
-    is grep( /$year/, @deleted )   => 13, "and all of them belong to the current year";
+    SKIP: {
+        skip 'special case', 1 if $special_case;
+        is grep( /$year/, @deleted )   => 13, "and all of them belong to the current year";
+    }
     push @delta, @added;
     my %deleted_map = map { $_ => 1 } @deleted;
     @delta      = grep !$deleted_map{$_}, @delta;
