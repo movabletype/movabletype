@@ -211,7 +211,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/IO::Socket::SSL",
     },
     "IO::Uncompress::Gunzip" => {
-        label     => "IO::Uncompress::Gunzip is required in order to decompress files during a restore operation.",
+        label     => "IO::Uncompress::Gunzip is required in order to decompress files during an import operation.",
         perl_core => "2.020",
         tags      => ["Archive"],
         url       => "https://metacpan.org/pod/IO::Uncompress::Gunzip",
