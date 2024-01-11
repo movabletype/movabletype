@@ -15,13 +15,13 @@ my %CustomURL = (
 
 our %Requirements = (
     "Archive::Tar" => {
-        label     => "This module is optional. It is used to manipulate files during backup and restore operations.",
+        label     => "This module is optional. It is used to manipulate files during import/export operations.",
         perl_core => 1.52,
         tags      => ["Archive"],
         url       => "https://metacpan.org/pod/Archive::Tar",
     },
     "Archive::Zip" => {
-        label => "This module is optional. It is used to manipulate files during backup and restore operations.",
+        label => "This module is optional. It is used to manipulate files during import/export operations.",
         note  => "1.66+ has a stray symlink issue",
         tags  => ["Archive"],
         url   => "https://metacpan.org/pod/Archive::Zip",
@@ -200,7 +200,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Imager",
     },
     "IO::Compress::Gzip" => {
-        label     => "IO::Compress::Gzip is required in order to compress files during a backup operation.",
+        label     => "IO::Compress::Gzip is required in order to compress files during an export operation.",
         perl_core => "2.020",
         tags      => ["Archive"],
         url       => "https://metacpan.org/pod/IO::Compress::Gzip",
@@ -289,7 +289,7 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/LWP::UserAgent",
     },
     "MIME::Base64" => {
-        label     => "MIME::Base64 is required to send mail and handle blobs during backup/restore operations.",
+        label     => "MIME::Base64 is required to send mail and handle blobs during import/export operations.",
         perl_core => 3.08,
         tags      => ["Mail", "Encoding"],
         url       => "https://metacpan.org/pod/MIME::Base64",
