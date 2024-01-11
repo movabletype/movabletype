@@ -392,7 +392,7 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/URI",
     },
     "XML::LibXML::SAX" => {
-        label   => "This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.",
+        label   => "This module is optional; It is one of the modules required to import an exported site and such.",
         tags    => ["XML", "Backup"],
         url     => "https://metacpan.org/pod/XML::LibXML::SAX",
         version => "1.70",
@@ -404,18 +404,18 @@ our %Requirements = (
     },
     "XML::SAX" => {
         extlib => 1.02,
-        label  => "XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.",
+        label  => "XML::SAX and its dependencies are required to import an exported site and such.",
         tags   => ["XML", "Backup"],
         url    => "https://metacpan.org/pod/XML::SAX",
     },
     "XML::SAX::Expat" => {
-        label   => "This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.",
+        label   => "This module is optional; It is one of the modules required to import an exported site and such.",
         tags    => ["XML", "Backup"],
         url     => "https://metacpan.org/pod/XML::SAX::Expat",
         version => 0.37,
     },
     "XML::SAX::ExpatXS" => {
-        label   => "This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.",
+        label   => "This module is optional; It is one of the modules required to import an exported site and such.",
         tags    => ["XML", "Backup"],
         url     => "https://metacpan.org/pod/XML::SAX::ExpatXS",
         version => "1.30",
