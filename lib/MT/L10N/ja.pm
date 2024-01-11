@@ -2301,9 +2301,10 @@ use vars qw( @ISA %Lexicon );
 	q{Junk Filter [_1] died with: [_2]} => q{フィルタ'[_1]'でエラーがありました: [_2]},
 
 ## lib/MT/ListProperty.pm
-	'Cannot initialize list property [_1].[_2].' => '初期化に失敗しました。[_1].[_2]',
+	'Cannot initialize list property [_1].[_2].' => 'リストプロパティ [_1].[_2]の初期化に失敗しました。',
 	'Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'リストプロパティ[_1].[_2]の初期化に失敗しました: [_3]というカラムは見つかりません。',
 	'Failed to initialize auto list property [_1].[_2]: unsupported column type.' => 'リストプロパティ[_1].[_2]の初期化に失敗しました: 未サポートのカラム型です。',
+	'Object type and Property ID are required: [_1]' => 'オブジェクトタイプとプロパティIDが必要です: [_1]',
 	'[_1] (id:[_2])' => '[_1] (ID:[_2])',
 
 ## lib/MT/Lockout.pm
