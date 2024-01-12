@@ -389,6 +389,19 @@ ok( $tokens->[0][EL_NODE_VALUE] eq '</mt:Ignore>', "Token keeps an unmatched clo
 is( $builder->build( $ctx, $tokens ),
     '</mt:Ignore>', "Building produces expected result" );
 
+note("More complex mismatched closing tags");
+$tokens = $builder->compile( $ctx, <<'TMPL' );
+<mt:if test="1">
+<mt:setvarblock name="foo">
+</mt:if>
+</mt:setvarblock><mt:var name="foo">
+</mt:if>
+TMPL
+note( "Error: " . $builder->errstr ) unless $tokens;
+ok( !$tokens, "Compiling failed, as expected" );
+like( $builder->errstr => qr!^</?mt:setvarblock>に対応する</?mt:setvarblock>がありません!,
+    "Compilation yielded proper error message" );
+
 $mt->config->clear_dirty;
 
 done_testing;
