@@ -157,33 +157,40 @@ sub compilerPP {
                     next;
                 }
 
-                # Treat mismatched closing tag as a text (or an html snippet)
-                push @blocks, $head;
-                my $t_rec = [
-                    'TEXT',     # name
-                    undef,      # attr (or text?)
-                    undef,      # children
-                    $whole_tag, # value
-                    undef,      # attrlist
-                    undef,      # parent
-                    $tmpl,
-                ];
-                weaken($t_rec->[EL_NODE_TEMPLATE]);
-                push @{ @blocks ? ($blocks[-1][0][EL_NODE_CHILDREN] ||= []) : $tokens }, $t_rec;
-                last;
+                if ($lc_tag_name eq 'ignore') {
+                    # Treat mismatched closing tag as a text (or an html snippet)
+                    push @blocks, $head;
+                    my $t_rec = [
+                        'TEXT',     # name
+                        undef,      # attr (or text?)
+                        undef,      # children
+                        $whole_tag, # value
+                        undef,      # attrlist
+                        undef,      # parent
+                        $tmpl,
+                    ];
+                    weaken($t_rec->[EL_NODE_TEMPLATE]);
+                    push @{ @blocks ? ($blocks[-1][0][EL_NODE_CHILDREN] ||= []) : $tokens }, $t_rec;
+                    last;
+                }
             }
             if (not $head) {
-                my $t_rec = [
-                    'TEXT',     # name
-                    undef,      # attr (or text?)
-                    undef,      # children
-                    $whole_tag, # value
-                    undef,      # attrlist
-                    undef,      # parent
-                    $tmpl,
-                ];
-                weaken($t_rec->[EL_NODE_TEMPLATE]);
-                push @{ @blocks ? ($blocks[-1][0][EL_NODE_CHILDREN] ||= []) : $tokens }, $t_rec;
+                if ($lc_tag_name eq 'ignore') {
+                    my $t_rec = [
+                        'TEXT',     # name
+                        undef,      # attr (or text?)
+                        undef,      # children
+                        $whole_tag, # value
+                        undef,      # attrlist
+                        undef,      # parent
+                        $tmpl,
+                    ];
+                    weaken($t_rec->[EL_NODE_TEMPLATE]);
+                    push @{ @blocks ? ($blocks[-1][0][EL_NODE_CHILDREN] ||= []) : $tokens }, $t_rec;
+                } else {
+                    push @$error, $tag_start, MT->translate("Found mismatched closing tag [_1] at line #", $lc_tag_name);
+                    return;
+                }
             }
             next;
         }
