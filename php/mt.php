@@ -185,6 +185,16 @@ class MT {
         $plugin_paths = $this->config('PluginPath');
         $ctx =& $this->context();
 
+        $enabled = Array();
+        $switch = $this->config('PluginSwitch');
+        foreach ($switch as $sig => $value) {
+            if (preg_match('/^([^\/]+)\//', $sig, $matches)) {
+                $enabled[$matches[1]] += $value;
+            } else {
+                $enabled[$sig] += $value;
+            }
+        }
+
         foreach ($plugin_paths as $path) {
             if ( !is_dir($path) )
                 $path = $this->config('MTDir') . DIRECTORY_SEPARATOR . $path;
@@ -193,6 +203,9 @@ class MT {
                  while (($file = readdir($dh)) !== false) {
                      if ($file == "." || $file == "..")
                          continue;
+                     if (empty($enabled[$file])) {
+                         continue;
+                     }
                      $plugin_dir = $path . DIRECTORY_SEPARATOR . $file
                          . DIRECTORY_SEPARATOR . 'php';
                      if (is_dir($plugin_dir))
