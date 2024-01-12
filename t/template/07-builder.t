@@ -365,6 +365,30 @@ $tokens = $builder->compile( $ctx, '<mt:vあr>' );
 like $builder->errstr => qr/\Q<mt:vあr>は存在しません(1行目)\E|\Q<mt:vあr>は定義されていません(1行目)\E/,
     "correct error" or note "Error: " . $builder->errstr;
 
+note("Mismatched closing tag in a block");
+$tokens = $builder->compile( $ctx, '<mt:setvarblock name="foo"></mt:Ignore></mt:setvarblock><mt:var name="foo">' );
+note( "Error: " . $builder->errstr ) unless $tokens;
+ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
+ok( @$tokens == 2,            "Created two tokens" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'setvarblock', "Token is a tag token" );
+ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
+ok( @{ $tokens->[0][EL_NODE_CHILDREN] || [] } == 1, "Token is a child tag token" );
+ok( $tokens->[0][EL_NODE_CHILDREN][0][EL_NODE_NAME] eq 'TEXT', "Child token is a text" );
+ok( $tokens->[0][EL_NODE_CHILDREN][0][EL_NODE_VALUE] eq '</mt:Ignore>', "Child token keeps an unmatched closing tag" );
+is( $builder->build( $ctx, $tokens ),
+    '</mt:Ignore>', "Building produces expected result" );
+
+note("Mismatched closing tag not in a block");
+$tokens = $builder->compile( $ctx, '</mt:Ignore>' );
+note( "Error: " . $builder->errstr ) unless $tokens;
+ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
+ok( @$tokens == 1,            "Created one token" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'TEXT', "Token is a text" );
+ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
+ok( $tokens->[0][EL_NODE_VALUE] eq '</mt:Ignore>', "Token keeps an unmatched closing tag" );
+is( $builder->build( $ctx, $tokens ),
+    '</mt:Ignore>', "Building produces expected result" );
+
 $mt->config->clear_dirty;
 
 done_testing;
