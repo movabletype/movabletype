@@ -189,8 +189,10 @@ class MT {
         $switch = $this->config('PluginSwitch');
         foreach ($switch as $sig => $value) {
             if (preg_match('/^([^\/]+)\//', $sig, $matches)) {
+                $enabled[$matches[1]] ??= 0;
                 $enabled[$matches[1]] += $value;
             } else {
+                $enabled[$sig] ??= 0;
                 $enabled[$sig] += $value;
             }
         }
