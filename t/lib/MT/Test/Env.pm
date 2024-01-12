@@ -876,6 +876,21 @@ sub prepare_fixture {
         $hook->($self);
     }
 
+    # make sure to reflect PluginSwitch, which may have been modified while upgrading
+    if (my $switch_config = $self->{_config}{PluginSwitch}) {
+        my $switch = MT->config->PluginSwitch;
+        if (ref $switch_config eq 'ARRAY') {
+            for my $config (@{ $switch_config }) {
+                my ($key, $value) = split '=', $config;
+                $switch->{$key} = $value;
+            }
+        } elsif (ref $switch_config eq 'HASH') {
+            %$switch = (%$switch, %$switch_config);
+        }
+        MT->config->PluginSwitch($switch, 1);
+        MT->config->save_config;
+    }
+
     MT->config->clear_dirty;
 }
 
