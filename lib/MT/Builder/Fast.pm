@@ -156,12 +156,34 @@ sub compilerPP {
                     $head = undef;
                     next;
                 }
-                push @$error, $tag_start, MT->translate("Found mismatched closing tag [_1] at line #", $lc_tag_name);
-                return;
+
+                # Treat mismatched closing tag as a text (or an html snippet)
+                push @blocks, $head;
+                my $t_rec = [
+                    'TEXT',     # name
+                    undef,      # attr (or text?)
+                    undef,      # children
+                    $whole_tag, # value
+                    undef,      # attrlist
+                    undef,      # parent
+                    $tmpl,
+                ];
+                weaken($t_rec->[EL_NODE_TEMPLATE]);
+                push @{ @blocks ? ($blocks[-1][0][EL_NODE_CHILDREN] ||= []) : $tokens }, $t_rec;
+                last;
             }
             if (not $head) {
-                push @$error, $tag_start, MT->translate("Found mismatched closing tag [_1] at line #", $lc_tag_name);
-                return;
+                my $t_rec = [
+                    'TEXT',     # name
+                    undef,      # attr (or text?)
+                    undef,      # children
+                    $whole_tag, # value
+                    undef,      # attrlist
+                    undef,      # parent
+                    $tmpl,
+                ];
+                weaken($t_rec->[EL_NODE_TEMPLATE]);
+                push @{ @blocks ? ($blocks[-1][0][EL_NODE_CHILDREN] ||= []) : $tokens }, $t_rec;
             }
             next;
         }
