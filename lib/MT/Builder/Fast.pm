@@ -224,7 +224,7 @@ sub compilerPP {
                     } else {
                         $rec->[EL_NODE_CHILDREN] = compilerPP($handlers, $modifiers, $ids, $classes, $error, $sec, $tmpl, $rec);
                     }
-                    $rec->[EL_NODE_VALUE] = $sec if $opt->{uncompiled};
+                    $rec->[EL_NODE_VALUE] = $sec;
                 } else {
                     push @$error, $pos, MT->translate("<[_1]> with no </[_1]> on line #.", $prefix . $tag);
                     last;    # return undef;
