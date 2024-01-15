@@ -205,16 +205,15 @@ sub compilerPP {
                                 $tmpl,
                             ];
                             weaken($t_rec->[EL_NODE_TEMPLATE]);
-                            $rec->childNodes([$t_rec]);
+                            $rec->[EL_NODE_CHILDREN] = [$t_rec];
                         }
                     }
                     else {
                         local $opt->{depth}  = $opt->{depth} + 1;
                         local $opt->{parent} = $rec;
-                        $rec->childNodes(
-                            $build->compile( $ctx, $sec, $opt ) );
+                        $rec->[EL_NODE_CHILDREN] = $build->compile( $ctx, $sec, $opt );
                     }
-                    $rec->nodeValue($sec) if $opt->{uncompiled};
+                    $rec->[EL_NODE_VALUE] = $sec if $opt->{uncompiled};
                 }
                 else {
                     push @$error, $pos, MT->translate("<[_1]> with no </[_1]> on line #.", $prefix . $tag);
@@ -224,11 +223,13 @@ sub compilerPP {
                 ( pos $text ) = $tag_end;
             }
             else {
-                $rec->nodeValue('');
+                $rec->[EL_NODE_VALUE] = '';
             }
         }
-        $rec->parentNode( $opt->{parent} || $tmpl );
-        $rec->template($tmpl);
+        $rec->[EL_NODE_PARENT]   = $parent || $tmpl;
+        $rec->[EL_NODE_TEMPLATE] = $tmpl;
+        weaken($rec->[EL_NODE_TEMPLATE]);
+        weaken($rec->[EL_NODE_PARENT]);
         push @{ $state->{tokens} }, $rec;
         $pos = pos $text;
     }
