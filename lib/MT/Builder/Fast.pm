@@ -180,28 +180,6 @@ sub compilerPP {
             ( $h, $is_container ) = $hdlr->values;
         }
 
-        # determine line #
-        my $pre_line = substr( $text, 0, $tag_start );
-        my @m        = $pre_line =~ m/\r?\n/g;
-        my $line     = scalar @m;
-        $opt->{depth_line} ||= 0;
-        if ( $depth == 0 ) {
-            $opt->{line}       = $line + 1;
-            $opt->{depth_line} = 0;
-        }
-        elsif ( $depth > $opt->{old_depth} ) {
-            $opt->{line} += $line;
-            $opt->{depth_line} = ( $opt->{line} - 1 );
-        }
-        elsif ( $depth == $opt->{old_depth} ) {
-            $opt->{line} = $opt->{depth_line} + $line;
-        }
-        else {
-            $opt->{line}       = $line + 1;
-            $opt->{depth_line} = $line;
-        }
-        $opt->{old_depth} = $depth;
-
         if ( !$h ) {
             push @$errors,
                 {
