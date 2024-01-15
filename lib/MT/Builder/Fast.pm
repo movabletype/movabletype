@@ -209,6 +209,7 @@ sub compilerPP {
                         : substr $text, $sec_start, $sec_end - $sec_start;
                     if ($sec !~ m/<\$?MT/i) {
                         if ($sec ne '') {
+                            MT::Util::Encode::_utf8_on($sec);
                             my $t_rec = [
                                 'TEXT',    # name
                                 undef,     # attr
