@@ -179,8 +179,7 @@ sub compilerPP {
                 # We need a reference to the filters to check
                 # attributes and whether they need to be in the array of
                 # attributes for post-processing.
-                $mods ||= $ctx->{__filters};
-                push @args, [ $attr, $value ] if exists $mods->{$attr};
+                push @args, [ $attr, $value ] if exists $modifiers->{$attr};
                 $args{$attr} = $value;
                 if ( $attr eq 'id' ) {
                     # store a reference to this token based on the 'id' for it
