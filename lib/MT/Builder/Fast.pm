@@ -111,6 +111,7 @@ sub compilerPP {
             my $t_part = substr $text, $pos, $tag_start - $pos;
             $t_part =~ s/^\s+//s if $current_space_eater;
             if (length $t_part) {
+                MT::Util::Encode::_utf8_on($t_part);
                 my $t_rec = [
                     'TEXT',     # name
                     undef,      # attr (or text?)
@@ -245,6 +246,7 @@ sub compilerPP {
         my $t_part = substr $text, $pos, $len - $pos;
         $t_part =~ s/^\s+//s if $current_space_eater;
         if (length $t_part) {
+            MT::Util::Encode::_utf8_on($t_part);
             my $t_rec = [
                 'TEXT',     # name
                 undef,      # attr (or text)
