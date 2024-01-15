@@ -23,7 +23,9 @@ my @FilterOrder = qw(
     encode_url upper_case lower_case strip_linefeeds
     space_pad zero_pad sprintf
 );
-my %FilterOrderMap = do { my $i = 0; map { $_ => $i++ } @FilterOrder };
+my %FilterOrderMap = do {
+    my $i = 0; map { $_ => $i++ } @FilterOrder;
+};
 
 sub compile {
     my $build = shift;
@@ -100,12 +102,9 @@ sub compilerPP {
     my $len = length $text;
     my $current_space_eater;
 
-    while ( $text
-        =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$/]?>)!gis
-        )
-    {
-        my ( $whole_tag, $prefix, $tag, $space_eater ) = ( $1, $2, $3, $4 );
-        ( $tag, my ($args) ) = split /\s+/, $tag, 2;
+    while ($text =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$/]?>)!gis) {
+        my ($whole_tag, $prefix, $tag, $space_eater) = ($1, $2, $3, $4);
+        ($tag, my ($args)) = split /\s+/, $tag, 2;
         my $sec_start = pos $text;
         my $tag_start = $sec_start - length $whole_tag;
         if ($pos < $tag_start) {
@@ -161,31 +160,28 @@ sub compilerPP {
             /gsx
             )
         {
-            if ( defined $7 ) {
+            if (defined $7) {
                 # An unnamed attribute gets stored in the 'name' argument.
                 $args{'name'} = $7;
-            }
-            else {
+            } else {
                 my $attr  = lc $1;
                 my $value = defined $6 ? $6 : $3;
                 my $extra = $4;
-                if ( defined $extra ) {
+                if (defined $extra) {
                     my @extra;
-                    push @extra, $2
-                        while $extra =~ m/[,:](["'])((?:<[^>]+?>|.)*?)\1/gs;
-                    $value = [ $value, @extra ];
+                    push @extra, $2 while $extra =~ m/[,:](["'])((?:<[^>]+?>|.)*?)\1/gs;
+                    $value = [$value, @extra];
                 }
 
                 # We need a reference to the filters to check
                 # attributes and whether they need to be in the array of
                 # attributes for post-processing.
-                push @args, [ $attr, $value ] if exists $modifiers->{$attr};
+                push @args, [$attr, $value] if exists $modifiers->{$attr};
                 $args{$attr} = $value;
-                if ( $attr eq 'id' ) {
+                if ($attr eq 'id') {
                     # store a reference to this token based on the 'id' for it
                     $ids->{$3} = $rec;
-                }
-                elsif ( $attr eq 'class' ) {
+                } elsif ($attr eq 'class') {
                     # store a reference to this token based on the 'id' for it
                     $classes->{ lc $3 } ||= [];
                     push @{ $classes->{ lc $3 } }, $rec;
@@ -200,18 +196,17 @@ sub compilerPP {
             $h = $hdlr;
         }
 
-        if ( !$h ) {
-            push @$error, $pos, MT->translate("<[_1]> at line # is unrecognized.", MT::Util::Encode::decode_utf8( $prefix . $tag ));
+        if (!$h) {
+            push @$error, $pos, MT->translate("<[_1]> at line # is unrecognized.", MT::Util::Encode::decode_utf8($prefix . $tag));
         }
         if ($is_container) {
-            if ( $whole_tag !~ m|/>$| ) {
-                my ( $sec_end, $tag_end )
-                    = _consume_up_to( $handlers, \$text, $sec_start, lc($tag) );
+            if ($whole_tag !~ m|/>$|) {
+                my ($sec_end, $tag_end) = _consume_up_to($handlers, \$text, $sec_start, lc($tag));
                 if ($sec_end) {
                     my $sec = $tag =~ m/ignore/i
                         ? ''    # ignore MTIgnore blocks
                         : substr $text, $sec_start, $sec_end - $sec_start;
-                    if ( $sec !~ m/<\$?MT/i ) {
+                    if ($sec !~ m/<\$?MT/i) {
                         if ($sec ne '') {
                             my $t_rec = [
                                 'TEXT',    # name
@@ -225,20 +220,17 @@ sub compilerPP {
                             weaken($t_rec->[EL_NODE_TEMPLATE]);
                             $rec->[EL_NODE_CHILDREN] = [$t_rec];
                         }
-                    }
-                    else {
+                    } else {
                         $rec->[EL_NODE_CHILDREN] = compilerPP($handlers, $modifiers, $ids, $classes, $error, $sec, $tmpl, $rec);
                     }
                     $rec->[EL_NODE_VALUE] = $sec if $opt->{uncompiled};
-                }
-                else {
+                } else {
                     push @$error, $pos, MT->translate("<[_1]> with no </[_1]> on line #.", $prefix . $tag);
                     last;    # return undef;
                 }
                 $pos = $tag_end + 1;
-                ( pos $text ) = $tag_end;
-            }
-            else {
+                (pos $text) = $tag_end;
+            } else {
                 $rec->[EL_NODE_VALUE] = '';
             }
         }
@@ -271,53 +263,48 @@ sub compilerPP {
 }
 
 sub _consume_up_to {
-    my ( $handlers, $text, $start, $stoptag ) = @_;
+    my ($handlers, $text, $start, $stoptag) = @_;
     my $whole_tag;
 
     # check only ignore tag when searching close ignore tag.
     my $tag_regex = $stoptag eq 'ignore' ? 'Ignore' : '[^\s\$>]+';
 
-    ( pos $$text ) = $start;
-    while ( $$text
-        =~ m!(<([\$/]?)MT:?($tag_regex)(?:(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gis
-        )
-    {
+    (pos $$text) = $start;
+    while ($$text =~ m!(<([\$/]?)MT:?($tag_regex)(?:(?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)*?)[\$/]?>)!gis) {
         $whole_tag = $1;
-        my ( $prefix, $tag ) = ( $2, lc($3) );
+        my ($prefix, $tag) = ($2, lc($3));
         next
             if lc $tag ne lc $stoptag
             && $stoptag ne 'else'
             && $stoptag ne 'elseif';
 
         # check only container tag.
-        if ( $stoptag ne 'ignore' ) {
+        if ($stoptag ne 'ignore') {
             my $hdlr = $handlers->{ lc $tag };
             next unless Scalar::Util::reftype $hdlr eq 'ARRAY' && $hdlr->[1];
         }
 
         my $end = pos $$text;
-        if ( $prefix && ( $prefix eq '/' ) ) {
-            return ( $end - length($whole_tag), $end )
+        if ($prefix && ($prefix eq '/')) {
+            return ($end - length($whole_tag), $end)
                 if $tag eq $stoptag;
             last;
-        }
-        elsif ( $whole_tag !~ m|/>\z| ) {
-            my ( $sec_end, $end_tag )
-                = _consume_up_to( $handlers, $text, $end, $tag );
+        } elsif ($whole_tag !~ m|/>\z|) {
+            my ($sec_end, $end_tag) = _consume_up_to($handlers, $text, $end, $tag);
             last if !$sec_end;
-            ( pos $$text ) = $end_tag;
+            (pos $$text) = $end_tag;
         }
     }
 
     # special case for unclosed 'else' tag:
-    if ( $stoptag eq 'else' || $stoptag eq 'elseif' ) {
-        my $pos
-            = pos($$text)
+    if ($stoptag eq 'else' || $stoptag eq 'elseif') {
+        my $pos =
+              pos($$text)
             ? pos($$text) - length($whole_tag)
             : length($$text);
-        return ( $pos, $pos );
+        return ($pos, $pos);
     }
-    return ( 0, 0 );
+    return (0, 0);
 }
 
 sub build {
@@ -496,7 +483,7 @@ sub build {
                         # of processing as well, since it's better than
                         # the pseudo random order we get from retrieving the
                         # keys from the hash.
-                        for my $key (sort {($FilterOrderMap{$a} || 0) <=> ($FilterOrderMap{$b} || 0)} keys %args) {
+                        for my $key (sort { ($FilterOrderMap{$a} || 0) <=> ($FilterOrderMap{$b} || 0) } keys %args) {
                             next unless $ctx->{__filters}{$key};
                             push @args, [$key => $args{$key}];
                         }
