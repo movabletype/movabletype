@@ -98,6 +98,7 @@ sub compilerPP {
 
     my $pos = 0;
     my $len = length $text;
+    my $current_space_eater;
 
     while ( $text
         =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$/]?>)!gis
@@ -109,7 +110,7 @@ sub compilerPP {
         my $tag_start = $sec_start - length $whole_tag;
         if ($pos < $tag_start) {
             my $t_part = substr $text, $pos, $tag_start - $pos;
-            $t_part =~ s/^\s+//s if $state->{space_eater};
+            $t_part =~ s/^\s+//s if $current_space_eater;
             if (length $t_part) {
                 my $t_rec = [
                     'TEXT',     # name
@@ -121,10 +122,10 @@ sub compilerPP {
                     $tmpl,
                 ];
                 weaken($t_rec->[EL_NODE_TEMPLATE]);
-                push @{ $state->{tokens} }, $t_rec;
+                push @$tokens, $t_rec;
             }
         }
-        $state->{space_eater} = $space_eater;
+        $current_space_eater = $space_eater;
         $args ||= '';
 
         my $rec = [
@@ -246,12 +247,12 @@ sub compilerPP {
         $rec->[EL_NODE_TEMPLATE] = $tmpl;
         weaken($rec->[EL_NODE_TEMPLATE]);
         weaken($rec->[EL_NODE_PARENT]);
-        push @{ $state->{tokens} }, $rec;
+        push @$tokens, $rec;
         $pos = pos $text;
     }
     if ($pos < $len) {
         my $t_part = substr $text, $pos, $len - $pos;
-        $t_part =~ s/^\s+//s if $state->{space_eater};
+        $t_part =~ s/^\s+//s if $current_space_eater;
         if (length $t_part) {
             my $t_rec = [
                 'TEXT',     # name
@@ -263,11 +264,11 @@ sub compilerPP {
                 $tmpl,
             ];
             weaken($t_rec->[EL_NODE_TEMPLATE]);
-            push @{ $state->{tokens} }, $t_rec;
+            push @$tokens, $t_rec;
         }
     }
 
-    return $state->{tokens};
+    return $tokens;
 }
 
 sub _consume_up_to {
