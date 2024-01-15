@@ -92,7 +92,7 @@ sub compile {
 }
 
 sub compilerPP {
-    my ($handlers, $modifiers, $ids, $classes, $error, $text, $tmpl) = @_;
+    my ($handlers, $modifiers, $ids, $classes, $error, $text, $tmpl, $parent) = @_;
 
     my $tokens = [];
 
@@ -227,9 +227,7 @@ sub compilerPP {
                         }
                     }
                     else {
-                        local $opt->{depth}  = $opt->{depth} + 1;
-                        local $opt->{parent} = $rec;
-                        $rec->[EL_NODE_CHILDREN] = $build->compile( $ctx, $sec, $opt );
+                        $rec->[EL_NODE_CHILDREN] = compilerPP($handlers, $modifiers, $ids, $classes, $error, $sec, $tmpl, $rec);
                     }
                     $rec->[EL_NODE_VALUE] = $sec if $opt->{uncompiled};
                 }
