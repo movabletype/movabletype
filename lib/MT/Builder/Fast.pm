@@ -181,15 +181,7 @@ sub compilerPP {
         }
 
         if ( !$h ) {
-            push @$errors,
-                {
-                message => MT->translate(
-                    "<[_1]> at line [_2] is unrecognized.",
-                    MT::Util::Encode::decode_utf8( $prefix . $tag ),
-                    $opt->{line}
-                ),
-                line => $opt->{line}
-                };
+            push @$error, $pos, MT->translate("<[_1]> at line # is unrecognized.", MT::Util::Encode::decode_utf8( $prefix . $tag ));
         }
         if ($is_container) {
             if ( $whole_tag !~ m|/>$| ) {
@@ -220,30 +212,7 @@ sub compilerPP {
                     $rec->nodeValue($sec) if $opt->{uncompiled};
                 }
                 else {
-                    my $pre_error = substr( $text, 0, $tag_start );
-                    my @m         = $pre_error =~ m/\r?\n/g;
-                    my $line      = scalar @m;
-                    if ($depth) {
-                        push @$errors,
-                            {
-                            message => MT->translate(
-                                "<[_1]> with no </[_1]> on line [_2].",
-                                $prefix . $tag, "#"
-                            ),
-                            line => $line
-                            };
-                    }
-                    else {
-                        push @$errors,
-                            {
-                            message => MT->translate(
-                                "<[_1]> with no </[_1]> on line [_2].",
-                                $prefix . $tag,
-                                $line + 1
-                            ),
-                            line => $line + 1
-                            };
-                    }
+                    push @$error, $pos, MT->translate("<[_1]> with no </[_1]> on line #.", $prefix . $tag);
                     last;    # return undef;
                 }
                 $pos = $tag_end + 1;
