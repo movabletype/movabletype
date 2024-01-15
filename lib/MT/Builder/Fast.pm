@@ -107,7 +107,23 @@ sub compilerPP {
         ( $tag, my ($args) ) = split /\s+/, $tag, 2;
         my $sec_start = pos $text;
         my $tag_start = $sec_start - length $whole_tag;
-        _text_block( $state, $pos, $tag_start ) if $pos < $tag_start;
+        if ($pos < $tag_start) {
+            my $t_part = substr $text, $pos, $tag_start - $pos;
+            $t_part =~ s/^\s+//s if $state->{space_eater};
+            if (length $t_part) {
+                my $t_rec = [
+                    'TEXT',     # name
+                    undef,      # attr (or text?)
+                    undef,      # children
+                    $t_part,    # value
+                    undef,      # attrlist
+                    undef,      # parent
+                    $tmpl,
+                ];
+                weaken($t_rec->[EL_NODE_TEMPLATE]);
+                push @{ $state->{tokens} }, $t_rec;
+            }
+        }
         $state->{space_eater} = $space_eater;
         $args ||= '';
 
@@ -233,7 +249,23 @@ sub compilerPP {
         push @{ $state->{tokens} }, $rec;
         $pos = pos $text;
     }
-    _text_block( $state, $pos, $len ) if $pos < $len;
+    if ($pos < $len) {
+        my $t_part = substr $text, $pos, $len - $pos;
+        $t_part =~ s/^\s+//s if $state->{space_eater};
+        if (length $t_part) {
+            my $t_rec = [
+                'TEXT',     # name
+                undef,      # attr (or text)
+                undef,      # children
+                $t_part,    # value
+                undef,      # attrlist
+                undef,      # parent
+                $tmpl,
+            ];
+            weaken($t_rec->[EL_NODE_TEMPLATE]);
+            push @{ $state->{tokens} }, $t_rec;
+        }
+    }
 
     return $state->{tokens};
 }
@@ -286,25 +318,6 @@ sub _consume_up_to {
         return ( $pos, $pos );
     }
     return ( 0, 0 );
-}
-
-sub _text_block {
-    my $text = substr ${ $_[0]->{text} }, $_[1], $_[2] - $_[1];
-    if ( ( defined $text ) && ( $text ne '' ) ) {
-        return if $_[0]->{space_eater} && ( $text =~ m/^\s+$/s );
-        $text =~ s/^\s+//s if $_[0]->{space_eater};
-        my $rec = [
-            'TEXT',     # name
-            undef,      # attr (or text)
-            undef,      # children
-            $text,      # value
-            undef,      # attrlist
-            undef,      # parent
-            $tmpl,
-        ];
-        weaken($t_rec->[EL_NODE_TEMPLATE]);
-        push @{ $_[0]->{tokens} }, $rec;
-    }
 }
 
 sub build {
