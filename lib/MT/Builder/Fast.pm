@@ -99,14 +99,6 @@ sub compilerPP {
     my $pos = 0;
     my $len = length $text;
 
-    # MT tag syntax: <MTFoo>, <$MTFoo$>, <$MTFoo>
-    #                <MT:Foo>, <$MT:Foo>, <$MT:Foo$>
-    #                <MTFoo:Bar>, <$MTFoo:Bar>, <$MTFoo:Bar$>
-    # For 'function' tags, the '$' characters are optional
-    # For namespace, the ':' is optional for the default 'MT' namespace.
-    # Other namespaces (like 'Foo') would require the colon.
-    # Tag and attributes are case-insensitive. So you can write:
-    #   <mtfoo>...</MTFOO>
     while ( $text
         =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$/]?>)!gis
         )
@@ -119,9 +111,6 @@ sub compilerPP {
         $state->{space_eater} = $space_eater;
         $args ||= '';
 
-        # Structure of a node:
-        #   tag name, attribute hashref, contained tokens, template text,
-        #       attributes arrayref, parent array reference
         my $rec = NODE->new(
             tag            => $tag,
             attributes     => \my %args,
@@ -154,7 +143,6 @@ sub compilerPP {
             )
         {
             if ( defined $7 ) {
-
                 # An unnamed attribute gets stored in the 'name' argument.
                 $args{'name'} = $7;
             }
@@ -176,12 +164,10 @@ sub compilerPP {
                 push @args, [ $attr, $value ] if exists $mods->{$attr};
                 $args{$attr} = $value;
                 if ( $attr eq 'id' ) {
-
                     # store a reference to this token based on the 'id' for it
                     $ids->{$3} = $rec;
                 }
                 elsif ( $attr eq 'class' ) {
-
                     # store a reference to this token based on the 'id' for it
                     $classes->{ lc $3 } ||= [];
                     push @{ $classes->{ lc $3 } }, $rec;
@@ -252,22 +238,6 @@ sub compilerPP {
                         local $opt->{parent} = $rec;
                         $rec->childNodes(
                             $build->compile( $ctx, $sec, $opt ) );
-
-             # unless (defined $rec->[2]) {
-             #     my $pre_error = substr($text, 0, $sec_start);
-             #     my @m = $pre_error =~ m/\r?\n/g;
-             #     my $line = scalar @m;
-             #     if ($depth) {
-             #         $opt->{error_line} = $line + ($opt->{error_line} || 0);
-             #         return;
-             #     }
-             #     else {
-             #         $line += ($opt->{error_line} || 0) + 1;
-             #         my $err = $build->errstr;
-             #         $err =~ s/#/$line/;
-             #         return $build->error($err);
-             #     }
-             # }
                     }
                     $rec->nodeValue($sec) if $opt->{uncompiled};
                 }
@@ -276,9 +246,6 @@ sub compilerPP {
                     my @m         = $pre_error =~ m/\r?\n/g;
                     my $line      = scalar @m;
                     if ($depth) {
-
-# $opt->{error_line} = $line;
-# return $build->error(MT->translate("<[_1]> with no </[_1]> on line #", $prefix . $tag));
                         push @$errors,
                             {
                             message => MT->translate(
@@ -298,8 +265,6 @@ sub compilerPP {
                             ),
                             line => $line + 1
                             };
-
-# return $build->error(MT->translate("<[_1]> with no </[_1]> on line [_2]", $prefix . $tag, $line + 1));
                     }
                     last;    # return undef;
                 }
