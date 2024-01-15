@@ -192,10 +192,12 @@ sub compilerPP {
                 }
             }
         }
-        my $hdlr = $ctx->handler_for($tag);
-        my ( $h, $is_container );
-        if ($hdlr) {
-            ( $h, $is_container ) = $hdlr->values;
+        my $hdlr = $handlers->{ lc $tag };
+        my ($h, $is_container);
+        if ($hdlr and Scalar::Util::reftype $hdlr eq 'ARRAY') {
+            ($h, $is_container) = @$hdlr;
+        } else {
+            $h = $hdlr;
         }
 
         if ( !$h ) {
@@ -204,7 +206,7 @@ sub compilerPP {
         if ($is_container) {
             if ( $whole_tag !~ m|/>$| ) {
                 my ( $sec_end, $tag_end )
-                    = _consume_up_to( $ctx, \$text, $sec_start, lc($tag) );
+                    = _consume_up_to( $handlers, \$text, $sec_start, lc($tag) );
                 if ($sec_end) {
                     my $sec = $tag =~ m/ignore/i
                         ? ''    # ignore MTIgnore blocks
@@ -271,7 +273,7 @@ sub compilerPP {
 }
 
 sub _consume_up_to {
-    my ( $ctx, $text, $start, $stoptag ) = @_;
+    my ( $handlers, $text, $start, $stoptag ) = @_;
     my $whole_tag;
 
     # check only ignore tag when searching close ignore tag.
@@ -291,8 +293,8 @@ sub _consume_up_to {
 
         # check only container tag.
         if ( $stoptag ne 'ignore' ) {
-            my $hdlr = $ctx->handler_for($tag);
-            next if !( $hdlr && $hdlr->type );
+            my $hdlr = $handlers->{ lc $tag };
+            next unless Scalar::Util::reftype $hdlr eq 'ARRAY' && $hdlr->[1];
         }
 
         my $end = pos $$text;
@@ -303,7 +305,7 @@ sub _consume_up_to {
         }
         elsif ( $whole_tag !~ m|/>\z| ) {
             my ( $sec_end, $end_tag )
-                = _consume_up_to( $ctx, $text, $end, $tag );
+                = _consume_up_to( $handlers, $text, $end, $tag );
             last if !$sec_end;
             ( pos $$text ) = $end_tag;
         }
