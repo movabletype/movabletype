@@ -111,11 +111,13 @@ sub compilerPP {
         $state->{space_eater} = $space_eater;
         $args ||= '';
 
-        my $rec = NODE->new(
-            tag            => $tag,
-            attributes     => \my %args,
-            attribute_list => \my @args
-        );
+        my $rec = [
+            $tag,         # name
+            \my %args,    # attr
+            [],           # children
+            undef,        # value
+            \my @args,    # attrlist
+        ];
         while (
             $args =~ /
             (?:
@@ -192,16 +194,19 @@ sub compilerPP {
                         ? ''    # ignore MTIgnore blocks
                         : substr $text, $sec_start, $sec_end - $sec_start;
                     if ( $sec !~ m/<\$?MT/i ) {
-                        $rec->childNodes(
-                            [   (   $sec ne ''
-                                    ? NODE->new(
-                                        tag       => 'TEXT',
-                                        nodeValue => $sec
-                                        )
-                                    : ()
-                                )
-                            ]
-                        );
+                        if ($sec ne '') {
+                            my $t_rec = [
+                                'TEXT',    # name
+                                undef,     # attr
+                                undef,     # children
+                                $sec,      # value
+                                undef,     # attrlist
+                                undef,     # parent
+                                $tmpl,
+                            ];
+                            weaken($t_rec->[EL_NODE_TEMPLATE]);
+                            $rec->childNodes([$t_rec]);
+                        }
                     }
                     else {
                         local $opt->{depth}  = $opt->{depth} + 1;
@@ -287,12 +292,16 @@ sub _text_block {
     if ( ( defined $text ) && ( $text ne '' ) ) {
         return if $_[0]->{space_eater} && ( $text =~ m/^\s+$/s );
         $text =~ s/^\s+//s if $_[0]->{space_eater};
-        my $rec = NODE->new(
-            tag        => 'TEXT',
-            nodeValue  => $text,
-            parentNode => $_[0]->{tokens},
-            template   => $_[0]->{tmpl}
-        );
+        my $rec = [
+            'TEXT',     # name
+            undef,      # attr (or text)
+            undef,      # children
+            $text,      # value
+            undef,      # attrlist
+            undef,      # parent
+            $tmpl,
+        ];
+        weaken($t_rec->[EL_NODE_TEMPLATE]);
         push @{ $_[0]->{tokens} }, $rec;
     }
 }
