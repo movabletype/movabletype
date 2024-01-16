@@ -221,7 +221,17 @@ sub edit {
         );
 
         $param->{'mode_view_entry'} = 1;
-        $param->{'basename'} = MT->config->TrimFilePath ? trim_path($obj->basename) : $obj->basename;
+        if ( MT->config->TrimFilePath ) {
+            my $file = MT->publisher->archive_file_for( $obj, $blog, $at );
+            my $basename = trim_path( $obj->basename );
+            $basename =~ s/[-_]/\[-_\]/g;
+            my $basename_re = qr/$basename/;
+            ( $basename ) = $file =~ /(?:.+\/\s*)?(${basename_re})(?:\s*\..*)?$/;
+            $param->{'basename'} = $basename;
+        }
+        else {
+            $param->{'basename'} = $obj->basename;
+        }
 
         if ( my $ts = $obj->authored_on ) {
             $param->{authored_on_ts} = $ts;
