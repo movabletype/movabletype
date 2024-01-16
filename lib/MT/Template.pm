@@ -17,7 +17,7 @@ use Scalar::Util;
 use MT::Template::Node ':constants';
 sub NODE () {'MT::Template::Node'}
 
-our $DEBUG;
+sub DEBUG () { $ENV{MT_TEMPLATE_DEBUG} }
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -276,6 +276,7 @@ sub load_file {
     my $c;
     do { local $/; $c = <$fh> };
     close $fh;
+    $tmpl->{__real_file} = $real_file if DEBUG;
     return $c;
 }
 
@@ -366,6 +367,7 @@ sub build {
         or return;
 
     my $tmpl_name = $tmpl->name || $tmpl->{__file} || "?";
+    my $real_file = $tmpl->{__real_file} || "?";
 
     if ( $tmpl->{errors} && @{ $tmpl->{errors} } ) {
         my $error = "";
@@ -431,11 +433,11 @@ sub build {
     $timer->pause_partial if $timer;
 
     my $res = $build->build( $ctx, $tokens, $cond );
-    if ($DEBUG) {
+    if (DEBUG) {
         $res =~ s/\A\s+//s;
         $res =~ s/\s+\z//s;
         $res = join "",
-            "<!-- begin_tmpl $tmpl_name -->",
+            "<!-- begin_tmpl $tmpl_name ($real_file) -->",
             $res,
             "<!-- end_tmpl $tmpl_name -->";
     }
