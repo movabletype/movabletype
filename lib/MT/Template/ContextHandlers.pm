@@ -6237,7 +6237,7 @@ B<Example:>
             or return $ctx->error( $builder->errstr );
         $file =~ s!/{2,}!/!g;
         $file =~ s!(^/|/$)!!g;
-        $file = trim_path($file) if MT->config->TrimFilePath;
+        $file = trim_path($file) if MT->config->TrimFilePath == 1;
         $file;
     }
 }

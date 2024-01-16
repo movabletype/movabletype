@@ -221,7 +221,7 @@ sub edit {
         );
 
         $param->{'mode_view_entry'} = 1;
-        if ( MT->config->TrimFilePath ) {
+        if ( MT->config->TrimFilePath == 1 ) {
             my $file = MT->publisher->archive_file_for( $obj, $blog, $at );
             my $basename = trim_path( $obj->basename );
             $basename =~ s/[-_]/\[-_\]/g;
