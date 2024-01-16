@@ -8,7 +8,7 @@ package MT::CMS::Common;
 use strict;
 use warnings;
 
-use MT::Util qw( format_ts relative_date );
+use MT::Util qw( format_ts relative_date trim_path );
 
 sub save {
     my $app             = shift;
@@ -193,11 +193,16 @@ sub save {
             || ( $cfg_screen eq 'cfg_prefs' ) )
         )
     {
-        if (    $values{site_path}
-            and $values{site_path}
-            =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)! )
-        {
-            return $app->errtrans("Invalid request.");
+        if ( $values{site_path} ) {
+            if ( $values{site_path} =~ m!^(?:/|[a-zA-Z]:\\|\\\\[a-zA-Z0-9\.]+)! ) {
+                return $app->errtrans("Invalid request.");
+            }
+
+            if (   MT->config->TrimFilePath == 2
+                && $values{site_path} ne trim_path($values{site_path}) )
+            {
+                return $app->errtrans("The blog root contains an inappropriate whitespace.");
+            }
         }
 
         if (   $use_absolute
@@ -263,19 +268,25 @@ sub save {
                     @$names;
             }
         }
-        if ( $values{site_path} and $app->config->BaseSitePath ) {
-            my $l_path = $app->config->BaseSitePath;
-            my $s_path = $values{site_path};
-            unless ( is_within_base_sitepath( $app, $s_path ) ) {
-                return $app->errtrans(
-                    "The website root directory must be within [_1].",
-                    $l_path );
+        if ( $values{site_path} ) {
+            if ( $app->config->BaseSitePath ) {
+                my $l_path = $app->config->BaseSitePath;
+                my $s_path = $values{site_path};
+                unless ( is_within_base_sitepath( $app, $s_path ) ) {
+                    return $app->errtrans(
+                        "The website root directory must be within [_1].",
+                        $l_path );
+                }
             }
-        }
-        if ( $values{site_path}
-            and not File::Spec->file_name_is_absolute( $values{site_path} ) )
-        {
-            return $app->errtrans("Invalid request.");
+            unless ( File::Spec->file_name_is_absolute( $values{site_path} ) ) {
+                return $app->errtrans("Invalid Request.");
+            }
+
+            if (   MT->config->TrimFilePath == 2
+                && $values{site_path} ne trim_path( $values{site_path} ) )
+            {
+                return $app->errtrans("The website root contains an inappropriate whitespace.");
+            }
         }
     }
 

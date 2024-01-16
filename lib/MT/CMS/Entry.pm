@@ -1251,6 +1251,12 @@ sub save {
         week_number               => [qw/MAYBE_STRING/],
     }) or return;
 
+    if ( MT->config->TrimFilePath == 2 ) {
+        my $basename = $app->param('basename');
+        return $app->error( $app->translate('The basename contains an inappropriate whitespace.') )
+            if $basename ne trim_path( $basename );
+    }
+
     $app->remove_preview_file;
 
     if ( $app->param('is_power_edit') ) {

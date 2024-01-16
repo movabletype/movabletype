@@ -9,7 +9,7 @@ use strict;
 use warnings;
 use Symbol;
 use MT::Util
-    qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex);
+    qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex trim_path );
 use MT::Util::Encode;
 
 my $default_thumbnail_size = 60;
@@ -529,6 +529,12 @@ sub js_upload_file {
     $app->validate_magic()
         or return $app->error(
         $app->json_error( $app->translate("Invalid Request.") ) );
+
+    if ( MT->config->TrimFilePath == 2 ) {
+        my $extra_path = $app->param('extra_path') || '';
+        return $app->json_error( $app->translate("The upload destination contains an inappropriate whitespace.") )
+            if $extra_path ne trim_path( $extra_path );
+    }
 
     # Save as asset
     my ( $asset, $bytes ) = _upload_file(
