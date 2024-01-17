@@ -14,8 +14,6 @@ use MT::Template::Handler;
 use MT::Util::Encode;
 use Scalar::Util 'weaken';
 
-our $Compiler = \&compilerPP;    # for now
-
 my @FilterOrder = qw(
     filters trim_to trim ltrim rtrim decode_html
     decode_xml remove_html dirify sanitize
@@ -65,7 +63,7 @@ sub compile {
     my $handlers  = $ctx->{__handlers};
     my $modifiers = $ctx->{__filters};
 
-    my $tokens = $Compiler->($handlers, $modifiers, $ids, $classes, $error, $text, $tmpl);
+    my $tokens = _compile($handlers, $modifiers, $ids, $classes, $error, $text, $tmpl);
 
     MT::Util::Encode::_utf8_on($text) if $turn_utf8_back;
 
@@ -93,7 +91,7 @@ sub compile {
     return $tokens;
 }
 
-sub compilerPP {
+sub _compile {
     my ($handlers, $modifiers, $ids, $classes, $error, $text, $tmpl, $parent) = @_;
 
     my $tokens = [];
@@ -223,7 +221,7 @@ sub compilerPP {
                             $rec->[EL_NODE_CHILDREN] = [$t_rec];
                         }
                     } else {
-                        $rec->[EL_NODE_CHILDREN] = compilerPP($handlers, $modifiers, $ids, $classes, $error, $sec, $tmpl, $rec);
+                        $rec->[EL_NODE_CHILDREN] = _compile($handlers, $modifiers, $ids, $classes, $error, $sec, $tmpl, $rec);
                     }
                     $rec->[EL_NODE_VALUE] = $sec;
                 } else {
