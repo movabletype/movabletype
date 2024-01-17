@@ -367,7 +367,6 @@ sub build {
         or return;
 
     my $tmpl_name = $tmpl->name || $tmpl->{__file} || "?";
-    my $real_file = $tmpl->{__real_file} || "?";
 
     if ( $tmpl->{errors} && @{ $tmpl->{errors} } ) {
         my $error = "";
@@ -434,6 +433,7 @@ sub build {
 
     my $res = $build->build( $ctx, $tokens, $cond );
     if (DEBUG) {
+        my $real_file = $tmpl->{__real_file} || "?";
         $res =~ s/\A\s+//s;
         $res =~ s/\s+\z//s;
         $res = join "",
