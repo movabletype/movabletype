@@ -259,6 +259,7 @@ subtest 'mode = dialog_list_deprecated_log' => sub {
     for my $sig (keys %MT::Plugins) {
         next unless MT->has_plugin($sig);
         my $plugin = $MT::Plugins{$sig}{object};
+        next unless $plugin->isa('MT::Plugin');
 
         MT::Test::Permission->make_log(
             blog_id  => 0,
