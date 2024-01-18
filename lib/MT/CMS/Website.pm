@@ -385,7 +385,7 @@ sub post_delete {
 
     $app->log(
         {   message => $app->translate(
-                "Website '[_1]' (ID:[_2]) deleted by '[_3]'",
+                "Site '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
             level    => MT::Log::NOTICE(),
