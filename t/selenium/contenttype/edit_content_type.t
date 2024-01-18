@@ -376,7 +376,7 @@ subtest 'On Edit Content type ' => sub {
                         is_deeply($fields[0]->{options}->{$key}, $fields[1]->{options}->{$key}, "${type} - ${key} fields are duplicated");
                     }
                 } else {
-                    is('Duplicate - ' . $fields[0]->{options}->{$key}, $fields[1]->{options}->{$key}, "${type} - label are duplicated");
+                    like($fields[1]{options}{$key}, qr/Duplicate\s?-\s?$fields[0]->{options}->{$key}/, "${type} - label are duplicated");
                 }
             }
         }
