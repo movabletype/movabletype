@@ -196,6 +196,7 @@ sub _hdlr_widget_manager {
         local $ctx->{__stash}{tag} = 'include';
         for my $widget (@widgets) {
             my $name = $widget->name;
+            $args->{blog_id} = $widget->blog_id;
             my $out  = $ctx->invoke_handler('include', { %$args, widget => $name, }, $cond);
 
             # if error is occurred, pass the include's errstr
