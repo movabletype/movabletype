@@ -757,7 +757,7 @@ abstract class MTDatabase {
     }
 
     public function get_template_text($ctx, $module, $blog_id = null, $type = 'custom', $global = null) {
-        if (empty($blog_id))
+        if (!isset($blog_id))
             $blog_id = $ctx->stash('blog_id');
 
         if ($type === 'custom' || $type === 'widget'|| $type === 'widgetset') {
