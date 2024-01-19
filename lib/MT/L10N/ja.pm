@@ -1157,7 +1157,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] (ID:[_2])' => '[_1] (ID:[_2])',
 	'[_1] changed from [_2] to [_3]' => '[_1]は[_2]から[_3]に変更されました',
 	q{'[_1]' (ID:[_2]) has been copied as '[_3]' (ID:[_4]) by '[_5]' (ID:[_6]).} => q{'[_1]' (ID:[_2]) が '[_3]' (ID:[_4]) として '[_5]' (ID: [_6]) によって複製されました。},
-	q{Blog '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])を削除しました。},
+	q{Site '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がサイト'[_1]'(ID:[_2])を削除しました},
 	q{The '[_1]' provided below is not writable by the web server. Change the directory ownership or permissions and try again.} => q{ウェブサーバーから書き込めません。[_1]の書き込み権限を確認してから、もう一度実行してください。},
 	q{[_1] '[_2]' (ID:[_3]) created by '[_4]'} => q{[_4]によって[_1]の「[_2]」(ID:[_3])が作成されました},
 	q{[_1] '[_2]'} => q{[_1]「[_2]」},
@@ -1645,7 +1645,6 @@ use vars qw( @ISA %Lexicon );
 	'Type a site name to filter the choices below.' => '以下の選択によって抽出されたサイト名を入力',
 	'Type a website name to filter the choices below.' => '以下の選択によって抽出されたウェブサイト名を入力',
 	q{Blog '[_1]' (ID:[_2]) moved from '[_3]' to '[_4]' by '[_5]'} => q{'[_5]'がブログ「[_1]」(ID:[_2])を[_3]から[_4]に移しました},
-	q{Website '[_1]' (ID:[_2]) deleted by '[_3]'} => q{[_3]によってウェブサイト「[_1]」(ID:[_2])が削除されました},
 
 ## lib/MT/Category.pm
 	'Categories must exist within the same blog' => 'カテゴリは親となるカテゴリと同じブログに作らなければなりません。',
