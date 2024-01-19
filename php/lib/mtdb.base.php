@@ -504,6 +504,23 @@ abstract class MTDatabase {
         return $result;
     }
 
+    public function fetch_widgetset($ctx, $name, $blog_ids) {
+        $db = $ctx->mt->db()->db();
+        $bind_values = is_array($blog_ids) ? $blog_ids : array($blog_ids);
+        $func = function($key) use(&$db) { return $db->Param($key); };
+        $placeholders = implode(",", array_map($func, array_keys($blog_ids)));
+        $where = "template_blog_id IN ($placeholders)";
+        $where .= " and template_name = ".$db->Param($name);
+        $where .= " and template_type = ".$db->Param('widgetset');
+        $where .= " order by template_blog_id desc";
+        array_push($bind_values, $name, 'widgetset');
+
+        require_once('class.mt_template.php');
+        $template = new Template;
+        $template->Load($where, $bind_values);
+        return $template;
+    }
+
     public function load_special_template($ctx, $tmpl, $type, $blog_id = null) {
         if (empty($blog_id))
             $blog_id = $ctx->stash('blog_id');

@@ -23,7 +23,21 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
             }
         }
     }
+    $blog_ids = [];
+    if (!empty($blog_id)) {
+        if (!empty($args['parent'])) {
+            $blog_ids = [$blog_id];
+        } else {
+            $blog_ids = [0, $blog_id];
+        }
+    } else {
+        $blog_ids = [0];
+    }
 
+    $widgetset = $ctx->mt->db()->fetch_widgetset($ctx, $widgetmanager, $blog_ids);
+    if (empty($widgetset)) {
+        return $ctx->error($ctx->mt->translate("Specified WidgetSet '[_1]' not found.", array($tmpl_name)));
+    }
 
     $tmpl = $ctx->mt->db()->get_template_text($ctx, $widgetmanager, $blog_id, 'widgetset', $args['global'] ?? null);
     if ( !isset($tmpl) || !$tmpl ) {
