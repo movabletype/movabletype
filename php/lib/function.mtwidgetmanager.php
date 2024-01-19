@@ -7,6 +7,11 @@
 
 require_once("function.mtinclude.php");
 function smarty_function_mtwidgetmanager($args, &$ctx) {
+    $widgetmanager = $args['name']; // Should we try to load is there's only one?
+    if (empty($widgetmanager)) {
+        return $ctx->error($ctx->mt->translate("name is required."));
+    }
+
     $blog_id = $args['blog_id'] ?? $ctx->stash('blog_id') ?? 0;
     if( isset( $args['parent'] ) ) {
       $_stash_blog = $ctx->stash( 'blog' );
@@ -15,9 +20,6 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
       }
     }
 
-    $widgetmanager = $args['name']; // Should we try to load is there's only one?
-    if (!$widgetmanager) 
-        return;
 
     $tmpl = $ctx->mt->db()->get_template_text($ctx, $widgetmanager, $blog_id, 'widgetset', $args['global'] ?? null);
     if ( !isset($tmpl) || !$tmpl ) {
