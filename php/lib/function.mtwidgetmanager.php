@@ -13,11 +13,15 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
     }
 
     $blog_id = $args['blog_id'] ?? $ctx->stash('blog_id') ?? 0;
-    if( isset( $args['parent'] ) ) {
-      $_stash_blog = $ctx->stash( 'blog' );
-      if( $_stash_blog->is_blog() ){
-        $blog_id = $_stash_blog->website()->id;
-      }
+    if(!empty($args['parent'])) {
+        $_stash_blog = $ctx->stash( 'blog' );
+        if (isset($_stash_blog)) {
+            if ( $_stash_blog->is_blog() ){
+                $blog_id = $_stash_blog->website()->id;
+            } else {
+                $blog_id = $_stash_blog->id;
+            }
+        }
     }
 
 
