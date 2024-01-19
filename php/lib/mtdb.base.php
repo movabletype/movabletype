@@ -521,6 +521,36 @@ abstract class MTDatabase {
         return $template;
     }
 
+    public function fetch_widgets_by_id($ctx, $ids) {
+        $db = $ctx->mt->db()->db();
+        $bind_values = is_array($ids) ? $ids : array($ids);
+        $func = function($key) use(&$db) { return $db->Param($key); };
+        $placeholders = implode(",", array_map($func, array_keys($ids)));
+        $where = "template_id IN ($placeholders)";
+
+        require_once('class.mt_template.php');
+        $template = new Template;
+        $result = $template->Find($where, $bind_values);
+        return $result;
+    }
+
+    public function fetch_widgets_by_name($ctx, $name, $blog_id) {
+        $db = $ctx->mt->db()->db();
+        $bind_values = array($blog_id, 0);
+        $func = function($key) use(&$db) { return $db->Param($key); };
+        $placeholders = implode(",", array_map($func, array_keys($bind_values)));
+        $where = "template_blog_id IN ($placeholders)";
+        $where .= " and template_name = ".$db->Param($name);
+        $where .= " and template_type = ".$db->Param('widget');
+        $where .= " order by template_blog_id asc";
+        array_push($bind_values, $name, 'widget');
+
+        require_once('class.mt_template.php');
+        $template = new Template;
+        $result = $template->Find($where, $bind_values);
+        return $result;
+    }
+
     public function load_special_template($ctx, $tmpl, $type, $blog_id = null) {
         if (empty($blog_id))
             $blog_id = $ctx->stash('blog_id');

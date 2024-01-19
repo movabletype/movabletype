@@ -38,11 +38,26 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
     if (empty($widgetset)) {
         return $ctx->error($ctx->mt->translate("Specified WidgetSet '[_1]' not found.", array($tmpl_name)));
     }
+    $modulesets = $widgetset->modulesets;
+    if (!empty($modulesets)) {
+        $contents = '';
+        $widget_ids = explode(',', $modulesets);
+        $widgets = $ctx->mt->db()->fetch_widgets_by_id($ctx, $widget_ids);
+        $widget_map = array();
+        foreach($widgets as $widget) {
+            $widget_map[$widget->id] = $widget;
+        }
+        foreach($widget_ids as $widget_id) {
+            $widget = $widget_map[$widget_id];
+            $contents .= $ctx->tag('include', array(
+                'widget'  => $widget->name,
+                'blog_id' => $widget->blog_id,
+            ));
+        }
 
-    $tmpl = $ctx->mt->db()->get_template_text($ctx, $widgetmanager, $blog_id, 'widgetset', $args['global'] ?? null);
-    if ( !isset($tmpl) || !$tmpl ) {
-        return '';
+        return $contents;
     }
+    $tmpl = $widgetset->text;
     if ( isset($tmpl) && $tmpl ) {
         // push to ctx->vars
         $ext_args = array();
@@ -57,10 +72,12 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
         $contents = '';
 
         if (preg_match_all('/widget\=\"([^"]+)\"/', $tmpl, $matches)) {
-            foreach ($matches[1] as $widget) {
+            foreach ($matches[1] as $name) {
+                $widgets = $ctx->mt->db()->fetch_widgets_by_name($ctx, $name, $blog_id);
+                $widget  = $widgets[0];
                 $contents .= $ctx->tag('include', array(
-                    'widget' => $widget,
-                    'blog_id' => $blog_id,
+                    'widget'  => $widget->name,
+                    'blog_id' => $widget->blog_id,
                 ));
             }
         }
