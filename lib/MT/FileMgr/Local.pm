@@ -122,7 +122,7 @@ sub _write_file {
     my $bytes = 0;
     if ( $fmgr->is_handle($from) ) {
         while ( my $len = read $from, my ($block), 8192 ) {
-            print FH $block;
+            print $FH $block;
             $bytes += $len;
         }
     }
