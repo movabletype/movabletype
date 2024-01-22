@@ -7,7 +7,7 @@
 # $Id$
 
 use strict;
-
+use warnings;
 use lib ( './', './lib', './extlib' );
 $| = 1;
 
