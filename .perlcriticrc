@@ -8,6 +8,12 @@ only = 1
 
 [InputOutput::ProhibitBarewordFileHandles]
 
+[TestingAndDebugging::RequireUseStrict]
+equivalent_modules = Modern::Perl
+
+[TestingAndDebugging::RequireUseWarnings]
+equivalent_modules = Modern::Perl
+
 [TooMuchCode::ProhibitUnusedConstant]
 
 [TooMuchCode::ProhibitUnusedImport]
