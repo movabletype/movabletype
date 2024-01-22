@@ -1,9 +1,14 @@
 only = 1
-include = Variables::ProhibitUnusedVariables
-include = ValuesAndExpressions::ProhibitDuplicateHashKeys
-include = InputOutput::ProhibitTwoArgOpen
-include = InputOutput::ProhibitBarewordFileHandles
-include = TooMuchCode::ProhibitUnusedImport TooMuchCode::ProhibitUnusedConstant
+
+[Variables::ProhibitUnusedVariables]
+
+[ValuesAndExpressions::ProhibitDuplicateHashKeys]
+
+[InputOutput::ProhibitTwoArgOpen]
+
+[InputOutput::ProhibitBarewordFileHandles]
+
+[TooMuchCode::ProhibitUnusedConstant]
 
 [TooMuchCode::ProhibitUnusedImport]
 ignored_modules = MT::Test::App
