@@ -9,7 +9,7 @@ use Test::Perl::Critic (-profile => "$FindBin::Bin/../.perlcriticrc", -verbose =
 my @files;
 for my $dir (qw( lib tools t xt build addons plugins )) {
     next unless -d $dir;
-    find( { wanted => \&_find, no_chdir => 1, follow => 1 }, $dir );
+    find( { wanted => \&_find, no_chdir => 1, follow_fast => 1 }, $dir );
 }
 push @files,
     ( grep { $_ !~ /mt-config\.cgi$/ } grep {/\.(cgi|psgi)$/} glob '*' );
