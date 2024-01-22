@@ -15,13 +15,13 @@ my %CustomURL = (
 
 our %Requirements = (
     "Archive::Tar" => {
-        label     => "This module is optional. It is used to manipulate files during backup and restore operations.",
+        label     => "This module is optional. It is used to manipulate files during import/export operations.",
         perl_core => 1.52,
         tags      => ["Archive"],
         url       => "https://metacpan.org/pod/Archive::Tar",
     },
     "Archive::Zip" => {
-        label => "This module is optional. It is used to manipulate files during backup and restore operations.",
+        label => "This module is optional. It is used to manipulate files during import/export operations.",
         note  => "1.66+ has a stray symlink issue",
         tags  => ["Archive"],
         url   => "https://metacpan.org/pod/Archive::Zip",
@@ -200,7 +200,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Imager",
     },
     "IO::Compress::Gzip" => {
-        label     => "IO::Compress::Gzip is required in order to compress files during a backup operation.",
+        label     => "IO::Compress::Gzip is required in order to compress files during an export operation.",
         perl_core => "2.020",
         tags      => ["Archive"],
         url       => "https://metacpan.org/pod/IO::Compress::Gzip",
@@ -211,7 +211,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/IO::Socket::SSL",
     },
     "IO::Uncompress::Gunzip" => {
-        label     => "IO::Uncompress::Gunzip is required in order to decompress files during a restore operation.",
+        label     => "IO::Uncompress::Gunzip is required in order to decompress files during an import operation.",
         perl_core => "2.020",
         tags      => ["Archive"],
         url       => "https://metacpan.org/pod/IO::Uncompress::Gunzip",
@@ -289,7 +289,7 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/LWP::UserAgent",
     },
     "MIME::Base64" => {
-        label     => "MIME::Base64 is required to send mail and handle blobs during backup/restore operations.",
+        label     => "MIME::Base64 is required to send mail and handle blobs during import/export operations.",
         perl_core => 3.08,
         tags      => ["Mail", "Encoding"],
         url       => "https://metacpan.org/pod/MIME::Base64",
@@ -392,7 +392,7 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/URI",
     },
     "XML::LibXML::SAX" => {
-        label   => "This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.",
+        label   => "This module is optional; It is one of the modules required to import an exported site and such.",
         tags    => ["XML", "Backup"],
         url     => "https://metacpan.org/pod/XML::LibXML::SAX",
         version => "1.70",
@@ -404,18 +404,18 @@ our %Requirements = (
     },
     "XML::SAX" => {
         extlib => 1.02,
-        label  => "XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.",
+        label  => "XML::SAX and its dependencies are required to import an exported site and such.",
         tags   => ["XML", "Backup"],
         url    => "https://metacpan.org/pod/XML::SAX",
     },
     "XML::SAX::Expat" => {
-        label   => "This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.",
+        label   => "This module is optional; It is one of the modules required to import an exported site and such.",
         tags    => ["XML", "Backup"],
         url     => "https://metacpan.org/pod/XML::SAX::Expat",
         version => 0.37,
     },
     "XML::SAX::ExpatXS" => {
-        label   => "This module is optional; It is one of the modules required to restore a backup created in a backup/restore operation.",
+        label   => "This module is optional; It is one of the modules required to import an exported site and such.",
         tags    => ["XML", "Backup"],
         url     => "https://metacpan.org/pod/XML::SAX::ExpatXS",
         version => "1.30",
