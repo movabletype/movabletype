@@ -68,6 +68,12 @@ sub terms {
     }
 }
 
+sub data_load_handler {
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
+    [ grep {defined $_ && $_ ne ''} $app->multi_param("content-field-${field_id}") ];
+}
+
 sub tag_handler {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
     my $tok     = $ctx->stash('tokens');
