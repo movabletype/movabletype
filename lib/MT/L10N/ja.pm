@@ -1056,9 +1056,8 @@ use vars qw( @ISA %Lexicon );
 	'Unknown tag found: [_1]' => '不明なタグです: [_1]',
 
 ## lib/MT/Builder/Fast.pm
-	'Found mismatched closing tag [_1] at line #' => '</mt:[_1]>に対応する<mt:[_1]>がありません(#行目)',
-	'Tag [_1] left unclosed at line #' => '<mt:[_1]>に対応する</mt:[_1]>がありません(#行目)',
-	'Undefined tag [_1] at line #' => '<mt:[_1]>は定義されていません(#行目)',
+	'<[_1]> at line # is unrecognized.' => '<[_1]>は存在しません(#行目)。',
+	'<[_1]> with no </[_1]> on line #.' => '<[_1]>に対応する</[_1]>がありません(#行目)。',
 	q{Publish error in template '[_1]': [_2]} => q{テンプレート「[_1]」の再構築中にエラーが発生しました: [_2]},
 
 ## lib/MT/CMS/AddressBook.pm
