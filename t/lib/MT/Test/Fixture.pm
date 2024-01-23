@@ -610,7 +610,6 @@ sub prepare_content_type {
             }
 
             my @field_spec_copy = @field_spec;
-            my %cfs;
             my @fields;
             while (my ($cf_name, $cf_spec) = splice @field_spec_copy, 0, 2) {
                 my %cf_arg;

@@ -4,6 +4,9 @@
 #
 
 package MT::Test;
+
+use strict;
+use warnings;
 use base qw( Exporter );
 
 our $VERSION = 0.9;
@@ -11,9 +14,6 @@ our @EXPORT  = qw(
     _run_app _run_rpt _run_tasks
     location_param_contains query_param_contains has_php
 );
-
-use strict;
-use warnings;
 
 # Handle cwd = MT_DIR, MT_DIR/t
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
