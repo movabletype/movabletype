@@ -16,6 +16,7 @@ sub field_html_params {
     my $value = $field_data->{value};
     $value = ''       unless defined $value;
     $value = [$value] unless ref $value eq 'ARRAY';
+    $value = ['']     unless @$value;
 
     my $required
         = $field_data->{options}{required} ? 'data-mt-required="1"' : '';
