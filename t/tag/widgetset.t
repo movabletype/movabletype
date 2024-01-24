@@ -58,3 +58,9 @@ __DATA__
 <MTWidgetSet name="global_widgetset">
 --- expected
 My global widget
+
+=== unknown widgetset
+--- template
+<MTWidgetSet name="unknown_widgetset">
+--- expected_error
+Specified WidgetSet 'unknown_widgetset' not found.
