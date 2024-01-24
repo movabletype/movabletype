@@ -39,7 +39,7 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
 
     $widgetset = $ctx->mt->db()->fetch_widgetset($ctx, $widgetmanager, $blog_ids);
     if (empty($widgetset)) {
-        return $ctx->error($ctx->mt->translate("Specified WidgetSet '[_1]' not found.", array($tmpl_name)));
+        return $ctx->error($ctx->mt->translate("Specified WidgetSet '[_1]' not found.", array($widgetmanager)));
     }
     $modulesets = $widgetset->modulesets;
     if (!empty($modulesets)) {
