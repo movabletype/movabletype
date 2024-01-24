@@ -517,7 +517,8 @@ abstract class MTDatabase {
 
         require_once('class.mt_template.php');
         $template = new Template;
-        $template->Load($where, $bind_values);
+        $res = $template->Load($where, $bind_values);
+        if (empty($res)) return null;
         return $template;
     }
 
