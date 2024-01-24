@@ -18,6 +18,9 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
         if (isset($_stash_blog)) {
             if ( $_stash_blog->is_blog() ){
                 $blog_id = $_stash_blog->website()->id;
+                if (empty($blog_id)) {
+                    return '';
+                }
             } else {
                 $blog_id = $_stash_blog->id;
             }
