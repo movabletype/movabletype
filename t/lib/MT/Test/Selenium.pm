@@ -268,6 +268,14 @@ sub find {
     $self;
 }
 
+sub get_current_value {
+    my ($self, $selector, $prop_name) = @_;
+    $prop_name ||= 'value';
+    $selector = quotemeta($selector);
+    $prop_name = quotemeta($prop_name);
+    wait_until { $self->driver->execute_script("return jQuery('$selector').prop('$prop_name');") };
+}
+
 sub mt_url {
     my ( $self, $params ) = @_;
     my $url = $self->base_url;
