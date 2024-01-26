@@ -161,14 +161,21 @@ sub _compile {
         {
             if (defined $7) {
                 # An unnamed attribute gets stored in the 'name' argument.
-                $args{'name'} = $7;
+                my $name = $7;
+                MT::Util::Encode::_utf8_on($name);
+                $args{'name'} = $name;
             } else {
                 my $attr  = lc $1;
                 my $value = defined $6 ? $6 : $3;
                 my $extra = $4;
+                MT::Util::Encode::_utf8_on($value);
                 if (defined $extra) {
                     my @extra;
-                    push @extra, $2 while $extra =~ m/[,:](["'])((?:<[^>]+?>|.)*?)\1/gs;
+                    while ($extra =~ m/[,:](["'])((?:<[^>]+?>|.)*?)\1/gs) {
+                        my $extra_value = $2;
+                        MT::Util::Encode::_utf8_on($extra_value);
+                        push @extra, $extra_value;
+                    }
                     $value = [$value, @extra];
                 }
 
