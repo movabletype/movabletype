@@ -73,6 +73,17 @@ TMPL
 TMPL
     }];
 
+$spec->{tag} = [map({ 'tag' . $_ } 1 .. 15), '0'];
+for my $i (1..15) {
+    $spec->{content_data}{"cd_tag$i"} = {
+        content_type => 'ct',
+        author       => 'author',
+        data         => {
+            cf_tags => ["tag$i"],
+        },
+    };
+}
+
 my $objs = MT::Test::Fixture->prepare($spec);
 
 my $blog_id       = $objs->{blog_id};
@@ -182,6 +193,17 @@ subtest 'No uuv with bogus SearchMaxResults' => sub {
     });
     ok !@warnings, "no warnings" or note explain \@warnings;
     ok $app->generic_error, "showed an error message: " . $app->generic_error;
+};
+
+subtest 'tag field' => sub {
+    my $app = MT::Test::App->new('MT::App::Search::ContentData');
+    $app->get_ok({
+        blog_id            => $blog_id,
+        SearchContentTypes => qq{"$ct_name"},
+        content_field      => 'tags:1',
+    });
+    my @divs = $app->wq_find('div#results div');
+    is_deeply [map { $_->attr('class') } @divs] => [qw/cd cd_tag1/];
 };
 
 done_testing;
