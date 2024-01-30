@@ -21,7 +21,7 @@ use vars qw($VERSION $AUTOLOAD $lastFetched);
 use Image::ExifTool qw(:DataAccess :Utils);
 require Exporter;
 
-$VERSION = '1.55';
+$VERSION = '1.57';
 
 sub FetchObject($$$$);
 sub ExtractObject($$;$$);
@@ -41,7 +41,7 @@ my $cryptStream;    # flag that streams are encrypted
 my $lastOffset;     # last fetched object offset
 my %streamObjs;     # hash of stream objects
 my %fetched;        # dicts fetched in verbose mode (to avoid cyclical recursion)
-my $pdfVer;         # version of PDF file being processed
+my $pdfVer;         # version of PDF file being processed (from header)
 
 # filters supported in DecodeStream()
 my %supportedFilter = (
@@ -109,12 +109,24 @@ my %supportedFilter = (
     Title       => { },
     Author      => { Groups => { 2 => 'Author' } },
     Subject     => { },
-    Keywords    => { List => 'string' },  # this is a string list
+    Keywords    => {
+        List => 'string',  # this is a string list
+        Notes => q{
+            stored as a string but treated as a comma- or semicolon-separated list of
+            items when reading if the string contains commas or semicolons, whichever is
+            more numerous, otherwise it is treated a space-separated list of items.
+            Written as a comma-separated list.  The list behaviour may be defeated by
+            setting the API NoPDFList option.  Note that the corresponding
+            XMP-pdf:Keywords tag is not treated as a list, so the NoPDFList option
+            should be used when copying between these two.
+        },
+    },
     Creator     => { },
     Producer    => { },
     CreationDate => {
         Name => 'CreateDate',
         Writable => 'date',
+        PDF2 => 1,  # not deprecated in PDF 2.0
         Groups => { 2 => 'Time' },
         Shift => 'Time',
         PrintConv => '$self->ConvertDateTime($val)',
@@ -123,6 +135,7 @@ my %supportedFilter = (
     ModDate => {
         Name => 'ModifyDate',
         Writable => 'date',
+        PDF2 => 1,  # not deprecated in PDF 2.0
         Groups => { 2 => 'Time' },
         Shift => 'Time',
         PrintConv => '$self->ConvertDateTime($val)',
@@ -168,7 +181,10 @@ my %supportedFilter = (
     Lang       => 'Language',
     PageLayout => { },
     PageMode   => { },
-    Version    => 'PDFVersion',
+    Version    => {
+        Name => 'PDFVersion',
+        RawConv => '$$self{PDFVersion} = $val if $$self{PDFVersion} < $val; $val',
+    },
 );
 
 # tags extracted from the PDF Encrypt dictionary
@@ -1749,12 +1765,13 @@ sub ExpandArray($)
 #         4) nesting depth, 5) dictionary capture type
 sub ProcessDict($$$$;$$)
 {
+    local $_;
     my ($et, $tagTablePtr, $dict, $xref, $nesting, $type) = @_;
     my $verbose = $et->Options('Verbose');
     my $unknown = $$tagTablePtr{EXTRACT_UNKNOWN};
     my $embedded = (defined $unknown and not $unknown and $et->Options('ExtractEmbedded'));
     my @tags = @{$$dict{_tags}};
-    my ($next, %join);
+    my ($next, %join, $validInfo);
     my $index = 0;
 
     $nesting = ($nesting || 0) + 1;
@@ -1775,6 +1792,7 @@ sub ProcessDict($$$$;$$)
             last;
         }
     }
+    $validInfo = ($et->Options('Validate') and $tagTablePtr eq \%Image::ExifTool::PDF::Info);
 #
 # extract information from all tags in the dictionary
 #
@@ -1809,6 +1827,10 @@ sub ProcessDict($$$$;$$)
             } else {
                 $isSubDoc = 1;  # treat as a sub-document
             }
+        }
+        if ($validInfo and $$et{PDFVersion} >= 2.0 and (not $tagInfo or not $$tagInfo{PDF2})) {
+            my $name = $tagInfo ? ":$$tagInfo{Name}" : " Info tag '${tag}'";
+            $et->Warn("PDF$name is deprecated in PDF 2.0");
         }
         if ($verbose) {
             my ($val2, $extra);
@@ -2007,10 +2029,16 @@ sub ProcessDict($$$$;$$)
                 }
                 if ($$tagInfo{List} and not $$et{OPTIONS}{NoPDFList}) {
                     # separate tokens in comma or whitespace delimited lists
-                    my @values = ($val =~ /,/) ? split /,+\s*/, $val : split ' ', $val;
-                    foreach $val (@values) {
-                        $et->FoundTag($tagInfo, $val);
+                    my $comma = $val =~ tr/,/,/;
+                    my $semi = $val =~ tr/;/;/;
+                    my $split;
+                    if ($comma or $semi) {
+                        $split = $comma > $semi ? ',+\\s*' : ';+\\s*';
+                    } else {
+                        $split = ' ';
                     }
+                    my @values = split $split, $val;
+                    $et->FoundTag($tagInfo, $_) foreach @values;
                 } else {
                     # a simple tag value
                     $et->FoundTag($tagInfo, $val);
@@ -2118,9 +2146,8 @@ sub ReadPDF($$)
     $raf->Read($buff, 1024) >= 8 or return 0;
     $buff =~ /^(\s*)%PDF-(\d+\.\d+)/ or return 0;
     $$et{PDFBase} = length $1 and $et->Warn('PDF header is not at start of file',1);
-    $pdfVer = $2;
+    $pdfVer = $$et{PDFVersion} = $2;
     $et->SetFileType();   # set the FileType tag
-    $et->Warn("The PDF $pdfVer specification is held hostage by the ISO") if $pdfVer >= 2.0;
     # store PDFVersion tag
     my $tagTablePtr = GetTagTable('Image::ExifTool::PDF::Root');
     $et->HandleTag($tagTablePtr, 'Version', $pdfVer);
@@ -2384,12 +2411,12 @@ This module is loaded automatically by Image::ExifTool when required.
 This code reads meta information from PDF (Adobe Portable Document Format)
 files.  It supports object streams introduced in PDF-1.5 but only with a
 limited set of Filter and Predictor algorithms, however all standard
-encryption methods through PDF-1.7 extension level 3 are supported,
-including AESV2 (AES-128) and AESV3 (AES-256).
+encryption methods through PDF-2.0 are supported, including AESV2 (AES-128)
+and AESV3 (AES-256).
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2023, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

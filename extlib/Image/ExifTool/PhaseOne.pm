@@ -15,7 +15,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.07';
+$VERSION = '1.09';
 
 sub WritePhaseOne($$$);
 sub ProcessPhaseOne($$$);
@@ -84,6 +84,7 @@ my @formatName = ( undef, 'string', 'int16s', undef, 'int32s' );
         Name => 'RawData',
         Format => 'undef', # (actually 2-byte integers, but don't convert)
         Binary => 1,
+        IsImageData => 1,
         PutFirst => 1,
         Writable => 0,
         Drop => 1, # don't copy to other file types
@@ -584,6 +585,7 @@ sub ProcessPhaseOne($$$)
     my $dirLen = $$dirInfo{DirLen} || $$dirInfo{DataLen} - $dirStart;
     my $binary = $et->Options('Binary');
     my $verbose = $et->Options('Verbose');
+    my $hash = $$et{ImageDataHash};
     my $htmlDump = $$et{HTML_DUMP};
 
     return 0 if $dirLen < 12;
@@ -676,6 +678,17 @@ sub ProcessPhaseOne($$$)
                 }
             }
         }
+        if ($hash and $tagInfo and $$tagInfo{IsImageData}) {
+            my ($pos, $len) = ($valuePtr, $size);
+            while ($len) {
+                my $n = $len > 65536 ? 65536 : $len;
+                my $tmp = substr($$dataPt, $pos, $n);
+                $hash->add($tmp);
+                $len -= $n;
+                $pos += $n;
+            }
+            $et->VPrint(0, "$$et{INDENT}(ImageDataHash: $size bytes of PhaseOne:$$tagInfo{Name})\n");
+        }
         my %parms = (
             DirName => $ifdType,
             Index   => $index,
@@ -712,7 +725,7 @@ One maker notes.
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2023, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

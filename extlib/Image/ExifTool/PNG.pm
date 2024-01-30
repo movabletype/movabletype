@@ -36,7 +36,7 @@ use strict;
 use vars qw($VERSION $AUTOLOAD %stdCase);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.60';
+$VERSION = '1.65';
 
 sub ProcessPNG_tEXt($$$);
 sub ProcessPNG_iTXt($$$);
@@ -80,6 +80,7 @@ my %pngMap = (
     ICC_Profile  => 'PNG',
     Photoshop    => 'PNG',
    'PNG-pHYs'    => 'PNG',
+    JUMBF        => 'PNG',
     IPTC         => 'Photoshop',
     MakerNotes   => 'ExifIFD',
 );
@@ -339,6 +340,17 @@ my %noLeapFrog = ( SAVE => 1, SEEK => 1, IHDR => 1, JHDR => 1, IEND => 1, MEND =
         #    int32u DividedHeight2
         #    int32u IDAT_Offset2 [location of IDAT with start of DividedHeight2 segment]
     },
+    caBX => { # C2PA metadata
+        Name => 'JUMBF',
+        Deletable => 1,
+        SubDirectory => { TagTable => 'Image::ExifTool::Jpeg2000::Main' },
+    },
+    cICP => {
+        Name => 'CICodePoints',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::PNG::CICodePoints',
+        },
+    },
 );
 
 # PNG IHDR chunk
@@ -421,6 +433,79 @@ my %noLeapFrog = ( SAVE => 1, SEEK => 1, IHDR => 1, JHDR => 1, IEND => 1, MEND =
         PrintConv => { 0 => 'Unknown', 1 => 'meters' },
         Notes => 'default meters',
     },
+);
+
+# PNG cICP chunk
+%Image::ExifTool::PNG::CICodePoints = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 1 => 'PNG-cICP', 2 => 'Image' },
+    NOTES => q{
+        These tags are found in the PNG cICP chunk and belong to the PNG-cICP family
+        1 group.
+    },
+    # (same as tags in QuickTime::ColorRep)
+    0 => {
+        Name => 'ColorPrimaries',
+        PrintConv => {
+            1 => 'BT.709',
+            2 => 'Unspecified',
+            4 => 'BT.470 System M (historical)',
+            5 => 'BT.470 System B, G (historical)',
+            6 => 'BT.601',
+            7 => 'SMPTE 240',
+            8 => 'Generic film (color filters using illuminant C)',
+            9 => 'BT.2020, BT.2100',
+            10 => 'SMPTE 428 (CIE 1921 XYZ)',
+            11 => 'SMPTE RP 431-2',
+            12 => 'SMPTE EG 432-1',
+            22 => 'EBU Tech. 3213-E',
+        },
+    },
+    1 => {
+        Name => 'TransferCharacteristics',
+        PrintConv => {
+            0 => 'For future use (0)',
+            1 => 'BT.709',
+            2 => 'Unspecified',
+            3 => 'For future use (3)',
+            4 => 'BT.470 System M (historical)',
+            5 => 'BT.470 System B, G (historical)',
+            6 => 'BT.601',
+            7 => 'SMPTE 240 M',
+            8 => 'Linear',
+            9 => 'Logarithmic (100 : 1 range)',
+            10 => 'Logarithmic (100 * Sqrt(10) : 1 range)',
+            11 => 'IEC 61966-2-4',
+            12 => 'BT.1361',
+            13 => 'sRGB or sYCC',
+            14 => 'BT.2020 10-bit systems',
+            15 => 'BT.2020 12-bit systems',
+            16 => 'SMPTE ST 2084, ITU BT.2100 PQ',
+            17 => 'SMPTE ST 428',
+            18 => 'BT.2100 HLG, ARIB STD-B67',
+        },
+    },
+    2 => {
+        Name => 'MatrixCoefficients',
+        PrintConv => {
+            0 => 'Identity matrix',
+            1 => 'BT.709',
+            2 => 'Unspecified',
+            3 => 'For future use (3)',
+            4 => 'US FCC 73.628',
+            5 => 'BT.470 System B, G (historical)',
+            6 => 'BT.601',
+            7 => 'SMPTE 240 M',
+            8 => 'YCgCo',
+            9 => 'BT.2020 non-constant luminance, BT.2100 YCbCr',
+            10 => 'BT.2020 constant luminance',
+            11 => 'SMPTE ST 2085 YDzDx',
+            12 => 'Chromaticity-derived non-constant luminance',
+            13 => 'Chromaticity-derived constant luminance',
+            14 => 'BT.2100 ICtCp',
+        },
+    },
+    3 => 'VideoFullRangeFlag',
 );
 
 # PNG sCAL chunk
@@ -536,6 +621,8 @@ my %unreg = ( Notes => 'unregistered' );
     Label       => { %unreg },
     Make        => { %unreg, Groups => { 2 => 'Camera' } },
     Model       => { %unreg, Groups => { 2 => 'Camera' } },
+    # parameters      (written by Stable Diffusion)
+    # aesthetic_score (written by Stable Diffusion)
    'create-date'=> {
         Name => 'CreateDate',
         Groups => { 2 => 'Time' },
@@ -1289,6 +1376,7 @@ sub ProcessPNG($$)
     my $datCount = 0;
     my $datBytes = 0;
     my $fastScan = $et->Options('FastScan');
+    my $hash = $$et{ImageDataHash};
     my ($n, $sig, $err, $hbuf, $dbuf, $cbuf);
     my ($wasHdr, $wasEnd, $wasDat, $doTxt, @txtOffset);
 
@@ -1368,6 +1456,7 @@ sub ProcessPNG($$)
             if ($datCount and $chunk ne $datChunk) {
                 my $s = $datCount > 1 ? 's' : '';
                 print $out "$fileType $datChunk ($datCount chunk$s, total $datBytes bytes)\n";
+                print $out "$$et{INDENT}(ImageDataHash: $datBytes bytes of $datChunk data)\n" if $hash;
                 $datCount = $datBytes = 0;
             }
         }
@@ -1454,7 +1543,12 @@ sub ProcessPNG($$)
                 }
             # skip over data chunks if possible/necessary
             } elsif (not $validate or $len > $chunkSizeLimit) {
-                $raf->Seek($len + 4, 1) or $et->Warn('Seek error'), last;
+                if ($hash) {
+                    $et->ImageDataHash($raf, $len);
+                    $raf->Read($cbuf, 4) == 4 or $et->Warn('Truncated data'), last;
+                } else {
+                    $raf->Seek($len + 4, 1) or $et->Warn('Seek error'), last;
+                }
                 next;
             }
         } elsif ($wasDat and $isTxtChunk{$chunk}) {
@@ -1473,6 +1567,7 @@ sub ProcessPNG($$)
             $et->Warn("Corrupted $fileType image") unless $wasEnd;
             last;
         }
+        $hash->add($dbuf) if $hash and $datChunk;   # add to hash if necessary
         if ($verbose or $validate or ($outfile and not $fastScan)) {
             # check CRC when in verbose mode (since we don't care about speed)
             my $crc = CalculateCRC(\$hbuf, undef, 4);
@@ -1561,7 +1656,7 @@ and JNG (JPEG Network Graphics) images.
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2023, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -58,7 +58,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 use Image::ExifTool::HP;
 
-$VERSION = '3.41';
+$VERSION = '3.44';
 
 sub CryptShutterCount($$);
 sub PrintFilter($$$);
@@ -72,10 +72,7 @@ sub DecodeAFPoints($$$$;$);
     Notes => q{
         The first number gives the series of the lens, and the second identifies the
         lens model.  Note that newer series numbers may not always be properly
-        identified by cameras running older firmware versions.  Decimal values have
-        been added to differentiate lenses which would otherwise have the same
-        LensType, and are used by the Composite LensID tag when attempting to
-        identify the specific lens model.
+        identified by cameras running older firmware versions.
     },
     OTHER => sub {
         my ($val, $inv, $conv) = @_;
@@ -178,6 +175,7 @@ sub DecodeAFPoints($$$$;$);
     '4 2' => 'smc PENTAX-FA 80-320mm F4.5-5.6',
     '4 3' => 'smc PENTAX-FA 43mm F1.9 Limited',
     '4 6' => 'smc PENTAX-FA 35-80mm F4-5.6',
+    '4 7' => 'Irix 45mm F1.4', #27
     '4 8' => 'Irix 150mm F2.8 Macro', #exiv2 issue 1084
     '4 9' => 'Irix 11mm F4 Firefly', #27
     '4 10' => 'Irix 15mm F2.4', #27
@@ -268,6 +266,7 @@ sub DecodeAFPoints($$$$;$);
     '6 14' => 'smc PENTAX-FA* Macro 200mm F4 ED[IF]',
     '7 0' => 'smc PENTAX-DA 21mm F3.2 AL Limited', #13
     '7 58' => 'smc PENTAX-D FA Macro 100mm F2.8 WR', #PH - this bit of information cost me $600 ;)
+  # '7 58' also 'HD PENTAX-D FA MACRO 100mm F2.8 ED AW' (ref 27)
     '7 75' => 'Tamron SP AF 70-200mm F2.8 Di LD [IF] Macro (A001)', #(Anton Bondar)
     '7 201' => 'smc Pentax-DA L 50-200mm F4-5.6 ED WR', #(Bruce Rusk)
     '7 202' => 'smc PENTAX-DA L 18-55mm F3.5-5.6 AL WR', #29
@@ -557,6 +556,8 @@ my %pentaxModelID = (
     0x13240 => 'K-1 Mark II', # (Ricoh)
     0x13254 => 'K-3 Mark III', #IB (Ricoh)
     0x13290 => 'WG-70', # (Ricoh)
+    0x1329a => 'GR IIIx', # (Ricoh)
+    0x132d6 => 'K-3 Mark III Monochrome', #github226 (Ricoh)
 );
 
 # Pentax city codes - (PH, Optio WP)
@@ -972,6 +973,7 @@ my %binaryDataAttrs = (
             5 => 'Premium', #PH (K20D)
             7 => 'RAW (pixel shift enabled)', #forum6536 (K-3 II)
             8 => 'Dynamic Pixel Shift', #IB
+            9 => 'Monochrome', #github226
             65535 => 'n/a', #PH (Q MOV video)
         },
     },
@@ -2145,6 +2147,7 @@ my %binaryDataAttrs = (
             11 => 'Flat', #31 (K-70)
             # 256 - seen for GR III
             # 262 - seen for GR III
+            32768 => 'n/a',
         },
     },
     0x0050 => { #PH
@@ -2231,6 +2234,7 @@ my %binaryDataAttrs = (
             18 => '18 (KP)', #PH
             19 => '19 (GR III)', #PH
             20 => '20 (K-3III)', #PH
+            21 => '21 (K-3IIIMonochrome)', #github226
         },
     },
     0x0067 => { #PH (K-5)
@@ -4081,6 +4085,7 @@ my %binaryDataAttrs = (
         ValueConvInv => '$val=~s/\.\d+$//; $val',
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
+        PrintInt => 1,
     },
     3 => { #PH
         Name => 'ExtenderStatus',
@@ -4104,6 +4109,7 @@ my %binaryDataAttrs = (
         ValueConvInv => '$val=~s/\.\d+$//; $val',
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
+        PrintInt => 1,
     },
     3 => {
         Name => 'LensData',
@@ -4139,6 +4145,7 @@ my %binaryDataAttrs = (
         },
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
+        PrintInt => 1,
     },
     4 => {
         Name => 'LensData',
@@ -4174,6 +4181,7 @@ my %binaryDataAttrs = (
         },
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
+        PrintInt => 1,
     },
     13 => {
         Name => 'LensData',
@@ -4209,6 +4217,7 @@ my %binaryDataAttrs = (
         },
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
+        PrintInt => 1,
     },
     12 => {
         Name => 'LensData',
@@ -4245,6 +4254,7 @@ my %binaryDataAttrs = (
         },
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
+        PrintInt => 1,
     },
     15 => {
         Name => 'LensData',
@@ -6320,7 +6330,7 @@ tags, and everyone who helped contribute to the LensType values.
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2023, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
