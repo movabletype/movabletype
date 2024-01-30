@@ -343,9 +343,16 @@ $test_env->prepare_fixture(sub {
     $ct->save or die $ct->errstr;
 });
 
+if (!$before_fields) {
+    my $ct = MT::ContentType->load({name => 'test content data'});
+    $before_fields = $ct->fields;
+}
+
 my $author = MT->model('author')->load(1) or die MT->model('author')->errstr;
 $author->set_password('Nelson');
 $author->save or die $author->errstr;
+
+$test_env->clear_mt_cache;
 
 use Class::Inspector;
 
