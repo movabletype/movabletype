@@ -157,40 +157,6 @@
         </mt:loop>
         </select>
     </mtapp:setting>
-
-    <mtapp:setting
-       id="has-license"
-       label="<__trans phrase="License">">
-      <div id="has-license" style="display: none;">
-      <mt:if name="cc_license">
-        <a href="<mt:var name="cc_license_url" escape="html">"><img src="<mt:var name="cc_license_image_url" escape="html">" /></a>
-      </mt:if>
-        <p>
-      <mt:if name="is_blog">
-          <__trans phrase="Your child site is currently licensed under:">
-      <mt:else>
-          <__trans phrase="Your site is currently licensed under:">
-      </mt:if>
-          <strong id="cc-license-name"><mt:var name="cc_license_name"></strong>
-        </p>
-        <span class="actions-link">
-          <a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Change license"></a>
-          |
-          <a href="javascript:void(0);" onclick="return doRemoveLicense();"><__trans phrase="Remove license"></a>
-        </span>
-      </div>
-      <div id="no-license" style="display: none;">
-        <p>
-      <mt:if name="is_blog">
-          <__trans phrase="Your child site does not have an explicit Creative Commons license.">
-      <mt:else>
-          <__trans phrase="Your site does not have an explicit Creative Commons license.">
-      </mt:if>
-        </p>
-        <a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Select a license"></a>
-      </div>
-      <input type="hidden" name="cc_license" value="<mt:var name="cc_license" escape="html">" />
-    </mtapp:setting>
   </mtapp:settinggroup>
 
 <mt:if name="can_set_publish_paths">
