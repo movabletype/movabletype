@@ -600,10 +600,8 @@ sub _hdlr_website_cc_license_image {
     my $website = $blog->website
         or return $ctx->_no_parent_website_error();
     my $cc = $website->cc_license or return '';
-    my ( $code, $license, $image_url ) = $cc =~ /(\S+) (\S+) (\S+)/;
-    return $image_url if $image_url;
-    "http://creativecommons.org/images/public/"
-        . ( $cc eq 'pd' ? 'norights' : 'somerights' );
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::cc_image($cc);
 }
 
 ###########################################################################

@@ -851,10 +851,8 @@ sub _hdlr_blog_cc_license_image {
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $cc = $blog->cc_license or return '';
-    my ( $code, $license, $image_url ) = $cc =~ /(\S+) (\S+) (\S+)/;
-    return $image_url if $image_url;
-    "http://creativecommons.org/images/public/"
-        . ( $cc eq 'pd' ? 'norights' : 'somerights' );
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::cc_image($cc);
 }
 
 ###########################################################################
