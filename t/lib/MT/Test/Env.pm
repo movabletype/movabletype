@@ -277,6 +277,23 @@ sub image_drivers {
     map { my $tmp = basename($_); $tmp =~ s/\.pm$//; $tmp } glob "$MT_HOME/lib/MT/Image/*.pm";
 }
 
+sub suppress_deprecated_warnings {
+    my $self = shift;
+    if (!@_ or $_[0]) {
+        my $sub = $self->{deprecation_handler} //= sub {};
+        if (@_ && ref $_[0] eq 'CODE') {
+            $sub = $_[0];
+            $self->{deprecation_handler} = $sub;
+        }
+        require MT::Util::Deprecated;
+        $self->{mocked_deprecation_handler} = Mock::MonkeyPatch->patch(
+            'MT::Util::Deprecated::warning' => subname 'mocked_deprecation_handler' => $sub,
+        );
+    } elsif (@_ && !$_[0]) {
+        delete $self->{mocked_deprecation_handler};
+    }
+}
+
 sub cluck_errors {
     my $self = shift;
     if (!@_ or $_[0]) {
@@ -787,6 +804,8 @@ sub detect_basename_collision {
 
 sub prepare_fixture {
     my $self = shift;
+
+    $self->suppress_deprecated_warnings unless $ENV{MT_TEST_WARN_DEPRECATION};
 
     if (grep { $ENV{"MT_TEST_$_"} } qw/ LANG /) {
         $ENV{MT_TEST_IGNORE_FIXTURE} = 1;
