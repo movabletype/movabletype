@@ -926,7 +926,8 @@ RDF
 </Work>
 RDF
     }
-    $rdf .= MT::Util::cc_rdf($cc) . "</rdf:RDF>\n-->\n";
+    require MT::Util::Deprecated;
+    $rdf .= MT::Util::Deprecated::cc_rdf($cc) . "</rdf:RDF>\n-->\n";
     $rdf;
 }
 
