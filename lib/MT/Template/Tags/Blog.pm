@@ -906,9 +906,9 @@ RDF
             unless $arg->{with_index};
         $rdf .= <<RDF;
 <Work rdf:about="$link">
-<dc:title>@{[ encode_xml($strip_hyphen->($entry->title)) ]}</dc:title>
-<dc:description>@{[ encode_xml($strip_hyphen->($ctx->invoke_handler('entryexcerpt', @_))) ]}</dc:description>
-<dc:creator>@{[ encode_xml($strip_hyphen->($author_name)) ]}</dc:creator>
+<dc:title>@{[ MT::Util::encode_xml($strip_hyphen->($entry->title)) ]}</dc:title>
+<dc:description>@{[ MT::Util::encode_xml($strip_hyphen->($ctx->invoke_handler('entryexcerpt', @_))) ]}</dc:description>
+<dc:creator>@{[ MT::Util::encode_xml($strip_hyphen->($author_name)) ]}</dc:creator>
 <dc:date>@{[ $ctx->invoke_handler( 'entrydate', { 'format' => "%Y-%m-%dT%H:%M:%S" }) .
              $ctx->invoke_handler('blogtimezone', @_) ]}</dc:date>
 <license rdf:resource="$cc_url" />
@@ -918,8 +918,8 @@ RDF
     else {
         $rdf .= <<RDF;
 <Work rdf:about="@{[ $blog->site_url ]}">
-<dc:title>@{[ encode_xml($strip_hyphen->($blog->name)) ]}</dc:title>
-<dc:description>@{[ encode_xml($strip_hyphen->($blog->description)) ]}</dc:description>
+<dc:title>@{[ MT::Util::encode_xml($strip_hyphen->($blog->name)) ]}</dc:title>
+<dc:description>@{[ MT::Util::encode_xml($strip_hyphen->($blog->description)) ]}</dc:description>
 <license rdf:resource="$cc_url" />
 </Work>
 RDF
