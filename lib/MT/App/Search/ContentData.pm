@@ -747,7 +747,7 @@ sub _join_content_field {
             || $data_type eq 'blob';
         my $search_column = "value_$data_type";
         my %columns       = (
-            $search_column => ( $search_column eq 'integer' ) ? 1 : 'like', );
+            $search_column => ( $data_type eq 'integer' ) ? 1 : 'like', );
         my %filter_types = ();
         my ($terms)
             = $app->_query_parse_core( $lucene_struct, \%columns,
