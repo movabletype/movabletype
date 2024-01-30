@@ -109,14 +109,6 @@ sub edit {
             $lang = 'ja' if lc($lang) eq 'jp';
             $param->{ 'language_' . $lang } = 1;
 
-            if ( $obj->cc_license ) {
-                $param->{cc_license_name}
-                    = MT::Util::cc_name( $obj->cc_license );
-                $param->{cc_license_image_url}
-                    = MT::Util::cc_image( $obj->cc_license );
-                $param->{cc_license_url}
-                    = MT::Util::cc_url( $obj->cc_license );
-            }
             if (   $obj->column('archive_path')
                 || $obj->column('archive_url') )
             {
