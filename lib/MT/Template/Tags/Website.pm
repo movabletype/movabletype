@@ -541,7 +541,7 @@ sub _hdlr_website_timezone {
 A conditional tag that is true when the current website in context has
 been assigned a Creative Commons License.
 
-=for tags websites, creativecommons
+=for tags websites, creativecommons, deprecated
 
 =cut
 
@@ -562,7 +562,7 @@ Publishes the license URL of the Creative Commons logo appropriate
 to the license assigned to the website inc ontex.t If the website doesn't
 have a Creative Commons license, this tag returns an empty string.
 
-=for tags websites, creativecommons
+=for tags websites, creativecommons, deprecated
 
 =cut
 
@@ -589,7 +589,7 @@ B<Example:>
     <img src="<$MTWebsiteCCLicenseImage$>" alt="Creative Commons" />
     </MTIf>
 
-=for tags website, creativecommons
+=for tags website, creativecommons, deprecated
 
 =cut
 

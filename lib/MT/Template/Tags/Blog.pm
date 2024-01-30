@@ -260,7 +260,7 @@ sub _loop {
 A conditional tag that is true when the current blog in context has
 been assigned a Creative Commons License.
 
-=for tags blogs, creativecommons
+=for tags blogs, creativecommons, deprecated
 
 =cut
 
@@ -269,7 +269,7 @@ been assigned a Creative Commons License.
 A conditional tag that is true when the current site in context has
 been assigned a Creative Commons License.
 
-=for tags sites, creativecommons
+=for tags sites, creativecommons, deprecated
 
 =cut
 
@@ -791,7 +791,7 @@ Publishes the license URL of the Creative Commons logo appropriate
 to the license assigned to the blog in context. If the blog doesn't
 have a Creative Commons license, this tag returns an empty string.
 
-=for tags blogs, creativecommons
+=for tags blogs, creativecommons, deprecated
 
 =cut
 
@@ -801,7 +801,7 @@ Publishes the license URL of the Creative Commons logo appropriate
 to the license assigned to the site in context. If the site doesn't
 have a Creative Commons license, this tag returns an empty string.
 
-=for tags sites, creativecommons
+=for tags sites, creativecommons, deprecated
 
 =cut
 
@@ -826,7 +826,7 @@ B<Example:>
     <img src="<$MTBlogCCLicenseImage$>" alt="Creative Commons" />
     </MTIf>
 
-=for tags blogs, creativecommons
+=for tags blogs, creativecommons, deprecated
 
 =cut
 
@@ -842,7 +842,7 @@ B<Example:>
     <img src="<$MTSiteCCLicenseImage$>" alt="Creative Commons" />
     </MTIf>
 
-=for tags sites, creativecommons
+=for tags sites, creativecommons, deprecated
 
 =cut
 
@@ -873,7 +873,7 @@ entry permalink published in the RDF block.
 
 =back
 
-=for tags blogs, creativecommons
+=for tags blogs, creativecommons, deprecated
 
 =cut
 
