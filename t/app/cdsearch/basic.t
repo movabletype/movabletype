@@ -84,6 +84,31 @@ for my $i (1..15) {
     };
 }
 
+for my $i (1..15) {
+    $spec->{image}{"$i.jpg"} = {
+        label       => "Sample Image $i",
+        description => "Sample photo $i",
+    };
+    $spec->{content_data}{"cd_image$i"} = {
+        content_type  => 'ct',
+        author        => 'author',
+        data          => {
+            cf_image => ["$i.jpg"],
+        },
+    };
+}
+
+$spec->{category_set}{"test category set"} = [map{ "category$_" } 1 .. 15];
+for my $i (1..15) {
+    $spec->{content_data}{"cd_category$i"} = {
+        content_type      => 'ct',
+        author            => 'author',
+        data              => {
+            cf_categories => ["category$i"],
+        },
+    };
+}
+
 my $objs = MT::Test::Fixture->prepare($spec);
 
 my $blog_id       = $objs->{blog_id};
@@ -204,6 +229,28 @@ subtest 'tag field' => sub {
     });
     my @divs = $app->wq_find('div#results div');
     is_deeply [map { $_->attr('class') } @divs] => [qw/cd cd_tag1/];
+};
+
+subtest 'image field' => sub {
+    my $app = MT::Test::App->new('MT::App::Search::ContentData');
+    $app->get_ok({
+        blog_id            => $blog_id,
+        SearchContentTypes => qq{"$ct_name"},
+        content_field      => 'asset_image:1',
+    });
+    my @divs = $app->wq_find('div#results div');
+    is_deeply [map { $_->attr('class') } @divs] => [qw/cd_image1/];
+};
+
+subtest 'category field' => sub {
+    my $app = MT::Test::App->new('MT::App::Search::ContentData');
+    $app->get_ok({
+        blog_id            => $blog_id,
+        SearchContentTypes => qq{"$ct_name"},
+        content_field      => 'categories:2',
+    });
+    my @divs = $app->wq_find('div#results div');
+    is_deeply [map { $_->attr('class') } @divs] => [qw/cd cd_category1/];
 };
 
 done_testing;
