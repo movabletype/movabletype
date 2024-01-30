@@ -702,20 +702,6 @@
 <script type="text/javascript" src="<mt:var name="static_uri">js/upload_settings.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
-function doRemoveLicense () {
-    document.cfg_form.cc_license.value = '';
-    var e = MT.Util.getByID('has-license');
-    if (e) e.style.display = 'none';
-    e = MT.Util.getByID('no-license');
-    if (e) e.style.display = 'block';
-}
-
-function setLicense() {
-    var w = window.open('http://creativecommons.org/license/?partner=SixApart&jurisdiction_choose=1&exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_name=[license_name]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no');
-    if ( w ) w.focus();
-   return false;
-}
-
     <mt:if name="sitepath_limited">
     function is_path_limit_clear( path_ ) {
         re = new RegExp("^<mt:var name="sitepath_limited" escape="js" escape="js">$", "i");
@@ -731,9 +717,6 @@ function setLicense() {
     </mt:if>
 
 jQuery(window).on('load', function () {
-    var e = MT.Util.getByID(<mt:if name="cc_license">'has-license'<mt:else>'no-license'</mt:if>);
-    if (e) e.style.display = 'block';
-
     jQuery.mtValidateAddRules({
 <mt:if name="is_blog">
         "#site_url_path": function($e) {
