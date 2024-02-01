@@ -14,6 +14,7 @@ BEGIN {
 use MT::Test::Tag;
 use MT::Test::PHP;
 use MT::Test::Permission;
+use MT::Test::Util::CreativeCommons;
 use MT::Util qw(ts2epoch epoch2ts);
 
 $test_env->prepare_fixture('db_data');
@@ -92,6 +93,8 @@ sub embed_path {
 sub fix_path { File::Spec->canonpath(shift) }
 
 my $blog_id = 1;
+
+MT::Test::Util::CreativeCommons->set_cc_license('by_nc_sa_20');
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);
