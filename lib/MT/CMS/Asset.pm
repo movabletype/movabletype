@@ -3122,10 +3122,11 @@ sub dialog_asset_modal {
     if ( my $content_field_id = $app->param('content_field_id') ) {
         require MT::ContentField;
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
+            my $options    = $content_field->options;
+            my $can_upload = ( $options->{allow_upload} && $app->can_do('upload') ) ? 1 : 0;
             $param{content_field_id} = $content_field_id;
-            my $options = $content_field->options;
-            $param{can_multi}  = $options->{multiple}     ? 1 : 0;
-            $param{can_upload} = $options->{allow_upload} ? 1 : 0;
+            $param{can_multi}        = $options->{multiple} ? 1 : 0;
+            $param{can_upload}       = $can_upload;
         }
     }
 
