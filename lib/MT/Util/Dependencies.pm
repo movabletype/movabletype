@@ -903,6 +903,10 @@ sub _modify_hash {
             $hash{$module}{extlib} = $info->{$module}{version};
         } else {
             delete $hash{$module}{extlib};
+            if ($used) {
+                delete $hash{$module};
+                next;
+            }
         }
         if ($used && !$hash{$module}{internal}) {
             $index ||= _make_index();
