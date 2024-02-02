@@ -31,7 +31,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.91';
+$VERSION = '1.92';
 
 sub ProcessFujiDir($$$);
 sub ProcessFaceRec($$$);
@@ -1187,6 +1187,8 @@ my %faceCategories = (
         ValueConv => 'my @v=reverse split(" ",$val);"@v"', # reverse to show width first
         PrintConv => '$val=~tr/ /x/; $val',
     },
+    # 0x112 - int16u[2] same as 0x111 but with width/height swapped?
+    # 0x113 - int16u[2] same as 0x111?
     0x115 => {
         Name => 'RawImageAspectRatio',
         Format => 'int16u',
@@ -1236,6 +1238,7 @@ my %faceCategories = (
         Count => 36,
         PrintConv => '$val =~ tr/012 /RGB/d; join " ", $val =~ /....../g',
     },
+    # 0x141 - int16u[2] Bit depth? "14 42" for 14-bit RAF and "16 48" for 16-bit RAF
     0x2000 => { #IB
         Name => 'WB_GRGBLevelsAuto',
         Format => 'int16u',
@@ -1408,6 +1411,8 @@ my %faceCategories = (
     0xf00e => 'WB_GRBLevels',
     0xf00f => 'ChromaticAberrationParams', # (rational64s[23])
     0xf010 => 'VignettingParams', #9 (rational64s[31 or 64])
+    # 0xf013 - int32u[3] same as 0xf00d
+    # 0xf014 - int32u[3] - also related to WhiteBalance
 );
 
 # information found in FFMV atom of MOV videos
@@ -1468,12 +1473,15 @@ my %faceCategories = (
     },
     1 => { Name => 'RawImageNumber', Format => 'int32u' },
     # 3 - seen "0 100", "-300 100" and "300 100" for a sequence of 3 images
-    3 => { Name => 'MRAW_0x0003', Format => 'rational32s', Unknown => 1, Hidden => 1, PrintConv => 'sprintf("%+.2f",$val)' },
+    3 => { Name => 'ExposureCompensation', Format => 'rational32s', Unknown => 1, Hidden => 1, PrintConv => 'sprintf("%+.2f",$val)' },
     # 4 - (same value as 3 in all my samples)
-    4 => { Name => 'MRAW_0x0004', Format => 'rational32s', Unknown => 1, Hidden => 1, PrintConv => 'sprintf("%+.2f",$val)' },
+    4 => { Name => 'ExposureCompensation2', Format => 'rational32s', Unknown => 1, Hidden => 1, PrintConv => 'sprintf("%+.2f",$val)' },
     # 5 - seen "10 1600", "10 6800", "10 200", "10 35000" etc
+    5 => { Name => 'ExposureTime', Format => 'rational64u', PrintConv => 'Image::ExifTool::Exif::PrintExposureTime($val)' },
     # 6 - seen "450 100", "400 100" (all images in RAF have same value)
+    6 => { Name => 'FNumber', Format => 'rational64u', PrintConv => 'Image::ExifTool::Exif::PrintFNumber($val)' },
     # 7 - seen 200, 125, 250, 2000
+    7 => 'ISO',
     # 8 - seen 0
 );
 
@@ -1685,7 +1693,7 @@ sub WriteRAF($$)
     # rewrite the embedded JPEG in memory
     my %jpegInfo = (
         Parent  => 'RAF',
-        RAF     => new File::RandomAccess(\$jpeg),
+        RAF     => File::RandomAccess->new(\$jpeg),
         OutFile => \$outJpeg,
     );
     $$et{FILE_TYPE} = 'JPEG';
@@ -1789,7 +1797,7 @@ sub ProcessRAF($$)
     # extract information from embedded JPEG
     my %dirInfo = (
         Parent => 'RAF',
-        RAF    => new File::RandomAccess(\$jpeg),
+        RAF    => File::RandomAccess->new(\$jpeg),
     );
     if ($jpos) {
         $$et{BASE} += $jpos;
@@ -1871,7 +1879,7 @@ FujiFilm maker notes in EXIF information, and to read/write FujiFilm RAW
 
 =head1 AUTHOR
 
-Copyright 2003-2023, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

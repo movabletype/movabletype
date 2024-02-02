@@ -57,7 +57,7 @@ use vars qw($VERSION $AUTOLOAD @formatSize @formatName %formatNumber %intFormat
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::MakerNotes;
 
-$VERSION = '4.46';
+$VERSION = '4.50';
 
 sub ProcessExif($$$);
 sub WriteExif($$$);
@@ -1426,12 +1426,12 @@ my %opcodeInfo = (
         Count => 6,
         Priority => 0,
     },
-  # 0x220 - int32u: 0 (IFD0, Xaiomi Redmi models)
-  # 0x221 - int32u: 0 (IFD0, Xaiomi Redmi models)
-  # 0x222 - int32u: 0 (IFD0, Xaiomi Redmi models)
-  # 0x223 - int32u: 0 (IFD0, Xaiomi Redmi models)
-  # 0x224 - int32u: 0,1 (IFD0, Xaiomi Redmi models)
-  # 0x225 - string: "" (IFD0, Xaiomi Redmi models)
+  # 0x220 - int32u: 0 (IFD0, Xiaomi Redmi models)
+  # 0x221 - int32u: 0 (IFD0, Xiaomi Redmi models)
+  # 0x222 - int32u: 0 (IFD0, Xiaomi Redmi models)
+  # 0x223 - int32u: 0 (IFD0, Xiaomi Redmi models)
+  # 0x224 - int32u: 0,1 (IFD0, Xiaomi Redmi models)
+  # 0x225 - string: "" (IFD0, Xiaomi Redmi models)
     0x22f => 'StripRowCounts',
     0x2bc => {
         Name => 'ApplicationNotes', # (writable directory!)
@@ -1443,6 +1443,16 @@ my %opcodeInfo = (
         SubDirectory => {
             DirName => 'XMP',
             TagTable => 'Image::ExifTool::XMP::Main',
+        },
+    },
+    0x303 => { #https://learn.microsoft.com/en-us/windows/win32/gdiplus/-gdiplus-constant-property-item-descriptions
+        Name => 'RenderingIntent',
+        Format => 'int8u',
+        PrintConv => {
+            0 => 'Perceptual',
+            1 => 'Relative Colorimetric',
+            2 => 'Saturation',
+            3 => 'Absolute colorimetric',
         },
     },
     0x3e7 => 'USPTOMiscellaneous', #20
@@ -2523,8 +2533,18 @@ my %opcodeInfo = (
         Name => 'CameraElevationAngle',
         Writable => 'rational64s',
     },
-  # 0x9999 - string: camera settings (ExifIFD, Xiaomi POCO F1)
-  # 0x9aaa - int8u[2176]: ? (ExifIFD, Xiaomi POCO F1)
+    0x9999 => { # (ExifIFD, Xiaomi)
+        Name => 'XiaomiSettings', # (writable directory!)
+        Writable => 'string',
+        Protected => 1,
+        SubDirectory => { TagTable => 'Image::ExifTool::JSON::Main' },
+    },
+    0x9a00 => {
+        Name => 'XiaomiModel',
+        Writable => 'string',
+        Protected => 1,
+    },
+  # 0x9aaa - int8u[2048/2176]: ? (ExifIFD, Xiaomi POCO F1)
     0x9c9b => {
         Name => 'XPTitle',
         Format => 'undef',
@@ -2976,6 +2996,7 @@ my %opcodeInfo = (
     0xa480 => { Name => 'GDALMetadata',     Writable => 'string', WriteGroup => 'IFD0' }, #3
     0xa481 => { Name => 'GDALNoData',       Writable => 'string', WriteGroup => 'IFD0' }, #3
     0xa500 => { Name => 'Gamma',            Writable => 'rational64u' },
+  # 0xa661 - string: ? (ExifIFD, Xiaomi)
     0xafc0 => 'ExpandSoftware', #JD (Opanda)
     0xafc1 => 'ExpandLens', #JD (Opanda)
     0xafc2 => 'ExpandFilm', #JD (Opanda)
@@ -4327,6 +4348,7 @@ my %opcodeInfo = (
         Deletable => 1,
         SubDirectory => {
             TagTable => 'Image::ExifTool::Jpeg2000::Main',
+            DirName => 'JUMBF',
             ByteOrder => 'BigEndian',
         },
     },
@@ -6444,7 +6466,7 @@ sub ProcessExif($$$)
                                 TagInfo => $tagInfo || $tmpInfo,
                                 Offset  => $base + $valuePtr + $dataPos,
                                 Size    => $size,
-                                Fixup   => new Image::ExifTool::Fixup,
+                                Fixup   => Image::ExifTool::Fixup->new,
                             };
                         }
                     } else {
@@ -7043,7 +7065,7 @@ EXIF and TIFF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2023, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

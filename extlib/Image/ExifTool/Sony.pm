@@ -34,7 +34,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::Minolta;
 
-$VERSION = '3.64';
+$VERSION = '3.67';
 
 sub ProcessSRF($$$);
 sub ProcessSR2($$$);
@@ -597,7 +597,7 @@ my %unknownCipherData = (
     Hidden => 1,    # doesn't appear in Tag Name documentation
     RawConv => sub { Decipher(\$_[0]); return $_[0] },
     ValueConv => 'PrintHex($val)',                      # print as hex
-    PrintConv => 'length($val) > 65 ? substr($val,0,60) . "[...]" : $val',  # limit length
+    PrintConv => \&Image::ExifTool::LimitLongValues,
 );
 
 my %meterInfo1 = (
@@ -859,7 +859,7 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
         # must construct 0x20-byte header which contains length, width and height
         ValueConvInv => q{
             return 'none' unless $val;
-            my $e = new Image::ExifTool;
+            my $e = Image::ExifTool->new;
             my $info = $e->ImageInfo(\$val,'ImageWidth','ImageHeight');
             return undef unless $$info{ImageWidth} and $$info{ImageHeight};
             my $size = Set32u($$info{ImageWidth}) . Set32u($$info{ImageHeight});
@@ -1643,9 +1643,11 @@ my %hidUnk = ( Hidden => 1, Unknown => 1 );
 # 0x203e - int8u: seen 0, 1, 2, 3, 4 and 255: possibly nr. of detected/tracked faces?
 # 0x203f - int16u
 # 0x2041 - int8u
-# 0x2044 - int32u[2] in ILCE-6700/7CM2/7CR, ILCE-7M4 v1.10, ILCE-7RM5 JPG and ZV-E1:
-#           ARW: seen 143360 53248 and 139264 53248
-#           JPG: [~filesize] 53248
+# 0x2044 - int32u[2] offset and size of some unknown data, relative to TIFF header in JPG and ARW - PH
+    0x2044 => {
+        Name => 'HiddenInfo',
+        SubDirectory => { TagTable => 'Image::ExifTool::Sony::HiddenInfo' },
+    },
 # 0x2047 - first seen for ILCE-9M3, November 2023
 # 0x2048 - first seen for ILCE-9M3
 # 0x2049 - undef[2]
@@ -5956,6 +5958,29 @@ my %faceInfo = (
     #   A33/35/55: seen 0, 1, 64
     #   NEX:       204
     # 0x001a, 0x001c appear to be 2 int16u values, meaning unknown
+);
+
+# hidden information (ref PH)
+%Image::ExifTool::Sony::HiddenInfo = (
+    %binaryDataAttrs,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
+    FORMAT => 'int32u',
+    IS_OFFSET => [ 0 ],   # tag 0 is 'IsOffset'
+    0 => {
+        Name => 'HiddenDataOffset',
+        IsOffset => 1,
+        OffsetPair => 1,
+        DataTag => 'HiddenData',
+        WriteGroup => 'MakerNotes',
+        Protectd => 2,
+    },
+    1 => {
+        Name => 'HiddenDataLength',
+        OffsetPair => 0,
+        DataTag => 'HiddenData',
+        WriteGroup => 'MakerNotes',
+        Protectd => 2,
+    },
 );
 
 # shot information (ref PH)
@@ -10735,6 +10760,32 @@ my %isoSetting2010 = (
         ValueConv => '$val[1] =~ /^W/i ? -$val[0] : $val[0]',
         PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "E")',
     },
+    HiddenData => {
+        Require => {
+            # (Note: This pointer is fragile in JPEG images, and won't be updated
+            # when the file is written unless the EXIF information is also written, but
+            # an incorrect offset is fixed by subsequently writing EXIF with ExifTool)
+            0 => 'Sony:HiddenDataOffset',
+            1 => 'Sony:HiddenDataLength',
+        },
+        Notes => q{
+            hidden data in some Sony JPG and ARW images, extracted only if specifically
+            requested
+        },
+        RawConv => q{
+            my $hdOff = $val[0];
+            my $reqTag = $$self{REQ_TAG_LOOKUP}{hiddendata};
+            my $hDump = $self->Options('HtmlDump');
+            return undef unless $reqTag or $self->Options('Validate') or $hDump;
+            my $dataPt = Image::ExifTool::Sony::ReadHiddenData($self, $hdOff, $val[1]);
+            if ($dataPt and $hDump) {
+                my $msg = '(Sony HiddenData)';
+                $msg .= ' <span class=V>(fixed)</span>' if $hdOff != $val[0];
+                $self->HDump($hdOff, $val[1], $msg, undef, 0x08);
+            }
+            return $reqTag ? $dataPt : undef;
+        },
+    },
 );
 
 # add our composite tags
@@ -10781,6 +10832,34 @@ sub SortLensTypes
     }
     $$minoltaTypes{Notes} = $sonyLensTypes{Notes}; # (restore original Notes)
     $$minoltaTypes{OTHER} = $other;
+}
+
+#------------------------------------------------------------------------------
+# Read HiddenData from JPEG trailer
+# Inputs: 0) ExifTool ref, 1) HiddenDataOffset (abs), 2) HiddenDataLength
+# Returns: HiddenData reference, or undef on error
+# --> updates $hdOff upon return if it was incorrect
+sub ReadHiddenData($$$)
+{
+    my ($et, $hdOff, $hdLen) = @_;
+    my $raf = $$et{RAF};
+    my ($buff, $pos);
+    unless ($raf->Seek($hdOff,0) and $raf->Read($buff,$hdLen) == $hdLen and
+        $buff=~/^\x55\x26\x11\x05\0/)
+    {
+        # search the first 4096 bytes of the trailer to find the HiddenData
+        unless ($$et{TrailerStart} and $raf->Seek($$et{TrailerStart},0) and
+            $raf->Read($buff,4096) and $buff=~/\x55\x26\x11\x05\0/g and
+            $pos = $$et{TrailerStart}+pos($buff)-5 and $raf->Seek($pos,0) and
+            $raf->Read($buff,$hdLen) == $hdLen)
+        {
+            $et->Warn('Error reading HiddenData',1);
+            return undef;
+        }
+        $_[1] = $pos;   # return fixed offset
+        $et->Warn('Fixed incorrect HiddenDataOffset',1) if $et->Options('Validate') or $$et{IsWriting};
+    }
+    return \$buff;
 }
 
 #------------------------------------------------------------------------------
@@ -11561,7 +11640,7 @@ sub ProcessSR2($$$)
                 );
                 my $subTable = GetTagTable('Image::ExifTool::Sony::SR2SubIFD');
                 if ($outfile) {
-                    my $fixup = new Image::ExifTool::Fixup;
+                    my $fixup = Image::ExifTool::Fixup->new;
                     $dirInfo{Fixup} = $fixup;
                     $result = $et->WriteDirectory(\%dirInfo, $subTable);
                     return undef unless $result;
@@ -11655,7 +11734,7 @@ Minolta.
 
 =head1 AUTHOR
 
-Copyright 2003-2023, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

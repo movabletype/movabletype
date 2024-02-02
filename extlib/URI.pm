@@ -3,7 +3,7 @@ package URI;
 use strict;
 use warnings;
 
-our $VERSION = '5.24';
+our $VERSION = '5.25';
 
 # 1=version 5.10 and earlier; 0=version 5.11 and later
 use constant HAS_RESERVED_SQUARE_BRACKETS => $ENV{URI_HAS_RESERVED_SQUARE_BRACKETS} ? 1 : 0;
@@ -181,6 +181,8 @@ sub implementor
     # check we actually have one for the scheme:
     unless (@{"${ic}::ISA"}) {
         if (not exists $require_attempted{$ic}) {
+            $require_attempted{$ic} = 1;
+
             # Try to load it
             my $_old_error = $@;
             eval "require $ic";

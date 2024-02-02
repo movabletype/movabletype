@@ -2191,6 +2191,15 @@ my %sSubVersion = (
     GROUPS => { 0 => 'SVG', 2 => 'Unknown' },
     LANG_INFO => \&GetLangInfo,
     NAMESPACE => undef, # variable namespace
+    'c2pa:manifest' => {
+        Name => 'JUMBF',
+        Groups => { 0 => 'JUMBF' },
+        RawConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Jpeg2000::Main',
+            ByteOrder => 'BigEndian',
+        },
+    },
 );
 
 #------------------------------------------------------------------------------
@@ -2228,7 +2237,7 @@ This file contains definitions for less common XMP namespaces.
 
 =head1 AUTHOR
 
-Copyright 2003-2023, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
