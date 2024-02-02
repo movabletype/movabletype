@@ -919,8 +919,9 @@ sub update_me {
         }
     }
     close $fh;
+    my $used = _find_usage();
     $req    = _modify_hash($req);
-    $extlib = _modify_hash($extlib);
+    $extlib = _modify_hash($extlib, $used);
 
     my $body = "$head$req$mid$extlib$tail";
     Perl::Tidy::perltidy(
@@ -938,8 +939,9 @@ sub _require_module {
 }
 
 sub _modify_hash {
-    my $str  = shift;
+    my ($str, $used) = @_;
     my %hash = eval $str or die $@;
+    my $index;
     for my $module (keys %hash) {
         my $url = "https://metacpan.org/pod/$module";
         $hash{$module}{url} = $CustomURL{$module} || $url;
@@ -957,11 +959,107 @@ sub _modify_hash {
         } else {
             delete $hash{$module}{extlib};
         }
+        if ($used && !$hash{$module}{internal}) {
+            $index ||= _make_index();
+            if (my $dist = $index->{package}{$module}) {
+                for my $package (keys %{ $index->{dist}{$dist} || {} }) {
+                    if ($used->{$package}) {
+                        $used->{$module}{$_} = 1 for keys %{ $used->{$package} };
+                    }
+                }
+                for my $package (keys %{ $index->{dist}{$dist} || {} }) {
+                    delete $used->{$module}{$package};
+                }
+            }
+            if ($used->{$module}) {
+                delete $hash{$module}{not_used};
+                my @new_used_in;
+                for my $used_in (@{ $hash{$module}{used_in} || [] }) {
+                    if ($used->{$module}{$used_in}) {
+                        push @new_used_in, $used_in;
+                        next;
+                    }
+                }
+                if (!@new_used_in) {
+                    @new_used_in = sort keys %{ $used->{$module} || {} };
+                    if (grep /^MT/, @new_used_in) {
+                        @new_used_in = grep /^MT/, @new_used_in;
+                    }
+                }
+                if (@new_used_in) {
+                    $hash{$module}{used_in} = \@new_used_in;
+                } else {
+                    $hash{$module}{not_used} = 1;
+                    delete $hash{$module}{used_in};
+                }
+            } else {
+                $hash{$module}{not_used} = 1;
+                delete $hash{$module}{used_in};
+            }
+        } else {
+            delete $hash{$module}{not_used};
+            delete $hash{$module}{used_in};
+        }
     }
     my $res = Data::Dump::dump(\%hash);
     $res =~ s/\A\{\n//s;
     $res =~ s/\}\z//s;
     $res;
+}
+
+sub _find_usage {
+    _require_module('Perl::PrereqScanner::NotQuiteLite') or return;
+    _require_module('File::Find')                        or return;
+    my %usage;
+    my @dirs = ('lib', 'extlib', glob('plugins/*/lib'), glob('plugins/*/extlib'));
+    for my $dir (@dirs) {
+        File::Find::find({
+                wanted => sub {
+                    my $file = $File::Find::name;
+                    return unless $file =~ /\.p[ml]$/;
+                    (my $module = $file) =~ s!^.*?lib/!!;
+                    $module =~ s!/!::!g;
+                    $module =~ s!\.p[ml]$!!;
+                    print STDERR "$file => $module\n";
+                    my $scanner = Perl::PrereqScanner::NotQuiteLite->new(
+                        parsers    => [qw/:bundled/],
+                        suggests   => 1,
+                        recommends => 1,
+                    );
+                    my $ctx = $scanner->scan_file($file);
+                    for my $type (qw(requires recommends suggests noes)) {
+                        my $prereqs = $ctx->$type or next;
+                        my $hash    = $prereqs->as_string_hash;
+                        for my $key (keys %$hash) {
+                            $usage{$key}{$module} = 1;
+                        }
+                    }
+                },
+                no_chdir => 1,
+            },
+            $dir
+        );
+    }
+    return \%usage;
+}
+
+sub _make_index {
+    _require_module('CPAN::Common::Index::Mirror') or return;
+    my $index = CPAN::Common::Index::Mirror->new;
+    open my $fh, '<', $index->cached_package;
+    my (%dists, %packages, $seen);
+    while (<$fh>) {
+        chomp;
+        if ($_ eq '') {
+            $seen = 1;
+            next;
+        }
+        next unless $seen;
+        my ($package, $version, $dist) = split /\s+/;
+        $packages{$package} = $dist;
+        $dists{$dist}{$package} = 1;
+    }
+    return +{ dist => \%dists, package => \%packages };
 }
 
 1;
