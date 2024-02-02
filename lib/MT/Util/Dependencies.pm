@@ -600,11 +600,6 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/IO::HTML",
         used_in => ["HTTP::Message"],
     },
-    "IO::SessionSet" => {
-        extlib   => "undef",
-        not_used => 1,
-        url      => "https://metacpan.org/pod/IO::SessionSet",
-    },
     "IO::Socket::IP" => {
         extlib  => 0.41,
         url     => "https://metacpan.org/pod/IO::Socket::IP",
@@ -705,11 +700,6 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/Try::Tiny",
         used_in => ["LWP::UserAgent"],
     },
-    "UDDI::Lite" => {
-        extlib   => 0.718,
-        not_used => 1,
-        url      => "https://metacpan.org/pod/UDDI::Lite",
-    },
     "UNIVERSAL::require" => {
         extlib   => 0.19,
         not_used => 1,
@@ -740,11 +730,6 @@ our %ExtLibOnly = (
         extlib  => 1.12,
         url     => "https://metacpan.org/pod/XML::NamespaceSupport",
         used_in => ["XML::SAX::PurePerl"],
-    },
-    "XML::Parser::Lite" => {
-        extlib   => 0.722,
-        not_used => 1,
-        url      => "https://metacpan.org/pod/XML::Parser::Lite",
     },
     "XML::SAX::Base" => {
         extlib  => 1.09,
