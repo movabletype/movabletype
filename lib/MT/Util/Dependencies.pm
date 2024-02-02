@@ -1016,10 +1016,10 @@ sub _find_usage {
         File::Find::find({
                 wanted => sub {
                     my $file = $File::Find::name;
-                    return unless $file =~ /\.p[ml]$/;
+                    return unless $file  =~ /\.p[ml]$/;
                     (my $module = $file) =~ s!^.*?lib/!!;
-                    $module =~ s!/!::!g;
-                    $module =~ s!\.p[ml]$!!;
+                    $module              =~ s!/!::!g;
+                    $module              =~ s!\.p[ml]$!!;
                     print STDERR "$file => $module\n";
                     my $scanner = Perl::PrereqScanner::NotQuiteLite->new(
                         parsers    => [qw/:bundled/],
