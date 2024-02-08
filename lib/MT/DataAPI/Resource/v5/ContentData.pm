@@ -156,6 +156,7 @@ sub _apply_text_filters {
         return $value;
     }
     if ($convert_breaks) {
+        require MT::Template::Context;
         my $ctx = MT::Template::Context->new;
         return MT->apply_text_filters( $value, [$convert_breaks], $ctx );
     }
