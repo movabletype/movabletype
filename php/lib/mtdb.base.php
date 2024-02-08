@@ -505,15 +505,14 @@ abstract class MTDatabase {
     }
 
     public function fetch_widgetset($ctx, $name, $blog_ids) {
-        $db = $ctx->mt->db()->db();
-        $bind_values = is_array($blog_ids) ? $blog_ids : array($blog_ids);
-        $func = function($key) use(&$db) { return $db->Param($key); };
-        $placeholders = implode(",", array_map($func, array_keys($blog_ids)));
+        $blog_ids = is_array($blog_ids) ? $blog_ids : array($blog_ids);
+        $bind_values = [];
+        $placeholders = $this->in_ph('template_blog_id', $bind_values, $blog_ids);
         $where = "template_blog_id IN ($placeholders)";
-        $where .= " and template_name = ".$db->Param($name);
-        $where .= " and template_type = ".$db->Param('widgetset');
+        $where .= " and template_name = ". $this->conn->param('template_name');
+        $where .= " and template_type = ". $this->conn->param('template_type');
         $where .= " order by template_blog_id desc";
-        array_push($bind_values, $name, 'widgetset');
+        $bind_values = array_merge($bind_values, ['template_name' => $name, 'template_type' => 'widgetset']);
 
         require_once('class.mt_template.php');
         $template = new Template;
@@ -523,10 +522,9 @@ abstract class MTDatabase {
     }
 
     public function fetch_widgets_by_id($ctx, $ids) {
-        $db = $ctx->mt->db()->db();
-        $bind_values = is_array($ids) ? $ids : array($ids);
-        $func = function($key) use(&$db) { return $db->Param($key); };
-        $placeholders = implode(",", array_map($func, array_keys($ids)));
+        $ids = is_array($ids) ? $ids : array($ids);
+        $bind_values = [];
+        $placeholders = $this->in_ph('template_id', $bind_values, $ids);
         $where = "template_id IN ($placeholders)";
 
         require_once('class.mt_template.php');
@@ -536,15 +534,13 @@ abstract class MTDatabase {
     }
 
     public function fetch_widgets_by_name($ctx, $name, $blog_id) {
-        $db = $ctx->mt->db()->db();
-        $bind_values = array($blog_id, 0);
-        $func = function($key) use(&$db) { return $db->Param($key); };
-        $placeholders = implode(",", array_map($func, array_keys($bind_values)));
+        $bind_values = [];
+        $placeholders = $this->in_ph('template_blog_id', $bind_values, [$blog_id, 0]);
         $where = "template_blog_id IN ($placeholders)";
-        $where .= " and template_name = ".$db->Param($name);
-        $where .= " and template_type = ".$db->Param('widget');
+        $where .= " and template_name = ". $this->conn->param('template_name');
+        $where .= " and template_type = ". $this->conn->param('template_type');
         $where .= " order by template_blog_id asc";
-        array_push($bind_values, $name, 'widget');
+        $bind_values = array_merge($bind_values, ['template_name' => $name, 'template_type' => 'widget']);
 
         require_once('class.mt_template.php');
         $template = new Template;
@@ -5552,6 +5548,16 @@ abstract class MTDatabase {
 
     public function flush_cache() {
         $this->_blog_id_cache = array();
+    }
+
+    public function in_ph($name, &$bind, $values) {
+        $ph = array();
+        foreach($values as $i => $v) {
+            if (is_null($v)) continue;
+            $ph[] = $this->conn->param($name. $i);
+            $bind[$name. $i] = $values[$i];
+        }
+        return join(',', $ph);
     }
 }
 ?>
