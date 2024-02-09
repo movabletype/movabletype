@@ -180,6 +180,7 @@ sub write_config {
         BuilderModule          => $ENV{MT_TEST_BUILDER} || 'MT::Builder',
         DisableObjectCache     => $ENV{MT_TEST_DISABLE_OBJECT_CACHE} || 0,
         $ENV{MT_TEST_ADMIN_THEME_ID} ? (AdminThemeId => $ENV{MT_TEST_ADMIN_THEME_ID}) : (),
+        OracleNullsLast        => $self->{driver} eq 'oracle' ? 1 : 0,
     );
 
     if ($extra) {
