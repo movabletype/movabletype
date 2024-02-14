@@ -2700,6 +2700,13 @@ sub reboot {
     $app->validate_magic or return;
     return $app->permission_denied() unless $app->user->is_superuser();
 
+    $app->log({
+        message  => $app->translate('Reboot is requested by [_1]', $app->user->name),
+        level    => MT::Log::INFO(),
+        class    => 'system',
+        category => 'reboot',
+    });
+
     $app->reboot;
     $app->return_to_dashboard(redirect => 1);
 }
