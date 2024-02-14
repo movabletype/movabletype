@@ -16,7 +16,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Sigma;
 
-$VERSION = '1.29';
+$VERSION = '1.32';
 
 sub ProcessX3FHeader($$$);
 sub ProcessX3FDirectory($$$);
@@ -460,7 +460,7 @@ sub WriteX3F($$)
                     my $newData;
                     my %jpegInfo = (
                         Parent  => 'X3F',
-                        RAF     => new File::RandomAccess(\$buff),
+                        RAF     => File::RandomAccess->new(\$buff),
                         OutFile => \$newData,
                     );
                     $$et{FILE_TYPE} = 'JPEG';
@@ -545,10 +545,16 @@ sub ProcessX3FDirectory($$$)
         if  ($$tagInfo{Name} eq 'PreviewImage') {
             # check image header to see if this is a JPEG preview image
             $raf->Read($buff, 28) == 28 or return 'Error reading PreviewImage header';
-            # ignore all image data but JPEG compressed (version 2.0, type 2, format 18)
-            next unless $buff =~ /^SECi\0\0\x02\0\x02\0\0\0\x12\0\0\0/;
             $offset += 28;
             $len -= 28;
+            # ignore all image data but JPEG compressed (version 2.0, type 2, format 18)
+            unless ($buff =~ /^SECi\0\0\x02\0\x02\0\0\0\x12\0\0\0/) {
+                # do hash on non-preview data if requested
+                if ($$et{ImageDataHash} and substr($buff,8,1) ne "\x02") {
+                    $et->ImageDataHash($raf, $len, 'SigmaRaw IMAG');
+                }
+                next;
+            }
             $raf->Read($buff, $len) == $len or return "Error reading PreviewImage data";
             # check fore EXIF segment, and extract this image as the JpgFromRaw
             if ($buff =~ /^\xff\xd8\xff\xe1/) {
@@ -569,7 +575,7 @@ sub ProcessX3FDirectory($$$)
             if ($$tagInfo{Name} eq 'JpgFromRaw') {
                 my %dirInfo = (
                     Parent => 'X3F',
-                    RAF    => new File::RandomAccess(\$buff),
+                    RAF    => File::RandomAccess->new(\$buff),
                 );
                 $$et{BASE} += $offset;
                 $et->ProcessJPEG(\%dirInfo);
@@ -674,7 +680,7 @@ Sigma and Foveon X3F images.
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
