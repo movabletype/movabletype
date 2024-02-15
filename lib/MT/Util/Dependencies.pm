@@ -536,7 +536,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::Digest::SHA"],
     },
     "Email::Date::Format" => {
-        extlib  => 1.008,
+        extlib  => 1.005,
         url     => "https://metacpan.org/pod/Email::Date::Format",
         used_in => ["MIME::Lite"],
     },
