@@ -1557,6 +1557,7 @@ use vars qw( @ISA %Lexicon );
 	'Prohibit notification pings is on' => '更新pingは無効です',
 	'Prohibit trackbacks is off' => 'トラックバックは有効です',
 	'Prohibit trackbacks is on' => 'トラックバックは無効です',
+	'Reboot is requested by [_1]' => '[_1]が再起動の請求をしました',
 	'Recipients for lockout notification' => '通知メール受信者',
 	'Some [_1] were not imported because their parent objects were not imported.' => '親となるオブジェクトがないため[_1]をインポートできませんでした。',
 	'Some objects were not imported because their parent objects were not imported.  Detailed information is in the activity log.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。詳細はログを参照してください。',
