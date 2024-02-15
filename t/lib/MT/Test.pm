@@ -344,8 +344,7 @@ sub init_data {
             sort_order_comments      => 'ascend',
             remote_auth_token        => 'token',
             convert_paras_comments   => 1,
-            cc_license =>
-                'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif',
+            cc_license           => '',
             server_offset        => '-3.5',
             children_modified_on => '20000101000000',
             language             => 'en_us',
@@ -388,8 +387,7 @@ sub init_data {
             remote_auth_token        => 'token',
             convert_paras_comments   => 1,
             google_api_key           => 'r9Vj5K8PsjEu+OMsNZ/EEKjWmbCeQAv1',
-            cc_license =>
-                'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif',
+            cc_license           => '',
             server_offset        => '-3.5',
             children_modified_on => '20000101000000',
             language             => 'en_us',

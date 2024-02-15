@@ -23,6 +23,7 @@ use MT;
 use MT::PublishOption;
 use MT::Test;
 use MT::Test::App;
+use MT::Test::Util::CreativeCommons;
 
 my $app    = MT->instance;
 my $config = $app->config;
@@ -51,6 +52,7 @@ $test_env->prepare_fixture(sub {
             remote_auth_token        => 'token',
             allow_unreg_comments     => 1,
             commenter_authenticators => 'MovableType,TypeKey',
+            cc_license               => MT::Test::Util::CreativeCommons->by_nc_sa_20,
         }
     );
     $first_website->save or die $first_website->errstr;
@@ -103,8 +105,7 @@ $test_env->prepare_fixture(sub {
             {   description => 'This is a first website.',
                 site_url    => 'http://localhost/first_website/',
                 site_path   => '/var/www/html/first_website',
-                cc_license =>
-                    'by http://creativecommons.org/licenses/by/3.0/ http://i.creativecommons.org/l/by/3.0/88x31.png',
+                cc_license  => MT::Test::Util::CreativeCommons->by_30,
             }
         );
         $w->save or die $w->errstr;

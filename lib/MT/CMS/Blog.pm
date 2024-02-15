@@ -109,14 +109,6 @@ sub edit {
             $lang = 'ja' if lc($lang) eq 'jp';
             $param->{ 'language_' . $lang } = 1;
 
-            if ( $obj->cc_license ) {
-                $param->{cc_license_name}
-                    = MT::Util::cc_name( $obj->cc_license );
-                $param->{cc_license_image_url}
-                    = MT::Util::cc_image( $obj->cc_license );
-                $param->{cc_license_url}
-                    = MT::Util::cc_url( $obj->cc_license );
-            }
             if (   $obj->column('archive_path')
                 || $obj->column('archive_url') )
             {
@@ -1456,34 +1448,6 @@ sub save_favorite_blogs {
     $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript+json");
     $app->print_encode("true");
-}
-
-sub cc_return {
-    my $app   = shift;
-    my $name  = $app->param('license_name');
-    my $url   = $app->param('license_url');
-    my $image = $app->param('license_button');
-
-    my $code;
-    if ( $url =~ m!^http://creativecommons\.org/licenses/([a-z\-]+)!i ) {
-        $code = $1;
-    }
-    elsif ( $url =~ m!^http://creativecommons.org/publicdomain/mark/!i ) {
-        $code = 'pd';
-    }
-    elsif ( $url =~ m!^http://creativecommons.org/publicdomain/zero/!i ) {
-        $code = 'pdd';
-    }
-    else {
-        return $app->error( "MT is not aware of this license: "
-                . MT::Util::encode_html( $name, 1 ) );
-    }
-
-    my %param = (
-        license_name => MT::Util::cc_name($code),
-        license_code => "$code $url $image",
-    );
-    $app->load_tmpl( 'cc_return.tmpl', \%param );
 }
 
 sub dialog_select_weblog {
