@@ -25,8 +25,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 1",
             "jpg",
-            "MEW4XQDA2W.jpg",
-            "__TEST_ROOT__/MEW4XQDA2W.jpg",
+            "ZttRj0yqO1.jpg",
+            "__TEST_ROOT__/ZttRj0yqO1.jpg",
             1,
             "Sample Image 1",
             "text/plain",
@@ -42,8 +42,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 2",
             "jpg",
-            "MEW4XQDA2W.jpg",
-            "__TEST_ROOT__/MEW4XQDA2W.jpg",
+            "ZttRj0yqO1.jpg",
+            "__TEST_ROOT__/ZttRj0yqO1.jpg",
             2,
             "Sample Image 2",
             "text/plain",
@@ -320,7 +320,7 @@
             null,
             1,
             100,
-            "by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif",
+            "",
             "2000-01-01 00:00:00",
             "website",
             null,
@@ -394,7 +394,7 @@
             null,
             1,
             100,
-            "by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif",
+            "",
             "2000-01-01 00:00:00",
             "blog",
             null,
@@ -556,7 +556,7 @@
             null,
             null,
             "asset_image",
-            "8199f20c57a813033f2109f0043e0e368716b271"
+            "eb2960d049da89ea481bb53093e4c171ce6a5d41"
          ]
       ]
    },
@@ -600,7 +600,7 @@
             null,
             "__NOW__",
             "content type 1",
-            "12882ac8a38dd90cdac2a7bcf269e6b6b92a2336",
+            "826dcad6ad0e4516c0ef62661bab2e7875a3e379",
             null,
             null
          ]

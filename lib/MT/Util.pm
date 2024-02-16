@@ -14,7 +14,7 @@ use MT::I18N qw( const );
 use Time::Local;
 use List::Util qw( sum );
 
-use MT::Util::Deprecated qw( perl_sha1_digest_hex ); ## no critic
+use MT::Util::Deprecated qw( perl_sha1_digest_hex cc_url cc_rdf cc_name cc_image ); ## no critic
 use MT::Util::Encode;
 
 our @EXPORT_OK
@@ -452,7 +452,6 @@ my %TsFormatCache;
 sub format_ts {
     my ( $format, $ts, $blog, $lang, $is_mail ) = @_;
     return '' unless defined $ts and $ts ne '' and !ref $ts;
-    my %f;
     unless ($lang) {
         $lang
             = $blog && $blog->date_language
@@ -1522,135 +1521,6 @@ sub is_url {
     my ($url) = @_;
 
     return $url =~ /^s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+$/;
-}
-
-{
-    my %Data = (
-        'by' => {
-            name     => 'Attribution',
-            requires => [qw( Attribution Notice )],
-            permits  => [qw( Reproduction Distribution DerivativeWorks )],
-        },
-        'by-nd' => {
-            name     => 'Attribution-NoDerivs',
-            requires => [qw( Attribution Notice )],
-            permits  => [qw( Reproduction Distribution )],
-        },
-        'by-nc-nd' => {
-            name      => 'Attribution-NoDerivs-NonCommercial',
-            requires  => [qw( Attribution Notice )],
-            permits   => [qw( Reproduction Distribution )],
-            prohibits => [qw( CommercialUse)],
-        },
-        'by-nd-nc' => {
-            name      => 'Attribution-NoDerivs-NonCommercial',
-            requires  => [qw( Attribution Notice )],
-            permits   => [qw( Reproduction Distribution )],
-            prohibits => [qw( CommercialUse)],
-        },
-        'by-nc' => {
-            name      => 'Attribution-NonCommercial',
-            requires  => [qw( Attribution Notice )],
-            permits   => [qw( Reproduction Distribution DerivativeWorks )],
-            prohibits => [qw( CommercialUse )],
-        },
-        'by-nc-sa' => {
-            name      => 'Attribution-NonCommercial-ShareAlike',
-            requires  => [qw( Attribution Notice ShareAlike )],
-            permits   => [qw( Reproduction Distribution DerivativeWorks )],
-            prohibits => [qw( CommercialUse )],
-        },
-        'by-sa' => {
-            name     => 'Attribution-ShareAlike',
-            requires => [qw( Attribution Notice ShareAlike )],
-            permits  => [qw( Reproduction Distribution DerivativeWorks )],
-        },
-        'nd' => {
-            name     => 'NonDerivative',
-            requires => [qw( Notice )],
-            permits  => [qw( Reproduction Distribution )],
-        },
-        'nd-nc' => {
-            name      => 'NonDerivative-NonCommercial',
-            requires  => [qw( Notice )],
-            permits   => [qw( Reproduction Distribution )],
-            prohibits => [qw( CommercialUse )],
-        },
-        'nc' => {
-            name      => 'NonCommercial',
-            requires  => [qw( Notice )],
-            permits   => [qw( Reproduction Distribution DerivativeWorks )],
-            prohibits => [qw( CommercialUse )],
-        },
-        'nc-sa' => {
-            name      => 'NonCommercial-ShareAlike',
-            requires  => [qw( Notice ShareAlike )],
-            permits   => [qw( Reproduction Distribution DerivativeWorks )],
-            prohibits => [qw( CommercialUse )],
-        },
-        'sa' => {
-            name     => 'ShareAlike',
-            requires => [qw( Notice ShareAlike )],
-            permits  => [qw( Reproduction Distribution DerivativeWorks )],
-        },
-        'pd' => {
-            name    => 'PublicDomain',
-            permits => [qw( Reproduction Distribution DerivativeWorks )],
-        },
-        'pdd' => {
-            name    => 'PublicDomainDedication',
-            permits => [qw( Reproduction Distribution DerivativeWorks )],
-        },
-    );
-
-    sub cc_url {
-        my ($code) = @_;
-        my $url;
-        my ( $real_code, $license_url, $image_url );
-        if ( ( $real_code, $license_url, $image_url )
-            = $code =~ /(\S+) (\S+) (\S+)/ )
-        {
-            return $license_url;
-        }
-        $code eq 'pd'
-            ? "http://web.resource.org/cc/PublicDomain"
-            : "http://creativecommons.org/licenses/$code/1.0/";
-    }
-
-    sub cc_rdf {
-        my ($code) = @_;
-        my $url    = cc_url($code);
-        my $rdf    = <<RDF;
-<License rdf:about="$url">
-RDF
-        for my $type (qw( requires permits prohibits )) {
-            for my $item ( @{ $Data{$code}{$type} } ) {
-                $rdf .= <<RDF;
-<$type rdf:resource="http://web.resource.org/cc/$item" />
-RDF
-            }
-        }
-        $rdf . "</License>\n";
-    }
-
-    sub cc_name {
-        my ($code) = ( $_[0] =~ /(\S+) \S+ \S+/ );
-        $code ||= $_[0];
-        $Data{$code}{name};
-    }
-
-    sub cc_image {
-        my ($code) = @_;
-        my $url;
-        my ( $real_code, $license_url, $image_url );
-        if ( ( $real_code, $license_url, $image_url )
-            = $code =~ /(\S+) (\S+) (\S+)/ )
-        {
-            return $image_url;
-        }
-        "http://creativecommons.org/images/public/"
-            . ( $code eq 'pd' ? 'norights' : 'somerights' );
-    }
 }
 
 sub mark_odd_rows {

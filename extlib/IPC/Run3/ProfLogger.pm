@@ -1,6 +1,8 @@
+use strict;
+use warnings;
 package IPC::Run3::ProfLogger;
 
-$VERSION = 0.048;
+our $VERSION = 0.049;
 
 =head1 NAME
 
@@ -31,8 +33,6 @@ classes.
 
 =cut
 
-use strict;
-
 =head1 METHODS
 
 =head2 C<< IPC::Run3::ProfLogger->new( ... ) >>
@@ -42,7 +42,7 @@ use strict;
 sub new {
     my $class = ref $_[0] ? ref shift : shift;
     my $self = bless { @_ }, $class;
-    
+
     $self->{Destination} = "run3.out"
         unless defined $self->{Destination} && length $self->{Destination};
 

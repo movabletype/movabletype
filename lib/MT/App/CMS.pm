@@ -244,7 +244,6 @@ sub core_methods {
         'save_entry_prefs'     => "${pkg}Entry::save_entry_prefs",
         'save_template_prefs'  => "${pkg}Template::save_template_prefs",
         'save_favorite_blogs'  => "${pkg}Blog::save_favorite_blogs",
-        'cc_return'            => "${pkg}Blog::cc_return",
         'itemset_action'       => "${pkg}Tools::do_list_action",
         'page_action'          => "${pkg}Tools::do_page_action",
         'cfg_system_general'   => "${pkg}Tools::cfg_system_general",

@@ -53,14 +53,6 @@ sub edit {
             $lang = 'ja' if lc($lang) eq 'jp';
             $param->{ 'language_' . $lang } = 1;
 
-            if ( $obj->cc_license ) {
-                $param->{cc_license_name}
-                    = MT::Util::cc_name( $obj->cc_license );
-                $param->{cc_license_image_url}
-                    = MT::Util::cc_image( $obj->cc_license );
-                $param->{cc_license_url}
-                    = MT::Util::cc_url( $obj->cc_license );
-            }
             if (   $obj->column('archive_path')
                 || $obj->column('archive_url') )
             {
@@ -385,7 +377,7 @@ sub post_delete {
 
     $app->log(
         {   message => $app->translate(
-                "Website '[_1]' (ID:[_2]) deleted by '[_3]'",
+                "Site '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
             level    => MT::Log::NOTICE(),

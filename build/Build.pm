@@ -5,6 +5,9 @@
 # $Id$
 
 package Build;
+
+use strict;
+use warnings;
 our $VERSION = '0.09';
 
 =head1 NAME
@@ -33,8 +36,6 @@ Movable Type distributions in multiple languages.
 
 =cut
 
-use strict;
-use warnings;
 use Cwd;
 use File::Basename;
 use File::Copy;

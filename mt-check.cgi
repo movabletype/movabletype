@@ -7,6 +7,7 @@
 # $Id$
 
 use strict;
+use warnings;
 use Encode;
 
 sub BEGIN {
