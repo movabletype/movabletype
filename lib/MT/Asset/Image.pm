@@ -1166,6 +1166,23 @@ sub remove_gps_metadata {
     1;
 }
 
+sub remove_broken_png_metadata {
+    my $asset = shift;
+    return 1 if lc( $asset->file_ext || '' ) !~ /^png$/;
+    return 1 if $asset->is_metadata_broken;
+
+    my $exif = $asset->exif or return;
+
+    # libpng 1.6 marks some of the old HP profiles *broken*
+    # cf. https://sourceforge.net/p/libpng/code/ci/master/tree/png.c#l2275
+    my $datetime = $exif->GetValue('ProfileDateTime') or return 1;
+    return 1 unless $datetime eq '1998:02:09 06:49:00';
+
+    $exif->SetNewValue('ICC_Profile:*', undef, DelValue => 1);
+    $exif->WriteInfo($asset->file_path)
+        or $asset->trans_error( 'Writing metadata failed: [_1]', $exif->GetValue('Error') );
+}
+
 sub remove_all_metadata {
     my ($asset) = @_;
 
