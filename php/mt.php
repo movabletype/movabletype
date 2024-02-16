@@ -205,7 +205,7 @@ class MT {
                  while (($file = readdir($dh)) !== false) {
                      if ($file == "." || $file == "..")
                          continue;
-                     if (empty($enabled[$file])) {
+                     if (isset($enabled[$file]) && empty($enabled[$file])) {
                          continue;
                      }
                      $plugin_dir = $path . DIRECTORY_SEPARATOR . $file
