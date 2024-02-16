@@ -1150,7 +1150,7 @@ sub _set_mandatory_exif_tags {
 sub remove_gps_metadata {
     my ($asset) = @_;
 
-    return 1 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp)$/;
+    return 1 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp|png)$/;
     return 1 if $asset->is_metadata_broken;
 
     require Image::ExifTool;
@@ -1186,7 +1186,7 @@ sub remove_broken_png_metadata {
 sub remove_all_metadata {
     my ($asset) = @_;
 
-    return 1 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp)$/;
+    return 1 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp|png)$/;
     return 1 if $asset->is_metadata_broken;
 
     my $exif = $asset->exif or return;
@@ -1194,7 +1194,7 @@ sub remove_all_metadata {
     my $orientation = $exif->GetValue('Orientation');
 
     $exif->SetNewValue('*');
-    if (lc($asset->file_ext || '') =~ /^(jpe?g|webp)$/) {
+    if (lc($asset->file_ext || '') =~ /^(jpe?g|webp|png)$/) {
         $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
         $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
         $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
