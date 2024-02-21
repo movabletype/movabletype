@@ -1154,8 +1154,6 @@ sub remove_gps_metadata {
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
-
-    1;
 }
 
 sub remove_broken_png_metadata {
@@ -1196,8 +1194,6 @@ sub remove_all_metadata {
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
-
-    1;
 }
 
 sub is_metadata_broken {
