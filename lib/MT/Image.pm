@@ -262,7 +262,8 @@ sub crop {
 sub remove_metadata {
     my ( $class, $file ) = @_;
 
-    return 1 if lc($file) !~ /\.(jpe?g|tiff?|webp)$/;
+    my $lc_file = lc($file);
+    return 1 if $lc_file !~ /\.(jpe?g|tiff?|webp|png)$/;
 
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;
@@ -277,8 +278,9 @@ sub remove_metadata {
     my $orientation = $exif->GetValue('Orientation');
 
     $exif->SetNewValue('*');
-    if (lc($file) =~ /\.(jpe?g|webp)$/) {
-        $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
+    if ($lc_file =~ /\.(jpe?g|webp|png)$/) {
+        $exif->SetNewValue( 'PNG:*', undef, Replace => 2 ) if $lc_file =~ /png/;
+        $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 ) if $lc_file =~ /jpe?g/;
         $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
         $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
     }
