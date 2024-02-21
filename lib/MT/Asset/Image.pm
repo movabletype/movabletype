@@ -953,7 +953,7 @@ sub _transform {
     # Preserve metadata.
     my ( $exif, $next_exif );
     my $update_metadata
-        = lc( $file_ext ) =~ /^(jpe?g|tiff?|webp)$/
+        = lc( $file_ext ) =~ /^(jpe?g|tiff?|webp|png)$/
         && $asset->has_metadata
         && !$asset->is_metadata_broken;
     if ($update_metadata) {
@@ -1092,7 +1092,7 @@ sub exif {
 sub has_gps_metadata {
     my ($asset) = @_;
 
-    return 0 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp)$/;
+    return 0 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp|png)$/;
 
     my $exif = $asset->exif or return;
     $exif->Options( Group1 => 'GPS' );
@@ -1107,13 +1107,14 @@ sub has_metadata {
     my ($asset) = @_;
 
     my $file_ext = lc( $asset->file_ext || '' );
-    return 0 if $file_ext !~ /^(jpe?g|tiff?|webp)$/;
+    return 0 if $file_ext !~ /^(jpe?g|tiff?|webp|png)$/;
 
     require Image::ExifTool;
     my $exif    = $asset->exif or return;
     my $is_jpeg = $file_ext =~ /^jpe?g$/;
     my $is_tiff = $file_ext =~ /^tiff?$/;
     my $is_webp = $file_ext eq 'webp';
+    my $is_png  = $file_ext eq 'png';
 
     @MandatoryExifTags = _set_mandatory_exif_tags() unless @MandatoryExifTags;
     for my $g ( $exif->GetGroups ) {
@@ -1122,6 +1123,7 @@ sub has_metadata {
             || $g eq 'File'
             || ( $is_jpeg && $g =~ /\A(?:JFIF|ICC_Profile)\z/ )
             || ( $is_webp && $g =~ /\A(?:RIFF|ICC_Profile)\z/ )
+            || ( $is_png  && $g =~ /\A(?:PNG|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
         my %writable_tags = map {$_ => 1} Image::ExifTool::GetWritableTags($g);
         delete $writable_tags{$_} for @MandatoryExifTags;
