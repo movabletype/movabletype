@@ -55,7 +55,8 @@ my $mt_app = sub {
     return sub {
         my $env = shift;
         eval "require $app_class";
-        my $cgi = CGI::PSGI->new($env);
+        my $cgi = eval { CGI::PSGI->new($env) }
+            or return [400, [], ['Bad Request']];
         local *ENV = { %ENV, %$env };    # some MT::App method needs this
         my $app = $app_class->new(CGIObject => $cgi);
         delete $app->{init_request};
@@ -85,7 +86,8 @@ my $mt_app_streaming = sub {
     return sub {
         my $env = shift;
         eval "require $app_class";
-        my $cgi = CGI::PSGI->new($env);
+        my $cgi = eval { CGI::PSGI->new($env) }
+            or return [400, [], ['Bad Request']];
         local *ENV = { %ENV, %$env };    # some MT::App method needs this
         my $app = $app_class->new(CGIObject => $cgi);
         delete $app->{init_request};
