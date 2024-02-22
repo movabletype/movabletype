@@ -438,7 +438,7 @@ sub init_data {
         {   name       => 'Bob D',
             nickname   => 'Dylan',
             email      => 'bobd@example.com',
-            url        => 'http://a/',
+            url        => 'http://example.com/',
             auth_type  => 'MT',
             created_on => '19780131075000',
         }

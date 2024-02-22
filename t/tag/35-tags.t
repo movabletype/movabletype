@@ -1892,7 +1892,7 @@ bobd@example.com;chuckd@example.com;
 --- template
 <MTAuthors sort_by='url'><MTAuthorURL>;</MTAuthors>
 --- expected
-http://a/;http://chuckd.com/;
+http://chuckd.com/;http://example.com/;
 
 === test 352
 --- template
