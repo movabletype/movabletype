@@ -7,6 +7,7 @@ package MT::CMS::Category;
 
 use strict;
 use warnings;
+use MT::Util qw( trim_path );
 use MT::Util::Encode;
 
 sub edit {
@@ -231,6 +232,13 @@ sub bulk_update {
         require JSON;
         my $decode = JSON->new->utf8(0);
         $objects = $decode->decode($json);
+
+        if ( MT->config->TrimFilePath == 2 ) {
+            foreach my $obj ( @$objects ) {
+                return $app->json_error( $app->translate("The basenames contains an inappropriate whitespace.") )
+                    if $obj->{basename} ne trim_path($obj->{basename});
+            }
+        }
     }
     else {
         $objects = [];

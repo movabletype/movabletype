@@ -311,7 +311,7 @@ sub seed_database {
 
     $cfg->set(DisableNotificationPings => 1, 1);
     $cfg->set(DefaultSupportedLanguages => 'en_us,ja', 1);
-    $cfg->set(TrimFilePath => 1, 1);
+    $cfg->set(TrimFilePath => 2, 1);
 
     $cfg->save_config;
 
