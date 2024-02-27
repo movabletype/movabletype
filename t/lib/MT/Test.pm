@@ -368,7 +368,7 @@ sub init_data {
     $blog = MT::Blog->load(1);
     $blog ||= MT::Blog->new();
     $blog->set_values(
-        {   name         => 'none',
+        {   name         => 'None',
             site_url     => '/::/nana/',
             archive_url  => '/::/nana/archives/',
             site_path    => "$test_root/site/",

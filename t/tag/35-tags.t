@@ -209,7 +209,7 @@ nonzero
 --- template
 <MTBlogs><MTBlogName></MTBlogs>
 --- expected
-none
+None
 
 === test 23
 --- template
@@ -311,14 +311,14 @@ Work rdf:about="http://narnia.na/nana/">
 --- template
 <MTInclude module="blog-name">
 --- expected
-none
+None
 
 === test 38
 --- SKIP
 --- template
 <MTInclude module="blog-name">
 --- expected
-none
+None
 
 === test 39
 --- template
@@ -2988,7 +2988,7 @@ Narnia None Test Blog
 --- template
 <MTEntries lastn="1"><MTEntryBlogName></MTEntries>
 --- expected
-none
+None
 
 === test 562
 --- template
