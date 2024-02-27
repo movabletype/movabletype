@@ -253,6 +253,12 @@ sub test_data_api {
                 }
 
                 $result = $format->{unserialize}->($body);
+
+                if (lc($ENV{MT_TEST_BACKEND} // '') eq 'oracle') {
+                    _null_to_string($result);
+                    _null_to_string($expected_result);
+                }
+
                 cmp_deeply( $result, $expected_result, 'result' ) || note explain $result;
             }
 
@@ -272,6 +278,22 @@ sub test_data_api {
                 $complete->( $data, $body, \%headers );
             }
         };
+    }
+}
+
+sub _null_to_string {
+    my $hash = shift;
+    for my $key (keys %$hash) {
+        my $val = $hash->{$key};
+        if (!defined($hash->{$key})) {
+            $hash->{$key} = '';
+        } elsif (ref($val) && ref($val) eq 'HASH') {
+            _null_to_string($val);
+        } elsif (ref($val) && ref($val) eq 'ARRAY') {
+            my @new;
+            push @new, (defined($_) ? $_ : '') for (@$val);
+            $hash->{$key} = \@new;
+        }
     }
 }
 
