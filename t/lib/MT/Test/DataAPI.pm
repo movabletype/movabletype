@@ -71,6 +71,9 @@ sub test_data_api {
     if ( my @only = grep { $_->{only} } @$suite ) {
         $suite = \@only;
     }
+
+    my $test_number = 0;
+
     for my $data (@$suite) {
         my $author;
         if ( $data->{author_id} ) {
@@ -153,7 +156,7 @@ sub test_data_api {
             ? $data->{params}->($data)
             : $data->{params};
 
-        my $note = $path;
+        my $note = $test_number++ . ': ' . $path;
         if ( lc $data->{method} eq 'get' && $data->{params} ) {
             $note .= '?'
                 . join( '&',
