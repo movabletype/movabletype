@@ -512,7 +512,7 @@
             1,
             null,
             1,
-            null,
+            "http://example.com/",
             null
          ],
          [
@@ -750,7 +750,7 @@
             null,
             "__NOW__",
             null,
-            "none",
+            "None",
             null,
             2,
             0,
