@@ -59,7 +59,7 @@ sub is_locked_out_user {
     return 0 if ( !$app->config->UserLockoutLimit ) || ( !$username );
 
     my $user = $app->user
-        || $app->model('author')->load( { name => $username } )
+        || $app->model('author')->load( { name => $username }, { binary => { name => 1 } } )
         or return 0;
 
     $user->locked_out;
@@ -194,6 +194,8 @@ sub _insert_failedlogin {
     my $user = $app->model('author')->load(
         {   name   => $username,
             status => MT::Author::ACTIVE,
+        }, {
+            binary => { name => 1 },
         }
     );
     my $author_id = $user ? $user->id : undef;
@@ -330,7 +332,7 @@ sub process_login_result {
         $app->model('failedlogin')->remove( { remote_ip => $remote_ip } );
         if (my $user = (
                        $app->user
-                    || $app->model('author')->load( { name => $username } )
+                    || $app->model('author')->load( { name => $username }, { binary => { name => 1 } } )
             )
             )
         {

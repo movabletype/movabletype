@@ -2243,7 +2243,19 @@ sub login {
             )
         );
     }
-    elsif ( $res == MT::Auth::LOCKED_OUT() ) {
+    elsif ( $res == MT::Auth::LOCKED_OUT_IP() ) {
+        $app->log(
+            {   message => $app->translate(
+                    "Failed login attempt by ip-locked-out user '[_1]'", $user
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            }
+        );
+        return $app->error( $app->translate('Invalid login.') );
+    }
+    elsif ( $res == MT::Auth::LOCKED_OUT_USER() or $res == MT::Auth::LOCKED_OUT() ) {
         $app->log(
             {   message => $app->translate(
                     "Failed login attempt by locked-out user '[_1]'", $user
@@ -3096,6 +3108,8 @@ sub do_reboot {
     return unless $app->{do_reboot};
     delete $app->{do_reboot};
 
+    $app->run_callbacks('reboot', $app);
+
     if ( $ENV{FAST_CGI} ) {
         require MT::Touch;
         MT::Touch->touch( 0, 'config' );
@@ -3117,35 +3131,37 @@ sub do_reboot {
         }
     }
     if ( my $pidfile = MT->config->PIDFilePath ) {
-        require MT::FileMgr;
-        my $fmgr = MT::FileMgr->new('Local');
-        my $pid;
-        unless ( $pid = $fmgr->get_data($pidfile) ) {
-            $app->log(
-                $app->translate(
-                    "Failed to open pid file [_1]: [_2]", $pidfile,
-                    $fmgr->errstr,
-                )
-            );
-            return 1;
-        }
-        chomp $pid;
-        unless ( kill 'HUP', int($pid) ) {
-            $app->log(
-                $app->translate( "Failed to send reboot signal: [_1]", $!, )
-            );
-            return 1;
-        }
-        if (my $wait = MT->config->WaitAfterReboot) {
-            require Time::HiRes;
-            if (MT->config->DisableMetaRefresh) {
-                my $until = Time::HiRes::time() + $wait;
-                while ((my $sleep = $until - Time::HiRes::time()) > 0) {
-                    Time::HiRes::sleep($sleep);
-                }
-            } else {
-                Time::HiRes::sleep $wait;
+        $app->_send_hup_to($pidfile);
+    }
+    return 1;
+}
+
+sub _send_hup_to {
+    my ($app, $pidfile) = @_;
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    my $pid = $fmgr->get_data($pidfile);
+    chomp $pid if $pid;
+    if (!$pid or $pid !~ /^[0-9]+$/) {
+        $app->log($app->translate("Invalid pid file: [_1]", $pidfile));
+        return 1;
+    }
+
+    unless ( kill 'HUP', $pid ) {
+        $app->log(
+            $app->translate( "Failed to send reboot signal: [_1]", $!, )
+        );
+        return 1;
+    }
+    if (my $wait = MT->config->WaitAfterReboot) {
+        require Time::HiRes;
+        if (MT->config->DisableMetaRefresh) {
+            my $until = Time::HiRes::time() + $wait;
+            while ((my $sleep = $until - Time::HiRes::time()) > 0) {
+                Time::HiRes::sleep($sleep);
             }
+        } else {
+            Time::HiRes::sleep $wait;
         }
     }
     1;
@@ -4458,6 +4474,16 @@ sub log {
         unless defined $log->level;
     $log->class('system')
         unless defined $log->class;
+    my $message = $log->message;
+    if ($message =~ /Can't locate/) {
+        $message =~ s!\(you may need to install [^)]+\)\s+\(\@INC [^)]+\)!!s;
+        $log->message($message);
+    }
+    my $metadata = $log->metadata;
+    if ($metadata and $metadata =~ /Can't locate/) {
+        $metadata =~ s!\(you may need to install [^)]+\)\s+\(\@INC [^)]+\)!!s;
+        $log->metadata($metadata);
+    }
     $log->save;
 
     require MT::Util::Log;
@@ -4470,7 +4496,11 @@ sub log {
         : $log->level == MT::Log::ERROR()    ? 'error'
         : $log->level == MT::Log::SECURITY() ? 'error'
         :                                      'none';
-    MT::Util::Log->$method( $log->message );
+
+    $message .= " ($metadata)" if defined $metadata && $metadata ne '';
+    my $class_category = join ':', grep {defined $_ and $_ ne ''} ($log->class, $log->category);
+    $message = "[$class_category] $message" if $class_category;
+    MT::Util::Log->$method($message);
 }
 
 sub trace {

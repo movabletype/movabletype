@@ -8,10 +8,11 @@ use Exporter();
 *import = \&Exporter::import;
 our @EXPORT_OK = qw(
   urandom
+  urandom_ub
 );
 our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK, );
 
-our $VERSION  = '0.36';
+our $VERSION  = '0.39';
 our @CARP_NOT = ('Crypt::URandom');
 
 sub CRYPT_SILENT      { return 64; }               # hex 40
@@ -109,8 +110,18 @@ _RTLGENRANDOM_PROTO_
     return;
 }
 
+sub urandom_ub {
+    my ($length) = @_;
+    return _urandom( 'sysread', $length );
+}
+
 sub urandom {
     my ($length) = @_;
+    return _urandom( 'read', $length );
+}
+
+sub _urandom {
+    my ( $type, $length ) = @_;
 
     my $length_ok;
     if ( defined $length ) {
@@ -145,13 +156,14 @@ sub urandom {
         return $buffer;
     }
     else {
-        my $result = $_urandom_handle->read( my $buffer, $length );
+        my $result = $_urandom_handle->$type( my $buffer, $length );
         if ( defined $result ) {
             if ( $result == $length ) {
                 return $buffer;
             }
             else {
                 $_urandom_handle = undef;
+                $_initialised    = undef;
                 Carp::croak( "Only read $result bytes from "
                       . SINGLE_QUOTE()
                       . PATH()
@@ -161,6 +173,7 @@ sub urandom {
         else {
             my $error = $OS_ERROR;
             $_urandom_handle = undef;
+            $_initialised    = undef;
             Carp::croak( 'Failed to read from '
                   . SINGLE_QUOTE()
                   . PATH()
@@ -180,7 +193,7 @@ Crypt::URandom - Provide non blocking randomness
 
 =head1 VERSION
 
-This document describes Crypt::URandom version 0.36
+This document describes Crypt::URandom version 0.39
 
 
 =head1 SYNOPSIS
@@ -213,8 +226,18 @@ or equal to Windows 2000.
 =for stopwords cryptographic
 
 This function accepts an integer and returns a string of the same size
-filled with random data.  The first call will initialize the native 
-cryptographic libraries (if necessary) and load all the required Perl libraries
+filled with random data.  The first call will initialize the native
+cryptographic libraries (if necessary) and load all the required Perl libraries.
+This call is a buffered read on non Win32 platforms.
+
+=item C<urandom_ub>
+
+=for stopwords cryptographic
+
+This function accepts an integer and returns a string of the same size
+filled with random data.  The first call will initialize the native
+cryptographic libraries (if necessary) and load all the required Perl libraries.
+This call is a unbuffered sysread on non Win32 platforms.
 
 =back
 
@@ -331,7 +354,7 @@ gratitude from Crypt::Random::Source::Strong::Win32 by Max Kanat-Alexander
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2011, David Dick C<< <ddick@cpan.org> >>. All rights reserved.
+Copyright (c) 2023, David Dick C<< <ddick@cpan.org> >>. All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

@@ -260,7 +260,7 @@ sub _loop {
 A conditional tag that is true when the current blog in context has
 been assigned a Creative Commons License.
 
-=for tags blogs, creativecommons
+=for tags blogs, creativecommons, deprecated
 
 =cut
 
@@ -269,7 +269,7 @@ been assigned a Creative Commons License.
 A conditional tag that is true when the current site in context has
 been assigned a Creative Commons License.
 
-=for tags sites, creativecommons
+=for tags sites, creativecommons, deprecated
 
 =cut
 
@@ -791,7 +791,7 @@ Publishes the license URL of the Creative Commons logo appropriate
 to the license assigned to the blog in context. If the blog doesn't
 have a Creative Commons license, this tag returns an empty string.
 
-=for tags blogs, creativecommons
+=for tags blogs, creativecommons, deprecated
 
 =cut
 
@@ -801,7 +801,7 @@ Publishes the license URL of the Creative Commons logo appropriate
 to the license assigned to the site in context. If the site doesn't
 have a Creative Commons license, this tag returns an empty string.
 
-=for tags sites, creativecommons
+=for tags sites, creativecommons, deprecated
 
 =cut
 
@@ -826,7 +826,7 @@ B<Example:>
     <img src="<$MTBlogCCLicenseImage$>" alt="Creative Commons" />
     </MTIf>
 
-=for tags blogs, creativecommons
+=for tags blogs, creativecommons, deprecated
 
 =cut
 
@@ -842,7 +842,7 @@ B<Example:>
     <img src="<$MTSiteCCLicenseImage$>" alt="Creative Commons" />
     </MTIf>
 
-=for tags sites, creativecommons
+=for tags sites, creativecommons, deprecated
 
 =cut
 
@@ -851,10 +851,8 @@ sub _hdlr_blog_cc_license_image {
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $cc = $blog->cc_license or return '';
-    my ( $code, $license, $image_url ) = $cc =~ /(\S+) (\S+) (\S+)/;
-    return $image_url if $image_url;
-    "http://creativecommons.org/images/public/"
-        . ( $cc eq 'pd' ? 'norights' : 'somerights' );
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::cc_image($cc);
 }
 
 ###########################################################################
@@ -875,7 +873,7 @@ entry permalink published in the RDF block.
 
 =back
 
-=for tags blogs, creativecommons
+=for tags blogs, creativecommons, deprecated
 
 =cut
 
@@ -908,9 +906,9 @@ RDF
             unless $arg->{with_index};
         $rdf .= <<RDF;
 <Work rdf:about="$link">
-<dc:title>@{[ encode_xml($strip_hyphen->($entry->title)) ]}</dc:title>
-<dc:description>@{[ encode_xml($strip_hyphen->($ctx->invoke_handler('entryexcerpt', @_))) ]}</dc:description>
-<dc:creator>@{[ encode_xml($strip_hyphen->($author_name)) ]}</dc:creator>
+<dc:title>@{[ MT::Util::encode_xml($strip_hyphen->($entry->title)) ]}</dc:title>
+<dc:description>@{[ MT::Util::encode_xml($strip_hyphen->($ctx->invoke_handler('entryexcerpt', @_))) ]}</dc:description>
+<dc:creator>@{[ MT::Util::encode_xml($strip_hyphen->($author_name)) ]}</dc:creator>
 <dc:date>@{[ $ctx->invoke_handler( 'entrydate', { 'format' => "%Y-%m-%dT%H:%M:%S" }) .
              $ctx->invoke_handler('blogtimezone', @_) ]}</dc:date>
 <license rdf:resource="$cc_url" />
@@ -920,13 +918,14 @@ RDF
     else {
         $rdf .= <<RDF;
 <Work rdf:about="@{[ $blog->site_url ]}">
-<dc:title>@{[ encode_xml($strip_hyphen->($blog->name)) ]}</dc:title>
-<dc:description>@{[ encode_xml($strip_hyphen->($blog->description)) ]}</dc:description>
+<dc:title>@{[ MT::Util::encode_xml($strip_hyphen->($blog->name)) ]}</dc:title>
+<dc:description>@{[ MT::Util::encode_xml($strip_hyphen->($blog->description)) ]}</dc:description>
 <license rdf:resource="$cc_url" />
 </Work>
 RDF
     }
-    $rdf .= MT::Util::cc_rdf($cc) . "</rdf:RDF>\n-->\n";
+    require MT::Util::Deprecated;
+    $rdf .= MT::Util::Deprecated::cc_rdf($cc) . "</rdf:RDF>\n-->\n";
     $rdf;
 }
 

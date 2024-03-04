@@ -244,7 +244,6 @@ sub core_methods {
         'save_entry_prefs'     => "${pkg}Entry::save_entry_prefs",
         'save_template_prefs'  => "${pkg}Template::save_template_prefs",
         'save_favorite_blogs'  => "${pkg}Blog::save_favorite_blogs",
-        'cc_return'            => "${pkg}Blog::cc_return",
         'itemset_action'       => "${pkg}Tools::do_list_action",
         'page_action'          => "${pkg}Tools::do_page_action",
         'cfg_system_general'   => "${pkg}Tools::cfg_system_general",
@@ -275,6 +274,8 @@ sub core_methods {
         'restore_premature_cancel' => "${pkg}Tools::restore_premature_cancel",
         'adjust_sitepath'          => "${pkg}Tools::adjust_sitepath",
         'system_check'             => "${pkg}Tools::system_check",
+        'start_reboot'             => "${pkg}Tools::start_reboot",
+        'reboot'                   => "${pkg}Tools::reboot",
         'dialog_refresh_templates' =>
             "${pkg}Template::dialog_refresh_templates",
         'dialog_clone_blog' => "${pkg}Blog::clone",
@@ -2407,6 +2408,17 @@ sub core_menus {
                 return 0;
             },
             view => ['system'],
+        },
+        'tools:reboot' => {
+            label => "Reboot",
+            order => 1000,
+            mode  => 'start_reboot',
+            view  => ['system'],
+            condition => sub {
+                return 0 unless $ENV{"psgi.version"};
+                return 0 unless MT->app->user->is_superuser;
+                return 1;
+            },
         },
 
         'category_set:manage' => {

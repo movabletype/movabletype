@@ -21,6 +21,8 @@ sub NEW_USER ()         {8}
 sub PENDING ()          {9}
 sub LOCKED_OUT ()       {10}
 sub SESSION_EXPIRED ()  {11}
+sub LOCKED_OUT_IP ()    {12}
+sub LOCKED_OUT_USER ()  {13}
 
 {
     my $auth_module;
@@ -83,8 +85,11 @@ sub validate_credentials {
         require MT::Lockout;
         my $user = $ctx->{username};
 
-        if ( MT::Lockout->is_locked_out( $app, $app->remote_ip, $user ) ) {
-            return MT::Auth::LOCKED_OUT();
+        if ( MT::Lockout->is_locked_out_ip( $app, $app->remote_ip ) ) {
+            return MT::Auth::LOCKED_OUT_IP();
+        }
+        if ( MT::Lockout->is_locked_out_user( $app, $user ) ) {
+            return MT::Auth::LOCKED_OUT_USER();
         }
 
         MT::Lockout->process_login_result( $app, $app->remote_ip, $user,

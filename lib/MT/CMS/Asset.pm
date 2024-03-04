@@ -220,11 +220,15 @@ sub dialog_list_asset {
 
     $app->add_breadcrumb( $app->translate("Files") );
 
-    my $content_field_id = $app->param('content_field_id');
-    if ($blog_id && !$content_field_id) {
-        my $blog_ids = $app->_load_child_blog_ids($blog_id);
-        push @$blog_ids, $blog_id;
-        $terms{blog_id} = $blog_ids;
+    if ($blog_id) {
+        my $content_field_id = $app->param('content_field_id');
+        if ($content_field_id) {
+            $terms{blog_id} = $blog_id;
+        } else {
+            my $blog_ids = $app->_load_child_blog_ids($blog_id);
+            push @$blog_ids, $blog_id;
+            $terms{blog_id} = $blog_ids;
+        }
     }
 
     my $hasher = build_asset_hasher(
@@ -560,6 +564,7 @@ sub js_upload_file {
     my $thumb_type;
     my $thumb_size = $app->param('thumbnail_size') || $default_thumbnail_size;
     if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
+        $asset->remove_broken_png_metadata;
         my ( $orig_height, $orig_width )
             = ( $asset->image_width, $asset->image_height );
         if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
@@ -2713,6 +2718,7 @@ sub dialog_edit_asset {
     }
 
     if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
+        $asset->remove_broken_png_metadata;
         my ( $thumb_url, $thumb_w, $thumb_h );
         my $thumb_size = 240;
         my ( $orig_height, $orig_width )
@@ -3118,10 +3124,11 @@ sub dialog_asset_modal {
     if ( my $content_field_id = $app->param('content_field_id') ) {
         require MT::ContentField;
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
+            my $options    = $content_field->options;
+            my $can_upload = ( $options->{allow_upload} && $app->can_do('upload') ) ? 1 : 0;
             $param{content_field_id} = $content_field_id;
-            my $options = $content_field->options;
-            $param{can_multi}  = $options->{multiple}     ? 1 : 0;
-            $param{can_upload} = $options->{allow_upload} ? 1 : 0;
+            $param{can_multi}        = $options->{multiple} ? 1 : 0;
+            $param{can_upload}       = $can_upload;
         }
     }
 
@@ -3364,6 +3371,7 @@ sub _make_thumbnail_url {
         = $param && $param->{size} ? $param->{size} : $default_thumbnail_size;
 
     if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
+        $asset->remove_broken_png_metadata;
         my ( $orig_height, $orig_width )
             = ( $asset->image_width, $asset->image_height );
         if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {

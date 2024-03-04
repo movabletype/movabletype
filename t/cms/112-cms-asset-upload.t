@@ -252,4 +252,20 @@ subtest 'Regular PDF file' => sub {
     );
 };
 
+subtest 'Show edit page' => sub {
+    my $newest_asset = MT::Asset->load(
+        { class => '*' },
+        { sort  => [{ column => 'id', desc => 'DESC' }] },
+    );
+
+    my $app = MT::Test::App->new('CMS');
+    $app->login($admin);
+    $app->get_ok({
+        __mode  => 'view',
+        blog_id => $blog->id,
+        id      => $newest_asset->id,
+        _type   => 'asset',
+    });
+};
+
 done_testing();

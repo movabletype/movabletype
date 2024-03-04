@@ -20,6 +20,7 @@ plan tests => (1 + 2) * blocks;
 use MT;
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::Util::CreativeCommons;
 
 filters {
     blog_id  => [qw( chomp )],
@@ -29,8 +30,8 @@ filters {
 
 $test_env->prepare_fixture('db_data');
 
-my $website = MT->model('website')->load(2) or MT->model('website')->errstr;
-$website->cc_license(undef);
+my $website = MT->model('website')->load(1) or MT->model('website')->errstr;
+$website->cc_license(MT::Test::Util::CreativeCommons->by_nc_sa_20);
 $website->save or die $website->errstr;
 
 MT::Test::Tag->run_perl_tests;

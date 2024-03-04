@@ -328,6 +328,22 @@ SKIP: {
         skip( 'Log::Minimal is not installed', 1 );
     }
 }
+SKIP: {
+    if ( eval { require Log::Dispatch::Config } ) {
+        use_ok('MT::Util::Log::Dispatch');
+    }
+    else {
+        skip( 'Log::Dispatch::Config is not installed', 1 );
+    }
+}
+SKIP: {
+    if ( eval { require Fluent::Logger } ) {
+        use_ok('MT::Util::Log::Fluentd');
+    }
+    else {
+        skip( 'Fluent::Logger is not installed', 1 );
+    }
+}
 
 # TheSchwartz support
 use_ok('MT::TheSchwartz');
@@ -625,6 +641,7 @@ SKIP: {
     my $eval_string = join( ';', map {"require $_"} @modules );
     if ( eval $eval_string ) {
         use_ok('MT::PSGI');
+        use_ok('MT::PSGI::ServeStatic');
     }
     else {
         my $last_module = pop @modules;

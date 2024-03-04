@@ -185,6 +185,18 @@ class MT {
         $plugin_paths = $this->config('PluginPath');
         $ctx =& $this->context();
 
+        $enabled = Array();
+        $switch = $this->config('PluginSwitch');
+        foreach ($switch as $sig => $value) {
+            if (preg_match('/^([^\/]+)\//', $sig, $matches)) {
+                $enabled[$matches[1]] = $enabled[$matches[1]] ?? 0;
+                $enabled[$matches[1]] += $value;
+            } else {
+                $enabled[$sig] = $enabled[$sig] ?? 0;
+                $enabled[$sig] += $value;
+            }
+        }
+
         foreach ($plugin_paths as $path) {
             if ( !is_dir($path) )
                 $path = $this->config('MTDir') . DIRECTORY_SEPARATOR . $path;
@@ -193,6 +205,9 @@ class MT {
                  while (($file = readdir($dh)) !== false) {
                      if ($file == "." || $file == "..")
                          continue;
+                     if (isset($enabled[$file]) && empty($enabled[$file])) {
+                         continue;
+                     }
                      $plugin_dir = $path . DIRECTORY_SEPARATOR . $file
                          . DIRECTORY_SEPARATOR . 'php';
                      if (is_dir($plugin_dir))
@@ -540,9 +555,9 @@ class MT {
         }
 
         // IIS request by error document...
-        if (preg_match('/IIS/', $_SERVER['SERVER_SOFTWARE'])) {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && preg_match('/IIS/', $_SERVER['SERVER_SOFTWARE'])) {
             // assume 404 handler
-            if (preg_match('/^\d+;(.*)$/', $_SERVER['QUERY_STRING'], $matches)) {
+            if (isset($_SERVER['QUERY_STRING']) && preg_match('/^\d+;(.*)$/', $_SERVER['QUERY_STRING'], $matches)) {
                 $path = $matches[1];
                 $path = preg_replace('!^http://[^/]+!', '', $path);
                 if (preg_match('/\?(.+)?/', $path, $matches)) {

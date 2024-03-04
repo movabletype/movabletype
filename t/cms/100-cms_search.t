@@ -107,4 +107,20 @@ subtest 'comment' => sub {
     });
 };
 
+subtest 'group' => sub {
+    my $group = new MT::Group;
+    $group->name('Test Group');
+    $group->save;
+    # global search for a group
+    # __mode=search_replace&_type=group&do_search=1&search=group
+    $app->get_ok({
+        __mode    => 'search_replace',
+        blog_id   => 0,
+        do_search => 1,
+        search    => 'Test Group',
+        _type     => 'group',
+    });
+    $app->content_like(qr/Test Group/i, "Test group is present");
+};
+
 done_testing;

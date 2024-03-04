@@ -14,6 +14,7 @@ BEGIN {
 use MT::Test::Tag;
 use MT::Test::PHP;
 use MT::Test::Permission;
+use MT::Test::Util::CreativeCommons;
 use MT::Util qw(ts2epoch epoch2ts);
 
 $test_env->prepare_fixture('db_data');
@@ -92,6 +93,8 @@ sub embed_path {
 sub fix_path { File::Spec->canonpath(shift) }
 
 my $blog_id = 1;
+
+MT::Test::Util::CreativeCommons->set_cc_license('by_nc_sa_20');
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);
@@ -206,7 +209,7 @@ nonzero
 --- template
 <MTBlogs><MTBlogName></MTBlogs>
 --- expected
-none
+None
 
 === test 23
 --- template
@@ -308,14 +311,14 @@ Work rdf:about="http://narnia.na/nana/">
 --- template
 <MTInclude module="blog-name">
 --- expected
-none
+None
 
 === test 38
 --- SKIP
 --- template
 <MTInclude module="blog-name">
 --- expected
-none
+None
 
 === test 39
 --- template
@@ -1889,7 +1892,7 @@ bobd@example.com;chuckd@example.com;
 --- template
 <MTAuthors sort_by='url'><MTAuthorURL>;</MTAuthors>
 --- expected
-;http://chuckd.com/;
+http://chuckd.com/;http://example.com/;
 
 === test 352
 --- template
@@ -2985,7 +2988,7 @@ Narnia None Test Blog
 --- template
 <MTEntries lastn="1"><MTEntryBlogName></MTEntries>
 --- expected
-none
+None
 
 === test 562
 --- template

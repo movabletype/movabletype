@@ -171,9 +171,7 @@ class MTViewer extends Smarty {
         // Silence "Attempt to read property "nocache" on array" on $this->tpl_vars['vars'] access.
         // See https://github.com/smarty-php/smarty/issues/855
         // See https://github.com/smarty-php/smarty/issues/759#issuecomment-1243946505
-        if (version_compare(phpversion(), '8.2.0', '>=')) {
-            $this->muteUndefinedOrNullWarnings();
-        }
+        $this->muteUndefinedOrNullWarnings();
 
         $this->smarty = $this;
 
