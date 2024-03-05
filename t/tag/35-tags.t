@@ -976,6 +976,12 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=grandpa&amp;limit=
 --- expected
 2:1:4:1:5
 
+=== test 183-2
+--- template
+<MTEntries tag='grandpa' lastn='1'><MTEntryTags glue=','><MTTagCount></MTEntryTags></MTEntries>
+--- expected
+1,4,1
+
 === test 184
 --- SKIP
 --- template
