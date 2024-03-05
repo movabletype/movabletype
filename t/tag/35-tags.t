@@ -24,6 +24,7 @@ $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
 my $blog = MT::Blog->load(1);
 $blog->captcha_provider('mt_default');
+$blog->include_system('php');
 $blog->save;
 
 my $asset = MT::Asset->load(1);
@@ -85,6 +86,16 @@ sub embed_path {
     require File::Temp;
     my ( $fh, $file ) = File::Temp::tempfile();
     print $fh $cont;
+    close $fh;
+    $in =~ s{PATH}{$file};
+    $in;
+}
+
+sub embed_path_to_php_test {
+    my $in = shift;
+    require File::Temp;
+    my ( $fh, $file ) = File::Temp::tempfile();
+    print $fh '<?php echo 3+4;';
     close $fh;
     $in =~ s{PATH}{$file};
     $in;
@@ -4891,6 +4902,16 @@ left <mt:Include file="PATH"> right
 File inclusion is disabled by "AllowFileInclude" config directive.
 --- expected_php_error
 left File include is disabled by "AllowFileInclude" config directive. right
+
+=== test 883-3 include php file
+--- mt_config
+{AllowFileInclude => 1}
+--- template embed_path_to_php_test
+<mt:Include ssi="1" file="PATH">
+--- expected
+<?php echo 3+4;
+--- expected_php
+7
 
 === test 884
 --- template
