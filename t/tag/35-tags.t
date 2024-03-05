@@ -312,6 +312,12 @@ Work rdf:about="http://narnia.na/nana/">
 --- expected
 (Header)January 1978|January 1965|January 1964|January 1963|January 1962|(Footer)January 1961|
 
+=== test 35-2 mt:CalendarDate
+--- template
+<MTArchiveList archive_type="Monthly"><$mt:CalendarDate format="%Y/%m"$>|</MTArchiveList>
+--- expected
+1978/01|1965/01|1964/01|1963/01|1962/01|1961/01|
+
 === test 36
 --- template
 [<MTEntries lastn="10"> * <MTEntryTitle></MTEntries>]
@@ -325,7 +331,6 @@ Work rdf:about="http://narnia.na/nana/">
 None
 
 === test 38
---- SKIP
 --- template
 <MTInclude module="blog-name">
 --- expected
@@ -3228,7 +3233,6 @@ http%3A%2F%2Fexample.com%2F%3Fq%3D%40
 http%3A//example.com/%3Fq%3D%40
 
 === test 595
---- SKIP
 --- template
 <MTSetVarBlock name="foo">http://example.com/?q=@</MTSetVarBlock><MTGetVar name="foo" escape="quotes">
 --- expected
@@ -3263,14 +3267,12 @@ http://example.com/?q=@
 \<s\cript\>alert(\"test\");\<\/s\cript\>
 
 === test 600
---- SKIP
 --- template
 <MTSetVarBlock name="foo">test@example.com</MTSetVarBlock><MTGetVar name="foo" escape="mail">
 --- expected
 test [AT] example [DOT] com
 
 === test 601
---- SKIP
 --- template
 <MTSetVarBlock name="foo"><span>Foo</span></MTSetVarBlock><MTGetVar name="foo" escape="nonstd">
 --- expected
@@ -4112,14 +4114,12 @@ bar@baz\/
 <&>'"
 
 === test 750
---- SKIP
 --- template
 <mt:setvarblock name="str"><&>'"</mt:setvarblock><$mt:var name="str" encode_xml="1"$>
 --- expected
 <![CDATA[<&>'"]]>
 
 === test 751
---- SKIP
 --- template
 <mt:setvarblock name="str"><![CDATA[&lt;&amp;&gt;&#039;&quot;]]></mt:setvarblock><$mt:var name="str" decode_xml="1"$>
 --- expected
