@@ -97,7 +97,7 @@
     "js-cookie": "3.0.1",
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
     "popper.js": "^1.16.1",
-    "riot": "3.7.4",
+    "riot": "9.1.4",
     "sass-loader": "^13.3.0",
     "svg4everybody": "^2.1.9",
     "tinymce5": "npm:tinymce@5.10.9",
