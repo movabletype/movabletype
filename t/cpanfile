@@ -99,6 +99,7 @@ on 'test' => sub {
     requires 'File::pushd';
     requires 'File::Temp', '0.23';
     requires 'File::Which';
+    requires 'Fluent::Logger';
     requires 'HTML::Filter::Callbacks';
     requires 'HTML::Form';
     requires 'HTTP::DAV';
@@ -108,6 +109,9 @@ on 'test' => sub {
     requires 'IPC::Run3';
     requires 'JSON::XS';  # For speed
     requires 'JSON::Validator' unless $] < 5.016;
+    requires 'Log::Dispatch';
+    requires 'Log::Dispatch::Configurator::Perl';
+    requires 'Log::Dispatch::Configurator::YAML';
     requires 'Log::Log4perl';
     requires 'Log::Minimal';
     requires 'MIME::Head';

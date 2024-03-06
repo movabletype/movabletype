@@ -12,24 +12,29 @@ use warnings;
 our @EXPORT_OK = qw(readied_provider default_provider_has);
 use base qw(Exporter);
 
-our %providers;
+my %loaded;
 
 sub readied_provider {
     my ($app, $blog, $provider_arg) = @_;
 
-    if (!%providers) {
-        my $all_providers = $app->registry('stats_providers');
-        return undef unless $all_providers;
-        for my $k (keys %$all_providers) {
-            $providers{$k} = $app->registry('stats_providers', $k);
-            eval "require $providers{$k}{provider};";
-        }
-    }
+    my $all_providers = $app->registry('stats_providers');
+    return undef unless $all_providers;
 
     my %seen;
-    my @provider_keys = grep { $_ && !$seen{$_}++ } ($provider_arg || MT->config('DefaultStatsProvider'), keys %providers);
+    my @provider_keys = grep { $_ && !$seen{$_}++ } ($provider_arg || MT->config('DefaultStatsProvider'), keys %$all_providers);
     for my $k (@provider_keys) {
-        my $provider = $providers{$k}{provider} or next;
+        # Ignore if the key is not registered
+        my $reg = $all_providers->{$k} or next;
+
+        # Ignore if the registry does not have a provider (probably because of autovivification)
+        my $provider = $reg->{provider} or next;
+
+        if (!exists $loaded{$k}) {
+            $loaded{$k} = eval "require $provider; 1" ? 1 : 0;
+        }
+        # Ignore if the provider is not loaded for some reasons
+        next unless $loaded{$k};
+
         if ($provider->is_ready($app, $blog)) {
             return $provider->new($k, $blog);
         }
@@ -39,16 +44,14 @@ sub readied_provider {
 }
 
 sub default_provider_has {
-    my $method = shift;
-    my $name   = MT->config->DefaultStatsProvider or return;
-    my $provider;
-    if (!%providers) {
-        my $reg = MT->instance->registry('stats_providers', $name) or return;
-        $provider = $reg->{provider};
-        return unless eval "require $provider; 1";
-    } else {
-        $provider = $providers{$name};
+    my $method   = shift;
+    my $name     = MT->config->DefaultStatsProvider                 or return;
+    my $reg      = MT->instance->registry('stats_providers', $name) or return;
+    my $provider = $reg->{provider}                                 or return;
+    if (!exists $loaded{$name}) {
+        $loaded{$name} = eval "require $provider; 1" ? 1 : 0;
     }
+    return unless $loaded{$name};
     if ($provider->can($method)) {
         return $provider->$method;
     }

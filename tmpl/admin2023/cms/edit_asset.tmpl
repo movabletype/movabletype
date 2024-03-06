@@ -360,8 +360,7 @@ jQuery(window).on('load', init );
 </div>
 </mt:setvarblock>
 
-<mt:setvarblock name="js_include" append="1">
-<script>
+<mt:setvarblock name="jq_js_include" append="1">
     jQuery('#edit_asset').validate({
         rules: {
             label: 'required'
@@ -403,10 +402,7 @@ jQuery(window).on('load', init );
         }
         return false;
     });
-</script>
-</mt:setvarblock>
 
-<mt:setvarblock name="jq_js_include" append="1">
     jQuery('#btn-copy-url').on('click', function() {
       var fld = document.createElement("textarea");
       fld.value = '<mt:var name="url" escape="js">';

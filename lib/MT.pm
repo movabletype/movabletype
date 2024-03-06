@@ -39,14 +39,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '8.000002', '8.0000' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '8.001000', '8.0000' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '8.0.2',              '__PRODUCT_VERSION_ID__',
+        '8.1.0',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -414,8 +414,18 @@ sub log {
         : $log->level == MT::Log::SECURITY() ? 'error'
         :                                      'none';
     my $message  = $log->message;
+    if ($message =~ /Can't locate/) {
+        $message =~ s!\(you may need to install [^)]+\)\s+\(\@INC [^)]+\)!!s;
+        $log->message($message);
+    }
     my $metadata = $log->metadata;
+    if ($metadata and $metadata =~ /Can't locate/) {
+        $metadata =~ s!\(you may need to install [^)]+\)\s+\(\@INC [^)]+\)!!s;
+        $log->metadata($metadata);
+    }
     $message .= " ($metadata)" if defined $metadata && $metadata ne '';
+    my $class_category = join ':', grep {defined $_ and $_ ne ''} ($log->class, $log->category);
+    $message = "[$class_category] $message" if $class_category;
     MT::Util::Log->$method($message);
 
     $log->save();
@@ -1414,7 +1424,10 @@ sub init_plugins {
         eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin';";
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if ($@) {
-            $Plugins{$plugin_sig}{error} = $@;
+            $Plugins{$plugin_sig}{error} = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
+            $Plugins{$plugin_sig}{system_error} = $@;
+            $Plugins{$plugin_sig}{enabled} = 0;
+            delete $PluginSwitch->{$plugin_sig};
             return;
         }
         else {
@@ -1492,6 +1505,7 @@ sub init_plugins {
                     $plugin_full_path
                         = File::Spec->catfile( $PluginPath, $plugin );
                     if ( -f $plugin_full_path ) {
+                        next if exists $Plugins{$plugin} && $Plugins{$plugin}{error};
                         $plugin_envelope = $plugin_lastdir;
                         if ($plugin_full_path =~ /\.pl$/) {
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
@@ -1535,6 +1549,7 @@ sub init_plugins {
                             $plugin );
                         if ( -f $plugin_file ) {
                             my $sig = $plugin_dir . '/' . $plugin;
+                            next if exists $Plugins{$sig} && $Plugins{$sig}{error};
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @loaded_plugins, $obj if $obj;
                             push @errors, [$plugin_full_path, $Plugins{$sig}{error}] if $Plugins{$sig}{error};

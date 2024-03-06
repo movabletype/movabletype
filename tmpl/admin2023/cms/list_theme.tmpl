@@ -269,7 +269,7 @@
 </div>
 </mt:if>
 <div id="<$mt:var name="scope_type"$>-theme-group" class="theme-group">
-  <h4 class="theme-group-name"><__trans phrase="Available Themes"></h4>
+  <h4 class="theme-group-name"><__trans phrase="Available Themes"><mt:if name="is_administrator"> (<__trans phrase="If an installed theme is not listed here, visit the [_1] menu to reboot MT manually." params="<a href="<mt:var name="script_url">?__mode=start_reboot"><__trans phrase="Reboot"></a>">)</mt:if></h4>
   <div class="theme-list">
   <mt:setvar name="loop_for" value="available_theme_loop" /><mt:var name="theme_loop_tmpl">
   </div>

@@ -308,29 +308,52 @@ sub mount_applications {
     }
 
     if ($serve_static) {
+        require MT::PSGI::ServeStatic;
         require Plack::App::Directory;
         require Plack::App::File;
 
         ## Mount mt-static directory
         my $staticurl = $mt->static_path();
         $staticurl =~ s!^https?://[^/]*!!;
-        my $staticpath = $mt->static_file_path();
+        my @staticpaths = ($mt->static_file_path());
+        if ($mt->config('StaticFilePath')) {
+            {   # taken from MT::static_file_path
+                if ( $mt->can('document_root') ) {
+                    my $web_path = $mt->config->StaticWebPath || 'mt-static';
+                    $web_path =~ s!^https?://[^/]+/!!;
+                    my $doc_static_path = File::Spec->catdir( $mt->document_root(), $web_path );
+                    if (-d $doc_static_path) {
+                        push @staticpaths, $doc_static_path;
+                        last;
+                    }
+                }
+                my $mtdir_static_path = File::Spec->catdir( $mt->mt_dir, 'mt-static' );
+                push @staticpaths, $mtdir_static_path if -d $mtdir_static_path;
+            }
+        }
         $urlmap->map( $staticurl,
-            Plack::App::Directory->new( { root => $staticpath } )->to_app );
+            MT::PSGI::ServeStatic->new( { root => \@staticpaths } )->to_app );
 
         ## Mount support directory
-        my $supporturl = MT->config->SupportURL;
-        $supporturl =~ s!^https?://[^/]*!!;
-        my $supportpath = MT->config->SupportDirectoryPath;
-        $urlmap->map( $supporturl,
-            Plack::App::Directory->new( { root => $supportpath } )->to_app );
+        my $supporturl = MT->config->SupportDirectoryURL;
+        if ($supporturl) {
+            $supporturl =~ s!^https?://[^/]*!!;
+            my $supportpath = MT->config->SupportDirectoryPath;
+            $urlmap->map( $supporturl,
+                Plack::App::Directory->new( { root => $supportpath } )->to_app );
+        }
 
         ## Mount favicon.ico
-        my $static = $staticpath;
-        $static .= '/' unless $static =~ m!/$!;
-        my $favicon = $static . 'images/favicon.ico';
-        $urlmap->map( '/favicon.ico' =>
-                Plack::App::File->new( { file => $favicon } )->to_app );
+        for my $staticpath (@staticpaths) {
+            my $static = $staticpath;
+            $static .= '/' unless $static =~ m!/$!;
+            my $favicon = $static . 'images/favicon.ico';
+            if (-f $favicon) {
+                $urlmap->map( '/favicon.ico' =>
+                        Plack::App::File->new( { file => $favicon } )->to_app );
+                last;
+            }
+        }
     }
 
     $self->_app( $urlmap->to_app );
