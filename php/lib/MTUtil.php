@@ -1679,20 +1679,25 @@ function create_rating_expr_function($expr, $filter, $namespace, $datasource = '
 
     require_once 'rating_lib.php';
     $expr = '$ctx = $c; if ($ctx == null) { $mt = MT::get_instance(); $ctx = $mt->context(); }';
-    if ($filter == 'min_score') {
-        $expr .= '$ret = score_for($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret >= '.$orig_expr.';';
-    } elseif ($filter == 'max_score') {
-        $expr .= '$ret = score_for($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret <= '.$orig_expr.';';
-    } elseif ($filter == 'min_rate') {
-        $expr .= '$ret = score_avg($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret >= '.$orig_expr.';';
-    } elseif ($filter == 'max_rate') {
-        $expr .= '$ret = score_avg($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret <= '.$orig_expr.';';
-    } elseif ($filter == 'min_count') {
-        $expr .= '$ret = score_count($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret >= '.$orig_expr.';';
-    } elseif ($filter == 'max_count') {
-        $expr .= '$ret = score_count($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret <= '.$orig_expr.';';
-    } elseif ($filter == 'scored_by') {
+    
+    if ($filter == 'scored_by') {
         $expr .= '$ret = get_score($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'", '.$orig_expr.'); return isset($ret);';
+    } else {
+        if (!$orig_expr) {
+            $expr .= 'return 1;';
+        } else if ($filter == 'min_score') {
+            $expr .= '$ret = score_for($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret >= '.$orig_expr.';';
+        } elseif ($filter == 'max_score') {
+            $expr .= '$ret = score_for($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret <= '.$orig_expr.';';
+        } elseif ($filter == 'min_rate') {
+            $expr .= '$ret = score_avg($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret >= '.$orig_expr.';';
+        } elseif ($filter == 'max_rate') {
+            $expr .= '$ret = score_avg($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret <= '.$orig_expr.';';
+        } elseif ($filter == 'min_count') {
+            $expr .= '$ret = score_count($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret >= '.$orig_expr.';';
+        } elseif ($filter == 'max_count') {
+            $expr .= '$ret = score_count($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'"); return $ret && $ret <= '.$orig_expr.';';
+        } 
     }
 
     try {

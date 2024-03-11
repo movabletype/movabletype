@@ -457,7 +457,6 @@ Invalid scored by filter: Nobody
 a
 
 === MTAssets[namespace][min_score=0]
---- SKIP
 --- template
 <mt:Assets namespace="foo" min_score="0">a</mt:Assets>
 --- expected
@@ -470,7 +469,6 @@ aaaaa
 a:
 
 === MTAssets[namespace][max_score=0]
---- SKIP
 --- template
 <mt:Assets namespace="foo" max_score="0">a</mt:Assets>
 --- expected
@@ -483,7 +481,6 @@ aaaaa
 :b
 
 === MTAssets[namespace][min_rate=0]
---- SKIP
 --- template
 <mt:Assets namespace="foo" min_rate="0">a</mt:Assets>
 --- expected
@@ -496,7 +493,6 @@ aaaaa
 a:
 
 === MTAssets[namespace][max_rate=0]
---- SKIP
 --- template
 <mt:Assets namespace="foo" max_rate="0">a</mt:Assets>
 --- expected
@@ -509,7 +505,6 @@ aaaaa
 :b
 
 === MTAssets[namespace][min_count=0]
---- SKIP
 --- template
 <mt:Assets namespace="foo" min_count="0">a</mt:Assets>
 --- expected
@@ -522,7 +517,6 @@ aaaaa
 a:
 
 === MTAssets[namespace][max_count=0]
---- SKIP
 --- template
 <mt:Assets namespace="foo" max_count="0">a</mt:Assets>
 --- expected
