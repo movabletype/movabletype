@@ -163,8 +163,10 @@ sub get_image_info {
         $res = $exif->ExtractInfo($filename);
     }
     return unless $res;
-    my $info = $exif->GetInfo('ImageWidth', 'ImageHeight', 'FileTypeExtension');
-    return int($info->{ImageWidth} || 0), int($info->{ImageHeight} || 0), $info->{FileTypeExtension};
+    my $width  = int($exif->GetValue('ImageWidth')  || 0);
+    my $height = int($exif->GetValue('ImageHeight') || 0);
+    my $ext    = $exif->GetValue('FileTypeExtension');
+    return ($width, $height, $ext);
 }
 
 sub get_image_type {
