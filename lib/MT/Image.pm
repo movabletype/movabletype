@@ -146,21 +146,40 @@ sub is_valid_image {
     return 1;
 }
 
+sub _needs_rescan {
+    my ($class, $exif) = @_;
+    require MT::Asset;
+    my $ext = $exif->GetValue('FileTypeExtension') or return;
+    my $handler = MT::Asset->handler_for_file("dummy.$ext") or return;
+    return $handler =~ /^MT::Asset::(?:Image|Video)/;
+}
+
 sub get_image_info {
     my $class  = shift;
     my %params = @_;
 
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;
+    $exif->Options(FastScan => 3);
     my $res;
     if ( my $fh = $params{Fh} ) {
         seek $fh, 0, 0;
         require File::RandomAccess;
-        $res = $exif->ExtractInfo(File::RandomAccess->new($fh));
+        my $file = File::RandomAccess->new($fh);
+        $res = $exif->ExtractInfo($file);
         seek $fh, 0, 0;
+        if ($class->_needs_rescan($exif)) {
+            $exif->Options(FastScan => 0);
+            $res = $exif->ExtractInfo($file);
+            seek $fh, 0, 0;
+        }
     }
     elsif ( my $filename = $params{Filename} ) {
         $res = $exif->ExtractInfo($filename);
+        if ($class->_needs_rescan($exif)) {
+            $exif->Options(FastScan => 0);
+            $res = $exif->ExtractInfo($filename);
+        }
     }
     return unless $res;
     my $width  = int($exif->GetValue('ImageWidth')  || 0);
