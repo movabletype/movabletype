@@ -184,7 +184,12 @@ sub check_upload {
 
     my $fh = $params{Fh};
 
-    my ( $w, $h, $id ) = $class->get_image_info(@_);
+    my ( $w, $h, $id );
+    if ($params{Info}) {
+        ($w, $h, $id) = @{$params{Info}}{qw/width height ext/};
+    } else {
+        ($w, $h, $id) = $class->get_image_info(@_);
+    }
 
     my $write_file = sub {
         $params{Fmgr}->put( $fh, $params{Local}, 'upload' );
