@@ -226,6 +226,8 @@ sub check_upload {
             && defined($h)
             && ( $w > $max_dim || $h > $max_dim ) )
         {
+            require MT::Util::Deprecated;
+            MT::Util::Deprecated::warning(name => 'MaxDim support', since => '8.3.0');
             my $uploaded_data = eval { local $/; <$fh> };
             my $img = $class->new( Data => $uploaded_data )
                 or return $class->error( $class->errstr );
