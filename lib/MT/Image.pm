@@ -166,7 +166,7 @@ sub get_image_info {
     my $width  = int($exif->GetValue('ImageWidth')  || 0);
     my $height = int($exif->GetValue('ImageHeight') || 0);
     my $ext    = $exif->GetValue('FileTypeExtension');
-    return ($width, $height, $ext);
+    return wantarray ? ($width, $height, $ext) : {width => $width, height => $height, ext => $ext};
 }
 
 sub get_image_type {
