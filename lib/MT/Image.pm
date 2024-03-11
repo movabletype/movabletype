@@ -151,17 +151,19 @@ sub get_image_info {
     my %params = @_;
 
     require Image::ExifTool;
-    my $info;
+    my $exif = Image::ExifTool->new;
+    my $res;
     if ( my $fh = $params{Fh} ) {
         seek $fh, 0, 0;
         require File::RandomAccess;
-        $info = Image::ExifTool::ImageInfo(File::RandomAccess->new($fh));
+        $res = $exif->ExtractInfo(File::RandomAccess->new($fh));
         seek $fh, 0, 0;
     }
     elsif ( my $filename = $params{Filename} ) {
-        $info = Image::ExifTool::ImageInfo($filename);
+        $res = $exif->ExtractInfo($filename);
     }
-    return unless $info;
+    return unless $res;
+    my $info = $exif->GetInfo('ImageWidth', 'ImageHeight', 'FileTypeExtension');
     return int($info->{ImageWidth} || 0), int($info->{ImageHeight} || 0), $info->{FileTypeExtension};
 }
 
