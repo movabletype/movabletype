@@ -1486,7 +1486,7 @@ sub _upload_file_compat {
         $local_file,     $asset_file,   $base_url,
         $asset_base_url, $relative_url, $relative_path
     );
-    my $image_info = MT::Image->get_image_info(Fh => $fh);
+    my $image_info = MT::Image->get_image_info(Fh => $fh) || {};
     if ( $blog_id = $app->param('blog_id') ) {
         unless ($has_overwrite) {
             if (my $ext_new = $image_info->{ext}) {
@@ -2036,7 +2036,7 @@ sub _upload_file {
         File::Basename::basename($basename) );
 
     # Change to real file extension
-    my $image_info = MT::Image->get_image_info(Fh => $fh);
+    my $image_info = MT::Image->get_image_info(Fh => $fh) || {};
     if (my $ext_new = $image_info->{ext}) {
         my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
         if ($asset_class eq 'MT::Asset::Image' && !MT->config->DisableFileExtensionConversion) {

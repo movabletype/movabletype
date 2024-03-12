@@ -75,7 +75,7 @@ sub image_height {
     }
     if (!$asset->{__image_info}) {
         require MT::Image;
-        $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path );
+        $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path ) || {};
     }
     if (my $h = $asset->{__image_info}{height}) {
         $asset->meta( 'image_height', $h );
@@ -97,7 +97,7 @@ sub image_width {
     }
     if (!$asset->{__image_info}) {
         require MT::Image;
-        $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path );
+        $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path ) || {};
     }
     if (my $w = $asset->{__image_info}{width}) {
         $asset->meta( 'image_width', $w );
