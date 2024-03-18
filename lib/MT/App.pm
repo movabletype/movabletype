@@ -4622,6 +4622,14 @@ sub DESTROY {
 
 sub set_no_cache {
     my $app = shift;
+
+    if (my $cache_control = $app->config->CacheControl) {
+        # No need to set another Cache-Control header if one is already set
+        if (!$app->config->ForceCacheControl) {
+            $app->set_header('Cache-Control' => $cache_control);
+        }
+    }
+
     ## Add the Pragma: no-cache header.
     if ( MT::Util::is_mod_perl1() ) {
         $app->{apache}->no_cache(1);
