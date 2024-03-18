@@ -3177,7 +3177,7 @@ sub run {
         $timer->pause_partial();
     }
 
-    if ( my $cache_control = $app->config->HeaderCacheControl ) {
+    if ( my $cache_control = $app->config->ForceCacheControl ) {
         $app->set_header( 'Cache-Control' => $cache_control );
     }
 
