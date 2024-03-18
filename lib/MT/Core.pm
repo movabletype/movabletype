@@ -1904,6 +1904,7 @@ BEGIN {
             'HTTPProxy'              => undef,
             'HTTPSProxy'             => undef,
             'HTTPNoProxy'            => { default => 'localhost', },
+            'CacheControl'           => { default => 'no-store' },
             'HeaderCacheControl'     => undef,
             'ImageDriver'            => { default => 'ImageMagick', },
             'ImageQualityJpeg'       => { default => 85 },
