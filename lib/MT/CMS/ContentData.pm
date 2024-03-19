@@ -360,7 +360,13 @@ sub edit {
             $field->{value} = $app->param( $field->{content_field_id} );
         }
         elsif ( $content_data_id || $data ) {
-            $field->{value} = $data->{ $field->{content_field_id} };
+            if ( $param->{'recovered_object'} && $field->{type} eq 'tags' ) {
+                my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
+                $tag_delim .= ' ' if $tag_delim eq ',';
+                $field->{tags} = join $tag_delim, @{$data->{ $field->{content_field_id} }};
+            } else {
+                $field->{value} = $data->{ $field->{content_field_id} };
+            }
         }
         else {
             if ( $field->{type} =~ /^(?:select_box|radio_button|checkboxes)$/ ) {
