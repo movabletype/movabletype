@@ -1,0 +1,1162 @@
+name: movabletype/movabletype
+on:
+  push:
+    branches:
+    - "**/*"
+  pull_request:
+  schedule: []
+concurrency:
+#   # This item has no matching transformer
+#   maximum_number_of_builds: 0
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+env:
+  MT_TEST_IGNORE_FIXTURE: '0'
+  DOCKER_USERNAME: "${{ secrets.DOCKER_USERNAME }}"
+  DOCKER_PASSWORD: "${{ secrets.DOCKER_PASSWORD }}"
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora39
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
+    if: ${{ github.event_name != 'schedule' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_2:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora39
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
+    if: ${{ github.event_name != 'schedule' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_3:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora39
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
+    if: ${{ github.event_name != 'schedule' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_4:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora39
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
+    if: ${{ github.event_name != 'schedule' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_5:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora39
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
+    if: ${{ github.event_name != 'schedule' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_6:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora39
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
+    if: ${{ github.event_name != 'schedule' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_7:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora39
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
+    if: ${{ github.event_name != 'schedule' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_8:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora39
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
+    if: ${{ github.event_name != 'schedule' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_9:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora39
+      TEST_COMMAND: phpunit && make test-php-lint
+    if: ${{ github.event_name != 'schedule' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_10:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora35
+      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_11:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora35
+      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_12:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora35
+      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_13:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora35
+      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_14:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora35
+      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_15:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora35
+      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_16:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora35
+      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_17:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora35
+      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_18:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora35
+      TEST_COMMAND: phpunit php/tests/*Test.php && make test-php-lint
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_19:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora37
+      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_20:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora37
+      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_21:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora37
+      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_22:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora37
+      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_23:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora37
+      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_24:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora37
+      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_25:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora37
+      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_26:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: fedora37
+      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_27:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: centos6
+      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_28:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: centos6
+      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_29:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: centos6
+      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_30:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: centos6
+      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_31:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: centos6
+      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_32:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: centos6
+      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_33:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: centos6
+      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_34:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: centos6
+      TEST_COMMAND: MT_TEST_DISABLE_OBEJCT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_35:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: bullseye
+      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_36:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: bullseye
+      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_37:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: bullseye
+      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_38:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: bullseye
+      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_39:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: bullseye
+      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_40:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: bullseye
+      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 MT_TEST_FORCE_DATAAPI_VERSION=5 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_41:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: bullseye
+      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_42:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: bullseye
+      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_43:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: bullseye
+      TEST_COMMAND: phpunit && make test-php-lint
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_44:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: buster
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_45:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: buster
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_46:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: buster
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_47:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: buster
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_48:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: buster
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_49:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: buster
+      TEST_COMMAND: MT_TEST_FORCE_DATAAPI_VERSION=5 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_50:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: buster
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_51:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: buster
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_52:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: buster
+      TEST_COMMAND: phpunit && make test-php-lint
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_53:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_COMMAND: MT_TEST_SELENIUM_MAX_RETRY=5 prove -v -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t
+      TEST_IMAGE_NAME: chromiumdriver
+    if: ${{ github.event_name != 'schedule' }}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_54:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_COMMAND: MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t
+      TEST_IMAGE_NAME: chromiumdriver
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
+  test_55:
+    runs-on: ubuntu-20.04
+    env:
+      TEST_IMAGE_NAME: buster
+      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt
+    if:
+#       # GitHub Actions does not support regex within the `If` condition
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - run: gem install bundler
+    - run: bundle install --jobs=3 --retry=3
+    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+    services:
+#       # This item has no matching transformer
+#       docker:
