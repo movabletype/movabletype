@@ -676,24 +676,31 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  notify_success:
+  notify_slack:
     runs-on: ubuntu-20.04
-    if: ${{ success() }}
+    needs: [test, test_2, test_3, test_4, test_5, test_6, test_7, test_8, test_9, test_10, test_11, test_12, test_13, test_14, test_15, test_16, test_17, test_18, test_19, test_20, test_21, test_22, test_23, test_24, test_25, test_26, test_27, test_28, test_29, test_30, test_31, test_32, test_33, test_34, test_35, test_36, test_37, test_38, test_39, test_40, test_41, test_42, test_43, test_44, test_45, test_46, test_47, test_48, test_49, test_50, test_51, test_52, test_53, test_54, test_55]
+    if: ${{ always() }}
     steps:
+    - name: Install jq
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y jq
+    - name: Filters if the "needs" context has "failure"
+      run: |
+        HAS_FAILURE=$(echo '${{ toJSON(needs) }}' | jq '.[] | select(.result == "failure").result')
+        echo "HAS_FAILURE=${HAS_FAILURE}" >> "$GITHUB_ENV"
+    - name: SLACK_COLOR is danger
+      if: ${{ env.HAS_FAILURE }}
+      run: |
+        echo "SLACK_COLOR=danger" >> "$GITHUB_ENV"
+    - name: SLACK_COLOR is good
+      if: ${{ ! env.HAS_FAILURE }}
+      run: |
+        echo "SLACK_COLOR=good" >> "$GITHUB_ENV"
     - uses: rtCamp/action-slack-notify@v2.2.1
       env:
         SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
         SLACK_USERNAME: "GitHub Actions ${{ github.repository }}"
         SLACK_TITLE: 'Workflow #${{ github.run_number }}'
         SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-  notify_failure:
-    runs-on: ubuntu-20.04
-    if: ${{ failure() }}
-    steps:
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
-        SLACK_USERNAME: "GitHub Actions ${{ github.repository }}"
-        SLACK_TITLE: 'Workflow #${{ github.run_number }}'
-        SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
-        SLACK_COLOR: danger
+        SLACK_COLOR: "${{ env.SLACK_COLOR }}"
