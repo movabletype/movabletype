@@ -1192,7 +1192,7 @@ sub core_list_actions {
                 },
             },
             move_blogs => {
-                label         => "Move child site(s) ",
+                label         => "Move Child Site(s) ",
                 order         => 200,
                 code          => "${pkg}Website::dialog_move_blogs",
                 permit_action => 'move_blogs',
@@ -1342,7 +1342,7 @@ sub core_list_actions {
                 },
             },
             move_blogs => {
-                label         => "Move child site(s) ",
+                label         => "Move Child Site(s) ",
                 order         => 200,
                 code          => "${pkg}Website::dialog_move_blogs",
                 permit_action => 'move_blogs',
