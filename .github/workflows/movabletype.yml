@@ -4,7 +4,8 @@ on:
     branches:
     - "**/*"
   pull_request:
-  schedule: []
+  schedule:
+    - cron:  '30 0 * * *'
 concurrency:
 #   # This item has no matching transformer
 #   maximum_number_of_builds: 0
