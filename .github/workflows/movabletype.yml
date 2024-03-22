@@ -201,8 +201,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora35
       TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -222,8 +221,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora35
       TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -243,8 +241,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora35
       TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -264,8 +261,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora35
       TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -285,8 +281,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora35
       TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -306,8 +301,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora35
       TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -327,8 +321,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora35
       TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -348,8 +341,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora35
       TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -369,8 +361,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora35
       TEST_COMMAND: phpunit php/tests/*Test.php && make test-php-lint
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -390,8 +381,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora37
       TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -411,8 +401,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora37
       TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -432,8 +421,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora37
       TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -453,8 +441,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora37
       TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -474,8 +461,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora37
       TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -495,8 +481,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora37
       TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -516,8 +501,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora37
       TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -537,8 +521,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: fedora37
       TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -558,8 +541,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: centos6
       TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -579,8 +561,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: centos6
       TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -600,8 +581,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: centos6
       TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -621,8 +601,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: centos6
       TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -642,8 +621,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: centos6
       TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -663,8 +641,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: centos6
       TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -684,8 +661,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: centos6
       TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -705,8 +681,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: centos6
       TEST_COMMAND: MT_TEST_DISABLE_OBEJCT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -726,8 +701,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: bullseye
       TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -747,8 +721,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: bullseye
       TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -768,8 +741,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: bullseye
       TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -789,8 +761,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: bullseye
       TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -810,8 +781,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: bullseye
       TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -831,8 +801,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: bullseye
       TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 MT_TEST_FORCE_DATAAPI_VERSION=5 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -852,8 +821,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: bullseye
       TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -873,8 +841,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: bullseye
       TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -894,8 +861,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: bullseye
       TEST_COMMAND: phpunit && make test-php-lint
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -915,8 +881,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: buster
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -936,8 +901,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: buster
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -957,8 +921,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: buster
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -978,8 +941,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: buster
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -999,8 +961,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: buster
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -1020,8 +981,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: buster
       TEST_COMMAND: MT_TEST_FORCE_DATAAPI_VERSION=5 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -1041,8 +1001,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: buster
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -1062,8 +1021,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: buster
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -1083,8 +1041,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: buster
       TEST_COMMAND: phpunit && make test-php-lint
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -1124,8 +1081,7 @@ jobs:
     env:
       TEST_COMMAND: MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t
       TEST_IMAGE_NAME: chromiumdriver
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -1145,8 +1101,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: buster
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt
-    if:
-#       # GitHub Actions does not support regex within the `If` condition
+    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
