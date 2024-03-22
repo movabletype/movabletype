@@ -25,8 +25,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -42,8 +40,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -59,8 +55,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -76,8 +70,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -93,8 +85,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -110,8 +100,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -127,8 +115,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -144,8 +130,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -161,8 +145,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -178,8 +160,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -195,8 +175,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -212,8 +190,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -229,8 +205,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -246,8 +220,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -263,8 +235,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -280,8 +250,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -297,8 +265,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -314,8 +280,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -331,8 +295,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -348,8 +310,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -365,8 +325,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -382,8 +340,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -399,8 +355,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -416,8 +370,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -433,8 +385,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -450,8 +400,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -467,8 +415,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -484,8 +430,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -501,8 +445,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -518,8 +460,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -535,8 +475,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -552,8 +490,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -569,8 +505,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -586,8 +520,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -603,8 +535,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -620,8 +550,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -637,8 +565,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -654,8 +580,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -671,8 +595,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -688,8 +610,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -705,8 +625,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -722,8 +640,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -739,8 +655,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -756,8 +670,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -773,8 +685,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -790,8 +700,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -807,8 +715,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -824,8 +730,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -841,8 +745,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -858,8 +760,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -875,8 +775,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -892,8 +790,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -909,8 +805,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -926,8 +820,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
@@ -943,8 +835,6 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: gem install bundler
-    - run: bundle install --jobs=3 --retry=3
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
