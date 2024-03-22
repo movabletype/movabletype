@@ -28,9 +28,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_2:
     runs-on: ubuntu-20.04
     env:
@@ -43,9 +40,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_3:
     runs-on: ubuntu-20.04
     env:
@@ -58,9 +52,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_4:
     runs-on: ubuntu-20.04
     env:
@@ -73,9 +64,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_5:
     runs-on: ubuntu-20.04
     env:
@@ -88,9 +76,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_6:
     runs-on: ubuntu-20.04
     env:
@@ -103,9 +88,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_7:
     runs-on: ubuntu-20.04
     env:
@@ -118,9 +100,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_8:
     runs-on: ubuntu-20.04
     env:
@@ -133,9 +112,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_9:
     runs-on: ubuntu-20.04
     env:
@@ -148,9 +124,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_10:
     runs-on: ubuntu-20.04
     env:
@@ -163,9 +136,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_11:
     runs-on: ubuntu-20.04
     env:
@@ -178,9 +148,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_12:
     runs-on: ubuntu-20.04
     env:
@@ -193,9 +160,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_13:
     runs-on: ubuntu-20.04
     env:
@@ -208,9 +172,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_14:
     runs-on: ubuntu-20.04
     env:
@@ -223,9 +184,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_15:
     runs-on: ubuntu-20.04
     env:
@@ -238,9 +196,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_16:
     runs-on: ubuntu-20.04
     env:
@@ -253,9 +208,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_17:
     runs-on: ubuntu-20.04
     env:
@@ -268,9 +220,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_18:
     runs-on: ubuntu-20.04
     env:
@@ -283,9 +232,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_19:
     runs-on: ubuntu-20.04
     env:
@@ -298,9 +244,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_20:
     runs-on: ubuntu-20.04
     env:
@@ -313,9 +256,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_21:
     runs-on: ubuntu-20.04
     env:
@@ -328,9 +268,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_22:
     runs-on: ubuntu-20.04
     env:
@@ -343,9 +280,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_23:
     runs-on: ubuntu-20.04
     env:
@@ -358,9 +292,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_24:
     runs-on: ubuntu-20.04
     env:
@@ -373,9 +304,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_25:
     runs-on: ubuntu-20.04
     env:
@@ -388,9 +316,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_26:
     runs-on: ubuntu-20.04
     env:
@@ -403,9 +328,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_27:
     runs-on: ubuntu-20.04
     env:
@@ -418,9 +340,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_28:
     runs-on: ubuntu-20.04
     env:
@@ -433,9 +352,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_29:
     runs-on: ubuntu-20.04
     env:
@@ -448,9 +364,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_30:
     runs-on: ubuntu-20.04
     env:
@@ -463,9 +376,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_31:
     runs-on: ubuntu-20.04
     env:
@@ -478,9 +388,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_32:
     runs-on: ubuntu-20.04
     env:
@@ -493,9 +400,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_33:
     runs-on: ubuntu-20.04
     env:
@@ -508,9 +412,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_34:
     runs-on: ubuntu-20.04
     env:
@@ -523,9 +424,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_35:
     runs-on: ubuntu-20.04
     env:
@@ -538,9 +436,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_36:
     runs-on: ubuntu-20.04
     env:
@@ -553,9 +448,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_37:
     runs-on: ubuntu-20.04
     env:
@@ -568,9 +460,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_38:
     runs-on: ubuntu-20.04
     env:
@@ -583,9 +472,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_39:
     runs-on: ubuntu-20.04
     env:
@@ -598,9 +484,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_40:
     runs-on: ubuntu-20.04
     env:
@@ -613,9 +496,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_41:
     runs-on: ubuntu-20.04
     env:
@@ -628,9 +508,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_42:
     runs-on: ubuntu-20.04
     env:
@@ -643,9 +520,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_43:
     runs-on: ubuntu-20.04
     env:
@@ -658,9 +532,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_44:
     runs-on: ubuntu-20.04
     env:
@@ -673,9 +544,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_45:
     runs-on: ubuntu-20.04
     env:
@@ -688,9 +556,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_46:
     runs-on: ubuntu-20.04
     env:
@@ -703,9 +568,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_47:
     runs-on: ubuntu-20.04
     env:
@@ -718,9 +580,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_48:
     runs-on: ubuntu-20.04
     env:
@@ -733,9 +592,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_49:
     runs-on: ubuntu-20.04
     env:
@@ -748,9 +604,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_50:
     runs-on: ubuntu-20.04
     env:
@@ -763,9 +616,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_51:
     runs-on: ubuntu-20.04
     env:
@@ -778,9 +628,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_52:
     runs-on: ubuntu-20.04
     env:
@@ -793,9 +640,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_53:
     runs-on: ubuntu-20.04
     env:
@@ -808,9 +652,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_54:
     runs-on: ubuntu-20.04
     env:
@@ -823,9 +664,6 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-    - uses: rtCamp/action-slack-notify@v2.2.1
-      env:
-        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
   test_55:
     runs-on: ubuntu-20.04
     env:
@@ -838,6 +676,24 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+  notify_success:
+    runs-on: ubuntu-20.04
+    if: ${{ success() }}
+    steps:
     - uses: rtCamp/action-slack-notify@v2.2.1
       env:
         SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+        SLACK_USERNAME: "GitHub Actions ${{ github.repository }}"
+        SLACK_TITLE: 'Workflow #${{ github.run_number }}'
+        SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+  notify_failure:
+    runs-on: ubuntu-20.04
+    if: ${{ failure() }}
+    steps:
+    - uses: rtCamp/action-slack-notify@v2.2.1
+      env:
+        SLACK_WEBHOOK: "${{ secrets.SLACK_WEBHOOK }}"
+        SLACK_USERNAME: "GitHub Actions ${{ github.repository }}"
+        SLACK_TITLE: 'Workflow #${{ github.run_number }}'
+        SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+        SLACK_COLOR: danger
