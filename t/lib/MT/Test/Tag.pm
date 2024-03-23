@@ -272,6 +272,11 @@ PHP
     $test_script .= <<'PHP';
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
+include_once($MT_HOME . '/t/lib/MT/Test/Tag/error_handler.php');
+
+$error_handler = new MT_Error_Handler();
+set_error_handler([$error_handler, 'handler']);
+$error_handler->log = $log;
 
 $mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->config('PHPErrorLogFilePath', $log);
@@ -296,14 +301,6 @@ PHP
     $test_script .= $extra if $extra;
 
     $test_script .= <<'PHP';
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
-    if ($error_no & E_USER_ERROR) {
-        print($error_msg."\n");
-    } else {
-        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
-    }
-});
-
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
     echo $_var_compiled;
 } else {
