@@ -16,7 +16,7 @@ env:
   DOCKER_USERNAME: "${{ secrets.DOCKER_USERNAME }}"
   DOCKER_PASSWORD: "${{ secrets.DOCKER_PASSWORD }}"
 jobs:
-  test:
+  fedora39_test:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora39
@@ -28,7 +28,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_2:
+  fedora39_test_mt7:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora39
@@ -40,7 +40,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_3:
+  fedora39_test_mt7_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora39
@@ -52,7 +52,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_4:
+  fedora39_test_others:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora39
@@ -64,7 +64,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_5:
+  fedora39_test_cms_permission:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora39
@@ -76,7 +76,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_6:
+  fedora39_test_data_api:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora39
@@ -88,7 +88,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_7:
+  fedora39_test_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora39
@@ -100,7 +100,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_8:
+  fedora39_test_plugins:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora39
@@ -112,7 +112,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_9:
+  fedora39_test_php_lint:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora39
@@ -124,7 +124,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_10:
+  fedora35_test:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora35
@@ -136,7 +136,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_11:
+  fedora35_test_mt7:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora35
@@ -148,7 +148,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_12:
+  fedora35_test_mt7_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora35
@@ -160,7 +160,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_13:
+  fedora35_test_others:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora35
@@ -172,7 +172,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_14:
+  fedora35_test_cms_permission:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora35
@@ -184,7 +184,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_15:
+  fedora35_test_data_api:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora35
@@ -196,7 +196,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_16:
+  fedora35_test_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora35
@@ -208,7 +208,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_17:
+  fedora35_test_plugins:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora35
@@ -220,7 +220,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_18:
+  fedora35_test_php_lint:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora35
@@ -232,7 +232,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_19:
+  fedora37_test:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora37
@@ -244,7 +244,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_20:
+  fedora37_test_mt7:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora37
@@ -256,7 +256,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_21:
+  fedora37_test_mt7_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora37
@@ -268,7 +268,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_22:
+  fedora37_test_others:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora37
@@ -280,7 +280,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_23:
+  fedora37_test_cms_permission:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora37
@@ -292,7 +292,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_24:
+  fedora37_test_data_api:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora37
@@ -304,7 +304,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_25:
+  fedora37_test_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora37
@@ -316,7 +316,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_26:
+  fedora37_test_plugins:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: fedora37
@@ -328,7 +328,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_27:
+  centos6_test:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: centos6
@@ -340,7 +340,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_28:
+  centos6_test_mt7:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: centos6
@@ -352,7 +352,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_29:
+  centos6_test_mt7_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: centos6
@@ -364,7 +364,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_30:
+  centos6_test_others:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: centos6
@@ -376,7 +376,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_31:
+  centos6_test_cms_permission:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: centos6
@@ -388,7 +388,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_32:
+  centos6_test_data_api:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: centos6
@@ -400,7 +400,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_33:
+  centos6_test_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: centos6
@@ -412,7 +412,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_34:
+  centos6_test_plugins:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: centos6
@@ -424,7 +424,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_35:
+  bullseye_test:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: bullseye
@@ -436,7 +436,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_36:
+  bullseye_test_mt7:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: bullseye
@@ -448,7 +448,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_37:
+  bullseye_test_mt7_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: bullseye
@@ -460,7 +460,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_38:
+  bullseye_test_others:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: bullseye
@@ -472,7 +472,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_39:
+  bullseye_test_cms_permission:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: bullseye
@@ -484,7 +484,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_40:
+  bullseye_test_data_api:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: bullseye
@@ -496,7 +496,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_41:
+  bullseye_test_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: bullseye
@@ -508,7 +508,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_42:
+  bullseye_test_plugins:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: bullseye
@@ -520,7 +520,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_43:
+  bullseye_test_php_lint:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: bullseye
@@ -532,7 +532,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_44:
+  buster_test:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: buster
@@ -544,7 +544,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_45:
+  buster_test_mt7:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: buster
@@ -556,7 +556,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_46:
+  buster_test_mt7_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: buster
@@ -568,7 +568,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_47:
+  buster_test_others:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: buster
@@ -580,7 +580,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_48:
+  buster_test_cms_permission:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: buster
@@ -592,7 +592,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_49:
+  buster_test_data_api:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: buster
@@ -604,7 +604,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_50:
+  buster_test_tag:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: buster
@@ -616,7 +616,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_51:
+  buster_test_plugins:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: buster
@@ -628,7 +628,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_52:
+  buster_test_php_lint:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: buster
@@ -640,7 +640,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_53:
+  selenium_test:
     runs-on: ubuntu-20.04
     env:
       TEST_COMMAND: MT_TEST_SELENIUM_MAX_RETRY=5 prove -v -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t
@@ -652,7 +652,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_54:
+  selenium_crawl_test:
     runs-on: ubuntu-20.04
     env:
       TEST_COMMAND: MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t
@@ -664,7 +664,7 @@ jobs:
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  test_55:
+  test_xt:
     runs-on: ubuntu-20.04
     env:
       TEST_IMAGE_NAME: buster
@@ -678,7 +678,61 @@ jobs:
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
   notify_slack:
     runs-on: ubuntu-20.04
-    needs: [test, test_2, test_3, test_4, test_5, test_6, test_7, test_8, test_9, test_10, test_11, test_12, test_13, test_14, test_15, test_16, test_17, test_18, test_19, test_20, test_21, test_22, test_23, test_24, test_25, test_26, test_27, test_28, test_29, test_30, test_31, test_32, test_33, test_34, test_35, test_36, test_37, test_38, test_39, test_40, test_41, test_42, test_43, test_44, test_45, test_46, test_47, test_48, test_49, test_50, test_51, test_52, test_53, test_54, test_55]
+    needs:
+    - fedora39_test
+    - fedora39_test_mt7
+    - fedora39_test_mt7_tag
+    - fedora39_test_others
+    - fedora39_test_cms_permission
+    - fedora39_test_data_api
+    - fedora39_test_tag
+    - fedora39_test_plugins
+    - fedora39_test_php_lint
+    - fedora35_test
+    - fedora35_test_mt7
+    - fedora35_test_mt7_tag
+    - fedora35_test_others
+    - fedora35_test_cms_permission
+    - fedora35_test_data_api
+    - fedora35_test_tag
+    - fedora35_test_plugins
+    - fedora35_test_php_lint
+    - fedora37_test
+    - fedora37_test_mt7
+    - fedora37_test_mt7_tag
+    - fedora37_test_others
+    - fedora37_test_cms_permission
+    - fedora37_test_data_api
+    - fedora37_test_tag
+    - fedora37_test_plugins
+    - centos6_test
+    - centos6_test_mt7
+    - centos6_test_mt7_tag
+    - centos6_test_others
+    - centos6_test_cms_permission
+    - centos6_test_data_api
+    - centos6_test_tag
+    - centos6_test_plugins
+    - bullseye_test
+    - bullseye_test_mt7
+    - bullseye_test_mt7_tag
+    - bullseye_test_others
+    - bullseye_test_cms_permission
+    - bullseye_test_data_api
+    - bullseye_test_tag
+    - bullseye_test_plugins
+    - bullseye_test_php_lint
+    - buster_test
+    - buster_test_mt7
+    - buster_test_mt7_tag
+    - buster_test_others
+    - buster_test_cms_permission
+    - buster_test_data_api
+    - buster_test_tag
+    - buster_test_plugins
+    - buster_test_php_lint
+    - selenium_test
+    - selenium_crawl_test
     if: ${{ always() }}
     steps:
     - name: Install jq
