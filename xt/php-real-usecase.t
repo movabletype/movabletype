@@ -81,6 +81,9 @@ sub load_dump {
     }
     $dbh->commit;
 
+    # There found mysql dump without any pkeys for meta tables in real world use case.
+    add_pkey($dbh);
+
     # for init_db
     require MT::Test;
     MT::Test->_load_classes;
@@ -88,6 +91,16 @@ sub load_dump {
     MT->instance->init_config_from_db;
 
     return 1;
+}
+
+sub add_pkey {
+    my $dbh = shift;
+    my @tables = qw(asset author awesome blog category cd comment entry profileevent tbping template);
+    for my $class (@tables){
+        eval {
+            $dbh->do("ALTER TABLE mt_${class}_meta ADD PRIMARY KEY (${class}_meta_${class}_id, ${class}_meta_type);");
+        };
+    }
 }
 
 sub record {
