@@ -826,7 +826,6 @@ sub json_result {
     my $app = shift;
     return if $app->{finalized}++;
     my ($result) = @_;
-    $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
     $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
     $app->print_encode(
@@ -840,7 +839,6 @@ sub json_error {
     return if $app->{finalized}++;
     $app->response_code($status)
         if defined $status;
-    $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
     $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
     $app->print_encode( MT::Util::to_json( { error => $error } ) );
@@ -3184,6 +3182,7 @@ sub run {
     $app->set_x_frame_options_header;
     $app->set_x_xss_protection_header;
     $app->set_referrer_policy;
+    $app->set_header('X-Content-Type-Options' => 'nosniff');
 
     my ($body);
 
