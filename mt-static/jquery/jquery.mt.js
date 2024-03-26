@@ -1762,10 +1762,10 @@ function resizeModal() {
   var modalBodyHeight;
   var $iframeContents = window.top.jQuery('iframe.embed-responsive-item:visible').contents();
 
-  // $iframeContents may not be retrieved.
-  // if not retrieved, try three times retry.
+  // if not retrieved, retry for `maxResizeModalRetryCount` times.
   if ($iframeContents.length === 0) {
     if (resizeModalRetryCount < maxResizeModalRetryCount) {
+      // If the iframe is not yet visible, retry after some time.
       resizeModalRetryCount++;
       return setTimeout(resizeModal, 100);
     }
