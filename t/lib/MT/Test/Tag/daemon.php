@@ -2,9 +2,9 @@
 
 ini_set("memory_limit", "-1");
 
-$opts = getopt('', ['port:', 'mt_home:', 'mt_config:', 'log:', 'init_blog_id:', 'ignore_php_dynamic_properties_warnings:']);
+$opts = getopt('', ['path:', 'mt_home:', 'mt_config:', 'log:', 'init_blog_id:', 'ignore_php_dynamic_properties_warnings:']);
 
-$socket = stream_socket_server("tcp://127.0.0.1:". $opts['port']);
+$socket = stream_socket_server('unix://'. $opts['path']);
 
 include_once($opts['mt_home'] . '/php/mt.php');
 include_once($opts['mt_home'] . '/php/lib/MTUtil.php');

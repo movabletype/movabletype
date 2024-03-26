@@ -153,6 +153,7 @@ on 'test' => sub {
     requires 'Test::Requires';
     requires 'Test::SharedFork';
     requires 'Test::Spec';
+    requires 'Test::UNIXSock';
     requires 'Text::Diff';
     requires 'Time::Piece';
     requires 'URI::Escape';

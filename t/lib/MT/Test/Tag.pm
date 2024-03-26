@@ -15,7 +15,6 @@ use MT::I18N;
 use MT::Test::PHP;
 use File::Spec;
 use Socket;
-use Test::TCP;
 use Text::Diff 'diff';
 
 BEGIN {
@@ -319,14 +318,16 @@ my $PHP_DAEMON;
 sub MT::Test::Tag::_php_daemon {
     my ($template, $blog_id, $extra, $text, $log) = @_;
 
-    $PHP_DAEMON ||= Test::TCP->new(
+    require Test::UNIXSock;
+    
+    $PHP_DAEMON ||= Test::UNIXSock->new(
         code => sub {
-            my $port    = shift;
+            my $path    = shift;
             my $command = MT::Test::PHP::_make_php_command();
             my $config  = MT->instance->find_config;
             my @opts    = (
                 $ENV{MT_HOME} . '/t/lib/MT/Test/Tag/daemon.php',
-                '--port', $port,
+                '--path', $path,
                 '--mt_home', ($ENV{MT_HOME} ? $ENV{MT_HOME} : '.'),
                 '--mt_config', $config,
                 '--init_blog_id', $blog_id,
@@ -336,11 +337,8 @@ sub MT::Test::Tag::_php_daemon {
             exec join(' ', @$command, @opts);
         });
 
-    socket(my $sock, PF_INET, SOCK_STREAM, getprotobyname('tcp')) or die "Cannot create socket: $!";
-    my $port = $PHP_DAEMON->port;
-    my $packed_remote_host = inet_aton('127.0.0.1');
-    my $sock_addr          = sockaddr_in($port, $packed_remote_host);
-    connect($sock, $sock_addr) or die "Cannot connect to 127.0.0.1:$port: $!";
+    socket(my $sock, PF_UNIX, SOCK_STREAM, 0) or die "Cannot create socket: $!";
+    connect($sock, pack_sockaddr_un($PHP_DAEMON->path)) or die "Cannot connect to php: $!";
 
     if ($text) {
         $extra =<<"PHP" . $extra;
