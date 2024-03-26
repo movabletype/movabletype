@@ -7,6 +7,8 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 
+plan skip_all => "set MT_TEST_MYSQL_DUMP to enable this test" unless $ENV{MT_TEST_MYSQL_DUMP};
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;

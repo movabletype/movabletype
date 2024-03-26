@@ -1,6 +1,6 @@
 <?php
 
-class MT_Error_Handler {
+class MT_Test_Error_Handler {
 
     public $log;
     public $ignore_php_dynamic_properties_warnings = false;

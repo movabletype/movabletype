@@ -10,7 +10,7 @@ include_once($opts['mt_home'] . '/php/mt.php');
 include_once($opts['mt_home'] . '/php/lib/MTUtil.php');
 include_once($opts['mt_home'] . '/t/lib/MT/Test/Tag/error_handler.php');
 
-$error_handler = new MT_Error_Handler();
+$error_handler = new MT_Test_Error_Handler();
 set_error_handler([$error_handler, 'handler']);
 $error_handler->log = $opts['log'];
 $error_handler->ignore_php_dynamic_properties_warnings = $opts['ignore_php_dynamic_properties_warnings'];

@@ -276,7 +276,7 @@ include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
 include_once($MT_HOME . '/t/lib/MT/Test/Tag/error_handler.php');
 
-$error_handler = new MT_Error_Handler();
+$error_handler = new MT_Test_Error_Handler();
 set_error_handler([$error_handler, 'handler']);
 $error_handler->log = $log;
 $error_handler->ignore_php_dynamic_properties_warnings = $ignore_php_dynamic_properties_warnings;
@@ -320,7 +320,7 @@ sub MT::Test::Tag::_php_daemon {
     my ($template, $blog_id, $extra, $text, $log) = @_;
 
     my $sock;
-    for my $retry_current (1..3) {
+    for (1..3) {
         $PHP_DAEMON ||= Test::TCP->new(
             code => sub {
                 my $port    = shift;
@@ -345,6 +345,7 @@ sub MT::Test::Tag::_php_daemon {
         unless (connect($sock, $sock_addr)) {
             $PHP_DAEMON = undef;
             note "Cannot connect to 127.0.0.1:$port Retrying";
+            sleep(1);
             next;
         }
         die "Cannot connect to 127.0.0.1:$port: $!" unless $PHP_DAEMON && $sock;
