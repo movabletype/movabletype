@@ -1,6 +1,6 @@
 <?php
 
-$opts = getopt('', ['port:', 'mt_home:', 'mt_config:', 'log:', 'init_blog_id:']);
+$opts = getopt('', ['port:', 'mt_home:', 'mt_config:', 'log:', 'init_blog_id:', 'ignore_php_dynamic_properties_warnings:']);
 
 $socket = stream_socket_server("tcp://127.0.0.1:". $opts['port']);
 
@@ -11,6 +11,7 @@ include_once($opts['mt_home'] . '/t/lib/MT/Test/Tag/error_handler.php');
 $error_handler = new MT_Error_Handler();
 set_error_handler([$error_handler, 'handler']);
 $error_handler->log = $opts['log'];
+$error_handler->ignore_php_dynamic_properties_warnings = $opts['ignore_php_dynamic_properties_warnings'];
 
 # fix following tests by using first blog_id for init.
 # - t/tag/35-tags-assets.t

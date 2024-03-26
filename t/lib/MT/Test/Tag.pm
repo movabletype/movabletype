@@ -260,6 +260,8 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
 \$MT_CONFIG = '@{[ MT->instance->find_config ]}';
 \$blog_id   = '$blog_id';
 \$log = '$log';
+\$ignore_php_dynamic_properties_warnings = '@{[ $ENV{MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS} || 0 ]}';
+
 \$tmpl = <<<__TMPL__
 $template
 __TMPL__
@@ -277,6 +279,7 @@ include_once($MT_HOME . '/t/lib/MT/Test/Tag/error_handler.php');
 $error_handler = new MT_Error_Handler();
 set_error_handler([$error_handler, 'handler']);
 $error_handler->log = $log;
+$error_handler->ignore_php_dynamic_properties_warnings = $ignore_php_dynamic_properties_warnings;
 
 $mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->config('PHPErrorLogFilePath', $log);
@@ -327,6 +330,7 @@ sub MT::Test::Tag::_php_daemon {
                 '--mt_home', ($ENV{MT_HOME} ? $ENV{MT_HOME} : '.'),
                 '--mt_config', $config,
                 '--init_blog_id', $blog_id,
+                '--ignore_php_dynamic_properties_warnings', ($ENV{MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS} || 0),
                 $log ? ('--log', $log) : (),
             );
             exec join(' ', @$command, @opts);
@@ -365,12 +369,8 @@ PHP
 sub _retrieve_php_logs {
     my $file = shift;
     open(my $fh, '<', $file) or return '';
-    my $ret = '';
-    while (<$fh>) {
-        next if $_ =~ /str:Creation of dynamic property Memcache::\$connection is deprecated/;
-        $ret .= $_;
-    }
-    return $ret;
+    local $/;
+    return <$fh>;
 }
 
 sub _update_config {
