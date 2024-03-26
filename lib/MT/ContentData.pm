@@ -112,9 +112,6 @@ __PACKAGE__->install_properties(
 MT->add_callback( 'cms_post_save.content_data', 10, MT->component('core'),
     sub { MT->model('rebuild_trigger')->runner( 'post_content_save', @_ ); }
 );
-MT->add_callback( 'api_post_save.content_data', 10, MT->component('core'),
-    sub { MT->model('rebuild_trigger')->runner( 'post_content_save', @_ ); }
-);
 MT->add_callback(
     'cms_post_bulk_save.content_data',
     10,
