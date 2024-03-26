@@ -7,6 +7,7 @@
 package MT::ContentType;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 
 use MT;

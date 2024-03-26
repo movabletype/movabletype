@@ -283,7 +283,10 @@ my $cd2 = MT::Test::Permission->make_content_data(
     content_type_id => $ct2->id,
     author_id       => 1,
     label           => 'Content Data2',
-    data            => { $cf_single_line_text2->id => 'single', },
+    data            => {
+        $cf_single_line_text2->id => 'single',
+        $cf_multi_line_text->id   => 'a',
+    },
 );
 my $cd3 = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id2,

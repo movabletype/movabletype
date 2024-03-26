@@ -145,6 +145,36 @@ class UnitTest extends TestCase {
             $this->assertEquals(31, $ret); // Jan 1970
         }
     }
+
+    public function testAssociation() {
+        include_once("php/lib/class.mt_association.php");
+        $assoc = new Association();
+        $assoc->Load('association_id=1');
+        $role = $assoc->role();
+        $this->assertEquals('Role', get_class($role));
+        $this->assertEquals('1', $role->id);
+        $this->assertEquals('1', $role->role_id);
+    }
+
+    public function testFileinfo() {
+        include_once("php/lib/class.mt_fileinfo.php");
+        include_once("php/lib/class.mt_category.php");
+        $cat = new Category();
+        $cat->blog_id = 1;
+        $cat->category_category_set_id = 1;
+        $cat->label = 'test';
+        $cat->save();
+        $finfo = new FileInfo();
+        $finfo->blog_id = 1;
+        $finfo->entry_id = 1;
+        $finfo->category_id = 1;
+        $finfo->save();
+        $finfo->Load('fileinfo_id=1');
+        $cat = $finfo->category();
+        $this->assertEquals('Category', get_class($cat));
+        $this->assertEquals('1', $cat->id);
+        $this->assertEquals('1', $cat->category_id);
+    }
 }
 
 class MyCaptchaProvider implements CaptchaProvider { 

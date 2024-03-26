@@ -19,6 +19,7 @@
 package MT::Plugin::Textile;
 
 use strict;
+use warnings;
 use MT;
 use base qw( MT::Plugin );
 

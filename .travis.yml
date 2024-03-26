@@ -47,6 +47,24 @@ jobs:
     - if: (type = cron AND (branch = master OR branch =~ /^develop\d*$/ OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="fedora35" TEST_COMMAND="phpunit php/tests/*Test.php && make test-php-lint"
 
+    - # Perl 5.38 / PHP 8.3 / MySQL 8.0
+      if: (type = cron AND (branch = master OR branch =~ /^develop\d*$/ OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="fedora40" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
+    - if: (type = cron AND (branch = master OR branch =~ /^develop\d*$/ OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="fedora40" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - if: (type = cron AND (branch = master OR branch =~ /^develop\d*$/ OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="fedora40" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - if: (type = cron AND (branch = master OR branch =~ /^develop\d*$/ OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="fedora40" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+    - if: (type = cron AND (branch = master OR branch =~ /^develop\d*$/ OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="fedora40" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
+    - if: (type = cron AND (branch = master OR branch =~ /^develop\d*$/ OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="fedora40" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
+    - if: (type = cron AND (branch = master OR branch =~ /^develop\d*$/ OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="fedora40" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
+    - if: (type = cron AND (branch = master OR branch =~ /^develop\d*$/ OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME="fedora40" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+
     - # Perl 5.36 / PHP 8.1 / MySQL 8.0
       if: (type = cron AND (branch = master OR branch =~ /^develop\d*$/ OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="fedora37" TEST_COMMAND="MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"

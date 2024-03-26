@@ -353,7 +353,7 @@
             null,
             null,
             "single_line_text",
-            "706ebe28e87ef4c85b24bfe3335baba256d4b93f"
+            "fe3c277bc2da87bdcf07421beb96f8fb3c5481d7"
          ]
       ]
    },
@@ -392,12 +392,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(706ebe28e87ef4c85b24bfe3335baba256d4b93f\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0010single line text",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0010single line text\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0010single_line_text\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(fe3c277bc2da87bdcf07421beb96f8fb3c5481d7",
             1,
             null,
             "__NOW__",
             "test content type",
-            "0303ea8b74297fc802bd9653440ad77ba75ef1ea",
+            "ae6bbb1b864a11c970197ef78a6dd73c88c3f458",
             null,
             null
          ]

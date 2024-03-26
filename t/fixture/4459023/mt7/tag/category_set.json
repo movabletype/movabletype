@@ -265,7 +265,7 @@
             null,
             1,
             100,
-            "by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif",
+            "",
             "2000-01-01 00:00:00",
             "blog",
             null,
@@ -339,7 +339,7 @@
             null,
             1,
             100,
-            "by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif",
+            "",
             "2000-01-01 00:00:00",
             "blog",
             null,
@@ -596,7 +596,7 @@
             1,
             null,
             "__NOW__",
-            "72fd6ed2c655dd32c3aa0d1df6522392945095c3",
+            "01a64ab854651aa0e2972f50ba0df9a67f47ba85",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             1,
@@ -604,9 +604,9 @@
             null,
             null,
             "__NOW__",
-            0,
+            3,
             2,
-            "44ed3a478712d23a6549f6b74796ddfb9f1ca835",
+            "d853205551a930ce941a6cb45baece9609bd4daa",
             null,
             201739
          ],
@@ -617,7 +617,7 @@
             2,
             null,
             "__NOW__",
-            "727ec0d86362c436827797881760d09aa80860e7",
+            "2e7a8bdf9592da3d7cf704ef3ddafd95c669f494",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012",
             2,
@@ -627,7 +627,7 @@
             "__NOW__",
             6,
             2,
-            "5c086b01af5d4d38b9e69960fc2c4399f1ae8163",
+            "28a1ff128c81500a27a48b0c2cc690ea6067654c",
             null,
             201739
          ]
@@ -667,7 +667,7 @@
             null,
             null,
             "categories",
-            "2a98dee641ad074e201e5e61eed988698d5abf7e"
+            "a65a4a5e8bd51febe2d8f6946252bc19dd232348"
          ],
          [
             2,
@@ -684,7 +684,7 @@
             null,
             null,
             "categories",
-            "4d2f196b9f50d99222b8c9516bbf04c1abb796e1"
+            "22225894bd80f94dcf78a24c90939cec7eb2b0c8"
          ]
       ]
    },
@@ -778,12 +778,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0011Category Field 01\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0011Category Field 01",
             1,
             null,
             "__NOW__",
             "test content type 01",
-            "72fd6ed2c655dd32c3aa0d1df6522392945095c3",
+            "01a64ab854651aa0e2972f50ba0df9a67f47ba85",
             null,
             null
          ],
@@ -793,12 +793,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0011Category Field 02\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0011Category Field 02\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011",
             2,
             null,
             "__NOW__",
             "test content type 02",
-            "727ec0d86362c436827797881760d09aa80860e7",
+            "2e7a8bdf9592da3d7cf704ef3ddafd95c669f494",
             null,
             null
          ]
