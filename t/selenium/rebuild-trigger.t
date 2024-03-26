@@ -24,7 +24,7 @@ use Selenium::Waiter;
 
 $test_env->prepare_fixture('db');
 
-my $s = MT::Test::Selenium->new($test_env);
+my $s = MT::Test::Selenium->new($test_env, {rebootable => 1});
 
 MT->model('content_type')->remove();
 
