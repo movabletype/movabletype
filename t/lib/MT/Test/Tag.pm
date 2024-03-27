@@ -319,37 +319,28 @@ my $PHP_DAEMON;
 sub MT::Test::Tag::_php_daemon {
     my ($template, $blog_id, $extra, $text, $log) = @_;
 
-    my $sock;
-    for (1..3) {
-        $PHP_DAEMON ||= Test::TCP->new(
-            code => sub {
-                my $port    = shift;
-                my $command = MT::Test::PHP::_make_php_command();
-                my $config  = MT->instance->find_config;
-                my @opts    = (
-                    $ENV{MT_HOME} . '/t/lib/MT/Test/Tag/daemon.php',
-                    '--port', $port,
-                    '--mt_home', ($ENV{MT_HOME} ? $ENV{MT_HOME} : '.'),
-                    '--mt_config', $config,
-                    '--init_blog_id', $blog_id,
-                    '--ignore_php_dynamic_properties_warnings', ($ENV{MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS} || 0),
-                    $log ? ('--log', $log) : (),
-                );
-                exec join(' ', @$command, @opts);
-            });
+    $PHP_DAEMON ||= Test::TCP->new(
+        code => sub {
+            my $port    = shift;
+            my $command = MT::Test::PHP::_make_php_command();
+            my $config  = MT->instance->find_config;
+            my @opts    = (
+                $ENV{MT_HOME} . '/t/lib/MT/Test/Tag/daemon.php',
+                '--port', $port,
+                '--mt_home', ($ENV{MT_HOME} ? $ENV{MT_HOME} : '.'),
+                '--mt_config', $config,
+                '--init_blog_id', $blog_id,
+                '--ignore_php_dynamic_properties_warnings', ($ENV{MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS} || 0),
+                $log ? ('--log', $log) : (),
+            );
+            exec join(' ', @$command, @opts);
+        });
 
-        socket($sock, PF_INET, SOCK_STREAM, getprotobyname('tcp')) or die "Cannot create socket: $!";
-        my $port = $PHP_DAEMON->port;
-        my $packed_remote_host = inet_aton('127.0.0.1');
-        my $sock_addr          = sockaddr_in($port, $packed_remote_host);
-        unless (connect($sock, $sock_addr)) {
-            $PHP_DAEMON = undef;
-            note "Cannot connect to 127.0.0.1:$port Retrying";
-            sleep(1);
-            next;
-        }
-        die "Cannot connect to 127.0.0.1:$port: $!" unless $PHP_DAEMON && $sock;
-    }
+    socket(my $sock, PF_INET, SOCK_STREAM, getprotobyname('tcp')) or die "Cannot create socket: $!";
+    my $port = $PHP_DAEMON->port;
+    my $packed_remote_host = inet_aton('127.0.0.1');
+    my $sock_addr          = sockaddr_in($port, $packed_remote_host);
+    connect($sock, $sock_addr) or die "Cannot connect to 127.0.0.1:$port: $!";
 
     if ($text) {
         $extra =<<"PHP" . $extra;
