@@ -31,9 +31,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
-      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
-    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
+    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -55,9 +53,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
-      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
-    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
+    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -79,9 +75,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
-      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
-    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
+    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -103,9 +97,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
-      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
-    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
+    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -127,9 +119,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
-      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
-    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
+    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -151,9 +141,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
-      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
-    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
+    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -175,9 +163,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
-      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
-    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
+    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -199,9 +185,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
-      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
-    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
+    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -220,9 +204,7 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: phpunit && make test-php-lint
-      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
-      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
-    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
+    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
