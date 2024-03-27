@@ -145,4 +145,70 @@ subtest 'Check applying a blog theme' => sub {
     );
 };
 
+subtest 'Check All Themes screen' => sub {
+    subtest 'System' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'list_theme',
+            blog_id => 0,
+        });
+        $app->has_no_permission_error;
+
+        my @titles = $app->content =~ /theme-title/g;
+        is scalar @titles, 7, '7 themes';
+
+        $app->content_like(qr/Classic Website/,  'Classic Website');
+        $app->content_like(qr/Classic Blog/,     'Classic Blog');
+        $app->content_like(qr/Mont-Blanc/,       'Mont-Blanc');
+        $app->content_like(qr/Other theme/,      'Other theme');
+        $app->content_like(qr/my_website_theme/, 'my_website_theme');
+        $app->content_like(qr/my_blog_theme/,    'my_blog_theme');
+        $app->content_like(qr/OLD Theme/,        'OLD Theme');
+    };
+
+    subtest 'Parente Site' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'list_theme',
+            blog_id => $website->id,
+        });
+        $app->has_no_permission_error;
+
+        my @titles = $app->content =~ /theme-title/g;
+        is scalar @titles, 7, '7 themes';
+
+        $app->content_like(qr/Classic Website/,  'Classic Website');
+        $app->content_like(qr/Classic Blog/,     'Classic Blog');
+        $app->content_like(qr/Mont-Blanc/,       'Mont-Blanc');
+        $app->content_like(qr/Other theme/,      'Other theme');
+        $app->content_like(qr/my_website_theme/, 'my_website_theme');
+        $app->content_like(qr/my_blog_theme/,    'my_blog_theme');
+        $app->content_like(qr/OLD Theme/,        'OLD Theme');
+
+    };
+
+    subtest 'Child Site' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'list_theme',
+            blog_id => $blog->id,
+        });
+        $app->has_no_permission_error;
+
+        my @titles = $app->content =~ /theme-title/g;
+        is scalar @titles, 5, '5 themes';
+
+        $app->content_unlike(qr/Classic Website/, 'no Classic Website');
+        $app->content_like(qr/Classic Blog/, 'Classic Blog');
+        $app->content_like(qr/Mont-Blanc/,   'Mont-Blanc');
+        $app->content_like(qr/Other theme/,  'Other theme');
+        $app->content_unlike(qr/my_website_theme/, 'my_website_theme');
+        $app->content_like(qr/my_blog_theme/, 'my_blog_theme');
+        $app->content_like(qr/OLD Theme/,     'OLD Theme');
+    };
+};
+
 done_testing;
