@@ -62,11 +62,12 @@ while ($remote = stream_socket_accept($socket)) {
         }
     }
 
-    if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-        fwrite($remote, $_var_compiled);
-    } else {
-        throw new Exception('Error compiling template module.');
+    try {
+        $ctx->_compile_source('evaluated template', $tmpl, $_var_compiled);
+    } catch (Throwable $e) {
+        $_var_compiled = '';
     }
+    fwrite($remote, $_var_compiled);
 
     fclose($remote);
 }
