@@ -312,7 +312,7 @@ jobs:
         sudo apt-get install -y jq
     - name: Filters if the "needs" context has "failure"
       run: |
-        HAS_FAILURE=$(echo '${{ toJSON(needs) }}' | jq '.[] | select(.result == "failure").result')
+        HAS_FAILURE=$(echo '${{ toJSON(needs) }}' | jq '[.[] | select(.result == "failure") | .result] | join(",")')
         echo "HAS_FAILURE=${HAS_FAILURE}" >> "$GITHUB_ENV"
     - name: SLACK_COLOR is danger
       if: ${{ env.HAS_FAILURE }}
