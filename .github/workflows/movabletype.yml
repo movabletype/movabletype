@@ -16,720 +16,213 @@ env:
   DOCKER_USERNAME: "${{ secrets.DOCKER_USERNAME }}"
   DOCKER_PASSWORD: "${{ secrets.DOCKER_PASSWORD }}"
 jobs:
-  fedora39_test:
+  test:
+    strategy:
+      matrix:
+        distribution:
+          - fedora40
+          - fedora39
+          - fedora37
+          - fedora35
+          - centos6
+          - bullseye
+          - buster
     runs-on: ubuntu-20.04
     env:
-      TEST_IMAGE_NAME: fedora39
+      TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if: ${{ github.event_name != 'schedule' }}
+      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
+      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
+    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora39_test_mt7:
+  test_mt7:
+    strategy:
+      matrix:
+        distribution:
+          - fedora40
+          - fedora39
+          - fedora37
+          - fedora35
+          - centos6
+          - bullseye
+          - buster
     runs-on: ubuntu-20.04
     env:
-      TEST_IMAGE_NAME: fedora39
+      TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if: ${{ github.event_name != 'schedule' }}
+      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
+      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
+    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora39_test_mt7_tag:
+  test_mt7_tag:
+    strategy:
+      matrix:
+        distribution:
+          - fedora40
+          - fedora39
+          - fedora37
+          - fedora35
+          - centos6
+          - bullseye
+          - buster
     runs-on: ubuntu-20.04
     env:
-      TEST_IMAGE_NAME: fedora39
+      TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if: ${{ github.event_name != 'schedule' }}
+      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
+      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
+    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora39_test_others:
+  test_others:
+    strategy:
+      matrix:
+        distribution:
+          - fedora40
+          - fedora39
+          - fedora37
+          - fedora35
+          - centos6
+          - bullseye
+          - buster
     runs-on: ubuntu-20.04
     env:
-      TEST_IMAGE_NAME: fedora39
+      TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if: ${{ github.event_name != 'schedule' }}
+      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
+      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
+    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora39_test_cms_permission:
+  test_cms_permission:
+    strategy:
+      matrix:
+        distribution:
+          - fedora40
+          - fedora39
+          - fedora37
+          - fedora35
+          - centos6
+          - bullseye
+          - buster
     runs-on: ubuntu-20.04
     env:
-      TEST_IMAGE_NAME: fedora39
+      TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if: ${{ github.event_name != 'schedule' }}
+      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
+      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
+    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora39_test_data_api:
+  test_data_api:
+    strategy:
+      matrix:
+        distribution:
+          - fedora40
+          - fedora39
+          - fedora37
+          - fedora35
+          - centos6
+          - bullseye
+          - buster
     runs-on: ubuntu-20.04
     env:
-      TEST_IMAGE_NAME: fedora39
+      TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if: ${{ github.event_name != 'schedule' }}
+      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
+      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
+    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora39_test_tag:
+  test_tag:
+    strategy:
+      matrix:
+        distribution:
+          - fedora40
+          - fedora39
+          - fedora37
+          - fedora35
+          - centos6
+          - bullseye
+          - buster
     runs-on: ubuntu-20.04
     env:
-      TEST_IMAGE_NAME: fedora39
+      TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if: ${{ github.event_name != 'schedule' }}
+      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
+      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
+    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora39_test_plugins:
+  test_plugins:
+    strategy:
+      matrix:
+        distribution:
+          - fedora40
+          - fedora39
+          - fedora37
+          - fedora35
+          - centos6
+          - bullseye
+          - buster
     runs-on: ubuntu-20.04
     env:
-      TEST_IMAGE_NAME: fedora39
+      TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if: ${{ github.event_name != 'schedule' }}
+      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
+      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
+    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
     - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
     - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora39_test_php_lint:
+  test_php_lint:
+    strategy:
+      matrix:
+        distribution:
+          - fedora39
+          - fedora35
+          - bullseye
+          - buster
     runs-on: ubuntu-20.04
     env:
-      TEST_IMAGE_NAME: fedora39
+      TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: phpunit && make test-php-lint
-    if: ${{ github.event_name != 'schedule' }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora35_test:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora35
-      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora35_test_mt7:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora35
-      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora35_test_mt7_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora35
-      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora35_test_others:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora35
-      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora35_test_cms_permission:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora35
-      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora35_test_data_api:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora35
-      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora35_test_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora35
-      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora35_test_plugins:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora35
-      TEST_COMMAND: MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora35_test_php_lint:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora35
-      TEST_COMMAND: phpunit php/tests/*Test.php && make test-php-lint
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora40_test:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora40
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora40_test_mt7:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora40
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora40_test_mt7_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora40
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora40_test_others:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora40
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora40_test_cms_permission:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora40
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora40_test_data_api:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora40
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora40_test_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora40
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora40_test_plugins:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora40
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora37_test:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora37
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora37_test_mt7:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora37
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora37_test_mt7_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora37
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora37_test_others:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora37
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora37_test_cms_permission:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora37
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora37_test_data_api:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora37
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora37_test_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora37
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  fedora37_test_plugins:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: fedora37
-      TEST_COMMAND: MT_TEST_BUILDER=MT::Builder::Fast prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  centos6_test:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: centos6
-      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  centos6_test_mt7:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: centos6
-      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  centos6_test_mt7_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: centos6
-      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  centos6_test_others:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: centos6
-      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  centos6_test_cms_permission:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: centos6
-      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  centos6_test_data_api:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: centos6
-      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  centos6_test_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: centos6
-      TEST_COMMAND: MT_TEST_DISABLE_OBJECT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  centos6_test_plugins:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: centos6
-      TEST_COMMAND: MT_TEST_DISABLE_OBEJCT_CACHE=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  bullseye_test:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: bullseye
-      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  bullseye_test_mt7:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: bullseye
-      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  bullseye_test_mt7_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: bullseye
-      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  bullseye_test_others:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: bullseye
-      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  bullseye_test_cms_permission:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: bullseye
-      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  bullseye_test_data_api:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: bullseye
-      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 MT_TEST_FORCE_DATAAPI_VERSION=5 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  bullseye_test_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: bullseye
-      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  bullseye_test_plugins:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: bullseye
-      TEST_COMMAND: MT_TEST_ADMIN_THEME_ID=0 prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  bullseye_test_php_lint:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: bullseye
-      TEST_COMMAND: phpunit && make test-php-lint
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  buster_test:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: buster
-      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  buster_test_mt7:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: buster
-      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  buster_test_mt7_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: buster
-      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  buster_test_others:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: buster
-      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  buster_test_cms_permission:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: buster
-      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  buster_test_data_api:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: buster
-      TEST_COMMAND: MT_TEST_FORCE_DATAAPI_VERSION=5 prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  buster_test_tag:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: buster
-      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  buster_test_plugins:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: buster
-      TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
-    steps:
-    - name: checkout
-      uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
-  buster_test_php_lint:
-    runs-on: ubuntu-20.04
-    env:
-      TEST_IMAGE_NAME: buster
-      TEST_COMMAND: phpunit && make test-php-lint
-    if: ${{ ((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron') }}
+      DEFAULT_TARGET: ${{ (matrix.distribution == 'fedora39') && (github.event_name != 'schedule') }}
+      OPTIONAL_TARGET: ${{ (matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron')) }}
+    if: ${{ env.DEFAULT_TARGET || env.OPTIONAL_TARGET }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
@@ -775,68 +268,18 @@ jobs:
   notify_slack:
     runs-on: ubuntu-20.04
     needs:
-    - fedora39_test
-    - fedora39_test_mt7
-    - fedora39_test_mt7_tag
-    - fedora39_test_others
-    - fedora39_test_cms_permission
-    - fedora39_test_data_api
-    - fedora39_test_tag
-    - fedora39_test_plugins
-    - fedora39_test_php_lint
-    - fedora35_test
-    - fedora35_test_mt7
-    - fedora35_test_mt7_tag
-    - fedora35_test_others
-    - fedora35_test_cms_permission
-    - fedora35_test_data_api
-    - fedora35_test_tag
-    - fedora35_test_plugins
-    - fedora35_test_php_lint
-    - fedora40_test
-    - fedora40_test_mt7
-    - fedora40_test_mt7_tag
-    - fedora40_test_others
-    - fedora40_test_cms_permission
-    - fedora40_test_data_api
-    - fedora40_test_tag
-    - fedora40_test_plugins
-    - fedora37_test
-    - fedora37_test_mt7
-    - fedora37_test_mt7_tag
-    - fedora37_test_others
-    - fedora37_test_cms_permission
-    - fedora37_test_data_api
-    - fedora37_test_tag
-    - fedora37_test_plugins
-    - centos6_test
-    - centos6_test_mt7
-    - centos6_test_mt7_tag
-    - centos6_test_others
-    - centos6_test_cms_permission
-    - centos6_test_data_api
-    - centos6_test_tag
-    - centos6_test_plugins
-    - bullseye_test
-    - bullseye_test_mt7
-    - bullseye_test_mt7_tag
-    - bullseye_test_others
-    - bullseye_test_cms_permission
-    - bullseye_test_data_api
-    - bullseye_test_tag
-    - bullseye_test_plugins
-    - bullseye_test_php_lint
-    - buster_test
-    - buster_test_mt7
-    - buster_test_mt7_tag
-    - buster_test_others
-    - buster_test_cms_permission
-    - buster_test_data_api
-    - buster_test_tag
-    - buster_test_plugins
-    - buster_test_php_lint
+    - test
+    - test_mt7
+    - test_mt7_tag
+    - test_others
+    - test_cms_permission
+    - test_data_api
+    - test_tag
+    - test_plugins
+    - test_php_lint
     - selenium_test
     - selenium_crawl_test
+    - test_xt
     if: ${{ always() }}
     steps:
     - name: Install jq
