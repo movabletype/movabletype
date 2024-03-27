@@ -591,7 +591,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Members' => 'メンバーの管理',
 	'Manage' => '一覧',
 	'Movable Type News' => 'Movable Typeニュース',
-	'Move child site(s) ' => 'サイトの移動',
+	'Move Child Site(s) ' => 'サイトの移動',
 	'New' => '新規',
 	'No such blog [_1]' => '[_1]というブログはありません。',
 	'None' => 'なし',
