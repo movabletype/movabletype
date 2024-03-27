@@ -239,6 +239,38 @@ jobs:
         if: ${{ matrix.test == 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
+  cloud7:
+    env:
+      TEST_IMAGE_NAME: cloud7
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test:
+          - "t/*.t"
+          - "t/mt7/[^t]*"
+          - "t/mt7/t*"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+          - "t/cms_permission/"
+          - "t/data_api/"
+          - "t/tag/"
+          - "plugins/*/t"
+          - selenium
+          - php
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.0
+      - name: login
+        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+      - name: test
+        if: ${{ (matrix.test != 'php' && matrix.test != 'selenium') }}
+        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+      - name: test selenium
+        if: ${{ matrix.test == 'selenium' }}
+        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "MT_TEST_SELENIUM_MAX_RETRY=5 prove -lr -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium"
+      - name: test php
+        if: ${{ matrix.test == 'php' }}
+        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
+
   extra:
     needs: [fedora39]
     if: ${{ ( ( (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.ref, 'cron') ) }}
@@ -270,6 +302,7 @@ jobs:
     - centos6
     - bullseye
     - buster
+    - cloud7
     - extra
     if: ${{ always() }}
     steps:
