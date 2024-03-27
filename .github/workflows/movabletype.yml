@@ -31,13 +31,21 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t
-    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ env.RUN_JOB }}
+      run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
   test_mt7:
     strategy:
       matrix:
@@ -53,13 +61,21 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*
-    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ env.RUN_JOB }}
+      run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
   test_mt7_tag:
     strategy:
       matrix:
@@ -75,13 +91,21 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*
-    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ env.RUN_JOB }}
+      run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
   test_others:
     strategy:
       matrix:
@@ -97,13 +121,21 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/
-    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ env.RUN_JOB }}
+      run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
   test_cms_permission:
     strategy:
       matrix:
@@ -119,13 +151,21 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/
-    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ env.RUN_JOB }}
+      run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
   test_data_api:
     strategy:
       matrix:
@@ -141,13 +181,21 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/
-    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ env.RUN_JOB }}
+      run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
   test_tag:
     strategy:
       matrix:
@@ -163,13 +211,21 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/
-    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ env.RUN_JOB }}
+      run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
   test_plugins:
     strategy:
       matrix:
@@ -185,13 +241,21 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t
-    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ env.RUN_JOB }}
+      run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
   test_php_lint:
     strategy:
       matrix:
@@ -204,13 +268,21 @@ jobs:
     env:
       TEST_IMAGE_NAME: ${{ matrix.distribution }}
       TEST_COMMAND: phpunit && make test-php-lint
-    if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) || ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
     steps:
     - name: checkout
       uses: actions/checkout@v4.1.0
-    - run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
-    - run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
+    - if: ${{ ((matrix.distribution == 'fedora39') && (github.event_name != 'schedule')) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ ((matrix.distribution != 'fedora39') && (((github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-'))) || contains(github.ref, 'cron'))) }}
+      run: |
+        echo "RUN_JOB=1" >> "$GITHUB_ENV"
+    - if: ${{ env.RUN_JOB }}
+      run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora39 bash -c "BUILD_RELEASE_NUMBER=1 make"
+    - if: ${{ env.RUN_JOB }}
+      run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
   selenium_test:
     runs-on: ubuntu-20.04
     env:
