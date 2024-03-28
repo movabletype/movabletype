@@ -230,10 +230,7 @@ jobs:
       - name: login
         run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
       - name: test
-        if: ${{ matrix.test != 'php' && ! contains(matrix.test, 'data_api') }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
-      - name: test data_api with MT_TEST_FORCE_DATAAPI_VERSION
-        if: ${{ matrix.test != 'php' && contains(matrix.test, 'data_api') }}
+        if: ${{ matrix.test != 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_FORCE_DATAAPI_VERSION=5 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
