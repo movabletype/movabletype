@@ -3146,6 +3146,8 @@ use vars qw( @ISA %Lexicon );
 	'Show input field to enter data label' => 'ユーザーが入力する',
 	'Unique ID' => 'ユニークID',
 	'close' => '閉じる',
+	'Edit all' => 'すべて編集',
+	'Close all' => 'すべて閉じる',
 
 ## mt-static/js/admin2023/listing/list_data.js
 	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
