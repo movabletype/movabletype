@@ -9,6 +9,17 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file('themes/invalid_class_theme/theme.yaml', <<'YAML');
+id: invalid_theme
+name: Invalid Class Theme
+label: Invalid Class theme
+class: invalid
+required_components:
+    core: 1.0
+optional_components:
+    commercial: 2.0
+YAML
 }
 
 use MT::Test;
