@@ -237,6 +237,7 @@ jobs:
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   cloud7:
+    needs: [fedora39]
     env:
       TEST_IMAGE_NAME: cloud7
     runs-on: ubuntu-latest
@@ -251,7 +252,6 @@ jobs:
           - "t/data_api/"
           - "t/tag/"
           - "plugins/*/t"
-          - selenium
           - php
     steps:
       - name: checkout
@@ -259,11 +259,8 @@ jobs:
       - name: login
         run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
       - name: test
-        if: ${{ (matrix.test != 'php' && matrix.test != 'selenium') }}
+        if: ${{ matrix.test != 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
-      - name: test selenium
-        if: ${{ matrix.test == 'selenium' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "MT_TEST_SELENIUM_MAX_RETRY=5 prove -lr -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium"
       - name: test php
         if: ${{ matrix.test == 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
