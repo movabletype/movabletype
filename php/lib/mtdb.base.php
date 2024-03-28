@@ -1544,7 +1544,7 @@ abstract class MTDatabase {
                             }
                         }
                         $sort_by_numeric =
-                            preg_match('/integer|float/', $entry_meta_info[$match[1]]);
+                            preg_match('/integer|float/', $entry_meta_info[$match[1]] ?? '');
                     }
                     else {
                         $sort_by_numeric =
@@ -1561,7 +1561,7 @@ abstract class MTDatabase {
                     } else {
                         $sort_fn = function($a, $b) use ($sort_field) {
                             $f = addslashes($sort_field);
-                            return strcmp($a->$f, $b->$f);
+                            return strcmp($a->$f ?? '', $b->$f ?? '');
                         };
                     }
 

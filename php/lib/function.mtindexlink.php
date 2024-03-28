@@ -7,6 +7,7 @@
 
 function smarty_function_mtindexlink($args, &$ctx) {
     $tmpl = $ctx->stash('index_templates');
+    if (!$tmpl) return '';
     $counter = $ctx->stash('index_templates_counter');
     $idx = $tmpl[$counter];
     if (!$idx) return '';

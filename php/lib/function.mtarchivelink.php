@@ -10,6 +10,7 @@ function smarty_function_mtarchivelink($args, &$ctx) {
     $at = isset($args['type']) ? $args['type'] : null;
     $at or $at = isset($args['archive_type']) ? $args['archive_type'] : null;
     $at or $at = $ctx->stash('current_archive_type');
+    if (!isset($at)) return '';
     $ts = $ctx->stash('current_timestamp');
     if ($at == 'Monthly') {
          $ts = substr($ts, 0, 6) . '01000000';
