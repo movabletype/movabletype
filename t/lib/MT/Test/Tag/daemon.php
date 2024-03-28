@@ -64,10 +64,10 @@ while ($remote = stream_socket_accept($socket)) {
 
     try {
         $ctx->_compile_source('evaluated template', $tmpl, $_var_compiled);
+        fwrite($remote, $_var_compiled);
     } catch (Throwable $e) {
-        $_var_compiled = '';
+        trigger_error("Error: ". $e->getMessage() ."\n" . $e->getTraceAsString());
     }
-    fwrite($remote, $_var_compiled);
 
     fclose($remote);
 }
