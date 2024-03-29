@@ -18,7 +18,7 @@ label: My Website Theme
 class: website
 thumbnail: my_thumbnail.png
 elements:
-    template_sGet:
+    template_set:
         component: core
         importer: template_set
         label: Template set
@@ -63,7 +63,7 @@ label: My Blog Theme
 class: blog
 thumbnail: my_thumbnail.png
 elements:
-    template_sGet:
+    template_set:
         component: core
         importer: template_set
         label: Template set
