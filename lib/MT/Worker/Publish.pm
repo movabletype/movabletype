@@ -50,6 +50,7 @@ sub work {
     my $start   = [gettimeofday];
     my $rebuilt = 0;
 
+    my %published;
     while ( my $job = $job_iter->() ) {
         my $fi_id = $job->uniqkey;
         my $fi    = MT::FileInfo->load($fi_id);
@@ -101,15 +102,7 @@ sub work {
             else {
                 $job->completed();
             }
-            $mt->log(
-                {   ( $fi->blog_id ? ( blog_id => $fi->blog_id ) : () ),
-                    message  => $mt->translate('Background Publishing Done'),
-                    metadata => log_time() . ' '
-                        . $mt->translate( 'Published: [_1]', $fi->file_path ),
-                    category => "publish",
-                    level    => MT::Log::INFO(),
-                }
-            );
+            push @{ $published{$fi->blog_id || 0} ||= []}, sprintf '%s %s (%s)', log_time(), $fi->file_path, (-s $fi->file_path) || 0;
             $rebuilt++;
         }
         else {
@@ -132,6 +125,17 @@ sub work {
 
     if ($rebuilt) {
         $mt->publisher->remove_marked_files;
+
+        for my $blog_id (sort keys %published) {
+            $mt->log(
+                {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                    message  => $mt->translate('Background Publishing Done'),
+                    metadata => join("\n", $mt->translate('Published ([_1]):', scalar @{ $published{$blog_id} }), @{ $published{$blog_id} }),
+                    category => "publish",
+                    level    => MT::Log::INFO(),
+                }
+            );
+        }
 
         MT::TheSchwartz->debug(
             $mt->translate(

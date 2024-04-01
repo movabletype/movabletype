@@ -3069,7 +3069,7 @@ use vars qw( @ISA %Lexicon );
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- 完了 ([_1]ファイル - [_2]秒)',
 	'Background Publishing Done' => 'バックグラウンドパブリッシングが完了しました',
 	'Error rebuilding file [_1]:[_2]' => '[_1]の再構築中にエラーが発生しました: [_2]',
-	'Published: [_1]' => '公開されたファイル: [_1]',
+	'Published ([_1]):' => '公開されたファイル ([_1]):',
 
 ## lib/MT/Worker/Sync.pm
 	'Done Synchronizing Files' => 'ファイルを同期しました。',
