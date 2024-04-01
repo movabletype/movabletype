@@ -1273,6 +1273,9 @@ abstract class MTDatabase {
                     $limit = 0; $offset = 0;
                     $no_resort = 0;
                 } else {
+                    if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                        throw new MTDBException('illegal sort_by name');
+                    }
                     $sort_field = 'entry_' . $args['sort_by'];
                 }
                 if (!empty($sort_field)) $no_resort = 1;
@@ -1453,6 +1456,9 @@ abstract class MTDatabase {
                 } elseif (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
                     $sort_field = 'entry_field.' . $match[1];
                 } else {
+                    if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                        throw new MTDBException('illegal sort_by name');
+                    }
                     $sort_field = 'entry_' . $args['sort_by'];
                 }
             } else {
@@ -1894,6 +1900,9 @@ abstract class MTDatabase {
         }
         $sort_by = 'user_custom';
         if ( isset($args['sort_by']) ) {
+            if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                throw new MTDBException('illegal sort_by name');
+            }
             $sort_by = strtolower($args['sort_by']);
             if ( 'user_custom' != $sort_by ) {
                 require_once('class.mt_category.php');
@@ -2393,6 +2402,9 @@ abstract class MTDatabase {
                 $order_sql = "order by author_created_on desc";
                 $re_sort = true;
             } else {
+                if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                    throw new MTDBException('illegal sort_by name');
+                }
                 $sort_col = $args['sort_by'];
                 if (strtolower($sort_col) == 'display_name') $sort_col = 'nickname';
                 if (!preg_match('/^author_/i', $sort_col)) $sort_col = 'author_' . $sort_col;
@@ -2648,6 +2660,9 @@ abstract class MTDatabase {
     }
 
     public function fetch_sum_scores($namespace, $datasource, $order, $filters) {
+        if (preg_match('/[^a-zA-Z0-9_]/', $datasource)) {
+            throw new MTDBException('illegal datasource name');
+        }
         $othertables = '';
         $otherwhere = '';
         if ($datasource == 'asset') {
@@ -2672,6 +2687,9 @@ abstract class MTDatabase {
     }
 
     public function fetch_avg_scores($namespace, $datasource, $order, $filters) {
+        if (preg_match('/[^a-zA-Z0-9_]/', $datasource)) {
+            throw new MTDBException('illegal datasource name');
+        }
         $othertables = '';
         $otherwhere = '';
         if ($datasource == 'asset') {
@@ -3705,6 +3723,9 @@ abstract class MTDatabase {
         
         if (isset($args['sort_by'])) {
             if ('score' != $args['sort_by'] && 'rate' != $args['sort_by']) {
+                if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                    throw new MTDBException('illegal sort_by name');
+                }
                 $sort_by = 'asset_' . $args['sort_by'];
             }
         }
@@ -3868,8 +3889,14 @@ abstract class MTDatabase {
                 if (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
                     // TODO: Unreachable because field.myfield causes SQL error earlier.
                     // Note that perl also doesn't seem to support field.myfield for assets
+                    if (preg_match('/[^a-zA-Z0-9_]/', $match[1])) {
+                        throw new MTDBException('illegal sort_by name');
+                    }
                     $sort_field = 'asset_field.' . $match[1];
                 } else {
+                    if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                        throw new MTDBException('illegal sort_by name');
+                    }
                     $sort_field = 'asset_' . $args['sort_by'];
                 }
             }  
@@ -4599,6 +4626,9 @@ abstract class MTDatabase {
                         $limit = 0; $offset = 0;
                         $no_resort = 0;
                     } else {
+                        if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                            throw new MTDBException('illegal sort_by name');
+                        }
                         $sort_field = 'cd_' . $args['sort_by'];
                     }
                     if ($sort_field) $no_resort = 1;
@@ -4941,6 +4971,9 @@ abstract class MTDatabase {
                 } elseif (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
                     $sort_field = 'entry_field.' . $match[1];
                 } else {
+                    if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                        throw new MTDBException('illegal sort_by name');
+                    }
                     $sort_field = 'entry_' . $args['sort_by'];
                 }
             } else {
