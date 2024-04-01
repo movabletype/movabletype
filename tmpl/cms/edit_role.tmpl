@@ -234,7 +234,7 @@ function init() {
         <mt:loop name="loaded_permissions">
         <mt:if name="content_type_unique_id" eq="$ct_perm_group_unique_id">
 
-            <mt:if test="$id =~ /^manage_content_data/">
+            <mt:if name="id" like="/^manage_content_data/">
                 <mt:setvarblock name="all">
                 <div class="form-check">
                     <div class="custom-control custom-checkbox">
@@ -244,7 +244,7 @@ function init() {
                 </div>
                 </mt:setvarblock>
 
-            <mt:elseif test="$id =~ /^create|publish|edit_all|_contentdata:/">
+            <mt:elseif name="id" like="/^create|publish|edit_all|_contentdata:/">
                 <mt:setvarblock name="manage_content_data" append="1">
                 <div class="form-check">
                     <div class="custom-control custom-checkbox">
