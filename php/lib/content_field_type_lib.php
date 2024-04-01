@@ -570,6 +570,9 @@ class CategoriesRegistry implements ContentFieldType {
                 $where = $where . " and category_id = ".$db->Param(0);
             }
             if (isset($args['sort'])) {
+                if (preg_match('/[^a-zA-Z0-9_]/', $args['sort'])) {
+                    throw new MTDBException('illegal sort_by name');
+                }
                 $sort_by = "category_" . strtolower($args['sort']);
                 if ($category_class->has_column($sort_by)) {
                     $tableinfo =& $category_class->TableInfo();
