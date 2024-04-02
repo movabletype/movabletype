@@ -75,7 +75,7 @@
     <fieldset id="content-fields" class="form-group">
       <legend class="h3">{ trans('Content Fields') }</legend>
       <div class="mt-collapse__all">
-        <a data-bs-toggle="collapse" onclick={ toggleAll } href=".mt-collapse__content" aria-expanded="{ isExpanded ? 'true' : 'false' }" aria-controls="" class="d-inline-block">
+        <a data-bs-toggle="collapse" onclick={ toggleAll } href="" aria-expanded="{ isExpanded ? 'true' : 'false' }" aria-controls="" class="d-inline-block">
           { isExpanded ? trans('Close all') : trans('Edit all') }
           <ss title="{ trans('Edit') }" class="mt-icon--secondary expand-all-icon" href="{ StaticURI }images/sprite.svg#ic_collapse"></ss>
         </a>
@@ -86,6 +86,12 @@
           <p>{ trans('Please add a content field.') }</p>
         </div>
         <div class="mt-contentfield" draggable="true" aria-grabbed="false" each={ fields } data-is="content-field" ondragstart={ onDragStart } ondragend={ onDragEnd } style="width: 100%;"></div>
+      </div>
+      <div class="mt-collapse__all">
+        <a data-bs-toggle="collapse" onclick={ toggleAll } href=".mt-collapse__content" aria-expanded="{ isExpanded ? 'true' : 'false' }" aria-controls="" class="d-inline-block">
+          { isExpanded ? trans('Close all') : trans('Edit all') }
+          <ss title="{ trans('Edit') }" class="mt-icon--secondary expand-all-icon" href="{ StaticURI }images/sprite.svg#ic_collapse"></ss>
+        </a>
       </div>
     </fieldset>
   </form>
