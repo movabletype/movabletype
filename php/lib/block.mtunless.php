@@ -17,7 +17,18 @@ function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
             $tag = preg_replace('/^mt:?/i', '', $tag);
             $largs = $args; // local arguments without 'tag' element
             unset($largs['tag']);
-            $val = $ctx->tag($tag, $largs);
+
+            // Disable error handler temporarily
+            // for disabling trigger_error function.
+            set_error_handler(function() { return TRUE; });
+
+            try {
+                $val = $ctx->tag($tag, $largs);
+            } catch (exception $e) {
+                $val = '';
+            }
+
+            restore_error_handler();
         }
         if (isset($val) && !is_array($val)
           && preg_match('/^smarty_fun_[a-f0-9]+$/', $val)) {
@@ -74,5 +85,6 @@ function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
     } else {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
+    
 }
 ?>

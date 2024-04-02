@@ -75,7 +75,7 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
 
             // Disable error handler temporarily
             // for disabling trigger_error function.
-            set_error_handler('_dummy_error_handler');
+            set_error_handler(function() { return TRUE; });
 
             try {
                 $val = $ctx->tag($tag, $largs);
@@ -162,9 +162,5 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
         $vars =& $ctx->__stash['vars'];
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
-}
-
-function _dummy_error_handler() {
-    return TRUE;
 }
 ?>
