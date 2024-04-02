@@ -122,18 +122,25 @@ sub new {
         code => sub {
             my $port = shift;
 
-            my $pid_file = "$ENV{MT_TEST_ROOT}/.server.pid";
+            my $rebootable = $args && $args->{rebootable} &&
+                 eval { require Server::Starter; require Net::Server::SS::PreFork; require Starman; 1 };
+
             my $host     = MY_HOST;
             my %extra    = (
                 CGIPath        => "http://$host:$port/cgi-bin/",
                 StaticWebPath  => "http://$host:$port/mt-static/",
                 StaticFilePath => "$ENV{MT_HOME}/mt-static",
-                PIDFilePath    => $pid_file,
             );
+
+            my $pid_file;
+            if ($rebootable) {
+                $pid_file           = "$ENV{MT_TEST_ROOT}/.server.pid";
+                $extra{PIDFilePath} = $pid_file;
+            }
+
             $env->update_config(%extra);
 
-            if ($args->{rebootable} && 
-                    eval { require Server::Starter; require Net::Server::SS::PreFork; require Starman; 1 }) {
+            if ($rebootable) {
                 my @options = qw(-s Starman --workers 1);
                 push @options, '--env', (DEBUG ? 'development' : 'production');
                 Server::Starter::start_server(

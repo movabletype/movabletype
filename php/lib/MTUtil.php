@@ -823,6 +823,7 @@ function _check_xml_char($matches) {
 }
 
 function encode_xml($str, $nocdata = 0) {
+    if (!isset($str)) return '';
     $mt = MT::get_instance();
     global $_encode_xml_Map;
     $cfg_nocdata = $mt->config('NoCDATA');

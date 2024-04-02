@@ -254,9 +254,9 @@ extend( DOM, {
                             } else {
                                 d[ name ] = [];
                             }
-
-                            d[ name ].push( e.value );
                         }
+
+                        d[ name ].push( e.value );
                     } else {
                         d[ name ] = e.value;
                     }

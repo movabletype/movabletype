@@ -280,13 +280,13 @@ function init() {
               <label class="custom-control-label" for="use_absolute_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
             </div>
           </div>
-          </mt:unless>
-          <div class="text-muted hint relative-site_path-hint">
-            <__trans phrase="Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
-          </div>
-          <div class="text-muted hint absolute-site_path-hint">
+          <small class="text-muted hint absolute-site_path-hint">
             <__trans phrase="Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
-          </div>
+          </small>
+          </mt:unless>
+          <small class="text-muted hint relative-site_path-hint">
+            <__trans phrase="Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
+          </small>
         </mtapp:setting>
 
 
@@ -369,13 +369,13 @@ function init() {
               <label class="custom-control-label" for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
             </div>
           </div>
-          </mt:unless>
-          <div class="text-muted hint relative-site_path-hint">
-            <__trans phrase="Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
-          </div>
-          <div class="text-muted hint absolute-site_path-hint">
+          <small class="text-muted hint absolute-site_path-hint">
             <__trans phrase="Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
-          </div>
+          </small>
+          </mt:unless>
+          <small class="text-muted hint relative-site_path-hint">
+            <__trans phrase="Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
+          </small>
         </mtapp:setting>
       </mt:if>
       </fieldset>

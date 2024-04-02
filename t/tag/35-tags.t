@@ -24,6 +24,7 @@ $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
 my $blog = MT::Blog->load(1);
 $blog->captcha_provider('mt_default');
+$blog->include_system('php');
 $blog->save;
 
 my $asset = MT::Asset->load(1);
@@ -85,6 +86,16 @@ sub embed_path {
     require File::Temp;
     my ( $fh, $file ) = File::Temp::tempfile();
     print $fh $cont;
+    close $fh;
+    $in =~ s{PATH}{$file};
+    $in;
+}
+
+sub embed_path_to_php_test {
+    my $in = shift;
+    require File::Temp;
+    my ( $fh, $file ) = File::Temp::tempfile();
+    print $fh '<?php echo 3+4;';
     close $fh;
     $in =~ s{PATH}{$file};
     $in;
@@ -301,6 +312,12 @@ Work rdf:about="http://narnia.na/nana/">
 --- expected
 (Header)January 1978|January 1965|January 1964|January 1963|January 1962|(Footer)January 1961|
 
+=== test 35-2 mt:CalendarDate
+--- template
+<MTArchiveList archive_type="Monthly"><$mt:CalendarDate format="%Y/%m"$>|</MTArchiveList>
+--- expected
+1978/01|1965/01|1964/01|1963/01|1962/01|1961/01|
+
 === test 36
 --- template
 [<MTEntries lastn="10"> * <MTEntryTitle></MTEntries>]
@@ -314,7 +331,6 @@ Work rdf:about="http://narnia.na/nana/">
 None
 
 === test 38
---- SKIP
 --- template
 <MTInclude module="blog-name">
 --- expected
@@ -959,6 +975,12 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=grandpa&amp;limit=
 <MTTags glue=':'><MTTagCount></MTTags>
 --- expected
 2:1:4:1:5
+
+=== test 183-2
+--- template
+<MTEntries tag='grandpa' lastn='1'><MTEntryTags glue=','><MTTagCount></MTEntryTags></MTEntries>
+--- expected
+1,4,1
 
 === test 184
 --- SKIP
@@ -3217,7 +3239,6 @@ http%3A%2F%2Fexample.com%2F%3Fq%3D%40
 http%3A//example.com/%3Fq%3D%40
 
 === test 595
---- SKIP
 --- template
 <MTSetVarBlock name="foo">http://example.com/?q=@</MTSetVarBlock><MTGetVar name="foo" escape="quotes">
 --- expected
@@ -3252,14 +3273,12 @@ http://example.com/?q=@
 \<s\cript\>alert(\"test\");\<\/s\cript\>
 
 === test 600
---- SKIP
 --- template
 <MTSetVarBlock name="foo">test@example.com</MTSetVarBlock><MTGetVar name="foo" escape="mail">
 --- expected
 test [AT] example [DOT] com
 
 === test 601
---- SKIP
 --- template
 <MTSetVarBlock name="foo"><span>Foo</span></MTSetVarBlock><MTGetVar name="foo" escape="nonstd">
 --- expected
@@ -4101,14 +4120,12 @@ bar@baz\/
 <&>'"
 
 === test 750
---- SKIP
 --- template
 <mt:setvarblock name="str"><&>'"</mt:setvarblock><$mt:var name="str" encode_xml="1"$>
 --- expected
 <![CDATA[<&>'"]]>
 
 === test 751
---- SKIP
 --- template
 <mt:setvarblock name="str"><![CDATA[&lt;&amp;&gt;&#039;&quot;]]></mt:setvarblock><$mt:var name="str" decode_xml="1"$>
 --- expected
@@ -4891,6 +4908,16 @@ left <mt:Include file="PATH"> right
 File inclusion is disabled by "AllowFileInclude" config directive.
 --- expected_php_error
 left File include is disabled by "AllowFileInclude" config directive. right
+
+=== test 883-3 include php file
+--- mt_config
+{AllowFileInclude => 1}
+--- template embed_path_to_php_test
+<mt:Include ssi="1" file="PATH">
+--- expected
+<?php echo 3+4;
+--- expected_php
+7
 
 === test 884
 --- template

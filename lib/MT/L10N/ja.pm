@@ -591,7 +591,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Members' => 'メンバーの管理',
 	'Manage' => '一覧',
 	'Movable Type News' => 'Movable Typeニュース',
-	'Move child site(s) ' => 'サイトの移動',
+	'Move Child Site(s) ' => 'サイトの移動',
 	'New' => '新規',
 	'No such blog [_1]' => '[_1]というブログはありません。',
 	'None' => 'なし',
@@ -4096,10 +4096,10 @@ use vars qw( @ISA %Lexicon );
 	'You must set a valid Site URL.' => '有効なサイトURLを指定してください。',
 	'You must set a valid local site path.' => '有効なサイトパスを指定してください。',
 	q{Enter the new URL of your public child site. End with '/'. Example: http://www.example.com/blog/} => q{新しいサイトURLを入力してください。末尾は'/'で終わります。例: http://www.example.com/blog/},
-	q{Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{新しくアーカイブのインデックスファイルを公開するパスを入力して下さい。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog or C:\www\public_html\blog},
-	q{Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{新しくアーカイブのインデックスファイルを公開するパスを入力して下さい。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog or C:\www\public_html\blog},
-	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{新しくインデックスファイルを公開するパスを入力して下さい。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog or C:\www\public_html\blog},
-	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{新しくインデックスファイルを公開するパスを入力して下さい。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog or C:\www\public_html\blog},
+	q{Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{新しくアーカイブのインデックスファイルを公開するパスを入力して下さい。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog または C:\www\public_html\blog},
+	q{Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{新しくアーカイブのインデックスファイルを公開するパスを入力して下さい。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog または C:\www\public_html\blog},
+	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{新しくインデックスファイルを公開するパスを入力して下さい。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog または C:\www\public_html\blog},
+	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{新しくインデックスファイルを公開するパスを入力して下さい。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog または C:\www\public_html\blog},
 
 ## tmpl/admin2023/cms/dialog/asset_edit.tmpl
 	'Close (x)' => '閉じる (x)',
@@ -5503,6 +5503,7 @@ use vars qw( @ISA %Lexicon );
 	q{Enter the URL of your site. Exclude the filename (i.e. index.html). Example:http://www.example.com/} => q{サイトを公開するURLを入力してください。ファイル名(index.htmlなど)は含めず、末尾は'/'で終わります。例: http://www.example.com/blog/},
 
 ## tmpl/admin2023/cms/system_check.tmpl
+	'Addon version:' => 'アドオンのバージョン',
 	'Memcached Server is [_1].' => 'Memcachedサーバーは[_1]です。',
 	'Memcached Status' => 'Memcachedの状態',
 	'Memcached is [_1].' => 'Memcachedは[_1]です。',
