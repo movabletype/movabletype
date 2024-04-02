@@ -326,6 +326,20 @@ sub edit_role {
 
     $param{'loaded_permissions'} = \@perms;
 
+    # Make permission list for blog
+    my %loaded_permissions_for_blog;
+    my @groups_for_blog   = qw(blog_admin auth_pub blog_design blog_upload blog_comment);
+    my %is_group_for_blog = map { $_ => 1 } @groups_for_blog;
+    for my $p (@perms) {
+        my $group = $p->{group};
+        next unless $group && $is_group_for_blog{$group};
+
+        push @{ $loaded_permissions_for_blog{$group} ||= [] }, $p;
+    }
+    for my $group (@groups_for_blog) {
+        $param{"loaded_permissions_${group}"} = $loaded_permissions_for_blog{$group};
+    }
+
     my $all_perm_flags = MT::Permission->perms('blog');
 
     for my $ref (@$all_perm_flags) {
