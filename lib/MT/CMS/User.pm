@@ -324,7 +324,7 @@ sub edit_role {
 
     @perms = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) } @perms;
 
-    $param{'loaded_permissions'} = \@perms;
+    $param{'loaded_permissions'} = \@perms;    # DEPRECATED
 
     # Make each permission list
     my %loaded_permissions_for_blog;
