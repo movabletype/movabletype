@@ -327,18 +327,18 @@ sub edit_role {
     $param{'loaded_permissions'} = \@perms;    # DEPRECATED
 
     # Make each permission list
-    my %loaded_permissions_for_blog;
-    my %loaded_permissions_for_blog_content_data;
-    my @groups_for_blog   = qw(blog_admin auth_pub blog_design blog_upload blog_comment);
-    my %is_group_for_blog = map { $_ => 1 } @groups_for_blog;
-    for my $p (@perms) {
-        my $group = $p->{group} or next;
+    my %perms_blog;
+    my %perms_content_data;
+    my @blog_groups    = qw(blog_admin auth_pub blog_design blog_upload blog_comment);
+    my %is_blog_groups = map { $_ => 1 } @blog_groups;
+    for my $perm (@perms) {
+        my $group = $perm->{group} or next;
 
-        if ($is_group_for_blog{$group}) {
-            push @{ $loaded_permissions_for_blog{$group} ||= [] }, $p;
+        if ($is_blog_groups{$group}) {
+            push @{ $perms_blog{$group} ||= [] }, $perm;
 
-        } elsif (my $ct_unique_id = $p->{content_type_unique_id}) {
-            my $id = $p->{id};
+        } elsif (my $ct_unique_id = $perm->{content_type_unique_id}) {
+            my $id = $perm->{id};
 
             my $type;
             if ($id =~ /^manage_content_data/) {
@@ -348,21 +348,21 @@ sub edit_role {
             } else {
                 $type = 'manage_content_field';
             }
-            $p->{type} = $type;
+            $perm->{type} = $type;
 
-            $loaded_permissions_for_blog_content_data{$ct_unique_id} ||= {};
-            $loaded_permissions_for_blog_content_data{$ct_unique_id}{$type} ||= [];
+            $perms_content_data{$ct_unique_id} ||= {};
+            $perms_content_data{$ct_unique_id}{$type} ||= [];
 
-            push @{ $loaded_permissions_for_blog_content_data{$ct_unique_id}{$type} }, $p;
+            push @{ $perms_content_data{$ct_unique_id}{$type} }, $perm;
         }
     }
-    for my $group (@groups_for_blog) {
-        $param{"loaded_permissions_${group}"} = $loaded_permissions_for_blog{$group};
+    for my $group (@blog_groups) {
+        $param{"loaded_permissions_${group}"} = $perms_blog{$group};
     }
-    for my $group (@{ MT->model('content_type')->permission_groups }) {
-        my $ct_unique_id = $group->{ct_perm_group_unique_id};
-        my $perm_types   = $loaded_permissions_for_blog_content_data{$ct_unique_id} or next;
-        push @{ $param{'loaded_permissions_content_data'} }, { %{$perm_types}, %{$group} };
+    for my $perm_group (@{ MT->model('content_type')->permission_groups }) {
+        my $ct_unique_id = $perm_group->{ct_perm_group_unique_id};
+        my $perm_types   = $perms_content_data{$ct_unique_id} or next;
+        push @{ $param{'loaded_permissions_content_data'} }, { %{$perm_types}, %{$perm_group} };
     }
 
     my $all_perm_flags = MT::Permission->perms('blog');
