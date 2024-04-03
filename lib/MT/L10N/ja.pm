@@ -3203,6 +3203,7 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/admin2023/mt.js
 	'Are you certain you want to remove these [_1] roles? By doing so you will be taking away the permissions currently assigned to any users and groups associated with these roles.' => 'これら[_1]つのロールをしてもよろしいですか? 削除してしまうと、これらのロールを通じて権限を付与されているすべてのユーザーとグループから権限を剥奪することになります。',
 	'Are you certain you want to remove this role? By doing so you will be taking away the permissions currently assigned to any users and groups associated with this role.' => 'このロールを本当に削除してもよろしいですか? ロールを通じて権限を付与されているすべてのユーザーとグループから権限を剥奪することになります。',
+	'Are you sure you want to remove this asset?' => 'アセットを削除してもよろしいですか？',
 	'Enter URL:' => 'URLを入力:',
 	'Enter email address:' => 'メールアドレスを入力:',
 	'Same name tag already exists.' => '同名のタグがすでに存在します',
