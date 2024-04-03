@@ -219,9 +219,6 @@ function init() {
   <mtapp:settinggroup id="role-content-type-privileges">
     <legend class="h3"><__trans phrase="Content Type Privileges"></legend>
     <mt:loop name="loaded_permissions_content_data">
-        <mt:setvar name="manage_content_data" value="">
-        <mt:setvar name="manage_content_field" value="">
-
         <mtapp:setting
           id="ct-perm-group-<mt:var name="ct_perm_group_unique_id" escape="html">"
           label_class="label-none">
