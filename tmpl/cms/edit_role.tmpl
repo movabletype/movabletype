@@ -215,49 +215,12 @@ function init() {
     </mt:if>
   </mtapp:settinggroup>
 
-<mt:if name="content_type_perm_groups">
+<mt:if name="loaded_permissions_content_data">
   <mtapp:settinggroup id="role-content-type-privileges">
     <legend class="h3"><__trans phrase="Content Type Privileges"></legend>
-    <mt:loop name="content_type_perm_groups">
+    <mt:loop name="loaded_permissions_content_data">
         <mt:setvar name="manage_content_data" value="">
         <mt:setvar name="manage_content_field" value="">
-        <mt:loop name="loaded_permissions">
-        <mt:if name="content_type_unique_id" eq="$ct_perm_group_unique_id">
-
-            <mt:if name="id" like="/^manage_content_data/">
-                <mt:setvarblock name="all">
-                <div class="form-check">
-                    <div class="custom-control custom-checkbox">
-                        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
-                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><span class="h4"><mt:var name="label" escape="html"></span></label>
-                    </div>
-                </div>
-                </mt:setvarblock>
-
-            <mt:elseif name="id" like="/^create|publish|edit_all|_contentdata:/">
-                <mt:setvarblock name="manage_content_data" append="1">
-                <div class="form-check">
-                    <div class="custom-control custom-checkbox">
-                        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
-                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
-                    </div>
-                </div>
-                </mt:setvarblock>
-
-            <mt:else>
-                <mt:setvarblock name="manage_content_field" append="1">
-                <div class="form-check mb-3" style="">
-                    <div class="custom-control custom-checkbox">
-                        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
-                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
-                    </div>
-                </div>
-                </mt:setvarblock>
-            </mt:if>
-
-        </mt:if>
-        </mt:loop>
-
 
         <mtapp:setting
           id="ct-perm-group-<mt:var name="ct_perm_group_unique_id" escape="html">"
@@ -272,11 +235,25 @@ function init() {
 
                 <div class="collapse" id="collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">">
                     <div class="form-group manage_all_content_data ml-3 mb-3">
-                        <mt:var name="all">
+                    <mt:loop name="all">
+                        <div class="form-check">
+                            <div class="custom-control custom-checkbox">
+                                <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+                                <label class="custom-control-label" for="<mt:var name="id" escape="html">"><span class="h4"><mt:var name="label" escape="html"></span></label>
+                            </div>
+                        </div>
+                    </mt:loop>
                     </div>
 
                     <div class="form-group manage_content_data d-flex flex-wrap ml-3 mb-3">
-                        <mt:var name="manage_content_data">
+                    <mt:loop name="manage_content_data">
+                        <div class="form-check">
+                            <div class="custom-control custom-checkbox">
+                                <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+                                <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+                            </div>
+                        </div>
+                    </mt:loop>
                     </div>
 
                     <hr class="manage_content_data_bottom">
@@ -288,7 +265,14 @@ function init() {
                         <div class="col-auto"><a href="#" class="uncheck_all_content_field"><__trans phrase="Uncheck All"></a></div>
                         </div>
                         <div class="manage_content_field d-flex flex-wrap">
-                        <mt:var name="manage_content_field">
+                        <mt:loop name="manage_content_field">
+                            <div class="form-check mb-3" style="">
+                                <div class="custom-control custom-checkbox">
+                                    <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+                                    <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+                                </div>
+                            </div>
+                        </mt:loop>
                         </div>
                     </div>
                 </div>

@@ -326,18 +326,43 @@ sub edit_role {
 
     $param{'loaded_permissions'} = \@perms;
 
-    # Make permission list for blog
+    # Make each permission list
     my %loaded_permissions_for_blog;
+    my %loaded_permissions_for_blog_content_data;
     my @groups_for_blog   = qw(blog_admin auth_pub blog_design blog_upload blog_comment);
     my %is_group_for_blog = map { $_ => 1 } @groups_for_blog;
     for my $p (@perms) {
-        my $group = $p->{group};
-        next unless $group && $is_group_for_blog{$group};
+        my $group = $p->{group} or next;
 
-        push @{ $loaded_permissions_for_blog{$group} ||= [] }, $p;
+        if ($is_group_for_blog{$group}) {
+            push @{ $loaded_permissions_for_blog{$group} ||= [] }, $p;
+
+        } elsif (my $ct_unique_id = $p->{content_type_unique_id}) {
+            my $id = $p->{id};
+
+            my $type;
+            if ($id =~ /^manage_content_data/) {
+                $type = 'all';
+            } elsif ($id =~ /^create|publish|edit_all|_contentdata:/) {
+                $type = 'manage_content_data';
+            } else {
+                $type = 'manage_content_field';
+            }
+            $p->{type} = $type;
+
+            $loaded_permissions_for_blog_content_data{$ct_unique_id} ||= {};
+            $loaded_permissions_for_blog_content_data{$ct_unique_id}{$type} ||= [];
+
+            push @{ $loaded_permissions_for_blog_content_data{$ct_unique_id}{$type} }, $p;
+        }
     }
     for my $group (@groups_for_blog) {
         $param{"loaded_permissions_${group}"} = $loaded_permissions_for_blog{$group};
+    }
+    for my $group (@{ MT->model('content_type')->permission_groups }) {
+        my $ct_unique_id = $group->{ct_perm_group_unique_id};
+        my $perm_types   = $loaded_permissions_for_blog_content_data{$ct_unique_id} or next;
+        push @{ $param{'loaded_permissions_content_data'} }, { %{$perm_types}, %{$group} };
     }
 
     my $all_perm_flags = MT::Permission->perms('blog');
