@@ -621,8 +621,8 @@ sub js_upload_file {
 sub upload_file {
     my $app = shift;
 
-    # require MT::Util::Deprecated;
-    # MT::Util::Deprecated::warning(since => '7.8');
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.3.0');
 
     if ( my $perms = $app->permissions ) {
         return $app->error( $app->translate("Permission denied.") )
