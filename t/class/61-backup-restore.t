@@ -337,9 +337,9 @@ sub checkrestored {
         my ( $str, $id ) = @$log;
         $log_ids{$id} = 1 if $id;
     }
-    cmp_bag(
+    cmp_set(
         [ keys %log_ids ],
-        [qw( cb-restore-content-data-data cb-restore-entry-asset cb-restore-permission )]
+        [qw( cb-restore-content-data-data cb-restore-entry-asset cb-restore-permission cf-restore-object-asset )]
     );
 }
 
