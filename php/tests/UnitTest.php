@@ -6,9 +6,6 @@ include_once("php/lib/captcha_lib.php");
 
 class UnitTest extends TestCase {
 
-    private $mt;
-    private $ctx;
-
     public function testWdayFromTs() {
         include_once("php/lib/MTUtil.php");
         // leap year
@@ -24,19 +21,13 @@ class UnitTest extends TestCase {
     }
 
     public function testFetchPermission() {
-        include_once("php/mt.php");
-        include_once("php/lib/MTUtil.php");
-        $cfg_file =  realpath( "t/mysql-test.cfg" );
-        $this->mt =  MT::get_instance(1, $cfg_file);
-        $this->ctx =& $this->mt->context();
 
-        error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
-        $perm = $this->mt->db()->fetch_permission(array('blog_id' => 1, 'id' => 1));
+        $perm = MT::get_instance()->db()->fetch_permission(array('blog_id' => 1, 'id' => 1));
         $this->assertTrue(is_array($perm) && !empty($perm));
         $this->assertEquals(1, $perm[0]->blog_id);
         $this->assertEquals(1, $perm[0]->author_id);
         $this->assertTrue(preg_match("{'administer_site'}", $perm[0]->permission_permissions) !== false);
-        
+
         include_once("php/lib/class.mt_author.php");
         $author = new Author;
         $author->Load(1);

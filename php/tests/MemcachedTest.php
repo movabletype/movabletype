@@ -9,7 +9,7 @@ include_once("php/mt.php");
 class MemcachedTest extends TestCase {
 
     public function testMain() {
-        $mt = MT::get_instance(1, realpath( "t/mysql-test.cfg" ));
+        $mt = MT::get_instance();
         $this->_testCacheLib($mt);
         $this->_testMTCacheSession($mt);
         $this->_testCacheSession($mt);
