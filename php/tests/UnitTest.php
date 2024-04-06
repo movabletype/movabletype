@@ -2,12 +2,12 @@
 
 use PHPUnit\Framework\TestCase;
 
-include_once("php/lib/captcha_lib.php");
+require_once('captcha_lib.php');
 
 class UnitTest extends TestCase {
 
     public function testWdayFromTs() {
-        include_once("php/lib/MTUtil.php");
+        require_once('MTUtil.php');
         // leap year
         $this->assertEquals(6, wday_from_ts(2000,1,1), 'right wday');
         $this->assertEquals(4, wday_from_ts(2000,1,6), 'right wday');
@@ -28,7 +28,7 @@ class UnitTest extends TestCase {
         $this->assertEquals(1, $perm[0]->author_id);
         $this->assertTrue(preg_match("{'administer_site'}", $perm[0]->permission_permissions) !== false);
 
-        include_once("php/lib/class.mt_author.php");
+        require_once('class.mt_author.php');
         $author = new Author;
         $author->Load(1);
         $perm2 = $author->permissions(1);
@@ -48,7 +48,7 @@ class UnitTest extends TestCase {
         $this->assertEquals(1, $perm3[1]->author_id);
         $this->assertTrue(preg_match("{'administer_site'}", $perm3[1]->permission_permissions) !== false);
 
-        include_once("php/lib/class.mt_blog.php");
+        require_once('class.mt_blog.php');
         $b = new Blog;
         $b->Load(1);
         $b->set_values(array('blog_name' => 'test_name', 'blog_site_url' => 'test_url'));
@@ -68,19 +68,19 @@ class UnitTest extends TestCase {
     }
     
     public function testArchiverFactory() {
-        include_once("php/lib/archive_lib.php");
+        require_once('archive_lib.php');
         ArchiverFactory::add_archiver('ContentType', 'ContentTypeArchiver');
         $a = ArchiverFactory::get_archiver('ContentType');
         $this->assertTrue($a instanceof ArchiveType);
     }
 
     public function testCC() {
-        include_once("php/lib/cc_lib.php");
+        require_once('cc_lib.php');
         $this->assertEquals(cc_name('by'), 'Attribution');
     }
 
     public function testDatetimeToTimestamp() {
-        include_once("php/lib/MTUtil.php");
+        require_once('MTUtil.php');
 
         $ret = datetime_to_timestamp('2005-12-30 23:23:59');
         $this->assertEquals(1135952639, $ret);
@@ -138,7 +138,7 @@ class UnitTest extends TestCase {
     }
 
     public function testAssociation() {
-        include_once("php/lib/class.mt_association.php");
+        require_once('class.mt_association.php');
         $assoc = new Association();
         $assoc->Load('association_id=1');
         $role = $assoc->role();
@@ -148,8 +148,8 @@ class UnitTest extends TestCase {
     }
 
     public function testFileinfo() {
-        include_once("php/lib/class.mt_fileinfo.php");
-        include_once("php/lib/class.mt_category.php");
+        require_once('class.mt_fileinfo.php');
+        require_once('class.mt_category.php');
         $cat = new Category();
         $cat->blog_id = 1;
         $cat->category_category_set_id = 1;

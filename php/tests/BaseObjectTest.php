@@ -57,7 +57,7 @@ class BaseObjectTest extends TestCase {
             'template' => 'Template',
             'website' => 'Website');
         foreach ($obj_names as $table => $name) {
-            require_once("php/lib/class.mt_$table.php");
+            require_once("class.mt_$table.php");
             $obj = new $name;
             $obj->Load();
 
@@ -87,7 +87,7 @@ class BaseObjectTest extends TestCase {
 
     private function cache_driver() {
         if (empty(self::$_cache_driver)) {
-            require_once("class.basecache.php");
+            require_once('class.basecache.php');
             try {
                 self::$_cache_driver = CacheProviderFactory::get_provider('memcached');
             } catch (Exception $e) {

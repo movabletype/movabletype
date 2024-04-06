@@ -2,9 +2,9 @@
 
 use PHPUnit\Framework\TestCase;
 
-include_once("php/lib/mtcache_base.php");
-include_once("php/lib/class.basecache.php");
-include_once("php/mt.php");
+require_once('mtcache_base.php');
+require_once('class.basecache.php');
+require_once('mt.php');
 
 class MemcachedTest extends TestCase {
 
@@ -25,26 +25,26 @@ class MemcachedTest extends TestCase {
     }
 
     public function _testMTCacheSession($mt) {
-        include_once("php/lib/mtcache_session.php");
+        require_once('mtcache_session.php');
         $a = new MTCache_session();
         $this->assertCache($a, true);
     }
 
     public function _testCacheSession($mt) {
-        include_once("php/lib/class.cachesession.php");
+        require_once('class.cachesession.php');
         $a = new CacheSession();
         $this->assertCache($a, true);
     }
     
     public function _testCacheMemcache($mt) {
-        include_once("php/lib/class.cachememcached.php");
+        require_once('class.cachememcached.php');
         $mt->config('MemcachedServers', '127.0.0.1:11211');
         $a = new CacheMemcached();
         $this->assertCache($a);
     }
     
     public function _testMTCacheMemcached($mt) {
-        include_once("php/lib/mtcache_memcached.php");
+        require_once('mtcache_memcached.php');
         $a = new MTCache_memcached();
         $a->connect('127.0.0.1:11211');
         $this->assertCache($a);
