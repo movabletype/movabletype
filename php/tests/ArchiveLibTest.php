@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-include_once('php/lib/archive_lib.php');
+require_once('archive_lib.php');
 
 class ArchiveLibTest extends TestCase {
     
