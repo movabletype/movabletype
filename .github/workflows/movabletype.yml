@@ -281,7 +281,7 @@ jobs:
         run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
       - name: test selenium
         if: ${{ matrix.test == 'selenium' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
+        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "BUILD_RELEASE_NUMBER=1 make && MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
       - name: test xt
         if: ${{ matrix.test == 'xt' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
