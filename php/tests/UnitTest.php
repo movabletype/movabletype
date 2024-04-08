@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 
 require_once('captcha_lib.php');
+require_once('Mockdata.php');
 
 class UnitTest extends TestCase {
 
@@ -18,6 +19,164 @@ class UnitTest extends TestCase {
         // normal year
         $this->assertEquals(3, wday_from_ts(2001,2,28), 'right wday');
         $this->assertEquals(4, wday_from_ts(2001,3,1), 'right wday');
+    }
+
+    public function testFetchWebsites() {
+
+        $mt = MT::get_instance();
+        $sites = $mt->db()->fetch_websites([]);
+        $this->assertEquals('Blog', get_class($sites[0])); // XXX Consider to fix this to be Website instead
+        $this->assertEquals(1, $sites[0]->id);
+    }
+
+    public function testFetchWebsite() {
+
+        $mt = MT::get_instance();
+        $site = $mt->db()->fetch_website(1);
+        $this->assertEquals('Blog', get_class($site)); // XXX Consider to fix this to be Website instead
+        $this->assertEquals(1, $site->id);
+    }
+
+    public function testFetch_widgets_by_name() {
+
+        $template = MockData::makeTemplate(['type' => 'widget', 'name' => 'my_widget']);
+
+        $mt = MT::get_instance();
+        $widgets = $mt->db()->fetch_widgets_by_name($mt->ctx, 'my_widget', 1);
+        $this->assertEquals('Template', get_class($widgets[0]));
+        $this->assertEquals($template->id, $widgets[0]->id);
+    }
+
+    public function testFetch_plugin_data() {
+
+        $mt = MT::get_instance();
+
+        require_once('class.mt_plugindata.php');
+        $plugindata = new PluginData();
+        $plugindata->data = $mt->db()->serialize(['foo' => 'fooval', 'bar' => 'barval']);
+        $plugindata->key = 'configuration:blog:3';
+        $plugindata->plugin = 'MyPlugin';
+        $plugindata->save();
+
+        $config = $mt->db()->fetch_plugin_data('MyPlugin', 'configuration:blog:3');
+        $this->assertEquals('fooval', $config['foo']);
+        $this->assertEquals('barval', $config['bar']);
+        
+        $config1 = $mt->db()->fetch_plugin_config('MyPlugin', 'blog:3');
+        $this->assertEquals('fooval', $config['foo']);
+        $this->assertEquals('barval', $config['bar']);
+    }
+
+    public function testFetch_tag() {
+
+        $tag = MockData::makeTag(['name' => 'foo']);
+
+        $mt = MT::get_instance();
+        $tag2 = $mt->db()->fetch_tag($tag->id);
+        $this->assertEquals('Tag', get_class($tag2));
+        $this->assertEquals($tag->id, $tag2->id);
+
+        $tag3 = $mt->db()->fetch_tag_by_name($tag->tag_name);
+        $this->assertEquals('Tag', get_class($tag3));
+        $this->assertEquals($tag->id, $tag3->id);
+    }
+
+    public function testFetch_avg_scores() {
+
+        $oscore = MockData::makeObjectScore(['object_ds' => 'entry']);
+        $mt = MT::get_instance();
+        $score = $mt->db()->fetch_avg_scores('foo', 'entry', 'asc', '');
+        $this->assertEquals('ADORecordSet_pdo', get_class($score));
+    }
+
+    public function testBlog_ping_count() {
+
+        $blog = Mockdata::makeBlog(['name' => 'MyBlog']);
+        $entry = Mockdata::makeEntry();
+        $category = Mockdata::makeCategory();
+        $trackback = MockData::makeTrackback();
+        $ping = MockData::makeTbping();
+
+        $mt = MT::get_instance();
+        $count = $mt->db()->blog_ping_count(['blog_id' => $ping->blog_id]);
+        $this->assertEquals(1, $count);
+    }
+
+    // @TODO SKIP MTC-29547
+
+    // public function testTags_entry_count() {
+
+    //     $entry = Mockdata::makeEntry(['status' => 2]);
+    //     $tag = MockData::makeTag(['name' => 'foo']);
+    //     $otag = MockData::makeObjectTag(['object_datasource' => 'entry', 'tag_id' => $tag->id]);
+
+    //     $mt = MT::get_instance();
+    //     $count = $mt->db()->tags_entry_count($tag->id);
+    //     $this->assertEquals(1, $count);
+    // }
+
+    public function testEntry_comment_count() {
+
+        $entry = Mockdata::makeEntry(['status' => 2]);
+        $comment = Mockdata::makeComment();
+        $comment = Mockdata::makeComment();
+
+        $mt = MT::get_instance();
+        $count = $mt->db()->entry_comment_count($entry->id);
+        $this->assertEquals(2, $count);
+    }
+
+    public function testEntry_tbping_count() {
+
+        $entry = Mockdata::makeEntry(['status' => 2]);
+        $tbping = Mockdata::makeTbping();
+        $tbping = Mockdata::makeTbping();
+
+        $mt = MT::get_instance();
+        $count = $mt->db()->entry_ping_count($entry->id);
+        $this->assertEquals(2, $count);
+    }
+
+    public function testCategory_ping_count() {
+
+        $blog = Mockdata::makeBlog(['name' => 'MyBlog']);
+        $entry = Mockdata::makeEntry(['status' => 2]);
+        $category = Mockdata::makeCategory();
+        $trackback = Mockdata::makeTrackback();
+        $tbping = Mockdata::makeTbping();
+        $tbping = Mockdata::makeTbping();
+
+        $mt = MT::get_instance();
+        $count = $mt->db()->category_ping_count($category->id);
+        $this->assertEquals(2, $count);
+
+        $pings = $mt->db()->fetch_pings(['blog_id' => $blog->id]);
+        $this->assertEquals('TBPing', get_class($pings[0]));
+        $this->assertEquals(2, count($pings));
+    }
+
+    public function testGet_latest_touch() {
+
+        $blog = Mockdata::makeBlog(['name' => 'MyBlog']);
+        $entry = Mockdata::makeEntry(['status' => 2]);
+        $touch = Mockdata::makeTouch(['object_type' => 'author', 'blog_id' => 0]);
+        $touch = Mockdata::makeTouch(['object_type' => 'entry', 'blog_id' => $blog->id]);
+
+        $mt = MT::get_instance();
+        $touches = $mt->db()->get_latest_touch($blog->id, 'author');
+        $this->assertEquals('Touch', get_class($touches));
+        $touches = $mt->db()->get_latest_touch($blog->id, 'entry');
+        $this->assertEquals('Touch', get_class($touches));
+    }
+
+    public function testFetch_rebuild_trigger() {
+
+        $blog = Mockdata::makeBlog(['name' => 'MyBlog']);
+        $trigger = Mockdata::makeRebuildTrigger();
+
+        $mt = MT::get_instance();
+        $trigger2 = $mt->db()->fetch_rebuild_trigger($blog->id);
+        $this->assertEquals('RebuildTrigger', get_class($trigger2));
     }
 
     public function testFetchPermission() {
