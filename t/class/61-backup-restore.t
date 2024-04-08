@@ -337,9 +337,11 @@ sub checkrestored {
         my ( $str, $id ) = @$log;
         $log_ids{$id} = 1 if $id;
     }
-    cmp_bag(
+    my @expected = qw( cb-restore-content-data-data cb-restore-entry-asset cb-restore-permission );
+    push @expected, qw( cf-restore-object-asset ) if MT->model('field');
+    cmp_set(
         [ keys %log_ids ],
-        [qw( cb-restore-content-data-data cb-restore-entry-asset cb-restore-permission )]
+        \@expected,
     );
 }
 
