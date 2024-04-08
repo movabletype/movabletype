@@ -161,18 +161,13 @@ jobs:
           - "t/data_api/"
           - "t/tag/"
           - "plugins/*/t"
-          - php
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
       - name: login
         run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
       - name: test
-        if: ${{ matrix.test != 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_DISABLE_OBJECT_CACHE=1 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
-      - name: test php
-        if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   # Perl 5.32 / PHP 7.4 / MariaDB 10.5
   bullseye:
