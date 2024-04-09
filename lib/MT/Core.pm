@@ -1860,6 +1860,7 @@ BEGIN {
             'SMTPPassword'          => undef,
             'SMTPPort'              => undef,
             'SMTPTimeout'           => { default => 10 },
+            'SMTPS'                 => undef,
             'SMTPSSLVerifyNone'     => undef,
             'SMTPSSLVersion'        => undef,
             'SMTPOptions'           => { type => 'HASH' },
