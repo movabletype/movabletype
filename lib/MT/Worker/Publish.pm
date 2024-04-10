@@ -65,13 +65,12 @@ sub work {
 
         my $blog_id = $fi->blog_id;
         if (!$log_each and !$started{$blog_id}) {
-            $mt->log(
-                {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                    message  => $mt->translate('Background Publishing Started'),
-                    category => "publish",
-                    level    => MT::Log::INFO(),
-                }
-            );
+            $mt->log({
+                blog_id  => $blog_id,
+                message  => $mt->translate('Background Publishing Started'),
+                category => "publish",
+                level    => MT::Log::INFO(),
+            });
             $started{$blog_id} = 1;
         }
 
@@ -118,17 +117,15 @@ sub work {
             }
 
             if ($log_each) {
-                $mt->log(
-                    {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                        message  => $mt->translate('Background Publishing Done'),
-                        metadata => log_time() . ' '
-                            . $mt->translate( 'Published: [_1]', $fi->file_path ),
-                        category => "publish",
-                        level    => MT::Log::INFO(),
-                    }
-                );
+                $mt->log({
+                    blog_id  => $blog_id,
+                    message  => $mt->translate('Background Publishing Done'),
+                    metadata => log_time() . ' ' . $mt->translate( 'Published: [_1]', $fi->file_path ),
+                    category => "publish",
+                    level    => MT::Log::INFO(),
+                });
             } else {
-                push @{ $published{$blog_id || 0} ||= []}, sprintf '%s %s (%s)', log_time(), $fi->file_path, (-s $fi->file_path) || 0;
+                push @{ $published{$blog_id} ||= []}, sprintf '%s %s (%s)', log_time(), $fi->file_path, (-s $fi->file_path) || 0;
             }
             $rebuilt++;
         }
@@ -139,14 +136,13 @@ sub work {
             MT::TheSchwartz->debug($errmsg);
             $job->permanent_failure($errmsg);
             require MT::Log;
-            $mt->log(
-                {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                    message  => $errmsg,
-                    metadata => log_time() . ' ' . $errmsg . ":\n" . $error,
-                    category => "publish",
-                    level    => MT::Log::ERROR(),
-                }
-            );
+            $mt->log({
+                blog_id  => $blog_id,
+                message  => $errmsg,
+                metadata => log_time() . ' ' . $errmsg . ":\n" . $error,
+                category => "publish",
+                level    => MT::Log::ERROR(),
+            });
         }
     }
 
@@ -155,14 +151,13 @@ sub work {
 
         if (!$log_each) {
             for my $blog_id (sort keys %published) {
-                $mt->log(
-                    {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
-                        message  => $mt->translate('Background Publishing Done'),
-                        metadata => join("\n", $mt->translate('Published ([_1]):', scalar @{ $published{$blog_id} }), @{ $published{$blog_id} }),
-                        category => "publish",
-                        level    => MT::Log::INFO(),
-                    }
-                );
+                $mt->log({
+                    blog_id  => $blog_id,
+                    message  => $mt->translate('Background Publishing Done'),
+                    metadata => join("\n", $mt->translate('Published ([_1]):', scalar @{ $published{$blog_id} }), @{ $published{$blog_id} }),
+                    category => "publish",
+                    level    => MT::Log::INFO(),
+                });
             }
         }
 
