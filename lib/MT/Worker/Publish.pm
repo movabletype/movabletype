@@ -50,6 +50,7 @@ sub work {
     my $start   = [gettimeofday];
     my $rebuilt = 0;
 
+    my %started;
     my $log_each = MT->config->LogEachFilePublishedInTheBackground;
     my %published;
     while ( my $job = $job_iter->() ) {
@@ -60,6 +61,18 @@ sub work {
         unless ($fi) {
             $job->completed();
             next;
+        }
+
+        my $blog_id = $fi->blog_id;
+        if (!$log_each and !$started{$blog_id}) {
+            $mt->log(
+                {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                    message  => $mt->translate('Background Publishing Started'),
+                    category => "publish",
+                    level    => MT::Log::INFO(),
+                }
+            );
+            $started{$blog_id} = 1;
         }
 
         my $priority = $job->priority ? ", priority " . $job->priority : "";
@@ -106,7 +119,7 @@ sub work {
 
             if ($log_each) {
                 $mt->log(
-                    {   ( $fi->blog_id ? ( blog_id => $fi->blog_id ) : () ),
+                    {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
                         message  => $mt->translate('Background Publishing Done'),
                         metadata => log_time() . ' '
                             . $mt->translate( 'Published: [_1]', $fi->file_path ),
@@ -115,7 +128,7 @@ sub work {
                     }
                 );
             } else {
-                push @{ $published{$fi->blog_id || 0} ||= []}, sprintf '%s %s (%s)', log_time(), $fi->file_path, (-s $fi->file_path) || 0;
+                push @{ $published{$blog_id || 0} ||= []}, sprintf '%s %s (%s)', log_time(), $fi->file_path, (-s $fi->file_path) || 0;
             }
             $rebuilt++;
         }
@@ -127,7 +140,7 @@ sub work {
             $job->permanent_failure($errmsg);
             require MT::Log;
             $mt->log(
-                {   ( $fi->blog_id ? ( blog_id => $fi->blog_id ) : () ),
+                {   ( $blog_id ? ( blog_id => $blog_id ) : () ),
                     message  => $errmsg,
                     metadata => log_time() . ' ' . $errmsg . ":\n" . $error,
                     category => "publish",
