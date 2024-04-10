@@ -50,7 +50,6 @@ sub work {
     my $start   = [gettimeofday];
     my $rebuilt = 0;
 
-    my %started;
     my $log_each = MT->config->LogEachFilePublishedInTheBackground;
     my %published;
     while ( my $job = $job_iter->() ) {
@@ -64,14 +63,14 @@ sub work {
         }
 
         my $blog_id = $fi->blog_id;
-        if (!$log_each and !$started{$blog_id}) {
+        if (!$log_each and !$published{$blog_id}) {
             $mt->log({
                 blog_id  => $blog_id,
                 message  => $mt->translate('Background Publishing Started'),
                 category => "publish",
                 level    => MT::Log::INFO(),
             });
-            $started{$blog_id} = 1;
+            $published{$blog_id} = [];
         }
 
         my $priority = $job->priority ? ", priority " . $job->priority : "";
@@ -125,7 +124,7 @@ sub work {
                     level    => MT::Log::INFO(),
                 });
             } else {
-                push @{ $published{$blog_id} ||= []}, sprintf '%s %s (%s)', log_time(), $fi->file_path, (-s $fi->file_path) || 0;
+                push @{ $published{$blog_id} }, sprintf '%s %s (%s)', log_time(), $fi->file_path, (-s $fi->file_path) || 0;
             }
             $rebuilt++;
         }
@@ -149,18 +148,6 @@ sub work {
     if ($rebuilt) {
         $mt->publisher->remove_marked_files;
 
-        if (!$log_each) {
-            for my $blog_id (sort keys %published) {
-                $mt->log({
-                    blog_id  => $blog_id,
-                    message  => $mt->translate('Background Publishing Done'),
-                    metadata => join("\n", $mt->translate('Published ([_1]):', scalar @{ $published{$blog_id} }), @{ $published{$blog_id} }),
-                    category => "publish",
-                    level    => MT::Log::INFO(),
-                });
-            }
-        }
-
         MT::TheSchwartz->debug(
             $mt->translate(
                 "-- set complete ([quant,_1,file,files] in [_2] seconds)",
@@ -170,6 +157,17 @@ sub work {
         );
     }
 
+    if (!$log_each and %published) {
+        for my $blog_id (sort keys %published) {
+            $mt->log({
+                blog_id  => $blog_id,
+                message  => $mt->translate('Background Publishing Done'),
+                metadata => join("\n", $mt->translate('Published ([_1]):', scalar @{ $published{$blog_id} }), @{ $published{$blog_id} }),
+                category => "publish",
+                level    => MT::Log::INFO(),
+            });
+        }
+    }
 }
 
 sub grab_for    {60}
