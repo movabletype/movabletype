@@ -50,6 +50,7 @@ sub work {
     my $start   = [gettimeofday];
     my $rebuilt = 0;
 
+    my $bytes    = $mt->translate('bytes');
     my $log_each = MT->config->LogEachFilePublishedInTheBackground;
     my %published;
     while ( my $job = $job_iter->() ) {
@@ -119,12 +120,12 @@ sub work {
                 $mt->log({
                     blog_id  => $blog_id,
                     message  => $mt->translate('Background Publishing Done'),
-                    metadata => log_time() . ' ' . $mt->translate( 'Published: [_1]', $fi->file_path ),
+                    metadata => log_time() . ' ' . $mt->translate( 'Published: [_1] ([_2] bytes)', $fi->file_path, (-s $fi->file_path) ),
                     category => "publish",
                     level    => MT::Log::INFO(),
                 });
             } else {
-                push @{ $published{$blog_id} }, sprintf '%s %s (%s)', log_time(), $fi->file_path, (-s $fi->file_path) || 0;
+                push @{ $published{$blog_id} }, sprintf '%s %s (%s%s)', log_time(), $fi->file_path, (-s $fi->file_path) || 0, $bytes;
             }
             $rebuilt++;
         }
