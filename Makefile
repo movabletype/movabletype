@@ -166,6 +166,7 @@ check:
 lib/MT.pm: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk build/mt-dists/default.mk
 	mv lib/MT.pm lib/MT.pm.pre
 	sed -e "s!__PRODUCT_NAME__!$(PRODUCT_NAME)!g" \
+	    -e "s!__PRODUCT_CODE__!$(PRODUCT_CODE)!g" \
 	    -e "s!__BUILD_ID__!$(BUILD_VERSION_ID)!g" \
 	    -e "s!__PORTAL_URL__!$(PORTAL_URL)!g" \
 	    -e "s!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g" \
