@@ -110,9 +110,10 @@ function init() {
         // handle checkboxes
         if ( tagName == "input" && TC.hasClassName( element, "select" ) ) {
             var parent = TC.getParentByTagName( element, "tr" );
+            var parent_li = TC.getParentByTagName( element, "li" );
             if (parent) this.setFocus( parent );
             // evt.preventDefault();
-            return this.select( element, parent );
+            return this.select( element, (parent_li ? null : parent) );
         }
 
         // handle rows
