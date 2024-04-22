@@ -127,6 +127,9 @@ sub id {
 }
 
 sub version_slug {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.3.0');
+
     return MT->translate_templatized(<<"SLUG");
 <__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
 <__trans phrase="Version [_1]" params="$VERSION_ID">
