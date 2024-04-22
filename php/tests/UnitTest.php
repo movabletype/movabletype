@@ -315,6 +315,32 @@ class UnitTest extends TestCase {
         $this->assertEquals('1', $cat->id);
         $this->assertEquals('1', $cat->category_id);
     }
+
+    public function testThumbnail() {
+
+        $tempdir = sys_get_temp_dir(). DIRECTORY_SEPARATOR. 'phpunit_'. getmypid(). rand(1000, 9999). '/';
+
+        require_once('thumbnail_lib.php');
+        $thumb1 = new Thumbnail('t/images/test.jpg');
+        $this->assertEquals(true, $thumb1->get_thumbnail(['dest' => $tempdir. 'test.jpg']));
+        $this->assertEquals(640, $thumb1->width());
+        $this->assertEquals(480, $thumb1->height());
+
+        $thumb2 = new Thumbnail('t/images/test.gif');
+        $this->assertEquals(true, $thumb2->get_thumbnail(['dest' => $tempdir. 'test.gif']));
+        $this->assertEquals(400, $thumb2->width());
+        $this->assertEquals(300, $thumb2->height());
+
+        $thumb3 = new Thumbnail('t/images/test.png');
+        $this->assertEquals(true, $thumb3->get_thumbnail(['dest' => $tempdir. 'test.png']));
+        $this->assertEquals(150, $thumb3->width());
+        $this->assertEquals(150, $thumb3->height());
+
+        $thumb3 = new Thumbnail('t/images/test.webp');
+        $this->assertEquals(true, $thumb3->get_thumbnail(['dest' => $tempdir. 'test.webp']));
+        $this->assertEquals(150, $thumb3->width());
+        $this->assertEquals(150, $thumb3->height());
+    }
 }
 
 class MyCaptchaProvider implements CaptchaProvider { 
