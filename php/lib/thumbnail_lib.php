@@ -153,6 +153,9 @@ class Thumbnail {
         case 3: #PNG
             $this->src_img = @imagecreatefrompng($src_file);
             break;
+        case 18: #WEBP
+            $this->src_img = @imagecreatefromwebp($src_file);
+            break;
         default: #Unsupported format
             throw new MTUnsupportedImageTypeException($src_file);
         }
@@ -233,6 +236,8 @@ class Thumbnail {
             $output = 2;
         } elseif (strtolower($this->dest_type) == 'png') {
             $output = 3;
+        } elseif (strtolower($this->dest_type) == 'webp') {
+            $output = 18;
         } else {
             $output = $this->src_type;
         }
@@ -245,6 +250,9 @@ class Thumbnail {
             break;
         case 3:
             $ext = '.png';
+            break;
+        case 18:
+            $ext = '.webp';
             break;
         default:
             $ext = image_type_to_extension($output);
@@ -395,6 +403,8 @@ class Thumbnail {
                     $output = 2;
                 elseif ( strtolower($this->dest_type) == 'png' )
                     $output = 3;
+                elseif ( strtolower($this->dest_type) == 'webp' )
+                    $output = 18;
                 else
                     $output = $this->src_type;
             }
