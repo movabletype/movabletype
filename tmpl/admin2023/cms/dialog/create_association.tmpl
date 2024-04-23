@@ -113,7 +113,7 @@ function init() {
             var parent_li = TC.getParentByTagName( element, "li" );
             if (parent) this.setFocus( parent );
             // evt.preventDefault();
-            return this.select( element, (parent_li ? null : parent) );
+            return this.select( element, (parent_li ? parent_li : parent) );
         }
 
         // handle rows
