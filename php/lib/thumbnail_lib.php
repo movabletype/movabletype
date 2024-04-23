@@ -144,16 +144,16 @@ class Thumbnail {
         list($this->src_w, $this->src_h, $this->src_type, $this->src_attr) = getimagesize($src_file);
 
         switch($this->src_type) {
-        case 1: #GIF
+        case IMAGETYPE_GIF:
             $this->src_img = @imagecreatefromgif($src_file);
             break;
-        case 2: #JPEG
+        case IMAGETYPE_JPEG:
             $this->src_img = @imagecreatefromjpeg($src_file);
             break;
-        case 3: #PNG
+        case IMAGETYPE_PNG:
             $this->src_img = @imagecreatefrompng($src_file);
             break;
-        case 18: #WEBP
+        case IMAGETYPE_WEBP:
             $this->src_img = @imagecreatefromwebp($src_file);
             break;
         default: #Unsupported format
@@ -231,27 +231,27 @@ class Thumbnail {
         if ($this->dest_type == 'auto') {
             $output = $this->src_type;
         } elseif (strtolower($this->dest_type) == 'gif') {
-            $output = 1;
+            $output = IMAGETYPE_GIF;
         } elseif (strtolower($this->dest_type) == 'jpeg') {
-            $output = 2;
+            $output = IMAGETYPE_JPEG;
         } elseif (strtolower($this->dest_type) == 'png') {
-            $output = 3;
+            $output = IMAGETYPE_PNG;
         } elseif (strtolower($this->dest_type) == 'webp') {
-            $output = 18;
+            $output = IMAGETYPE_WEBP;
         } else {
             $output = $this->src_type;
         }
         switch($output) {
-        case 1:
+        case IMAGETYPE_GIF:
             $ext = '.gif';
             break;
-        case 2:
+        case IMAGETYPE_JPEG:
             $ext = '.jpg';
             break;
-        case 3:
+        case IMAGETYPE_PNG:
             $ext = '.png';
             break;
-        case 18:
+        case IMAGETYPE_WEBP:
             $ext = '.webp';
             break;
         default:
@@ -398,27 +398,27 @@ class Thumbnail {
             $output = $this->src_type;
             if ($this->dest_type != 'auto') {
                 if ( strtolower($this->dest_type) == 'gif' )
-                    $output = 1;
+                    $output = IMAGETYPE_GIF;
                 elseif ( strtolower($this->dest_type) == 'jpeg' )
-                    $output = 2;
+                    $output = IMAGETYPE_JPEG;
                 elseif ( strtolower($this->dest_type) == 'png' )
-                    $output = 3;
+                    $output = IMAGETYPE_PNG;
                 elseif ( strtolower($this->dest_type) == 'webp' )
-                    $output = 18;
+                    $output = IMAGETYPE_WEBP;
                 else
                     $output = $this->src_type;
             }
             switch($output) {
-            case 1: #GIF
+            case IMAGETYPE_GIF:
                 imagegif($this->dest_img, $dest_file);
                 break;
-            case 2: #JPEG
+            case IMAGETYPE_JPEG:
                 imagejpeg($this->dest_img, $dest_file);
                 break;
-            case 3: #PNG
+            case IMAGETYPE_PNG:
                 imagepng($this->dest_img, $dest_file);
                 break;
-            case 18: #PNG
+            case IMAGETYPE_WEBP:
                 imagewebp($this->dest_img, $dest_file);
                 break;
             }
