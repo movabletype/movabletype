@@ -108,13 +108,12 @@ function init() {
         var tagName = element.tagName ? element.tagName.toLowerCase() : null;
 
         // handle checkboxes
-        if ( tagName == "input" &&
-            TC.hasClassName( element, "select" ) ) {
-            if ((element.type == "checkbox") || (element.type == "radio"))
-                var parent = TC.getParentByTagName( element, "tr" );
-                if (parent) this.setFocus( parent );
-                // evt.preventDefault();
-                return this.select( element, parent );
+        if ( tagName == "input" && TC.hasClassName( element, "select" ) ) {
+            var parent = TC.getParentByTagName( element, "tr" );
+            var parent_li = TC.getParentByTagName( element, "li" );
+            if (parent) this.setFocus( parent );
+            // evt.preventDefault();
+            return this.select( element, (parent_li ? parent_li : parent) );
         }
 
         // handle rows
