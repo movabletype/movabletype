@@ -1147,7 +1147,7 @@ sub init_request {
                 my $res = parse_init_cgi_error($err);
                 $app->{query} = CGI->new( {} );
                 $app->response_code($res->{code});
-                die $err;
+                die $res->{message};
             }
         }
     }
