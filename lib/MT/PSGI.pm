@@ -12,7 +12,7 @@ use parent qw(Plack::Component);
 use Plack::Util::Accessor qw(script application _app);
 use MT;
 use MT::Component;
-use MT::Util::Request qw(parse_init_cgi_error);
+use MT::Util::RequestError qw(parse_init_cgi_error);
 use Carp;
 use FindBin;
 use CGI::PSGI;
