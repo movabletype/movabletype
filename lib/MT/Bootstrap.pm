@@ -278,7 +278,7 @@ sub import {
                     }
                     my $page = $app->show_error(\%param)
                         or die $app->errstr;
-                    print "Content-Type: text/html; charset=$charset\n\n";
+                    $app->send_http_header("text/html; charset=$charset");
                     $app->print_encode($page);
                     exit;
                 };
