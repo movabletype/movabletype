@@ -13,7 +13,7 @@ use base qw( MT );
 use File::Spec;
 use MT::Request;
 use MT::Util qw( encode_html encode_url is_valid_email is_url );
-use MT::Util::Request qw( parse_init_cgi_error );
+use MT::Util::RequestError qw( parse_init_cgi_error );
 use MT::I18N;
 use MT::Util::Encode;
 
