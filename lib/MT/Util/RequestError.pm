@@ -20,7 +20,7 @@ sub parse_init_cgi_error {
     $err =~ m/malformed/i
         ? {
         code    => 400,
-        message => "$err",
+        message => "Bad Request: $err",
         }
         : {
         code    => 500,
