@@ -13,6 +13,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+$test_env->prepare_fixture('db');
+
 use MT;
 MT->instance;
 
