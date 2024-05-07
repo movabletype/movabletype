@@ -1034,7 +1034,7 @@ sub _find_usage {
                         my $prereqs = $ctx->$type or next;
                         my $hash    = $prereqs->as_string_hash;
                         for my $key (keys %$hash) {
-                            $usage{$key}{$module} = 1;
+                            $usage{$key}{$module} = $type;
                         }
                     }
                 },
