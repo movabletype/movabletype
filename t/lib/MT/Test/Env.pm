@@ -20,6 +20,9 @@ use Mock::MonkeyPatch;
 use Sub::Name;
 use Time::HiRes qw/time/;
 use Module::Find qw/findsubmod/;
+use Devel::GlobalDestruction;
+use Class::Method::Modifiers;
+use version;
 
 our $MT_HOME;
 
@@ -47,6 +50,15 @@ unless ($^O eq 'MSWin32') {
 
 sub new {
     my ($class, %extra_config) = @_;
+
+    if (version->parse($^V) < version->parse('v5.14')) {
+        require MT::ConfigMgr;
+        around 'MT::ConfigMgr::DESTROY' => sub {
+            my ( $orig ) = @_;
+            return if in_global_destruction;
+            $orig->();
+        };
+    }
 
     $class->load_envfile;
 
