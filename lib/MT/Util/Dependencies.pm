@@ -824,6 +824,16 @@ FORMAT:
     %found;
 }
 
+sub lacks_core_modules {
+    my $class = shift;
+
+    for my $module (keys %HiddenCoreDeps) {
+        next unless $HiddenCoreDeps{$module}{dropped_in};
+        eval "require $module; 1" or return 1;
+    }
+    return;
+}
+
 #----------------------------------------------------------------------------
 
 sub update_me {
