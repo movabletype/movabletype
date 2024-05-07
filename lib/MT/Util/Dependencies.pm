@@ -936,8 +936,8 @@ sub _require_module {
 
 sub _modify_hash {
     my ($str, $used) = @_;
-    my %hash = eval $str or die $@;
-    my $index;
+    my %hash  = eval $str or die $@;
+    my $index = _make_index();
     for my $module (keys %hash) {
         my $url = "https://metacpan.org/pod/$module";
         $hash{$module}{url} = $CustomURL{$module} || $url;
@@ -945,8 +945,12 @@ sub _modify_hash {
         my $version = $hash{$module}{version};
         if (Module::CoreList::is_core($module, $version, '5.016000') && Module::CoreList::is_core($module, $version)) {
             $hash{$module}{perl_core} = $Module::CoreList::version{'5.016000'}{$module};
+            if ($index->{package}{$module} =~ /\bperl\b/) {
+                $hash{$module}{perl_only} = 1;
+            }
         } else {
             delete $hash{$module}{perl_core};
+            delete $hash{$module}{perl_only};
         }
         (my $file = "./extlib/$module.pm") =~ s!::!/!g;
         if (-e $file) {
@@ -960,7 +964,6 @@ sub _modify_hash {
             }
         }
         if ($used && !$hash{$module}{internal}) {
-            $index ||= _make_index();
             if (my $dist = $index->{package}{$module}) {
                 for my $package (keys %{ $index->{dist}{$dist} || {} }) {
                     if ($used->{$package}) {
