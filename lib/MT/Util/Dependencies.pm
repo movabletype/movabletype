@@ -790,6 +790,9 @@ our %ExtLibOnly = (
     },
 );
 
+our %HiddenCoreDeps = (
+);
+
 sub required_modules {
     my $self = shift;
     my %res;
@@ -887,7 +890,7 @@ sub update_me {
     my $file = __FILE__;
     open my $fh, '<', $file or die $!;
     my $step;
-    my ($head, $req, $mid, $extlib, $tail) = ('', '', '', '', '');
+    my ($head, $req, $mid, $extlib, $mid2, $core, $tail) = ('', '', '', '', '', '', '');
 
     while (<$fh>) {
         if (!$step) {
@@ -912,9 +915,21 @@ sub update_me {
             $extlib .= $_;
             if (/^\)/) {
                 $step = 4;
-                $tail .= $_;
+                $mid2 .= $_;
             }
         } elsif ($step == 4) {
+            $mid2 .= $_;
+            if (/^our \%HiddenCoreDeps/) {
+                $step = 5;
+                $core = '(';
+            }
+        } elsif ($step == 5) {
+            $core .= $_;
+            if (/^\)/) {
+                $step = 6;
+                $tail .= $_;
+            }
+        } elsif ($step == 6) {
             $tail .= $_;
         }
     }
@@ -922,8 +937,9 @@ sub update_me {
     my $used = _find_usage();
     $req    = _modify_hash($req);
     $extlib = _modify_hash($extlib, $used);
+    $core   = _modify_hash($core);
 
-    my $body = "$head$req$mid$extlib$tail";
+    my $body = "$head$req$mid$extlib$mid2$core$tail";
     Perl::Tidy::perltidy(
         source      => \$body,
         destination => $file,
