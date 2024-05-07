@@ -54,10 +54,11 @@ sub new {
     if (version->parse($^V) < version->parse('v5.14')) {
         require MT::ConfigMgr;
         around 'MT::ConfigMgr::DESTROY' => sub {
-            my ( $orig ) = @_;
+            my ($orig, $data) = @_;
             return if in_global_destruction;
-            $orig->();
+            $orig->($data);
         };
+        my $dummy = \&MT::Test::Env::MT::ConfigMgr::DESTROY;
     }
 
     $class->load_envfile;
