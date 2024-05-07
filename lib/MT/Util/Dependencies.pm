@@ -939,6 +939,41 @@ sub update_me {
     $extlib = _modify_hash($extlib, $used);
     $core   = _modify_hash($core);
 
+    my $index       = _make_index();
+    my %req_hash    = eval $req;
+    my %extlib_hash = eval $extlib;
+    my %core_hash   = eval $core;
+USED:
+    for my $module (sort keys %$used) {
+        next if $module =~ /^MT\b/;
+        my $dist = $index->{package}{$module} or next;
+        for my $dist_package (keys %{ $index->{dist}{$dist} }) {
+            next USED if exists $req_hash{$dist_package};
+            next USED if exists $extlib_hash{$dist_package};
+            next USED if exists $core_hash{$dist_package};
+        }
+        # ignore core pragma modules
+        next if $module =~ /^[a-z0-9:]+$/ && Module::CoreList::is_core($module, undef, '5.016000');
+        my $used_in_mt;
+        for my $where (keys %{ $used->{$module} }) {
+            next unless $where =~ /^MT\b/;
+            next unless $used->{$module}{$where} eq 'requires';
+            next if $where =~ /^MT::Plugin::\b/;
+            $used_in_mt = 1;
+        }
+        next unless $used_in_mt;
+        if (Module::CoreList::is_core($module, undef, '5.016000')) {
+            $core_hash{$module} //= {};
+            next;
+        }
+        print STDERR "$module is missing? " . Data::Dump::dump($used->{$module}), "\n";
+    }
+
+    $core = Data::Dump::dump(\%core_hash);
+    $core =~ s/\A\{\n//s;
+    $core =~ s/\}\z//s;
+    $core = _modify_hash($core);
+
     my $body = "$head$req$mid$extlib$mid2$core$tail";
     Perl::Tidy::perltidy(
         source      => \$body,
