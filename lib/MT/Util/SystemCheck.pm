@@ -203,6 +203,7 @@ sub check_dependencies {
         $param->{$key} = \@modified;
         $param->{"missing_$key"} = \@missing;
     }
+    $param->{lacks_core_modules} = MT::Util::Dependencies->lacks_core_modules;
 
     $param;
 }
