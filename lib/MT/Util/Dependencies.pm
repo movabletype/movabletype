@@ -957,10 +957,15 @@ USED:
     for my $module (sort keys %$used) {
         next if $module =~ /^(MT|Apache)\b/;
         my $dist = $index->{package}{$module} or next;
-        for my $dist_package (keys %{ $index->{dist}{$dist} }) {
-            next USED if exists $req_hash{$dist_package};
-            next USED if exists $extlib_hash{$dist_package};
-            next USED if exists $core_hash{$dist_package};
+        next if exists $req_hash{$module};
+        next if exists $extlib_hash{$module};
+        next if exists $core_hash{$module};
+        if ($dist !~ /\bperl\b/) {
+            for my $dist_package (keys %{ $index->{dist}{$dist} }) {
+                next USED if exists $req_hash{$dist_package};
+                next USED if exists $extlib_hash{$dist_package};
+                next USED if exists $core_hash{$dist_package};
+            }
         }
         # ignore core pragma modules
         next if $module =~ /^[a-z0-9:]+$/ && Module::CoreList::is_core($module, undef, '5.016000');
