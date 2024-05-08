@@ -912,7 +912,7 @@ USED:
         my $used_in_mt;
         for my $where (keys %{ $used->{$module} }) {
             next unless $where =~ /^MT\b/;
-            next unless $used->{$module}{$where} eq 'requires';
+            next if $used->{$module}{$where} eq 'suggests';
             next if $where =~ /^MT::Plugin::\b/;
             $used_in_mt = 1;
         }
