@@ -1557,6 +1557,7 @@ use vars qw( @ISA %Lexicon );
 	'Prohibit notification pings is on' => '更新pingは無効です',
 	'Prohibit trackbacks is off' => 'トラックバックは有効です',
 	'Prohibit trackbacks is on' => 'トラックバックは無効です',
+	'Reboot is requested by [_1]' => '[_1]が再起動の請求をしました',
 	'Recipients for lockout notification' => '通知メール受信者',
 	'Some [_1] were not imported because their parent objects were not imported.' => '親となるオブジェクトがないため[_1]をインポートできませんでした。',
 	'Some objects were not imported because their parent objects were not imported.  Detailed information is in the activity log.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。詳細はログを参照してください。',
@@ -5502,6 +5503,7 @@ use vars qw( @ISA %Lexicon );
 	q{Enter the URL of your site. Exclude the filename (i.e. index.html). Example:http://www.example.com/} => q{サイトを公開するURLを入力してください。ファイル名(index.htmlなど)は含めず、末尾は'/'で終わります。例: http://www.example.com/blog/},
 
 ## tmpl/admin2023/cms/system_check.tmpl
+	'Addon version:' => 'アドオンのバージョン',
 	'Memcached Server is [_1].' => 'Memcachedサーバーは[_1]です。',
 	'Memcached Status' => 'Memcachedの状態',
 	'Memcached is [_1].' => 'Memcachedは[_1]です。',
