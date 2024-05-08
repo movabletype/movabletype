@@ -751,14 +751,17 @@ our %ExtLibOnly = (
 );
 
 our %HiddenCoreDeps = (
-    "Carp" => {
-        perl_core => 1.26,
-        url       => "https://metacpan.org/pod/Carp",
-    },
+    "Carp"         => { perl_core => 1.26, url => "https://metacpan.org/pod/Carp" },
     "Data::Dumper" => {
         dropped_in => ["centos7"],
         perl_core  => "2.135_06",
         url        => "https://metacpan.org/pod/Data::Dumper",
+    },
+    "DirHandle" => {
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 1.04,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/DirHandle",
     },
     "English" => {
         dropped_in => ["amazonlinux2023"],
@@ -766,10 +769,7 @@ our %HiddenCoreDeps = (
         perl_only  => 1,
         url        => "https://metacpan.org/pod/English",
     },
-    "Exporter" => {
-        perl_core => 5.66,
-        url       => "https://metacpan.org/pod/Exporter",
-    },
+    "Exporter"           => { perl_core => 5.66, url => "https://metacpan.org/pod/Exporter" },
     "ExtUtils::Manifest" => {
         dropped_in => ["amazonlinux2023", "centos7"],
         perl_core  => 1.61,
@@ -806,17 +806,18 @@ our %HiddenCoreDeps = (
         perl_core  => 1.51,
         url        => "https://metacpan.org/pod/FindBin",
     },
-    "Getopt::Long" => {
-        perl_core => 2.38,
-        url       => "https://metacpan.org/pod/Getopt::Long",
+    "Getopt::Long"         => { perl_core => 2.38, url => "https://metacpan.org/pod/Getopt::Long" },
+    "I18N::LangTags::List" => {
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => "0.35_01",
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/I18N::LangTags::List",
     },
-    "IO::File" => {
-        perl_core => 1.16,
-        url       => "https://metacpan.org/pod/IO::File",
-    },
-    "IO::Select" => {
-        perl_core => 1.21,
-        url       => "https://metacpan.org/pod/IO::Select",
+    "IO::File"         => { perl_core => 1.16, url => "https://metacpan.org/pod/IO::File" },
+    "IO::Select"       => { perl_core => 1.21, url => "https://metacpan.org/pod/IO::Select" },
+    "IO::Socket::INET" => {
+        perl_core => 1.33,
+        url       => "https://metacpan.org/pod/IO::Socket::INET",
     },
     "IPC::Open3" => {
         perl_core => 1.12,
@@ -838,6 +839,10 @@ our %HiddenCoreDeps = (
         perl_core  => 1.16,
         perl_only  => 1,
         url        => "https://metacpan.org/pod/Sys::Hostname",
+    },
+    "Text::Wrap" => {
+        perl_core => 2009.0305,
+        url       => "https://metacpan.org/pod/Text::Wrap",
     },
 );
 
