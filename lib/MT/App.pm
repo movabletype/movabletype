@@ -826,7 +826,6 @@ sub json_result {
     my $app = shift;
     return if $app->{finalized}++;
     my ($result) = @_;
-    $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
     $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
     $app->print_encode(
@@ -840,7 +839,6 @@ sub json_error {
     return if $app->{finalized}++;
     $app->response_code($status)
         if defined $status;
-    $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
     $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
     $app->print_encode( MT::Util::to_json( { error => $error } ) );
@@ -3141,7 +3139,7 @@ sub _send_hup_to {
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     my $pid = $fmgr->get_data($pidfile);
-    chomp $pid;
+    chomp $pid if $pid;
     if (!$pid or $pid !~ /^[0-9]+$/) {
         $app->log($app->translate("Invalid pid file: [_1]", $pidfile));
         return 1;
@@ -3177,13 +3175,14 @@ sub run {
         $timer->pause_partial();
     }
 
-    if ( my $cache_control = $app->config->HeaderCacheControl ) {
+    if ( my $cache_control = $app->config->ForceCacheControl ) {
         $app->set_header( 'Cache-Control' => $cache_control );
     }
 
     $app->set_x_frame_options_header;
     $app->set_x_xss_protection_header;
     $app->set_referrer_policy;
+    $app->set_header('X-Content-Type-Options' => 'nosniff');
 
     my ($body);
 
@@ -4622,6 +4621,14 @@ sub DESTROY {
 
 sub set_no_cache {
     my $app = shift;
+
+    if (my $cache_control = $app->config->CacheControl) {
+        # No need to set another Cache-Control header if one is already set
+        if (!$app->config->ForceCacheControl) {
+            $app->set_header('Cache-Control' => $cache_control);
+        }
+    }
+
     ## Add the Pragma: no-cache header.
     if ( MT::Util::is_mod_perl1() ) {
         $app->{apache}->no_cache(1);

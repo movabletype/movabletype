@@ -1,2 +1,2 @@
-PRODUCT_NAME = Movable Type Premium (Advanced)
-PRODUCT_CODE = MT
+PRODUCT_NAME = Movable Type Advanced
+PRODUCT_CODE = MTP

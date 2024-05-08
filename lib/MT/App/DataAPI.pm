@@ -771,8 +771,7 @@ sub send_cors_http_header {
 sub send_http_header {
     my $app = shift;
 
-    $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
-    $app->set_header( 'Cache-Control'          => 'no-cache' );
+    $app->set_header( 'Cache-Control' => 'no-cache' );
 
     $app->send_cors_http_header(@_);
 

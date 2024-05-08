@@ -379,7 +379,7 @@ Test site
     <mt:Include module="blog-name" />
 </mt:MultiBlog>
 --- expected
-none
+None
 --- access_overrides
 { 1 => 2 }
 
@@ -485,8 +485,8 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=anemones&amp;limit
 <mt:OtherBlog blog_id="1"><mt:BlogName /></mt:OtherBlog>
 <mt:OtherBlog site_id="1"><mt:BlogName /></mt:OtherBlog>
 --- expected
-none
-none
+None
+None
 --- access_overrides
 { 1 => 2 }
 
@@ -560,7 +560,7 @@ Foo
 --- template
 <mt:MultiBlog blog_ids="1,2-3" mode="loop"><mt:BlogName />,</mt:MultiBlog>
 --- expected
-none,Test site,
+None,Test site,
 --- access_overrides
 { 1 => 2, 2 => 2}
 

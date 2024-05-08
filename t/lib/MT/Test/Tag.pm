@@ -260,6 +260,8 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
 \$MT_CONFIG = '@{[ MT->instance->find_config ]}';
 \$blog_id   = '$blog_id';
 \$log = '$log';
+\$ignore_php_dynamic_properties_warnings = '@{[ $ENV{MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS} || 0 ]}';
+
 \$tmpl = <<<__TMPL__
 $template
 __TMPL__
@@ -272,6 +274,12 @@ PHP
     $test_script .= <<'PHP';
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
+include_once($MT_HOME . '/t/lib/MT/Test/Tag/error_handler.php');
+
+$error_handler = new MT_Test_Error_Handler();
+set_error_handler([$error_handler, 'handler']);
+$error_handler->log = $log;
+$error_handler->ignore_php_dynamic_properties_warnings = $ignore_php_dynamic_properties_warnings;
 
 $mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->config('PHPErrorLogFilePath', $log);
@@ -296,14 +304,6 @@ PHP
     $test_script .= $extra if $extra;
 
     $test_script .= <<'PHP';
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
-    if ($error_no & E_USER_ERROR) {
-        print($error_msg."\n");
-    } else {
-        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
-    }
-});
-
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
     echo $_var_compiled;
 } else {
@@ -330,6 +330,7 @@ sub MT::Test::Tag::_php_daemon {
                 '--mt_home', ($ENV{MT_HOME} ? $ENV{MT_HOME} : '.'),
                 '--mt_config', $config,
                 '--init_blog_id', $blog_id,
+                '--ignore_php_dynamic_properties_warnings', ($ENV{MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS} || 0),
                 $log ? ('--log', $log) : (),
             );
             exec join(' ', @$command, @opts);
@@ -368,12 +369,8 @@ PHP
 sub _retrieve_php_logs {
     my $file = shift;
     open(my $fh, '<', $file) or return '';
-    my $ret = '';
-    while (<$fh>) {
-        next if $_ =~ /str:Creation of dynamic property Memcache::\$connection is deprecated/;
-        $ret .= $_;
-    }
-    return $ret;
+    local $/;
+    return <$fh>;
 }
 
 sub _update_config {

@@ -2890,6 +2890,10 @@ function selectAll(id) {
 }
 
 function removeAssetFromList(assetId, prefix) {
+    if (!confirm(trans('Are you sure you want to remove this asset?'))) {
+        return;
+    }
+
     if ( prefix == null ) {
         prefix = '';
     }

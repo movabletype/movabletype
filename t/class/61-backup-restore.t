@@ -5,6 +5,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
+use Test::Deep;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
@@ -90,6 +91,7 @@ MT::BackupRestore->backup(
 
 # These records need to be removed for creating new records.
 MT::Author->remove_all();
+MT::Association->remove_all();
 MT::Permission->remove_all();
 
 # Create system administrator for restoring
@@ -113,6 +115,10 @@ is( scalar( keys %deferred ), 0, 'no deferred objects remain' );
 warn join "\n", @errors if @errors;
 is( scalar(@errors), 0, 'no error during backup' );
 &checkthemout( \%oldies, \%objects );
+
+my @restore_logs = ();
+MT->run_callbacks( 'restore', \%objects, \%deferred, \@errors, sub { push @restore_logs, \@_ } );
+&checkrestored( \%objects, \@restore_logs );
 
 &finish;
 require MIME::Base64;
@@ -306,6 +312,37 @@ sub checkthemout {
             }
         }
     }
+}
+
+sub checkrestored {
+    my ( $objects, $logs ) = @_;
+    foreach my $obj (values %$objects) {
+        if ($obj->isa('MT::Entry')) {
+            for my $cat (@{$obj->categories}) {
+                is( $cat->blog_id, $obj->blog_id, "Restored category placement<MT::Entry#@{[$obj->id]}>");
+            }
+            my @objectassets = MT->model('objectasset')->load({
+                object_ds => 'entry',
+                object_id => $obj->id,
+            });
+            for my $objectasset (@objectassets) {
+                my $asset = MT->model('asset')->load($objectasset->asset_id);
+                is( $asset->blog_id, $obj->blog_id, "Restored objectasset<MT::Entry#@{[$obj->id]},MT::Asset#@{[$asset->id]}>");
+            }
+        }
+    }
+
+    my %log_ids = ();
+    foreach my $log (@$logs) {
+        my ( $str, $id ) = @$log;
+        $log_ids{$id} = 1 if $id;
+    }
+    my @expected = qw( cb-restore-content-data-data cb-restore-entry-asset cb-restore-permission );
+    push @expected, qw( cf-restore-object-asset ) if MT->model('field');
+    cmp_set(
+        [ keys %log_ids ],
+        \@expected,
+    );
 }
 
 sub finish {

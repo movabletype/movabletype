@@ -244,7 +244,6 @@ sub core_methods {
         'save_entry_prefs'     => "${pkg}Entry::save_entry_prefs",
         'save_template_prefs'  => "${pkg}Template::save_template_prefs",
         'save_favorite_blogs'  => "${pkg}Blog::save_favorite_blogs",
-        'cc_return'            => "${pkg}Blog::cc_return",
         'itemset_action'       => "${pkg}Tools::do_list_action",
         'page_action'          => "${pkg}Tools::do_page_action",
         'cfg_system_general'   => "${pkg}Tools::cfg_system_general",
@@ -1172,6 +1171,7 @@ sub core_list_actions {
         'blog' => {
             refresh_blog_templates => {
                 label                   => "Refresh Template(s)",
+                order                   => 100,
                 continue_prompt_handler => sub {
                     MT->translate("_WARNING_REFRESH_TEMPLATES_FOR_BLOGS");
                 },
@@ -1192,7 +1192,7 @@ sub core_list_actions {
                 },
             },
             move_blogs => {
-                label         => "Move child site(s) ",
+                label         => "Move Child Site(s) ",
                 order         => 200,
                 code          => "${pkg}Website::dialog_move_blogs",
                 permit_action => 'move_blogs',
@@ -1206,6 +1206,7 @@ sub core_list_actions {
             },
             clone_blog => {
                 label         => "Clone Child Site",
+                order         => 150,
                 code          => "${pkg}Blog::clone",
                 permit_action => 'clone_blog',
                 max           => 1,
@@ -1271,6 +1272,7 @@ sub core_list_actions {
         'website' => {
             refresh_website_templates => {
                 label                   => "Refresh Template(s)",
+                order                   => 100,
                 continue_prompt_handler => sub {
                     MT->translate("_WARNING_REFRESH_TEMPLATES_FOR_BLOGS");
                 },
@@ -1340,7 +1342,7 @@ sub core_list_actions {
                 },
             },
             move_blogs => {
-                label         => "Move child site(s) ",
+                label         => "Move Child Site(s) ",
                 order         => 200,
                 code          => "${pkg}Website::dialog_move_blogs",
                 permit_action => 'move_blogs',
@@ -1354,6 +1356,7 @@ sub core_list_actions {
             },
             clone_blog => {
                 label         => "Clone Child Site",
+                order         => 150,
                 code          => "${pkg}Blog::clone",
                 permit_action => 'clone_blog',
                 max           => 1,
