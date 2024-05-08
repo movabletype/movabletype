@@ -955,7 +955,7 @@ sub update_me {
     my %core_hash   = eval $core;
 USED:
     for my $module (sort keys %$used) {
-        next if $module =~ /^MT\b/;
+        next if $module =~ /^(MT|Apache)\b/;
         my $dist = $index->{package}{$module} or next;
         for my $dist_package (keys %{ $index->{dist}{$dist} }) {
             next USED if exists $req_hash{$dist_package};
