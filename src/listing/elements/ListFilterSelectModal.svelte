@@ -66,14 +66,14 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">{trans("Select Filter")}</h5>
+        <h5 class="modal-title">{window.trans("Select Filter")}</h5>
         <button type="button" class="close" data-dismiss="modal"
           ><span>×</span></button
         >
       </div>
       <div class="modal-body">
         <div class="filter-list-block">
-          <h6 class="filter-list-label">{trans("My Filters")}</h6>
+          <h6 class="filter-list-label">{window.trans("My Filters")}</h6>
           <ul id="user-filters" class="list-unstyled editable">
             {#each $ListingStore.filters as { id, filter }}
               <!-- {#if filter.can_save === "1"}
@@ -137,7 +137,7 @@
                 id="new_filter"
                 class="icon-mini-left addnew create-new apply-link d-md-inline-block"
                 on:click={createNewFilter}
-                title={trans("Add")}
+                title={window.trans("Add")}
               >
                 <svg class="mt-icon mt-icon--sm">
                   <use
@@ -145,13 +145,13 @@
                       "images/sprite.svg#ic_add"}
                   />
                 </svg>
-                {trans("Create New")}
+                {window.trans("Create New")}
               </a>
             </li>
           </ul>
         </div>
         <div class="filter-list-block" if={hasSystemFilter()}>
-          <h6 class="filter-list-label">{trans("Built in Filters")}</h6>
+          <h6 class="filter-list-label">{window.trans("Built in Filters")}</h6>
           <ul id="built-in-filters" class="list-unstyled">
             {#each $ListingStore.filters as { id, filter }}
               <!-- {#if filter.can_save === "0"}

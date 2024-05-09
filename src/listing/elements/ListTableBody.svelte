@@ -16,7 +16,7 @@
 {#if $ListingStore.objects.length == 0}
   <tr>
     <td colspan={$ListingStore.columns.length + 1}>
-      {trans("No [_1] could be found.", $ListingOpts.zeroStateLabel)}
+      {window.trans("No [_1] could be found.", $ListingOpts.zeroStateLabel)}
     </td>
   </tr>
 {/if}
@@ -25,7 +25,7 @@
   <tr style="background-color: #ffffff;">
     <td colspan={$ListingStore.objects.length + 1}>
       <a href="javascript:void(0);" on:click={checkAllRows}>
-        {trans("Select all [_1] items", $ListingStore.count)}
+        {window.trans("Select all [_1] items", $ListingStore.count)}
       </a>
     </td>
   </tr>
@@ -34,7 +34,7 @@
 {#if $ListingStore.pageMax > 1 && $ListingStore.checkedAllRows}
   <tr class="success">
     <td colspan={$ListingStore.objects.length + 1}>
-      {trans("All [_1] items are selected", $ListingStore.count)}
+      {window.trans("All [_1] items are selected", $ListingStore.count)}
     </td>
   </tr>
 {/if}

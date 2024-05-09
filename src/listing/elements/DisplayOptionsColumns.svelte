@@ -13,11 +13,11 @@
 </script>
 
 <div class="field-header">
-  <label class="form-label">{trans("Column")}</label>
+  <label class="form-label">{window.trans("Column")}</label>
 </div>
 {#if $ListingOpts.disableUserDispOption}
   <div class="alert alert-warning">
-    {trans("User Display Option is disabled now.")}
+    {window.trans("User Display Option is disabled now.")}
   </div>
 {/if}
 <div class={$ListingOpts.disableUserDispOption ? "" : "field-content"}>

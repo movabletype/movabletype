@@ -13,7 +13,7 @@
   <div class="col-auto mx-auto">
     <div class="form-inline">
       <label for="row-for-mobile" class="form-label"
-        >{trans("Show") + ":"}</label
+        >{window.trans("Show") + ":"}</label
       >
       <select
         id="row-for-mobile"
@@ -22,11 +22,11 @@
         bind:value={selected}
         on:change={changeLimit}
       >
-        <option value="10">{trans("[_1] rows", 10)}</option>
-        <option value="25">{trans("[_1] rows", 25)}</option>
-        <option value="50">{trans("[_1] rows", 50)}</option>
-        <option value="100">{trans("[_1] rows", 100)}</option>
-        <option value="200">{trans("[_1] rows", 200)}</option>
+        <option value="10">{window.trans("[_1] rows", 10)}</option>
+        <option value="25">{window.trans("[_1] rows", 25)}</option>
+        <option value="50">{window.trans("[_1] rows", 50)}</option>
+        <option value="100">{window.trans("[_1] rows", 100)}</option>
+        <option value="200">{window.trans("[_1] rows", 200)}</option>
       </select>
     </div>
   </div>

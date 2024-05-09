@@ -30,7 +30,7 @@
         id="reset-display-options"
         on:click={resetColumns}
       >
-        {trans("Reset defaults")}
+        {window.trans("Reset defaults")}
       </a>
     </div>
   </div>

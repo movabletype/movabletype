@@ -11,7 +11,7 @@
   <tbody>
     <tr>
       <td colspan={$ListingStore.columns.length + 1}>
-        {trans("Loading...")}
+        {window.trans("Loading...")}
       </td>
     </tr>
   </tbody>

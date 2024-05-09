@@ -13,7 +13,7 @@
       data-page={$ListingStore.page - 1}
       onclick={movePage}
     >
-      {trans("Previous")}
+      {window.trans("Previous")}
     </a>
   </li>
 
@@ -95,7 +95,7 @@
       data-page={$ListingStore.page + 1}
       onclick={movePage}
     >
-      {trans("Next")}
+      {window.trans("Next")}
     </a>
   </li>
 </ul>

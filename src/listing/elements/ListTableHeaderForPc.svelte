@@ -17,7 +17,7 @@
         />
         <label class="form-check-label form-label" for="select-all">
           <span class="visually-hidden">
-            {trans("Select All")}
+            {window.trans("Select All")}
           </span>
         </label>
       </div>

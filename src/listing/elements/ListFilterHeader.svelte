@@ -19,7 +19,7 @@
   <div class="col-12 col-md-11">
     <ul class="list-inline mb-0">
       <li class="list-inline-item">
-        {trans("Filter:")}
+        {window.trans("Filter:")}
       </li>
       <li class="list-inline-item">
         <a
@@ -28,14 +28,14 @@
           data-bs-toggle="modal"
           data-bs-target="#select-filter"
         >
-          <u>{trans($ListingStore.currentFilter.label)}</u>
+          <u>{window.trans($ListingStore.currentFilter.label)}</u>
         </a>
         <ListFilterSelectModal />
       </li>
       <li class="list-inline-item">
         {#if isAllpassFilter() == false}
           <a href="#" id="allpass-filter" on:click={resetFilter}>
-            [ {trans("Reset Filter")} ]
+            [ {window.trans("Reset Filter")} ]
           </a>
         {/if}
       </li>

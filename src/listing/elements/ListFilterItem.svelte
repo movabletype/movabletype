@@ -1,6 +1,22 @@
 <script>
   import { ListingStore, ListingOpts } from "../ListingStore.ts";
   import ListFilterItemField from "./ListFilterItemField.svelte";
+
+  export let opts = {};
+
+  let filterTypeHash = {};
+
+  const addFilterItemContent = () => {
+    // TODO
+  };
+
+  const removeFilterItem = () => {
+    // TODO
+  };
+
+  const removeFilterItemContent = () => {
+    // TODO
+  };
 </script>
 
 <div class="filteritem">
@@ -24,7 +40,9 @@
                 on:click={addFilterItemContent}
               >
                 <svg class="mt-icon mt-icon--sm">
-                  <use xlink:href={StaticURI + "images/sprite.svg#ic_add"} />
+                  <use
+                    xlink:href={window.StaticURI + "images/sprite.svg#ic_add"}
+                  />
                 </svg>
               </a>
               {#if !filterTypeHash[item.type].singleton && opts.item.args.items.length > 1}
@@ -34,7 +52,8 @@
                 >
                   <svg class="mt-icon mt-icon--sm">
                     <use
-                      xlink:href={StaticURI + "images/sprite.svg#ic_remove"}
+                      xlink:href={window.StaticURI +
+                        "images/sprite.svg#ic_remove"}
                     />
                   </svg>
                 </a>
@@ -63,7 +82,7 @@
           on:click={addFilterItemContent}
         >
           <svg class="mt-icon mt-icon--sm">
-            <use xlink:href={StaticURI + "images/sprite.svg#ic_add"} />
+            <use xlink:href={window.StaticURI + "images/sprite.svg#ic_add"} />
           </svg>
         </a>
       </div>

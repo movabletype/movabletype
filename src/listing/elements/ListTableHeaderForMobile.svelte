@@ -16,7 +16,8 @@
             on:change={toggleAllRowsOnPage}
           />
           <label class="form-check-label" for="select-all"
-            ><span class="visually-hidden">{trans("Select All")}</span></label
+            ><span class="visually-hidden">{window.trans("Select All")}</span
+            ></label
           >
         </div>
       </th>
@@ -24,10 +25,10 @@
     <th scope="col">
       {#if $ListingOpts.hasMobilePulldownActions}
         <span on:click={toggleAllRowsOnPage}>
-          {trans("All")}
+          {window.trans("All")}
         </span>
         <span class="float-end">
-          {trans(
+          {window.trans(
             "[_1] &ndash; [_2] of [_3]",
             $ListingStore.getListStart(),
             $ListingStore.getListEnd(),

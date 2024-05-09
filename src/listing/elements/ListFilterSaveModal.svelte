@@ -36,7 +36,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">
-          {trans($ListingStore.saveAs ? "Save As Filter" : "Save Filter")}
+          {window.trans(
+            $ListingStore.saveAs ? "Save As Filter" : "Save Filter"
+          )}
         </h5>
         <button
           type="button"
@@ -50,7 +52,7 @@
       </div>
       <div class="modal-body">
         <div style="padding-bottom: 30px;">
-          <h6>{trans("Filter Label")}</h6>
+          <h6>{window.trans("Filter Label")}</h6>
           <input
             type="text"
             class="text full required form-control"
@@ -61,10 +63,10 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" on:click={saveFilter}>
-          {trans("Save")}
+          {window.trans("Save")}
         </button>
         <button class="btn btn-default" on:click={closeModal}>
-          {trans("Cancel")}
+          {window.trans("Cancel")}
         </button>
       </div>
     </div>

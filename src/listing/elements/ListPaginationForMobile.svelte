@@ -15,9 +15,9 @@
       on:click={movePage}
     >
       <ss
-        title={trans("Previous")}
+        title={window.trans("Previous")}
         class="mt-icon--inverse mt-icon--sm"
-        href={StaticURI + "images/sprite.svg#ic_tri-left"}
+        href={window.StaticURI + "images/sprite.svg#ic_tri-left"}
       />
     </a>
   </li>
@@ -142,9 +142,9 @@
       on:click={movePage}
     >
       <ss
-        title={trans("Next")}
+        title={window.trans("Next")}
         class="mt-icon--inverse mt-icon--sm"
-        href={StaticURI + "images/sprite.svg#ic_tri-right"}
+        href={window.URI + "images/sprite.svg#ic_tri-right"}
       />
     </a>
   </li>

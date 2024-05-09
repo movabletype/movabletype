@@ -40,7 +40,7 @@
   disabled={$ListingStore.currentFilter.items.length == 0}
   on:click={applyFilter}
 >
-  {trans("Apply")}
+  {window.trans("Apply")}
 </button>
 <button
   class="btn btn-default"
@@ -48,11 +48,11 @@
     $ListingStore.currentFilter.can_save == "0"}
   on:click={saveFilter}
 >
-  {trans("Save")}
+  {window.trans("Save")}
 </button>
 {#if $ListingStore.currentFilter.id && $ListingStore.currentFilter.items.length > 0}
   <button class="btn btn-default" on:click={saveAsFilter}>
-    {trans("Save As")}
+    {window.trans("Save As")}
   </button>
 {/if}
 <ListFilterSaveModal />

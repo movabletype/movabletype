@@ -1,6 +1,8 @@
 <script>
   import { ListingStore, ListingOpts } from "../ListingStore.ts";
 
+  export let opts = {};
+
   function classes(index) {
     var nameClass = this.store.showColumns[index].id;
     var classes;
@@ -39,7 +41,7 @@
         />
         <span class="custom-control-indicator" />
         <label class="form-check-label" for={"select_" + opts.object[0]}
-          ><span class="visually-hidden">{trans("Select")}</span></label
+          ><span class="visually-hidden">{window.trans("Select")}</span></label
         >
       </div>
     {/if}

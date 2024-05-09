@@ -9,7 +9,7 @@
 </script>
 
 <div class="field-header">
-  <label class="form-label">{trans("Show")}</label>
+  <label class="form-label">{window.trans("Show")}</label>
 </div>
 <div class="field-content">
   <select
@@ -20,10 +20,10 @@
     bind:value={selected}
     on:change={changeLimit}
   >
-    <option value="10">{trans("[_1] rows", 10)}</option>
-    <option value="25">{trans("[_1] rows", 25)}</option>
-    <option value="50">{trans("[_1] rows", 50)}</option>
-    <option value="100">{trans("[_1] rows", 100)}</option>
-    <option value="200">{trans("[_1] rows", 200)}</option>
+    <option value="10">{window.trans("[_1] rows", 10)}</option>
+    <option value="25">{window.trans("[_1] rows", 25)}</option>
+    <option value="50">{window.trans("[_1] rows", 50)}</option>
+    <option value="100">{window.trans("[_1] rows", 100)}</option>
+    <option value="200">{window.trans("[_1] rows", 200)}</option>
   </select>
 </div>

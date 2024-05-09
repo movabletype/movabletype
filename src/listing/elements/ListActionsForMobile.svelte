@@ -39,7 +39,7 @@
 {#if hasActionForMobile()}
   <div class="btn-group">
     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-      {trans("Select action")}
+      {window.trans("Select action")}
     </button>
     <div class="dropdown-menu">
       {#each buttonActionsForMobile as action, key}

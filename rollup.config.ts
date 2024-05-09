@@ -16,7 +16,7 @@ export default {
   output: {
     dir: "mt-static/js/build",
     format: "esm",
-    sourcemap: true
+    sourcemap: !production
   },
   plugins: [
     resolve({

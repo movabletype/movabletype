@@ -24,7 +24,7 @@
             class="btn btn-default dropdown-toggle"
             data-toggle="dropdown"
           >
-            {trans("Select Filter Item...")}
+            {window.trans("Select Filter Item...")}
           </button>
           <div class="dropdown-menu">
             {#each $ListingOpts.filterTypes as type}

@@ -12,7 +12,7 @@
 {#if $ListingOpts.hasPulldownActions}
   <div class="btn-group">
     <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-      {trans("More actions...")}
+      {window.trans("More actions...")}
     </button>
     <div class="dropdown-menu">
       {#each $ListingOpts.listActions as action}
@@ -28,7 +28,7 @@
       {#if typeof $ListingOpts.moreListActions != "undefined"}
         {#if Object.keys($ListingOpts.moreListActions).length > 0}
           <h6 class="dropdown-header">
-            {trans("Plugin Actions")}
+            {window.trans("Plugin Actions")}
           </h6>
         {/if}
 
