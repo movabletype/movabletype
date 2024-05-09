@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2019",
     "module": "ESNext",
     // Search under node_modules for non-relative imports.
     "moduleResolution": "node",
