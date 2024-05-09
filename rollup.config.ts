@@ -1,5 +1,5 @@
 // rollup.config.js
-import glob from "glob";
+import { glob } from "glob";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import esbuild from 'rollup-plugin-esbuild'
