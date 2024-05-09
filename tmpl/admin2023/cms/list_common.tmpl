@@ -86,11 +86,12 @@
 <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_data.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/listing/list_store.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
-<mt:unless name="debug_riot">
+<mt:if name="config.useriot">
+  <mt:unless name="debug_riot">
   <script type="text/javascript" src="<mt:var name="static_uri">riot/riot.min.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">js/ss/ss.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">js/admin2023/listing/listing.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
-<mt:else>
+  <mt:else>
   <script type="riot/tag" src="<mt:var name="static_uri">js/ss/tag/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/raw.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-top.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -105,7 +106,10 @@
   <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-filter.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="riot/tag" src="<mt:var name="static_uri">js/admin2023/listing/tag/list-table.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">riot/riot-compiler.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-</mt:unless>
+  </mt:unless>
+</mt:if>
+
+<mt:unless name="config.useriot">
 <script type="module" src="<mt:var name="static_uri">js/build/listing.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="application/json" id="listing-opts">
 {
@@ -247,6 +251,7 @@
   }
 }
 </script>
+</mt:unless>
 
 <mt:loop name="filter_types">
 <mt:setvarblock name="label"><mt:var name="label" encode_html="1"></mt:setvarblock>
@@ -265,6 +270,7 @@ jQuery.event.special.listReady = {
   }
 };
 
+<mt:if name="config.useriot">
 (function () {
   var listColumns = <mt:var name="list_columns_json">;
   var listSortBy = '<mt:var name="sort_by" escape="js">';
@@ -468,6 +474,7 @@ jQuery.event.special.listReady = {
   });
 
 })();
+</mt:if>
 
 var initial_load = true;
 
