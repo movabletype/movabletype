@@ -1,6 +1,6 @@
 <script>
-import ListFilterHeader from "./ListFilterHeader.svelte";
-import ListFilterDetail from "./ListFilterDetail.svelte";
+  import ListFilterHeader from "./ListFilterHeader.svelte";
+  import ListFilterDetail from "./ListFilterDetail.svelte";
 </script>
 
 <div class="card-header">

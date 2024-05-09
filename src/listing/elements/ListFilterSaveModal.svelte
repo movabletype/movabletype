@@ -1,50 +1,58 @@
 <script>
-  import { ListingOpts, ListingStore } from '../ListingStore.ts';
+  import { ListingOpts, ListingStore } from "../ListingStore.ts";
 
   function closeModal(e) {
-//    jQuery(this.refs.modal).modal('hide')
+    //    jQuery(this.refs.modal).modal('hide')
   }
 
   function openModal(args) {
-//    if (!args) {
-//      args = {}
-//    }
-//    jQuery(this.refs.filterName).mtUnvalidate()
-//    if (args.filterLabel) {
-//      this.refs.filterName.value = args.filterLabel
-//    }
-//    this.saveAs = args.saveAs
-//    jQuery(this.refs.modal).modal()
+    //    if (!args) {
+    //      args = {}
+    //    }
+    //    jQuery(this.refs.filterName).mtUnvalidate()
+    //    if (args.filterLabel) {
+    //      this.refs.filterName.value = args.filterLabel
+    //    }
+    //    this.saveAs = args.saveAs
+    //    jQuery(this.refs.modal).modal()
   }
 
   function saveFilter(e) {
-//    if (!jQuery(this.refs.filterName).mtValidate('simple')) {
-//      return false
-//    }
-//    this.listFilterTop.getItemValues()
-//    this.listFilterTop.currentFilter.label = this.refs.filterName.value
-//    if (this.saveAs) {
-//      this.listFilterTop.currentFilter.id = null
-//    }
-//    this.store.trigger('save_filter', this.listFilterTop.currentFilter)
-//    this.closeModal()
+    //    if (!jQuery(this.refs.filterName).mtValidate('simple')) {
+    //      return false
+    //    }
+    //    this.listFilterTop.getItemValues()
+    //    this.listFilterTop.currentFilter.label = this.refs.filterName.value
+    //    if (this.saveAs) {
+    //      this.listFilterTop.currentFilter.id = null
+    //    }
+    //    this.store.trigger('save_filter', this.listFilterTop.currentFilter)
+    //    this.closeModal()
   }
-
 </script>
 
 <div id="save-filter" class="modal fade" tabindex="-1" ref="modal">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">{ trans( $ListingStore.saveAs ? 'Save As Filter' : 'Save Filter' ) }</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+        <h5 class="modal-title">
+          {trans($ListingStore.saveAs ? "Save As Filter" : "Save Filter")}
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          data-mt-modal-close
+        >
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <div style="padding-bottom: 30px;">
-          <h6>{ trans('Filter Label') }</h6>
-          <input type="text"
+          <h6>{trans("Filter Label")}</h6>
+          <input
+            type="text"
             class="text full required form-control"
             name="filter_name"
             ref="filterName"
@@ -52,11 +60,11 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" on:click={ saveFilter }>
-          { trans('Save') }
+        <button class="btn btn-primary" on:click={saveFilter}>
+          {trans("Save")}
         </button>
-        <button class="btn btn-default" on:click={ closeModal }>
-          { trans('Cancel') }
+        <button class="btn btn-default" on:click={closeModal}>
+          {trans("Cancel")}
         </button>
       </div>
     </div>

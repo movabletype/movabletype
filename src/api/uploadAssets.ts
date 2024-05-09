@@ -24,7 +24,7 @@ export function uploadAssets({
   options,
   requestOptions,
 }: UploadAssetsParam): Promise<Response>[] {
-  return [...files ?? []].map(async (f) => {
+  return [...(files ?? [])].map(async (f) => {
     // FIXME:これで取れないケースは今はないと思うけれども、保証はされていない。
     // 今後JSでUIを作っていく前提になっていく場合ないこともあるかもしれない。
     // <meta name="csrf-token" value="xxxxxx" /> のようなものをヘッダーに入れるのがいいかもしれない。

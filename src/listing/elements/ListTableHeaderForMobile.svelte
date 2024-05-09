@@ -1,37 +1,40 @@
 <script>
-import { ListingStore, ListingOpts } from "../ListingStore.ts";
-export let toggleAllRowsOnPage;
+  import { ListingStore, ListingOpts } from "../ListingStore.ts";
+  export let toggleAllRowsOnPage;
 </script>
 
 {#if $ListingStore.count}
-<tr 
-  class="d-md-none"
->
-  {#if $ListingOpts.hasMobilePulldownActions}
-  <th 
-    class="mt-table__control"
-  >
-    <div class="form-check">
-      <input type="checkbox"
-        class="form-check-input"
-        id="select-all"
-        checked={ $ListingOpts.checkedAllRowsOnPage }
-        on:change={ toggleAllRowsOnPage } />
-      <label class="form-check-label" for="select-all"><span class="visually-hidden">{ trans('Select All') }</span></label>
-    </div>
-  </th>
-  {/if}
-  <th scope="col">
+  <tr class="d-md-none">
     {#if $ListingOpts.hasMobilePulldownActions}
-    <span 
-      on:click={ toggleAllRowsOnPage }
-    >
-      { trans('All') }
-    </span>
-    <span class="float-end">
-      { trans('[_1] &ndash; [_2] of [_3]', $ListingStore.getListStart(), $ListingStore.getListEnd(), $ListingStore.count) }
-    </span>
+      <th class="mt-table__control">
+        <div class="form-check">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="select-all"
+            checked={$ListingOpts.checkedAllRowsOnPage}
+            on:change={toggleAllRowsOnPage}
+          />
+          <label class="form-check-label" for="select-all"
+            ><span class="visually-hidden">{trans("Select All")}</span></label
+          >
+        </div>
+      </th>
     {/if}
-  </th>
-</tr>
+    <th scope="col">
+      {#if $ListingOpts.hasMobilePulldownActions}
+        <span on:click={toggleAllRowsOnPage}>
+          {trans("All")}
+        </span>
+        <span class="float-end">
+          {trans(
+            "[_1] &ndash; [_2] of [_3]",
+            $ListingStore.getListStart(),
+            $ListingStore.getListEnd(),
+            $ListingStore.count
+          )}
+        </span>
+      {/if}
+    </th>
+  </tr>
 {/if}

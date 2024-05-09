@@ -1,6 +1,6 @@
 <script>
-  import { onMount } from 'svelte';
-  import { ListingOpts, ListingStore } from '../ListingStore.ts';
+  import { onMount } from "svelte";
+  import { ListingOpts, ListingStore } from "../ListingStore.ts";
 
   import DisplayOptions from "./DisplayOptions.svelte";
   import DisplayOptionsForMobile from "./DisplayOptionsForMobile.svelte";
@@ -16,7 +16,7 @@
     moreListActions: [],
     buttonActionsForMobile: [],
     listActionsForMobile: [],
-    moreListActionsForMobile: []
+    moreListActionsForMobile: [],
   };
   export let store = {};
 
@@ -35,25 +35,25 @@
     }
     const url = $ListingStore.listClient.url;
     fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'X-Requested-With': 'XMLHttpRequest'
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "X-Requested-With": "XMLHttpRequest",
       },
-      body: formData
+      body: formData,
     })
-    .then(function(response) {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(function(data) {
-      args.done(data);
-    })
-    .catch(function(error) {
-      console.error('Fetch Error:', error);
-    });
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then(function (data) {
+        args.done(data);
+      })
+      .catch(function (error) {
+        console.error("Fetch Error:", error);
+      });
   }
 
   function filteredList(args) {
@@ -61,7 +61,7 @@
       args = {};
     }
     let data = {
-      __mode: 'filtered_list',
+      __mode: "filtered_list",
       blog_id: $ListingStore.listClient.siteId,
       columns: serializeColumns(args.columns),
       datasource: $ListingStore.listClient.datasource,
@@ -70,7 +70,7 @@
       magic_token: $ListingStore.listClient.magicToken,
       page: args.page,
       sort_by: args.sortBy,
-      sort_order: args.sortOrder
+      sort_order: args.sortOrder,
     };
     if (args.filter.id && !args.noFilterId) {
       data.fid = args.filter.id;
@@ -80,7 +80,7 @@
 
   function serializeColumns(columns) {
     if (Array.isArray(columns)) {
-      return columns.join(',');
+      return columns.join(",");
     } else {
       return columns;
     }
@@ -91,8 +91,8 @@
       args = {};
     }
     const refreshCurrentFilter = args.refreshCurrentFilter;
-    const noFilterId           = args.noFilterId;
-    const moveToPagination     = args.moveToPagination;
+    const noFilterId = args.noFilterId;
+    const moveToPagination = args.moveToPagination;
 
     if (!$ListingStore.sortOrder) {
       $ListingStore.toggleSortColumn($ListingStore.sortBy);
@@ -137,14 +137,14 @@
   }
 
   function refreshViewEvent(args) {
-    if (!args) args = {}
-    const moveToPagination = args.moveToPagination
-    const notCallListReady = args.notCallListReady
+    if (!args) args = {};
+    const moveToPagination = args.moveToPagination;
+    const notCallListReady = args.notCallListReady;
 
     //self.update()
-    updateSubFields()
+    updateSubFields();
     if (moveToPagination) {
-      window.document.body.scrollTop = window.document.body.scrollHeight
+      window.document.body.scrollTop = window.document.body.scrollHeight;
     }
     if (!notCallListReady) {
       listReadyEvent();
@@ -153,51 +153,52 @@
 
   function listReadyEvent() {
     let tag_names = {};
-    const editTagElements = document.querySelectorAll('.edit-tag');
+    const editTagElements = document.querySelectorAll(".edit-tag");
     editTagElements.forEach(function (element) {
       tag_names[element.textContent] = 1;
     });
   }
 
   function refreshCurrentFilterEvent() {
-    $ListingStore.currentFilter = $ListingStore.currentFilter
+    $ListingStore.currentFilter = $ListingStore.currentFilter;
   }
 
   function updateSubFields() {
     $ListingStore.columns.forEach(function (column) {
       column.sub_fields.forEach(function (subField) {
-        const selector = 'td.' + subField.parent_id + ' .' + subField.class
+        const selector = "td." + subField.parent_id + " ." + subField.class;
         const element = document.querySelector(selector);
         if (subField.checked) {
-          element.style.display = 'block';
+          element.style.display = "block";
         } else {
-          element.style.display = 'none';
+          element.style.display = "none";
         }
-      })
-    })
+      });
+    });
   }
 
   function tableClass() {
-    const objectType = opts.objectTypeForTableClass || opts.objectType
-    return 'list-' + objectType
+    const objectType = opts.objectTypeForTableClass || opts.objectType;
+    return "list-" + objectType;
   }
 
   function addFilterItem(filterItem) {
     if ($ListingStore.currentFilter.id == $ListingStore.allpassFilter.id) {
-      createNewFilter(trans('New Filter'));
+      createNewFilter(trans("New Filter"));
     }
     $ListingStore.currentFilter.items.push({ type: filterItem });
   }
-  
+
   function addFilterItemContent(itemIndex, contentIndex) {
-    if ($ListingStore.currentFilter.items[itemIndex].type != 'pack') {
-      const items = [ $ListingStore.currentFilter.items[itemIndex] ];
+    if ($ListingStore.currentFilter.items[itemIndex].type != "pack") {
+      const items = [$ListingStore.currentFilter.items[itemIndex]];
       $ListingStore.currentFilter.items[itemIndex] = {
-        type: 'pack',
-        args: { op: 'and', items: items }
+        type: "pack",
+        args: { op: "and", items: items },
       };
     }
-    const type = $ListingStore.currentFilter.items[itemIndex].args.items[0].type;
+    const type =
+      $ListingStore.currentFilter.items[itemIndex].args.items[0].type;
     $ListingStore.currentFilter.items[itemIndex].args.items.splice(
       contentIndex + 1,
       0,
@@ -225,7 +226,7 @@
   function createNewFilter(filterLabel) {
     $ListingStore.currentFilter = {
       items: [],
-      label: trans( filterLabel || 'New Filter' )
+      label: trans(filterLabel || "New Filter"),
     };
   }
 
@@ -261,11 +262,13 @@
   }
 
   function getCheckedRowIds() {
-    return $ListingStore.objects.filter(function (object) {
-      return object.checked;
-    }).map(function (object) {
-      return object.object[0];
-    });
+    return $ListingStore.objects
+      .filter(function (object) {
+        return object.checked;
+      })
+      .map(function (object) {
+        return object.object[0];
+      });
   }
 
   function getFilter(filterId) {
@@ -283,7 +286,10 @@
   }
 
   function getListEnd() {
-    return ($ListingStore.page - 1) * $ListingStore.limit + $ListingStore.objects.length;
+    return (
+      ($ListingStore.page - 1) * $ListingStore.limit +
+      $ListingStore.objects.length
+    );
   }
 
   function getListStart() {
@@ -298,7 +304,7 @@
         return false;
       }
       mobileColumnIndex++;
-      if (column.id == '__mobile') {
+      if (column.id == "__mobile") {
         hasMobileColumn = true;
         return true;
       }
@@ -309,9 +315,11 @@
   function getNewFilterLabel(objectLabel) {
     let temp_base = 1;
     let temp = "";
-    while ( 1 ) {
-      temp = trans('[_1] - Filter [_2]', objectLabel, temp_base++);
-      const hasSameLabel = $ListingStore.filters.some(function (f) { return f.label == temp });
+    while (1) {
+      temp = trans("[_1] - Filter [_2]", objectLabel, temp_base++);
+      const hasSameLabel = $ListingStore.filters.some(function (f) {
+        return f.label == temp;
+      });
       if (!hasSameLabel) {
         break;
       }
@@ -338,7 +346,7 @@
 
   function hasSystemFilter() {
     return $ListingStore.filters.some(function (filter) {
-      return filter.can_save == '0';
+      return filter.can_save == "0";
     });
   }
 
@@ -371,7 +379,10 @@
   }
 
   function removeFilterItemContent(itemIndex, contentIndex) {
-    $ListingStore.currentFilter.items[itemIndex].args.items.splice(contentIndex, 1);
+    $ListingStore.currentFilter.items[itemIndex].args.items.splice(
+      contentIndex,
+      1
+    );
   }
 
   function resetAllClickedRows() {
@@ -413,14 +424,14 @@
   }
 
   function setResult(result) {
-    const resultColumnIds = result.columns.split(',');
-    const showColumns = []
+    const resultColumnIds = result.columns.split(",");
+    const showColumns = [];
     $ListingStore.columns.forEach(function (column) {
       column.checked = resultColumnIds.indexOf(column.id) >= 0;
       column.sub_fields.forEach(function (subField) {
         subField.checked = resultColumnIds.indexOf(subField.id) >= 0;
       });
-      if(column.checked){
+      if (column.checked) {
         showColumns.push(column);
       }
     });
@@ -428,7 +439,7 @@
     $ListingStore.objects = result.objects.map(function (object) {
       return {
         checked: false,
-        object: object
+        object: object,
       };
     });
     $ListingStore.count = result.count;
@@ -436,7 +447,7 @@
     $ListingStore.pageMax = result.page_max;
     $ListingStore.filters = result.filters;
     setFilterById(result.id);
-  
+
     $ListingStore.checkedAllRows = false;
     $ListingStore.checkedAllRowsOnPage = false;
   }
@@ -465,25 +476,25 @@
     }
     const currentState = object.checked;
     object.checked = !currentState;
-  
+
     $ListingStore.checkedAllRowsOnPage = $ListingStore.isCheckedAllRowsOnPage();
     $ListingStore.checkedAllRows = false;
   }
 
   function toggleSortColumn(columnId) {
     if ($ListingStore.sortOrder && columnId == $ListingStore.sortBy) {
-      if ($ListingStore.sortOrder == 'ascend') {
-        $ListingStore.sortOrder = 'descend';
+      if ($ListingStore.sortOrder == "ascend") {
+        $ListingStore.sortOrder = "descend";
       } else {
-        $ListingStore.sortOrder = 'ascend';
+        $ListingStore.sortOrder = "ascend";
       }
     } else {
       $ListingStore.sortBy = columnId;
       const column = $ListingStore.getColumn(columnId);
       if (column) {
-        $ListingStore.sortOrder = column.default_sort_order || 'ascend';
+        $ListingStore.sortOrder = column.default_sort_order || "ascend";
       } else {
-        $ListingStore.sortOrder = 'ascend';
+        $ListingStore.sortOrder = "ascend";
       }
     }
   }
@@ -513,11 +524,11 @@
     $ListingStore.checkedAllRowsOnPage = nextState;
     $ListingStore.checkedAllRows = false;
   }
-  
+
   function updateIsLoading(nextState) {
     $ListingStore.isLoading = nextState;
   }
-  
+
   function updateLimit(limit) {
     $ListingStore.limit = limit;
   }
@@ -542,8 +553,8 @@
       {/if}
       <div style="overflow-x: auto">
         <table
-          id="{ opts.objectType }-table"
-          class="table mt-table { tableClass() }"
+          id="{opts.objectType}-table"
+          class="table mt-table {tableClass()}"
         >
           <ListTable />
         </table>
@@ -551,7 +562,7 @@
     </div>
   </div>
 </div>
-{#if $ListingStore.count != 0 }
+{#if $ListingStore.count != 0}
   <div class="row">
     <ListPagination />
   </div>

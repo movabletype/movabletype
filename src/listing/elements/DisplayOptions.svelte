@@ -1,5 +1,5 @@
 <script>
-import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
+  import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
 </script>
 
 <div class="row">
@@ -11,7 +11,7 @@ import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
       aria-expanded="false"
       aria-controls="display-options-detail2"
     >
-      { trans('Display Options') }
+      {trans("Display Options")}
     </button>
   </div>
 </div>

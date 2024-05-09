@@ -1,7 +1,7 @@
 <script>
-import ListTableHeader from "./ListTableHeader.svelte";
-import ListTableBody from "./ListTableBody.svelte";
-import { ListingStore, ListingOpts } from "../ListingStore.ts";
+  import ListTableHeader from "./ListTableHeader.svelte";
+  import ListTableBody from "./ListTableBody.svelte";
+  import { ListingStore, ListingOpts } from "../ListingStore.ts";
 </script>
 
 <thead>
@@ -10,13 +10,13 @@ import { ListingStore, ListingOpts } from "../ListingStore.ts";
 {#if $ListingStore.isLoading}
   <tbody>
     <tr>
-      <td colspan={ $ListingStore.columns.length + 1 }>
-        { trans('Loading...') }
+      <td colspan={$ListingStore.columns.length + 1}>
+        {trans("Loading...")}
       </td>
     </tr>
   </tbody>
 {:else if !$ListingStore.isLoading && !$ListingStore.objects}
-<tbody>
-  <ListTableBody />
-</tbody>
+  <tbody>
+    <ListTableBody />
+  </tbody>
 {/if}
