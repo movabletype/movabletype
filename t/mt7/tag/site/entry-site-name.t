@@ -41,7 +41,7 @@ __END__
 --- template
 <mt:Entries limit="1"><mt:EntrySiteName></mt:Entries>
 --- expected
-none
+None
 
 === mt:EntrySiteName - website
 --- blog_id

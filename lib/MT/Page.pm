@@ -25,8 +25,6 @@ __PACKAGE__->install_properties(
 # include versioned columns
 MT->add_callback( 'data_api_pre_save.' . 'page',
     9, undef, \&MT::Revisable::mt_presave_obj );
-MT->add_callback( 'api_pre_save.' . 'page',
-    9, undef, \&MT::Revisable::mt_presave_obj );
 MT->add_callback( 'cms_pre_save.' . 'page',
     9, undef, \&MT::Revisable::mt_presave_obj );
 
@@ -35,19 +33,12 @@ MT->add_callback( 'cms_pre_save.' . 'page',
 # registering a post_save and saving
 MT->add_callback( 'data_api_post_save.' . 'page',
     9, undef, \&MT::Revisable::mt_postsave_obj );
-MT->add_callback( 'api_post_save.' . 'page',
-    9, undef, \&MT::Revisable::mt_postsave_obj );
 MT->add_callback( 'cms_post_save.' . 'page',
     9, undef, \&MT::Revisable::mt_postsave_obj );
 
 # Register page post-save callback for rebuild triggers
 MT->add_callback(
     'cms_post_save.page', 10,
-    MT->component('core'),
-    sub { MT->model('rebuild_trigger')->runner( 'post_entry_save', @_ ); }
-);
-MT->add_callback(
-    'api_post_save.page', 10,
     MT->component('core'),
     sub { MT->model('rebuild_trigger')->runner( 'post_entry_save', @_ ); }
 );
@@ -113,9 +104,8 @@ sub list_props {
                 $label;
             },
         },
-        created_on  => { base => 'entry.created_on', order => 600, },
+        created_on  => { base => 'entry.created_on' },
         modified_on => {
-            order   => 700,
             base    => 'entry.modified_on',
             display => 'default',
         },

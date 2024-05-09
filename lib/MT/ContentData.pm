@@ -112,9 +112,6 @@ __PACKAGE__->install_properties(
 MT->add_callback( 'cms_post_save.content_data', 10, MT->component('core'),
     sub { MT->model('rebuild_trigger')->runner( 'post_content_save', @_ ); }
 );
-MT->add_callback( 'api_post_save.content_data', 10, MT->component('core'),
-    sub { MT->model('rebuild_trigger')->runner( 'post_content_save', @_ ); }
-);
 MT->add_callback(
     'cms_post_bulk_save.content_data',
     10,
@@ -1440,9 +1437,18 @@ sub _make_field_list_props {
 
                         my $child_ret;
                         {
-                            local $db_terms->{content_type_id}
-                                = $content_type->id;
-                            $child_ret = $terms->( $prop, @_ );
+                            my $ct_terms = $db_terms;
+                            if (ref $db_terms eq 'ARRAY') {
+                                for my $t (@$db_terms) {
+                                    next unless ref $t eq 'HASH';
+                                    if (exists $t->{content_type_id}) {
+                                        $ct_terms = $t;
+                                        last;
+                                    }
+                                }
+                            }
+                            local $ct_terms->{content_type_id} = $content_type->id;
+                            $child_ret = $terms->($prop, @_);
                         }
                         return $child_ret
                             unless $child_ret && $child_ret->{id};
@@ -1683,7 +1689,7 @@ sub preview_data {
 
     my $registry = MT->registry('content_field_types');
 
-    my $tmpl = MT->app->load_tmpl('search_replace_cf_data.tmpl', {});
+    my $tmpl = MT->app->load_cached_tmpl('search_replace_cf_data.tmpl', {});
 
     my $data = '';
     for my $f ( @{ $content_type->fields } ) {
@@ -1840,7 +1846,7 @@ sub search {
 }
 
 sub _as_operator {
-    if ( lc MT->config->ObjectDriver eq 'oracle' ) {
+    if ( lc(MT->config->ObjectDriver) =~ /oracle/ ) {
         '';
     }
     else {
@@ -1932,7 +1938,7 @@ sub _prepare_statement_for_normal_sort {
     for my $col ( reverse $class->_sort_columns ) {
         my $db_col = $driver->_decorate_column_name(
             MT->model('content_field_index'), $col );
-        if ( lc MT->config->ObjectDriver eq 'oracle' ) {
+        if ( lc(MT->config->ObjectDriver) =~ /oracle/ ) {
             if ( $col eq 'value_blob' ) {
                 $sort_col
                     = "NVL(LISTAGG(UTL_RAW.CAST_TO_NVARCHAR2(DBMS_LOB.SUBSTR($db_col, 4000, 1)), ',') WITHIN GROUP (ORDER BY $content_data_id_db_col), $sort_col)";
@@ -2005,7 +2011,7 @@ sub _prepare_statement_for_sub_on_mssql {
     my $stmt = $dbd->sql_class->new;
 
     my $convert_to
-        = lc( MT->config->ObjectDriver ) eq 'umssqlserver'
+        = lc( MT->config->ObjectDriver ) =~ /umssqlserver/
         ? 'nvarchar'
         : 'varchar';
     my $decimal_s = _get_decimal_s();

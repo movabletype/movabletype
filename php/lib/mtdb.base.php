@@ -44,6 +44,7 @@ abstract class MTDatabase {
 
     private $_cd_id_cache = array();
     private $_content_type_id_cache; // XXX consider changing the cache storage
+    private $_content_field_id_cache;
 
     // Construction
     public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
@@ -313,37 +314,6 @@ abstract class MTDatabase {
         return "extract($part from $column)";
     }
 
-    // Deprecated method
-    public function get_row($query = null, $output = OBJECT, $y = 0) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('get_row was Deprecated.');
-    }
-
-    public function get_results($query = null, $output = ARRAY_A) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('get_results was Deprecated.');
-    }
-
-    public function convert_fieldname($array) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('convert_fieldname was Deprecated.');
-    }
-
-    public function expand_meta($rows) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('expand_meta was Deprecated.');
-    }
-
-    public function get_meta($obj_type, $obj_id) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('get_meta was Deprecated.');
-    }
-
-    function apply_limit_sql($sql, $limit, $offset = 0) {
-        require_once('class.exception.php');
-        throw new MTDeprecatedException('apply_limit_sql was Deprecated.');
-    }
-
     // Public method
     public function resolve_url($path, $blog_id, $build_type = 3) {
         $path = preg_replace('!/$!', '', $path);
@@ -531,6 +501,50 @@ abstract class MTDatabase {
         require_once('class.mt_templatemap.php');
         $tmap = new TemplateMap;
         $result = $tmap->Find($where, false, false, isset($extras) ? $extras : null);
+        return $result;
+    }
+
+    public function fetch_widgetset($ctx, $name, $blog_ids) {
+        $blog_ids = is_array($blog_ids) ? $blog_ids : array($blog_ids);
+        $bind_values = [];
+        $placeholders = $this->in_ph('template_blog_id', $bind_values, $blog_ids);
+        $where = "template_blog_id IN ($placeholders)";
+        $where .= " and template_name = ". $this->conn->param('template_name');
+        $where .= " and template_type = ". $this->conn->param('template_type');
+        $where .= " order by template_blog_id desc";
+        $bind_values = array_merge($bind_values, ['template_name' => $name, 'template_type' => 'widgetset']);
+
+        require_once('class.mt_template.php');
+        $template = new Template;
+        $res = $template->Load($where, $bind_values);
+        if (empty($res)) return null;
+        return $template;
+    }
+
+    public function fetch_widgets_by_id($ctx, $ids) {
+        $ids = is_array($ids) ? $ids : array($ids);
+        $bind_values = [];
+        $placeholders = $this->in_ph('template_id', $bind_values, $ids);
+        $where = "template_id IN ($placeholders)";
+
+        require_once('class.mt_template.php');
+        $template = new Template;
+        $result = $template->Find($where, $bind_values);
+        return $result;
+    }
+
+    public function fetch_widgets_by_name($ctx, $name, $blog_id) {
+        $bind_values = [];
+        $placeholders = $this->in_ph('template_blog_id', $bind_values, [$blog_id, 0]);
+        $where = "template_blog_id IN ($placeholders)";
+        $where .= " and template_name = ". $this->conn->param('template_name');
+        $where .= " and template_type = ". $this->conn->param('template_type');
+        $where .= " order by template_blog_id asc";
+        $bind_values = array_merge($bind_values, ['template_name' => $name, 'template_type' => 'widget']);
+
+        require_once('class.mt_template.php');
+        $template = new Template;
+        $result = $template->Find($where, $bind_values);
         return $result;
     }
 
@@ -740,7 +754,7 @@ abstract class MTDatabase {
     }
 
     public function get_template_text($ctx, $module, $blog_id = null, $type = 'custom', $global = null) {
-        if (empty($blog_id))
+        if (!isset($blog_id))
             $blog_id = $ctx->stash('blog_id');
 
         if ($type === 'custom' || $type === 'widget'|| $type === 'widgetset') {
@@ -1530,7 +1544,7 @@ abstract class MTDatabase {
                             }
                         }
                         $sort_by_numeric =
-                            preg_match('/integer|float/', $entry_meta_info[$match[1]]);
+                            preg_match('/integer|float/', $entry_meta_info[$match[1]] ?? '');
                     }
                     else {
                         $sort_by_numeric =
@@ -1547,7 +1561,7 @@ abstract class MTDatabase {
                     } else {
                         $sort_fn = function($a, $b) use ($sort_field) {
                             $f = addslashes($sort_field);
-                            return strcmp($a->$f, $b->$f);
+                            return strcmp($a->$f ?? '', $b->$f ?? '');
                         };
                     }
 
@@ -4695,7 +4709,7 @@ abstract class MTDatabase {
                                     }
                                     $cmap[$oid][$o->objectcategory_category_id]++;
                                     if (!$not_clause)
-                                        $content_list[$o->objectcategory_oject_id] = 1;
+                                        $content_list[$oid] = 1;
                                 }
                             }
                             $filter_ctx = array();
@@ -5534,6 +5548,16 @@ abstract class MTDatabase {
 
     public function flush_cache() {
         $this->_blog_id_cache = array();
+    }
+
+    public function in_ph($name, &$bind, $values) {
+        $ph = array();
+        foreach($values as $i => $v) {
+            if (is_null($v)) continue;
+            $ph[] = $this->conn->param($name. $i);
+            $bind[$name. $i] = $values[$i];
+        }
+        return join(',', $ph);
     }
 }
 ?>

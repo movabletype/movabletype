@@ -30,15 +30,15 @@ sub new {
     $class =~ s/::(\w+)$/::Bin$1/ if MT->config->UseExternalArchiver;
 
     my $obj;
-    eval "require $class;";
-    if (my $e = $@) {
-        return $pkg->error($e);
+    if (!eval "require $class; 1") {
+        return $pkg->error($@);
     }
-    eval { $obj = $class->new(@_); };
-    if (my $e = $@) {
-        return $pkg->error($e);
-    } elsif (!defined $obj) {
-        return $pkg->error($class->errstr);
+    if (!eval { $obj = $class->new(@_); }) {
+        if (my $e = $@) {
+            return $pkg->error($e);
+        } elsif (!defined $obj) {
+            return $pkg->error($class->errstr);
+        }
     }
 
     $obj;
@@ -55,8 +55,7 @@ sub available_formats {
         my $class = $classes->{$key}->{class};
         $class =~ s/::(\w+)$/::Bin$1/ if $use_bin;
         my $error;
-        eval "require $class;";
-        if ($@) {
+        if (!eval "require $class; 1") {
             ($error = $@) =~ s/ at .+? line \d+$//s;
             $error = MT->translate("Cannot load [_1]: [_2]", $class, $error);
         } elsif ($use_bin && !$class->find_bin) {

@@ -156,7 +156,7 @@
       $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-start">' + String(page - 1) + '</a></li>');
     }
 
-    $e.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(currnt)</span></a></li>');
+    $e.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="visually-hidden">(current)</span></a></li>');
 
     if (page + 1 <= maxPage) {
       var firstLastClass = page + 1 == maxPage ? ' first-last' : '';
@@ -280,7 +280,7 @@
   function generateMobilePageLink(page, setMrAuto, current) {
     var mrAutoClass = setMrAuto ? ' mr-auto' : '';
     if (current) {
-      return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
+      return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="visually-hidden">(current)</span></a></li>';
     } else {
       return '<li class="page-item' + mrAutoClass + '"><a href="#" class="page-link">' + page + '</a></li>';
     }
@@ -425,25 +425,25 @@
   <div class="border-bottom pb-3">
   <form action="" method="get" id="modal-search" class="form-inline">
     <input type="hidden" id="asset-class" name="asset-class" value="image">
-    <div class="form-row align-items-center w-100">
-      <div class="form-group">
-        <label class="sr-only" for="search"><__trans phrase="Search"></label>
+    <div class="row align-items-center w-100">
+      <div class="col-auto">
+        <label class="visually-hidden" for="search"><__trans phrase="Search"></label>
         <input type="text" id="search" name="search" class="form-control search-input text" value="" placeholder="<__trans phrase="Search">" />
       </div>
-      <div class="form-group ml-3">
+      <div class="col-auto ps-0">
         <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').trigger('click'); return false;">
           <mtapp:svgicon id="ic_search" title="Search">
         </a>
         <button id="search-button" class="search-command search-submit" style="display: none;">
-          <span class="sr-only">
+          <span class="visually-hidden">
             <__trans phrase="Search">
           </span>
         </button>
       </div>
-      <div class="form-group">
+      <div class="col-auto ps-0">
         <a href="javascript:void(0)" class="search-reset" style="display: none;"><__trans phrase="Reset"></a>
       </div>
-      <div class="page-status ml-auto mt-auto mb-0"></div>
+      <div class="col-auto page-status ml-auto mt-auto mb-0"></div>
     </div>
   </form>
   </div>
@@ -474,7 +474,7 @@
           <!-- <mt:var name="row">:<mt:var name="__counter__"> -->
           <mt:if name="__first__">
           <div class="row">
-            <div class="col">
+            <div class="col ps-4">
                 <div class="img-preview">
                   <a href="#" class="upload_asset">
                   <img src="<mt:var name="static_uri">images/ic_addfiles.svg" class="mx-auto" title="<__trans phrase="Upload new image">">
@@ -484,7 +484,7 @@
             </div>
           </mt:if>
 
-            <div id="asset-<mt:var name="id" escape="html">-card" class="col">
+            <div id="asset-<mt:var name="id" escape="html">-card" class="col ps-4">
               <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
               <label class="asset-col">
                 <div class="img-preview">

@@ -29,6 +29,7 @@ my $components = {
                 MT/Template/Tags/Calendar.pm
                 MT/Template/Tags/Category.pm
                 MT/Template/Tags/CategorySet.pm
+                MT/Template/Tags/Common.pm
                 MT/Template/Tags/ContentType.pm
                 MT/Template/Tags/Entry.pm
                 MT/Template/Tags/Filters.pm
@@ -97,6 +98,8 @@ my @removed_from_core = qw(
     IfRegistrationRequired IfRequireCommentEmails IfTypeKeyToken
     PingEntry Pings PingsFooter PingsHeader PingsSent
     SiteIfCommentsOpen WebsiteIfCommentsOpen
+
+    XMLRPCScript AtomScript
 );
 
 my %is_removed = map { $_ => 1 } @removed_from_core;

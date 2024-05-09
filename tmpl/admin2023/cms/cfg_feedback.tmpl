@@ -67,7 +67,7 @@
       <div class="mb-3">
         <div class="form-check">
           <input id="auto_delete_junk" class="form-check-input" name="auto_delete_junk" type="checkbox" value="1"<mt:if name="auto_delete_junk"> checked="checked"</mt:if> data-bs-toggle="collapse" data-bs-target="#auto_delete_junk_prefs" aria-expanded="<mt:if name="auto_delete_junk">true<mt:else>false</mt:if>" aria-controls="auto_delete_junk_prefs" />
-          <label class="form-check-label form-label" for="auto_delete_junk">
+          <label class="form-check-label" for="auto_delete_junk">
             <__trans phrase="Automatically delete spam feedback after the time period shown below.">
           </label>
         </div>
@@ -114,7 +114,7 @@
       <div class="mb-3">
         <div class="form-check">
           <input type="checkbox" value="1" name="nofollow_urls" class="form-check-input" id="nofollow_urls"<mt:if name="nofollow_urls"> checked="checked"</mt:if> class="cb" data-bs-toggle="collapse" data-bs-target="#nofollow_urls-option" aria-expanded="<mt:if name="nofollow_urls">true<mt:else>false</mt:if>" aria-controls="nofollow_urls-option" />
-          <label class="form-check-label form-label" for="nofollow_urls">
+          <label class="form-check-label" for="nofollow_urls">
             <__trans phrase="If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation.">
           </label>
         </div>
@@ -129,7 +129,7 @@
         <div class="mb-3">
           <div class="form-check">
             <input type="checkbox" value="1" name="follow_auth_links" id="follow_auth_links"<mt:if name="follow_auth_links"> checked="checked"</mt:if> class="form-check-input cb" />
-            <label class="form-check-label form-label" for="follow_auth_links">
+            <label class="form-check-label" for="follow_auth_links">
               <__trans phrase="Do not add the 'nofollow' attribute when a comment is submitted by a trusted commenter.">
             </label>
           </div>
@@ -160,7 +160,7 @@
       <div class="mb-3">
         <div class="form-check">
           <input type="checkbox" name="allow_comments" class="form-check-input" id="allow_comments"<mt:if name="allow_comments"> checked="checked"</mt:if> value="1" data-bs-toggle="collapse" data-bs-target="#allow_comments-option" aria-expanded="<mt:if name="allow_comments">true<mt:else>false</mt:if>" aria-controls="allow_comments-option" />
-          <label class="form-check-label form-label" for="allow_comments">
+          <label class="form-check-label" for="allow_comments">
             <__trans phrase="Accept comments according to the policies shown below.">
           </label>
         </div>
@@ -180,27 +180,27 @@
            label="<__trans phrase="Immediately approve comments from">">
           <ul class="list-unstyled">
             <li>
-              <div class="custom-control custom-radio">
+              <div class="custom-control form-check">
                 <input type="radio" id="moderate_comments_1" name="moderate_comments" value="1"<mt:if name="moderate_comments_1"> checked="checked"</mt:if> class="form-check-input rb" />
-                <label class="form-check-label form-label" for="moderate_comments_1"><__trans phrase="No one"></label>
+                <label class="form-check-label" for="moderate_comments_1"><__trans phrase="No one"></label>
               </div>
             </li>
             <li>
-              <div class="custom-control custom-radio">
+              <div class="custom-control form-check">
                 <input type="radio" id="moderate_comments_2" name="moderate_comments" value="2"<mt:if name="moderate_comments_2"> checked="checked"</mt:if> class="form-check-input rb" />
-                <label class="form-check-label form-label" for="moderate_comments_2"><__trans phrase="Trusted commenters only"></label>
+                <label class="form-check-label" for="moderate_comments_2"><__trans phrase="Trusted commenters only"></label>
               </div>
             </li>
             <li>
-              <div class="custom-control custom-radio">
+              <div class="custom-control form-check">
                 <input type="radio" id="moderate_comments_3" name="moderate_comments" value="3"<mt:if name="moderate_comments_3"> checked="checked"</mt:if> class="form-check-input rb" />
-                <label class="form-check-label form-label" for="moderate_comments_3"><__trans phrase="Any authenticated commenters"></label>
+                <label class="form-check-label" for="moderate_comments_3"><__trans phrase="Any authenticated commenters"></label>
               </div>
             </li>
             <li>
-              <div class="custom-control custom-radio">
+              <div class="custom-control form-check">
                 <input type="radio" id="moderate_comments_0" name="moderate_comments" value="0"<mt:if name="moderate_comments_0"> checked="checked"</mt:if> class="form-check-input rb" />
-                <label class="form-check-label form-label" for="moderate_comments_0"><__trans phrase="Anyone"></label>
+                <label class="form-check-label" for="moderate_comments_0"><__trans phrase="Anyone"></label>
               </div>
             </li>
           </ul>
@@ -212,7 +212,7 @@
           <div class="mb-3">
             <div class="form-check">
               <input type="checkbox" name="allow_comment_html" id="allow_comment_html" value="1"<mt:if name="allow_comment_html"> checked="checked"</mt:if> class="form-check-input cb" data-bs-toggle="collapse" data-bs-target="#allow_comment_html-option" aria-expanded="<mt:if name="allow_comment_html">true<mt:else>false</mt:if>" aria-controls="allow_comment_html-option" />
-              <label class="form-check-label form-label" for="allow_comment_html">
+              <label class="form-check-label" for="allow_comment_html">
                 <__trans phrase="Allow commenters to include a limited set of HTML tags in their comments. Otherwise all HTML will be stripped out.">
               </label>
             </div>
@@ -225,18 +225,18 @@
              label="<__trans phrase="Limit HTML Tags">">
             <ul class="list-unstyled">
               <li>
-                <div class="custom-control custom-radio">
+                <div class="custom-control form-check">
                   <input type="radio" name="sanitize_spec" id="sanitize_spec_0" value="0"<mt:if name="sanitize_spec_0"> checked="checked"</mt:if> class="form-check-input rb" />
-                  <label class="form-check-label form-label" for="sanitize_spec_0">
+                  <label class="form-check-label" for="sanitize_spec_0">
                     <__trans phrase="Use defaults">:
                     <span class="text-muted hint"><__trans phrase="([_1])" params="<mt:var name="global_sanitize_spec" escape="html">"></span>
                   </label>
                 </div>
               </li>
-              <li>
-                <div class="custom-control custom-radio">
+              <li class="form-inline">
+                <div class="custom-control form-check">
                   <input type="radio" name="sanitize_spec" id="sanitize_spec_1" value="1"<mt:if name="sanitize_spec_1"> checked="checked"</mt:if> class="form-check-input rb" />
-                  <label class="form-check-label form-inline form-label" for="sanitize_spec_1">
+                  <label class="form-check-label form-inline" for="sanitize_spec_1">
                     <__trans phrase="Use my settings">:
                     <input type="text" name="sanitize_spec_manual" id="sanitize_spec_manual" class="form-control text med" value="<mt:if name="sanitize_spec_1"><mt:var name="sanitize_spec" escape="html"></mt:if>" />
                   </label>
@@ -251,21 +251,21 @@
            label="<__trans phrase="E-mail Notification">">
           <ul class="list-unstyled">
             <li>
-              <div class="custom-control custom-radio">
+              <div class="custom-control form-check">
                 <input type="radio" id="email_new_comments_1" name="email_new_comments" value="1"<mt:if name="email_new_comments_1"> checked="checked"</mt:if> class="form-check-input rb" />
-                <label class="form-check-label form-label" for="email_new_comments_1"><__trans phrase="On"></label>
+                <label class="form-check-label" for="email_new_comments_1"><__trans phrase="On"></label>
               </div>
             </li>
             <li>
-              <div class="custom-control custom-radio">
+              <div class="custom-control form-check">
                 <input type="radio" id="email_new_comments_2" name="email_new_comments" value="2"<mt:if name="email_new_comments_2"> checked="checked"</mt:if> class="form-check-input rb"  />
-                <label class="form-check-label form-label" for="email_new_comments_2"><__trans phrase="Only when attention is required"></label>
+                <label class="form-check-label" for="email_new_comments_2"><__trans phrase="Only when attention is required"></label>
               </div>
             </li>
             <li>
-              <div class="custom-control custom-radio">
+              <div class="custom-control form-check">
                 <input type="radio" id="email_new_comments_0" name="email_new_comments" value="0"<mt:unless name="email_new_comments"> checked="checked"</mt:unless> class="form-check-input rb" />
-                <label class="form-check-label form-label" for="email_new_comments_0"><__trans phrase="Off"></label>
+                <label class="form-check-label" for="email_new_comments_0"><__trans phrase="Off"></label>
               </div>
             </li>
           </ul>
@@ -291,7 +291,7 @@
           <div class="mb-3">
             <div class="form-check">
               <input type="checkbox" value="1" name="autolink_urls" id="autolink_urls"<mt:if name="autolink_urls"> checked="checked"</mt:if> class="form-check-input cb" />
-              <label class="form-check-label form-label" for="autolink_urls">
+              <label class="form-check-label" for="autolink_urls">
                 <__trans phrase="Transform URLs in comment text into HTML links.">
               </label>
             </div>
@@ -336,7 +336,7 @@
           <div class="mb-3">
             <div class="form-check">
               <input type="checkbox" name="use_comment_confirmation" class="form-check-input" id="use_comment_confirmation"<mt:if name="use_comment_confirmation"> checked="checked"</mt:if> value="1" />
-              <label class="form-check-label form-label" for="use_comment_confirmation">
+              <label class="form-check-label" for="use_comment_confirmation">
                 <__trans phrase="Each commenter's browser will be redirected to a comment confirmation page after their comment is accepted.">
               </label>
             </div>
@@ -366,7 +366,7 @@
       <div class="mb-3">
         <div class="form-check">
           <input type="checkbox" name="allow_pings" class="form-check-input" id="allow_pings"<mt:if name="allow_pings"> checked="checked"</mt:if> value="1" data-bs-toggle="collapse" data-bs-target="#allow_pings-option" aria-expanded="<mt:if name="allow_pings">true<mt:else>false</mt:if>" aria-controls="allow_pings-option" />
-          <label class="form-check-label form-label" for="allow_pings"><__trans phrase="Accept TrackBacks from any source."></label>
+          <label class="form-check-label" for="allow_pings"><__trans phrase="Accept TrackBacks from any source."></label>
         </div>
       </div>
     </mtapp:setting>
@@ -380,7 +380,7 @@
           <div class="mb-3">
             <div class="form-check">
               <input type="checkbox" name="moderate_pings" class="form-check-input" id="moderate_pings"<mt:if name="MODERATE_PINGS_1"> checked="checked"</mt:if> value="1" />
-              <label class="form-check-label form-label" for="moderate_pings">
+              <label class="form-check-label" for="moderate_pings">
                 <__trans phrase="Hold all TrackBacks for approval before they are published.">
               </label>
             </div>
@@ -392,21 +392,21 @@
            label="<__trans phrase="E-mail Notification">">
           <ul class="list-unstyled">
             <li>
-              <div class="custom-control custom-radio">
+              <div class="custom-control form-check">
                 <input type="radio" id="email_new_pings_1" name="email_new_pings" class="form-check-input" value="1"<mt:if name="EMAIL_NEW_PINGS_1"> checked="checked"</mt:if> />
-                <label class="form-check-label form-label" for="email_new_pings_1"><__trans phrase="On"></label>
+                <label class="form-check-label" for="email_new_pings_1"><__trans phrase="On"></label>
               </div>
             </li>
             <li>
-              <div class="custom-control custom-radio">
+              <div class="custom-control form-check">
                 <input type="radio" id="email_new_pings_2" name="email_new_pings" class="form-check-input" value="2"<mt:if name="EMAIL_NEW_PINGS_2"> checked="checked"</mt:if> />
-                <label class="form-check-label form-label" for="email_new_pings_2"><__trans phrase="Only when attention is required"></label>
+                <label class="form-check-label" for="email_new_pings_2"><__trans phrase="Only when attention is required"></label>
               </div>
             </li>
             <li>
-              <div class="custom-control custom-radio">
+              <div class="custom-control form-check">
                 <input type="radio" id="email_new_pings_0" name="email_new_pings" class="form-check-input" value="0"<mt:unless name="email_new_pings"> checked="checked"</mt:unless> />
-                <label class="form-check-label form-label" for="email_new_pings_0"><__trans phrase="Off"></label>
+                <label class="form-check-label" for="email_new_pings_0"><__trans phrase="Off"></label>
               </div>
             </li>
           </ul>
@@ -422,7 +422,7 @@
             <li>
               <div class="form-check">
                 <input type="checkbox" value="1" name="autodiscover_links" class="form-check-input" id="autodiscover_links"<mt:if name="autodiscover_links"> checked="checked"</mt:if> />
-                <label class="form-check-label form-label" for="autodiscover_links"><__trans phrase="Enable External TrackBack Auto-Discovery"></label>
+                <label class="form-check-label" for="autodiscover_links"><__trans phrase="Enable External TrackBack Auto-Discovery"></label>
               </div>
             <mt:if name="system_allow_selected_pings">
               <p>
@@ -445,7 +445,7 @@
             <li>
               <div class="form-check">
                 <input type="checkbox" value="1" name="internal_autodiscovery" class="form-check-input" id="internal_autodiscovery"<mt:if name="internal_autodiscovery"> checked="checked"</mt:if> class="cb" />
-                <label class="form-check-label form-label" for="internal_autodiscovery"><__trans phrase="Enable Internal TrackBack Auto-Discovery"></label>
+                <label class="form-check-label" for="internal_autodiscovery"><__trans phrase="Enable Internal TrackBack Auto-Discovery"></label>
               </div>
             <mt:if name="system_allow_selected_pings">
               <p>

@@ -244,7 +244,6 @@ sub core_methods {
         'save_entry_prefs'     => "${pkg}Entry::save_entry_prefs",
         'save_template_prefs'  => "${pkg}Template::save_template_prefs",
         'save_favorite_blogs'  => "${pkg}Blog::save_favorite_blogs",
-        'cc_return'            => "${pkg}Blog::cc_return",
         'itemset_action'       => "${pkg}Tools::do_list_action",
         'page_action'          => "${pkg}Tools::do_page_action",
         'cfg_system_general'   => "${pkg}Tools::cfg_system_general",
@@ -275,6 +274,8 @@ sub core_methods {
         'restore_premature_cancel' => "${pkg}Tools::restore_premature_cancel",
         'adjust_sitepath'          => "${pkg}Tools::adjust_sitepath",
         'system_check'             => "${pkg}Tools::system_check",
+        'start_reboot'             => "${pkg}Tools::start_reboot",
+        'reboot'                   => "${pkg}Tools::reboot",
         'dialog_refresh_templates' =>
             "${pkg}Template::dialog_refresh_templates",
         'dialog_clone_blog' => "${pkg}Blog::clone",
@@ -326,9 +327,6 @@ sub core_methods {
         # declared in MT::App
         'update_widget_prefs' =>
             sub { return shift->update_widget_prefs(@_) },
-
-        ## DEPRECATED ##
-        'upload_userpic' => "${pkg}User::upload_userpic",
 
         ## MT7 - Content Data
         'view_content_data'    => "${pkg}ContentData::edit",
@@ -1173,6 +1171,7 @@ sub core_list_actions {
         'blog' => {
             refresh_blog_templates => {
                 label                   => "Refresh Template(s)",
+                order                   => 100,
                 continue_prompt_handler => sub {
                     MT->translate("_WARNING_REFRESH_TEMPLATES_FOR_BLOGS");
                 },
@@ -1193,7 +1192,7 @@ sub core_list_actions {
                 },
             },
             move_blogs => {
-                label         => "Move child site(s) ",
+                label         => "Move Child Site(s) ",
                 order         => 200,
                 code          => "${pkg}Website::dialog_move_blogs",
                 permit_action => 'move_blogs',
@@ -1207,6 +1206,7 @@ sub core_list_actions {
             },
             clone_blog => {
                 label         => "Clone Child Site",
+                order         => 150,
                 code          => "${pkg}Blog::clone",
                 permit_action => 'clone_blog',
                 max           => 1,
@@ -1272,6 +1272,7 @@ sub core_list_actions {
         'website' => {
             refresh_website_templates => {
                 label                   => "Refresh Template(s)",
+                order                   => 100,
                 continue_prompt_handler => sub {
                     MT->translate("_WARNING_REFRESH_TEMPLATES_FOR_BLOGS");
                 },
@@ -1341,7 +1342,7 @@ sub core_list_actions {
                 },
             },
             move_blogs => {
-                label         => "Move child site(s) ",
+                label         => "Move Child Site(s) ",
                 order         => 200,
                 code          => "${pkg}Website::dialog_move_blogs",
                 permit_action => 'move_blogs',
@@ -1355,6 +1356,7 @@ sub core_list_actions {
             },
             clone_blog => {
                 label         => "Clone Child Site",
+                order         => 150,
                 code          => "${pkg}Blog::clone",
                 permit_action => 'clone_blog',
                 max           => 1,
@@ -1604,10 +1606,13 @@ sub core_menu_actions {
             label => 'Search',
             href => sub {
                 my $blog_id     = $app->blog ? $app->blog->id : 0;
+                my $mode        = $app->param('__mode') || '';
+
+                return $app->uri(mode => 'search_replace', args => {blog_id => $blog_id}) if $mode eq 'search_replace';
+
                 my $search_apis = $app->registry("search_apis") or ();
                 my $app_type    = $app->param('_type');
                 if (!$app_type) {
-                    my $mode = $app->param('__mode');
                     # Replace list_*
                     if (!$app_type && $mode =~ /^list_/) {
                         ($app_type = $mode) =~ s/^list_(.*)$/$1/;
@@ -1625,17 +1630,19 @@ sub core_menu_actions {
                 my $_type;
                 if ($app_type && exists $search_apis->{$app_type}) {
                     my $set_type = 1;
-                    if (my $view = $search_apis->{$app_type}{view}) {
-                        if ($blog_id) {
-                            $set_type = 0 if $view ne 'blog';
-                        } else {
-                            $set_type = 0 if $view ne 'system';
+                    if (ref $search_apis->{$app_type}) {
+                        if (my $view = $search_apis->{$app_type}{view}) {
+                            if ($blog_id) {
+                                $set_type = 0 if $view ne 'blog';
+                            } else {
+                                $set_type = 0 if $view ne 'system';
+                            }
                         }
-                    }
-                    my $cond = $search_apis->{$app_type}{condition};
-                    if ($cond) {
-                        $cond = MT->handler_to_coderef($cond);
-                        $set_type = 0 unless $cond->();
+                        my $cond = $search_apis->{$app_type}{condition};
+                        if ($cond) {
+                            $cond = MT->handler_to_coderef($cond);
+                            $set_type = 0 unless $cond->();
+                        }
                     }
                     if ($set_type) {
                         $_type = $app_type;
@@ -1645,7 +1652,10 @@ sub core_menu_actions {
                 # get content type id
                 my $_content_type_id;
                 if ($_type && $_type eq 'content_data') {
-                    ($_content_type_id = $app->param('type')) =~ s/^content_data_(\d+)$/$1/;
+                    $_content_type_id = $app->param('content_type_id');
+                    if (!$_content_type_id && (($app->param('type') || '') =~ /^content_data_(\d+)$/)) {
+                        $_content_type_id = $1;
+                    }
                 }
                 $app->uri(
                     mode => 'search_replace',
@@ -2402,6 +2412,17 @@ sub core_menus {
                 return 0;
             },
             view => ['system'],
+        },
+        'tools:reboot' => {
+            label => "Reboot",
+            order => 1000,
+            mode  => 'start_reboot',
+            view  => ['system'],
+            condition => sub {
+                return 0 unless $ENV{"psgi.version"};
+                return 0 unless MT->app->user->is_superuser;
+                return 1;
+            },
         },
 
         'category_set:manage' => {
@@ -3292,6 +3313,7 @@ sub build_menus {
         $menu->{allowed} = 1;
         $menu->{current} = 0;
         $menu->{'id'}    = $id;
+        $menu->{order}   ||= 0;
 
         my @sub_ids = grep {m/^$id:/} keys %$menus;
         my @sub;
@@ -3302,6 +3324,8 @@ sub build_menus {
                 && !$theme_modify->{$sub_id};
             my $sub = $menus->{$sub_id};
             $sub->{current} = 0;
+            $sub->{order} ||= 0;
+            $sub->{mode}  ||= '';
 
             ## Keep a compatibility
             $sub->{view} = [ 'website', 'blog', 'system' ]
@@ -3855,22 +3879,6 @@ sub list_pref {
         $list_pref->{ 'order_' . $list_pref->{'order'} } = 1;
     }
     $app->request( "list_pref_$list", $list_pref );
-}
-
-sub make_feed_link {
-    my $app = shift;
-    my ( $view, $params ) = @_;
-    my $user = $app->user;
-    return if ( $user->api_password || '' ) eq '';
-
-    $params ||= {};
-    $params->{view}     = $view;
-    $params->{username} = $user->name;
-    $params->{token} = perl_sha1_digest_hex( 'feed:' . $user->api_password );
-    $app->base
-        . $app->mt_path
-        . $app->config('ActivityFeedScript')
-        . $app->uri_params( args => $params );
 }
 
 sub show_error {

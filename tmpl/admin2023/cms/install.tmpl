@@ -67,7 +67,7 @@
          id="admin_username"
          label="<__trans phrase="Username">"
          label_class="top-label">
-        <input type="text" id="admin_username" class="form-control text full required" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+        <input type="text" id="admin_username" class="form-control text full required" name="admin_username" value="<mt:var name="admin_username" escape="html">" autocorrect="off" autocapitalize="off" />
       </mtapp:setting>
 
       <mtapp:setting
@@ -94,7 +94,7 @@
              show_hint="1">
             <div class="form-check">
               <input type="checkbox" class="form-check-input" id="use_system_email" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" aria-describedby="systemEmail" />
-              <label class="form-check-label form-label" for="use_system_email">
+              <label class="form-check-label" for="use_system_email">
                 <__trans phrase="Use this as system email address">
               </label>
             </div>
@@ -138,7 +138,7 @@
          id="admin_username"
          label="<__trans phrase="Username">"
          label_class="top-label">
-        <input type="text" id="admin_username" class="form-control text full" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+        <input type="text" id="admin_username" class="form-control text full" name="admin_username" value="<mt:var name="admin_username" escape="html">" autocorrect="off" autocapitalize="off" />
       </mtapp:setting>
 
       <mtapp:setting
@@ -163,9 +163,9 @@
         <button
            type="submit"
            accesskey="s"
-           title="<__trans phrase="Finish install (s)">"
+           title="<__trans phrase="Next (s)">"
            class="save action primary button btn btn-primary">
-          <__trans phrase="Finish install">
+          <__trans phrase="Next Page">
         </button>
       </div>
     </form>

@@ -776,14 +776,14 @@ $.fn.mtEditInput = function(options) {
             $input = $('input#'+id);
         if ($input.val() && !$input.hasClass('show-input')) {
             $input
-                .before('<span class="'+id+'-text text-wrap ms-3"></span>')
+                .before('<span class="'+id+'-text text-wrap me-3"></span>')
                 .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'-text').text($input.val());
         }
         if (!$input.val() && $input.hasClass('hide-input')) {
             $input
-                .before('<span class="'+id+'-text text-wrap ms-3"></span>')
+                .before('<span class="'+id+'-text text-wrap me-3"></span>')
                 .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
         }
@@ -1194,10 +1194,23 @@ $.mtValidator('dialog', {
 
 $.mtValidateRules = {
     '.date': function ($e) {
-        return !$e.val() || /^\d{4}\-\d{2}\-\d{2}$/.test($e.val());
+        if ( $e.val() ) {
+          var matches = $e.val().match(/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/);
+          if ( !matches ) {
+            return false;
+          }
+          var y = Number(matches[1]);
+          var m = Number(matches[2]) - 1;
+          var d = Number(matches[3]);
+          var date = new Date(y, m, d);
+          if ( date.getFullYear() !== y || date.getMonth() !== m || date.getDate() !== d ) {
+            return false;
+          }
+        }
+        return true;
     },
     '.time': function ($e) {
-        return !$e.val() || /^\d{2}:\d{2}:\d{2}$/.test($e.val());
+        return !$e.val() || /^(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test($e.val());
     },
 
     // RegExp code taken from http://bassistance.de/jquery-plugins/jquery-plugin-validation/
@@ -1535,7 +1548,7 @@ $.fn.mtEditInputBlock = function(options) {
           $time = $('input#'+id);
       if (!$div.hasClass('show-input')) {
           $div
-              .before('<span class="'+id+'-text ms-2"></span>')
+              .before('<span class="'+id+'-text me-2"></span>')
               .after('<button type="button" id="mt-edit-'+id+'" class="btn btn-default button mt-edit-field-button">'+opts.edit+'</button>')
               .hide();
           $('span.'+id+'-text').text(opts.text);
@@ -1599,6 +1612,7 @@ $.fn.mtModal.open = function (url, options) {
 $.fn.mtModal.close = function (url) {
   var $modal = window.top.jQuery('.mt-modal');
   $modal.modal('hide');
+  $(window.top).trigger('dialogDisposed');
   if (url) window.top.location = url;
   return false;
 };
@@ -1691,8 +1705,10 @@ function openModal(href, opts) {
   $modal.find('.modal-content').append($iframe);
 
 //   $modal.modal(getModalOptions(opts));
-  var $bsmodal = new bootstrap.Modal($modal.get(0), getModalOptions(opts));
-  $bsmodal.show();
+  var $bsmodal = bootstrap.Modal.getOrCreateInstance($modal.get(0), getModalOptions(opts));
+  if (!$bsmodal._element.classList.contains('show')) {
+    $bsmodal.show();
+  }
 }
 
 function getNextIframeId() {
@@ -1743,10 +1759,24 @@ function openModalWithoutForm(href, opts) {
 
 }
 
+var resizeModalRetryCount = 0;
+var maxResizeModalRetryCount = 3;
 function resizeModal() {
   var modalHeight;
   var modalBodyHeight;
   var $iframeContents = window.top.jQuery('iframe.embed-responsive-item:visible').contents();
+
+  // if not retrieved, retry for `maxResizeModalRetryCount` times.
+  if ($iframeContents.length === 0) {
+    if (resizeModalRetryCount < maxResizeModalRetryCount) {
+      // If the iframe is not yet visible, retry after some time.
+      resizeModalRetryCount++;
+      return setTimeout(resizeModal, 100);
+    }
+  }
+  // reset retry count.
+  resizeModalRetryCount = 0;
+
   var $modalBody = $iframeContents.find('body .modal-body');
   if ( MT.Util.isMobileView() ) {
     var mobileScreenHeight = window.top.jQuery(window.top).height();

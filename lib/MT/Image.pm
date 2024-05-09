@@ -146,23 +146,46 @@ sub is_valid_image {
     return 1;
 }
 
+sub _needs_rescan {
+    my ($class, $exif) = @_;
+    require MT::Asset;
+    my $ext = $exif->GetValue('FileTypeExtension') or return;
+    my $handler = MT::Asset->handler_for_file("dummy.$ext") or return;
+    return $handler =~ /^MT::Asset::(?:Image|Video)/;
+}
+
 sub get_image_info {
     my $class  = shift;
     my %params = @_;
 
     require Image::ExifTool;
-    my $info;
+    my $exif = Image::ExifTool->new;
+    $exif->Options(FastScan => 3);
+    my $res;
     if ( my $fh = $params{Fh} ) {
         seek $fh, 0, 0;
         require File::RandomAccess;
-        $info = Image::ExifTool::ImageInfo(File::RandomAccess->new($fh));
+        my $file = File::RandomAccess->new($fh);
+        $res = $exif->ExtractInfo($file);
         seek $fh, 0, 0;
+        if ($class->_needs_rescan($exif)) {
+            $exif->Options(FastScan => 0);
+            $res = $exif->ExtractInfo($file);
+            seek $fh, 0, 0;
+        }
     }
     elsif ( my $filename = $params{Filename} ) {
-        $info = Image::ExifTool::ImageInfo($filename);
+        $res = $exif->ExtractInfo($filename);
+        if ($class->_needs_rescan($exif)) {
+            $exif->Options(FastScan => 0);
+            $res = $exif->ExtractInfo($filename);
+        }
     }
-    return unless $info;
-    return int($info->{ImageWidth} || 0), int($info->{ImageHeight} || 0), $info->{FileTypeExtension};
+    return unless $res;
+    my $width  = int($exif->GetValue('ImageWidth')  || 0);
+    my $height = int($exif->GetValue('ImageHeight') || 0);
+    my $ext    = $exif->GetValue('FileTypeExtension');
+    return wantarray ? ($width, $height, $ext) : {width => $width, height => $height, ext => $ext};
 }
 
 sub get_image_type {
@@ -180,7 +203,12 @@ sub check_upload {
 
     my $fh = $params{Fh};
 
-    my ( $w, $h, $id ) = $class->get_image_info(@_);
+    my ( $w, $h, $id );
+    if ($params{Info}) {
+        ($w, $h, $id) = @{$params{Info}}{qw/width height ext/};
+    } else {
+        ($w, $h, $id) = $class->get_image_info(@_);
+    }
 
     my $write_file = sub {
         $params{Fmgr}->put( $fh, $params{Local}, 'upload' );
@@ -217,6 +245,8 @@ sub check_upload {
             && defined($h)
             && ( $w > $max_dim || $h > $max_dim ) )
         {
+            require MT::Util::Deprecated;
+            MT::Util::Deprecated::warning(name => 'MaxDim support', since => '8.3.0');
             my $uploaded_data = eval { local $/; <$fh> };
             my $img = $class->new( Data => $uploaded_data )
                 or return $class->error( $class->errstr );
@@ -262,7 +292,8 @@ sub crop {
 sub remove_metadata {
     my ( $class, $file ) = @_;
 
-    return 1 if lc($file) !~ /\.(jpe?g|tiff?|webp)$/;
+    my $lc_file = lc($file);
+    return 1 if $lc_file !~ /\.(jpe?g|tiff?|webp|png)$/;
 
     require Image::ExifTool;
     my $exif = Image::ExifTool->new;
@@ -277,8 +308,9 @@ sub remove_metadata {
     my $orientation = $exif->GetValue('Orientation');
 
     $exif->SetNewValue('*');
-    if (lc($file) =~ /\.(jpe?g|webp)$/) {
-        $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
+    if ($lc_file =~ /\.(jpe?g|webp|png)$/) {
+        $exif->SetNewValue( 'PNG:*', undef, Replace => 2 ) if $lc_file =~ /png/;
+        $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 ) if $lc_file =~ /jpe?g/;
         $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
         $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
     }

@@ -255,4 +255,40 @@ subtest 'mode = delete' => sub {
     $app->has_invalid_request("delete by non permitted user");
 };
 
+subtest 'mode = dialog_list_deprecated_log' => sub {
+    for my $sig (keys %MT::Plugins) {
+        next unless MT->has_plugin($sig);
+        my $plugin = $MT::Plugins{$sig}{object};
+        next unless $plugin->isa('MT::Plugin');
+
+        MT::Test::Permission->make_log(
+            blog_id  => 0,
+            class    => 'plugin',
+            category => $plugin->log_category_for_deprecated_fn,
+            message  => "${sig} plugin is using deprecaged call.",
+            metadata => 'This is a deprecated log message.',
+        );
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode     => 'dialog_list_deprecated_log',
+            blog_id    => $blog->id,
+            dialog     => 1,
+            plugin_sig => $sig,
+        });
+        $app->has_no_permission_error("$sig: dialog_list_deprecated_log by admin");
+
+        $app->login($egawa);
+        my $res = $app->get_ok({
+            __mode     => 'dialog_list_deprecated_log',
+            blog_id    => $blog->id,
+            dialog     => 1,
+            plugin_sig => $sig,
+        });
+
+        $app->has_permission_error("$sig: dialog_list_deprecated_log by other permission");
+    }
+};
+
 done_testing();

@@ -39,14 +39,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.9', '7.0054' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '8.001000', '8.0000' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.9.9',              '__PRODUCT_VERSION_ID__',
+        '8.1.0',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -64,19 +64,14 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 9;
+        $RELEASE_NUMBER = 0;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5404';
+        $RELEASE_VERSION_ID = '';
     }
 
     $DebugMode = 0;
-
-    # Alias lowercase to uppercase package; note: this is an equivalence
-    # as opposed to having @mt::ISA set to 'MT'. so @mt::Plugins would
-    # resolve as well as @MT::Plugins.
-    *{mt::} = *{MT::};
 
     # Alias these; Components is the preferred array for MT 4
     *Plugins = \@Components;
@@ -132,6 +127,9 @@ sub id {
 }
 
 sub version_slug {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.3.0');
+
     return MT->translate_templatized(<<"SLUG");
 <__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
 <__trans phrase="Version [_1]" params="$VERSION_ID">
@@ -419,8 +417,18 @@ sub log {
         : $log->level == MT::Log::SECURITY() ? 'error'
         :                                      'none';
     my $message  = $log->message;
+    if ($message =~ /Can't locate/) {
+        $message =~ s!\(you may need to install [^)]+\)\s+\(\@INC [^)]+\)!!s;
+        $log->message($message);
+    }
     my $metadata = $log->metadata;
+    if ($metadata and $metadata =~ /Can't locate/) {
+        $metadata =~ s!\(you may need to install [^)]+\)\s+\(\@INC [^)]+\)!!s;
+        $log->metadata($metadata);
+    }
     $message .= " ($metadata)" if defined $metadata && $metadata ne '';
+    my $class_category = join ':', grep {defined $_ and $_ ne ''} ($log->class, $log->category);
+    $message = "[$class_category] $message" if $class_category;
     MT::Util::Log->$method($message);
 
     $log->save();
@@ -1321,7 +1329,7 @@ sub init_plugins {
 
     my $cfg          = $mt->config;
     my $use_plugins  = $cfg->UsePlugins;
-    my @PluginPaths  = $cfg->PluginPath;
+    my @PluginPaths  = ($cfg->UserPluginPath, $cfg->PluginPath);
     my $PluginSwitch = $cfg->PluginSwitch || {};
     my $plugin_sigs  = join ',', sort keys %$PluginSwitch;
     $mt->_init_plugins_core( $PluginSwitch, $use_plugins, \@PluginPaths );
@@ -1419,7 +1427,10 @@ sub init_plugins {
         eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin';";
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
         if ($@) {
-            $Plugins{$plugin_sig}{error} = $@;
+            $Plugins{$plugin_sig}{error} = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
+            $Plugins{$plugin_sig}{system_error} = $@;
+            $Plugins{$plugin_sig}{enabled} = 0;
+            delete $PluginSwitch->{$plugin_sig};
             return;
         }
         else {
@@ -1497,6 +1508,7 @@ sub init_plugins {
                     $plugin_full_path
                         = File::Spec->catfile( $PluginPath, $plugin );
                     if ( -f $plugin_full_path ) {
+                        next if exists $Plugins{$plugin} && $Plugins{$plugin}{error};
                         $plugin_envelope = $plugin_lastdir;
                         if ($plugin_full_path =~ /\.pl$/) {
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_full_path, $plugin );
@@ -1540,6 +1552,7 @@ sub init_plugins {
                             $plugin );
                         if ( -f $plugin_file ) {
                             my $sig = $plugin_dir . '/' . $plugin;
+                            next if exists $Plugins{$sig} && $Plugins{$sig}{error};
                             my $obj = __load_plugin( $mt, $timer, $PluginSwitch, $use_plugins, $plugin_file, $sig );
                             push @loaded_plugins, $obj if $obj;
                             push @errors, [$plugin_full_path, $Plugins{$sig}{error}] if $Plugins{$sig}{error};
@@ -1948,6 +1961,7 @@ sub apply_text_filters {
     my ( $str, $filters, @extra ) = @_;
     my $all_filters = $mt->all_text_filters;
     for my $filter (@$filters) {
+        next unless defined $filter;
         my $f = $all_filters->{$filter} or next;
         my $code = $f->{code} || $f->{handler};
         unless ( ref($code) eq 'CODE' ) {
@@ -2046,7 +2060,7 @@ sub template_paths {
             push @paths, File::Spec->catdir( $mt->mt_dir, $mt->{plugin_template_path} );
         }
     }
-    my @alt_paths = $mt->config('AltTemplatePath');
+    my @alt_paths = ($mt->config('UserTemplatePath'), $mt->config('AltTemplatePath'));
     foreach my $alt_path (@alt_paths) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
             if ($mt->{template_dir}) {
@@ -2118,6 +2132,42 @@ sub load_global_tmpl {
     require MT::Template;
     my $tmpl = MT::Template->load( $terms, $args );
     $app->set_default_tmpl_params($tmpl) if $tmpl;
+    $tmpl;
+}
+
+sub load_core_tmpl {
+    my $mt = shift;
+    local $mt->{component} = 'core';
+    $mt->load_tmpl(@_);
+}
+
+sub load_cached_tmpl {
+    my $mt = shift;
+    if ( exists( $mt->{component} ) && ( lc( $mt->{component} ) ne 'core' ) )
+    {
+        if ( my $c = $mt->component( $mt->{component} ) ) {
+            return $c->load_cached_tmpl(@_);
+        }
+    }
+
+    my ( $file, @p ) = @_;
+    my $param;
+    if ( @p && ( ref( $p[$#p] ) eq 'HASH' ) ) {
+        $param = pop @p;
+    }
+    my ($tmpl, $cache);
+    if (!ref $file) {
+        require MT::Request;
+        $cache = MT::Request->instance->{__stash}{load_tmpl_file_cache} ||= {};
+        if ($cache->{core}{$file}) {
+            $tmpl = $cache->{core}{$file};
+        }
+    }
+    $tmpl ||= $mt->load_tmpl($file, @p) or return;
+    if ($cache) {
+        $cache->{core}{$file} = $tmpl;
+    }
+    $tmpl->param($param) if $param;
     $tmpl;
 }
 
@@ -2380,27 +2430,19 @@ sub new_ua {
     my ($opt) = @_;
     $opt ||= {};
     my $lwp_class = 'LWP::UserAgent';
-    if ( $opt->{paranoid} ) {
-        eval { require LWPx::ParanoidAgent; };
-        $lwp_class = 'LWPx::ParanoidAgent' unless $@;
-    }
     eval "require $lwp_class;";
     return undef if $@;
     my $cfg      = $class->config;
     my $max_size = exists $opt->{max_size} ? $opt->{max_size} : 100_000;
-    my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout
-        || $cfg->PingTimeout;
-    my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy
-        || $cfg->PingProxy;
+    my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout;
+    my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy;
     my $sec_proxy
         = exists $opt->{sec_proxy} ? $opt->{sec_proxy} : $cfg->HTTPSProxy;
     my $no_proxy
-        = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy
-        || $cfg->PingNoProxy;
+        = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy;
     my $agent = $opt->{agent} || $MT::PRODUCT_NAME . '/' . $MT::VERSION;
     my $interface
-        = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface
-        || $cfg->PingInterface;
+        = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface;
 
     if ( my $localaddr = $interface ) {
         @LWP::Protocol::http::EXTRA_SOCK_OPTS = (

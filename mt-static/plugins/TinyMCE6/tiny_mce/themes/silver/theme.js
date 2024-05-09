@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.5.0 (2023-06-12)
+ * TinyMCE version 6.7.3 (2023-11-15)
  */
 
 (function () {
@@ -616,6 +616,7 @@
     const documentElement = element => SugarElement.fromDom(documentOrOwner(element).dom.documentElement);
     const defaultView = element => SugarElement.fromDom(documentOrOwner(element).dom.defaultView);
     const parent = element => Optional.from(element.dom.parentNode).map(SugarElement.fromDom);
+    const parentNode = element => parent(element);
     const parentElement = element => Optional.from(element.dom.parentElement).map(SugarElement.fromDom);
     const parents = (element, isRoot) => {
       const stop = isFunction(isRoot) ? isRoot : never;
@@ -6203,6 +6204,8 @@
         const navigate = tabbingConfig.cyclic ? cycleNext : tryNext;
         return go(component, simulatedEvent, tabbingConfig, navigate);
       };
+      const isFirstChild = elem => parentNode(elem).bind(firstChild).exists(child => eq(child, elem));
+      const goFromPseudoTabstop = (component, simulatedEvent, tabbingConfig) => findCurrent(component, tabbingConfig).filter(elem => !tabbingConfig.useTabstopAt(elem)).bind(elem => (isFirstChild(elem) ? goBackwards : goForwards)(component, simulatedEvent, tabbingConfig));
       const execute = (component, simulatedEvent, tabbingConfig) => tabbingConfig.onEnter.bind(f => f(component, simulatedEvent));
       const exit = (component, simulatedEvent, tabbingConfig) => tabbingConfig.onEscape.bind(f => f(component, simulatedEvent));
       const getKeydownRules = constant$1([
@@ -6216,7 +6219,10 @@
           inSet(ENTER)
         ]), execute)
       ]);
-      const getKeyupRules = constant$1([rule(inSet(ESCAPE), exit)]);
+      const getKeyupRules = constant$1([
+        rule(inSet(ESCAPE), exit),
+        rule(inSet(TAB), goFromPseudoTabstop)
+      ]);
       return typical(schema, NoState.init, getKeydownRules, getKeyupRules, () => Optional.some(focusIn));
     };
 
@@ -8034,6 +8040,34 @@
       ]
     });
 
+    const getAttrs = elem => {
+      const attributes = elem.dom.attributes !== undefined ? elem.dom.attributes : [];
+      return foldl(attributes, (b, attr) => {
+        if (attr.name === 'class') {
+          return b;
+        } else {
+          return {
+            ...b,
+            [attr.name]: attr.value
+          };
+        }
+      }, {});
+    };
+    const getClasses = elem => Array.prototype.slice.call(elem.dom.classList, 0);
+    const fromHtml = html => {
+      const elem = SugarElement.fromHtml(html);
+      const children$1 = children(elem);
+      const attrs = getAttrs(elem);
+      const classes = getClasses(elem);
+      const contents = children$1.length === 0 ? {} : { innerHtml: get$9(elem) };
+      return {
+        tag: name$3(elem),
+        classes,
+        attributes: attrs,
+        ...contents
+      };
+    };
+
     const record = spec => {
       const uid = isSketchSpec(spec) && hasNonNullableKey(spec, 'uid') ? spec.uid : generate$5('memento');
       const get = anyInSystem => anyInSystem.getSystem().getByUid(uid).getOrDie();
@@ -8048,6 +8082,1571 @@
         asSpec
       };
     };
+
+    function _typeof(obj) {
+      '@babel/helpers - typeof';
+      return _typeof = 'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator ? function (obj) {
+        return typeof obj;
+      } : function (obj) {
+        return obj && 'function' == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj;
+      }, _typeof(obj);
+    }
+    function _setPrototypeOf(o, p) {
+      _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+        o.__proto__ = p;
+        return o;
+      };
+      return _setPrototypeOf(o, p);
+    }
+    function _isNativeReflectConstruct() {
+      if (typeof Reflect === 'undefined' || !Reflect.construct)
+        return false;
+      if (Reflect.construct.sham)
+        return false;
+      if (typeof Proxy === 'function')
+        return true;
+      try {
+        Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {
+        }));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+    function _construct(Parent, args, Class) {
+      if (_isNativeReflectConstruct()) {
+        _construct = Reflect.construct;
+      } else {
+        _construct = function _construct(Parent, args, Class) {
+          var a = [null];
+          a.push.apply(a, args);
+          var Constructor = Function.bind.apply(Parent, a);
+          var instance = new Constructor();
+          if (Class)
+            _setPrototypeOf(instance, Class.prototype);
+          return instance;
+        };
+      }
+      return _construct.apply(null, arguments);
+    }
+    function _toConsumableArray(arr) {
+      return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+    }
+    function _arrayWithoutHoles(arr) {
+      if (Array.isArray(arr))
+        return _arrayLikeToArray(arr);
+    }
+    function _iterableToArray(iter) {
+      if (typeof Symbol !== 'undefined' && iter[Symbol.iterator] != null || iter['@@iterator'] != null)
+        return Array.from(iter);
+    }
+    function _unsupportedIterableToArray(o, minLen) {
+      if (!o)
+        return;
+      if (typeof o === 'string')
+        return _arrayLikeToArray(o, minLen);
+      var n = Object.prototype.toString.call(o).slice(8, -1);
+      if (n === 'Object' && o.constructor)
+        n = o.constructor.name;
+      if (n === 'Map' || n === 'Set')
+        return Array.from(o);
+      if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+        return _arrayLikeToArray(o, minLen);
+    }
+    function _arrayLikeToArray(arr, len) {
+      if (len == null || len > arr.length)
+        len = arr.length;
+      for (var i = 0, arr2 = new Array(len); i < len; i++)
+        arr2[i] = arr[i];
+      return arr2;
+    }
+    function _nonIterableSpread() {
+      throw new TypeError('Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.');
+    }
+    var hasOwnProperty = Object.hasOwnProperty, setPrototypeOf = Object.setPrototypeOf, isFrozen = Object.isFrozen, getPrototypeOf = Object.getPrototypeOf, getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+    var freeze = Object.freeze, seal = Object.seal, create$1 = Object.create;
+    var _ref = typeof Reflect !== 'undefined' && Reflect, apply = _ref.apply, construct = _ref.construct;
+    if (!apply) {
+      apply = function apply(fun, thisValue, args) {
+        return fun.apply(thisValue, args);
+      };
+    }
+    if (!freeze) {
+      freeze = function freeze(x) {
+        return x;
+      };
+    }
+    if (!seal) {
+      seal = function seal(x) {
+        return x;
+      };
+    }
+    if (!construct) {
+      construct = function construct(Func, args) {
+        return _construct(Func, _toConsumableArray(args));
+      };
+    }
+    var arrayForEach = unapply(Array.prototype.forEach);
+    var arrayPop = unapply(Array.prototype.pop);
+    var arrayPush = unapply(Array.prototype.push);
+    var stringToLowerCase = unapply(String.prototype.toLowerCase);
+    var stringMatch = unapply(String.prototype.match);
+    var stringReplace = unapply(String.prototype.replace);
+    var stringIndexOf = unapply(String.prototype.indexOf);
+    var stringTrim = unapply(String.prototype.trim);
+    var regExpTest = unapply(RegExp.prototype.test);
+    var typeErrorCreate = unconstruct(TypeError);
+    function unapply(func) {
+      return function (thisArg) {
+        for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+          args[_key - 1] = arguments[_key];
+        }
+        return apply(func, thisArg, args);
+      };
+    }
+    function unconstruct(func) {
+      return function () {
+        for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+          args[_key2] = arguments[_key2];
+        }
+        return construct(func, args);
+      };
+    }
+    function addToSet(set, array) {
+      if (setPrototypeOf) {
+        setPrototypeOf(set, null);
+      }
+      var l = array.length;
+      while (l--) {
+        var element = array[l];
+        if (typeof element === 'string') {
+          var lcElement = stringToLowerCase(element);
+          if (lcElement !== element) {
+            if (!isFrozen(array)) {
+              array[l] = lcElement;
+            }
+            element = lcElement;
+          }
+        }
+        set[element] = true;
+      }
+      return set;
+    }
+    function clone(object) {
+      var newObject = create$1(null);
+      var property;
+      for (property in object) {
+        if (apply(hasOwnProperty, object, [property])) {
+          newObject[property] = object[property];
+        }
+      }
+      return newObject;
+    }
+    function lookupGetter(object, prop) {
+      while (object !== null) {
+        var desc = getOwnPropertyDescriptor(object, prop);
+        if (desc) {
+          if (desc.get) {
+            return unapply(desc.get);
+          }
+          if (typeof desc.value === 'function') {
+            return unapply(desc.value);
+          }
+        }
+        object = getPrototypeOf(object);
+      }
+      function fallbackValue(element) {
+        console.warn('fallback value for', element);
+        return null;
+      }
+      return fallbackValue;
+    }
+    var html$1 = freeze([
+      'a',
+      'abbr',
+      'acronym',
+      'address',
+      'area',
+      'article',
+      'aside',
+      'audio',
+      'b',
+      'bdi',
+      'bdo',
+      'big',
+      'blink',
+      'blockquote',
+      'body',
+      'br',
+      'button',
+      'canvas',
+      'caption',
+      'center',
+      'cite',
+      'code',
+      'col',
+      'colgroup',
+      'content',
+      'data',
+      'datalist',
+      'dd',
+      'decorator',
+      'del',
+      'details',
+      'dfn',
+      'dialog',
+      'dir',
+      'div',
+      'dl',
+      'dt',
+      'element',
+      'em',
+      'fieldset',
+      'figcaption',
+      'figure',
+      'font',
+      'footer',
+      'form',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'head',
+      'header',
+      'hgroup',
+      'hr',
+      'html',
+      'i',
+      'img',
+      'input',
+      'ins',
+      'kbd',
+      'label',
+      'legend',
+      'li',
+      'main',
+      'map',
+      'mark',
+      'marquee',
+      'menu',
+      'menuitem',
+      'meter',
+      'nav',
+      'nobr',
+      'ol',
+      'optgroup',
+      'option',
+      'output',
+      'p',
+      'picture',
+      'pre',
+      'progress',
+      'q',
+      'rp',
+      'rt',
+      'ruby',
+      's',
+      'samp',
+      'section',
+      'select',
+      'shadow',
+      'small',
+      'source',
+      'spacer',
+      'span',
+      'strike',
+      'strong',
+      'style',
+      'sub',
+      'summary',
+      'sup',
+      'table',
+      'tbody',
+      'td',
+      'template',
+      'textarea',
+      'tfoot',
+      'th',
+      'thead',
+      'time',
+      'tr',
+      'track',
+      'tt',
+      'u',
+      'ul',
+      'var',
+      'video',
+      'wbr'
+    ]);
+    var svg$1 = freeze([
+      'svg',
+      'a',
+      'altglyph',
+      'altglyphdef',
+      'altglyphitem',
+      'animatecolor',
+      'animatemotion',
+      'animatetransform',
+      'circle',
+      'clippath',
+      'defs',
+      'desc',
+      'ellipse',
+      'filter',
+      'font',
+      'g',
+      'glyph',
+      'glyphref',
+      'hkern',
+      'image',
+      'line',
+      'lineargradient',
+      'marker',
+      'mask',
+      'metadata',
+      'mpath',
+      'path',
+      'pattern',
+      'polygon',
+      'polyline',
+      'radialgradient',
+      'rect',
+      'stop',
+      'style',
+      'switch',
+      'symbol',
+      'text',
+      'textpath',
+      'title',
+      'tref',
+      'tspan',
+      'view',
+      'vkern'
+    ]);
+    var svgFilters = freeze([
+      'feBlend',
+      'feColorMatrix',
+      'feComponentTransfer',
+      'feComposite',
+      'feConvolveMatrix',
+      'feDiffuseLighting',
+      'feDisplacementMap',
+      'feDistantLight',
+      'feFlood',
+      'feFuncA',
+      'feFuncB',
+      'feFuncG',
+      'feFuncR',
+      'feGaussianBlur',
+      'feImage',
+      'feMerge',
+      'feMergeNode',
+      'feMorphology',
+      'feOffset',
+      'fePointLight',
+      'feSpecularLighting',
+      'feSpotLight',
+      'feTile',
+      'feTurbulence'
+    ]);
+    var svgDisallowed = freeze([
+      'animate',
+      'color-profile',
+      'cursor',
+      'discard',
+      'fedropshadow',
+      'font-face',
+      'font-face-format',
+      'font-face-name',
+      'font-face-src',
+      'font-face-uri',
+      'foreignobject',
+      'hatch',
+      'hatchpath',
+      'mesh',
+      'meshgradient',
+      'meshpatch',
+      'meshrow',
+      'missing-glyph',
+      'script',
+      'set',
+      'solidcolor',
+      'unknown',
+      'use'
+    ]);
+    var mathMl$1 = freeze([
+      'math',
+      'menclose',
+      'merror',
+      'mfenced',
+      'mfrac',
+      'mglyph',
+      'mi',
+      'mlabeledtr',
+      'mmultiscripts',
+      'mn',
+      'mo',
+      'mover',
+      'mpadded',
+      'mphantom',
+      'mroot',
+      'mrow',
+      'ms',
+      'mspace',
+      'msqrt',
+      'mstyle',
+      'msub',
+      'msup',
+      'msubsup',
+      'mtable',
+      'mtd',
+      'mtext',
+      'mtr',
+      'munder',
+      'munderover'
+    ]);
+    var mathMlDisallowed = freeze([
+      'maction',
+      'maligngroup',
+      'malignmark',
+      'mlongdiv',
+      'mscarries',
+      'mscarry',
+      'msgroup',
+      'mstack',
+      'msline',
+      'msrow',
+      'semantics',
+      'annotation',
+      'annotation-xml',
+      'mprescripts',
+      'none'
+    ]);
+    var text$1 = freeze(['#text']);
+    var html = freeze([
+      'accept',
+      'action',
+      'align',
+      'alt',
+      'autocapitalize',
+      'autocomplete',
+      'autopictureinpicture',
+      'autoplay',
+      'background',
+      'bgcolor',
+      'border',
+      'capture',
+      'cellpadding',
+      'cellspacing',
+      'checked',
+      'cite',
+      'class',
+      'clear',
+      'color',
+      'cols',
+      'colspan',
+      'controls',
+      'controlslist',
+      'coords',
+      'crossorigin',
+      'datetime',
+      'decoding',
+      'default',
+      'dir',
+      'disabled',
+      'disablepictureinpicture',
+      'disableremoteplayback',
+      'download',
+      'draggable',
+      'enctype',
+      'enterkeyhint',
+      'face',
+      'for',
+      'headers',
+      'height',
+      'hidden',
+      'high',
+      'href',
+      'hreflang',
+      'id',
+      'inputmode',
+      'integrity',
+      'ismap',
+      'kind',
+      'label',
+      'lang',
+      'list',
+      'loading',
+      'loop',
+      'low',
+      'max',
+      'maxlength',
+      'media',
+      'method',
+      'min',
+      'minlength',
+      'multiple',
+      'muted',
+      'name',
+      'nonce',
+      'noshade',
+      'novalidate',
+      'nowrap',
+      'open',
+      'optimum',
+      'pattern',
+      'placeholder',
+      'playsinline',
+      'poster',
+      'preload',
+      'pubdate',
+      'radiogroup',
+      'readonly',
+      'rel',
+      'required',
+      'rev',
+      'reversed',
+      'role',
+      'rows',
+      'rowspan',
+      'spellcheck',
+      'scope',
+      'selected',
+      'shape',
+      'size',
+      'sizes',
+      'span',
+      'srclang',
+      'start',
+      'src',
+      'srcset',
+      'step',
+      'style',
+      'summary',
+      'tabindex',
+      'title',
+      'translate',
+      'type',
+      'usemap',
+      'valign',
+      'value',
+      'width',
+      'xmlns',
+      'slot'
+    ]);
+    var svg = freeze([
+      'accent-height',
+      'accumulate',
+      'additive',
+      'alignment-baseline',
+      'ascent',
+      'attributename',
+      'attributetype',
+      'azimuth',
+      'basefrequency',
+      'baseline-shift',
+      'begin',
+      'bias',
+      'by',
+      'class',
+      'clip',
+      'clippathunits',
+      'clip-path',
+      'clip-rule',
+      'color',
+      'color-interpolation',
+      'color-interpolation-filters',
+      'color-profile',
+      'color-rendering',
+      'cx',
+      'cy',
+      'd',
+      'dx',
+      'dy',
+      'diffuseconstant',
+      'direction',
+      'display',
+      'divisor',
+      'dur',
+      'edgemode',
+      'elevation',
+      'end',
+      'fill',
+      'fill-opacity',
+      'fill-rule',
+      'filter',
+      'filterunits',
+      'flood-color',
+      'flood-opacity',
+      'font-family',
+      'font-size',
+      'font-size-adjust',
+      'font-stretch',
+      'font-style',
+      'font-variant',
+      'font-weight',
+      'fx',
+      'fy',
+      'g1',
+      'g2',
+      'glyph-name',
+      'glyphref',
+      'gradientunits',
+      'gradienttransform',
+      'height',
+      'href',
+      'id',
+      'image-rendering',
+      'in',
+      'in2',
+      'k',
+      'k1',
+      'k2',
+      'k3',
+      'k4',
+      'kerning',
+      'keypoints',
+      'keysplines',
+      'keytimes',
+      'lang',
+      'lengthadjust',
+      'letter-spacing',
+      'kernelmatrix',
+      'kernelunitlength',
+      'lighting-color',
+      'local',
+      'marker-end',
+      'marker-mid',
+      'marker-start',
+      'markerheight',
+      'markerunits',
+      'markerwidth',
+      'maskcontentunits',
+      'maskunits',
+      'max',
+      'mask',
+      'media',
+      'method',
+      'mode',
+      'min',
+      'name',
+      'numoctaves',
+      'offset',
+      'operator',
+      'opacity',
+      'order',
+      'orient',
+      'orientation',
+      'origin',
+      'overflow',
+      'paint-order',
+      'path',
+      'pathlength',
+      'patterncontentunits',
+      'patterntransform',
+      'patternunits',
+      'points',
+      'preservealpha',
+      'preserveaspectratio',
+      'primitiveunits',
+      'r',
+      'rx',
+      'ry',
+      'radius',
+      'refx',
+      'refy',
+      'repeatcount',
+      'repeatdur',
+      'restart',
+      'result',
+      'rotate',
+      'scale',
+      'seed',
+      'shape-rendering',
+      'specularconstant',
+      'specularexponent',
+      'spreadmethod',
+      'startoffset',
+      'stddeviation',
+      'stitchtiles',
+      'stop-color',
+      'stop-opacity',
+      'stroke-dasharray',
+      'stroke-dashoffset',
+      'stroke-linecap',
+      'stroke-linejoin',
+      'stroke-miterlimit',
+      'stroke-opacity',
+      'stroke',
+      'stroke-width',
+      'style',
+      'surfacescale',
+      'systemlanguage',
+      'tabindex',
+      'targetx',
+      'targety',
+      'transform',
+      'transform-origin',
+      'text-anchor',
+      'text-decoration',
+      'text-rendering',
+      'textlength',
+      'type',
+      'u1',
+      'u2',
+      'unicode',
+      'values',
+      'viewbox',
+      'visibility',
+      'version',
+      'vert-adv-y',
+      'vert-origin-x',
+      'vert-origin-y',
+      'width',
+      'word-spacing',
+      'wrap',
+      'writing-mode',
+      'xchannelselector',
+      'ychannelselector',
+      'x',
+      'x1',
+      'x2',
+      'xmlns',
+      'y',
+      'y1',
+      'y2',
+      'z',
+      'zoomandpan'
+    ]);
+    var mathMl = freeze([
+      'accent',
+      'accentunder',
+      'align',
+      'bevelled',
+      'close',
+      'columnsalign',
+      'columnlines',
+      'columnspan',
+      'denomalign',
+      'depth',
+      'dir',
+      'display',
+      'displaystyle',
+      'encoding',
+      'fence',
+      'frame',
+      'height',
+      'href',
+      'id',
+      'largeop',
+      'length',
+      'linethickness',
+      'lspace',
+      'lquote',
+      'mathbackground',
+      'mathcolor',
+      'mathsize',
+      'mathvariant',
+      'maxsize',
+      'minsize',
+      'movablelimits',
+      'notation',
+      'numalign',
+      'open',
+      'rowalign',
+      'rowlines',
+      'rowspacing',
+      'rowspan',
+      'rspace',
+      'rquote',
+      'scriptlevel',
+      'scriptminsize',
+      'scriptsizemultiplier',
+      'selection',
+      'separator',
+      'separators',
+      'stretchy',
+      'subscriptshift',
+      'supscriptshift',
+      'symmetric',
+      'voffset',
+      'width',
+      'xmlns'
+    ]);
+    var xml = freeze([
+      'xlink:href',
+      'xml:id',
+      'xlink:title',
+      'xml:space',
+      'xmlns:xlink'
+    ]);
+    var MUSTACHE_EXPR = seal(/\{\{[\w\W]*|[\w\W]*\}\}/gm);
+    var ERB_EXPR = seal(/<%[\w\W]*|[\w\W]*%>/gm);
+    var DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]/);
+    var ARIA_ATTR = seal(/^aria-[\-\w]+$/);
+    var IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i);
+    var IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
+    var ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g);
+    var DOCTYPE_NAME = seal(/^html$/i);
+    var getGlobal = function getGlobal() {
+      return typeof window === 'undefined' ? null : window;
+    };
+    var _createTrustedTypesPolicy = function _createTrustedTypesPolicy(trustedTypes, document) {
+      if (_typeof(trustedTypes) !== 'object' || typeof trustedTypes.createPolicy !== 'function') {
+        return null;
+      }
+      var suffix = null;
+      var ATTR_NAME = 'data-tt-policy-suffix';
+      if (document.currentScript && document.currentScript.hasAttribute(ATTR_NAME)) {
+        suffix = document.currentScript.getAttribute(ATTR_NAME);
+      }
+      var policyName = 'dompurify' + (suffix ? '#' + suffix : '');
+      try {
+        return trustedTypes.createPolicy(policyName, {
+          createHTML: function createHTML(html) {
+            return html;
+          }
+        });
+      } catch (_) {
+        console.warn('TrustedTypes policy ' + policyName + ' could not be created.');
+        return null;
+      }
+    };
+    function createDOMPurify() {
+      var window = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getGlobal();
+      var DOMPurify = function DOMPurify(root) {
+        return createDOMPurify(root);
+      };
+      DOMPurify.version = '2.3.8';
+      DOMPurify.removed = [];
+      if (!window || !window.document || window.document.nodeType !== 9) {
+        DOMPurify.isSupported = false;
+        return DOMPurify;
+      }
+      var originalDocument = window.document;
+      var document = window.document;
+      var DocumentFragment = window.DocumentFragment, HTMLTemplateElement = window.HTMLTemplateElement, Node = window.Node, Element = window.Element, NodeFilter = window.NodeFilter, _window$NamedNodeMap = window.NamedNodeMap, NamedNodeMap = _window$NamedNodeMap === void 0 ? window.NamedNodeMap || window.MozNamedAttrMap : _window$NamedNodeMap, HTMLFormElement = window.HTMLFormElement, DOMParser = window.DOMParser, trustedTypes = window.trustedTypes;
+      var ElementPrototype = Element.prototype;
+      var cloneNode = lookupGetter(ElementPrototype, 'cloneNode');
+      var getNextSibling = lookupGetter(ElementPrototype, 'nextSibling');
+      var getChildNodes = lookupGetter(ElementPrototype, 'childNodes');
+      var getParentNode = lookupGetter(ElementPrototype, 'parentNode');
+      if (typeof HTMLTemplateElement === 'function') {
+        var template = document.createElement('template');
+        if (template.content && template.content.ownerDocument) {
+          document = template.content.ownerDocument;
+        }
+      }
+      var trustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, originalDocument);
+      var emptyHTML = trustedTypesPolicy ? trustedTypesPolicy.createHTML('') : '';
+      var _document = document, implementation = _document.implementation, createNodeIterator = _document.createNodeIterator, createDocumentFragment = _document.createDocumentFragment, getElementsByTagName = _document.getElementsByTagName;
+      var importNode = originalDocument.importNode;
+      var documentMode = {};
+      try {
+        documentMode = clone(document).documentMode ? document.documentMode : {};
+      } catch (_) {
+      }
+      var hooks = {};
+      DOMPurify.isSupported = typeof getParentNode === 'function' && implementation && typeof implementation.createHTMLDocument !== 'undefined' && documentMode !== 9;
+      var MUSTACHE_EXPR$1 = MUSTACHE_EXPR, ERB_EXPR$1 = ERB_EXPR, DATA_ATTR$1 = DATA_ATTR, ARIA_ATTR$1 = ARIA_ATTR, IS_SCRIPT_OR_DATA$1 = IS_SCRIPT_OR_DATA, ATTR_WHITESPACE$1 = ATTR_WHITESPACE;
+      var IS_ALLOWED_URI$1 = IS_ALLOWED_URI;
+      var ALLOWED_TAGS = null;
+      var DEFAULT_ALLOWED_TAGS = addToSet({}, [].concat(_toConsumableArray(html$1), _toConsumableArray(svg$1), _toConsumableArray(svgFilters), _toConsumableArray(mathMl$1), _toConsumableArray(text$1)));
+      var ALLOWED_ATTR = null;
+      var DEFAULT_ALLOWED_ATTR = addToSet({}, [].concat(_toConsumableArray(html), _toConsumableArray(svg), _toConsumableArray(mathMl), _toConsumableArray(xml)));
+      var CUSTOM_ELEMENT_HANDLING = Object.seal(Object.create(null, {
+        tagNameCheck: {
+          writable: true,
+          configurable: false,
+          enumerable: true,
+          value: null
+        },
+        attributeNameCheck: {
+          writable: true,
+          configurable: false,
+          enumerable: true,
+          value: null
+        },
+        allowCustomizedBuiltInElements: {
+          writable: true,
+          configurable: false,
+          enumerable: true,
+          value: false
+        }
+      }));
+      var FORBID_TAGS = null;
+      var FORBID_ATTR = null;
+      var ALLOW_ARIA_ATTR = true;
+      var ALLOW_DATA_ATTR = true;
+      var ALLOW_UNKNOWN_PROTOCOLS = false;
+      var SAFE_FOR_TEMPLATES = false;
+      var WHOLE_DOCUMENT = false;
+      var SET_CONFIG = false;
+      var FORCE_BODY = false;
+      var RETURN_DOM = false;
+      var RETURN_DOM_FRAGMENT = false;
+      var RETURN_TRUSTED_TYPE = false;
+      var SANITIZE_DOM = true;
+      var KEEP_CONTENT = true;
+      var IN_PLACE = false;
+      var USE_PROFILES = {};
+      var FORBID_CONTENTS = null;
+      var DEFAULT_FORBID_CONTENTS = addToSet({}, [
+        'annotation-xml',
+        'audio',
+        'colgroup',
+        'desc',
+        'foreignobject',
+        'head',
+        'iframe',
+        'math',
+        'mi',
+        'mn',
+        'mo',
+        'ms',
+        'mtext',
+        'noembed',
+        'noframes',
+        'noscript',
+        'plaintext',
+        'script',
+        'style',
+        'svg',
+        'template',
+        'thead',
+        'title',
+        'video',
+        'xmp'
+      ]);
+      var DATA_URI_TAGS = null;
+      var DEFAULT_DATA_URI_TAGS = addToSet({}, [
+        'audio',
+        'video',
+        'img',
+        'source',
+        'image',
+        'track'
+      ]);
+      var URI_SAFE_ATTRIBUTES = null;
+      var DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, [
+        'alt',
+        'class',
+        'for',
+        'id',
+        'label',
+        'name',
+        'pattern',
+        'placeholder',
+        'role',
+        'summary',
+        'title',
+        'value',
+        'style',
+        'xmlns'
+      ]);
+      var MATHML_NAMESPACE = 'http://www.w3.org/1998/Math/MathML';
+      var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+      var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
+      var NAMESPACE = HTML_NAMESPACE;
+      var IS_EMPTY_INPUT = false;
+      var PARSER_MEDIA_TYPE;
+      var SUPPORTED_PARSER_MEDIA_TYPES = [
+        'application/xhtml+xml',
+        'text/html'
+      ];
+      var DEFAULT_PARSER_MEDIA_TYPE = 'text/html';
+      var transformCaseFunc;
+      var CONFIG = null;
+      var formElement = document.createElement('form');
+      var isRegexOrFunction = function isRegexOrFunction(testValue) {
+        return testValue instanceof RegExp || testValue instanceof Function;
+      };
+      var _parseConfig = function _parseConfig(cfg) {
+        if (CONFIG && CONFIG === cfg) {
+          return;
+        }
+        if (!cfg || _typeof(cfg) !== 'object') {
+          cfg = {};
+        }
+        cfg = clone(cfg);
+        ALLOWED_TAGS = 'ALLOWED_TAGS' in cfg ? addToSet({}, cfg.ALLOWED_TAGS) : DEFAULT_ALLOWED_TAGS;
+        ALLOWED_ATTR = 'ALLOWED_ATTR' in cfg ? addToSet({}, cfg.ALLOWED_ATTR) : DEFAULT_ALLOWED_ATTR;
+        URI_SAFE_ATTRIBUTES = 'ADD_URI_SAFE_ATTR' in cfg ? addToSet(clone(DEFAULT_URI_SAFE_ATTRIBUTES), cfg.ADD_URI_SAFE_ATTR) : DEFAULT_URI_SAFE_ATTRIBUTES;
+        DATA_URI_TAGS = 'ADD_DATA_URI_TAGS' in cfg ? addToSet(clone(DEFAULT_DATA_URI_TAGS), cfg.ADD_DATA_URI_TAGS) : DEFAULT_DATA_URI_TAGS;
+        FORBID_CONTENTS = 'FORBID_CONTENTS' in cfg ? addToSet({}, cfg.FORBID_CONTENTS) : DEFAULT_FORBID_CONTENTS;
+        FORBID_TAGS = 'FORBID_TAGS' in cfg ? addToSet({}, cfg.FORBID_TAGS) : {};
+        FORBID_ATTR = 'FORBID_ATTR' in cfg ? addToSet({}, cfg.FORBID_ATTR) : {};
+        USE_PROFILES = 'USE_PROFILES' in cfg ? cfg.USE_PROFILES : false;
+        ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false;
+        ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false;
+        ALLOW_UNKNOWN_PROTOCOLS = cfg.ALLOW_UNKNOWN_PROTOCOLS || false;
+        SAFE_FOR_TEMPLATES = cfg.SAFE_FOR_TEMPLATES || false;
+        WHOLE_DOCUMENT = cfg.WHOLE_DOCUMENT || false;
+        RETURN_DOM = cfg.RETURN_DOM || false;
+        RETURN_DOM_FRAGMENT = cfg.RETURN_DOM_FRAGMENT || false;
+        RETURN_TRUSTED_TYPE = cfg.RETURN_TRUSTED_TYPE || false;
+        FORCE_BODY = cfg.FORCE_BODY || false;
+        SANITIZE_DOM = cfg.SANITIZE_DOM !== false;
+        KEEP_CONTENT = cfg.KEEP_CONTENT !== false;
+        IN_PLACE = cfg.IN_PLACE || false;
+        IS_ALLOWED_URI$1 = cfg.ALLOWED_URI_REGEXP || IS_ALLOWED_URI$1;
+        NAMESPACE = cfg.NAMESPACE || HTML_NAMESPACE;
+        if (cfg.CUSTOM_ELEMENT_HANDLING && isRegexOrFunction(cfg.CUSTOM_ELEMENT_HANDLING.tagNameCheck)) {
+          CUSTOM_ELEMENT_HANDLING.tagNameCheck = cfg.CUSTOM_ELEMENT_HANDLING.tagNameCheck;
+        }
+        if (cfg.CUSTOM_ELEMENT_HANDLING && isRegexOrFunction(cfg.CUSTOM_ELEMENT_HANDLING.attributeNameCheck)) {
+          CUSTOM_ELEMENT_HANDLING.attributeNameCheck = cfg.CUSTOM_ELEMENT_HANDLING.attributeNameCheck;
+        }
+        if (cfg.CUSTOM_ELEMENT_HANDLING && typeof cfg.CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements === 'boolean') {
+          CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = cfg.CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements;
+        }
+        PARSER_MEDIA_TYPE = SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? PARSER_MEDIA_TYPE = DEFAULT_PARSER_MEDIA_TYPE : PARSER_MEDIA_TYPE = cfg.PARSER_MEDIA_TYPE;
+        transformCaseFunc = PARSER_MEDIA_TYPE === 'application/xhtml+xml' ? function (x) {
+          return x;
+        } : stringToLowerCase;
+        if (SAFE_FOR_TEMPLATES) {
+          ALLOW_DATA_ATTR = false;
+        }
+        if (RETURN_DOM_FRAGMENT) {
+          RETURN_DOM = true;
+        }
+        if (USE_PROFILES) {
+          ALLOWED_TAGS = addToSet({}, _toConsumableArray(text$1));
+          ALLOWED_ATTR = [];
+          if (USE_PROFILES.html === true) {
+            addToSet(ALLOWED_TAGS, html$1);
+            addToSet(ALLOWED_ATTR, html);
+          }
+          if (USE_PROFILES.svg === true) {
+            addToSet(ALLOWED_TAGS, svg$1);
+            addToSet(ALLOWED_ATTR, svg);
+            addToSet(ALLOWED_ATTR, xml);
+          }
+          if (USE_PROFILES.svgFilters === true) {
+            addToSet(ALLOWED_TAGS, svgFilters);
+            addToSet(ALLOWED_ATTR, svg);
+            addToSet(ALLOWED_ATTR, xml);
+          }
+          if (USE_PROFILES.mathMl === true) {
+            addToSet(ALLOWED_TAGS, mathMl$1);
+            addToSet(ALLOWED_ATTR, mathMl);
+            addToSet(ALLOWED_ATTR, xml);
+          }
+        }
+        if (cfg.ADD_TAGS) {
+          if (ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) {
+            ALLOWED_TAGS = clone(ALLOWED_TAGS);
+          }
+          addToSet(ALLOWED_TAGS, cfg.ADD_TAGS);
+        }
+        if (cfg.ADD_ATTR) {
+          if (ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) {
+            ALLOWED_ATTR = clone(ALLOWED_ATTR);
+          }
+          addToSet(ALLOWED_ATTR, cfg.ADD_ATTR);
+        }
+        if (cfg.ADD_URI_SAFE_ATTR) {
+          addToSet(URI_SAFE_ATTRIBUTES, cfg.ADD_URI_SAFE_ATTR);
+        }
+        if (cfg.FORBID_CONTENTS) {
+          if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) {
+            FORBID_CONTENTS = clone(FORBID_CONTENTS);
+          }
+          addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS);
+        }
+        if (KEEP_CONTENT) {
+          ALLOWED_TAGS['#text'] = true;
+        }
+        if (WHOLE_DOCUMENT) {
+          addToSet(ALLOWED_TAGS, [
+            'html',
+            'head',
+            'body'
+          ]);
+        }
+        if (ALLOWED_TAGS.table) {
+          addToSet(ALLOWED_TAGS, ['tbody']);
+          delete FORBID_TAGS.tbody;
+        }
+        if (freeze) {
+          freeze(cfg);
+        }
+        CONFIG = cfg;
+      };
+      var MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, [
+        'mi',
+        'mo',
+        'mn',
+        'ms',
+        'mtext'
+      ]);
+      var HTML_INTEGRATION_POINTS = addToSet({}, [
+        'foreignobject',
+        'desc',
+        'title',
+        'annotation-xml'
+      ]);
+      var COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, [
+        'title',
+        'style',
+        'font',
+        'a',
+        'script'
+      ]);
+      var ALL_SVG_TAGS = addToSet({}, svg$1);
+      addToSet(ALL_SVG_TAGS, svgFilters);
+      addToSet(ALL_SVG_TAGS, svgDisallowed);
+      var ALL_MATHML_TAGS = addToSet({}, mathMl$1);
+      addToSet(ALL_MATHML_TAGS, mathMlDisallowed);
+      var _checkValidNamespace = function _checkValidNamespace(element) {
+        var parent = getParentNode(element);
+        if (!parent || !parent.tagName) {
+          parent = {
+            namespaceURI: HTML_NAMESPACE,
+            tagName: 'template'
+          };
+        }
+        var tagName = stringToLowerCase(element.tagName);
+        var parentTagName = stringToLowerCase(parent.tagName);
+        if (element.namespaceURI === SVG_NAMESPACE) {
+          if (parent.namespaceURI === HTML_NAMESPACE) {
+            return tagName === 'svg';
+          }
+          if (parent.namespaceURI === MATHML_NAMESPACE) {
+            return tagName === 'svg' && (parentTagName === 'annotation-xml' || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
+          }
+          return Boolean(ALL_SVG_TAGS[tagName]);
+        }
+        if (element.namespaceURI === MATHML_NAMESPACE) {
+          if (parent.namespaceURI === HTML_NAMESPACE) {
+            return tagName === 'math';
+          }
+          if (parent.namespaceURI === SVG_NAMESPACE) {
+            return tagName === 'math' && HTML_INTEGRATION_POINTS[parentTagName];
+          }
+          return Boolean(ALL_MATHML_TAGS[tagName]);
+        }
+        if (element.namespaceURI === HTML_NAMESPACE) {
+          if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) {
+            return false;
+          }
+          if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) {
+            return false;
+          }
+          return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
+        }
+        return false;
+      };
+      var _forceRemove = function _forceRemove(node) {
+        arrayPush(DOMPurify.removed, { element: node });
+        try {
+          node.parentNode.removeChild(node);
+        } catch (_) {
+          try {
+            node.outerHTML = emptyHTML;
+          } catch (_) {
+            node.remove();
+          }
+        }
+      };
+      var _removeAttribute = function _removeAttribute(name, node) {
+        try {
+          arrayPush(DOMPurify.removed, {
+            attribute: node.getAttributeNode(name),
+            from: node
+          });
+        } catch (_) {
+          arrayPush(DOMPurify.removed, {
+            attribute: null,
+            from: node
+          });
+        }
+        node.removeAttribute(name);
+        if (name === 'is' && !ALLOWED_ATTR[name]) {
+          if (RETURN_DOM || RETURN_DOM_FRAGMENT) {
+            try {
+              _forceRemove(node);
+            } catch (_) {
+            }
+          } else {
+            try {
+              node.setAttribute(name, '');
+            } catch (_) {
+            }
+          }
+        }
+      };
+      var _initDocument = function _initDocument(dirty) {
+        var doc;
+        var leadingWhitespace;
+        if (FORCE_BODY) {
+          dirty = '<remove></remove>' + dirty;
+        } else {
+          var matches = stringMatch(dirty, /^[\r\n\t ]+/);
+          leadingWhitespace = matches && matches[0];
+        }
+        if (PARSER_MEDIA_TYPE === 'application/xhtml+xml') {
+          dirty = '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>' + dirty + '</body></html>';
+        }
+        var dirtyPayload = trustedTypesPolicy ? trustedTypesPolicy.createHTML(dirty) : dirty;
+        if (NAMESPACE === HTML_NAMESPACE) {
+          try {
+            doc = new DOMParser().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
+          } catch (_) {
+          }
+        }
+        if (!doc || !doc.documentElement) {
+          doc = implementation.createDocument(NAMESPACE, 'template', null);
+          try {
+            doc.documentElement.innerHTML = IS_EMPTY_INPUT ? '' : dirtyPayload;
+          } catch (_) {
+          }
+        }
+        var body = doc.body || doc.documentElement;
+        if (dirty && leadingWhitespace) {
+          body.insertBefore(document.createTextNode(leadingWhitespace), body.childNodes[0] || null);
+        }
+        if (NAMESPACE === HTML_NAMESPACE) {
+          return getElementsByTagName.call(doc, WHOLE_DOCUMENT ? 'html' : 'body')[0];
+        }
+        return WHOLE_DOCUMENT ? doc.documentElement : body;
+      };
+      var _createIterator = function _createIterator(root) {
+        return createNodeIterator.call(root.ownerDocument || root, root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT, null, false);
+      };
+      var _isClobbered = function _isClobbered(elm) {
+        return elm instanceof HTMLFormElement && (typeof elm.nodeName !== 'string' || typeof elm.textContent !== 'string' || typeof elm.removeChild !== 'function' || !(elm.attributes instanceof NamedNodeMap) || typeof elm.removeAttribute !== 'function' || typeof elm.setAttribute !== 'function' || typeof elm.namespaceURI !== 'string' || typeof elm.insertBefore !== 'function');
+      };
+      var _isNode = function _isNode(object) {
+        return _typeof(Node) === 'object' ? object instanceof Node : object && _typeof(object) === 'object' && typeof object.nodeType === 'number' && typeof object.nodeName === 'string';
+      };
+      var _executeHook = function _executeHook(entryPoint, currentNode, data) {
+        if (!hooks[entryPoint]) {
+          return;
+        }
+        arrayForEach(hooks[entryPoint], function (hook) {
+          hook.call(DOMPurify, currentNode, data, CONFIG);
+        });
+      };
+      var _sanitizeElements = function _sanitizeElements(currentNode) {
+        var content;
+        _executeHook('beforeSanitizeElements', currentNode, null);
+        if (_isClobbered(currentNode)) {
+          _forceRemove(currentNode);
+          return true;
+        }
+        if (regExpTest(/[\u0080-\uFFFF]/, currentNode.nodeName)) {
+          _forceRemove(currentNode);
+          return true;
+        }
+        var tagName = transformCaseFunc(currentNode.nodeName);
+        _executeHook('uponSanitizeElement', currentNode, {
+          tagName: tagName,
+          allowedTags: ALLOWED_TAGS
+        });
+        if (currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && (!_isNode(currentNode.content) || !_isNode(currentNode.content.firstElementChild)) && regExpTest(/<[/\w]/g, currentNode.innerHTML) && regExpTest(/<[/\w]/g, currentNode.textContent)) {
+          _forceRemove(currentNode);
+          return true;
+        }
+        if (tagName === 'select' && regExpTest(/<template/i, currentNode.innerHTML)) {
+          _forceRemove(currentNode);
+          return true;
+        }
+        if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
+          if (!FORBID_TAGS[tagName] && _basicCustomElementTest(tagName)) {
+            if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName))
+              return false;
+            if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName))
+              return false;
+          }
+          if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
+            var parentNode = getParentNode(currentNode) || currentNode.parentNode;
+            var childNodes = getChildNodes(currentNode) || currentNode.childNodes;
+            if (childNodes && parentNode) {
+              var childCount = childNodes.length;
+              for (var i = childCount - 1; i >= 0; --i) {
+                parentNode.insertBefore(cloneNode(childNodes[i], true), getNextSibling(currentNode));
+              }
+            }
+          }
+          _forceRemove(currentNode);
+          return true;
+        }
+        if (currentNode instanceof Element && !_checkValidNamespace(currentNode)) {
+          _forceRemove(currentNode);
+          return true;
+        }
+        if ((tagName === 'noscript' || tagName === 'noembed') && regExpTest(/<\/no(script|embed)/i, currentNode.innerHTML)) {
+          _forceRemove(currentNode);
+          return true;
+        }
+        if (SAFE_FOR_TEMPLATES && currentNode.nodeType === 3) {
+          content = currentNode.textContent;
+          content = stringReplace(content, MUSTACHE_EXPR$1, ' ');
+          content = stringReplace(content, ERB_EXPR$1, ' ');
+          if (currentNode.textContent !== content) {
+            arrayPush(DOMPurify.removed, { element: currentNode.cloneNode() });
+            currentNode.textContent = content;
+          }
+        }
+        _executeHook('afterSanitizeElements', currentNode, null);
+        return false;
+      };
+      var _isValidAttribute = function _isValidAttribute(lcTag, lcName, value) {
+        if (SANITIZE_DOM && (lcName === 'id' || lcName === 'name') && (value in document || value in formElement)) {
+          return false;
+        }
+        if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR$1, lcName));
+        else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName));
+        else if (!ALLOWED_ATTR[lcName] || FORBID_ATTR[lcName]) {
+          if (_basicCustomElementTest(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName)) || lcName === 'is' && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value)));
+          else {
+            return false;
+          }
+        } else if (URI_SAFE_ATTRIBUTES[lcName]);
+        else if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, '')));
+        else if ((lcName === 'src' || lcName === 'xlink:href' || lcName === 'href') && lcTag !== 'script' && stringIndexOf(value, 'data:') === 0 && DATA_URI_TAGS[lcTag]);
+        else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, '')));
+        else if (!value);
+        else {
+          return false;
+        }
+        return true;
+      };
+      var _basicCustomElementTest = function _basicCustomElementTest(tagName) {
+        return tagName.indexOf('-') > 0;
+      };
+      var _sanitizeAttributes = function _sanitizeAttributes(currentNode) {
+        var attr;
+        var value;
+        var lcName;
+        var l;
+        _executeHook('beforeSanitizeAttributes', currentNode, null);
+        var attributes = currentNode.attributes;
+        if (!attributes) {
+          return;
+        }
+        var hookEvent = {
+          attrName: '',
+          attrValue: '',
+          keepAttr: true,
+          allowedAttributes: ALLOWED_ATTR
+        };
+        l = attributes.length;
+        while (l--) {
+          attr = attributes[l];
+          var _attr = attr, name = _attr.name, namespaceURI = _attr.namespaceURI;
+          value = name === 'value' ? attr.value : stringTrim(attr.value);
+          lcName = transformCaseFunc(name);
+          var initValue = value;
+          hookEvent.attrName = lcName;
+          hookEvent.attrValue = value;
+          hookEvent.keepAttr = true;
+          hookEvent.forceKeepAttr = undefined;
+          _executeHook('uponSanitizeAttribute', currentNode, hookEvent);
+          value = hookEvent.attrValue;
+          if (hookEvent.forceKeepAttr) {
+            continue;
+          }
+          if (!hookEvent.keepAttr) {
+            _removeAttribute(name, currentNode);
+            continue;
+          }
+          if (regExpTest(/\/>/i, value)) {
+            _removeAttribute(name, currentNode);
+            continue;
+          }
+          if (SAFE_FOR_TEMPLATES) {
+            value = stringReplace(value, MUSTACHE_EXPR$1, ' ');
+            value = stringReplace(value, ERB_EXPR$1, ' ');
+          }
+          var lcTag = transformCaseFunc(currentNode.nodeName);
+          if (!_isValidAttribute(lcTag, lcName, value)) {
+            _removeAttribute(name, currentNode);
+            continue;
+          }
+          if (value !== initValue) {
+            try {
+              if (namespaceURI) {
+                currentNode.setAttributeNS(namespaceURI, name, value);
+              } else {
+                currentNode.setAttribute(name, value);
+              }
+            } catch (_) {
+              _removeAttribute(name, currentNode);
+            }
+          }
+        }
+        _executeHook('afterSanitizeAttributes', currentNode, null);
+      };
+      var _sanitizeShadowDOM = function _sanitizeShadowDOM(fragment) {
+        var shadowNode;
+        var shadowIterator = _createIterator(fragment);
+        _executeHook('beforeSanitizeShadowDOM', fragment, null);
+        while (shadowNode = shadowIterator.nextNode()) {
+          _executeHook('uponSanitizeShadowNode', shadowNode, null);
+          if (_sanitizeElements(shadowNode)) {
+            continue;
+          }
+          if (shadowNode.content instanceof DocumentFragment) {
+            _sanitizeShadowDOM(shadowNode.content);
+          }
+          _sanitizeAttributes(shadowNode);
+        }
+        _executeHook('afterSanitizeShadowDOM', fragment, null);
+      };
+      DOMPurify.sanitize = function (dirty, cfg) {
+        var body;
+        var importedNode;
+        var currentNode;
+        var oldNode;
+        var returnNode;
+        IS_EMPTY_INPUT = !dirty;
+        if (IS_EMPTY_INPUT) {
+          dirty = '<!-->';
+        }
+        if (typeof dirty !== 'string' && !_isNode(dirty)) {
+          if (typeof dirty.toString !== 'function') {
+            throw typeErrorCreate('toString is not a function');
+          } else {
+            dirty = dirty.toString();
+            if (typeof dirty !== 'string') {
+              throw typeErrorCreate('dirty is not a string, aborting');
+            }
+          }
+        }
+        if (!DOMPurify.isSupported) {
+          if (_typeof(window.toStaticHTML) === 'object' || typeof window.toStaticHTML === 'function') {
+            if (typeof dirty === 'string') {
+              return window.toStaticHTML(dirty);
+            }
+            if (_isNode(dirty)) {
+              return window.toStaticHTML(dirty.outerHTML);
+            }
+          }
+          return dirty;
+        }
+        if (!SET_CONFIG) {
+          _parseConfig(cfg);
+        }
+        DOMPurify.removed = [];
+        if (typeof dirty === 'string') {
+          IN_PLACE = false;
+        }
+        if (IN_PLACE) {
+          if (dirty.nodeName) {
+            var tagName = transformCaseFunc(dirty.nodeName);
+            if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
+              throw typeErrorCreate('root node is forbidden and cannot be sanitized in-place');
+            }
+          }
+        } else if (dirty instanceof Node) {
+          body = _initDocument('<!---->');
+          importedNode = body.ownerDocument.importNode(dirty, true);
+          if (importedNode.nodeType === 1 && importedNode.nodeName === 'BODY') {
+            body = importedNode;
+          } else if (importedNode.nodeName === 'HTML') {
+            body = importedNode;
+          } else {
+            body.appendChild(importedNode);
+          }
+        } else {
+          if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && dirty.indexOf('<') === -1) {
+            return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(dirty) : dirty;
+          }
+          body = _initDocument(dirty);
+          if (!body) {
+            return RETURN_DOM ? null : RETURN_TRUSTED_TYPE ? emptyHTML : '';
+          }
+        }
+        if (body && FORCE_BODY) {
+          _forceRemove(body.firstChild);
+        }
+        var nodeIterator = _createIterator(IN_PLACE ? dirty : body);
+        while (currentNode = nodeIterator.nextNode()) {
+          if (currentNode.nodeType === 3 && currentNode === oldNode) {
+            continue;
+          }
+          if (_sanitizeElements(currentNode)) {
+            continue;
+          }
+          if (currentNode.content instanceof DocumentFragment) {
+            _sanitizeShadowDOM(currentNode.content);
+          }
+          _sanitizeAttributes(currentNode);
+          oldNode = currentNode;
+        }
+        oldNode = null;
+        if (IN_PLACE) {
+          return dirty;
+        }
+        if (RETURN_DOM) {
+          if (RETURN_DOM_FRAGMENT) {
+            returnNode = createDocumentFragment.call(body.ownerDocument);
+            while (body.firstChild) {
+              returnNode.appendChild(body.firstChild);
+            }
+          } else {
+            returnNode = body;
+          }
+          if (ALLOWED_ATTR.shadowroot) {
+            returnNode = importNode.call(originalDocument, returnNode, true);
+          }
+          return returnNode;
+        }
+        var serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
+        if (WHOLE_DOCUMENT && ALLOWED_TAGS['!doctype'] && body.ownerDocument && body.ownerDocument.doctype && body.ownerDocument.doctype.name && regExpTest(DOCTYPE_NAME, body.ownerDocument.doctype.name)) {
+          serializedHTML = '<!DOCTYPE ' + body.ownerDocument.doctype.name + '>\n' + serializedHTML;
+        }
+        if (SAFE_FOR_TEMPLATES) {
+          serializedHTML = stringReplace(serializedHTML, MUSTACHE_EXPR$1, ' ');
+          serializedHTML = stringReplace(serializedHTML, ERB_EXPR$1, ' ');
+        }
+        return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(serializedHTML) : serializedHTML;
+      };
+      DOMPurify.setConfig = function (cfg) {
+        _parseConfig(cfg);
+        SET_CONFIG = true;
+      };
+      DOMPurify.clearConfig = function () {
+        CONFIG = null;
+        SET_CONFIG = false;
+      };
+      DOMPurify.isValidAttribute = function (tag, attr, value) {
+        if (!CONFIG) {
+          _parseConfig({});
+        }
+        var lcTag = transformCaseFunc(tag);
+        var lcName = transformCaseFunc(attr);
+        return _isValidAttribute(lcTag, lcName, value);
+      };
+      DOMPurify.addHook = function (entryPoint, hookFunction) {
+        if (typeof hookFunction !== 'function') {
+          return;
+        }
+        hooks[entryPoint] = hooks[entryPoint] || [];
+        arrayPush(hooks[entryPoint], hookFunction);
+      };
+      DOMPurify.removeHook = function (entryPoint) {
+        if (hooks[entryPoint]) {
+          return arrayPop(hooks[entryPoint]);
+        }
+      };
+      DOMPurify.removeHooks = function (entryPoint) {
+        if (hooks[entryPoint]) {
+          hooks[entryPoint] = [];
+        }
+      };
+      DOMPurify.removeAllHooks = function () {
+        hooks = {};
+      };
+      return DOMPurify;
+    }
+    var purify = createDOMPurify();
+
+    const sanitizeHtmlString = html => purify().sanitize(html);
 
     var global$8 = tinymce.util.Tools.resolve('tinymce.util.I18n');
 
@@ -8121,10 +9720,7 @@
     };
     const factory$m = detail => {
       const memBannerText = record({
-        dom: {
-          tag: 'p',
-          innerHtml: detail.translationProvider(detail.text)
-        },
+        dom: fromHtml(`<p>${ sanitizeHtmlString(detail.translationProvider(detail.text)) }</p>`),
         behaviours: derive$1([Replacing.config({})])
       });
       const renderPercentBar = percent => ({
@@ -8558,6 +10154,10 @@
         default: !global$5.deviceType.isTouch()
       });
       registerOption('sidebar_show', { processor: 'string' });
+      registerOption('help_accessibility', {
+        processor: 'boolean',
+        default: editor.hasPlugin('help')
+      });
     };
     const isReadOnly = option$2('readonly');
     const getHeightOption = option$2('height');
@@ -8595,6 +10195,7 @@
     const getPasteAsText = option$2('paste_as_text');
     const getSidebarShow = option$2('sidebar_show');
     const promotionEnabled = option$2('promotion');
+    const useHelpAccessibility = option$2('help_accessibility');
     const isSkinDisabled = editor => editor.options.get('skin') === false;
     const isMenubarEnabled = editor => editor.options.get('menubar') !== false;
     const getSkinUrl = editor => {
@@ -8713,7 +10314,8 @@
         useBranding: useBranding,
         getResize: getResize,
         getPasteAsText: getPasteAsText,
-        getSidebarShow: getSidebarShow
+        getSidebarShow: getSidebarShow,
+        useHelpAccessibility: useHelpAccessibility
     });
 
     const autocompleteSelector = '[data-mce-autocompleter]';
@@ -9238,7 +10840,7 @@
     const type = requiredString('type');
     const name$1 = requiredString('name');
     const label = requiredString('label');
-    const text$1 = requiredString('text');
+    const text = requiredString('text');
     const title = requiredString('title');
     const icon = requiredString('icon');
     const value$1 = requiredString('value');
@@ -9362,7 +10964,7 @@
 
     const cardTextFields = [
       type,
-      text$1,
+      text,
       optionalName,
       defaultedArrayOf('classes', ['tox-collection__item-label'], string)
     ];
@@ -10432,13 +12034,7 @@
 
     const foregroundId = 'forecolor';
     const backgroundId = 'hilitecolor';
-    const defaultCols = 5;
-    const calcCols = colors => Math.max(defaultCols, Math.ceil(Math.sqrt(colors)));
-    const calcColsOption = (editor, numColors) => {
-      const calculatedCols = calcCols(numColors);
-      const fallbackCols = option$1('color_cols')(editor);
-      return defaultCols === calculatedCols ? fallbackCols : calculatedCols;
-    };
+    const fallbackCols = 5;
     const mapColors = colorMap => {
       const colors = [];
       for (let i = 0; i < colorMap.length; i += 2) {
@@ -10465,6 +12061,19 @@
           return {
             valid: false,
             message: 'Must be an array of strings.'
+          };
+        }
+      };
+      const colorColsProcessor = value => {
+        if (isNumber(value) && value > 0) {
+          return {
+            value,
+            valid: true
+          };
+        } else {
+          return {
+            valid: false,
+            message: 'Must be a positive number.'
           };
         }
       };
@@ -10520,16 +12129,16 @@
       registerOption('color_map_background', { processor: colorProcessor });
       registerOption('color_map_foreground', { processor: colorProcessor });
       registerOption('color_cols', {
-        processor: 'number',
-        default: calcCols(getColors$2(editor, 'default').length)
+        processor: colorColsProcessor,
+        default: calcCols(editor)
       });
       registerOption('color_cols_foreground', {
-        processor: 'number',
-        default: calcColsOption(editor, getColors$2(editor, foregroundId).length)
+        processor: colorColsProcessor,
+        default: defaultCols(editor, foregroundId)
       });
       registerOption('color_cols_background', {
-        processor: 'number',
-        default: calcColsOption(editor, getColors$2(editor, backgroundId).length)
+        processor: colorColsProcessor,
+        default: defaultCols(editor, backgroundId)
       });
       registerOption('custom_colors', {
         processor: 'boolean',
@@ -10544,20 +12153,6 @@
         default: fallbackColor
       });
     };
-    const colorColsOption = (editor, id) => {
-      if (id === foregroundId) {
-        return option$1('color_cols_foreground')(editor);
-      } else if (id === backgroundId) {
-        return option$1('color_cols_background')(editor);
-      } else {
-        return option$1('color_cols')(editor);
-      }
-    };
-    const getColorCols$1 = (editor, id) => {
-      const colorCols = colorColsOption(editor, id);
-      return colorCols > 0 ? colorCols : defaultCols;
-    };
-    const hasCustomColors$1 = option$1('custom_colors');
     const getColors$2 = (editor, id) => {
       if (id === foregroundId && editor.options.isSet('color_map_foreground')) {
         return option$1('color_map_foreground')(editor);
@@ -10567,6 +12162,29 @@
         return option$1('color_map')(editor);
       }
     };
+    const calcCols = (editor, id = 'default') => Math.max(fallbackCols, Math.ceil(Math.sqrt(getColors$2(editor, id).length)));
+    const defaultCols = (editor, id) => {
+      const defaultCols = option$1('color_cols')(editor);
+      const calculatedCols = calcCols(editor, id);
+      if (defaultCols === calcCols(editor)) {
+        return calculatedCols;
+      } else {
+        return defaultCols;
+      }
+    };
+    const getColorCols$1 = (editor, id = 'default') => {
+      const getCols = () => {
+        if (id === foregroundId) {
+          return option$1('color_cols_foreground')(editor);
+        } else if (id === backgroundId) {
+          return option$1('color_cols_background')(editor);
+        } else {
+          return option$1('color_cols')(editor);
+        }
+      };
+      return Math.round(getCols());
+    };
+    const hasCustomColors$1 = option$1('custom_colors');
     const getDefaultForegroundColor = option$1('color_default_foreground');
     const getDefaultBackgroundColor = option$1('color_default_background');
 
@@ -10882,7 +12500,8 @@
 
     const cellOverEvent = generate$6('cell-over');
     const cellExecuteEvent = generate$6('cell-execute');
-    const makeCell = (row, col, labelId) => {
+    const makeAnnouncementText = backstage => (row, col) => backstage.shared.providers.translate(`${ col } columns, ${ row } rows`);
+    const makeCell = (row, col, label) => {
       const emitCellOver = c => emitWith(c, cellOverEvent, {
         row,
         col
@@ -10900,7 +12519,7 @@
           tag: 'div',
           attributes: {
             role: 'button',
-            ['aria-labelledby']: labelId
+            ['aria-label']: label
           }
         },
         behaviours: derive$1([
@@ -10918,12 +12537,13 @@
         ])
       });
     };
-    const makeCells = (labelId, numRows, numCols) => {
+    const makeCells = (getCellLabel, numRows, numCols) => {
       const cells = [];
       for (let i = 0; i < numRows; i++) {
         const row = [];
         for (let j = 0; j < numCols; j++) {
-          row.push(makeCell(i, j, labelId));
+          const label = getCellLabel(i + 1, j + 1);
+          row.push(makeCell(i, j, label));
         }
         cells.push(row);
       }
@@ -10938,17 +12558,16 @@
     };
     const makeComponents = cells => bind$3(cells, cellRow => map$2(cellRow, premade));
     const makeLabelText = (row, col) => text$2(`${ col }x${ row }`);
-    const renderInsertTableMenuItem = spec => {
+    const renderInsertTableMenuItem = (spec, backstage) => {
       const numRows = 10;
       const numColumns = 10;
-      const sizeLabelId = generate$6('size-label');
-      const cells = makeCells(sizeLabelId, numRows, numColumns);
+      const getCellLabel = makeAnnouncementText(backstage);
+      const cells = makeCells(getCellLabel, numRows, numColumns);
       const emptyLabelText = makeLabelText(0, 0);
       const memLabel = record({
         dom: {
           tag: 'span',
-          classes: ['tox-insert-table-picker__label'],
-          attributes: { id: sizeLabelId }
+          classes: ['tox-insert-table-picker__label']
         },
         components: [emptyLabelText],
         behaviours: derive$1([Replacing.config({})])
@@ -11873,12 +13492,15 @@
 
     const nonScrollingOverflows = [
       'visible',
-      'hidden'
+      'hidden',
+      'clip'
     ];
+    const isScrollingOverflowValue = value => trim$1(value).length > 0 && !contains$2(nonScrollingOverflows, value);
     const isScroller = elem => {
       if (isHTMLElement(elem)) {
-        const overflow = get$e(elem, 'overflow');
-        return trim$1(overflow).length > 0 && !contains$2(nonScrollingOverflows, overflow);
+        const overflowX = get$e(elem, 'overflow-x');
+        const overflowY = get$e(elem, 'overflow-y');
+        return isScrollingOverflowValue(overflowX) || isScrollingOverflowValue(overflowY);
       } else {
         return false;
       }
@@ -14318,7 +15940,6 @@
       }
     });
     const withElement = (initialValue, getter, setter) => withComp(initialValue, c => getter(c.element), (c, v) => setter(c.element, v));
-    const domValue = optInitialValue => withElement(optInitialValue, get$6, set$5);
     const domHtml = optInitialValue => withElement(optInitialValue, get$9, set$6);
     const memory = initialValue => Representing.config({
       store: {
@@ -14326,14 +15947,6 @@
         initialValue
       }
     });
-    const RepresentingConfigs = {
-      memento,
-      withElement,
-      withComp,
-      domValue,
-      domHtml,
-      memory
-    };
 
     const english = {
       'colorcustom.rgb.red.label': 'R',
@@ -14379,7 +15992,7 @@
         dom: { tag: 'div' },
         components: [memPicker.asSpec()],
         behaviours: derive$1([
-          RepresentingConfigs.withComp(initialData, comp => {
+          withComp(initialData, comp => {
             const picker = memPicker.get(comp);
             const optRgbForm = Composing.getCurrent(picker);
             const optHex = optRgbForm.bind(rgbForm => {
@@ -14430,7 +16043,7 @@
                 });
               });
             })]),
-          RepresentingConfigs.withComp(Optional.none(), () => editorApi.get().fold(() => initialValue.get().getOr(''), ed => ed.getValue()), (component, value) => {
+          withComp(Optional.none(), () => editorApi.get().fold(() => initialValue.get().getOr(''), ed => ed.getValue()), (component, value) => {
             editorApi.get().fold(() => initialValue.set(value), ed => ed.setValue(value));
           }),
           ComposingConfigs.self()
@@ -14493,7 +16106,7 @@
           classes: ['tox-dropzone-container']
         },
         behaviours: derive$1([
-          RepresentingConfigs.memory(initialData.getOr([])),
+          memory(initialData.getOr([])),
           ComposingConfigs.self(),
           Disabling.config({}),
           Toggling.config({
@@ -14570,6 +16183,74 @@
       components: map$2(spec.items, backstage.interpreter)
     });
 
+    const adaptable = (fn, rate) => {
+      let timer = null;
+      let args = null;
+      const cancel = () => {
+        if (!isNull(timer)) {
+          clearTimeout(timer);
+          timer = null;
+          args = null;
+        }
+      };
+      const throttle = (...newArgs) => {
+        args = newArgs;
+        if (isNull(timer)) {
+          timer = setTimeout(() => {
+            const tempArgs = args;
+            timer = null;
+            args = null;
+            fn.apply(null, tempArgs);
+          }, rate);
+        }
+      };
+      return {
+        cancel,
+        throttle
+      };
+    };
+    const first = (fn, rate) => {
+      let timer = null;
+      const cancel = () => {
+        if (!isNull(timer)) {
+          clearTimeout(timer);
+          timer = null;
+        }
+      };
+      const throttle = (...args) => {
+        if (isNull(timer)) {
+          timer = setTimeout(() => {
+            timer = null;
+            fn.apply(null, args);
+          }, rate);
+        }
+      };
+      return {
+        cancel,
+        throttle
+      };
+    };
+    const last = (fn, rate) => {
+      let timer = null;
+      const cancel = () => {
+        if (!isNull(timer)) {
+          clearTimeout(timer);
+          timer = null;
+        }
+      };
+      const throttle = (...args) => {
+        cancel();
+        timer = setTimeout(() => {
+          timer = null;
+          fn.apply(null, args);
+        }, rate);
+      };
+      return {
+        cancel,
+        throttle
+      };
+    };
+
     const beforeObject = generate$6('alloy-fake-before-tabstop');
     const afterObject = generate$6('alloy-fake-after-tabstop');
     const craftWithClasses = classes => {
@@ -14590,11 +16271,14 @@
         ])
       };
     };
-    const craft = spec => {
+    const craft = (containerClasses, spec) => {
       return {
         dom: {
           tag: 'div',
-          classes: ['tox-navobj']
+          classes: [
+            'tox-navobj',
+            ...containerClasses.getOr([])
+          ]
         },
         components: [
           craftWithClasses([beforeObject]),
@@ -14627,43 +16311,112 @@
       ].join(','), never);
     };
 
-    const getDynamicSource = initialData => {
+    const dialogChannel = generate$6('update-dialog');
+    const titleChannel = generate$6('update-title');
+    const bodyChannel = generate$6('update-body');
+    const footerChannel = generate$6('update-footer');
+    const bodySendMessageChannel = generate$6('body-send-message');
+    const dialogFocusShiftedChannel = generate$6('dialog-focus-shifted');
+
+    const browser = detect$2().browser;
+    const isSafari = browser.isSafari();
+    const isFirefox = browser.isFirefox();
+    const isSafariOrFirefox = isSafari || isFirefox;
+    const isChromium = browser.isChromium();
+    const isElementScrollAtBottom = ({scrollTop, scrollHeight, clientHeight}) => Math.ceil(scrollTop) + clientHeight >= scrollHeight;
+    const scrollToY = (win, y) => win.scrollTo(0, y === 'bottom' ? 99999999 : y);
+    const getScrollingElement = (doc, html) => {
+      const body = doc.body;
+      return Optional.from(!/^<!DOCTYPE (html|HTML)/.test(html) && (!isChromium && !isSafari || isNonNullable(body) && (body.scrollTop !== 0 || Math.abs(body.scrollHeight - body.clientHeight) > 1)) ? body : doc.documentElement);
+    };
+    const writeValue = (iframeElement, html, fallbackFn) => {
+      const iframe = iframeElement.dom;
+      Optional.from(iframe.contentDocument).fold(fallbackFn, doc => {
+        let lastScrollTop = 0;
+        const isScrollAtBottom = getScrollingElement(doc, html).map(el => {
+          lastScrollTop = el.scrollTop;
+          return el;
+        }).forall(isElementScrollAtBottom);
+        const scrollAfterWrite = () => {
+          const win = iframe.contentWindow;
+          if (isNonNullable(win)) {
+            if (isScrollAtBottom) {
+              scrollToY(win, 'bottom');
+            } else if (!isScrollAtBottom && isSafariOrFirefox && lastScrollTop !== 0) {
+              scrollToY(win, lastScrollTop);
+            }
+          }
+        };
+        if (isSafari) {
+          iframe.addEventListener('load', scrollAfterWrite, { once: true });
+        }
+        doc.open();
+        doc.write(html);
+        doc.close();
+        if (!isSafari) {
+          scrollAfterWrite();
+        }
+      });
+    };
+    const throttleInterval = someIf(isSafariOrFirefox, isSafari ? 500 : 200);
+    const writeValueThrottler = throttleInterval.map(interval => adaptable(writeValue, interval));
+    const getDynamicSource = (initialData, stream) => {
       const cachedValue = Cell(initialData.getOr(''));
       return {
         getValue: _frameComponent => cachedValue.get(),
         setValue: (frameComponent, html) => {
           if (cachedValue.get() !== html) {
-            set$9(frameComponent.element, 'srcdoc', html);
+            const iframeElement = frameComponent.element;
+            const setSrcdocValue = () => set$9(iframeElement, 'srcdoc', html);
+            if (stream) {
+              writeValueThrottler.fold(constant$1(writeValue), throttler => throttler.throttle)(iframeElement, html, setSrcdocValue);
+            } else {
+              setSrcdocValue();
+            }
           }
           cachedValue.set(html);
         }
       };
     };
     const renderIFrame = (spec, providersBackstage, initialData) => {
-      const isSandbox = spec.sandboxed;
-      const isTransparent = spec.transparent;
       const baseClass = 'tox-dialog__iframe';
+      const opaqueClass = spec.transparent ? [] : [`${ baseClass }--opaque`];
+      const containerBorderedClass = spec.border ? [`tox-navobj-bordered`] : [];
       const attributes = {
         ...spec.label.map(title => ({ title })).getOr({}),
         ...initialData.map(html => ({ srcdoc: html })).getOr({}),
-        ...isSandbox ? { sandbox: 'allow-scripts allow-same-origin' } : {}
+        ...spec.sandboxed ? { sandbox: 'allow-scripts allow-same-origin' } : {}
       };
-      const sourcing = getDynamicSource(initialData);
+      const sourcing = getDynamicSource(initialData, spec.streamContent);
       const pLabel = spec.label.map(label => renderLabel$3(label, providersBackstage));
-      const factory = newSpec => craft({
+      const factory = newSpec => craft(Optional.from(containerBorderedClass), {
         uid: newSpec.uid,
         dom: {
           tag: 'iframe',
           attributes,
-          classes: isTransparent ? [baseClass] : [
+          classes: [
             baseClass,
-            `${ baseClass }--opaque`
+            ...opaqueClass
           ]
         },
         behaviours: derive$1([
           Tabstopping.config({}),
           Focusing.config({}),
-          RepresentingConfigs.withComp(initialData, sourcing.getValue, sourcing.setValue)
+          withComp(initialData, sourcing.getValue, sourcing.setValue),
+          Receiving.config({
+            channels: {
+              [dialogFocusShiftedChannel]: {
+                onReceive: (comp, message) => {
+                  message.newFocus.each(newFocus => {
+                    parentElement(comp.element).each(parent => {
+                      const f = eq(comp.element, newFocus) ? add$2 : remove$2;
+                      f(parent, 'tox-navobj-bordered-focus');
+                    });
+                  });
+                }
+              }
+            }
+          })
         ])
       });
       const pField = FormField.parts.field({ factory: { sketch: factory } });
@@ -14776,16 +16529,23 @@
         components: [memContainer.asSpec()],
         behaviours: derive$1([
           ComposingConfigs.self(),
-          RepresentingConfigs.withComp(fakeValidatedData, () => cachedData.get(), setValue)
+          withComp(fakeValidatedData, () => cachedData.get(), setValue)
         ])
       };
     };
 
     const renderLabel$2 = (spec, backstageShared) => {
+      const baseClass = 'tox-label';
+      const centerClass = spec.align === 'center' ? [`${ baseClass }--center`] : [];
+      const endClass = spec.align === 'end' ? [`${ baseClass }--end`] : [];
       const label = {
         dom: {
           tag: 'label',
-          classes: ['tox-label']
+          classes: [
+            baseClass,
+            ...centerClass,
+            ...endClass
+          ]
         },
         components: [text$2(backstageShared.providers.translate(spec.label))]
       };
@@ -14802,7 +16562,7 @@
         behaviours: derive$1([
           ComposingConfigs.self(),
           Replacing.config({}),
-          RepresentingConfigs.domHtml(Optional.none()),
+          domHtml(Optional.none()),
           Keying.config({ mode: 'acyclic' })
         ])
       };
@@ -14973,6 +16733,13 @@
             onDehighlightItem: updateAriaOnDehighlight
           }
         },
+        getAnchorOverrides: () => {
+          return {
+            maxHeightFunction: (element, available) => {
+              anchored()(element, available - 10);
+            }
+          };
+        },
         fetch: comp => Future.nu(curry(spec.fetch, comp))
       }));
       return memDropdown.asSpec();
@@ -15128,7 +16895,7 @@
             classes: [],
             dropdownBehaviours: [
               Tabstopping.config({}),
-              RepresentingConfigs.withComp(initialItem.map(item => item.value), comp => get$f(comp.element, dataAttribute), (comp, data) => {
+              withComp(initialItem.map(item => item.value), comp => get$f(comp.element, dataAttribute), (comp, data) => {
                 findItemByValue(spec.items, data).each(item => {
                   set$9(comp.element, dataAttribute, item.value);
                   emitWith(comp, updateMenuText, { text: item.text });
@@ -16423,48 +18190,6 @@
         events: events$5
     });
 
-    const first = (fn, rate) => {
-      let timer = null;
-      const cancel = () => {
-        if (!isNull(timer)) {
-          clearTimeout(timer);
-          timer = null;
-        }
-      };
-      const throttle = (...args) => {
-        if (isNull(timer)) {
-          timer = setTimeout(() => {
-            timer = null;
-            fn.apply(null, args);
-          }, rate);
-        }
-      };
-      return {
-        cancel,
-        throttle
-      };
-    };
-    const last = (fn, rate) => {
-      let timer = null;
-      const cancel = () => {
-        if (!isNull(timer)) {
-          clearTimeout(timer);
-          timer = null;
-        }
-      };
-      const throttle = (...args) => {
-        cancel();
-        timer = setTimeout(() => {
-          timer = null;
-          fn.apply(null, args);
-        }, rate);
-      };
-      return {
-        cancel,
-        throttle
-      };
-    };
-
     const throttle = _config => {
       const state = Cell(null);
       const readState = () => ({ timer: state.get() !== null ? 'set' : 'unset' });
@@ -17101,7 +18826,7 @@
       return renderFormField(Optional.none(), FormField.parts.field({
         factory: Button,
         ...renderButtonSpec(spec, Optional.some(action), providersBackstage, [
-          RepresentingConfigs.memory(''),
+          memory(''),
           ComposingConfigs.self()
         ])
       }));
@@ -17367,51 +19092,53 @@
       });
     };
 
-    const renderAlertBanner = (spec, providersBackstage) => Container.sketch({
-      dom: {
-        tag: 'div',
-        attributes: { role: 'alert' },
-        classes: [
-          'tox-notification',
-          'tox-notification--in',
-          `tox-notification--${ spec.level }`
-        ]
-      },
-      components: [
-        {
-          dom: {
-            tag: 'div',
-            classes: ['tox-notification__icon']
-          },
-          components: [Button.sketch({
-              dom: {
-                tag: 'button',
-                classes: [
-                  'tox-button',
-                  'tox-button--naked',
-                  'tox-button--icon'
-                ],
-                innerHtml: get$2(spec.icon, providersBackstage.icons),
-                attributes: { title: providersBackstage.translate(spec.iconTooltip) }
-              },
-              action: comp => {
-                emitWith(comp, formActionEvent, {
+    const renderAlertBanner = (spec, providersBackstage) => {
+      const icon = get$2(spec.icon, providersBackstage.icons);
+      return Container.sketch({
+        dom: {
+          tag: 'div',
+          attributes: { role: 'alert' },
+          classes: [
+            'tox-notification',
+            'tox-notification--in',
+            `tox-notification--${ spec.level }`
+          ]
+        },
+        components: [
+          {
+            dom: {
+              tag: 'div',
+              classes: ['tox-notification__icon'],
+              innerHtml: !spec.url ? icon : undefined
+            },
+            components: spec.url ? [Button.sketch({
+                dom: {
+                  tag: 'button',
+                  classes: [
+                    'tox-button',
+                    'tox-button--naked',
+                    'tox-button--icon'
+                  ],
+                  innerHtml: icon,
+                  attributes: { title: providersBackstage.translate(spec.iconTooltip) }
+                },
+                action: comp => emitWith(comp, formActionEvent, {
                   name: 'alert-banner',
                   value: spec.url
-                });
-              },
-              buttonBehaviours: derive$1([addFocusableBehaviour()])
-            })]
-        },
-        {
-          dom: {
-            tag: 'div',
-            classes: ['tox-notification__body'],
-            innerHtml: providersBackstage.translate(spec.text)
+                }),
+                buttonBehaviours: derive$1([addFocusableBehaviour()])
+              })] : undefined
+          },
+          {
+            dom: {
+              tag: 'div',
+              classes: ['tox-notification__body'],
+              innerHtml: providersBackstage.translate(spec.text)
+            }
           }
-        }
-      ]
-    });
+        ]
+      });
+    };
 
     const set$1 = (element, status) => {
       element.dom.checked = status;
@@ -17443,7 +19170,7 @@
           }),
           Tabstopping.config({}),
           Focusing.config({}),
-          RepresentingConfigs.withElement(initialData, get$1, set$1),
+          withElement(initialData, get$1, set$1),
           Keying.config({
             mode: 'special',
             onEnter: toggleCheckboxHandler,
@@ -17692,6 +19419,42 @@
       });
       return () => lazyUseEditableAreaAnchor() ? editableAreaAnchor() : standardAnchor();
     };
+    const getInlineBottomDialogAnchor = (inline, contentAreaElement, lazyBottomAnchorBar, lazyUseEditableAreaAnchor) => {
+      const bubbleSize = 12;
+      const overrides = { maxHeightFunction: expandable$1() };
+      const editableAreaAnchor = () => ({
+        type: 'node',
+        root: getContentContainer(getRootNode(contentAreaElement())),
+        node: Optional.from(contentAreaElement()),
+        bubble: nu$5(bubbleSize, bubbleSize, bubbleAlignments$2),
+        layouts: {
+          onRtl: () => [north],
+          onLtr: () => [north]
+        },
+        overrides
+      });
+      const standardAnchor = () => inline ? {
+        type: 'node',
+        root: getContentContainer(getRootNode(contentAreaElement())),
+        node: Optional.from(contentAreaElement()),
+        bubble: nu$5(0, -getOuter$2(contentAreaElement()), bubbleAlignments$2),
+        layouts: {
+          onRtl: () => [north$2],
+          onLtr: () => [north$2]
+        },
+        overrides
+      } : {
+        type: 'hotspot',
+        hotspot: lazyBottomAnchorBar(),
+        bubble: nu$5(0, 0, bubbleAlignments$2),
+        layouts: {
+          onRtl: () => [north$2],
+          onLtr: () => [north$2]
+        },
+        overrides
+      };
+      return () => lazyUseEditableAreaAnchor() ? editableAreaAnchor() : standardAnchor();
+    };
     const getBannerAnchor = (contentAreaElement, lazyAnchorbar, lazyUseEditableAreaAnchor) => {
       const editableAreaAnchor = () => ({
         type: 'node',
@@ -17735,13 +19498,14 @@
       root: bodyElement(),
       node: element
     });
-    const getAnchors = (editor, lazyAnchorbar, isToolbarTop) => {
+    const getAnchors = (editor, lazyAnchorbar, lazyBottomAnchorBar, isToolbarTop) => {
       const useFixedToolbarContainer = useFixedContainer(editor);
       const bodyElement = () => SugarElement.fromDom(editor.getBody());
       const contentAreaElement = () => SugarElement.fromDom(editor.getContentAreaContainer());
       const lazyUseEditableAreaAnchor = () => useFixedToolbarContainer || !isToolbarTop();
       return {
         inlineDialog: getInlineDialogAnchor(contentAreaElement, lazyAnchorbar, lazyUseEditableAreaAnchor),
+        inlineBottomDialog: getInlineBottomDialogAnchor(editor.inline, contentAreaElement, lazyBottomAnchorBar, lazyUseEditableAreaAnchor),
         banner: getBannerAnchor(contentAreaElement, lazyAnchorbar, lazyUseEditableAreaAnchor),
         cursor: getCursorAnchor(editor, bodyElement),
         node: getNodeAnchor$1(bodyElement)
@@ -18040,7 +19804,7 @@
     };
     const isContentEditableTrue = hasContentEditableState('true');
     const isContentEditableFalse = hasContentEditableState('false');
-    const create$1 = (type, title, url, level, attach) => ({
+    const create = (type, title, url, level, attach) => ({
       type,
       title,
       url,
@@ -18092,12 +19856,12 @@
       const attach = () => {
         elm.id = headerId;
       };
-      return create$1('header', (_a = getElementText(elm)) !== null && _a !== void 0 ? _a : '', '#' + headerId, getLevel(elm), attach);
+      return create('header', (_a = getElementText(elm)) !== null && _a !== void 0 ? _a : '', '#' + headerId, getLevel(elm), attach);
     };
     const anchorTarget = elm => {
       const anchorId = elm.id || elm.name;
       const anchorText = getElementText(elm);
-      return create$1('anchor', anchorText ? anchorText : '#' + anchorId, '#' + anchorId, 0, noop);
+      return create('anchor', anchorText ? anchorText : '#' + anchorId, '#' + anchorId, 0, noop);
     };
     const getHeaderTargets = elms => {
       return map$2(filter$2(elms, isValidHeader), headerTarget);
@@ -18221,7 +19985,7 @@
       getUrlPicker: filetype => getUrlPicker(editor, filetype)
     });
 
-    const init$6 = (lazySinks, editor, lazyAnchorbar) => {
+    const init$6 = (lazySinks, editor, lazyAnchorbar, lazyBottomAnchorBar) => {
       const contextMenuState = Cell(false);
       const toolbar = HeaderBackstage(editor);
       const providers = {
@@ -18240,7 +20004,7 @@
       const commonBackstage = {
         shared: {
           providers,
-          anchors: getAnchors(editor, lazyAnchorbar, toolbar.isPositionedAtTop),
+          anchors: getAnchors(editor, lazyAnchorbar, lazyBottomAnchorBar, toolbar.isPositionedAtTop),
           header: toolbar
         },
         urlinput,
@@ -18481,7 +20245,10 @@
         dom: detail.dom,
         components: extra.components,
         behaviours: augment(detail.toolbarBehaviours, extra.behaviours),
-        apis: { setGroups },
+        apis: {
+          setGroups,
+          refresh: noop
+        },
         domModification: { attributes: { role: 'group' } }
       };
     };
@@ -19588,11 +21355,13 @@
       }
       state.clear();
     };
+    const isBlocked = (component, blockingConfig, blockingState) => blockingState.isBlocked();
 
     var BlockingApis = /*#__PURE__*/Object.freeze({
         __proto__: null,
         block: block,
-        unblock: unblock
+        unblock: unblock,
+        isBlocked: isBlocked
     });
 
     var BlockingSchema = [
@@ -19626,34 +21395,6 @@
       apis: BlockingApis,
       state: BlockingState
     });
-
-    const getAttrs = elem => {
-      const attributes = elem.dom.attributes !== undefined ? elem.dom.attributes : [];
-      return foldl(attributes, (b, attr) => {
-        if (attr.name === 'class') {
-          return b;
-        } else {
-          return {
-            ...b,
-            [attr.name]: attr.value
-          };
-        }
-      }, {});
-    };
-    const getClasses = elem => Array.prototype.slice.call(elem.dom.classList, 0);
-    const fromHtml = html => {
-      const elem = SugarElement.fromHtml(html);
-      const children$1 = children(elem);
-      const attrs = getAttrs(elem);
-      const classes = getClasses(elem);
-      const contents = children$1.length === 0 ? {} : { innerHtml: get$9(elem) };
-      return {
-        tag: name$3(elem),
-        classes,
-        attributes: attrs,
-        ...contents
-      };
-    };
 
     const getBusySpec$1 = providerBackstage => (_root, _behaviours) => ({
       dom: {
@@ -20424,7 +22165,7 @@
             name: 'more',
             icon: Optional.some('more-drawer'),
             enabled: true,
-            tooltip: Optional.some('More...'),
+            tooltip: Optional.some('Reveal or hide additional toolbar items'),
             primary: false,
             buttonType: Optional.none(),
             borderless: false
@@ -20532,7 +22273,7 @@
     ];
     const normalButtonFields = [
       ...baseButtonFields,
-      text$1,
+      text,
       requiredStringEnum('type', ['button'])
     ];
     const toggleButtonFields = [
@@ -21186,7 +22927,7 @@
       },
       tools: {
         title: 'Tools',
-        items: 'spellchecker spellcheckerlanguage | autocorrect capitalization | a11ycheck code typography wordcount addtemplate'
+        items: 'aidialog aishortcuts | spellchecker spellcheckerlanguage | autocorrect capitalization | a11ycheck code typography wordcount addtemplate'
       },
       table: {
         title: 'Table',
@@ -21706,7 +23447,7 @@
     const createBespokeNumberInput = (editor, backstage, spec) => {
       let currentComp = Optional.none();
       const getValueFromCurrentComp = comp => comp.map(alloyComp => Representing.getValue(alloyComp)).getOr('');
-      const onSetup = onSetupEvent(editor, 'NodeChange', api => {
+      const onSetup = onSetupEvent(editor, 'NodeChange SwitchMode', api => {
         const comp = api.getComponent();
         currentComp = Optional.some(comp);
         spec.updateInputValue(comp);
@@ -21747,7 +23488,7 @@
       const makeStepperButton = (action, title, tooltip, classes) => {
         const translatedTooltip = backstage.shared.providers.translate(tooltip);
         const altExecuting = generate$6('altExecuting');
-        const onSetup = onSetupEvent(editor, 'NodeChange', api => {
+        const onSetup = onSetupEvent(editor, 'NodeChange SwitchMode', api => {
           Disabling.set(api.getComponent(), !editor.selection.isEditable());
         });
         const onClick = comp => {
@@ -22549,6 +24290,13 @@
         ]
       },
       {
+        name: 'ai',
+        items: [
+          'aidialog',
+          'aishortcuts'
+        ]
+      },
+      {
         name: 'styles',
         items: ['styles']
       },
@@ -22747,11 +24495,14 @@
       }
       attachSystem(uiRoot, uiRefs.dialogUi.mothership);
     };
-    const render$1 = async (editor, uiRefs, rawUiConfig, backstage, args) => {
+    const render$1 = (editor, uiRefs, rawUiConfig, backstage, args) => {
       const {mainUi, uiMotherships} = uiRefs;
       const lastToolbarWidth = Cell(0);
       const outerContainer = mainUi.outerContainer;
-      await iframe(editor);
+      editor.on('SkinLoaded', () => {
+        setToolbar(editor, uiRefs, rawUiConfig, backstage);
+      });
+      iframe(editor);
       const eTargetNode = SugarElement.fromDom(args.targetNode);
       const uiRoot = getContentContainer(getRootNode(eTargetNode));
       attachSystemAfter(eTargetNode, mainUi.mothership);
@@ -23125,13 +24876,13 @@
         elementLoad.clear();
       });
     };
-    const render = async (editor, uiRefs, rawUiConfig, backstage, args) => {
+    const render = (editor, uiRefs, rawUiConfig, backstage, args) => {
       const {mainUi} = uiRefs;
       const floatContainer = value$2();
       const targetElm = SugarElement.fromDom(args.targetNode);
       const ui = InlineHeader(editor, targetElm, uiRefs, backstage, floatContainer);
       const toolbarPersist = isToolbarPersist(editor);
-      await inline(editor);
+      inline(editor);
       const render = () => {
         if (floatContainer.isSet()) {
           ui.show();
@@ -24780,9 +26531,9 @@
       const sections = foldl(menuConfig, (acc, name) => {
         return get$g(contextMenus, name.toLowerCase()).map(menu => {
           const items = menu.update(selectedElement);
-          if (isString(items)) {
+          if (isString(items) && isNotEmpty(trim$1(items))) {
             return addContextMenuGroup(acc, items.split(' '));
-          } else if (items.length > 0) {
+          } else if (isArray(items) && items.length > 0) {
             const allItems = map$2(items, makeContextItem);
             return addContextMenuGroup(acc, allItems);
           } else {
@@ -25759,22 +27510,83 @@
             }]
         };
       };
-      const getTextComponents = () => {
+      const renderHelpAccessibility = () => {
+        const shortcutText = convertText('Alt+0');
+        const text = `Press {0} for help`;
+        return {
+          dom: {
+            tag: 'div',
+            classes: ['tox-statusbar__help-text']
+          },
+          components: [text$2(global$8.translate([
+              text,
+              shortcutText
+            ]))]
+        };
+      };
+      const renderRightContainer = () => {
         const components = [];
-        if (useElementPath(editor)) {
-          components.push(renderElementPath(editor, {}, providersBackstage));
-        }
         if (editor.hasPlugin('wordcount')) {
           components.push(renderWordCount(editor, providersBackstage));
         }
         if (useBranding(editor)) {
           components.push(renderBranding());
         }
+        return {
+          dom: {
+            tag: 'div',
+            classes: ['tox-statusbar__right-container']
+          },
+          components
+        };
+      };
+      const getTextComponents = () => {
+        const components = [];
+        const shouldRenderHelp = useHelpAccessibility(editor);
+        const shouldRenderElementPath = useElementPath(editor);
+        const shouldRenderRightContainer = useBranding(editor) || editor.hasPlugin('wordcount');
+        const getTextComponentClasses = () => {
+          const flexStart = 'tox-statusbar__text-container--flex-start';
+          const flexEnd = 'tox-statusbar__text-container--flex-end';
+          const spaceAround = 'tox-statusbar__text-container--space-around';
+          if (shouldRenderHelp) {
+            const container3Columns = 'tox-statusbar__text-container-3-cols';
+            if (!shouldRenderRightContainer && !shouldRenderElementPath) {
+              return [
+                container3Columns,
+                spaceAround
+              ];
+            }
+            if (shouldRenderRightContainer && !shouldRenderElementPath) {
+              return [
+                container3Columns,
+                flexEnd
+              ];
+            }
+            return [
+              container3Columns,
+              flexStart
+            ];
+          }
+          return [shouldRenderRightContainer && !shouldRenderElementPath ? flexEnd : flexStart];
+        };
+        if (shouldRenderElementPath) {
+          components.push(renderElementPath(editor, {}, providersBackstage));
+        }
+        if (shouldRenderHelp) {
+          components.push(renderHelpAccessibility());
+        }
+        if (shouldRenderRightContainer) {
+          components.push(renderRightContainer());
+        }
         if (components.length > 0) {
           return [{
               dom: {
                 tag: 'div',
-                classes: ['tox-statusbar__text-container']
+                classes: [
+                  'tox-statusbar__text-container',
+                  ...getTextComponentClasses()
+                ]
               },
               components
             }];
@@ -25816,16 +27628,23 @@
           classes: ['tox-anchorbar']
         }
       });
+      const memBottomAnchorBar = record({
+        dom: {
+          tag: 'div',
+          classes: ['tox-bottom-anchorbar']
+        }
+      });
       const lazyHeader = () => lazyUiRefs.mainUi.get().map(ui => ui.outerContainer).bind(OuterContainer.getHeader);
       const lazyDialogSinkResult = () => Result.fromOption(lazyUiRefs.dialogUi.get().map(ui => ui.sink), 'UI has not been rendered');
       const lazyPopupSinkResult = () => Result.fromOption(lazyUiRefs.popupUi.get().map(ui => ui.sink), '(popup) UI has not been rendered');
       const lazyAnchorBar = lazyUiRefs.lazyGetInOuterOrDie('anchor bar', memAnchorBar.getOpt);
+      const lazyBottomAnchorBar = lazyUiRefs.lazyGetInOuterOrDie('bottom anchor bar', memBottomAnchorBar.getOpt);
       const lazyToolbar = lazyUiRefs.lazyGetInOuterOrDie('toolbar', OuterContainer.getToolbar);
       const lazyThrobber = lazyUiRefs.lazyGetInOuterOrDie('throbber', OuterContainer.getThrobber);
       const backstages = init$6({
         popup: lazyPopupSinkResult,
         dialog: lazyDialogSinkResult
-      }, editor, lazyAnchorBar);
+      }, editor, lazyAnchorBar, lazyBottomAnchorBar);
       const makeHeaderPart = () => {
         const verticalDirAttributes = { attributes: { [Attribute]: isToolbarBottom ? AttributeValue.BottomToTop : AttributeValue.TopToBottom } };
         const partMenubar = OuterContainer.parts.menubar({
@@ -26008,7 +27827,10 @@
         const editorContainer = OuterContainer.parts.editorContainer({
           components: flatten([
             editorComponents,
-            isInline ? [] : statusbar.toArray()
+            isInline ? [] : [
+              memBottomAnchorBar.asSpec(),
+              ...statusbar.toArray()
+            ]
           ])
         });
         const isHidden = isDistractionFree(editor);
@@ -26244,7 +28066,7 @@
           behaviours: derive$1([
             Focusing.config({}),
             config('dialog-blocker-events', [runOnSource(focusin(), () => {
-                Keying.focusIn(dialog);
+                Blocking.isBlocked(dialog) ? noop() : Keying.focusIn(dialog);
               })])
           ])
         });
@@ -26260,7 +28082,7 @@
         });
       };
       const getDialogBody = dialog => getPartOrDie(dialog, detail, 'body');
-      const getDialogFooter = dialog => getPartOrDie(dialog, detail, 'footer');
+      const getDialogFooter = dialog => getPart(dialog, detail, 'footer');
       const setBusy = (dialog, getBusySpec) => {
         Blocking.block(dialog, getBusySpec);
       };
@@ -26352,7 +28174,7 @@
     ];
     const dialogFooterButtonFields = [
       ...baseFooterButtonFields,
-      text$1
+      text
     ];
     const normalFooterButtonFields = [
       requiredStringEnum('type', [
@@ -26388,7 +28210,7 @@
 
     const alertBannerFields = [
       type,
-      text$1,
+      text,
       requiredStringEnum('level', [
         'info',
         'warn',
@@ -26407,7 +28229,7 @@
 
     const buttonFields = [
       type,
-      text$1,
+      text,
       enabled,
       generatedName('button'),
       optionalIcon,
@@ -26438,7 +28260,7 @@
     const collectionSchema = objOf(collectionFields);
     const collectionDataProcessor = arrOfObj([
       value$1,
-      text$1,
+      text,
       icon
     ]);
 
@@ -26484,7 +28306,9 @@
     const htmlPanelSchema = objOf(htmlPanelFields);
 
     const iframeFields = formComponentWithLabelFields.concat([
+      defaultedBoolean('border', false),
       defaultedBoolean('sandboxed', true),
+      defaultedBoolean('streamContent', false),
       defaultedBoolean('transparent', true)
     ]);
     const iframeSchema = objOf(iframeFields);
@@ -26510,15 +28334,20 @@
     const createLabelFields = itemsField => [
       type,
       label,
-      itemsField
+      itemsField,
+      defaultedStringEnum('align', 'start', [
+        'start',
+        'center',
+        'end'
+      ])
     ];
 
     const listBoxSingleItemFields = [
-      text$1,
+      text,
       value$1
     ];
     const listBoxNestedItemFields = [
-      text$1,
+      text,
       requiredArrayOf('items', thunkOf('items', () => listBoxItemSchema))
     ];
     const listBoxItemSchema = oneOf([
@@ -26534,7 +28363,7 @@
 
     const selectBoxFields = formComponentWithLabelFields.concat([
       requiredArrayOfObj('items', [
-        text$1,
+        text,
         value$1
       ]),
       defaultedNumber('size', 1),
@@ -26676,7 +28505,7 @@
         tabpanel: tabPanelSchema
       })),
       defaultedString('size', 'normal'),
-      requiredArrayOf('buttons', dialogButtonSchema),
+      defaultedArrayOf('buttons', [], dialogButtonSchema),
       defaulted('initialData', {}),
       defaultedFunction('onAction', noop),
       defaultedFunction('onChange', noop),
@@ -26883,12 +28712,15 @@
             useTabstopAt: not(isPseudoStop)
           }),
           ComposingConfigs.memento(memForm),
-          RepresentingConfigs.memento(memForm, {
+          memento(memForm, {
             postprocess: formValue => toValidValues(formValue).fold(err => {
               console.error(err);
               return {};
             }, identity)
-          })
+          }),
+          config('dialog-body-panel', [run$1(focusin(), (comp, se) => {
+              comp.getSystem().broadcastOn([dialogFocusShiftedChannel], { newFocus: Optional.some(se.event.target) });
+            })])
         ])
       };
     };
@@ -27343,7 +29175,7 @@
           config('tabpanel', tabMode.extraEvents),
           Keying.config({ mode: 'acyclic' }),
           Composing.config({ find: comp => head(TabSection.getViewItems(comp)) }),
-          RepresentingConfigs.withComp(Optional.none(), tsection => {
+          withComp(Optional.none(), tsection => {
             tsection.getSystem().broadcastOn([SendDataToSectionChannel], {});
             return storedValue.get();
           }, (tsection, value) => {
@@ -27353,12 +29185,6 @@
         ])
       });
     };
-
-    const dialogChannel = generate$6('update-dialog');
-    const titleChannel = generate$6('update-title');
-    const bodyChannel = generate$6('update-body');
-    const footerChannel = generate$6('update-footer');
-    const bodySendMessageChannel = generate$6('body-send-message');
 
     const renderBody = (spec, dialogId, contentId, backstage, ariaAttrs) => {
       const renderComponents = incoming => {
@@ -27411,7 +29237,7 @@
               tag: 'div',
               classes: ['tox-dialog__body-iframe']
             },
-            components: [craft({
+            components: [craft(Optional.none(), {
                 dom: {
                   tag: 'iframe',
                   attributes: { src: spec.url }
@@ -27429,1571 +29255,6 @@
       };
       return ModalDialog.parts.body(bodySpec);
     };
-
-    function _typeof(obj) {
-      '@babel/helpers - typeof';
-      return _typeof = 'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator ? function (obj) {
-        return typeof obj;
-      } : function (obj) {
-        return obj && 'function' == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj;
-      }, _typeof(obj);
-    }
-    function _setPrototypeOf(o, p) {
-      _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-        o.__proto__ = p;
-        return o;
-      };
-      return _setPrototypeOf(o, p);
-    }
-    function _isNativeReflectConstruct() {
-      if (typeof Reflect === 'undefined' || !Reflect.construct)
-        return false;
-      if (Reflect.construct.sham)
-        return false;
-      if (typeof Proxy === 'function')
-        return true;
-      try {
-        Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {
-        }));
-        return true;
-      } catch (e) {
-        return false;
-      }
-    }
-    function _construct(Parent, args, Class) {
-      if (_isNativeReflectConstruct()) {
-        _construct = Reflect.construct;
-      } else {
-        _construct = function _construct(Parent, args, Class) {
-          var a = [null];
-          a.push.apply(a, args);
-          var Constructor = Function.bind.apply(Parent, a);
-          var instance = new Constructor();
-          if (Class)
-            _setPrototypeOf(instance, Class.prototype);
-          return instance;
-        };
-      }
-      return _construct.apply(null, arguments);
-    }
-    function _toConsumableArray(arr) {
-      return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-    }
-    function _arrayWithoutHoles(arr) {
-      if (Array.isArray(arr))
-        return _arrayLikeToArray(arr);
-    }
-    function _iterableToArray(iter) {
-      if (typeof Symbol !== 'undefined' && iter[Symbol.iterator] != null || iter['@@iterator'] != null)
-        return Array.from(iter);
-    }
-    function _unsupportedIterableToArray(o, minLen) {
-      if (!o)
-        return;
-      if (typeof o === 'string')
-        return _arrayLikeToArray(o, minLen);
-      var n = Object.prototype.toString.call(o).slice(8, -1);
-      if (n === 'Object' && o.constructor)
-        n = o.constructor.name;
-      if (n === 'Map' || n === 'Set')
-        return Array.from(o);
-      if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-        return _arrayLikeToArray(o, minLen);
-    }
-    function _arrayLikeToArray(arr, len) {
-      if (len == null || len > arr.length)
-        len = arr.length;
-      for (var i = 0, arr2 = new Array(len); i < len; i++)
-        arr2[i] = arr[i];
-      return arr2;
-    }
-    function _nonIterableSpread() {
-      throw new TypeError('Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.');
-    }
-    var hasOwnProperty = Object.hasOwnProperty, setPrototypeOf = Object.setPrototypeOf, isFrozen = Object.isFrozen, getPrototypeOf = Object.getPrototypeOf, getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-    var freeze = Object.freeze, seal = Object.seal, create = Object.create;
-    var _ref = typeof Reflect !== 'undefined' && Reflect, apply = _ref.apply, construct = _ref.construct;
-    if (!apply) {
-      apply = function apply(fun, thisValue, args) {
-        return fun.apply(thisValue, args);
-      };
-    }
-    if (!freeze) {
-      freeze = function freeze(x) {
-        return x;
-      };
-    }
-    if (!seal) {
-      seal = function seal(x) {
-        return x;
-      };
-    }
-    if (!construct) {
-      construct = function construct(Func, args) {
-        return _construct(Func, _toConsumableArray(args));
-      };
-    }
-    var arrayForEach = unapply(Array.prototype.forEach);
-    var arrayPop = unapply(Array.prototype.pop);
-    var arrayPush = unapply(Array.prototype.push);
-    var stringToLowerCase = unapply(String.prototype.toLowerCase);
-    var stringMatch = unapply(String.prototype.match);
-    var stringReplace = unapply(String.prototype.replace);
-    var stringIndexOf = unapply(String.prototype.indexOf);
-    var stringTrim = unapply(String.prototype.trim);
-    var regExpTest = unapply(RegExp.prototype.test);
-    var typeErrorCreate = unconstruct(TypeError);
-    function unapply(func) {
-      return function (thisArg) {
-        for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-          args[_key - 1] = arguments[_key];
-        }
-        return apply(func, thisArg, args);
-      };
-    }
-    function unconstruct(func) {
-      return function () {
-        for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-          args[_key2] = arguments[_key2];
-        }
-        return construct(func, args);
-      };
-    }
-    function addToSet(set, array) {
-      if (setPrototypeOf) {
-        setPrototypeOf(set, null);
-      }
-      var l = array.length;
-      while (l--) {
-        var element = array[l];
-        if (typeof element === 'string') {
-          var lcElement = stringToLowerCase(element);
-          if (lcElement !== element) {
-            if (!isFrozen(array)) {
-              array[l] = lcElement;
-            }
-            element = lcElement;
-          }
-        }
-        set[element] = true;
-      }
-      return set;
-    }
-    function clone(object) {
-      var newObject = create(null);
-      var property;
-      for (property in object) {
-        if (apply(hasOwnProperty, object, [property])) {
-          newObject[property] = object[property];
-        }
-      }
-      return newObject;
-    }
-    function lookupGetter(object, prop) {
-      while (object !== null) {
-        var desc = getOwnPropertyDescriptor(object, prop);
-        if (desc) {
-          if (desc.get) {
-            return unapply(desc.get);
-          }
-          if (typeof desc.value === 'function') {
-            return unapply(desc.value);
-          }
-        }
-        object = getPrototypeOf(object);
-      }
-      function fallbackValue(element) {
-        console.warn('fallback value for', element);
-        return null;
-      }
-      return fallbackValue;
-    }
-    var html$1 = freeze([
-      'a',
-      'abbr',
-      'acronym',
-      'address',
-      'area',
-      'article',
-      'aside',
-      'audio',
-      'b',
-      'bdi',
-      'bdo',
-      'big',
-      'blink',
-      'blockquote',
-      'body',
-      'br',
-      'button',
-      'canvas',
-      'caption',
-      'center',
-      'cite',
-      'code',
-      'col',
-      'colgroup',
-      'content',
-      'data',
-      'datalist',
-      'dd',
-      'decorator',
-      'del',
-      'details',
-      'dfn',
-      'dialog',
-      'dir',
-      'div',
-      'dl',
-      'dt',
-      'element',
-      'em',
-      'fieldset',
-      'figcaption',
-      'figure',
-      'font',
-      'footer',
-      'form',
-      'h1',
-      'h2',
-      'h3',
-      'h4',
-      'h5',
-      'h6',
-      'head',
-      'header',
-      'hgroup',
-      'hr',
-      'html',
-      'i',
-      'img',
-      'input',
-      'ins',
-      'kbd',
-      'label',
-      'legend',
-      'li',
-      'main',
-      'map',
-      'mark',
-      'marquee',
-      'menu',
-      'menuitem',
-      'meter',
-      'nav',
-      'nobr',
-      'ol',
-      'optgroup',
-      'option',
-      'output',
-      'p',
-      'picture',
-      'pre',
-      'progress',
-      'q',
-      'rp',
-      'rt',
-      'ruby',
-      's',
-      'samp',
-      'section',
-      'select',
-      'shadow',
-      'small',
-      'source',
-      'spacer',
-      'span',
-      'strike',
-      'strong',
-      'style',
-      'sub',
-      'summary',
-      'sup',
-      'table',
-      'tbody',
-      'td',
-      'template',
-      'textarea',
-      'tfoot',
-      'th',
-      'thead',
-      'time',
-      'tr',
-      'track',
-      'tt',
-      'u',
-      'ul',
-      'var',
-      'video',
-      'wbr'
-    ]);
-    var svg$1 = freeze([
-      'svg',
-      'a',
-      'altglyph',
-      'altglyphdef',
-      'altglyphitem',
-      'animatecolor',
-      'animatemotion',
-      'animatetransform',
-      'circle',
-      'clippath',
-      'defs',
-      'desc',
-      'ellipse',
-      'filter',
-      'font',
-      'g',
-      'glyph',
-      'glyphref',
-      'hkern',
-      'image',
-      'line',
-      'lineargradient',
-      'marker',
-      'mask',
-      'metadata',
-      'mpath',
-      'path',
-      'pattern',
-      'polygon',
-      'polyline',
-      'radialgradient',
-      'rect',
-      'stop',
-      'style',
-      'switch',
-      'symbol',
-      'text',
-      'textpath',
-      'title',
-      'tref',
-      'tspan',
-      'view',
-      'vkern'
-    ]);
-    var svgFilters = freeze([
-      'feBlend',
-      'feColorMatrix',
-      'feComponentTransfer',
-      'feComposite',
-      'feConvolveMatrix',
-      'feDiffuseLighting',
-      'feDisplacementMap',
-      'feDistantLight',
-      'feFlood',
-      'feFuncA',
-      'feFuncB',
-      'feFuncG',
-      'feFuncR',
-      'feGaussianBlur',
-      'feImage',
-      'feMerge',
-      'feMergeNode',
-      'feMorphology',
-      'feOffset',
-      'fePointLight',
-      'feSpecularLighting',
-      'feSpotLight',
-      'feTile',
-      'feTurbulence'
-    ]);
-    var svgDisallowed = freeze([
-      'animate',
-      'color-profile',
-      'cursor',
-      'discard',
-      'fedropshadow',
-      'font-face',
-      'font-face-format',
-      'font-face-name',
-      'font-face-src',
-      'font-face-uri',
-      'foreignobject',
-      'hatch',
-      'hatchpath',
-      'mesh',
-      'meshgradient',
-      'meshpatch',
-      'meshrow',
-      'missing-glyph',
-      'script',
-      'set',
-      'solidcolor',
-      'unknown',
-      'use'
-    ]);
-    var mathMl$1 = freeze([
-      'math',
-      'menclose',
-      'merror',
-      'mfenced',
-      'mfrac',
-      'mglyph',
-      'mi',
-      'mlabeledtr',
-      'mmultiscripts',
-      'mn',
-      'mo',
-      'mover',
-      'mpadded',
-      'mphantom',
-      'mroot',
-      'mrow',
-      'ms',
-      'mspace',
-      'msqrt',
-      'mstyle',
-      'msub',
-      'msup',
-      'msubsup',
-      'mtable',
-      'mtd',
-      'mtext',
-      'mtr',
-      'munder',
-      'munderover'
-    ]);
-    var mathMlDisallowed = freeze([
-      'maction',
-      'maligngroup',
-      'malignmark',
-      'mlongdiv',
-      'mscarries',
-      'mscarry',
-      'msgroup',
-      'mstack',
-      'msline',
-      'msrow',
-      'semantics',
-      'annotation',
-      'annotation-xml',
-      'mprescripts',
-      'none'
-    ]);
-    var text = freeze(['#text']);
-    var html = freeze([
-      'accept',
-      'action',
-      'align',
-      'alt',
-      'autocapitalize',
-      'autocomplete',
-      'autopictureinpicture',
-      'autoplay',
-      'background',
-      'bgcolor',
-      'border',
-      'capture',
-      'cellpadding',
-      'cellspacing',
-      'checked',
-      'cite',
-      'class',
-      'clear',
-      'color',
-      'cols',
-      'colspan',
-      'controls',
-      'controlslist',
-      'coords',
-      'crossorigin',
-      'datetime',
-      'decoding',
-      'default',
-      'dir',
-      'disabled',
-      'disablepictureinpicture',
-      'disableremoteplayback',
-      'download',
-      'draggable',
-      'enctype',
-      'enterkeyhint',
-      'face',
-      'for',
-      'headers',
-      'height',
-      'hidden',
-      'high',
-      'href',
-      'hreflang',
-      'id',
-      'inputmode',
-      'integrity',
-      'ismap',
-      'kind',
-      'label',
-      'lang',
-      'list',
-      'loading',
-      'loop',
-      'low',
-      'max',
-      'maxlength',
-      'media',
-      'method',
-      'min',
-      'minlength',
-      'multiple',
-      'muted',
-      'name',
-      'nonce',
-      'noshade',
-      'novalidate',
-      'nowrap',
-      'open',
-      'optimum',
-      'pattern',
-      'placeholder',
-      'playsinline',
-      'poster',
-      'preload',
-      'pubdate',
-      'radiogroup',
-      'readonly',
-      'rel',
-      'required',
-      'rev',
-      'reversed',
-      'role',
-      'rows',
-      'rowspan',
-      'spellcheck',
-      'scope',
-      'selected',
-      'shape',
-      'size',
-      'sizes',
-      'span',
-      'srclang',
-      'start',
-      'src',
-      'srcset',
-      'step',
-      'style',
-      'summary',
-      'tabindex',
-      'title',
-      'translate',
-      'type',
-      'usemap',
-      'valign',
-      'value',
-      'width',
-      'xmlns',
-      'slot'
-    ]);
-    var svg = freeze([
-      'accent-height',
-      'accumulate',
-      'additive',
-      'alignment-baseline',
-      'ascent',
-      'attributename',
-      'attributetype',
-      'azimuth',
-      'basefrequency',
-      'baseline-shift',
-      'begin',
-      'bias',
-      'by',
-      'class',
-      'clip',
-      'clippathunits',
-      'clip-path',
-      'clip-rule',
-      'color',
-      'color-interpolation',
-      'color-interpolation-filters',
-      'color-profile',
-      'color-rendering',
-      'cx',
-      'cy',
-      'd',
-      'dx',
-      'dy',
-      'diffuseconstant',
-      'direction',
-      'display',
-      'divisor',
-      'dur',
-      'edgemode',
-      'elevation',
-      'end',
-      'fill',
-      'fill-opacity',
-      'fill-rule',
-      'filter',
-      'filterunits',
-      'flood-color',
-      'flood-opacity',
-      'font-family',
-      'font-size',
-      'font-size-adjust',
-      'font-stretch',
-      'font-style',
-      'font-variant',
-      'font-weight',
-      'fx',
-      'fy',
-      'g1',
-      'g2',
-      'glyph-name',
-      'glyphref',
-      'gradientunits',
-      'gradienttransform',
-      'height',
-      'href',
-      'id',
-      'image-rendering',
-      'in',
-      'in2',
-      'k',
-      'k1',
-      'k2',
-      'k3',
-      'k4',
-      'kerning',
-      'keypoints',
-      'keysplines',
-      'keytimes',
-      'lang',
-      'lengthadjust',
-      'letter-spacing',
-      'kernelmatrix',
-      'kernelunitlength',
-      'lighting-color',
-      'local',
-      'marker-end',
-      'marker-mid',
-      'marker-start',
-      'markerheight',
-      'markerunits',
-      'markerwidth',
-      'maskcontentunits',
-      'maskunits',
-      'max',
-      'mask',
-      'media',
-      'method',
-      'mode',
-      'min',
-      'name',
-      'numoctaves',
-      'offset',
-      'operator',
-      'opacity',
-      'order',
-      'orient',
-      'orientation',
-      'origin',
-      'overflow',
-      'paint-order',
-      'path',
-      'pathlength',
-      'patterncontentunits',
-      'patterntransform',
-      'patternunits',
-      'points',
-      'preservealpha',
-      'preserveaspectratio',
-      'primitiveunits',
-      'r',
-      'rx',
-      'ry',
-      'radius',
-      'refx',
-      'refy',
-      'repeatcount',
-      'repeatdur',
-      'restart',
-      'result',
-      'rotate',
-      'scale',
-      'seed',
-      'shape-rendering',
-      'specularconstant',
-      'specularexponent',
-      'spreadmethod',
-      'startoffset',
-      'stddeviation',
-      'stitchtiles',
-      'stop-color',
-      'stop-opacity',
-      'stroke-dasharray',
-      'stroke-dashoffset',
-      'stroke-linecap',
-      'stroke-linejoin',
-      'stroke-miterlimit',
-      'stroke-opacity',
-      'stroke',
-      'stroke-width',
-      'style',
-      'surfacescale',
-      'systemlanguage',
-      'tabindex',
-      'targetx',
-      'targety',
-      'transform',
-      'transform-origin',
-      'text-anchor',
-      'text-decoration',
-      'text-rendering',
-      'textlength',
-      'type',
-      'u1',
-      'u2',
-      'unicode',
-      'values',
-      'viewbox',
-      'visibility',
-      'version',
-      'vert-adv-y',
-      'vert-origin-x',
-      'vert-origin-y',
-      'width',
-      'word-spacing',
-      'wrap',
-      'writing-mode',
-      'xchannelselector',
-      'ychannelselector',
-      'x',
-      'x1',
-      'x2',
-      'xmlns',
-      'y',
-      'y1',
-      'y2',
-      'z',
-      'zoomandpan'
-    ]);
-    var mathMl = freeze([
-      'accent',
-      'accentunder',
-      'align',
-      'bevelled',
-      'close',
-      'columnsalign',
-      'columnlines',
-      'columnspan',
-      'denomalign',
-      'depth',
-      'dir',
-      'display',
-      'displaystyle',
-      'encoding',
-      'fence',
-      'frame',
-      'height',
-      'href',
-      'id',
-      'largeop',
-      'length',
-      'linethickness',
-      'lspace',
-      'lquote',
-      'mathbackground',
-      'mathcolor',
-      'mathsize',
-      'mathvariant',
-      'maxsize',
-      'minsize',
-      'movablelimits',
-      'notation',
-      'numalign',
-      'open',
-      'rowalign',
-      'rowlines',
-      'rowspacing',
-      'rowspan',
-      'rspace',
-      'rquote',
-      'scriptlevel',
-      'scriptminsize',
-      'scriptsizemultiplier',
-      'selection',
-      'separator',
-      'separators',
-      'stretchy',
-      'subscriptshift',
-      'supscriptshift',
-      'symmetric',
-      'voffset',
-      'width',
-      'xmlns'
-    ]);
-    var xml = freeze([
-      'xlink:href',
-      'xml:id',
-      'xlink:title',
-      'xml:space',
-      'xmlns:xlink'
-    ]);
-    var MUSTACHE_EXPR = seal(/\{\{[\w\W]*|[\w\W]*\}\}/gm);
-    var ERB_EXPR = seal(/<%[\w\W]*|[\w\W]*%>/gm);
-    var DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]/);
-    var ARIA_ATTR = seal(/^aria-[\-\w]+$/);
-    var IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i);
-    var IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
-    var ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g);
-    var DOCTYPE_NAME = seal(/^html$/i);
-    var getGlobal = function getGlobal() {
-      return typeof window === 'undefined' ? null : window;
-    };
-    var _createTrustedTypesPolicy = function _createTrustedTypesPolicy(trustedTypes, document) {
-      if (_typeof(trustedTypes) !== 'object' || typeof trustedTypes.createPolicy !== 'function') {
-        return null;
-      }
-      var suffix = null;
-      var ATTR_NAME = 'data-tt-policy-suffix';
-      if (document.currentScript && document.currentScript.hasAttribute(ATTR_NAME)) {
-        suffix = document.currentScript.getAttribute(ATTR_NAME);
-      }
-      var policyName = 'dompurify' + (suffix ? '#' + suffix : '');
-      try {
-        return trustedTypes.createPolicy(policyName, {
-          createHTML: function createHTML(html) {
-            return html;
-          }
-        });
-      } catch (_) {
-        console.warn('TrustedTypes policy ' + policyName + ' could not be created.');
-        return null;
-      }
-    };
-    function createDOMPurify() {
-      var window = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : getGlobal();
-      var DOMPurify = function DOMPurify(root) {
-        return createDOMPurify(root);
-      };
-      DOMPurify.version = '2.3.8';
-      DOMPurify.removed = [];
-      if (!window || !window.document || window.document.nodeType !== 9) {
-        DOMPurify.isSupported = false;
-        return DOMPurify;
-      }
-      var originalDocument = window.document;
-      var document = window.document;
-      var DocumentFragment = window.DocumentFragment, HTMLTemplateElement = window.HTMLTemplateElement, Node = window.Node, Element = window.Element, NodeFilter = window.NodeFilter, _window$NamedNodeMap = window.NamedNodeMap, NamedNodeMap = _window$NamedNodeMap === void 0 ? window.NamedNodeMap || window.MozNamedAttrMap : _window$NamedNodeMap, HTMLFormElement = window.HTMLFormElement, DOMParser = window.DOMParser, trustedTypes = window.trustedTypes;
-      var ElementPrototype = Element.prototype;
-      var cloneNode = lookupGetter(ElementPrototype, 'cloneNode');
-      var getNextSibling = lookupGetter(ElementPrototype, 'nextSibling');
-      var getChildNodes = lookupGetter(ElementPrototype, 'childNodes');
-      var getParentNode = lookupGetter(ElementPrototype, 'parentNode');
-      if (typeof HTMLTemplateElement === 'function') {
-        var template = document.createElement('template');
-        if (template.content && template.content.ownerDocument) {
-          document = template.content.ownerDocument;
-        }
-      }
-      var trustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, originalDocument);
-      var emptyHTML = trustedTypesPolicy ? trustedTypesPolicy.createHTML('') : '';
-      var _document = document, implementation = _document.implementation, createNodeIterator = _document.createNodeIterator, createDocumentFragment = _document.createDocumentFragment, getElementsByTagName = _document.getElementsByTagName;
-      var importNode = originalDocument.importNode;
-      var documentMode = {};
-      try {
-        documentMode = clone(document).documentMode ? document.documentMode : {};
-      } catch (_) {
-      }
-      var hooks = {};
-      DOMPurify.isSupported = typeof getParentNode === 'function' && implementation && typeof implementation.createHTMLDocument !== 'undefined' && documentMode !== 9;
-      var MUSTACHE_EXPR$1 = MUSTACHE_EXPR, ERB_EXPR$1 = ERB_EXPR, DATA_ATTR$1 = DATA_ATTR, ARIA_ATTR$1 = ARIA_ATTR, IS_SCRIPT_OR_DATA$1 = IS_SCRIPT_OR_DATA, ATTR_WHITESPACE$1 = ATTR_WHITESPACE;
-      var IS_ALLOWED_URI$1 = IS_ALLOWED_URI;
-      var ALLOWED_TAGS = null;
-      var DEFAULT_ALLOWED_TAGS = addToSet({}, [].concat(_toConsumableArray(html$1), _toConsumableArray(svg$1), _toConsumableArray(svgFilters), _toConsumableArray(mathMl$1), _toConsumableArray(text)));
-      var ALLOWED_ATTR = null;
-      var DEFAULT_ALLOWED_ATTR = addToSet({}, [].concat(_toConsumableArray(html), _toConsumableArray(svg), _toConsumableArray(mathMl), _toConsumableArray(xml)));
-      var CUSTOM_ELEMENT_HANDLING = Object.seal(Object.create(null, {
-        tagNameCheck: {
-          writable: true,
-          configurable: false,
-          enumerable: true,
-          value: null
-        },
-        attributeNameCheck: {
-          writable: true,
-          configurable: false,
-          enumerable: true,
-          value: null
-        },
-        allowCustomizedBuiltInElements: {
-          writable: true,
-          configurable: false,
-          enumerable: true,
-          value: false
-        }
-      }));
-      var FORBID_TAGS = null;
-      var FORBID_ATTR = null;
-      var ALLOW_ARIA_ATTR = true;
-      var ALLOW_DATA_ATTR = true;
-      var ALLOW_UNKNOWN_PROTOCOLS = false;
-      var SAFE_FOR_TEMPLATES = false;
-      var WHOLE_DOCUMENT = false;
-      var SET_CONFIG = false;
-      var FORCE_BODY = false;
-      var RETURN_DOM = false;
-      var RETURN_DOM_FRAGMENT = false;
-      var RETURN_TRUSTED_TYPE = false;
-      var SANITIZE_DOM = true;
-      var KEEP_CONTENT = true;
-      var IN_PLACE = false;
-      var USE_PROFILES = {};
-      var FORBID_CONTENTS = null;
-      var DEFAULT_FORBID_CONTENTS = addToSet({}, [
-        'annotation-xml',
-        'audio',
-        'colgroup',
-        'desc',
-        'foreignobject',
-        'head',
-        'iframe',
-        'math',
-        'mi',
-        'mn',
-        'mo',
-        'ms',
-        'mtext',
-        'noembed',
-        'noframes',
-        'noscript',
-        'plaintext',
-        'script',
-        'style',
-        'svg',
-        'template',
-        'thead',
-        'title',
-        'video',
-        'xmp'
-      ]);
-      var DATA_URI_TAGS = null;
-      var DEFAULT_DATA_URI_TAGS = addToSet({}, [
-        'audio',
-        'video',
-        'img',
-        'source',
-        'image',
-        'track'
-      ]);
-      var URI_SAFE_ATTRIBUTES = null;
-      var DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, [
-        'alt',
-        'class',
-        'for',
-        'id',
-        'label',
-        'name',
-        'pattern',
-        'placeholder',
-        'role',
-        'summary',
-        'title',
-        'value',
-        'style',
-        'xmlns'
-      ]);
-      var MATHML_NAMESPACE = 'http://www.w3.org/1998/Math/MathML';
-      var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
-      var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
-      var NAMESPACE = HTML_NAMESPACE;
-      var IS_EMPTY_INPUT = false;
-      var PARSER_MEDIA_TYPE;
-      var SUPPORTED_PARSER_MEDIA_TYPES = [
-        'application/xhtml+xml',
-        'text/html'
-      ];
-      var DEFAULT_PARSER_MEDIA_TYPE = 'text/html';
-      var transformCaseFunc;
-      var CONFIG = null;
-      var formElement = document.createElement('form');
-      var isRegexOrFunction = function isRegexOrFunction(testValue) {
-        return testValue instanceof RegExp || testValue instanceof Function;
-      };
-      var _parseConfig = function _parseConfig(cfg) {
-        if (CONFIG && CONFIG === cfg) {
-          return;
-        }
-        if (!cfg || _typeof(cfg) !== 'object') {
-          cfg = {};
-        }
-        cfg = clone(cfg);
-        ALLOWED_TAGS = 'ALLOWED_TAGS' in cfg ? addToSet({}, cfg.ALLOWED_TAGS) : DEFAULT_ALLOWED_TAGS;
-        ALLOWED_ATTR = 'ALLOWED_ATTR' in cfg ? addToSet({}, cfg.ALLOWED_ATTR) : DEFAULT_ALLOWED_ATTR;
-        URI_SAFE_ATTRIBUTES = 'ADD_URI_SAFE_ATTR' in cfg ? addToSet(clone(DEFAULT_URI_SAFE_ATTRIBUTES), cfg.ADD_URI_SAFE_ATTR) : DEFAULT_URI_SAFE_ATTRIBUTES;
-        DATA_URI_TAGS = 'ADD_DATA_URI_TAGS' in cfg ? addToSet(clone(DEFAULT_DATA_URI_TAGS), cfg.ADD_DATA_URI_TAGS) : DEFAULT_DATA_URI_TAGS;
-        FORBID_CONTENTS = 'FORBID_CONTENTS' in cfg ? addToSet({}, cfg.FORBID_CONTENTS) : DEFAULT_FORBID_CONTENTS;
-        FORBID_TAGS = 'FORBID_TAGS' in cfg ? addToSet({}, cfg.FORBID_TAGS) : {};
-        FORBID_ATTR = 'FORBID_ATTR' in cfg ? addToSet({}, cfg.FORBID_ATTR) : {};
-        USE_PROFILES = 'USE_PROFILES' in cfg ? cfg.USE_PROFILES : false;
-        ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false;
-        ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false;
-        ALLOW_UNKNOWN_PROTOCOLS = cfg.ALLOW_UNKNOWN_PROTOCOLS || false;
-        SAFE_FOR_TEMPLATES = cfg.SAFE_FOR_TEMPLATES || false;
-        WHOLE_DOCUMENT = cfg.WHOLE_DOCUMENT || false;
-        RETURN_DOM = cfg.RETURN_DOM || false;
-        RETURN_DOM_FRAGMENT = cfg.RETURN_DOM_FRAGMENT || false;
-        RETURN_TRUSTED_TYPE = cfg.RETURN_TRUSTED_TYPE || false;
-        FORCE_BODY = cfg.FORCE_BODY || false;
-        SANITIZE_DOM = cfg.SANITIZE_DOM !== false;
-        KEEP_CONTENT = cfg.KEEP_CONTENT !== false;
-        IN_PLACE = cfg.IN_PLACE || false;
-        IS_ALLOWED_URI$1 = cfg.ALLOWED_URI_REGEXP || IS_ALLOWED_URI$1;
-        NAMESPACE = cfg.NAMESPACE || HTML_NAMESPACE;
-        if (cfg.CUSTOM_ELEMENT_HANDLING && isRegexOrFunction(cfg.CUSTOM_ELEMENT_HANDLING.tagNameCheck)) {
-          CUSTOM_ELEMENT_HANDLING.tagNameCheck = cfg.CUSTOM_ELEMENT_HANDLING.tagNameCheck;
-        }
-        if (cfg.CUSTOM_ELEMENT_HANDLING && isRegexOrFunction(cfg.CUSTOM_ELEMENT_HANDLING.attributeNameCheck)) {
-          CUSTOM_ELEMENT_HANDLING.attributeNameCheck = cfg.CUSTOM_ELEMENT_HANDLING.attributeNameCheck;
-        }
-        if (cfg.CUSTOM_ELEMENT_HANDLING && typeof cfg.CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements === 'boolean') {
-          CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = cfg.CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements;
-        }
-        PARSER_MEDIA_TYPE = SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? PARSER_MEDIA_TYPE = DEFAULT_PARSER_MEDIA_TYPE : PARSER_MEDIA_TYPE = cfg.PARSER_MEDIA_TYPE;
-        transformCaseFunc = PARSER_MEDIA_TYPE === 'application/xhtml+xml' ? function (x) {
-          return x;
-        } : stringToLowerCase;
-        if (SAFE_FOR_TEMPLATES) {
-          ALLOW_DATA_ATTR = false;
-        }
-        if (RETURN_DOM_FRAGMENT) {
-          RETURN_DOM = true;
-        }
-        if (USE_PROFILES) {
-          ALLOWED_TAGS = addToSet({}, _toConsumableArray(text));
-          ALLOWED_ATTR = [];
-          if (USE_PROFILES.html === true) {
-            addToSet(ALLOWED_TAGS, html$1);
-            addToSet(ALLOWED_ATTR, html);
-          }
-          if (USE_PROFILES.svg === true) {
-            addToSet(ALLOWED_TAGS, svg$1);
-            addToSet(ALLOWED_ATTR, svg);
-            addToSet(ALLOWED_ATTR, xml);
-          }
-          if (USE_PROFILES.svgFilters === true) {
-            addToSet(ALLOWED_TAGS, svgFilters);
-            addToSet(ALLOWED_ATTR, svg);
-            addToSet(ALLOWED_ATTR, xml);
-          }
-          if (USE_PROFILES.mathMl === true) {
-            addToSet(ALLOWED_TAGS, mathMl$1);
-            addToSet(ALLOWED_ATTR, mathMl);
-            addToSet(ALLOWED_ATTR, xml);
-          }
-        }
-        if (cfg.ADD_TAGS) {
-          if (ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) {
-            ALLOWED_TAGS = clone(ALLOWED_TAGS);
-          }
-          addToSet(ALLOWED_TAGS, cfg.ADD_TAGS);
-        }
-        if (cfg.ADD_ATTR) {
-          if (ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) {
-            ALLOWED_ATTR = clone(ALLOWED_ATTR);
-          }
-          addToSet(ALLOWED_ATTR, cfg.ADD_ATTR);
-        }
-        if (cfg.ADD_URI_SAFE_ATTR) {
-          addToSet(URI_SAFE_ATTRIBUTES, cfg.ADD_URI_SAFE_ATTR);
-        }
-        if (cfg.FORBID_CONTENTS) {
-          if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) {
-            FORBID_CONTENTS = clone(FORBID_CONTENTS);
-          }
-          addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS);
-        }
-        if (KEEP_CONTENT) {
-          ALLOWED_TAGS['#text'] = true;
-        }
-        if (WHOLE_DOCUMENT) {
-          addToSet(ALLOWED_TAGS, [
-            'html',
-            'head',
-            'body'
-          ]);
-        }
-        if (ALLOWED_TAGS.table) {
-          addToSet(ALLOWED_TAGS, ['tbody']);
-          delete FORBID_TAGS.tbody;
-        }
-        if (freeze) {
-          freeze(cfg);
-        }
-        CONFIG = cfg;
-      };
-      var MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, [
-        'mi',
-        'mo',
-        'mn',
-        'ms',
-        'mtext'
-      ]);
-      var HTML_INTEGRATION_POINTS = addToSet({}, [
-        'foreignobject',
-        'desc',
-        'title',
-        'annotation-xml'
-      ]);
-      var COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, [
-        'title',
-        'style',
-        'font',
-        'a',
-        'script'
-      ]);
-      var ALL_SVG_TAGS = addToSet({}, svg$1);
-      addToSet(ALL_SVG_TAGS, svgFilters);
-      addToSet(ALL_SVG_TAGS, svgDisallowed);
-      var ALL_MATHML_TAGS = addToSet({}, mathMl$1);
-      addToSet(ALL_MATHML_TAGS, mathMlDisallowed);
-      var _checkValidNamespace = function _checkValidNamespace(element) {
-        var parent = getParentNode(element);
-        if (!parent || !parent.tagName) {
-          parent = {
-            namespaceURI: HTML_NAMESPACE,
-            tagName: 'template'
-          };
-        }
-        var tagName = stringToLowerCase(element.tagName);
-        var parentTagName = stringToLowerCase(parent.tagName);
-        if (element.namespaceURI === SVG_NAMESPACE) {
-          if (parent.namespaceURI === HTML_NAMESPACE) {
-            return tagName === 'svg';
-          }
-          if (parent.namespaceURI === MATHML_NAMESPACE) {
-            return tagName === 'svg' && (parentTagName === 'annotation-xml' || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
-          }
-          return Boolean(ALL_SVG_TAGS[tagName]);
-        }
-        if (element.namespaceURI === MATHML_NAMESPACE) {
-          if (parent.namespaceURI === HTML_NAMESPACE) {
-            return tagName === 'math';
-          }
-          if (parent.namespaceURI === SVG_NAMESPACE) {
-            return tagName === 'math' && HTML_INTEGRATION_POINTS[parentTagName];
-          }
-          return Boolean(ALL_MATHML_TAGS[tagName]);
-        }
-        if (element.namespaceURI === HTML_NAMESPACE) {
-          if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) {
-            return false;
-          }
-          if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) {
-            return false;
-          }
-          return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
-        }
-        return false;
-      };
-      var _forceRemove = function _forceRemove(node) {
-        arrayPush(DOMPurify.removed, { element: node });
-        try {
-          node.parentNode.removeChild(node);
-        } catch (_) {
-          try {
-            node.outerHTML = emptyHTML;
-          } catch (_) {
-            node.remove();
-          }
-        }
-      };
-      var _removeAttribute = function _removeAttribute(name, node) {
-        try {
-          arrayPush(DOMPurify.removed, {
-            attribute: node.getAttributeNode(name),
-            from: node
-          });
-        } catch (_) {
-          arrayPush(DOMPurify.removed, {
-            attribute: null,
-            from: node
-          });
-        }
-        node.removeAttribute(name);
-        if (name === 'is' && !ALLOWED_ATTR[name]) {
-          if (RETURN_DOM || RETURN_DOM_FRAGMENT) {
-            try {
-              _forceRemove(node);
-            } catch (_) {
-            }
-          } else {
-            try {
-              node.setAttribute(name, '');
-            } catch (_) {
-            }
-          }
-        }
-      };
-      var _initDocument = function _initDocument(dirty) {
-        var doc;
-        var leadingWhitespace;
-        if (FORCE_BODY) {
-          dirty = '<remove></remove>' + dirty;
-        } else {
-          var matches = stringMatch(dirty, /^[\r\n\t ]+/);
-          leadingWhitespace = matches && matches[0];
-        }
-        if (PARSER_MEDIA_TYPE === 'application/xhtml+xml') {
-          dirty = '<html xmlns="http://www.w3.org/1999/xhtml"><head></head><body>' + dirty + '</body></html>';
-        }
-        var dirtyPayload = trustedTypesPolicy ? trustedTypesPolicy.createHTML(dirty) : dirty;
-        if (NAMESPACE === HTML_NAMESPACE) {
-          try {
-            doc = new DOMParser().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
-          } catch (_) {
-          }
-        }
-        if (!doc || !doc.documentElement) {
-          doc = implementation.createDocument(NAMESPACE, 'template', null);
-          try {
-            doc.documentElement.innerHTML = IS_EMPTY_INPUT ? '' : dirtyPayload;
-          } catch (_) {
-          }
-        }
-        var body = doc.body || doc.documentElement;
-        if (dirty && leadingWhitespace) {
-          body.insertBefore(document.createTextNode(leadingWhitespace), body.childNodes[0] || null);
-        }
-        if (NAMESPACE === HTML_NAMESPACE) {
-          return getElementsByTagName.call(doc, WHOLE_DOCUMENT ? 'html' : 'body')[0];
-        }
-        return WHOLE_DOCUMENT ? doc.documentElement : body;
-      };
-      var _createIterator = function _createIterator(root) {
-        return createNodeIterator.call(root.ownerDocument || root, root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT, null, false);
-      };
-      var _isClobbered = function _isClobbered(elm) {
-        return elm instanceof HTMLFormElement && (typeof elm.nodeName !== 'string' || typeof elm.textContent !== 'string' || typeof elm.removeChild !== 'function' || !(elm.attributes instanceof NamedNodeMap) || typeof elm.removeAttribute !== 'function' || typeof elm.setAttribute !== 'function' || typeof elm.namespaceURI !== 'string' || typeof elm.insertBefore !== 'function');
-      };
-      var _isNode = function _isNode(object) {
-        return _typeof(Node) === 'object' ? object instanceof Node : object && _typeof(object) === 'object' && typeof object.nodeType === 'number' && typeof object.nodeName === 'string';
-      };
-      var _executeHook = function _executeHook(entryPoint, currentNode, data) {
-        if (!hooks[entryPoint]) {
-          return;
-        }
-        arrayForEach(hooks[entryPoint], function (hook) {
-          hook.call(DOMPurify, currentNode, data, CONFIG);
-        });
-      };
-      var _sanitizeElements = function _sanitizeElements(currentNode) {
-        var content;
-        _executeHook('beforeSanitizeElements', currentNode, null);
-        if (_isClobbered(currentNode)) {
-          _forceRemove(currentNode);
-          return true;
-        }
-        if (regExpTest(/[\u0080-\uFFFF]/, currentNode.nodeName)) {
-          _forceRemove(currentNode);
-          return true;
-        }
-        var tagName = transformCaseFunc(currentNode.nodeName);
-        _executeHook('uponSanitizeElement', currentNode, {
-          tagName: tagName,
-          allowedTags: ALLOWED_TAGS
-        });
-        if (currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && (!_isNode(currentNode.content) || !_isNode(currentNode.content.firstElementChild)) && regExpTest(/<[/\w]/g, currentNode.innerHTML) && regExpTest(/<[/\w]/g, currentNode.textContent)) {
-          _forceRemove(currentNode);
-          return true;
-        }
-        if (tagName === 'select' && regExpTest(/<template/i, currentNode.innerHTML)) {
-          _forceRemove(currentNode);
-          return true;
-        }
-        if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
-          if (!FORBID_TAGS[tagName] && _basicCustomElementTest(tagName)) {
-            if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName))
-              return false;
-            if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName))
-              return false;
-          }
-          if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
-            var parentNode = getParentNode(currentNode) || currentNode.parentNode;
-            var childNodes = getChildNodes(currentNode) || currentNode.childNodes;
-            if (childNodes && parentNode) {
-              var childCount = childNodes.length;
-              for (var i = childCount - 1; i >= 0; --i) {
-                parentNode.insertBefore(cloneNode(childNodes[i], true), getNextSibling(currentNode));
-              }
-            }
-          }
-          _forceRemove(currentNode);
-          return true;
-        }
-        if (currentNode instanceof Element && !_checkValidNamespace(currentNode)) {
-          _forceRemove(currentNode);
-          return true;
-        }
-        if ((tagName === 'noscript' || tagName === 'noembed') && regExpTest(/<\/no(script|embed)/i, currentNode.innerHTML)) {
-          _forceRemove(currentNode);
-          return true;
-        }
-        if (SAFE_FOR_TEMPLATES && currentNode.nodeType === 3) {
-          content = currentNode.textContent;
-          content = stringReplace(content, MUSTACHE_EXPR$1, ' ');
-          content = stringReplace(content, ERB_EXPR$1, ' ');
-          if (currentNode.textContent !== content) {
-            arrayPush(DOMPurify.removed, { element: currentNode.cloneNode() });
-            currentNode.textContent = content;
-          }
-        }
-        _executeHook('afterSanitizeElements', currentNode, null);
-        return false;
-      };
-      var _isValidAttribute = function _isValidAttribute(lcTag, lcName, value) {
-        if (SANITIZE_DOM && (lcName === 'id' || lcName === 'name') && (value in document || value in formElement)) {
-          return false;
-        }
-        if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR$1, lcName));
-        else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName));
-        else if (!ALLOWED_ATTR[lcName] || FORBID_ATTR[lcName]) {
-          if (_basicCustomElementTest(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName)) || lcName === 'is' && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value)));
-          else {
-            return false;
-          }
-        } else if (URI_SAFE_ATTRIBUTES[lcName]);
-        else if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, '')));
-        else if ((lcName === 'src' || lcName === 'xlink:href' || lcName === 'href') && lcTag !== 'script' && stringIndexOf(value, 'data:') === 0 && DATA_URI_TAGS[lcTag]);
-        else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, '')));
-        else if (!value);
-        else {
-          return false;
-        }
-        return true;
-      };
-      var _basicCustomElementTest = function _basicCustomElementTest(tagName) {
-        return tagName.indexOf('-') > 0;
-      };
-      var _sanitizeAttributes = function _sanitizeAttributes(currentNode) {
-        var attr;
-        var value;
-        var lcName;
-        var l;
-        _executeHook('beforeSanitizeAttributes', currentNode, null);
-        var attributes = currentNode.attributes;
-        if (!attributes) {
-          return;
-        }
-        var hookEvent = {
-          attrName: '',
-          attrValue: '',
-          keepAttr: true,
-          allowedAttributes: ALLOWED_ATTR
-        };
-        l = attributes.length;
-        while (l--) {
-          attr = attributes[l];
-          var _attr = attr, name = _attr.name, namespaceURI = _attr.namespaceURI;
-          value = name === 'value' ? attr.value : stringTrim(attr.value);
-          lcName = transformCaseFunc(name);
-          var initValue = value;
-          hookEvent.attrName = lcName;
-          hookEvent.attrValue = value;
-          hookEvent.keepAttr = true;
-          hookEvent.forceKeepAttr = undefined;
-          _executeHook('uponSanitizeAttribute', currentNode, hookEvent);
-          value = hookEvent.attrValue;
-          if (hookEvent.forceKeepAttr) {
-            continue;
-          }
-          if (!hookEvent.keepAttr) {
-            _removeAttribute(name, currentNode);
-            continue;
-          }
-          if (regExpTest(/\/>/i, value)) {
-            _removeAttribute(name, currentNode);
-            continue;
-          }
-          if (SAFE_FOR_TEMPLATES) {
-            value = stringReplace(value, MUSTACHE_EXPR$1, ' ');
-            value = stringReplace(value, ERB_EXPR$1, ' ');
-          }
-          var lcTag = transformCaseFunc(currentNode.nodeName);
-          if (!_isValidAttribute(lcTag, lcName, value)) {
-            _removeAttribute(name, currentNode);
-            continue;
-          }
-          if (value !== initValue) {
-            try {
-              if (namespaceURI) {
-                currentNode.setAttributeNS(namespaceURI, name, value);
-              } else {
-                currentNode.setAttribute(name, value);
-              }
-            } catch (_) {
-              _removeAttribute(name, currentNode);
-            }
-          }
-        }
-        _executeHook('afterSanitizeAttributes', currentNode, null);
-      };
-      var _sanitizeShadowDOM = function _sanitizeShadowDOM(fragment) {
-        var shadowNode;
-        var shadowIterator = _createIterator(fragment);
-        _executeHook('beforeSanitizeShadowDOM', fragment, null);
-        while (shadowNode = shadowIterator.nextNode()) {
-          _executeHook('uponSanitizeShadowNode', shadowNode, null);
-          if (_sanitizeElements(shadowNode)) {
-            continue;
-          }
-          if (shadowNode.content instanceof DocumentFragment) {
-            _sanitizeShadowDOM(shadowNode.content);
-          }
-          _sanitizeAttributes(shadowNode);
-        }
-        _executeHook('afterSanitizeShadowDOM', fragment, null);
-      };
-      DOMPurify.sanitize = function (dirty, cfg) {
-        var body;
-        var importedNode;
-        var currentNode;
-        var oldNode;
-        var returnNode;
-        IS_EMPTY_INPUT = !dirty;
-        if (IS_EMPTY_INPUT) {
-          dirty = '<!-->';
-        }
-        if (typeof dirty !== 'string' && !_isNode(dirty)) {
-          if (typeof dirty.toString !== 'function') {
-            throw typeErrorCreate('toString is not a function');
-          } else {
-            dirty = dirty.toString();
-            if (typeof dirty !== 'string') {
-              throw typeErrorCreate('dirty is not a string, aborting');
-            }
-          }
-        }
-        if (!DOMPurify.isSupported) {
-          if (_typeof(window.toStaticHTML) === 'object' || typeof window.toStaticHTML === 'function') {
-            if (typeof dirty === 'string') {
-              return window.toStaticHTML(dirty);
-            }
-            if (_isNode(dirty)) {
-              return window.toStaticHTML(dirty.outerHTML);
-            }
-          }
-          return dirty;
-        }
-        if (!SET_CONFIG) {
-          _parseConfig(cfg);
-        }
-        DOMPurify.removed = [];
-        if (typeof dirty === 'string') {
-          IN_PLACE = false;
-        }
-        if (IN_PLACE) {
-          if (dirty.nodeName) {
-            var tagName = transformCaseFunc(dirty.nodeName);
-            if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
-              throw typeErrorCreate('root node is forbidden and cannot be sanitized in-place');
-            }
-          }
-        } else if (dirty instanceof Node) {
-          body = _initDocument('<!---->');
-          importedNode = body.ownerDocument.importNode(dirty, true);
-          if (importedNode.nodeType === 1 && importedNode.nodeName === 'BODY') {
-            body = importedNode;
-          } else if (importedNode.nodeName === 'HTML') {
-            body = importedNode;
-          } else {
-            body.appendChild(importedNode);
-          }
-        } else {
-          if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && dirty.indexOf('<') === -1) {
-            return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(dirty) : dirty;
-          }
-          body = _initDocument(dirty);
-          if (!body) {
-            return RETURN_DOM ? null : RETURN_TRUSTED_TYPE ? emptyHTML : '';
-          }
-        }
-        if (body && FORCE_BODY) {
-          _forceRemove(body.firstChild);
-        }
-        var nodeIterator = _createIterator(IN_PLACE ? dirty : body);
-        while (currentNode = nodeIterator.nextNode()) {
-          if (currentNode.nodeType === 3 && currentNode === oldNode) {
-            continue;
-          }
-          if (_sanitizeElements(currentNode)) {
-            continue;
-          }
-          if (currentNode.content instanceof DocumentFragment) {
-            _sanitizeShadowDOM(currentNode.content);
-          }
-          _sanitizeAttributes(currentNode);
-          oldNode = currentNode;
-        }
-        oldNode = null;
-        if (IN_PLACE) {
-          return dirty;
-        }
-        if (RETURN_DOM) {
-          if (RETURN_DOM_FRAGMENT) {
-            returnNode = createDocumentFragment.call(body.ownerDocument);
-            while (body.firstChild) {
-              returnNode.appendChild(body.firstChild);
-            }
-          } else {
-            returnNode = body;
-          }
-          if (ALLOWED_ATTR.shadowroot) {
-            returnNode = importNode.call(originalDocument, returnNode, true);
-          }
-          return returnNode;
-        }
-        var serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
-        if (WHOLE_DOCUMENT && ALLOWED_TAGS['!doctype'] && body.ownerDocument && body.ownerDocument.doctype && body.ownerDocument.doctype.name && regExpTest(DOCTYPE_NAME, body.ownerDocument.doctype.name)) {
-          serializedHTML = '<!DOCTYPE ' + body.ownerDocument.doctype.name + '>\n' + serializedHTML;
-        }
-        if (SAFE_FOR_TEMPLATES) {
-          serializedHTML = stringReplace(serializedHTML, MUSTACHE_EXPR$1, ' ');
-          serializedHTML = stringReplace(serializedHTML, ERB_EXPR$1, ' ');
-        }
-        return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(serializedHTML) : serializedHTML;
-      };
-      DOMPurify.setConfig = function (cfg) {
-        _parseConfig(cfg);
-        SET_CONFIG = true;
-      };
-      DOMPurify.clearConfig = function () {
-        CONFIG = null;
-        SET_CONFIG = false;
-      };
-      DOMPurify.isValidAttribute = function (tag, attr, value) {
-        if (!CONFIG) {
-          _parseConfig({});
-        }
-        var lcTag = transformCaseFunc(tag);
-        var lcName = transformCaseFunc(attr);
-        return _isValidAttribute(lcTag, lcName, value);
-      };
-      DOMPurify.addHook = function (entryPoint, hookFunction) {
-        if (typeof hookFunction !== 'function') {
-          return;
-        }
-        hooks[entryPoint] = hooks[entryPoint] || [];
-        arrayPush(hooks[entryPoint], hookFunction);
-      };
-      DOMPurify.removeHook = function (entryPoint) {
-        if (hooks[entryPoint]) {
-          return arrayPop(hooks[entryPoint]);
-        }
-      };
-      DOMPurify.removeHooks = function (entryPoint) {
-        if (hooks[entryPoint]) {
-          hooks[entryPoint] = [];
-        }
-      };
-      DOMPurify.removeAllHooks = function () {
-        hooks = {};
-      };
-      return DOMPurify;
-    }
-    var purify = createDOMPurify();
-
-    const sanitizeHtmlString = html => purify().sanitize(html);
 
     const isTouch = global$5.deviceType.isTouch();
     const hiddenHeader = (title, close) => ({
@@ -29110,9 +29371,14 @@
         dragBlockClass: blockerClass,
         modalBehaviours: derive$1([
           Focusing.config({}),
-          config('dialog-events', spec.dialogEvents.concat([runOnSource(focusin(), (comp, _se) => {
-              Keying.focusIn(comp);
-            })])),
+          config('dialog-events', spec.dialogEvents.concat([
+            runOnSource(focusin(), (comp, _se) => {
+              Blocking.isBlocked(comp) ? noop() : Keying.focusIn(comp);
+            }),
+            run$1(focusShifted(), (comp, se) => {
+              comp.getSystem().broadcastOn([dialogFocusShiftedChannel], { newFocus: se.event.newFocus });
+            })
+          ])),
           config('scroll-lock', [
             runOnAttached(() => {
               add$2(body(), scrollLockClass);
@@ -29215,7 +29481,7 @@
       title: backstage.shared.providers.translate(title),
       draggable: backstage.dialog.isDraggableModal()
     }, dialogId, backstage.shared.providers);
-    const getBusySpec = (message, bs, providers) => ({
+    const getBusySpec = (message, bs, providers, headerHeight) => ({
       dom: {
         tag: 'div',
         classes: ['tox-dialog__busy-spinner'],
@@ -29224,7 +29490,7 @@
           left: '0px',
           right: '0px',
           bottom: '0px',
-          top: '0px',
+          top: `${ headerHeight.getOr(0) }px`,
           position: 'absolute'
         }
       },
@@ -29234,7 +29500,8 @@
     const getEventExtras = (lazyDialog, providers, extra) => ({
       onClose: () => extra.closeWindow(),
       onBlock: blockEvent => {
-        ModalDialog.setBusy(lazyDialog(), (_comp, bs) => getBusySpec(blockEvent.message, bs, providers));
+        const headerHeight = descendant(lazyDialog().element, '.tox-dialog__header').map(header => get$d(header));
+        ModalDialog.setBusy(lazyDialog(), (_comp, bs) => getBusySpec(blockEvent.message, bs, providers, headerHeight));
       },
       onUnblock: () => {
         ModalDialog.setIdle(lazyDialog());
@@ -29252,7 +29519,7 @@
             updateState,
             initialData
           }),
-          RepresentingConfigs.memory({}),
+          memory({}),
           ...spec.extraBehaviours
         ],
         onEscape: comp => {
@@ -29360,7 +29627,7 @@
           spec.onChange(api, { name: event.name });
         }),
         fireApiEvent(formActionEvent, (api, spec, event, component) => {
-          const focusIn = () => Keying.focusIn(component);
+          const focusIn = () => component.getSystem().isConnected() ? Keying.focusIn(component) : undefined;
           const isDisabled = focused => has$1(focused, 'disabled') || getOpt(focused, 'aria-disabled').exists(val => val === 'true');
           const rootNode = getRootNode(component.element);
           const current = active$1(rootNode);
@@ -29389,10 +29656,6 @@
           Representing.setValue(component, api.getData());
         })
       ];
-    };
-    const SilverDialogEvents = {
-      initUrlDialog,
-      initDialog
     };
 
     const makeButton = (button, backstage) => renderFooterButton(button, button.type, backstage);
@@ -29450,7 +29713,7 @@
         const form = Composing.getCurrent(access.getFormWrapper()).getOr(access.getFormWrapper());
         return Form.getField(form, name).orThunk(() => {
           const footer = access.getFooter();
-          const footerState = Reflecting.getState(footer).get();
+          const footerState = footer.bind(f => Reflecting.getState(f).get());
           return footerState.bind(f => f.lookupByName(name));
         });
       } else {
@@ -29577,14 +29840,14 @@
       }, dialogId, backstage);
       const storedMenuButtons = mapMenuButtons(internalDialog.buttons);
       const objOfCells = extractCellsToObject(storedMenuButtons);
-      const footer = renderModalFooter({ buttons: storedMenuButtons }, dialogId, backstage);
-      const dialogEvents = SilverDialogEvents.initDialog(() => instanceApi, getEventExtras(() => dialog, backstage.shared.providers, extra), backstage.shared.getSink);
+      const footer = someIf(storedMenuButtons.length !== 0, renderModalFooter({ buttons: storedMenuButtons }, dialogId, backstage));
+      const dialogEvents = initDialog(() => instanceApi, getEventExtras(() => dialog, backstage.shared.providers, extra), backstage.shared.getSink);
       const dialogSize = getDialogSizeClasses(internalDialog.size);
       const spec = {
         id: dialogId,
         header,
         body,
-        footer: Optional.some(footer),
+        footer,
         extraClasses: dialogSize,
         extraBehaviours: [],
         extraStyles: {}
@@ -29622,11 +29885,20 @@
       };
     };
 
-    const renderInlineDialog = (dialogInit, extra, backstage, ariaAttrs) => {
+    const getInlineDialogSizeClass = size => {
+      switch (size) {
+      case 'medium':
+        return Optional.some('tox-dialog--width-md');
+      default:
+        return Optional.none();
+      }
+    };
+    const renderInlineDialog = (dialogInit, extra, backstage, ariaAttrs = false) => {
       const dialogId = generate$6('dialog');
       const dialogLabelId = generate$6('dialog-label');
       const dialogContentId = generate$6('dialog-content');
       const internalDialog = dialogInit.internalDialog;
+      const dialogSize = getInlineDialogSizeClass(internalDialog.size);
       const updateState = (_comp, incoming) => Optional.some(incoming);
       const memHeader = record(renderInlineHeader({
         title: internalDialog.title,
@@ -29638,10 +29910,13 @@
       }, dialogId, dialogContentId, backstage, ariaAttrs));
       const storagedMenuButtons = mapMenuButtons(internalDialog.buttons);
       const objOfCells = extractCellsToObject(storagedMenuButtons);
-      const memFooter = record(renderInlineFooter({ buttons: storagedMenuButtons }, dialogId, backstage));
-      const dialogEvents = SilverDialogEvents.initDialog(() => instanceApi, {
+      const optMemFooter = someIf(storagedMenuButtons.length !== 0, record(renderInlineFooter({ buttons: storagedMenuButtons }, dialogId, backstage)));
+      const dialogEvents = initDialog(() => instanceApi, {
         onBlock: event => {
-          Blocking.block(dialog, (_comp, bs) => getBusySpec(event.message, bs, backstage.shared.providers));
+          Blocking.block(dialog, (_comp, bs) => {
+            const headerHeight = memHeader.getOpt(dialog).map(dialog => get$d(dialog.element));
+            return getBusySpec(event.message, bs, backstage.shared.providers, headerHeight);
+          });
         },
         onUnblock: () => {
           Blocking.unblock(dialog);
@@ -29654,7 +29929,8 @@
           tag: 'div',
           classes: [
             'tox-dialog',
-            inlineClass
+            inlineClass,
+            ...dialogSize.toArray()
           ],
           attributes: {
             role: 'dialog',
@@ -29688,17 +29964,22 @@
             initialData: dialogInit
           }),
           Focusing.config({}),
-          config('execute-on-form', dialogEvents.concat([runOnSource(focusin(), (comp, _se) => {
+          config('execute-on-form', dialogEvents.concat([
+            runOnSource(focusin(), (comp, _se) => {
               Keying.focusIn(comp);
-            })])),
+            }),
+            run$1(focusShifted(), (comp, se) => {
+              comp.getSystem().broadcastOn([dialogFocusShiftedChannel], { newFocus: se.event.newFocus });
+            })
+          ])),
           Blocking.config({ getRoot: () => Optional.some(dialog) }),
           Replacing.config({}),
-          RepresentingConfigs.memory({})
+          memory({})
         ]),
         components: [
           memHeader.asSpec(),
           memBody.asSpec(),
-          memFooter.asSpec()
+          ...optMemFooter.map(memFooter => memFooter.asSpec()).toArray()
         ]
       });
       const toggleFullscreen = () => {
@@ -29715,7 +29996,7 @@
       const instanceApi = getDialogApi({
         getId: constant$1(dialogId),
         getRoot: constant$1(dialog),
-        getFooter: () => memFooter.get(dialog),
+        getFooter: () => optMemFooter.map(memFooter => memFooter.get(dialog)),
         getBody: () => memBody.get(dialog),
         getFormWrapper: () => {
           const body = memBody.get(dialog);
@@ -29812,7 +30093,7 @@
           return Optional.some(renderModalFooter({ buttons }, dialogId, backstage));
         }
       });
-      const dialogEvents = SilverDialogEvents.initUrlDialog(() => instanceApi, getEventExtras(() => dialog, backstage.shared.providers, extra));
+      const dialogEvents = initUrlDialog(() => instanceApi, getEventExtras(() => dialog, backstage.shared.providers, extra));
       const styles = {
         ...internalDialog.height.fold(() => ({}), height => ({
           'height': height + 'px',
@@ -30004,13 +30285,16 @@
       const alertDialog = setup$2(extras.backstages.dialog);
       const confirmDialog = setup$1(extras.backstages.dialog);
       const open = (config, params, closeWindow) => {
-        if (params !== undefined && params.inline === 'toolbar') {
-          return openInlineDialog(config, extras.backstages.popup.shared.anchors.inlineDialog(), closeWindow, params.ariaAttrs);
-        } else if (params !== undefined && params.inline === 'cursor') {
-          return openInlineDialog(config, extras.backstages.popup.shared.anchors.cursor(), closeWindow, params.ariaAttrs);
-        } else {
-          return openModalDialog(config, closeWindow);
+        if (!isUndefined(params)) {
+          if (params.inline === 'toolbar') {
+            return openInlineDialog(config, extras.backstages.popup.shared.anchors.inlineDialog(), closeWindow, params);
+          } else if (params.inline === 'bottom') {
+            return openBottomInlineDialog(config, extras.backstages.popup.shared.anchors.inlineBottomDialog(), closeWindow, params);
+          } else if (params.inline === 'cursor') {
+            return openInlineDialog(config, extras.backstages.popup.shared.anchors.cursor(), closeWindow, params);
+          }
         }
+        return openModalDialog(config, closeWindow);
       };
       const openUrl = (config, closeWindow) => openModalUrlDialog(config, closeWindow);
       const openModalUrlDialog = (config, closeWindow) => {
@@ -30047,7 +30331,7 @@
         };
         return DialogManager.open(factory, config);
       };
-      const openInlineDialog = (config$1, anchor, closeWindow, ariaAttrs = false) => {
+      const openInlineDialog = (config$1, anchor, closeWindow, windowParams) => {
         const factory = (contents, internalInitialData, dataValidator) => {
           const initialData = validateData(internalInitialData, dataValidator);
           const inlineDialog = value$2();
@@ -30069,14 +30353,14 @@
               inlineDialog.clear();
               closeWindow(dialogUi.instanceApi);
             }
-          }, extras.backstages.popup, ariaAttrs);
+          }, extras.backstages.popup, windowParams.ariaAttrs);
           const inlineDialogComp = build$1(InlineView.sketch({
             lazySink: extras.backstages.popup.shared.getSink,
             dom: {
               tag: 'div',
               classes: []
             },
-            fireDismissalEventInstead: {},
+            fireDismissalEventInstead: windowParams.persistent ? { event: 'doNotDismissYet' } : {},
             ...isToolbarLocationTop ? {} : { fireRepositionEventInstead: {} },
             inlineBehaviours: derive$1([
               config('window-manager-inline-events', [run$1(dismissRequested(), (_comp, _se) => {
@@ -30097,6 +30381,92 @@
             Docking.refresh(inlineDialogComp);
             editor.on('ResizeEditor', refreshDocking);
           }
+          dialogUi.instanceApi.setData(initialData);
+          Keying.focusIn(dialogUi.dialog);
+          return dialogUi.instanceApi;
+        };
+        return DialogManager.open(factory, config$1);
+      };
+      const openBottomInlineDialog = (config$1, anchor, closeWindow, windowParams) => {
+        const factory = (contents, internalInitialData, dataValidator) => {
+          const initialData = validateData(internalInitialData, dataValidator);
+          const inlineDialog = value$2();
+          const isToolbarLocationTop = extras.backstages.popup.shared.header.isPositionedAtTop();
+          const dialogInit = {
+            dataValidator,
+            initialData,
+            internalDialog: contents
+          };
+          const refreshDocking = () => inlineDialog.on(dialog => {
+            InlineView.reposition(dialog);
+            Docking.refresh(dialog);
+          });
+          const dialogUi = renderInlineDialog(dialogInit, {
+            redial: DialogManager.redial,
+            closeWindow: () => {
+              inlineDialog.on(InlineView.hide);
+              editor.off('ResizeEditor ScrollWindow ElementScroll', refreshDocking);
+              inlineDialog.clear();
+              closeWindow(dialogUi.instanceApi);
+            }
+          }, extras.backstages.popup, windowParams.ariaAttrs);
+          const inlineDialogComp = build$1(InlineView.sketch({
+            lazySink: extras.backstages.popup.shared.getSink,
+            dom: {
+              tag: 'div',
+              classes: []
+            },
+            fireDismissalEventInstead: windowParams.persistent ? { event: 'doNotDismissYet' } : {},
+            ...isToolbarLocationTop ? {} : { fireRepositionEventInstead: {} },
+            inlineBehaviours: derive$1([
+              config('window-manager-inline-events', [run$1(dismissRequested(), (_comp, _se) => {
+                  emit(dialogUi.dialog, formCancelEvent);
+                })]),
+              Docking.config({
+                contextual: {
+                  lazyContext: () => Optional.some(box$1(SugarElement.fromDom(editor.getContentAreaContainer()))),
+                  fadeInClass: 'tox-dialog-dock-fadein',
+                  fadeOutClass: 'tox-dialog-dock-fadeout',
+                  transitionClass: 'tox-dialog-dock-transition'
+                },
+                modes: [
+                  'top',
+                  'bottom'
+                ],
+                lazyViewport: comp => {
+                  const optScrollingContext = detectWhenSplitUiMode(editor, comp.element);
+                  return optScrollingContext.map(sc => {
+                    const combinedBounds = getBoundsFrom(sc);
+                    return {
+                      bounds: combinedBounds,
+                      optScrollEnv: Optional.some({
+                        currentScrollTop: sc.element.dom.scrollTop,
+                        scrollElmTop: absolute$3(sc.element).top
+                      })
+                    };
+                  }).getOrThunk(() => ({
+                    bounds: win(),
+                    optScrollEnv: Optional.none()
+                  }));
+                }
+              })
+            ]),
+            isExtraPart: (_comp, target) => isAlertOrConfirmDialog(target)
+          }));
+          inlineDialog.set(inlineDialogComp);
+          const getInlineDialogBounds = () => {
+            return extras.backstages.popup.shared.getSink().toOptional().bind(s => {
+              const optScrollingContext = detectWhenSplitUiMode(editor, s.element);
+              const margin = 15;
+              const bounds$1 = optScrollingContext.map(sc => getBoundsFrom(sc)).getOr(win());
+              const contentAreaContainer = box$1(SugarElement.fromDom(editor.getContentAreaContainer()));
+              const constrainedBounds = constrain(contentAreaContainer, bounds$1);
+              return Optional.some(bounds(constrainedBounds.x, constrainedBounds.y, constrainedBounds.width, constrainedBounds.height - margin));
+            });
+          };
+          InlineView.showWithinBounds(inlineDialogComp, premade(dialogUi.dialog), { anchor }, getInlineDialogBounds);
+          Docking.refresh(inlineDialogComp);
+          editor.on('ResizeEditor ScrollWindow ElementScroll', refreshDocking);
           dialogUi.instanceApi.setData(initialData);
           Keying.focusIn(dialogUi.dialog);
           return dialogUi.instanceApi;
@@ -30135,8 +30505,8 @@
           popups,
           renderUI: renderModeUI
         } = setup$3(editor, { getPopupSinkBounds: () => popupSinkBounds() });
-        const renderUI = async () => {
-          const renderResult = await renderModeUI();
+        const renderUI = () => {
+          const renderResult = renderModeUI();
           const optScrollingContext = detectWhenSplitUiMode(editor, popups.getMothership().element);
           optScrollingContext.each(sc => {
             popupSinkBounds = () => {

@@ -78,7 +78,7 @@ function selectBlog() {
         <li>
           <div class="custom-control custom-radio">
             <input class="form-check-input" type="radio" id="import_as_me-on" name="import_as_me" value="1" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').hide();"</mt:if> checked="checked">
-            <label class="form-check-label form-label" for="import_as_me-on">
+            <label class="form-check-label" for="import_as_me-on">
               <__trans phrase="Import as me">
             </label>
           </div>
@@ -86,7 +86,7 @@ function selectBlog() {
         <li>
           <div class="custom-control custom-radio">
             <input class="form-check-input" type="radio" id="import_as_me-off" name="import_as_me" value="0" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').show();"</mt:if>>
-            <label class="form-check-label form-label" for="import_as_me-off">
+            <label class="form-check-label" for="import_as_me-off">
               <__trans phrase="Preserve original user">
             </label>
           </div>
@@ -126,7 +126,7 @@ function selectBlog() {
     <mtapp:setting
        id="file"
        label="<__trans phrase="Upload import file (optional)">">
-      <input name="file" id="file" type="file" class="form-control-file" />
+      <input name="file" id="file" type="file" class="d-block form-control-file" />
     </mtapp:setting>
 
     <mtapp:setting

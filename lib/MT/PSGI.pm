@@ -269,35 +269,6 @@ sub make_app {
     if ( $type eq 'run_once' ) {
         my $filepath = File::Spec->catfile( $FindBin::Bin, $script );
         $psgi_app = $mt_cgi->($filepath);
-    }
-    elsif ( $type eq 'xmlrpc' ) {
-        my $handler = $app->{handler};
-        my $server;
-        require XMLRPC::Transport::HTTP::Plack;
-        $server = XMLRPC::Transport::HTTP::Plack->new;
-        $server->dispatch_with( {
-            'mt'         => 'MT::XMLRPCServer',
-            'blogger'    => 'blogger',
-            'metaWeblog' => 'metaWeblog',
-            'wp'         => 'wp',
-        } );
-        $server->on_action(sub {
-            my ($action, $method_uri, $method_name) = @_;
-
-            my $class =
-                   $server->dispatch_with->{$method_uri}
-                || $server->dispatch_with->{ $action || '' }
-                || defined($action) && $action =~ /^"(.+)"$/ && $server->dispatch_with->{$1};
-
-            die "Denied access to method ($method_name)\n"
-                unless $class && $class->can($method_name);
-        });
-        $psgi_app = sub {
-            eval "require $handler";
-            my $env = shift;
-            my $req = Plack::Request->new($env);
-            $server->handle($req);
-        };
     } elsif ($streaming and $type eq 'psgi_streaming') {
         my $handler = $app->{handler};
         $psgi_app = $mt_app_streaming->($handler);
@@ -337,29 +308,52 @@ sub mount_applications {
     }
 
     if ($serve_static) {
+        require MT::PSGI::ServeStatic;
         require Plack::App::Directory;
         require Plack::App::File;
 
         ## Mount mt-static directory
         my $staticurl = $mt->static_path();
         $staticurl =~ s!^https?://[^/]*!!;
-        my $staticpath = $mt->static_file_path();
+        my @staticpaths = ($mt->static_file_path());
+        if ($mt->config('StaticFilePath')) {
+            {   # taken from MT::static_file_path
+                if ( $mt->can('document_root') ) {
+                    my $web_path = $mt->config->StaticWebPath || 'mt-static';
+                    $web_path =~ s!^https?://[^/]+/!!;
+                    my $doc_static_path = File::Spec->catdir( $mt->document_root(), $web_path );
+                    if (-d $doc_static_path) {
+                        push @staticpaths, $doc_static_path;
+                        last;
+                    }
+                }
+                my $mtdir_static_path = File::Spec->catdir( $mt->mt_dir, 'mt-static' );
+                push @staticpaths, $mtdir_static_path if -d $mtdir_static_path;
+            }
+        }
         $urlmap->map( $staticurl,
-            Plack::App::Directory->new( { root => $staticpath } )->to_app );
+            MT::PSGI::ServeStatic->new( { root => \@staticpaths } )->to_app );
 
         ## Mount support directory
-        my $supporturl = MT->config->SupportURL;
-        $supporturl =~ s!^https?://[^/]*!!;
-        my $supportpath = MT->config->SupportDirectoryPath;
-        $urlmap->map( $supporturl,
-            Plack::App::Directory->new( { root => $supportpath } )->to_app );
+        my $supporturl = MT->config->SupportDirectoryURL;
+        if ($supporturl) {
+            $supporturl =~ s!^https?://[^/]*!!;
+            my $supportpath = MT->config->SupportDirectoryPath;
+            $urlmap->map( $supporturl,
+                Plack::App::Directory->new( { root => $supportpath } )->to_app );
+        }
 
         ## Mount favicon.ico
-        my $static = $staticpath;
-        $static .= '/' unless $static =~ m!/$!;
-        my $favicon = $static . 'images/favicon.ico';
-        $urlmap->map( '/favicon.ico' =>
-                Plack::App::File->new( { file => $favicon } )->to_app );
+        for my $staticpath (@staticpaths) {
+            my $static = $staticpath;
+            $static .= '/' unless $static =~ m!/$!;
+            my $favicon = $static . 'images/favicon.ico';
+            if (-f $favicon) {
+                $urlmap->map( '/favicon.ico' =>
+                        Plack::App::File->new( { file => $favicon } )->to_app );
+                last;
+            }
+        }
     }
 
     $self->_app( $urlmap->to_app );
@@ -492,7 +486,7 @@ By default, the value of CGIPath config directive will be used.
 
 =item applications/YOURAPP/type
 
-Specify the application type. Only 'run_once' and 'xmlrpc' are acceptable value.
+Specify the application type. Only 'run_once' is acceptable value.
 If type is not given, standard persistent PSGI application will be compiled.
 
 =over 8
@@ -502,11 +496,6 @@ If type is not given, standard persistent PSGI application will be compiled.
 Run as non-persistent CGI script with C<fork>/C<exec> model. It's good for
 the kind of applications which be excuted infrequently like MT::Upgrader.
 Also usable to run old script who have no good cleanup process at exiting.
-
-=item xmlrpc
-
-Special mode for apps which constructed on XMLRPC::Lite. Make PSGI app with
-using XMLRPC::Transport::HTTP::Plack.
 
 =back
 

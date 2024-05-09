@@ -1,0 +1,168 @@
+-
+  note: Individual archive (GA4)
+  input:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/a-rainy-day.html
+        pageTitle: Title
+  output:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/a-rainy-day.html
+        pageTitle: Title
+        archiveType: Individual
+        entry:
+          id: 1
+        category: ~
+        author: ~
+        startDate: ~
+-
+  note: Monthly archive (GA4)
+  input:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/index.html
+        pageTitle: Title
+  output:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/index.html
+        pageTitle: Title
+        archiveType: Monthly
+        entry:
+        category: ~
+        author: ~
+        startDate: 1978-01-01
+-
+  note: Monthly archive (without index.html) (GA4)
+  input:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/
+        pageTitle: Title
+  output:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/
+        pageTitle: Title
+        archiveType: Monthly
+        entry: ~
+        category: ~
+        author: ~
+        startDate: 1978-01-01
+-
+  note: Weekly archive (GA4)
+  input:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/29-week/index.html
+        pageTitle: Title
+  output:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/29-week/index.html
+        pageTitle: Title
+        archiveType: Weekly
+        entry: ~
+        category: ~
+        author: ~
+        startDate: 1978-01-29
+-
+  note: Daily archive (GA4)
+  input:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/31/index.html
+        pageTitle: Title
+  output:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/31/index.html
+        pageTitle: Title
+        archiveType: Daily
+        entry: ~
+        category: ~
+        author: ~
+        startDate: 1978-01-31
+-
+  note: Index (GA4)
+  input:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/index.html
+        pageTitle: Title
+  output:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/index.html
+        pageTitle: Title
+        archiveType: index
+        entry: ~
+        category: ~
+        author: ~
+        startDate: ~
+-
+  note: The path which is not managed by MT (GA4)
+  input:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /unknown/path/index.html
+        pageTitle: Title
+  output:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /unknown/path/index.html
+        pageTitle: Title
+        archiveType: ~
+        entry: ~
+        category: ~
+        author: ~
+        startDate: ~
+-
+  note: Duplicated path (GA4)
+  input:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/a-rainy-day.html
+        pageTitle: Title
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/a-rainy-day.html
+        pageTitle: (not set)
+  output:
+    items:
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/a-rainy-day.html
+        pageTitle: Title
+        archiveType: Individual
+        entry:
+          id: 1
+        category: ~
+        author: ~
+        startDate: ~
+      -
+        screenPageViews: 10
+        pagePath: /nana/archives/1978/01/a-rainy-day.html
+        pageTitle: (not set)
+        archiveType: Individual
+        entry:
+          id: 1
+        category: ~
+        author: ~
+        startDate: ~

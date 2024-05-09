@@ -376,7 +376,7 @@ function showPasswordField() {
          hint="$password_hint"
          hint_id="passwordHelp"
          show_hint="1">
-        <input type="password" name="pass" id="pass" class="form-control text password" value=""  aria-describedby="passwordHelp" />
+        <input type="password" name="pass" id="pass" class="form-control text password" value=""  aria-describedby="passwordHelp" autocomplete="new-password" />
       </mtapp:setting>
 
       <mtapp:setting
@@ -384,20 +384,8 @@ function showPasswordField() {
          label="<__trans phrase="Confirm Password">"
          label_for="pass_verify"
          required="$password_required">
-        <input type="password" name="pass_verify" id="pass_verify" class="form-control text password" value="" />
+        <input type="password" name="pass_verify" id="pass_verify" class="form-control text password" value="" autocomplete="new-password" />
       </mtapp:setting>
-
-      <mt:unless name="new_object">
-        <mt:if name="hint">
-      <mtapp:setting
-         id="hint"
-         required="0"
-         label="<__trans phrase="Password recovery word/phrase">"
-         label_for="hint">
-        <input name="hint" id="hint" value="<mt:var name="hint" escape="html">" />
-      </mtapp:setting>
-        </mt:if>
-      </mt:unless>
     </div>
     </mt:if>
   </fieldset>
@@ -492,7 +480,7 @@ function showPasswordField() {
         <div class="form-check form-check-inline">
           <div class="form-check">
             <input name="<mt:var name="id">" id="<mt:var name="id">" class="form-check-input permission-checkbox" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="can_modify_sys_perms">disabled="disabled"</mt:unless> onclick="togglePerms(this, '<mt:var name="children">')"<mt:if name="children"> data-child-perm='<mt:var name="children">'</mt:if> />
-            <label class="form-check-label form-label" for="<mt:var name="id" escape="html">"><mt:var name="label"></label>
+            <label class="form-check-label" for="<mt:var name="id" escape="html">"><mt:var name="label"></label>
           </div>
         </div>
       </mt:loop>

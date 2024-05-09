@@ -158,7 +158,6 @@ callbacks:
     MT::App::CMS::template_param.edit_formatted_text: $FormattedText::FormattedText::App::param_edit_formatted_text
     MT::App::CMS::cms_edit.formatted_text: $FormattedText::FormattedText::App::cms_edit_formatted_text
     MT::App::CMS::list_template_param.formatted_text: $FormattedText::FormattedText::App::list_template_param
-    api_save_filter.formatted_text: $FormattedText::FormattedText::FormattedText::save_filter
     cms_save_filter.formatted_text: $FormattedText::FormattedText::FormattedText::save_filter
 
     cms_object_scope_filter.formatted_text: $FormattedText::FormattedText::App::cms_object_scope_filter

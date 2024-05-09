@@ -591,48 +591,6 @@ subtest 'mode = remove_userpic' => sub {
     $app->has_permission_error("remove_userpic by other user");
 };
 
-subtest 'mode = upload_userpic' => sub {
-    my ($guard, $file) = MT::Test::Image->tempfile(
-        DIR    => $test_env->root,
-        SUFFIX => '.jpg',
-    );
-    my $app = MT::Test::App->new('MT::App::CMS');
-    $app->login($admin);
-    $app->post_ok({
-        __test_upload => ['file', $file],
-        __mode        => 'upload_userpic',
-        blog_id       => 0,
-        user_id       => $kemikawa->id
-    });
-    $app->has_no_permission_error("upload_userpic by admin");
-
-    ($guard, $file) = MT::Test::Image->tempfile(
-        DIR    => $test_env->root,
-        SUFFIX => '.jpg',
-    );
-    $app->login($aikawa);
-    $app->post_ok({
-        __test_upload => ['file', $file],
-        __mode        => 'upload_userpic',
-        blog_id       => 0,
-        user_id       => $aikawa->id,
-    });
-    $app->has_no_permission_error("upload_userpic by myself");
-
-    ($guard, $file) = MT::Test::Image->tempfile(
-        DIR    => $test_env->root,
-        SUFFIX => '.jpg',
-    );
-    $app->login($aikawa);
-    $app->post_ok({
-        __test_upload => ['file', $file],
-        __mode        => 'upload_userpic',
-        blog_id       => 0,
-        user_id       => $ichikawa->id,
-    });
-    $app->has_permission_error("upload_userpic by other user");
-};
-
 subtest 'mode = save_cfg_system_users' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);

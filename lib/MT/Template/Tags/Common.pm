@@ -54,4 +54,37 @@ sub hdlr_author_link {
     return $displayname;
 }
 
+=head2 TextFormat
+
+The function tag which outputs the text format of the data in the current context.
+
+=cut
+
+sub _hdlr_text_format {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+
+    if (my $field_data = $ctx->stash('content_field_data')) {
+        return $ctx->error( MT->translate("You used an '[_1]' tag outside of the context of a 'Multi Line Text' field.", $tag_name) )
+            if $field_data->{type} ne 'multi_line_text';
+        my $content_data = $ctx->stash('content')
+            or return $ctx->_no_content_error;
+        my $convert_breaks = MT::Serialize->unserialize( $content_data->convert_breaks );
+        return $$convert_breaks->{ $field_data->{id} };
+    }
+    elsif (my $entry = $ctx->stash('entry')) {
+        my $convert_breaks = $entry->convert_breaks;
+        if (!defined($convert_breaks) && (my $blog = $ctx->stash('blog'))) {
+            $convert_breaks = $blog->convert_paras;
+        }
+        $convert_breaks = '__default__' if !defined($convert_breaks) || $convert_breaks eq '1';
+        return $convert_breaks;
+    }
+    else {
+        return $ctx->error( MT->translate("You used an '[_1]' tag outside of the context of the correct content; ", $tag_name) );
+    }
+}
+
 1;

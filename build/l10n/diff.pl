@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
@@ -7,6 +7,7 @@
 # $Id$
 
 use strict;
+use warnings;
 use Getopt::Long;
 
 my ($file1, $file2, $file3);

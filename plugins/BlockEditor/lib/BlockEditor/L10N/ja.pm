@@ -14,6 +14,10 @@ use vars qw( %Lexicon );
 
 %Lexicon = (
 
+## mt-static/plugins/BlockEditor/lib/js/admin2023/modal_window.js
+	'Add' => '追加',
+	'Cancel' => 'キャンセル',
+
 ## mt-static/plugins/BlockEditor/lib/js/blockeditor_field.js
 	'Delete' => '削除',
 	'Edit [_1] block' => '[_1]ブロックの編集',
@@ -42,12 +46,8 @@ use vars qw( %Lexicon );
 	'__TEXT_BLOCK__' => 'テキスト',
 
 ## mt-static/plugins/BlockEditor/lib/js/jquery.blockeditor.js
-	'Add' => '追加',
 	'Next' => '次',
 	'Select a block' => 'ブロックを選択',
-
-## mt-static/plugins/BlockEditor/lib/js/modal_window.js
-	'Cancel' => 'キャンセル',
 
 ## plugins/BlockEditor/config.yaml
 	'Block Editor' => 'ブロックエディタ',
@@ -65,13 +65,24 @@ use vars qw( %Lexicon );
 	'Files' => 'ファイル',
 	'No permissions' => '権限がありません。',
 
-## plugins/BlockEditor/tmpl/cms/dialog/asset_modal.tmpl
+## plugins/BlockEditor/tmpl/admin2023/cms/dialog/asset_modal.tmpl
 	'Back' => '戻る',
 	'Previous' => '前',
 	'Reset' => 'リセット',
 	'Search' => '検索',
 	'Upload new image' => '新しい画像をアップロード',
 	'[_1] - [_2] of [_3]' => '[_1] - [_2] / [_3]',
+
+## plugins/BlockEditor/tmpl/admin2023/cms/field_html/field_html_multi_line_text.tmpl
+	'Changing to block editor is not possible to result return to your current document.' => 'ブロックエディタに変換すると、現在のHTML構造に戻れない可能性があります。',
+	'Changing to plain text is not possible to return to the block edit.' => '他の入力フォーマットへ変換すると、ブロック構造が失われます。',
+	'Converting to rich text may result in changes to your current document.' => 'リッチテキストに変換すると、現在のHTML構造に変更が生じる可能性があります。',
+	'Format:' => 'フォーマット:',
+	'No block in this field.' => 'ブロックがありません。',
+	'Preview' => 'プレビュー',
+	'Required' => '必須',
+	'Sort' => '並び替え',
+	'This field is required' => 'このフィールドは必須です。',
 
 ## plugins/BlockEditor/tmpl/cms/dialog/include/asset_upload_panel.tmpl
 	'Cancel upload' => 'アップロードしない',
@@ -99,17 +110,6 @@ use vars qw( %Lexicon );
 
 ## plugins/BlockEditor/tmpl/cms/dialog/multi_asset_options.tmpl
 	'This field must be a positive integer.' => 'このフィールドは0以上の整数を指定してください。',
-
-## plugins/BlockEditor/tmpl/cms/field_html/field_html_multi_line_text.tmpl
-	'Changing to block editor is not possible to result return to your current document.' => 'ブロックエディタに変換すると、現在のHTML構造に戻れない可能性があります。',
-	'Changing to plain text is not possible to return to the block edit.' => '他の入力フォーマットへ変換すると、ブロック構造が失われます。',
-	'Converting to rich text may result in changes to your current document.' => 'リッチテキストに変換すると、現在のHTML構造に変更が生じる可能性があります。',
-	'Format:' => 'フォーマット:',
-	'No block in this field.' => 'ブロックがありません。',
-	'Preview' => 'プレビュー',
-	'Required' => '必須',
-	'Sort' => '並び替え',
-	'This field is required' => 'このフィールドは必須です。',
 
 ## plugins/BlockEditor/tmpl/cms/include/insert_options.tmpl
 	'Align Center' => '中央揃え',

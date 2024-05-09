@@ -115,7 +115,7 @@
             <p>
               <div class="form-check">
                 <input type="checkbox" name="smtp_auth" id="smtp_auth" class="form-check-input cb" value="1" <mt:if name="smtp_auth">checked</mt:if> />
-                <label class="form-check-label form-label" for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
+                <label class="form-check-label" for="smtp_auth"><__trans phrase="Use SMTP Auth"></label>
               </div>
             </p>
             <div id="smtpauth_params" <mt:unless name="smtp_auth">style="display: none"</mt:unless>>
@@ -128,7 +128,7 @@
                  hint="<__trans phrase="Username for your SMTP Server.">"
                  hint_id="smtpAuthUsername"
                  show_hint="1">
-                <input type="text" id="smtp_auth_username" class="form-control text full" name="smtp_auth_username" value="<mt:if name="smtp_auth_username"><mt:var name="smtp_auth_username" escape="html"></mt:if>" aria-describedby="smtpAuthUsername" />
+                <input type="text" id="smtp_auth_username" class="form-control text full" name="smtp_auth_username" value="<mt:if name="smtp_auth_username"><mt:var name="smtp_auth_username" escape="html"></mt:if>" aria-describedby="smtpAuthUsername" autocorrect="off" autocapitalize="off" />
               </mtapp:setting>
 
       <!-- SMTPAuth Password -->

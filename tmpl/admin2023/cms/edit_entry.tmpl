@@ -315,7 +315,9 @@
               <span class="text-muted disabled">[#|h trans("None selected") #]</span>
               [#* return #]
           [# } #]
+          [# if (MT.App.objectType == 'entry') { #]
           <p class="h5 py-3">[#|h trans("Selected Categories") #]</p>
+          [# } #]
           <ul class="list-unstyled <$mt:var name="container_type" lower_case="1"$>-list">
           [# var map = {}; #]
           [# for ( var i = 0; i < items.length; i++ ) { #]
@@ -539,7 +541,7 @@
             <mtapp:svgicon id="ic_date" title="<__trans phrase="Published Date">">
           </span>
         </div>
-        <div class="mb-3 col d-none d-md-block mb-0">
+        <div class="col d-none d-md-block mb-0">
           <input type="text" id="created-on" class="form-control text date text-date<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" placeholder="YYYY-MM-DD"/>
         </div>
         <div class="form-inline col d-md-none">
@@ -579,7 +581,7 @@
             <mtapp:svgicon id="ic_time" title="<__trans phrase="Published Time">">
           </span>
         </div>
-        <div class="mb-3 col d-none d-md-block mb-0">
+        <div class="col d-none d-md-block mb-0">
           <input id="created-on-time" type="text" class="form-control text time <mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>"  placeholder="HH:mm:ss"/>
         </div>
         <div class="form-inline col d-md-none">
@@ -640,7 +642,7 @@
               <mtapp:svgicon id="ic_date" title="<__trans phrase="Unpublished Date">">
             </span>
           </div>
-          <div class="mb-3 col d-none d-md-block mb-0">
+          <div class="col d-none d-md-block mb-0">
             <input type="text" id="unpublished-on-date" class="form-control text date text-date" name="unpublished_on_date" value="<$mt:var name="unpublished_on_date" escape="html"$>" placeholder="YYYY-MM-DD" />
           </div>
           <div class="form-inline col d-md-none">
@@ -680,7 +682,7 @@
                <mtapp:svgicon id="ic_time" title="<__trans phrase="Unpublished Time">">
              </span>
           </div>
-          <div class="mb-3 col d-none d-md-block mb-0">
+          <div class="col d-none d-md-block mb-0">
             <input type="text" id="unpublished-on-time" class="form-control text time" name="unpublished_on_time" value="<$mt:var name="unpublished_on_time" escape="html"$>" placeholder="HH:mm:ss" />
           </div>
           <div class="form-inline col d-md-none">
@@ -862,7 +864,7 @@
         <li>
           <div class="form-check">
             <input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="form-check-input cb" />
-            <label class="form-check-label form-label" for="allow_comments"><__trans phrase="Accept Comments"></label>
+            <label class="form-check-label" for="allow_comments"><__trans phrase="Accept Comments"></label>
           </div>
         <mt:unless name="new_object">
           <span class="comments-link feedback-count">
@@ -876,7 +878,7 @@
         <li>
           <div class="form-check">
             <input type="checkbox" name="allow_pings" id="allow_pings" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="form-check-input cb" />
-            <label class="form-check-label form-label" for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
+            <label class="form-check-label" for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
           </div>
         <mt:unless name="new_object">
           <span class="pings-link feedback-count">
@@ -1256,14 +1258,6 @@ div.mce-notification-error {
       }
 
       var tag_delim = '<$mt:var name="auth_pref_tag_delim"$>';
-      function setDirty () {
-          log.warn('deprecated function setDirty(), call app.setDirty instead');
-          app.setDirty();
-      }
-      function clearDirty () {
-          log.warn('deprecated function clearDirty(), call app.clearDirty instead');
-          app.clearDirty();
-      }
 
       // array of tag names
       var tagList;
@@ -1466,19 +1460,19 @@ div.mce-notification-error {
        label="<__trans phrase="Fields">"
        label_class="display-options">
       <div>
-        <div class="form-check form-check-inline">
         <mt:loop name="field_loop">
           <mt:unless name="system_field">
+            <div class="form-check form-check-inline">
             <mt:unless name="lock_field">
               <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="form-check-input cb" />
-              <label class="form-check-label form-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
+              <label class="form-check-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
             <mt:else>
               <input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>"<mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="form-check-input cb" />
-              <label class="form-check-label form-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
+              <label class="form-check-label" for="custom-prefs-<mt:var name="field_id" escape="html">"><$mt:var name="field_label" escape="html"$></label>
             </mt:unless>
+            </div>
           </mt:unless>
         </mt:loop>
-        </div>
       </div>
     </mtapp:setting>
 
@@ -1491,18 +1485,18 @@ div.mce-notification-error {
       <mt:if name="object_type" ne="page">
         <div class="form-check form-check-inline">
           <input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="form-check-input cb form-check-input" />
-          <label class="form-check-label form-label form-check-label" for="custom-prefs-category"><__trans phrase="Categories"></label>
+          <label class="form-check-label" for="custom-prefs-category"><__trans phrase="Categories"></label>
         </div>
       </mt:if>
       <mt:if name="enabled_plugins{Comments}">
         <div class="form-check form-check-inline">
           <input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="form-check-input cb form-check-input" />
-          <label class="form-check-label form-label form-check-label" for="custom-prefs-feedback"><__trans phrase="Comments"></label>
+          <label class="form-check-label" for="custom-prefs-feedback"><__trans phrase="Comments"></label>
         </div>
       </mt:if>
         <div class="form-check form-check-inline">
           <input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="form-check-input cb form-check-input" />
-          <label class="form-check-label form-label form-check-label" for="custom-prefs-assets"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label>
+          <label class="form-check-label" for="custom-prefs-assets"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label>
         </div>
       </div>
     </mtapp:setting>
@@ -1722,10 +1716,6 @@ div.mce-notification-error {
 </mt:loop>
 <!-- / Sortable --></div>
 
-
-  <div id="quickpost" class="mt-3 d-none d-md-block">
-    <p><mt:var name="quickpost_js"></p>
-  </div>
 
   <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 

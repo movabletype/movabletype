@@ -14,7 +14,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '1.50';
+$VERSION = '1.54';
 
 sub ProcessMIE($$);
 sub ProcessMIEGroup($$$);
@@ -391,7 +391,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
             -30", "-40.5", "40 30 0.00 S"
         },
         ValueConv    => 'Image::ExifTool::GPS::ToDegrees($val, 1)',
-        ValueConvInv => 'Image::ExifTool::GPS::ToDMS($self, $val, 0)',
+        ValueConvInv => 'Image::ExifTool::GPS::ToDMS($self, $val, 3)',
         PrintConv    => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "N")',
         PrintConvInv => 'Image::ExifTool::GPS::ToDegrees($val, 1, "lat")',
     },
@@ -404,7 +404,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
             negative, but may be entered as positive numbers with a trailing 'W'
         },
         ValueConv    => 'Image::ExifTool::GPS::ToDegrees($val, 1)',
-        ValueConvInv => 'Image::ExifTool::GPS::ToDMS($self, $val, 0)',
+        ValueConvInv => 'Image::ExifTool::GPS::ToDMS($self, $val, 3)',
         PrintConv    => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "E")',
         PrintConvInv => 'Image::ExifTool::GPS::ToDegrees($val, 1, "lon")',
     },
@@ -1077,7 +1077,7 @@ sub WriteMIEGroup($$$)
                         $newVal = '';
                         %subdirInfo = (
                             OutFile => \$newVal,
-                            RAF => new File::RandomAccess(\$oldVal),
+                            RAF => File::RandomAccess->new(\$oldVal),
                         );
                     } elsif ($optCompress and not $$dirInfo{IsCompressed}) {
                         # write to memory so we can compress the new MIE group
@@ -1536,7 +1536,7 @@ sub ProcessMIEGroup($$$)
             $tagInfo = {
                 Name => $tag,
                 Writable => 0,
-                PrintConv => 'length($val) > 60 ? substr($val,0,55) . "[...]" : $val',
+                PrintConv => \&Image::ExifTool::LimitLongValues,
             };
             AddTagToTable($tagTablePtr, $tag, $tagInfo);
             last;
@@ -1585,7 +1585,7 @@ sub ProcessMIEGroup($$$)
                 WasCompressed => $wasCompressed,
             );
             # read from uncompressed data instead if necessary
-            $subdirInfo{RAF} = new File::RandomAccess(\$value) if $valLen;
+            $subdirInfo{RAF} = File::RandomAccess->new(\$value) if $valLen;
 
             my $oldOrder = GetByteOrder();
             SetByteOrder($format & 0x08 ? 'II' : 'MM');
@@ -2551,7 +2551,7 @@ tag name.  For example:
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.  The MIE format itself is also

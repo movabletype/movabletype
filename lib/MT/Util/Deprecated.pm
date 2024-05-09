@@ -10,10 +10,7 @@ use Carp;
 use utf8;
 use base 'Exporter';
 
-our @EXPORT_OK = qw(
-    dsa_verify dec2bin bin2dec
-    perl_sha1_digest perl_sha1_digest_hex perl_sha1_digest_base64
-);
+our @EXPORT_OK = qw(perl_sha1_digest_hex cc_url cc_rdf cc_name cc_image);
 
 sub warning {
     my (%args) = @_;
@@ -52,99 +49,6 @@ sub warning {
 
 {
     eval { require bytes; 1; };
-
-    sub addbin {
-        my ( $left, $right ) = @_;
-        my $length
-            = ( length $left > length $right ? length $left : length $right );
-
-        $left  = "\0" x ( $length - ( length $left ) ) . $left;
-        $right = "\0" x ( $length - ( length $right ) ) . $right;
-        my $carry  = 0;
-        my $result = '';
-        for ( my $i = 1; $i <= $length; $i++ ) {
-            my $left_digit  = ord( substr( $left,  -$i, 1 ) );
-            my $right_digit = ord( substr( $right, -$i, 1 ) );
-            my $rdigit      = $left_digit + $right_digit + $carry;
-            $carry  = $rdigit / 256;
-            $result = chr( $rdigit % 256 ) . $result;
-        }
-        if ($carry) {
-            return $result = chr($carry) . $result;
-        }
-        else {
-            return $result;
-        }
-    }
-
-    sub multbindec {
-        my ( $a, $b ) = @_;
-
-        # $b is decimal-ascii, $b < 256
-        my @result;
-        $result[ ( length $a ) ] = 0;
-        for ( my $i = 1; $i <= length $a; $i++ ) {
-            my $adigit = substr( $a, -$i, 1 );
-            $result[ -$i ] = ord($adigit) * $b;
-        }
-
-        for ( my $i = 2; $i <= scalar @result; $i++ ) {
-            $result[ -$i ] += int( $result[ -$i + 1 ] / 256 );
-            $result[ -$i + 1 ] = $result[ -$i + 1 ] % 256;
-        }
-
-        shift @result while ( @result && ( $result[0] == 0 ) );
-
-        pack( 'C*', @result );
-    }
-
-    sub divbindec {
-        my ( $a, $b ) = @_;
-
-        # $b is decimal-ascii, $b < 256
-
-        my $acc = ord( substr( $a, 0, 1 ) );
-        my $quot;
-        while ( length $a ) {
-            $a = substr( $a, 1 );
-            $quot .= chr( $acc / $b );
-            $acc = $acc % $b;
-            if ( length $a ) {
-                $acc = $acc * 256 + ord( substr( $a, 0, 1 ) );
-            }
-        }
-        return ( $quot, $acc );
-    }
-
-    sub dec2bin {
-        MT::Util::Deprecated::warning(since => '7.8');
-
-        my ($decimal) = @_;
-        my @digits = split //, $decimal;
-        my $result = "";
-        foreach my $d (@digits) {
-            $result = multbindec( $result, 10 );
-            $result = addbin( pack( 'c', $d ), $result );
-        }
-        while ( substr( $result, 0, 1 ) eq "\0" ) {
-            $result = substr( $result, 1 );
-        }
-        $result;
-    }
-
-    sub bin2dec {
-        MT::Util::Deprecated::warning(since => '7.8');
-
-        my $bin    = $_[0];
-        my $result = '';
-        my $rem    = 0;
-        while ( ( length $bin ) && ( $bin ne "\0" ) ) {
-            ( $bin, $rem ) = divbindec( $bin, 10 );
-            $result = $rem . $result;
-            $bin = substr( $bin, 1 ) if ( substr( $bin, 0, 1 ) eq "\0" );
-        }
-        $result;
-    }
 
     sub perl_sha1_digest
     {    # thanks to Adam Back for the starting point of this
@@ -230,66 +134,148 @@ sub perl_sha1_digest_hex {
     sprintf( "%.8x" x 5, unpack( 'N*', &perl_sha1_digest(@_) ) );
 }
 
-sub perl_sha1_digest_base64 {
-    MT::Util::Deprecated::warning(since => '7.8');
+my %Data = (
+    'by' => {
+        name     => 'Attribution',
+        abbrev   => 'CC BY 4.0',
+        requires => [qw( Attribution Notice )],
+        permits  => [qw( Reproduction Distribution DerivativeWorks )],
+        url      => 'http://creativecommons.org/licenses/by/4.0/',
+    },
+    'by-nd' => {
+        name     => 'Attribution-NoDerivs',
+        abbrev   => 'CC BY-ND 4.0',
+        requires => [qw( Attribution Notice )],
+        permits  => [qw( Reproduction Distribution )],
+        url      => 'http://creativecommons.org/licenses/by-nd/4.0/',
+    },
+    'by-nc-nd' => {
+        name      => 'Attribution-NoDerivs-NonCommercial',
+        abbrev    => 'CC BY-NC-ND 4.0',
+        requires  => [qw( Attribution Notice )],
+        permits   => [qw( Reproduction Distribution )],
+        prohibits => [qw( CommercialUse)],
+        url       => 'http://creativecommons.org/licenses/by-nc-nd/4.0/',
+    },
+    'by-nd-nc' => {
+        # deprecated; only for 1.0
+        name      => 'Attribution-NoDerivs-NonCommercial',
+        requires  => [qw( Attribution Notice )],
+        permits   => [qw( Reproduction Distribution )],
+        prohibits => [qw( CommercialUse)],
+    },
+    'by-nc' => {
+        name      => 'Attribution-NonCommercial',
+        abbrev    => 'CC BY-NC 4.0',
+        requires  => [qw( Attribution Notice )],
+        permits   => [qw( Reproduction Distribution DerivativeWorks )],
+        prohibits => [qw( CommercialUse )],
+        url       => 'http://creativecommons.org/licenses/by-nc/4.0/',
+    },
+    'by-nc-sa' => {
+        name      => 'Attribution-NonCommercial-ShareAlike',
+        abbrev    => 'CC BY-NC-SA 4.0',
+        requires  => [qw( Attribution Notice ShareAlike )],
+        permits   => [qw( Reproduction Distribution DerivativeWorks )],
+        prohibits => [qw( CommercialUse )],
+        url       => 'http://creativecommons.org/licenses/by-nc-sa/4.0/',
+    },
+    'by-sa' => {
+        name     => 'Attribution-ShareAlike',
+        abbrev   => 'CC BY-SA 4.0',
+        requires => [qw( Attribution Notice ShareAlike )],
+        permits  => [qw( Reproduction Distribution DerivativeWorks )],
+        url      => 'http://creativecommons.org/licenses/by-sa/4.0/',
+    },
+    'nd' => {
+        # only theoretical
+        name     => 'NonDerivative',
+        requires => [qw( Notice )],
+        permits  => [qw( Reproduction Distribution )],
+    },
+    'nd-nc' => {
+        # only theoretical
+        name      => 'NonDerivative-NonCommercial',
+        requires  => [qw( Notice )],
+        permits   => [qw( Reproduction Distribution )],
+        prohibits => [qw( CommercialUse )],
+    },
+    'nc' => {
+        # only theoretical
+        name      => 'NonCommercial',
+        requires  => [qw( Notice )],
+        permits   => [qw( Reproduction Distribution DerivativeWorks )],
+        prohibits => [qw( CommercialUse )],
+    },
+    'nc-sa' => {
+        # only theoretical
+        name      => 'NonCommercial-ShareAlike',
+        requires  => [qw( Notice ShareAlike )],
+        permits   => [qw( Reproduction Distribution DerivativeWorks )],
+        prohibits => [qw( CommercialUse )],
+    },
+    'sa' => {
+        # only theoretical
+        name     => 'ShareAlike',
+        requires => [qw( Notice ShareAlike )],
+        permits  => [qw( Reproduction Distribution DerivativeWorks )],
+    },
+    'pd' => {
+        name    => 'PublicDomain',
+        permits => [qw( Reproduction Distribution DerivativeWorks )],
+    },
+    'pdd' => {
+        name    => 'PublicDomainDedication',
+        permits => [qw( Reproduction Distribution DerivativeWorks )],
+    },
+);
 
-    require MIME::Base64;
-    MIME::Base64::encode_base64( perl_sha1_digest(@_), '' );
+sub cc_url {
+    MT::Util::Deprecated::warning(since => '8.2.0');
+    my ($code) = @_;
+    my $url;
+    my ($real_code, $license_url, $image_url);
+    if (($real_code, $license_url, $image_url) = $code =~ /(\S+) (\S+) (\S+)/) {
+        return $license_url;
+    }
+    $code eq 'pd'
+        ? "http://web.resource.org/cc/PublicDomain"
+        : "http://creativecommons.org/licenses/$code/1.0/";
 }
 
-{
-    my $has_crypt_dsa;
-
-    sub dsa_verify {
-        my %param = @_;
-
-        MT::Util::Deprecated::warning(since => '7.8');
-
-        unless ( defined $has_crypt_dsa ) {
-            eval { require Crypt::DSA; };
-            $has_crypt_dsa = $@ ? 0 : 1;
-        }
-        if ( $has_crypt_dsa && !$param{ForcePerl} ) {
-            $param{Key} = bless $param{Key}, 'Crypt::DSA::Key';
-            $param{Signature} = bless $param{Signature},
-                'Crypt::DSA::Signature';
-            return Crypt::DSA->new->verify(%param);
-        }
-        else {
-            require Math::BigInt;
-
-            my ( $key, $dgst, $sig );
-
-            Carp::croak __PACKAGE__ . "dsa_verify: Need a Key"
-                unless $key = $param{Key};
-
-            unless ( $dgst = $param{Digest} ) {
-                Carp::croak "dsa_verify: Need either Message or Digest"
-                    unless $param{Message};
-                $dgst = perl_sha1_digest( $param{Message} );
-            }
-            Carp::croak "dsa_verify: Need a Signature"
-                unless $sig = $param{Signature};
-            my $r       = new Math::BigInt( $sig->{r} );
-            my $s       = new Math::BigInt( $sig->{'s'} );
-            my $p       = new Math::BigInt( $key->{p} );
-            my $q       = new Math::BigInt( $key->{'q'} );
-            my $g       = new Math::BigInt( $key->{g} );
-            my $pub_key = new Math::BigInt( $key->{pub_key} );
-            my $u2      = $s->bmodinv($q);
-
-            my $u1 = new Math::BigInt( "0x" . unpack( "H*", $dgst ) );
-
-            $u1 = $u1->bmul($u2)->bmod($q);
-            $u2 = $r->bmul($u2)->bmod($q);
-            my $t1 = $g->bmodpow( $u1, $p );
-            my $t2 = $pub_key->bmodpow( $u2, $p );
-            $u1 = $t1->bmul($t2)->bmod( $key->{p} );
-            $u1 = $u1->bmod( $key->{'q'} );
-            my $result = $u1->bcmp( $sig->{r} );
-            return defined($result) ? $result == 0 : 0;
+sub cc_rdf {
+    MT::Util::Deprecated::warning(since => '8.2.0');
+    my ($code) = @_;
+    my $url    = cc_url($code);
+    my $rdf    = <<RDF;
+<License rdf:about="$url">
+RDF
+    for my $type (qw( requires permits prohibits )) {
+        for my $item (@{ $Data{$code}{$type} }) {
+            $rdf .= <<RDF;
+<$type rdf:resource="http://web.resource.org/cc/$item" />
+RDF
         }
     }
+    $rdf . "</License>\n";
+}
+
+sub cc_name {
+    MT::Util::Deprecated::warning(since => '8.2.0');
+    my ($code) = ($_[0] =~ /(\S+) \S+ \S+/);
+    $code ||= $_[0];
+    $Data{$code}{name};
+}
+
+sub cc_image {
+    MT::Util::Deprecated::warning(since => '8.2.0');
+    my ($code) = @_;
+    my $url;
+    my ($real_code, $license_url, $image_url);
+    if (($real_code, $license_url, $image_url) = $code =~ /(\S+) (\S+) (\S+)/) {
+        return $image_url;
+    }
+    "http://creativecommons.org/images/public/" . ($code eq 'pd' ? 'norights' : 'somerights');
 }
 
 1;

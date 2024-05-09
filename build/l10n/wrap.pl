@@ -1,10 +1,13 @@
-#! /usr/bin/perl -w
+#! /usr/bin/env perl -w
 
 # Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
 # $Id$
+
+use strict;
+use warnings;
 
 my $wc =0; # New: count the number of words left to translate!
 

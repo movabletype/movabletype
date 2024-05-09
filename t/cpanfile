@@ -52,7 +52,6 @@ requires 'Crypt::DSA';
 
 requires 'MIME::Base64';
 requires 'Email::MIME';
-requires 'XML::Atom';
 requires 'Cache::Memcached';
 requires 'Archive::Tar';
 requires 'IO::Compress::Gzip';
@@ -97,8 +96,10 @@ on 'test' => sub {
     requires 'Devel::GlobalDestruction';
     requires 'DBD::SQLite';
     requires 'DBI', '1.633';
+    requires 'File::pushd';
     requires 'File::Temp', '0.23';
     requires 'File::Which';
+    requires 'Fluent::Logger';
     requires 'HTML::Filter::Callbacks';
     requires 'HTML::Form';
     requires 'HTTP::DAV';
@@ -108,10 +109,14 @@ on 'test' => sub {
     requires 'IPC::Run3';
     requires 'JSON::XS';  # For speed
     requires 'JSON::Validator' unless $] < 5.016;
+    requires 'Log::Dispatch';
+    requires 'Log::Dispatch::Configurator::Perl';
+    requires 'Log::Dispatch::Configurator::YAML';
     requires 'Log::Log4perl';
     requires 'Log::Minimal';
     requires 'MIME::Head';
     requires 'Mock::MonkeyPatch';
+    requires 'Module::Find';
     requires 'Mojolicious';
     requires 'Net::Server::SS::PreFork' unless $^O eq 'MSWin32';
     requires 'Net::SFTP';
@@ -136,6 +141,7 @@ on 'test' => sub {
     requires 'Test::Class';
     requires 'Test::Data';
     requires 'Test::Deep';
+    requires 'Test::Differences';
     requires 'Test::File';
     requires 'Test::LeakTrace';
     requires 'Test::Memcached';

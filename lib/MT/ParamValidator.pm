@@ -95,7 +95,6 @@ sub validate_param {
 
     for my $name (@names) {
         next unless exists $self->{validators}{$name};
-        my $last_error;
         my @values = $app->multi_param($name);
         if (@values > 1 && !$self->{multi}{$name}) {
             _warn(MT->translate("'[_1]' has multiple values", $name) . join ",", @values);

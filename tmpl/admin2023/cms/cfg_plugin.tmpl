@@ -48,6 +48,13 @@
       </mt:if>
     </mtapp:widget>
   </mt:unless>
+  <mt:if name="is_administrator">
+    <mtapp:widget
+      id="reboot"
+      label="<__trans phrase="Reboot">">
+      <p><__trans phrase="If an installed plugin is not listed here, visit the [_1] menu to reboot MT manually." params="<a href="<mt:var name="script_url">?__mode=start_reboot"><__trans phrase="Reboot"></a>"></p>
+    </mtapp:widget>
+  </mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="content_header">
@@ -235,12 +242,12 @@ function toggleAdvancedPrefs(evt, c) {
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-if ( location.hash ) {
+if ( location.hash && location.hash.search(/^#plugin-[0-9a-f]{40}$/) != -1 ) {
   // Open plugin contents.
-  jQuery('a'+location.hash).trigger('click');
+  jQuery('a'+location.hash).get(0).click();
 
   // If there is Settings tab, open it.
-  jQuery('a'+location.hash+'-config-tab').trigger('click');
+  jQuery('a'+location.hash+'-config-tab').get(0).click();
 }
 
 jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
@@ -266,7 +273,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
   <mt:else>
     <div class="mt-pluginpanel">
       <div class="mt-collapse__container align-items-center">
-        <div class="col-auto">
+        <div class="col-auto ps-4">
     <mt:if name="plugin_disabled">
           <svg role="img" class="mt-icon mt-pluginpanel__icon">
             <title>Disabled</title>
@@ -296,7 +303,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
     </mt:if>
         </div>
     <mt:if name="can_config">
-        <div class="col text-right">
+        <div class="col text-right pe-4">
           <div class="plugin-status">
       <mt:unless name="blog_view">
         <mt:if name="plugin_deprecated_log_exists">
@@ -347,6 +354,11 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
               <mt:var name="plugin_system_error" escape="html">
             </span>
         <mt:elseif name="plugin_error">
+            <span class="alert-error-inline icon-left icon-error text-muted">
+              <mtapp:svgicon id="ic_caution" size="sm" title="<__trans phrase="Failed to load">" color="danger">
+              <__trans phrase="Failed to Load">
+            </span>
+        <mt:else>
           <mt:unless name="plugin_disabled">
             <span class="icon-left icon-success">
               <mtapp:svgicon id="ic_success" size="sm" title="<__trans phrase="Enabled">" color="success">
@@ -516,7 +528,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
                   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
                   <input type="hidden" name="plugin_sig" value="<mt:var name="plugin_sig" escape="html">" />
                   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-                  <fieldset>
+                  <fieldset class="mb-4">
                     <mt:var name="plugin_config_html">
                   </fieldset>
 

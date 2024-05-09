@@ -56,10 +56,6 @@ jquery_js = mt-static/jquery/jquery.mt.js
 
 bs5_jquery_js = mt-static/js/admin2023/jquery/jquery.mt.js
 
-tinymce_plugin_mt_js = mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.js
-
-tinymce_plugin_mt_fullscreen_js = mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.js
-
 tinymce5_plugin_mt_js = mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.js
 
 tinymce5_plugin_mt_fullscreen_js = mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.js
@@ -107,14 +103,6 @@ mt-static/js/admin2023/jquery/jquery.mt.min.js: $(bs5_jquery_js)
 	cat $(bs5_jquery_js) > mt-static/js/admin2023/jquery/jquery.mt.min.js
 	./build/minifier.pl mt-static/js/admin2023/jquery/jquery.mt.min.js
 
-mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js: $(tinymce_plugin_mt_js)
-	cat $(tinymce_plugin_mt_js) > mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
-	./build/minifier.pl mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
-
-mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js: $(tinymce_plugin_mt_fullscreen_js)
-	cat $(tinymce_plugin_mt_fullscreen_js) > mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js
-	./build/minifier.pl mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js
-
 mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js: $(tinymce5_plugin_mt_js)
 	cat $(tinymce5_plugin_mt_js) > mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js
 	./build/minifier.pl mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js
@@ -147,8 +135,6 @@ code_common = lib/MT.pm php/mt.php mt-check.cgi version_file \
         mt-static/js/editor.js \
         mt-static/jquery/jquery.mt.min.js \
         mt-static/js/admin2023/jquery/jquery.mt.min.js \
-        mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js \
-        mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js \
         mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js \
         mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js \
         mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js \
@@ -232,8 +218,6 @@ clean:
 	-rm -rf mt-static/js/editor.js
 	-rm -f mt-static/jquery/jquery.mt.min.js
 	-rm -f mt-static/js/admin2023/jquery/jquery.mt.min.js
-	-rm -f mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
-	-rm -f mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/plugin.min.js
 	-rm -f mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.min.js
 	-rm -f mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js
 	-rm -f mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt/plugin.min.js

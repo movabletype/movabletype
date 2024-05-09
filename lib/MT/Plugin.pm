@@ -242,8 +242,12 @@ sub get_config_value {
 }
 
 sub log_category_for_deprecated_fn {
-    my $plugin = shift;
-    return $plugin->{plugin_sig} . '_' . $plugin->version;
+    my $plugin   = shift;
+    my $category = $plugin->{plugin_sig};
+    if (defined(my $version  = $plugin->version)) {
+        $category .= '_' . $version;
+    }
+    return $category;
 }
 
 package MT::PluginSettings;

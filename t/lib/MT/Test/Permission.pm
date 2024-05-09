@@ -78,8 +78,7 @@ sub make_website {
         sort_order_comments      => 'ascend',
         remote_auth_token        => 'token',
         convert_paras_comments   => 1,
-        cc_license =>
-            'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif',
+        cc_license           => '',
         server_offset        => '-3.5',
         children_modified_on => '20000101000000',
         language             => 'en_us',
@@ -100,9 +99,6 @@ sub make_website {
     $website->set_values($values);
     $website->class('website');
     $website->save() or die "Couldn't save website: " . $website->errstr;
-
-    my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
     my $theme = MT::Theme->load( $values->{theme_id} )
@@ -140,8 +136,7 @@ sub make_blog {
         remote_auth_token        => 'token',
         convert_paras_comments   => 1,
         google_api_key           => 'r9Vj5K8PsjEu+OMsNZ/EEKjWmbCeQAv1',
-        cc_license =>
-            'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif',
+        cc_license           => '',
         server_offset        => '-3.5',
         children_modified_on => '20000101000000',
         language             => 'en_us',
@@ -163,9 +158,6 @@ sub make_blog {
     $blog->set_values($values);
     $blog->class('blog');
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
-
-    my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
     my $theme = MT::Theme->load( $values->{theme_id} )

@@ -109,14 +109,6 @@ sub edit {
             $lang = 'ja' if lc($lang) eq 'jp';
             $param->{ 'language_' . $lang } = 1;
 
-            if ( $obj->cc_license ) {
-                $param->{cc_license_name}
-                    = MT::Util::cc_name( $obj->cc_license );
-                $param->{cc_license_image_url}
-                    = MT::Util::cc_image( $obj->cc_license );
-                $param->{cc_license_url}
-                    = MT::Util::cc_url( $obj->cc_license );
-            }
             if (   $obj->column('archive_path')
                 || $obj->column('archive_url') )
             {
@@ -571,12 +563,8 @@ sub cfg_registration {
     return $app->permission_denied()
         unless $app->can_do('edit_config');
 
-    eval { require Digest::SHA1; };
-    my $openid_available = $@ ? 0 : 1;
-
     my %param = ();
     $param{id}                       = $blog->id;
-    $param{openid_enabled}           = $openid_available;
     $param{screen_class}             = 'settings-screen registration-screen';
     $param{commenter_authenticators} = $blog->commenter_authenticators;
     my $registration = $app->config->CommenterRegistration;
@@ -1201,6 +1189,28 @@ sub rebuild_pages {
                 }
             }
             else {    # popup--just go to cnfrmn. page
+                # cf. tmpl/cms/popup/rebuilt.tmpl
+                if ($param{start_timestamp}) {
+                    my $elapsed = MT::Util::relative_date($param{start_timestamp}, time, $blog, undef, 3, MT->current_language);
+                    my $log_message;
+                    if ($all) {
+                        $log_message = MT->translate('The files for [_1] have been published.', $blog->name);
+                    } elsif ($is_one_index or $is_entry) {
+                        $log_message = MT->translate('Your [_1] has been published.', $archive_label);
+                    } elsif ($type ne 'index') {
+                        $log_message = MT->translate('Your [_1] archives have been published.', $archive_label);
+                    } else {
+                        $log_message = MT->translate('Your [_1] templates have been published.', $archive_label);
+                    }
+                    $log_message .= ' ' if $log_message && MT->current_language ne 'ja';
+                    $log_message .= MT->translate('Publish time: [_1].', $elapsed);
+                    MT->log({
+                        message  => $log_message,
+                        blog_id  => $blog->id,
+                        level    => MT::Log::INFO(),
+                        category => 'publish',
+                    });
+                }
                 return $app->load_tmpl( 'popup/rebuilt.tmpl', \%param );
             }
         }
@@ -1460,34 +1470,6 @@ sub save_favorite_blogs {
     $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript+json");
     $app->print_encode("true");
-}
-
-sub cc_return {
-    my $app   = shift;
-    my $name  = $app->param('license_name');
-    my $url   = $app->param('license_url');
-    my $image = $app->param('license_button');
-
-    my $code;
-    if ( $url =~ m!^http://creativecommons\.org/licenses/([a-z\-]+)!i ) {
-        $code = $1;
-    }
-    elsif ( $url =~ m!^http://creativecommons.org/publicdomain/mark/!i ) {
-        $code = 'pd';
-    }
-    elsif ( $url =~ m!^http://creativecommons.org/publicdomain/zero/!i ) {
-        $code = 'pdd';
-    }
-    else {
-        return $app->error( "MT is not aware of this license: "
-                . MT::Util::encode_html( $name, 1 ) );
-    }
-
-    my %param = (
-        license_name => MT::Util::cc_name($code),
-        license_code => "$code $url $image",
-    );
-    $app->load_tmpl( 'cc_return.tmpl', \%param );
 }
 
 sub dialog_select_weblog {
@@ -2207,7 +2189,7 @@ sub post_delete {
 
     $app->log(
         {   message => $app->translate(
-                "Blog '[_1]' (ID:[_2]) deleted by '[_3]'",
+                "Site '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
             level    => MT::Log::NOTICE(),
@@ -3040,13 +3022,13 @@ sub clone {
 
     if ( !@id ) {
         return $app->error(
-            $app->translate("No blog was selected to clone.") );
+            $app->translate("No child site was selected to clone.") );
     }
 
     if ( scalar @id > 1 ) {
         return $app->error(
             $app->translate(
-                "This action can only be run on a single blog at a time.")
+                "This action can only be run on a single child site at a time.")
         );
     }
 
@@ -3056,7 +3038,7 @@ sub clone {
     my $blog_class = $app->model('blog');
     my $blog       = $blog_class->load($blog_id)
         or return $app->error( $app->translate("Invalid blog_id") );
-    return $app->error( $app->translate("This action cannot clone website.") )
+    return $app->error( $app->translate("This action can only clone a child site.") )
         unless $blog->is_blog && $blog->parent_id;
 
     return $app->permission_denied()

@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '7.9');
-define('PRODUCT_VERSION', '7.9.9');
+define('VERSION', '8.001000');
+define('PRODUCT_VERSION', '8.1.0');
 define('DATA_API_DEFAULT_VERSION', '6');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 9;
+    $RELEASE_NUMBER = 0;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -185,6 +185,18 @@ class MT {
         $plugin_paths = $this->config('PluginPath');
         $ctx =& $this->context();
 
+        $enabled = Array();
+        $switch = $this->config('PluginSwitch');
+        foreach ($switch as $sig => $value) {
+            if (preg_match('/^([^\/]+)\//', $sig, $matches)) {
+                $enabled[$matches[1]] = $enabled[$matches[1]] ?? 0;
+                $enabled[$matches[1]] += $value;
+            } else {
+                $enabled[$sig] = $enabled[$sig] ?? 0;
+                $enabled[$sig] += $value;
+            }
+        }
+
         foreach ($plugin_paths as $path) {
             if ( !is_dir($path) )
                 $path = $this->config('MTDir') . DIRECTORY_SEPARATOR . $path;
@@ -193,6 +205,9 @@ class MT {
                  while (($file = readdir($dh)) !== false) {
                      if ($file == "." || $file == "..")
                          continue;
+                     if (isset($enabled[$file]) && empty($enabled[$file])) {
+                         continue;
+                     }
                      $plugin_dir = $path . DIRECTORY_SEPARATOR . $file
                          . DIRECTORY_SEPARATOR . 'php';
                      if (is_dir($plugin_dir))
@@ -421,10 +436,6 @@ class MT {
             $cfg['adminscript'] = 'mt.cgi';
         isset($cfg['commentscript']) or
             $cfg['commentscript'] = 'mt-comments.cgi';
-        isset($cfg['atomscript']) or
-            $cfg['atomscript'] = 'mt-atom.cgi';
-        isset($cfg['xmlrpcscript']) or
-            $cfg['xmlrpcscript'] = 'mt-xmlrpc.cgi';
         isset($cfg['searchscript']) or
             $cfg['searchscript'] = 'mt-search.cgi';
         isset($cfg['defaultlanguage']) or
@@ -544,9 +555,9 @@ class MT {
         }
 
         // IIS request by error document...
-        if (preg_match('/IIS/', $_SERVER['SERVER_SOFTWARE'])) {
+        if (isset($_SERVER['SERVER_SOFTWARE']) && preg_match('/IIS/', $_SERVER['SERVER_SOFTWARE'])) {
             // assume 404 handler
-            if (preg_match('/^\d+;(.*)$/', $_SERVER['QUERY_STRING'], $matches)) {
+            if (isset($_SERVER['QUERY_STRING']) && preg_match('/^\d+;(.*)$/', $_SERVER['QUERY_STRING'], $matches)) {
                 $path = $matches[1];
                 $path = preg_replace('!^http://[^/]+!', '', $path);
                 if (preg_match('/\?(.+)?/', $path, $matches)) {

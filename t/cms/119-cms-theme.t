@@ -8,9 +8,7 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        ThemesDirectory => 'TEST_ROOT/themes',
-    );
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 
     $test_env->save_file('themes/MyWebsiteTheme/theme.yaml', <<'YAML');
@@ -20,7 +18,7 @@ label: My Website Theme
 class: website
 thumbnail: my_thumbnail.png
 elements:
-    template_sGet:
+    template_set:
         component: core
         importer: template_set
         label: Template set
@@ -65,7 +63,7 @@ label: My Blog Theme
 class: blog
 thumbnail: my_thumbnail.png
 elements:
-    template_sGet:
+    template_set:
         component: core
         importer: template_set
         label: Template set

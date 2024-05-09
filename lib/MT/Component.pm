@@ -365,7 +365,7 @@ sub template_paths {
             push @paths, $dir                                      if -d $dir;
         }
     }
-    my @alt_paths = $mt->config('AltTemplatePath');
+    my @alt_paths = ($mt->config('UserTemplatePath'), $mt->config('AltTemplatePath'));
     foreach my $alt_path (@alt_paths) {
         if ($mt->{template_dir}) {
             push @paths, File::Spec->catdir($alt_path, $mt->{template_dir}, $admin_theme_id) if $admin_theme_id;
@@ -395,6 +395,26 @@ sub template_paths {
     push @paths, File::Spec->catdir($path, $admin_theme_id) if $admin_theme_id;
     push @paths, $path;
     return grep { -d $_ } @paths;
+}
+
+sub load_cached_tmpl {
+    my $c = shift;
+    my ( $file, $param ) = @_;
+
+    my ($tmpl, $cache);
+    if (!ref $file) {
+        require MT::Request;
+        $cache = MT::Request->instance->{__stash}{load_tmpl_file_cache} ||= {};
+        if ($cache->{$c->id}{$file}) {
+            $tmpl = $cache->{$c->id}{$file};
+        }
+    }
+    $tmpl ||= $c->load_tmpl($file) or return;
+    if ($cache) {
+        $cache->{$c->id}{$file} = $tmpl;
+    }
+    $tmpl->param($param) if $param;
+    $tmpl;
 }
 
 sub load_tmpl {

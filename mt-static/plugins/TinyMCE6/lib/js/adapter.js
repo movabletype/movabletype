@@ -43,7 +43,7 @@
                 'mt_source_bold mt_source_italic mt_source_blockquote mt_source_unordered_list mt_source_ordered_list mt_source_list_item | mt_source_link mt_insert_file mt_insert_image | mt_fullscreen',
             // Buttons using in wysiwyg mode.
             plugin_mt_wysiwyg_buttons1: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink | mt_insert_html mt_insert_file mt_insert_image | table',
-            plugin_mt_wysiwyg_buttons2: 'undo redo | forecolor backcolor removeformat | alignleft aligncenter alignright indent outdent | formatselect | mt_fullscreen',
+            plugin_mt_wysiwyg_buttons2: 'undo redo | forecolor backcolor removeformat | alignleft aligncenter alignright indent outdent | blocks | mt_fullscreen',
 
             plugin_mt_wysiwyg_selection_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
             plugin_mt_wysiwyg_insert_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
@@ -202,6 +202,7 @@
                 config['quickbars_insert_toolbar'] = config['plugin_mt_wysiwyg_insert_toolbar']
                 config['quickbars_selection_toolbar'] = config['plugin_mt_wysiwyg_selection_toolbar']
                 config['verify_html'] = true
+                delete config['content_css'];
             } else {
                 if ($('#' + adapter.id).prop('nodeName') == 'DIV') {
                     var div = $('#' + adapter.id)

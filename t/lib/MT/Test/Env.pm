@@ -19,6 +19,7 @@ use String::CamelCase qw/decamelize camelize/;
 use Mock::MonkeyPatch;
 use Sub::Name;
 use Time::HiRes qw/time/;
+use Module::Find qw/findsubmod/;
 
 our $MT_HOME;
 
@@ -28,10 +29,12 @@ BEGIN {
     $ENV{MT_HOME} = $MT_HOME;
 }
 use lib "$MT_HOME/lib", "$MT_HOME/extlib";
-use lib glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib");
-use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
+use lib grep -d $_, glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib"), glob("$MT_HOME/addons/*/t/lib");
+use lib grep -d $_, glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
 use Term::Encoding qw(term_encoding);
+
+my @extra_modules = do { local @Module::Find::ModuleDirs = grep {m!\bt[\\/]lib\b!} @INC; findsubmod 'MT::Test::Env'; };
 
 my $enc = term_encoding() || 'utf8';
 
@@ -52,6 +55,7 @@ sub new {
     $root = Cwd::realpath($root);
     $ENV{MT_TEST_ROOT} = $root;
     $ENV{PERL_JSON_BACKEND} ||= 'JSON::PP';
+    $ENV{MT_PROHIBIT_PHP_DYNAMIC_PROPERTY} = 1;
 
     my $driver = _driver();
 
@@ -61,6 +65,14 @@ sub new {
         config => \%extra_config,
         start  => [Time::HiRes::gettimeofday],
     }, $class;
+
+    for my $module (@extra_modules) {
+        eval "require $module";
+        my $new_hook = $module->can('_new');
+        $new_hook->($self, \%extra_config) if $new_hook;
+        my $prepare_hook = $module->can('_prepare_fixture');
+        $self->{prepare_hooks}{$module} = $prepare_hook if $prepare_hook;
+    }
 
     $self->write_config(\%extra_config);
 
@@ -263,6 +275,23 @@ sub save_file {
 sub image_drivers {
     my $self = shift;
     map { my $tmp = basename($_); $tmp =~ s/\.pm$//; $tmp } glob "$MT_HOME/lib/MT/Image/*.pm";
+}
+
+sub suppress_deprecated_warnings {
+    my $self = shift;
+    if (!@_ or $_[0]) {
+        my $sub = $self->{deprecation_handler} //= sub {};
+        if (@_ && ref $_[0] eq 'CODE') {
+            $sub = $_[0];
+            $self->{deprecation_handler} = $sub;
+        }
+        require MT::Util::Deprecated;
+        $self->{mocked_deprecation_handler} = Mock::MonkeyPatch->patch(
+            'MT::Util::Deprecated::warning' => subname 'mocked_deprecation_handler' => $sub,
+        );
+    } elsif (@_ && !$_[0]) {
+        delete $self->{mocked_deprecation_handler};
+    }
 }
 
 sub cluck_errors {
@@ -776,6 +805,8 @@ sub detect_basename_collision {
 sub prepare_fixture {
     my $self = shift;
 
+    $self->suppress_deprecated_warnings unless $ENV{MT_TEST_WARN_DEPRECATION};
+
     if (grep { $ENV{"MT_TEST_$_"} } qw/ LANG /) {
         $ENV{MT_TEST_IGNORE_FIXTURE} = 1;
         note "Fixture is ignored because of an environmental variable";
@@ -859,6 +890,27 @@ sub prepare_fixture {
     $self->cluck_errors if $ENV{MT_TEST_CLUCK_ERRORS};
 
     $self->enable_query_log if $ENV{MT_TEST_QUERY_LOG};
+
+    for my $hook (values %{$self->{prepare_hooks} || {}}) {
+        $hook->($self);
+    }
+
+    # make sure to reflect PluginSwitch, which may have been modified while upgrading
+    if (my $switch_config = $self->{_config}{PluginSwitch}) {
+        my $switch = MT->config->PluginSwitch;
+        if (ref $switch_config eq 'ARRAY') {
+            for my $config (@{ $switch_config }) {
+                my ($key, $value) = split '=', $config;
+                $switch->{$key} = $value;
+            }
+        } elsif (ref $switch_config eq 'HASH') {
+            %$switch = (%$switch, %$switch_config);
+        }
+        MT->config->PluginSwitch($switch, 1);
+        MT->config->save_config;
+    }
+
+    MT->config->clear_dirty;
 }
 
 sub slurp {

@@ -2,15 +2,15 @@
 <div class="form-group">
   <div class="row no-gutters align-items-center">
     <div class="col">
-      <ul class="nav nav-tabs d-flex mb-3" data-role="tablist" id=blockeidor_menus-<mt:var name="content_field_id">>
-        <mt:if name="options{label}"><li class="mr-auto"><label for="contentblock1"><mt:var name="options{label}" escape="html"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if></label></li></mt:if>
+      <ul class="nav nav-tabs d-flex border-bottom-0" data-role="tablist" id=blockeidor_menus-<mt:var name="content_field_id">>
+        <mt:if name="options{label}"><li class="mr-auto mb-0"><label for="contentblock<mt:var name="content_field_id">"><mt:var name="options{label}" escape="html"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if></label></li></mt:if>
         <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link active" href="#prev"><__trans phrase="Preview"></a></li>
         <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link" href="#sort"><__trans phrase="Sort"></a></li>
       </ul>
     </div>
   </div>
   <div class="mt-contentblock" id="contentblock<mt:var name="content_field_id">">
-    <div class="form-group mb-4">
+    <div class="form-inline mb-4">
       <label for="formGroup-<mt:var name="content_field_id">"><__trans phrase="Format:"></label>
       <select name="content-field-<mt:var name="content_field_id">_convert_breaks" class="custom-select form-control convert_breaks form-select" id="formGroup-<mt:var name="content_field_id">" data-target="editor-input-content-field-<mt:var name="content_field_id">" data-orig_text_format="<$mt:var name="convert_breaks"$>" mt:watch-change="1" mt:raw-name="1">
       <mt:loop name="text_filters">
@@ -65,11 +65,11 @@
   <mt:setvarblock name="js_include" append="1">
     <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/jquery.blockeditor.js?v=<mt:var name="mt_version_id" escape="url">"></script>
     <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field_manager.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/blockeditor_field.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/bootstrap5/modal_window.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/admin2023/blockeditor_field.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script src="<$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/admin2023/modal_window.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
     <mt:loop name="blockeditor_fields">
-    <script src="<mt:if name="path"><$mt:var name="static_uri"$><$mt:var name="path"$><mt:else><$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/fields/<$mt:var name="type"$>.js</mt:if>?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script src="<mt:if name="path"><$mt:var name="static_uri"$><$mt:var name="path"$><mt:else><$mt:var name="static_uri"$>plugins/BlockEditor/lib/js/admin2023/fields/<$mt:var name="type"$>.js</mt:if>?v=<mt:var name="mt_version_id" escape="url">"></script>
     </mt:loop>
   </mt:setvarblock>
 

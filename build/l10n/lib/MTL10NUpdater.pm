@@ -284,13 +284,19 @@ sub load_current_l10n {
     my $package = $self->l10n_class($name) . "::$lang";
     my $file    = $self->l10n_file($name, $lang) or die "No l10n file: $name $lang";
     my $module  = $self->slurp($file);
-    $module =~ s/\A(.+?)(\%Lexicon\s*=)/package $package; use utf8; our $2/s;
+    $module =~ s/\A(.+?)(\%Lexicon\s*=)/"package $package; use utf8; "._tweak_l10n_preamble($1)."our $2"/se;
     my $preamble = $1 or die "No preamble? $name $lang";
     $module =~ s/^\s*use base.+$//m;
     eval $module or die "Failed to load current l10n module $name $lang: $@";
     no strict 'refs';
     my %lexicon = %{"$package\::Lexicon"};
     ($preamble, \%lexicon);
+}
+
+sub _tweak_l10n_preamble {
+    my $preamble = shift;
+    my @left = grep {$_ and !/^(?:#|package|use|our\s*$|\@ISA)/} split /\n/, $preamble;
+    return join "", @left;
 }
 
 sub load_core_l10n {
@@ -335,8 +341,10 @@ sub find_phrases {
     }
 
     my $ignore_re = _gen_re(qw(
+        plugins/MTBlockEditor
         fabric.js
         chart-api/mtchart.js
+        tiny_mce/plugins/accordion/plugin.js
         tiny_mce/plugins/insertdatetime/plugin.js
         tiny_mce/plugins/save/plugin.js
         tiny_mce/plugins/spellchecker/plugin.js
@@ -405,6 +413,24 @@ sub _find_phrases {
             push @phrases, [$phrase, 'tmpl'];
         } else {
             push @phrases, $phrase;
+        }
+
+        # params may have yet another <__trans...>
+        my $params = $args{params} or next;
+        while ($params =~ m!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!igm) {
+            my ($msg, %args) = ($1);
+            while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<[^>]+?>|[^\2])*?)?\2/g) {    #'
+                $args{$1} = $3;
+            }
+            next unless exists $args{phrase};
+            my $phrase = $args{phrase};
+            $phrase =~ s/(?<!\\)\\"/"/g;
+            $phrase =~ s/(?<![':\\])\\'/'/g;
+            if ($check_component) {
+                push @phrases, [$phrase, 'tmpl'];
+            } else {
+                push @phrases, $phrase;
+            }
         }
     }
 

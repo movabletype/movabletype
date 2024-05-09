@@ -92,7 +92,7 @@ subtest 'load_config' => sub {
     my $rt2 = MT::RebuildTrigger->new;
     $rt2->blog_id($site->id);
     $rt2->object_type(MT::RebuildTrigger::TYPE_CONTENT_TYPE());
-    $rt2->action(MT::RebuildTrigger::ACTION_RIP());
+    $rt2->action(MT::RebuildTrigger::ACTION_RI());
     $rt2->event(MT::RebuildTrigger::EVENT_PUBLISH());
     $rt2->target(MT::RebuildTrigger::TARGET_BLOG());
     $rt2->target_blog_id($blog->id);
@@ -137,8 +137,8 @@ subtest 'load_config' => sub {
     is($param->[1]->{id},             '2',                                          'right value');
     is($param->[1]->{object_type},    MT::RebuildTrigger::TYPE_CONTENT_TYPE(),      'right value');
     is($param->[1]->{object_label},   'testct_a',                                   'right value');
-    is($param->[1]->{action},         MT::RebuildTrigger::ACTION_RIP(),             'right value');
-    is($param->[1]->{action_label},   'rebuild indexes and send pings.',            'right value');
+    is($param->[1]->{action},         MT::RebuildTrigger::ACTION_RI(),              'right value');
+    is($param->[1]->{action_label},   'rebuild indexes.',                           'right value');
     is($param->[1]->{event},          MT::RebuildTrigger::EVENT_PUBLISH(),          'right value');
     is($param->[1]->{event_label},    'Publish',                                    'right value');
     is($param->[1]->{target},         MT::RebuildTrigger::TARGET_BLOG(),            'right value');

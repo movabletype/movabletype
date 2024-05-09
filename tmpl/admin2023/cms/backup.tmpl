@@ -44,7 +44,7 @@
       <mt:loop name="archive_formats">
         <div class="custom-control custom-radio">
           <input type="radio" id="<mt:var name="key">" class="form-check-input" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="error"> disabled="disabled"<mt:elseif name="__first__"> checked="checked"</mt:if> />
-          <label class="form-check-label form-label" for="<mt:var name="key" escape="html">"><mt:var name="label" escape="html">
+          <label class="form-check-label" for="<mt:var name="key" escape="html">"><mt:var name="label" escape="html">
           <mt:if name="error">(<mt:var name="error" escape="html">)</mt:if></label>
         </div>
         <mt:if name="__last__">
@@ -53,7 +53,7 @@
       </mt:loop>
         <div class="custom-control custom-radio">
           <input type="radio" id="no_archive" class="form-check-input" name="backup_archive_format" value="0"<mt:unless name="format_available"> checked="checked"</mt:unless> />
-          <label class="form-check-label form-label" for="no_archive"><__trans phrase="Don't compress"></label>
+          <label class="form-check-label" for="no_archive"><__trans phrase="Don't compress"></label>
         </div>
       </div>
     </mtapp:setting>

@@ -58,12 +58,11 @@ sub dsn_from_config {
     unless ( -e $db_file ) {
         my $umask = oct $cfg->DBUmask;
         my $old   = umask($umask);
-        local *JUNK;
-        sysopen JUNK, $db_file, O_RDWR | O_CREAT, 0666
+        sysopen my $JUNK, $db_file, O_RDWR | O_CREAT, 0666
             or return undef;
 
 #or return $driver->error(MT->translate("Cannot open '[_1]': [_2]", $db_file, $!));
-        close JUNK;
+        close $JUNK;
         umask($old);
     }
     unless ( -w $db_file ) {

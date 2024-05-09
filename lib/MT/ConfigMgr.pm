@@ -139,7 +139,7 @@ sub default {
         }
         elsif ( $type eq 'HASH' ) {
             if ( ref $def ne 'HASH' ) {
-                ( my ($key), my ($val) ) = split /=/, $def;
+                my ($key, $val) = split /=/, $def, 2;
                 return { $key => $val };
             }
         }
@@ -152,6 +152,7 @@ sub set_internal {
     my ( $var, $val, $db_flag ) = @_;
     $var = lc $var;
     $mgr->set_dirty() if defined($db_flag) && $db_flag;
+    $val = '' if defined $val and ($val eq q{''} or $val eq q{""});
     my $set = $db_flag ? '__dbvar' : '__var';
     if ( defined( my $alias = $mgr->{__settings}{$var}{alias} ) ) {
         if ( $max_depth < $depth ) {
@@ -175,9 +176,13 @@ sub set_internal {
             if ( ref $val eq 'HASH' ) {
                 $mgr->{$set}{$var} = $val;
             }
-            else {
-                ( my ($key), $val ) = split /=/, $val;
+            elsif ($val && $val =~ /=/) {
+                ( my ($key), $val ) = split /=/, $val, 2;
                 $mgr->{$set}{$var}{$key} = $val;
+            }
+            else {
+                $val = '' unless defined $val;
+                warn "Illegal value for hash-typed config directive '$var': $val" if $MT::DebugMode;
             }
         }
         else {
@@ -203,10 +208,11 @@ sub set {
 }
 
 sub is_readonly {
-    my $class = shift;
+    my $mgr = shift;
+    $mgr = $mgr->instance unless ref $mgr;
     my ($var) = @_;
-    return ( !$class->is_overwritable($var)
-            && defined $class->instance->{__var}{ lc $var } ) ? 1 : 0;
+    return ( !$mgr->is_overwritable($var)
+            && defined $mgr->{__var}{ lc $var } ) ? 1 : 0;
 }
 
 sub overwritable_keys {
@@ -222,14 +228,15 @@ sub overwritable_keys {
 }
 
 sub is_overwritable {
-    my $class = shift;
-    my $var   = lc shift;
-    return $class->instance->{__overwritable_keys}{$var};
+    my $mgr = shift;
+    my $var = lc shift;
+    $mgr = $mgr->instance unless ref $mgr;
+    return $mgr->{__overwritable_keys}{$var};
 }
 
 sub read_config {
-    my $class = shift;
-    return $class->read_config_file(@_);
+    my $mgr = shift;
+    return $mgr->read_config_file(@_);
 }
 
 sub set_dirty {
@@ -261,38 +268,12 @@ sub is_dirty {
 }
 
 sub save_config {
-    my $class = shift;
-    my $mgr   = $class->instance;
+    my $mgr = shift;
+    $mgr = $mgr->instance unless ref $mgr;
 
     # prevent saving when the db row wasn't read already
     return 0 unless $mgr->{__read_db};
     return 0 unless $mgr->is_dirty();
-    my $data     = '';
-    my $settings = $mgr->{__dbvar};
-    foreach ( sort keys %$settings ) {
-        my $type = ( $mgr->{__settings}{$_}{type} || '' );
-        delete $mgr->{__settings}{$_}{dirty}
-            if exists $mgr->{__settings}{$_}{dirty};
-        if ( $type eq 'HASH' ) {
-            my $h = $settings->{$_};
-            foreach my $k ( sort keys %$h ) {
-                $data
-                    .= $mgr->{__settings}{$_}{key} . ' '
-                    . $k . '='
-                    . $h->{$k} . "\n";
-            }
-        }
-        elsif ( $type eq 'ARRAY' ) {
-            my $a = $settings->{$_};
-            foreach my $v (@$a) {
-                $data .= $mgr->{__settings}{$_}{key} . ' ' . $v . "\n";
-            }
-        }
-        elsif ( defined $settings->{$_} and $settings->{$_} ne '' ) {
-            $data
-                .= $mgr->{__settings}{$_}{key} . ' ' . $settings->{$_} . "\n";
-        }
-    }
 
     my $cfg_class = MT->model('config') or return;
 
@@ -305,6 +286,8 @@ sub save_config {
     unless ($config) {
         $config = $cfg_class->new;
     }
+
+    my $data = $mgr->stringify_config;
 
     if ( $data !~ m/^schemaversion/im ) {
         if ( $config->id
@@ -331,25 +314,58 @@ sub save_config {
     1;
 }
 
+sub stringify_config {
+    my $mgr      = shift;
+    my $data     = '';
+    my $settings = $mgr->{__dbvar};
+    foreach ( sort keys %$settings ) {
+        my $type = $mgr->{__settings}{$_}{type} || '';
+        my $key  = $mgr->{__settings}{$_}{key};
+        if (!$key) {
+            warn "Config directive '$_' is not defined" if $MT::DebugMode;
+            next;
+        }
+        if ( $type eq 'HASH' ) {
+            my $h = $settings->{$_};
+            foreach my $k ( sort keys %$h ) {
+                $data .= $key . ' ' . $k . '=' . $h->{$k} . "\n";
+            }
+        }
+        elsif ( $type eq 'ARRAY' ) {
+            my $a = $settings->{$_};
+            foreach my $v (@$a) {
+                $data .= $key . ' ' . $v . "\n";
+            }
+        }
+        elsif ( defined $settings->{$_} ) {
+            my $value = $settings->{$_};
+            $value = q{''} if $value eq '';
+            $data .= $key . ' ' . $value . "\n";
+        }
+    }
+    return $data;
+}
+
 sub read_config_file {
-    my $class      = shift;
+    my $mgr        = shift;
     my ($cfg_file) = @_;
-    my $mgr        = $class->instance;
+    $mgr = $mgr->instance unless ref $mgr;
     $mgr->{__var} = {};
     local $_;
     local $/ = "\n";
     die "Cannot read config without config file name" if !$cfg_file;
     open my $FH, "<", $cfg_file
-        or return $class->error(
+        or return $mgr->error(
         MT->translate( "Error opening file '[_1]': [_2]", $cfg_file, "$!" ) );
     my $line = 0;
 
+    my $was_dirty = $mgr->is_dirty;
     while (<$FH>) {
         chomp;
         $line++;
         next if !/\S/ || /^#/;
         my ( $var, $val ) = $_ =~ /^\s*(\S+)\s+(.*)$/;
-        return $class->error(
+        return $mgr->error(
             MT->translate(
                 "Config directive [_1] without value at [_2] line [_3]",
                 $var, $cfg_file, $line
@@ -360,13 +376,15 @@ sub read_config_file {
         $mgr->set( $var, $val );
     }
     close $FH;
+
+    $mgr->clear_dirty unless $was_dirty;
     1;
 }
 
 sub read_config_db {
-    my $class     = shift;
-    my $mgr       = $class->instance;
+    my $mgr       = shift;
     my $cfg_class = MT->model('config') or return;
+    $mgr = $mgr->instance unless ref $mgr;
 
     $mgr->{__dbvar} = {};
 
@@ -394,6 +412,8 @@ sub read_config_db {
 }
 
 sub DESTROY {
+    # Don't try to save_config in global destruction
+    return if defined ${^GLOBAL_PHASE} && ${^GLOBAL_PHASE} eq 'DESTRUCT';
 
     # save_config here so not to miss any dirty config change to persist
     # particularly for those which does not construct MT::App.

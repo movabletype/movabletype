@@ -17,7 +17,7 @@ use Scalar::Util;
 use MT::Template::Node ':constants';
 sub NODE () {'MT::Template::Node'}
 
-our $DEBUG;
+sub DEBUG () { $ENV{MT_TEMPLATE_DEBUG} }
 
 __PACKAGE__->install_properties(
     {   column_defs => {
@@ -276,6 +276,7 @@ sub load_file {
     my $c;
     do { local $/; $c = <$fh> };
     close $fh;
+    $tmpl->{__real_file} = $real_file if DEBUG;
     return $c;
 }
 
@@ -383,9 +384,7 @@ sub build {
     my $build = $ctx->{__stash}{builder} || MT->builder;
     my $page_layout;
     if ( my $blog_id = $tmpl->blog_id ) {
-        $ctx->stash( 'blog_id',       $blog_id );
-        $ctx->stash( 'local_blog_id', $blog_id )
-            unless $ctx->stash('local_blog_id');
+        $ctx->stash( 'blog_id', $blog_id );
         my $blog = $ctx->stash('blog');
         unless ($blog) {
             $blog = MT->request->{__stash}{__obj}{"site:$blog_id"} ||= MT->model('blog')->load($blog_id)
@@ -398,12 +397,13 @@ sub build {
             $ctx->stash( 'blog', $blog );
         }
         else {
-            $ctx->stash( 'blog_id',       $blog->id );
-            $ctx->stash( 'local_blog_id', $blog->id )
-                unless $ctx->stash('local_blog_id');
+            $ctx->stash( 'blog_id', $blog->id );
         }
         MT->request( 'time_offset', $blog->server_offset );
         $page_layout = $blog->page_layout;
+    }
+    if ($ctx->stash('blog_id') && !$ctx->stash('local_blog_id')) {
+        $ctx->stash('local_blog_id', $ctx->stash('blog_id'));
     }
     my $type = $tmpl->type;
     if (   $type
@@ -432,11 +432,12 @@ sub build {
     $timer->pause_partial if $timer;
 
     my $res = $build->build( $ctx, $tokens, $cond );
-    if ($DEBUG) {
+    if (DEBUG) {
+        my $real_file = $tmpl->{__real_file} || "?";
         $res =~ s/\A\s+//s;
         $res =~ s/\s+\z//s;
         $res = join "",
-            "<!-- begin_tmpl $tmpl_name -->",
+            "<!-- begin_tmpl $tmpl_name ($real_file) -->",
             $res,
             "<!-- end_tmpl $tmpl_name -->";
     }
@@ -746,7 +747,9 @@ sub _sync_from_disk {
         else {
 
             # use MT path to base relative paths
-            my $base_path = MT->config->BaseTemplatePath || MT->instance->server_path;
+            my $base_path = MT->config->BaseTemplatePath;
+            $base_path ||= (MT->config->UserTemplatePath)[0];
+            $base_path ||= MT->instance->server_path;
             $lfile = File::Spec->catfile( $base_path, $lfile );
         }
     }
@@ -1066,7 +1069,7 @@ sub insertAfter {
     my ( $node1, $node2 ) = @_;
     my $parent_node
         = $node2 && $node2->[EL_NODE_PARENT] ? $node2->[EL_NODE_PARENT] : $tmpl;
-    my $parent_array = ref $parent_node eq 'ARRAY' ? $parent_node->[EL_NODE_PARENT] : $parent_node->childNodes;
+    my $parent_array = ref $parent_node eq 'ARRAY' ? $parent_node->[EL_NODE_CHILDREN] : $parent_node->childNodes;
     if (ref $parent_array eq 'MT::Template') {
         $parent_array = $parent_array->childNodes;
     }

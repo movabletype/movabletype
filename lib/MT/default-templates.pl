@@ -7,6 +7,7 @@
 package MT::default_templates;
 
 use strict;
+use warnings;
 require MT::DefaultTemplates;
 
 delete $INC{'MT/default-templates.pl'};

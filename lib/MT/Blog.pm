@@ -920,7 +920,8 @@ sub comment_text_filters {
 
 sub cc_license_url {
     my $cc = $_[0]->cc_license or return '';
-    MT::Util::cc_url($cc);
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::cc_url($cc);
 }
 
 sub email_all_comments {

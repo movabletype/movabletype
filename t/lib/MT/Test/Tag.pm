@@ -16,6 +16,7 @@ use MT::Test::PHP;
 use File::Spec;
 use Socket;
 use Test::TCP;
+use Text::Diff 'diff';
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
@@ -121,7 +122,7 @@ sub run_perl_tests {
                 if ($expected_ref && $expected_ref eq 'Regexp') {
                     like($got, $expected, $name);
                 } else {
-                    is($got, $expected, $name);
+                    ok($got eq $expected, $name) or diag diff(\$expected, \$got, {STYLE => 'Unified'});
                 }
             }
             __PACKAGE__->_update_config($prev_config);
@@ -174,10 +175,7 @@ SKIP: {
                     $got = Encode::decode_utf8(_php_daemon($template, $block->blog_id || $blog_id, $extra, $text, $log));
                 }
 
-                my $php_error = '';
-                if (open(my $fh, '<', $log)) {
-                    $php_error = do { local $/; <$fh> };
-                }
+                my $php_error = __PACKAGE__->_retrieve_php_logs($log);
 
                 ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
@@ -226,7 +224,8 @@ SKIP: {
                 } else {
                     is($got, $expected, $name);
                 }
-                if ($ENV{MT_TEST_IGNORE_PHP_WARNINGS} && $php_error) {
+                my $ignore_php_warnings = __PACKAGE__->_check_ignore_php_warnings($block) || $ENV{MT_TEST_IGNORE_PHP_WARNINGS};
+                if ($ignore_php_warnings && $php_error) {
                     SKIP: {
                         local $TODO = 'for now';
                         ok !$php_error, 'no php warnings';
@@ -261,6 +260,8 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
 \$MT_CONFIG = '@{[ MT->instance->find_config ]}';
 \$blog_id   = '$blog_id';
 \$log = '$log';
+\$ignore_php_dynamic_properties_warnings = '@{[ $ENV{MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS} || 0 ]}';
+
 \$tmpl = <<<__TMPL__
 $template
 __TMPL__
@@ -273,6 +274,12 @@ PHP
     $test_script .= <<'PHP';
 include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
+include_once($MT_HOME . '/t/lib/MT/Test/Tag/error_handler.php');
+
+$error_handler = new MT_Test_Error_Handler();
+set_error_handler([$error_handler, 'handler']);
+$error_handler->log = $log;
+$error_handler->ignore_php_dynamic_properties_warnings = $ignore_php_dynamic_properties_warnings;
 
 $mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->config('PHPErrorLogFilePath', $log);
@@ -297,14 +304,6 @@ PHP
     $test_script .= $extra if $extra;
 
     $test_script .= <<'PHP';
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
-    if ($error_no & E_USER_ERROR) {
-        print($error_msg."\n");
-    } else {
-        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
-    }
-});
-
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
     echo $_var_compiled;
 } else {
@@ -331,6 +330,7 @@ sub MT::Test::Tag::_php_daemon {
                 '--mt_home', ($ENV{MT_HOME} ? $ENV{MT_HOME} : '.'),
                 '--mt_config', $config,
                 '--init_blog_id', $blog_id,
+                '--ignore_php_dynamic_properties_warnings', ($ENV{MT_TEST_IGNORE_PHP_DYNAMIC_PROPERTIES_WARNINGS} || 0),
                 $log ? ('--log', $log) : (),
             );
             exec join(' ', @$command, @opts);
@@ -355,7 +355,7 @@ PHP
     $| = 1;
     select $old_handle;
     require JSON;
-    print $sock JSON::to_json([$blog_id, $template, $extra]);
+    print $sock JSON::to_json([$blog_id, $template, $extra, $log]);
     shutdown $sock, 1;
     my $result = do { local $/; <$sock> };
     close $sock;
@@ -364,6 +364,13 @@ PHP
     Encode::decode_utf8($result);
 
     return $result;
+}
+
+sub _retrieve_php_logs {
+    my $file = shift;
+    open(my $fh, '<', $file) or return '';
+    local $/;
+    return <$fh>;
 }
 
 sub _update_config {
@@ -386,6 +393,19 @@ sub _check_skip_php {
     if (defined($skip_php)) {
         if (length($skip_php)) {
             return _filter_vars($skip_php);
+        } else {
+            return 1;
+        }
+    }
+    return;
+}
+
+sub _check_ignore_php_warnings {
+    my $block  = shift;
+    my $ignore = $block->ignore_php_warnings;
+    if (defined($ignore)) {
+        if (length($ignore)) {
+            return _filter_vars($ignore);
         } else {
             return 1;
         }

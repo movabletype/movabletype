@@ -84,6 +84,16 @@ sub list_props {
                     ;    # from GMT to Blog( or system ) Timezone
                 return epoch2ts( $blog, $epoch, 1 );    # back to timestamp
             },
+            sort => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                my $direction = delete $args->{direction} eq 'descend' ? 'DESC' : 'ASC';
+                $args->{sort} = [
+                    { column => 'created_on', desc => $direction },
+                    { column => 'id',         desc => $direction },
+                ];
+                return;
+            },
         },
         message => {
             auto      => 1,
@@ -110,7 +120,7 @@ sub list_props {
                     desc => MT::Util::encode_html($desc),
                     msg  => MT::Util::encode_html($msg),
                 );
-                return $app->load_tmpl('cms/include/mt_log_list_props_message.tmpl', \%params)->output();
+                return $app->load_cached_tmpl('cms/include/mt_log_list_props_message.tmpl', \%params)->output();
             },
         },
         blog_name => {

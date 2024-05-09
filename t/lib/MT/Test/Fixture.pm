@@ -610,7 +610,6 @@ sub prepare_content_type {
             }
 
             my @field_spec_copy = @field_spec;
-            my %cfs;
             my @fields;
             while (my ($cf_name, $cf_spec) = splice @field_spec_copy, 0, 2) {
                 my %cf_arg;
@@ -663,6 +662,7 @@ sub prepare_content_type {
                         content_type_id => $ct->id,
                         name            => $cf_arg{name}        || $cf_name,
                         description     => $cf_arg{description} || $cf_name,
+                        $cf_type eq 'content_type' ? (related_content_type_id => $options{source}) : (),
                         %cf_arg,
                     );
                     $objs->{content_type}{$ct_name}{content_field}{$cf_name} = $cf;
@@ -927,6 +927,7 @@ sub prepare_template {
     return unless $spec->{template};
 
     if (ref $spec->{template} eq 'ARRAY') {
+        my @widgetsets;
         for my $item (@{ $spec->{template} }) {
             my %arg          = ref $item eq 'HASH' ? %$item : (archive_type => $item);
             my $archive_type = delete $arg{archive_type};
@@ -948,9 +949,16 @@ sub prepare_template {
                 (my $archive_type_name = $archive_type) =~ tr/A-Z-/a-z_/;
                 $arg{name} = "tmpl_$archive_type_name";
             }
-            if (exists $objs->{template}{ $arg{name} }) {
-                _note_or_croak("template: $arg{name} already exists");
+            if (exists $objs->{template}{$blog_id}{ $arg{name} }) {
+                _note_or_croak("template: $arg{name} for site $blog_id already exists");
                 next;
+            }
+            if ($arg{type} && $arg{type} eq 'widgetset') {
+                push @widgetsets, {
+                    name       => $arg{name},
+                    blog_id    => $blog_id,
+                    modulesets => delete $arg{modulesets},
+                };
             }
 
             my $mapping = delete $arg{mapping};
@@ -967,7 +975,7 @@ sub prepare_template {
                 %arg,
             );
 
-            $objs->{template}{ $tmpl->name } = $tmpl;
+            $objs->{template}{$blog_id}{ $tmpl->name } = $tmpl;
 
             next unless $archive_type && $mapping;
 
@@ -1001,6 +1009,18 @@ sub prepare_template {
 
                 $preferred = 0;
             }
+        }
+        for my $widgetset (@widgetsets) {
+            my @modulesets;
+            for my $widget (@{ $widgetset->{modulesets} || []}) {
+                if (!exists $objs->{template}{$widgetset->{blog_id}}{$widget}) {
+                    croak("template: unknown widget $widget for site $widgetset->{blog_id} widgetset $widgetset->{name}");
+                }
+                push @modulesets, $widget;
+            }
+            my $obj = $objs->{template}{$widgetset->{blog_id}}{$widgetset->{name}};
+            $obj->modulesets(MT::Template->widgets_to_modulesets(\@modulesets, $widgetset->{blog_id}));
+            $obj->save_widgetset;
         }
     }
 }

@@ -57,13 +57,11 @@ use_ok('MT::CMS::RebuildTrigger');
 use_ok('MT::CMS::Group');
 
 # Supporting applications
-use_ok('MT::App::ActivityFeeds');
 use_ok('MT::App::Upgrader');
 use_ok('MT::App::Wizard');
 
 # Search apps
 use_ok('MT::App::Search');
-use_ok('MT::App::Search::FreeText');
 use_ok('MT::App::Search::TagSearch');
 
 # Auth framework
@@ -197,10 +195,13 @@ use_ok('MT::DataAPI::Resource::v4::ContentField');
 use_ok('MT::DataAPI::Resource::v4::ContentType');
 use_ok('MT::DataAPI::Resource::v4::Template');
 use_ok('MT::DataAPI::Resource::v4::Website');
+use_ok('MT::DataAPI::Resource::v6::StatisticsDate');
+use_ok('MT::DataAPI::Resource::v6::StatisticsPath');
 use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
 use_ok('MT::Util::BlessedString');
+use_ok('MT::Util::Checksums');
 use_ok('MT::Util::ContentType');
 use_ok('MT::Util::Dependencies');
 use_ok('MT::Util::Deprecated');
@@ -327,6 +328,22 @@ SKIP: {
         skip( 'Log::Minimal is not installed', 1 );
     }
 }
+SKIP: {
+    if ( eval { require Log::Dispatch::Config } ) {
+        use_ok('MT::Util::Log::Dispatch');
+    }
+    else {
+        skip( 'Log::Dispatch::Config is not installed', 1 );
+    }
+}
+SKIP: {
+    if ( eval { require Fluent::Logger } ) {
+        use_ok('MT::Util::Log::Fluentd');
+    }
+    else {
+        skip( 'Fluent::Logger is not installed', 1 );
+    }
+}
 
 # TheSchwartz support
 use_ok('MT::TheSchwartz');
@@ -395,15 +412,6 @@ use_ok('MT::ArchiveType::Page');
 use_ok('MT::ArchiveType::Weekly');
 use_ok('MT::ArchiveType::Yearly');
 
-# XMLRPC support
-use_ok('MT::XMLRPCServer');
-
-# Atom support
-if ( eval { require XML::Parser } ) {
-    use_ok('MT::Atom');
-    use_ok('MT::AtomServer');
-}
-
 # Backup/Restore
 use_ok('MT::BackupRestore');
 use_ok('MT::BackupRestore::BackupFileHandler');
@@ -459,6 +467,7 @@ use_ok('MT::Upgrade::v4');
 use_ok('MT::Upgrade::v5');
 use_ok('MT::Upgrade::v6');
 use_ok('MT::Upgrade::v7');
+use_ok('MT::Upgrade::v8');
 
 # Revision Management Framework
 use_ok('MT::Revisable');
@@ -494,17 +503,8 @@ use_ok('MT::App::CMS::Common');
 use_ok('MT::DataAPI::Callback::Entry');
 use_ok('MT::DataAPI::Callback::Permission');
 use_ok('MT::DataAPI::Callback::User');
-use_ok('MT::DataAPI::Endpoint::Asset');
-use_ok('MT::DataAPI::Endpoint::Auth');
-use_ok('MT::DataAPI::Endpoint::Blog');
-use_ok('MT::DataAPI::Endpoint::Category');
 use_ok('MT::DataAPI::Endpoint::Common');
-use_ok('MT::DataAPI::Endpoint::Entry');
 use_ok('MT::DataAPI::Endpoint::OpenAPI');
-use_ok('MT::DataAPI::Endpoint::Permission');
-use_ok('MT::DataAPI::Endpoint::Publish');
-use_ok('MT::DataAPI::Endpoint::Stats');
-use_ok('MT::DataAPI::Endpoint::User');
 use_ok('MT::DataAPI::Endpoint::Util');
 use_ok('MT::DataAPI::Endpoint::Version');
 use_ok('MT::DataAPI::Endpoint::v1');
@@ -520,17 +520,8 @@ use_ok('MT::DataAPI::Endpoint::v1::User');
 use_ok('MT::DataAPI::Format');
 use_ok('MT::DataAPI::Format::JSON');
 use_ok('MT::DataAPI::Resource');
-use_ok('MT::DataAPI::Resource::Asset');
-use_ok('MT::DataAPI::Resource::Blog');
-use_ok('MT::DataAPI::Resource::Category');
 use_ok('MT::DataAPI::Resource::Common');
 use_ok('MT::DataAPI::Resource::Endpoint');
-use_ok('MT::DataAPI::Resource::Entry');
-use_ok('MT::DataAPI::Resource::Permission');
-use_ok('MT::DataAPI::Resource::StatisticsDate');
-use_ok('MT::DataAPI::Resource::StatisticsPath');
-use_ok('MT::DataAPI::Resource::User');
-use_ok('MT::DataAPI::Resource::Website');
 use_ok('MT::DataAPI::Resource::v1::Asset');
 use_ok('MT::DataAPI::Resource::v1::Blog');
 use_ok('MT::DataAPI::Resource::v1::Category');
@@ -646,10 +637,11 @@ use_ok('MT::App::Search::Common');
 
 SKIP: {
     my @modules
-        = qw( parent Plack CGI::PSGI CGI::Parse::PSGI XMLRPC::Transport::HTTP::Plack );
+        = qw( parent Plack CGI::PSGI CGI::Parse::PSGI );
     my $eval_string = join( ';', map {"require $_"} @modules );
     if ( eval $eval_string ) {
         use_ok('MT::PSGI');
+        use_ok('MT::PSGI::ServeStatic');
     }
     else {
         my $last_module = pop @modules;
