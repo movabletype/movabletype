@@ -95,7 +95,7 @@
     const moveToPagination = args.moveToPagination;
 
     if (!$ListingStore.sortOrder) {
-      $ListingStore.toggleSortColumn($ListingStore.sortBy);
+      // $ListingStore.toggleSortColumn($ListingStore.sortBy);
     }
 
     if ($ListingStore.disableUserDispOption) {

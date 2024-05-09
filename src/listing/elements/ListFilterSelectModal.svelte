@@ -76,7 +76,7 @@
           <h6 class="filter-list-label">{trans("My Filters")}</h6>
           <ul id="user-filters" class="list-unstyled editable">
             {#each $ListingStore.filters as { id, filter }}
-              {#if filter.can_save === "1"}
+              <!-- {#if filter.can_save === "1"}
                 <li
                   class="filter line"
                   data-mt-list-filter-id={id}
@@ -129,7 +129,7 @@
                     </div>
                   </div>
                 </li>
-              {/if}
+              {/if} -->
             {/each}
             <li class="filter line d-none d-md-block">
               <a
@@ -154,7 +154,7 @@
           <h6 class="filter-list-label">{trans("Built in Filters")}</h6>
           <ul id="built-in-filters" class="list-unstyled">
             {#each $ListingStore.filters as { id, filter }}
-              {#if filter.can_save === "0"}
+              <!-- {#if filter.can_save === "0"}
                 <li
                   class="filter line"
                   data-mt-list-filter-id={id}
@@ -164,7 +164,7 @@
                     {@html filter.label}
                   </a>
                 </li>
-              {/if}
+              {/if} -->
             {/each}
           </ul>
         </div>
