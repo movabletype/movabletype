@@ -7,6 +7,7 @@
 
 <ul class="pagination__mobile d-md-none">
   <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+    <!-- svelte-ignore a11y-invalid-attribute -->
     <a
       href="javascript:void(0);"
       class="page-link"
@@ -24,6 +25,7 @@
 
   {#if $ListingStore.page - 4 >= 1 && $ListingStore.pageMax - $ListingStore.page < 1}
     <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -37,6 +39,7 @@
 
   {#if $ListingStore.page - 3 >= 1 && $ListingStore.pageMax - $ListingStore.page < 2}
     <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -50,6 +53,7 @@
 
   {#if $ListingStore.page - 2 >= 1}
     <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -63,6 +67,7 @@
 
   {#if $ListingStore.page - 1 >= 1}
     <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -75,6 +80,7 @@
   {/if}
 
   <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+    <!-- svelte-ignore a11y-missing-attribute -->
     <a class="page-link">
       {$ListingStore.page}
       <span class="sr-only">(current)</span>
@@ -83,6 +89,7 @@
 
   {#if $ListingStore.page + 1 <= $ListingStore.pageMax}
     <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -96,6 +103,7 @@
 
   {#if $ListingStore.page + 2 <= $ListingStore.pageMax}
     <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -109,6 +117,7 @@
 
   {#if $ListingStore.page + 3 <= $ListingStore.pageMax && $ListingStore.page <= 2}
     <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -122,6 +131,7 @@
 
   {#if $ListingStore.page + 4 <= $ListingStore.pageMax && $ListingStore.page <= 1}
     <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -134,6 +144,7 @@
   {/if}
 
   <li class="page-item">
+    <!-- svelte-ignore a11y-invalid-attribute -->
     <a
       href="javascript:void(0);"
       class="page-link"

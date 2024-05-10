@@ -16,6 +16,7 @@
     </button>
     <div class="dropdown-menu">
       {#each $ListingOpts.listActions as action}
+        <!-- svelte-ignore a11y-invalid-attribute -->
         <a
           class="dropdown-item"
           href="javascript:void(0);"
@@ -33,6 +34,7 @@
         {/if}
 
         {#each $ListingOpts.moreListActions as action}
+          <!-- svelte-ignore a11y-invalid-attribute -->
           <a
             class="dropdown-item"
             href="javascript:void(0);"

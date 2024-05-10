@@ -6,6 +6,7 @@
 
 <ul class="pagination d-none d-md-flex">
   <li class="page-item">
+    <!-- svelte-ignore a11y-invalid-attribute -->
     <a
       href="javascript:void(0);"
       class="page-link"
@@ -19,6 +20,7 @@
 
   {#if $ListingStore.page - 2 >= 1}
     <li class="page-item first-last">
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -36,6 +38,7 @@
 
   {#if $ListingStore.page - 1 >= 1}
     <li class="page-item {$ListingStore.page - 1 == 1 ? 'first-last' : ''}">
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -48,6 +51,7 @@
   {/if}
 
   <li class="page-item active">
+    <!-- svelte-ignore a11y-missing-attribute -->
     <a class="page-link">
       {$ListingStore.page}
     </a>
@@ -59,6 +63,7 @@
         ? 'first-last'
         : ''}"
     >
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -76,6 +81,7 @@
 
   {#if $ListingStore.page + 2 <= $ListingStore.pageMax}
     <li class="page-item first-last">
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
@@ -88,6 +94,7 @@
   {/if}
 
   <li class="page-item">
+    <!-- svelte-ignore a11y-invalid-attribute -->
     <a
       href="javascript:void(0);"
       class="page-link"

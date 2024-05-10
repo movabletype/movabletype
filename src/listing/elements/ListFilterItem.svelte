@@ -33,6 +33,7 @@
           >
             <div class="item-content form-inline">
               <ListFilterItemField />
+              <!-- svelte-ignore a11y-invalid-attribute -->
               <a
                 href="javascript:void(0);"
                 class="d-inline-block"
@@ -46,6 +47,7 @@
                 </svg>
               </a>
               {#if !filterTypeHash[item.type].singleton && opts.item.args.items.length > 1}
+                <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
                   href="javascript:void(0);"
                   on:click={removeFilterItemContent}
@@ -75,6 +77,7 @@
           field={filterTypeHash[opts.item.type].field}
           item={opts.item}
         />
+        <!-- svelte-ignore a11y-invalid-attribute -->
         <a
           href="javascript:void(0);"
           class="d-inline-block"

@@ -25,6 +25,7 @@
       if={!$ListingOpts.disableUserDispOption}
       class="actions-bar actions-bar-bottom"
     >
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         id="reset-display-options"

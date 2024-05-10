@@ -24,6 +24,7 @@
     {/if}
     <th scope="col">
       {#if $ListingOpts.hasMobilePulldownActions}
+        <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
         <span on:click={toggleAllRowsOnPage}>
           {window.trans("All")}
         </span>

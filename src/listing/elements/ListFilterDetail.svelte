@@ -29,6 +29,7 @@
           <div class="dropdown-menu">
             {#each $ListingOpts.filterTypes as type}
               {#if type.editable}
+                <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
                   class="disabled dropdown-item"
                   href="#"

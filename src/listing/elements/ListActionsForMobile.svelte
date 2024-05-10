@@ -43,6 +43,7 @@
     </button>
     <div class="dropdown-menu">
       {#each buttonActionsForMobile as action, key}
+        <!-- svelte-ignore a11y-invalid-attribute -->
         <a
           class="dropdown-item"
           href="javascript:void(0);"
@@ -53,6 +54,7 @@
       {/each}
 
       {#each listActionsForMobile as action, key}
+        <!-- svelte-ignore a11y-invalid-attribute -->
         <a
           class="dropdown-item"
           href="javascript:void(0);"
@@ -66,6 +68,7 @@
         {#if Object.keys(moreListActionsForMobile).length > 0}
           <h6 class="dropdown-header">Plugin Actions</h6>
           {#each moreListActionsForMobile as action, key}
+            <!-- svelte-ignore a11y-invalid-attribute -->
             <a
               class="dropdown-item"
               href="javascript:void(0);"

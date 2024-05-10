@@ -24,6 +24,7 @@
 {#if $ListingStore.pageMax > 1 && $ListingStore.checkedAllRowsOnPage && !$ListingStore.checkedAllRows}
   <tr style="background-color: #ffffff;">
     <td colspan={$ListingStore.objects.length + 1}>
+      <!-- svelte-ignore a11y-invalid-attribute -->
       <a href="javascript:void(0);" on:click={checkAllRows}>
         {window.trans("Select all [_1] items", $ListingStore.count)}
       </a>

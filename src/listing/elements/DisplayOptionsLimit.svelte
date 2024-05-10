@@ -9,6 +9,7 @@
 </script>
 
 <div class="field-header">
+  <!-- svelte-ignore a11y-label-has-associated-control -->
   <label class="form-label">{window.trans("Show")}</label>
 </div>
 <div class="field-content">

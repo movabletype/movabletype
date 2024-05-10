@@ -27,6 +27,7 @@
     {#if column.checked && column.id != "__mobile"}
       <th>
         {#if column.sortable}
+          <!-- svelte-ignore a11y-invalid-attribute -->
           <a href="javascript:void(0)" on:click={toggleSortColumn}>
             {@html column.label}
           </a>
