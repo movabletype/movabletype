@@ -15,10 +15,11 @@ my %CustomURL = (
 
 our %Requirements = (
     "Archive::Tar" => {
-        label     => "This module is optional. It is used to manipulate files during import/export operations.",
-        perl_core => 1.82,
-        tags      => ["Archive"],
-        url       => "https://metacpan.org/pod/Archive::Tar",
+        dropped_in => ["amazonlinux2023", "centos7"],
+        label      => "This module is optional. It is used to manipulate files during import/export operations.",
+        perl_core  => 1.82,
+        tags       => ["Archive"],
+        url        => "https://metacpan.org/pod/Archive::Tar",
     },
     "Archive::Zip" => {
         label => "This module is optional. It is used to manipulate files during import/export operations.",
@@ -96,16 +97,18 @@ our %Requirements = (
         version  => 1.21,
     },
     "Digest::MD5" => {
-        label     => "This module is used to make checksums.",
-        perl_core => 2.51,
-        tags      => ["Digest"],
-        url       => "https://metacpan.org/pod/Digest::MD5",
+        dropped_in => ["centos7"],
+        label      => "This module is used to make checksums.",
+        perl_core  => 2.51,
+        tags       => ["Digest"],
+        url        => "https://metacpan.org/pod/Digest::MD5",
     },
     "Digest::SHA" => {
-        label     => "Digest::SHA is required in order to provide enhanced protection of user passwords.",
-        perl_core => 5.71,
-        tags      => ["Digest"],
-        url       => "https://metacpan.org/pod/Digest::SHA",
+        dropped_in => ["amazonlinux2023", "centos7"],
+        label      => "Digest::SHA is required in order to provide enhanced protection of user passwords.",
+        perl_core  => 5.71,
+        tags       => ["Digest"],
+        url        => "https://metacpan.org/pod/Digest::SHA",
     },
     "Email::MIME" => {
         label => "This module and its dependencies are optional. It is an alternative module to create mail.",
@@ -200,10 +203,11 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Imager",
     },
     "IO::Compress::Gzip" => {
-        label     => "IO::Compress::Gzip is required in order to compress files during an export operation.",
-        perl_core => 2.048,
-        tags      => ["Archive"],
-        url       => "https://metacpan.org/pod/IO::Compress::Gzip",
+        dropped_in => ["amazonlinux2023", "centos7"],
+        label      => "IO::Compress::Gzip is required in order to compress files during an export operation.",
+        perl_core  => 2.048,
+        tags       => ["Archive"],
+        url        => "https://metacpan.org/pod/IO::Compress::Gzip",
     },
     "IO::Socket::SSL" => {
         label => "This module is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.",
@@ -211,10 +215,11 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/IO::Socket::SSL",
     },
     "IO::Uncompress::Gunzip" => {
-        label     => "IO::Uncompress::Gunzip is required in order to decompress files during an import operation.",
-        perl_core => 2.048,
-        tags      => ["Archive"],
-        url       => "https://metacpan.org/pod/IO::Uncompress::Gunzip",
+        dropped_in => ["amazonlinux2023", "centos7"],
+        label      => "IO::Uncompress::Gunzip is required in order to decompress files during an import operation.",
+        perl_core  => 2.048,
+        tags       => ["Archive"],
+        url        => "https://metacpan.org/pod/IO::Uncompress::Gunzip",
     },
     "IPC::Run" => {
         label => "IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.",
@@ -229,11 +234,12 @@ our %Requirements = (
         url      => "https://metacpan.org/pod/JSON",
     },
     "JSON::PP" => {
-        extlib    => 4.16,
-        label     => "JSON::PP is used internally to process JSON by default.",
-        perl_core => "2.27200",
-        tags      => ["JSON"],
-        url       => "https://metacpan.org/pod/JSON::PP",
+        dropped_in => ["amazonlinux2023", "centos7"],
+        extlib     => 4.16,
+        label      => "JSON::PP is used internally to process JSON by default.",
+        perl_core  => "2.27200",
+        tags       => ["JSON"],
+        url        => "https://metacpan.org/pod/JSON::PP",
     },
     "JSON::XS" => {
         label => "JSON::XS accelerates JSON processing.",
@@ -345,10 +351,11 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Plack",
     },
     "Safe" => {
-        label     => "This module is used in a test attribute for the MTIf conditional tag.",
-        perl_core => "2.31_01",
-        tags      => ["System"],
-        url       => "https://metacpan.org/pod/Safe",
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is used in a test attribute for the MTIf conditional tag.",
+        perl_core  => "2.31_01",
+        tags       => ["System"],
+        url        => "https://metacpan.org/pod/Safe",
     },
     "Scalar::Util" => {
         label     => "Scalar::Util is required to avoid memory leaks.",
@@ -381,10 +388,11 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/TheSchwartz",
     },
     "Time::HiRes" => {
-        label     => "This module is required for profiling.",
-        perl_core => 1.9725,
-        tags      => ["System", "DateTime"],
-        url       => "https://metacpan.org/pod/Time::HiRes",
+        dropped_in => ["amazonlinux2023"],
+        label      => "This module is required for profiling.",
+        perl_core  => 1.9725,
+        tags       => ["System", "DateTime"],
+        url        => "https://metacpan.org/pod/Time::HiRes",
     },
     "URI" => {
         extlib => 5.25,
@@ -520,10 +528,11 @@ our %ExtLibOnly = (
         used_in => ["Mail::Field::Date"],
     },
     "Digest::base" => {
-        extlib    => "1.20",
-        perl_core => 1.16,
-        url       => "https://metacpan.org/pod/Digest::base",
-        used_in   => ["Digest::SHA::PurePerl"],
+        dropped_in => ["centos7"],
+        extlib     => "1.20",
+        perl_core  => 1.16,
+        url        => "https://metacpan.org/pod/Digest::base",
+        used_in    => ["Digest::SHA::PurePerl"],
     },
     "Digest::Perl::MD5" => {
         extlib  => 1.9,
@@ -616,10 +625,11 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::Archive::BinZip"],
     },
     "Locale::Maketext" => {
-        extlib    => 1.33,
-        perl_core => 1.22,
-        url       => "https://metacpan.org/pod/Locale::Maketext",
-        used_in   => ["MT::L10N"],
+        dropped_in => ["amazonlinux2023", "centos7"],
+        extlib     => 1.33,
+        perl_core  => 1.22,
+        url        => "https://metacpan.org/pod/Locale::Maketext",
+        used_in    => ["MT::L10N"],
     },
     "Lucene::QueryParser" => {
         extlib  => 1.04,
@@ -637,10 +647,11 @@ our %ExtLibOnly = (
         used_in => ["MIME::Lite"],
     },
     "Math::BigInt" => {
-        extlib    => 2.003002,
-        perl_core => 1.998,
-        url       => "https://metacpan.org/pod/Math::BigInt",
-        used_in   => ["JSON::PP"],
+        dropped_in => ["amazonlinux2023"],
+        extlib     => 2.003002,
+        perl_core  => 1.998,
+        url        => "https://metacpan.org/pod/Math::BigInt",
+        used_in    => ["JSON::PP"],
     },
     "Math::Random::MT::Perl" => {
         extlib  => 1.15,
@@ -716,10 +727,11 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::UniqueID"],
     },
     "version" => {
-        extlib    => "0.9930",
-        perl_core => 0.99,
-        url       => "https://metacpan.org/pod/version",
-        used_in   => ["MT::version"],
+        dropped_in => ["amazonlinux2023", "centos7"],
+        extlib     => "0.9930",
+        perl_core  => 0.99,
+        url        => "https://metacpan.org/pod/version",
+        used_in    => ["MT::version"],
     },
     "WWW::RobotRules" => {
         extlib  => 6.02,
@@ -735,6 +747,102 @@ our %ExtLibOnly = (
         extlib  => 1.09,
         url     => "https://metacpan.org/pod/XML::SAX::Base",
         used_in => ["MT::BackupRestore::BackupFileScanner"],
+    },
+);
+
+our %HiddenCoreDeps = (
+    "Carp"         => { perl_core => 1.26, url => "https://metacpan.org/pod/Carp" },
+    "Data::Dumper" => {
+        dropped_in => ["centos7"],
+        perl_core  => "2.135_06",
+        url        => "https://metacpan.org/pod/Data::Dumper",
+    },
+    "DirHandle" => {
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 1.04,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/DirHandle",
+    },
+    "English" => {
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 1.05,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/English",
+    },
+    "Exporter"           => { perl_core => 5.66, url => "https://metacpan.org/pod/Exporter" },
+    "ExtUtils::Manifest" => {
+        dropped_in => ["amazonlinux2023", "centos7"],
+        perl_core  => 1.61,
+        url        => "https://metacpan.org/pod/ExtUtils::Manifest",
+    },
+    "Fcntl" => {
+        perl_core => 1.11,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/Fcntl",
+    },
+    "File::Basename" => {
+        perl_core => 2.84,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/File::Basename",
+    },
+    "File::Copy" => {
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 2.23,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/File::Copy",
+    },
+    "File::Find" => {
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => "1.20",
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/File::Find",
+    },
+    "File::Path" => {
+        perl_core => "2.08_01",
+        url       => "https://metacpan.org/pod/File::Path",
+    },
+    "FindBin" => {
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 1.51,
+        url        => "https://metacpan.org/pod/FindBin",
+    },
+    "Getopt::Long"         => { perl_core => 2.38, url => "https://metacpan.org/pod/Getopt::Long" },
+    "I18N::LangTags::List" => {
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => "0.35_01",
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/I18N::LangTags::List",
+    },
+    "IO::File"         => { perl_core => 1.16, url => "https://metacpan.org/pod/IO::File" },
+    "IO::Select"       => { perl_core => 1.21, url => "https://metacpan.org/pod/IO::Select" },
+    "IO::Socket::INET" => {
+        perl_core => 1.33,
+        url       => "https://metacpan.org/pod/IO::Socket::INET",
+    },
+    "IPC::Open3" => {
+        perl_core => 1.12,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/IPC::Open3",
+    },
+    "POSIX" => {
+        perl_core => "1.30",
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/POSIX",
+    },
+    "Symbol" => {
+        perl_core => 1.07,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/Symbol",
+    },
+    "Sys::Hostname" => {
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 1.16,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/Sys::Hostname",
+    },
+    "Text::Wrap" => {
+        perl_core => 2009.0305,
+        url       => "https://metacpan.org/pod/Text::Wrap",
     },
 );
 
@@ -824,6 +932,16 @@ FORMAT:
     %found;
 }
 
+sub lacks_core_modules {
+    my $class = shift;
+
+    for my $module (keys %HiddenCoreDeps) {
+        next unless $HiddenCoreDeps{$module}{dropped_in};
+        eval "require $module; 1" or return 1;
+    }
+    return;
+}
+
 #----------------------------------------------------------------------------
 
 sub update_me {
@@ -835,7 +953,7 @@ sub update_me {
     my $file = __FILE__;
     open my $fh, '<', $file or die $!;
     my $step;
-    my ($head, $req, $mid, $extlib, $tail) = ('', '', '', '', '');
+    my ($head, $req, $mid, $extlib, $mid2, $core, $tail) = ('', '', '', '', '', '', '');
 
     while (<$fh>) {
         if (!$step) {
@@ -860,9 +978,21 @@ sub update_me {
             $extlib .= $_;
             if (/^\)/) {
                 $step = 4;
-                $tail .= $_;
+                $mid2 .= $_;
             }
         } elsif ($step == 4) {
+            $mid2 .= $_;
+            if (/^our \%HiddenCoreDeps/) {
+                $step = 5;
+                $core = '(';
+            }
+        } elsif ($step == 5) {
+            $core .= $_;
+            if (/^\)/) {
+                $step = 6;
+                $tail .= $_;
+            }
+        } elsif ($step == 6) {
             $tail .= $_;
         }
     }
@@ -870,8 +1000,49 @@ sub update_me {
     my $used = _find_usage();
     $req    = _modify_hash($req);
     $extlib = _modify_hash($extlib, $used);
+    $core   = _modify_hash($core);
 
-    my $body = "$head$req$mid$extlib$tail";
+    my $index       = _make_index();
+    my %req_hash    = eval $req;
+    my %extlib_hash = eval $extlib;
+    my %core_hash   = eval $core;
+USED:
+    for my $module (sort keys %$used) {
+        next if $module =~ /^(MT|Apache)\b/;
+        my $dist = $index->{package}{$module} or next;
+        next if exists $req_hash{$module};
+        next if exists $extlib_hash{$module};
+        next if exists $core_hash{$module};
+        if ($dist !~ /\bperl\b/) {
+            for my $dist_package (keys %{ $index->{dist}{$dist} }) {
+                next USED if exists $req_hash{$dist_package};
+                next USED if exists $extlib_hash{$dist_package};
+                next USED if exists $core_hash{$dist_package};
+            }
+        }
+        # ignore core pragma modules
+        next if $module =~ /^[a-z0-9:]+$/ && Module::CoreList::is_core($module, undef, '5.016000');
+        my $used_in_mt;
+        for my $where (keys %{ $used->{$module} }) {
+            next unless $where =~ /^MT\b/;
+            next if $used->{$module}{$where} eq 'suggests';
+            next if $where =~ /^MT::Plugin::\b/;
+            $used_in_mt = 1;
+        }
+        next unless $used_in_mt;
+        if (Module::CoreList::is_core($module, undef, '5.016000')) {
+            $core_hash{$module} //= {};
+            next;
+        }
+        print STDERR "$module is missing? " . Data::Dump::dump($used->{$module}), "\n";
+    }
+
+    $core = Data::Dump::dump(\%core_hash);
+    $core =~ s/\A\{\n//s;
+    $core =~ s/\}\z//s;
+    $core = _modify_hash($core);
+
+    my $body = "$head$req$mid$extlib$mid2$core$tail";
     Perl::Tidy::perltidy(
         source      => \$body,
         destination => $file,
@@ -888,8 +1059,8 @@ sub _require_module {
 
 sub _modify_hash {
     my ($str, $used) = @_;
-    my %hash = eval $str or die $@;
-    my $index;
+    my %hash  = eval $str or die $@;
+    my $index = _make_index();
     for my $module (keys %hash) {
         my $url = "https://metacpan.org/pod/$module";
         $hash{$module}{url} = $CustomURL{$module} || $url;
@@ -897,8 +1068,12 @@ sub _modify_hash {
         my $version = $hash{$module}{version};
         if (Module::CoreList::is_core($module, $version, '5.016000') && Module::CoreList::is_core($module, $version)) {
             $hash{$module}{perl_core} = $Module::CoreList::version{'5.016000'}{$module};
+            if ($index->{package}{$module} =~ /\bperl\b/) {
+                $hash{$module}{perl_only} = 1;
+            }
         } else {
             delete $hash{$module}{perl_core};
+            delete $hash{$module}{perl_only};
         }
         (my $file = "./extlib/$module.pm") =~ s!::!/!g;
         if (-e $file) {
@@ -912,7 +1087,6 @@ sub _modify_hash {
             }
         }
         if ($used && !$hash{$module}{internal}) {
-            $index ||= _make_index();
             if (my $dist = $index->{package}{$module}) {
                 for my $package (keys %{ $index->{dist}{$dist} || {} }) {
                     if ($used->{$package}) {
@@ -983,7 +1157,7 @@ sub _find_usage {
                         my $prereqs = $ctx->$type or next;
                         my $hash    = $prereqs->as_string_hash;
                         for my $key (keys %$hash) {
-                            $usage{$key}{$module} = 1;
+                            $usage{$key}{$module} = $type;
                         }
                     }
                 },
