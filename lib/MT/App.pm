@@ -13,6 +13,7 @@ use base qw( MT );
 use File::Spec;
 use MT::Request;
 use MT::Util qw( encode_html encode_url is_valid_email is_url );
+use MT::Util::RequestError qw( parse_init_cgi_error );
 use MT::I18N;
 use MT::Util::Encode;
 
@@ -1139,7 +1140,13 @@ sub init_request {
             }
             require CGI;
             $CGI::POST_MAX = $app->config->CGIMaxUpload;
-            $app->{query} = CGI->new( $app->{no_read_body} ? {} : () );
+            $app->{query} = eval { CGI->new( $app->{no_read_body} ? {} : () ) };
+            if (my $err = $@) {
+                my $res = parse_init_cgi_error($err);
+                $app->{query} = CGI->new( {} );
+                $app->response_code($res->{code});
+                die $res->{message};
+            }
         }
     }
     $app->init_query();
