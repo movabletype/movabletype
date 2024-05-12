@@ -10,7 +10,7 @@ return (new PhpCsFixer\Config())
     ->setFinder($finder)
     ->setRules([
         '@PSR2' => true,
-        'array_syntax' => ['syntax' => 'long'],
+        'array_syntax' => ['syntax' => 'short'],
         'function_typehint_space' => true,
         'no_unused_imports' => true,
         'no_empty_comment' => true,
@@ -21,5 +21,9 @@ return (new PhpCsFixer\Config())
         'return_type_declaration' => true,
         'ternary_operator_spaces' => true,
         'whitespace_after_comma_in_array' => true,
+        'braces_position' => [
+            'functions_opening_brace' => 'same_line',
+            'classes_opening_brace' => 'same_line',
+        ],
     ])
 ;
