@@ -1,12 +1,13 @@
 <script>
   import { ListingStore, ListingOpts } from "../ListingStore.ts";
+  import SS from "../../ss/elements/SS.svelte";
 
   export let movePage;
   export let isTooNarrowWidth;
 </script>
 
 <ul class="pagination__mobile d-md-none">
-  <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+  <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
     <!-- svelte-ignore a11y-invalid-attribute -->
     <a
       href="javascript:void(0);"
@@ -15,7 +16,7 @@
       data-page={$ListingStore.page - 1}
       on:click={movePage}
     >
-      <ss
+      <SS
         title={window.trans("Previous")}
         class="mt-icon--inverse mt-icon--sm"
         href={window.StaticURI + "images/sprite.svg#ic_tri-left"}
@@ -24,7 +25,7 @@
   </li>
 
   {#if $ListingStore.page - 4 >= 1 && $ListingStore.pageMax - $ListingStore.page < 1}
-    <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+    <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
@@ -38,7 +39,7 @@
   {/if}
 
   {#if $ListingStore.page - 3 >= 1 && $ListingStore.pageMax - $ListingStore.page < 2}
-    <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+    <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
@@ -52,7 +53,7 @@
   {/if}
 
   {#if $ListingStore.page - 2 >= 1}
-    <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+    <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
@@ -66,7 +67,7 @@
   {/if}
 
   {#if $ListingStore.page - 1 >= 1}
-    <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+    <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
@@ -79,16 +80,16 @@
     </li>
   {/if}
 
-  <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+  <li class="page-item active{isTooNarrowWidth ? ' me-auto' : ''}">
     <!-- svelte-ignore a11y-missing-attribute -->
     <a class="page-link">
       {$ListingStore.page}
-      <span class="sr-only">(current)</span>
+      <span class="visually-hidden">(current)</span>
     </a>
   </li>
 
   {#if $ListingStore.page + 1 <= $ListingStore.pageMax}
-    <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+    <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
@@ -102,7 +103,7 @@
   {/if}
 
   {#if $ListingStore.page + 2 <= $ListingStore.pageMax}
-    <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+    <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
@@ -116,7 +117,7 @@
   {/if}
 
   {#if $ListingStore.page + 3 <= $ListingStore.pageMax && $ListingStore.page <= 2}
-    <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+    <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
@@ -130,7 +131,7 @@
   {/if}
 
   {#if $ListingStore.page + 4 <= $ListingStore.pageMax && $ListingStore.page <= 1}
-    <li class="page-item {isTooNarrowWidth() ? 'mr-auto' : ''}">
+    <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
@@ -152,10 +153,10 @@
       data-page={$ListingStore.page + 1}
       on:click={movePage}
     >
-      <ss
+      <SS
         title={window.trans("Next")}
         class="mt-icon--inverse mt-icon--sm"
-        href={window.URI + "images/sprite.svg#ic_tri-right"}
+        href={window.StaticURI + "images/sprite.svg#ic_tri-right"}
       />
     </a>
   </li>
