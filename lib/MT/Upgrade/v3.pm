@@ -602,6 +602,8 @@ sub core_create_config_table {
 
 sub core_set_enable_archive_paths {
     my $self = shift;
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.3.0');
     MT->config->EnableArchivePaths( 1, 1 );
     return 1;
 }
