@@ -1,11 +1,12 @@
 <script>
-  import { ListingStore } from "../ListingStore.ts";
+  export let listStore;
+  export let limit;
+
+  $: limitToString = limit.toString();
 
   function changeLimit(e) {
-    //this.store.trigger('update_limit', this.refs.limit.value)
-    console.log("Run update_limit for " + e.currentTarget.id);
+    listStore.trigger("update_limit", limitToString);
   }
-  let selected = $ListingStore.limit.toString();
 </script>
 
 <div class="field-header">
@@ -18,7 +19,7 @@
     class="custom-select form-control form-select"
     style="width: 100px;"
     ref="limit"
-    bind:value={selected}
+    bind:value={limitToString}
     on:change={changeLimit}
   >
     <option value="10">{window.trans("[_1] rows", 10)}</option>

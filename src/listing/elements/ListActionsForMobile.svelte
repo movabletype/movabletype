@@ -1,34 +1,32 @@
 <script>
-  import { ListingStore, ListingOpts } from "../ListingStore.ts";
   export let doAction;
+  export let opts;
 
   function buttonActionsForMobile() {
-    return getActionsForMobile($ListingOpts.buttonActions);
+    return getActionsForMobile(opts.buttonActions);
   }
 
   function listActionsForMobile() {
-    return getActionsForMobile($ListingOpts.listActions);
+    return getActionsForMobile(opts.listActions);
   }
 
   function moreListActionsForMobile() {
-    return getActionsForMobile($ListingOpts.moreListActions);
+    return getActionsForMobile(opts.moreListActions);
   }
 
   function getActionsForMobile(actions) {
-    const mobileActions = [];
-    if (typeof actions != "undefined") {
-      const actionsToArray = Object.entries(actions);
-      actionsToArray.forEach((action) => {
-        if (action.mobile) {
-          mobileActions.push(action);
-        }
-      });
-    }
+    const mobileActions = {};
+    Object.keys(actions).forEach((key) => {
+      const action = actions[key];
+      if (action.mobile) {
+        mobileActions[key] = action;
+      }
+    });
     return mobileActions;
   }
 
   function hasActionForMobile() {
-    let mobileActionCount =
+    const mobileActionCount =
       Object.keys(buttonActionsForMobile()).length +
       Object.keys(listActionsForMobile()).length +
       Object.keys(moreListActionsForMobile()).length;
@@ -38,11 +36,11 @@
 
 {#if hasActionForMobile()}
   <div class="btn-group">
-    <button class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+    <button class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown">
       {window.trans("Select action")}
     </button>
     <div class="dropdown-menu">
-      {#each buttonActionsForMobile as action, key}
+      {#each Object.entries(buttonActionsForMobile()) as [key, action]}
         <!-- svelte-ignore a11y-invalid-attribute -->
         <a
           class="dropdown-item"
@@ -53,7 +51,7 @@
         </a>
       {/each}
 
-      {#each listActionsForMobile as action, key}
+      {#each Object.entries(listActionsForMobile()) as [key, action]}
         <!-- svelte-ignore a11y-invalid-attribute -->
         <a
           class="dropdown-item"
@@ -64,20 +62,18 @@
         </a>
       {/each}
 
-      {#if typeof moreListActionsForMobile != "undefined"}
-        {#if Object.keys(moreListActionsForMobile).length > 0}
-          <h6 class="dropdown-header">Plugin Actions</h6>
-          {#each moreListActionsForMobile as action, key}
-            <!-- svelte-ignore a11y-invalid-attribute -->
-            <a
-              class="dropdown-item"
-              href="javascript:void(0);"
-              on:click={() => doAction(key)}
-            >
-              {@html action.label}
-            </a>
-          {/each}
-        {/if}
+      {#if Object.keys(moreListActionsForMobile()).length > 0}
+        <h6 class="dropdown-header">Plugin Actions</h6>
+        {#each Object.entries(moreListActionsForMobile()) as [key, action]}
+          <!-- svelte-ignore a11y-invalid-attribute -->
+          <a
+            class="dropdown-item"
+            href="javascript:void(0);"
+            on:click={() => doAction(key)}
+          >
+            {@html action.label}
+          </a>
+        {/each}
       {/if}
     </div>
   </div>

@@ -1,7 +1,8 @@
 <script>
   import ListActionsForPc from "./ListActionsForPc.svelte";
   import ListActionsForMobile from "./ListActionsForMobile.svelte";
-  import { ListingStore, ListingOpts } from "../ListingStore.ts";
+
+  export let opts;
 
   function doAction(event) {
     console.log("do action");
@@ -146,8 +147,8 @@
 </script>
 
 <div class="d-none d-md-block">
-  <ListActionsForPc {doAction} />
+  <ListActionsForPc {opts} {doAction} />
 </div>
 <div class="d-md-none">
-  <ListActionsForMobile {doAction} />
+  <ListActionsForMobile {opts} {doAction} />
 </div>

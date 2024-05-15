@@ -1,12 +1,12 @@
 <script>
-  //import DisplayOptionsLimit, { changeLimit } from "./DisplayOptionsLimit.svelte";
-  import { ListingStore, ListingOpts } from "../ListingStore.ts";
+  export let listStore;
+  export let limit;
 
-  function changeLimit(e) {
-    //this.store.trigger('update_limit', this.refs.limit.value)
-    console.log("Run update_limit for " + e.currentTarget.id);
+  $: limitToString = limit.toString();
+
+  function changeLimit() {
+    listStore.trigger("update_limit", limitToString);
   }
-  let selected = $ListingStore.limit.toString();
 </script>
 
 <div class="row d-md-none">
@@ -19,7 +19,7 @@
         id="row-for-mobile"
         class="custom-select form-control form-select"
         ref="limit"
-        bind:value={selected}
+        bind:value={limitToString}
         on:change={changeLimit}
       >
         <option value="10">{window.trans("[_1] rows", 10)}</option>

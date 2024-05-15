@@ -133,7 +133,7 @@
             {/each}
             <li class="filter line d-none d-md-block">
               <a
-                href={$ListingOpts.StaticURI + "images/sprite.svg#ic_add"}
+                href={window.StaticURI + "images/sprite.svg#ic_add"}
                 id="new_filter"
                 class="icon-mini-left addnew create-new apply-link d-md-inline-block"
                 on:click={createNewFilter}
@@ -141,8 +141,7 @@
               >
                 <svg class="mt-icon mt-icon--sm">
                   <use
-                    xlink:href={$ListingStore.StaticURI +
-                      "images/sprite.svg#ic_add"}
+                    xlink:href={window.StaticURI + "images/sprite.svg#ic_add"}
                   />
                 </svg>
                 {window.trans("Create New")}

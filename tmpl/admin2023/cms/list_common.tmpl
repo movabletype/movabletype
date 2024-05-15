@@ -110,6 +110,7 @@
 </mt:if>
 
 <mt:unless name="config.useriot">
+<script type="text/javascript" src="<mt:var name="static_uri">riot/riot.min.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
 <script type="module" src="<mt:var name="static_uri">js/build/listing.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <script type="application/json" id="listing-opts">
 {
@@ -148,98 +149,74 @@
   </mt:loop>
   ],
 
-  "buttonActions": [
+  "buttonActions": {
   <mt:loop name="button_actions">
-    {
+    "<mt:var name='key' escape="json">": {
       "type": "core",
-      "js_message": "<__trans phrase='<mt:var name='js_message'>'' escape="js">"
-      <mt:if name="action_mode">,"mode": "<mt:var name='action_mode'>"</mt:if>
-      <mt:if name="input">,"input": "<mt:var name='input_label' escape='js'>"</mt:if>
-      <mt:if name="continue_prompt">,"continue_prompt": "<mt:var name='continue_prompt' escape='js'>"</mt:if>
-      <mt:if name="no_prompt">,"no_prompt": "<mt:var name='no_prompt' escape='js'>"</mt:if>
+      "js_message": "<__trans phrase='<mt:var name='js_message'>'' escape='json'>"
+      <mt:if name="action_mode">,"mode": "<mt:var name='action_mode' escape='json'>"</mt:if>
+      <mt:if name="input">,"input": "<mt:var name='input_label' escape='json'>"</mt:if>
+      <mt:if name="continue_prompt">,"continue_prompt": "<mt:var name='continue_prompt' escape='json'>"</mt:if>
+      <mt:if name="no_prompt">,"no_prompt": "<mt:var name='no_prompt' escape='json'>"</mt:if>
       <mt:if name="dialog">,"dialog": 1</mt:if>
-      <mt:if name="js">,"js": "<mt:var name='js' escape='js'>"</mt:if>
-      <mt:if name="min">,"min": "<mt:var name='min' escape='js'>"</mt:if>
-      <mt:if name="max">,"max": "<mt:var name='max' escape='js'>"</mt:if>
+      <mt:if name="js">,"js": "<mt:var name='js' escape='json'>"</mt:if>
+      <mt:if name="min">,"min": "<mt:var name='min' escape='json'>"</mt:if>
+      <mt:if name="max">,"max": "<mt:var name='max' escape='json'>"</mt:if>
       <mt:if name="xhr">, "xhr": true</mt:if>
-      <mt:if name="label">, "label": "<mt:var name='label' escape='js'>"</mt:if>
+      <mt:if name="label">, "label": "<mt:var name='label' escape='json'>"</mt:if>
       <mt:if name="mobile">, "mobile": true</mt:if>
     }
-    <mt:Unless __last__>,</mt:Unless>
-    </mt:loop>
-  ],
+    <mt:unless name="__last__">,</mt:unless>
+  </mt:loop>
+  },
 
-  "listActions": [
-    <mt:loop name="list_actions">
-      {
+  "listActions": {
+  <mt:loop name="list_actions">
+    "<mt:var name='key' escape='json'>": {
       "type": "core"
-      <mt:if name="action_mode">,"mode": "<mt:var name='action_mode'>"</mt:if>
-      <mt:if name="input">,"input": "<mt:var name='input_label' escape='js'>"</mt:if>
-      <mt:if name="continue_prompt">,"continue_prompt": "<mt:var name='continue_prompt' escape='js'>"</mt:if>
-      <mt:if name="no_prompt">,"no_prompt": "<mt:var name='no_prompt' escape='js'>"</mt:if>
+      <mt:if name="action_mode">,"mode": "<mt:var name='action_mode' escape='json'>"</mt:if>
+      <mt:if name="input">,"input": "<mt:var name='input_label' escape='json'>"</mt:if>
+      <mt:if name="continue_prompt">,"continue_prompt": "<mt:var name='continue_prompt' escape='json'>"</mt:if>
+      <mt:if name="no_prompt">,"no_prompt": "<mt:var name='no_prompt' escape='json'>"</mt:if>
       <mt:if name="dialog">,"dialog": 1</mt:if>
-      <mt:if name="js">,"js": "<mt:var name='js' escape='js'>"</mt:if>
-      <mt:if name="min">,"min": "<mt:var name='min' escape='js'>"</mt:if>
-      <mt:if name="max">,"max": "<mt:var name='max' escape='js'>"</mt:if>
+      <mt:if name="js">,"js": "<mt:var name='js' escape='json'>"</mt:if>
+      <mt:if name="min">,"min": "<mt:var name='min' escape='json'>"</mt:if>
+      <mt:if name="max">,"max": "<mt:var name='max' escape='json'>"</mt:if>
       <mt:if name="xhr">, "xhr": true</mt:if>
-      <mt:if name="label">, "label": "<mt:var name='label' escape='js'>"</mt:if>
+      <mt:if name="label">, "label": "<mt:var name='label' escape='json'>"</mt:if>
       <mt:if name="mobile">, "mobile": true</mt:if>
     }
-    <mt:Unless __last__>,</mt:Unless>
-    </mt:loop>
-  ],
+    <mt:unless name="__last__">,</mt:unless>
+  </mt:loop>
+  },
 
-  <mt:if name="more_list_actions">
-  ,"moreListActions": [
-    <mt:loop name="more_list_actions">
-      {
+  "moreListActions": {
+  <mt:loop name="more_list_actions">
+    "<mt:var name='key' escape='json'>": {
       "type": "core"
-      <mt:if name="action_mode">,"mode": "<mt:var name='action_mode'>"</mt:if>
-      <mt:if name="input">,"input": "<mt:var name='input_label' escape='js'>"</mt:if>
-      <mt:if name="continue_prompt">,"continue_prompt": "<mt:var name='continue_prompt' escape='js'>"</mt:if>
-      <mt:if name="no_prompt">,"no_prompt": "<mt:var name='no_prompt' escape='js'>"</mt:if>
+      <mt:if name="action_mode">,"mode": "<mt:var name='action_mode' escape='json'>"</mt:if>
+      <mt:if name="input">,"input": "<mt:var name='input_label' escape='json'>"</mt:if>
+      <mt:if name="continue_prompt">,"continue_prompt": "<mt:var name='continue_prompt' escape='json'>"</mt:if>
+      <mt:if name="no_prompt">,"no_prompt": "<mt:var name='no_prompt' escape='json'>"</mt:if>
       <mt:if name="dialog">,"dialog": 1</mt:if>
-      <mt:if name="js">,"js": "<mt:var name='js' escape='js'>"</mt:if>
-      <mt:if name="min">,"min": "<mt:var name='min' escape='js'>"</mt:if>
-      <mt:if name="max">,"max": "<mt:var name='max' escape='js'>"</mt:if>
+      <mt:if name="js">,"js": "<mt:var name='js' escape='json'>"</mt:if>
+      <mt:if name="min">,"min": "<mt:var name='min' escape='json'>"</mt:if>
+      <mt:if name="max">,"max": "<mt:var name='max' escape='json'>"</mt:if>
       <mt:if name="xhr">, "xhr": true</mt:if>
-      <mt:if name="label">, "label": "<mt:var name='label' escape='js'>"</mt:if>
+      <mt:if name="label">, "label": "<mt:var name='label' escape='json'>"</mt:if>
       <mt:if name="mobile">, "mobile": true</mt:if>
     }
-    <mt:Unless __last__>,</mt:Unless>
-    </mt:loop>
-  ],
-  </mt:if>
+    <mt:unless name="__last__">,</mt:unless>
+  </mt:loop>
+  },
 
   "objectType": "<mt:var name='object_type' escape='js'>",
   <mt:if name='object_type_for_table_class'>"objectTypeForTableClass: "<mt:var name='object_type_for_table_class' escape='js'>",</mt:if>
-  "StaticURI": ""
+  "StaticURI": "<mt:var name='static_uri' escape='js'>"
 }
 </script>
 <script type="application/json" id="listing-store">
 {
-  "message": "Svelte store object",
-  "columns": <mt:var name="list_columns_json">,
-  "showColumns": [],
-  "limit": <mt:var name="limit" escape="js">,
-  "page": 1,
-  "sortBy": "<mt:var name='sort_by' escape='js'>",
-  <mt:if name="sort_order">"sortOrder": "<mt:var name='sort_order' escape='js'>",</mt:if>
-
-  "filters": <mt:var name="filters">,
-  "allpassFilter": <mt:var name="allpass_filter">,
-  "currentFilter": <mt:var name="initial_filter">,
-
-  "objects": [],
-  "count": 0,
-  "editableCount": 0,
-  "pageMax": 0,
-
-  "checkedAllRowsOnPage": false,
-  "checkedAllRows": false,
-  "isLoading": false,
-  "saveAs": false,
-
   "listClient": {
     "url": "<mt:var name='script_url'>",
     "siteId": "<mt:var name='blog_id'>",
@@ -248,7 +225,37 @@
     "magicToken": "<mt:var name='magic_token'>",
     "returnArgs": "<mt:var name='return_args'>"
     <mt:if name="subtype">,"subType": "<mt:var name='subtype'>"</mt:if>
-  }
+  },
+
+  "columns": <mt:var name="list_columns_json">,
+  "limit": <mt:var name="limit" escape="js">,
+  "page": 1,
+  "sortBy": "<mt:var name='sort_by' escape='js'>",
+  <mt:if name="sort_order">"sortOrder": "<mt:var name='sort_order' escape='js'>",</mt:if>
+
+  "allpassFilter": <mt:var name="allpass_filter">,
+  "currentFilter": <mt:var name="initial_filter">,
+  "filters": <mt:var name="filters">,
+
+  <mt:if name="disable_user_disp_option">
+  "disableUserDispOption": true,
+  <mt:else>
+  "disableUserDispOption": false,
+  </mt:if>
+
+  "showColumns": [],
+
+  "objects": [],
+  "count": 0,
+  "editableCount": 0,
+  "pageMax": 0,
+
+  "checkedAllRowsOnPage": false,
+  "checkedAllRows": false,
+
+  "isLoading": false,
+
+  "saveAs": false
 }
 </script>
 </mt:unless>
@@ -259,8 +266,6 @@
 </mt:loop>
 
 <script>
-var listStore;
-
 jQuery.event.special.listReady = {
   setup: function ( data, ns ) {
     return false;
@@ -270,7 +275,6 @@ jQuery.event.special.listReady = {
   }
 };
 
-<mt:if name="config.useriot">
 (function () {
   var listColumns = <mt:var name="list_columns_json">;
   var listSortBy = '<mt:var name="sort_by" escape="js">';
@@ -279,7 +283,7 @@ jQuery.event.special.listReady = {
   var objectType = '<mt:var name="object_type" escape="js">';
   var objectTypeForTableClass = '<mt:var name="object_type_for_table_class" escape="js">';
 
-  var listClient = new ListClient({
+  window.listClient = new ListClient({
     url: '<mt:var name="script_url">',
     siteId: '<mt:var name="blog_id">',
     datasource: '<mt:var name="list_type" escape="js">',
@@ -289,7 +293,7 @@ jQuery.event.special.listReady = {
     subType: '<mt:if name="subtype"><mt:var name="subtype"></mt:if>'
   });
 
-  var listActionClient = new ListActionClient({
+  window.listActionClient = new ListActionClient({
     url: listClient.url,
     siteId: listClient.siteId,
     datasource: listClient.datasource,
@@ -427,7 +431,7 @@ jQuery.event.special.listReady = {
   var useFilters = false;
   </mt:if>
 
-  listStore = new ListStore({
+  window.listStore = new ListStore({
     listClient: listClient,
 
     columns: listColumns,
@@ -443,6 +447,7 @@ jQuery.event.special.listReady = {
     disableUserDispOption: disableUserDispOption
   });
 
+<mt:if name="config.useriot">
   jQuery(function () {
     riot.mount('list-top', {
       listActionClient: listActionClient,
@@ -472,9 +477,9 @@ jQuery.event.special.listReady = {
       disableUserDispOption: disableUserDispOption
     });
   });
+</mt:if>
 
 })();
-</mt:if>
 
 var initial_load = true;
 

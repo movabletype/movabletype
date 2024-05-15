@@ -1,28 +1,28 @@
 <script>
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
   import DisplayOptionsLimit from "./DisplayOptionsLimit.svelte";
-  import { ListingOpts } from "../ListingStore.ts";
+
+  export let listStore;
 
   function resetColumns(e) {
-    //this.store.trigger('reset_columns')
-    console.log("Run reset_columns for " + e.currentTarget.id);
+    listStore.trigger("reset_columns");
   }
 </script>
 
-<div id="display-options-detail2" class="collapse">
+<div id="display-options-detail" class="collapse">
   <div class="card card-block p-3">
     <fieldset class="form-group">
       <div data-is="display-options-limit" id="per_page-field">
-        <DisplayOptionsLimit />
+        <DisplayOptionsLimit {listStore} limit={listStore.limit} />
       </div>
     </fieldset>
     <fieldset class="form-group">
       <div data-is="display-options-columns" id="display_columns-field">
-        <DisplayOptionsColumns />
+        <DisplayOptionsColumns {listStore} />
       </div>
     </fieldset>
     <div
-      if={!$ListingOpts.disableUserDispOption}
+      if={!listStore.disableUserDispOption}
       class="actions-bar actions-bar-bottom"
     >
       <!-- svelte-ignore a11y-invalid-attribute -->

@@ -1,5 +1,7 @@
 <script>
   import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
+
+  export let listStore;
 </script>
 
 <div class="row">
@@ -7,16 +9,16 @@
     <button
       class="btn btn-default dropdown-toggle float-end"
       data-bs-toggle="collapse"
-      data-bs-target="#display-options-detail2"
+      data-bs-target="#display-options-detail"
       aria-expanded="false"
-      aria-controls="display-options-detail2"
+      aria-controls="display-options-detail"
     >
-      {window.trans("Display Options")}
+      {" " + window.trans("Display Options") + " "}
     </button>
   </div>
 </div>
 <div class="row">
-  <div data-is="display-options-detail2" class="col-12">
-    <DisplayOptionsDetail />
+  <div data-is="display-options-detail" class="col-12">
+    <DisplayOptionsDetail {listStore} />
   </div>
 </div>
