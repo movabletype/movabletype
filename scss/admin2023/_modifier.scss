@@ -1534,6 +1534,10 @@ fieldset.form-group{
 .mt-collapse__block--selected{
   background: $lochmara50;
 }
+.mt-collapse__all{
+  margin-top: 0.5rem;
+  text-align: right;
+}
 .mt-archivemapping,
 .mt-pluginpanel{
   padding: 1rem 0;
@@ -1560,7 +1564,7 @@ fieldset.form-group{
     margin-top: 0.5rem;
   }
 }
-.mt-collapse, .mt-draggable, .mt-archivemapping, .mt-pluginpanel, .mt-contentfield{
+.mt-collapse, .mt-draggable, .mt-archivemapping, .mt-pluginpanel, .mt-contentfield, .mt-collapse__all{
   .mt-icon--secondary{
     margin: 0 .5rem 0 0;
     transition: 0.2s ease-in-out;
