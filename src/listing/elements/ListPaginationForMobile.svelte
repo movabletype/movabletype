@@ -1,7 +1,7 @@
 <script>
-  import { ListingStore, ListingOpts } from "../ListingStore.ts";
   import SS from "../../ss/elements/SS.svelte";
 
+  export let listStore;
   export let movePage;
   export let isTooNarrowWidth;
 </script>
@@ -12,8 +12,8 @@
     <a
       href="javascript:void(0);"
       class="page-link"
-      disabled={$ListingStore.page <= 1}
-      data-page={$ListingStore.page - 1}
+      disabled={listStore.page <= 1}
+      data-page={listStore.page - 1}
       on:click={movePage}
     >
       <SS
@@ -24,58 +24,58 @@
     </a>
   </li>
 
-  {#if $ListingStore.page - 4 >= 1 && $ListingStore.pageMax - $ListingStore.page < 1}
+  {#if listStore.page - 4 >= 1 && listStore.pageMax - listStore.page < 1}
     <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={$ListingStore.page - 4}
+        data-page={listStore.page - 4}
         on:click={movePage}
       >
-        {$ListingStore.page - 4}
+        {listStore.page - 4}
       </a>
     </li>
   {/if}
 
-  {#if $ListingStore.page - 3 >= 1 && $ListingStore.pageMax - $ListingStore.page < 2}
+  {#if listStore.page - 3 >= 1 && listStore.pageMax - listStore.page < 2}
     <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={$ListingStore.page - 3}
+        data-page={listStore.page - 3}
         on:click={movePage}
       >
-        {$ListingStore.page - 3}
+        {listStore.page - 3}
       </a>
     </li>
   {/if}
 
-  {#if $ListingStore.page - 2 >= 1}
+  {#if listStore.page - 2 >= 1}
     <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={$ListingStore.page - 2}
+        data-page={listStore.page - 2}
         on:click={movePage}
       >
-        {$ListingStore.page - 2}
+        {listStore.page - 2}
       </a>
     </li>
   {/if}
 
-  {#if $ListingStore.page - 1 >= 1}
+  {#if listStore.page - 1 >= 1}
     <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={$ListingStore.page - 1}
+        data-page={listStore.page - 1}
         on:click={movePage}
       >
-        {$ListingStore.page - 1}
+        {listStore.page - 1}
       </a>
     </li>
   {/if}
@@ -83,63 +83,63 @@
   <li class="page-item active{isTooNarrowWidth ? ' me-auto' : ''}">
     <!-- svelte-ignore a11y-missing-attribute -->
     <a class="page-link">
-      {$ListingStore.page}
+      {listStore.page}
       <span class="visually-hidden">(current)</span>
     </a>
   </li>
 
-  {#if $ListingStore.page + 1 <= $ListingStore.pageMax}
+  {#if listStore.page + 1 <= listStore.pageMax}
     <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={$ListingStore.page + 1}
+        data-page={listStore.page + 1}
         on:click={movePage}
       >
-        {$ListingStore.page + 1}
+        {listStore.page + 1}
       </a>
     </li>
   {/if}
 
-  {#if $ListingStore.page + 2 <= $ListingStore.pageMax}
+  {#if listStore.page + 2 <= listStore.pageMax}
     <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={$ListingStore.page + 2}
+        data-page={listStore.page + 2}
         on:click={movePage}
       >
-        {$ListingStore.page + 2}
+        {listStore.page + 2}
       </a>
     </li>
   {/if}
 
-  {#if $ListingStore.page + 3 <= $ListingStore.pageMax && $ListingStore.page <= 2}
+  {#if listStore.page + 3 <= listStore.pageMax && listStore.page <= 2}
     <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={$ListingStore.page + 3}
+        data-page={listStore.page + 3}
         on:click={movePage}
       >
-        {$ListingStore.page + 3}
+        {listStore.page + 3}
       </a>
     </li>
   {/if}
 
-  {#if $ListingStore.page + 4 <= $ListingStore.pageMax && $ListingStore.page <= 1}
+  {#if listStore.page + 4 <= listStore.pageMax && listStore.page <= 1}
     <li class="page-item{isTooNarrowWidth ? ' me-auto' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={$ListingStore.page + 4}
+        data-page={listStore.page + 4}
         on:click={movePage}
       >
-        {$ListingStore.page + 4}
+        {listStore.page + 4}
       </a>
     </li>
   {/if}
@@ -149,8 +149,8 @@
     <a
       href="javascript:void(0);"
       class="page-link"
-      disabled={$ListingStore.page >= $ListingStore.pageMax}
-      data-page={$ListingStore.page + 1}
+      disabled={listStore.page >= listStore.pageMax}
+      data-page={listStore.page + 1}
       on:click={movePage}
     >
       <SS

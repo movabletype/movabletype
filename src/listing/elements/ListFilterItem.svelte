@@ -1,26 +1,173 @@
 <script>
-  import { ListingStore, ListingOpts } from "../ListingStore.ts";
+  import { onMount } from "svelte";
+
+  import SS from "../../ss/elements/SS.svelte";
+
   import ListFilterItemField from "./ListFilterItemField.svelte";
 
-  export let opts = {};
+  export let currentFilter;
+  export let listFilterTopAddFilterItemContent;
+  export let listFilterTopRemoveFilterItem;
+  export let listFilterTopRemoveFilterItemContent;
+  export let opts;
 
-  let filterTypeHash = {};
+  $: filterTypeHash = opts.filterTypeHash.reduce((hash, filterType) => {
+    hash[filterType.type] = filterType;
+    return hash;
+  }, {});
 
-  const addFilterItemContent = () => {
-    // TODO
-  };
+  onMount(() => {
+    initializeDateOption();
+    initializeOptionWithBlank();
+  });
 
-  const removeFilterItem = () => {
-    // TODO
-  };
+  function addFilterItemContent(e) {
+    const itemIndex = getListItemIndex(e.target);
+    const contentIndex = getListItemContentIndex(e.target);
+    let item = currentFilter.items[itemIndex];
+    if (item.type == "pack") {
+      item = item.args.items[contentIndex];
+    }
+    jQuery(e.target)
+      .parent()
+      .each(function () {
+        jQuery(this)
+          .find(":input")
+          .each(function () {
+            var re = new RegExp(item.type + "-(\\w+)");
+            jQuery(this).attr("class").match(re);
+            var key = RegExp.$1;
+            if (key && !item.args.hasOwnProperty(key)) {
+              item.args[key] = jQuery(this).val();
+            }
+          });
+      });
+    listFilterTopAddFilterItemContent(itemIndex, contentIndex);
+    initializeDateOption();
+    initializeOptionWithBlank();
+  }
 
-  const removeFilterItemContent = () => {
-    // TODO
-  };
+  function getListItemIndex(element) {
+    while (!element.dataset.hasOwnProperty("mtListItemIndex")) {
+      element = element.parentElement;
+    }
+    return Number(element.dataset.mtListItemIndex);
+  }
+
+  function getListItemContentIndex(element) {
+    while (!element.dataset.hasOwnProperty("mtListItemContentIndex")) {
+      element = element.parentElement;
+    }
+    return Number(element.dataset.mtListItemContentIndex);
+  }
+
+  function initializeDateOption() {
+    const dateOption = function ($node) {
+      const val = $node.val();
+      let type;
+      switch (val) {
+        case "hours":
+          type = "hours";
+          break;
+        case "days":
+          type = "days";
+          break;
+        case "before":
+        case "after":
+          type = "date";
+          break;
+        case "future":
+        case "past":
+        case "blank":
+        case "not_blank":
+          type = "none";
+          break;
+        default:
+          type = "range";
+      }
+      $node
+        .parents(".item-content")
+        .find(".date-options span.date-option")
+        .hide();
+      $node
+        .parents(".item-content")
+        .find(".date-option." + type)
+        .show();
+    };
+    // TODO: fix this.root
+    jQuery(this.root)
+      .find(".filter-date")
+      .each(function (index, element) {
+        var $node = jQuery(element);
+        dateOption($node);
+        $node.on("change", function () {
+          dateOption($node);
+        });
+      });
+    // TODO: fix this.root
+    jQuery(this.root)
+      .find("input.date")
+      .datepicker({
+        dateFormat: "yy-mm-dd",
+        dayNamesMin: opts.localeCalendarHeader,
+        monthNames: [
+          "- 01",
+          "- 02",
+          "- 03",
+          "- 04",
+          "- 05",
+          "- 06",
+          "- 07",
+          "- 08",
+          "- 09",
+          "- 10",
+          "- 11",
+          "- 12",
+        ],
+        showMonthAfterYear: true,
+        prevText: "<",
+        nextText: ">",
+      });
+  }
+
+  function initializeOptionWithBlank() {
+    const changeOption = function ($node) {
+      if ($node.val() == "blank" || $node.val() == "not_blank") {
+        $node.parent().find("input[type=text]").hide();
+      } else {
+        $node.parent().find("input[type=text]").show();
+      }
+    };
+    // TODO: fix this.root
+    jQuery(this.root)
+      .find(".filter-blank")
+      .each(function (index, element) {
+        var $node = jQuery(element);
+        changeOption($node);
+        $node.on("change", function () {
+          changeOption($node);
+        });
+      });
+  }
+
+  function removeFilterItem(e) {
+    const itemIndex = getListItemIndex(e.target);
+    listFilterTopRemoveFilterItem(itemIndex);
+  }
+
+  function removeFilterItemContent(e) {
+    const itemIndex = getListItemIndex(e.target);
+    const contentIndex = getListItemContentIndex(e.target);
+    listFilterTopRemoveFilterItemContent(itemIndex, contentIndex);
+  }
 </script>
 
 <div class="filteritem">
-  <button class="close" aria-label="Close" on:click={removeFilterItem}>
+  <button
+    class="close btn-close"
+    aria-label="Close"
+    on:click={removeFilterItem}
+  >
     <span aria-hidden="true">&times;</span>
   </button>
   {#if opts.item.type == "pack"}
@@ -32,32 +179,36 @@
             class={"filtertype type-" + item.type}
           >
             <div class="item-content form-inline">
-              <ListFilterItemField />
+              <ListFilterItemField
+                field={filterTypeHash[item.type].field}
+                {item}
+                {opts}
+              />
               <!-- svelte-ignore a11y-invalid-attribute -->
-              <a
-                href="javascript:void(0);"
-                class="d-inline-block"
-                if={!filterTypeHash[item.type].singleton}
-                on:click={addFilterItemContent}
-              >
-                <svg class="mt-icon mt-icon--sm">
-                  <use
-                    xlink:href={window.StaticURI + "images/sprite.svg#ic_add"}
+              {#if !filterTypeHash[item.type].singleton}
+                <a
+                  href="javascript:void(0);"
+                  class="d-inline-block"
+                  on:click={addFilterItemContent}
+                >
+                  <SS
+                    title={window.trans("Add")}
+                    class="mt-icon mt-icon--sm"
+                    href={window.StaticURI + "images/sprite.svg#ic_add"}
                   />
-                </svg>
-              </a>
+                </a>
+              {/if}
               {#if !filterTypeHash[item.type].singleton && opts.item.args.items.length > 1}
                 <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
                   href="javascript:void(0);"
                   on:click={removeFilterItemContent}
                 >
-                  <svg class="mt-icon mt-icon--sm">
-                    <use
-                      xlink:href={window.StaticURI +
-                        "images/sprite.svg#ic_remove"}
-                    />
-                  </svg>
+                  <SS
+                    title={window.trans("Remove")}
+                    class="mt-icon mt-icon--sm"
+                    href={window.StaticURI + "images/sprite.svg#ic_remove"}
+                  />
                 </a>
               {/if}
             </div>
@@ -77,17 +228,25 @@
           field={filterTypeHash[opts.item.type].field}
           item={opts.item}
         />
+        <ListFilterItemField
+          field={filterTypeHash[opts.item.type].field}
+          item={opts.item}
+          {opts}
+        />
         <!-- svelte-ignore a11y-invalid-attribute -->
-        <a
-          href="javascript:void(0);"
-          class="d-inline-block"
-          if={!filterTypeHash[opts.item.type].singleton}
-          on:click={addFilterItemContent}
-        >
-          <svg class="mt-icon mt-icon--sm">
-            <use xlink:href={window.StaticURI + "images/sprite.svg#ic_add"} />
-          </svg>
-        </a>
+        {#if !filterTypeHash[opts.item.type].singleton}
+          <a
+            href="javascript:void(0);"
+            class="d-inline-block"
+            on:click={addFilterItemContent}
+          >
+            <SS
+              title={window.trans("Add")}
+              class="mt-icon mt-icon--sm"
+              href={window.StaticURI + "images/sprite.svg#ic_add"}
+            />
+          </a>
+        {/if}
       </div>
     </div>
   {/if}

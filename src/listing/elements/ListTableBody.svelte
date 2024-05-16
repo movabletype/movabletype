@@ -1,53 +1,82 @@
 <script>
   import ListTableRow from "./ListTableRow.svelte";
-  import { ListingStore, ListingOpts } from "../ListingStore.ts";
+
+  export let listStore;
+  export let opts;
+
+  // FIXME
+  $: objects = listStore.objects || [];
 
   function checkAllRows(e) {
-    //this.store.trigger('check_all_rows')
+    listStore.trigger("check_all_rows");
   }
 
-  const parent = {
-    clickRow: (event) => {
-      // Implement the clickRow function
-    },
-  };
+  function clickRow(e) {
+    listStore.trigger("reset_all_clicked_rows");
+
+    if (
+      e.target.tagName == "A" ||
+      e.target.tagName == "IMG" ||
+      e.target.tagName == "svg"
+    ) {
+      return false;
+    }
+    if (MT.Util.isMobileView()) {
+      let $mobileColumn;
+      if (e.target.dataset.is == "list-table-column") {
+        $mobileColumn = jQuery(e.target);
+      } else {
+        $mobileColumn = jQuery(e.target).parents("[data-is=list-table-column]");
+      }
+      if ($mobileColumn.length > 0 && $mobileColumn.find("a").length > 0) {
+        $mobileColumn.find("a")[0].click();
+        listStore.trigger("click_row", e.currentTarget.dataset.index);
+        return false;
+      }
+    }
+    e.stopPropagation();
+    listStore.trigger("toggle_row", e.currentTarget.dataset.index);
+  }
 </script>
 
-{#if $ListingStore.objects.length == 0}
+{#if objects.length == 0}
   <tr>
-    <td colspan={$ListingStore.columns.length + 1}>
-      {window.trans("No [_1] could be found.", $ListingOpts.zeroStateLabel)}
+    <td colspan={listStore.columns.length + 1}>
+      {window.trans("No [_1] could be found.", opts.zeroStateLabel)}
     </td>
   </tr>
 {/if}
 
-{#if $ListingStore.pageMax > 1 && $ListingStore.checkedAllRowsOnPage && !$ListingStore.checkedAllRows}
+{#if listStore.pageMax > 1 && listStore.checkedAllRowsOnPage && !listStore.checkedAllRows}
   <tr style="background-color: #ffffff;">
-    <td colspan={$ListingStore.objects.length + 1}>
+    <td colspan={objects.length + 1}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a href="javascript:void(0);" on:click={checkAllRows}>
-        {window.trans("Select all [_1] items", $ListingStore.count)}
+        {window.trans("Select all [_1] items", listStore.count)}
       </a>
     </td>
   </tr>
 {/if}
 
-{#if $ListingStore.pageMax > 1 && $ListingStore.checkedAllRows}
+{#if listStore.pageMax > 1 && listStore.checkedAllRows}
   <tr class="success">
-    <td colspan={$ListingStore.objects.length + 1}>
-      {window.trans("All [_1] items are selected", $ListingStore.count)}
+    <td colspan={objects.length + 1}>
+      {window.trans("All [_1] items are selected", listStore.count)}
     </td>
   </tr>
 {/if}
 
-{#each $ListingStore.objects as obj, index}
+{#each objects as obj, index}
   <tr
-    on:click={parent.clickRow}
-    class={obj.checked || obj.clicked ? "mt-table__highlight" : ""}
+    class:mt-table__highlight={obj.checked || obj.clicked}
     data-index={index}
-    checked={obj.checked}
-    object={obj.object}
+    on:click={clickRow}
   >
-    <ListTableRow />
+    <ListTableRow
+      checked={obj.checked}
+      {listStore}
+      object={obj.object}
+      {opts}
+    />
   </tr>
 {/each}

@@ -76,14 +76,14 @@
   <div class="col-12">
     <div class="card">
       {#if opts.useFilters}
-        <ListFilter />
+        <ListFilter {listStore} {opts} />
       {/if}
       <div style="overflow-x: auto">
         <table
           id="{opts.objectType}-table"
           class="table mt-table {tableClass()}"
         >
-          <ListTable />
+          <ListTable {listStore} {opts} />
         </table>
       </div>
     </div>
@@ -91,7 +91,7 @@
 </div>
 {#if listStore.count != 0}
   <div class="row">
-    <ListPagination />
+    <ListPagination {listStore} />
   </div>
 {/if}
 <DisplayOptionsForMobile {listStore} limit={listStore.limit} />

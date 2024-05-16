@@ -1,17 +1,24 @@
 <script>
-  import { ListingOpts, ListingStore } from "../ListingStore.ts";
   import ListFilterItem from "./ListFilterItem.svelte";
   import ListFilterButtons from "./ListFilterButtons.svelte";
 
+  export let currentFilter;
+  export let isListFilterItemSelected;
+  export let listFilterTopAddFilterItem;
+  export let listFilterTopAddFilterItemContent;
+  export let listFilterTopRemoveFilterItem;
+  export let listFilterTopRemoveFilterItemContent;
+  export let listStore;
+  export let opts;
+
   function addFilterItem(e) {
-    //    if (e.currentTarget.classList.contains('disabled')) {
-    //      e.preventDefault()
-    //      e.stopPropagation()
-    //      return
-    //    }
-    //    const filterType = e.currentTarget.dataset.mtFilterType
-    //    listFilterTop.addFilterItem(filterType)
-    console.log(e);
+    if (e.currentTarget.classList.contains("disabled")) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    const filterType = e.currentTarget.dataset.mtFilterType;
+    listFilterTopAddFilterItem(filterType);
   }
 </script>
 
@@ -22,21 +29,23 @@
         <div class="dropdown">
           <button
             class="btn btn-default dropdown-toggle"
-            data-toggle="dropdown"
+            data-bs-toggle="dropdown"
           >
-            {window.trans("Select Filter Item...")}
+            {" " + window.trans("Select Filter Item...") + " "}
           </button>
           <div class="dropdown-menu">
-            {#each $ListingOpts.filterTypes as type}
-              {#if type.editable}
+            {#each opts.filterTypes as filterType}
+              {#if filterType.editable}
                 <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
-                  class="disabled dropdown-item"
+                  class="{isListFilterItemSelected(filterType.type)
+                    ? 'disabled '
+                    : ' '}dropdown-item"
                   href="#"
-                  data-mt-filter-type={type}
+                  data-mt-filter-type={filterType.type}
                   on:click={addFilterItem}
                 >
-                  {@html type.label}
+                  {@html filterType.label}
                 </a>
               {/if}
             {/each}
@@ -49,9 +58,15 @@
 <div class="row mb-3">
   <div class="col-12">
     <ul class="list-group">
-      {#each $ListingStore.currentFilter.items as item, index}
-        <li data-mt-list-item-index={index} class="list-group-item">
-          <ListFilterItem />
+      {#each listStore.currentFilter.items as item, index}
+        <li class="list-group-item" data-mt-list-item-index={index} {item}>
+          <ListFilterItem
+            {currentFilter}
+            {listFilterTopAddFilterItemContent}
+            {listFilterTopRemoveFilterItem}
+            {listFilterTopRemoveFilterItemContent}
+            {opts}
+          />
         </li>
       {/each}
     </ul>
@@ -59,6 +74,6 @@
 </div>
 <div class="row">
   <div class="col-12">
-    <ListFilterButtons />
+    <ListFilterButtons {currentFilter} {listStore} />
   </div>
 </div>

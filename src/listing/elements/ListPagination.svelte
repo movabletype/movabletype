@@ -1,9 +1,10 @@
 <script>
   import { onMount } from "svelte";
 
-  import { ListingStore, ListingOpts } from "../ListingStore.ts";
-  import ListPaginationForPc from "./ListPaginationForPc.svelte";
   import ListPaginationForMobile from "./ListPaginationForMobile.svelte";
+  import ListPaginationForPc from "./ListPaginationForPc.svelte";
+
+  export let listStore;
 
   let isTooNarrowWidth;
 
@@ -12,7 +13,7 @@
   });
 
   function checkTooNarrowWidth() {
-    isTooNarrowWidth = $ListingStore.pageMax >= 5 && window.innerWidth < 400;
+    isTooNarrowWidth = listStore.pageMax >= 5 && window.innerWidth < 400;
   }
 
   function movePage(e) {
@@ -33,16 +34,19 @@
       return false;
     }
     let moveToPagination = true;
-    $ListingStore.move_page(nextPage, moveToPagination);
+    listStore.trigger("move_page", nextPage, moveToPagination);
     return false;
   }
 </script>
 
-<svelte:window on:resize={checkTooNarrowWidth} />
+<svelte:window
+  on:resize={checkTooNarrowWidth}
+  on:orientationchange={checkTooNarrowWidth}
+/>
 
 <div class="col-auto mx-auto{isTooNarrowWidth ? ' w-100' : ''}">
-  <nav aria-label={$ListingStore.objectType + " list"}>
-    <ListPaginationForPc move_page={movePage} />
-    <ListPaginationForMobile {isTooNarrowWidth} move_page={movePage} />
+  <nav aria-label={listStore.objectType + " list"}>
+    <ListPaginationForPc {listStore} {movePage} />
+    <ListPaginationForMobile {isTooNarrowWidth} {listStore} {movePage} />
   </nav>
 </div>

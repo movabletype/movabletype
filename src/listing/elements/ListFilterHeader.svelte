@@ -1,17 +1,16 @@
 <script>
-  import { ListingOpts, ListingStore } from "../ListingStore.ts";
   import ListFilterSelectModal from "./ListFilterSelectModal.svelte";
 
-  function isAllpassFilter() {
-    return $ListingStore.currentFilter.id == $ListingStore.allpassFilter.id;
-  }
+  export let currentFilter;
+  export let isAllpassFilter;
+  export let listStore;
+  export let opts;
 
-  function resetFilter(e) {
-    //    listTop.opts.listActionClient.removeFilterKeyFromReturnArgs()
-    //    listTop.opts.listActionClient.removeFilterItemFromReturnArgs()
-    //    store.trigger('close_filter_detail')
-    //    store.trigger('reset_filter')
-    console.log(e);
+  function resetFilter() {
+    opts.listActionClient.removeFilterKeyFromReturnArgs();
+    opts.listActionClient.removeFilterItemFromReturnArgs();
+    listStore.trigger("close_filter_detail");
+    listStore.trigger("reset_filter");
   }
 </script>
 
@@ -29,9 +28,9 @@
           data-bs-toggle="modal"
           data-bs-target="#select-filter"
         >
-          <u>{window.trans($ListingStore.currentFilter.label)}</u>
+          <u>{window.trans(currentFilter.label)}</u>
         </a>
-        <ListFilterSelectModal />
+        <ListFilterSelectModal {listStore} />
       </li>
       <li class="list-inline-item">
         {#if isAllpassFilter() == false}
@@ -46,7 +45,7 @@
   <div class="d-none d-md-block col-md-1">
     <button
       id="toggle-filter-detail"
-      class="btn btn-default dropdown-toggle float-right"
+      class="btn btn-default dropdown-toggle float-end"
       data-bs-toggle="collapse"
       data-bs-target="#list-filter-collapse"
       aria-expanded="false"

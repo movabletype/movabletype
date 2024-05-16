@@ -1,6 +1,8 @@
 <script>
   import { ListingOpts, ListingStore } from "../ListingStore.ts";
 
+  export let listStore;
+
   function applyFilter(e) {
     //    closeModal()
     //    const filterId = e.target.parentElement.dataset.mtListFilterId
@@ -67,7 +69,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">{window.trans("Select Filter")}</h5>
-        <button type="button" class="close" data-dismiss="modal"
+        <button type="button" class="close btn-close" data-dismiss="modal"
           ><span>×</span></button
         >
       </div>
@@ -75,7 +77,14 @@
         <div class="filter-list-block">
           <h6 class="filter-list-label">{window.trans("My Filters")}</h6>
           <ul id="user-filters" class="list-unstyled editable">
-            {#each $ListingStore.filters as { id, filter }}
+            {#each listStore.filters as filter}
+              {#if filter.can_save == "1"}
+                <li
+                  class="filter line"
+                  data-mt-list-filter-id={filter.id}
+                  data-mt-filter-label={filter.label}
+                />
+              {/if}
               <!-- {#if filter.can_save === "1"}
                 <li
                   class="filter line"

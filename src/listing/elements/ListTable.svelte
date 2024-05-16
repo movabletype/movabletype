@@ -1,22 +1,24 @@
 <script>
-  import ListTableHeader from "./ListTableHeader.svelte";
   import ListTableBody from "./ListTableBody.svelte";
-  import { ListingStore, ListingOpts } from "../ListingStore.ts";
+  import ListTableHeader from "./ListTableHeader.svelte";
+
+  export let listStore;
+  export let opts;
 </script>
 
 <thead>
-  <ListTableHeader />
+  <ListTableHeader {listStore} {opts} />
 </thead>
-{#if $ListingStore.isLoading}
+{#if listStore.isLoading}
   <tbody>
     <tr>
-      <td colspan={$ListingStore.columns.length + 1}>
+      <td colspan={listStore.columns.length + 1}>
         {window.trans("Loading...")}
       </td>
     </tr>
   </tbody>
-{:else if !$ListingStore.isLoading && !$ListingStore.objects}
+{:else if !listStore.isLoading && listStore.objects}
   <tbody>
-    <ListTableBody />
+    <ListTableBody {listStore} {opts} />
   </tbody>
 {/if}

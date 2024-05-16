@@ -1,6 +1,5 @@
 <script>
-  import { ListingStore, ListingOpts } from "../ListingStore.ts";
-
+  export let listStore;
   export let movePage;
 </script>
 
@@ -10,15 +9,15 @@
     <a
       href="javascript:void(0);"
       class="page-link"
-      disabled={$ListingStore.page <= 1}
-      data-page={$ListingStore.page - 1}
+      disabled={listStore.page <= 1}
+      data-page={listStore.page - 1}
       onclick={movePage}
     >
       {window.trans("Previous")}
     </a>
   </li>
 
-  {#if $ListingStore.page - 2 >= 1}
+  {#if listStore.page - 2 >= 1}
     <li class="page-item first-last">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
@@ -32,20 +31,20 @@
     </li>
   {/if}
 
-  {#if $ListingStore.page - 3 >= 1}
+  {#if listStore.page - 3 >= 1}
     <li class="page-item" aria-hidden="true">...</li>
   {/if}
 
-  {#if $ListingStore.page - 1 >= 1}
-    <li class="page-item {$ListingStore.page - 1 == 1 ? 'first-last' : ''}">
+  {#if listStore.page - 1 >= 1}
+    <li class="page-item {listStore.page - 1 == 1 ? 'first-last' : ''}">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={$ListingStore.page - 1}
+        data-page={listStore.page - 1}
         onclick={movePage}
       >
-        {$ListingStore.page - 1}
+        {listStore.page - 1}
       </a>
     </li>
   {/if}
@@ -53,13 +52,14 @@
   <li class="page-item active">
     <!-- svelte-ignore a11y-missing-attribute -->
     <a class="page-link">
-      {$ListingStore.page}
+      {listStore.page}
+      <span class="visually-hidden">(current)</span>
     </a>
   </li>
 
-  {#if $ListingStore.page + 1 <= $ListingStore.pageMax}
+  {#if listStore.page + 1 <= listStore.pageMax}
     <li
-      class="page-item {$ListingStore.page + 1 == $ListingStore.pageMax
+      class="page-item {listStore.page + 1 == listStore.pageMax
         ? 'first-last'
         : ''}"
     >
@@ -67,28 +67,28 @@
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={$ListingStore.page + 1}
+        data-page={listStore.page + 1}
         onclick={movePage}
       >
-        {$ListingStore.page + 1}
+        {listStore.page + 1}
       </a>
     </li>
   {/if}
 
-  {#if $ListingStore.page + 3 <= $ListingStore.pageMax}
+  {#if listStore.page + 3 <= listStore.pageMax}
     <li class="page-item" aria-hidden="true">...</li>
   {/if}
 
-  {#if $ListingStore.page + 2 <= $ListingStore.pageMax}
+  {#if listStore.page + 2 <= listStore.pageMax}
     <li class="page-item first-last">
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
         class="page-link"
-        data-page={$ListingStore.pageMax}
+        data-page={listStore.pageMax}
         onclick={movePage}
       >
-        {$ListingStore.pageMax}
+        {listStore.pageMax}
       </a>
     </li>
   {/if}
@@ -98,8 +98,8 @@
     <a
       href="javascript:void(0);"
       class="page-link"
-      disabled={$ListingStore.page >= $ListingStore.pageMax}
-      data-page={$ListingStore.page + 1}
+      disabled={listStore.page >= listStore.pageMax}
+      data-page={listStore.page + 1}
       onclick={movePage}
     >
       {window.trans("Next")}

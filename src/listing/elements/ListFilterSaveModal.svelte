@@ -1,5 +1,5 @@
 <script>
-  import { ListingOpts, ListingStore } from "../ListingStore.ts";
+  export let listStore;
 
   function closeModal(e) {
     //    jQuery(this.refs.modal).modal('hide')
@@ -36,16 +36,13 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">
-          {window.trans(
-            $ListingStore.saveAs ? "Save As Filter" : "Save Filter"
-          )}
+          {window.trans(listStore.saveAs ? "Save As Filter" : "Save Filter")}
         </h5>
         <button
           type="button"
           class="close"
-          data-dismiss="modal"
+          data-bs-dismiss="modal"
           aria-label="Close"
-          data-mt-modal-close
         >
           <span aria-hidden="true">&times;</span>
         </button>
@@ -65,7 +62,11 @@
         <button class="btn btn-primary" on:click={saveFilter}>
           {window.trans("Save")}
         </button>
-        <button class="btn btn-default" on:click={closeModal}>
+        <button
+          class="btn btn-default"
+          data-bs-dismiss="modal"
+          on:click={closeModal}
+        >
           {window.trans("Cancel")}
         </button>
       </div>

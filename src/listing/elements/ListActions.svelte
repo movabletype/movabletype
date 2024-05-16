@@ -1,96 +1,103 @@
 <script>
-  import ListActionsForPc from "./ListActionsForPc.svelte";
   import ListActionsForMobile from "./ListActionsForMobile.svelte";
+  import ListActionsForPc from "./ListActionsForPc.svelte";
 
+  export let listStore;
   export let opts;
 
-  function doAction(event) {
-    console.log("do action");
-    //    this.selectedActionId = e.target.dataset.actionId
-    //        this.selectedAction = this.getAction(this.selectedActionId)
-    //        this.selectedActionPhrase = this.selectedAction.js_message || trans('act upon')
-    //
-    //        var args = {}
-    //
-    //        if (!this.checkCount()) {
-    //          return false
-    //        }
-    //
-    //        if (this.selectedAction.input) {
-    //          var input = prompt(this.selectedAction.input)
-    //          if (input) {
-    //            args.itemsetActionInput = input
-    //          } else {
-    //            return false
-    //          }
-    //        }
-    //
-    //        if (!this.selectedAction.no_prompt) {
-    //          if (this.selectedAction.continue_prompt) {
-    //            if (!confirm(this.selectedAction.continue_prompt)) {
-    //              return false
-    //            }
-    //          } else {
-    //            if (!confirm(this.getConfirmMessage())) {
-    //              return false
-    //            }
-    //          }
-    //        }
-    //
-    //        var requestArgs = this.generateRequestArguments(args)
-    //
-    //        if (this.selectedAction.xhr) {
-    //        } else if (this.selectedAction.dialog) {
-    //          var requestData = this.listTop.opts.listActionClient.generateRequestData(requestArgs)
-    //          requestData.dialog = 1
-    //          var url = ScriptURI + '?' + jQuery.param(requestData, true)
-    //          jQuery.fn.mtModal.open(url, { large: true });
-    //        } else {
-    //          this.sendRequest(requestArgs)
-    //        }
+  let selectedAction;
+  let selectedActionId;
+  let selectedActionPhrase;
+
+  function doAction(actionId) {
+    selectedActionId = actionId;
+    selectedAction = getAction(selectedActionId);
+    selectedActionPhrase =
+      selectedAction.js_message || window.trans("act upon");
+
+    const args = {};
+
+    if (!checkCount()) {
+      return false;
+    }
+
+    if (selectedAction.input) {
+      const input = prompt(selectedAction.input);
+      if (input) {
+        args.itemsetActionInput = input;
+      } else {
+        return false;
+      }
+    }
+
+    if (!selectedAction.no_prompt) {
+      if (selectedAction.continue_prompt) {
+        if (!confirm(selectedAction.continue_prompt)) {
+          return false;
+        }
+      } else {
+        if (!confirm(getConfirmMessage())) {
+          return false;
+        }
+      }
+    }
+
+    const requestArgs = generateRequestArguments(args);
+
+    if (!selectedAction.xhr) {
+      if (selectedAction.dialog) {
+        const requestData =
+          window.listActionClient.generateRequestData(requestArgs);
+        requestData.dialog = 1;
+        const url = window.ScriptURI + "?" + jQuery.param(requestData, true);
+        jQuery.fn.mtModal.open(url, { large: true });
+      } else {
+        sendRequest(requestArgs);
+      }
+    }
   }
 
   function sendRequest(postArgs) {
-    this.listTop.opts.listActionClient.post(postArgs);
+    window.listActionClient.post(postArgs);
   }
 
   function generateRequestArguments(args) {
     return {
-      action: this.selectedAction,
-      actionName: this.selectedActionId,
-      allSelected: this.checkedAllRows,
-      filter: this.currentFilter,
-      ids: this.checkedRowIds,
+      action: selectedAction,
+      actionName: selectedActionId,
+      allSelected: listStore.checkedAllRows,
+      filter: listStore.currentFilter,
+      ids: listStore.getCheckedRowIds(),
       ...args,
     };
   }
 
   function getAction(actionId) {
     return (
-      this.listTop.opts.buttonActions[actionId] ||
-      this.listTop.opts.listActions[actionId] ||
-      this.listTop.opts.moreListActions[actionId] ||
+      opts.buttonActions[actionId] ||
+      opts.listActions[actionId] ||
+      opts.moreListActions[actionId] ||
       null
     );
   }
 
   function getCheckedRowCount() {
-    return this.store.getCheckedRowCount();
+    return listStore.getCheckedRowCount();
   }
 
   function checkCount() {
-    let checkedRowCount = this.getCheckedRowCount();
+    const checkedRowCount = getCheckedRowCount();
 
     if (checkedRowCount == 0) {
-      this.alertNoSelectedError();
+      alertNoSelectedError();
       return false;
     }
-    if (this.selectedAction.min && checkedRowCount < this.selectedAction.min) {
-      this.alertMinimumError();
+    if (selectedAction.min && checkedRowCount < selectedAction.min) {
+      alertMinimumError();
       return false;
     }
-    if (this.selectedAction.max && checkedRowCount > this.selectedAction.max) {
-      this.alertMaximumError();
+    if (selectedAction.max && checkedRowCount > selectedAction.max) {
+      alertMaximumError();
       return false;
     }
     return true;
@@ -100,8 +107,8 @@
     alert(
       trans(
         "You did not select any [_1] to [_2].",
-        this.listTop.opts.plural,
-        this.selectedActionPhrase
+        opts.plural,
+        selectedActionPhrase
       )
     );
   }
@@ -110,8 +117,8 @@
     alert(
       trans(
         "You can only act upon a minimum of [_1] [_2].",
-        this.selectedAction.min,
-        this.listTop.opts.plural
+        selectedAction.min,
+        opts.plural
       )
     );
   }
@@ -120,27 +127,27 @@
     alert(
       trans(
         "You can only act upon a maximum of [_1] [_2].",
-        this.selectedAction.max,
-        this.listTop.opts.plural
+        selectedAction.max,
+        opts.plural
       )
     );
   }
 
   function getConfirmMessage() {
-    let checkedRowCount = this.getCheckedRowCount();
+    const checkedRowCount = getCheckedRowCount();
 
     if (checkedRowCount == 1) {
       return trans(
         "Are you sure you want to [_2] this [_1]?",
-        this.listTop.opts.singular,
-        this.selectedActionPhrase
+        opts.singular,
+        selectedActionPhrase
       );
     } else {
       return trans(
         "Are you sure you want to [_3] the [_1] selected [_2]?",
         checkedRowCount,
-        this.listTop.opts.plural,
-        this.selectedActionPhrase
+        opts.plural,
+        selectedActionPhrase
       );
     }
   }

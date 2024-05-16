@@ -1,16 +1,24 @@
 <script>
-  import ListTableHeaderForPc from "./ListTableHeaderForPc.svelte";
   import ListTableHeaderForMobile from "./ListTableHeaderForMobile.svelte";
+  import ListTableHeaderForPc from "./ListTableHeaderForPc.svelte";
+
+  export let listStore;
+  export let opts;
 
   function toggleAllRowsOnPage(e) {
-    //this.store.trigger('toggle_all_rows_on_page');
+    listStore.trigger("toggle_all_rows_on_page");
   }
 
   function toggleSortColumn(e) {
-    //  var columnId = e.currentTarget.parentElement.dataset.id
-    //  this.store.trigger('toggle_sort_column', columnId)
+    const columnId = e.currentTarget.parentElement.dataset.id;
+    listStore.trigger("toggle_sort_column", columnId);
   }
 </script>
 
-<ListTableHeaderForPc />
-<ListTableHeaderForMobile />
+<ListTableHeaderForPc
+  {listStore}
+  {opts}
+  {toggleAllRowsOnPage}
+  {toggleSortColumn}
+/>
+<ListTableHeaderForMobile {listStore} {opts} {toggleAllRowsOnPage} />

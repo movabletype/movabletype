@@ -7,7 +7,7 @@
   <button
     class="btn btn-default mr-2"
     data-action-id={key}
-    on:click={doAction(action.mode)}
+    on:click={doAction(key)}
   >
     {@html action.label}
   </button>
@@ -25,7 +25,7 @@
           class="dropdown-item"
           href="javascript:void(0);"
           data-action-id={key}
-          on:click={doAction(action.mode)}
+          on:click={doAction(key)}
         >
           {@html action.label}
         </a>
@@ -43,7 +43,7 @@
           class="dropdown-item"
           href="javascript:void(0);"
           data-action-id={key}
-          on:click={doAction(action.mode)}
+          on:click={doAction(key)}
         >
           {@html action.label}
         </a>

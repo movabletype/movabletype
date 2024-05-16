@@ -1,18 +1,21 @@
 <script>
   import { ListingStore, ListingOpts } from "../ListingStore.ts";
+
+  export let listStore;
+  export let opts;
   export let toggleAllRowsOnPage;
 </script>
 
-{#if $ListingStore.count}
+{#if listStore.count}
   <tr class="d-md-none">
-    {#if $ListingOpts.hasMobilePulldownActions}
+    {#if opts.hasMobilePulldownActions}
       <th class="mt-table__control">
         <div class="form-check">
           <input
             type="checkbox"
             class="form-check-input"
             id="select-all"
-            checked={$ListingOpts.checkedAllRowsOnPage}
+            checked={opts.checkedAllRowsOnPage}
             on:change={toggleAllRowsOnPage}
           />
           <label class="form-check-label" for="select-all"
@@ -23,20 +26,20 @@
       </th>
     {/if}
     <th scope="col">
-      {#if $ListingOpts.hasMobilePulldownActions}
+      {#if opts.hasMobilePulldownActions}
         <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
         <span on:click={toggleAllRowsOnPage}>
           {window.trans("All")}
         </span>
-        <span class="float-end">
-          {window.trans(
-            "[_1] &ndash; [_2] of [_3]",
-            $ListingStore.getListStart(),
-            $ListingStore.getListEnd(),
-            $ListingStore.count
-          )}
-        </span>
       {/if}
+      <span class="float-end">
+        {window.trans(
+          "[_1] - [_2] of [_3]",
+          listStore.getListStart(),
+          listStore.getListEnd(),
+          listStore.count
+        )}
+      </span>
     </th>
   </tr>
 {/if}

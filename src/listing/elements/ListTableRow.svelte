@@ -1,19 +1,20 @@
 <script>
-  import { ListingStore, ListingOpts } from "../ListingStore.ts";
-
-  export let opts = {};
+  export let checked;
+  export let listStore;
+  export let object;
+  export let opts;
 
   function classes(index) {
-    var nameClass = this.store.showColumns[index].id;
-    var classes;
-    if (this.store.hasMobileColumn()) {
-      if (this.store.getMobileColumnIndex() == index) {
+    const nameClass = listStore.showColumns[index].id;
+    let classes;
+    if (listStore.hasMobileColumn()) {
+      if (listStore.getMobileColumnIndex() == index) {
         classes = "d-md-none";
       } else {
         classes = "d-none d-md-table-cell";
       }
     } else {
-      if (this.store.showColumns[index].primary) {
+      if (listStore.showColumns[index].primary) {
         classes = "";
       } else {
         classes = "d-none d-md-table-cell";
@@ -27,28 +28,33 @@
   }
 </script>
 
-{#if $ListingOpts.hasListActions}
-  <td>
-    {#if opts.object[0]}
+{#if opts.hasListActions}
+  <td
+    class:d-none={!opts.hasMobilePulldownActions}
+    class:d-md-table-cell={!opts.hasMobilePulldownActions}
+  >
+    {#if object[0]}
       <div class="form-check">
         <input
           type="checkbox"
           name="id"
           class="form-check-input"
-          id={"select_" + opts.object[0]}
-          value={opts.object[0]}
-          checked={opts.checked}
+          id={"select_" + object[0]}
+          value={object[0]}
+          {checked}
         />
         <span class="custom-control-indicator" />
-        <label class="form-check-label" for={"select_" + opts.object[0]}
+        <label class="form-check-label" for={"select_" + object[0]}
           ><span class="visually-hidden">{window.trans("Select")}</span></label
         >
       </div>
     {/if}
   </td>
 {/if}
-{#each opts.object as content, index}
-  <td class={classes(index)}>
-    {@html content}
-  </td>
+{#each object as content, index}
+  {#if index > 0}
+    <td class={classes(index - 1)}>
+      {@html content}
+    </td>
+  {/if}
 {/each}
