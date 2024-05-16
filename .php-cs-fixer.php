@@ -2,6 +2,8 @@
 
 $finder = (new PhpCsFixer\Finder())
     ->exclude('php/extlib')
+    ->exclude('plugins/Markdown')
+    ->exclude('plugins/Textile')
     ->notPath('t/lib/JSON.php')
     ->in('.')
 ;
