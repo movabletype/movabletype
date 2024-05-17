@@ -2,10 +2,10 @@
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
   import DisplayOptionsLimit from "./DisplayOptionsLimit.svelte";
 
-  export let listStore;
+  export let store;
 
-  function resetColumns(e) {
-    listStore.trigger("reset_columns");
+  function resetColumns() {
+    store.trigger("reset_columns");
   }
 </script>
 
@@ -13,16 +13,16 @@
   <div class="card card-block p-3">
     <fieldset class="form-group">
       <div data-is="display-options-limit" id="per_page-field">
-        <DisplayOptionsLimit {listStore} limit={listStore.limit} />
+        <DisplayOptionsLimit limit={store.limit} {store} />
       </div>
     </fieldset>
     <fieldset class="form-group">
       <div data-is="display-options-columns" id="display_columns-field">
-        <DisplayOptionsColumns {listStore} />
+        <DisplayOptionsColumns {store} />
       </div>
     </fieldset>
     <div
-      if={!listStore.disableUserDispOption}
+      if={!store.disableUserDispOption}
       class="actions-bar actions-bar-bottom"
     >
       <!-- svelte-ignore a11y-invalid-attribute -->

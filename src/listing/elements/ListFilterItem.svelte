@@ -6,13 +6,14 @@
   import ListFilterItemField from "./ListFilterItemField.svelte";
 
   export let currentFilter;
+  export let filterTypes;
   export let item;
   export let listFilterTopAddFilterItemContent;
   export let listFilterTopRemoveFilterItem;
   export let listFilterTopRemoveFilterItemContent;
-  export let opts;
+  export let localeCalendarHeader;
 
-  $: filterTypeHash = opts.filterTypes.reduce((hash, filterType) => {
+  $: filterTypeHash = filterTypes.reduce((hash, filterType) => {
     hash[filterType.type] = filterType;
     return hash;
   }, {});
@@ -95,40 +96,39 @@
         .find(".date-option." + type)
         .show();
     };
-    // TODO: fix this.root
-    jQuery(this.root)
-      .find(".filter-date")
-      .each(function (index, element) {
-        var $node = jQuery(element);
-        dateOption($node);
-        $node.on("change", function () {
-          dateOption($node);
-        });
-      });
-    // TODO: fix this.root
-    jQuery(this.root)
-      .find("input.date")
-      .datepicker({
-        dateFormat: "yy-mm-dd",
-        dayNamesMin: opts.localeCalendarHeader,
-        monthNames: [
-          "- 01",
-          "- 02",
-          "- 03",
-          "- 04",
-          "- 05",
-          "- 06",
-          "- 07",
-          "- 08",
-          "- 09",
-          "- 10",
-          "- 11",
-          "- 12",
-        ],
-        showMonthAfterYear: true,
-        prevText: "<",
-        nextText: ">",
-      });
+    // FIXME
+    // jQuery(this.root)
+    //   .find(".filter-date")
+    //   .each(function (index, element) {
+    //     var $node = jQuery(element);
+    //     dateOption($node);
+    //     $node.on("change", function () {
+    //       dateOption($node);
+    //     });
+    //   });
+    // jQuery(this.root)
+    //   .find("input.date")
+    //   .datepicker({
+    //     dateFormat: "yy-mm-dd",
+    //     dayNamesMin: localeCalendarHeader,
+    //     monthNames: [
+    //       "- 01",
+    //       "- 02",
+    //       "- 03",
+    //       "- 04",
+    //       "- 05",
+    //       "- 06",
+    //       "- 07",
+    //       "- 08",
+    //       "- 09",
+    //       "- 10",
+    //       "- 11",
+    //       "- 12",
+    //     ],
+    //     showMonthAfterYear: true,
+    //     prevText: "<",
+    //     nextText: ">",
+    //   });
   }
 
   function initializeOptionWithBlank() {
@@ -139,16 +139,16 @@
         $node.parent().find("input[type=text]").show();
       }
     };
-    // TODO: fix this.root
-    jQuery(this.root)
-      .find(".filter-blank")
-      .each(function (index, element) {
-        var $node = jQuery(element);
-        changeOption($node);
-        $node.on("change", function () {
-          changeOption($node);
-        });
-      });
+    // FIXME
+    // jQuery(this.root)
+    //   .find(".filter-blank")
+    //   .each(function (index, element) {
+    //     var $node = jQuery(element);
+    //     changeOption($node);
+    //     $node.on("change", function () {
+    //       changeOption($node);
+    //     });
+    //   });
   }
 
   function removeFilterItem(e) {
@@ -228,11 +228,7 @@
           field={filterTypeHash[item.type].field}
           {item}
         />
-        <ListFilterItemField
-          field={filterTypeHash[item.type].field}
-          {item}
-          {opts}
-        />
+        <ListFilterItemField field={filterTypeHash[item.type].field} {item} />
         <!-- svelte-ignore a11y-invalid-attribute -->
         {#if !filterTypeHash[item.type].singleton}
           <a

@@ -3,15 +3,15 @@
 
   export let currentFilter;
   export let isAllpassFilter;
+  export let listActionClient;
   export let listFilterTopCreateNewFilter;
-  export let listStore;
-  export let opts;
+  export let store;
 
   function resetFilter() {
-    opts.listActionClient.removeFilterKeyFromReturnArgs();
-    opts.listActionClient.removeFilterItemFromReturnArgs();
-    listStore.trigger("close_filter_detail");
-    listStore.trigger("reset_filter");
+    listActionClient.removeFilterKeyFromReturnArgs();
+    listActionClient.removeFilterItemFromReturnArgs();
+    store.trigger("close_filter_detail");
+    store.trigger("reset_filter");
   }
 </script>
 
@@ -31,7 +31,7 @@
         >
           <u>{window.trans(currentFilter.label)}</u>
         </a>
-        <ListFilterSelectModal {listFilterTopCreateNewFilter} {listStore} />
+        <ListFilterSelectModal {listFilterTopCreateNewFilter} {store} />
       </li>
       <li class="list-inline-item">
         {#if isAllpassFilter() == false}

@@ -2,7 +2,7 @@
   import ListFilterSaveModal from "./ListFilterSaveModal.svelte";
 
   export let currentFilter;
-  export let listStore;
+  export let store;
 
   function applyFilter(e) {
     if (!this.listFilterTop.validateFilterDetails()) {
@@ -10,7 +10,7 @@
     }
     this.listFilterTop.getItemValues();
     const noFilterId = true;
-    listStore.trigger("apply_filter", currentFilter, noFilterId);
+    store.trigger("apply_filter", currentFilter, noFilterId);
   }
 
   function saveFilter(e) {
@@ -19,7 +19,7 @@
     }
     if (this.listFilterTop.isUserFilter()) {
       this.listFilterTop.getItemValues();
-      listStore.trigger("save_filter", currentFilter);
+      store.trigger("save_filter", currentFilter);
     } else {
       const filterLabel = listStore.getNewFilterLabel(opts.objectLabel);
       this.tags["list-filter-save-modal"].openModal({
@@ -58,4 +58,4 @@
     {window.trans("Save As")}
   </button>
 {/if}
-<ListFilterSaveModal {listStore} />
+<ListFilterSaveModal {store} />

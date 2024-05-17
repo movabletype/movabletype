@@ -2,23 +2,30 @@
   import ListTableBody from "./ListTableBody.svelte";
   import ListTableHeader from "./ListTableHeader.svelte";
 
-  export let listStore;
-  export let opts;
+  export let hasListActions;
+  export let hasMobilePulldownActions;
+  export let store;
+  export let zeroStateLabel;
 </script>
 
 <thead>
-  <ListTableHeader {listStore} {opts} />
+  <ListTableHeader {hasListActions} {hasMobilePulldownActions} {store} />
 </thead>
-{#if listStore.isLoading}
+{#if store.isLoading}
   <tbody>
     <tr>
-      <td colspan={listStore.columns.length + 1}>
+      <td colspan={store.columns.length + 1}>
         {window.trans("Loading...")}
       </td>
     </tr>
   </tbody>
-{:else if !listStore.isLoading && listStore.objects}
+{:else if !store.isLoading && store.objects}
   <tbody>
-    <ListTableBody {listStore} {opts} />
+    <ListTableBody
+      {hasListActions}
+      {hasMobilePulldownActions}
+      {store}
+      {zeroStateLabel}
+    />
   </tbody>
 {/if}

@@ -1,11 +1,11 @@
 <script>
-  export let listStore;
   export let limit;
+  export let store;
 
   $: limitToString = limit.toString();
 
-  function changeLimit(e) {
-    listStore.trigger("update_limit", limitToString);
+  function changeLimit() {
+    store.trigger("update_limit", limitToString);
   }
 </script>
 

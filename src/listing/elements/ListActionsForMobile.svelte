@@ -1,17 +1,19 @@
 <script>
+  export let buttonActions;
   export let doAction;
-  export let opts;
+  export let listActions;
+  export let moreListActions;
 
   function buttonActionsForMobile() {
-    return getActionsForMobile(opts.buttonActions);
+    return getActionsForMobile(buttonActions);
   }
 
   function listActionsForMobile() {
-    return getActionsForMobile(opts.listActions);
+    return getActionsForMobile(listActions);
   }
 
   function moreListActionsForMobile() {
-    return getActionsForMobile(opts.moreListActions);
+    return getActionsForMobile(moreListActions);
   }
 
   function getActionsForMobile(actions) {

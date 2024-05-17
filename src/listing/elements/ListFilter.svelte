@@ -2,11 +2,14 @@
   import ListFilterDetail from "./ListFilterDetail.svelte";
   import ListFilterHeader from "./ListFilterHeader.svelte";
 
-  export let listStore;
-  export let opts;
+  export let filterTypes;
+  export let listActionClient;
+  export let localeCalendarHeader;
+  export let store;
 
-  $: currentFilter = listStore.currentFilter;
+  $: currentFilter = store.currentFilter;
 
+  // TODO
   function addFilterItem() {}
   function addFilterItemContent() {}
   function createNewFilter() {}
@@ -21,21 +24,22 @@
     {currentFilter}
     {isAllpassFilter}
     listFilterTopCreateNewFilter={createNewFilter}
-    {listStore}
-    {opts}
+    {listActionClient}
+    {store}
   />
 </div>
 <div id="list-filter-collapse" class="collapse">
   <div id="filter-detail" class="card-block p-3">
     <ListFilterDetail
       {currentFilter}
+      {filterTypes}
       {isListFilterItemSelected}
       listFilterTopAddFilterItem={addFilterItem}
       listFilterTopAddFilterItemContent={addFilterItemContent}
       listFilterTopRemoveFilterItem={removeFilterItem}
       listFilterTopRemoveFilterItemContent={removeFilterItemContent}
-      {listStore}
-      {opts}
+      {localeCalendarHeader}
+      {store}
     />
   </div>
 </div>

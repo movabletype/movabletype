@@ -1,5 +1,5 @@
 <script>
-  export let listStore;
+  export let store;
 
   function closeModal(e) {
     //    jQuery(this.refs.modal).modal('hide')
@@ -36,7 +36,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">
-          {window.trans(listStore.saveAs ? "Save As Filter" : "Save Filter")}
+          {window.trans(store.saveAs ? "Save As Filter" : "Save Filter")}
         </h5>
         <button
           type="button"

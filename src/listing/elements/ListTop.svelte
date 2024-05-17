@@ -11,19 +11,39 @@
   import ListPagination from "./ListPagination.svelte";
   import ListTable from "./ListTable.svelte";
 
-  export let opts;
+  export let allpassFilter;
+  export let buttonActions;
+  export let disableUserDispOption;
+  export let filterTypes;
+  export let hasListActions;
+  export let hasMobilePulldownActions;
+  export let hasPulldownActions;
+  export let initialFilter;
+  export let listActionClient;
+  export let listActions;
+  export let localeCalendarHeader;
+  export let moreListActions;
+  export let objectLabel;
+  export let objectType;
+  export let objectTypeForTableClass;
+  export let plural;
+  export let useActions;
+  export let useFilters;
+  export let singular;
   export let store;
+  export let zeroStateLabel;
 
+  let opts = {};
   ListingOpts.set(opts);
   ListingStore.set(store);
 
-  export let listStore = window.listStore;
+  // export let listStore = window.listStore;
 
   onMount(() => {
-    listStore.trigger("load_list");
+    store.trigger("load_list");
   });
 
-  listStore.on("refresh_view", (args) => {
+  store.on("refresh_view", (args) => {
     if (!args) args = {};
 
     updateSubFields();
@@ -34,11 +54,11 @@
       jQuery(window).trigger("listReady");
     }
 
-    listStore = listStore;
+    store = store;
   });
 
   function updateSubFields() {
-    listStore.columns.forEach(function (column) {
+    store.columns.forEach(function (column) {
       column.sub_fields.forEach(function (subField) {
         const selector = "td." + subField.parent_id + " ." + subField.class;
         const element = document.querySelector(selector);
@@ -52,46 +72,57 @@
   }
 
   function tableClass() {
-    const objectType = opts.objectTypeForTableClass || opts.objectType;
-    return "list-" + objectType;
+    return "list-" + (objectTypeForTableClass || objectType);
   }
 </script>
 
 <div class="d-none d-md-block mb-3">
-  <DisplayOptions {listStore} />
+  <DisplayOptions {store} />
 </div>
 <div id="actions-bar-top" class="row mb-5 mb-md-3">
   <div class="col">
-    <ListActions {listStore} {opts} />
+    <ListActions
+      {buttonActions}
+      {hasPulldownActions}
+      {listActions}
+      {listActionClient}
+      {moreListActions}
+      {plural}
+      {singular}
+      {store}
+    />
   </div>
   <div class="col-auto align-self-end list-counter">
-    <ListCount
-      count={listStore.count}
-      limit={listStore.limit}
-      page={listStore.page}
-    />
+    <ListCount count={store.count} limit={store.limit} page={store.page} />
   </div>
 </div>
 <div class="row mb-5 mb-md-3">
   <div class="col-12">
     <div class="card">
-      {#if opts.useFilters}
-        <ListFilter {listStore} {opts} />
+      {#if useFilters}
+        <ListFilter
+          {filterTypes}
+          {listActionClient}
+          {localeCalendarHeader}
+          {store}
+        />
       {/if}
       <div style="overflow-x: auto">
-        <table
-          id="{opts.objectType}-table"
-          class="table mt-table {tableClass()}"
-        >
-          <ListTable {listStore} {opts} />
+        <table id="{objectType}-table" class="table mt-table {tableClass()}">
+          <ListTable
+            {hasListActions}
+            {hasMobilePulldownActions}
+            {store}
+            {zeroStateLabel}
+          />
         </table>
       </div>
     </div>
   </div>
 </div>
-{#if listStore.count != 0}
+{#if store.count != 0}
   <div class="row">
-    <ListPagination {listStore} />
+    <ListPagination {store} />
   </div>
 {/if}
-<DisplayOptionsForMobile {listStore} limit={listStore.limit} />
+<DisplayOptionsForMobile limit={store.limit} {store} />

@@ -4,7 +4,7 @@
   import ListPaginationForMobile from "./ListPaginationForMobile.svelte";
   import ListPaginationForPc from "./ListPaginationForPc.svelte";
 
-  export let listStore;
+  export let store;
 
   let isTooNarrowWidth;
 
@@ -13,7 +13,7 @@
   });
 
   function checkTooNarrowWidth() {
-    isTooNarrowWidth = listStore.pageMax >= 5 && window.innerWidth < 400;
+    isTooNarrowWidth = store.pageMax >= 5 && window.innerWidth < 400;
   }
 
   function movePage(e) {
@@ -34,7 +34,7 @@
       return false;
     }
     let moveToPagination = true;
-    listStore.trigger("move_page", nextPage, moveToPagination);
+    store.trigger("move_page", nextPage, moveToPagination);
     return false;
   }
 </script>
@@ -45,8 +45,8 @@
 />
 
 <div class="col-auto mx-auto{isTooNarrowWidth ? ' w-100' : ''}">
-  <nav aria-label={listStore.objectType + " list"}>
-    <ListPaginationForPc {listStore} {movePage} />
-    <ListPaginationForMobile {isTooNarrowWidth} {listStore} {movePage} />
+  <nav aria-label={store.objectType + " list"}>
+    <ListPaginationForPc {movePage} {store} />
+    <ListPaginationForMobile {isTooNarrowWidth} {movePage} {store} />
   </nav>
 </div>

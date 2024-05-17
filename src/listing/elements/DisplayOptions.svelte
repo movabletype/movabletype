@@ -1,7 +1,7 @@
 <script>
   import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
 
-  export let listStore;
+  export let store;
 </script>
 
 <div class="row">
@@ -19,6 +19,6 @@
 </div>
 <div class="row">
   <div data-is="display-options-detail" class="col-12">
-    <DisplayOptionsDetail {listStore} />
+    <DisplayOptionsDetail {store} />
   </div>
 </div>

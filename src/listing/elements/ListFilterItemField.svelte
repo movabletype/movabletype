@@ -25,7 +25,8 @@
     }
   }
 
-  setValues();
+  // FIXME
+  // setValues();
 </script>
 
 {@html field}

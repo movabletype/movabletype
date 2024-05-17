@@ -1,12 +1,12 @@
 <script>
-  export let listStore;
+  export let store;
 
-  function toggleColumn(e) {
-    listStore.trigger("toggle_column", e.currentTarget.id);
+  function toggleColumn(columnId) {
+    store.trigger("toggle_column", columnId);
   }
 
-  function toggleSubField(e) {
-    listStore.trigger("toggle_sub_field", e.currentTarget.id);
+  function toggleSubField(subFieldId) {
+    store.trigger("toggle_sub_field", subFieldId);
   }
 </script>
 
@@ -14,14 +14,14 @@
   <!-- svelte-ignore a11y-label-has-associated-control -->
   <label class="form-label">{window.trans("Column")}</label>
 </div>
-{#if listStore.disableUserDispOption}
+{#if store.disableUserDispOption}
   <div class="alert alert-warning">
     {window.trans("User Display Option is disabled now.")}
   </div>
 {/if}
-<div class={listStore.disableUserDispOption ? "" : "field-content"}>
+<div class={store.disableUserDispOption ? "" : "field-content"}>
   <ul id="disp_cols" class="list-inline m-0">
-    {#each listStore.columns as column}
+    {#each store.columns as column}
       <li class="list-inline-item" hidden={column.force_display}>
         <div class="form-check">
           <input
@@ -29,8 +29,8 @@
             class="form-check-input"
             id={column.id}
             checked={column.checked}
-            on:change={toggleColumn}
-            disabled={listStore.isLoading}
+            on:change={() => toggleColumn(column.id)}
+            disabled={store.isLoading}
           />
           <label class="form-check-label form-label" for={column.id}>
             {@html column.label}
@@ -47,7 +47,7 @@
               class="form-check-input {subField.class}"
               disabled={!column.checked}
               checked={subField.checked}
-              on:change={toggleSubField}
+              on:change={() => toggleSubField(subField.id)}
             />
             <label class="form-check-label form-label" for={subField.id}
               >{subField.label}</label

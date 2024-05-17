@@ -3,13 +3,14 @@
   import ListFilterButtons from "./ListFilterButtons.svelte";
 
   export let currentFilter;
+  export let filterTypes;
   export let isListFilterItemSelected;
   export let listFilterTopAddFilterItem;
   export let listFilterTopAddFilterItemContent;
   export let listFilterTopRemoveFilterItem;
   export let listFilterTopRemoveFilterItemContent;
-  export let listStore;
-  export let opts;
+  export let localeCalendarHeader;
+  export let store;
 
   function addFilterItem(e) {
     if (e.currentTarget.classList.contains("disabled")) {
@@ -34,7 +35,7 @@
             {" " + window.trans("Select Filter Item...") + " "}
           </button>
           <div class="dropdown-menu">
-            {#each opts.filterTypes as filterType}
+            {#each filterTypes as filterType}
               {#if filterType.editable}
                 <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
@@ -58,15 +59,16 @@
 <div class="row mb-3">
   <div class="col-12">
     <ul class="list-group">
-      {#each listStore.currentFilter.items as item, index}
+      {#each store.currentFilter.items as item, index}
         <li class="list-group-item" data-mt-list-item-index={index}>
           <ListFilterItem
             {currentFilter}
+            {filterTypes}
             {item}
             {listFilterTopAddFilterItemContent}
             {listFilterTopRemoveFilterItem}
             {listFilterTopRemoveFilterItemContent}
-            {opts}
+            {localeCalendarHeader}
           />
         </li>
       {/each}
@@ -75,6 +77,6 @@
 </div>
 <div class="row">
   <div class="col-12">
-    <ListFilterButtons {currentFilter} {listStore} />
+    <ListFilterButtons {currentFilter} {store} />
   </div>
 </div>

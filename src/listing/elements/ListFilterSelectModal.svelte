@@ -4,13 +4,13 @@
   import SS from "../../ss/elements/SS.svelte";
 
   export let listFilterTopCreateNewFilter;
-  export let listStore;
+  export let store;
 
   let isEditingFilter = {};
 
   function applyFilter(filterId) {
     closeModal();
-    listStore.trigger("apply_filter_by_id", filterId);
+    store.trigger("apply_filter_by_id", filterId);
   }
 
   function startEditingFilter(filterId) {
@@ -35,13 +35,13 @@
 
   function createNewFilter() {
     closeModal();
-    listStore.trigger("open_filter_detail");
+    store.trigger("open_filter_detail");
     listFilterTopCreateNewFilter();
-    listStore = listStore;
+    store = store;
   }
 
   function renameFilter(filterId, filterLabel) {
-    listStore.trigger("rename_filter_by_id", filterId, filterLabel);
+    store.trigger("rename_filter_by_id", filterId, filterLabel);
     isEditingFilter[filterId] = false;
   }
 
@@ -53,7 +53,7 @@
     if (confirm(message) == false) {
       return false;
     }
-    listStore.trigger("remove_filter_by_id", filterId);
+    store.trigger("remove_filter_by_id", filterId);
   }
 </script>
 
@@ -70,7 +70,7 @@
         <div class="filter-list-block">
           <h6 class="filter-list-label">{window.trans("My Filters")}</h6>
           <ul id="user-filters" class="list-unstyled editable">
-            {#each listStore.filters as filter}
+            {#each store.filters as filter}
               {#if filter.can_save == "1"}
                 <li
                   class="filter line"
@@ -146,13 +146,13 @@
             </li>
           </ul>
         </div>
-        {#if listStore.hasSystemFilter()}
+        {#if store.hasSystemFilter()}
           <div class="filter-list-block">
             <h6 class="filter-list-label">
               {window.trans("Built in Filters")}
             </h6>
             <ul id="built-in-filters" class="list-unstyled">
-              {#each listStore.filters as filter}
+              {#each store.filters as filter}
                 {#if filter.can_save == "0"}
                   <li
                     class="filter line"

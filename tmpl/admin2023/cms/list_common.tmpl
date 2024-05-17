@@ -111,7 +111,11 @@
 
 <mt:unless name="config.useriot">
 <script type="text/javascript" src="<mt:var name="static_uri">riot/riot.min.js?v=<mt:var name="mt_version_id" escape="url">" charset="utf-8"></script>
-<script type="module" src="<mt:var name="static_uri">js/build/listing.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:Ignore> <script type="module" src="<mt:var name="static_uri">js/build/listing.js?v=<mt:var name="mt_version_id" escape="url">"></script> </mt:Ignore>
+<script type="module">
+import { svelteMountListTop } from "<mt:var name="static_uri">js/build/listing.js?v=<mt:var name="mt_version_id" escape="url">"
+window.svelteMountListTop = svelteMountListTop
+</script>
 <script type="application/json" id="listing-opts">
 {
   <mt:if name="disable_user_disp_option">
@@ -266,6 +270,8 @@
 </mt:loop>
 
 <script>
+var listStore;
+
 jQuery.event.special.listReady = {
   setup: function ( data, ns ) {
     return false;
@@ -283,7 +289,7 @@ jQuery.event.special.listReady = {
   var objectType = '<mt:var name="object_type" escape="js">';
   var objectTypeForTableClass = '<mt:var name="object_type_for_table_class" escape="js">';
 
-  window.listClient = new ListClient({
+  var listClient = new ListClient({
     url: '<mt:var name="script_url">',
     siteId: '<mt:var name="blog_id">',
     datasource: '<mt:var name="list_type" escape="js">',
@@ -293,7 +299,7 @@ jQuery.event.special.listReady = {
     subType: '<mt:if name="subtype"><mt:var name="subtype"></mt:if>'
   });
 
-  window.listActionClient = new ListActionClient({
+  var listActionClient = new ListActionClient({
     url: listClient.url,
     siteId: listClient.siteId,
     datasource: listClient.datasource,
@@ -431,7 +437,7 @@ jQuery.event.special.listReady = {
   var useFilters = false;
   </mt:if>
 
-  window.listStore = new ListStore({
+  listStore = new ListStore({
     listClient: listClient,
 
     columns: listColumns,
@@ -447,37 +453,41 @@ jQuery.event.special.listReady = {
     disableUserDispOption: disableUserDispOption
   });
 
-<mt:if name="config.useriot">
+  const opts = {
+    listActionClient: listActionClient,
+
+    zeroStateLabel: zeroStateLabel,
+
+    buttonActions: buttonActions,
+    hasListActions: hasListActions,
+    hasPulldownActions: hasPulldownActions,
+    hasMobilePulldownActions: hasMobilePulldownActions,
+    listActions: listActions,
+    moreListActions: moreListActions,
+    plural: plural,
+    useActions: useActions,
+    useFilters: useFilters,
+    singular: singular,
+    store: listStore,
+
+    allpassFilter: allpassFilter,
+    initialFilter: initialFilter,
+    filterTypes: filterTypes,
+
+    localeCalendarHeader: localeCalendarHeader,
+    objectLabel: objectLabel,
+    objectType: objectType,
+    objectTypeForTableClass: objectTypeForTableClass,
+    disableUserDispOption: disableUserDispOption
+  };
+
   jQuery(function () {
-    riot.mount('list-top', {
-      listActionClient: listActionClient,
-
-      zeroStateLabel: zeroStateLabel,
-
-      buttonActions: buttonActions,
-      hasListActions: hasListActions,
-      hasPulldownActions: hasPulldownActions,
-      hasMobilePulldownActions: hasMobilePulldownActions,
-      listActions: listActions,
-      moreListActions: moreListActions,
-      plural: plural,
-      useActions: useActions,
-      useFilters: useFilters,
-      singular: singular,
-      store: listStore,
-
-      allpassFilter: allpassFilter,
-      initialFilter: initialFilter,
-      filterTypes: filterTypes,
-
-      localeCalendarHeader: localeCalendarHeader,
-      objectLabel: objectLabel,
-      objectType: objectType,
-      objectTypeForTableClass: objectTypeForTableClass,
-      disableUserDispOption: disableUserDispOption
-    });
-  });
+<mt:if name="config.useriot">
+    riot.mount('list-top', opts);
+<mt:else>
+    window.listTop = svelteMountListTop(opts);
 </mt:if>
+  });
 
 })();
 

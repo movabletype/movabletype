@@ -2,8 +2,14 @@
   import ListActionsForMobile from "./ListActionsForMobile.svelte";
   import ListActionsForPc from "./ListActionsForPc.svelte";
 
-  export let listStore;
-  export let opts;
+  export let buttonActions;
+  export let hasPulldownActions;
+  export let listActions;
+  export let listActionClient;
+  export let moreListActions;
+  export let plural;
+  export let singular;
+  export let store;
 
   let selectedAction;
   let selectedActionId;
@@ -46,8 +52,7 @@
 
     if (!selectedAction.xhr) {
       if (selectedAction.dialog) {
-        const requestData =
-          window.listActionClient.generateRequestData(requestArgs);
+        const requestData = listActionClient.generateRequestData(requestArgs);
         requestData.dialog = 1;
         const url = window.ScriptURI + "?" + jQuery.param(requestData, true);
         jQuery.fn.mtModal.open(url, { large: true });
@@ -58,31 +63,31 @@
   }
 
   function sendRequest(postArgs) {
-    window.listActionClient.post(postArgs);
+    listActionClient.post(postArgs);
   }
 
   function generateRequestArguments(args) {
     return {
       action: selectedAction,
       actionName: selectedActionId,
-      allSelected: listStore.checkedAllRows,
-      filter: listStore.currentFilter,
-      ids: listStore.getCheckedRowIds(),
+      allSelected: store.checkedAllRows,
+      filter: store.currentFilter,
+      ids: store.getCheckedRowIds(),
       ...args,
     };
   }
 
   function getAction(actionId) {
     return (
-      opts.buttonActions[actionId] ||
-      opts.listActions[actionId] ||
-      opts.moreListActions[actionId] ||
+      buttonActions[actionId] ||
+      listActions[actionId] ||
+      moreListActions[actionId] ||
       null
     );
   }
 
   function getCheckedRowCount() {
-    return listStore.getCheckedRowCount();
+    return store.getCheckedRowCount();
   }
 
   function checkCount() {
@@ -107,7 +112,7 @@
     alert(
       trans(
         "You did not select any [_1] to [_2].",
-        opts.plural,
+        plural,
         selectedActionPhrase
       )
     );
@@ -118,7 +123,7 @@
       trans(
         "You can only act upon a minimum of [_1] [_2].",
         selectedAction.min,
-        opts.plural
+        plural
       )
     );
   }
@@ -128,7 +133,7 @@
       trans(
         "You can only act upon a maximum of [_1] [_2].",
         selectedAction.max,
-        opts.plural
+        plural
       )
     );
   }
@@ -139,14 +144,14 @@
     if (checkedRowCount == 1) {
       return trans(
         "Are you sure you want to [_2] this [_1]?",
-        opts.singular,
+        singular,
         selectedActionPhrase
       );
     } else {
       return trans(
         "Are you sure you want to [_3] the [_1] selected [_2]?",
         checkedRowCount,
-        opts.plural,
+        plural,
         selectedActionPhrase
       );
     }
@@ -154,8 +159,19 @@
 </script>
 
 <div class="d-none d-md-block">
-  <ListActionsForPc {opts} {doAction} />
+  <ListActionsForPc
+    {buttonActions}
+    {doAction}
+    {listActions}
+    {hasPulldownActions}
+    {moreListActions}
+  />
 </div>
 <div class="d-md-none">
-  <ListActionsForMobile {opts} {doAction} />
+  <ListActionsForMobile
+    {buttonActions}
+    {doAction}
+    {listActions}
+    {moreListActions}
+  />
 </div>

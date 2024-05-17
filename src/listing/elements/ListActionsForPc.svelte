@@ -1,9 +1,12 @@
 <script>
+  export let buttonActions;
   export let doAction;
-  export let opts;
+  export let listActions;
+  export let hasPulldownActions;
+  export let moreListActions;
 </script>
 
-{#each Object.entries(opts.buttonActions) as [key, action]}
+{#each Object.entries(buttonActions) as [key, action]}
   <button
     class="btn btn-default mr-2"
     data-action-id={key}
@@ -13,13 +16,13 @@
   </button>
 {/each}
 
-{#if opts.hasPulldownActions}
+{#if hasPulldownActions}
   <div class="btn-group">
     <button class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown">
       {" " + window.trans("More actions...") + " "}
     </button>
     <div class="dropdown-menu">
-      {#each Object.entries(opts.listActions) as [key, action]}
+      {#each Object.entries(listActions) as [key, action]}
         <!-- svelte-ignore a11y-invalid-attribute -->
         <a
           class="dropdown-item"
@@ -31,13 +34,13 @@
         </a>
       {/each}
 
-      {#if Object.keys(opts.moreListActions).length > 0}
+      {#if Object.keys(moreListActions).length > 0}
         <h6 class="dropdown-header">
           {window.trans("Plugin Actions")}
         </h6>
       {/if}
 
-      {#each Object.entries(opts.moreListActions) as [key, action]}
+      {#each Object.entries(moreListActions) as [key, action]}
         <!-- svelte-ignore a11y-invalid-attribute -->
         <a
           class="dropdown-item"

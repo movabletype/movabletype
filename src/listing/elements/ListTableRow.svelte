@@ -1,20 +1,21 @@
 <script>
   export let checked;
-  export let listStore;
+  export let hasListActions;
+  export let hasMobilePulldownActions;
   export let object;
-  export let opts;
+  export let store;
 
   function classes(index) {
-    const nameClass = listStore.showColumns[index].id;
+    const nameClass = store.showColumns[index].id;
     let classes;
-    if (listStore.hasMobileColumn()) {
-      if (listStore.getMobileColumnIndex() == index) {
+    if (store.hasMobileColumn()) {
+      if (store.getMobileColumnIndex() == index) {
         classes = "d-md-none";
       } else {
         classes = "d-none d-md-table-cell";
       }
     } else {
-      if (listStore.showColumns[index].primary) {
+      if (store.showColumns[index].primary) {
         classes = "";
       } else {
         classes = "d-none d-md-table-cell";
@@ -28,10 +29,10 @@
   }
 </script>
 
-{#if opts.hasListActions}
+{#if hasListActions}
   <td
-    class:d-none={!opts.hasMobilePulldownActions}
-    class:d-md-table-cell={!opts.hasMobilePulldownActions}
+    class:d-none={!hasMobilePulldownActions}
+    class:d-md-table-cell={!hasMobilePulldownActions}
   >
     {#if object[0]}
       <div class="form-check">

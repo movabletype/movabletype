@@ -1,18 +1,20 @@
 <script>
   import ListTableRow from "./ListTableRow.svelte";
 
-  export let listStore;
-  export let opts;
+  export let hasListActions;
+  export let hasMobilePulldownActions;
+  export let store;
+  export let zeroStateLabel;
 
   // FIXME
-  $: objects = listStore.objects || [];
+  $: objects = store.objects || [];
 
   function checkAllRows(e) {
-    listStore.trigger("check_all_rows");
+    store.trigger("check_all_rows");
   }
 
   function clickRow(e) {
-    listStore.trigger("reset_all_clicked_rows");
+    store.trigger("reset_all_clicked_rows");
 
     if (
       e.target.tagName == "A" ||
@@ -30,38 +32,38 @@
       }
       if ($mobileColumn.length > 0 && $mobileColumn.find("a").length > 0) {
         $mobileColumn.find("a")[0].click();
-        listStore.trigger("click_row", e.currentTarget.dataset.index);
+        store.trigger("click_row", e.currentTarget.dataset.index);
         return false;
       }
     }
     e.stopPropagation();
-    listStore.trigger("toggle_row", e.currentTarget.dataset.index);
+    store.trigger("toggle_row", e.currentTarget.dataset.index);
   }
 </script>
 
 {#if objects.length == 0}
   <tr>
-    <td colspan={listStore.columns.length + 1}>
-      {window.trans("No [_1] could be found.", opts.zeroStateLabel)}
+    <td colspan={store.columns.length + 1}>
+      {window.trans("No [_1] could be found.", zeroStateLabel)}
     </td>
   </tr>
 {/if}
 
-{#if listStore.pageMax > 1 && listStore.checkedAllRowsOnPage && !listStore.checkedAllRows}
+{#if store.pageMax > 1 && store.checkedAllRowsOnPage && !store.checkedAllRows}
   <tr style="background-color: #ffffff;">
     <td colspan={objects.length + 1}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a href="javascript:void(0);" on:click={checkAllRows}>
-        {window.trans("Select all [_1] items", listStore.count)}
+        {window.trans("Select all [_1] items", store.count)}
       </a>
     </td>
   </tr>
 {/if}
 
-{#if listStore.pageMax > 1 && listStore.checkedAllRows}
+{#if store.pageMax > 1 && store.checkedAllRows}
   <tr class="success">
     <td colspan={objects.length + 1}>
-      {window.trans("All [_1] items are selected", listStore.count)}
+      {window.trans("All [_1] items are selected", store.count)}
     </td>
   </tr>
 {/if}
@@ -74,9 +76,10 @@
   >
     <ListTableRow
       checked={obj.checked}
-      {listStore}
+      {hasListActions}
+      {hasMobilePulldownActions}
       object={obj.object}
-      {opts}
+      {store}
     />
   </tr>
 {/each}

@@ -1,20 +1,22 @@
 import ListTop from "./listing/elements/ListTop.svelte";
 
-const listTopTarget = document.querySelector('[data-is="list-top"]');
-if (!listTopTarget) {
-  throw new Error("Target element is not found");
+function getListTopTarget(): Element {
+  const listTopTarget = document.querySelector('[data-is="list-top"]');
+  if (!listTopTarget) {
+    throw new Error("Target element is not found");
+  }
+  return listTopTarget;
 }
 
-const listTop = new ListTop({
-  target: listTopTarget,
-  props: {
-    opts: JSON.parse(
-      (document.querySelector("#listing-opts") || {}).textContent || "{}"
-    ),
-    store: JSON.parse(
-      (document.querySelector("#listing-store") || {}).textContent || "{}"
-    ),
-  },
-});
+// TODO
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function svelteMountListTop(props: any): ListTop {
+  const listTopTarget = getListTopTarget();
+  const listTop = new ListTop({
+    target: listTopTarget,
+    props: props,
+  });
+  return listTop;
+}
 
-export { listTop };
+export { svelteMountListTop };
