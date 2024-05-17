@@ -2,6 +2,7 @@
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
   import DisplayOptionsLimit from "./DisplayOptionsLimit.svelte";
 
+  export let disableUserDispOption;
   export let store;
 
   function resetColumns() {
@@ -18,21 +19,20 @@
     </fieldset>
     <fieldset class="form-group">
       <div data-is="display-options-columns" id="display_columns-field">
-        <DisplayOptionsColumns {store} />
+        <DisplayOptionsColumns {disableUserDispOption} {store} />
       </div>
     </fieldset>
-    <div
-      if={!store.disableUserDispOption}
-      class="actions-bar actions-bar-bottom"
-    >
-      <!-- svelte-ignore a11y-invalid-attribute -->
-      <a
-        href="javascript:void(0);"
-        id="reset-display-options"
-        on:click={resetColumns}
-      >
-        {window.trans("Reset defaults")}
-      </a>
-    </div>
+    {#if !disableUserDispOption}
+      <div class="actions-bar actions-bar-bottom">
+        <!-- svelte-ignore a11y-invalid-attribute -->
+        <a
+          href="javascript:void(0);"
+          id="reset-display-options"
+          on:click={resetColumns}
+        >
+          {window.trans("Reset defaults")}
+        </a>
+      </div>
+    {/if}
   </div>
 </div>

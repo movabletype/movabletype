@@ -11,14 +11,12 @@
   import ListPagination from "./ListPagination.svelte";
   import ListTable from "./ListTable.svelte";
 
-  export let allpassFilter;
   export let buttonActions;
   export let disableUserDispOption;
   export let filterTypes;
   export let hasListActions;
   export let hasMobilePulldownActions;
   export let hasPulldownActions;
-  export let initialFilter;
   export let listActionClient;
   export let listActions;
   export let localeCalendarHeader;
@@ -77,20 +75,22 @@
 </script>
 
 <div class="d-none d-md-block mb-3">
-  <DisplayOptions {store} />
+  <DisplayOptions {disableUserDispOption} {store} />
 </div>
 <div id="actions-bar-top" class="row mb-5 mb-md-3">
   <div class="col">
-    <ListActions
-      {buttonActions}
-      {hasPulldownActions}
-      {listActions}
-      {listActionClient}
-      {moreListActions}
-      {plural}
-      {singular}
-      {store}
-    />
+    {#if useActions}
+      <ListActions
+        {buttonActions}
+        {hasPulldownActions}
+        {listActions}
+        {listActionClient}
+        {moreListActions}
+        {plural}
+        {singular}
+        {store}
+      />
+    {/if}
   </div>
   <div class="col-auto align-self-end list-counter">
     <ListCount count={store.count} limit={store.limit} page={store.page} />
