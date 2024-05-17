@@ -560,6 +560,7 @@ use vars qw( @ISA %Lexicon );
 	'Compose' => '投稿',
 	'Content Data' => 'コンテンツデータ',
 	'Content Types' => 'コンテンツタイプ',
+	'Convert File Paths' => 'ファイルパスの変換',
 	'Create Role' => '新しいロールを作成',
 	'Delete' => '削除',
 	'Design' => 'デザイン',
@@ -1523,6 +1524,7 @@ use vars qw( @ISA %Lexicon );
 	'Error sending e-mail ([_1]); Please fix the problem, then try again to recover your password.' => 'メールを送信できませんでした。問題を解決してから再度パスワードの再設定を行ってください: [_1]',
 	'Failed to send signal to the process in [_1].' => '[_1] が示すプロセスにシグナルを送信できませんでした。',
 	'File was not uploaded.' => 'ファイルがアップロードされませんでした。',
+	'Found a file path that does not belong to the site: [_1]' => 'サイトパス配下にないファイルパスが見つかりました: [_1]',
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'Image quality(JPEG) is [_1]' => 'JPEG 画像の品質は [_1] です',
@@ -1574,6 +1576,7 @@ use vars qw( @ISA %Lexicon );
 	'Temporary directory needs to be writable for import to work correctly.  Please check (Export)TempDir configuration directive.' => 'インポートするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
 	'Test email from Movable Type' => 'Movable Typeからのテストメール',
 	'That action ([_1]) is apparently not implemented!' => 'アクション([_1])が実装されていません。',
+	'The previous site path is invalid: [_1]' => '以前のサイトパスが正しくありません: [_1]',
 	'This is the test email sent by Movable Type.' => 'このメールはMovable Typeから送信されたテストメールです。',
 	'Uploaded file was not a valid Movable Type exported manifest file.' => 'アップロードされたファイルはMovable Typeで作成されたマニフェストファイルではありません。',
 	'User lockout interval' => 'サインインの間隔',
@@ -4085,6 +4088,25 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2023/cms/content_field_type_options/text_label.tmpl
 	'This block is only visible in the administration screen for comments.' => 'このブロックはコメントのため、管理画面でのみ表示されます。',
 	'__TEXT_LABEL_TEXT' => 'テキスト',
+
+## tmpl/admin2023/cms/convert_file_path.tmpl
+	'Absolute paths exist in the database. Do you want to convert them?' => '絶対パス形式のファイルパスが見つかりました。変換しますか。',
+	'Convert (c)' => '変換(c)',
+	'Convert' => '変換',
+	'File paths in the database do not seem to belong to this site. You need the previous site path to convert them.' => 'サイトパス配下にないファイルパスが見つかりました。変換には以前のサイトパスが必要です。',
+	'Movable Type stores the absolute paths of the published files. You may lose published files by rebuilding if you import data from the same server.' => 'Movable Typeは公開ファイルの絶対パスを保存するように設定されています。同一サーバーからのデータをインポートすると再構築時に公開ファイルが失われることがあります。',
+	'Movable Type stores the relative paths of the published files. These paths are portable, but third-party plugins might depend on absolute paths.' => 'Movable Typeは公開ファイルの相対パスを保存するように設定されています。相対パスは可搬性が高いですが、サードパーティープラグインの中には絶対パスに依存しているものがあるかもしれません。',
+	'Previous Site Path' => '以前のサイトパス',
+	'Relative paths exist in the database. Do you want to convert them?' => '相対パス形式のファイルパスが見つかりました。変換しますか。',
+	'You cannot convert file paths because the archive path of this site does not belong to the site path.' => 'このサイトはアーカイブパスがサイトパス配下にないのでファイルパスの変換はできません。',
+	q{You don't need to convert anything.} => q{変換の必要はありません。},
+
+## tmpl/admin2023/cms/convert_file_path_end.tmpl
+	'All the file paths are converted successfully!' => 'すべてのファイルパスが変換されました。',
+	'An error occurred during the convert process: [_1]' => '変換中にエラーが発生しました: [_1]',
+
+## tmpl/admin2023/cms/convert_file_path_start.tmpl
+	'Converting File Paths' => 'ファイルパスを変換しています',
 
 ## tmpl/admin2023/cms/dashboard/dashboard.tmpl
 	'Dashboard' => 'ダッシュボード',
