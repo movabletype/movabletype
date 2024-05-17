@@ -1114,8 +1114,12 @@ sub rebuild_file {
                 }
             }
 
+            my $relfile = $file;
+            if (MT->config->UseRelativeFilePath && File::Spec->file_name_is_absolute($file)) {
+                $relfile = File::Spec->abs2rel($file, $blog->site_path);
+            }
             $finfo = MT::FileInfo->set_info_for_url(
-                $rel_url, $file, $at,
+                $rel_url, $relfile, $at,
                 {   Blog        => $blog->id,
                     TemplateMap => $map->id,
                     Template    => $tmpl_id,

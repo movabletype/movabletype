@@ -1470,6 +1470,10 @@ sub rebuild_file {
                 }
             }
 
+            my $relfile = $file;
+            if (MT->config->UseRelativeFilePath && File::Spec->file_name_is_absolute($file)) {
+                $relfile = File::Spec->abs2rel($file, $blog->site_path);
+            }
             $finfo = MT::FileInfo->set_info_for_url(
                 $rel_url, $file, $at,
                 {   Blog        => $blog->id,
@@ -1890,8 +1894,12 @@ sub rebuild_indexes {
                     $_->remove();
                     MT::Util::Log->debug( 'Removed FileInfo for ' . $_->file_path );
                 }
+                my $relfile = $file;
+                if (MT->config->UseRelativeFilePath && File::Spec->file_name_is_absolute($file)) {
+                    $relfile = File::Spec->abs2rel($file, $blog->site_path);
+                }
                 $finfo = MT::FileInfo->set_info_for_url(
-                    $rel_url, $file, 'index',
+                    $rel_url, $relfile, 'index',
                     {   Blog     => $tmpl->blog_id,
                         Template => $tmpl->id,
                     }
