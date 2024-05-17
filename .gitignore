@@ -69,6 +69,7 @@ perltidy.LOG
 *.tdy
 *.ERR
 .php_cs.cache
+.php-cs-fixer.cache
 
 cover_db/
 

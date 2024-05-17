@@ -366,6 +366,7 @@ build-language-stamp
 ^node_modules/
 \.node-version$
 \.php_cs\.dist$
+\.php-cs-fixer\.php
 ^rollup.config.ts
 ^tsconfig.json
 \.babelrc
