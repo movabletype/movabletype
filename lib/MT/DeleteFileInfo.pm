@@ -24,4 +24,15 @@ __PACKAGE__->install_properties(
     }
 );
 
+
+sub absolute_file_path {
+    require MT::FileInfo;
+    MT::FileInfo::absolute_file_path(@_);
+}
+
+sub relative_file_path {
+    require MT::FileInfo;
+    MT::FileInfo::relative_file_path(@_);
+}
+
 1;
