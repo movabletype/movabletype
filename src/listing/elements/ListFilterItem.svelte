@@ -167,7 +167,7 @@
   <button
     class="close btn-close"
     aria-label="Close"
-    on:click={removeFilterItem}
+    on:click={() => removeFilterItem(this)}
   >
     <span aria-hidden="true">&times;</span>
   </button>
@@ -202,7 +202,7 @@
                 <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
                   href="javascript:void(0);"
-                  on:click={removeFilterItemContent}
+                  on:click={() => removeFilterItemContent(this)}
                 >
                   <SS
                     title={window.trans("Remove")}
