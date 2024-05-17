@@ -59,9 +59,10 @@
   <div class="col-12">
     <ul class="list-group">
       {#each listStore.currentFilter.items as item, index}
-        <li class="list-group-item" data-mt-list-item-index={index} {item}>
+        <li class="list-group-item" data-mt-list-item-index={index}>
           <ListFilterItem
             {currentFilter}
+            {item}
             {listFilterTopAddFilterItemContent}
             {listFilterTopRemoveFilterItem}
             {listFilterTopRemoveFilterItemContent}

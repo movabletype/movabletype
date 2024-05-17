@@ -1,6 +1,4 @@
 <script>
-  import { ListingStore, ListingOpts } from "../ListingStore.ts";
-
   export let listStore;
   export let opts;
   export let toggleAllRowsOnPage;

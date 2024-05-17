@@ -6,12 +6,13 @@
   import ListFilterItemField from "./ListFilterItemField.svelte";
 
   export let currentFilter;
+  export let item;
   export let listFilterTopAddFilterItemContent;
   export let listFilterTopRemoveFilterItem;
   export let listFilterTopRemoveFilterItemContent;
   export let opts;
 
-  $: filterTypeHash = opts.filterTypeHash.reduce((hash, filterType) => {
+  $: filterTypeHash = opts.filterTypes.reduce((hash, filterType) => {
     hash[filterType.type] = filterType;
     return hash;
   }, {});
@@ -170,22 +171,21 @@
   >
     <span aria-hidden="true">&times;</span>
   </button>
-  {#if opts.item.type == "pack"}
+  {#if item.type == "pack"}
     <div>
-      {#each opts.item.args.items as item, index}
-        {#if filterTypeHash[item.type]}
+      {#each item.args.items as i, index}
+        {#if filterTypeHash[i.type]}
           <div
             data-mt-list-item-content-index={index}
-            class={"filtertype type-" + item.type}
+            class={"filtertype type-" + i.type}
           >
             <div class="item-content form-inline">
               <ListFilterItemField
-                field={filterTypeHash[item.type].field}
-                {item}
-                {opts}
+                field={filterTypeHash[i.type].field}
+                item={i}
               />
               <!-- svelte-ignore a11y-invalid-attribute -->
-              {#if !filterTypeHash[item.type].singleton}
+              {#if !filterTypeHash[i.type].singleton}
                 <a
                   href="javascript:void(0);"
                   class="d-inline-block"
@@ -198,7 +198,7 @@
                   />
                 </a>
               {/if}
-              {#if !filterTypeHash[item.type].singleton && opts.item.args.items.length > 1}
+              {#if !filterTypeHash[i.type].singleton && item.args.items.length > 1}
                 <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
                   href="javascript:void(0);"
@@ -217,24 +217,24 @@
       {/each}
     </div>
   {/if}
-  {#if opts.item.type != "pack" && filterTypeHash[opts.item.type]}
+  {#if item.type != "pack" && filterTypeHash[item.type]}
     <div
       data-mt-list-item-content-index="0"
-      class={"filtertype type-" + opts.item.type}
+      class={"filtertype type-" + item.type}
     >
       <div class="item-content form-inline">
         <virtual
           data-is="list-filter-item-field"
-          field={filterTypeHash[opts.item.type].field}
-          item={opts.item}
+          field={filterTypeHash[item.type].field}
+          {item}
         />
         <ListFilterItemField
-          field={filterTypeHash[opts.item.type].field}
-          item={opts.item}
+          field={filterTypeHash[item.type].field}
+          {item}
           {opts}
         />
         <!-- svelte-ignore a11y-invalid-attribute -->
-        {#if !filterTypeHash[opts.item.type].singleton}
+        {#if !filterTypeHash[item.type].singleton}
           <a
             href="javascript:void(0);"
             class="d-inline-block"

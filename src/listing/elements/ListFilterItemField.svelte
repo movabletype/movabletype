@@ -1,32 +1,31 @@
 <script>
-  export let opts;
+  export let field;
+  export let item;
+
+  let root;
 
   function setValues() {
-    for (let key in opts.item.args) {
+    for (let key in item.args) {
       if (
-        typeof opts.item.args[key] != "string" &&
-        typeof opts.item.args[key] != "number"
+        typeof item.args[key] != "string" &&
+        typeof item.args[key] != "number"
       ) {
         continue;
       }
-      const selector = "." + opts.item.type + "-" + key;
+      const selector = "." + item.type + "-" + key;
       // TODO: fix this.root
       const elements = this.root.querySelectorAll(selector);
       Array.prototype.slice.call(elements).forEach(function (element) {
         if (element.tagName == "INPUT" || element.tagName == "SELECT") {
-          element.value = opts.item.args[key];
+          element.value = item.args[key];
         } else {
-          element.textContent = opts.item.args[key];
+          element.textContent = item.args[key];
         }
       });
     }
   }
 
-  // TODO
-  $: {
-    opts = opts;
-    setValues();
-  }
+  setValues();
 </script>
 
-{@html opts.field}
+{@html field}

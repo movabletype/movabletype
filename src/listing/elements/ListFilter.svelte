@@ -9,6 +9,7 @@
 
   function addFilterItem() {}
   function addFilterItemContent() {}
+  function createNewFilter() {}
   function isAllpassFilter() {}
   function isListFilterItemSelected() {}
   function removeFilterItem() {}
@@ -16,7 +17,13 @@
 </script>
 
 <div class="card-header">
-  <ListFilterHeader {currentFilter} {isAllpassFilter} {listStore} {opts} />
+  <ListFilterHeader
+    {currentFilter}
+    {isAllpassFilter}
+    listFilterTopCreateNewFilter={createNewFilter}
+    {listStore}
+    {opts}
+  />
 </div>
 <div id="list-filter-collapse" class="collapse">
   <div id="filter-detail" class="card-block p-3">

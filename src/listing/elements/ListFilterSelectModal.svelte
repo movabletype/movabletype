@@ -1,70 +1,63 @@
 <script>
   import { ListingOpts, ListingStore } from "../ListingStore.ts";
 
+  import SS from "../../ss/elements/SS.svelte";
+
+  export let listFilterTopCreateNewFilter;
   export let listStore;
 
-  function applyFilter(e) {
-    //    closeModal()
-    //    const filterId = e.target.parentElement.dataset.mtListFilterId
-    //    $ListingStore.trigger('apply_filter_by_id', filterId)
+  let isEditingFilter = {};
+
+  function applyFilter(filterId) {
+    closeModal();
+    listStore.trigger("apply_filter_by_id", filterId);
   }
 
-  function startEditingFilter(e) {
-    //    stopEditingAllFilters()
-    //    const filterData = e.target.parentElement.parentElement.dataset
-    //    isEditingFilter[filterData.mtListFilterId] = true
+  function startEditingFilter(filterId) {
+    stopEditingAllFilters();
+    isEditingFilter[filterId] = true;
   }
 
   function stopEditingAllFilters() {
-    $ListingStore.isEditingFilter = {};
+    isEditingFilter = {};
   }
 
-  function stopEditingFilter(e) {
-    //    const filterData = e.target.parentElement.parentElement.parentElement.dataset
-    //    isEditingFilter[filterData.mtListFilterId] = false
+  function stopEditingFilter(filterId) {
+    isEditingFilter[filterId] = false;
   }
 
   function closeModal() {
-    //    jQuery('#select-filter').modal('hide')
+    // FIXME
+    // jQuery("#select-filter").modal("hide");
+    bootstrap.Modal.getInstance("#select-filter").hide();
+    // bootstrap.Modal.getInstance(this.refs.modal).hide();
   }
 
-  function createNewFilter(e) {
-    //    closeModal();
-    //    store.trigger('open_filter_detail')
-    //    listFilterTop.createNewFilter()
-    //    listFilterTop.update()
+  function createNewFilter() {
+    closeModal();
+    listStore.trigger("open_filter_detail");
+    listFilterTopCreateNewFilter();
+    listStore = listStore;
   }
 
-  function renameFilter(e) {
-    //    const filterData = e.target.parentElement.parentElement.parentElement.dataset
-    //    store.trigger(
-    //      'rename_filter_by_id',
-    //      filterData.mtListFilterId,
-    //      refs.label.value
-    //    )
-    //    isEditingFilter[filterData.mtListFilterId] = false
+  function renameFilter(filterId, filterLabel) {
+    listStore.trigger("rename_filter_by_id", filterId, filterLabel);
+    isEditingFilter[filterId] = false;
   }
 
-  function removeFilter(e) {
-    //    const filterData = e.target.closest('[data-mt-list-filter-label]').dataset
-    //    const message = trans(
-    //      "Are you sure you want to remove filter '[_1]'?",
-    //      filterData.mtListFilterLabel
-    //    )
-    //    if (confirm(message) == false) {
-    //      return false
-    //    }
-    //    this.store.trigger('remove_filter_by_id', filterData.mtListFilterId)
-  }
-
-  function hasSystemFilter() {
-    return $ListingStore.filters.some(function (filter) {
-      return filter.can_save == "0";
-    });
+  function removeFilter(filterId, filterLabel) {
+    const message = window.trans(
+      "Are you sure you want to remove filter '[_1]'?",
+      filterLabel
+    );
+    if (confirm(message) == false) {
+      return false;
+    }
+    listStore.trigger("remove_filter_by_id", filterId);
   }
 </script>
 
-<div class="modal fade" id="select-filter" tabindex="-1">
+<div class="modal fade" id="select-filter" tabindex="-1" ref="modal">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -83,99 +76,99 @@
                   class="filter line"
                   data-mt-list-filter-id={filter.id}
                   data-mt-filter-label={filter.label}
-                />
-              {/if}
-              <!-- {#if filter.can_save === "1"}
-                <li
-                  class="filter line"
-                  data-mt-list-filter-id={id}
-                  data-mt-list-filter-label={filter.label}
                 >
-                  {#if !parent.isEditingFilter[id]}
-                    <a href="#" onclick={applyFilter}>
-                      {@html filter.label}
+                  {#if !isEditingFilter[filter.id]}
+                    <!-- svelte-ignore a11y-invalid-attribute -->
+                    <a href="#" on:click={applyFilter(filter.id)}>
+                      {filter.label}
                     </a>
-                    <div class="float-right d-none d-md-block">
-                      <a href="#" on:click={startEditingFilter}
-                        >[{trans("rename")}]</a
-                      >
+                    <div class="float-end d-none d-md-block">
+                      <!-- svelte-ignore a11y-invalid-attribute -->
+                      <a href="#" on:click={startEditingFilter(filter.id)}>
+                        {window.trans("rename")}
+                      </a>
+                      <!-- svelte-ignore a11y-invalid-attribute -->
                       <a
-                        href={$ListingOpts.StaticURI +
-                          "images/sprite.svg#ic_trash"}
+                        href="#"
                         class="d-inline-block"
-                        on:click={removeFilter}
-                        title={trans("Remove")}
+                        on:click={removeFilter(filter.id, filter.label)}
                       >
-                        <svg class="mt-icon mt-icon--sm">
-                          <use
-                            xlink:href={$ListingOpts.StaticURI +
-                              "images/sprite.svg#ic_trash"}
-                          />
-                        </svg>
+                        <SS
+                          title={window.trans("Remove")}
+                          class="mt-icon mt-icon--sm"
+                          href={window.StaticURI + "images/sprite.svg#ic_trash"}
+                        />
                       </a>
                     </div>
                   {/if}
-                  <div class="form-inline" if={parent.isEditingFilter[id]}>
-                    <div class="form-group form-group-sm">
-                      <input
-                        type="text"
-                        class="form-control rename-filter-input"
-                        value={filter.label}
-                        ref="label"
-                      />
-                      <button
-                        class="btn btn-default form-control"
-                        on:click={renameFilter}
-                      >
-                        {trans("Save")}
-                      </button>
-                      <button
-                        class="btn btn-default form-control"
-                        on:click={stopEditingFilter}
-                      >
-                        {trans("Cancel")}
-                      </button>
+                  {#if isEditingFilter[filter.id]}
+                    <div class="form-inline">
+                      <div class="form-group form-group-sm">
+                        <input
+                          type="text"
+                          class="form-control rename-filter-input"
+                          value={filter.label}
+                          ref="label"
+                        />
+                        <button
+                          class="btn btn-default form-control"
+                          on:click={renameFilter(filter.id, filter.label)}
+                        >
+                          {window.trans("Save")}
+                        </button>
+                        <button
+                          class="btn btn-default form-control"
+                          on:click={stopEditingFilter(filter.id)}
+                        >
+                          {window.trans("Cancel")}
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  {/if}
                 </li>
-              {/if} -->
+              {/if}
             {/each}
             <li class="filter line d-none d-md-block">
+              <!-- svelte-ignore a11y-invalid-attribute -->
               <a
-                href={window.StaticURI + "images/sprite.svg#ic_add"}
+                href="#"
                 id="new_filter"
                 class="icon-mini-left addnew create-new apply-link d-md-inline-block"
                 on:click={createNewFilter}
-                title={window.trans("Add")}
               >
-                <svg class="mt-icon mt-icon--sm">
-                  <use
-                    xlink:href={window.StaticURI + "images/sprite.svg#ic_add"}
-                  />
-                </svg>
+                <SS
+                  title={window.trans("Add")}
+                  class="mt-icon mt-icon--sm"
+                  href={window.StaticURI + "images/sprite.svg#ic_add"}
+                />
                 {window.trans("Create New")}
               </a>
             </li>
           </ul>
         </div>
-        <div class="filter-list-block" if={hasSystemFilter()}>
-          <h6 class="filter-list-label">{window.trans("Built in Filters")}</h6>
-          <ul id="built-in-filters" class="list-unstyled">
-            {#each $ListingStore.filters as { id, filter }}
-              <!-- {#if filter.can_save === "0"}
-                <li
-                  class="filter line"
-                  data-mt-list-filter-id={id}
-                  data-mt-list-filter-label={filter.label}
-                >
-                  <a href="#" on:click={applyFilter}>
-                    {@html filter.label}
-                  </a>
-                </li>
-              {/if} -->
-            {/each}
-          </ul>
-        </div>
+        {#if listStore.hasSystemFilter()}
+          <div class="filter-list-block">
+            <h6 class="filter-list-label">
+              {window.trans("Built in Filters")}
+            </h6>
+            <ul id="built-in-filters" class="list-unstyled">
+              {#each listStore.filters as filter}
+                {#if filter.can_save == "0"}
+                  <li
+                    class="filter line"
+                    data-mt-list-filter-id={filter.id}
+                    data-mt-list-filter-label={filter.label}
+                  >
+                    <!-- svelte-ignore a11y-invalid-attribute -->
+                    <a href="#" on:click={() => applyFilter(filter.id)}>
+                      {filter.label}
+                    </a>
+                  </li>
+                {/if}
+              {/each}
+            </ul>
+          </div>
+        {/if}
       </div>
     </div>
   </div>

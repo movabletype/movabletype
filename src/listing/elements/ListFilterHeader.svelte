@@ -3,6 +3,7 @@
 
   export let currentFilter;
   export let isAllpassFilter;
+  export let listFilterTopCreateNewFilter;
   export let listStore;
   export let opts;
 
@@ -30,7 +31,7 @@
         >
           <u>{window.trans(currentFilter.label)}</u>
         </a>
-        <ListFilterSelectModal {listStore} />
+        <ListFilterSelectModal {listFilterTopCreateNewFilter} {listStore} />
       </li>
       <li class="list-inline-item">
         {#if isAllpassFilter() == false}
