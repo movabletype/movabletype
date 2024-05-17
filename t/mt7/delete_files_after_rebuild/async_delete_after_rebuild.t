@@ -132,10 +132,11 @@ sub diff_should_be {
 
     my @current_files = list_files();
     my $diff          = Array::Diff->diff( \@prev_files, \@current_files );
-    my @added         = @{ $diff->added };
-    my @deleted       = @{ $diff->deleted };
+    my @added         = map { File::Spec->canonpath($_) } @{ $diff->added };
+    my @deleted       = map { File::Spec->canonpath($_) } @{ $diff->deleted };
     note explain \@added;
     note explain \@deleted;
+
     if ( !@delta ) {
         is @added => $expected, "$expected files are added";
         ok !@deleted, "nothing should be deleted" or note explain \@deleted;
