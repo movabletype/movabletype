@@ -11,7 +11,7 @@
   export let listFilterTopAddFilterItemContent;
   export let listFilterTopRemoveFilterItem;
   export let listFilterTopRemoveFilterItemContent;
-  export let localeCalendarHeader;
+  // export let localeCalendarHeader;
 
   $: filterTypeHash = filterTypes.reduce((hash, filterType) => {
     hash[filterType.type] = filterType;
