@@ -10,6 +10,7 @@
   export let listFilterTopRemoveFilterItem;
   export let listFilterTopRemoveFilterItemContent;
   export let localeCalendarHeader;
+  export let objectLabel;
   export let store;
 
   function addFilterItem(e) {
@@ -77,6 +78,6 @@
 </div>
 <div class="row">
   <div class="col-12">
-    <ListFilterButtons {currentFilter} {store} />
+    <ListFilterButtons {currentFilter} {objectLabel} {store} />
   </div>
 </div>

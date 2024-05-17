@@ -104,6 +104,7 @@
           {filterTypes}
           {listActionClient}
           {localeCalendarHeader}
+          {objectLabel}
           {store}
         />
       {/if}

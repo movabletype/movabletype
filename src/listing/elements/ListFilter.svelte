@@ -5,6 +5,7 @@
   export let filterTypes;
   export let listActionClient;
   export let localeCalendarHeader;
+  export let objectLabel;
   export let store;
 
   $: currentFilter = store.currentFilter;
@@ -39,6 +40,7 @@
       listFilterTopRemoveFilterItem={removeFilterItem}
       listFilterTopRemoveFilterItemContent={removeFilterItemContent}
       {localeCalendarHeader}
+      {objectLabel}
       {store}
     />
   </div>

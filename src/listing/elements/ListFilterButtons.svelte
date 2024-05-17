@@ -2,6 +2,7 @@
   import ListFilterSaveModal from "./ListFilterSaveModal.svelte";
 
   export let currentFilter;
+  export let objectLabel;
   export let store;
 
   function applyFilter(e) {
@@ -21,7 +22,7 @@
       this.listFilterTop.getItemValues();
       store.trigger("save_filter", currentFilter);
     } else {
-      const filterLabel = listStore.getNewFilterLabel(opts.objectLabel);
+      const filterLabel = listStore.getNewFilterLabel(objectLabel);
       this.tags["list-filter-save-modal"].openModal({
         filterLabel: filterLabel,
       });
