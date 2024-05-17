@@ -23,14 +23,14 @@
     initializeOptionWithBlank();
   });
 
-  function addFilterItemContent(e) {
-    const itemIndex = getListItemIndex(e.target);
-    const contentIndex = getListItemContentIndex(e.target);
+  function addFilterItemContent(target) {
+    const itemIndex = getListItemIndex(target);
+    const contentIndex = getListItemContentIndex(target);
     let item = currentFilter.items[itemIndex];
     if (item.type == "pack") {
       item = item.args.items[contentIndex];
     }
-    jQuery(e.target)
+    jQuery(target)
       .parent()
       .each(function () {
         jQuery(this)
@@ -151,14 +151,14 @@
     //   });
   }
 
-  function removeFilterItem(e) {
-    const itemIndex = getListItemIndex(e.target);
+  function removeFilterItem(target) {
+    const itemIndex = getListItemIndex(target);
     listFilterTopRemoveFilterItem(itemIndex);
   }
 
-  function removeFilterItemContent(e) {
-    const itemIndex = getListItemIndex(e.target);
-    const contentIndex = getListItemContentIndex(e.target);
+  function removeFilterItemContent(target) {
+    const itemIndex = getListItemIndex(target);
+    const contentIndex = getListItemContentIndex(target);
     listFilterTopRemoveFilterItemContent(itemIndex, contentIndex);
   }
 </script>
@@ -189,7 +189,7 @@
                 <a
                   href="javascript:void(0);"
                   class="d-inline-block"
-                  on:click={addFilterItemContent}
+                  on:click={() => addFilterItemContent(this)}
                 >
                   <SS
                     title={window.trans("Add")}
@@ -234,7 +234,7 @@
           <a
             href="javascript:void(0);"
             class="d-inline-block"
-            on:click={addFilterItemContent}
+            on:click={() => addFilterItemContent(this)}
           >
             <SS
               title={window.trans("Add")}
