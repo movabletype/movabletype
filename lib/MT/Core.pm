@@ -2243,6 +2243,7 @@ BEGIN {
             'PHPErrorLogFilePath' => undef,
             'LogEachFilePublishedInTheBackground' => undef,
             'TrimFilePath' => { default => 0 },
+            'UseRelativeFilePath' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
