@@ -2022,7 +2022,11 @@ sub adjust_sitepath {
                 $file_path =~ s/$quoted_old_delim/$delim/g;
             }
 
-            $fi->file_path( File::Spec->catfile( $path, $file_path ) );
+            if (MT->config->UseRelativeFilePath) {
+                $fi->file_path($file_path);
+            } else {
+                $fi->file_path( File::Spec->catfile( $path, $file_path ) );
+            }
 
             $app->print_encode(
                 $app->translate(
