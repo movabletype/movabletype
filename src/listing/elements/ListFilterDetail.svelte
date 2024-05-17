@@ -4,7 +4,7 @@
 
   export let currentFilter;
   export let filterTypes;
-  export let isListFilterItemSelected;
+  export let isFilterItemSelected;
   export let listFilterTopAddFilterItem;
   export let listFilterTopAddFilterItemContent;
   export let listFilterTopGetItemValues;
@@ -43,7 +43,7 @@
               {#if filterType.editable}
                 <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
-                  class="{isListFilterItemSelected(filterType.type)
+                  class="{isFilterItemSelected(filterType.type)
                     ? 'disabled '
                     : ' '}dropdown-item"
                   href="#"
