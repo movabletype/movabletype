@@ -1,6 +1,4 @@
 <script>
-  import { ListingOpts, ListingStore } from "../ListingStore.ts";
-
   import SS from "../../ss/elements/SS.svelte";
 
   export let listFilterTopCreateNewFilter;

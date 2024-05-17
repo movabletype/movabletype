@@ -1,8 +1,6 @@
 <script>
   import { onMount } from "svelte";
 
-  import { ListingOpts, ListingStore } from "../ListingStore.ts";
-
   import DisplayOptions from "./DisplayOptions.svelte";
   import DisplayOptionsForMobile from "./DisplayOptionsForMobile.svelte";
   import ListActions from "./ListActions.svelte";
@@ -30,12 +28,6 @@
   export let singular;
   export let store;
   export let zeroStateLabel;
-
-  let opts = {};
-  ListingOpts.set(opts);
-  ListingStore.set(store);
-
-  // export let listStore = window.listStore;
 
   onMount(() => {
     store.trigger("load_list");
