@@ -262,7 +262,7 @@ subtest 'MTC-27376' => sub {
         my @rows = MT::FileInfo->load(
             { blog_id => $blog_id, archive_type => $at } );
         for my $row (@rows) {
-            my $path = $row->file_path;
+            my $path = $row->absolute_file_path($blog);
             ok -f $path, $path;
         }
         $map{$at} = \@rows;
@@ -312,7 +312,7 @@ subtest 'MTC-27376' => sub {
             { blog_id => $blog_id, archive_type => $at } );
         is scalar @{ $map{$at} } => scalar @rows, "fileinfo: $at";
         for my $row ( @{ $map{$at} } ) {
-            my $path = $row->file_path;
+            my $path = $row->absolute_file_path($blog);
             ok -f $path, $path;
         }
     }
@@ -345,7 +345,7 @@ subtest 'MTC-27376' => sub {
             { blog_id => $blog_id, archive_type => $at } );
         is scalar @{ $map{$at} } => scalar @rows, "fileinfo: $at";
         for my $row ( @{ $map{$at} } ) {
-            my $path = $row->file_path;
+            my $path = $row->absolute_file_path($blog);
             ok -f $path, $path;
         }
 

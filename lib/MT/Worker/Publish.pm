@@ -56,6 +56,7 @@ sub work {
     while ( my $job = $job_iter->() ) {
         my $fi_id = $job->uniqkey;
         my $fi    = MT::FileInfo->load($fi_id);
+        my $file  = $fi->absolute_file_path;
 
         # FileInfo record missing? Strange, but ignore and continue.
         unless ($fi) {
@@ -81,13 +82,13 @@ sub work {
 
         require MT::FileMgr;
         my $fmgr  = MT::FileMgr->new('Local');
-        my $mtime = $fmgr->file_mod_time( $fi->file_path );
+        my $mtime = $fmgr->file_mod_time($file);
 
         my $throttle = MT::PublishOption::get_throttle($fi);
 
         # think about-- throttle by archive type or by template
         if ( $throttle->{type} == MT::PublishOption::SCHEDULED() ) {
-            if ( -f $fi->file_path ) {
+            if ( -f $file ) {
                 my $time = time;
                 if ( $time - $mtime < $throttle->{interval} ) {
 
@@ -120,19 +121,18 @@ sub work {
                 $mt->log({
                     blog_id  => $blog_id,
                     message  => $mt->translate('Background Publishing Done'),
-                    metadata => log_time() . ' ' . $mt->translate( 'Published: [_1] ([_2] bytes)', $fi->file_path, (-s $fi->file_path) ),
+                    metadata => log_time() . ' ' . $mt->translate( 'Published: [_1] ([_2] bytes)', $file, (-s $file) ),
                     category => "publish",
                     level    => MT::Log::INFO(),
                 });
             } else {
-                push @{ $published{$blog_id} }, sprintf '%s %s (%s%s)', log_time(), $fi->file_path, (-s $fi->file_path) || 0, $bytes;
+                push @{ $published{$blog_id} }, sprintf '%s %s (%s%s)', log_time(), $file, (-s $file) || 0, $bytes;
             }
             $rebuilt++;
         }
         else {
             my $error  = $mt->publisher->errstr;
-            my $errmsg = $mt->translate( "Error rebuilding file [_1]:[_2]",
-                $fi->file_path, $error );
+            my $errmsg = $mt->translate( "Error rebuilding file [_1]:[_2]", $file, $error );
             MT::TheSchwartz->debug($errmsg);
             $job->permanent_failure($errmsg);
             require MT::Log;

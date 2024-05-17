@@ -26,6 +26,7 @@ my $app = MT::App::DataAPI->new;
 
 my $objs = MT::Test::Fixture::ArchiveType->load_objs;
 
+my $site    = $objs->{website}{site_for_archive_test};
 my $site_id = $objs->{website}{site_for_archive_test}->id;
 
 my $ct_map = $objs->{content_type}{ct_with_same_catset};
@@ -82,7 +83,7 @@ sub publish_tests_for_create {
 
                 require MT::FileInfo;
                 my @fileinfo = MT::FileInfo->load( { cd_id => $cd->id } );
-                ok !grep( { !-f $_->file_path } @fileinfo ),
+                ok !grep( { !-f $_->absolute_file_path($site) } @fileinfo ),
                     'all the published files exist';
             },
         }
@@ -127,7 +128,7 @@ sub publish_tests_for_create {
 
                 require MT::FileInfo;
                 my @fileinfo = MT::FileInfo->load( { cd_id => $cd->id } );
-                ok !grep( { -f $_->file_path } @fileinfo ),
+                ok !grep( { -f $_->absolute_file_path($site) } @fileinfo ),
                     'all the published files do not exist';
             },
         }

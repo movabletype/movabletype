@@ -384,7 +384,7 @@ sub update {
         next if $finfo->archive_type eq 'ContentType';
         my %params = (
             Blog        => $site,
-            File        => $finfo->file_path,
+            File        => $finfo->absolute_file_path($site),
             ArchiveType => $finfo->archive_type,
             FileInfo    => $finfo,
             ContentData => $orig_content_data,

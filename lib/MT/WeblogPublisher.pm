@@ -1270,7 +1270,7 @@ sub remove_marked_files {
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     for my $info (@infos) {
-        my $file = $info->file_path;
+        my $file = $info->absolute_file_path($blog);
         $info->remove;
         if ( MT->model('fileinfo')->exist( { blog_id => $info->blog_id, file_path => $file } ) ) {
             next;
@@ -1438,7 +1438,7 @@ sub rebuild_file {
         my @finfos = MT::FileInfo->load( \%terms );
 
         if (   ( scalar @finfos == 1 )
-            && ( $finfos[0]->file_path eq $file )
+            && ( $finfos[0]->absolute_file_path($blog) eq $file )
             && ( ( $finfos[0]->url || '' ) eq $rel_url )
             && ( $finfos[0]->template_id == $tmpl_id ) )
         {
@@ -1460,7 +1460,7 @@ sub rebuild_file {
                     if ( MT->config('DeleteFilesAtRebuild') ) {
                         $mt->_delete_archive_file(
                             Blog        => $blog,
-                            File        => $finfo->file_path,
+                            File        => $finfo->absolute_file_path($blog),
                             ArchiveType => $at,
                             ( $archiver->entry_based && $entry )
                             ? ( Entry => $entry->id )
@@ -1516,7 +1516,7 @@ sub rebuild_file {
             if ( MT->config->DeleteFilesAtRebuild ) {
                 $mt->_delete_archive_file(
                     Blog        => $blog,
-                    File        => $finfo->file_path,
+                    File        => $finfo->absolute_file_path($blog),
                     ArchiveType => $at
                 );
             }
@@ -1554,9 +1554,10 @@ sub rebuild_file {
             category     => $category,
         );
 
+        my $file = $finfo->absolute_file_path($blog);
         rename(
-            $finfo->file_path,    # is this just $file ?
-            $finfo->file_path . '.static'
+            $file,    # is this just $file ?
+            $file . '.static'
         );
 
         ## If the FileInfo is set to static, flip it to virtual.
@@ -1877,7 +1878,7 @@ sub rebuild_indexes {
                 }
             );
             if (   ( scalar @finfos == 1 )
-                && ( $finfos[0]->file_path eq $file )
+                && ( $finfos[0]->absolute_file_path($blog) eq $file )
                 && ( ( $finfos[0]->url || '' ) eq $rel_url ) )
             {
                 $finfo = $finfos[0];

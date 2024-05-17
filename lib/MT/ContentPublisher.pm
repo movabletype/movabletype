@@ -1081,7 +1081,7 @@ sub rebuild_file {
         my @finfos = MT::FileInfo->load( \%terms );
 
         if (   ( scalar @finfos == 1 )
-            && ( $finfos[0]->file_path eq $file )
+            && ( $finfos[0]->absolute_file_path($blog) eq $file )
             && ( ( $finfos[0]->url || '' ) eq $rel_url )
             && ( $finfos[0]->template_id == $tmpl_id ) )
         {
@@ -1103,7 +1103,7 @@ sub rebuild_file {
                     if ( MT->config('DeleteFilesAtRebuild') ) {
                         $mt->_delete_archive_file(
                             Blog        => $blog,
-                            File        => $fi->file_path,
+                            File        => $fi->absolute_file_path($blog),
                             ArchiveType => $at,
                             (   $any_contenttype_based && $content_data
                                 ? ( ContentData => $content_data->id )
@@ -1170,7 +1170,7 @@ sub rebuild_file {
             if ( MT->config->DeleteFilesAtRebuild ) {
                 $mt->_delete_archive_file(
                     Blog        => $blog,
-                    File        => $finfo->file_path,
+                    File        => $finfo->absolute_file_path($blog),
                     ArchiveType => $at
                 );
             }
@@ -1210,9 +1210,10 @@ sub rebuild_file {
             contentdata  => $content_data,
         );
 
+        my $file_path = $finfo->absolute_file_path($blog);
         rename(
-            $finfo->file_path,    # is this just $file ?
-            $finfo->file_path . '.static'
+            $file_path,    # is this just $file ?
+            $file_path . '.static'
         );
 
         ## If the FileInfo is set to static, flip it to virtual.

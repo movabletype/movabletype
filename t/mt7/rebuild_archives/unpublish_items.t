@@ -137,13 +137,13 @@ subtest 'MTC-26550: entries' => sub {
         { blog_id => $blog_id, archive_type => 'Individual' } );
     is @individuals => 2, "2 FileInfo";
     my ($entry_file)
-        = ( grep { $_->entry_id == $entry->id } @individuals )[0]->file_path;
+        = ( grep { $_->entry_id == $entry->id } @individuals )[0]->absolute_file_path($blog);
     ok -f $entry_file, "$entry_file exists";
 
     my @monthly = MT::FileInfo->load(
         { blog_id => $blog_id, archive_type => 'Monthly' } );
     is @monthly => 1, "1 FileInfo";
-    my $file = $monthly[0]->file_path;
+    my $file = $monthly[0]->absolute_file_path($blog);
     ok -f $file, "$file exists";
     my $html = _slurp($file);
     is $html => "Entry 2: second_entry\nEntry 1: first_entry\n",
@@ -219,13 +219,13 @@ subtest 'MTC-26550: content data' => sub {
     my @cds = MT::FileInfo->load(
         { blog_id => $blog_id, archive_type => 'ContentType' } );
     is @cds => 2, "2 FileInfo";
-    my ($cd_file) = ( grep { $_->cd_id == $cd->id } @cds )[0]->file_path;
+    my ($cd_file) = ( grep { $_->cd_id == $cd->id } @cds )[0]->absolute_file_path($blog);
     ok -f $cd_file, "$cd_file exists";
 
     my @monthly = MT::FileInfo->load(
         { blog_id => $blog_id, archive_type => 'ContentType-Monthly' } );
     is @monthly => 1, "1 FileInfo";
-    my $file = $monthly[0]->file_path;
+    my $file = $monthly[0]->absolute_file_path($blog);
     ok -f $file, "$file exists";
     my $html = _slurp($file);
     is $html => "Content 2: second_cd\nContent 1: first_cd\n",

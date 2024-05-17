@@ -1253,7 +1253,7 @@ __BODY__
                 ok my ($fileinfo) = grep {
                     $_->file_path =~ /test-api-permission-entry-publish/
                 } MT::FileInfo->load;
-                ok -f $fileinfo->file_path, 'published file exists';
+                ok -f $fileinfo->absolute_file_path($blog), 'published file exists';
             },
         },
         {   path   => '/v3/sites/1/entries',

@@ -110,7 +110,7 @@ sub list_files {
     if ( $ENV{MT_TEST_PUBLISH_DYNAMIC} ) {
         return
             sort { $a cmp $b }
-            uniq map { $_->file_path } MT::FileInfo->load( { blog_id => $blog_id } );
+            uniq map { $_->absolute_file_path($site) } MT::FileInfo->load( { blog_id => $blog_id } );
     }
     else {
         return $test_env->files($site_root);
