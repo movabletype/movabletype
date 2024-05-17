@@ -8,6 +8,7 @@ our $test_env;
 
 BEGIN {
     $test_env = MT::Test::Env->new(
+        UseRelativeFilePath     => $ENV{MT_TEST_USE_RELATIVE_FILE_PATH} // 0,
         DeleteFilesAfterRebuild => $ENV{MT_TEST_DELETE_FILES_AFTER_REBUILD} // 1,
         DeleteFilesAtRebuild    => 1,
         RebuildAtDelete         => 1,
