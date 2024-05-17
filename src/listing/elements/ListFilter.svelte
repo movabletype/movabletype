@@ -14,10 +14,13 @@
   function addFilterItem() {}
   function addFilterItemContent() {}
   function createNewFilter() {}
+  function getItemValues() {}
   function isAllpassFilter() {}
   function isListFilterItemSelected() {}
+  function isUserFilter() {}
   function removeFilterItem() {}
   function removeFilterItemContent() {}
+  function validateFilterDetails() {}
 </script>
 
 <div class="card-header">
@@ -37,8 +40,11 @@
       {isListFilterItemSelected}
       listFilterTopAddFilterItem={addFilterItem}
       listFilterTopAddFilterItemContent={addFilterItemContent}
+      listFilterTopGetItemValues={getItemValues}
+      listFilterTopIsUserFilter={isUserFilter}
       listFilterTopRemoveFilterItem={removeFilterItem}
       listFilterTopRemoveFilterItemContent={removeFilterItemContent}
+      listFilterTopValidateFilterDetails={validateFilterDetails}
       {localeCalendarHeader}
       {objectLabel}
       {store}

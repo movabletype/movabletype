@@ -2,38 +2,43 @@
   import ListFilterSaveModal from "./ListFilterSaveModal.svelte";
 
   export let currentFilter;
+  export let listFilterTopGetItemValues;
+  export let listFilterTopIsUserFilter;
+  export let listFilterTopValidateFilterDetails;
   export let objectLabel;
   export let store;
 
-  function applyFilter(e) {
-    if (!this.listFilterTop.validateFilterDetails()) {
+  let listFilterSaveModal;
+
+  function applyFilter() {
+    if (!listFilterTopValidateFilterDetails()) {
       return false;
     }
-    this.listFilterTop.getItemValues();
+    listFilterTopGetItemValues();
     const noFilterId = true;
     store.trigger("apply_filter", currentFilter, noFilterId);
   }
 
-  function saveFilter(e) {
-    if (!this.listFilterTop.validateFilterDetails()) {
+  function saveFilter() {
+    if (!listFilterTopValidateFilterDetails()) {
       return false;
     }
-    if (this.listFilterTop.isUserFilter()) {
-      this.listFilterTop.getItemValues();
+    if (listFilterTopIsUserFilter()) {
+      listFilterTopGetItemValues();
       store.trigger("save_filter", currentFilter);
     } else {
-      const filterLabel = listStore.getNewFilterLabel(objectLabel);
-      this.tags["list-filter-save-modal"].openModal({
+      const filterLabel = store.getNewFilterLabel(objectLabel);
+      listFilterSaveModal.openModal({
         filterLabel: filterLabel,
       });
     }
   }
 
-  function saveAsFilter(e) {
-    if (!this.listFilterTop.validateFilterDetails()) {
+  function saveAsFilter() {
+    if (!listFilterTopValidateFilterDetails()) {
       return false;
     }
-    this.tags["list-filter-save-modal"].openModal({
+    listFilterSaveModal.openModal({
       filterLabel: currentFilter.label,
       saveAs: true,
     });
@@ -59,4 +64,4 @@
     {window.trans("Save As")}
   </button>
 {/if}
-<ListFilterSaveModal {store} />
+<ListFilterSaveModal bind:this={listFilterSaveModal} {store} />

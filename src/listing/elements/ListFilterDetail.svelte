@@ -7,8 +7,11 @@
   export let isListFilterItemSelected;
   export let listFilterTopAddFilterItem;
   export let listFilterTopAddFilterItemContent;
+  export let listFilterTopGetItemValues;
+  export let listFilterTopIsUserFilter;
   export let listFilterTopRemoveFilterItem;
   export let listFilterTopRemoveFilterItemContent;
+  export let listFilterTopValidateFilterDetails;
   export let localeCalendarHeader;
   export let objectLabel;
   export let store;
@@ -78,6 +81,13 @@
 </div>
 <div class="row">
   <div class="col-12">
-    <ListFilterButtons {currentFilter} {objectLabel} {store} />
+    <ListFilterButtons
+      {currentFilter}
+      {listFilterTopGetItemValues}
+      {listFilterTopIsUserFilter}
+      {listFilterTopValidateFilterDetails}
+      {objectLabel}
+      {store}
+    />
   </div>
 </div>
