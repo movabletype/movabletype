@@ -1272,7 +1272,7 @@ sub remove_marked_files {
     for my $info (@infos) {
         my $file = $info->absolute_file_path($blog);
         $info->remove;
-        if ( MT->model('fileinfo')->exist( { blog_id => $info->blog_id, file_path => $file } ) ) {
+        if ( MT->model('fileinfo')->exist( { blog_id => $info->blog_id, file_path => [ $file, $info->relative_file_path($blog) ] } ) ) {
             next;
         }
         $fmgr->delete($file);
