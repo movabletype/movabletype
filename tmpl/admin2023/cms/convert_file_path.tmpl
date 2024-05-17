@@ -1,0 +1,61 @@
+<mt:setvarblock name="page_title"><__trans phrase="Convert File Paths"></mt:setvarblock>
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="restore" value="1">
+
+<mt:setvarblock name="page_content">
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="danger"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+
+<div id="convert-panel">
+<mt:if name="use_relative">
+  <p class="page-desc"><__trans phrase="Movable Type stores the relative paths of the published files. These paths are portable, but third-party plugins might depend on absolute paths."></p>
+<mt:else>
+  <p class="page-desc"><__trans phrase="Movable Type stores the absolute paths of the published files. You may lose published files by rebuilding if you import data from the same server."></p>
+</mt:if>
+<mt:if name="cannot_convert">
+  <p><__trans phrase="You cannot convert file paths because the archive path of this site does not belong to the site path."></p>
+<mt:elseif name="has_something_to_convert">
+  <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="convert_file_path" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+    <mt:if name="requires_previous_site_path">
+      <p><__trans phrase="File paths in the database do not seem to belong to this site. You need the previous site path to convert them."></p>
+      <mtapp:setting
+        id="previous_site_path"
+        label="<__trans phrase="Previous Site Path">"
+        label_for="previous_site_path">
+        <input type="text" name="previous_site_path" id="previous_site_path" class="form-control blog-path-text text path required" value="" />
+      </mtapp:setting>
+    <mt:elseif name="relative">
+      <p><__trans phrase="Absolute paths exist in the database. Do you want to convert them?"></p>
+    <mt:else>
+      <p><__trans phrase="Relative paths exist in the database. Do you want to convert them?"></p>
+    </mt:if>
+
+    <mt:setvarblock name="action_buttons">
+      <button
+         type="submit"
+         accesskey="c"
+         title="<__trans phrase="Convert (c)">"
+         class="restore action primary button btn btn-primary">
+        <__trans phrase="Convert">
+      </button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+  </form>
+<mt:else>
+  <p><__trans phrase="You don't need to convert anything."></p>
+</mt:if>
+</div>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

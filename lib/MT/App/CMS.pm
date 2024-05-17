@@ -276,6 +276,8 @@ sub core_methods {
         'system_check'             => "${pkg}Tools::system_check",
         'start_reboot'             => "${pkg}Tools::start_reboot",
         'reboot'                   => "${pkg}Tools::reboot",
+        'start_convert_file_path'  => "${pkg}Tools::start_convert_file_path",
+        'convert_file_path'        => "${pkg}Tools::convert_file_path",
         'dialog_refresh_templates' =>
             "${pkg}Template::dialog_refresh_templates",
         'dialog_clone_blog' => "${pkg}Blog::clone",
@@ -2412,6 +2414,16 @@ sub core_menus {
                 return 0;
             },
             view => ['system'],
+        },
+        'tools:convert_file_path' => {
+            label     => "Convert File Paths",
+            order     => 800,
+            mode      => 'start_convert_file_path',
+            condition => sub {
+                return 1 if $app->user->is_superuser;
+                return 0;
+            },
+            view => ['website', 'blog'],
         },
         'tools:reboot' => {
             label => "Reboot",
