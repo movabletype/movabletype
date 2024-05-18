@@ -85,7 +85,7 @@
     {/if}
   </div>
   <div class="col-auto align-self-end list-counter">
-    <ListCount count={store.count} limit={store.limit} page={store.page} />
+    <ListCount {store} />
   </div>
 </div>
 <div class="row mb-5 mb-md-3">
