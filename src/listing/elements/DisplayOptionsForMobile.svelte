@@ -1,12 +1,9 @@
 <script>
-  export let limit;
+  export let changeLimit;
   export let store;
 
+  $: limit = store.limit;
   $: limitToString = limit.toString();
-
-  function changeLimit() {
-    store.trigger("update_limit", limitToString);
-  }
 </script>
 
 <div class="row d-md-none">

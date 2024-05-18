@@ -122,4 +122,4 @@
     <ListPagination {store} />
   </div>
 {/if}
-<DisplayOptionsForMobile limit={store.limit} {store} />
+<DisplayOptionsForMobile {changeLimit} {store} />
