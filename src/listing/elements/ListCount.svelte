@@ -1,5 +1,6 @@
-<script>
-  export let store;
+<script lang="typescript">
+  /* eslint @typescript-eslint/no-explicit-any: 0 */
+  export let store: any;
 
   $: count = store.count == null ? 0 : store.count;
   $: limit = store.limit == null ? 0 : store.limit;
