@@ -1,6 +1,7 @@
 <script>
   import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
 
+  export let changeLimit;
   export let disableUserDispOption;
   export let store;
 </script>
@@ -20,6 +21,6 @@
 </div>
 <div class="row">
   <div data-is="display-options-detail" class="col-12">
-    <DisplayOptionsDetail {disableUserDispOption} {store} />
+    <DisplayOptionsDetail {changeLimit} {disableUserDispOption} {store} />
   </div>
 </div>

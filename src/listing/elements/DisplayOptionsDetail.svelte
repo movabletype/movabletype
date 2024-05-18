@@ -2,6 +2,7 @@
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
   import DisplayOptionsLimit from "./DisplayOptionsLimit.svelte";
 
+  export let changeLimit;
   export let disableUserDispOption;
   export let store;
 
@@ -14,7 +15,7 @@
   <div class="card card-block p-3">
     <fieldset class="form-group">
       <div data-is="display-options-limit" id="per_page-field">
-        <DisplayOptionsLimit limit={store.limit} {store} />
+        <DisplayOptionsLimit {changeLimit} {store} />
       </div>
     </fieldset>
     <fieldset class="form-group">

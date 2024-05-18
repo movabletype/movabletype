@@ -47,6 +47,10 @@
     store = store;
   });
 
+  function changeLimit(e) {
+    store.trigger("update_limit", e.currentTarget.value);
+  }
+
   function updateSubFields() {
     store.columns.forEach(function (column) {
       column.sub_fields.forEach(function (subField) {
@@ -67,7 +71,7 @@
 </script>
 
 <div class="d-none d-md-block mb-3">
-  <DisplayOptions {disableUserDispOption} {store} />
+  <DisplayOptions {changeLimit} {disableUserDispOption} {store} />
 </div>
 <div id="actions-bar-top" class="row mb-5 mb-md-3">
   <div class="col">
