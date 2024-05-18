@@ -1,14 +1,15 @@
-<script>
-  export let disableUserDispOption;
-  export let store;
+<script lang="typescript">
+  export let disableUserDispOption: boolean;
+  /* eslint @typescript-eslint/no-explicit-any: 0 */
+  export let store: any;
 
-  function toggleColumn(columnId) {
+  const toggleColumn = (columnId: string): void => {
     store.trigger("toggle_column", columnId);
-  }
+  };
 
-  function toggleSubField(subFieldId) {
+  const toggleSubField = (subFieldId: string): void => {
     store.trigger("toggle_sub_field", subFieldId);
-  }
+  };
 </script>
 
 <div class="field-header">
@@ -44,7 +45,6 @@
               <input
                 type="checkbox"
                 id={subField.id}
-                pid={subField.parent_id}
                 class="form-check-input {subField.class}"
                 disabled={!column.checked}
                 checked={subField.checked}
