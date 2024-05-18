@@ -1,6 +1,9 @@
-<script>
-  export let changeLimit;
-  export let store;
+<script lang="typescript">
+  import { ChangeEventHandler } from "svelte/elements";
+
+  export let changeLimit: ChangeEventHandler<HTMLSelectElement>;
+  /* eslint @typescript-eslint/no-explicit-any: 0 */
+  export let store: any;
 
   $: limit = store.limit;
   $: limitToString = limit.toString();
@@ -15,15 +18,14 @@
       <select
         id="row-for-mobile"
         class="custom-select form-control form-select"
-        ref="limit"
         bind:value={limitToString}
         on:change={changeLimit}
       >
-        <option value="10">{window.trans("[_1] rows", 10)}</option>
-        <option value="25">{window.trans("[_1] rows", 25)}</option>
-        <option value="50">{window.trans("[_1] rows", 50)}</option>
-        <option value="100">{window.trans("[_1] rows", 100)}</option>
-        <option value="200">{window.trans("[_1] rows", 200)}</option>
+        <option value="10">{window.trans("[_1] rows", "10")}</option>
+        <option value="25">{window.trans("[_1] rows", "25")}</option>
+        <option value="50">{window.trans("[_1] rows", "50")}</option>
+        <option value="100">{window.trans("[_1] rows", "100")}</option>
+        <option value="200">{window.trans("[_1] rows", "200")}</option>
       </select>
     </div>
   </div>
