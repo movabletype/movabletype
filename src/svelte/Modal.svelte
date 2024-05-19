@@ -11,12 +11,12 @@
   export let describedby = "";
   export let labelledby = "";
 
-  function modalOpen(): void {
+  const modalOpen = (): void => {
     document.body.classList.add("modal-open");
-  }
-  function modalClose(): void {
+  };
+  const modalClose = (): void => {
     document.body.classList.remove("modal-open");
-  }
+  };
 
   $: {
     if (open) {

@@ -11,7 +11,7 @@
   });
 
   let container: HTMLDivElement;
-  function onReady(): void {
+  const onReady = (): void => {
     if (++readiedCount !== components.length) {
       return;
     }
@@ -21,7 +21,7 @@
       .forEach((e: HTMLElement, i) => {
         e.style.order ||= String((i + 1) * 100);
       });
-  }
+  };
 </script>
 
 <div class="d-flex flex-column" bind:this={container}>
