@@ -1,14 +1,17 @@
-<script>
+<script lang="typescript">
+  import { ChangeEventHandler } from "svelte/elements";
+
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
   import DisplayOptionsLimit from "./DisplayOptionsLimit.svelte";
 
-  export let changeLimit;
-  export let disableUserDispOption;
-  export let store;
+  export let changeLimit: ChangeEventHandler<HTMLSelectElement>;
+  export let disableUserDispOption: boolean;
+  /* eslint @typescript-eslint/no-explicit-any: 0 */
+  export let store: any;
 
-  function resetColumns() {
+  const resetColumns = (): void => {
     store.trigger("reset_columns");
-  }
+  };
 </script>
 
 <div id="display-options-detail" class="collapse">
