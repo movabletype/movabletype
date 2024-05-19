@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   export let disableUserDispOption: boolean;
   /* eslint @typescript-eslint/no-explicit-any: 0 */
   export let store: any;

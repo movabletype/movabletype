@@ -1,4 +1,4 @@
-<script lang="typescript">
+<script lang="ts">
   import { ChangeEventHandler } from "svelte/elements";
 
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
