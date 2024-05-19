@@ -1,9 +1,12 @@
-<script>
+<script lang="typescript">
+  import { ChangeEventHandler } from "svelte/elements";
+
   import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
 
-  export let changeLimit;
-  export let disableUserDispOption;
-  export let store;
+  export let changeLimit: ChangeEventHandler<HTMLSelectElement>;
+  export let disableUserDispOption: boolean;
+  /* eslint @typescript-eslint/no-explicit-any: 0 */
+  export let store: any;
 </script>
 
 <div class="row">
