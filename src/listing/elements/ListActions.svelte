@@ -1,21 +1,21 @@
-<script>
+<script lang="ts">
   import ListActionsForMobile from "./ListActionsForMobile.svelte";
   import ListActionsForPc from "./ListActionsForPc.svelte";
 
-  export let buttonActions;
-  export let hasPulldownActions;
-  export let listActions;
-  export let listActionClient;
-  export let moreListActions;
-  export let plural;
-  export let singular;
-  export let store;
+  export let buttonActions: ButtonActions;
+  export let hasPulldownActions: boolean;
+  export let listActions: ListActions;
+  export let listActionClient: ListActionClient;
+  export let moreListActions: MoreListActions;
+  export let plural: string;
+  export let singular: string;
+  export let store: ListStore;
 
-  let selectedAction;
-  let selectedActionId;
-  let selectedActionPhrase;
+  let selectedAction: ButtonAction | ListAction | MoreListAction | null;
+  let selectedActionId: string;
+  let selectedActionPhrase: string;
 
-  function doAction(actionId) {
+  const doAction = (actionId: string): boolean | undefined => {
     selectedActionId = actionId;
     selectedAction = getAction(selectedActionId);
     selectedActionPhrase =
@@ -60,13 +60,13 @@
         sendRequest(requestArgs);
       }
     }
-  }
+  };
 
-  function sendRequest(postArgs) {
+  const sendRequest = (postArgs: object): void => {
     listActionClient.post(postArgs);
-  }
+  };
 
-  function generateRequestArguments(args) {
+  const generateRequestArguments = (args: object): object => {
     return {
       action: selectedAction,
       actionName: selectedActionId,
@@ -75,22 +75,24 @@
       ids: store.getCheckedRowIds(),
       ...args,
     };
-  }
+  };
 
-  function getAction(actionId) {
+  const getAction = (
+    actionId: string
+  ): ButtonAction | ListAction | MoreListAction | null => {
     return (
       buttonActions[actionId] ||
       listActions[actionId] ||
       moreListActions[actionId] ||
       null
     );
-  }
+  };
 
-  function getCheckedRowCount() {
+  const getCheckedRowCount = (): number => {
     return store.getCheckedRowCount();
-  }
+  };
 
-  function checkCount() {
+  const checkCount = (): boolean => {
     const checkedRowCount = getCheckedRowCount();
 
     if (checkedRowCount == 0) {
@@ -106,56 +108,56 @@
       return false;
     }
     return true;
-  }
+  };
 
-  function alertNoSelectedError() {
+  const alertNoSelectedError = (): void => {
     alert(
-      trans(
+      window.trans(
         "You did not select any [_1] to [_2].",
         plural,
         selectedActionPhrase
       )
     );
-  }
+  };
 
-  function alertMinimumError() {
+  const alertMinimumError = (): void => {
     alert(
-      trans(
+      window.trans(
         "You can only act upon a minimum of [_1] [_2].",
-        selectedAction.min,
+        selectedAction.min.toString(),
         plural
       )
     );
-  }
+  };
 
-  function alertMaximumError() {
+  const alertMaximumError = (): void => {
     alert(
-      trans(
+      window.trans(
         "You can only act upon a maximum of [_1] [_2].",
-        selectedAction.max,
+        selectedAction.max.toString(),
         plural
       )
     );
-  }
+  };
 
-  function getConfirmMessage() {
+  const getConfirmMessage = (): string => {
     const checkedRowCount = getCheckedRowCount();
 
     if (checkedRowCount == 1) {
-      return trans(
+      return window.trans(
         "Are you sure you want to [_2] this [_1]?",
         singular,
         selectedActionPhrase
       );
     } else {
-      return trans(
+      return window.trans(
         "Are you sure you want to [_3] the [_1] selected [_2]?",
-        checkedRowCount,
+        checkedRowCount.toString(),
         plural,
         selectedActionPhrase
       );
     }
-  }
+  };
 </script>
 
 <div class="d-none d-md-block">

@@ -1,7 +1,7 @@
-<script>
-  export let hasMobilePulldownActions;
-  export let store;
-  export let toggleAllRowsOnPage;
+<script lang="ts">
+  export let hasMobilePulldownActions: boolean;
+  export let store: ListStore;
+  export let toggleAllRowsOnPage: () => void;
 </script>
 
 {#if store.count}

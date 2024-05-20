@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
 
   import DisplayOptions from "./DisplayOptions.svelte";
@@ -47,11 +47,11 @@
     store = store;
   });
 
-  function changeLimit(e) {
+  const changeLimit = (e): void => {
     store.trigger("update_limit", e.currentTarget.value);
-  }
+  };
 
-  function updateSubFields() {
+  const updateSubFields = (): void => {
     store.columns.forEach(function (column) {
       column.sub_fields.forEach(function (subField) {
         const selector = "td." + subField.parent_id + " ." + subField.class;
@@ -63,11 +63,11 @@
         }
       });
     });
-  }
+  };
 
-  function tableClass() {
+  const tableClass = (): string => {
     return "list-" + (objectTypeForTableClass || objectType);
-  }
+  };
 </script>
 
 <div class="d-none d-md-block mb-3">

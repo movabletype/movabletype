@@ -1,8 +1,8 @@
-<script>
-  export let hasListActions;
-  export let store;
-  export let toggleAllRowsOnPage;
-  export let toggleSortColumn;
+<script lang="ts">
+  export let hasListActions: boolean;
+  export let store: ListStore;
+  export let toggleAllRowsOnPage: () => void;
+  export let toggleSortColumn: (columnId: string) => void;
 </script>
 
 <tr class="d-none d-md-table-row">
@@ -44,7 +44,7 @@
               store.sortBy == column.id &&
               store.sortOrder == "descend"}
             href="javascript:void(0)"
-            on:click={toggleSortColumn}
+            on:click={() => toggleSortColumn(column.id)}
           >
             {@html column.label}
           </a>

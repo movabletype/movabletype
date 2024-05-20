@@ -1,6 +1,5 @@
 <script lang="ts">
-  /* eslint @typescript-eslint/no-explicit-any: 0 */
-  export let store: any;
+  export let store: ListStore;
 
   $: count = store.count == null ? 0 : store.count;
   $: limit = store.limit == null ? 0 : store.limit;

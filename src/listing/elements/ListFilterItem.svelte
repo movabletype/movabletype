@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
 
   import SS from "../../ss/elements/SS.svelte";
 
   import ListFilterItemField from "./ListFilterItemField.svelte";
 
-  export let currentFilter;
+  export let currentFilter: Filter;
   export let filterTypes;
   export let item;
   export let listFilterTopAddFilterItemContent;
@@ -23,7 +23,7 @@
     initializeOptionWithBlank();
   });
 
-  function addFilterItemContent(target) {
+  const addFilterItemContent = (target): void => {
     const itemIndex = getListItemIndex(target);
     const contentIndex = getListItemContentIndex(target);
     let item = currentFilter.items[itemIndex];
@@ -39,7 +39,7 @@
             var re = new RegExp(item.type + "-(\\w+)");
             jQuery(this).attr("class").match(re);
             var key = RegExp.$1;
-            if (key && !item.args.hasOwnProperty(key)) {
+            if (key && !Object.prototype.hasOwnProperty.call(item.args, key)) {
               item.args[key] = jQuery(this).val();
             }
           });
@@ -47,24 +47,31 @@
     listFilterTopAddFilterItemContent(itemIndex, contentIndex);
     initializeDateOption();
     initializeOptionWithBlank();
-  }
+  };
 
-  function getListItemIndex(element) {
-    while (!element.dataset.hasOwnProperty("mtListItemIndex")) {
+  const getListItemIndex = (element): number => {
+    while (
+      !Object.prototype.hasOwnProperty.call(element.dataset, "mtListItemIndex")
+    ) {
       element = element.parentElement;
     }
     return Number(element.dataset.mtListItemIndex);
-  }
+  };
 
-  function getListItemContentIndex(element) {
-    while (!element.dataset.hasOwnProperty("mtListItemContentIndex")) {
+  const getListItemContentIndex = (element): number => {
+    while (
+      !Object.prototype.hasOwnProperty.call(
+        element.dataset,
+        "mtListItemContentIndex"
+      )
+    ) {
       element = element.parentElement;
     }
     return Number(element.dataset.mtListItemContentIndex);
-  }
+  };
 
-  function initializeDateOption() {
-    const dateOption = function ($node) {
+  const initializeDateOption = (): void => {
+    const dateOption = ($node): void => {
       const val = $node.val();
       let type;
       switch (val) {
@@ -129,10 +136,10 @@
     //     prevText: "<",
     //     nextText: ">",
     //   });
-  }
+  };
 
-  function initializeOptionWithBlank() {
-    const changeOption = function ($node) {
+  const initializeOptionWithBlank = (): void => {
+    const changeOption = ($node): void => {
       if ($node.val() == "blank" || $node.val() == "not_blank") {
         $node.parent().find("input[type=text]").hide();
       } else {
@@ -149,18 +156,18 @@
     //       changeOption($node);
     //     });
     //   });
-  }
+  };
 
-  function removeFilterItem(target) {
+  const removeFilterItem = (target): void => {
     const itemIndex = getListItemIndex(target);
     listFilterTopRemoveFilterItem(itemIndex);
-  }
+  };
 
-  function removeFilterItemContent(target) {
+  const removeFilterItemContent = (target): void => {
     const itemIndex = getListItemIndex(target);
     const contentIndex = getListItemContentIndex(target);
     listFilterTopRemoveFilterItemContent(itemIndex, contentIndex);
-  }
+  };
 </script>
 
 <div class="filteritem">

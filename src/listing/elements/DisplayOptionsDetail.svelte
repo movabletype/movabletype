@@ -6,8 +6,7 @@
 
   export let changeLimit: ChangeEventHandler<HTMLSelectElement>;
   export let disableUserDispOption: boolean;
-  /* eslint @typescript-eslint/no-explicit-any: 0 */
-  export let store: any;
+  export let store: ListStore;
 
   const resetColumns = (): void => {
     store.trigger("reset_columns");

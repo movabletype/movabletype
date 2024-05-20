@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
   export let field;
   export let item;
 
   let root;
 
-  function setValues() {
+  const setValues = (): void => {
     for (let key in item.args) {
       if (
         typeof item.args[key] != "string" &&
@@ -23,7 +23,7 @@
         }
       });
     }
-  }
+  };
 
   // FIXME
   // setValues();

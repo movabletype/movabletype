@@ -1,22 +1,24 @@
-<script>
-  export let buttonActions;
-  export let doAction;
-  export let listActions;
-  export let moreListActions;
+<script lang="ts">
+  export let buttonActions: ButtonActions;
+  export let doAction: (actionId: string) => boolean | undefined;
+  export let listActions: ListActions;
+  export let moreListActions: MoreListActions;
 
-  function buttonActionsForMobile() {
+  const buttonActionsForMobile = (): ButtonActions => {
     return getActionsForMobile(buttonActions);
-  }
+  };
 
-  function listActionsForMobile() {
+  const listActionsForMobile = (): ListActions => {
     return getActionsForMobile(listActions);
-  }
+  };
 
-  function moreListActionsForMobile() {
+  const moreListActionsForMobile = (): MoreListActions => {
     return getActionsForMobile(moreListActions);
-  }
+  };
 
-  function getActionsForMobile(actions) {
+  const getActionsForMobile = (
+    actions: ButtonActions | ListActions | MoreListActions
+  ): ButtonActions | ListActions | MoreListActions => {
     const mobileActions = {};
     Object.keys(actions).forEach((key) => {
       const action = actions[key];
@@ -25,15 +27,15 @@
       }
     });
     return mobileActions;
-  }
+  };
 
-  function hasActionForMobile() {
+  const hasActionForMobile = (): boolean => {
     const mobileActionCount =
       Object.keys(buttonActionsForMobile()).length +
       Object.keys(listActionsForMobile()).length +
       Object.keys(moreListActionsForMobile()).length;
     return mobileActionCount > 0;
-  }
+  };
 </script>
 
 {#if hasActionForMobile()}

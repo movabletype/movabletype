@@ -2,10 +2,9 @@
   import { ChangeEventHandler } from "svelte/elements";
 
   export let changeLimit: ChangeEventHandler<HTMLSelectElement>;
-  /* eslint @typescript-eslint/no-explicit-any: 0 */
-  export let store: any;
+  export let store: ListStore;
 
-  $: limit = store.limit;
+  $: limit = store.limit || 0;
   $: limitToString = limit.toString();
 </script>
 

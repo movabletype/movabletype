@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import ListFilterItem from "./ListFilterItem.svelte";
   import ListFilterButtons from "./ListFilterButtons.svelte";
 
@@ -16,7 +16,7 @@
   export let objectLabel;
   export let store;
 
-  function addFilterItem(e) {
+  const addFilterItem = (e): void => {
     if (e.currentTarget.classList.contains("disabled")) {
       e.preventDefault();
       e.stopPropagation();
@@ -24,7 +24,7 @@
     }
     const filterType = e.currentTarget.dataset.mtFilterType;
     listFilterTopAddFilterItem(filterType);
-  }
+  };
 </script>
 
 <div class="row">

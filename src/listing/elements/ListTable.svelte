@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
   import ListTableBody from "./ListTableBody.svelte";
   import ListTableHeader from "./ListTableHeader.svelte";
 
-  export let hasListActions;
-  export let hasMobilePulldownActions;
-  export let store;
-  export let zeroStateLabel;
+  export let hasListActions: boolean;
+  export let hasMobilePulldownActions: boolean;
+  export let store: ListStore;
+  export let zeroStateLabel: string;
 </script>
 
 <thead>

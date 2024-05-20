@@ -2,6 +2,21 @@ module.exports = {
   env: {
     browser: true,
     es6: true,
+    jquery: true,
+    node: true,
+  },
+  globals: {
+    ButtonAction: true,
+    ButtonActions: true,
+    Filter: true,
+    ListAction: true,
+    ListActionClient: true,
+    ListActions: true,
+    ListObject: true,
+    ListStore: true,
+    MoreListAction: true,
+    MoreListActions: true,
+    MT: true,
   },
   parser: "@typescript-eslint/parser",
   parserOptions: {

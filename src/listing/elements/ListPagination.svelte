@@ -1,22 +1,22 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
 
   import ListPaginationForMobile from "./ListPaginationForMobile.svelte";
   import ListPaginationForPc from "./ListPaginationForPc.svelte";
 
-  export let store;
+  export let store: ListStore;
 
-  let isTooNarrowWidth;
+  let isTooNarrowWidth: boolean;
 
   onMount(() => {
     checkTooNarrowWidth();
   });
 
-  function checkTooNarrowWidth() {
+  const checkTooNarrowWidth = (): void => {
     isTooNarrowWidth = store.pageMax >= 5 && window.innerWidth < 400;
-  }
+  };
 
-  function movePage(e) {
+  const movePage = (e): boolean => {
     if (e.currentTarget.disabled) {
       return false;
     }
@@ -36,7 +36,7 @@
     let moveToPagination = true;
     store.trigger("move_page", nextPage, moveToPagination);
     return false;
-  }
+  };
 </script>
 
 <svelte:window

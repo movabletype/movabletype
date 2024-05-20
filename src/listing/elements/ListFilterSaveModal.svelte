@@ -1,11 +1,11 @@
-<script>
-  export let store;
+<script lang="ts">
+  export let store: ListStore;
 
-  function closeModal(e) {
+  const closeModal = (): void => {
     //    jQuery(this.refs.modal).modal('hide')
-  }
+  };
 
-  function openModal(args) {
+  const openModal = (args: object): void => {
     //    if (!args) {
     //      args = {}
     //    }
@@ -15,9 +15,9 @@
     //    }
     //    this.saveAs = args.saveAs
     //    jQuery(this.refs.modal).modal()
-  }
+  };
 
-  function saveFilter(e) {
+  const saveFilter = (): void => {
     //    if (!jQuery(this.refs.filterName).mtValidate('simple')) {
     //      return false
     //    }
@@ -28,10 +28,10 @@
     //    }
     //    this.store.trigger('save_filter', this.listFilterTop.currentFilter)
     //    this.closeModal()
-  }
+  };
 </script>
 
-<div id="save-filter" class="modal fade" tabindex="-1" ref="modal">
+<div id="save-filter" class="modal fade" tabindex="-1">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
@@ -54,7 +54,6 @@
             type="text"
             class="text full required form-control"
             name="filter_name"
-            ref="filterName"
           />
         </div>
       </div>

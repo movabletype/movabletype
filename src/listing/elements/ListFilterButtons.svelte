@@ -1,25 +1,25 @@
-<script>
+<script lang="ts">
   import ListFilterSaveModal from "./ListFilterSaveModal.svelte";
 
-  export let currentFilter;
+  export let currentFilter: Filter;
   export let listFilterTopGetItemValues;
   export let listFilterTopIsUserFilter;
   export let listFilterTopValidateFilterDetails;
-  export let objectLabel;
-  export let store;
+  export let objectLabel: string;
+  export let store: ListStore;
 
   let listFilterSaveModal;
 
-  function applyFilter() {
+  const applyFilter = (): boolean | void => {
     if (!listFilterTopValidateFilterDetails()) {
       return false;
     }
     listFilterTopGetItemValues();
     const noFilterId = true;
     store.trigger("apply_filter", currentFilter, noFilterId);
-  }
+  };
 
-  function saveFilter() {
+  const saveFilter = (): boolean | void => {
     if (!listFilterTopValidateFilterDetails()) {
       return false;
     }
@@ -32,9 +32,9 @@
         filterLabel: filterLabel,
       });
     }
-  }
+  };
 
-  function saveAsFilter() {
+  const saveAsFilter = (): boolean | void => {
     if (!listFilterTopValidateFilterDetails()) {
       return false;
     }
@@ -42,7 +42,7 @@
       filterLabel: currentFilter.label,
       saveAs: true,
     });
-  }
+  };
 </script>
 
 <button

@@ -1,49 +1,52 @@
-<script>
+<script lang="ts">
   import SS from "../../ss/elements/SS.svelte";
 
-  export let listFilterTopCreateNewFilter;
-  export let store;
+  export let listFilterTopCreateNewFilter: Filter;
+  export let store: ListStore;
 
-  let isEditingFilter = {};
+  let isEditingFilter: { [key: string]: boolean } = {};
 
-  function applyFilter(filterId) {
+  const applyFilter = (filterId: string): void => {
     closeModal();
     store.trigger("apply_filter_by_id", filterId);
-  }
+  };
 
-  function startEditingFilter(filterId) {
+  const startEditingFilter = (filterId: string): void => {
     stopEditingAllFilters();
     isEditingFilter[filterId] = true;
-  }
+  };
 
-  function stopEditingAllFilters() {
+  const stopEditingAllFilters = (): void => {
     isEditingFilter = {};
-  }
+  };
 
-  function stopEditingFilter(filterId) {
+  const stopEditingFilter = (filterId: string): void => {
     isEditingFilter[filterId] = false;
-  }
+  };
 
-  function closeModal() {
+  const closeModal = (): void => {
     // FIXME
     // jQuery("#select-filter").modal("hide");
     bootstrap.Modal.getInstance("#select-filter").hide();
     // bootstrap.Modal.getInstance(this.refs.modal).hide();
-  }
+  };
 
-  function createNewFilter() {
+  const createNewFilter = (): void => {
     closeModal();
     store.trigger("open_filter_detail");
     listFilterTopCreateNewFilter();
     store = store;
-  }
+  };
 
-  function renameFilter(filterId, filterLabel) {
+  const renameFilter = (filterId: string, filterLabel: string): void => {
     store.trigger("rename_filter_by_id", filterId, filterLabel);
     isEditingFilter[filterId] = false;
-  }
+  };
 
-  function removeFilter(filterId, filterLabel) {
+  const removeFilter = (
+    filterId: string,
+    filterLabel: string
+  ): boolean | void => {
     const message = window.trans(
       "Are you sure you want to remove filter '[_1]'?",
       filterLabel
@@ -52,10 +55,10 @@
       return false;
     }
     store.trigger("remove_filter_by_id", filterId);
-  }
+  };
 </script>
 
-<div class="modal fade" id="select-filter" tabindex="-1" ref="modal">
+<div class="modal fade" id="select-filter" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -77,19 +80,22 @@
                 >
                   {#if !isEditingFilter[filter.id]}
                     <!-- svelte-ignore a11y-invalid-attribute -->
-                    <a href="#" on:click={applyFilter(filter.id)}>
+                    <a href="#" on:click={() => applyFilter(filter.id)}>
                       {filter.label}
                     </a>
                     <div class="float-end d-none d-md-block">
                       <!-- svelte-ignore a11y-invalid-attribute -->
-                      <a href="#" on:click={startEditingFilter(filter.id)}>
+                      <a
+                        href="#"
+                        on:click={() => startEditingFilter(filter.id)}
+                      >
                         {window.trans("rename")}
                       </a>
                       <!-- svelte-ignore a11y-invalid-attribute -->
                       <a
                         href="#"
                         class="d-inline-block"
-                        on:click={removeFilter(filter.id, filter.label)}
+                        on:click={() => removeFilter(filter.id, filter.label)}
                       >
                         <SS
                           title={window.trans("Remove")}
@@ -106,17 +112,16 @@
                           type="text"
                           class="form-control rename-filter-input"
                           value={filter.label}
-                          ref="label"
                         />
                         <button
                           class="btn btn-default form-control"
-                          on:click={renameFilter(filter.id, filter.label)}
+                          on:click={() => renameFilter(filter.id, filter.label)}
                         >
                           {window.trans("Save")}
                         </button>
                         <button
                           class="btn btn-default form-control"
-                          on:click={stopEditingFilter(filter.id)}
+                          on:click={() => stopEditingFilter(filter.id)}
                         >
                           {window.trans("Cancel")}
                         </button>

@@ -1,18 +1,18 @@
-<script>
+<script lang="ts">
   import ListFilterSelectModal from "./ListFilterSelectModal.svelte";
 
-  export let currentFilter;
-  export let isAllpassFilter;
-  export let listActionClient;
+  export let currentFilter: Filter;
+  export let isAllpassFilter: () => boolean;
+  export let listActionClient: ListActionClient;
   export let listFilterTopCreateNewFilter;
-  export let store;
+  export let store: ListStore;
 
-  function resetFilter() {
+  const resetFilter = (): void => {
     listActionClient.removeFilterKeyFromReturnArgs();
     listActionClient.removeFilterItemFromReturnArgs();
     store.trigger("close_filter_detail");
     store.trigger("reset_filter");
-  }
+  };
 </script>
 
 <div class="row">

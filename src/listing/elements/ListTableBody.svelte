@@ -1,19 +1,19 @@
-<script>
+<script lang="ts">
   import ListTableRow from "./ListTableRow.svelte";
 
-  export let hasListActions;
-  export let hasMobilePulldownActions;
-  export let store;
-  export let zeroStateLabel;
+  export let hasListActions: boolean;
+  export let hasMobilePulldownActions: boolean;
+  export let store: ListStore;
+  export let zeroStateLabel: string;
 
   // FIXME
   $: objects = store.objects || [];
 
-  function checkAllRows(e) {
+  const checkAllRows = (): void => {
     store.trigger("check_all_rows");
-  }
+  };
 
-  function clickRow(e) {
+  const clickRow = (e): boolean | undefined => {
     store.trigger("reset_all_clicked_rows");
 
     if (
@@ -38,7 +38,7 @@
     }
     e.stopPropagation();
     store.trigger("toggle_row", e.currentTarget.dataset.index);
-  }
+  };
 </script>
 
 {#if objects.length == 0}

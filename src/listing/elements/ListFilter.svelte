@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import ListFilterDetail from "./ListFilterDetail.svelte";
   import ListFilterHeader from "./ListFilterHeader.svelte";
 
@@ -6,21 +6,25 @@
   export let listActionClient;
   export let localeCalendarHeader;
   export let objectLabel;
-  export let store;
+  export let store: ListStore;
 
+  let currentFilter: Filter;
   $: currentFilter = store.currentFilter;
 
   let validateErrorMessage;
 
   // TODO
-  function addFilterItem(filterType) {
+  const addFilterItem = (filterType: string): void => {
     if (isAllpassFilter()) {
-      createNewFilter(trans("New Filter"));
+      createNewFilter(window.trans("New Filter"));
     }
     currentFilter.items.push({ type: filterType, args: {} });
-  }
+  };
 
-  function addFilterItemContent(itemIndex, contentIndex) {
+  const addFilterItemContent = (
+    itemIndex: string,
+    contentIndex: string
+  ): void => {
     if (currentFilter.items[itemIndex].type != "pack") {
       const items = [currentFilter.items[itemIndex]];
       currentFilter.items[itemIndex] = {
@@ -33,18 +37,18 @@
       type: type,
       args: {},
     });
-  }
+  };
 
-  function createNewFilter(filterLabel) {
+  const createNewFilter = (filterLabel: string): void => {
     currentFilter = {
       items: [],
       label: filterLabel || window.trans("New Filter"),
     };
-  }
+  };
 
-  function getItemValues() {
+  const getItemValues = (): void => {
     var $items = jQuery("#filter-detail .filteritem:not(.error)");
-    vals = [];
+    let vals = [];
     $items.each(function () {
       var data = {};
       var fields = [];
@@ -62,7 +66,7 @@
               .each(function () {
                 var re = new RegExp(type + "-(\\w+)");
                 const key = (jQuery(this).attr("class").match(re) || [])[1];
-                if (key && !args.hasOwnProperty(key)) {
+                if (key && !Object.prototype.hasOwnProperty.call(args, key)) {
                   args[key] = jQuery(this).val();
                 }
               });
@@ -81,31 +85,34 @@
       vals.push(data);
     });
     currentFilter.items = vals;
-  }
+  };
 
-  function isAllpassFilter() {
+  const isAllpassFilter = (): boolean => {
     return currentFilter.id == store.allpassFilter.id;
-  }
+  };
 
-  function isFilterItemSelected(type) {
+  const isFilterItemSelected = (type: string): boolean => {
     return currentFilter.items.some(function (item) {
       return item.type == type;
     });
-  }
+  };
 
-  function isUserFilter() {
+  const isUserFilter = (): boolean => {
     return currentFilter.id && currentFilter.id.match(/^[1-9][0-9]*$/);
-  }
+  };
 
-  function removeFilterItem(itemIndex) {
+  const removeFilterItem = (itemIndex: string): void => {
     currentFilter.items.splice(itemIndex, 1);
-  }
+  };
 
-  function removeFilterItemContent(itemIndex, contentIndex) {
+  const removeFilterItemContent = (
+    itemIndex: string,
+    contentIndex: string
+  ): void => {
     currentFilter.items[itemIndex].args.items.splice(contentIndex, 1);
-  }
+  };
 
-  function showMessage(content, cls) {
+  const showMessage = (content: any, cls: string): any => {
     var error_block;
     if (typeof content == "object") {
       jQuery("#msg-block").append(
@@ -135,15 +142,15 @@
       );
     }
     return error_block;
-  }
+  };
 
-  function validateFilterName(name) {
+  const validateFilterName = (name: string): boolean => {
     return !store.filters.some(function (filter) {
       return filter.label == name;
     });
-  }
+  };
 
-  function validateFilterDetails() {
+  const validateFilterDetails = (): boolean => {
     if (validateErrorMessage) {
       validateErrorMessage.remove();
     }
@@ -158,21 +165,23 @@
     });
     if (errors) {
       validateErrorMessage = showMessage(
-        trans(
+        window.trans(
           "One or more fields in the filter item are not filled in properly."
         ),
         "error"
       );
     }
     return errors ? false : true;
-  }
+  };
 
   jQuery.mtValidateRules["[name=filter_name], .rename-filter-input"] =
     function ($e) {
       if (validateFilterName($e.val())) {
         return true;
       } else {
-        return this.raise(trans('Label "[_1]" is already in use.', $e.val()));
+        return this.raise(
+          window.trans('Label "[_1]" is already in use.', $e.val())
+        );
       }
     };
 </script>

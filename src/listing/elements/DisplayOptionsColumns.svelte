@@ -1,7 +1,6 @@
 <script lang="ts">
   export let disableUserDispOption: boolean;
-  /* eslint @typescript-eslint/no-explicit-any: 0 */
-  export let store: any;
+  export let store: ListStore;
 
   const toggleColumn = (columnId: string): void => {
     store.trigger("toggle_column", columnId);
@@ -24,13 +23,13 @@
   <div class="field-content">
     <ul id="disp_cols" class="list-inline m-0">
       {#each store.columns as column}
-        <li class="list-inline-item" hidden={column.force_display}>
+        <li class="list-inline-item" hidden={column.force_display != 0}>
           <div class="form-check">
             <input
               type="checkbox"
               class="form-check-input"
               id={column.id}
-              checked={column.checked}
+              checked={column.checked != 0}
               on:change={() => toggleColumn(column.id)}
               disabled={store.isLoading}
             />
@@ -40,19 +39,19 @@
           </div>
         </li>
         {#each column.sub_fields as subField}
-          <li class="list-inline-item" hidden={subField.force_display}>
+          <li class="list-inline-item">
             <div class="form-check">
               <input
                 type="checkbox"
                 id={subField.id}
                 class="form-check-input {subField.class}"
                 disabled={!column.checked}
-                checked={subField.checked}
+                checked={subField.checked != 0}
                 on:change={() => toggleSubField(subField.id)}
               />
-              <label class="form-check-label form-label" for={subField.id}
-                >{subField.label}</label
-              >
+              <label class="form-check-label form-label" for={subField.id}>
+                {subField.label}
+              </label>
             </div>
           </li>
         {/each}

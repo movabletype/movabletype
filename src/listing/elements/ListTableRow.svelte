@@ -1,11 +1,11 @@
-<script>
-  export let checked;
-  export let hasListActions;
-  export let hasMobilePulldownActions;
-  export let object;
-  export let store;
+<script lang="ts">
+  export let checked: number;
+  export let hasListActions: boolean;
+  export let hasMobilePulldownActions: boolean;
+  export let object: ListObject;
+  export let store: ListStore;
 
-  function classes(index) {
+  const classes = (index: string): string => {
     const nameClass = store.showColumns[index].id;
     let classes;
     if (store.hasMobileColumn()) {
@@ -26,7 +26,7 @@
     } else {
       return nameClass;
     }
-  }
+  };
 </script>
 
 {#if hasListActions}
