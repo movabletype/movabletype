@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { ListObject, ListStore } from "types/listing";
+
   export let checked: number;
   export let hasListActions: boolean;
   export let hasMobilePulldownActions: boolean;
@@ -9,7 +11,7 @@
     const nameClass = store.showColumns[index].id;
     let classes;
     if (store.hasMobileColumn()) {
-      if (store.getMobileColumnIndex() == index) {
+      if (store.getMobileColumnIndex().toString() == index) {
         classes = "d-md-none";
       } else {
         classes = "d-none d-md-table-cell";
@@ -42,7 +44,7 @@
           class="form-check-input"
           id={"select_" + object[0]}
           value={object[0]}
-          {checked}
+          checked={checked != 0}
         />
         <span class="custom-control-indicator" />
         <label class="form-check-label" for={"select_" + object[0]}
@@ -54,7 +56,7 @@
 {/if}
 {#each object as content, index}
   {#if index > 0}
-    <td class={classes(index - 1)}>
+    <td class={classes((index - 1).toString())}>
       {@html content}
     </td>
   {/if}

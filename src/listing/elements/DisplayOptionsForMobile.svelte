@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { ChangeEventHandler } from "svelte/elements";
+  import { ListStore } from "types/listing";
 
-  export let changeLimit: ChangeEventHandler<HTMLSelectElement>;
+  export let changeLimit: (selectedValue: string) => void;
   export let store: ListStore;
 
   $: limit = store.limit || 0;
@@ -18,7 +18,7 @@
         id="row-for-mobile"
         class="custom-select form-control form-select"
         bind:value={limitToString}
-        on:change={changeLimit}
+        on:change={() => changeLimit(limitToString)}
       >
         <option value="10">{window.trans("[_1] rows", "10")}</option>
         <option value="25">{window.trans("[_1] rows", "25")}</option>

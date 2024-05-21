@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
+  import { ListStore } from "types/listing";
+
   import ListPaginationForMobile from "./ListPaginationForMobile.svelte";
   import ListPaginationForPc from "./ListPaginationForPc.svelte";
 

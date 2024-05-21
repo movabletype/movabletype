@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { ListStore } from "types/listing";
+
   export let hasMobilePulldownActions: boolean;
   export let store: ListStore;
   export let toggleAllRowsOnPage: () => void;
@@ -33,9 +35,9 @@
       <span class="float-end">
         {window.trans(
           "[_1] - [_2] of [_3]",
-          store.getListStart(),
-          store.getListEnd(),
-          store.count
+          store.getListStart().toString(),
+          store.getListEnd().toString(),
+          store.count.toString()
         )}
       </span>
     </th>

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { ListStore } from "types/listing";
+
   import ListTableRow from "./ListTableRow.svelte";
 
   export let hasListActions: boolean;
@@ -54,7 +56,7 @@
     <td colspan={objects.length + 1}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a href="javascript:void(0);" on:click={checkAllRows}>
-        {window.trans("Select all [_1] items", store.count)}
+        {window.trans("Select all [_1] items", (store.count || 0).toString())}
       </a>
     </td>
   </tr>
@@ -63,7 +65,10 @@
 {#if store.pageMax > 1 && store.checkedAllRows}
   <tr class="success">
     <td colspan={objects.length + 1}>
-      {window.trans("All [_1] items are selected", store.count)}
+      {window.trans(
+        "All [_1] items are selected",
+        (store.count || 0).toString()
+      )}
     </td>
   </tr>
 {/if}

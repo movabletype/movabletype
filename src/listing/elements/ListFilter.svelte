@@ -1,11 +1,20 @@
 <script lang="ts">
+  // import jQuery from "jquery";
+
+  import {
+    Filter,
+    FilterType,
+    ListActionClient,
+    ListStore,
+  } from "types/listing";
+
   import ListFilterDetail from "./ListFilterDetail.svelte";
   import ListFilterHeader from "./ListFilterHeader.svelte";
 
-  export let filterTypes;
-  export let listActionClient;
-  export let localeCalendarHeader;
-  export let objectLabel;
+  export let filterTypes: Array<FilterType>;
+  export let listActionClient: ListActionClient;
+  export let localeCalendarHeader: Array<string>;
+  export let objectLabel: string;
   export let store: ListStore;
 
   let currentFilter: Filter;
@@ -39,8 +48,10 @@
     });
   };
 
-  const createNewFilter = (filterLabel: string): void => {
+  const createNewFilter = (filterLabel?: string): void => {
     currentFilter = {
+      can_save: "0",
+      id: "",
       items: [],
       label: filterLabel || window.trans("New Filter"),
     };
@@ -48,10 +59,10 @@
 
   const getItemValues = (): void => {
     var $items = jQuery("#filter-detail .filteritem:not(.error)");
-    let vals = [];
+    let vals: Array<any> = [];
     $items.each(function () {
       var data = {};
-      var fields = [];
+      var fields: Array<any> = [];
       var $types = jQuery(this).find(".filtertype");
       $types.each(function () {
         const type = (jQuery(this)
@@ -98,11 +109,13 @@
   };
 
   const isUserFilter = (): boolean => {
-    return currentFilter.id && currentFilter.id.match(/^[1-9][0-9]*$/);
+    return currentFilter.id && currentFilter.id.match(/^[1-9][0-9]*$/)
+      ? true
+      : false;
   };
 
   const removeFilterItem = (itemIndex: string): void => {
-    currentFilter.items.splice(itemIndex, 1);
+    currentFilter.items.splice(Number(itemIndex), 1);
   };
 
   const removeFilterItemContent = (

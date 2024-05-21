@@ -1,37 +1,42 @@
 <script lang="ts">
+  import { ListStore } from "types/listing";
+
   export let store: ListStore;
 
+  let modal: HTMLDivElement;
+  let filterName: HTMLInputElement;
+
   const closeModal = (): void => {
-    //    jQuery(this.refs.modal).modal('hide')
+    jQuery(modal).modal("hide");
   };
 
   const openModal = (args: object): void => {
-    //    if (!args) {
-    //      args = {}
-    //    }
-    //    jQuery(this.refs.filterName).mtUnvalidate()
-    //    if (args.filterLabel) {
-    //      this.refs.filterName.value = args.filterLabel
-    //    }
-    //    this.saveAs = args.saveAs
-    //    jQuery(this.refs.modal).modal()
+    if (!args) {
+      args = {};
+    }
+    jQuery(filterName).mtUnvalidate();
+    if (args.filterLabel) {
+      filterName.value = args.filterLabel;
+    }
+    this.saveAs = args.saveAs;
+    jQuery(modal).modal();
   };
 
-  const saveFilter = (): void => {
-    //    if (!jQuery(this.refs.filterName).mtValidate('simple')) {
-    //      return false
-    //    }
-    //    this.listFilterTop.getItemValues()
-    //    this.listFilterTop.currentFilter.label = this.refs.filterName.value
-    //    if (this.saveAs) {
-    //      this.listFilterTop.currentFilter.id = null
-    //    }
-    //    this.store.trigger('save_filter', this.listFilterTop.currentFilter)
-    //    this.closeModal()
+  const saveFilter = (): boolean | void => {
+    if (!jQuery(filterName).mtValidate("simple")) {
+      return false;
+    }
+    listFilterTopGetItemValues();
+    listFilterTopCurrentFilter.label = filterName.value;
+    if (this.saveAs) {
+      this.listFilterTop.currentFilter.id = null;
+    }
+    store.trigger("save_filter", this.listFilterTop.currentFilter);
+    closeModal();
   };
 </script>
 
-<div id="save-filter" class="modal fade" tabindex="-1">
+<div id="save-filter" class="modal fade" tabindex="-1" bind:this={modal}>
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
@@ -54,6 +59,7 @@
             type="text"
             class="text full required form-control"
             name="filter_name"
+            bind:this={filterName}
           />
         </div>
       </div>

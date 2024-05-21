@@ -1,10 +1,12 @@
 <script lang="ts">
+  import { Filter, ListActionClient, ListStore } from "types/listing";
+
   import ListFilterSelectModal from "./ListFilterSelectModal.svelte";
 
   export let currentFilter: Filter;
   export let isAllpassFilter: () => boolean;
   export let listActionClient: ListActionClient;
-  export let listFilterTopCreateNewFilter;
+  export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
   export let store: ListStore;
 
   const resetFilter = (): void => {

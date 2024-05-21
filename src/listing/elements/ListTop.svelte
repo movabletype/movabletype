@@ -1,6 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
+  import {
+    ButtonActions,
+    FilterType,
+    ListActionClient,
+    ListStore,
+    MoreListActions,
+  } from "types/listing";
+
   import DisplayOptions from "./DisplayOptions.svelte";
   import DisplayOptionsForMobile from "./DisplayOptionsForMobile.svelte";
   import ListActions from "./ListActions.svelte";
@@ -9,25 +17,25 @@
   import ListPagination from "./ListPagination.svelte";
   import ListTable from "./ListTable.svelte";
 
-  export let buttonActions;
-  export let disableUserDispOption;
-  export let filterTypes;
-  export let hasListActions;
-  export let hasMobilePulldownActions;
-  export let hasPulldownActions;
-  export let listActionClient;
-  export let listActions;
-  export let localeCalendarHeader;
-  export let moreListActions;
-  export let objectLabel;
-  export let objectType;
-  export let objectTypeForTableClass;
-  export let plural;
-  export let useActions;
-  export let useFilters;
-  export let singular;
-  export let store;
-  export let zeroStateLabel;
+  export let buttonActions: ButtonActions;
+  export let disableUserDispOption: boolean;
+  export let filterTypes: Array<FilterType>;
+  export let hasListActions: boolean;
+  export let hasMobilePulldownActions: boolean;
+  export let hasPulldownActions: boolean;
+  export let listActionClient: ListActionClient;
+  export let listActions: ListActions;
+  export let localeCalendarHeader: Array<string>;
+  export let moreListActions: MoreListActions;
+  export let objectLabel: string;
+  export let objectType: string;
+  export let objectTypeForTableClass: string;
+  export let plural: string;
+  export let useActions: boolean;
+  export let useFilters: boolean;
+  export let singular: string;
+  export let store: ListStore;
+  export let zeroStateLabel: string;
 
   onMount(() => {
     store.trigger("load_list");
@@ -44,18 +52,23 @@
       jQuery(window).trigger("listReady");
     }
 
+    // eslint-disable-next-line no-self-assign
     store = store;
   });
 
-  const changeLimit = (e): void => {
-    store.trigger("update_limit", e.currentTarget.value);
+  const changeLimit = (selectedValue: string): void => {
+    store.trigger("update_limit", selectedValue);
   };
 
   const updateSubFields = (): void => {
     store.columns.forEach(function (column) {
       column.sub_fields.forEach(function (subField) {
         const selector = "td." + subField.parent_id + " ." + subField.class;
-        const element = document.querySelector(selector);
+        const element: HTMLElement | null = document.querySelector(selector);
+        if (!element) {
+          return;
+        }
+
         if (subField.checked) {
           element.style.display = "block";
         } else {

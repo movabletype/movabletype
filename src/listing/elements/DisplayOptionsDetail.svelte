@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { ChangeEventHandler } from "svelte/elements";
+  import { ListStore } from "types/listing";
 
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
   import DisplayOptionsLimit from "./DisplayOptionsLimit.svelte";
 
-  export let changeLimit: ChangeEventHandler<HTMLSelectElement>;
+  export let changeLimit: (selectedValue: string) => void;
   export let disableUserDispOption: boolean;
   export let store: ListStore;
 

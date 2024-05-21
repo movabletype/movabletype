@@ -1,9 +1,11 @@
 <script lang="ts">
-  export let buttonActions: { [key: string]: { label: string } };
+  import { ButtonActions, ListActions, MoreListActions } from "types/listing";
+
+  export let buttonActions: ButtonActions;
   export let doAction: (actionId: string) => boolean | undefined;
-  export let listActions: { [key: string]: { label: string } };
+  export let listActions: ListActions;
   export let hasPulldownActions: boolean;
-  export let moreListActions: { [key: string]: { label: string } };
+  export let moreListActions: MoreListActions;
 </script>
 
 {#each Object.entries(buttonActions) as [key, action]}

@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { Filter, ListStore } from "types/listing";
+
   import SS from "../../ss/elements/SS.svelte";
 
-  export let listFilterTopCreateNewFilter: Filter;
+  export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
   export let store: ListStore;
 
   let isEditingFilter: { [key: string]: boolean } = {};
@@ -35,6 +37,7 @@
     closeModal();
     store.trigger("open_filter_detail");
     listFilterTopCreateNewFilter();
+    // eslint-disable-next-line no-self-assign
     store = store;
   };
 

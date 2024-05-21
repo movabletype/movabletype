@@ -1,20 +1,28 @@
 <script lang="ts">
+  import { Filter, FilterType, ListStore } from "types/listing";
+
   import ListFilterItem from "./ListFilterItem.svelte";
   import ListFilterButtons from "./ListFilterButtons.svelte";
 
-  export let currentFilter;
-  export let filterTypes;
-  export let isFilterItemSelected;
-  export let listFilterTopAddFilterItem;
-  export let listFilterTopAddFilterItemContent;
-  export let listFilterTopGetItemValues;
-  export let listFilterTopIsUserFilter;
-  export let listFilterTopRemoveFilterItem;
-  export let listFilterTopRemoveFilterItemContent;
-  export let listFilterTopValidateFilterDetails;
-  export let localeCalendarHeader;
-  export let objectLabel;
-  export let store;
+  export let currentFilter: Filter;
+  export let filterTypes: Array<FilterType>;
+  export let isFilterItemSelected: (type: string) => boolean;
+  export let listFilterTopAddFilterItem: (filterType: string) => void;
+  export let listFilterTopAddFilterItemContent: (
+    itemIndex: string,
+    contentIndex: string
+  ) => void;
+  export let listFilterTopGetItemValues: () => void;
+  export let listFilterTopIsUserFilter: () => boolean;
+  export let listFilterTopRemoveFilterItem: (itemIndex: string) => void;
+  export let listFilterTopRemoveFilterItemContent: (
+    itemIndex: string,
+    contentIndex: string
+  ) => void;
+  export let listFilterTopValidateFilterDetails: () => boolean;
+  export let localeCalendarHeader: Array<string>;
+  export let objectLabel: string;
+  export let store: ListStore;
 
   const addFilterItem = (e): void => {
     if (e.currentTarget.classList.contains("disabled")) {

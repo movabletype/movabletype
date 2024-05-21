@@ -1,14 +1,18 @@
 <script lang="ts">
+  import { SvelteComponent } from "svelte";
+
+  import { Filter, ListStore } from "types/listing";
+
   import ListFilterSaveModal from "./ListFilterSaveModal.svelte";
 
   export let currentFilter: Filter;
-  export let listFilterTopGetItemValues;
-  export let listFilterTopIsUserFilter;
-  export let listFilterTopValidateFilterDetails;
+  export let listFilterTopGetItemValues: () => void;
+  export let listFilterTopIsUserFilter: () => boolean;
+  export let listFilterTopValidateFilterDetails: () => boolean;
   export let objectLabel: string;
   export let store: ListStore;
 
-  let listFilterSaveModal;
+  let listFilterSaveModal: SvelteComponent;
 
   const applyFilter = (): boolean | void => {
     if (!listFilterTopValidateFilterDetails()) {

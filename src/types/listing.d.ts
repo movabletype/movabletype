@@ -1,12 +1,15 @@
-export interface ButtonAction extends ListAction {
-  js_message: string;
-}
+export interface ButtonAction extends ListAction {}
 
 export interface ButtonActions {
   [key: string]: ButtonAction;
 }
 
-export interface Filter {}
+export interface Filter {
+  can_save: string;
+  id: string;
+  items: Array<Item>;
+  label: string;
+}
 
 interface FilterType {
   baseType: string;
@@ -18,6 +21,11 @@ interface FilterType {
   singleton?: boolean;
 }
 
+interface Item {
+  args: object;
+  type: string;
+}
+
 export interface ListAction {
   type: string;
 
@@ -25,6 +33,7 @@ export interface ListAction {
   dialog?: number;
   input?: string;
   js?: string;
+  js_message?: string;
   label?: string;
   max?: string;
   min?: string;
@@ -34,7 +43,12 @@ export interface ListAction {
   xhr?: boolean;
 }
 
-export interface ListActionClient {}
+export interface ListActionClient {
+  generateRequestData: (obj: object) => object;
+  post: (obj: object) => void;
+  removeFilterKeyFromReturnArgs: () => string;
+  removeFilterItemFromReturnArgs: () => string;
+}
 
 export interface ListActions {
   [key: string]: ListAction;
@@ -60,16 +74,23 @@ interface ListColumn {
 interface ListData {
   DefaultPage: number;
 
+  allpassFilter: Filter;
   checkedAllRows: boolean;
   checkedAllRowsOnPage: boolean;
   columns: Array<ListColumn>;
   count: number | null;
   currentFilter: Filter;
   disableUserDispOption: boolean;
+  filters: Array<Filter>;
   isLoading: boolean;
   limit: number | null;
+  objectType: string;
+  objects: Array<ListObject> | null;
   page: number | null;
   pageMax: number;
+  showColumns: Array<ListColumn>;
+  sortBy: string;
+  sortOrder: string;
 
   addFilterItem: () => void;
   addFilterItemContent: (itemIndex: string, contentIndex: number) => void;
@@ -113,7 +134,10 @@ interface ListData {
 export interface ListObject {}
 
 export interface ListStore extends ListData {
-  trigger: (event: string, ...args: string[]) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  on: (event: string, fn: (...args: any) => void) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  trigger: (event: string, ...args: any) => void;
 }
 
 export interface MoreListAction extends ListAction {}

@@ -1,17 +1,29 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  // import jQuery from "jquery";
+
+  import { SvelteComponent, onMount } from "svelte";
+
+  import { Filter, FilterType, Item } from "types/listing";
 
   import SS from "../../ss/elements/SS.svelte";
 
   import ListFilterItemField from "./ListFilterItemField.svelte";
 
   export let currentFilter: Filter;
-  export let filterTypes;
-  export let item;
-  export let listFilterTopAddFilterItemContent;
-  export let listFilterTopRemoveFilterItem;
-  export let listFilterTopRemoveFilterItemContent;
-  // export let localeCalendarHeader;
+  export let filterTypes: Array<FilterType>;
+  export let item: Item;
+  export let listFilterTopAddFilterItemContent: (
+    itemIndex: string,
+    contentIndex: string
+  ) => void;
+  export let listFilterTopRemoveFilterItem: (itemIndex: string) => void;
+  export let listFilterTopRemoveFilterItemContent: (
+    itemIndex: string,
+    contentIndex: string
+  ) => void;
+  export let localeCalendarHeader: Array<string>;
+
+  let root: HTMLDivElement;
 
   $: filterTypeHash = filterTypes.reduce((hash, filterType) => {
     hash[filterType.type] = filterType;
@@ -23,7 +35,12 @@
     initializeOptionWithBlank();
   });
 
-  const addFilterItemContent = (target): void => {
+  const addFilterItemContent = (e: Event): void => {
+    const target = e.target;
+    if (!target) {
+      return;
+    }
+
     const itemIndex = getListItemIndex(target);
     const contentIndex = getListItemContentIndex(target);
     let item = currentFilter.items[itemIndex];
@@ -44,7 +61,10 @@
             }
           });
       });
-    listFilterTopAddFilterItemContent(itemIndex, contentIndex);
+    listFilterTopAddFilterItemContent(
+      itemIndex.toString(),
+      contentIndex.toString()
+    );
     initializeDateOption();
     initializeOptionWithBlank();
   };
@@ -103,39 +123,38 @@
         .find(".date-option." + type)
         .show();
     };
-    // FIXME
-    // jQuery(this.root)
-    //   .find(".filter-date")
-    //   .each(function (index, element) {
-    //     var $node = jQuery(element);
-    //     dateOption($node);
-    //     $node.on("change", function () {
-    //       dateOption($node);
-    //     });
-    //   });
-    // jQuery(this.root)
-    //   .find("input.date")
-    //   .datepicker({
-    //     dateFormat: "yy-mm-dd",
-    //     dayNamesMin: localeCalendarHeader,
-    //     monthNames: [
-    //       "- 01",
-    //       "- 02",
-    //       "- 03",
-    //       "- 04",
-    //       "- 05",
-    //       "- 06",
-    //       "- 07",
-    //       "- 08",
-    //       "- 09",
-    //       "- 10",
-    //       "- 11",
-    //       "- 12",
-    //     ],
-    //     showMonthAfterYear: true,
-    //     prevText: "<",
-    //     nextText: ">",
-    //   });
+    jQuery(root)
+      .find(".filter-date")
+      .each(function (index, element) {
+        var $node = jQuery(element);
+        dateOption($node);
+        $node.on("change", function () {
+          dateOption($node);
+        });
+      });
+    jQuery(root)
+      .find("input.date")
+      .datepicker({
+        dateFormat: "yy-mm-dd",
+        dayNamesMin: localeCalendarHeader,
+        monthNames: [
+          "- 01",
+          "- 02",
+          "- 03",
+          "- 04",
+          "- 05",
+          "- 06",
+          "- 07",
+          "- 08",
+          "- 09",
+          "- 10",
+          "- 11",
+          "- 12",
+        ],
+        showMonthAfterYear: true,
+        prevText: "<",
+        nextText: ">",
+      });
   };
 
   const initializeOptionWithBlank = (): void => {
@@ -146,31 +165,33 @@
         $node.parent().find("input[type=text]").show();
       }
     };
-    // FIXME
-    // jQuery(this.root)
-    //   .find(".filter-blank")
-    //   .each(function (index, element) {
-    //     var $node = jQuery(element);
-    //     changeOption($node);
-    //     $node.on("change", function () {
-    //       changeOption($node);
-    //     });
-    //   });
+    jQuery(root)
+      .find(".filter-blank")
+      .each(function (index, element) {
+        var $node = jQuery(element);
+        changeOption($node);
+        $node.on("change", function () {
+          changeOption($node);
+        });
+      });
   };
 
   const removeFilterItem = (target): void => {
     const itemIndex = getListItemIndex(target);
-    listFilterTopRemoveFilterItem(itemIndex);
+    listFilterTopRemoveFilterItem(itemIndex.toString());
   };
 
   const removeFilterItemContent = (target): void => {
     const itemIndex = getListItemIndex(target);
     const contentIndex = getListItemContentIndex(target);
-    listFilterTopRemoveFilterItemContent(itemIndex, contentIndex);
+    listFilterTopRemoveFilterItemContent(
+      itemIndex.toString(),
+      contentIndex.toString()
+    );
   };
 </script>
 
-<div class="filteritem">
+<div class="filteritem" bind:this={root}>
   <button
     class="close btn-close"
     aria-label="Close"
@@ -241,7 +262,7 @@
           <a
             href="javascript:void(0);"
             class="d-inline-block"
-            on:click={() => addFilterItemContent(this)}
+            on:click={addFilterItemContent}
           >
             <SS
               title={window.trans("Add")}

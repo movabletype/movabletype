@@ -2,6 +2,17 @@
   import ListActionsForMobile from "./ListActionsForMobile.svelte";
   import ListActionsForPc from "./ListActionsForPc.svelte";
 
+  import {
+    ButtonAction,
+    ButtonActions,
+    ListAction,
+    ListActionClient,
+    ListActions,
+    ListStore,
+    MoreListAction,
+    MoreListActions,
+  } from "types/listing";
+
   export let buttonActions: ButtonActions;
   export let hasPulldownActions: boolean;
   export let listActions: ListActions;
@@ -18,10 +29,13 @@
   const doAction = (actionId: string): boolean | undefined => {
     selectedActionId = actionId;
     selectedAction = getAction(selectedActionId);
+    if (!selectedAction) {
+      return false;
+    }
     selectedActionPhrase =
       selectedAction.js_message || window.trans("act upon");
 
-    const args = {};
+    const args: { itemsetActionInput?: string } = {};
 
     if (!checkCount()) {
       return false;
@@ -52,7 +66,9 @@
 
     if (!selectedAction.xhr) {
       if (selectedAction.dialog) {
-        const requestData = listActionClient.generateRequestData(requestArgs);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const requestData: any =
+          listActionClient.generateRequestData(requestArgs);
         requestData.dialog = 1;
         const url = window.ScriptURI + "?" + jQuery.param(requestData, true);
         jQuery.fn.mtModal.open(url, { large: true });
@@ -99,11 +115,19 @@
       alertNoSelectedError();
       return false;
     }
-    if (selectedAction.min && checkedRowCount < selectedAction.min) {
+    if (
+      selectedAction &&
+      selectedAction.min &&
+      checkedRowCount < Number(selectedAction.min)
+    ) {
       alertMinimumError();
       return false;
     }
-    if (selectedAction.max && checkedRowCount > selectedAction.max) {
+    if (
+      selectedAction &&
+      selectedAction.max &&
+      checkedRowCount > Number(selectedAction.max)
+    ) {
       alertMaximumError();
       return false;
     }
@@ -124,7 +148,7 @@
     alert(
       window.trans(
         "You can only act upon a minimum of [_1] [_2].",
-        selectedAction.min.toString(),
+        (selectedAction && selectedAction.min) || "",
         plural
       )
     );
@@ -134,7 +158,7 @@
     alert(
       window.trans(
         "You can only act upon a maximum of [_1] [_2].",
-        selectedAction.max.toString(),
+        (selectedAction && selectedAction.max) || "",
         plural
       )
     );
