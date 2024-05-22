@@ -16,7 +16,7 @@
   $: {
     previousDisabledProp = {};
     if (page <= 1) {
-      previousDisabledProp.disabled = "";
+      previousDisabledProp.disabled = "disabled";
     }
   }
 
@@ -24,7 +24,7 @@
   $: {
     nextDisabledProp = {};
     if (page >= store.pageMax) {
-      nextDisabledProp.disabled = "";
+      nextDisabledProp.disabled = "disabled";
     }
   }
 
@@ -37,7 +37,7 @@
   };
 
   const movePage = (e): boolean => {
-    if (e.currentTarget.disabled) {
+    if (e.currentTarget.getAttribute("disabled")) {
       return false;
     }
 
