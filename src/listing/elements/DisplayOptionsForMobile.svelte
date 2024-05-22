@@ -4,6 +4,8 @@
   export let changeLimit: (selectedValue: string) => void;
   export let store: ListStore;
 
+  let refLimitProp = { ref: "limit" };
+
   $: limit = store.limit || 0;
   $: limitToString = limit.toString();
 </script>
@@ -17,6 +19,7 @@
       <select
         id="row-for-mobile"
         class="custom-select form-control form-select"
+        {...refLimitProp}
         bind:value={limitToString}
         on:change={() => changeLimit(limitToString)}
       >

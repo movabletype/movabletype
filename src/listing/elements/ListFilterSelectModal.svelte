@@ -6,8 +6,10 @@
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
   export let store: ListStore;
 
-  let modal: HTMLDivElement;
   let isEditingFilter: { [key: string]: boolean } = {};
+  let modal: HTMLDivElement;
+  let refLabelProp = { ref: "label" };
+  let refModalProp = { ref: "modal" };
 
   const applyFilter = (filterId: string): void => {
     closeModal();
@@ -60,7 +62,13 @@
   };
 </script>
 
-<div class="modal fade" id="select-filter" tabindex="-1" bind:this={modal}>
+<div
+  class="modal fade"
+  id="select-filter"
+  tabindex="-1"
+  bind:this={modal}
+  {...refModalProp}
+>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -114,6 +122,7 @@
                           type="text"
                           class="form-control rename-filter-input"
                           value={filter.label}
+                          {...refLabelProp}
                         />
                         <button
                           class="btn btn-default form-control"

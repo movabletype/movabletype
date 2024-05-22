@@ -7,6 +7,8 @@
 
   let modal: HTMLDivElement;
   let filterName: HTMLInputElement;
+  let refModalProp = { ref: "modal" };
+  let refFilterNameProp = { ref: "filterName" };
   let saveAs: boolean | undefined;
 
   const closeModal = (): void => {
@@ -42,7 +44,13 @@
   };
 </script>
 
-<div id="save-filter" class="modal fade" tabindex="-1" bind:this={modal}>
+<div
+  id="save-filter"
+  class="modal fade"
+  tabindex="-1"
+  {...refModalProp}
+  bind:this={modal}
+>
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-header">
@@ -65,6 +73,7 @@
             type="text"
             class="text full required form-control"
             name="filter_name"
+            {...refFilterNameProp}
             bind:this={filterName}
           />
         </div>
