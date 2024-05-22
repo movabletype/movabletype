@@ -1,8 +1,8 @@
 <script lang="ts">
-  export let field;
-  export let item;
+  import { Item } from "types/listing";
 
-  let root;
+  export let field;
+  export let item: Item;
 
   const setValues = (): void => {
     for (let key in item.args) {
@@ -13,8 +13,8 @@
         continue;
       }
       const selector = "." + item.type + "-" + key;
-      // TODO: fix this.root
-      const elements = this.root.querySelectorAll(selector);
+      // TODO
+      const elements = field.querySelectorAll(selector);
       Array.prototype.slice.call(elements).forEach(function (element) {
         if (element.tagName == "INPUT" || element.tagName == "SELECT") {
           element.value = item.args[key];
@@ -25,8 +25,7 @@
     }
   };
 
-  // FIXME
-  // setValues();
+  setValues();
 </script>
 
 {@html field}

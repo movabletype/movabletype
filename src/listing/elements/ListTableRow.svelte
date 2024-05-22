@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { ListObject, ListStore } from "types/listing";
+  import { ListStore } from "types/listing";
 
   export let checked: number;
   export let hasListActions: boolean;
   export let hasMobilePulldownActions: boolean;
-  export let object: ListObject;
+  export let object: Array<object>;
   export let store: ListStore;
 
   const classes = (index: string): string => {

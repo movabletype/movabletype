@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { SvelteComponent } from "svelte";
-
   import { Filter, ListStore } from "types/listing";
 
   import ListFilterSaveModal from "./ListFilterSaveModal.svelte";
@@ -12,7 +10,7 @@
   export let objectLabel: string;
   export let store: ListStore;
 
-  let listFilterSaveModal: SvelteComponent;
+  let openModal: (args: { filterLabel?: string; saveAs?: boolean }) => void;
 
   const applyFilter = (): boolean | void => {
     if (!listFilterTopValidateFilterDetails()) {
@@ -32,7 +30,7 @@
       store.trigger("save_filter", currentFilter);
     } else {
       const filterLabel = store.getNewFilterLabel(objectLabel);
-      listFilterSaveModal.openModal({
+      openModal({
         filterLabel: filterLabel,
       });
     }
@@ -42,7 +40,7 @@
     if (!listFilterTopValidateFilterDetails()) {
       return false;
     }
-    listFilterSaveModal.openModal({
+    openModal({
       filterLabel: currentFilter.label,
       saveAs: true,
     });
@@ -58,7 +56,7 @@
 </button>
 <button
   class="btn btn-default"
-  disabled={currentFilter.items.length == 0 || currentFilter.can_save == "0"}
+  disabled={currentFilter.items.length == 0 || currentFilter.can_save == 0}
   on:click={saveFilter}
 >
   {window.trans("Save")}
@@ -68,4 +66,9 @@
     {window.trans("Save As")}
   </button>
 {/if}
-<ListFilterSaveModal bind:this={listFilterSaveModal} {store} />
+<ListFilterSaveModal
+  {currentFilter}
+  {listFilterTopGetItemValues}
+  bind:openModal
+  {store}
+/>

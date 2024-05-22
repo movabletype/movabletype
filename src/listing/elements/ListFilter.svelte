@@ -50,7 +50,8 @@
 
   const createNewFilter = (filterLabel?: string): void => {
     currentFilter = {
-      can_save: "0",
+      can_save: 0,
+      can_edit: 0,
       id: "",
       items: [],
       label: filterLabel || window.trans("New Filter"),
@@ -59,12 +60,14 @@
 
   const getItemValues = (): void => {
     var $items = jQuery("#filter-detail .filteritem:not(.error)");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let vals: Array<any> = [];
     $items.each(function () {
-      var data = {};
-      var fields: Array<any> = [];
+      var data: { type?: string; args?: object } | undefined = {};
+      var fields: Array<{ type: string; args: object }> = [];
       var $types = jQuery(this).find(".filtertype");
       $types.each(function () {
+        /* @ts-expect-error : ignore undefined */
         const type = (jQuery(this)
           .attr("class")
           .match(/type-(\w+)/) || [])[1];
@@ -76,6 +79,7 @@
               .find(":input")
               .each(function () {
                 var re = new RegExp(type + "-(\\w+)");
+                /* @ts-expect-error : ignore undefined */
                 const key = (jQuery(this).attr("class").match(re) || [])[1];
                 if (key && !Object.prototype.hasOwnProperty.call(args, key)) {
                   args[key] = jQuery(this).val();
@@ -125,6 +129,7 @@
     currentFilter.items[itemIndex].args.items.splice(contentIndex, 1);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const showMessage = (content: any, cls: string): any => {
     var error_block;
     if (typeof content == "object") {
@@ -169,6 +174,7 @@
     }
     var errors = 0;
     jQuery("div#filter-detail div.filteritem").each(function () {
+      /* @ts-expect-error : mtValidate is not defined */
       if (!jQuery(this).find("input:visible").mtValidate()) {
         errors++;
         jQuery(this).addClass("highlight error bg-warning");
@@ -187,6 +193,7 @@
     return errors ? false : true;
   };
 
+  /* @ts-expect-error : mtValidateRules is not defined */
   jQuery.mtValidateRules["[name=filter_name], .rename-filter-input"] =
     function ($e) {
       if (validateFilterName($e.val())) {

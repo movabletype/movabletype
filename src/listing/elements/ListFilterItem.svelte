@@ -1,7 +1,7 @@
 <script lang="ts">
   // import jQuery from "jquery";
 
-  import { SvelteComponent, onMount } from "svelte";
+  import { onMount } from "svelte";
 
   import { Filter, FilterType, Item } from "types/listing";
 
@@ -54,8 +54,8 @@
           .find(":input")
           .each(function () {
             var re = new RegExp(item.type + "-(\\w+)");
-            jQuery(this).attr("class").match(re);
-            var key = RegExp.$1;
+            /* @ts-expect-error : ignore undefined */
+            const key = (jQuery(this).attr("class").match(re) || [])[1];
             if (key && !Object.prototype.hasOwnProperty.call(item.args, key)) {
               item.args[key] = jQuery(this).val();
             }

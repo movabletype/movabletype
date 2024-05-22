@@ -5,10 +5,13 @@ export interface ButtonActions {
 }
 
 export interface Filter {
-  can_save: string;
+  can_delete?: number;
+  can_edit: number;
+  can_save: number;
   id: string;
   items: Array<Item>;
   label: string;
+  order?: number;
 }
 
 interface FilterType {
@@ -131,7 +134,11 @@ interface ListData {
   updateLimit: (limit: number) => void;
 }
 
-export interface ListObject {}
+export interface ListObject {
+  checked: number;
+  clicked: boolean;
+  object: Array<object>;
+}
 
 export interface ListStore extends ListData {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

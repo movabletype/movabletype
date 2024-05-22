@@ -4,7 +4,7 @@
   import SS from "../../ss/elements/SS.svelte";
 
   export let isTooNarrowWidth: boolean;
-  export let movePage: () => void;
+  export let movePage: (e: Event) => void;
   export let store: ListStore;
 
   let page: number;
@@ -17,7 +17,7 @@
     <a
       href="javascript:void(0);"
       class="page-link"
-      disabled={page <= 1}
+      data-disabled={page <= 1}
       data-page={page - 1}
       on:click={movePage}
     >
@@ -154,7 +154,7 @@
     <a
       href="javascript:void(0);"
       class="page-link"
-      disabled={page >= store.pageMax}
+      data-disabled={page >= store.pageMax}
       data-page={page + 1}
       on:click={movePage}
     >

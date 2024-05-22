@@ -1,16 +1,22 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
+  import { Filter, ListStore } from "types/listing";
 
+  export let currentFilter: Filter;
+  export let listFilterTopGetItemValues: () => void;
   export let store: ListStore;
 
   let modal: HTMLDivElement;
   let filterName: HTMLInputElement;
+  let saveAs: boolean | undefined;
 
   const closeModal = (): void => {
     jQuery(modal).modal("hide");
   };
 
-  const openModal = (args: object): void => {
+  export const openModal = (args: {
+    filterLabel?: string;
+    saveAs?: boolean;
+  }): void => {
     if (!args) {
       args = {};
     }
@@ -18,7 +24,7 @@
     if (args.filterLabel) {
       filterName.value = args.filterLabel;
     }
-    this.saveAs = args.saveAs;
+    saveAs = args.saveAs;
     jQuery(modal).modal();
   };
 
@@ -27,11 +33,11 @@
       return false;
     }
     listFilterTopGetItemValues();
-    listFilterTopCurrentFilter.label = filterName.value;
-    if (this.saveAs) {
-      this.listFilterTop.currentFilter.id = null;
+    currentFilter.label = filterName.value;
+    if (saveAs) {
+      currentFilter.id = "";
     }
-    store.trigger("save_filter", this.listFilterTop.currentFilter);
+    store.trigger("save_filter", currentFilter);
     closeModal();
   };
 </script>
@@ -41,7 +47,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">
-          {window.trans(store.saveAs ? "Save As Filter" : "Save Filter")}
+          {window.trans(saveAs ? "Save As Filter" : "Save Filter")}
         </h5>
         <button
           type="button"

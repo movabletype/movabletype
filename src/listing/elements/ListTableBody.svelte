@@ -8,14 +8,14 @@
   export let store: ListStore;
   export let zeroStateLabel: string;
 
-  // FIXME
   $: objects = store.objects || [];
 
   const checkAllRows = (): void => {
     store.trigger("check_all_rows");
   };
 
-  const clickRow = (e): boolean | undefined => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const clickRow = (e: any): boolean | undefined => {
     store.trigger("reset_all_clicked_rows");
 
     if (
@@ -25,6 +25,7 @@
     ) {
       return false;
     }
+    /* @ts-expect-error : MT is not defined */
     if (MT.Util.isMobileView()) {
       let $mobileColumn;
       if (e.target.dataset.is == "list-table-column") {

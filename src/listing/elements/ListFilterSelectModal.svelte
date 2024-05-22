@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { Filter, ListStore } from "types/listing";
+  import { ListStore } from "types/listing";
 
   import SS from "../../ss/elements/SS.svelte";
 
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
   export let store: ListStore;
 
+  let modal: HTMLDivElement;
   let isEditingFilter: { [key: string]: boolean } = {};
 
   const applyFilter = (filterId: string): void => {
@@ -27,10 +28,8 @@
   };
 
   const closeModal = (): void => {
-    // FIXME
-    // jQuery("#select-filter").modal("hide");
-    bootstrap.Modal.getInstance("#select-filter").hide();
-    // bootstrap.Modal.getInstance(this.refs.modal).hide();
+    /* @ts-expect-error : bootstrap is not defined */
+    bootstrap.Modal.getInstance(modal).hide();
   };
 
   const createNewFilter = (): void => {
@@ -61,7 +60,7 @@
   };
 </script>
 
-<div class="modal fade" id="select-filter" tabindex="-1">
+<div class="modal fade" id="select-filter" tabindex="-1" bind:this={modal}>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -75,7 +74,7 @@
           <h6 class="filter-list-label">{window.trans("My Filters")}</h6>
           <ul id="user-filters" class="list-unstyled editable">
             {#each store.filters as filter}
-              {#if filter.can_save == "1"}
+              {#if filter.can_save == 1}
                 <li
                   class="filter line"
                   data-mt-list-filter-id={filter.id}
@@ -159,7 +158,7 @@
             </h6>
             <ul id="built-in-filters" class="list-unstyled">
               {#each store.filters as filter}
-                {#if filter.can_save == "0"}
+                {#if filter.can_save == 0}
                   <li
                     class="filter line"
                     data-mt-list-filter-id={filter.id}

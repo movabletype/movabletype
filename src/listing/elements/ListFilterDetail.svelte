@@ -24,6 +24,7 @@
   export let objectLabel: string;
   export let store: ListStore;
 
+  // TODO
   const addFilterItem = (e): void => {
     if (e.currentTarget.classList.contains("disabled")) {
       e.preventDefault();

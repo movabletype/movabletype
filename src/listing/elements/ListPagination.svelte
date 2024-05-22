@@ -19,7 +19,7 @@
   };
 
   const movePage = (e): boolean => {
-    if (e.currentTarget.disabled) {
+    if (e.currentTarget.dataset.disabled) {
       return false;
     }
 

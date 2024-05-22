@@ -17,6 +17,7 @@ module.exports = {
     MoreListAction: true,
     MoreListActions: true,
     MT: true,
+    bootstrap: true,
   },
   parser: "@typescript-eslint/parser",
   parserOptions: {
