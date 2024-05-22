@@ -71,15 +71,10 @@
     store.columns.forEach(function (column) {
       column.sub_fields.forEach(function (subField) {
         const selector = "td." + subField.parent_id + " ." + subField.class;
-        const element: HTMLElement | null = document.querySelector(selector);
-        if (!element) {
-          return;
-        }
-
         if (subField.checked) {
-          element.style.display = "block";
+          jQuery(selector).show();
         } else {
-          element.style.display = "none";
+          jQuery(selector).hide();
         }
       });
     });
