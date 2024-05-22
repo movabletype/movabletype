@@ -24,14 +24,27 @@
   export let objectLabel: string;
   export let store: ListStore;
 
-  // TODO
-  const addFilterItem = (e): void => {
-    if (e.currentTarget.classList.contains("disabled")) {
+  const addFilterItem = (e: PointerEvent): void => {
+    if (!e || !e.currentTarget) {
       e.preventDefault();
       e.stopPropagation();
       return;
     }
-    const filterType = e.currentTarget.dataset.mtFilterType;
+
+    const currentTarget = e.currentTarget as HTMLElement;
+    if (currentTarget.classList.contains("disabled")) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    const filterType = currentTarget.dataset.mtFilterType;
+    if (!filterType) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
     listFilterTopAddFilterItem(filterType);
   };
 </script>

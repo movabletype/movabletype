@@ -9,6 +9,7 @@ module.exports = {
     ButtonAction: true,
     ButtonActions: true,
     Filter: true,
+    JQuery: true,
     ListAction: true,
     ListActionClient: true,
     ListActions: true,

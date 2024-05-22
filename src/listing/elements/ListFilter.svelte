@@ -20,9 +20,8 @@
   let currentFilter: Filter;
   $: currentFilter = store.currentFilter;
 
-  let validateErrorMessage;
+  let validateErrorMessage: JQuery<HTMLElement>;
 
-  // TODO
   const addFilterItem = (filterType: string): void => {
     if (isAllpassFilter()) {
       createNewFilter(window.trans("New Filter"));
@@ -129,36 +128,18 @@
     currentFilter.items[itemIndex].args.items.splice(contentIndex, 1);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const showMessage = (content: any, cls: string): any => {
-    var error_block;
-    if (typeof content == "object") {
-      jQuery("#msg-block").append(
-        (error_block = jQuery("<div>")
-          .attr("class", "msg msg-" + cls)
+  const showMessage = (content: string, cls: string): JQuery<HTMLElement> => {
+    const error_block = jQuery("<div />")
+      .attr("class", "msg msg-" + cls)
+      .append(
+        jQuery("<p />")
+          .attr("class", "msg-text alert alert-danger alert-dismissible")
           .append(
-            jQuery("<p />")
-              .attr("class", "msg-text alert alert-danger alert-dismissible")
-              .append(
-                '<button type="button" class="close btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
-              )
-              .append(content)
-          ))
+            '<button type="button" class="close btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+          )
+          .append(content)
       );
-    } else {
-      jQuery("#msg-block").append(
-        (error_block = jQuery("<div />")
-          .attr("class", "msg msg-" + cls)
-          .append(
-            jQuery("<p />")
-              .attr("class", "msg-text alert alert-danger alert-dismissible")
-              .append(
-                '<button type="button" class="close btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
-              )
-              .append(content)
-          ))
-      );
-    }
+    jQuery("#msg-block").append(error_block);
     return error_block;
   };
 
