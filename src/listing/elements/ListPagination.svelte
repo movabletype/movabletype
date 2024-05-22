@@ -12,19 +12,19 @@
 
   $: page = store.page == null ? 0 : store.page;
 
-  let previousDisabledProps: { disabled?: string } = {};
+  let previousDisabledProp: { disabled?: string } = {};
   $: {
-    previousDisabledProps = {};
+    previousDisabledProp = {};
     if (page <= 1) {
-      previousDisabledProps.disabled = "";
+      previousDisabledProp.disabled = "";
     }
   }
 
-  let nextDisabledProps: { disabled?: string } = {};
+  let nextDisabledProp: { disabled?: string } = {};
   $: {
-    nextDisabledProps = {};
+    nextDisabledProp = {};
     if (page >= store.pageMax) {
-      nextDisabledProps.disabled = "";
+      nextDisabledProp.disabled = "";
     }
   }
 
@@ -68,16 +68,16 @@
   <nav aria-label={store.objectType + " list"}>
     <ListPaginationForPc
       {movePage}
-      {nextDisabledProps}
+      {nextDisabledProp}
       {page}
-      {previousDisabledProps}
+      {previousDisabledProp}
       {store}
     />
     <ListPaginationForMobile
       {isTooNarrowWidth}
-      {nextDisabledProps}
+      {nextDisabledProp}
       {page}
-      {previousDisabledProps}
+      {previousDisabledProp}
       {movePage}
       {store}
     />

@@ -5,9 +5,9 @@
 
   export let isTooNarrowWidth: boolean;
   export let movePage: (e: Event) => void;
-  export let nextDisabledProps: { disabled?: string };
+  export let nextDisabledProp: { disabled?: string };
   export let page: number;
-  export let previousDisabledProps: { disabled?: string };
+  export let previousDisabledProp: { disabled?: string };
   export let store: ListStore;
 </script>
 
@@ -17,7 +17,7 @@
     <a
       href="javascript:void(0);"
       class="page-link"
-      {...previousDisabledProps}
+      {...previousDisabledProp}
       data-page={page - 1}
       on:click={movePage}
     >
@@ -154,7 +154,7 @@
     <a
       href="javascript:void(0);"
       class="page-link"
-      {...nextDisabledProps}
+      {...nextDisabledProp}
       data-page={page + 1}
       on:click={movePage}
     >
