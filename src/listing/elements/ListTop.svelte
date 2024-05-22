@@ -49,15 +49,13 @@
   store.on("refresh_view", (args) => {
     if (!args) args = {};
 
+    selfUpdate();
     if (args.moveToPagination) {
       window.document.body.scrollTop = window.document.body.scrollHeight;
     }
     if (!args.notCallListReady) {
       jQuery(window).trigger("listReady");
     }
-
-    // eslint-disable-next-line no-self-assign
-    store = store;
   });
 
   const changeLimit = (selectedValue: string): void => {
@@ -80,6 +78,11 @@
         }
       });
     });
+  };
+
+  const selfUpdate = (): void => {
+    // eslint-disable-next-line no-self-assign
+    store = store;
   };
 
   const tableClass = (): string => {
