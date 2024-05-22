@@ -49,7 +49,7 @@
   store.on("refresh_view", (args) => {
     if (!args) args = {};
 
-    selfUpdate();
+    update();
     if (args.moveToPagination) {
       window.document.body.scrollTop = window.document.body.scrollHeight;
     }
@@ -60,6 +60,11 @@
 
   const changeLimit = (selectedValue: string): void => {
     store.trigger("update_limit", selectedValue);
+  };
+
+  const update = (): void => {
+    // eslint-disable-next-line no-self-assign
+    store = store;
   };
 
   const updateSubFields = (): void => {
@@ -78,11 +83,6 @@
         }
       });
     });
-  };
-
-  const selfUpdate = (): void => {
-    // eslint-disable-next-line no-self-assign
-    store = store;
   };
 
   const tableClass = (): string => {
