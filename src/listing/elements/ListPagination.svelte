@@ -10,6 +10,24 @@
 
   let isTooNarrowWidth: boolean;
 
+  $: page = store.page == null ? 0 : store.page;
+
+  let previousDisabledProps: { disabled?: string } = {};
+  $: {
+    previousDisabledProps = {};
+    if (page <= 1) {
+      previousDisabledProps.disabled = "";
+    }
+  }
+
+  let nextDisabledProps: { disabled?: string } = {};
+  $: {
+    nextDisabledProps = {};
+    if (page >= store.pageMax) {
+      nextDisabledProps.disabled = "";
+    }
+  }
+
   onMount(() => {
     checkTooNarrowWidth();
   });
@@ -19,7 +37,7 @@
   };
 
   const movePage = (e): boolean => {
-    if (e.currentTarget.dataset.disabled) {
+    if (e.currentTarget.disabled) {
       return false;
     }
 
@@ -48,7 +66,20 @@
 
 <div class="col-auto mx-auto{isTooNarrowWidth ? ' w-100' : ''}">
   <nav aria-label={store.objectType + " list"}>
-    <ListPaginationForPc {movePage} {store} />
-    <ListPaginationForMobile {isTooNarrowWidth} {movePage} {store} />
+    <ListPaginationForPc
+      {movePage}
+      {nextDisabledProps}
+      {page}
+      {previousDisabledProps}
+      {store}
+    />
+    <ListPaginationForMobile
+      {isTooNarrowWidth}
+      {nextDisabledProps}
+      {page}
+      {previousDisabledProps}
+      {movePage}
+      {store}
+    />
   </nav>
 </div>

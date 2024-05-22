@@ -5,10 +5,10 @@
 
   export let isTooNarrowWidth: boolean;
   export let movePage: (e: Event) => void;
+  export let nextDisabledProps: { disabled?: string };
+  export let page: number;
+  export let previousDisabledProps: { disabled?: string };
   export let store: ListStore;
-
-  let page: number;
-  $: page = store.page == null ? 0 : store.page;
 </script>
 
 <ul class="pagination__mobile d-md-none">
@@ -17,7 +17,7 @@
     <a
       href="javascript:void(0);"
       class="page-link"
-      data-disabled={page <= 1}
+      {...previousDisabledProps}
       data-page={page - 1}
       on:click={movePage}
     >
@@ -154,7 +154,7 @@
     <a
       href="javascript:void(0);"
       class="page-link"
-      data-disabled={page >= store.pageMax}
+      {...nextDisabledProps}
       data-page={page + 1}
       on:click={movePage}
     >
