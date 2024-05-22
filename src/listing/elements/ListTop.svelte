@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { afterUpdate, onMount } from "svelte";
 
   import {
     ButtonActions,
@@ -41,10 +41,14 @@
     store.trigger("load_list");
   });
 
+  // sub_fields are not updated yet in store.on("refresh_view", ...)
+  afterUpdate(() => {
+    updateSubFields();
+  });
+
   store.on("refresh_view", (args) => {
     if (!args) args = {};
 
-    updateSubFields();
     if (args.moveToPagination) {
       window.document.body.scrollTop = window.document.body.scrollHeight;
     }
