@@ -25,7 +25,7 @@ interface FilterType {
 }
 
 interface Item {
-  args: object;
+  args: { items: Array<Item> };
   type: string;
 }
 

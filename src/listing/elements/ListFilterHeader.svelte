@@ -4,7 +4,7 @@
   import ListFilterSelectModal from "./ListFilterSelectModal.svelte";
 
   export let currentFilter: Filter;
-  export let isAllpassFilter: () => boolean;
+  export let isAllpassFilter: boolean;
   export let listActionClient: ListActionClient;
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
   export let store: ListStore;
@@ -36,7 +36,7 @@
         <ListFilterSelectModal {listFilterTopCreateNewFilter} {store} />
       </li>
       <li class="list-inline-item">
-        {#if isAllpassFilter() == false}
+        {#if isAllpassFilter == false}
           <!-- svelte-ignore a11y-invalid-attribute -->
           <a href="#" id="allpass-filter" on:click={resetFilter}>
             [ {window.trans("Reset Filter")} ]

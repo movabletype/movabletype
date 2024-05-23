@@ -1,12 +1,7 @@
 <script lang="ts">
   // import jQuery from "jquery";
 
-  import {
-    Filter,
-    FilterType,
-    ListActionClient,
-    ListStore,
-  } from "types/listing";
+  import { FilterType, ListActionClient, ListStore } from "types/listing";
 
   import ListFilterDetail from "./ListFilterDetail.svelte";
   import ListFilterHeader from "./ListFilterHeader.svelte";
@@ -17,13 +12,10 @@
   export let objectLabel: string;
   export let store: ListStore;
 
-  let currentFilter: Filter;
-  $: currentFilter = store.currentFilter;
-
   let validateErrorMessage: JQuery<HTMLElement>;
 
   const addFilterItem = (filterType: string): void => {
-    if (isAllpassFilter()) {
+    if (isAllpassFilter) {
       createNewFilter(window.trans("New Filter"));
     }
     currentFilter.items.push({ type: filterType, args: {} });
@@ -101,9 +93,8 @@
     currentFilter.items = vals;
   };
 
-  const isAllpassFilter = (): boolean => {
-    return currentFilter.id == store.allpassFilter.id;
-  };
+  $: currentFilter = store.currentFilter;
+  $: isAllpassFilter = currentFilter.id == store.allpassFilter.id;
 
   const isFilterItemSelected = (type: string): boolean => {
     return currentFilter.items.some(function (item) {
@@ -185,6 +176,16 @@
         );
       }
     };
+
+  store.on("open_filter_detail", () => {
+    /* @ts-expect-error : undefined error */
+    jQuery("#list-filter-collapse").collapse("show");
+  });
+
+  store.on("close_filter_detail", () => {
+    /* @ts-expect-error : undefined error */
+    jQuery("#list-filter-collapse").collapse("hide");
+  });
 </script>
 
 <div class="card-header">

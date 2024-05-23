@@ -1,10 +1,19 @@
 <script lang="ts">
+  import { afterUpdate } from "svelte";
   import { Item } from "types/listing";
 
-  export let field;
+  export let parentDiv: HTMLDivElement | undefined;
   export let item: Item;
 
+  afterUpdate(() => {
+    setValues();
+  });
+
   const setValues = (): void => {
+    if (!parentDiv) {
+      return;
+    }
+
     for (let key in item.args) {
       if (
         typeof item.args[key] != "string" &&
@@ -13,8 +22,7 @@
         continue;
       }
       const selector = "." + item.type + "-" + key;
-      // TODO
-      const elements = field.querySelectorAll(selector);
+      const elements = parentDiv.querySelectorAll(selector);
       Array.prototype.slice.call(elements).forEach(function (element) {
         if (element.tagName == "INPUT" || element.tagName == "SELECT") {
           element.value = item.args[key];
@@ -24,8 +32,6 @@
       });
     }
   };
-
-  setValues();
 </script>
 
-{@html field}
+<slot />

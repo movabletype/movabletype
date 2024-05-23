@@ -1,6 +1,4 @@
 <script lang="ts">
-  // import jQuery from "jquery";
-
   import { onMount } from "svelte";
 
   import { Filter, FilterType, Item } from "types/listing";
@@ -23,6 +21,7 @@
   ) => void;
   export let localeCalendarHeader: Array<string>;
 
+  let fieldParentDivs: Array<HTMLDivElement | undefined> = [];
   let root: HTMLDivElement;
 
   $: filterTypeHash = filterTypes.reduce((hash, filterType) => {
@@ -36,7 +35,7 @@
   });
 
   const addFilterItemContent = (e: Event): void => {
-    const target = e.target;
+    const target = e.target as HTMLElement;
     if (!target) {
       return;
     }
@@ -69,23 +68,31 @@
     initializeOptionWithBlank();
   };
 
-  const getListItemIndex = (element): number => {
+  const getListItemIndex = (element: HTMLElement): number => {
     while (
       !Object.prototype.hasOwnProperty.call(element.dataset, "mtListItemIndex")
     ) {
-      element = element.parentElement;
+      if (element.parentElement) {
+        element = element.parentElement;
+      } else {
+        return -1;
+      }
     }
     return Number(element.dataset.mtListItemIndex);
   };
 
-  const getListItemContentIndex = (element): number => {
+  const getListItemContentIndex = (element: HTMLElement): number => {
     while (
       !Object.prototype.hasOwnProperty.call(
         element.dataset,
         "mtListItemContentIndex"
       )
     ) {
-      element = element.parentElement;
+      if (element.parentElement) {
+        element = element.parentElement;
+      } else {
+        return -1;
+      }
     }
     return Number(element.dataset.mtListItemContentIndex);
   };
@@ -134,6 +141,7 @@
       });
     jQuery(root)
       .find("input.date")
+      /* @ts-expect-error : undefined error */
       .datepicker({
         dateFormat: "yy-mm-dd",
         dayNamesMin: localeCalendarHeader,
@@ -176,12 +184,20 @@
       });
   };
 
-  const removeFilterItem = (target): void => {
+  const removeFilterItem = (e: Event): void => {
+    const target = e.target as HTMLElement;
+    if (!target) {
+      return;
+    }
     const itemIndex = getListItemIndex(target);
     listFilterTopRemoveFilterItem(itemIndex.toString());
   };
 
-  const removeFilterItemContent = (target): void => {
+  const removeFilterItemContent = (e: Event): void => {
+    const target = e.target as HTMLElement;
+    if (!target) {
+      return;
+    }
     const itemIndex = getListItemIndex(target);
     const contentIndex = getListItemContentIndex(target);
     listFilterTopRemoveFilterItemContent(
@@ -195,7 +211,7 @@
   <button
     class="close btn-close"
     aria-label="Close"
-    on:click={() => removeFilterItem(this)}
+    on:click={removeFilterItem}
   >
     <span aria-hidden="true">&times;</span>
   </button>
@@ -207,17 +223,19 @@
             data-mt-list-item-content-index={index}
             class={"filtertype type-" + i.type}
           >
-            <div class="item-content form-inline">
-              <ListFilterItemField
-                field={filterTypeHash[i.type].field}
-                item={i}
-              />
+            <div
+              class="item-content form-inline"
+              bind:this={fieldParentDivs[index]}
+            >
+              <ListFilterItemField item={i} parentDiv={fieldParentDivs[index]}>
+                {@html filterTypeHash[i.type].field}
+              </ListFilterItemField>
               <!-- svelte-ignore a11y-invalid-attribute -->
               {#if !filterTypeHash[i.type].singleton}
                 <a
                   href="javascript:void(0);"
                   class="d-inline-block"
-                  on:click={() => addFilterItemContent(this)}
+                  on:click={addFilterItemContent}
                 >
                   <SS
                     title={window.trans("Add")}
@@ -230,7 +248,7 @@
                 <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
                   href="javascript:void(0);"
-                  on:click={() => removeFilterItemContent(this)}
+                  on:click={removeFilterItemContent}
                 >
                   <SS
                     title={window.trans("Remove")}
@@ -250,13 +268,10 @@
       data-mt-list-item-content-index="0"
       class={"filtertype type-" + item.type}
     >
-      <div class="item-content form-inline">
-        <virtual
-          data-is="list-filter-item-field"
-          field={filterTypeHash[item.type].field}
-          {item}
-        />
-        <ListFilterItemField field={filterTypeHash[item.type].field} {item} />
+      <div class="item-content form-inline" bind:this={fieldParentDivs[0]}>
+        <ListFilterItemField {item} parentDiv={fieldParentDivs[0]}>
+          {@html filterTypeHash[item.type].field}
+        </ListFilterItemField>
         <!-- svelte-ignore a11y-invalid-attribute -->
         {#if !filterTypeHash[item.type].singleton}
           <a
