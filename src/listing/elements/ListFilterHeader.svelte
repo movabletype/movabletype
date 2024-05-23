@@ -7,6 +7,7 @@
   export let isAllpassFilter: boolean;
   export let listActionClient: ListActionClient;
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
+  export let listFilterTopUpdate: () => void;
   export let store: ListStore;
 
   const resetFilter = (): void => {
@@ -33,7 +34,11 @@
         >
           <u>{window.trans(currentFilter.label)}</u>
         </a>
-        <ListFilterSelectModal {listFilterTopCreateNewFilter} {store} />
+        <ListFilterSelectModal
+          {listFilterTopCreateNewFilter}
+          {listFilterTopUpdate}
+          {store}
+        />
       </li>
       <li class="list-inline-item">
         {#if isAllpassFilter == false}

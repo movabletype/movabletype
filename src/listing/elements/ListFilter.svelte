@@ -25,7 +25,7 @@
       createNewFilter(window.trans("New Filter"));
     }
     currentFilter.items.push({ type: filterType, args: {} });
-    currentFilter = currentFilter;
+    update();
   };
 
   const addFilterItemContent = (
@@ -44,6 +44,7 @@
       type: type,
       args: {},
     });
+    update();
   };
 
   const createNewFilter = (filterLabel?: string): void => {
@@ -116,7 +117,7 @@
 
   const removeFilterItem = (itemIndex: string): void => {
     currentFilter.items.splice(Number(itemIndex), 1);
-    currentFilter = currentFilter;
+    update();
   };
 
   const removeFilterItemContent = (
@@ -139,6 +140,11 @@
       );
     jQuery("#msg-block").append(error_block);
     return error_block;
+  };
+
+  const update = (): void => {
+    // eslint-disable-next-line no-self-assign
+    currentFilter = currentFilter;
   };
 
   const validateFilterName = (name: string): boolean => {
@@ -204,6 +210,7 @@
     {currentFilter}
     {isAllpassFilter}
     listFilterTopCreateNewFilter={createNewFilter}
+    listFilterTopUpdate={update}
     {listActionClient}
     {store}
   />

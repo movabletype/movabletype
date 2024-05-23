@@ -4,6 +4,7 @@
   import SS from "../../ss/elements/SS.svelte";
 
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
+  export let listFilterTopUpdate: () => void;
   export let store: ListStore;
 
   let isEditingFilter: { [key: string]: boolean } = {};
@@ -38,8 +39,7 @@
     closeModal();
     store.trigger("open_filter_detail");
     listFilterTopCreateNewFilter();
-    // eslint-disable-next-line no-self-assign
-    store = store;
+    listFilterTopUpdate();
   };
 
   const renameFilter = (filterId: string, filterLabel: string): void => {
