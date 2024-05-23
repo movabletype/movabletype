@@ -6,7 +6,7 @@
 
   export let currentFilter: Filter;
   export let filterTypes: Array<FilterType>;
-  export let isFilterItemSelected: (type: string) => boolean;
+  export let isFilterItemSelected: (filter: Filter, type: string) => boolean;
   export let listFilterTopAddFilterItem: (filterType: string) => void;
   export let listFilterTopAddFilterItemContent: (
     itemIndex: string,
@@ -65,9 +65,11 @@
               {#if filterType.editable}
                 <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
-                  class="{isFilterItemSelected(filterType.type)
-                    ? 'disabled '
-                    : ' '}dropdown-item"
+                  class:disabled={isFilterItemSelected(
+                    currentFilter,
+                    filterType.type
+                  )}
+                  class="dropdown-item"
                   href="#"
                   data-mt-filter-type={filterType.type}
                   on:click={addFilterItem}
@@ -85,7 +87,7 @@
 <div class="row mb-3">
   <div class="col-12">
     <ul class="list-group">
-      {#each store.currentFilter.items as item, index}
+      {#each currentFilter.items as item, index}
         <li class="list-group-item" data-mt-list-item-index={index}>
           <ListFilterItem
             {currentFilter}

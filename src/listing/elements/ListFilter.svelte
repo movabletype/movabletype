@@ -1,7 +1,12 @@
 <script lang="ts">
   // import jQuery from "jquery";
 
-  import { FilterType, ListActionClient, ListStore } from "types/listing";
+  import {
+    Filter,
+    FilterType,
+    ListActionClient,
+    ListStore,
+  } from "types/listing";
 
   import ListFilterDetail from "./ListFilterDetail.svelte";
   import ListFilterHeader from "./ListFilterHeader.svelte";
@@ -12,6 +17,7 @@
   export let objectLabel: string;
   export let store: ListStore;
 
+  let currentFilter = store.currentFilter;
   let validateErrorMessage: JQuery<HTMLElement>;
 
   const addFilterItem = (filterType: string): void => {
@@ -19,6 +25,7 @@
       createNewFilter(window.trans("New Filter"));
     }
     currentFilter.items.push({ type: filterType, args: {} });
+    currentFilter = currentFilter;
   };
 
   const addFilterItemContent = (
@@ -93,11 +100,10 @@
     currentFilter.items = vals;
   };
 
-  $: currentFilter = store.currentFilter;
   $: isAllpassFilter = currentFilter.id == store.allpassFilter.id;
 
-  const isFilterItemSelected = (type: string): boolean => {
-    return currentFilter.items.some(function (item) {
+  const isFilterItemSelected = (filter: Filter, type: string): boolean => {
+    return filter.items.some(function (item) {
       return item.type == type;
     });
   };
@@ -110,6 +116,7 @@
 
   const removeFilterItem = (itemIndex: string): void => {
     currentFilter.items.splice(Number(itemIndex), 1);
+    currentFilter = currentFilter;
   };
 
   const removeFilterItemContent = (
@@ -176,6 +183,10 @@
         );
       }
     };
+
+  store.on("refresh_current_filter", () => {
+    currentFilter = store.currentFilter;
+  });
 
   store.on("open_filter_detail", () => {
     /* @ts-expect-error : undefined error */
