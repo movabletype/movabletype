@@ -170,7 +170,7 @@ sub init_core_registry {
                 handler => \&configure,
                 params  => [
                     qw(dbpath dbname dbport dbserver dbsocket
-                        dbtype dbuser dbpass odbcdriver publish_charset)
+                        dbtype dbuser dbpass odbcdriver odbcencrypt publish_charset)
                 ]
             },
             optional => {
@@ -826,12 +826,13 @@ sub configure {
             else {
                 $cfg->Database( $param{dbname} );
             }
-            $cfg->DBUser( $param{dbuser} )         if $param{dbuser};
-            $cfg->DBPassword( $param{dbpass} )     if $param{dbpass};
-            $cfg->DBPort( $param{dbport} )         if $param{dbport};
-            $cfg->DBSocket( $param{dbsocket} )     if $param{dbsocket};
-            $cfg->ODBCDriver( $param{odbcdriver} ) if $param{odbcdriver};
-            $cfg->DBHost( $param{dbserver} )       if $param{dbserver};
+            $cfg->DBUser( $param{dbuser} )           if $param{dbuser};
+            $cfg->DBPassword( $param{dbpass} )       if $param{dbpass};
+            $cfg->DBPort( $param{dbport} )           if $param{dbport};
+            $cfg->DBSocket( $param{dbsocket} )       if $param{dbsocket};
+            $cfg->ODBCDriver( $param{odbcdriver} )   if $param{odbcdriver};
+            $cfg->ODBCEncrypt( $param{odbcencrypt} ) if $param{odbcencrypt};
+            $cfg->DBHost( $param{dbserver} )         if $param{dbserver};
             my $current_charset = $cfg->PublishCharset;
             $cfg->PublishCharset( $param{publish_charset} )
                 if $param{publish_charset};
@@ -1198,6 +1199,7 @@ sub seed {
                 dbport          => 'database_port',
                 dbsocket        => 'database_socket',
                 odbcdriver      => 'database_odbcdriver',
+                odbcencrypt     => 'database_odbcencrypt',
                 setnames        => 'use_setnames',
                 publish_charset => 'publish_charset',
             );
