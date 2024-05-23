@@ -227,9 +227,11 @@
               class="item-content form-inline"
               bind:this={fieldParentDivs[index]}
             >
-              <ListFilterItemField item={i} parentDiv={fieldParentDivs[index]}>
-                {@html filterTypeHash[i.type].field}
-              </ListFilterItemField>
+              <ListFilterItemField
+                field={filterTypeHash[i.type].field}
+                item={i}
+                parentDiv={fieldParentDivs[index]}
+              />
               <!-- svelte-ignore a11y-invalid-attribute -->
               {#if !filterTypeHash[i.type].singleton}
                 <a
@@ -269,9 +271,11 @@
       class={"filtertype type-" + item.type}
     >
       <div class="item-content form-inline" bind:this={fieldParentDivs[0]}>
-        <ListFilterItemField {item} parentDiv={fieldParentDivs[0]}>
-          {@html filterTypeHash[item.type].field}
-        </ListFilterItemField>
+        <ListFilterItemField
+          field={filterTypeHash[item.type].field}
+          {item}
+          parentDiv={fieldParentDivs[0]}
+        />
         <!-- svelte-ignore a11y-invalid-attribute -->
         {#if !filterTypeHash[item.type].singleton}
           <a

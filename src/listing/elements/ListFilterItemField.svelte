@@ -2,6 +2,7 @@
   import { afterUpdate } from "svelte";
   import { Item } from "types/listing";
 
+  export let field: string;
   export let parentDiv: HTMLDivElement | undefined;
   export let item: Item;
 
@@ -34,4 +35,4 @@
   };
 </script>
 
-<slot />
+{@html field}
