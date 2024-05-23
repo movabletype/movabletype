@@ -73,7 +73,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">{window.trans("Select Filter")}</h5>
-        <button type="button" class="close btn-close" data-dismiss="modal"
+        <button type="button" class="close btn-close" data-bs-dismiss="modal"
           ><span>×</span></button
         >
       </div>
