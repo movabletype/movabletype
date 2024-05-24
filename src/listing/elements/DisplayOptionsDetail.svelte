@@ -4,7 +4,7 @@
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
   import DisplayOptionsLimit from "./DisplayOptionsLimit.svelte";
 
-  export let changeLimit: (selectedValue: string) => void;
+  export let changeLimit: (e: Event) => void;
   export let disableUserDispOption: boolean;
   export let store: ListStore;
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { ListStore } from "types/listing";
 
-  export let changeLimit: (selectedValue: string) => void;
+  export let changeLimit: (e: Event) => void;
   export let store: ListStore;
 
   let refLimitProp = { ref: "limit" };
@@ -21,7 +21,7 @@
     style="width: 100px;"
     {...refLimitProp}
     bind:value={limitToString}
-    on:change={() => changeLimit(limitToString)}
+    on:change={changeLimit}
   >
     <option value="10">{window.trans("[_1] rows", "10")}</option>
     <option value="25">{window.trans("[_1] rows", "25")}</option>

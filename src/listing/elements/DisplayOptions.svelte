@@ -3,7 +3,7 @@
 
   import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
 
-  export let changeLimit: (selectedValue: string) => void;
+  export let changeLimit: (e: Event) => void;
   export let disableUserDispOption: boolean;
   export let store: ListStore;
 </script>

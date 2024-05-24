@@ -64,8 +64,8 @@
     }
   );
 
-  const changeLimit = (selectedValue: string): void => {
-    store.trigger("update_limit", selectedValue);
+  const changeLimit = (e: Event): void => {
+    store.trigger("update_limit", (e.target as HTMLSelectElement)?.value);
   };
 
   const update = (): void => {
