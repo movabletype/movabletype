@@ -58,7 +58,7 @@
             class="btn btn-default dropdown-toggle"
             data-bs-toggle="dropdown"
           >
-            {" " + window.trans("Select Filter Item...") + " "}
+            {window.trans("Select Filter Item...")}
           </button>
           <div class="dropdown-menu">
             {#each filterTypes as filterType}

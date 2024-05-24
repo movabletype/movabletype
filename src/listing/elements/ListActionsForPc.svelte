@@ -21,7 +21,7 @@
 {#if hasPulldownActions}
   <div class="btn-group">
     <button class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown">
-      {" " + window.trans("More actions...") + " "}
+      {window.trans("More actions...")}
     </button>
     <div class="dropdown-menu">
       {#each Object.entries(listActions) as [key, action]}

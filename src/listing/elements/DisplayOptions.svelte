@@ -17,7 +17,7 @@
       aria-expanded="false"
       aria-controls="display-options-detail"
     >
-      {" " + window.trans("Display Options") + " "}
+      {window.trans("Display Options")}
     </button>
   </div>
 </div>
