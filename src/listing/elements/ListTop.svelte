@@ -37,6 +37,8 @@
   export let store: ListStore;
   export let zeroStateLabel: string;
 
+  $: hidden = store.count == 0;
+
   onMount(() => {
     store.trigger("load_list");
   });
@@ -132,9 +134,7 @@
     </div>
   </div>
 </div>
-{#if store.count != 0}
-  <div class="row">
-    <ListPagination {store} />
-  </div>
-{/if}
+<div class="row" {hidden} style:display={hidden ? "none" : ""}>
+  <ListPagination {store} />
+</div>
 <DisplayOptionsForMobile {changeLimit} {store} />
