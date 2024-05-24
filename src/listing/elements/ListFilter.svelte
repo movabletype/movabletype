@@ -1,6 +1,4 @@
 <script lang="ts">
-  // import jQuery from "jquery";
-
   import {
     Filter,
     FilterType,
