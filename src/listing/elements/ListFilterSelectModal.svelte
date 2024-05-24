@@ -42,7 +42,21 @@
     listFilterTopUpdate();
   };
 
-  const renameFilter = (filterId: string, filterLabel: string): void => {
+  const renameFilter = (e: MouseEvent): void => {
+    const target = e?.target as HTMLElement;
+    const filterId =
+      target?.parentElement?.parentElement?.parentElement?.dataset
+        .mtListFilterId;
+    const filterLabel = (target?.previousElementSibling as HTMLInputElement)
+      ?.value;
+    if (
+      filterId == null ||
+      filterId == "" ||
+      filterLabel == null ||
+      filterLabel == ""
+    ) {
+      return;
+    }
     store.trigger("rename_filter_by_id", filterId, filterLabel);
     isEditingFilter[filterId] = false;
   };
@@ -126,7 +140,7 @@
                         />
                         <button
                           class="btn btn-default form-control"
-                          on:click={() => renameFilter(filter.id, filter.label)}
+                          on:click={(e) => renameFilter(e)}
                         >
                           {window.trans("Save")}
                         </button>

@@ -12,7 +12,7 @@
   let saveAs: boolean | undefined;
 
   const closeModal = (): void => {
-    jQuery(modal).modal("hide");
+    bootstrap.Modal.getInstance(modal).hide();
   };
 
   export const openModal = (args: {
@@ -27,7 +27,8 @@
       filterName.value = args.filterLabel;
     }
     saveAs = args.saveAs;
-    jQuery(modal).modal();
+    let $bsmodal = new bootstrap.Modal(modal, {});
+    $bsmodal.show();
   };
 
   const saveFilter = (): boolean | void => {
