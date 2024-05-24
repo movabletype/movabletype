@@ -4,11 +4,13 @@
   export let disableUserDispOption: boolean;
   export let store: ListStore;
 
-  const toggleColumn = (columnId: string): void => {
+  const toggleColumn = (e: Event): void => {
+    const columnId = (e.currentTarget as HTMLInputElement)?.id;
     store.trigger("toggle_column", columnId);
   };
 
-  const toggleSubField = (subFieldId: string): void => {
+  const toggleSubField = (e: Event): void => {
+    const subFieldId = (e.currentTarget as HTMLInputElement)?.id;
     store.trigger("toggle_sub_field", subFieldId);
   };
 </script>
@@ -37,7 +39,7 @@
               class="form-check-input"
               id={column.id}
               checked={column.checked != 0}
-              on:change={() => toggleColumn(column.id)}
+              on:change={toggleColumn}
               disabled={store.isLoading}
             />
             <label class="form-check-label form-label" for={column.id}>
@@ -47,6 +49,7 @@
         </li>
         {#each column.sub_fields as subField}
           {@const hiddenSubField = subField.force_display != 0}
+          {@const pidProp = { pid: subField.parent_id }}
           <li
             class="list-inline-item"
             hidden={hiddenSubField}
@@ -56,10 +59,11 @@
               <input
                 type="checkbox"
                 id={subField.id}
+                {...pidProp}
                 class="form-check-input {subField.class}"
                 disabled={!column.checked}
                 checked={subField.checked != 0}
-                on:change={() => toggleSubField(subField.id)}
+                on:change={toggleSubField}
               />
               <label class="form-check-label form-label" for={subField.id}>
                 {subField.label}
