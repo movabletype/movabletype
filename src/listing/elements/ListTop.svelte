@@ -48,17 +48,21 @@
     updateSubFields();
   });
 
-  store.on("refresh_view", (args) => {
-    if (!args) args = {};
+  store.on(
+    "refresh_view",
+    (args?: { moveToPagination?: boolean; notCallListReady?: boolean }) => {
+      if (!args) args = {};
 
-    update();
-    if (args.moveToPagination) {
-      window.document.body.scrollTop = window.document.body.scrollHeight;
+      update();
+
+      if (args.moveToPagination) {
+        window.document.body.scrollTop = window.document.body.scrollHeight;
+      }
+      if (!args.notCallListReady) {
+        jQuery(window).trigger("listReady");
+      }
     }
-    if (!args.notCallListReady) {
-      jQuery(window).trigger("listReady");
-    }
-  });
+  );
 
   const changeLimit = (selectedValue: string): void => {
     store.trigger("update_limit", selectedValue);
@@ -70,8 +74,8 @@
   };
 
   const updateSubFields = (): void => {
-    store.columns.forEach(function (column) {
-      column.sub_fields.forEach(function (subField) {
+    store.columns.forEach((column) => {
+      column.sub_fields.forEach((subField) => {
         const selector = "td." + subField.parent_id + " ." + subField.class;
         if (subField.checked) {
           jQuery(selector).show();
