@@ -10,7 +10,7 @@
   export let zeroStateLabel: string;
 </script>
 
-<thead>
+<thead data-is="list-table-header">
   <ListTableHeader {hasListActions} {hasMobilePulldownActions} {store} />
 </thead>
 {#if store.isLoading}
@@ -22,7 +22,7 @@
     </tr>
   </tbody>
 {:else if !store.isLoading && store.objects}
-  <tbody>
+  <tbody data-is="list-table-body">
     <ListTableBody
       {hasListActions}
       {hasMobilePulldownActions}

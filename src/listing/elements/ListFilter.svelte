@@ -201,7 +201,7 @@
   });
 </script>
 
-<div class="card-header">
+<div data-is="list-filter-header" class="card-header">
   <ListFilterHeader
     {currentFilter}
     {isAllpassFilter}
@@ -212,7 +212,7 @@
   />
 </div>
 <div id="list-filter-collapse" class="collapse">
-  <div id="filter-detail" class="card-block p-3">
+  <div data-is="list-filter-detail" id="filter-detail" class="card-block p-3">
     <ListFilterDetail
       {currentFilter}
       {filterTypes}

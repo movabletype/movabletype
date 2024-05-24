@@ -88,7 +88,11 @@
   <div class="col-12">
     <ul class="list-group">
       {#each currentFilter.items as item, index}
-        <li class="list-group-item" data-mt-list-item-index={index}>
+        <li
+          data-is="list-filter-item"
+          class="list-group-item"
+          data-mt-list-item-index={index}
+        >
           <ListFilterItem
             {currentFilter}
             {filterTypes}
@@ -104,7 +108,7 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-12">
+  <div data-is="list-filter-buttons" class="col-12">
     <ListFilterButtons
       {currentFilter}
       {listFilterTopGetItemValues}

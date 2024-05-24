@@ -76,6 +76,7 @@
 
 {#each objects as obj, index}
   <tr
+    data-is="list-table-row"
     class:mt-table__highlight={obj.checked || obj.clicked}
     data-index={index}
     on:click={clickRow}

@@ -56,7 +56,7 @@
 {/if}
 {#each object as content, index}
   {#if index > 0}
-    <td class={classes((index - 1).toString())}>
+    <td data-is="list-table-column" class={classes((index - 1).toString())}>
       {@html content}
     </td>
   {/if}

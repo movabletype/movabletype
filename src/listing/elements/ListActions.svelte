@@ -185,7 +185,7 @@
   };
 </script>
 
-<div class="d-none d-md-block">
+<div data-is="list-actions-for-pc" class="d-none d-md-block">
   <ListActionsForPc
     {buttonActions}
     {doAction}
@@ -194,7 +194,7 @@
     {moreListActions}
   />
 </div>
-<div class="d-md-none">
+<div data-is="list-actions-for-mobile" class="d-md-none">
   <ListActionsForMobile
     {buttonActions}
     {doAction}
