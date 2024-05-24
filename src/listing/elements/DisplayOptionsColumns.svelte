@@ -25,7 +25,12 @@
   <div class="field-content">
     <ul id="disp_cols" class="list-inline m-0">
       {#each store.columns as column}
-        <li class="list-inline-item" hidden={column.force_display != 0}>
+        {@const hiddenColumn = column.force_display != 0}
+        <li
+          class="list-inline-item"
+          hidden={hiddenColumn}
+          style:display={hiddenColumn ? "none" : ""}
+        >
           <div class="form-check">
             <input
               type="checkbox"
@@ -41,7 +46,12 @@
           </div>
         </li>
         {#each column.sub_fields as subField}
-          <li class="list-inline-item">
+          {@const hiddenSubField = subField.force_display != 0}
+          <li
+            class="list-inline-item"
+            hidden={hiddenSubField}
+            style:display={hiddenSubField ? "none" : ""}
+          >
             <div class="form-check">
               <input
                 type="checkbox"

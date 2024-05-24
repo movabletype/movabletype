@@ -166,6 +166,7 @@ interface SubField {
   class: string;
   checked: number;
   display: number;
+  force_display: number;
   id: string;
   is_default: number;
   label: string;
