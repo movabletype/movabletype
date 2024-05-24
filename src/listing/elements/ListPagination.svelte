@@ -8,19 +8,17 @@
 
   export let store: ListStore;
 
+  let nextDisabledProp: { disabled?: string } = {};
   let isTooNarrowWidth: boolean;
+  let previousDisabledProp: { disabled?: string } = {};
 
   $: page = store.page == null ? 0 : store.page;
-
-  let previousDisabledProp: { disabled?: string } = {};
   $: {
     previousDisabledProp = {};
     if (page <= 1) {
       previousDisabledProp.disabled = "disabled";
     }
   }
-
-  let nextDisabledProp: { disabled?: string } = {};
   $: {
     nextDisabledProp = {};
     if (page >= store.pageMax) {
@@ -36,24 +34,29 @@
     isTooNarrowWidth = store.pageMax >= 5 && window.innerWidth < 400;
   };
 
-  const movePage = (e): boolean => {
-    if (e.currentTarget.getAttribute("disabled")) {
+  const movePage = (e: Event): boolean => {
+    const currentTarget = e.currentTarget as HTMLElement;
+    if (currentTarget.getAttribute("disabled")) {
       return false;
     }
 
-    let nextPage;
-    if (e.target.tagName === "INPUT") {
-      if (e.which !== 13) {
-        return false;
-      }
-      nextPage = Number(e.target.value);
-    } else {
-      nextPage = Number(e.currentTarget.dataset.page);
-    }
+    let nextPage: number;
+
+    /* Comment out old unused code. Do not remove */
+    // if (target.tagName === "INPUT") {
+    //   if (e.which !== 13) {
+    //     return false;
+    //   }
+    //   nextPage = Number((target as HTMLInputElement).value);
+    // } else {
+    //   nextPage = Number(currentTarget.dataset.page);
+    // }
+    nextPage = Number(currentTarget.dataset.page);
+
     if (!nextPage) {
       return false;
     }
-    let moveToPagination = true;
+    const moveToPagination = true;
     store.trigger("move_page", nextPage, moveToPagination);
     return false;
   };
@@ -64,8 +67,8 @@
   on:orientationchange={checkTooNarrowWidth}
 />
 
-<div class="col-auto mx-auto{isTooNarrowWidth ? ' w-100' : ''}">
-  <nav aria-label={store.objectType + " list"}>
+<div class="col-auto mx-auto" class:w-100={isTooNarrowWidth}>
+  <nav aria-label={store.listClient.objectType + " list"}>
     <ListPaginationForPc
       {movePage}
       {nextDisabledProp}

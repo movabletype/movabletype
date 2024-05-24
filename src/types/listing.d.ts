@@ -57,6 +57,10 @@ export interface ListActions {
   [key: string]: ListAction;
 }
 
+interface ListClient {
+  objectType: string;
+}
+
 interface ListColumn {
   checked: number;
   col_class: string;
@@ -141,6 +145,7 @@ export interface ListObject {
 }
 
 export interface ListStore extends ListData {
+  listClient: ListClient;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on: (event: string, fn: (...args: any) => void) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
