@@ -12,7 +12,9 @@
     store.trigger("toggle_all_rows_on_page");
   };
 
-  const toggleSortColumn = (columnId: string): void => {
+  const toggleSortColumn = (e: Event): void => {
+    const columnId = (e.currentTarget as HTMLElement)?.parentElement?.dataset
+      .id;
     store.trigger("toggle_sort_column", columnId);
   };
 </script>

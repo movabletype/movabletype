@@ -4,7 +4,7 @@
   export let hasListActions: boolean;
   export let store: ListStore;
   export let toggleAllRowsOnPage: () => void;
-  export let toggleSortColumn: (columnId: string) => void;
+  export let toggleSortColumn: (e: Event) => void;
 </script>
 
 <tr class="d-none d-md-table-row">
@@ -46,7 +46,7 @@
               store.sortBy == column.id &&
               store.sortOrder == "descend"}
             href="javascript:void(0)"
-            on:click={() => toggleSortColumn(column.id)}
+            on:click={toggleSortColumn}
           >
             {@html column.label}
           </a>

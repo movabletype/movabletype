@@ -21,7 +21,7 @@
       </td>
     </tr>
   </tbody>
-{:else if !store.isLoading && store.objects}
+{:else if store.objects}
   <tbody data-is="list-table-body">
     <ListTableBody
       {hasListActions}
