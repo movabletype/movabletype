@@ -22,7 +22,7 @@
     if (isAllpassFilter) {
       createNewFilter(window.trans("New Filter"));
     }
-    currentFilter.items.push({ type: filterType, args: {} });
+    currentFilter.items.push({ type: filterType, args: { items: [] } });
     update();
   };
 
@@ -193,12 +193,10 @@
   });
 
   store.on("open_filter_detail", () => {
-    /* @ts-expect-error : undefined error */
     jQuery("#list-filter-collapse").collapse("show");
   });
 
   store.on("close_filter_detail", () => {
-    /* @ts-expect-error : undefined error */
     jQuery("#list-filter-collapse").collapse("hide");
   });
 </script>

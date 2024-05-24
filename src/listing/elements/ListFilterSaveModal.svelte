@@ -12,6 +12,7 @@
   let saveAs: boolean | undefined;
 
   const closeModal = (): void => {
+    /* @ts-expect-error : bootstrap is not defined */
     bootstrap.Modal.getInstance(modal).hide();
   };
 
@@ -22,16 +23,19 @@
     if (!args) {
       args = {};
     }
+    /* @ts-expect-error : mtUnvalidate is not defined */
     jQuery(filterName).mtUnvalidate();
     if (args.filterLabel) {
       filterName.value = args.filterLabel;
     }
     saveAs = args.saveAs;
+    /* @ts-expect-error : bootstrap is not defined */
     let $bsmodal = new bootstrap.Modal(modal, {});
     $bsmodal.show();
   };
 
   const saveFilter = (): boolean | void => {
+    /* @ts-expect-error : mtValidate is not defined */
     if (!jQuery(filterName).mtValidate("simple")) {
       return false;
     }

@@ -24,7 +24,7 @@
   export let objectLabel: string;
   export let store: ListStore;
 
-  const addFilterItem = (e: PointerEvent): void => {
+  const addFilterItem = (e: MouseEvent): void => {
     if (!e || !e.currentTarget) {
       e.preventDefault();
       e.stopPropagation();
