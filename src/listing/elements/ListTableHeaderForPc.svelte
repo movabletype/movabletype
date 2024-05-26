@@ -1,16 +1,36 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
+  import { ListColumn, ListStore } from "types/listing";
 
   export let hasListActions: boolean;
   export let store: ListStore;
   export let toggleAllRowsOnPage: () => void;
   export let toggleSortColumn: (e: Event) => void;
+
+  const classProps = (column: ListColumn): object => {
+    if (column.sortable && store.sortBy == column.id) {
+      if (store.sortOrder == "ascend") {
+        return { class: "mt-table__ascend" };
+      } else if (store.sortOrder == "descend") {
+        return { class: "mt-table__descend" };
+      } else {
+        return {};
+      }
+    } else {
+      return {};
+    }
+  };
 </script>
 
 <tr class="d-none d-md-table-row">
   {#if hasListActions}
     <th class="mt-table__control">
       <div class="form-check">
+        {#if false}
+          <!--
+          RIOT_DIFF: checked="checked" is not added to input tag after click checkbox,
+            but check parameter of input element returns true. So, do not fix this.
+        -->
+        {/if}
         <input
           type="checkbox"
           class="form-check-input"
@@ -29,24 +49,19 @@
   {#each store.columns as column}
     {#if column.checked && column.id != "__mobile"}
       <th
+        scope="col"
         data-id={column.id}
         class:primary={column.primary}
         class:sortable={column.sortable}
         class:sorted={store.sortBy == column.id}
         class="text-truncate"
-        scope="col"
       >
         {#if column.sortable}
           <!-- svelte-ignore a11y-invalid-attribute -->
           <a
-            class:mt-table__ascend={column.sortable &&
-              store.sortBy == column.id &&
-              store.sortOrder == "ascend"}
-            class:mt-table__descend={column.sortable &&
-              store.sortBy == column.id &&
-              store.sortOrder == "descend"}
             href="javascript:void(0)"
             on:click={toggleSortColumn}
+            {...classProps(column)}
           >
             {@html column.label}
           </a>

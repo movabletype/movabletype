@@ -11,6 +11,12 @@
     {#if hasMobilePulldownActions}
       <th class="mt-table__control">
         <div class="form-check">
+          {#if false}
+            <!--
+          RIOT_DIFF: checked="checked" is not added to input tag after click checkbox,
+            but check parameter of input element returns true. So, do not fix this.
+        -->
+          {/if}
           <input
             type="checkbox"
             class="form-check-input"
@@ -18,10 +24,11 @@
             checked={store.checkedAllRowsOnPage}
             on:change={toggleAllRowsOnPage}
           />
-          <label class="form-check-label" for="select-all"
-            ><span class="visually-hidden">{window.trans("Select All")}</span
-            ></label
-          >
+          <label class="form-check-label" for="select-all">
+            <span class="visually-hidden">
+              {window.trans("Select All")}
+            </span>
+          </label>
         </div>
       </th>
     {/if}
