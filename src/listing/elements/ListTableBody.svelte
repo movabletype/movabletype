@@ -8,39 +8,50 @@
   export let store: ListStore;
   export let zeroStateLabel: string;
 
+  $: count = store.count || 0;
   $: objects = store.objects || [];
+
+  const clickRow = (e: Event): boolean | undefined => {
+    store.trigger("reset_all_clicked_rows");
+
+    const target = e.target as HTMLElement;
+    if (
+      target.tagName == "A" ||
+      target.tagName == "IMG" ||
+      target.tagName == "svg"
+    ) {
+      return false;
+    }
+
+    const currentTarget = e.currentTarget as HTMLElement;
+    /* @ts-expect-error : MT is not defined */
+    if (MT.Util.isMobileView()) {
+      let $mobileColumn: JQuery<HTMLElement>;
+      if (target.dataset.is == "list-table-column") {
+        $mobileColumn = jQuery(target);
+      } else {
+        $mobileColumn = jQuery(target).parents("[data-is=list-table-column]");
+      }
+      if ($mobileColumn.length > 0 && $mobileColumn.find("a").length > 0) {
+        $mobileColumn.find("a")[0].click();
+        store.trigger("click_row", currentTarget.dataset.index);
+        return false;
+      }
+    }
+    e.stopPropagation();
+    store.trigger("toggle_row", currentTarget.dataset.index);
+  };
 
   const checkAllRows = (): void => {
     store.trigger("check_all_rows");
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const clickRow = (e: any): boolean | undefined => {
-    store.trigger("reset_all_clicked_rows");
-
-    if (
-      e.target.tagName == "A" ||
-      e.target.tagName == "IMG" ||
-      e.target.tagName == "svg"
-    ) {
-      return false;
+  const checkedProp = (checked: number): object => {
+    if (checked != 0) {
+      return { checked: "checked" };
+    } else {
+      return {};
     }
-    /* @ts-expect-error : MT is not defined */
-    if (MT.Util.isMobileView()) {
-      let $mobileColumn;
-      if (e.target.dataset.is == "list-table-column") {
-        $mobileColumn = jQuery(e.target);
-      } else {
-        $mobileColumn = jQuery(e.target).parents("[data-is=list-table-column]");
-      }
-      if ($mobileColumn.length > 0 && $mobileColumn.find("a").length > 0) {
-        $mobileColumn.find("a")[0].click();
-        store.trigger("click_row", e.currentTarget.dataset.index);
-        return false;
-      }
-    }
-    e.stopPropagation();
-    store.trigger("toggle_row", e.currentTarget.dataset.index);
   };
 </script>
 
@@ -57,7 +68,7 @@
     <td colspan={objects.length + 1}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a href="javascript:void(0);" on:click={checkAllRows}>
-        {window.trans("Select all [_1] items", (store.count || 0).toString())}
+        {window.trans("Select all [_1] items", count.toString())}
       </a>
     </td>
   </tr>
@@ -66,20 +77,23 @@
 {#if store.pageMax > 1 && store.checkedAllRows}
   <tr class="success">
     <td colspan={objects.length + 1}>
-      {window.trans(
-        "All [_1] items are selected",
-        (store.count || 0).toString()
-      )}
+      {window.trans("All [_1] items are selected", count.toString())}
     </td>
   </tr>
 {/if}
 
 {#each objects as obj, index}
+  {#if false}
+    <!--
+    RIOT_DIFF: remove object property because it is not output in Riot.js
+  -->
+  {/if}
   <tr
     data-is="list-table-row"
-    class:mt-table__highlight={obj.checked || obj.clicked}
-    data-index={index}
     on:click={clickRow}
+    class={obj.checked || obj.clicked ? "mt-table__highlight" : ""}
+    data-index={index}
+    {...checkedProp(obj.checked)}
   >
     <ListTableRow
       checked={obj.checked}
