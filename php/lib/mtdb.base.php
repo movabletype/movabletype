@@ -1310,7 +1310,7 @@ abstract class MTDatabase {
             isset($min_comment_filter) ? $min_comment_filter : ''
         ));
         if (!empty($sort_field)) {
-            $sql .= "order by $sort_field $base_order";
+            $sql .= " order by $sort_field $base_order";
             if ($sort_field == 'entry_authored_on') {
                 $sql .= ",entry_id $base_order";
             }

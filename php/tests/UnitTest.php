@@ -116,6 +116,11 @@ class UnitTest extends TestCase {
         $this->assertEquals('Entry', get_class($entries[0]));
         $this->assertEquals($entry2->id, $entries[0]->id);
 
+        $entries = $mt->db()->fetch_entries(['blog_id' => $site1->id, 'min_comment' => 0], $total_count);
+        $this->assertEquals(2, count($entries));
+        $this->assertEquals('Entry', get_class($entries[0]));
+        $this->assertEquals($entry2->id, $entries[0]->id);
+
         $entries = $mt->db()->fetch_entries(['blog_id' => $site1->id, 'limit' => 1, 'sort_by' => 'basename'], $total_count);
         $this->assertEquals(1, count($entries));
         $this->assertEquals('Entry', get_class($entries[0]));
