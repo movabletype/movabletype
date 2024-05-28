@@ -85,7 +85,7 @@ class Author extends BaseObject
 
         require_once('class.mt_asset.php');
         $asset = new Asset;
-        $asset->Load("asset_id = $userpic_id");
+        $asset->LoadByIntId($userpic_id);
         return $asset;
     }
 }

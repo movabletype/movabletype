@@ -32,7 +32,7 @@ class ObjectScore extends BaseObject
         require_once("class.mt_" . $this->object_ds . ".php");
         $class = $this->object_ds;
         $obj = new $class;
-        $obj->Load($this->object_ds . "_id = " . $this->object_id);
+        $obj->LoadByIntId($this->object_id);
         return $obj;
     }
 

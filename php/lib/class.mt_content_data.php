@@ -100,11 +100,9 @@ class ContentData extends BaseObject
         return array();
     }
     public function content_type() {
-      $where = "content_type_id = " . $this->content_type_id;
-
       require_once('class.mt_content_type.php');
       $ct = new ContentType();
-      $ct->Load($where);
+      $ct->LoadByIntId($this->content_type_id);
       return $ct;
     }
 

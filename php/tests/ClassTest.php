@@ -12,7 +12,7 @@ class ClassTest extends TestCase {
         $entry = Mockdata::makeEntry();
 
         $entry2 = new Entry();
-        $entry2->Load($entry->id);
+        $entry2->LoadByIntId($entry->id);
         $this->assertEquals('Entry', get_class($entry2));
         $this->assertEquals($entry->id, $entry2->id);
 
@@ -52,7 +52,7 @@ class ClassTest extends TestCase {
         $oasset = MockData::makeObjectAsset(['object_ds' => 'entry']);
 
         $oasset2 = new ObjectAsset();
-        $oasset2->Load($oasset->id);
+        $oasset2->LoadByIntId($oasset->id);
         $this->assertEquals('ObjectAsset', get_class($oasset2));
         $this->assertEquals($oasset->id, $oasset2->id);
 
@@ -70,7 +70,7 @@ class ClassTest extends TestCase {
         $entry = MockData::makeEntry();
         $oscore = MockData::makeObjectScore(['object_ds' => 'entry']);
         $oscore2 = new ObjectScore();
-        $oscore2->Load($oscore->id);
+        $oscore2->LoadByIntId($oscore->id);
         $this->assertEquals('ObjectScore', get_class($oscore2));
         $this->assertEquals($oscore->id, $oscore2->id);
 
@@ -85,7 +85,7 @@ class ClassTest extends TestCase {
         $otag = MockData::makeObjectTag(['object_datasource' => 'entry', 'tag_id' => 1]);
 
         $otag2 = new ObjectTag();
-        $otag2->Load($otag->id);
+        $otag2->LoadByIntId($otag->id);
         $this->assertEquals('ObjectTag', get_class($otag2));
         $this->assertEquals($otag->id, $otag2->id);
 

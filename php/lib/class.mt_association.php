@@ -35,7 +35,7 @@ class Association extends BaseObject
 
             require_once('class.mt_role.php');
             $role = new Role;
-            $role->Load("role_id = $role_id");
+            $role->LoadByIntId($role_id);
         }
 
         return $role;
@@ -53,7 +53,7 @@ class Association extends BaseObject
 
             require_once('class.mt_group.php');
             $group = new Group;
-            $group->Load("group_id = $group_id");
+            $group->LoadByIntId($group_id);
         }
 
         return $group;
