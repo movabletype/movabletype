@@ -1076,17 +1076,14 @@ sub optional {
                     if $param{smtp_server};
                 $cfg->SMTPPort( $param{smtp_port} )
                     if $param{smtp_port};
-                $cfg->SMTPAuth(1)
-                    if $param{smtp_auth};
-                if ( $cfg->SMTPAuth ) {
+                if ( $param{smtp_auth} ) {
                     $cfg->SMTPUser( $param{smtp_auth_username} )
                         if $param{smtp_auth_username};
                     $cfg->SMTPpassword( $param{smtp_auth_password} )
                         if $param{smtp_auth_password};
-                    $cfg->SMTPAuth('ssl')
-                        if $param{smtp_ssl} eq 'ssl';
-                    $cfg->SMTPAuth('starttls')
-                        if $param{smtp_ssl} eq 'tls';
+                    $cfg->SMTPAuth( $param{smtp_ssl} || 1 );
+                } elsif ( $param{smtp_ssl} ) {
+                    $cfg->SMTPS( $param{smtp_ssl} );
                 }
             }
 
