@@ -11,8 +11,8 @@ function getListTopTarget(): Element {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function svelteMountListTop(props: any): ListTop {
-  return new ListTop({
+function svelteMountListTop(props: any): void {
+  new ListTop({
     target: getListTopTarget(),
     props: props,
   });

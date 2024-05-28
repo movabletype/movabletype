@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <mt:if name="config.useriot">
   riot.mount('list-top', opts);
 <mt:else>
-  window.ListTop = svelteMountListTop(opts);
+  svelteMountListTop(opts);
 </mt:if>
 });
 
