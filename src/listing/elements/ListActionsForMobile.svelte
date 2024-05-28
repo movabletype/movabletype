@@ -2,23 +2,23 @@
   import { ButtonActions, ListActions, MoreListActions } from "types/listing";
 
   export let buttonActions: ButtonActions;
-  export let doAction: (actionId: string) => boolean | undefined;
+  export let doAction: (e: Event) => boolean | undefined;
   export let listActions: ListActions;
   export let moreListActions: MoreListActions;
 
   const buttonActionsForMobile = (): ButtonActions => {
-    return getActionsForMobile(buttonActions);
+    return _getActionsForMobile(buttonActions);
   };
 
   const listActionsForMobile = (): ListActions => {
-    return getActionsForMobile(listActions);
+    return _getActionsForMobile(listActions);
   };
 
   const moreListActionsForMobile = (): MoreListActions => {
-    return getActionsForMobile(moreListActions);
+    return _getActionsForMobile(moreListActions);
   };
 
-  const getActionsForMobile = (
+  const _getActionsForMobile = (
     actions: ButtonActions | ListActions | MoreListActions
   ): ButtonActions | ListActions | MoreListActions => {
     const mobileActions = {};
@@ -51,7 +51,8 @@
         <a
           class="dropdown-item"
           href="javascript:void(0);"
-          on:click={() => doAction(key)}
+          data-action-id={key}
+          on:click={doAction}
         >
           {@html action.label}
         </a>
@@ -62,7 +63,8 @@
         <a
           class="dropdown-item"
           href="javascript:void(0);"
-          on:click={() => doAction(key)}
+          data-action-id={key}
+          on:click={doAction}
         >
           {@html action.label}
         </a>
@@ -70,17 +72,19 @@
 
       {#if Object.keys(moreListActionsForMobile()).length > 0}
         <h6 class="dropdown-header">Plugin Actions</h6>
-        {#each Object.entries(moreListActionsForMobile()) as [key, action]}
-          <!-- svelte-ignore a11y-invalid-attribute -->
-          <a
-            class="dropdown-item"
-            href="javascript:void(0);"
-            on:click={() => doAction(key)}
-          >
-            {@html action.label}
-          </a>
-        {/each}
       {/if}
+
+      {#each Object.entries(moreListActionsForMobile()) as [key, action]}
+        <!-- svelte-ignore a11y-invalid-attribute -->
+        <a
+          class="dropdown-item"
+          href="javascript:void(0);"
+          data-action-id={key}
+          on:click={doAction}
+        >
+          {@html action.label}
+        </a>
+      {/each}
     </div>
   </div>
 {/if}

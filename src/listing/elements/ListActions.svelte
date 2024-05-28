@@ -26,8 +26,8 @@
   let selectedActionId: string;
   let selectedActionPhrase: string;
 
-  const doAction = (actionId: string): boolean | undefined => {
-    selectedActionId = actionId;
+  const doAction = (e: Event): boolean | undefined => {
+    selectedActionId = (e.target as HTMLElement)?.dataset.actionId || "";
     selectedAction = getAction(selectedActionId);
     if (!selectedAction) {
       return false;

@@ -2,18 +2,14 @@
   import { ButtonActions, ListActions, MoreListActions } from "types/listing";
 
   export let buttonActions: ButtonActions;
-  export let doAction: (actionId: string) => boolean | undefined;
+  export let doAction: (e: Event) => boolean | undefined;
   export let listActions: ListActions;
   export let hasPulldownActions: boolean;
   export let moreListActions: MoreListActions;
 </script>
 
 {#each Object.entries(buttonActions) as [key, action]}
-  <button
-    class="btn btn-default mr-2"
-    data-action-id={key}
-    on:click={() => doAction(key)}
-  >
+  <button class="btn btn-default mr-2" data-action-id={key} on:click={doAction}>
     {@html action.label}
   </button>
 {/each}
@@ -30,7 +26,7 @@
           class="dropdown-item"
           href="javascript:void(0);"
           data-action-id={key}
-          on:click={() => doAction(key)}
+          on:click={doAction}
         >
           {@html action.label}
         </a>
@@ -48,7 +44,7 @@
           class="dropdown-item"
           href="javascript:void(0);"
           data-action-id={key}
-          on:click={() => doAction(key)}
+          on:click={doAction}
         >
           {@html action.label}
         </a>
