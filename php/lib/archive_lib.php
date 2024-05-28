@@ -632,8 +632,7 @@ class MonthlyArchiver extends DateBasedArchiver {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
-        $inside = $ctx->stash('inside_archive_list');
-        if (isset($inside) && $inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -719,8 +718,7 @@ class DailyArchiver extends DateBasedArchiver {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
-        $inside = $ctx->stash('inside_archive_list');
-        if (isset($inside) && $inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -834,8 +832,7 @@ class WeeklyArchiver extends DateBasedArchiver {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
-        $inside = $ctx->stash('inside_archive_list');
-        if (isset($inside) && $inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -1289,11 +1286,7 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
                 $author_filter = " and entry_author_id=".$author->author_id;
             }
         #}
-        $inside = $ctx->stash('inside_archive_list');
-        if (!isset($inside)) {
-          $inside = false;
-        }
-        if ($inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -1392,12 +1385,8 @@ class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
                 $author_filter = " and entry_author_id=".$author->author_id;
             }
         #}
-        $inside = $ctx->stash('inside_archive_list');
-        if (!isset($inside)) {
-          $inside = false;
-        }
         $date_filter = '';
-        if ($inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -1519,11 +1508,7 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
                 $author_filter = " and entry_author_id=".$author->author_id;
             }
         #}
-        $inside = $ctx->stash('inside_archive_list');
-        if (!isset($inside)) {
-          $inside = false;
-        }
-        if ($inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -1879,11 +1864,7 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
         $year_ext = $mt->db()->apply_extract_date('year', 'entry_authored_on');
 
         $index = $ctx->stash('index_archive');
-        $inside = $ctx->stash('inside_archive_list');
-        if (!isset($inside)) {
-          $inside = false;
-        }
-        if ($inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -1987,11 +1968,7 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
         $month_ext = $mt->db()->apply_extract_date('month', 'entry_authored_on');
 
         $index = $ctx->stash('index_archive');
-        $inside = $ctx->stash('inside_archive_list');
-        if (!isset($inside)) {
-          $inside = false;
-        }
-        if ($inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -2095,11 +2072,7 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
         $day_ext = $mt->db()->apply_extract_date('day', 'entry_authored_on');
 
         $index = $ctx->stash('index_archive');
-        $inside = $ctx->stash('inside_archive_list');
-        if (!isset($inside)) {
-            $inside = false;
-        }
-        if ($inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -2205,11 +2178,7 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
         $cat_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
         $index = $ctx->stash('index_archive');
-        $inside = $ctx->stash('inside_archive_list');
-        if (!isset($inside)) {
-          $inside = false;
-        }
-        if ($inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -2632,8 +2601,7 @@ class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
 
         list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
-        $inside = $ctx->stash('inside_archive_list');
-        if (isset($inside) && $inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -2753,8 +2721,7 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
 
         list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
-        $inside = $ctx->stash('inside_archive_list');
-        if (isset($inside) && $inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -2849,8 +2816,7 @@ class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
 
         list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
-        $inside = $ctx->stash('inside_archive_list');
-        if (isset($inside) && $inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -3433,11 +3399,7 @@ class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchive
             $author_filter = " and cd_author_id=".$author->author_id;
         }
 
-        $inside = $ctx->stash('inside_archive_list');
-        if (!isset($inside)) {
-          $inside = false;
-        }
-        if ($inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -3541,11 +3503,7 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
             $author_filter = " and cd_author_id=".$author->author_id;
         }
 
-        $inside = $ctx->stash('inside_archive_list');
-        if (!isset($inside)) {
-          $inside = false;
-        }
-        if ($inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -3657,11 +3615,7 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
             $author_filter = " and cd_author_id=".$author->author_id;
         }
 
-        $inside = $ctx->stash('inside_archive_list');
-        if (!isset($inside)) {
-          $inside = false;
-        }
-        if ($inside) {
+        if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
@@ -4091,11 +4045,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
 
-                $inside = $ctx->stash('inside_archive_list');
-                if (!isset($inside)) {
-                  $inside = false;
-                }
-                if ($inside) {
+                if ($ctx->stash('inside_archive_list')) {
                     $ts = $ctx->stash('current_timestamp');
                     $tsend = $ctx->stash('current_timestamp_end');
                     if ($ts && $tsend) {
@@ -4235,11 +4185,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                 $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
 
                 $index = $ctx->stash('index_archive');
-                $inside = $ctx->stash('inside_archive_list');
-                if (!isset($inside)) {
-                  $inside = false;
-                }
-                if ($inside) {
+                if ($ctx->stash('inside_archive_list')) {
                     $ts = $ctx->stash('current_timestamp');
                     $tsend = $ctx->stash('current_timestamp_end');
                     if ($ts && $tsend) {
@@ -4381,11 +4327,7 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                 $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
                 $day_ext = $mt->db()->apply_extract_date('day', $dt_target_col);
 
-                $inside = $ctx->stash('inside_archive_list');
-                if (!isset($inside)) {
-                    $inside = false;
-                }
-                if ($inside) {
+                if ($ctx->stash('inside_archive_list')) {
                     $ts = $ctx->stash('current_timestamp');
                     $tsend = $ctx->stash('current_timestamp_end');
                     if ($ts && $tsend) {
@@ -4535,11 +4477,7 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                 if ( array_key_exists($join_on, $seen_join_on) ) continue;
                 $seen_join_on[$join_on] = 1;
 
-                $inside = $ctx->stash('inside_archive_list');
-                if (!isset($inside)) {
-                  $inside = false;
-                }
-                if ($inside) {
+                if ($ctx->stash('inside_archive_list')) {
                     $ts = $ctx->stash('current_timestamp');
                     $tsend = $ctx->stash('current_timestamp_end');
                     if ($ts && $tsend) {
