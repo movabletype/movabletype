@@ -24,27 +24,14 @@
   export let objectLabel: string;
   export let store: ListStore;
 
-  const addFilterItem = (e: MouseEvent): void => {
-    if (!e || !e.currentTarget) {
+  const addFilterItem = (e: Event): void => {
+    if ((e.currentTarget as HTMLElement)?.classList.contains("disabled")) {
       e.preventDefault();
       e.stopPropagation();
       return;
     }
-
-    const currentTarget = e.currentTarget as HTMLElement;
-    if (currentTarget.classList.contains("disabled")) {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-
-    const filterType = currentTarget.dataset.mtFilterType;
-    if (!filterType) {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-
+    const filterType =
+      (e.currentTarget as HTMLElement)?.dataset.mtFilterType || "";
     listFilterTopAddFilterItem(filterType);
   };
 </script>
@@ -88,10 +75,13 @@
   <div class="col-12">
     <ul class="list-group">
       {#each currentFilter.items as item, index}
+        {#if false}
+          <!-- RIOT_DIFF: remove "item" property because it is not output in Riot.js -->
+        {/if}
         <li
           data-is="list-filter-item"
-          class="list-group-item"
           data-mt-list-item-index={index}
+          class="list-group-item"
         >
           <ListFilterItem
             {currentFilter}

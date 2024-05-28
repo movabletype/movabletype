@@ -69,6 +69,6 @@
 <ListFilterSaveModal
   {currentFilter}
   {listFilterTopGetItemValues}
-  bind:openModal
   {store}
+  bind:openModal
 />

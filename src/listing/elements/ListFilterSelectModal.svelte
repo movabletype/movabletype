@@ -7,27 +7,17 @@
   export let listFilterTopUpdate: () => void;
   export let store: ListStore;
 
+  const refLabelProp = { ref: "label" };
+  const refModalProp = { ref: "modal" };
+
   let isEditingFilter: { [key: string]: boolean } = {};
   let modal: HTMLDivElement;
-  let refLabelProp = { ref: "label" };
-  let refModalProp = { ref: "modal" };
 
-  const applyFilter = (filterId: string): void => {
+  const applyFilter = (e: Event): void => {
     closeModal();
+    const filterId = (e.target as HTMLElement).parentElement?.dataset
+      .mtListFilterId;
     store.trigger("apply_filter_by_id", filterId);
-  };
-
-  const startEditingFilter = (filterId: string): void => {
-    stopEditingAllFilters();
-    isEditingFilter[filterId] = true;
-  };
-
-  const stopEditingAllFilters = (): void => {
-    isEditingFilter = {};
-  };
-
-  const stopEditingFilter = (filterId: string): void => {
-    isEditingFilter[filterId] = false;
   };
 
   const closeModal = (): void => {
@@ -42,37 +32,59 @@
     listFilterTopUpdate();
   };
 
-  const renameFilter = (e: MouseEvent): void => {
-    const target = e?.target as HTMLElement;
+  const renameFilter = (e: Event): void => {
+    const target = e.target as HTMLElement;
     const filterId =
-      target?.parentElement?.parentElement?.parentElement?.dataset
+      target.parentElement?.parentElement?.parentElement?.dataset
         .mtListFilterId;
-    const filterLabel = (target?.previousElementSibling as HTMLInputElement)
-      ?.value;
-    if (
-      filterId == null ||
-      filterId == "" ||
-      filterLabel == null ||
-      filterLabel == ""
-    ) {
+    const filterLabel = (target.previousElementSibling as HTMLInputElement)
+      .value;
+    if (filterId == null || filterId == "") {
       return;
     }
     store.trigger("rename_filter_by_id", filterId, filterLabel);
     isEditingFilter[filterId] = false;
   };
 
-  const removeFilter = (
-    filterId: string,
-    filterLabel: string
-  ): boolean | void => {
+  const removeFilter = (e: Event): boolean | void => {
+    const filterData = (
+      (e.target as HTMLElement).closest(
+        "[data-mt-list-filter-label]"
+      ) as HTMLElement
+    ).dataset;
     const message = window.trans(
       "Are you sure you want to remove filter '[_1]'?",
-      filterLabel
+      filterData.mtListFilterLabel || ""
     );
     if (confirm(message) == false) {
       return false;
     }
-    store.trigger("remove_filter_by_id", filterId);
+    store.trigger("remove_filter_by_id", filterData.mtListFilterId);
+  };
+
+  const startEditingFilter = (e: Event): void => {
+    const filterData = (e.target as HTMLElement).parentElement?.parentElement
+      ?.dataset;
+    const filterId = filterData?.mtListFilterId || "";
+    if (filterId == "") {
+      return;
+    }
+    stopEditingAllFilters();
+    isEditingFilter[filterId] = true;
+  };
+
+  const stopEditingAllFilters = (): void => {
+    isEditingFilter = {};
+  };
+
+  const stopEditingFilter = (e: Event): void => {
+    const filterData = (e.target as HTMLElement).parentElement?.parentElement
+      ?.dataset;
+    const filterId = filterData?.mtListFilterId || "";
+    if (filterId == "") {
+      return;
+    }
+    isEditingFilter[filterId] = false;
   };
 </script>
 
@@ -80,8 +92,8 @@
   class="modal fade"
   id="select-filter"
   tabindex="-1"
-  bind:this={modal}
   {...refModalProp}
+  bind:this={modal}
 >
   <div class="modal-dialog">
     <div class="modal-content">
@@ -100,26 +112,23 @@
                 <li
                   class="filter line"
                   data-mt-list-filter-id={filter.id}
-                  data-mt-filter-label={filter.label}
+                  data-mt-list-filter-label={filter.label}
                 >
                   {#if !isEditingFilter[filter.id]}
                     <!-- svelte-ignore a11y-invalid-attribute -->
-                    <a href="#" on:click={() => applyFilter(filter.id)}>
+                    <a href="#" on:click={applyFilter}>
                       {filter.label}
                     </a>
                     <div class="float-end d-none d-md-block">
                       <!-- svelte-ignore a11y-invalid-attribute -->
-                      <a
-                        href="#"
-                        on:click={() => startEditingFilter(filter.id)}
-                      >
-                        {window.trans("rename")}
+                      <a href="#" on:click={startEditingFilter}>
+                        [{window.trans("rename")}]
                       </a>
                       <!-- svelte-ignore a11y-invalid-attribute -->
                       <a
                         href="#"
                         class="d-inline-block"
-                        on:click={() => removeFilter(filter.id, filter.label)}
+                        on:click={removeFilter}
                       >
                         <SS
                           title={window.trans("Remove")}
@@ -140,13 +149,13 @@
                         />
                         <button
                           class="btn btn-default form-control"
-                          on:click={(e) => renameFilter(e)}
+                          on:click={renameFilter}
                         >
                           {window.trans("Save")}
                         </button>
                         <button
                           class="btn btn-default form-control"
-                          on:click={() => stopEditingFilter(filter.id)}
+                          on:click={stopEditingFilter}
                         >
                           {window.trans("Cancel")}
                         </button>
@@ -188,7 +197,7 @@
                     data-mt-list-filter-label={filter.label}
                   >
                     <!-- svelte-ignore a11y-invalid-attribute -->
-                    <a href="#" on:click={() => applyFilter(filter.id)}>
+                    <a href="#" on:click={applyFilter}>
                       {filter.label}
                     </a>
                   </li>

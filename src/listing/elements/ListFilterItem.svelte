@@ -52,7 +52,7 @@
         jQuery(this)
           .find(":input")
           .each(function () {
-            var re = new RegExp(item.type + "-(\\w+)");
+            const re = new RegExp(item.type + "-(\\w+)");
             /* @ts-expect-error : ignore undefined */
             const key = (jQuery(this).attr("class").match(re) || [])[1];
             if (key && !Object.prototype.hasOwnProperty.call(item.args, key)) {
@@ -98,9 +98,9 @@
   };
 
   const initializeDateOption = (): void => {
-    const dateOption = ($node): void => {
+    const dateOption = ($node: JQuery<HTMLElement>): void => {
       const val = $node.val();
-      let type;
+      let type: string;
       switch (val) {
         case "hours":
           type = "hours";
@@ -133,7 +133,7 @@
     jQuery(root)
       .find(".filter-date")
       .each(function (index, element) {
-        var $node = jQuery(element);
+        const $node = jQuery(element);
         dateOption($node);
         $node.on("change", function () {
           dateOption($node);
@@ -166,7 +166,7 @@
   };
 
   const initializeOptionWithBlank = (): void => {
-    const changeOption = ($node): void => {
+    const changeOption = ($node: JQuery<HTMLElement>): void => {
       if ($node.val() == "blank" || $node.val() == "not_blank") {
         $node.parent().find("input[type=text]").hide();
       } else {
@@ -176,7 +176,7 @@
     jQuery(root)
       .find(".filter-blank")
       .each(function (index, element) {
-        var $node = jQuery(element);
+        const $node = jQuery(element);
         changeOption($node);
         $node.on("change", function () {
           changeOption($node);
@@ -217,11 +217,11 @@
   </button>
   {#if item.type == "pack"}
     <div>
-      {#each item.args.items as i, index}
-        {#if filterTypeHash[i.type]}
+      {#each item.args.items as loopItem, index}
+        {#if filterTypeHash[loopItem.type]}
           <div
             data-mt-list-item-content-index={index}
-            class={"filtertype type-" + i.type}
+            class={"filtertype type-" + loopItem.type}
           >
             <div
               class="item-content form-inline"
@@ -229,13 +229,13 @@
             >
               {#key currentFilter}
                 <ListFilterItemField
-                  field={filterTypeHash[i.type].field}
-                  item={i}
+                  field={filterTypeHash[loopItem.type].field}
+                  item={loopItem}
                   parentDiv={fieldParentDivs[index]}
                 />
               {/key}
-              <!-- svelte-ignore a11y-invalid-attribute -->
-              {#if !filterTypeHash[i.type].singleton}
+              {#if !filterTypeHash[loopItem.type].singleton}
+                <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
                   href="javascript:void(0);"
                   class="d-inline-block"
@@ -248,7 +248,7 @@
                   />
                 </a>
               {/if}
-              {#if !filterTypeHash[i.type].singleton && item.args.items.length > 1}
+              {#if !filterTypeHash[loopItem.type].singleton && item.args.items.length > 1}
                 <!-- svelte-ignore a11y-invalid-attribute -->
                 <a
                   href="javascript:void(0);"
@@ -267,7 +267,7 @@
       {/each}
     </div>
   {/if}
-  {#if item.type != "pack" && filterTypeHash[item.type]}
+  {#if item.type != "type" && filterTypeHash[item.type]}
     <div
       data-mt-list-item-content-index="0"
       class={"filtertype type-" + item.type}
@@ -280,8 +280,8 @@
             parentDiv={fieldParentDivs[0]}
           />
         {/key}
-        <!-- svelte-ignore a11y-invalid-attribute -->
         {#if !filterTypeHash[item.type].singleton}
+          <!-- svelte-ignore a11y-invalid-attribute -->
           <a
             href="javascript:void(0);"
             class="d-inline-block"

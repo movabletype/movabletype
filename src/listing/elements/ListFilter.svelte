@@ -18,6 +18,39 @@
   let currentFilter = store.currentFilter;
   let validateErrorMessage: JQuery<HTMLElement>;
 
+  const validateFilterName = (name: string): boolean => {
+    return !store.filters.some(function (filter) {
+      return filter.label == name;
+    });
+  };
+
+  /* @ts-expect-error : mtValidateRules is not defined */
+  jQuery.mtValidateRules["[name=filter_name], .rename-filter-input"] =
+    function ($e: JQuery<HTMLElement>) {
+      const val = $e.val()?.toString();
+      if (val == null) {
+        return;
+      }
+
+      if (validateFilterName(val)) {
+        return true;
+      } else {
+        return this.raise(window.trans('Label "[_1]" is already in use.', val));
+      }
+    };
+
+  store.on("refresh_current_filter", () => {
+    currentFilter = store.currentFilter;
+  });
+
+  store.on("open_filter_detail", () => {
+    jQuery("#list-filter-collapse").collapse("show");
+  });
+
+  store.on("close_filter_detail", () => {
+    jQuery("#list-filter-collapse").collapse("hide");
+  });
+
   const addFilterItem = (filterType: string): void => {
     if (isAllpassFilter) {
       createNewFilter(window.trans("New Filter"));
@@ -56,13 +89,13 @@
   };
 
   const getItemValues = (): void => {
-    var $items = jQuery("#filter-detail .filteritem:not(.error)");
+    const $items = jQuery("#filter-detail .filteritem:not(.error)");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let vals: Array<any> = [];
     $items.each(function () {
-      var data: { type?: string; args?: object } | undefined = {};
-      var fields: Array<{ type: string; args: object }> = [];
-      var $types = jQuery(this).find(".filtertype");
+      let data: { type?: string; args?: object } | undefined = {};
+      const fields: Array<{ type: string; args: object }> = [];
+      const $types = jQuery(this).find(".filtertype");
       $types.each(function () {
         /* @ts-expect-error : ignore undefined */
         const type = (jQuery(this)
@@ -71,11 +104,11 @@
         jQuery(this)
           .find(".item-content")
           .each(function () {
-            var args = {};
+            const args = {};
             jQuery(this)
               .find(":input")
               .each(function () {
-                var re = new RegExp(type + "-(\\w+)");
+                const re = new RegExp(type + "-(\\w+)");
                 /* @ts-expect-error : ignore undefined */
                 const key = (jQuery(this).attr("class").match(re) || [])[1];
                 if (key && !Object.prototype.hasOwnProperty.call(args, key)) {
@@ -101,6 +134,7 @@
 
   $: isAllpassFilter = currentFilter.id == store.allpassFilter.id;
 
+  /* RIOT_DIFF: add "filter" argument for updating this output after changing "filter" */
   const isFilterItemSelected = (filter: Filter, type: string): boolean => {
     return filter.items.some(function (item) {
       return item.type == type;
@@ -140,22 +174,11 @@
     return error_block;
   };
 
-  const update = (): void => {
-    // eslint-disable-next-line no-self-assign
-    currentFilter = currentFilter;
-  };
-
-  const validateFilterName = (name: string): boolean => {
-    return !store.filters.some(function (filter) {
-      return filter.label == name;
-    });
-  };
-
   const validateFilterDetails = (): boolean => {
     if (validateErrorMessage) {
       validateErrorMessage.remove();
     }
-    var errors = 0;
+    let errors = 0;
     jQuery("div#filter-detail div.filteritem").each(function () {
       /* @ts-expect-error : mtValidate is not defined */
       if (!jQuery(this).find("input:visible").mtValidate()) {
@@ -176,29 +199,10 @@
     return errors ? false : true;
   };
 
-  /* @ts-expect-error : mtValidateRules is not defined */
-  jQuery.mtValidateRules["[name=filter_name], .rename-filter-input"] =
-    function ($e) {
-      if (validateFilterName($e.val())) {
-        return true;
-      } else {
-        return this.raise(
-          window.trans('Label "[_1]" is already in use.', $e.val())
-        );
-      }
-    };
-
-  store.on("refresh_current_filter", () => {
-    currentFilter = store.currentFilter;
-  });
-
-  store.on("open_filter_detail", () => {
-    jQuery("#list-filter-collapse").collapse("show");
-  });
-
-  store.on("close_filter_detail", () => {
-    jQuery("#list-filter-collapse").collapse("hide");
-  });
+  const update = (): void => {
+    // eslint-disable-next-line no-self-assign
+    currentFilter = currentFilter;
+  };
 </script>
 
 <div data-is="list-filter-header" class="card-header">
