@@ -42,7 +42,7 @@
 
     let nextPage: number;
 
-    /* Comment out old unused code. Do not remove */
+    /* RIOT_DIFF: Comment out old unused code */
     // if (target.tagName === "INPUT") {
     //   if (e.which !== 13) {
     //     return false;

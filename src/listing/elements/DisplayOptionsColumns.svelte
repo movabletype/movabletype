@@ -34,6 +34,12 @@
           style:display={hiddenColumn ? "none" : ""}
         >
           <div class="form-check">
+            {#if false}
+              <!--
+          RIOT_DIFF: checked="checked" is not added to input tag after click checkbox,
+            but check parameter of input element returns true. So, do not fix this.
+        -->
+            {/if}
             <input
               type="checkbox"
               class="form-check-input"
@@ -48,7 +54,8 @@
           </div>
         </li>
         {#each column.sub_fields as subField}
-          {@const hiddenSubField = subField.force_display != 0}
+          {@const hiddenSubField =
+            subField.force_display != null && subField.force_display != 0}
           {@const pidProp = { pid: subField.parent_id }}
           <li
             class="list-inline-item"
@@ -56,6 +63,12 @@
             style:display={hiddenSubField ? "none" : ""}
           >
             <div class="form-check">
+              {#if false}
+                <!--
+          RIOT_DIFF: checked="checked" is not added to input tag after click checkbox,
+            but check parameter of input element returns true. So, do not fix this.
+        -->
+              {/if}
               <input
                 type="checkbox"
                 id={subField.id}
