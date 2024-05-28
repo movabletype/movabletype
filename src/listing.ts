@@ -1,3 +1,5 @@
+import observable from "@riotjs/observable";
+
 import ListTop from "./listing/elements/ListTop.svelte";
 
 function getListTopTarget(): Element {
@@ -16,4 +18,4 @@ function svelteMountListTop(props: any): ListTop {
   });
 }
 
-export { svelteMountListTop };
+export { observable, svelteMountListTop };
