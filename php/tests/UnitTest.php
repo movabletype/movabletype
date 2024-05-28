@@ -437,6 +437,16 @@ class UnitTest extends TestCase {
         $this->assertEquals(1, count($res));
         $this->assertEquals('ContentField', get_class($res[0]));
         $this->assertEquals($cf1->id, $res[0]->id);
+
+        $res = $mt->db()->fetch_content_fields(['content_type_id' => $ct1->id]);
+        $this->assertEquals(1, count($res));
+        $this->assertEquals('ContentField', get_class($res[0]));
+        $this->assertEquals($cf1->id, $res[0]->id);
+
+        $res = $mt->db()->fetch_content_fields(['content_type_id' => [$ct1->id, $ct2->id]]);
+        $this->assertEquals(2, count($res));
+        $this->assertEquals('ContentField', get_class($res[0]));
+        $this->assertEquals($cf1->id, $res[0]->id);
     }
 
     public function testFetchContentTags() {
