@@ -435,10 +435,11 @@ abstract class MTDatabase {
     }
 
     public function fetch_blogs($args = null) {
-        if ($blog_ids = $this->include_exclude_blogs($args))
+        if ($blog_ids = $this->include_exclude_blogs($args)) {
             $blog_filter = 'blog_id ' . $blog_ids;
-        else
-            $blog_filter = '1 = 1';
+        } else {
+            $blog_filter = '1 = 1'; // TODO: Unreachable because include_exclude_blogs is never empty.
+        }
 
         if (!isset($args['class']))
             $args['class'] = 'blog';
@@ -854,6 +855,7 @@ abstract class MTDatabase {
             if ( !empty( $blog ) )
                 $blog_id = $blog->blog_id;
         } elseif (isset($args['blog_id'])) {
+            // TODO: Unreachable because include_exclude_blogs is never empty.
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and entry_blog_id = ' . $blog_id;
             $blog = $this->fetch_blog($blog_id);
@@ -1821,6 +1823,7 @@ abstract class MTDatabase {
         if ($blog_filter = $this->include_exclude_blogs($args)) {
              $blog_filter = 'and category_blog_id '. $blog_filter;
         } elseif (isset($args['blog_id'])) {
+            // TODO: Unreachable because include_exclude_blogs is never empty.
             $blog_filter = 'and category_blog_id = '.intval($args['blog_id']);
         }
         if (isset($args['parent'])) {
@@ -2514,6 +2517,7 @@ abstract class MTDatabase {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and permission_blog_id ' . $sql;
         } elseif (isset($args['blog_id'])) {
+            // TODO: Unreachable because include_exclude_blogs is never empty.
             $blog_id = intval($args['blog_id']);
             $blog_filter = "and permission_blog_id = $blog_id";
         }
@@ -2816,6 +2820,7 @@ abstract class MTDatabase {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and entry_blog_id ' . $sql;
         } elseif (isset($args['blog_id'])) {
+            // TODO: Unreachable because include_exclude_blogs is never empty.
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and entry_blog_id = ' . $blog_id;
         }
@@ -2873,6 +2878,7 @@ abstract class MTDatabase {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and comment_blog_id ' . $sql;
         } elseif (isset($args['blog_id'])) {
+            // TODO: Unreachable because include_exclude_blogs is never empty.
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and comment_blog_id = ' . $blog_id;
         }
@@ -2944,6 +2950,7 @@ abstract class MTDatabase {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and category_blog_id ' . $sql;
         } elseif (isset($args['blog_id'])) {
+            // TODO: Unreachable because include_exclude_blogs is never empty.
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and category_blog_id = ' . $blog_id;
         }
@@ -2999,6 +3006,7 @@ abstract class MTDatabase {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and entry_blog_id ' . $sql;
         } elseif (isset($args['blog_id'])) {
+            // TODO: Unreachable because include_exclude_blogs is never empty.
             $blog_id = intval($args['blog_id']);
             $blog_filter = 'and entry_blog_id = ' . $blog_id;
         }
@@ -3420,6 +3428,7 @@ abstract class MTDatabase {
             if (isset($args['blog_id']))
                 $blog = $this->fetch_blog($args['blog_id']);
         } elseif (isset($args['blog_id'])) {
+            // TODO: Unreachable because include_exclude_blogs is never empty.
             $blog = $this->fetch_blog($args['blog_id']);
             $blog_filter = ' and tbping_blog_id = ' . $blog->blog_id;
         }
@@ -3539,6 +3548,7 @@ abstract class MTDatabase {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and asset_blog_id ' . $sql;
         } elseif( isset($args['blog_id']) ) {
+            // TODO: Unreachable because include_exclude_blogs is never empty.
             $blog_filter = 'and asset_blog_id = ' . intval($args['blog_id']);
         }
 
@@ -3843,6 +3853,8 @@ abstract class MTDatabase {
             $sort_field = 'asset_created_on';
             if (isset($args['sort_by']) && $asset->has_column($args['sort_by'])) {
                 if (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
+                    // TODO: Unreachable because field.myfield causes SQL error earlier.
+                    // Note that perl also doesn't seem to support field.myfield for assets
                     $sort_field = 'asset_field.' . $match[1];
                 } else {
                     $sort_field = 'asset_' . $args['sort_by'];
@@ -4371,6 +4383,7 @@ abstract class MTDatabase {
         $content_list = array();
 
         if (count($content_list) && ($content_filter == '')) {
+            // TODO: Unreachable becaulse $content_list is initialized right before the if-block. If it's still needed, fix it for MTC-27980.
             $content_list = implode(",", array_keys($content_list));
             # set a reasonable cap on the content list cache. if
             # user is selecting something too big, then they'll
@@ -4891,6 +4904,7 @@ abstract class MTDatabase {
         if (empty($no_resort)) {
             $sort_field = '';
             if (isset($args['sort_by'])) {
+                // TODO: This if-block is totaly wrong where field prefix should be cd_ instead of entry_
                 if ($args['sort_by'] == 'title') {
                     $sort_field = 'entry_title';
                 } elseif ($args['sort_by'] == 'id') {
@@ -5310,6 +5324,7 @@ abstract class MTDatabase {
 
         $blog_filter = $this->include_exclude_blogs($args);
         if ($blog_filter == '' and isset($args['blog_id'])) {
+            // TODO: Unreachable because include_exclude_blogs is never empty.
             if ($cacheable) {
                 if (!isset($args['cd_id'])) {
                     if (isset($this->_blog_tag_cache[$args['blog_id'].":$class"])) {
