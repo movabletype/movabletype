@@ -120,7 +120,7 @@
               <select id="smtp_ssl" class="custom-select form-control form-select" name="smtp_ssl">
                 <option value="0"<mt:if name="smtp_ssl" eq="0"> selected="selected"</mt:if>><__trans phrase="Do not use SSL"></option>
                 <option value="ssl"<mt:if name="smtp_ssl" eq="ssl"> selected="selected"</mt:if>><__trans phrase="Use SSL"></option>
-                <option value="tls"<mt:if name="smtp_ssl" eq="tls"> selected="selected"</mt:if>><__trans phrase="Use STARTTLS"></option>
+                <option value="starttls"<mt:if name="smtp_ssl" eq="starttls"> selected="selected"</mt:if>><__trans phrase="Use STARTTLS"></option>
               </select>
             </mtapp:setting>
           </mt:if>
