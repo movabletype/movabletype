@@ -12,6 +12,7 @@ BEGIN {
 }
 
 use MT::Test;
+use MT::Test::Wizard;
 use MT::Test::App;
 use MT::App::Wizard;
 use File::Copy qw/cp/;
@@ -44,6 +45,39 @@ subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
     if ($remove && -e $home_cfg) {
         unlink $home_cfg
     }
+};
+
+subtest 'SMTPAuth' => sub {
+    test_wizard(
+        optional => {
+            email_address_main => 'test@localhost.localdomain',
+            mail_transfer      => 'smtp',
+            smtp_auth          => 1,
+            smtp_ssl           => 'ssl',
+            smtp_server        => 'localhost',
+            smtp_auth_username => 'mt_smtp_user',
+            smtp_auth_password => 'mt_smtp_pass',
+        },
+        mt_config => {
+            like   => ['SMTPAuth ssl'],
+            unlike => ['SMTPS ssl'],
+        },
+    );
+};
+
+subtest 'SMTPS' => sub {
+    test_wizard(
+        optional => {
+            email_address_main => 'test@localhost.localdomain',
+            mail_transfer      => 'smtp',
+            smtp_ssl           => 'starttls',
+            smtp_server        => 'localhost',
+        },
+        mt_config => {
+            like   => ['SMTPS starttls'],
+            unlike => ['SMTPAuth starttls'],
+        },
+    );
 };
 
 done_testing;
