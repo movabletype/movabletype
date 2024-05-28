@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
+  import { ListObject, ListStore } from "types/listing";
 
   import ListTableRow from "./ListTableRow.svelte";
 
@@ -46,12 +46,17 @@
     store.trigger("check_all_rows");
   };
 
-  const checkedProp = (checked: number): object => {
-    if (checked != 0) {
-      return { checked: "checked" };
-    } else {
-      return {};
+  const trProps = (obj: ListObject): object => {
+    let props: { checked?: string; class?: string } = {};
+
+    if (obj.checked || obj.clicked) {
+      props.class = "mt-table__highlight";
     }
+    if (obj.checked != 0) {
+      props.checked = "checked";
+    }
+
+    return props;
   };
 </script>
 
@@ -85,15 +90,14 @@
 {#each objects as obj, index}
   {#if false}
     <!--
-    RIOT_DIFF: remove object property because it is not output in Riot.js
+    RIOT_DIFF: remove "object" property because it is not output in Riot.js
   -->
   {/if}
   <tr
     data-is="list-table-row"
     on:click={clickRow}
-    class={obj.checked || obj.clicked ? "mt-table__highlight" : ""}
     data-index={index}
-    {...checkedProp(obj.checked)}
+    {...trProps(obj)}
   >
     <ListTableRow
       checked={obj.checked}
