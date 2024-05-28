@@ -18,7 +18,7 @@ use MT::App::Wizard;
 use File::Copy qw/cp/;
 
 subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
-    my $app = MT::Test::App->new(app_class => 'MT::App::Wizard', no_redirect => 1);
+    my $app      = MT::Test::App->new(app_class => 'MT::App::Wizard', no_redirect => 1);
     my $home_cfg = File::Spec->catfile($ENV{MT_HOME}, 'mt-config.cgi');
     my $remove;
     if (!-e $home_cfg) {
@@ -43,7 +43,7 @@ subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
     }
 
     if ($remove && -e $home_cfg) {
-        unlink $home_cfg
+        unlink $home_cfg;
     }
 };
 
