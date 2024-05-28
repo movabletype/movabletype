@@ -837,7 +837,7 @@ class WeeklyArchiver extends DateBasedArchiver {
         $inside = $ctx->stash('inside_archive_list');
         if (isset($inside) && $inside) {
             $ts = $ctx->stash('current_timestamp');
-
+            $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
                 $ts = $mt->db()->ts2db($ts);
                 $tsend = $mt->db()->ts2db($tsend);
