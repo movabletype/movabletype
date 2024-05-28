@@ -1359,7 +1359,7 @@ sub module_check {
         else {
             $desc = $self->translate($desc);
         }
-        eval( "use $mod" . ( $ver ? " $ver;" : ";" ) );
+        eval( "use $mod" . ( $ver ? " $ver ();" : " ();" ) );
         $mod .= $ver if $mod eq 'DBD::ODBC';
         $sort = $mod unless defined $sort;
         if ($@) {
