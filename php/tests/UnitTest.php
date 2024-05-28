@@ -533,7 +533,7 @@ class UnitTest extends TestCase {
 
         require_once('class.mt_author.php');
         $author = new Author;
-        $author->Load(1);
+        $author->LoadByIntId(1);
         $perm2 = $author->permissions(1);
         $this->assertTrue(is_array($perm2) && !empty($perm2));
         $this->assertEquals(1, count($perm2));
@@ -560,7 +560,7 @@ class UnitTest extends TestCase {
 
         require_once('class.mt_blog.php');
         $b = new Blog;
-        $b->Load(1);
+        $b->LoadByIntId(1);
         $b->set_values(['blog_name' => 'test_name', 'blog_site_url' => 'test_url']);
         $this->assertEquals($b->blog_name, 'test_name');
         $this->assertEquals($b->blog_site_url, 'test_url');
@@ -698,7 +698,7 @@ class UnitTest extends TestCase {
     public function testAssociation() {
         require_once('class.mt_association.php');
         $assoc = new Association();
-        $assoc->Load('association_id=1');
+        $assoc->LoadByIntId(1);
         $role = $assoc->role();
         $this->assertEquals('Role', get_class($role));
         $this->assertEquals('1', $role->id);
@@ -712,7 +712,7 @@ class UnitTest extends TestCase {
 
         require_once('class.mt_fileinfo.php');
         $finfo2 = new FileInfo();
-        $finfo2->Load($finfo->id);
+        $finfo2->LoadByIntId($finfo->id);
         $cat2 = $finfo2->category();
         $this->assertEquals('Category', get_class($cat2));
         $this->assertEquals($cat1->id, $cat2->id);
@@ -747,7 +747,7 @@ class UnitTest extends TestCase {
         $mt = MT::get_instance();
         $ctx = $mt->context();
         $blog = new Blog;
-        $blog->Load(1);
+        $blog->LoadByIntId(1);
 
         require_once('function.mtblogsitepath.php');
         $this->assertEquals('/', smarty_function_mtblogsitepath(['id' => $blog->id], $ctx));
@@ -758,7 +758,7 @@ class UnitTest extends TestCase {
         $mt = MT::get_instance();
         $ctx = $mt->context();
         $blog = new Blog;
-        $blog->Load(1);
+        $blog->LoadByIntId(1);
 
         require_once('function.mtwebsitepath.php');
         $this->assertEquals('/', smarty_function_mtwebsitepath(['id' => $blog->id], $ctx));
@@ -769,7 +769,7 @@ class UnitTest extends TestCase {
         $mt = MT::get_instance();
         $ctx = $mt->context();
         $blog = new Blog;
-        $blog->Load(1);
+        $blog->LoadByIntId(1);
 
         require_once('function.mtwebsiterelativeurl.php');
         $this->assertEquals('', smarty_function_mtwebsiterelativeurl(['id' => $blog->id], $ctx));
@@ -780,7 +780,7 @@ class UnitTest extends TestCase {
         $mt = MT::get_instance();
         $ctx = $mt->context();
         $blog = new Blog;
-        $blog->Load(1);
+        $blog->LoadByIntId(1);
 
         require_once('function.mtwebsiteurl.php');
         $this->assertEquals('/', smarty_function_mtwebsiteurl(['id' => $blog->id], $ctx));

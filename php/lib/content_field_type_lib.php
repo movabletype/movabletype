@@ -188,7 +188,7 @@ class ContentTypeRegistry implements ContentFieldType {
 
             require_once("class.mt_content_type.php");
             $content_type = new ContentType;
-            $loaded = $content_type->Load($source);
+            $loaded = $content_type->LoadByIntId($source);
             if (!$loaded)
                 return $ctx->error( $ctx->mt->translate('No Content Type could be found.') );
             $content_data = $ctx->stash('content');
