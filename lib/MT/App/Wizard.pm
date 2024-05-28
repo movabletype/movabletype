@@ -1250,17 +1250,11 @@ sub seed {
 
     $param{tmpl_loop} = \@tmpl_loop;
 
-    # If TLS is enabled, SMTPAuth should be 'starttls'
-    $param{smtp_auth} = 'starttls'
-        if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' )
-        && $param{smtp_auth}
-        && $param{smtp_ssl} eq 'tls';
-
-    # If SSL is enabled, SMTPAuth should be 'ssl'
-    $param{smtp_auth} = 'ssl'
-        if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' )
-        && $param{smtp_auth}
-        && $param{smtp_ssl} eq 'ssl';
+    if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' ) {
+        if ($param{smtp_auth} && $param{smtp_ssl}) {
+            $param{smtp_auth} = delete $param{smtp_ssl};
+        }
+    }
 
     my $data = $app->build_page( "mt-config.tmpl", \%param );
 
