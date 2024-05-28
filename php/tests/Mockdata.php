@@ -156,7 +156,7 @@ class Mockdata {
         $ping->save();
 
         $entry = new Entry();
-        $entry->Load($entry_id);
+        $entry->LoadByIntId($entry_id);
         $entry->ping_count++;
         $entry->save();
 
@@ -242,7 +242,7 @@ class Mockdata {
         $comment->save();
 
         $entry = new Entry();
-        $entry->Load($entry_id);
+        $entry->LoadByIntId($entry_id);
         $entry->comment_count++;
         $entry->save();
 

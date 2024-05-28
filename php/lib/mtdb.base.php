@@ -821,7 +821,7 @@ abstract class MTDatabase {
         }
         require_once('class.mt_website.php');
         $blog = new Website;
-        $blog->Load("blog_id = $blog_id");
+        $blog->LoadByIntId($blog_id);
         $this->_blog_id_cache[$blog_id] = $blog;
         return $blog;
     }
@@ -832,7 +832,7 @@ abstract class MTDatabase {
         }
         require_once('class.mt_blog.php');
         $blog = new Blog;
-        $blog->Load("blog_id = $blog_id");
+        $blog->LoadByIntId($blog_id);
         $this->_blog_id_cache[$blog_id] = $blog;
         return $blog;
     }
@@ -848,7 +848,7 @@ abstract class MTDatabase {
         }
         require_once("class.mt_entry.php");
         $entry = New Entry;
-        $entry->Load( $eid );
+        $entry->LoadByIntId($eid);
         if ( !empty( $entry ) ) {
             $this->_entry_id_cache[$eid] = $entry;
             return $entry;
@@ -2128,7 +2128,7 @@ abstract class MTDatabase {
         }
         require_once("class.mt_page.php");
         $page = New Page;
-        $page->Load( $eid );
+        $page->LoadByIntId($eid);
         if ( !empty( $page ) ) {
             $this->_entry_id_cache[$eid] = $page;
             return $page;
@@ -2609,7 +2609,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_tag.php');
         $tag = new Tag;
-        $loaded = $tag->Load("tag_id = $tag_id");
+        $loaded = $tag->LoadByIntId($tag_id);
         if ($loaded)
             $this->_tag_id_cache[$tag->tag_id] = $tag;
 
@@ -3025,7 +3025,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_entry.php');
         $entry = new Entry;
-        $loaded = $entry->Load("entry_id = $entry_id");
+        $loaded = $entry->LoadByIntId($entry_id);
         $count = 0;
         if ($loaded) {
             $count = $entry->entry_comment_count;
@@ -3426,7 +3426,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_entry.php');
         $entry = new Entry;
-        $loaded = $entry->Load("entry_id = $entry_id");
+        $loaded = $entry->LoadByIntId($entry_id);
         $count = 0;
         if ($loaded) {
             $count = $entry->entry_ping_count;
@@ -4143,7 +4143,7 @@ abstract class MTDatabase {
         }
         require_once('class.mt_category_set.php');
         $category_set = new CategorySet;
-        $loaded = $category_set->Load("category_set_id = $category_set_id");
+        $loaded = $category_set->LoadByIntId($category_set_id);
         if (!$loaded) return null;
         $this->_category_set_id_cache[$category_set_id] = $category_set;
         return $category_set;
@@ -4229,7 +4229,7 @@ abstract class MTDatabase {
         }
         require_once("class.mt_content_type.php");
         $content_type= New ContentType;
-        $loaded = $content_type->Load( $id );
+        $loaded = $content_type->LoadByIntId($id);
         if ($loaded) {
             $this->_content_type_id_cache[$id] = $content_type;
             return $content_type;
@@ -4318,7 +4318,7 @@ abstract class MTDatabase {
         }
         require_once("class.mt_content_data.php");
         $cd = New ContentData;
-        $cd ->Load( $cid );
+        $cd->LoadByIntId($cid);
         if ( !empty( $cd) ) {
             $this->_cd_id_cache[$cid] = $cd;
             return $cd;
@@ -5212,7 +5212,7 @@ abstract class MTDatabase {
         }
         require_once("class.mt_content_field.php");
         $content_field= New ContentField;
-        $content_field->Load( $id );
+        $content_field->LoadByIntId($id);
         if ( !empty( $content_field ) ) {
             $this->_content_field_id_cache[$id] = $content_field;
             return $content_field;
@@ -5470,8 +5470,7 @@ abstract class MTDatabase {
         if (isset($args['content_type'])) {
             $str = $args['content_type'];
             if (ctype_digit($str)) {
-                $where = "content_type_id = $str";
-                $ct->Load($where);
+                $ct->LoadByIntId($str);
             }
             if (is_null($ct->id)) {
                 $str = $this->escape($str);

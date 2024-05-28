@@ -100,5 +100,36 @@ class BaseObjectTest extends TestCase {
         return self::$_cache_driver;
     }
 
+    public function testLoadByIntId() {
 
+        require_once('class.mt_template.php');
+
+        $obj = new Template;
+        $obj->Load(2);
+        $this->assertEquals(2, $obj->id);
+
+        $obj = new Template;
+        $obj->Load('2');
+        $this->assertEquals(2, $obj->id);
+
+        $obj = new Template;
+        $obj->LoadByIntId(3);
+        $this->assertEquals(3, $obj->id);
+
+        $obj = new Template;
+        $obj->LoadByIntId('3');
+        $this->assertEquals(3, $obj->id);
+
+        $obj = new Template;
+        $obj->Load('template_id = 4');
+        $this->assertEquals(4, $obj->id);
+
+        $obj = new Template;
+        $obj->Load('2.5');
+        $this->assertEquals(null, $obj->id);
+
+        $obj = new Template;
+        $obj->Load(2.5);
+        $this->assertEquals(null, $obj->id);
+    }
 }

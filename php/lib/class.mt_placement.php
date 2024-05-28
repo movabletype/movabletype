@@ -26,7 +26,6 @@ class Placement extends BaseObject
         $col_name = "placement_category_id";
         $category = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
-            $category_id = $this->$col_name;
 
             $entry = $this->entry();
             if (empty($entry))
@@ -35,11 +34,11 @@ class Placement extends BaseObject
             if ($entry->class === 'entry') {
                 require_once('class.mt_category.php');
                 $category = new Category;
-                $loaded = $category->Load("category_id = $category_id");
+                $loaded = $category->LoadByIntId($this->$col_name);
             } else {
                 require_once('class.mt_folder.php');
                 $category = new Folder();
-                $loaded = $category->Load("category_id = $category_id");
+                $loaded = $category->LoadByIntId($this->$col_name);
             }
             if (!$loaded)
                 $category = null;
