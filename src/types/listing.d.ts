@@ -1,3 +1,5 @@
+import { ObservableInstance } from "@riotjs/observable";
+
 export interface ButtonAction extends ListAction {}
 
 export interface ButtonActions {
@@ -144,12 +146,9 @@ export interface ListObject {
   object: Array<object>;
 }
 
-export interface ListStore extends ListData {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface ListStore extends ListData, ObservableInstance<any> {
   listClient: ListClient;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  on: (event: string, fn: (...args: any) => void) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  trigger: (event: string, ...args: any) => void;
 }
 
 export interface MoreListAction extends ListAction {}
