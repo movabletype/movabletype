@@ -10,7 +10,7 @@ class ClassTest extends TestCase {
 
         $category = Mockdata::makeCategory();
         $entry = Mockdata::makeEntry();
-    
+
         $entry2 = new Entry();
         $entry2->Load($entry->id);
         $this->assertEquals('Entry', get_class($entry2));
@@ -40,7 +40,7 @@ class ClassTest extends TestCase {
         $this->assertEquals('Trackback', get_class($trackback2));
         $this->assertEquals($trackback2->id, $trackback->id);
 
-        $category2 = $trackback2->category(); 
+        $category2 = $trackback2->category();
         $this->assertEquals('Category', get_class($category2));
         $this->assertEquals($category->id, $category2->id);
     }
@@ -109,13 +109,7 @@ class ClassTest extends TestCase {
         $folder->label = '';
         $folder->save();
 
-        require_once('class.mt_placement.php');
-        $placement = new Placement();
-        $placement->blog_id = 1;
-        $placement->entry_id = $page->id;
-        $placement->is_primary = 1;
-        $placement->category_id = $folder->id;
-        $placement->save();
+        $placement = MockData::makeObjectPlacement(['blog_id' => 1, 'category_id' => $folder->id]);
 
         $folder2 = $page->folder();
         $this->assertEquals('Folder', get_class($folder2));
