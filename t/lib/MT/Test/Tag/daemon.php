@@ -30,9 +30,11 @@ if (is_a($db, 'MTDatabaseoracle')) {
 $ctx = $mt->context();
 
 while ($remote = stream_socket_accept($socket)) {
-    
+
     $stream = stream_get_contents($remote);
-    if (!$stream) continue;
+    if (!$stream) {
+        continue;
+    }
 
     // $mt->cache_driver()->flush_all();
 
