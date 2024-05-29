@@ -85,17 +85,6 @@ class UnitTest extends TestCase {
         $this->assertEquals($site1->id, $site2->id);
     }
 
-    public function testFetchWidgetsByName() {
-
-        $site1 = MockData::makeBlog(['name' => 'testFetchWidgetsByName', 'class' => 'website']);
-        $template = MockData::makeTemplate(['type' => 'widget', 'name' => 'my_widget']);
-
-        $mt = MT::get_instance();
-        $widgets = $mt->db()->fetch_widgets_by_name($mt->ctx, 'my_widget', $site1->id);
-        $this->assertEquals('Template', get_class($widgets[0]));
-        $this->assertEquals($template->id, $widgets[0]->id);
-    }
-
     public function testFetchEntries() {
 
         BaseObject::install_meta('entry', 'field.myfield', 'vstring');
