@@ -15,7 +15,9 @@ BEGIN {
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        PluginSwitch => ['Textile/textile2.pl=1'],
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 

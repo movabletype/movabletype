@@ -40,7 +40,7 @@ __END__
 --- template
 <mt:SiteName>
 --- expected
-none
+None
 
 === mt:SiteName - website
 --- blog_id

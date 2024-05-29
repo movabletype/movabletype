@@ -3,17 +3,23 @@ use warnings;
 use FindBin;
 
 use File::Find;
-use Test::Perl::Critic (-profile => "$FindBin::Bin/../.perlcriticrc" );
+use Test::More;
+use Test::Perl::Critic (-profile => "$FindBin::Bin/../.perlcriticrc", -verbose => 6 );
 
-my @files = grep -d $_, qw( lib tools t xt build );
-for my $dir ( 'addons', 'plugins' ) {
+my @files;
+for my $dir (qw( lib tools t xt build addons plugins )) {
     next unless -d $dir;
-    find( { wanted => \&_find, no_chdir => 1, follow => 1 }, $dir );
+    find( { wanted => \&_find, no_chdir => 1, follow_fast => 1 }, $dir );
 }
 push @files,
     ( grep { $_ !~ /mt-config\.cgi$/ } grep {/\.(cgi|psgi)$/} glob '*' );
 
-all_critic_ok(@files);
+for my $file (sort @files) {
+    next unless -f $file;
+    critic_ok($file);
+}
+
+done_testing;
 
 sub _find {
     return if $File::Find::name =~ m!/(?:extlib|local|blib)/!;

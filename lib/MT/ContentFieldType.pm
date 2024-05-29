@@ -1189,7 +1189,7 @@ sub _list_registry {
         icon_class           => 'ic_list',
         can_data_label_field => 0,
         data_load_handler =>
-            '$Core::MT::ContentFieldType::Common::data_load_handler_multiple',
+            '$Core::MT::ContentFieldType::List::data_load_handler',
         field_html => 'field_html/field_html_list.tmpl',
         field_html_params =>
             '$Core::MT::ContentFieldType::List::field_html_params',

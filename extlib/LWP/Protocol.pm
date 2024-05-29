@@ -2,7 +2,7 @@ package LWP::Protocol;
 
 use parent 'LWP::MemberMixin';
 
-our $VERSION = '6.67';
+our $VERSION = '6.76';
 
 use strict;
 use Carp ();
@@ -12,6 +12,7 @@ use Scalar::Util qw(openhandle);
 use Try::Tiny qw(try catch);
 
 my %ImplementedBy = (); # scheme => classname
+my %ImplementorAlreadyTested;
 
 sub new
 {
@@ -49,15 +50,18 @@ sub implementor
     if ($impclass) {
 	$ImplementedBy{$scheme} = $impclass;
     }
+
     my $ic = $ImplementedBy{$scheme};
-    return $ic if $ic;
+    # module does not exist
+    return $ic if $ic || $ImplementorAlreadyTested{$scheme};
 
     return '' unless $scheme =~ /^([.+\-\w]+)$/;  # check valid URL schemes
     $scheme = $1; # untaint
-    $scheme =~ tr/.+-/_/;  # make it a legal module name
 
     # scheme not yet known, look for a 'use'd implementation
-    $ic = "LWP::Protocol::$scheme";  # default location
+    $ic = $scheme;
+    $ic =~ tr/.+-/_/;  # make it a legal module name
+    $ic = "LWP::Protocol::$ic";  # default location
     $ic = "LWP::Protocol::nntp" if $scheme eq 'news'; #XXX ugly hack
     no strict 'refs';
     # check we actually have one for the scheme:
@@ -79,6 +83,7 @@ sub implementor
         };
     }
     $ImplementedBy{$scheme} = $ic if $ic;
+    $ImplementorAlreadyTested{$scheme} = 1;
     $ic;
 }
 

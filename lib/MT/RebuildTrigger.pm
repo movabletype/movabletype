@@ -7,6 +7,7 @@
 package MT::RebuildTrigger;
 
 use strict;
+use warnings;
 use base qw( MT::Object );
 
 use Exporter 'import';

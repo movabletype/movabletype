@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '8.001000');
-define('PRODUCT_VERSION', '8.1.0');
+define('VERSION', '8.002000');
+define('PRODUCT_VERSION', '8.2.0');
 define('DATA_API_DEFAULT_VERSION', '6');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -185,6 +185,18 @@ class MT {
         $plugin_paths = $this->config('PluginPath');
         $ctx =& $this->context();
 
+        $enabled = Array();
+        $switch = $this->config('PluginSwitch');
+        foreach ($switch as $sig => $value) {
+            if (preg_match('/^([^\/]+)\//', $sig, $matches)) {
+                $enabled[$matches[1]] = $enabled[$matches[1]] ?? 0;
+                $enabled[$matches[1]] += $value;
+            } else {
+                $enabled[$sig] = $enabled[$sig] ?? 0;
+                $enabled[$sig] += $value;
+            }
+        }
+
         foreach ($plugin_paths as $path) {
             if ( !is_dir($path) )
                 $path = $this->config('MTDir') . DIRECTORY_SEPARATOR . $path;
@@ -193,6 +205,9 @@ class MT {
                  while (($file = readdir($dh)) !== false) {
                      if ($file == "." || $file == "..")
                          continue;
+                     if (isset($enabled[$file]) && empty($enabled[$file])) {
+                         continue;
+                     }
                      $plugin_dir = $path . DIRECTORY_SEPARATOR . $file
                          . DIRECTORY_SEPARATOR . 'php';
                      if (is_dir($plugin_dir))

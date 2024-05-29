@@ -1,5 +1,7 @@
 package MT::Awesome::Image;
 
+use strict;
+use warnings;
 use base qw( MT::Awesome );
 
 __PACKAGE__->install_properties(

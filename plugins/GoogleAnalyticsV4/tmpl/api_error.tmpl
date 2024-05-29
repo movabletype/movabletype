@@ -10,9 +10,9 @@
 
 <div class="actions-bar">
   <button
-     type="submit"
+     id="close-button"
      accesskey="x"
-     class="action button mt-close-dialog"
+     class="action button"
      title="<__trans phrase="Close (x)">">
     <__trans phrase="Close">
   </button>
@@ -25,8 +25,12 @@ jQuery(function($) {
     $p($p.find('#ga4_configured_client_id')).val('');
     $p($p.find('#ga4_configured_client_secret')).val('');
     $p($p.find('#ga4_select_profile')).trigger('click');
-    $p.fn.mtDialog.close();
+    $p.fn.mtModal.close();
 </mt:If>
+
+    $('#close-button').on('click', function() {
+      $p.fn.mtModal.close();
+    });
 });
 </script>
 <mt:include name="dialog/footer.tmpl">

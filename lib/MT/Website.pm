@@ -234,7 +234,6 @@ sub add_blog {
 
 sub system_filters {
     my %filters;
-    my @filters_to_sort;
     my $order = 0;
 
     $filters{parent_site_only} = {

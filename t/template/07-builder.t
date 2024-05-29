@@ -358,6 +358,43 @@ is( scalar keys %{ $tokens->[0][EL_NODE_ATTR] }, 0, "Has no attributes" );
 is( $builder->build( $ctx, $tokens ),
     'foo', "Building produces expected result" );
 
+note("Mismatched closing tag in a block");
+$tokens = $builder->compile( $ctx, '<mt:setvarblock name="foo"></mt:?Ignore></mt:setvarblock><mt:var name="foo">' );
+note( "Error: " . $builder->errstr ) unless $tokens;
+ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
+ok( @$tokens == 2,            "Created two tokens" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'setvarblock', "Token is a tag token" );
+ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
+ok( @{ $tokens->[0][EL_NODE_CHILDREN] || [] } == 1, "Token is a child tag token" );
+ok( $tokens->[0][EL_NODE_CHILDREN][0][EL_NODE_NAME] eq 'TEXT', "Child token is a text" );
+ok( $tokens->[0][EL_NODE_CHILDREN][0][EL_NODE_VALUE] eq '</mt:?Ignore>', "Child token keeps an unmatched closing tag" );
+is( $builder->build( $ctx, $tokens ),
+    '</mt:?Ignore>', "Building produces expected result" );
+
+note("Mismatched closing tag not in a block");
+$tokens = $builder->compile( $ctx, '</mt:?Ignore>' );
+note( "Error: " . $builder->errstr ) unless $tokens;
+ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
+ok( @$tokens == 1,            "Created one token" );
+ok( $tokens->[0][EL_NODE_NAME] eq 'TEXT', "Token is a text" );
+ok( @{ $tokens->[0] } == 7,   "Length of token object is 7 elements" );
+ok( $tokens->[0][EL_NODE_VALUE] eq '</mt:?Ignore>', "Token keeps an unmatched closing tag" );
+is( $builder->build( $ctx, $tokens ),
+    '</mt:?Ignore>', "Building produces expected result" );
+
+note("More complex mismatched closing tags");
+$tokens = $builder->compile( $ctx, <<'TMPL' );
+<mt:if test="1">
+<mt:setvarblock name="foo">
+</mt:if>
+</mt:setvarblock><mt:var name="foo">
+</mt:if>
+TMPL
+note( "Error: " . $builder->errstr ) unless $tokens;
+ok( !$tokens, "Compiling failed, as expected" );
+like( $builder->errstr => qr!^<mt:setvarblock> with no </mt:setvarblock> on line .!,
+    "Compilation yielded proper error message" );
+
 $mt->set_language('ja_JP');
 
 note("Unknown localized tag");

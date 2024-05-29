@@ -943,7 +943,7 @@ sub _transform {
     # Preserve metadata.
     my ( $exif, $next_exif );
     my $update_metadata
-        = lc( $file_ext ) =~ /^(jpe?g|tiff?|webp)$/
+        = lc( $file_ext ) =~ /^(jpe?g|tiff?|webp|png)$/
         && $asset->has_metadata
         && !$asset->is_metadata_broken;
     if ($update_metadata) {
@@ -1082,7 +1082,7 @@ sub exif {
 sub has_gps_metadata {
     my ($asset) = @_;
 
-    return 0 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp)$/;
+    return 0 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp|png)$/;
 
     my $exif = $asset->exif or return;
     $exif->Options( Group1 => 'GPS' );
@@ -1097,13 +1097,14 @@ sub has_metadata {
     my ($asset) = @_;
 
     my $file_ext = lc( $asset->file_ext || '' );
-    return 0 if $file_ext !~ /^(jpe?g|tiff?|webp)$/;
+    return 0 if $file_ext !~ /^(jpe?g|tiff?|webp|png)$/;
 
     require Image::ExifTool;
     my $exif    = $asset->exif or return;
     my $is_jpeg = $file_ext =~ /^jpe?g$/;
     my $is_tiff = $file_ext =~ /^tiff?$/;
     my $is_webp = $file_ext eq 'webp';
+    my $is_png  = $file_ext eq 'png';
 
     @MandatoryExifTags = _set_mandatory_exif_tags() unless @MandatoryExifTags;
     for my $g ( $exif->GetGroups ) {
@@ -1112,6 +1113,7 @@ sub has_metadata {
             || $g eq 'File'
             || ( $is_jpeg && $g =~ /\A(?:JFIF|ICC_Profile)\z/ )
             || ( $is_webp && $g =~ /\A(?:RIFF|ICC_Profile)\z/ )
+            || ( $is_png  && $g =~ /\A(?:PNG|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
         my %writable_tags = map {$_ => 1} Image::ExifTool::GetWritableTags($g);
         delete $writable_tags{$_} for @MandatoryExifTags;
@@ -1140,7 +1142,7 @@ sub _set_mandatory_exif_tags {
 sub remove_gps_metadata {
     my ($asset) = @_;
 
-    return 1 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp)$/;
+    return 1 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp|png)$/;
     return 1 if $asset->is_metadata_broken;
 
     require Image::ExifTool;
@@ -1152,14 +1154,30 @@ sub remove_gps_metadata {
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
+}
 
-    1;
+sub remove_broken_png_metadata {
+    my $asset = shift;
+    return 1 if lc( $asset->file_ext || '' ) !~ /^png$/;
+    return 1 if $asset->is_metadata_broken;
+
+    my $exif = $asset->exif or return;
+
+    # libpng 1.6 marks some of the old HP profiles *broken*
+    # cf. https://sourceforge.net/p/libpng/code/ci/master/tree/png.c#l2275
+    my $datetime = $exif->GetValue('ProfileDateTime') or return 1;
+    return 1 unless $datetime eq '1998:02:09 06:49:00';
+
+    $exif->SetNewValue('ICC_Profile:*', undef, DelValue => 1);
+    $exif->WriteInfo($asset->file_path)
+        or $asset->trans_error( 'Writing metadata failed: [_1]', $exif->GetValue('Error') );
 }
 
 sub remove_all_metadata {
     my ($asset) = @_;
 
-    return 1 if lc( $asset->file_ext || '' ) !~ /^(jpe?g|tiff?|webp)$/;
+    my $lc_ext = lc( $asset->file_ext || '' );
+    return 1 if $lc_ext !~ /^(jpe?g|tiff?|webp|png)$/;
     return 1 if $asset->is_metadata_broken;
 
     my $exif = $asset->exif or return;
@@ -1167,16 +1185,15 @@ sub remove_all_metadata {
     my $orientation = $exif->GetValue('Orientation');
 
     $exif->SetNewValue('*');
-    if (lc($asset->file_ext || '') =~ /^(jpe?g|webp)$/) {
-        $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
+    if ($lc_ext =~ /^(jpe?g|webp|png)$/) {
+        $exif->SetNewValue( 'PNG:*', undef, Replace => 2 ) if $lc_ext =~ /png/;
+        $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 ) if $lc_ext =~ /jpe?g/;
         $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
         $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
     }
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
-
-    1;
 }
 
 sub is_metadata_broken {

@@ -1,5 +1,7 @@
 package LWP::UserAgent::Local;
 
+use strict;
+use warnings;
 use LWP::UserAgent;
 use base 'LWP::UserAgent';
 use IPC::Run3 'run3';

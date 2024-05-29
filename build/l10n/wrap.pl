@@ -6,6 +6,9 @@
 #
 # $Id$
 
+use strict;
+use warnings;
+
 my $wc =0; # New: count the number of words left to translate!
 
 BEGIN {

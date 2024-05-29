@@ -195,11 +195,9 @@ sub _hdlr_widget_manager {
     {
         local $ctx->{__stash}{tag} = 'include';
         for my $widget (@widgets) {
-            my $name     = $widget->name;
-            my $stash_id = MT::Util::Encode::encode_utf8(join('::', 'template_widget', $blog_id, $name));
-            my $tokens   = $ctx->stash('builder')->compile($ctx, $widget);
-            $req->stash($stash_id, [$widget, $tokens]);
-            my $out = $ctx->invoke_handler('include', { %$args, widget => $name, }, $cond);
+            my $name = $widget->name;
+            $args->{blog_id} = $widget->blog_id;
+            my $out  = $ctx->invoke_handler('include', { %$args, widget => $name, }, $cond);
 
             # if error is occurred, pass the include's errstr
             return unless defined $out;

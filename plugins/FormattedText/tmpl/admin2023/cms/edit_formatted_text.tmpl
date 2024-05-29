@@ -1,0 +1,148 @@
+<mt:if name="id">
+    <mt:setvar name="page_title" value="<__trans phrase="Edit Boilerplate">">
+<mt:else>
+    <mt:setvar name="page_title" value="<__trans phrase="Create Boilerplate">">
+</mt:if>
+
+<$mt:setvar name="position_actions_bottom" value="1"$>
+
+<mt:setvarblock name="html_head" append="1">
+<mt:include name="include/libjs.tmpl" component="core">
+</mt:setvarblock>
+
+<mt:SetVarBlock name="system_msg">
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved_added">
+  <mtapp:statusmsg
+     id="saved-added"
+     class="success">
+    <__trans phrase="This boilerplate has been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved_changes">
+  <mtapp:statusmsg
+     id="saved-changes"
+     class="success">
+    <__trans phrase="Your changes have been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+</mt:SetVarBlock>
+
+<mt:setvarblock name="css_include" append="1">
+<style>
+div.mce-notification-error {
+    display: none;
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+
+<mt:include name="include/editor_script.tmpl" id="editor_script_include">
+
+<form method="post" action="<mt:var name="script_url">" id="edit_formatted_text" class="mb-5">
+  <input type="hidden" id="blog-id" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+  <input type="hidden" name="__mode" value="save" />
+  <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" id="id" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+  <mtapp:settinggroup id="formatted_text-meta">
+
+    <mtapp:setting
+       id="text"
+       label_class="no-header"
+       label="<__trans phrase="Text">"
+       label_for="text">
+      <textarea name="text" id="text" class="text highest"><mt:var name="text" escape="html"></textarea>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="label"
+       label_class="top-label"
+       label="<__trans phrase="Label">"
+       label_for="label"
+       required="1"
+       no_grid="1">
+      <input type="text" name="label" id="label" class="form-control text full required" maxlength="100" value="<mt:var name="label" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="description"
+       label_class="top-label"
+       label_for="description"
+       label="<__trans phrase="Description">"
+       no_grid="1">
+      <input type="text" name="description" id="description" class="form-control text full" maxlength="255" value="<mt:var name="description" escape="html">" />
+    </mtapp:setting>
+
+  </mtapp:settinggroup>
+
+  <mt:setvarblock name="action_buttons">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Save changes to this boilerplate (s)">"
+       class="save action button primary btn btn-primary"
+       ><__trans phrase="Save Changes"></button>
+  </mt:setvarblock>
+
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+(function($) {
+
+var formatted_texts = [
+<mt:loop name="blog_formatted_texts" glue=",">
+    {
+        id: "<mt:var name="id" encode_js="1" />",
+        label: "<mt:var name="label" encode_js="1" />",
+    }
+</mt:loop>
+];
+
+Lexicon["The boilerplate '[_1]' is already in use in this blog."] = '<__trans phrase="The boilerplate '[_1]' is already in use in this blog." params="[_1]" escape="singlequotes" />';
+jQuery.mtValidateAddRules({
+    '#label': function ($e) {
+        var validator  = this;
+        var id         = $('#id').val();
+        var new_label  = $e.val();
+
+        jQuery.each(formatted_texts, function() {
+            if (this.label == new_label && this.id != id) {
+                validator.raise(trans("The boilerplate '[_1]' is already in use in this blog.", new_label));
+                return false;
+            }
+        });
+
+        return true;
+    }
+});
+
+
+var editor_manager = new MT.EditorManager('text');
+
+$('#edit_formatted_text').on('submit', function () {
+    editor_manager.currentEditor.save();
+    if ( !$(this).find(':input').mtValidate('simple')) {
+        return false;
+    }
+});
+
+})(jQuery);
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

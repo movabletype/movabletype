@@ -13,11 +13,12 @@ use HTTP::Date ();
 use LWP ();
 use HTTP::Status ();
 use LWP::Protocol ();
+use Module::Load qw( load );
 
 use Scalar::Util qw(blessed openhandle);
 use Try::Tiny qw(try catch);
 
-our $VERSION = '6.67';
+our $VERSION = '6.76';
 
 sub new
 {
@@ -86,6 +87,10 @@ sub new
     $requests_redirectable = ['GET', 'HEAD']
       unless defined $requests_redirectable;
 
+    my $cookie_jar_class = delete $cnf{cookie_jar_class};
+    $cookie_jar_class = 'HTTP::Cookies'
+      unless defined $cookie_jar_class;
+
     # Actually ""s are just as good as 0's, but for concision we'll just say:
     Carp::croak("protocols_allowed has to be an arrayref or 0, not \"$protocols_allowed\"!")
       if $protocols_allowed and ref($protocols_allowed) ne 'ARRAY';
@@ -114,6 +119,7 @@ sub new
         protocols_forbidden   => $protocols_forbidden,
         requests_redirectable => $requests_redirectable,
         send_te               => $send_te,
+        cookie_jar_class      => $cookie_jar_class,
     }, $class;
 
     $self->agent(defined($agent) ? $agent : $class->_agent)
@@ -712,7 +718,21 @@ sub get_basic_credentials
 }
 
 
-sub timeout      { shift->_elem('timeout',      @_); }
+sub timeout
+{
+    my $self = shift;
+    my $old = $self->{timeout};
+    if (@_) {
+        $self->{timeout} = shift;
+        if (my $conn_cache = $self->conn_cache) {
+            for my $conn ($conn_cache->get_connections) {
+                $conn->timeout($self->{timeout});
+            }
+        }
+    }
+    return $old;
+}
+
 sub local_address{ shift->_elem('local_address',@_); }
 sub max_size     { shift->_elem('max_size',     @_); }
 sub max_redirect { shift->_elem('max_redirect', @_); }
@@ -755,7 +775,7 @@ sub parse_head {
                require HTML::HeadParser;
                $parser = HTML::HeadParser->new;
                $parser->xml_mode(1) if $response->content_is_xhtml;
-               $parser->utf8_mode(1) if $] >= 5.008 && $HTML::Parser::VERSION >= 3.40;
+               $parser->utf8_mode(1) if $HTML::Parser::VERSION >= 3.40;
 
                push(@{$response->{handlers}{response_data}}, {
 		   callback => sub {
@@ -784,24 +804,38 @@ sub parse_head {
 sub cookie_jar {
     my $self = shift;
     my $old = $self->{cookie_jar};
-    if (@_) {
-	my $jar = shift;
-	if (ref($jar) eq "HASH") {
-	    require HTTP::Cookies;
-	    $jar = HTTP::Cookies->new(%$jar);
-	}
-	$self->{cookie_jar} = $jar;
-        $self->set_my_handler("request_prepare",
-            $jar ? sub {
-                return if $_[0]->header("Cookie");
-                $jar->add_cookie_header($_[0]);
-            } : undef,
-        );
-        $self->set_my_handler("response_done",
-            $jar ? sub { $jar->extract_cookies($_[0]); } : undef,
-        );
+
+    return $old unless @_;
+
+    my $jar = shift;
+    if (ref($jar) eq "HASH") {
+        my $class = $self->{cookie_jar_class};
+        try {
+            load($class);
+            $jar = $class->new(%$jar);
+        }
+        catch {
+            my $error = $_;
+            if ($error =~ /Can't locate/) {
+                die "cookie_jar_class '$class' not found\n";
+            }
+            else {
+                die "$error\n";
+            }
+        };
     }
-    $old;
+    $self->{cookie_jar} = $jar;
+    $self->set_my_handler("request_prepare",
+        $jar ? sub {
+            return if $_[0]->header("Cookie");
+            $jar->add_cookie_header($_[0]);
+        } : undef,
+    );
+    $self->set_my_handler("response_done",
+        $jar ? sub { $jar->extract_cookies($_[0]); } : undef,
+    );
+
+    return $old;
 }
 
 sub default_headers {
@@ -845,16 +879,21 @@ sub from {  # legacy
 
 sub conn_cache {
     my $self = shift;
-    my $old = $self->{conn_cache};
+    my $old  = $self->{conn_cache};
     if (@_) {
-	my $cache = shift;
-	if (ref($cache) eq "HASH") {
-	    require LWP::ConnCache;
-	    $cache = LWP::ConnCache->new(%$cache);
-	}
-	$self->{conn_cache} = $cache;
+        my $cache = shift;
+        if ( ref($cache) eq "HASH" ) {
+            require LWP::ConnCache;
+            $cache = LWP::ConnCache->new(%$cache);
+        }
+        elsif ( defined $cache)  {
+            for my $conn ( $cache->get_connections ) {
+                $conn->timeout( $self->timeout );
+            }
+        }
+        $self->{conn_cache} = $cache;
     }
-    $old;
+    return $old;
 }
 
 
@@ -1073,9 +1112,8 @@ sub _need_proxy {
     if ($ua->{no_proxy}) {
         if (my $host = eval { $req->uri->host }) {
             for my $domain (@{$ua->{no_proxy}}) {
-                if ($host =~ /\Q$domain\E$/) {
-                    return;
-                }
+                $domain =~ s/^\.//;
+                return if $host =~ /(?:^|\.)\Q$domain\E$/;
             }
         }
     }
@@ -1284,6 +1322,7 @@ The following options correspond to attribute methods described below:
    agent                   "libwww-perl/#.###"
    conn_cache              undef
    cookie_jar              undef
+   cookie_jar_class        HTTP::Cookies
    default_headers         HTTP::Headers->new
    from                    undef
    local_address           undef
@@ -1293,8 +1332,10 @@ The following options correspond to attribute methods described below:
    parse_head              1
    protocols_allowed       undef
    protocols_forbidden     undef
-   proxy                   undef
+   proxy                   {}
    requests_redirectable   ['GET', 'HEAD']
+   send_te                 1
+   show_progress           undef
    ssl_opts                { verify_hostname => 1 }
    timeout                 180
 
@@ -1372,9 +1413,9 @@ instead.  See L</"BEST PRACTICES"> for more information.
 The default is to have no cookie jar, i.e. never automatically add
 C<Cookie> headers to the requests.
 
-Shortcut: If a reference to a plain hash is passed in, it is replaced with an
-instance of L<HTTP::Cookies> that is initialized based on the hash. This form
-also automatically loads the L<HTTP::Cookies> module.  It means that:
+If C<$jar> contains an unblessed hash reference, a new cookie jar object is
+created for you automatically. The object is of the class set with the
+C<cookie_jar_class> constructor argument, which defaults to L<HTTP::Cookies>.
 
   $ua->cookie_jar({ file => "$ENV{HOME}/.cookies.txt" });
 
@@ -1382,6 +1423,20 @@ is really just a shortcut for:
 
   require HTTP::Cookies;
   $ua->cookie_jar(HTTP::Cookies->new(file => "$ENV{HOME}/.cookies.txt"));
+
+As described above and in L</"BEST PRACTICES">, you should set
+C<cookie_jar_class> to C<"HTTP::CookieJar::LWP"> to get a safer cookie jar.
+
+  my $ua = LWP::UserAgent->new( cookie_jar_class => 'HTTP::CookieJar::LWP' );
+  $ua->cookie_jar({}); # HTTP::CookieJar::LWP takes no args
+
+These can also be combined into the constructor, so a jar is created at
+instantiation.
+
+  my $ua = LWP::UserAgent->new(
+    cookie_jar_class => 'HTTP::CookieJar::LWP',
+    cookie_jar       =>  {},
+  );
 
 =head2 credentials
 
@@ -1640,8 +1695,8 @@ C<CGI_HTTP_PROXY> environment variable can be used instead.
     $ua->no_proxy('localhost', 'example.com');
     $ua->no_proxy(); # clear the list
 
-Do not proxy requests to the given domains.  Calling C<no_proxy> without
-any domains clears the list of domains.
+Do not proxy requests to the given domains, including subdomains.
+Calling C<no_proxy> without any domains clears the list of domains.
 
 =head2 proxy
 

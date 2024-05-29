@@ -137,9 +137,9 @@ sub suite {
 
                 my $plugin_id = 'Awesome';
 
+                # ignore plugin folder
                 my @plugin_loop = grep {
-                           $_->{plugin_folder}
-                        || $_->{plugin_sig} eq $plugin_id
+                        $_->{plugin_sig} eq $plugin_id
                 } @{ $param{plugin_loop} };
 
                 my ($plugin) = @{

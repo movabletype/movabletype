@@ -26,8 +26,8 @@ function smarty_function_mtinclude($args, &$ctx) {
     }
 
     $blog_id = isset($args['site_id']) ? $args['site_id'] : null;
-    $blog_id or $blog_id = isset($args['blog_id']) ? $args['blog_id'] : null;
-    $blog_id or $blog_id = $ctx->stash('blog_id');
+    isset($blog_id) or $blog_id = isset($args['blog_id']) ? $args['blog_id'] : null;
+    isset($blog_id) or $blog_id = $ctx->stash('blog_id');
     if (!empty($args['local']))
         $blog_id = $ctx->stash('local_blog_id');
     $blog = $ctx->mt->db()->fetch_blog($blog_id);

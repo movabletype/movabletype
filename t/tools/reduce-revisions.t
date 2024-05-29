@@ -89,7 +89,12 @@ for my $ds ('template', 'cd', 'entry') {
 
     my $expected_oks = $ds eq 'template' ? 2 : 1;   # +1 for the global templates
 
-    my $obj = $objs->{ $ds_spec->{$ds}->{fixture} }{ $ds . '1' };
+    my $obj;
+    if ($ds eq 'template') {
+        $obj = $objs->{ $ds_spec->{$ds}->{fixture} }{$site2->id}{ $ds . '1' };
+    } else {
+        $obj = $objs->{ $ds_spec->{$ds}->{fixture} }{ $ds . '1' };
+    }
 
     MT->model($ds . ':revision')->remove({ $ds . '_id' => $obj->id });
 
@@ -166,7 +171,7 @@ for my $ds ('template', 'cd', 'entry') {
 }
 
 {
-    my $obj = $objs->{'template'}{'global_template'};
+    my $obj = $objs->{'template'}{0}{'global_template'};
 
     for (1 .. 21) {
         my $rev_obj = $obj->clone();

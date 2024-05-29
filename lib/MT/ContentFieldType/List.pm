@@ -16,6 +16,7 @@ sub field_html_params {
     my $value = $field_data->{value};
     $value = ''       unless defined $value;
     $value = [$value] unless ref $value eq 'ARRAY';
+    $value = ['']     unless @$value;
 
     my $required
         = $field_data->{options}{required} ? 'data-mt-required="1"' : '';
@@ -66,6 +67,12 @@ sub terms {
             = get_cd_ids_by_inner_join( $prop, $join_terms, $join_args, @_ );
         { id => $cd_ids };
     }
+}
+
+sub data_load_handler {
+    my ( $app, $field_data ) = @_;
+    my $field_id = $field_data->{id};
+    [ grep {defined $_ && $_ ne ''} $app->multi_param("content-field-${field_id}") ];
 }
 
 sub tag_handler {

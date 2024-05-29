@@ -277,6 +277,23 @@ sub image_drivers {
     map { my $tmp = basename($_); $tmp =~ s/\.pm$//; $tmp } glob "$MT_HOME/lib/MT/Image/*.pm";
 }
 
+sub suppress_deprecated_warnings {
+    my $self = shift;
+    if (!@_ or $_[0]) {
+        my $sub = $self->{deprecation_handler} //= sub {};
+        if (@_ && ref $_[0] eq 'CODE') {
+            $sub = $_[0];
+            $self->{deprecation_handler} = $sub;
+        }
+        require MT::Util::Deprecated;
+        $self->{mocked_deprecation_handler} = Mock::MonkeyPatch->patch(
+            'MT::Util::Deprecated::warning' => subname 'mocked_deprecation_handler' => $sub,
+        );
+    } elsif (@_ && !$_[0]) {
+        delete $self->{mocked_deprecation_handler};
+    }
+}
+
 sub cluck_errors {
     my $self = shift;
     if (!@_ or $_[0]) {
@@ -788,6 +805,8 @@ sub detect_basename_collision {
 sub prepare_fixture {
     my $self = shift;
 
+    $self->suppress_deprecated_warnings unless $ENV{MT_TEST_WARN_DEPRECATION};
+
     if (grep { $ENV{"MT_TEST_$_"} } qw/ LANG /) {
         $ENV{MT_TEST_IGNORE_FIXTURE} = 1;
         note "Fixture is ignored because of an environmental variable";
@@ -874,6 +893,21 @@ sub prepare_fixture {
 
     for my $hook (values %{$self->{prepare_hooks} || {}}) {
         $hook->($self);
+    }
+
+    # make sure to reflect PluginSwitch, which may have been modified while upgrading
+    if (my $switch_config = $self->{_config}{PluginSwitch}) {
+        my $switch = MT->config->PluginSwitch;
+        if (ref $switch_config eq 'ARRAY') {
+            for my $config (@{ $switch_config }) {
+                my ($key, $value) = split '=', $config;
+                $switch->{$key} = $value;
+            }
+        } elsif (ref $switch_config eq 'HASH') {
+            %$switch = (%$switch, %$switch_config);
+        }
+        MT->config->PluginSwitch($switch, 1);
+        MT->config->save_config;
     }
 
     MT->config->clear_dirty;

@@ -33,6 +33,7 @@ use MT::App::DataAPI;
 use MT::DataAPI::Resource;
 use MT::DataAPI::Format;
 use Test::Deep qw/cmp_deeply/;
+use Data::Visitor::Tiny;
 
 sub test_data_api {
     my ( $suite, $args ) = @_;
@@ -71,6 +72,9 @@ sub test_data_api {
     if ( my @only = grep { $_->{only} } @$suite ) {
         $suite = \@only;
     }
+
+    my $test_number = 0;
+
     for my $data (@$suite) {
         my $author;
         if ( $data->{author_id} ) {
@@ -153,7 +157,7 @@ sub test_data_api {
             ? $data->{params}->($data)
             : $data->{params};
 
-        my $note = $path;
+        my $note = $test_number++ . ': ' . $path;
         if ( lc $data->{method} eq 'get' && $data->{params} ) {
             $note .= '?'
                 . join( '&',
@@ -250,6 +254,16 @@ sub test_data_api {
                 }
 
                 $result = $format->{unserialize}->($body);
+
+                if (lc($ENV{MT_TEST_BACKEND} // '') eq 'oracle') {
+                    visit(
+                        [$result, $expected_result],
+                        sub {
+                            my ($key, $valueref) = @_;
+                            $$valueref = '' unless defined $$valueref;
+                        });
+                }
+
                 cmp_deeply( $result, $expected_result, 'result' ) || note explain $result;
             }
 

@@ -175,7 +175,6 @@ my %defs = (
             field('can_create_blog', sub { $this_obj->type == 1 ? RAND_BOOL : undef }),
             field('is_superuser', sub { $this_obj->type == 1 && $this_iter == 1 ? 1 : undef }, 3.2),
             field('can_view_log', sub { $this_obj->type == 1 ? RAND_BOOL : undef }),
-            field('hint', sub { $this_obj->type == 1 ? 'hint' : undef } ),
             field('public_key', undef),
             field('api_password', sub { $this_obj->type == 1 ? 'Nelson' : undef }, 3.2),
             field('remote_auth_username', undef, 3.0),

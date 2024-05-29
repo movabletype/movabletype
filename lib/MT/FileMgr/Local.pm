@@ -89,7 +89,6 @@ sub put {
 sub _write_file {
     my $fmgr = shift;
     my ( $from, $to, $type ) = @_;
-    local *FH;
     my ( $umask, $perms );
     my $cfg = MT->config;
     if ( $type && $type eq 'upload' ) {
@@ -104,7 +103,7 @@ sub _write_file {
     $to = _local($to);
 
     my $old = umask( oct $umask );
-    sysopen FH, $to, O_RDWR | O_CREAT | O_TRUNC,
+    sysopen my $FH, $to, O_RDWR | O_CREAT | O_TRUNC,
         oct $perms
         or return $fmgr->error(
         MT->translate(
@@ -113,27 +112,27 @@ sub _write_file {
         )
         );
     if ( $type && $type eq 'upload' ) {
-        binmode(FH);
+        binmode($FH);
         binmode($from) if $fmgr->is_handle($from);
     }
     ## Lock file unless NoLocking specified.
-    flock FH, LOCK_EX unless $cfg->NoLocking;
-    seek FH, 0, 0;
-    truncate FH, 0;
+    flock $FH, LOCK_EX unless $cfg->NoLocking;
+    seek $FH, 0, 0;
+    truncate $FH, 0;
     my $bytes = 0;
     if ( $fmgr->is_handle($from) ) {
         while ( my $len = read $from, my ($block), 8192 ) {
-            print FH $block;
+            print $FH $block;
             $bytes += $len;
         }
     }
     else {
         my $enc = $cfg->PublishCharset || 'utf8';
         $from = MT::Util::Encode::encode_if_flagged( $enc, $from );
-        print FH $from;
+        print $FH $from;
         $bytes = length($from);
     }
-    close FH;
+    close $FH;
     umask($old);
     $bytes;
 }

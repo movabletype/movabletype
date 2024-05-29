@@ -132,8 +132,7 @@ sub set_params_for_formatted_text {
 sub cms_edit_formatted_text {
     my ( $cb, $app, $id, $obj, $param ) = @_;
     $app->setup_editor_param($param);
-    $param->{output} = File::Spec->catfile( plugin()->{full_path},
-        'tmpl', 'cms', 'edit_formatted_text.tmpl' );
+    $param->{output} = 'cms/edit_formatted_text.tmpl';
     set_params_for_formatted_text( $cb, $app, $param );
 
     $app->add_breadcrumb(
@@ -237,10 +236,7 @@ sub listing_screens {
             inherit       => 0,
         },
         condition => \&_is_enabled,
-        template => File::Spec->catfile(
-            plugin()->{full_path}, 'tmpl',
-            'cms',                 'list_formatted_text.tmpl'
-        ),
+        template  => 'cms/list_formatted_text.tmpl',
     };
 }
 

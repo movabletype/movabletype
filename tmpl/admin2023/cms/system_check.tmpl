@@ -116,6 +116,16 @@
   <li>
     <strong><__trans phrase="Movable Type version:"></strong> <code><mt:var name="version" escape="html"></code>
   </li>
+  <mt:if name="packs_installed">
+    <li>
+      <strong><__trans phrase="Addon version:"></strong>
+    </li>
+  <mt:loop name="packs_installed">
+    <li>
+      <mt:var name="label" escape="html">  <code><mt:var name="version" escape="html"></code>
+    </li>
+  </mt:loop>
+  </mt:if>
 </ul>
 
 <ul id="path-info" class="list-unstyled">
@@ -175,6 +185,9 @@
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
+}
+.msg-text {
+    margin-bottom: 0px;
 }
 </style>
 </mt:setvarblock>

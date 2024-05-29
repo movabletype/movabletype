@@ -11,7 +11,7 @@
 package MT::Plugin::WidgetManager;
 
 use strict;
-
+use warnings;
 use base qw( MT::Plugin );
 use MT::Template;
 use MT::Util;

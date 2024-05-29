@@ -3141,7 +3141,7 @@ sub _send_hup_to {
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     my $pid = $fmgr->get_data($pidfile);
-    chomp $pid;
+    chomp $pid if $pid;
     if (!$pid or $pid !~ /^[0-9]+$/) {
         $app->log($app->translate("Invalid pid file: [_1]", $pidfile));
         return 1;

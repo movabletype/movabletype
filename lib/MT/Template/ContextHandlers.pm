@@ -76,20 +76,20 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Site::_hdlr_sites_if_local_site',
             'SiteIfCommentsOpen?' => sub {''},
             'SiteIfCCLicense?' =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',  # deprecated
 
             ## Blog
             Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
             'IfBlog?' => '$Core::MT::Template::Tags::Blog::_hdlr_if_blog',
             'BlogIfCCLicense?' =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',  # deprecated
 
             ## Website
             Websites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
             'IfWebsite?' =>
                 '$Core::MT::Template::Tags::Website::_hdlr_if_website',
             'WebsiteIfCCLicense?' =>
-                '$Core::MT::Template::Tags::Website::_hdlr_website_if_cc_license',
+                '$Core::MT::Template::Tags::Website::_hdlr_website_if_cc_license',  # deprecated
             'WebsiteHasBlog?' =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_has_blog',
             BlogParentWebsite =>
@@ -469,9 +469,9 @@ sub core_tags {
             SiteTimezone =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
             SiteCCLicenseURL =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',  # deprecated
             SiteCCLicenseImage =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',  # deprecated
             SiteFileExtension =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
             SiteThemeID =>
@@ -521,11 +521,11 @@ sub core_tags {
             BlogTimezone =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_timezone',
             BlogCCLicenseURL =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_url',  # deprecated
             BlogCCLicenseImage =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_cc_license_image',  # deprecated
             CCLicenseRDF =>
-                '$Core::MT::Template::Tags::Blog::_hdlr_cc_license_rdf',
+                '$Core::MT::Template::Tags::Blog::_hdlr_cc_license_rdf',  # deprecated
             BlogFileExtension =>
                 '$Core::MT::Template::Tags::Blog::_hdlr_blog_file_extension',
             BlogTemplateSetID =>
@@ -551,9 +551,9 @@ sub core_tags {
             WebsiteTimezone =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_timezone',
             WebsiteCCLicenseURL =>
-                '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_url',
+                '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_url',  # deprecated
             WebsiteCCLicenseImage =>
-                '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_image',
+                '$Core::MT::Template::Tags::Website::_hdlr_website_cc_license_image',  # deprecated
             WebsiteFileExtension =>
                 '$Core::MT::Template::Tags::Website::_hdlr_website_file_extension',
             WebsiteHost =>

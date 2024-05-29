@@ -504,6 +504,50 @@ abstract class MTDatabase {
         return $result;
     }
 
+    public function fetch_widgetset($ctx, $name, $blog_ids) {
+        $blog_ids = is_array($blog_ids) ? $blog_ids : array($blog_ids);
+        $bind_values = [];
+        $placeholders = $this->in_ph('template_blog_id', $bind_values, $blog_ids);
+        $where = "template_blog_id IN ($placeholders)";
+        $where .= " and template_name = ". $this->conn->param('template_name');
+        $where .= " and template_type = ". $this->conn->param('template_type');
+        $where .= " order by template_blog_id desc";
+        $bind_values = array_merge($bind_values, ['template_name' => $name, 'template_type' => 'widgetset']);
+
+        require_once('class.mt_template.php');
+        $template = new Template;
+        $res = $template->Load($where, $bind_values);
+        if (empty($res)) return null;
+        return $template;
+    }
+
+    public function fetch_widgets_by_id($ctx, $ids) {
+        $ids = is_array($ids) ? $ids : array($ids);
+        $bind_values = [];
+        $placeholders = $this->in_ph('template_id', $bind_values, $ids);
+        $where = "template_id IN ($placeholders)";
+
+        require_once('class.mt_template.php');
+        $template = new Template;
+        $result = $template->Find($where, $bind_values);
+        return $result;
+    }
+
+    public function fetch_widgets_by_name($ctx, $name, $blog_id) {
+        $bind_values = [];
+        $placeholders = $this->in_ph('template_blog_id', $bind_values, [$blog_id, 0]);
+        $where = "template_blog_id IN ($placeholders)";
+        $where .= " and template_name = ". $this->conn->param('template_name');
+        $where .= " and template_type = ". $this->conn->param('template_type');
+        $where .= " order by template_blog_id asc";
+        $bind_values = array_merge($bind_values, ['template_name' => $name, 'template_type' => 'widget']);
+
+        require_once('class.mt_template.php');
+        $template = new Template;
+        $result = $template->Find($where, $bind_values);
+        return $result;
+    }
+
     public function load_special_template($ctx, $tmpl, $type, $blog_id = null) {
         if (empty($blog_id))
             $blog_id = $ctx->stash('blog_id');
@@ -710,7 +754,7 @@ abstract class MTDatabase {
     }
 
     public function get_template_text($ctx, $module, $blog_id = null, $type = 'custom', $global = null) {
-        if (empty($blog_id))
+        if (!isset($blog_id))
             $blog_id = $ctx->stash('blog_id');
 
         if ($type === 'custom' || $type === 'widget'|| $type === 'widgetset') {
@@ -5504,6 +5548,16 @@ abstract class MTDatabase {
 
     public function flush_cache() {
         $this->_blog_id_cache = array();
+    }
+
+    public function in_ph($name, &$bind, $values) {
+        $ph = array();
+        foreach($values as $i => $v) {
+            if (is_null($v)) continue;
+            $ph[] = $this->conn->param($name. $i);
+            $bind[$name. $i] = $values[$i];
+        }
+        return join(',', $ph);
     }
 }
 ?>

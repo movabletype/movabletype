@@ -265,7 +265,7 @@
             null,
             1,
             100,
-            "by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif",
+            "",
             "2000-01-01 00:00:00",
             "website",
             null,
@@ -339,7 +339,7 @@
             null,
             1,
             100,
-            "by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif",
+            "",
             "2000-01-01 00:00:00",
             "blog",
             null,
@@ -497,17 +497,17 @@
             3,
             null,
             "__NOW__",
-            "78d49684aca3c50d804e8a2e1820cfdf98136894",
+            "132daac1ee379ed8ca4ae102768389f4abd0be96",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0003-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u00013",
             1,
-            "561af59cf29a5545fa7e4cce553f0dd49eb3fb6f",
+            "d0fbc5da6bc3d18036b0f0a8e34b9fc219cab5f3",
             "test cd",
             null,
             "__NOW__",
-            9,
+            4,
             2,
-            "561af59cf29a5545fa7e4cce553f0dd49eb3fb6f",
+            "d0fbc5da6bc3d18036b0f0a8e34b9fc219cab5f3",
             null,
             201722
          ]
@@ -547,7 +547,7 @@
             null,
             null,
             "tags",
-            "042e8adb946749e927a9b6eb5669c33f955f6414"
+            "6ca049bd67e0362a45e9e52d1366cd640106ea08"
          ]
       ]
    },
@@ -663,7 +663,7 @@
             null,
             "__NOW__",
             "ct without ct archive",
-            "5d77a36cddc2379902989cdfddf6a736c6f04ccb",
+            "b10e03d8ccbc87add33a3b44fa19acc7e778cdd2",
             null,
             null
          ],
@@ -678,7 +678,7 @@
             null,
             "__NOW__",
             "ct with ct archive",
-            "130917a1b3cd3672ca5f4509bf2df84520e1e1ba",
+            "67c4389973d3076bf45e38ea61b6538cf23d1c4b",
             null,
             null
          ],
@@ -688,12 +688,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(042e8adb946749e927a9b6eb5669c33f955f6414\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(6ca049bd67e0362a45e9e52d1366cd640106ea08\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011",
             3,
             null,
             "__NOW__",
             "test ct",
-            "78d49684aca3c50d804e8a2e1820cfdf98136894",
+            "132daac1ee379ed8ca4ae102768389f4abd0be96",
             null,
             null
          ]

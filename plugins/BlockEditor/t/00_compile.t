@@ -8,7 +8,9 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        PluginSwitch => ['BlockEdior=1'],
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 

@@ -19,6 +19,7 @@ plan tests => (1 + 2) * blocks;
 use MT;
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::Util::CreativeCommons;
 my $app = MT->instance;
 
 filters {
@@ -29,6 +30,8 @@ filters {
 };
 
 $test_env->prepare_fixture('db_data');
+
+MT::Test::Util::CreativeCommons->set_cc_license('by_nc_sa_20');
 
 MT::Test::Tag->run_perl_tests;
 MT::Test::Tag->run_php_tests;

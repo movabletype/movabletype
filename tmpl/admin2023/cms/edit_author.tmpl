@@ -386,18 +386,6 @@ function showPasswordField() {
          required="$password_required">
         <input type="password" name="pass_verify" id="pass_verify" class="form-control text password" value="" autocomplete="new-password" />
       </mtapp:setting>
-
-      <mt:unless name="new_object">
-        <mt:if name="hint">
-      <mtapp:setting
-         id="hint"
-         required="0"
-         label="<__trans phrase="Password recovery word/phrase">"
-         label_for="hint">
-        <input name="hint" id="hint" value="<mt:var name="hint" escape="html">" />
-      </mtapp:setting>
-        </mt:if>
-      </mt:unless>
     </div>
     </mt:if>
   </fieldset>

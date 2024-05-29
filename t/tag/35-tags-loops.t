@@ -42,7 +42,7 @@ $test_env->prepare_fixture(sub {
 
     $obj = $mt->model('website')->new;
     $obj->set_values({
-        name => 'web2',
+        name => 'Web2',
     });
     $obj->save or die $obj->errstr;
 
@@ -57,11 +57,11 @@ $test_env->prepare_fixture(sub {
     $author->save or die $author->errstr;
     $author_id = $author->id;
 
-    $obj = $mt->model('blog')->create_default_blog('blog1', undef, $website_id);
+    $obj = $mt->model('blog')->create_default_blog('Blog1', undef, $website_id);
     $blog_id = $obj->id;
     $author->add_role($author_role, $obj);
 
-    $obj = $mt->model('blog')->create_default_blog('blog2', undef, $website_id);
+    $obj = $mt->model('blog')->create_default_blog('Blog2', undef, $website_id);
 
     my @categories;
     $obj = $mt->model('category')->new;
@@ -308,7 +308,7 @@ $test_env->prepare_fixture(sub {
 });
 
 $website_id = MT::Website->load()->id;
-$blog_id = MT::Blog->load( { name => 'blog1' } )->id;
+$blog_id = MT::Blog->load( { name => 'Blog1' } )->id;
 $author_id = MT::Author->load( { name => 'dummy' } )->id;
 
 MT::Test::Tag->run_perl_tests($blog_id, \&_set_handler_perl);
@@ -553,3 +553,9 @@ __END__
 <mt:IfStatic><mt:SearchResults>____</mt:SearchResults></mt:IfStatic><mt:IfDynamic>|X1XX1X1XX||XX1X2XX1X|</mt:IfDynamic>
 --- expected
 2
+
+=== mt:WebsiteHasBlog else occurs
+--- template
+<MTBlogs blog_ids="all"><$mt:BlogID$>:<MTWebsiteHasBlog>true<MTElse>false</MTWebsiteHasBlog>,</MTBlogs>
+--- expected
+3:true,4:true,1:true,2:false,
