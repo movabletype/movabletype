@@ -124,4 +124,20 @@ class ClassTest extends TestCase {
         $this->assertEquals('Website', get_class($blog));
         $this->assertEquals(1, $blog->id);
     }
+
+    public function testCategory() {
+
+        $category = MockData::makeCategory();
+        $trackback = MockData::makeTrackback(['category_id' => $category->id]);
+        $trackback2 = $category->trackback();
+        $this->assertEquals('Trackback', get_class($trackback2));
+        $this->assertEquals($trackback2->id, $trackback->id);
+
+        $ct = MockData::makeContentType();
+        $cf = MockData::makeContentField();
+        $cd = MockData::makeContentData();
+        $ocat = MockData::makeObjectCategory(['object_ds' => 'content_data']);
+        $count = $category->content_data_count(['content_type_id' => $ct->id, 'content_field_name' => $cf->name]);
+        $this->assertEquals(1, $count);
+    }
 }
