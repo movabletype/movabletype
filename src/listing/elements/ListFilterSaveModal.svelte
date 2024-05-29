@@ -13,7 +13,7 @@
 
   const closeModal = (): void => {
     /* @ts-expect-error : bootstrap is not defined */
-    bootstrap.Modal.getInstance(modal).hide();
+    bootstrap.Modal.getInstance(modal)?.hide();
   };
 
   export const openModal = (args: {

@@ -4,7 +4,7 @@
   export let changeLimit: (e: Event) => void;
   export let store: ListStore;
 
-  let refLimitProp = { ref: "limit" };
+  const refLimitProp = { ref: "limit" };
 
   $: limit = store.limit || 0;
   $: limitToString = limit.toString();
