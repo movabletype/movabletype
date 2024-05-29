@@ -53,8 +53,7 @@
           .find(":input")
           .each(function () {
             const re = new RegExp(item.type + "-(\\w+)");
-            /* @ts-expect-error : ignore undefined */
-            const key = (jQuery(this).attr("class").match(re) || [])[1];
+            const key = (jQuery(this).attr("class")?.match(re) || [])[1];
             if (key && !Object.prototype.hasOwnProperty.call(item.args, key)) {
               item.args[key] = jQuery(this).val();
             }

@@ -97,10 +97,9 @@
       const fields: Array<{ type: string; args: object }> = [];
       const $types = jQuery(this).find(".filtertype");
       $types.each(function () {
-        /* @ts-expect-error : ignore undefined */
         const type = (jQuery(this)
           .attr("class")
-          .match(/type-(\w+)/) || [])[1];
+          ?.match(/type-(\w+)/) || [])[1];
         jQuery(this)
           .find(".item-content")
           .each(function () {
@@ -109,8 +108,7 @@
               .find(":input")
               .each(function () {
                 const re = new RegExp(type + "-(\\w+)");
-                /* @ts-expect-error : ignore undefined */
-                const key = (jQuery(this).attr("class").match(re) || [])[1];
+                const key = (jQuery(this).attr("class")?.match(re) || [])[1];
                 if (key && !Object.prototype.hasOwnProperty.call(args, key)) {
                   args[key] = jQuery(this).val();
                 }
