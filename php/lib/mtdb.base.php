@@ -45,6 +45,7 @@ abstract class MTDatabase {
     private $_cd_id_cache = array();
     private $_content_type_id_cache; // XXX consider changing the cache storage
     private $_content_field_id_cache;
+    private $_cd_tag_cache;
 
     // Construction
     public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
@@ -5019,7 +5020,7 @@ abstract class MTDatabase {
                 if (isset($cfs)) $cf = $cfs[0];
             }
             if (isset($cf)) $cat_field_id = $cf->id;
-            $obj_cats = $this->fetch_objectcategories(array('object_id' => $obj->id, 'category_field_id' => $cat_field_id));
+            $obj_cats = $this->fetch_objectcategories(['object_id' => $obj->id, 'category_field_id' => $cat_field_id]) ?? [];
             foreach ($obj_cats as $obj_cat) {
                 if ($obj_cat->is_primary)
                     $category_id = $obj_cat->category_id;
@@ -5064,8 +5065,9 @@ abstract class MTDatabase {
             $label .= ':author=' . $author_id;
         if (isset($by))
             $label .= ':by_' . $by;
-        if (isset($cat_field_id))
-            $label .= ":category_field_id=$cat_field_id:category_id=$category_id";
+        if (isset($cat_field_id)) {
+            $label .= ":category_field_id=$cat_field_id:category_id=". ($category_id ?? '');
+        }
         if (isset($dt_field_id))
             $label .= ":date_field_id=$dt_field_id";
         if (isset($obj->$label))
