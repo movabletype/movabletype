@@ -867,7 +867,7 @@ sub _nextprev {
     $label .= ':author=' . $terms->{author_id} if exists $terms->{author_id};
     $label .= ':by_' . $by if $by;
     $label
-        .= ":category_field_id=${category_field_id}:category_id=${category_id}"
+        .= ":category_field_id=${category_field_id}:category_id=". ($category_id || '')
         if $category_field_id;
     $label .= ":date_field_id=${date_field_id}" if $date_field_id;
     return $obj->{$label} if $obj->{$label};
