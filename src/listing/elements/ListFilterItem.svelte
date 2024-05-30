@@ -138,7 +138,6 @@
       });
     jQuery(root)
       .find("input.date")
-      /* @ts-expect-error : undefined error */
       .datepicker({
         dateFormat: "yy-mm-dd",
         dayNamesMin: localeCalendarHeader,
