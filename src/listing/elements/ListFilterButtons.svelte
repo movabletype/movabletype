@@ -1,12 +1,12 @@
 <script lang="ts">
   import ListFilterSaveModal from "./ListFilterSaveModal.svelte";
 
-  export let currentFilter: Filter;
+  export let currentFilter: Listing.Filter;
   export let listFilterTopGetItemValues: () => void;
   export let listFilterTopIsUserFilter: () => boolean;
   export let listFilterTopValidateFilterDetails: () => boolean;
   export let objectLabel: string;
-  export let store: ListStore;
+  export let store: Listing.ListStore;
 
   let openModal: (args: { filterLabel?: string; saveAs?: boolean }) => void;
 

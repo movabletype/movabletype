@@ -2,9 +2,12 @@
   import ListFilterItem from "./ListFilterItem.svelte";
   import ListFilterButtons from "./ListFilterButtons.svelte";
 
-  export let currentFilter: Filter;
-  export let filterTypes: Array<FilterType>;
-  export let isFilterItemSelected: (filter: Filter, type: string) => boolean;
+  export let currentFilter: Listing.Filter;
+  export let filterTypes: Array<Listing.FilterType>;
+  export let isFilterItemSelected: (
+    filter: Listing.Filter,
+    type: string
+  ) => boolean;
   export let listFilterTopAddFilterItem: (filterType: string) => void;
   export let listFilterTopAddFilterItemContent: (
     itemIndex: string,
@@ -20,7 +23,7 @@
   export let listFilterTopValidateFilterDetails: () => boolean;
   export let localeCalendarHeader: Array<string>;
   export let objectLabel: string;
-  export let store: ListStore;
+  export let store: Listing.ListStore;
 
   const addFilterItem = (e: Event): void => {
     if ((e.currentTarget as HTMLElement)?.classList.contains("disabled")) {

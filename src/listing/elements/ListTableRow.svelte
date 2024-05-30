@@ -3,7 +3,7 @@
   export let hasListActions: boolean;
   export let hasMobilePulldownActions: boolean;
   export let object: Array<object>;
-  export let store: ListStore;
+  export let store: Listing.ListStore;
 
   const classes = (index: string): string => {
     const nameClass = store.showColumns[index].id;

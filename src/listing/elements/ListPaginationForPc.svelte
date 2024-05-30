@@ -3,7 +3,7 @@
   export let nextDisabledProp: { disabled?: string };
   export let page: number;
   export let previousDisabledProp: { disabled?: string };
-  export let store: ListStore;
+  export let store: Listing.ListStore;
 </script>
 
 <ul class="pagination d-none d-md-flex">

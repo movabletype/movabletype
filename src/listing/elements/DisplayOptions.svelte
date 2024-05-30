@@ -3,7 +3,7 @@
 
   export let changeLimit: (e: Event) => void;
   export let disableUserDispOption: boolean;
-  export let store: ListStore;
+  export let store: Listing.ListStore;
 </script>
 
 <div class="row">

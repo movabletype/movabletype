@@ -1,6 +1,6 @@
 <script lang="ts">
   export let changeLimit: (e: Event) => void;
-  export let store: ListStore;
+  export let store: Listing.ListStore;
 
   const refLimitProp = { ref: "limit" };
 

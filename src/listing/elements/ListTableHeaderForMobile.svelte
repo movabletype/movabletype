@@ -1,6 +1,6 @@
 <script lang="ts">
   export let hasMobilePulldownActions: boolean;
-  export let store: ListStore;
+  export let store: Listing.ListStore;
   export let toggleAllRowsOnPage: () => void;
 </script>
 

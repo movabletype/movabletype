@@ -3,7 +3,7 @@
 
   export let hasListActions: boolean;
   export let hasMobilePulldownActions: boolean;
-  export let store: ListStore;
+  export let store: Listing.ListStore;
   export let zeroStateLabel: string;
 
   $: count = store.count || 0;
@@ -44,7 +44,7 @@
     store.trigger("check_all_rows");
   };
 
-  const trProps = (obj: ListObject): object => {
+  const trProps = (obj: Listing.ListObject): object => {
     let props: { checked?: string; class?: string } = {};
 
     if (obj.checked || obj.clicked) {

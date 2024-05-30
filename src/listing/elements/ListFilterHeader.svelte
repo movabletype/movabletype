@@ -1,12 +1,12 @@
 <script lang="ts">
   import ListFilterSelectModal from "./ListFilterSelectModal.svelte";
 
-  export let currentFilter: Filter;
+  export let currentFilter: Listing.Filter;
   export let isAllpassFilter: boolean;
-  export let listActionClient: ListActionClient;
+  export let listActionClient: Listing.ListActionClient;
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
   export let listFilterTopUpdate: () => void;
-  export let store: ListStore;
+  export let store: Listing.ListStore;
 
   const resetFilter = (): void => {
     listActionClient.removeFilterKeyFromReturnArgs();

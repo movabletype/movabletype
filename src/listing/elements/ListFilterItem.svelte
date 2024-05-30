@@ -5,9 +5,9 @@
 
   import ListFilterItemField from "./ListFilterItemField.svelte";
 
-  export let currentFilter: Filter;
-  export let filterTypes: Array<FilterType>;
-  export let item: Item;
+  export let currentFilter: Listing.Filter;
+  export let filterTypes: Array<Listing.FilterType>;
+  export let item: Listing.Item;
   export let listFilterTopAddFilterItemContent: (
     itemIndex: string,
     contentIndex: string

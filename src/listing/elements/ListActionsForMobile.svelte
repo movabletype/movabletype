@@ -1,24 +1,27 @@
 <script lang="ts">
-  export let buttonActions: ButtonActions;
+  export let buttonActions: Listing.ButtonActions;
   export let doAction: (e: Event) => boolean | undefined;
-  export let listActions: ListActions;
-  export let moreListActions: MoreListActions;
+  export let listActions: Listing.ListActions;
+  export let moreListActions: Listing.MoreListActions;
 
-  const buttonActionsForMobile = (): ButtonActions => {
+  const buttonActionsForMobile = (): Listing.ButtonActions => {
     return _getActionsForMobile(buttonActions);
   };
 
-  const listActionsForMobile = (): ListActions => {
+  const listActionsForMobile = (): Listing.ListActions => {
     return _getActionsForMobile(listActions);
   };
 
-  const moreListActionsForMobile = (): MoreListActions => {
+  const moreListActionsForMobile = (): Listing.MoreListActions => {
     return _getActionsForMobile(moreListActions);
   };
 
   const _getActionsForMobile = (
-    actions: ButtonActions | ListActions | MoreListActions
-  ): ButtonActions | ListActions | MoreListActions => {
+    actions:
+      | Listing.ButtonActions
+      | Listing.ListActions
+      | Listing.MoreListActions
+  ): Listing.ButtonActions | Listing.ListActions | Listing.MoreListActions => {
     const mobileActions = {};
     Object.keys(actions).forEach((key) => {
       const action = actions[key];
