@@ -16,7 +16,7 @@
   export let hasMobilePulldownActions: boolean;
   export let hasPulldownActions: boolean;
   export let listActionClient: Listing.ListActionClient;
-  export let listActions: ListActions;
+  export let listActions: Listing.ListActions;
   export let localeCalendarHeader: Array<string>;
   export let moreListActions: Listing.MoreListActions;
   export let objectLabel: string;
