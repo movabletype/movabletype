@@ -1,14 +1,6 @@
 <script lang="ts">
   import { afterUpdate, onMount } from "svelte";
 
-  import {
-    ButtonActions,
-    FilterType,
-    ListActionClient,
-    ListStore,
-    MoreListActions,
-  } from "types/listing";
-
   import DisplayOptions from "./DisplayOptions.svelte";
   import DisplayOptionsForMobile from "./DisplayOptionsForMobile.svelte";
   import ListActions from "./ListActions.svelte";

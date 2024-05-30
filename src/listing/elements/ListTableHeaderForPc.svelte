@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListColumn, ListStore } from "types/listing";
-
   export let hasListActions: boolean;
   export let store: ListStore;
   export let toggleAllRowsOnPage: () => void;

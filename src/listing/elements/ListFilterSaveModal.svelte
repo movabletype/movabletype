@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { Filter, ListStore } from "types/listing";
-
   export let currentFilter: Filter;
   export let listFilterTopGetItemValues: () => void;
   export let store: ListStore;

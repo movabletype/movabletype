@@ -1,8 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  import { Filter, FilterType, Item } from "types/listing";
-
   import SS from "../../ss/elements/SS.svelte";
 
   import ListFilterItemField from "./ListFilterItemField.svelte";

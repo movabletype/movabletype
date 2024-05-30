@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
-
   export let disableUserDispOption: boolean;
   export let store: ListStore;
 

@@ -1,11 +1,4 @@
 <script lang="ts">
-  import {
-    Filter,
-    FilterType,
-    ListActionClient,
-    ListStore,
-  } from "types/listing";
-
   import ListFilterDetail from "./ListFilterDetail.svelte";
   import ListFilterHeader from "./ListFilterHeader.svelte";
 

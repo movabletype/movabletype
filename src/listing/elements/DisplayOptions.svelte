@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
-
   import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
 
   export let changeLimit: (e: Event) => void;

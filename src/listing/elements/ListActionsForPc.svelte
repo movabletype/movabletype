@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ButtonActions, ListActions, MoreListActions } from "types/listing";
-
   export let buttonActions: ButtonActions;
   export let doAction: (e: Event) => boolean | undefined;
   export let listActions: ListActions;

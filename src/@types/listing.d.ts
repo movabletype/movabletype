@@ -1,12 +1,10 @@
-import { ObservableInstance } from "@riotjs/observable";
+declare interface ButtonAction extends ListAction {}
 
-export interface ButtonAction extends ListAction {}
-
-export interface ButtonActions {
+declare interface ButtonActions {
   [key: string]: ButtonAction;
 }
 
-export interface Filter {
+interface Filter {
   can_delete?: number;
   can_edit: number;
   can_save: number;
@@ -16,7 +14,7 @@ export interface Filter {
   order?: number;
 }
 
-interface FilterType {
+declare interface FilterType {
   baseType: string;
   field: string;
   label: string;
@@ -31,7 +29,7 @@ interface Item {
   type: string;
 }
 
-export interface ListAction {
+interface ListAction {
   type: string;
 
   continue_prompt?: string;
@@ -48,19 +46,19 @@ export interface ListAction {
   xhr?: boolean;
 }
 
-export interface ListActionClient {
+interface ListActionClient {
   generateRequestData: (obj: object) => object;
   post: (obj: object) => void;
   removeFilterKeyFromReturnArgs: () => string;
   removeFilterItemFromReturnArgs: () => string;
 }
 
-export interface ListActions {
-  [key: string]: ListAction;
-}
-
 interface ListClient {
   objectType: string;
+}
+
+interface ListActions {
+  [key: string]: ListAction;
 }
 
 interface ListColumn {
@@ -140,22 +138,24 @@ interface ListData {
   updateLimit: (limit: number) => void;
 }
 
-export interface ListObject {
+interface ListObject {
   checked: number;
   clicked: boolean;
   object: Array<object>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export interface ListStore extends ListData, ObservableInstance<any> {
+interface ListStore extends ListData, ObservableInstanceAny {
   listClient: ListClient;
 }
 
-export interface MoreListAction extends ListAction {}
+interface MoreListAction extends ListAction {}
 
-export interface MoreListActions {
+declare interface MoreListActions {
   [key: string]: MoreListAction;
 }
+
+type ObservableInstanceAny =
+  import("@riotjs/observable").ObservableInstance<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 interface Result {
   columns: Array<ListColumn>;

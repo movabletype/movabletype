@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListObject, ListStore } from "types/listing";
-
   import ListTableRow from "./ListTableRow.svelte";
 
   export let hasListActions: boolean;

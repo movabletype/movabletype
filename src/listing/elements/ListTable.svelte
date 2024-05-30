@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
-
   import ListTableBody from "./ListTableBody.svelte";
   import ListTableHeader from "./ListTableHeader.svelte";
 

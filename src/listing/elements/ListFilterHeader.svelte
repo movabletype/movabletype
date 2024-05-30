@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { Filter, ListActionClient, ListStore } from "types/listing";
-
   import ListFilterSelectModal from "./ListFilterSelectModal.svelte";
 
   export let currentFilter: Filter;

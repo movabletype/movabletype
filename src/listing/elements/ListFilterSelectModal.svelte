@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
-
   import SS from "../../ss/elements/SS.svelte";
 
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;

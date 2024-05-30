@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
-
   export let changeLimit: (e: Event) => void;
   export let store: ListStore;
 

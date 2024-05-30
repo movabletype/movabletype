@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
-
   export let movePage: (e: Event) => void;
   export let nextDisabledProp: { disabled?: string };
   export let page: number;

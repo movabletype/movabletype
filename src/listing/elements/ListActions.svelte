@@ -2,17 +2,6 @@
   import ListActionsForMobile from "./ListActionsForMobile.svelte";
   import ListActionsForPc from "./ListActionsForPc.svelte";
 
-  import {
-    ButtonAction,
-    ButtonActions,
-    ListAction,
-    ListActionClient,
-    ListActions,
-    ListStore,
-    MoreListAction,
-    MoreListActions,
-  } from "types/listing";
-
   export let buttonActions: ButtonActions;
   export let hasPulldownActions: boolean;
   export let listActions: ListActions;

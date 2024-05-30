@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
-
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
   import DisplayOptionsLimit from "./DisplayOptionsLimit.svelte";
 

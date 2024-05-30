@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
-
   import ListTableHeaderForMobile from "./ListTableHeaderForMobile.svelte";
   import ListTableHeaderForPc from "./ListTableHeaderForPc.svelte";
 

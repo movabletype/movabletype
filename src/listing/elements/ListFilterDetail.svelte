@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { Filter, FilterType, ListStore } from "types/listing";
-
   import ListFilterItem from "./ListFilterItem.svelte";
   import ListFilterButtons from "./ListFilterButtons.svelte";
 

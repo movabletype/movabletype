@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
-
   export let hasMobilePulldownActions: boolean;
   export let store: ListStore;
   export let toggleAllRowsOnPage: () => void;

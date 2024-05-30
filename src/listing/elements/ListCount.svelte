@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
-
   export let store: ListStore;
 
   $: count = store.count == null ? 0 : store.count;

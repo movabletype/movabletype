@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { Filter, ListStore } from "types/listing";
-
   import ListFilterSaveModal from "./ListFilterSaveModal.svelte";
 
   export let currentFilter: Filter;

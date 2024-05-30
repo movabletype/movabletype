@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { ListStore } from "types/listing";
-
   export let checked: number;
   export let hasListActions: boolean;
   export let hasMobilePulldownActions: boolean;
