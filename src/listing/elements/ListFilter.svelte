@@ -37,10 +37,12 @@
   });
 
   store.on("open_filter_detail", () => {
+    /* @ts-expect-error : collapse is not defined */
     jQuery("#list-filter-collapse").collapse("show");
   });
 
   store.on("close_filter_detail", () => {
+    /* @ts-expect-error : collapse is not defined */
     jQuery("#list-filter-collapse").collapse("hide");
   });
 
