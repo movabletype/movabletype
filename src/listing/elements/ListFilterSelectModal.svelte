@@ -1,4 +1,6 @@
 <script lang="ts">
+  import bootstrap from "bootstrap5";
+
   import SS from "../../ss/elements/SS.svelte";
 
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
@@ -19,8 +21,7 @@
   };
 
   const closeModal = (): void => {
-    /* @ts-expect-error : bootstrap is not defined */
-    bootstrap.Modal.getInstance(modal).hide();
+    bootstrap.Modal.getInstance(modal)?.hide();
   };
 
   const createNewFilter = (): void => {

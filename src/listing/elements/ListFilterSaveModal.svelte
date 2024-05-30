@@ -1,4 +1,6 @@
 <script lang="ts">
+  import bootstrap from "bootstrap5";
+
   export let currentFilter: Listing.Filter;
   export let listFilterTopGetItemValues: () => void;
   export let store: Listing.ListStore;
@@ -10,7 +12,6 @@
   let saveAs: boolean | undefined;
 
   const closeModal = (): void => {
-    /* @ts-expect-error : bootstrap is not defined */
     bootstrap.Modal.getInstance(modal)?.hide();
   };
 
@@ -27,7 +28,6 @@
       filterName.value = args.filterLabel;
     }
     saveAs = args.saveAs;
-    /* @ts-expect-error : bootstrap is not defined */
     let $bsmodal = new bootstrap.Modal(modal, {});
     $bsmodal.show();
   };
