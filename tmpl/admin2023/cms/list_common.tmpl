@@ -112,7 +112,10 @@
 <mt:unless name="config.useriot">
   <script type="module">
     import { observable, svelteMountListTop } from "<mt:var name="static_uri">js/build/listing.js?v=<mt:var name="mt_version_id" escape="url">"
-    window.riot = { "observable": observable }
+    if (!window.riot) {
+      window.riot = {}
+    }
+    window.riot.observable = observable
     window.svelteMountListTop = svelteMountListTop
   </script>
 </mt:unless>
