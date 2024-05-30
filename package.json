@@ -65,7 +65,6 @@
     "@rollup/plugin-replace": "^5.0.2",
     "@rollup/plugin-typescript": "^11.1.6",
     "@tsconfig/svelte": "^5.0.4",
-    "@types/bootstrap5": "npm:@types/bootstrap@5.2.2",
     "@types/jquery": "^3.5.30",
     "@types/jqueryui": "^1.12.22",
     "@types/node": "^20.12.11",
