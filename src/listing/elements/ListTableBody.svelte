@@ -50,7 +50,7 @@
     if (obj.checked || obj.clicked) {
       props.class = "mt-table__highlight";
     }
-    if (obj.checked != 0) {
+    if (obj.checked) {
       props.checked = "checked";
     }
 

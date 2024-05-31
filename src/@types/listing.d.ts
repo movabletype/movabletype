@@ -1,8 +1,6 @@
 declare namespace Listing {
   // list_common.tmpl
-  interface ButtonAction extends ListAction {
-    js_message: string;
-  }
+  type ButtonAction = ListAction;
 
   // list_common.tmpl
   interface ButtonActions {
@@ -46,6 +44,7 @@ declare namespace Listing {
     dialog?: number;
     input?: string;
     js?: string;
+    js_message?: string;
     label?: string;
     max?: string;
     min?: string;

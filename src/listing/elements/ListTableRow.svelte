@@ -1,8 +1,8 @@
 <script lang="ts">
-  export let checked: number;
+  export let checked: boolean;
   export let hasListActions: boolean;
   export let hasMobilePulldownActions: boolean;
-  export let object: Array<object>;
+  export let object: Array<string | number>;
   export let store: Listing.ListStore;
 
   const classes = (index: string): string => {
@@ -48,7 +48,7 @@
           class="form-check-input"
           id={"select_" + object[0]}
           value={object[0]}
-          checked={checked != 0}
+          {checked}
         />
         <span class="custom-control-indicator" />
         <label class="form-check-label" for={"select_" + object[0]}

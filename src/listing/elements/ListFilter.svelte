@@ -75,6 +75,7 @@
 
   const createNewFilter = (filterLabel?: string): void => {
     currentFilter = {
+      can_delete: 0,
       can_save: 1,
       can_edit: 0,
       id: "",
