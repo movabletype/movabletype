@@ -36,7 +36,7 @@
   >
     {#if object[0]}
       <div class="form-check">
-        <!-- RIOT_DIFF: checked="checked" is not added to input tag after click checkbox,
+        <!-- checked="checked" is not added to input tag after click checkbox,
           but check parameter of input element returns true. So, do not fix this. -->
         <input
           type="checkbox"
@@ -56,7 +56,7 @@
 {/if}
 {#each object as content, index}
   {#if index > 0}
-    <!-- RIOT_DIFF: index is shifted compared to Riot.js -->
+    <!-- index is shifted compared to Riot.js -->
     <td data-is="list-table-column" class={classes((index - 1).toString())}>
       {@html content}
     </td>

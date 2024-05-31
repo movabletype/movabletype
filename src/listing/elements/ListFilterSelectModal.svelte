@@ -145,7 +145,7 @@
                         >
                           {window.trans("Save")}
                         </button>
-                        <!-- RIOT_DIFF: cannot get Event object in on:click function -->
+                        <!-- add filter.id to argument because Event object cannot be gotten in on:click function -->
                         <button
                           class="btn btn-default form-control"
                           on:click={() => stopEditingFilter(filter.id)}

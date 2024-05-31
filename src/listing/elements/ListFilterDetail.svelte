@@ -76,7 +76,7 @@
   <div class="col-12">
     <ul class="list-group">
       {#each currentFilter.items as item, index}
-        <!-- RIOT_DIFF: remove "item" property because it is not output in Riot.js -->
+        <!-- remove "item" property because it is not output in Riot.js -->
         <li
           data-is="list-filter-item"
           data-mt-list-item-index={index}

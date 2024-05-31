@@ -128,7 +128,7 @@
 
   $: isAllpassFilter = currentFilter.id == store.allpassFilter.id;
 
-  /* RIOT_DIFF: add "filter" argument for updating this output after changing "filter" */
+  /* add "filter" argument for updating this output after changing "filter" */
   const isFilterItemSelected = (
     filter: Listing.Filter,
     type: string

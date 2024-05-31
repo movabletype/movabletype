@@ -40,7 +40,7 @@
 
     let nextPage: number;
 
-    /* RIOT_DIFF: Comment out old unused code */
+    /* Comment out old unused code */
     // if (target.tagName === "INPUT") {
     //   if (e.which !== 13) {
     //     return false;

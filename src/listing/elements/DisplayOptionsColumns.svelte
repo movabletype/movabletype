@@ -32,7 +32,7 @@
           style:display={hiddenColumn ? "none" : ""}
         >
           <div class="form-check">
-            <!-- RIOT_DIFF: checked="checked" is not added to input tag after click checkbox,
+            <!-- checked="checked" is not added to input tag after click checkbox,
               but check parameter of input element returns true. So, do not fix this. -->
             <input
               type="checkbox"
@@ -57,7 +57,7 @@
             style:display={hiddenSubField ? "none" : ""}
           >
             <div class="form-check">
-              <!-- RIOT_DIFF: checked="checked" is not added to input tag after click checkbox,
+              <!-- checked="checked" is not added to input tag after click checkbox,
                 but check parameter of input element returns true. So, do not fix this. -->
               <input
                 type="checkbox"
