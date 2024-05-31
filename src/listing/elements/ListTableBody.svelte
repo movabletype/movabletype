@@ -86,11 +86,7 @@
 {/if}
 
 {#each objects as obj, index}
-  {#if false}
-    <!--
-    RIOT_DIFF: remove "object" property because it is not output in Riot.js
-  -->
-  {/if}
+  <!-- RIOT_DIFF: remove "object" property because it is not output in Riot.js -->
   <tr
     data-is="list-table-row"
     on:click={clickRow}

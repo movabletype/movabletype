@@ -32,12 +32,8 @@
           style:display={hiddenColumn ? "none" : ""}
         >
           <div class="form-check">
-            {#if false}
-              <!--
-          RIOT_DIFF: checked="checked" is not added to input tag after click checkbox,
-            but check parameter of input element returns true. So, do not fix this.
-        -->
-            {/if}
+            <!-- RIOT_DIFF: checked="checked" is not added to input tag after click checkbox,
+              but check parameter of input element returns true. So, do not fix this. -->
             <input
               type="checkbox"
               class="form-check-input"
@@ -61,12 +57,8 @@
             style:display={hiddenSubField ? "none" : ""}
           >
             <div class="form-check">
-              {#if false}
-                <!--
-          RIOT_DIFF: checked="checked" is not added to input tag after click checkbox,
-            but check parameter of input element returns true. So, do not fix this.
-        -->
-              {/if}
+              <!-- RIOT_DIFF: checked="checked" is not added to input tag after click checkbox,
+                but check parameter of input element returns true. So, do not fix this. -->
               <input
                 type="checkbox"
                 id={subField.id}
