@@ -607,6 +607,7 @@ use vars qw( @ISA %Lexicon );
 	'Rebuild Trigger' => '再構築トリガー',
 	'Rebuild' => '再構築',
 	'Recover Password(s)' => 'パスワードの再設定',
+	'Reduce Revisions' => '履歴データの削除',
 	'Refresh Template(s)' => 'テンプレートの初期化',
 	'Refresh Templates' => 'テンプレート初期化',
 	'Remove Tags...' => 'タグの削除',
@@ -5455,6 +5456,12 @@ use vars qw( @ISA %Lexicon );
 	'No users were selected to process.' => 'ユーザーが選択されていません。',
 	'Recover Passwords' => 'パスワード再設定',
 	'Return' => '戻る',
+
+## tmpl/admin2023/cms/reduce_revisions.tmpl
+	'Detect' => '診断',
+	'Filter revisions by date' => '日付で履歴を絞り込む',
+	'Target objects' => '対象オブジェクト',
+	'What to reduce revisions' => '履歴データ削除対象サイト',
 
 ## tmpl/admin2023/cms/refresh_results.tmpl
 	'No templates were selected to process.' => 'テンプレートが選択されていません。',

@@ -276,6 +276,7 @@ sub core_methods {
         'system_check'             => "${pkg}Tools::system_check",
         'start_reboot'             => "${pkg}Tools::start_reboot",
         'reboot'                   => "${pkg}Tools::reboot",
+        'start_reduce_revisions'   => "${pkg}Tools::start_reduce_revisions",
         'dialog_refresh_templates' =>
             "${pkg}Template::dialog_refresh_templates",
         'dialog_clone_blog' => "${pkg}Blog::clone",
@@ -2420,6 +2421,16 @@ sub core_menus {
             view  => ['system'],
             condition => sub {
                 return 0 unless $ENV{"psgi.version"};
+                return 0 unless MT->app->user->is_superuser;
+                return 1;
+            },
+        },
+        'tools:reduce_revisions' => {
+            label => 'Reduce Revisions',
+            order => 1100,
+            mode  => 'start_reduce_revisions',
+            view  => ['system'],
+            condition => sub {
                 return 0 unless MT->app->user->is_superuser;
                 return 1;
             },

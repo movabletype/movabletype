@@ -1,0 +1,113 @@
+<mt:setvarblock name="page_title"><__trans phrase="Reduce Revisions"></mt:setvarblock>
+<mt:setvar name="position_actions_bottom" value="1">
+
+<mt:setvarblock name="page_content">
+
+<mt:if name="warnings">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="danger"
+     can_close="0">
+    <ul class="mb-0 ps-5">
+    <mt:loop name="warnings">
+        <li><mt:var name="__value__" escape="html"></li>
+    </mt:loop>
+    </ul>
+  </mtapp:statusmsg>
+</mt:if>
+
+<p class="page-desc">
+Movable Type を長期間利用している環境では、記事やコンテンツデータの更新履歴（リビジョン）が増加し、肥大化の要因になっている場合があります。
+更新履歴が肥大化すると、Movable Type のアップグレードなどの処理の際に、タイムアウトを引き起こし、アップグレードが失敗する要因のひとつになります。
+この機能を利用することで、現時点で設定されている上限数を超えて保存されている更新履歴がデータベースに存在しないか診断し、確認された場合には対象のデータを削除することができます。<br>
+更新履歴の削除を削除することで変更内容を追従できなくなりますので削除の決定は慎重に行なってください。
+</p>
+
+<div id="reduce-revisions-panel">
+  <form id="reduce-revisions-form" method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="start_reduce_revisions" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+    <mtapp:setting
+       id="reduce_revisions_what"
+       label="<__trans phrase="What to reduce revisions">">
+      <div>
+        <input type="hidden" id="selected_blog_ids" name="reduce_revisions_what" value="" />
+        <span id="selected_blogs"><__trans phrase="Everything"></span>
+        <span id="selected_blogs_link" style="display: none;"><a href="javascript:void(0);" onclick="document.getElementById('selected_blogs_link').style.display='none';var e=document.getElementById('selected_blogs');e.innerHTML='<__trans phrase="Everything" escape="js">';document.getElementById('selected_blog_ids').value='';return false;"><__trans phrase="Reset"></a> |</span>
+        <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+          <__trans phrase="Choose sites...">
+        </a>
+      </div>
+    </mtapp:setting>
+    <mtapp:setting
+       id="target-objects"
+       label="<__trans phrase="Target objects">">
+      <ul id="target-objects-list" class="list-unstyled setting-list">
+        <li>
+          <div class="form-check">
+            <input type="checkbox" name="target_entry" id="target-entry" class="form-check-input">
+            <label class="form-check-label" for="target-entry"><__trans phrase="Entry"></label>
+          </div>
+        </li>
+        <li>
+          <div class="form-check">
+            <input type="checkbox" name="target_cd" id="target-cd" class="form-check-input">
+            <label class="form-check-label" for="target-cd"><__trans phrase="Content Data"></label>
+          </div>
+        </li>
+        <li>
+          <div class="form-check">
+            <input type="checkbox" name="target_template" id="target-template" class="form-check-input">
+            <label class="form-check-label" for="target-template"><__trans phrase="Template"></label>
+          </div>
+        </li>
+        <li>
+          <div class="form-check">
+            <input type="checkbox" name="target_global_template" id="target-global-template" class="form-check-input">
+            <label class="form-check-label" for="target-global-template"><__trans phrase="Global Template"></label>
+          </div>
+        </li>
+      </ul>
+    </mtapp:setting>
+    <mtapp:setting
+       id="revisions-date-range"
+       label="<__trans phrase="Date Range">">
+       <p>
+         <div class="form-check">
+           <input type="checkbox" name="use_filter_date" id="filter-date" class="form-check-input" value="1">
+           <label class="form-check-label" for="filter-date"><__trans phrase="Filter revisions by date"></label>
+         </div>
+       </p>
+       <div class="item-content form-inline" id="date-options">
+ 履歴の作成日
+  <span class="date-options">
+    <span class="date-option date" style="">が<input type="text" name="filter_date" class="form-control m-1 text-date text date" id="date-range"></span>
+  </span>
+    <span>より前</span>
+   </div>
+    </mtapp:setting>
+
+    <mt:setvarblock name="action_buttons">
+      <button
+         id="detect"
+         type="submit" <mt:if name="warnings">disabled="disabled"</mt:if>
+         title="<__trans phrase="Detect">"
+         class="action primary button btn btn-primary">
+        <__trans phrase="Detect">
+      </button>
+      <button
+         id="delete"
+         type="submit" <mt:if name="warnings">disabled="disabled"</mt:if>
+         title="<__trans phrase="Delete">"
+         class="action primary button btn btn-default">
+        <__trans phrase="Delete">
+      </button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+  </form>
+</div>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

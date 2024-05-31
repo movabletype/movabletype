@@ -2711,6 +2711,13 @@ sub reboot {
     $app->return_to_dashboard(redirect => 1);
 }
 
+sub start_reduce_revisions {
+    my $app = shift;
+    return $app->permission_denied() unless $app->user->is_superuser();
+    $app->add_breadcrumb($app->translate('Reduce Revisions'));
+    $app->load_tmpl('reduce_revisions.tmpl');
+}
+
 sub convert_to_html {
     my $app       = shift;
     my $format    = $app->param('format') || '';
