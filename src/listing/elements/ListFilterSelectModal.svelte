@@ -75,13 +75,7 @@
     isEditingFilter = {};
   };
 
-  const stopEditingFilter = (e: Event): void => {
-    const filterData = (e.target as HTMLElement).parentElement?.parentElement
-      ?.dataset;
-    const filterId = filterData?.mtListFilterId || "";
-    if (filterId == "") {
-      return;
-    }
+  const stopEditingFilter = (filterId: string): void => {
     isEditingFilter[filterId] = false;
   };
 </script>
@@ -151,9 +145,11 @@
                         >
                           {window.trans("Save")}
                         </button>
+                        {#if false}
+                          <!-- RIOT_DIFF: cannot get Event object in on:click function -->{/if}
                         <button
                           class="btn btn-default form-control"
-                          on:click={stopEditingFilter}
+                          on:click={() => stopEditingFilter(filter.id)}
                         >
                           {window.trans("Cancel")}
                         </button>
