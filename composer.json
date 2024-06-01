@@ -20,7 +20,7 @@
     },
     "require": {
         "adodb/adodb-php": "5.22.7",
-        "smarty/smarty": "^v4.3.2"
+        "smarty/smarty": "^v5.3.0"
     },
     "config": {
         "allow-plugins": {
