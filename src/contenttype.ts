@@ -14,7 +14,7 @@ function getContentFieldsTarget(): Element {
 function svelteMountContentFields(props: any): void {
   new ContentFields({
     target: getContentFieldsTarget(),
-    props: props
+    props: props,
   });
 }
 

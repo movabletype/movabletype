@@ -8,26 +8,25 @@
   export let attr;
 
   if (!id) {
-    alert('ConetntFieldOption: id not found');
+    alert("ConetntFieldOption: id not found");
   }
-  let classValue = 'form-group';
+  let classValue = "form-group";
   if (required) {
-      classValue += ' required';
+    classValue += " required";
   }
-
 </script>
 
-<div id="{id}-field" class="{classValue}" {attr}>
-{#if label && showLabel}
-  <label for={id}>
-    {label}
-  {#if required}
-    <span class="badge badge-danger">{trans("Required")}</span>
+<div id="{id}-field" class={classValue} {attr}>
+  {#if label && showLabel}
+    <label for={id}>
+      {label}
+      {#if required}
+        <span class="badge badge-danger">{trans("Required")}</span>
+      {/if}
+    </label>
   {/if}
-  </label>
-{/if}
   <slot name="inside" />
-{#if hint && showHint }
-  <small id="{id}-field-help" class="form-text text-muted">{hint}</small>
-{/if}
+  {#if hint && showHint}
+    <small id="{id}-field-help" class="form-text text-muted">{hint}</small>
+  {/if}
 </div>
