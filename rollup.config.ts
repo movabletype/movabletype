@@ -12,7 +12,7 @@ import css from "rollup-plugin-css-only";
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
-  input: ["src/bootstrap.ts", "src/listing.ts"].concat(glob.sync("src/api/*.ts")),
+  input: ["src/bootstrap.ts", "src/contenttype.ts", "src/listing.ts"].concat(glob.sync("src/api/*.ts")),
   output: {
     dir: "mt-static/js/build",
     format: "esm",

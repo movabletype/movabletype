@@ -26,7 +26,7 @@
   self.labelFields = []; // TODO
   self.labelField = opts.labelField; //TODO
 
-  const invalid_types = opts.content_field_types.filter(function (field_type) {
+  const invalid_types = opts.types.filter(function (field_type) {
     return field_type.warning;
   }).reduce(function (hash, field_type) {                                                                                                   
     hash[field_type.type] = true;
