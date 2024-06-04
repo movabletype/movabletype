@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '8.001000');
-define('PRODUCT_VERSION', '8.1.0');
+define('VERSION', '8.002000');
+define('PRODUCT_VERSION', '8.2.0');
 define('DATA_API_DEFAULT_VERSION', '6');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -49,6 +49,7 @@ class MT {
     protected $blog_id;
     protected $db;
     protected $config;
+    protected $config_env;
     protected $debugging = false;
     protected $caching = false;
     protected $conditional = false;
@@ -127,6 +128,7 @@ class MT {
         }
 
         $this->configure($cfg_file);
+        $this->configure_from_env();
         $this->init_addons();
         $this->configure_from_db();
 
@@ -301,6 +303,9 @@ class MT {
 
     public function config($id, $value = null) {
         $id = strtolower($id);
+        if (isset($this->config_env[$id])) {
+            return $this->config_env[$id];
+        }
         if (isset($value))
             $this->config[$id] = $value;
         return isset($this->config[$id]) ? $this->config[$id] : null;
@@ -400,6 +405,22 @@ class MT {
         foreach ($GLOBALS['i18n_default_settings'] as $k => $v) {
             if (! isset($cfg[$k])) {
                 $cfg[$k] = $v;
+            }
+        }
+    }
+
+    function configure_from_env() {
+        $cfg =& $this->config_env;
+        foreach(array_keys($_ENV) as $i => $name) {
+            $lc_name = strtolower($name);
+            if (strpos($lc_name, 'mt_config_') === 0) {
+                $lc_name = preg_replace('/^mt_config_/', '', $lc_name);
+                $lc_name = preg_replace('/_/', '', $lc_name);
+                $value = $_ENV[$name];
+                if (isset($value) && $value === "''") {
+                    $value = '';
+                }
+                $cfg[$lc_name] = $value;
             }
         }
     }

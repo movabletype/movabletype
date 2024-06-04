@@ -1,16 +1,18 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()
+$finder = (new PhpCsFixer\Finder())
     ->exclude('php/extlib')
+    ->exclude('plugins/Markdown')
+    ->exclude('plugins/Textile')
     ->notPath('t/lib/JSON.php')
     ->in('.')
 ;
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config())
     ->setFinder($finder)
     ->setRules([
         '@PSR2' => true,
-        'array_syntax' => ['syntax' => 'long'],
+        'array_syntax' => ['syntax' => 'short'],
         'function_typehint_space' => true,
         'no_unused_imports' => true,
         'no_empty_comment' => true,
@@ -21,11 +23,10 @@ return PhpCsFixer\Config::create()
         'return_type_declaration' => true,
         'ternary_operator_spaces' => true,
         'whitespace_after_comma_in_array' => true,
-        'braces' => [
-            'allow_single_line_closure' => true,
-            'position_after_anonymous_constructs' => 'same',
-            'position_after_control_structures' => 'same',
-            'position_after_functions_and_oop_constructs' => 'same',
+        'braces_position' => [
+            'functions_opening_brace' => 'same_line',
+            'classes_opening_brace' => 'same_line',
         ],
+        'no_whitespace_in_blank_line' => true,
     ])
 ;
