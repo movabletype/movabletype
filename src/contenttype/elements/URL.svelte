@@ -20,7 +20,7 @@
   <svelte:fragment slot="body">
     <ContentFieldOption
       id="{type}-initial_value"
-      label={trans("Initial Value")}
+      label={window.trans("Initial Value")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
