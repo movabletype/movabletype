@@ -21,7 +21,7 @@
     <label for={id}>
       {label}
       {#if required}
-        <span class="badge badge-danger">{trans("Required")}</span>
+        <span class="badge badge-danger">{window.trans("Required")}</span>
       {/if}
     </label>
   {/if}
