@@ -1,9 +1,9 @@
-export function recalcHeight(droppableArea) {
+export function recalcHeight(droppableArea: Element): void {
   // Calculate droppable area height
   const contentFields = droppableArea.getElementsByClassName("mt-contentfield");
   let clientHeight = 0;
-  for (var i = 0; i < contentFields.length; i++) {
-    clientHeight += contentFields[i].offsetHeight;
+  for (let i = 0; i < contentFields.length; i++) {
+    clientHeight += (contentFields[i] as HTMLElement).offsetHeight;
   }
   if (clientHeight >= droppableArea.clientHeight) {
     jQuery(droppableArea).height(clientHeight + 100);
@@ -16,12 +16,12 @@ export function recalcHeight(droppableArea) {
   }
 }
 
-export function update() {
-  let select = document.querySelector("#label_field");
+export function update(): void {
+  const select = document.querySelector("#label_field") as HTMLSelectElement;
   jQuery(select)
     .find("option")
     .each(function (index, option) {
-      if (option.attributes.selected) {
+      if (option.attributes.getNamedItem("selected")) {
         select.selectedIndex = index;
         return false;
       }
