@@ -7,11 +7,12 @@
   export let config;
 
   const Debug = false;
-  function consoleLog(message) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const consoleLog = (message) => {
     if (Debug) {
       console.log(message);
     }
-  }
+  };
 
   cfields.set(opts.fields);
   mtConfig.set(config);
@@ -24,7 +25,7 @@
   self.placeholder.className = "placeholder"; // TODO
   let dragoverState = false;
   self.labelFields = []; // TODO
-  self.labelField = opts.labelField; //TODO
+  let labelField = opts.labelField;
 
   const invalid_types = opts.types
     .filter(function (field_type) {
@@ -44,7 +45,7 @@
     handleMtDragStart();
   });
 
-  jQuery(document).on("dragend", ".mt-draggable", function (event) {
+  jQuery(document).on("dragend", ".mt-draggable", function () {
     consoleLog("dragend");
     var jqThis = jQuery(this);
     jqThis.attr("aria-grabbed", false);
@@ -52,31 +53,33 @@
   });
 
   // Drag start from content field list
-  function handleMtDragStart() {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const handleMtDragStart = () => {
     consoleLog("handleMtDragStart");
     droppable = true;
-  }
+  };
 
   // Drag end from content field list
-  function handleMtDragEnd() {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const handleMtDragEnd = () => {
     consoleLog("handleMtDragEnd");
     droppable = false;
     onDragEnd();
-  }
+  };
 
   // Show dettail modal
-  jQuery(document).on("show.bs.modal", "#editDetail", function (e) {
+  jQuery(document).on("show.bs.modal", "#editDetail", function () {
     consoleLog("show.bs.modal");
     rebuildLabelFields();
     update();
   });
 
   // Hide detail modal
-  jQuery(document).on("hide.bs.modal", "#editDetail", function (e) {
+  jQuery(document).on("hide.bs.modal", "#editDetail", function () {
     consoleLog("hide.bs.modal");
     if (jQuery("#name-field > input").mtValidate("simple")) {
       opts.name = jQuery("#name-field > input").val();
-      setDirty(true);
+      window.setDirty(true);
       update();
     } else {
       return false;
@@ -87,7 +90,7 @@
   jQuery(document).on(
     "shown.bs.collapse",
     ".mt-collapse__content",
-    function (e) {
+    function () {
       consoleLog("show.bs.collapse");
       const target = document.getElementsByClassName("mt-draggable__area")[0];
       recalcHeight(target);
@@ -98,7 +101,7 @@
   jQuery(document).on(
     "hidden.bs.collapse",
     ".mt-collapse__content",
-    function (e) {
+    function () {
       consoleLog("hidden.bs.collapse");
       const target = document.getElementsByClassName("mt-draggable__area")[0];
       recalcHeight(target);
@@ -109,9 +112,9 @@
   jQuery(document).on(
     "focus",
     ".mt-draggable__area input, .mt-draggable__area textarea",
-    function (e) {
+    function () {
       consoleLog("focus");
-      const target = document.getElementsByClassName("mt-draggable__area")[0];
+      // const target = document.getElementsByClassName("mt-draggable__area")[0];
       jQuery(this).closest(".mt-contentfield").attr("draggable", false);
     }
   );
@@ -120,13 +123,14 @@
   jQuery(document).on(
     "blur",
     ".mt-draggable__area input, .mt-draggable__area textarea",
-    function (e) {
+    function () {
       consoleLog("blur");
       jQuery(this).closest(".mt-contentfield").attr("draggable", true);
     }
   );
 
-  function onDragOver(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const onDragOver = (e) => {
     consoleLog("onDragOver");
     // Allowed only for Content Field and Content Field Type.
     if (droppable) {
@@ -180,9 +184,10 @@
       }
       e.preventDefault();
     }
-  }
+  };
 
-  function onDrop(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const onDrop = (e) => {
     consoleLog("onDrop");
     if (dragged) {
       var pos = 0;
@@ -205,7 +210,7 @@
         }
       }
       _moveField(draggedItem, pos);
-      setDirty(true);
+      window.setDirty(true);
       update();
     } else {
       // Drag from field list
@@ -224,7 +229,7 @@
         canDataLabel: canDataLabel,
       });
       cfields.update((arr) => [...arr, newField]);
-      setDirty(true);
+      window.setDirty(true);
       isEmpty = false;
       update();
 
@@ -234,9 +239,10 @@
 
     e.target.classList.remove("mt-draggable__area--dragover");
     e.preventDefault();
-  }
+  };
 
-  function onDragLeave(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const onDragLeave = (e) => {
     consoleLog("onDragLeave");
     if (dragoverState) {
       if (e.target.classList.contains("mt-draggable__area")) {
@@ -246,17 +252,19 @@
       }
       dragoverState = false;
     }
-  }
+  };
 
-  function onDragStart(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const onDragStart = (e) => {
     consoleLog("onDragStart");
     dragged = e.target;
     draggedItem = e.item;
     e.dataTransfer.setData("text", e.item.id);
     droppable = true;
-  }
+  };
 
-  function onDragEnd(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const onDragEnd = () => {
     consoleLog("onDragEnd");
     if (self.placeholder.parentNode) {
       self.placeholder.parentNode.removeChild(self.placeholder);
@@ -266,18 +274,20 @@
     draggedItem = null;
     dragoverState = false;
     update();
-  }
+  };
 
-  function stopSubmitting(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const stopSubmitting = (e) => {
     consoleLog("stopSubmitting");
     if (e.which === 13) {
       e.preventDefault();
       return false;
     }
     return true;
-  }
+  };
 
-  function canSubmit() {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const canSubmit = () => {
     consoleLog("canSubmit");
     if ($cfields.length === 0) {
       return true;
@@ -286,9 +296,10 @@
       return invalid_types[field.type];
     });
     return invalidFields.length == 0 ? true : false;
-  }
+  };
 
-  function submit(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const submit = () => {
     consoleLog("submit");
     if (!canSubmit()) {
       return;
@@ -299,8 +310,8 @@
     }
 
     rebuildLabelFields();
-    setDirty(false);
-    fieldOptions = [];
+    window.setDirty(false);
+    const fieldOptions = [];
     if ($cfields) {
       //TODO content-fields tag does not exist
       //var child = self.tags['content-field']
@@ -311,7 +322,7 @@
         }
 
         child.forEach(function (c, i) {
-          var field = c.tags[c.type];
+          // var field = c.tags[c.type];
           var options = gatheringData();
           var data = {};
           data.type = c.type;
@@ -338,9 +349,10 @@
     }
     update();
     document.forms["content-type-form"].submit();
-  }
+  };
 
-  function gatheringData(id) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const gatheringData = (id) => {
     consoleLog("gatheringData");
     let data = {};
     const flds = document.querySelectorAll("#" + id + " *[ref]");
@@ -352,7 +364,7 @@
           if (Array.isArray(data[f.name])) {
             data[f.name].push(val);
           } else {
-            array = [];
+            const array = [];
             array.push(data[f.name]);
             array.push(val);
           }
@@ -370,9 +382,10 @@
     //      jQuery.extend(data, customData);
     //    }
     return data;
-  }
+  };
 
-  function rebuildLabelFields() {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const rebuildLabelFields = () => {
     consoleLog("rebuildLableFields");
     var fields = [];
     for (var i = 0; i < $cfields.length; i++) {
@@ -387,7 +400,7 @@
             .find('[name="label"]')
             .val();
           if (label === "") {
-            label = trans("No Name");
+            label = window.trans("No Name");
           }
           id = "id:" + $cfields[i].id;
         }
@@ -399,16 +412,18 @@
     }
     self.labelFields = fields;
     update();
-  }
+  };
 
-  function changeLabelField(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const changeLabelField = (e) => {
     consoleLog("changeLabelField");
     self.labelField = e.target.value;
-  }
+  };
 
-  function _moveField(item, pos) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const _moveField = (item, pos) => {
     consoleLog("_moveField");
-    for (var i = 0; i < $cfields.length; i++) {
+    for (let i = 0; i < $cfields.length; i++) {
       var field = $cfields[i];
       if (field.id === item.id) {
         cfields.update((arr) => {
@@ -420,12 +435,13 @@
       }
     }
     $cfields.splice(pos, 0, field); //TODO
-    for (var i = 0; i < $cfields.length; i++) {
+    for (let i = 0; i < $cfields.length; i++) {
       $cfields[i].order = i + 1;
     }
-  }
+  };
 
-  function _validateFields() {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const _validateFields = () => {
     consoleLog("_validateField");
     const requiredFieldsAreValid = jQuery(".html5-form").mtValidate("simple");
     const textFieldsInTableAreValid = jQuery(
@@ -458,10 +474,10 @@
     }
 
     return res;
-  }
+  };
 </script>
 
-<form name="content-type-form" action={CMSScriptURI} method="POST">
+<form name="content-type-form" action={window.CMSScriptURI} method="POST">
   <input type="hidden" name="__mode" value="save" />
   <input type="hidden" name="blog_id" value={opts.blog_id} />
   <input type="hidden" name="magic_token" value={opts.magic_token} />
@@ -482,7 +498,7 @@
               type="button"
               class="btn btn-link"
               data-toggle="modal"
-              data-target="#editDetail">{trans("Edit")}</button
+              data-target="#editDetail">{window.trans("Edit")}</button
             >
           </h3>
           <div
@@ -495,7 +511,7 @@
             <div class="modal-dialog modal-lg" data-role="document">
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="modal-title">{trans("Content Type")}</h4>
+                  <h4 class="modal-title">{window.trans("Content Type")}</h4>
                   <button
                     type="button"
                     class="close"
@@ -509,9 +525,9 @@
                   <div class="col">
                     <div id="name-field" class="form-group">
                       <label for="name" class="form-control-label"
-                        >{trans("Content Type Name")}
+                        >{window.trans("Content Type Name")}
                         <span class="badge badge-danger"
-                          >{trans("Required")}</span
+                          >{window.trans("Required")}</span
                         ></label
                       >
                       <input
@@ -528,7 +544,7 @@
                   <div class="col">
                     <div id="description-field" class="form-group">
                       <label for="description" class="form-control-label"
-                        >{trans("Description")}</label
+                        >{window.trans("Description")}</label
                       >
                       <textarea
                         name="description"
@@ -540,7 +556,7 @@
                   <div class="col">
                     <div id="label-field" class="form-group">
                       <label for="label_field" class="form-control-label"
-                        >{trans("Data Label Field")}</label
+                        >{window.trans("Data Label Field")}</label
                       >
                       <select
                         id="label_field"
@@ -549,7 +565,9 @@
                         onchange={changeLabelField}
                       >
                         <option value="" selected={labelField === ""}
-                          >{trans("Show input field to enter data label")}
+                          >{window.trans(
+                            "Show input field to enter data label"
+                          )}
                           {#each self.labelFields as l}
                             <option
                               value={l.value}
@@ -564,7 +582,7 @@
                   <div class="col">
                     <div id="unique_id-field" class="form-group">
                       <label for="unique_id" class="form-control-label"
-                        >{trans("Unique ID")}</label
+                        >{window.trans("Unique ID")}</label
                       >
                       <input
                         type="text"
@@ -578,7 +596,7 @@
                   <div class="col">
                     <div id="user_disp_option-field" class="form-group">
                       <label for="user_disp_option"
-                        >{trans(
+                        >{window.trans(
                           "Allow users to change the display and sort of fields by display option"
                         )}</label
                       >
@@ -589,7 +607,7 @@
                         checked={opts.user_disp_option}
                         name="user_disp_option"
                       /><label for="user_disp_option" class="last-child"
-                        >{trans(
+                        >{window.trans(
                           "Allow users to change the display and sort of fields by display option"
                         )}</label
                       >
@@ -600,7 +618,7 @@
                   <button
                     type="button"
                     class="btn btn-default"
-                    data-dismiss="modal">{trans("close")}</button
+                    data-dismiss="modal">{window.trans("close")}</button
                   >
                 </div>
               </div>
@@ -610,8 +628,9 @@
       {:else}
         <div id="name-field" class="form-group">
           <label for="name" class="form-control-label"
-            >{trans("Name")}
-            <span class="badge badge-danger">{trans("Required")}</span></label
+            >{window.trans("Name")}
+            <span class="badge badge-danger">{window.trans("Required")}</span
+            ></label
           >
           <input
             type="text"
@@ -630,7 +649,8 @@
 
 <form>
   <fieldset id="content-fields" class="form-group">
-    <legend class="h3">{trans("Content Fields")}</legend>
+    <legend class="h3">{window.trans("Content Fields")}</legend>
+    <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
       class="mt-draggable__area"
       style="height:400px;"
@@ -641,12 +661,12 @@
       {#if isEmpty}
         <div class="mt-draggable__empty">
           <img
-            src="{StaticURI}images/dragdrop.gif"
-            alt={trans("Drag and drop area")}
+            src="{window.StaticURI}images/dragdrop.gif"
+            alt={window.trans("Drag and drop area")}
             width="240"
             height="120"
           />
-          <p>{trans("Please add a content field.")}</p>
+          <p>{window.trans("Please add a content field.")}</p>
         </div>
       {/if}
       {#each $cfields as f, fieldIndex}
@@ -677,11 +697,11 @@
   type="button"
   class="btn btn-primary"
   disabled={!canSubmit()}
-  on:click={submit}>{trans("Save")}</button
+  on:click={submit}>{window.trans("Save")}</button
 >
 
 <style>
-  .placeholder {
+  :global(.placeholder) {
     height: 26px;
     margin: 4px;
     margin-left: 10px;
