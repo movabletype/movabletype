@@ -35,72 +35,79 @@
   //    validateTable();
   //  })
 
-  function addRow(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const addRow = () => {
     console.log("addRow");
     values.push({ checked: "" });
-  }
+  };
 
-  function enterLabel(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const enterLabel = (e) => {
     console.log("enterLabel");
     console.log(e);
     e.item.label = e.target.value;
-  }
+  };
 
-  function enterValue(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const enterValue = (e) => {
     console.log("enterValue");
     e.item.value = e.target.value;
-  }
+  };
 
-  function gather() {
-    console.log("gather");
-    return {
-      values: values,
-    };
-  }
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  // const gather = () => {
+  //   console.log("gather");
+  //   return {
+  //     values: values,
+  //   };
+  // };
 
-  function validateTable() {
-    console.log("validateTable");
-    // TODO refs.table の別呼び出し方法
-    const jqTable = jQuery(this.refs.table);
-    const tableIsValidated = jqTable.data("mtValidator") ? true : false;
-    if (tableIsValidated) {
-      const jqNotValidatedLabelsValues = jqTable.find(
-        "input[type=text]:not(.is-invalid)"
-      );
-      if (jqNotValidatedLabelsValues.length > 0) {
-        jqNotValidatedLabelsValues.mtValidate("simple");
-      } else {
-        jqTable.mtValid({ focus: false });
-      }
-    }
-  }
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  // const validateTable = () => {
+  //   console.log("validateTable");
+  //   // TODO refs.table の別呼び出し方法
+  //   const jqTable = jQuery(this.refs.table);
+  //   const tableIsValidated = jqTable.data("mtValidator") ? true : false;
+  //   if (tableIsValidated) {
+  //     const jqNotValidatedLabelsValues = jqTable.find(
+  //       "input[type=text]:not(.is-invalid)"
+  //     );
+  //     if (jqNotValidatedLabelsValues.length > 0) {
+  //       jqNotValidatedLabelsValues.mtValidate("simple");
+  //     } else {
+  //       jqTable.mtValid({ focus: false });
+  //     }
+  //   }
+  // };
   // Copy from selection_common_script.tmpl above
 
-  function deleteRow(e) {
-    console.log("deleteRow");
-    item = e.item;
-    index = values.indexOf(item);
-    values.splice(index, 1);
-    if (values.length === 0) {
-      values = [
-        {
-          checked: "checked",
-        },
-      ];
-    } else {
-      found = false;
-      values.forEach(function (v) {
-        if (v.checked === "checked") {
-          found = true;
-        }
-      });
-      if (!found) {
-        values[0].checked = "checked";
-      }
-    }
-  }
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  // const deleteRow = (e) => {
+  //   console.log("deleteRow");
+  //   item = e.item;
+  //   index = values.indexOf(item);
+  //   values.splice(index, 1);
+  //   if (values.length === 0) {
+  //     values = [
+  //       {
+  //         checked: "checked",
+  //       },
+  //     ];
+  //   } else {
+  //     found = false;
+  //     values.forEach(function (v) {
+  //       if (v.checked === "checked") {
+  //         found = true;
+  //       }
+  //     });
+  //     if (!found) {
+  //       values[0].checked = "checked";
+  //     }
+  //   }
+  // };
 
-  function enterInitial(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const enterInitial = (e) => {
     console.log("enterInitial");
     var target = e.target;
     var state = target.checked;
@@ -116,17 +123,18 @@
     }
 
     // Set current item status
-    item = e.item;
-    index = values.indexOf(item);
+    const item = e.item;
+    const index = values.indexOf(item);
     e.target.checked = state;
     values[index].checked = state ? "checked" : "";
 
     if (options.multiple || options.multiple === 1) {
       _updateInittialField(block);
     }
-  }
+  };
 
-  function changeStateMultiple(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const changeStateMultiple = (e) => {
     console.log("changeStateMultiple");
     var block = jQuery(e.target).parents(".mt-contentfield");
     options.multiple = e.target.checked;
@@ -137,38 +145,41 @@
     ) {
       _clearAllInitial(block);
     }
-  }
+  };
 
-  function enterMax(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const enterMax = (e) => {
     console.log("enterMax");
     var block = jQuery(e.target).parents(".mt-contentfield");
     _updateInittialField(block);
-  }
+  };
 
-  function _updateInittialField(block) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const _updateInittialField = (block) => {
     console.log("_updateInittialField");
     var max = Number(block.find('input[name="max"]').val());
     var cur = block
       .find(".values-option-table")
       .find('input[type="checkbox"]:checked').length;
     if (max === 0 || cur < max) {
-      var chkbox = block
+      let chkbox = block
         .find(".values-option-table")
         .find('input[type="checkbox"]');
       jQuery.each(chkbox, function (i) {
         jQuery(chkbox[i]).prop("disabled", false);
       });
     } else {
-      var chkbox = block
+      let chkbox = block
         .find(".values-option-table")
         .find('input[type="checkbox"]:not(:checked)');
       jQuery.each(chkbox, function (i) {
         jQuery(chkbox[i]).prop("disabled", true);
       });
     }
-  }
+  };
 
-  function _clearAllInitial(block) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const _clearAllInitial = (block) => {
     console.log("_clearAllInitial");
     var initials = block
       .find(".values-option-table")
@@ -183,7 +194,7 @@
     values.forEach(function (v) {
       v.checked = "";
     });
-  }
+  };
 </script>
 
 <ContentFieldOptionGroup
@@ -196,7 +207,7 @@
   <svelte:fragment slot="body">
     <ContentFieldOption
       id="{_type}-multiple"
-      label={trans("Allow users to select multiple values?")}
+      label={window.trans("Allow users to select multiple values?")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
@@ -209,14 +220,14 @@
           checked={options.multiple}
           on:click={changeStateMultiple}
         /><label for="{_type}-multiple" class="form-label"
-          >{trans("Allow users to select multiple values?")}</label
+          >{window.trans("Allow users to select multiple values?")}</label
         >
       </svelte:fragment>
     </ContentFieldOption>
 
     <ContentFieldOption
       id="{_type}-min"
-      label={trans("Minimum number of selections")}
+      label={window.trans("Minimum number of selections")}
       showLabel={true}
       attr="show={options.multiple}"
     >
@@ -235,7 +246,7 @@
 
     <ContentFieldOption
       id="{_type}-max"
-      label={trans("Maximum number of selections")}
+      label={window.trans("Maximum number of selections")}
       showLabel={true}
       attr="show={options.multiple}"
     >
@@ -256,7 +267,7 @@
     <ContentFieldOption
       id="{_type}-values"
       required={true}
-      label={trans("Values")}
+      label={window.trans("Values")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
@@ -264,9 +275,9 @@
           <table class="table mt-table values-option-table" ref="table">
             <thead>
               <tr>
-                <th scope="col">{trans("Selected")}</th>
-                <th scope="col">{trans("Label")}</th>
-                <th scope="col">{trans("Value")}</th>
+                <th scope="col">{window.trans("Selected")}</th>
+                <th scope="col">{window.trans("Label")}</th>
+                <th scope="col">{window.trans("Value")}</th>
                 <th scope="col" />
               </tr>
             </thead>
@@ -305,10 +316,10 @@
                       type="button"
                       class="btn btn-default btn-sm"
                       ><svg role="img" class="mt-icon mt-icon--sm"
-                        ><title>{trans("delete")}</title><use
+                        ><title>{window.trans("delete")}</title><use
                           xlink:href="{mtConfig.static_uri}images/sprite.svg#ic_trash"
                         /></svg
-                      >{trans("delete")}</button
+                      >{window.trans("delete")}</button
                     ></td
                   >
                 </tr>
@@ -318,10 +329,10 @@
         </div>
         <button on:click={addRow} type="button" class="btn btn-default btn-sm"
           ><svg role="img" class="mt-icon mt-icon--sm"
-            ><title>{trans("add")}</title><use
+            ><title>{window.trans("add")}</title><use
               xlink:href="{mtConfig.static_uri}images/sprite.svg#ic_add"
             /></svg
-          >{trans("add")}</button
+          >{window.trans("add")}</button
         >
       </svelte:fragment>
     </ContentFieldOption>
