@@ -21,7 +21,7 @@
     const minValueOrMaxValueSelector =
       "input[id^=number-min_value-field-options-], input[id^=number-max_value-field-options-]";
     jQuery(document).on("keyup", minValueOrMaxValueSelector, function () {
-      const matched = this.id.match(/[^\-]+$/);
+      const matched = this.id.match(/[^-]+$/);
       if (!matched) return;
 
       const fieldId = matched[0];
@@ -46,7 +46,7 @@
   <svelte:fragment slot="body">
     <ContentFieldOption
       id="{type}-min_value"
-      label={trans("Min Value")}
+      label={window.trans("Min Value")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
@@ -66,7 +66,7 @@
 
     <ContentFieldOption
       id="{type}-max_value"
-      label={trans("Max Value")}
+      label={window.trans("Max Value")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
@@ -86,7 +86,7 @@
 
     <ContentFieldOption
       id="{type}-decimal_places"
-      label={trans("Number of decimal places")}
+      label={window.trans("Number of decimal places")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
@@ -105,7 +105,7 @@
 
     <ContentFieldOption
       id="{type}-initial_value"
-      label={trans("Initial Value")}
+      label={window.trans("Initial Value")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
