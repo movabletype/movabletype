@@ -21,7 +21,7 @@
   <svelte:fragment slot="body">
     <ContentFieldOption
       id="{_type}-min_length"
-      label={trans("Min Length")}
+      label={window.trans("Min Length")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
@@ -39,7 +39,7 @@
 
     <ContentFieldOption
       id="{_type}-max_length"
-      label={trans("Max Length")}
+      label={window.trans("Max Length")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
@@ -57,7 +57,7 @@
 
     <ContentFieldOption
       id="{_type}-initial_value"
-      label={trans("Initial Value")}
+      label={window.trans("Initial Value")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
