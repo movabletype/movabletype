@@ -27,5 +27,6 @@ return (new PhpCsFixer\Config())
             'functions_opening_brace' => 'same_line',
             'classes_opening_brace' => 'same_line',
         ],
+        'no_whitespace_in_blank_line' => true,
     ])
 ;
