@@ -78,6 +78,12 @@ sub new {
 
     $self->enable_query_log if $ENV{MT_TEST_QUERY_LOG} && $ENV{MT_TEST_QUERY_LOG} > 4;
 
+    {   # No need to update config at the (global) destruction of a test
+        no warnings 'redefine';
+        require MT::ConfigMgr;
+        *MT::ConfigMgr::DESTROY = sub {};
+    }
+
     diag "Driver: $driver" unless $driver =~ /mysql/i;
 
     $self;
