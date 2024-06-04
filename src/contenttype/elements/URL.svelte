@@ -1,0 +1,31 @@
+<script>
+  import ContentFieldOptionGroup from './ContentFieldOptionGroup.svelte';
+  import ContentFieldOption from './ContentFieldOption.svelte';
+
+  export let fieldId;
+  export let options;
+  export let label;
+  export let isNew;
+
+  const type = "url";
+</script>
+
+<ContentFieldOptionGroup
+  type="{type}"
+  fieldId={ fieldId }
+  options={ options }
+  bind:labelValue={ label }
+  isNew={ isNew }
+>
+  <svelte:fragment slot="body">
+    <ContentFieldOption
+        id="{type}-initial_value"
+        label={ trans("Initial Value") }
+        showLabel={ true }
+    >
+      <svelte:fragment slot="inside">
+        <input ref="initial_value" type="text" name="initial_value" id="{type}-initial_value" class="form-control" value={ options.initial_value }/>
+      </svelte:fragment>
+    </ContentFieldOption>
+  </svelte:fragment>
+</ContentFieldOptionGroup>
