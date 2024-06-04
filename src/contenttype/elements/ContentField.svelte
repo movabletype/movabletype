@@ -37,11 +37,12 @@
   export let gatheringData;
   export let isEmpty;
 
-  function deleteField() {
-    const label = item.label ? item.label : trans("No Name");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const deleteField = () => {
+    const label = item.label ? item.label : window.trans("No Name");
     if (
       !confirm(
-        trans("Do you want to delete [_1]([_2])?", label, item.typeLabel)
+        window.trans("Do you want to delete [_1]([_2])?", label, item.typeLabel)
       )
     ) {
       return;
@@ -54,13 +55,14 @@
     isEmpty = $cfields.length > 0 ? false : true;
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
-  }
+  };
 
-  function duplicateField(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const duplicateField = (e) => {
     let newItem = jQuery.extend({}, $cfields[itemIndex]);
-    const field = document.querySelectorAll(
-      ".content-field [data-is='" + newItem.type + "']"
-    );
+    // const field = document.querySelectorAll(
+    //   ".content-field [data-is='" + newItem.type + "']"
+    // );
     const options = gatheringData("content-field-block-" + e.target.dataset.id);
     newItem.options = options;
     newItem.id = Math.random().toString(36).slice(-8);
@@ -72,10 +74,10 @@
         .find('[name="label"]')
         .val();
       if (label === "") {
-        label = trans("No Name");
+        label = window.trans("No Name");
       }
     }
-    newItem.label = trans("Duplicate") + "-" + label;
+    newItem.label = window.trans("Duplicate") + "-" + label;
     newItem.options.label = newItem.label;
     newItem.order = $cfields.length + 1;
     newItem.isNew = true;
@@ -84,44 +86,46 @@
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
     update();
-  }
+  };
 </script>
 
 <div class="mt-collapse__container">
   <div class="col-auto">
     <ss
-      title={trans("Move")}
+      title={window.trans("Move")}
       class="mt-icon"
-      href="{StaticURI}/images/sprite.svg#ic_move"
+      href="{window.StaticURI}/images/sprite.svg#ic_move"
     />
   </div>
   <div class="col text-wrap">
     <ss
-      title={trans("ContentField")}
+      title={window.trans("ContentField")}
       class="mt-icon--secondary"
-      href="{StaticURI}images/sprite.svg#ic_contentstype"
+      href="{window.StaticURI}images/sprite.svg#ic_contentstype"
     />{label || ""} ({typeLabel}) {#if realId}<span>(ID: {realId})</span>{/if}
   </div>
   <div class="col-auto">
+    <!-- svelte-ignore a11y-invalid-attribute -->
     <a
       data-id={id}
       href="javascript:void(0)"
       on:click={duplicateField}
       class="d-inline-block duplicate-content-field"
       ><ss
-        title={trans("Duplicate")}
+        title={window.trans("Duplicate")}
         class="mt-icon--secondary"
-        href="{StaticURI}images/sprite.svg#ic_duplicate"
+        href="{window.StaticURI}images/sprite.svg#ic_duplicate"
       /></a
     >
+    <!-- svelte-ignore a11y-invalid-attribute -->
     <a
       href="javascript:void(0)"
       on:click={deleteField}
       class="d-inline-block delete-content-field"
       ><ss
-        title={trans("Delete")}
+        title={window.trans("Delete")}
         class="mt-icon--secondary"
-        href="{StaticURI}images/sprite.svg#ic_trash"
+        href="{window.StaticURI}images/sprite.svg#ic_trash"
       /></a
     >
     <a
@@ -131,9 +135,9 @@
       aria-controls="field-options-{id}"
       class="d-inline-block"
       ><ss
-        title={trans("Edit")}
+        title={window.trans("Edit")}
         class="mt-icon--secondary"
-        href="{StaticURI}images/sprite.svg#ic_collapse"
+        href="{window.StaticURI}images/sprite.svg#ic_collapse"
       /></a
     >
   </div>
