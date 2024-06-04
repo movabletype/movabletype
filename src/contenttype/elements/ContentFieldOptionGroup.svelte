@@ -38,16 +38,19 @@
   //    })
   //  })
 
-  function inputLabel(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const inputLabel = (e) => {
     labelValue = e.target.value;
     update();
-  }
+  };
 
-  function changeStateRequired(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const changeStateRequired = (e) => {
     options.required = e.target.checked;
-  }
+  };
 
-  function closePanel(e) {
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const closePanel = () => {
     const root = document.querySelector("#field-options-" + fieldId);
     let className = root.className;
     root.className = className.replace(/\s*show\s*/, "");
@@ -58,7 +61,7 @@
       "aria-expanded",
       false
     );
-  }
+  };
 </script>
 
 {#if isNew}
@@ -83,7 +86,7 @@
 
 <ContentFieldOption
   id="{type}-label"
-  label={trans("Label")}
+  label={window.trans("Label")}
   required={true}
   showLabel={true}
 >
@@ -104,10 +107,10 @@
 
 <ContentFieldOption
   id="{type}-description"
-  label={trans("Description")}
+  label={window.trans("Description")}
   showLabel={true}
   showHint={true}
-  hint={trans("The entered message is displayed as a input field hint.")}
+  hint={window.trans("The entered message is displayed as a input field hint.")}
 >
   <svelte:fragment slot="inside">
     <input
@@ -124,7 +127,7 @@
 
 <ContentFieldOption
   id="{type}-required"
-  label={trans("Is this field required?")}
+  label={window.trans("Is this field required?")}
   showLabel={true}
 >
   <svelte:fragment slot="inside">
@@ -136,16 +139,18 @@
       name="required"
       checked={options.required}
       on:click={changeStateRequired}
-    /><label for="{type}-required">{trans("Is this field required?")}</label>
+    /><label for="{type}-required"
+      >{window.trans("Is this field required?")}</label
+    >
   </svelte:fragment>
 </ContentFieldOption>
 
 <ContentFieldOption
   id="{type}-display"
-  label={trans("Display Options")}
+  label={window.trans("Display Options")}
   showLabel={true}
   required={true}
-  hint={trans(
+  hint={window.trans(
     "Choose the display options for this content field in the listing screen."
   )}
   showHint={true}
@@ -158,16 +163,16 @@
       class="custom-select form-control form-select"
     >
       <option value="force" selected={options.displays.force}
-        >{trans("Force")}</option
+        >{window.trans("Force")}</option
       >
       <option value="default" selected={options.displays.default}
-        >{trans("Default")}</option
+        >{window.trans("Default")}</option
       >
       <option value="optional" selected={options.displays.optional}
-        >{trans("Optional")}</option
+        >{window.trans("Optional")}</option
       >
       <option value="none" selected={options.displays.none}
-        >{trans("None")}</option
+        >{window.trans("None")}</option
       >
     </select>
   </svelte:fragment>
@@ -177,7 +182,7 @@
 
 <div class="form-group-button">
   <button type="button" class="btn btn-default" on:click={closePanel}
-    >{trans("Close")}</button
+    >{window.trans("Close")}</button
   >
 </div>
 
