@@ -21,7 +21,7 @@
   <svelte:fragment slot="body">
     <ContentFieldOption
       id="{_type}-initial-date_value"
-      label={trans("Initial Value (Date)")}
+      label={window.trans("Initial Value (Date)")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
@@ -39,7 +39,7 @@
 
     <ContentFieldOption
       id="{_type}-initial-timevalue"
-      label={trans("Initial Value (Time)")}
+      label={window.trans("Initial Value (Time)")}
       showLabel={true}
     >
       <svelte:fragment slot="inside">
