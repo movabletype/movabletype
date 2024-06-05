@@ -152,7 +152,7 @@ interface ArchiveType {
     public function get_range($period_start);
     public function prepare_list($row);
     public function setup_args(&$args);
-    public function get_archive_link_sql($ts, $at, $args);
+    public function get_archive_link_sql($ts, $at, $args, &$bind);
     public function is_date_based();
 }
 
@@ -318,7 +318,7 @@ class IndividualArchiver implements ArchiveType {
         return true;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
         return '';
     }
 
@@ -396,7 +396,9 @@ abstract class DateBasedArchiver implements ArchiveType {
 
     public function setup_args(&$args) { return true; }
 
-    public function get_archive_link_sql($ts, $at, $args) { return ''; }
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
+        return '';
+    }
 
     public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
         $mt = MT::get_instance();
@@ -964,11 +966,11 @@ class AuthorBasedArchiver implements ArchiveType {
         return $results;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = intval($args['blog_id']);
         $author = $ctx->stash('author');
         if ( empty( $author ) ) {
             $entry = $ctx->stash('entry');
@@ -983,10 +985,12 @@ class AuthorBasedArchiver implements ArchiveType {
         $auth_id = $author->author_id;
         $at or $at = $ctx->stash('current_archive_type');
 
-        $sql = " fileinfo_blog_id = $blog_id
-                 and fileinfo_archive_type = '".$mt->db()->escape($at)."'
-                 and fileinfo_author_id = '$auth_id'
-                 and templatemap_is_preferred = 1";
+        $cond = [];
+        $cond[] = 'fileinfo_blog_id = '. $mtdb->ph('fileinfo_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'fileinfo_archive_type = '. $mtdb->ph('fileinfo_archive_type', $bind, $at);
+        $cond[] = 'fileinfo_author_id = '. $mtdb->ph('fileinfo_author_id', $bind, $auth_id);
+        $cond[] = 'templatemap_is_preferred = 1';
+        $sql = implode(' and ', $cond);
         return $sql;
     }
 
@@ -1086,11 +1090,11 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
         }
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = intval($args['blog_id']);
         $author = $ctx->stash('author');
         $auth_id = $author->author_id;
         $at or $at = $ctx->stash('current_archive_type');
@@ -1110,11 +1114,15 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
             $ts = '';
         }
 
-        $sql = ($ts ? "fileinfo_startdate = '$ts' and" : "") .
-               " fileinfo_blog_id = $blog_id
-                 and fileinfo_archive_type = '".$mt->db()->escape($at)."'
-                 and fileinfo_author_id = '$auth_id'
-                 and templatemap_is_preferred = 1";
+        $cond = [];
+        if ($ts) {
+            $cond[] = 'fileinfo_startdate = '. $mtdb->ph('fileinfo_startdate', $bind, $ts);
+        }
+        $cond[] = 'fileinfo_blog_id = '. $mtdb->ph('fileinfo_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'fileinfo_archive_type = '. $mtdb->ph('fileinfo_archive_type', $bind, $at);
+        $cond[] = 'fileinfo_author_id = '. $mtdb->ph('fileinfo_author_id', $bind, $auth_id);
+        $cond[] = 'templatemap_is_preferred = 1';
+        $sql = implode(' and ', $cond);
         return $sql;
     }
 
@@ -1711,7 +1719,9 @@ class CategoryArchiver implements ArchiveType {
         return $results;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) { return ''; }
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
+        return '';
+    }
 
     public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
         $mt = MT::get_instance();
@@ -1772,14 +1782,16 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
         }
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
         $blog_id = intval($args['blog_id']);
         $blog_id or $blog_id = intval($ctx->stash('blog_id'));
         $cat = $ctx->stash('category');
-        $cat_id = $cat->category_id;
+
+        $cond = [];
         if (isset($ts)) {
             if ($at == 'Category-Monthly') {
                 $ts = substr($ts, 0, 6) . '01000000';
@@ -1792,18 +1804,16 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
             } elseif ($at == 'Category-Yearly') {
                 $ts = substr($ts, 0, 4) . '0101000000';
             }
-            $start_filter = "and fileinfo_startdate = '$ts'";
+            $cond[] = 'fileinfo_startdate = '. $mtdb->ph('fileinfo_startdate', $bind, $ts);
         } else {
             // find a most oldest link when timestamp was not presented
             $order = "order by fileinfo_startdate asc";
         }
-
-        $sql = implode(' ', array(
-            "fileinfo_blog_id = $blog_id and fileinfo_archive_type = '". $mt->db()->escape($at). "'",
-            "and fileinfo_category_id = '$cat_id' and templatemap_is_preferred = 1",
-            isset($start_filter) ? $start_filter : '',
-            isset($order) ? $order : ''
-        ));
+        $cond[] = 'fileinfo_blog_id = '. $mtdb->ph('fileinfo_blog_id', $bind, $blog_id);
+        $cond[] = 'fileinfo_archive_type = '. $mtdb->ph('fileinfo_archive_type', $bind, $at);
+        $cond[] = 'fileinfo_category_id = '. $mtdb->ph('fileinfo_category_id', $bind, $cat->category_id);
+        $cond[] = 'templatemap_is_preferred = 1';
+        $sql = implode(' and ', $cond). ($order ?? '');
         return $sql;
     }
 
@@ -2472,7 +2482,7 @@ class ContentTypeArchiver implements ArchiveType {
         return true;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
         return '';
     }
 
@@ -2494,7 +2504,9 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
 
     public function setup_args(&$args) { return true; }
 
-    public function get_archive_link_sql($ts, $at, $args) { return ''; }
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
+        return '';
+    }
 
     public function archive_prev_next($args, $res, &$repeat, $tag, $at) {
         $mt = MT::get_instance();
@@ -3118,11 +3130,11 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         return $results;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = intval($args['blog_id']);
         $author = $ctx->stash('author');
         if ( empty( $author ) ) {
             $entry = $ctx->stash('entry');
@@ -3137,10 +3149,12 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         $auth_id = $author->author_id;
         $at or $at = $ctx->stash('current_archive_type');
 
-        $sql = " fileinfo_blog_id = $blog_id
-                 and fileinfo_archive_type = '".$mt->db()->escape($at)."'
-                 and fileinfo_author_id = '$auth_id'
-                 and templatemap_is_preferred = 1";
+        $cond = [];
+        $cond[] = 'fileinfo_blog_id = '. $mtdb->ph('fileinfo_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'fileinfo_archive_type = '. $mtdb->ph('fileinfo_archive_type', $bind, $at);
+        $cond[] = 'fileinfo_author_id = '. $mtdb->ph('fileinfo_author_id', $bind, $auth_id);
+        $cond[] = 'templatemap_is_preferred = 1';
+        $sql = implode(' and ', $cond);
         return $sql;
     }
 
@@ -3243,11 +3257,11 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         }
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = intval($args['blog_id']);
         $author = $ctx->stash('author');
         $auth_id = $author->author_id;
         $at or $at = $ctx->stash('current_archive_type');
@@ -3267,11 +3281,15 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
             $ts = '';
         }
 
-        $sql = ($ts ? "fileinfo_startdate = '$ts' and" : "") .
-               " fileinfo_blog_id = $blog_id
-                 and fileinfo_archive_type = '".$mt->db()->escape($at)."'
-                 and fileinfo_author_id = '$auth_id'
-                 and templatemap_is_preferred = 1";
+        $cond = [];
+        if ($ts) {
+            $cond[] = 'fileinfo_startdate = '. $mtdb->ph('fileinfo_startdate', $bind, $ts);
+        }
+        $cond[] = 'fileinfo_blog_id = '. $mtdb->ph('fileinfo_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'fileinfo_archive_type = '. $mtdb->ph('fileinfo_archive_type', $bind, $at);
+        $cond[] = 'fileinfo_author_id = '. $mtdb->ph('fileinfo_author_id', $bind, $auth_id);
+        $cond[] = 'templatemap_is_preferred = 1';
+        $sql = implode(' and ', $cond);
         return $sql;
     }
 
@@ -3895,7 +3913,7 @@ class ContentTypeCategoryArchiver implements ArchiveType {
         return $results;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
         return '';
     }
 
@@ -3961,14 +3979,14 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         }
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args, &$bind) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
         $blog_id = intval($args['blog_id']);
         $blog_id or $blog_id = intval($ctx->stash('blog_id'));
         $cat = $ctx->stash('category');
-        $cat_id = $cat->category_id;
         if (isset($ts)) {
             if ($at == 'ContentType-Category-Monthly') {
                 $ts = substr($ts, 0, 6) . '01000000';
@@ -3981,19 +3999,17 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             } elseif ($at == 'ContentType-Category-Yearly') {
                 $ts = substr($ts, 0, 4) . '0101000000';
             }
-            $start_filter = "and fileinfo_startdate = '$ts'";
+            $cond[] = 'fileinfo_startdate = '. $mtdb->ph('fileinfo_startdate', $bind, $ts);
         } else {
             // find a most oldest link when timestamp was not presented
             $order = "order by fileinfo_startdate asc";
         }
 
-        $sql = implode(' ', array(
-            "fileinfo_blog_id = $blog_id and fileinfo_archive_type = '".$mt->db()->escape($at)."'",
-            "and fileinfo_category_id = '$cat_id'",
-            "and templatemap_is_preferred = 1",
-            isset($start_filter) ? $start_filter : '',
-            isset($order) ? $order : ''
-        ));
+        $cond[] = 'fileinfo_blog_id = '. $mtdb->ph('fileinfo_blog_id', $bind, $blog_id);
+        $cond[] = 'fileinfo_archive_type = '. $mtdb->ph('fileinfo_archive_type', $bind, $at);
+        $cond[] = 'fileinfo_category_id = '. $mtdb->ph('fileinfo_category_id', $bind, $cat->category_id);
+        $cond[] = 'templatemap_is_preferred = 1';
+        $sql = implode(' and ', $cond). ($order ?? '');
         return $sql;
     }
 

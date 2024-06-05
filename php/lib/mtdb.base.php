@@ -626,11 +626,16 @@ abstract class MTDatabase {
         return $url;
     }
 
-    public function archive_link($ts, $at, $sql, $args) {
+    public function archive_link($ts, $at, $args) {
         $blog_id = intval($args['blog_id']);
         if (isset($this->_archive_link_cache[$blog_id.';'.$ts.';'.$at])) {
             $url = $this->_archive_link_cache[$blog_id.';'.$ts.';'.$at];
         } else {
+
+            $ar = ArchiverFactory::get_archiver($at);
+            $bind = [];
+            $sql = $ar->get_archive_link_sql($ts, $at, $args, $bind);
+
             if (empty($sql)) {
                 $sql = sprintf(
                     "fileinfo_startdate = %s
@@ -649,7 +654,7 @@ abstract class MTDatabase {
             
             require_once('class.mt_fileinfo.php');
             $finfo = new FileInfo;
-            $infos = $finfo->Find($sql, isset($bind) ? $bind : [], false, $extras);
+            $infos = $finfo->Find($sql, $bind, false, $extras);
             if (empty($infos))
                 return null;
 
