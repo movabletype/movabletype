@@ -107,12 +107,16 @@ class ContentData extends BaseObject
     }
 
     private function get_content_field( $unique_id ) {
-      $where = "cf_content_type_id = " . $this->content_type_id;
-      $where .= " and cf_unique_id = '$unique_id'";
+        $mtdb = MT::get_instance()->db();
+        $where = sprintf(
+            'cf_content_type_id = %s and cf_unique_id = %s',
+            $mtdb->ph('cf_content_type_id', $bind, $this->content_type_id),
+            $mtdb->ph('cf_unique_id', $bind, $unique_id)
+        );
 
       require_once('class.mt_content_field.php');
       $cf = new ContentField();
-      $cf->Load($where);
+      $cf->Load($where, $bind);
       return $cf;
     }
 }

@@ -207,6 +207,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (!$db || empty($this->_table))
             return false;
 
+        $bind_join = [];
         $join = '';
         if (isset($extra['join'])) {
             $joins = $extra['join'];
@@ -218,6 +219,7 @@ abstract class BaseObject extends ADOdb_Active_Record
                 if (isset($joins[$key]['type']))
                     $type = $joins[$key]['type'];
                 $join .= ' ' . strtolower($type) . ' JOIN ' . $table . ' ON ' . $cond;
+                $bind_join = array_merge($bind_join, isset($joins[$key]['bind']) ? $joins[$key]['bind'] : []);
             }
         }
 
@@ -231,10 +233,12 @@ abstract class BaseObject extends ADOdb_Active_Record
             }
         }
 
+        $bind = array_merge($bind_join, $bindarr ? $bindarr : []);
+        
         $objs = $db->GetActiveRecordsClass(get_class($this),
                                           $this->_table . $join,
                                           $whereOrderBy,
-                                          $bindarr,
+                                          $bind,
                                           $pkeysArr,
                                           $extra);
         $ret_objs = array();
@@ -492,12 +496,13 @@ abstract class BaseObject extends ADOdb_Active_Record
 
         $sql = "select count(*) " .
             "from " . $this->_table . $join;
-        if (!empty($where))
+        if (!empty($where)) {
             $sql = $sql . " where $where";
+        }
 
         $db = $this->db();
         $saved = $db->SetFetchMode(ADODB_FETCH_NUM);
-        $result = $db->Execute($sql);
+        $result = $db->Execute($sql, $args['bind'] ?? []);
         $cnt = $result->fields[0];
         $db->SetFetchMode($saved);
         return $cnt;

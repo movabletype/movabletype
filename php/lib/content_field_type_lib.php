@@ -114,16 +114,12 @@ class ContentFieldTypeTagHandler {
     public static function asset ($value, &$args, &$res, &$ctx, &$repeat) {
         $values = $ctx->stash('_content_field_values');
         if (empty($values)) {
-            $bind_values = is_array($value) ? $value : array($value);
-            if (!count($bind_values)) $bind_values = array(0);
-            $bind_value_count = count($bind_values);
-            $db = $ctx->mt->db()->db();
-            if ($bind_value_count > 1) {
-                $func = function($key) use(&$db) { return $db->Param($key); };
-                $placeholders = implode(",", array_map($func, array_keys($bind_values)));
-                $where = "asset_id IN ($placeholders)";
+            $value = is_array($value) ? $value : [$value];
+            if (count($value) > 1) {
+                $ph = $ctx->mt->db()->in_ph('asset_id', $bind_values, $value);
+                $where = "asset_id IN ($ph)";
             } else {
-                $where = "asset_id = ".$db->Param(0);
+                $where = 'asset_id = '. $ctx->mt->db()->ph('asset_id', $bind_values, $value[0] ?? 0);
             }
 
             require_once("class.mt_asset.php");
@@ -196,20 +192,16 @@ class ContentTypeRegistry implements ContentFieldType {
                 return $ctx->error( $ctx->mt->translate("You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?", "mtContentField" ) );
 
             $ids = is_array($value) ? $value : array($value);
-            if (empty($ids)) $ids = array(0);
-            $ids_count = count($ids);
 
             require_once("class.mt_content_data.php");
             $content_data_class = new ContentData;
-            $db = $ctx->mt->db()->db();
-            if ($ids_count > 1) {
-                $func = function($key) use(&$db) { return $db->Param($key); };
-                $placeholders = implode(",", array_map($func, array_keys($ids)));
-                $where = "cd_id IN ($placeholders)";
+            if (count($ids) > 1) {
+                $ph = $ctx->mt->db()->in_ph('cd_id', $bind, $ids);
+                $where = "cd_id IN ($ph)";
             } else {
-                $where = "cd_id = ".$db->Param(0);
+                $where = 'cd_id = '. $ctx->mt->db()->ph('cd_id', $bind, $ids[0] ?? 0);
             }
-            $cds = $content_data_class->Find($where, $ids);
+            $cds = $content_data_class->Find($where, $bind);
 
             $map = array();
             foreach ($cds as $cd) {
@@ -546,28 +538,23 @@ class CategoriesRegistry implements ContentFieldType {
             $category_class = new Category;
 
             $extra = array();
-            $bind_values = is_array($value) ? $value : array($value);
+            $value = is_array($value) ? $value : [$value];
             if (isset($args['lastn'])) {
                 if ($args['lastn'] > 0) {
                     $extra['limit'] = $args['lastn'];
-                    if (!isset($args['sort']))
-                        $bind_values = array_slice($bind_values, 0, $args['lastn']);
+                    if (!isset($args['sort'])) {
+                        $value = array_slice($value, 0, $args['lastn']);
+                    }
                 } else {
-                    $bind_values = array();
+                    $value = [];
                 }
             }
 
-            if (!count($bind_values)) {
-                $bind_values = array(0);
-            }
-            $bind_value_count = count($bind_values);
-            $db = $ctx->mt->db()->db();
-            if ($bind_value_count > 1) {
-                $func = function($key) use(&$db) { return $db->Param($key); };
-                $placeholders = implode(",", array_map($func, array_keys($bind_values)));
-                $where = $where . " and category_id IN ($placeholders)";
+            if (count($value) > 1) {
+                $ph = $ctx->mt->db()->in_ph('category_id', $bind_values, $value);
+                $where = $where . " and category_id IN ($ph)";
             } else {
-                $where = $where . " and category_id = ".$db->Param(0);
+                $where = $where . ' and category_id = '. $ctx->mt->db()->ph('category_id', $bind_values, $value[0] ?? 0);
             }
             if (isset($args['sort'])) {
                 if (preg_match('/[^a-zA-Z0-9_]/', $args['sort'])) {
@@ -646,16 +633,12 @@ class TagsRegistry implements ContentFieldType {
         if (empty($values)) {
             $column = $is_preview ? $ctx->mt->db()->binary_column("tag_name") : "tag_id";
 
-            $bind_values = is_array($value) ? $value : array($value);
-            if (!count($bind_values)) $bind_values = array(0);
-            $bind_value_count = count($bind_values);
-            $db = $ctx->mt->db()->db();
-            if ($bind_value_count > 1) {
-                $func = function($key) use(&$db) { return $db->Param($key); };
-                $placeholders = implode(",", array_map($func, array_keys($bind_values)));
-                $where = "$column IN ($placeholders)";
+            $value = is_array($value) ? $value : [$value];
+            if (count($value) > 1) {
+                $ph = $ctx->mt->db()->in_ph($column, $bind_values, $value);
+                $where = "$column IN ($ph)";
             } else {
-                $where = "$column = ".$db->Param(0);
+                $where = "$column = ". $ctx->mt->db()->ph($column, $bind_values, $value[0] ?? 0);
             }
 
             require_once("class.mt_tag.php");

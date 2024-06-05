@@ -116,7 +116,8 @@ class Entry extends BaseObject
 
         require_once('class.mt_trackback.php');
         $trackback = new Trackback();
-        $loaded = $trackback->Load("trackback_entry_id = " . $this->entry_id);
+        $mtdb = MT::get_instance()->db();
+        $loaded = $trackback->Load("trackback_entry_id = ". $mtdb->ph('trackback_entry_id', $bind, $this->entry_id), $bind);
         if (!$loaded)
             $trackback = null;
         return $trackback;
