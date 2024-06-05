@@ -9,20 +9,24 @@ function smarty_function_mtauthorentriescount($args, &$ctx) {
     $mt = MT::get_instance();
     $author = $ctx->stash('author');
 
-    $conn = $mt->db()->db();
+    $mtdb = $mt->db();
+    $conn = $mtdb->db();
+
+    $entry_class = 'entry';
+    $entry_author_id = $author->id;
+    $entry_release = 2; # RELEASE
+
     $sql = sprintf("
         select count(*)
           from mt_entry
           where entry_class = %s
           and entry_author_id = %s
           and entry_status = %s",
-       $conn->param('entry_class'), $conn->param('entry_author_id'), $conn->param('entry_status')
+          $mtdb->ph('entry_class', $bindVars, $entry_class),
+          $mtdb->ph('entry_author_id', $bindVars, $entry_author_id),
+          $mtdb->ph('entry_status', $bindVars, $entry_release)
    );
 
-    $entry_class = 'entry';
-    $entry_author_id = $author->id;
-    $entry_release = 2; # RELEASE
-    $bindVars = array('entry_class' => $entry_class, 'entry_author_id' => $entry_author_id, 'entry_status' => $entry_release);
     $handle = $conn->prepare($sql);
 
     $row = $conn->getRow($handle, $bindVars);
