@@ -292,6 +292,8 @@ jobs:
         run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
       - name: test npm ci
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm ci"
+      - name: test svelte commands
+        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run svelte-check-types && npm run svelte-format && npm run svelte-format && npm run build-svelte"
 
   notify_slack:
     runs-on: ubuntu-latest
