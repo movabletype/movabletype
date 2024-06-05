@@ -61,6 +61,9 @@ class MemcachedTest extends TestCase {
         $this->assertEquals('d', $class->get('c'));
         $class->flush_all();
         $this->assertEquals(null, $class->get('c'));
+        $class->add('a\'b', 'c', 10);
+        $this->assertEquals('c', $class->get('a\'b'));
+        $class->flush_all();
         $class->add('a', 'b', 10);
         $class->add('c', 'd', 10);
         $class->add('e', 'f', 10);
