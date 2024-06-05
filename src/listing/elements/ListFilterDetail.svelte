@@ -6,19 +6,19 @@
   export let filterTypes: Array<Listing.FilterType>;
   export let isFilterItemSelected: (
     filter: Listing.Filter,
-    type: string
+    type: string,
   ) => boolean;
   export let listFilterTopAddFilterItem: (filterType: string) => void;
   export let listFilterTopAddFilterItemContent: (
     itemIndex: string,
-    contentIndex: string
+    contentIndex: string,
   ) => void;
   export let listFilterTopGetItemValues: () => void;
   export let listFilterTopIsUserFilter: () => boolean;
   export let listFilterTopRemoveFilterItem: (itemIndex: string) => void;
   export let listFilterTopRemoveFilterItemContent: (
     itemIndex: string,
-    contentIndex: string
+    contentIndex: string,
   ) => void;
   export let listFilterTopValidateFilterDetails: () => boolean;
   export let localeCalendarHeader: Array<string>;
@@ -55,7 +55,7 @@
                 <a
                   class:disabled={isFilterItemSelected(
                     currentFilter,
-                    filterType.type
+                    filterType.type,
                   )}
                   class="dropdown-item"
                   href="#"

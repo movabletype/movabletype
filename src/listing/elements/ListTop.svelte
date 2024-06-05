@@ -53,7 +53,7 @@
       if (!args.notCallListReady) {
         jQuery(window).trigger("listReady");
       }
-    }
+    },
   );
 
   const changeLimit = (e: Event): void => {

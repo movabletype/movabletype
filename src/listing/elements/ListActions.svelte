@@ -88,7 +88,7 @@
   };
 
   const getAction = (
-    actionId: string
+    actionId: string,
   ):
     | Listing.ButtonAction
     | Listing.ListAction
@@ -137,8 +137,8 @@
       window.trans(
         "You did not select any [_1] to [_2].",
         plural,
-        selectedActionPhrase
-      )
+        selectedActionPhrase,
+      ),
     );
   };
 
@@ -147,8 +147,8 @@
       window.trans(
         "You can only act upon a minimum of [_1] [_2].",
         (selectedAction && selectedAction.min) || "",
-        plural
-      )
+        plural,
+      ),
     );
   };
 
@@ -157,8 +157,8 @@
       window.trans(
         "You can only act upon a maximum of [_1] [_2].",
         (selectedAction && selectedAction.max) || "",
-        plural
-      )
+        plural,
+      ),
     );
   };
 
@@ -169,14 +169,14 @@
       return window.trans(
         "Are you sure you want to [_2] this [_1]?",
         singular,
-        selectedActionPhrase
+        selectedActionPhrase,
       );
     } else {
       return window.trans(
         "Are you sure you want to [_3] the [_1] selected [_2]?",
         checkedRowCount.toString(),
         plural,
-        selectedActionPhrase
+        selectedActionPhrase,
       );
     }
   };

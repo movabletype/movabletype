@@ -38,7 +38,7 @@
           "[_1] - [_2] of [_3]",
           store.getListStart().toString(),
           store.getListEnd().toString(),
-          store.count.toString()
+          store.count.toString(),
         )}
       </span>
     </th>

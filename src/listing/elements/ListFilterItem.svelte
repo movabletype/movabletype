@@ -10,12 +10,12 @@
   export let item: Listing.Item;
   export let listFilterTopAddFilterItemContent: (
     itemIndex: string,
-    contentIndex: string
+    contentIndex: string,
   ) => void;
   export let listFilterTopRemoveFilterItem: (itemIndex: string) => void;
   export let listFilterTopRemoveFilterItemContent: (
     itemIndex: string,
-    contentIndex: string
+    contentIndex: string,
   ) => void;
   export let localeCalendarHeader: Array<string>;
 
@@ -59,7 +59,7 @@
       });
     listFilterTopAddFilterItemContent(
       itemIndex.toString(),
-      contentIndex.toString()
+      contentIndex.toString(),
     );
     initializeDateOption();
     initializeOptionWithBlank();
@@ -82,7 +82,7 @@
     while (
       !Object.prototype.hasOwnProperty.call(
         element.dataset,
-        "mtListItemContentIndex"
+        "mtListItemContentIndex",
       )
     ) {
       if (element.parentElement) {
@@ -198,7 +198,7 @@
     const contentIndex = getListItemContentIndex(target);
     listFilterTopRemoveFilterItemContent(
       itemIndex.toString(),
-      contentIndex.toString()
+      contentIndex.toString(),
     );
   };
 </script>

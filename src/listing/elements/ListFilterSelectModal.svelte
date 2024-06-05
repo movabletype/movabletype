@@ -47,12 +47,12 @@
   const removeFilter = (e: Event): boolean | void => {
     const filterData = (
       (e.target as HTMLElement).closest(
-        "[data-mt-list-filter-label]"
+        "[data-mt-list-filter-label]",
       ) as HTMLElement
     ).dataset;
     const message = window.trans(
       "Are you sure you want to remove filter '[_1]'?",
-      filterData.mtListFilterLabel || ""
+      filterData.mtListFilterLabel || "",
     );
     if (confirm(message) == false) {
       return false;

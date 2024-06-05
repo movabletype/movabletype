@@ -20,7 +20,7 @@
     actions:
       | Listing.ButtonActions
       | Listing.ListActions
-      | Listing.MoreListActions
+      | Listing.MoreListActions,
   ): Listing.ButtonActions | Listing.ListActions | Listing.MoreListActions => {
     const mobileActions = {};
     Object.keys(actions).forEach((key) => {
