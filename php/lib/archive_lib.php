@@ -22,6 +22,9 @@ function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
 }
 
 function _get_join_on($ctx, $at, $blog_id, $cat = NULL, $cat_field_id = NULL) {
+
+    trigger_error('function _get_join_on is deprecated', E_USER_DEPRECATED);
+
     $maps = $ctx->mt->db()->fetch_templatemap(array(
         'blog_id' => $blog_id,
         'content_type_id' => $ctx->stash('content_type')->id,
@@ -49,7 +52,7 @@ function _get_join_on($ctx, $at, $blog_id, $cat = NULL, $cat_field_id = NULL) {
 
         $join_on .= "join mt_cf_idx cat_cf_idx";
         $join_on .= " on cd_id = cat_cf_idx.cf_idx_content_data_id";
-        $join_on .= " and cat_cf_idx.cf_idx_content_field_id = $cat_field_id";
+        $join_on .= " and cat_cf_idx.cf_idx_content_field_id = ". $cat_field_id;
         $join_on .= " and cat_cf_idx.cf_idx_value_integer = $cat_id\n";
 
         $join_on .= "join mt_category";
@@ -65,7 +68,7 @@ function _get_join_on($ctx, $at, $blog_id, $cat = NULL, $cat_field_id = NULL) {
     return array ($dt_target_col, $cat_target_col, $join_on, isset($dt_field_id) ? $dt_field_id : null);
 }
 
-function _get_content_type_filter($args) {
+function _get_content_type_filter($args, &$bind) {
     $mt = MT::get_instance();
     $ctx =& $mt->context();
     if (isset($args['content_type']) && $args['content_type']) {
@@ -73,20 +76,70 @@ function _get_content_type_filter($args) {
             $content_type = $mt->db()->fetch_content_type($args['content_type']);
         }
         if (isset($content_type)) {
-            $content_type_filter = 'and cd_content_type_id = ' . $args['content_type'];
+            return 'cd_content_type_id = '. $mt->db()->ph('cd_content_type_id', $bind, $args['content_type']);
         }
         else {
             $content_types = $mt->db()->fetch_content_types($args);
             if (isset($content_types)) {
-                $content_type = $content_types[0];
-                $content_type_filter = 'and cd_content_type_id = ' . $content_type->id;
+                return 'cd_content_type_id = '. $mt->db()->ph('cd_content_type_id', $bind, $content_types[0]->id);
             }
         }
     }
     elseif ($ctx->stash('content_type')) {
-        $content_type_filter = 'and cd_content_type_id = ' . $ctx->stash('content_type')->id;
+        return 'cd_content_type_id = '. $mt->db()->ph('cd_content_type_id', $bind, $ctx->stash('content_type')->id);
     }
-    return $content_type_filter;
+    return;
+}
+
+trait ContentTypeArchiverUtility {
+
+    protected function get_join_on($at, $blog_id, &$bind=[], $cat=null, $cat_field_id=null) {
+
+        $mt = MT::get_instance();
+        $ctx = $mt->context();
+        $mtdb = $mt->db();
+        $maps = $ctx->mt->db()->fetch_templatemap([
+            'blog_id' => $blog_id,
+            'content_type_id' => $ctx->stash('content_type')->id,
+            'preferred' => 1,
+            'type' => $at
+        ]);
+        if (!empty($maps) && is_array($maps)) {
+            $dt_field_id = $maps[0]->templatemap_dt_field_id;
+            if ($cat) {
+                $cat_field_id = $maps[0]->templatemap_cat_field_id;
+            }
+        }
+
+        $joins = [];
+        if (isset($dt_field_id) && $dt_field_id) {
+            $joins[] = 'join mt_cf_idx dt_cf_idx on '. implode(' and ', [
+                'cd_id = dt_cf_idx.cf_idx_content_data_id',
+                'dt_cf_idx.cf_idx_content_field_id = '.
+                                                $mtdb->ph('dt_cf_idx_cf_idx_content_field_id', $bind, $dt_field_id),
+            ]);
+            $dt_target_col = 'dt_cf_idx.cf_idx_value_datetime';
+        }
+
+        $cols = [];
+
+        if ($cat) {
+            $cat_target_col = 'cat_cf_idx.cf_idx_value_integer';
+            $joins[] = 'join mt_cf_idx cat_cf_idx on '. implode(' and ', [
+                'cd_id = cat_cf_idx.cf_idx_content_data_id',
+                'cat_cf_idx.cf_idx_content_field_id = '.
+                                                $mtdb->ph('cat_cf_idx_cf_idx_content_field_id', $bind, $cat_field_id),
+                $cat_target_col. ' = '. $mtdb->ph('cat_cf_idx_cf_idx_value_integer', $bind, $cat->category_id)
+            ]);
+            $joins[] = 'join mt_category on '. implode(' and ', [
+                'category_id = '. $cat_target_col,
+                'category_id = '. $mtdb->ph('category_id', $bind, $cat->category_id),
+            ]);
+            $cols['cat'] = $cat_target_col;
+        }
+        $cols['dt'] = $dt_target_col ?? 'cd_authored_on';
+        return [implode(' ', $joins), $cols];
+    }
 }
 
 interface ArchiveType {
@@ -205,21 +258,21 @@ class IndividualArchiver implements ArchiveType {
 
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
-        $blog_id = $args['blog_id'];
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
-        $sql = "
-                entry_blog_id = $blog_id
-                and entry_status = 2
-                and entry_class = 'entry'
-                order by entry_authored_on $order, entry_id asc";
+        $bind = [];
+        $sql = implode(' ', [
+            'entry_blog_id = '. $mt->db()->ph('entry_blog_id', $bind, $args['blog_id']),
+            "and entry_status = 2 and entry_class = 'entry'",
+            "order by entry_authored_on $order, entry_id asc"
+        ]);
         $extras = array();
         $extras['limit'] = isset($args['lastn']) ? $args['lastn'] : -1;
         $extras['offset'] = isset($args['offset']) ? $args['offset'] : -1;
 
         require_once('class.mt_entry.php');
         $entry = new Entry();
-        $results = $entry->Find($sql, false, false, $extras);
+        $results = $entry->Find($sql, $bind, false, $extras);
         return empty($results) ? null : array($results, null, null);
     }
 
@@ -282,21 +335,21 @@ class PageArchiver extends IndividualArchiver {
 
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
-        $blog_id = $args['blog_id'];
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
-        $sql = "
-                entry_blog_id = $blog_id
-                and entry_status = 2
-                and entry_class = 'page'
-                order by entry_authored_on $order, entry_id asc";
+        $bind = [];
+        $sql = implode(' ', [
+            'entry_blog_id = '. $mt->db()->ph('entry_blog_id', $bind, $args['blog_id']),
+            "and entry_status = 2 and entry_class = 'page'",
+            "order by entry_authored_on $order, entry_id asc"
+        ]);
         $extras = array();
         $extras['limit'] = isset($args['lastn']) ? $args['lastn'] : -1;
         $extras['offset'] = isset($args['offset']) ? $args['offset'] : -1;
 
         require_once('class.mt_page.php');
         $page = new Page();
-        $results = $page->Find($sql, false, false, $extras);
+        $results = $page->Find($sql, $bind, false, $extras);
         return empty($results) ? null : array($results, null, null);
     }
 
@@ -546,27 +599,22 @@ class YearlyArchiver extends DateBasedArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
 
-        $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
         $year_ext = $mt->db()->apply_extract_date('year', 'entry_authored_on');
 
-        $sql = "
-                select count(*) as entry_count,
-                       $year_ext as y
-                  from mt_entry
-                 where entry_blog_id = $blog_id
-                   and entry_status = 2
-                   and entry_class = 'entry'
-                 group by
-                       $year_ext
-                 order by
-                       $year_ext $order";
+        $bind = [];
+        $sql = implode(' ', [
+            "select count(*) as entry_count, $year_ext as y from mt_entry",
+            'where entry_blog_id = '. $mt->db()->ph('entry_blog_id', $bind, $args['blog_id']),
+            "and entry_status = 2 and entry_class = 'entry'",
+            "group by $year_ext order by $year_ext $order"
+        ]);
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mt->db()->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -631,17 +679,25 @@ class MonthlyArchiver extends DateBasedArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
+
+        $bind = [];
+        $cond = [];
+        $cond[] = 'entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'entry_status = 2';
+        $cond[] = "entry_class = 'entry'";
 
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and (entry_authored_on between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    'entry_authored_on between %s and %s',
+                    $mtdb->ph('entry_authored_on1', $bind, $ts),
+                    $mtdb->ph('entry_authored_on2', $bind, $tsend)
+                );
             }
         }
-        $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
@@ -650,14 +706,13 @@ class MonthlyArchiver extends DateBasedArchiver {
 
         $sql = implode(' ', array(
             "select count(*) as entry_count, $year_ext as y, $month_ext as m from mt_entry",
-            "where entry_blog_id = $blog_id and entry_status = 2 and entry_class = 'entry'",
-            isset($date_filter) ? $date_filter : '',
+            'where '. implode(' and ', $cond),
             "group by $year_ext, $month_ext order by $year_ext $order, $month_ext $order"
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 }
@@ -717,18 +772,26 @@ class DailyArchiver extends DateBasedArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
+
+        $bind = [];
+        $cond = [];
+        $cond[] = 'entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'entry_status = 2';
+        $cond[] = "entry_class = 'entry'";
 
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and (entry_authored_on between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    'entry_authored_on between %s and %s',
+                    $mtdb->ph('entry_authored_on1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph('entry_authored_on2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
 
-        $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
@@ -742,16 +805,13 @@ class DailyArchiver extends DateBasedArchiver {
             "$month_ext as m,",
             "$day_ext as d",
             'from mt_entry',
-            "where entry_blog_id = $blog_id",
-            'and entry_status = 2',
-            "and entry_class = 'entry'",
-            isset($date_filter) ? $date_filter : '',
+            'where '. implode(' and ', $cond),
             "group by $year_ext, $month_ext, $day_ext order by $year_ext $order, $month_ext $order, $day_ext $order"
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
 
         return empty($results) ? null : $results->GetArray();
     }
@@ -831,31 +891,38 @@ class WeeklyArchiver extends DateBasedArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
+
+        $bind = [];
+        $cond = [];
+        $cond[] = 'entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'entry_status = 2';
+        $cond[] = "entry_class = 'entry'";
 
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and (entry_authored_on between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    'entry_authored_on between %s and %s',
+                    $mtdb->ph('entry_authored_on1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph('entry_authored_on2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
 
-        $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
         $sql = implode(' ', array(
             "select count(*) as entry_count, entry_week_number from mt_entry",
-            "where entry_blog_id = $blog_id and entry_status = 2 and entry_class = 'entry'",
-            isset($date_filter) ? $date_filter : '',
+            'where '. implode(' and ', $cond),
             "group by entry_week_number order by entry_week_number $order"
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
 
         return empty($results) ? null : $results->GetArray();
     }
@@ -957,25 +1024,27 @@ class AuthorBasedArchiver implements ArchiveType {
 
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
-        $blog_id = $args['blog_id'];
+        $mtdb = $mt->db();
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
-        $sql = "
-            select count(*) as entry_count,
-                   entry_author_id,
-                   author_name
-              from mt_entry
-                   join mt_author on entry_author_id = author_id
-             where entry_blog_id = $blog_id
-               and entry_status = 2
-               and entry_class = 'entry'
-             group by
-                   entry_author_id,
-                   author_name
-             order by
-                   author_name $order";
+        $bind = [];
+        $sql = implode(' ', [
+            "select count(*) as entry_count,
+                    entry_author_id,
+                    author_name
+                from mt_entry
+                    join mt_author on entry_author_id = author_id",
+            'where entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']),
+            "and entry_status = 2 and entry_class = 'entry'",
+            "group by
+                    entry_author_id,
+                    author_name
+                order by
+                    author_name $order"
+        ]);
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -1186,8 +1255,14 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
+        $bind = [];
+        $cond = [];
+        $cond[] = 'entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'entry_status = 2';
+        $cond[] = "entry_class = 'entry'";
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
         $year_ext = $mt->db()->apply_extract_date('year', 'entry_authored_on');
@@ -1196,20 +1271,19 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
             $author = $ctx->stash('archive_author');
             $author or $author = $ctx->stash('author');
             if (isset($author)) {
-                $author_filter = " and entry_author_id=".$author->author_id;
+                $cond[] = 'entry_author_id = '. $mtdb->ph('entry_author_id', $bind, $author->author_id);
             }
         #}
         $sql = implode(' ', array(
             "select count(*) as record_count, $year_ext as y, entry_author_id, author_name",
             "from mt_entry join mt_author on entry_author_id = author_id",
-            "where entry_blog_id = $blog_id and entry_class = 'entry' and entry_status = 2",
-            isset($author_filter) ? $author_filter : '',
+            'where '. implode(' and ', $cond),
             "group by $year_ext, entry_author_id, author_name order by author_name $auth_order, $year_ext $order"
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -1271,8 +1345,14 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
+        $bind = [];
+        $cond = [];
+        $cond[] = 'entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'entry_status = 2';
+        $cond[] = "entry_class = 'entry'";
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
         $year_ext = $mt->db()->apply_extract_date('year', 'entry_authored_on');
@@ -1283,32 +1363,32 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
             $author = $ctx->stash('archive_author');
             $author or $author = $ctx->stash('author');
             if (isset($author)) {
-                $author_filter = " and entry_author_id=".$author->author_id;
+                $cond[] = 'entry_author_id = '. $mtdb->ph('entry_author_id', $bind, $author->author_id);
             }
         #}
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and (entry_authored_on between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    'entry_authored_on between %s and %s',
+                    $mtdb->ph('entry_authored_on1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph('entry_authored_on2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
 
         $sql = implode(' ', array(
             "select count(*) as record_count, $year_ext as y, $month_ext as m, entry_author_id, author_name",
             'from mt_entry join mt_author on entry_author_id = author_id',
-            "where entry_blog_id = $blog_id and entry_status = 2 and entry_class = 'entry'",
-            isset($date_filter) ? $date_filter : '',
-            isset($author_filter) ? $author_filter : '',
+            'where '. implode(' and ', $cond),
             "group by $year_ext, $month_ext, entry_author_id, author_name",
             "order by author_name $auth_order, $year_ext $order, $month_ext $order",
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -1368,8 +1448,14 @@ class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
+        $bind = [];
+        $cond = [];
+        $cond[] = 'entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'entry_status = 2';
+        $cond[] = "entry_class = 'entry'";
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
         $year_ext = $mt->db()->apply_extract_date('year', 'entry_authored_on');
@@ -1377,54 +1463,51 @@ class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         $day_ext = $mt->db()->apply_extract_date('day', 'entry_authored_on');
 
         $index = $ctx->stash('index_archive');
-        $author_filter = '';
         #if (!$index) {
             $author = $ctx->stash('archive_author');
             $author or $author = $ctx->stash('author');
             if (isset($author)) {
-                $author_filter = " and entry_author_id=".$author->author_id;
+                $cond[] = 'entry_author_id = '. $mtdb->ph('entry_author_id', $bind, $author->author_id);
             }
         #}
-        $date_filter = '';
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and (entry_authored_on between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    'entry_authored_on between %s and %s',
+                    $mtdb->ph('entry_authored_on1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph('entry_authored_on2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
 
-        $sql = "
-            select count(*) as entry_count,
-                   $year_ext as y,
-                   $month_ext as m,
-                   $day_ext as d,
-                   entry_author_id,
-                   author_name
-              from mt_entry
-                   join mt_author on entry_author_id = author_id
-             where entry_blog_id = $blog_id
-                   and entry_status = 2
-                   and entry_class = 'entry'
-                   $date_filter
-                   $author_filter
-             group by
-                   $year_ext,
-                   $month_ext,
-                   $day_ext,
-                   entry_author_id,
-                   author_name
-             order by
-                   author_name $auth_order,
-                   $year_ext $order,
-                   $month_ext $order,
-                   $day_ext $order";
+        $sql = implode(' ', [
+            "select count(*) as entry_count,
+                    $year_ext as y,
+                    $month_ext as m,
+                    $day_ext as d,
+                    entry_author_id,
+                    author_name
+                from mt_entry
+                    join mt_author on entry_author_id = author_id",
+            'where '. implode(' and ', $cond),
+            "group by
+                    $year_ext,
+                    $month_ext,
+                    $day_ext,
+                    entry_author_id,
+                    author_name
+                order by
+                    author_name $auth_order,
+                    $year_ext $order,
+                    $month_ext $order,
+                    $day_ext $order"
+        ]);
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -1492,8 +1575,14 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
+        $bind = [];
+        $cond = [];
+        $cond[] = 'entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'entry_status = 2';
+        $cond[] = "entry_class = 'entry'";
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
         $year_ext = $mt->db()->apply_extract_date('year', 'entry_authored_on');
@@ -1505,16 +1594,18 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
             $author = $ctx->stash('archive_author');
             $author or $author = $ctx->stash('author');
             if (isset($author)) {
-                $author_filter = " and entry_author_id=".$author->author_id;
+                $cond[] = 'entry_author_id = '. $mtdb->ph('entry_author_id', $bind, $author->author_id);
             }
         #}
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and (entry_authored_on between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    'entry_authored_on between %s and %s',
+                    $mtdb->ph('entry_authored_on1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph('entry_authored_on2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
 
@@ -1522,15 +1613,13 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
             "select count(*) as record_count, entry_week_number, entry_author_id, author_name",
             "from mt_entry", 
             "join mt_author on entry_author_id = author_id",
-            "where entry_blog_id = $blog_id and entry_status = 2 and entry_class = 'entry'",
-            isset($date_filter) ? $date_filter : '',
-            isset($author_filter) ? $author_filter : '',
+            'where '. implode(' and ', $cond),
             "group by entry_week_number, entry_author_id, author_name",
             "order by author_name $auth_order, entry_week_number $order"
         ));
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -1857,8 +1946,14 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
+        $bind = [];
+        $cond = [];
+        $cond[] = 'entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'entry_status = 2';
+        $cond[] = "entry_class = 'entry'";
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $cat_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
         $year_ext = $mt->db()->apply_extract_date('year', 'entry_authored_on');
@@ -1868,37 +1963,34 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and entry_authored_on between '$ts' and '$tsend'";
+                $cond[] = sprintf(
+                    'entry_authored_on between %s and %s',
+                    $mtdb->ph('entry_authored_on1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph('entry_authored_on2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
         #if (!$index) {
             $cat = $ctx->stash('archive_category');
             $cat or $cat = $ctx->stash('category');
             if (isset($cat)){
-                $cat_filter = " and placement_category_id=".$cat->category_id;
-
+                $cond[] = 'placement_category_id='. $mtdb->ph('placement_category_id', $bind, $cat->category_id);
             }
         #}
         $sql = join(' ', array(
             "select count(*) as entry_count,
-                $year_ext as y,
-                placement_category_id,
-                category_label
-            from mt_entry join mt_placement on entry_id = placement_entry_id
-            join mt_category on placement_category_id = category_id
-            where entry_blog_id = $blog_id
-                and entry_status = 2
-                and entry_class = 'entry'",
-            isset($cat_filter) ? $cat_filter : '',
-            isset($date_filter) ? $date_filter : '',
+                    $year_ext as y,
+                    placement_category_id,
+                    category_label
+                from mt_entry join mt_placement on entry_id = placement_entry_id
+                join mt_category on placement_category_id = category_id",
+            'where '. implode(' and ', $cond),
             "group by $year_ext, placement_category_id, category_label",
             "order by category_label $cat_order, $year_ext $order"
         ));
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -1960,29 +2052,36 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $cat_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
         $year_ext = $mt->db()->apply_extract_date('year', 'entry_authored_on');
         $month_ext = $mt->db()->apply_extract_date('month', 'entry_authored_on');
+
+        $bind = [];
+        $cond = [];
+        $cond[] = 'entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'entry_status = 2';
+        $cond[] = "entry_class = 'entry'";
 
         $index = $ctx->stash('index_archive');
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and entry_authored_on between '$ts' and '$tsend'";
+                $cond[] = sprintf(
+                    'entry_authored_on between %s and %s',
+                    $mtdb->ph('entry_authored_on1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph('entry_authored_on2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
         #if (!$index) {
             $cat = $ctx->stash('archive_category');
             $cat or $cat = $ctx->stash('category');
             if(isset($cat)) {
-                $cat_filter = " and placement_category_id=".$cat->category_id;
-
+                $cond[] = 'placement_category_id='. $mtdb->ph('placement_category_id', $bind, $cat->category_id);
             }
         #}
         $sql = implode(' ', array(
@@ -1993,16 +2092,14 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
             'category_label',
             "from mt_entry join mt_placement on entry_id = placement_entry_id",
             "join mt_category on placement_category_id = category_id",
-            "where entry_blog_id = $blog_id and entry_status = 2 and entry_class = 'entry'",
-            isset($cat_filter) ? $cat_filter : '',
-            isset($date_filter) ? $date_filter : '',
+            'where '. implode(' and ', $cond),
             "group by $year_ext, $month_ext, placement_category_id, category_label",
             "order by category_label $cat_order, $year_ext $order, $month_ext $order"
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -2063,8 +2160,14 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
+        $bind = [];
+        $cond = [];
+        $cond[] = 'entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'entry_status = 2';
+        $cond[] = "entry_class = 'entry'";
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $cat_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
         $year_ext = $mt->db()->apply_extract_date('year', 'entry_authored_on');
@@ -2076,32 +2179,31 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and entry_authored_on between '$ts' and '$tsend'";
+                $cond[] = sprintf(
+                    'entry_authored_on between %s and %s',
+                    $mtdb->ph('entry_authored_on1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph('entry_authored_on2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
         #if (!$index) {
             $cat = $ctx->stash('archive_category');
             $cat or $cat = $ctx->stash('category');
             if(isset($cat)) {
-                $cat_filter = " and placement_category_id=".$cat->category_id;
-
+                $cond[] = 'placement_category_id = '. $mtdb->ph('placement_category_id', $bind, $cat->category_id);
             }
         #}
         $sql = implode(' ', array(
             "select count(*) as entry_count, $year_ext as y, $month_ext as m, $day_ext as d, placement_category_id, category_label",
             'from mt_entry join mt_placement on entry_id = placement_entry_id',
             "join mt_category on placement_category_id = category_id",
-            "where entry_blog_id = $blog_id and entry_status = 2 and entry_class = 'entry'",
-            isset($cat_filter) ? $cat_filter : '',
-            isset($date_filter) ? $date_filter : '',
+            'where '. implode(' and ', $cond),
             "group by placement_category_id, $year_ext, $month_ext, $day_ext, category_label",
             "order by category_label $cat_order, $year_ext $order, $month_ext $order, $day_ext $order",
         ));
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }    
 
@@ -2172,8 +2274,14 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
+        $bind = [];
+        $cond = [];
+        $cond[] = 'entry_blog_id = '. $mtdb->ph('entry_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'entry_status = 2';
+        $cond[] = "entry_class = 'entry'";
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $cat_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
@@ -2182,32 +2290,31 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and entry_authored_on between '$ts' and '$tsend'";
+                $cond[] = sprintf(
+                    'entry_authored_on between %s and %s',
+                    $mtdb->ph('entry_authored_on1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph('entry_authored_on2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
         #if (!$index) {
             $cat = $ctx->stash('archive_category');
             $cat or $cat = $ctx->stash('category');
             if(isset($cat)) {
-                $cat_filter = " and placement_category_id=".$cat->category_id;
-
+                $cond[] = 'placement_category_id = '. $mtdb->ph('placement_category_id', $bind, $cat->category_id);
             }
         #}
         $sql = implode(' ', array(
             "select count(*) as entry_count, entry_week_number, placement_category_id, category_label",
             "from mt_entry join mt_placement on entry_id = placement_entry_id",
             "join mt_category on placement_category_id = category_id",
-            "where entry_blog_id = $blog_id and entry_status = 2 and entry_class = 'entry'",
-            isset($cat_filter) ? $cat_filter : '',
-            isset($date_filter) ? $date_filter : '',
+            'where '. implode(' and ', $cond),
             "group by entry_week_number, placement_category_id, category_label",
             "order by category_label $cat_order, entry_week_number $order"
         ));
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -2250,6 +2357,9 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
 }
 
 class ContentTypeArchiver implements ArchiveType {
+
+    use ContentTypeArchiverUtility;
+
     public function get_label($args = null) {
         $mt = MT::get_instance();
         return $mt->translate("CONTENTTYPE_ADV");
@@ -2272,46 +2382,54 @@ class ContentTypeArchiver implements ArchiveType {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
-        list($results) = $this->get_archive_list_data($args);
+        $results = $this->get_archive_list_data($args);
         return $results;
     }
 
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        $blog_id = $args['blog_id'];
-        $at = $args['archive_type'];
+        $mtdb = $mt->db();
+
+        $bind = [];
+        $cond = [];
+        list($join_on, $cols) = $this->get_join_on($args['archive_type'], $args['blog_id'], $bind);
+        $dt_target_col = $cols['dt'];
+
+        $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'cd_status = 2';
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
-        $content_type_filter = _get_content_type_filter($args);
-
-        list($dt_target_col, $cat_target_col, $join_on, $dt_field_id) = _get_join_on($ctx, $at, $blog_id);
-        $content_field_filder = '';
-        if (isset($dt_field_id) && $dt_field_id) {
-            $content_field_filter = "and dt_cf_idx.cf_idx_content_field_id = $dt_field_id";
+        if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+            $cond[] = $content_type_filter;
         }
 
-        $sql = implode(' ' , array(
-            "cd_blog_id = $blog_id and cd_status = 2",
-            isset($content_type_filter) ? $content_type_filter : '',
-            isset($content_field_filter) ? $content_field_filter : '',
+        $sql = implode(' ', [
+            "select *",
+            'from mt_cd',
+            $join_on,
+            'where '. implode(' and ', $cond),
             "order by $dt_target_col $order, cd_id asc"
-        ));
-        $extras = array();
-        $extras['limit'] = isset($args['lastn']) ? $args['lastn'] : -1;
-        $extras['offset'] = isset($args['offset']) ? $args['offset'] : -1;
-        if (isset($dt_field_id) && $dt_field_id) {
-            $extras['join'] = array(
-                'mt_cf_idx dt_cf_idx' => array(
-                    'condition' => 'cd_id = dt_cf_idx.cf_idx_content_data_id'
-                )
-            );
-        }
+        ]);
+
+        $recordset = $mtdb->SelectLimit($sql, $args['lastn'] ?? -1, $args['offset'] ?? -1, $bind);
+        $results = [];
 
         require_once('class.mt_content_data.php');
-        $content = new ContentData();
-        $results = $content->Find($sql, false, false, $extras);
-        return empty($results) ? null : array($results, null, null);
+        $field_names = array_keys($recordset->fields);
+        while (!$recordset->EOF) {
+            $cd = new ContentData();
+            foreach($field_names as $field) {
+                if (!is_numeric($field)) {
+                    $field_lc = strtolower($field);
+                    $cd->$field_lc = $recordset->fields($field);
+                }
+            }
+            $results[] = $cd;
+            $recordset->MoveNext();
+        }
+        return empty($results) ? null : $results;
     }
 
     public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
@@ -2364,6 +2482,8 @@ class ContentTypeArchiver implements ArchiveType {
 }
 
 abstract class ContentTypeDateBasedArchiver implements ArchiveType {
+
+    use ContentTypeArchiverUtility;
 
     abstract protected function get_update_link_args($results);
     abstract protected function get_helper();
@@ -2592,22 +2712,30 @@ class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
-        $at = $args['archive_type'];
+        $bind = [];
+        list($join_on, $cols) = $this->get_join_on($args['archive_type'], $args['blog_id'], $bind);
+        $dt_target_col = $cols['dt'];
+        $cond = [];
+        $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'cd_status = 2';
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
-        $content_type_filter = _get_content_type_filter($args);
-
-        list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
+        if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+            $cond[] = $content_type_filter;
+        }
 
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and ($dt_target_col between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    $dt_target_col. ' between %s and %s',
+                    $mtdb->ph($dt_target_col. '1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph($dt_target_col. '2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
 
@@ -2622,17 +2750,14 @@ class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
             "$day_ext as d",
             'from mt_cd',
             $join_on,
-            "where cd_blog_id = $blog_id",
-            'and cd_status = 2',
-           isset($date_filter) ? $date_filter : '',
-           isset($content_type_filter) ? $content_type_filter : '',
-           "group by $year_ext, $month_ext, $day_ext",
-           "order by $year_ext $order, $month_ext $order, $day_ext $order"
+            'where '. implode(' and ', $cond),
+            "group by $year_ext, $month_ext, $day_ext",
+            "order by $year_ext $order, $month_ext $order, $day_ext $order"
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
 
         return empty($results) ? null : $results->GetArray();
     }
@@ -2712,22 +2837,31 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
-        $at = $args['archive_type'];
+        $bind = [];
+        list($join_on, $cols) = $this->get_join_on($args['archive_type'], $args['blog_id'], $bind);
+        $dt_target_col = $cols['dt'];
+
+        $cond = [];
+        $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'cd_status = 2';
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
-        $content_type_filter = _get_content_type_filter($args);
-
-        list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
+        if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+            $cond[] = $content_type_filter;
+        }
 
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and ($dt_target_col between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    $dt_target_col. ' between %s and %s',
+                    $mtdb->ph($dt_target_col. '1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph($dt_target_col. '2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
         $week_number = $dt_target_col === 'cd_authored_on' ? 'cd_week_number' : 'cf_idx_value_integer';
@@ -2736,16 +2870,14 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
             "select count(*) as cd_count, $week_number week_number",
             "from mt_cd",
             $join_on,
-            "where cd_blog_id = $blog_id and cd_status = 2",
-            isset($date_filter) ? $date_filter : '',
-            $content_type_filter,
+            'where '. implode(' and ', $cond),
             "group by $week_number",
             "order by $week_number $order",
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
 
         return empty($results) ? null : $results->GetArray();
     }
@@ -2807,22 +2939,30 @@ class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
-        $at = $args['archive_type'];
+        $bind = [];
+        list($join_on, $cols) = $this->get_join_on($args['archive_type'], $args['blog_id'], $bind);
+        $dt_target_col = $cols['dt'];
+        $cond = [];
+        $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'cd_status = 2';
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
-        $content_type_filter = _get_content_type_filter($args);
-
-        list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
+        if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+            $cond[] = $content_type_filter;
+        }
 
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and ($dt_target_col between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    $dt_target_col. ' between %s and %s',
+                    $mtdb->ph($dt_target_col. '1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph($dt_target_col. '2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
 
@@ -2833,16 +2973,14 @@ class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
             "select count(*) as cd_count, $year_ext as y, $month_ext as m",
             "from mt_cd",
             $join_on,
-            "where cd_blog_id = $blog_id and cd_status = 2",
-            isset($date_filter) ? $date_filter : '',
-            isset($content_type_filter) ? $content_type_filter : '',
+            'where '. implode(' and ', $cond),
             "group by $year_ext, $month_ext",
             "order by $year_ext $order, $month_ext $order"
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 }
@@ -2909,33 +3047,33 @@ class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
-        $at = $args['archive_type'];
+        $bind = [];
+        list($join_on, $cols) = $this->get_join_on($args['archive_type'], $args['blog_id'], $bind);
+        $dt_target_col = $cols['dt'];
+        $cond = [];
+        $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'cd_status = 2';
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
 
-        $content_type_filter = _get_content_type_filter($args);
-
-        list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
+        if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+            $cond[] = $content_type_filter;
+        }
 
         $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
 
-        $sql = "
-                select count(*) as cd_count,
-                       $year_ext as y
-                  from mt_cd
-                  $join_on
-                 where cd_blog_id = $blog_id
-                   and cd_status = 2
-                   $content_type_filter
-                 group by
-                       $year_ext
-                 order by
-                       $year_ext $order";
+        $sql = implode(' ', [
+            "select count(*) as cd_count, $year_ext as y from mt_cd",
+            $join_on,
+            'where '. implode(' and ', $cond),
+            "group by $year_ext order by $year_ext $order",
+        ]);
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -3041,22 +3179,29 @@ class ContentTypeAuthorArchiver implements ArchiveType {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        $blog_id = $args['blog_id'];
+        $mtdb = $mt->db();
+
+        $bind = [];
+        $cond = [];
+        $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'cd_status = 2';
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
-        $content_type_filter = _get_content_type_filter($args);
+        if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+            $cond[] = $content_type_filter;
+        }
 
         $sql = implode(' ', array(
             'select count(*) as cd_count, cd_author_id, author_name',
             'from mt_cd',
             'join mt_author on cd_author_id = author_id',
-            "where cd_blog_id = $blog_id and cd_status = 2",
-            isset($content_type_filter) ? $content_type_filter : '',
+            'where '. implode(' and ', $cond),
             "group by cd_author_id, author_name order by author_name $order"
         ));
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -3287,38 +3432,42 @@ class ContentTypeAuthorYearlyArchiver extends ContentTypeDateBasedAuthorArchiver
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
-        $at = $args['archive_type'];
+        $bind = [];
+        list($join_on, $cols) = $this->get_join_on($args['archive_type'], $args['blog_id'], $bind);
+        $dt_target_col = $cols['dt'];
+        $cond = [];
+        $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'cd_status = 2';
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
-        $content_type_filter = _get_content_type_filter($args);
-
-        list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
+        if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+            $cond[] = $content_type_filter;
+        }
 
         $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
 
         $author = $ctx->stash('archive_author');
         $author or $author = $ctx->stash('author');
         if (isset($author)) {
-            $author_filter = " and cd_author_id=".$author->author_id;
+            $cond[] = 'cd_author_id = '. $mtdb->ph('cd_author_id', $bind, $author->author_id);
         }
 
         $sql = implode(' ', array(
             "select count(*) as record_count, $year_ext as y, cd_author_id, author_name",
             "from mt_cd",
             "join mt_author on cd_author_id = author_id $join_on",
-            "where cd_blog_id = $blog_id and cd_status = 2",
-            isset($author_filter) ? $author_filter : '',
-            isset($content_type_filter) ? $content_type_filter : '',
+            'where '. implode(' and ', $cond),
             "group by $year_ext, cd_author_id, author_name",
             "order by author_name $auth_order, $year_ext $order",
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -3380,15 +3529,21 @@ class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchive
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
-        $at = $args['archive_type'];
+        $bind = [];
+        list($join_on, $cols) = $this->get_join_on($args['archive_type'], $args['blog_id'], $bind);
+        $dt_target_col = $cols['dt'];
+        $cond = [];
+        $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'cd_status = 2';
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
-        $content_type_filter = _get_content_type_filter($args);
-
-        list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
+        if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+            $cond[] = $content_type_filter;
+        }
 
         $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
         $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
@@ -3396,16 +3551,18 @@ class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchive
         $author = $ctx->stash('archive_author');
         $author or $author = $ctx->stash('author');
         if (isset($author)) {
-            $author_filter = " and cd_author_id=".$author->author_id;
+            $cond[] = 'cd_author_id = '. $mtdb->ph('cd_author_id', $bind, $author->author_id);
         }
 
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and ($dt_target_col between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    $dt_target_col. ' between %s and %s',
+                    $mtdb->ph($dt_target_col. '1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph($dt_target_col. '2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
 
@@ -3413,17 +3570,14 @@ class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchive
             "select count(*) as record_count, $year_ext as y, $month_ext as m, cd_author_id, author_name",
             "from mt_cd",
             "join mt_author on cd_author_id = author_id $join_on",
-            "where cd_blog_id = $blog_id and cd_status = 2",
-            isset($date_filter) ? $date_filter : '',
-            isset($author_filter) ? $author_filter : '',
-            isset($content_type_filter) ? $content_type_filter : '',
+            'where '. implode(' and ', $cond),
             "group by $year_ext, $month_ext, cd_author_id, author_name",
             "order by author_name $auth_order, $year_ext $order, $month_ext $order"
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -3483,15 +3637,22 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
-        $at = $args['archive_type'];
+        $bind = [];
+        list($join_on, $cols) = $this->get_join_on($args['archive_type'], $args['blog_id'], $bind);
+        $dt_target_col = $cols['dt'];
+        $cond = [];
+        $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'cd_status = 2';
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
-        $content_type_filter = _get_content_type_filter($args);
+        if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+            $cond[] = $content_type_filter;
+        }
 
-        list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
 
         $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
         $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
@@ -3500,16 +3661,18 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
         $author = $ctx->stash('archive_author');
         $author or $author = $ctx->stash('author');
         if (isset($author)) {
-            $author_filter = " and cd_author_id=".$author->author_id;
+            $cond[] = 'cd_author_id = '. $mtdb->ph('cd_author_id', $bind, $author->author_id);
         }
 
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and ($dt_target_col between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    $dt_target_col. ' between %s and %s',
+                    $mtdb->ph($dt_target_col. '1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph($dt_target_col. '2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
 
@@ -3517,17 +3680,14 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
             "select count(*) as cd_count, $year_ext as y, $month_ext as m, $day_ext as d, cd_author_id, author_name",
             "from mt_cd",
             "join mt_author on cd_author_id = author_id $join_on",
-            "where cd_blog_id = $blog_id and cd_status = 2",
-            isset($date_filter) ? $date_filter : '',
-            isset($author_filter) ? $author_filter : '',
-            isset($content_type_filter) ? $content_type_filter : '',
+            'where '. implode(' and ', $cond),
             "group by $year_ext, $month_ext, $day_ext, cd_author_id, author_name",
             "order by author_name $auth_order, $year_ext $order, $month_ext $order, $day_ext $order"
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -3595,15 +3755,21 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
+        $mtdb = $mt->db();
 
-        $blog_id = $args['blog_id'];
-        $at = $args['archive_type'];
+        $bind = [];
+        list($join_on, $cols) = $this->get_join_on($args['archive_type'], $args['blog_id'], $bind);
+        $dt_target_col = $cols['dt'];
+        $cond = [];
+        $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $args['blog_id']);
+        $cond[] = 'cd_status = 2';
+
         $order = !empty($args['sort_order']) && $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
         $auth_order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
-        $content_type_filter = _get_content_type_filter($args);
-
-        list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id);
+        if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+            $cond[] = $content_type_filter;
+        }
 
         $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
         $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
@@ -3612,16 +3778,18 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
         $author = $ctx->stash('archive_author');
         $author or $author = $ctx->stash('author');
         if (isset($author)) {
-            $author_filter = " and cd_author_id=".$author->author_id;
+            $cond[] = 'cd_author_id = '. $mtdb->ph('cd_author_id', $bind, $author->author_id);
         }
 
         if ($ctx->stash('inside_archive_list')) {
             $ts = $ctx->stash('current_timestamp');
             $tsend = $ctx->stash('current_timestamp_end');
             if ($ts && $tsend) {
-                $ts = $mt->db()->ts2db($ts);
-                $tsend = $mt->db()->ts2db($tsend);
-                $date_filter = "and ($dt_target_col between '$ts' and '$tsend')";
+                $cond[] = sprintf(
+                    $dt_target_col. ' between %s and %s',
+                    $mtdb->ph($dt_target_col. '1', $bind, $mtdb->ts2db($ts)),
+                    $mtdb->ph($dt_target_col. '2', $bind, $mtdb->ts2db($tsend))
+                );
             }
         }
         $week_number = $dt_target_col == 'cd_authored_on' ? 'cd_week_number' : 'cf_idx_value_integer';
@@ -3630,15 +3798,12 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
             "select count(*) as record_count, $week_number week_number, cd_author_id, author_name",
             "from mt_cd",
             "join mt_author on cd_author_id = author_id $join_on",
-            "where cd_blog_id = $blog_id and cd_status = 2",
-            isset($date_filter) ? $date_filter : '',
-            isset($author_filter) ? $author_filter : '',
-            isset($content_type_filter) ? $content_type_filter : '',
+            'where '. implode(' and ', $cond),
             "group by $week_number, cd_author_id, author_name order by author_name $auth_order, $week_number $order"
         ));
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
-        $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+        $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
         return empty($results) ? null : $results->GetArray();
     }
 
@@ -3997,8 +4162,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-
-        $content_type_filter = _get_content_type_filter($args);
+        $mtdb = $mt->db();
 
         $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
@@ -4037,11 +4201,24 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
-                list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+                $bind = [];
+                list($join_on, $cols) = $this->get_join_on($at, $blog_id, $bind, $cat, $cat_field_id);
+                $dt_target_col = $cols['dt'];
+                $cat_target_col = $cols['cat'];
 
                 # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
-                if ( array_key_exists($join_on, $seen_join_on) ) continue;
-                $seen_join_on[$join_on] = 1;
+                $seen_id = $join_on. implode(':', array_values($bind));
+                if (array_key_exists($seen_id, $seen_join_on)) {
+                    continue;
+                }
+                $seen_join_on[$seen_id] = 1;
+
+                $cond = [];
+                $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $blog_id);
+                $cond[] = 'cd_status = 2';
+                if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+                    $cond[] = $content_type_filter;
+                }
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
 
@@ -4049,9 +4226,11 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                     $ts = $ctx->stash('current_timestamp');
                     $tsend = $ctx->stash('current_timestamp_end');
                     if ($ts && $tsend) {
-                        $ts = $mt->db()->ts2db($ts);
-                        $tsend = $mt->db()->ts2db($tsend);
-                        $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+                        $cond[] = sprintf(
+                            $dt_target_col. ' between %s and %s',
+                            $mtdb->ph($dt_target_col. '1', $bind, $mtdb->ts2db($ts)),
+                            $mtdb->ph($dt_target_col. '2', $bind, $mtdb->ts2db($tsend))
+                        );
                     }
                 }
 
@@ -4059,15 +4238,13 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                     "select count(*) as cd_count, $year_ext as y, $cat_target_col as category_id, category_label",
                     'from mt_cd',
                     $join_on,
-                    "where cd_blog_id = $blog_id and cd_status = 2",
-                    isset($date_filter) ? $date_filter : '',
-                    $content_type_filter,
+                    'where '. implode(' and ', $cond),
                     "group by $year_ext, $cat_target_col, category_label",
                     "order by category_label $cat_order, $year_ext $order"
                 ));
                 $limit = isset($args['lastn']) ? $args['lastn'] : -1;
                 $offset = isset($args['offset']) ? $args['offset'] : -1;
-                $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+                $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
                 if (!empty($results)) {
                     $array = $results->GetArray();
                     $categories = array_merge($categories, $array);
@@ -4135,8 +4312,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-
-        $content_type_filter = _get_content_type_filter($args);
+        $mtdb = $mt->db();
 
         $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
@@ -4175,11 +4351,24 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
-                list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+                $bind = [];
+                list($join_on, $cols) = $this->get_join_on($at, $blog_id, $bind, $cat, $cat_field_id);
+                $dt_target_col = $cols['dt'];
+                $cat_target_col = $cols['cat'];
 
                 # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
-                if ( array_key_exists($join_on, $seen_join_on) ) continue;
-                $seen_join_on[$join_on] = 1;
+                $seen_id = $join_on. implode(':', array_values($bind));
+                if (array_key_exists($seen_id, $seen_join_on)) {
+                    continue;
+                }
+                $seen_join_on[$seen_id] = 1;
+
+                $cond = [];
+                $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $blog_id);
+                $cond[] = 'cd_status = 2';
+                if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+                    $cond[] = $content_type_filter;
+                }
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
                 $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
@@ -4189,9 +4378,11 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                     $ts = $ctx->stash('current_timestamp');
                     $tsend = $ctx->stash('current_timestamp_end');
                     if ($ts && $tsend) {
-                        $ts = $mt->db()->ts2db($ts);
-                        $tsend = $mt->db()->ts2db($tsend);
-                        $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+                        $cond[] = sprintf(
+                            $dt_target_col. ' between %s and %s',
+                            $mtdb->ph($dt_target_col. '1', $bind, $mtdb->ts2db($ts)),
+                            $mtdb->ph($dt_target_col. '2', $bind, $mtdb->ts2db($tsend))
+                        );
                     }
                 }
                 $sql = implode(' ', array(
@@ -4202,15 +4393,13 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                     'category_label',
                     'from mt_cd',
                     $join_on,
-                    "where cd_blog_id = $blog_id and cd_status = 2",
-                    isset($date_filter) ? $date_filter : '',
-                    isset($content_type_filter) ? $content_type_filter : '',
+                    'where '. implode(' and ', $cond),
                     "group by $year_ext, $month_ext, $cat_target_col, category_label",
                     "order by category_label $cat_order, $year_ext $order, $month_ext $order"
                 ));
                 $limit = isset($args['lastn']) ? $args['lastn'] : -1;
                 $offset = isset($args['offset']) ? $args['offset'] : -1;
-                $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+                $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
                 if (!empty($results)) {
                     $array = $results->GetArray();
                     $categories = array_merge($categories, $array);
@@ -4277,8 +4466,7 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-
-        $content_type_filter = _get_content_type_filter($args);
+        $mtdb = $mt->db();
 
         $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
@@ -4317,11 +4505,24 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
-                list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+                $bind = [];
+                list($join_on, $cols) = $this->get_join_on($at, $blog_id, $bind, $cat, $cat_field_id);
+                $dt_target_col = $cols['dt'];
+                $cat_target_col = $cols['cat'];
 
                 # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
-                if ( array_key_exists($join_on, $seen_join_on) ) continue;
-                $seen_join_on[$join_on] = 1;
+                $seen_id = $join_on. implode(':', array_values($bind));
+                if (array_key_exists($seen_id, $seen_join_on)) {
+                    continue;
+                }
+                $seen_join_on[$seen_id] = 1;
+
+                $cond = [];
+                $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $blog_id);
+                $cond[] = 'cd_status = 2';
+                if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+                    $cond[] = $content_type_filter;
+                }
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
                 $month_ext = $mt->db()->apply_extract_date('month', $dt_target_col);
@@ -4331,9 +4532,11 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                     $ts = $ctx->stash('current_timestamp');
                     $tsend = $ctx->stash('current_timestamp_end');
                     if ($ts && $tsend) {
-                        $ts = $mt->db()->ts2db($ts);
-                        $tsend = $mt->db()->ts2db($tsend);
-                        $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+                        $cond[] = sprintf(
+                            $dt_target_col. ' between %s and %s',
+                            $mtdb->ph($dt_target_col. '1', $bind, $mtdb->ts2db($ts)),
+                            $mtdb->ph($dt_target_col. '2', $bind, $mtdb->ts2db($tsend))
+                        );
                     }
                 }
                 $sql = implode(' ', array(
@@ -4345,16 +4548,13 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                     'category_label',
                     'from mt_cd',
                     $join_on,
-                    "where cd_blog_id = $blog_id",
-                    "and cd_status = 2",
-                    isset($date_filter) ? $date_filter : '',
-                    isset($content_type_filter) ? $content_type_filter : '',
+                    'where '. implode(' and ', $cond),
                     "group by $year_ext, $month_ext, $day_ext, $cat_target_col, category_label",
                     "order by category_label $cat_order, $year_ext $order, $month_ext $order, $day_ext $order"
                 ));
                 $limit = isset($args['lastn']) ? $args['lastn'] : -1;
                 $offset = isset($args['offset']) ? $args['offset'] : -1;
-                $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+                $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
                 if (!empty($results)) {
                     $array = $results->GetArray();
                     $categories = array_merge($categories, $array);
@@ -4431,8 +4631,7 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-
-        $content_type_filter = _get_content_type_filter($args);
+        $mtdb = $mt->db();
 
         $blog_id = $args['blog_id'];
         $at = $args['archive_type'];
@@ -4471,19 +4670,34 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
             }
             foreach ( $cat_field_ids as $cat_field_id => $count ) {
-                list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
+                $bind = [];
+                list($join_on, $cols) = $this->get_join_on($at, $blog_id, $bind, $cat, $cat_field_id);
+                $dt_target_col = $cols['dt'];
+                $cat_target_col = $cols['cat'];
 
                 # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
-                if ( array_key_exists($join_on, $seen_join_on) ) continue;
-                $seen_join_on[$join_on] = 1;
+                $seen_id = $join_on. implode(':', array_values($bind));
+                if (array_key_exists($seen_id, $seen_join_on)) {
+                    continue;
+                }
+                $seen_join_on[$seen_id] = 1;
+
+                $cond = [];
+                $cond[] = 'cd_blog_id = '. $mtdb->ph('cd_blog_id', $bind, $blog_id);
+                $cond[] = 'cd_status = 2';
+                if ($content_type_filter = _get_content_type_filter($args, $bind)) {
+                    $cond[] = $content_type_filter;
+                }
 
                 if ($ctx->stash('inside_archive_list')) {
                     $ts = $ctx->stash('current_timestamp');
                     $tsend = $ctx->stash('current_timestamp_end');
                     if ($ts && $tsend) {
-                        $ts = $mt->db()->ts2db($ts);
-                        $tsend = $mt->db()->ts2db($tsend);
-                        $date_filter = "and $dt_target_col between '$ts' and '$tsend'";
+                        $cond[] = sprintf(
+                            $dt_target_col. ' between %s and %s',
+                            $mtdb->ph($dt_target_col. '1', $bind, $mtdb->ts2db($ts)),
+                            $mtdb->ph($dt_target_col. '2', $bind, $mtdb->ts2db($tsend))
+                        );
                     }
                 }
                 $week_number = $dt_target_col === 'cd_authored_on' ? 'cd_week_number' : 'dt_cf_idx.cf_idx_value_integer';
@@ -4494,15 +4708,13 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                     'category_label',
                     'from mt_cd',
                     $join_on,
-                    "where cd_blog_id = $blog_id and cd_status = 2",
-                    isset($date_filter) ? $date_filter : '',
-                    isset($content_type_filter) ? $content_type_filter : '',
+                    'where '. implode(' and ', $cond),
                     "group by $week_number, $cat_target_col, category_label",
                     "order by category_label $cat_order, $week_number $order"
                 ));
                 $limit = isset($args['lastn']) ? $args['lastn'] : -1;
                 $offset = isset($args['offset']) ? $args['offset'] : -1;
-                $results = $mt->db()->SelectLimit($sql, $limit, $offset);
+                $results = $mtdb->SelectLimit($sql, $limit, $offset, $bind);
                 if (!empty($results)) {
                     $array = $results->GetArray();
                     $categories = array_merge($categories, $array);
