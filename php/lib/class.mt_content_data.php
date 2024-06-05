@@ -114,11 +114,11 @@ class ContentData extends BaseObject
             $mtdb->ph('cf_unique_id', $bind, $unique_id)
         );
 
-      require_once('class.mt_content_field.php');
-      $cf = new ContentField();
-      $cf->Load($where, $bind);
-      return $cf;
-    }
+        require_once('class.mt_content_field.php');
+        $cf = new ContentField();
+        $cf->Load($where, $bind);
+        return $cf;
+      }
 }
 
 // Relations

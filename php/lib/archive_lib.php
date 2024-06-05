@@ -1619,7 +1619,7 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
         $sql = implode(' ' , array(
             "select count(*) as record_count, entry_week_number, entry_author_id, author_name",
-            "from mt_entry", 
+            "from mt_entry",
             "join mt_author on entry_author_id = author_id",
             'where '. implode(' and ', $cond),
             "group by entry_week_number, entry_author_id, author_name",
