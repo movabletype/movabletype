@@ -2,11 +2,11 @@
   import ListFilterDetail from "./ListFilterDetail.svelte";
   import ListFilterHeader from "./ListFilterHeader.svelte";
 
-  export let filterTypes: Array<Listing.FilterType>;
-  export let listActionClient: Listing.ListActionClient;
+  export let filterTypes: Array<MT.Listing.FilterType>;
+  export let listActionClient: MT.Listing.ListActionClient;
   export let localeCalendarHeader: Array<string>;
   export let objectLabel: string;
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
 
   let currentFilter = store.currentFilter;
   let validateErrorMessage: JQuery<HTMLElement>;
@@ -130,7 +130,7 @@
 
   /* add "filter" argument for updating this output after changing "filter" */
   const isFilterItemSelected = (
-    filter: Listing.Filter,
+    filter: MT.Listing.Filter,
     type: string,
   ): boolean => {
     return filter.items.some(function (item) {

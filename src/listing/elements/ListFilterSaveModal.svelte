@@ -1,7 +1,7 @@
 <script lang="ts">
-  export let currentFilter: Listing.Filter;
+  export let currentFilter: MT.Listing.Filter;
   export let listFilterTopGetItemValues: () => void;
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
 
   let modal: HTMLDivElement;
   let filterName: HTMLInputElement;

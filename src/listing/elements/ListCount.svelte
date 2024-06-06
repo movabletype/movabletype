@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
 
   $: count = store.count == null ? 0 : store.count;
   $: limit = store.limit == null ? 0 : store.limit;

@@ -1,4 +1,4 @@
-declare namespace Listing {
+declare namespace MT.Listing {
   // list_common.tmpl
   type ButtonAction = ListAction;
 

@@ -3,7 +3,7 @@
 
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
   export let listFilterTopUpdate: () => void;
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
 
   const refLabelProp = { ref: "label" };
   const refModalProp = { ref: "modal" };

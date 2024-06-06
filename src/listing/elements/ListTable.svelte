@@ -4,7 +4,7 @@
 
   export let hasListActions: boolean;
   export let hasMobilePulldownActions: boolean;
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
   export let zeroStateLabel: string;
 </script>
 

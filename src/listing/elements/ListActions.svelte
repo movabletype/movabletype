@@ -2,19 +2,19 @@
   import ListActionsForMobile from "./ListActionsForMobile.svelte";
   import ListActionsForPc from "./ListActionsForPc.svelte";
 
-  export let buttonActions: Listing.ButtonActions;
+  export let buttonActions: MT.Listing.ButtonActions;
   export let hasPulldownActions: boolean;
-  export let listActions: Listing.ListActions;
-  export let listActionClient: Listing.ListActionClient;
-  export let moreListActions: Listing.MoreListActions;
+  export let listActions: MT.Listing.ListActions;
+  export let listActionClient: MT.Listing.ListActionClient;
+  export let moreListActions: MT.Listing.MoreListActions;
   export let plural: string;
   export let singular: string;
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
 
   let selectedAction:
-    | Listing.ButtonAction
-    | Listing.ListAction
-    | Listing.MoreListAction
+    | MT.Listing.ButtonAction
+    | MT.Listing.ListAction
+    | MT.Listing.MoreListAction
     | null;
   let selectedActionId: string;
   let selectedActionPhrase: string;
@@ -90,9 +90,9 @@
   const getAction = (
     actionId: string,
   ):
-    | Listing.ButtonAction
-    | Listing.ListAction
-    | Listing.MoreListAction
+    | MT.Listing.ButtonAction
+    | MT.Listing.ListAction
+    | MT.Listing.MoreListAction
     | null => {
     return (
       buttonActions[actionId] ||

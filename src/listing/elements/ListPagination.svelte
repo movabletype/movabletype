@@ -4,7 +4,7 @@
   import ListPaginationForMobile from "./ListPaginationForMobile.svelte";
   import ListPaginationForPc from "./ListPaginationForPc.svelte";
 
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
 
   let nextDisabledProp: { disabled?: string } = {};
   let isTooNarrowWidth: boolean;
