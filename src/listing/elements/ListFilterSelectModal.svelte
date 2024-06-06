@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SS from "../../ss/elements/SS.svelte";
+  import SVG from "../../svg/elements/SVG.svelte";
 
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
   export let listFilterTopUpdate: () => void;
@@ -122,7 +122,7 @@
                         class="d-inline-block"
                         on:click={removeFilter}
                       >
-                        <SS
+                        <SVG
                           title={window.trans("Remove")}
                           class="mt-icon mt-icon--sm"
                           href={window.StaticURI + "images/sprite.svg#ic_trash"}
@@ -166,7 +166,7 @@
                 class="icon-mini-left addnew create-new apply-link d-md-inline-block"
                 on:click={createNewFilter}
               >
-                <SS
+                <SVG
                   title={window.trans("Add")}
                   class="mt-icon mt-icon--sm"
                   href={window.StaticURI + "images/sprite.svg#ic_add"}

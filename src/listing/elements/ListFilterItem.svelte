@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  import SS from "../../ss/elements/SS.svelte";
+  import SVG from "../../svg/elements/SVG.svelte";
 
   import ListFilterItemField from "./ListFilterItemField.svelte";
 
@@ -237,7 +237,7 @@
                   class="d-inline-block"
                   on:click={addFilterItemContent}
                 >
-                  <SS
+                  <SVG
                     title={window.trans("Add")}
                     class="mt-icon mt-icon--sm"
                     href={window.StaticURI + "images/sprite.svg#ic_add"}
@@ -250,7 +250,7 @@
                   href="javascript:void(0);"
                   on:click={removeFilterItemContent}
                 >
-                  <SS
+                  <SVG
                     title={window.trans("Remove")}
                     class="mt-icon mt-icon--sm"
                     href={window.StaticURI + "images/sprite.svg#ic_remove"}
@@ -283,7 +283,7 @@
             class="d-inline-block"
             on:click={addFilterItemContent}
           >
-            <SS
+            <SVG
               title={window.trans("Add")}
               class="mt-icon mt-icon--sm"
               href={window.StaticURI + "images/sprite.svg#ic_add"}

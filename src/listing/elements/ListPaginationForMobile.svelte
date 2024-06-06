@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SS from "../../ss/elements/SS.svelte";
+  import SVG from "../../svg/elements/SVG.svelte";
 
   export let isTooNarrowWidth: boolean;
   export let movePage: (e: Event) => void;
@@ -19,7 +19,7 @@
       data-page={page - 1}
       on:click={movePage}
     >
-      <SS
+      <SVG
         title={window.trans("Previous")}
         class="mt-icon--inverse mt-icon--sm"
         href={window.StaticURI + "images/sprite.svg#ic_tri-left"}
@@ -156,7 +156,7 @@
       data-page={page + 1}
       on:click={movePage}
     >
-      <SS
+      <SVG
         title={window.trans("Next")}
         class="mt-icon--inverse mt-icon--sm"
         href={window.StaticURI + "images/sprite.svg#ic_tri-right"}
