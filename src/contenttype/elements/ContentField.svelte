@@ -1,6 +1,6 @@
-<script>
-  import { recalcHeight, update } from "../Utils.ts";
-  import { cfields } from "../Store.ts";
+<script lang="ts">
+  import { recalcHeight, update } from "../Utils";
+  import { cfields } from "../Store";
   //  import ContentType from './ContentType.svelte';
   import SingleLineText from "./SingleLineText.svelte";
   //  import MultiLineText from './MultiLineText.svelte';
@@ -25,17 +25,17 @@
   //  import Common from './Common.svelte';
   // selection_common_script
 
-  export let id;
-  export let isNew;
-  export let isShow;
-  export let item;
-  export let label;
-  export let realId;
-  export let type;
-  export let typeLabel;
-  export let itemIndex;
-  export let gatheringData;
-  export let isEmpty;
+  export let id: string;
+  export let isNew: boolean;
+  export let isShow: string;
+  export let item: MT.ContentType.Field;
+  export let label: string;
+  export let realId: string;
+  export let type: string;
+  export let typeLabel: string;
+  export let itemIndex: number;
+  export let gatheringData: (id: string) => object;
+  export let isEmpty: boolean;
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const deleteField = () => {
@@ -70,13 +70,18 @@
     const options = gatheringData("content-field-block-" + e.target.dataset.id);
     newItem.options = options;
     newItem.id = Math.random().toString(36).slice(-8);
-    let label = document.querySelector(
-      "#field-options-" + e.target.dataset.id + ' input[name="label"]',
-    ).value;
+    let label =
+      document
+        .querySelector(
+          "#field-options-" + e.target.dataset.id + ' input[name="label"]',
+        )
+        ?.getAttribute("value") || "";
     if (!label) {
-      label = jQuery("#content-field-block-" + e.target.dataset.id)
-        .find('[name="label"]')
-        .val();
+      label =
+        jQuery("#content-field-block-" + e.target.dataset.id)
+          .find('[name="label"]')
+          .val()
+          ?.toString() || "";
       if (label === "") {
         label = window.trans("No Name");
       }
@@ -91,6 +96,8 @@
     recalcHeight(target);
     update();
   };
+
+  $: divProps = { fieldid: id, isnew: isNew };
 </script>
 
 <div class="mt-collapse__container">
@@ -150,9 +157,7 @@
   data-is={type}
   class="collapse mt-collapse__content {isShow}"
   id="field-options-{id}"
-  fieldid={id}
-  options={this.options}
-  isnew={isNew}
+  {...divProps}
 >
   {#if type === "single-line-text"}
     <SingleLineText
