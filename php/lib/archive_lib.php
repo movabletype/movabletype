@@ -1807,7 +1807,7 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
             $cond[] = 'fileinfo_startdate = '. $mtdb->ph('fileinfo_startdate', $bind, $ts);
         } else {
             // find a most oldest link when timestamp was not presented
-            $order = "order by fileinfo_startdate asc";
+            $order = ' order by fileinfo_startdate asc'; 
         }
         $cond[] = 'fileinfo_blog_id = '. $mtdb->ph('fileinfo_blog_id', $bind, $blog_id);
         $cond[] = 'fileinfo_archive_type = '. $mtdb->ph('fileinfo_archive_type', $bind, $at);
@@ -4002,7 +4002,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             $cond[] = 'fileinfo_startdate = '. $mtdb->ph('fileinfo_startdate', $bind, $ts);
         } else {
             // find a most oldest link when timestamp was not presented
-            $order = "order by fileinfo_startdate asc";
+            $order = ' order by fileinfo_startdate asc';
         }
 
         $cond[] = 'fileinfo_blog_id = '. $mtdb->ph('fileinfo_blog_id', $bind, $blog_id);
