@@ -94,7 +94,7 @@
       consoleLog("show.bs.collapse");
       const target = document.getElementsByClassName("mt-draggable__area")[0];
       recalcHeight(target);
-    }
+    },
   );
 
   // Hide collaped block
@@ -105,7 +105,7 @@
       consoleLog("hidden.bs.collapse");
       const target = document.getElementsByClassName("mt-draggable__area")[0];
       recalcHeight(target);
-    }
+    },
   );
 
   // Cannot drag while focusing on input / textarea
@@ -116,7 +116,7 @@
       consoleLog("focus");
       // const target = document.getElementsByClassName("mt-draggable__area")[0];
       jQuery(this).closest(".mt-contentfield").attr("draggable", false);
-    }
+    },
   );
 
   // Set draggable back to true while not focusing on input / textarea
@@ -126,7 +126,7 @@
     function () {
       consoleLog("blur");
       jQuery(this).closest(".mt-contentfield").attr("draggable", true);
-    }
+    },
   );
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -445,16 +445,16 @@
     consoleLog("_validateField");
     const requiredFieldsAreValid = jQuery(".html5-form").mtValidate("simple");
     const textFieldsInTableAreValid = jQuery(
-      ".values-option-table input[type=text]"
+      ".values-option-table input[type=text]",
     ).mtValidate("simple");
     const tableIsValid = jQuery(".values-option-table").mtValidate(
-      "selection-field-values-option"
+      "selection-field-values-option",
     );
     const contentFieldBlockIsValid = jQuery(".content-field-block").mtValidate(
-      "content-field-block"
+      "content-field-block",
     );
     const uniqueFieldsAreValid = jQuery(
-      "input[data-mt-content-field-unique]"
+      "input[data-mt-content-field-unique]",
     ).mtValidate("simple");
 
     const res =
@@ -566,7 +566,7 @@
                       >
                         <option value="" selected={labelField === ""}
                           >{window.trans(
-                            "Show input field to enter data label"
+                            "Show input field to enter data label",
                           )}
                           {#each self.labelFields as l}
                             <option
@@ -597,7 +597,7 @@
                     <div id="user_disp_option-field" class="form-group">
                       <label for="user_disp_option"
                         >{window.trans(
-                          "Allow users to change the display and sort of fields by display option"
+                          "Allow users to change the display and sort of fields by display option",
                         )}</label
                       >
                       <input
@@ -608,7 +608,7 @@
                         name="user_disp_option"
                       /><label for="user_disp_option" class="last-child"
                         >{window.trans(
-                          "Allow users to change the display and sort of fields by display option"
+                          "Allow users to change the display and sort of fields by display option",
                         )}</label
                       >
                     </div>

@@ -42,7 +42,11 @@
     const label = item.label ? item.label : window.trans("No Name");
     if (
       !confirm(
-        window.trans("Do you want to delete [_1]([_2])?", label, item.typeLabel)
+        window.trans(
+          "Do you want to delete [_1]([_2])?",
+          label,
+          item.typeLabel,
+        ),
       )
     ) {
       return;
@@ -67,7 +71,7 @@
     newItem.options = options;
     newItem.id = Math.random().toString(36).slice(-8);
     let label = document.querySelector(
-      "#field-options-" + e.target.dataset.id + ' input[name="label"]'
+      "#field-options-" + e.target.dataset.id + ' input[name="label"]',
     ).value;
     if (!label) {
       label = jQuery("#content-field-block-" + e.target.dataset.id)

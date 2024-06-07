@@ -59,7 +59,7 @@
 
     jQuery("a[aria-controls='field-options-" + fieldId + "']").attr(
       "aria-expanded",
-      false
+      false,
     );
   };
 </script>
@@ -151,7 +151,7 @@
   showLabel={true}
   required={true}
   hint={window.trans(
-    "Choose the display options for this content field in the listing screen."
+    "Choose the display options for this content field in the listing screen.",
   )}
   showHint={true}
 >
