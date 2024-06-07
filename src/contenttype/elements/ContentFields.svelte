@@ -1,14 +1,14 @@
-<script>
-  import ContentField from "./ContentField.svelte";
-  import { recalcHeight, update } from "../Utils.ts";
-  import { cfields, mtConfig } from "../Store.ts";
+<script lang="ts">
+  import { recalcHeight, update } from "../Utils";
+  import { cfields, mtConfig } from "../Store";
 
-  export let opts;
-  export let config;
+  import ContentField from "./ContentField.svelte";
+
+  export let opts: MT.ContentType.ContentFieldsOpts;
+  export let config; // TODO
 
   const Debug = false;
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const consoleLog = (message) => {
+  const consoleLog = (message: string): void => {
     if (Debug) {
       console.log(message);
     }
@@ -17,14 +17,14 @@
   cfields.set(opts.fields);
   mtConfig.set(config);
   let isEmpty = $cfields.length > 0 ? false : true;
-  self.data = ""; // TODO
+  let data = "";
   let droppable = false;
   let dragged = null;
   let draggedItem = null;
-  self.placeholder = document.createElement("div"); // TODO
-  self.placeholder.className = "placeholder"; // TODO
+  let placeholder = document.createElement("div");
+  placeholder.className = "placeholder";
   let dragoverState = false;
-  self.labelFields = []; // TODO
+  let labelFields: Array<{ value: string; label: string }> = [];
   let labelField = opts.labelField;
 
   const invalid_types = opts.types
@@ -39,29 +39,27 @@
   jQuery(document).on("dragstart", ".mt-draggable", function (event) {
     consoleLog("dragstart");
     var jqThis = jQuery(this);
-    jqThis.attr("aria-grabbed", true);
+    jqThis.attr("aria-grabbed", "true");
     var fieldtype = jqThis.data("field-type");
-    event.originalEvent.dataTransfer.setData("text", fieldtype);
+    event.originalEvent?.dataTransfer?.setData("text", fieldtype);
     handleMtDragStart();
   });
 
   jQuery(document).on("dragend", ".mt-draggable", function () {
     consoleLog("dragend");
     var jqThis = jQuery(this);
-    jqThis.attr("aria-grabbed", false);
+    jqThis.attr("aria-grabbed", "false");
     handleMtDragEnd();
   });
 
   // Drag start from content field list
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleMtDragStart = () => {
+  const handleMtDragStart = (): void => {
     consoleLog("handleMtDragStart");
     droppable = true;
   };
 
   // Drag end from content field list
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleMtDragEnd = () => {
+  const handleMtDragEnd = (): void => {
     consoleLog("handleMtDragEnd");
     droppable = false;
     onDragEnd();
@@ -77,8 +75,9 @@
   // Hide detail modal
   jQuery(document).on("hide.bs.modal", "#editDetail", function () {
     consoleLog("hide.bs.modal");
+    /* @ts-expect-error : mtValidate is not defined */
     if (jQuery("#name-field > input").mtValidate("simple")) {
-      opts.name = jQuery("#name-field > input").val();
+      opts.name = jQuery("#name-field > input").val()?.toString() || "";
       window.setDirty(true);
       update();
     } else {
@@ -115,7 +114,7 @@
     function () {
       consoleLog("focus");
       // const target = document.getElementsByClassName("mt-draggable__area")[0];
-      jQuery(this).closest(".mt-contentfield").attr("draggable", false);
+      jQuery(this).closest(".mt-contentfield").attr("draggable", "false");
     },
   );
 
@@ -125,12 +124,11 @@
     ".mt-draggable__area input, .mt-draggable__area textarea",
     function () {
       consoleLog("blur");
-      jQuery(this).closest(".mt-contentfield").attr("draggable", true);
+      jQuery(this).closest(".mt-contentfield").attr("draggable", "true");
     },
   );
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const onDragOver = (e) => {
+  const onDragOver = (e): void => {
     consoleLog("onDragOver");
     // Allowed only for Content Field and Content Field Type.
     if (droppable) {
@@ -156,13 +154,13 @@
       if (dragged) {
         if (e.target.className === "mt-contentfield") {
           // Inside the dragOver method
-          self.over = e.target;
+          // self.over = e.target;
           const targetRect = e.target.getBoundingClientRect();
           const parent = e.target.parentNode;
           if ((e.clientY - targetRect.top) / targetRect.height > 0.5) {
-            parent.insertBefore(self.placeholder, e.target.nextElementSibling);
+            parent.insertBefore(placeholder, e.target.nextElementSibling);
           } else {
-            parent.insertBefore(self.placeholder, e.target);
+            parent.insertBefore(placeholder, e.target);
           }
         }
         if (e.target.className === "mt-draggable__area") {
@@ -171,29 +169,28 @@
             fields.length === 0 ||
             (fields.length === 1 && fields[0] === dragged)
           ) {
-            e.target.appendChild(self.placeholder);
+            e.target.appendChild(placeholder);
           }
         }
       } else {
         // Dragged from content field types
         if (e.target.classList.contains("mt-draggable__area")) {
-          e.target.appendChild(self.placeholder);
+          e.target.appendChild(placeholder);
         } else if (e.target.classList.contains("mt-contentfield")) {
-          e.target.parentNode.appendChild(self.placeholder);
+          e.target.parentNode.appendChild(placeholder);
         }
       }
       e.preventDefault();
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const onDrop = (e) => {
+  const onDrop = (e): void => {
     consoleLog("onDrop");
     if (dragged) {
       var pos = 0;
       var children;
-      if (self.placeholder.parentNode) {
-        children = self.placeholder.parentNode.children;
+      if (placeholder.parentNode) {
+        children = placeholder.parentNode.children;
       }
       if (!children) {
         e.target.classList.remove("mt-draggable__area--dragover");
@@ -201,7 +198,7 @@
         return;
       }
       for (var i = 0; i < children.length; i++) {
-        if (children[i] == self.placeholder) break;
+        if (children[i] == placeholder) break;
         if (
           children[i] != dragged &&
           children[i].classList.contains("mt-contentfield")
@@ -241,8 +238,7 @@
     e.preventDefault();
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const onDragLeave = (e) => {
+  const onDragLeave = (e): void => {
     consoleLog("onDragLeave");
     if (dragoverState) {
       if (e.target.classList.contains("mt-draggable__area")) {
@@ -254,8 +250,7 @@
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const onDragStart = (e) => {
+  const onDragStart = (e): void => {
     consoleLog("onDragStart");
     dragged = e.target;
     draggedItem = e.item;
@@ -263,11 +258,10 @@
     droppable = true;
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const onDragEnd = () => {
+  const onDragEnd = (): void => {
     consoleLog("onDragEnd");
-    if (self.placeholder.parentNode) {
-      self.placeholder.parentNode.removeChild(self.placeholder);
+    if (placeholder.parentNode) {
+      placeholder.parentNode.removeChild(placeholder);
     }
     droppable = false;
     dragged = null;
@@ -276,8 +270,7 @@
     update();
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const stopSubmitting = (e) => {
+  const stopSubmitting = (e): boolean => {
     consoleLog("stopSubmitting");
     if (e.which === 13) {
       e.preventDefault();
@@ -286,8 +279,7 @@
     return true;
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const canSubmit = () => {
+  const canSubmit = (): boolean => {
     consoleLog("canSubmit");
     if ($cfields.length === 0) {
       return true;
@@ -298,8 +290,7 @@
     return invalidFields.length == 0 ? true : false;
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const submit = () => {
+  const submit = (): void => {
     consoleLog("submit");
     if (!canSubmit()) {
       return;
@@ -311,23 +302,33 @@
 
     rebuildLabelFields();
     window.setDirty(false);
-    const fieldOptions = [];
+    const fieldOptions: Array<{
+      type?: string;
+      order?: number;
+      id?: string;
+      options?: object;
+    }> = [];
     if ($cfields) {
       //TODO content-fields tag does not exist
       //var child = self.tags['content-field']
       let child = document.querySelectorAll(".content-field");
       if (child) {
-        if (!Array.isArray(child)) {
-          child = [child];
-        }
+        // if (!Array.isArray(child)) {
+        //   child = [child];
+        // }
 
         child.forEach(function (c, i) {
           // var field = c.tags[c.type];
-          var options = gatheringData();
-          var data = {};
-          data.type = c.type;
+          var options = gatheringData("FIXME");
+          var data: {
+            type?: string;
+            order?: number;
+            id?: string;
+            options?: object;
+          } = {};
+          data.type = c.getAttribute("type") || "";
           data.options = options;
-          if (c.isNew) {
+          if (c.getAttribute("isNew")) {
             data.order = i + 1;
           } else {
             data.id = c.id;
@@ -342,19 +343,18 @@
           }
           fieldOptions.push(data);
         });
-        self.data = JSON.stringify(fieldOptions);
+        data = JSON.stringify(fieldOptions);
       }
     } else {
-      self.data = "";
+      data = "";
     }
     update();
     document.forms["content-type-form"].submit();
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const gatheringData = (id) => {
+  const gatheringData = (id: string): object => {
     consoleLog("gatheringData");
-    let data = {};
+    const data = {};
     const flds = document.querySelectorAll("#" + id + " *[ref]");
     Object.keys(flds).forEach(function (k) {
       const f = flds[k];
@@ -363,10 +363,10 @@
         if (f.name in data) {
           if (Array.isArray(data[f.name])) {
             data[f.name].push(val);
-          } else {
-            const array = [];
-            array.push(data[f.name]);
-            array.push(val);
+            // } else {
+            //   const array = [];
+            //   array.push(data[f.name]);
+            //   array.push(val);
           }
         } else {
           data[f.name] = val;
@@ -384,10 +384,9 @@
     return data;
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const rebuildLabelFields = () => {
+  const rebuildLabelFields = (): void => {
     consoleLog("rebuildLableFields");
-    var fields = [];
+    var fields: Array<{ value: string; label: string }> = [];
     for (var i = 0; i < $cfields.length; i++) {
       var required = jQuery("#content-field-block-" + $cfields[i].id)
         .find('[name="required"]')
@@ -396,35 +395,36 @@
         var label = $cfields[i].label;
         var id = $cfields[i].unique_id;
         if (!label) {
-          label = jQuery("#content-field-block-" + $cfields[i].id)
-            .find('[name="label"]')
-            .val();
+          label =
+            jQuery("#content-field-block-" + $cfields[i].id)
+              .find('[name="label"]')
+              .val()
+              ?.toString() || "";
           if (label === "") {
             label = window.trans("No Name");
           }
           id = "id:" + $cfields[i].id;
         }
         fields.push({
-          value: id,
+          value: id || "",
           label: label,
         });
       }
     }
-    self.labelFields = fields;
+    labelFields = fields;
     update();
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const changeLabelField = (e) => {
+  const changeLabelField = (e): void => {
     consoleLog("changeLabelField");
-    self.labelField = e.target.value;
+    labelField = e.target.value;
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const _moveField = (item, pos) => {
+  const _moveField = (item, pos: number): void => {
     consoleLog("_moveField");
+    let field: MT.ContentType.Field;
     for (let i = 0; i < $cfields.length; i++) {
-      var field = $cfields[i];
+      field = $cfields[i];
       if (field.id === item.id) {
         cfields.update((arr) => {
           // same as splice(i, 1)
@@ -434,27 +434,31 @@
         break;
       }
     }
-    $cfields.splice(pos, 0, field); //TODO
+    $cfields.splice(pos, 0, item);
     for (let i = 0; i < $cfields.length; i++) {
       $cfields[i].order = i + 1;
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const _validateFields = () => {
+  const _validateFields = (): boolean => {
     consoleLog("_validateField");
+    /* @ts-expect-error : mtValidate is not defined */
     const requiredFieldsAreValid = jQuery(".html5-form").mtValidate("simple");
     const textFieldsInTableAreValid = jQuery(
       ".values-option-table input[type=text]",
+      /* @ts-expect-error : mtValidate is not defined */
     ).mtValidate("simple");
+    /* @ts-expect-error : mtValidate is not defined */
     const tableIsValid = jQuery(".values-option-table").mtValidate(
       "selection-field-values-option",
     );
+    /* @ts-expect-error : mtValidate is not defined */
     const contentFieldBlockIsValid = jQuery(".content-field-block").mtValidate(
       "content-field-block",
     );
     const uniqueFieldsAreValid = jQuery(
       "input[data-mt-content-field-unique]",
+      /* @ts-expect-error : mtValidate is not defined */
     ).mtValidate("simple");
 
     const res =
@@ -465,9 +469,10 @@
       uniqueFieldsAreValid;
 
     if (!res) {
-      jQuery(".mt-contentfield").each(function (i, fld) {
+      jQuery(".mt-contentfield").each(function (_i, fld) {
         const jqFld = jQuery(fld);
         if (jqFld.find(".form-control.is-invalid").length > 0) {
+          /* @ts-expect-error : collapse is not defined */
           jqFld.find(".collapse").collapse("show");
         }
       });
@@ -484,8 +489,8 @@
   <input type="hidden" name="return_args" value={opts.return_args} />
   <input type="hidden" name="_type" value="content_type" />
   <input type="hidden" name="id" value={opts.id} />
-  {#if self.data}
-    <input type="hidden" name="data" value={self.data} />
+  {#if data}
+    <input type="hidden" name="data" value={data} />
   {/if}
 
   <div class="row">
@@ -562,18 +567,19 @@
                         id="label_field"
                         name="label_field"
                         class="custom-select form-control html5-form"
-                        onchange={changeLabelField}
+                        on:change={changeLabelField}
                       >
                         <option value="" selected={labelField === ""}
                           >{window.trans(
                             "Show input field to enter data label",
                           )}
-                          {#each self.labelFields as l}
+                          {#each labelFields as l}
                             <option
                               value={l.value}
-                              selected={l.value === parent.labelField}
-                              >{l.label}</option
+                              selected={l.value === labelField}
                             >
+                              {l.label}
+                            </option>
                           {/each}
                         </option></select
                       >
@@ -604,13 +610,14 @@
                         type="checkbox"
                         class="mt-switch form-control"
                         id="user_disp_option"
-                        checked={opts.user_disp_option}
+                        checked={opts.user_disp_option ? true : false}
                         name="user_disp_option"
-                      /><label for="user_disp_option" class="last-child"
-                        >{window.trans(
+                      />
+                      <label for="user_disp_option" class="last-child">
+                        {window.trans(
                           "Allow users to change the display and sort of fields by display option",
-                        )}</label
-                      >
+                        )}
+                      </label>
                     </div>
                   </div>
                 </div>
@@ -681,8 +688,14 @@
         >
           <div class="content-field">
             <ContentField
-              {...f}
+              id={f.id || ""}
+              isNew={f.isNew || false}
+              isShow={f.isShow || ""}
               item={f}
+              label={f.label || ""}
+              realId={f.realdId || ""}
+              type={f.type}
+              typeLabel={f.typeLabel}
               itemIndex={fieldIndex}
               {gatheringData}
               bind:isEmpty

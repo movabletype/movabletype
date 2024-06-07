@@ -1,4 +1,6 @@
 import { writable } from "svelte/store";
 
-export const cfields = writable([]);
+const fields: Array<MT.ContentType.Field> = [];
+
+export const cfields = writable(fields);
 export const mtConfig = writable({});
