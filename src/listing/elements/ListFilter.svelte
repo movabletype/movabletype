@@ -2,11 +2,11 @@
   import ListFilterDetail from "./ListFilterDetail.svelte";
   import ListFilterHeader from "./ListFilterHeader.svelte";
 
-  export let filterTypes: Array<Listing.FilterType>;
-  export let listActionClient: Listing.ListActionClient;
+  export let filterTypes: Array<MT.Listing.FilterType>;
+  export let listActionClient: MT.Listing.ListActionClient;
   export let localeCalendarHeader: Array<string>;
   export let objectLabel: string;
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
 
   let currentFilter = store.currentFilter;
   let validateErrorMessage: JQuery<HTMLElement>;
@@ -56,7 +56,7 @@
 
   const addFilterItemContent = (
     itemIndex: string,
-    contentIndex: string
+    contentIndex: string,
   ): void => {
     if (currentFilter.items[itemIndex].type != "pack") {
       const items = [currentFilter.items[itemIndex]];
@@ -130,8 +130,8 @@
 
   /* add "filter" argument for updating this output after changing "filter" */
   const isFilterItemSelected = (
-    filter: Listing.Filter,
-    type: string
+    filter: MT.Listing.Filter,
+    type: string,
   ): boolean => {
     return filter.items.some(function (item) {
       return item.type == type;
@@ -151,7 +151,7 @@
 
   const removeFilterItemContent = (
     itemIndex: string,
-    contentIndex: string
+    contentIndex: string,
   ): void => {
     currentFilter.items[itemIndex].args.items.splice(contentIndex, 1);
   };
@@ -163,9 +163,9 @@
         jQuery("<p />")
           .attr("class", "msg-text alert alert-danger alert-dismissible")
           .append(
-            '<button type="button" class="close btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+            '<button type="button" class="close btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>',
           )
-          .append(content)
+          .append(content),
       );
     jQuery("#msg-block").append(error_block);
     return error_block;
@@ -188,9 +188,9 @@
     if (errors) {
       validateErrorMessage = showMessage(
         window.trans(
-          "One or more fields in the filter item are not filled in properly."
+          "One or more fields in the filter item are not filled in properly.",
         ),
-        "error"
+        "error",
       );
     }
     return errors ? false : true;

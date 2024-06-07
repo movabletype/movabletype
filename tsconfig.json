@@ -19,9 +19,6 @@
     "noImplicitAny": false,
     "jsx": "preserve",
     "baseUrl": ".",
-    "paths": {
-      "*": ["src/*"]
-    },
     "skipLibCheck": true
   },
   "include": ["src"]

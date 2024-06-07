@@ -7,7 +7,6 @@
   },
   "globals": {
     "JQuery": true,
-    "Listing": true,
     "MT": true,
     "bootstrap": true
   },

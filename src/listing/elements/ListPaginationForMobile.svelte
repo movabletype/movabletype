@@ -1,12 +1,12 @@
 <script lang="ts">
-  import SS from "../../ss/elements/SS.svelte";
+  import SVG from "../../svg/elements/SVG.svelte";
 
   export let isTooNarrowWidth: boolean;
   export let movePage: (e: Event) => void;
   export let nextDisabledProp: { disabled?: string };
   export let page: number;
   export let previousDisabledProp: { disabled?: string };
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
 </script>
 
 <ul class="pagination__mobile d-md-none">
@@ -19,7 +19,7 @@
       data-page={page - 1}
       on:click={movePage}
     >
-      <SS
+      <SVG
         title={window.trans("Previous")}
         class="mt-icon--inverse mt-icon--sm"
         href={window.StaticURI + "images/sprite.svg#ic_tri-left"}
@@ -156,7 +156,7 @@
       data-page={page + 1}
       on:click={movePage}
     >
-      <SS
+      <SVG
         title={window.trans("Next")}
         class="mt-icon--inverse mt-icon--sm"
         href={window.StaticURI + "images/sprite.svg#ic_tri-right"}

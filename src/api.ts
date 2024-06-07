@@ -20,6 +20,6 @@ export function exportAll(): void {
       const { resolve } = await window.MT.export(k);
       const module = await import(`./${k}.js`);
       resolve(module[k]);
-    }
+    },
   );
 }

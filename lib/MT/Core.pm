@@ -1812,7 +1812,7 @@ BEGIN {
                 path    => 1,
                 type    => 'ARRAY',
             },
-            'EnableArchivePaths' => { default => 0, },
+            'EnableArchivePaths' => { default => 0, }, ## DEPRECATED
             'SearchTemplatePath' => {
                 default => 'search_templates',
                 path    => 1,

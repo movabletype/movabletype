@@ -1,9 +1,9 @@
 <script lang="ts">
-  import SS from "../../ss/elements/SS.svelte";
+  import SVG from "../../svg/elements/SVG.svelte";
 
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
   export let listFilterTopUpdate: () => void;
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
 
   const refLabelProp = { ref: "label" };
   const refModalProp = { ref: "modal" };
@@ -47,12 +47,12 @@
   const removeFilter = (e: Event): boolean | void => {
     const filterData = (
       (e.target as HTMLElement).closest(
-        "[data-mt-list-filter-label]"
+        "[data-mt-list-filter-label]",
       ) as HTMLElement
     ).dataset;
     const message = window.trans(
       "Are you sure you want to remove filter '[_1]'?",
-      filterData.mtListFilterLabel || ""
+      filterData.mtListFilterLabel || "",
     );
     if (confirm(message) == false) {
       return false;
@@ -122,7 +122,7 @@
                         class="d-inline-block"
                         on:click={removeFilter}
                       >
-                        <SS
+                        <SVG
                           title={window.trans("Remove")}
                           class="mt-icon mt-icon--sm"
                           href={window.StaticURI + "images/sprite.svg#ic_trash"}
@@ -166,7 +166,7 @@
                 class="icon-mini-left addnew create-new apply-link d-md-inline-block"
                 on:click={createNewFilter}
               >
-                <SS
+                <SVG
                   title={window.trans("Add")}
                   class="mt-icon mt-icon--sm"
                   href={window.StaticURI + "images/sprite.svg#ic_add"}

@@ -179,11 +179,11 @@
         editor.mtProxies = {}
         editor.supportedButtonsCache = {}
         initButtonSettings(editor)
-        editor.on('init', function () {
-            updateButtonVisibility(editor)
-        })
 
-        editor.on('NodeChange', function () {
+        editor.on('NodeChange', function (args) {
+            if (args.initial) {
+                updateButtonVisibility(editor)
+            }
             var s = editor.mtEditorStatus
             if (s.mode == 'source' && s.format != 'none.tinymce_temp') {
                 $(editor.container).find('.tox-toolbar:eq(0)').css('display', 'none')

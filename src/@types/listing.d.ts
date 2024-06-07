@@ -1,4 +1,4 @@
-declare namespace Listing {
+declare namespace MT.Listing {
   // list_common.tmpl
   type ButtonAction = ListAction;
 
@@ -154,7 +154,7 @@ declare namespace Listing {
     isFilterItemSelected: (type: string) => boolean;
     movePage: (page: number) => boolean;
     removeFilterItemByIndex: (itemIndex: string) => void;
-    removeFilterItemContent: (itemIndex: string, contentIndex: nubmer) => void;
+    removeFilterItemContent: (itemIndex: string, contentIndex: number) => void;
     resetAllClickedRows: () => void;
     setFilter: (filter: Filter) => boolean;
     setFilterById: (filterId: string) => boolean | void;

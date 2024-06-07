@@ -17,7 +17,7 @@ async function _import<T>(name: string): Promise<T> {
     setTimeout(async () => {
       const resolved = await exportPromiseMap[name].reduce(
         async (prev, cur) => cur(await prev),
-        () => Promise.resolve()
+        () => Promise.resolve(),
       );
       resolve(resolved);
     }, 0);

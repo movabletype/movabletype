@@ -1,21 +1,21 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  import SS from "../../ss/elements/SS.svelte";
+  import SVG from "../../svg/elements/SVG.svelte";
 
   import ListFilterItemField from "./ListFilterItemField.svelte";
 
-  export let currentFilter: Listing.Filter;
-  export let filterTypes: Array<Listing.FilterType>;
-  export let item: Listing.Item;
+  export let currentFilter: MT.Listing.Filter;
+  export let filterTypes: Array<MT.Listing.FilterType>;
+  export let item: MT.Listing.Item;
   export let listFilterTopAddFilterItemContent: (
     itemIndex: string,
-    contentIndex: string
+    contentIndex: string,
   ) => void;
   export let listFilterTopRemoveFilterItem: (itemIndex: string) => void;
   export let listFilterTopRemoveFilterItemContent: (
     itemIndex: string,
-    contentIndex: string
+    contentIndex: string,
   ) => void;
   export let localeCalendarHeader: Array<string>;
 
@@ -59,7 +59,7 @@
       });
     listFilterTopAddFilterItemContent(
       itemIndex.toString(),
-      contentIndex.toString()
+      contentIndex.toString(),
     );
     initializeDateOption();
     initializeOptionWithBlank();
@@ -82,7 +82,7 @@
     while (
       !Object.prototype.hasOwnProperty.call(
         element.dataset,
-        "mtListItemContentIndex"
+        "mtListItemContentIndex",
       )
     ) {
       if (element.parentElement) {
@@ -198,7 +198,7 @@
     const contentIndex = getListItemContentIndex(target);
     listFilterTopRemoveFilterItemContent(
       itemIndex.toString(),
-      contentIndex.toString()
+      contentIndex.toString(),
     );
   };
 </script>
@@ -237,7 +237,7 @@
                   class="d-inline-block"
                   on:click={addFilterItemContent}
                 >
-                  <SS
+                  <SVG
                     title={window.trans("Add")}
                     class="mt-icon mt-icon--sm"
                     href={window.StaticURI + "images/sprite.svg#ic_add"}
@@ -250,7 +250,7 @@
                   href="javascript:void(0);"
                   on:click={removeFilterItemContent}
                 >
-                  <SS
+                  <SVG
                     title={window.trans("Remove")}
                     class="mt-icon mt-icon--sm"
                     href={window.StaticURI + "images/sprite.svg#ic_remove"}
@@ -283,7 +283,7 @@
             class="d-inline-block"
             on:click={addFilterItemContent}
           >
-            <SS
+            <SVG
               title={window.trans("Add")}
               class="mt-icon mt-icon--sm"
               href={window.StaticURI + "images/sprite.svg#ic_add"}

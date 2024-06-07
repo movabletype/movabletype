@@ -9,16 +9,16 @@
   import ListPagination from "./ListPagination.svelte";
   import ListTable from "./ListTable.svelte";
 
-  export let buttonActions: Listing.ButtonActions;
+  export let buttonActions: MT.Listing.ButtonActions;
   export let disableUserDispOption: boolean;
-  export let filterTypes: Array<Listing.FilterType>;
+  export let filterTypes: Array<MT.Listing.FilterType>;
   export let hasListActions: boolean;
   export let hasMobilePulldownActions: boolean;
   export let hasPulldownActions: boolean;
-  export let listActionClient: Listing.ListActionClient;
-  export let listActions: Listing.ListActions;
+  export let listActionClient: MT.Listing.ListActionClient;
+  export let listActions: MT.Listing.ListActions;
   export let localeCalendarHeader: Array<string>;
-  export let moreListActions: Listing.MoreListActions;
+  export let moreListActions: MT.Listing.MoreListActions;
   export let objectLabel: string;
   export let objectType: string;
   export let objectTypeForTableClass: string;
@@ -26,7 +26,7 @@
   export let useActions: boolean;
   export let useFilters: boolean;
   export let singular: string;
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
   export let zeroStateLabel: string;
 
   $: hidden = store.count == 0;
@@ -53,7 +53,7 @@
       if (!args.notCallListReady) {
         jQuery(window).trigger("listReady");
       }
-    }
+    },
   );
 
   const changeLimit = (e: Event): void => {

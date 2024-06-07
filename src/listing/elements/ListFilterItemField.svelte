@@ -3,7 +3,7 @@
 
   export let field: string;
   export let parentDiv: HTMLDivElement | undefined;
-  export let item: Listing.Item;
+  export let item: MT.Listing.Item;
 
   afterUpdate(() => {
     setValues();

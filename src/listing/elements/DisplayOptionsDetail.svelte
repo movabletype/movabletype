@@ -4,7 +4,7 @@
 
   export let changeLimit: (e: Event) => void;
   export let disableUserDispOption: boolean;
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
 
   const resetColumns = (): void => {
     store.trigger("reset_columns");

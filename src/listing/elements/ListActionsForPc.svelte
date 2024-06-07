@@ -1,9 +1,9 @@
 <script lang="ts">
-  export let buttonActions: Listing.ButtonActions;
+  export let buttonActions: MT.Listing.ButtonActions;
   export let doAction: (e: Event) => boolean | undefined;
-  export let listActions: Listing.ListActions;
+  export let listActions: MT.Listing.ListActions;
   export let hasPulldownActions: boolean;
-  export let moreListActions: Listing.MoreListActions;
+  export let moreListActions: MT.Listing.MoreListActions;
 </script>
 
 {#each Object.entries(buttonActions) as [key, action]}

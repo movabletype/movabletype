@@ -1,6 +1,6 @@
 <script lang="ts">
   export let hasMobilePulldownActions: boolean;
-  export let store: Listing.ListStore;
+  export let store: MT.Listing.ListStore;
   export let toggleAllRowsOnPage: () => void;
 </script>
 
@@ -38,7 +38,7 @@
           "[_1] - [_2] of [_3]",
           store.getListStart().toString(),
           store.getListEnd().toString(),
-          store.count.toString()
+          store.count.toString(),
         )}
       </span>
     </th>
