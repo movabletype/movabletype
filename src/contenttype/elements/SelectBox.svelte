@@ -1,12 +1,12 @@
-<script>
+<script lang="ts">
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
-  import { mtConfig } from "../Store.ts";
+  import { mtConfig } from "../Store";
 
-  export let fieldId;
-  export let options;
-  export let label;
-  export let isNew;
+  export let fieldId: string;
+  export let options: any;
+  export let label: string;
+  export let isNew: boolean;
 
   const type = "select-box";
   const _type = type.replace(/-/g, "_");
@@ -212,7 +212,7 @@
     >
       <svelte:fragment slot="inside">
         <input
-          ref="multiple"
+          {...{ ref: "multiple" }}
           type="checkbox"
           class="mt-switch form-control form-check-input"
           id="{_type}-multiple"
@@ -233,7 +233,7 @@
     >
       <svelte:fragment slot="inside">
         <input
-          ref="min"
+          {...{ ref: "min" }}
           type="number"
           name="min"
           id="{_type}-min"
@@ -252,14 +252,14 @@
     >
       <svelte:fragment slot="inside">
         <input
-          ref="max"
+          {...{ ref: "max" }}
           type="number"
           name="max"
           id="{_type}-max"
           class="form-control w-25"
           min="1"
           value={options.max}
-          onchange={enterMax}
+          on:change={enterMax}
         />
       </svelte:fragment>
     </ContentFieldOption>
@@ -272,7 +272,10 @@
     >
       <svelte:fragment slot="inside">
         <div class="mt-table--outline mb-3">
-          <table class="table mt-table values-option-table" ref="table">
+          <table
+            class="table mt-table values-option-table"
+            {...{ ref: "table" }}
+          >
             <thead>
               <tr>
                 <th scope="col">{window.trans("Selected")}</th>
@@ -317,7 +320,7 @@
                       class="btn btn-default btn-sm"
                       ><svg role="img" class="mt-icon mt-icon--sm"
                         ><title>{window.trans("delete")}</title><use
-                          xlink:href="{mtConfig.static_uri}images/sprite.svg#ic_trash"
+                          xlink:href="{window.StaticURI}images/sprite.svg#ic_trash"
                         /></svg
                       >{window.trans("delete")}</button
                     ></td
@@ -330,7 +333,7 @@
         <button on:click={addRow} type="button" class="btn btn-default btn-sm"
           ><svg role="img" class="mt-icon mt-icon--sm"
             ><title>{window.trans("add")}</title><use
-              xlink:href="{mtConfig.static_uri}images/sprite.svg#ic_add"
+              xlink:href="{window.StaticURI}images/sprite.svg#ic_add"
             /></svg
           >{window.trans("add")}</button
         >

@@ -1,11 +1,22 @@
-<script>
+<script lang="ts">
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
-  export let fieldId;
-  export let options;
-  export let label;
-  export let isNew;
+  export let fieldId: string;
+  export let options: {
+    description?: string;
+    displays?: {
+      force?: boolean;
+      default?: boolean;
+      optional?: boolean;
+      none?: boolean;
+    };
+    required?: boolean;
+    initial_value?: string;
+    [key: string]: any;
+  };
+  export let label: string;
+  export let isNew: boolean;
 
   const type = "date-and-time";
   const _type = type.replace(/-/g, "_");
@@ -26,7 +37,7 @@
     >
       <svelte:fragment slot="inside">
         <input
-          ref="initial_date"
+          {...{ ref: "initial_date" }}
           type="text"
           name="initial_date"
           id="{_type}-initial_date"
@@ -44,7 +55,7 @@
     >
       <svelte:fragment slot="inside">
         <input
-          ref="initial_time"
+          {...{ ref: "initial_time" }}
           type="text"
           name="initial_time"
           id="{_type}-initial_time"

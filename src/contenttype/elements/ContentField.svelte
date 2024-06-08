@@ -96,8 +96,6 @@
     recalcHeight(target);
     update();
   };
-
-  $: divProps = { fieldid: id, isnew: isNew };
 </script>
 
 <div class="mt-collapse__container">
@@ -157,7 +155,7 @@
   data-is={type}
   class="collapse mt-collapse__content {isShow}"
   id="field-options-{id}"
-  {...divProps}
+  {...{ fieldid: id, isnew: isNew }}
 >
   {#if type === "single-line-text"}
     <SingleLineText

@@ -1,11 +1,21 @@
-<script>
+<script lang="ts">
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
-  export let fieldId;
-  export let options;
-  export let label;
-  export let isNew;
+  export let fieldId: string;
+  export let options: {
+    description?: string;
+    displays?: {
+      force?: boolean;
+      default?: boolean;
+      optional?: boolean;
+      none?: boolean;
+    };
+    required?: boolean;
+    initial_value?: string;
+  };
+  export let label: string;
+  export let isNew: boolean;
 
   const type = "date-only";
   const _type = type.replace(/-/g, "_");
@@ -27,7 +37,7 @@
       <svelte:fragment slot="inside">
         <!-- I guess id attribute should be date_only-initial_value. But original date.tmpl uses initial_value -->
         <input
-          ref="initial_value"
+          {...{ ref: "initial_value" }}
           type="text"
           name="initial_value"
           id="initial_value"

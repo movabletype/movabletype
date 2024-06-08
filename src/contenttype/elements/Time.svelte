@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
@@ -26,7 +26,7 @@
     >
       <svelte:fragment slot="inside">
         <input
-          ref="initial_value"
+          {...{ ref: "initial_value" }}
           type="text"
           name="initial_value"
           id="{_type}-initial-value"

@@ -39,7 +39,8 @@ declare namespace MT.ContentType {
     label?: string;
     description?: string;
     required?: string;
-    display?: string;
+    displays?: string;
+    initial_value?: string;
 
     [string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }

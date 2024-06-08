@@ -1,13 +1,13 @@
-<script>
+<script lang="ts">
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
-  import { update } from "../Utils.ts";
-  import { mtConfig } from "../Store.ts";
+  import { update } from "../Utils";
+  import { mtConfig } from "../Store";
 
-  export let fieldId;
-  export let options;
-  export let isNew;
-  export let label;
+  export let fieldId: string;
+  export let options: any;
+  export let isNew: boolean;
+  export let label: string;
 
   const refs = {
     min_value: {
@@ -29,6 +29,7 @@
       const jqInitialValue = jQuery(initialValueId);
       if (!jqInitialValue.data("mtValidator")) return;
 
+      /* @ts-expect-error : mtValid is undefined */
       jqInitialValue.mtValid({ focus: false });
     });
   });
@@ -51,7 +52,7 @@
     >
       <svelte:fragment slot="inside">
         <input
-          ref="min_value"
+          {...{ ref: "min_value" }}
           type="number"
           name="min_value"
           id="{type}-min_value"
@@ -71,7 +72,7 @@
     >
       <svelte:fragment slot="inside">
         <input
-          ref="max_value"
+          {...{ ref: "max_value" }}
           type="number"
           name="max_value"
           id="{type}-max_value"
@@ -91,7 +92,7 @@
     >
       <svelte:fragment slot="inside">
         <input
-          ref="decimal_places"
+          {...{ ref: "decimal_places" }}
           type="number"
           name="decimal_places"
           id="{type}-decimal_places"
@@ -110,7 +111,7 @@
     >
       <svelte:fragment slot="inside">
         <input
-          ref="initial_value"
+          {...{ ref: "initial_value" }}
           type="number"
           name="initial_value"
           id="{type}-initial_value"
