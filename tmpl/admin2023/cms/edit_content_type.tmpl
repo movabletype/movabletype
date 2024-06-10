@@ -50,12 +50,13 @@
 <script type="text/javascript" src="<mt:var name="static_uri">js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 
 <mt:if name="config.useriot">
-  <mt:if name="options_htmls">
-    <script type="riot/tag">
-      <mt:loop name="options_htmls"><mt:var name="html">
-      </mt:loop>
-    </script>
-  </mt:if>
+<mt:ignore><!-- Do not indent the following lines to avoid Riot.js error. --></mt:ignore>
+<mt:if name="options_htmls">
+<script type="riot/tag">
+<mt:loop name="options_htmls"><mt:var name="html">
+</mt:loop>
+</script>
+</mt:if>
 
   <mt:if name="debug_riot">
     <script type="riot/tag" src="<mt:var name="static_uri">js/ss/tag/ss.tag?v=<mt:var name="mt_version_id" escape="url">"></script>
