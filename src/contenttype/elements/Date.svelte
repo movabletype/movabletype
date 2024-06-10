@@ -32,7 +32,6 @@
     <ContentFieldOption
       id="{_type}-initial-date_value"
       label={window.trans("Initial Value")}
-      showLabel={true}
     >
       <svelte:fragment slot="inside">
         <!-- I guess id attribute should be date_only-initial_value. But original date.tmpl uses initial_value -->

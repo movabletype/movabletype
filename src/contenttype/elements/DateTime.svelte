@@ -33,7 +33,6 @@
     <ContentFieldOption
       id="{_type}-initial-date_value"
       label={window.trans("Initial Value (Date)")}
-      showLabel={true}
     >
       <svelte:fragment slot="inside">
         <input
@@ -51,7 +50,6 @@
     <ContentFieldOption
       id="{_type}-initial-timevalue"
       label={window.trans("Initial Value (Time)")}
-      showLabel={true}
     >
       <svelte:fragment slot="inside">
         <input

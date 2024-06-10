@@ -2,10 +2,10 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
-  export let fieldId;
-  export let options;
-  export let label;
-  export let isNew;
+  export let fieldId: string;
+  export let options: any;
+  export let label: string;
+  export let isNew: boolean;
 
   const type = "time-only";
   const _type = type.replace(/-/g, "_");
@@ -22,7 +22,6 @@
     <ContentFieldOption
       id="{_type}-initial-value"
       label={window.trans("Initial Value")}
-      showLabel={true}
     >
       <svelte:fragment slot="inside">
         <input

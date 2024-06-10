@@ -1,6 +1,7 @@
 <script lang="ts">
   import { recalcHeight, update } from "../Utils";
   import { cfields } from "../Store";
+  import SVG from "../../svg/elements/SVG.svelte";
   //  import ContentType from './ContentType.svelte';
   import SingleLineText from "./SingleLineText.svelte";
   //  import MultiLineText from './MultiLineText.svelte';
@@ -34,7 +35,7 @@
   export let type: string;
   export let typeLabel: string;
   export let itemIndex: number;
-  export let gatheringData: (id: string) => object;
+  export let gatheringData: (c: HTMLDivElement) => object;
   export let isEmpty: boolean;
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -99,28 +100,29 @@
 </script>
 
 <div class="mt-collapse__container">
-  <div class="col-auto">
-    <ss
+  <div class="col-auto p-0">
+    <SVG
       title={window.trans("Move")}
       class="mt-icon"
       href="{window.StaticURI}/images/sprite.svg#ic_move"
     />
   </div>
-  <div class="col text-wrap">
-    <ss
+  <div class="col text-wrap p-0">
+    <SVG
       title={window.trans("ContentField")}
       class="mt-icon--secondary"
       href="{window.StaticURI}images/sprite.svg#ic_contentstype"
-    />{label || ""} ({typeLabel}) {#if realId}<span>(ID: {realId})</span>{/if}
+    />
+    {label} ({typeLabel})
+    {#if realId}<span>(ID: {realId})</span>{/if}
   </div>
-  <div class="col-auto">
+  <div class="col-auto p-0">
     <!-- svelte-ignore a11y-invalid-attribute -->
     <a
-      data-id={id}
       href="javascript:void(0)"
       on:click={duplicateField}
       class="d-inline-block duplicate-content-field"
-      ><ss
+      ><SVG
         title={window.trans("Duplicate")}
         class="mt-icon--secondary"
         href="{window.StaticURI}images/sprite.svg#ic_duplicate"
@@ -131,7 +133,7 @@
       href="javascript:void(0)"
       on:click={deleteField}
       class="d-inline-block delete-content-field"
-      ><ss
+      ><SVG
         title={window.trans("Delete")}
         class="mt-icon--secondary"
         href="{window.StaticURI}images/sprite.svg#ic_trash"
@@ -143,7 +145,7 @@
       aria-expanded={isShow === "show" ? "true" : "false"}
       aria-controls="field-options-{id}"
       class="d-inline-block"
-      ><ss
+      ><SVG
         title={window.trans("Edit")}
         class="mt-icon--secondary"
         href="{window.StaticURI}images/sprite.svg#ic_collapse"
@@ -153,7 +155,8 @@
 </div>
 <div
   data-is={type}
-  class="collapse mt-collapse__content {isShow}"
+  class="collapse mt-collapse__content"
+  class:show={isShow === "show"}
   id="field-options-{id}"
   {...{ fieldid: id, isnew: isNew }}
 >

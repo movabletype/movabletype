@@ -45,11 +45,7 @@
   {options}
 >
   <svelte:fragment slot="body">
-    <ContentFieldOption
-      id="{type}-min_value"
-      label={window.trans("Min Value")}
-      showLabel={true}
-    >
+    <ContentFieldOption id="{type}-min_value" label={window.trans("Min Value")}>
       <svelte:fragment slot="inside">
         <input
           {...{ ref: "min_value" }}
@@ -65,11 +61,7 @@
       </svelte:fragment>
     </ContentFieldOption>
 
-    <ContentFieldOption
-      id="{type}-max_value"
-      label={window.trans("Max Value")}
-      showLabel={true}
-    >
+    <ContentFieldOption id="{type}-max_value" label={window.trans("Max Value")}>
       <svelte:fragment slot="inside">
         <input
           {...{ ref: "max_value" }}
@@ -88,7 +80,6 @@
     <ContentFieldOption
       id="{type}-decimal_places"
       label={window.trans("Number of decimal places")}
-      showLabel={true}
     >
       <svelte:fragment slot="inside">
         <input
@@ -107,7 +98,6 @@
     <ContentFieldOption
       id="{type}-initial_value"
       label={window.trans("Initial Value")}
-      showLabel={true}
     >
       <svelte:fragment slot="inside">
         <input

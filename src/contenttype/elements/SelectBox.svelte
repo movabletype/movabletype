@@ -208,7 +208,6 @@
     <ContentFieldOption
       id="{_type}-multiple"
       label={window.trans("Allow users to select multiple values?")}
-      showLabel={true}
     >
       <svelte:fragment slot="inside">
         <input
@@ -228,7 +227,6 @@
     <ContentFieldOption
       id="{_type}-min"
       label={window.trans("Minimum number of selections")}
-      showLabel={true}
       attr="show={options.multiple}"
     >
       <svelte:fragment slot="inside">
@@ -247,7 +245,6 @@
     <ContentFieldOption
       id="{_type}-max"
       label={window.trans("Maximum number of selections")}
-      showLabel={true}
       attr="show={options.multiple}"
     >
       <svelte:fragment slot="inside">
@@ -268,7 +265,6 @@
       id="{_type}-values"
       required={true}
       label={window.trans("Values")}
-      showLabel={true}
     >
       <svelte:fragment slot="inside">
         <div class="mt-table--outline mb-3">

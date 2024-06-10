@@ -44,6 +44,19 @@
 
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
+<mt:unless name="config.useriot">
+  <style>
+    div.mt-draggable__area > div.placeholder {
+      height: 26px;
+      margin: 4px;
+      margin-left: 10px;
+      border-width: 2px;
+      border-style: dashed;
+      border-radius: 4px;
+      border-color: #aaa;
+    }
+  </style>
+</mt:unless>
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">

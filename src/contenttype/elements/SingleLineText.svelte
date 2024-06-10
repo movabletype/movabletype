@@ -5,7 +5,7 @@
   export let fieldId: string;
   export let isNew: boolean;
   export let label: string;
-  export let options;
+  export let options: any;
 </script>
 
 <ContentFieldOptionGroup
