@@ -12,18 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-my $fixed_time = CORE::time;
-sub fixed_time() {
-    return $fixed_time;
-};
 BEGIN {
-    no warnings 'redefine';
-
-    undef(*CORE::GLOBAL::time);
-
-    *CORE::GLOBAL::time = \&fixed_time;
-    use MT::FailedLogin;
-
+    eval { use Test::MockTime::HiRes qw(set_fixed_time); 1 } or plan skip_all => "requires Test::MockTime::HiRes";
     use MT::Test;
 }
 
@@ -95,7 +85,7 @@ sub clear_lockout_statuses {
     $failedlogin_class->remove;
     MT::Lockout->unlock($evil_user);
     $evil_user->save();
-    $fixed_time = $now;
+    set_fixed_time($now);
 }
 
 
@@ -112,7 +102,7 @@ ok(
 );
 
 for (my $i = 0; $i < $ip_limit-1; $i++) {
-    $fixed_time = $now-60*($i+2);
+    set_fixed_time($now-60*($i+2));
     MT::Lockout->_insert_failedlogin($app, $evil_ip_address, '');
 }
 ok(
@@ -120,7 +110,7 @@ ok(
     '$evil_ip_address has not locked out. (FailedLogin: IPLockoutLimit - 1)'
 );
 
-$fixed_time = $now;
+set_fixed_time($now);
 MT::Lockout->_insert_failedlogin($app, $evil_ip_address, '');
 ok(
     MT::Lockout->is_locked_out_ip($app, $evil_ip_address),
@@ -131,13 +121,13 @@ ok(
     '$good_ip_address has not locked out. (FailedLogin: IPLockoutLimit)'
 );
 
-$fixed_time = $now+$ip_interval;
+set_fixed_time($now+$ip_interval);
 ok(
     MT::Lockout->is_locked_out_ip($app, $evil_ip_address),
     '$evil_ip_address has locked out. (not yet recovered)'
 );
 
-$fixed_time = $now+$ip_interval+1;
+set_fixed_time($now+$ip_interval+1);
 ok(
     ! MT::Lockout->is_locked_out_ip($app, $evil_ip_address),
     '$evil_ip_address has not locked out. (recovered)'
@@ -157,7 +147,7 @@ ok(
 );
 
 for (my $i = 0; $i < $user_limit-1; $i++) {
-    $fixed_time = $now-60*($i+2);
+    set_fixed_time($now-60*($i+2));
     MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
 }
 ok(
@@ -165,7 +155,7 @@ ok(
     '$evil_user has not locked out. (FailedLogin: AuthorLockoutLimit - 1)'
 );
 
-$fixed_time = $now;
+set_fixed_time($now);
 MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
 ok(
     MT::Lockout->is_locked_out_user($app, $evil_user->name),
@@ -176,13 +166,13 @@ ok(
     '$good_user has not locked out. (FailedLogin: IPLockoutLimit)'
 );
 
-$fixed_time = $now+$user_interval;
+set_fixed_time($now+$user_interval);
 ok(
     MT::Lockout->is_locked_out_user($app, $evil_user->name),
     '$evil_user has locked out. (not yet recoveried)'
 );
 
-$fixed_time = $now+$user_interval+1;
+set_fixed_time($now+$user_interval+1);
 ok(
     ! MT::Lockout->is_locked_out_user($app, $evil_user->name),
     '$evil_user has not locked out. (recoveried automaticaly)'
@@ -273,7 +263,7 @@ foreach my $res (
     )
 {
     clear_lockout_statuses();
-    $fixed_time = $now - 60;
+    set_fixed_time($now - 60);
     MT::Lockout->_insert_failedlogin( $app, $evil_ip_address, $evil_user->name );
 
     MT::Lockout->process_login_result( $app, $evil_ip_address,
@@ -300,7 +290,7 @@ foreach my $case (
         user  => $evil_user,
     },
 ) {
-    $fixed_time = $now-10;
+    set_fixed_time($now-10);
     MT::Lockout->_insert_failedlogin($app, $good_ip_address, $good_user->name);
     MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $good_user->name);
     MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
@@ -367,13 +357,13 @@ is_deeply(
 
 clear_lockout_statuses();
 note('MT::Lockout::cleanup');
-$fixed_time = $now-60;
+set_fixed_time($now-60);
 MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
-$fixed_time = $now-$max_interval-60;
+set_fixed_time($now-$max_interval-60);
 MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
 is($app->model('failedlogin')->count, 2, 'Failedlogin has 2 entries.');
 
-$fixed_time = $now;
+set_fixed_time($now);
 $app->model('failedlogin')->cleanup($app);
 is($app->model('failedlogin')->count, 1, 'Failedlogin has 1 entries. (cleaned)');
 
@@ -382,7 +372,7 @@ is($app->model('failedlogin')->count, 1, 'Failedlogin has 1 entries. (cleaned)')
 clear_lockout_statuses();
 note('MT::Lockout::locked_out_ip_recovery_time');
 for (my $i = 0; $i < $ip_limit; $i++) {
-    $fixed_time = $now-60;
+    set_fixed_time($now-60);
     MT::Lockout->_insert_failedlogin($app, $evil_ip_address, '');
 }
 is( MT::Lockout->locked_out_ip_recovery_time( $app, $evil_ip_address ),
@@ -435,7 +425,7 @@ clear_lockout_statuses();
         '$evil_user has not locked out.'
     );
     for (my $i = 0; $i < 10; $i++) {
-        $fixed_time = $now-60*($i+2);
+        set_fixed_time($now-60*($i+2));
         MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
     }
 
@@ -528,10 +518,10 @@ clear_lockout_statuses();
 
 clear_lockout_statuses();
 note('task');
-$fixed_time = $now-$max_interval-60;
+set_fixed_time($now-$max_interval-60);
 MT::Lockout->_insert_failedlogin($app, $evil_ip_address, $evil_user->name);
 is($app->model('failedlogin')->count, 1, 'Failedlogin has 1 entries.');
-$fixed_time = $now;
+set_fixed_time($now);
 
 my $task = $app->registry('tasks', 'CleanExpiredFailedLogin');
 ok($task, 'CleanExpiredFailedLogin is registered.');
@@ -566,7 +556,7 @@ $app->add_callback( 'post_lockout.ip',   1, undef, \&post_lockout_ip );
 clear_lockout_statuses();
 note('for ip lockout');
 for (my $i = 0; $i < $ip_limit; $i++) {
-    $fixed_time = $now-60*($i+2);
+    set_fixed_time($now-60*($i+2));
     MT::Lockout->process_login_result( $app, $evil_ip_address, $unknown_name,
         MT::Auth::INVALID_PASSWORD() );
 }
@@ -598,7 +588,7 @@ is(scalar @post_lockout_user_args, 0, 'post_lockout.user did not run');
 clear_lockout_statuses();
 note('for user lockout');
 for ( my $i = 0; $i < $user_limit; $i++ ) {
-    $fixed_time = $now - 60 * ( $i + 2 );
+    set_fixed_time($now - 60 * ( $i + 2 ));
     MT::Lockout->process_login_result( $app, $evil_ip_address,
         $evil_user->name, MT::Auth::INVALID_PASSWORD() );
 }
