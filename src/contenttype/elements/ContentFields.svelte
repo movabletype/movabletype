@@ -504,9 +504,7 @@
   <input type="hidden" name="return_args" value={opts.return_args} />
   <input type="hidden" name="_type" value="content_type" />
   <input type="hidden" name="id" value={opts.id} />
-  {#if data}
-    <input type="hidden" name="data" value={data} />
-  {/if}
+  <input type="hidden" name="data" value={data} />
 
   <div class="row">
     <div class="col">
