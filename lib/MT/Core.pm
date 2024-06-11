@@ -2380,6 +2380,10 @@ BEGIN {
                 label => "Publishes content.",
                 class => 'MT::Worker::Publish',
             },
+            'mt_reduce_revisions' => {
+                label => "Reduce revisions.",
+                class => 'MT::Worker::ReduceRevisions',
+            },
             'mt_sync' => {
                 label => "Synchronizes content to other server(s).",
                 class => 'MT::Worker::Sync',
