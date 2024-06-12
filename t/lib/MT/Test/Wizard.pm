@@ -58,6 +58,8 @@ sub test_wizard {
     my %param = @_;
     my $guard = MT::Test::Wizard::ConfigGuard->new;
 
+    local $ENV{MT_TEST_RUN_APP_AS_CGI} = 0;
+
     my $static_server = start_server();
     my $port          = $static_server->port;
     $default{pre_start}{set_static_uri_to} = "http://127.0.0.1:$port/mt-static";
