@@ -5,4 +5,4 @@ const fields: Array<MT.ContentType.Field> = [];
 const config: { [key: string]: any } = {};
 
 export const cfields = writable(fields);
-export const mtConfig = writable(config);
+export const mtConfig = writable(config); // TODO: change to readable

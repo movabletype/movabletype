@@ -82,6 +82,7 @@
     function () {
       const target = document.getElementsByClassName("mt-draggable__area")[0];
       recalcHeight(target);
+      updateAllIsShowInCfields();
       updateToggleAll();
     },
   );
@@ -93,6 +94,7 @@
     function () {
       const target = document.getElementsByClassName("mt-draggable__area")[0];
       recalcHeight(target);
+      updateAllIsShowInCfields();
       updateToggleAll();
     },
   );
@@ -381,6 +383,20 @@
     });
     isExpanded = isAllExpanded ? true : false;
     update();
+  };
+
+  const updateAllIsShowInCfields = (): void => {
+    const collapseEls = document.querySelectorAll(".mt-collapse__content");
+    cfields.update((arr) => {
+      for (let i = 0; i < arr.length; i++) {
+        if (collapseEls[i].classList.contains("show")) {
+          arr[i].isShow = "show";
+        } else {
+          arr[i].isShow = "";
+        }
+      }
+      return arr;
+    });
   };
 
   const _moveField = (item, pos: number): void => {
