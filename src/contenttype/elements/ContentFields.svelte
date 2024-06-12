@@ -302,9 +302,9 @@
         if (c.getAttribute("isNew")) {
           newData.order = i + 1;
         } else {
-          newData.id = c.id;
+          newData.id = c.id.replace(/^content-field-block-/, "");
           const innerField = $cfields.filter(function (v) {
-            return v.id == c.id;
+            return v.id == newData.id;
           });
           if (innerField.length) {
             newData.order = innerField[0].order;
@@ -699,6 +699,7 @@
           }}
           on:dragend={onDragEnd}
           style="width: 100%;"
+          id="content-field-block-{f.id}"
           bind:this={tags[fieldIndex]}
         >
           <ContentField
