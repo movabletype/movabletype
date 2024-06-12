@@ -1,15 +1,16 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  import ContentFieldOption from "./ContentFieldOption.svelte";
   import { recalcHeight, update } from "../Utils";
 
+  import ContentFieldOption from "./ContentFieldOption.svelte";
+
+  export let fieldId: string;
   export let id: string;
   export let isNew: boolean;
-  export let fieldId: string;
-  export let type: string;
   export let label: string;
-  export let options: { [key: string]: any } = {};
+  export let options: MT.ContentType.Options = {};
+  export let type: string;
 
   // Initialize
   options.displays = {};

@@ -41,13 +41,7 @@ declare namespace MT.ContentType {
 
   // Options can be expanded by options_pre_load_handler
   interface Options {
-    label?: string;
-    description?: string;
-    required?: string;
-    displays?: string;
-    initial_value?: string;
-
-    [string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
   // edit_content_type.tmpl
   interface Type {

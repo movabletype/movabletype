@@ -6,9 +6,9 @@
 
   export let fieldId: string;
   export let id: string;
-  export let options: any;
   export let isNew: boolean;
   export let label: string;
+  export let options: any;
 
   const refs = {
     min_value: {
