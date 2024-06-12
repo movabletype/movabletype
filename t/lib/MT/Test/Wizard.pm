@@ -73,10 +73,19 @@ sub test_wizard {
     $app->get_ok();
 
     my %seen;
+    my $ct        = 0;
+    my $prev_step = '';
     until ((my $step = current_step($app) || '') eq 'seed') {
         die $app->content unless $step;
+        die $app->content if $ct > 2;
         note "current step: $step";
         next_step($app, $seen{$step}++ ? {} : $param{$step} || $default{$step});
+        if ($prev_step eq $step) {
+            $ct++;
+        } else {
+            $ct = 0;
+        }
+        $prev_step = $step;
     }
 
     $app->content_like(qr/You've successfully configured Movable Type./);
