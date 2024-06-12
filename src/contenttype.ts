@@ -12,13 +12,14 @@ function getContentFieldsTarget(): Element {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function svelteMountContentFields(props: {
+  config: MT.ContentType.ConfigOpts;
   opts: MT.ContentType.ContentFieldsOpts;
 }): void {
   const target = getContentFieldsTarget();
   new ContentFields({
     target: target,
     props: {
-      config: {}, // TODO
+      config: props.config,
       opts: props.opts,
       root: target,
     },

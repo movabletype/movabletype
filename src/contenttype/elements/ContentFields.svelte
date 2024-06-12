@@ -8,7 +8,7 @@
 
   import ContentField from "./ContentField.svelte";
 
-  export let config: any; // TODO
+  export let config: MT.ContentType.ConfigOpts;
   export let opts: MT.ContentType.ContentFieldsOpts;
   export let root: Element;
 

@@ -1,4 +1,9 @@
 declare namespace MT.ContentType {
+  interface ConfigOpts {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
+  }
+
   // edit_content_type.tmpl
   interface ContentFieldsOpts {
     blog_id: string;

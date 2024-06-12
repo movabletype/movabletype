@@ -22,7 +22,7 @@
 
   // Initialize
   const self: { options?: any; id?: any; fieldId?: string; isNew?: boolean } =
-    {};
+    {}; // FIXME
   self.options = options;
   if (!self.options) {
     self.options = {};
@@ -58,7 +58,7 @@
     });
   });
 
-  const inputLabel = (e: InputEvent): void => {
+  const inputLabel = (e: Event): void => {
     const target = e.target as HTMLInputElement;
     labelValue = target.value;
     update();

@@ -56,8 +56,8 @@
           id="{type}-min_value"
           class="form-control html5-form w-25"
           value={options.min_value || $mtConfig.NumberFieldMinValue}
-          min={/* FIXME */ $mtConfig.NumberFieldMinValue || -2147483648 || 0}
-          max={/* FIXME */ $mtConfig.NumberFieldMaxValue || 2147483647 || 0}
+          min={$mtConfig.NumberFieldMinValue || 0}
+          max={$mtConfig.NumberFieldMaxValue || 0}
           on:keyup={update}
         />
       </svelte:fragment>
@@ -72,8 +72,8 @@
           id="{type}-max_value"
           class="form-control html5-form w-25"
           value={options.max_value || $mtConfig.NumberFieldMaxValue}
-          min={/* FIXME */ $mtConfig.NumberFieldMinValue || -2147483648 || 0}
-          max={/* FIXME */ $mtConfig.NumberFieldMaxValue || 2147483647 || 0}
+          min={$mtConfig.NumberFieldMinValue || 0}
+          max={$mtConfig.NumberFieldMaxValue || 0}
           on:keyup={update}
         />
       </svelte:fragment>

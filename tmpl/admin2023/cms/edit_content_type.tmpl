@@ -91,6 +91,13 @@
     }
     window.riot.observable = observable
     window.svelteMountContentFields = svelteMountContentFields
+
+    <mt:ignore>/* Enable to update this by JavaScript */</mt:ignore>
+    window.svelteMountConfig = {
+      NumberFieldMaxValue: <mt:var name="config.numberfieldmaxvalue" escape="js">,
+      NumberFieldMinValue: <mt:var name="config.numberfieldminvalue" escape="js">,
+      NumberFieldDecimalPlaces: <mt:var name="config.numberfielddecimalplaces" escape="js">
+    }
   </script>
 </mt:unless>
 
@@ -255,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <mt:if name="config.useriot">
     riot.mount('content-fields', opts);
   <mt:else>
-    svelteMountContentFields({ opts: opts });
+    svelteMountContentFields({ config: svelteMountConfig, opts: opts });
   </mt:if>
 });
 </mt:setvarblock>
