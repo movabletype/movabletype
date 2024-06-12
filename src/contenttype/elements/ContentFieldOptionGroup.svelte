@@ -9,37 +9,19 @@
   export let fieldId: string;
   export let type: string;
   export let label: string;
-  export let options: {
-    description?: string;
-    displays?: {
-      force?: boolean;
-      default?: boolean;
-      optional?: boolean;
-      none?: boolean;
-    };
-    required?: boolean;
-  };
+  export let options: { [key: string]: any } = {};
 
   // Initialize
-  const self: { options?: any; id?: any; fieldId?: string; isNew?: boolean } =
-    {}; // FIXME
-  self.options = options;
-  if (!self.options) {
-    self.options = {};
-  }
-  self.options.displays = {};
-  self.options.displays.force = "";
-  self.options.displays.default = "";
-  self.options.displays.optional = "";
-  self.options.displays.none = "";
-  if (self.options.display) {
-    self.options.displays[self.options.display] = "selected";
+  options.displays = {};
+  options.displays.force = "";
+  options.displays.default = "";
+  options.displays.optional = "";
+  options.displays.none = "";
+  if (options.display) {
+    options.displays[options.display] = "selected";
   } else {
-    self.options.displays["default"] = "selected";
+    options.displays["default"] = "selected";
   }
-  self.id = id;
-  self.fieldId = fieldId;
-  self.isNew = isNew;
 
   onMount(() => {
     const root = getRoot();
@@ -73,7 +55,7 @@
     }
 
     let className = root.className;
-    root.className = className.replace(/\s*show\s*/, ""); // TODO
+    root.className = className.replace(/\s*show\s*/, "");
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
 
@@ -170,16 +152,16 @@
     id="{type}-display"
     class="custom-select form-control form-select"
   >
-    <option value="force" selected={options?.displays?.force}
+    <option value="force" selected={options.displays.force}
       >{window.trans("Force")}</option
     >
-    <option value="default" selected={options?.displays?.default}
+    <option value="default" selected={options.displays.default}
       >{window.trans("Default")}</option
     >
-    <option value="optional" selected={options?.displays?.optional}
+    <option value="optional" selected={options.displays.optional}
       >{window.trans("Optional")}</option
     >
-    <option value="none" selected={options?.displays?.none}
+    <option value="none" selected={options.displays.none}
       >{window.trans("None")}</option
     >
   </select>
