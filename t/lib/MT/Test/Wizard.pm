@@ -58,6 +58,8 @@ sub test_wizard {
     my %param = @_;
     my $guard = MT::Test::Wizard::ConfigGuard->new;
 
+    my $static_server = start_server();
+
     my $app = MT::Test::App->new('MT::App::Wizard');
     if (MT->component('enterprise')) {
         # XXX: dirty hack to reinitialize a handler
