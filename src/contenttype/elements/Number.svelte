@@ -89,7 +89,7 @@
       name="initial_value"
       id="number-initial_value"
       class="form-control html5-form w-25"
-      value={options.initial_value}
+      value={options.initial_value ?? ""}
       min={minValue}
       max={maxValue}
     />

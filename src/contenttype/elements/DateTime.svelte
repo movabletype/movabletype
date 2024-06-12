@@ -3,43 +3,46 @@
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
   export let fieldId: string;
-  export let options: any;
-  export let label: string;
-  export let isNew: boolean;
-
   export let id: string;
-
-  const type = "date-and-time";
-  const _type = type.replace(/-/g, "_");
+  export let isNew: boolean;
+  export let label: string;
+  export let options: MT.ContentType.Options = {};
 </script>
 
-<ContentFieldOptionGroup {type} {id} {fieldId} {options} bind:label {isNew}>
+<ContentFieldOptionGroup
+  type="date_and_time"
+  {id}
+  {fieldId}
+  {options}
+  bind:label
+  {isNew}
+>
   <ContentFieldOption
-    id="{_type}-initial-date_value"
+    id="date_and_time-initial-date_value"
     label={window.trans("Initial Value (Date)")}
   >
     <input
       {...{ ref: "initial_date" }}
       type="text"
       name="initial_date"
-      id="{_type}-initial_date"
+      id="date_and_time-initial_date"
       class="form-control date-field w-25"
-      value={options?.initial_date}
+      value={options.initial_date ?? ""}
       placeholder="YYYY-MM-DD"
     />
   </ContentFieldOption>
 
   <ContentFieldOption
-    id="{_type}-initial-timevalue"
+    id="date_and_time-initial-timevalue"
     label={window.trans("Initial Value (Time)")}
   >
     <input
       {...{ ref: "initial_time" }}
       type="text"
       name="initial_time"
-      id="{_type}-initial_time"
+      id="date_and_time-initial_time"
       class="form-control time-field w-25"
-      value={options?.initial_time}
+      value={options.initial_time ?? ""}
       placeholder="HH:mm:ss"
     />
   </ContentFieldOption>
