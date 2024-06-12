@@ -55,7 +55,7 @@
           name="min_value"
           id="{type}-min_value"
           class="form-control html5-form w-25"
-          value={options.min_value || $mtConfig.NumberFieldMinValue}
+          value={options?.min_value || $mtConfig.NumberFieldMinValue}
           min={$mtConfig.NumberFieldMinValue || 0}
           max={$mtConfig.NumberFieldMaxValue || 0}
           on:keyup={update}
@@ -71,7 +71,7 @@
           name="max_value"
           id="{type}-max_value"
           class="form-control html5-form w-25"
-          value={options.max_value || $mtConfig.NumberFieldMaxValue}
+          value={options?.max_value || $mtConfig.NumberFieldMaxValue}
           min={$mtConfig.NumberFieldMinValue || 0}
           max={$mtConfig.NumberFieldMaxValue || 0}
           on:keyup={update}
@@ -92,7 +92,7 @@
           class="form-control html5-form w-25"
           min="0"
           max={$mtConfig.NumberFieldDecimalPlaces}
-          value={options.decimal_places || 0}
+          value={options?.decimal_places || 0}
         />
       </svelte:fragment>
     </ContentFieldOption>
@@ -108,7 +108,7 @@
           name="initial_value"
           id="{type}-initial_value"
           class="form-control html5-form w-25"
-          value={options.initial_value}
+          value={options?.initial_value}
           min={refs.min_value.value}
           max={refs.max_value.value}
         />

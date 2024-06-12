@@ -33,7 +33,7 @@
           name="initial_date"
           id="{_type}-initial_date"
           class="form-control date-field w-25"
-          value={options.initial_date}
+          value={options?.initial_date}
           placeholder="YYYY-MM-DD"
         />
       </svelte:fragment>
@@ -50,7 +50,7 @@
           name="initial_time"
           id="{_type}-initial_time"
           class="form-control time-field w-25"
-          value={options.initial_time}
+          value={options?.initial_time}
           placeholder="HH:mm:ss"
         />
       </svelte:fragment>

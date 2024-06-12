@@ -34,7 +34,7 @@
           name="initial_value"
           id="initial_value"
           class="form-control date-field w-25"
-          value={options.initial_value}
+          value={options?.initial_value}
           placeholder="YYYY-MM-DD"
         />
       </svelte:fragment>

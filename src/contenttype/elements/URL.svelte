@@ -29,7 +29,7 @@
           name="initial_value"
           id="url-initial_value"
           class="form-control"
-          value={options.initial_value}
+          value={options?.initial_value}
         />
       </svelte:fragment>
     </ContentFieldOption>

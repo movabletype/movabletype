@@ -136,7 +136,7 @@
       id="{type}-description"
       class="form-control"
       aria-describedby="{type}-description-field-help"
-      value={options.description}
+      value={options?.description}
     />
   </svelte:fragment>
 </ContentFieldOption>
@@ -152,7 +152,7 @@
       class="mt-switch form-control"
       id="{type}-required"
       name="required"
-      checked={options.required || false}
+      checked={options?.required || false}
       on:click={changeStateRequired}
     />
     <label for="{type}-required">
@@ -177,16 +177,16 @@
       id="{type}-display"
       class="custom-select form-control form-select"
     >
-      <option value="force" selected={options.displays?.force}
+      <option value="force" selected={options?.displays?.force}
         >{window.trans("Force")}</option
       >
-      <option value="default" selected={options.displays?.default}
+      <option value="default" selected={options?.displays?.default}
         >{window.trans("Default")}</option
       >
-      <option value="optional" selected={options.displays?.optional}
+      <option value="optional" selected={options?.displays?.optional}
         >{window.trans("Optional")}</option
       >
-      <option value="none" selected={options.displays?.none}
+      <option value="none" selected={options?.displays?.none}
         >{window.trans("None")}</option
       >
     </select>

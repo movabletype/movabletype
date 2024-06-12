@@ -30,7 +30,7 @@
           id="single_line_text-min_length"
           class="form-control w-25"
           min="0"
-          value={options.min_length || 0}
+          value={options?.min_length || 0}
         />
       </svelte:fragment>
     </ContentFieldOption>
@@ -47,7 +47,7 @@
           id="single_line_text-max_length"
           class="form-control w-25"
           min="1"
-          value={options.max_length || 255}
+          value={options?.max_length || 255}
         />
       </svelte:fragment>
     </ContentFieldOption>
@@ -63,7 +63,7 @@
           name="initial_value"
           id="single_line_text-initial_value"
           class="form-control"
-          value={options.initial_value}
+          value={options?.initial_value}
         />
       </svelte:fragment>
     </ContentFieldOption>
