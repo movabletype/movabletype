@@ -20,7 +20,22 @@ jobs:
   fedora39:
     env:
       TEST_IMAGE_NAME: fedora39
-    if: ${{ ( (github.event_name != 'schedule') || ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) ) }}
+    if: >-
+      ${{
+        (
+          (github.event_name != 'schedule')
+          || (
+            (github.repository == 'movabletype/movabletype' )
+            && (github.event_name == 'schedule')
+            && (
+              (github.ref == 'refs/heads/master')
+              || contains(github.ref, '/develop')
+              || contains(github.ref, '/support-')
+              || contains(github.ref, '/release-')
+            )
+          )
+        )
+      }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -53,7 +68,22 @@ jobs:
   # Perl 5.38 / PHP 8.3 / MySQL 8.0
   fedora40:
     needs: [fedora39]
-    if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
+    if: >-
+      ${{
+        (
+          (
+            (github.repository == 'movabletype/movabletype' )
+            && (github.event_name == 'schedule')
+            && (
+              (github.ref == 'refs/heads/master')
+              || contains(github.ref, '/develop')
+              || contains(github.ref, '/support-')
+              || contains(github.ref, '/release-')
+            )
+          )
+          || contains(github.head_ref, 'cron')
+        )
+      }}
     runs-on: ubuntu-latest
     env:
       TEST_IMAGE_NAME: fedora40
@@ -84,7 +114,22 @@ jobs:
   # Perl 5.34 / PHP 8.0 / MySQL 8.0
   fedora35:
     needs: [fedora39]
-    if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
+    if: >-
+      ${{
+        (
+          (
+            (github.repository == 'movabletype/movabletype' )
+            && (github.event_name == 'schedule')
+            && (
+              (github.ref == 'refs/heads/master')
+              || contains(github.ref, '/develop')
+              || contains(github.ref, '/support-')
+              || contains(github.ref, '/release-')
+            )
+          )
+          || contains(github.head_ref, 'cron')
+        )
+      }}
     runs-on: ubuntu-latest
     env:
       TEST_IMAGE_NAME: fedora35
@@ -115,7 +160,22 @@ jobs:
   # Perl 5.36 / PHP 8.1 / MySQL 8.0
   fedora37:
     needs: [fedora39]
-    if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
+    if: >-
+      ${{
+        (
+          (
+            (github.repository == 'movabletype/movabletype' )
+            && (github.event_name == 'schedule')
+            && (
+              (github.ref == 'refs/heads/master')
+              || contains(github.ref, '/develop')
+              || contains(github.ref, '/support-')
+              || contains(github.ref, '/release-')
+            )
+          )
+          || contains(github.head_ref, 'cron')
+        )
+      }}
     runs-on: ubuntu-latest
     env:
       TEST_IMAGE_NAME: fedora37
@@ -147,7 +207,22 @@ jobs:
   # Perl 5.10 / PHP 5.5 / MySQL 5.1
   centos6:
     needs: [fedora39]
-    if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
+    if: >-
+      ${{
+        (
+          (
+            (github.repository == 'movabletype/movabletype' )
+            && (github.event_name == 'schedule')
+            && (
+              (github.ref == 'refs/heads/master')
+              || contains(github.ref, '/develop')
+              || contains(github.ref, '/support-')
+              || contains(github.ref, '/release-')
+            )
+          )
+          || contains(github.head_ref, 'cron')
+        )
+      }}
     runs-on: ubuntu-latest
     env:
       TEST_IMAGE_NAME: centos6
@@ -173,7 +248,22 @@ jobs:
   # Perl 5.32 / PHP 7.4 / MariaDB 10.5
   bullseye:
     needs: [fedora39]
-    if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
+    if: >-
+      ${{
+        (
+          (
+            (github.repository == 'movabletype/movabletype' )
+            && (github.event_name == 'schedule')
+            && (
+              (github.ref == 'refs/heads/master')
+              || contains(github.ref, '/develop')
+              || contains(github.ref, '/support-')
+              || contains(github.ref, '/release-')
+            )
+          )
+          || contains(github.head_ref, 'cron')
+        )
+      }}
     runs-on: ubuntu-latest
     env:
       TEST_IMAGE_NAME: bullseye
@@ -204,7 +294,22 @@ jobs:
   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
   buster:
     needs: [fedora39]
-    if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
+    if: >-
+      ${{
+        (
+          (
+            (github.repository == 'movabletype/movabletype' )
+            && (github.event_name == 'schedule')
+            && (
+              (github.ref == 'refs/heads/master')
+              || contains(github.ref, '/develop')
+              || contains(github.ref, '/support-')
+              || contains(github.ref, '/release-')
+            )
+          )
+          || contains(github.head_ref, 'cron')
+        )
+      }}
     runs-on: ubuntu-latest
     env:
       TEST_IMAGE_NAME: buster
@@ -263,7 +368,22 @@ jobs:
 
   extra:
     needs: [fedora39]
-    if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
+    if: >-
+      ${{
+        (
+          (
+            (github.repository == 'movabletype/movabletype' )
+            && (github.event_name == 'schedule')
+            && (
+              (github.ref == 'refs/heads/master')
+              || contains(github.ref, '/develop')
+              || contains(github.ref, '/support-')
+              || contains(github.ref, '/release-')
+            )
+          )
+          || contains(github.head_ref, 'cron')
+        )
+      }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -306,7 +426,22 @@ jobs:
     - cloud7
     - extra
     - node_lts
-    if: ${{ ( (github.event_name != 'schedule') || ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) ) }}
+    if: >-
+      ${{
+        (
+          (github.event_name != 'schedule')
+          || (
+            (github.repository == 'movabletype/movabletype' )
+            && (github.event_name == 'schedule')
+            && (
+              (github.ref == 'refs/heads/master')
+              || contains(github.ref, '/develop')
+              || contains(github.ref, '/support-')
+              || contains(github.ref, '/release-')
+            )
+          )
+        )
+      }}
     steps:
     - name: Install jq
       run: |
