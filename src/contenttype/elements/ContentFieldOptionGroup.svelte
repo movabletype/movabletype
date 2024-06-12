@@ -116,7 +116,7 @@
     id="{type}-description"
     class="form-control"
     aria-describedby="{type}-description-field-help"
-    value={options?.description}
+    value={options.description || ""}
   />
 </ContentFieldOption>
 
@@ -130,7 +130,7 @@
     class="mt-switch form-control"
     id="{type}-required"
     name="required"
-    checked={options?.required || false}
+    checked={options.required || false}
     on:click={changeStateRequired}
   />
   <label for="{type}-required">
