@@ -5,7 +5,7 @@ on:
     - "**/*"
   pull_request:
   schedule:
-    - cron:  '30 0 * * *'
+    - cron:  '30 0 * * 0' # Sunday Only
 concurrency:
 #   # This item has no matching transformer
 #   maximum_number_of_builds: 0
@@ -72,6 +72,7 @@ jobs:
           || contains(github.ref_name, 'cron')
           || startsWith(github.ref_name, 'support-')
           || startsWith(github.ref_name, 'release-')
+          || (github.ref_name == 'develop')
         )
       }}
     runs-on: ubuntu-latest
@@ -114,6 +115,7 @@ jobs:
           || contains(github.ref_name, 'cron')
           || startsWith(github.ref_name, 'support-')
           || startsWith(github.ref_name, 'release-')
+          || (github.ref_name == 'develop')
         )
       }}
     runs-on: ubuntu-latest
@@ -156,6 +158,7 @@ jobs:
           || contains(github.ref_name, 'cron')
           || startsWith(github.ref_name, 'support-')
           || startsWith(github.ref_name, 'release-')
+          || (github.ref_name == 'develop')
         )
       }}
     runs-on: ubuntu-latest
@@ -199,6 +202,7 @@ jobs:
           || contains(github.ref_name, 'cron')
           || startsWith(github.ref_name, 'support-')
           || startsWith(github.ref_name, 'release-')
+          || (github.ref_name == 'develop')
         )
       }}
     runs-on: ubuntu-latest
@@ -236,6 +240,7 @@ jobs:
           || contains(github.ref_name, 'cron')
           || startsWith(github.ref_name, 'support-')
           || startsWith(github.ref_name, 'release-')
+          || (github.ref_name == 'develop')
         )
       }}
     runs-on: ubuntu-latest
@@ -278,6 +283,7 @@ jobs:
           || contains(github.ref_name, 'cron')
           || startsWith(github.ref_name, 'support-')
           || startsWith(github.ref_name, 'release-')
+          || (github.ref_name == 'develop')
         )
       }}
     runs-on: ubuntu-latest
@@ -348,6 +354,7 @@ jobs:
           || contains(github.ref_name, 'cron')
           || startsWith(github.ref_name, 'support-')
           || startsWith(github.ref_name, 'release-')
+          || (github.ref_name == 'develop')
         )
       }}
     runs-on: ubuntu-latest
