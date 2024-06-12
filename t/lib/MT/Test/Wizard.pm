@@ -59,6 +59,8 @@ sub test_wizard {
     my $guard = MT::Test::Wizard::ConfigGuard->new;
 
     my $static_server = start_server();
+    my $port          = $static_server->port;
+    $default{pre_start}{set_static_uri_to} = "http://127.0.0.1:$port/mt-static";
 
     my $app = MT::Test::App->new('MT::App::Wizard');
     if (MT->component('enterprise')) {
