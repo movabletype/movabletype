@@ -27,12 +27,6 @@ jobs:
           || (
             (github.repository == 'movabletype/movabletype' )
             && (github.event_name == 'schedule')
-            && (
-              (github.ref == 'refs/heads/master')
-              || contains(github.ref, '/develop')
-              || contains(github.ref, '/support-')
-              || contains(github.ref, '/release-')
-            )
           )
         )
       }}
@@ -74,12 +68,6 @@ jobs:
           (
             (github.repository == 'movabletype/movabletype' )
             && (github.event_name == 'schedule')
-            && (
-              (github.ref == 'refs/heads/master')
-              || contains(github.ref, '/develop')
-              || contains(github.ref, '/support-')
-              || contains(github.ref, '/release-')
-            )
           )
           || contains(github.head_ref, 'cron')
         )
@@ -120,12 +108,6 @@ jobs:
           (
             (github.repository == 'movabletype/movabletype' )
             && (github.event_name == 'schedule')
-            && (
-              (github.ref == 'refs/heads/master')
-              || contains(github.ref, '/develop')
-              || contains(github.ref, '/support-')
-              || contains(github.ref, '/release-')
-            )
           )
           || contains(github.head_ref, 'cron')
         )
@@ -166,12 +148,6 @@ jobs:
           (
             (github.repository == 'movabletype/movabletype' )
             && (github.event_name == 'schedule')
-            && (
-              (github.ref == 'refs/heads/master')
-              || contains(github.ref, '/develop')
-              || contains(github.ref, '/support-')
-              || contains(github.ref, '/release-')
-            )
           )
           || contains(github.head_ref, 'cron')
         )
@@ -213,12 +189,6 @@ jobs:
           (
             (github.repository == 'movabletype/movabletype' )
             && (github.event_name == 'schedule')
-            && (
-              (github.ref == 'refs/heads/master')
-              || contains(github.ref, '/develop')
-              || contains(github.ref, '/support-')
-              || contains(github.ref, '/release-')
-            )
           )
           || contains(github.head_ref, 'cron')
         )
@@ -254,12 +224,6 @@ jobs:
           (
             (github.repository == 'movabletype/movabletype' )
             && (github.event_name == 'schedule')
-            && (
-              (github.ref == 'refs/heads/master')
-              || contains(github.ref, '/develop')
-              || contains(github.ref, '/support-')
-              || contains(github.ref, '/release-')
-            )
           )
           || contains(github.head_ref, 'cron')
         )
@@ -300,12 +264,6 @@ jobs:
           (
             (github.repository == 'movabletype/movabletype' )
             && (github.event_name == 'schedule')
-            && (
-              (github.ref == 'refs/heads/master')
-              || contains(github.ref, '/develop')
-              || contains(github.ref, '/support-')
-              || contains(github.ref, '/release-')
-            )
           )
           || contains(github.head_ref, 'cron')
         )
@@ -374,12 +332,6 @@ jobs:
           (
             (github.repository == 'movabletype/movabletype' )
             && (github.event_name == 'schedule')
-            && (
-              (github.ref == 'refs/heads/master')
-              || contains(github.ref, '/develop')
-              || contains(github.ref, '/support-')
-              || contains(github.ref, '/release-')
-            )
           )
           || contains(github.head_ref, 'cron')
         )
@@ -433,12 +385,6 @@ jobs:
           || (
             (github.repository == 'movabletype/movabletype' )
             && (github.event_name == 'schedule')
-            && (
-              (github.ref == 'refs/heads/master')
-              || contains(github.ref, '/develop')
-              || contains(github.ref, '/support-')
-              || contains(github.ref, '/release-')
-            )
           )
         )
       }}
