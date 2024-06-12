@@ -5,8 +5,20 @@ use warnings;
 use Test::More;
 use MT::App::Wizard;
 use Exporter 'import';
+use Test::TCP;
 
 our @EXPORT = qw(test_wizard);
+
+sub start_server {
+    my $static_server = Test::TCP->new(
+        code => sub {
+            my $port = shift;
+            exec "plackup", "-I", "$ENV{MT_HOME}/lib", "-I", "$ENV{MT_HOME}/extlib", "-p", $port,
+                "-M", "Plack::App::Directory", "-M", "Plack::App::URLMap",
+                "-e", "my \$map = Plack::App::URLMap->new; \$map->map('/mt-static' => Plack::App::Directory->new({root => '$ENV{MT_HOME}/mt-static'}) ); \$map";
+        },
+    );
+}
 
 my @steps = qw(
     pre_start
