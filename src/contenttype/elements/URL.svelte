@@ -4,9 +4,9 @@
 
   export let fieldId: string;
   export let id: string;
-  export let options: any;
-  export let label: string;
   export let isNew: boolean;
+  export let label: string;
+  export let options: MT.ContentType.Options = {};
 </script>
 
 <ContentFieldOptionGroup type="url" {id} {fieldId} {isNew} bind:label {options}>
@@ -20,7 +20,7 @@
       name="initial_value"
       id="url-initial_value"
       class="form-control"
-      value={options?.initial_value}
+      value={options.initial_value}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>
