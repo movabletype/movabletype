@@ -198,14 +198,7 @@
   };
 </script>
 
-<ContentFieldOptionGroup
-  {type}
-  {id}
-  {fieldId}
-  {options}
-  bind:labelValue={label}
-  {isNew}
->
+<ContentFieldOptionGroup {type} {id} {fieldId} {options} bind:label {isNew}>
   <ContentFieldOption
     id="{_type}-multiple"
     label={window.trans("Allow users to select multiple values?")}
@@ -258,7 +251,7 @@
 
   <ContentFieldOption
     id="{_type}-values"
-    required={true}
+    required={1}
     label={window.trans("Values")}
   >
     <div class="mt-table--outline mb-3">

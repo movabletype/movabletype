@@ -38,14 +38,7 @@
   const type = "number";
 </script>
 
-<ContentFieldOptionGroup
-  {type}
-  {id}
-  {isNew}
-  {fieldId}
-  bind:labelValue={label}
-  {options}
->
+<ContentFieldOptionGroup {type} {id} {isNew} {fieldId} bind:label {options}>
   <ContentFieldOption id="{type}-min_value" label={window.trans("Min Value")}>
     <input
       {...{ ref: "min_value" }}

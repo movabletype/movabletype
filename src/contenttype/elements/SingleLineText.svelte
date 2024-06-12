@@ -6,16 +6,16 @@
   export let id: string;
   export let isNew: boolean;
   export let label: string;
-  export let options: any;
+  export let options: { [key: string]: any } = {};
 </script>
 
 <ContentFieldOptionGroup
   type="single_line_text"
-  {id}
   {fieldId}
-  {options}
-  bind:labelValue={label}
+  {id}
   {isNew}
+  bind:label
+  {options}
 >
   <ContentFieldOption
     id="single_line_text-min_length"
@@ -28,7 +28,7 @@
       id="single_line_text-min_length"
       class="form-control w-25"
       min="0"
-      value={options?.min_length || 0}
+      value={options.min_length || 0}
     />
   </ContentFieldOption>
 
@@ -43,7 +43,7 @@
       id="single_line_text-max_length"
       class="form-control w-25"
       min="1"
-      value={options?.max_length || 255}
+      value={options.max_length || 255}
     />
   </ContentFieldOption>
 
@@ -57,7 +57,7 @@
       name="initial_value"
       id="single_line_text-initial_value"
       class="form-control"
-      value={options?.initial_value}
+      value={options.initial_value}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

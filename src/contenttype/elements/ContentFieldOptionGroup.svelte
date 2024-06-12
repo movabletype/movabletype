@@ -8,7 +8,7 @@
   export let isNew: boolean;
   export let fieldId: string;
   export let type: string;
-  export let labelValue: string;
+  export let label: string;
   export let options: {
     description?: string;
     displays?: {
@@ -60,7 +60,7 @@
 
   const inputLabel = (e: Event): void => {
     const target = e.target as HTMLInputElement;
-    labelValue = target.value;
+    label = target.value;
     update();
   };
 
@@ -97,7 +97,7 @@
   type="hidden"
   {...{ ref: "id" }}
   name="id"
-  id="single-line-text-id"
+  id="{type}-id"
   class="form-control"
   value={isNew ? `id:${fieldId}` : fieldId}
 />
@@ -114,7 +114,7 @@
     id="{type}-label"
     class="form-control html5-form"
     on:input={inputLabel}
-    value={labelValue || ""}
+    value={label || ""}
     required
     data-mt-content-field-unique
   />

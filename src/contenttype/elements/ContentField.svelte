@@ -64,8 +64,7 @@
 
   const duplicateField = (): void => {
     const newItem = jQuery.extend({}, $cfields[itemIndex]);
-    const options = gatheringData(parent);
-    newItem.options = options;
+    newItem.options = gatheringData(parent);
     newItem.id = Math.random().toString(36).slice(-8);
     let label = item.label;
     if (!label) {

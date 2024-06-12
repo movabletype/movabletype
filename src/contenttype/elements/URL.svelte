@@ -9,14 +9,7 @@
   export let isNew: boolean;
 </script>
 
-<ContentFieldOptionGroup
-  type="url"
-  {id}
-  {fieldId}
-  {isNew}
-  bind:labelValue={label}
-  {options}
->
+<ContentFieldOptionGroup type="url" {id} {fieldId} {isNew} bind:label {options}>
   <ContentFieldOption
     id="url-initial_value"
     label={window.trans("Initial Value")}

@@ -13,14 +13,7 @@
   const _type = type.replace(/-/g, "_");
 </script>
 
-<ContentFieldOptionGroup
-  {type}
-  {id}
-  {fieldId}
-  {options}
-  bind:labelValue={label}
-  {isNew}
->
+<ContentFieldOptionGroup {type} {id} {fieldId} {options} bind:label {isNew}>
   <ContentFieldOption
     id="{_type}-initial-date_value"
     label={window.trans("Initial Value (Date)")}
