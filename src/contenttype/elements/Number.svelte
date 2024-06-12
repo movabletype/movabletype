@@ -5,6 +5,7 @@
   import { mtConfig } from "../Store";
 
   export let fieldId: string;
+  export let id: string;
   export let options: any;
   export let isNew: boolean;
   export let label: string;
@@ -39,6 +40,7 @@
 
 <ContentFieldOptionGroup
   {type}
+  {id}
   {isNew}
   {fieldId}
   bind:labelValue={label}

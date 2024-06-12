@@ -3,6 +3,7 @@
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
   export let fieldId: string;
+  export let id: string;
   export let options: any;
   export let label: string;
   export let isNew: boolean;
@@ -10,6 +11,7 @@
 
 <ContentFieldOptionGroup
   type="url"
+  {id}
   {fieldId}
   {isNew}
   bind:labelValue={label}

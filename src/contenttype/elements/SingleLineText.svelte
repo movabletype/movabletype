@@ -3,6 +3,7 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   export let fieldId: string;
+  export let id: string;
   export let isNew: boolean;
   export let label: string;
   export let options: any;
@@ -10,6 +11,7 @@
 
 <ContentFieldOptionGroup
   type="single_line_text"
+  {id}
   {fieldId}
   {options}
   bind:labelValue={label}

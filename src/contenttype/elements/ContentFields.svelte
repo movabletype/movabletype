@@ -12,12 +12,13 @@
   export let opts: MT.ContentType.ContentFieldsOpts;
   export let root: Element;
 
-  cfields.set(opts.fields);
   mtConfig.set(config);
+
+  cfields.set(opts.fields);
   let isEmpty = $cfields.length > 0 ? false : true;
   let data = "";
   let droppable = false;
-  let observer = opts.observer;
+  const observer = opts.observer;
   let dragged: EventTarget | null = null;
   let draggedItem: MT.ContentType.Field | null = null;
   const placeholder = document.createElement("div");
@@ -27,20 +28,19 @@
   let labelField = opts.labelField;
   let isExpanded = false;
 
-  const tags = (): NodeListOf<HTMLDivElement> => {
+  const tags: Array<HTMLDivElement> = [];
+
+  const getTags = (): NodeListOf<HTMLDivElement> => {
     return root.querySelectorAll('div[data-is="content-field"]');
   };
 
   afterUpdate(() => {
-    const select = root.querySelector("#label_field");
-    if (!select) {
-      return;
-    }
+    const select = root.querySelector("#label_field") as HTMLSelectElement;
     jQuery(select)
       .find("option")
       .each(function (index, option) {
         if (option.attributes.getNamedItem("selected")) {
-          (select as HTMLSelectElement).selectedIndex = index;
+          select.selectedIndex = index;
           return false;
         }
       });
@@ -60,7 +60,7 @@
   // Show detail modal
   jQuery(document).on("show.bs.modal", "#editDetail", function () {
     rebuildLabelFields();
-    update();
+    update(); // TODO
   });
 
   // Hide detail modal
@@ -69,7 +69,7 @@
     if (jQuery("#name-field > input").mtValidate("simple")) {
       opts.name = jQuery("#name-field > input").val()?.toString() || "";
       window.setDirty(true);
-      update();
+      update(); // TODO
     } else {
       return false;
     }
@@ -102,7 +102,6 @@
     "focus",
     ".mt-draggable__area input, .mt-draggable__area textarea",
     function () {
-      // const target = document.getElementsByClassName("mt-draggable__area")[0];
       jQuery(this).closest(".mt-contentfield").attr("draggable", "false");
     },
   );
@@ -132,22 +131,24 @@
 
       // Highlight droppable area
       if (!dragoverState) {
+        // e.currentTarget is correct here, but Riot.js implementation is not fixed, because it works fine now.
         currentTarget.classList.add("mt-draggable__area--dragover");
         dragoverState = true;
       }
 
       if (dragged) {
-        if (target.classList.contains("mt-contentfield")) {
+        if (target.className === "mt-contentfield") {
           // Inside the dragOver method
 
           // comment out because not used
           // self.over = e.target;
+
           const targetRect = target.getBoundingClientRect();
-          const parent = target.parentNode;
+          const parent = target.parentNode as ParentNode;
           if ((e.clientY - targetRect.top) / targetRect.height > 0.5) {
-            parent?.insertBefore(placeholder, target.nextElementSibling);
+            parent.insertBefore(placeholder, target.nextElementSibling);
           } else {
-            parent?.insertBefore(placeholder, target);
+            parent.insertBefore(placeholder, target);
           }
         }
         if (target.className === "mt-draggable__area") {
@@ -161,6 +162,7 @@
         }
       } else {
         // Dragged from content field types
+        // e.currentTarget is correct here, but Riot.js implementation is not fixed, because it works fine now.
         currentTarget.appendChild(placeholder);
       }
       e.preventDefault();
@@ -170,8 +172,8 @@
   const onDrop = (e: DragEvent): void => {
     const currentTarget = e.currentTarget as HTMLElement;
     if (dragged) {
-      var pos = 0;
-      var children;
+      let pos = 0;
+      let children: HTMLCollection | null = null;
       if (placeholder.parentNode) {
         children = placeholder.parentNode.children;
       }
@@ -180,10 +182,10 @@
         e.preventDefault();
         return;
       }
-      for (var i = 0; i < children.length; i++) {
-        if (children[i] == placeholder) break;
+      for (let i = 0; i < children.length; i++) {
+        if (children[i] === placeholder) break;
         if (
-          children[i] != dragged &&
+          children[i] !== dragged &&
           children[i].classList.contains("mt-contentfield")
         ) {
           pos++;
@@ -223,6 +225,7 @@
 
   const onDragLeave = (e: DragEvent): void => {
     if (dragoverState) {
+      // e.currentTarget is correct here, but Riot.js implementation is not fixed, because it works fine now.
       (e.currentTarget as HTMLElement).classList.remove(
         "mt-draggable__area--dragover",
       );
@@ -248,8 +251,9 @@
     update();
   };
 
-  const stopSubmitting = (e): boolean => {
-    if (e.which === 13) {
+  const stopSubmitting = (e: KeyboardEvent): boolean => {
+    if (e.key === "Enter") {
+      // e.which is deprecated
       e.preventDefault();
       return false;
     }
@@ -260,10 +264,10 @@
     if ($cfields.length === 0) {
       return true;
     }
-    var invalidFields = $cfields.filter(function (field) {
+    const invalidFields = $cfields.filter(function (field) {
       return opts.invalid_types[field.type];
     });
-    return invalidFields.length == 0 ? true : false;
+    return invalidFields.length === 0 ? true : false;
   };
 
   const submit = (): void => {
@@ -284,43 +288,33 @@
       options?: object;
     }> = [];
     if ($cfields) {
-      //TODO content-fields tag does not exist
-      //var child = self.tags['content-field']
-      const child = tags();
-      if (child) {
-        // if (!Array.isArray(child)) {
-        //   child = [child];
-        // }
-
-        child.forEach(function (c, i) {
-          // var field = c.tags[c.type];
-          var options = gatheringData(c);
-          var newData: {
-            type?: string;
-            order?: number;
-            id?: string;
-            options?: object;
-          } = {};
-          newData.type = $cfields[i].type;
-          newData.options = options;
-          if (c.getAttribute("isNew")) {
-            // TODO
-            newData.order = i + 1;
+      const child = getTags();
+      child.forEach(function (c, i) {
+        const options = gatheringData(c);
+        const newData: {
+          type?: string;
+          order?: number;
+          id?: string;
+          options?: object;
+        } = {};
+        newData.type = $cfields[i].type;
+        newData.options = options;
+        if (c.getAttribute("isNew")) {
+          newData.order = i + 1;
+        } else {
+          newData.id = c.id;
+          const innerField = $cfields.filter(function (v) {
+            return v.id == c.id;
+          });
+          if (innerField.length) {
+            newData.order = innerField[0].order;
           } else {
-            newData.id = c.id;
-            var innerField = $cfields.filter(function (v) {
-              return v.id == c.id;
-            });
-            if (innerField.length) {
-              newData.order = innerField[0].order;
-            } else {
-              newData.order = i + 1;
-            }
+            newData.order = i + 1;
           }
-          fieldOptions.push(newData);
-        });
-        data = JSON.stringify(fieldOptions);
-      }
+        }
+        fieldOptions.push(newData);
+      });
+      data = JSON.stringify(fieldOptions);
     } else {
       data = "";
     }
@@ -329,30 +323,17 @@
     document.forms["content-type-form"].submit();
   };
 
-  // const recalcHeight = (droppableArea) => {
-  //   // Calculate droppable area height
-  //   var contentFields = droppableArea.getElementsByClassName("mt-contentfield");
-  //   var clientHeight = 0;
-  //   for (var i = 0; i < contentFields.length; i++) {
-  //     clientHeight += contentFields[i].offsetHeight;
-  //   }
-  //   if (clientHeight >= droppableArea.clientHeight) {
-  //     jQuery(droppableArea).height(clientHeight + 100);
-  //   } else {
-  //     if (clientHeight >= 400) jQuery(droppableArea).height(clientHeight + 100);
-  //     else jQuery(droppableArea).height(400 - 8);
-  //   }
-  // };
+  // recalcHeight was moved to Utils.ts
 
   const rebuildLabelFields = (): void => {
-    var fields: Array<{ value: string; label: string }> = [];
-    for (var i = 0; i < $cfields.length; i++) {
-      var required = jQuery("#content-field-block-" + $cfields[i].id)
+    const fields: Array<{ value: string; label: string }> = [];
+    for (let i = 0; i < $cfields.length; i++) {
+      const required = jQuery("#content-field-block-" + $cfields[i].id)
         .find('[name="required"]')
         .prop("checked");
       if (required && $cfields[i].canDataLabel === 1) {
-        var label = $cfields[i].label;
-        var id = $cfields[i].unique_id;
+        let label = $cfields[i].label;
+        let id = $cfields[i].unique_id || "";
         if (!label) {
           label =
             jQuery("#content-field-block-" + $cfields[i].id)
@@ -365,7 +346,7 @@
           id = "id:" + $cfields[i].id;
         }
         fields.push({
-          value: id || "",
+          value: id,
           label: label,
         });
       }
@@ -374,8 +355,8 @@
     update();
   };
 
-  const changeLabelField = (e): void => {
-    labelField = e.target.value;
+  const changeLabelField = (e: Event): void => {
+    labelField = (e.target as HTMLSelectElement).value;
   };
 
   const toggleAll = (): void => {
@@ -718,6 +699,7 @@
           }}
           on:dragend={onDragEnd}
           style="width: 100%;"
+          bind:this={tags[fieldIndex]}
         >
           <ContentField
             id={f.id || ""}
@@ -731,7 +713,7 @@
             itemIndex={fieldIndex}
             {gatheringData}
             bind:isEmpty
-            bind:this={tags[fieldIndex]}
+            parent={tags[fieldIndex]}
           />
         </div>
       {/each}

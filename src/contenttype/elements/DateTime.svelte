@@ -3,20 +3,11 @@
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
   export let fieldId: string;
-  export let options: {
-    description?: string;
-    displays?: {
-      force?: boolean;
-      default?: boolean;
-      optional?: boolean;
-      none?: boolean;
-    };
-    required?: boolean;
-    initial_value?: string;
-    [key: string]: any;
-  };
+  export let options: any;
   export let label: string;
   export let isNew: boolean;
+
+  export let id: string;
 
   const type = "date-and-time";
   const _type = type.replace(/-/g, "_");
@@ -24,6 +15,7 @@
 
 <ContentFieldOptionGroup
   {type}
+  {id}
   {fieldId}
   {options}
   bind:labelValue={label}

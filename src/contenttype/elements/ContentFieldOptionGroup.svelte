@@ -1,7 +1,10 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import { recalcHeight, update } from "../Utils";
 
+  export let id: string;
   export let isNew: boolean;
   export let fieldId: string;
   export let type: string;
@@ -18,55 +21,59 @@
   };
 
   // Initialize
-  //  this.options = opts.options
-  //  if ( !this.options )
-  //    this.options = {}
-  //
-  //  this.options.displays = {}
-  //  this.options.displays.force = ""
-  //  this.options.displays.default = ""
-  //  this.options.displays.optional = ""
-  //  this.options.displays.none = ""
-  //  if ( this.options.display )
-  //    this.options.displays[this.options.display] = "selected"
-  //  else
-  //    this.options.displays['default'] = "selected"
-  //  this.id = opts.id
-  //  this.fieldId = opts.fieldid
-  //  this.isNew = opts.isnew
-  //
-  //  this.on('mount', function() {
-  //    elms = this.root.querySelectorAll('*')
-  //    Array.prototype.slice.call(elms).forEach( function (v) {
-  //      if ( v.hasAttribute('id') ) {
-  //        v.setAttribute('id', v.getAttribute('id') + '-' + opts.id)
-  //      }
-  //      if ( v.tagName.toLowerCase() == 'label' && v.hasAttribute('for') ) {
-  //        v.setAttribute('for', v.getAttribute('for') + '-' + opts.id)
-  //      }
-  //    })
-  //  })
+  const self: { options?: any; id?: any; fieldId?: string; isNew?: boolean } =
+    {};
+  self.options = options;
+  if (!self.options) {
+    self.options = {};
+  }
+  self.options.displays = {};
+  self.options.displays.force = "";
+  self.options.displays.default = "";
+  self.options.displays.optional = "";
+  self.options.displays.none = "";
+  if (self.options.display) {
+    self.options.displays[self.options.display] = "selected";
+  } else {
+    self.options.displays["default"] = "selected";
+  }
+  self.id = id;
+  self.fieldId = fieldId;
+  self.isNew = isNew;
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const inputLabel = (e) => {
-    labelValue = e.target.value;
+  onMount(() => {
+    const root = getRoot();
+    if (!root) {
+      return;
+    }
+
+    const elms = root.querySelectorAll("*");
+    Array.prototype.slice.call(elms).forEach(function (v) {
+      if (v.hasAttribute("id")) {
+        v.setAttribute("id", v.getAttribute("id") + "-" + id);
+      }
+      if (v.tagName.toLowerCase() == "label" && v.hasAttribute("for")) {
+        v.setAttribute("for", v.getAttribute("for") + "-" + id);
+      }
+    });
+  });
+
+  const inputLabel = (e: InputEvent): void => {
+    const target = e.target as HTMLInputElement;
+    labelValue = target.value;
     update();
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const changeStateRequired = (e) => {
-    options.required = e.target.checked;
-  };
+  // move gatheringData to Utils.ts
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const closePanel = () => {
-    const root = document.querySelector("#field-options-" + fieldId);
+  const closePanel = (): void => {
+    const root = getRoot();
     if (!root) {
       return;
     }
 
     let className = root.className;
-    root.className = className.replace(/\s*show\s*/, "");
+    root.className = className.replace(/\s*show\s*/, ""); // TODO
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
 
@@ -74,6 +81,15 @@
       "aria-expanded",
       "false",
     );
+  };
+
+  const changeStateRequired = (e: Event): void => {
+    const target = e.target as HTMLInputElement;
+    options.required = target.checked;
+  };
+
+  const getRoot = (): Element | null => {
+    return document.querySelector("#field-options-" + fieldId);
   };
 </script>
 

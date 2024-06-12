@@ -7,12 +7,15 @@
   export let label: string;
   export let isNew: boolean;
 
+  export let id: string;
+
   const type = "time-only";
   const _type = type.replace(/-/g, "_");
 </script>
 
 <ContentFieldOptionGroup
   {type}
+  {id}
   {fieldId}
   {options}
   bind:labelValue={label}

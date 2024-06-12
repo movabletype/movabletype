@@ -37,9 +37,9 @@
   export let itemIndex: number;
   export let gatheringData: (c: HTMLDivElement) => object;
   export let isEmpty: boolean;
+  export let parent: HTMLDivElement;
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const deleteField = () => {
+  const deleteField = (): void => {
     const label = item.label ? item.label : window.trans("No Name");
     if (
       !confirm(
@@ -62,27 +62,16 @@
     recalcHeight(target);
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const duplicateField = (e) => {
-    let newItem = jQuery.extend({}, $cfields[itemIndex]);
-    // const field = document.querySelectorAll(
-    //   ".content-field [data-is='" + newItem.type + "']"
-    // );
-    const options = gatheringData("content-field-block-" + e.target.dataset.id);
+  const duplicateField = (): void => {
+    const newItem = jQuery.extend({}, $cfields[itemIndex]);
+    const options = gatheringData(parent);
     newItem.options = options;
     newItem.id = Math.random().toString(36).slice(-8);
-    let label =
-      document
-        .querySelector(
-          "#field-options-" + e.target.dataset.id + ' input[name="label"]',
-        )
-        ?.getAttribute("value") || "";
+    let label = item.label;
     if (!label) {
-      label =
-        jQuery("#content-field-block-" + e.target.dataset.id)
-          .find('[name="label"]')
-          .val()
-          ?.toString() || "";
+      label = jQuery("#content-field-block-" + item.id)
+        .find('[name="label"]')
+        .val() as string;
       if (label === "") {
         label = window.trans("No Name");
       }
@@ -162,16 +151,10 @@
 >
   {#if type === "single-line-text"}
     <SingleLineText
+      id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={{
-        description: "",
-        required: "",
-        displays: "",
-        initial_value: "",
-        min_length: "",
-        max_length: "",
-      }}
+      options={item.options}
       {isNew}
     />
   {:else if type === "multi-line-text"}
@@ -184,66 +167,42 @@
 -->
   {:else if type === "number"}
     <Number
+      id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={{
-        description: "",
-        required: "",
-        displays: "",
-        initial_value: "",
-        min_value: "",
-        max_value: "",
-        decimal_places: "",
-      }}
+      options={item.options}
       {isNew}
     />
   {:else if type === "url"}
     <URL
+      id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={{
-        description: "",
-        required: "",
-        displays: "",
-        initial_value: "",
-      }}
+      options={item.options}
       {isNew}
     />
   {:else if type === "date-and-time"}
     <DateTime
+      id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={{
-        description: "",
-        required: "",
-        displays: "",
-        initial_date: "",
-        initial_time: "",
-      }}
+      options={item.options}
       {isNew}
     />
   {:else if type === "date-only"}
     <Date
+      id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={{
-        description: "",
-        required: "",
-        displays: "",
-        initial_value: "",
-      }}
+      options={item.options}
       {isNew}
     />
   {:else if type === "time-only"}
     <Time
+      id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={{
-        description: "",
-        required: "",
-        displays: "",
-        initial_value: "",
-      }}
+      options={item.options}
       {isNew}
     />
   {:else if type === "select-box"}
