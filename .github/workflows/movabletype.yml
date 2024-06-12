@@ -70,6 +70,8 @@ jobs:
             && (github.event_name == 'schedule')
           )
           || contains(github.head_name, 'cron')
+          || contains(github.ref, '/support-')
+          || contains(github.ref, '/release-')
         )
       }}
     runs-on: ubuntu-latest
@@ -110,6 +112,8 @@ jobs:
             && (github.event_name == 'schedule')
           )
           || contains(github.head_name, 'cron')
+          || contains(github.ref, '/support-')
+          || contains(github.ref, '/release-')
         )
       }}
     runs-on: ubuntu-latest
@@ -150,6 +154,8 @@ jobs:
             && (github.event_name == 'schedule')
           )
           || contains(github.head_name, 'cron')
+          || contains(github.ref, '/support-')
+          || contains(github.ref, '/release-')
         )
       }}
     runs-on: ubuntu-latest
@@ -191,6 +197,8 @@ jobs:
             && (github.event_name == 'schedule')
           )
           || contains(github.head_name, 'cron')
+          || contains(github.ref, '/support-')
+          || contains(github.ref, '/release-')
         )
       }}
     runs-on: ubuntu-latest
@@ -226,6 +234,8 @@ jobs:
             && (github.event_name == 'schedule')
           )
           || contains(github.head_name, 'cron')
+          || contains(github.ref, '/support-')
+          || contains(github.ref, '/release-')
         )
       }}
     runs-on: ubuntu-latest
@@ -266,6 +276,8 @@ jobs:
             && (github.event_name == 'schedule')
           )
           || contains(github.head_name, 'cron')
+          || contains(github.ref, '/support-')
+          || contains(github.ref, '/release-')
         )
       }}
     runs-on: ubuntu-latest
@@ -334,6 +346,8 @@ jobs:
             && (github.event_name == 'schedule')
           )
           || contains(github.head_name, 'cron')
+          || contains(github.ref, '/support-')
+          || contains(github.ref, '/release-')
         )
       }}
     runs-on: ubuntu-latest
