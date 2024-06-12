@@ -21,20 +21,18 @@
   bind:labelValue={label}
   {isNew}
 >
-  <svelte:fragment slot="body">
-    <ContentFieldOption
+  <ContentFieldOption
+    id="{_type}-initial-value"
+    label={window.trans("Initial Value")}
+  >
+    <input
+      {...{ ref: "initial_value" }}
+      type="text"
+      name="initial_value"
       id="{_type}-initial-value"
-      label={window.trans("Initial Value")}
-    >
-      <input
-        {...{ ref: "initial_value" }}
-        type="text"
-        name="initial_value"
-        id="{_type}-initial-value"
-        class="form-control time-field w-25"
-        value={options?.initial_value}
-        placeholder="HH:mm:ss"
-      />
-    </ContentFieldOption>
-  </svelte:fragment>
+      class="form-control time-field w-25"
+      value={options?.initial_value}
+      placeholder="HH:mm:ss"
+    />
+  </ContentFieldOption>
 </ContentFieldOptionGroup>

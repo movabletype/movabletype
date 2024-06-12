@@ -185,12 +185,10 @@
   </select>
 </ContentFieldOption>
 
-<slot name="body" />
+<slot />
 
 <div class="form-group-button">
   <button type="button" class="btn btn-default" on:click={closePanel}>
     {window.trans("Close")}
   </button>
 </div>
-
-<slot name="script" />

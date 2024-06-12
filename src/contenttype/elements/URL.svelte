@@ -17,19 +17,17 @@
   bind:labelValue={label}
   {options}
 >
-  <svelte:fragment slot="body">
-    <ContentFieldOption
+  <ContentFieldOption
+    id="url-initial_value"
+    label={window.trans("Initial Value")}
+  >
+    <input
+      {...{ ref: "initial_value" }}
+      type="text"
+      name="initial_value"
       id="url-initial_value"
-      label={window.trans("Initial Value")}
-    >
-      <input
-        {...{ ref: "initial_value" }}
-        type="text"
-        name="initial_value"
-        id="url-initial_value"
-        class="form-control"
-        value={options?.initial_value}
-      />
-    </ContentFieldOption>
-  </svelte:fragment>
+      class="form-control"
+      value={options?.initial_value}
+    />
+  </ContentFieldOption>
 </ContentFieldOptionGroup>
