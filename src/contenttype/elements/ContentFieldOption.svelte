@@ -26,7 +26,7 @@
     </label>
   {/if}
 
-  <slot name="inside" />
+  <slot />
 
   {#if hint && showHint}
     <small id="{id}-field-help" class="form-text text-muted">

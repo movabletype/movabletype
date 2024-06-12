@@ -26,18 +26,16 @@
       id="{_type}-initial-date_value"
       label={window.trans("Initial Value")}
     >
-      <svelte:fragment slot="inside">
-        <!-- I guess id attribute should be date_only-initial_value. But original date.tmpl uses initial_value -->
-        <input
-          {...{ ref: "initial_value" }}
-          type="text"
-          name="initial_value"
-          id="initial_value"
-          class="form-control date-field w-25"
-          value={options?.initial_value}
-          placeholder="YYYY-MM-DD"
-        />
-      </svelte:fragment>
+      <!-- I guess id attribute should be date_only-initial_value. But original date.tmpl uses initial_value -->
+      <input
+        {...{ ref: "initial_value" }}
+        type="text"
+        name="initial_value"
+        id="initial_value"
+        class="form-control date-field w-25"
+        value={options?.initial_value}
+        placeholder="YYYY-MM-DD"
+      />
     </ContentFieldOption>
   </svelte:fragment>
 </ContentFieldOptionGroup>

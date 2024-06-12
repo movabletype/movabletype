@@ -107,19 +107,17 @@
   label={window.trans("Label")}
   required={1}
 >
-  <svelte:fragment slot="inside">
-    <input
-      type="text"
-      {...{ ref: "label" }}
-      name="label"
-      id="{type}-label"
-      class="form-control html5-form"
-      on:input={inputLabel}
-      value={labelValue || ""}
-      required
-      data-mt-content-field-unique
-    />
-  </svelte:fragment>
+  <input
+    type="text"
+    {...{ ref: "label" }}
+    name="label"
+    id="{type}-label"
+    class="form-control html5-form"
+    on:input={inputLabel}
+    value={labelValue || ""}
+    required
+    data-mt-content-field-unique
+  />
 </ContentFieldOption>
 
 <ContentFieldOption
@@ -128,37 +126,33 @@
   showHint={1}
   hint={window.trans("The entered message is displayed as a input field hint.")}
 >
-  <svelte:fragment slot="inside">
-    <input
-      type="text"
-      {...{ ref: "description" }}
-      name="description"
-      id="{type}-description"
-      class="form-control"
-      aria-describedby="{type}-description-field-help"
-      value={options?.description}
-    />
-  </svelte:fragment>
+  <input
+    type="text"
+    {...{ ref: "description" }}
+    name="description"
+    id="{type}-description"
+    class="form-control"
+    aria-describedby="{type}-description-field-help"
+    value={options?.description}
+  />
 </ContentFieldOption>
 
 <ContentFieldOption
   id="{type}-required"
   label={window.trans("Is this field required?")}
 >
-  <svelte:fragment slot="inside">
-    <input
-      {...{ ref: "required" }}
-      type="checkbox"
-      class="mt-switch form-control"
-      id="{type}-required"
-      name="required"
-      checked={options?.required || false}
-      on:click={changeStateRequired}
-    />
-    <label for="{type}-required">
-      {window.trans("Is this field required?")}
-    </label>
-  </svelte:fragment>
+  <input
+    {...{ ref: "required" }}
+    type="checkbox"
+    class="mt-switch form-control"
+    id="{type}-required"
+    name="required"
+    checked={options?.required || false}
+    on:click={changeStateRequired}
+  />
+  <label for="{type}-required">
+    {window.trans("Is this field required?")}
+  </label>
 </ContentFieldOption>
 
 <ContentFieldOption
@@ -170,27 +164,25 @@
     "Choose the display options for this content field in the listing screen.",
   )}
 >
-  <svelte:fragment slot="inside">
-    <select
-      {...{ ref: "display" }}
-      name="display"
-      id="{type}-display"
-      class="custom-select form-control form-select"
+  <select
+    {...{ ref: "display" }}
+    name="display"
+    id="{type}-display"
+    class="custom-select form-control form-select"
+  >
+    <option value="force" selected={options?.displays?.force}
+      >{window.trans("Force")}</option
     >
-      <option value="force" selected={options?.displays?.force}
-        >{window.trans("Force")}</option
-      >
-      <option value="default" selected={options?.displays?.default}
-        >{window.trans("Default")}</option
-      >
-      <option value="optional" selected={options?.displays?.optional}
-        >{window.trans("Optional")}</option
-      >
-      <option value="none" selected={options?.displays?.none}
-        >{window.trans("None")}</option
-      >
-    </select>
-  </svelte:fragment>
+    <option value="default" selected={options?.displays?.default}
+      >{window.trans("Default")}</option
+    >
+    <option value="optional" selected={options?.displays?.optional}
+      >{window.trans("Optional")}</option
+    >
+    <option value="none" selected={options?.displays?.none}
+      >{window.trans("None")}</option
+    >
+  </select>
 </ContentFieldOption>
 
 <slot name="body" />

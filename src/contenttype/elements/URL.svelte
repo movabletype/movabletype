@@ -22,16 +22,14 @@
       id="url-initial_value"
       label={window.trans("Initial Value")}
     >
-      <svelte:fragment slot="inside">
-        <input
-          {...{ ref: "initial_value" }}
-          type="text"
-          name="initial_value"
-          id="url-initial_value"
-          class="form-control"
-          value={options?.initial_value}
-        />
-      </svelte:fragment>
+      <input
+        {...{ ref: "initial_value" }}
+        type="text"
+        name="initial_value"
+        id="url-initial_value"
+        class="form-control"
+        value={options?.initial_value}
+      />
     </ContentFieldOption>
   </svelte:fragment>
 </ContentFieldOptionGroup>

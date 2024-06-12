@@ -209,19 +209,17 @@
       id="{_type}-multiple"
       label={window.trans("Allow users to select multiple values?")}
     >
-      <svelte:fragment slot="inside">
-        <input
-          {...{ ref: "multiple" }}
-          type="checkbox"
-          class="mt-switch form-control form-check-input"
-          id="{_type}-multiple"
-          name="multiple"
-          checked={options.multiple}
-          on:click={changeStateMultiple}
-        /><label for="{_type}-multiple" class="form-label"
-          >{window.trans("Allow users to select multiple values?")}</label
-        >
-      </svelte:fragment>
+      <input
+        {...{ ref: "multiple" }}
+        type="checkbox"
+        class="mt-switch form-control form-check-input"
+        id="{_type}-multiple"
+        name="multiple"
+        checked={options.multiple}
+        on:click={changeStateMultiple}
+      /><label for="{_type}-multiple" class="form-label"
+        >{window.trans("Allow users to select multiple values?")}</label
+      >
     </ContentFieldOption>
 
     <ContentFieldOption
@@ -229,17 +227,15 @@
       label={window.trans("Minimum number of selections")}
       attr="show={options.multiple}"
     >
-      <svelte:fragment slot="inside">
-        <input
-          {...{ ref: "min" }}
-          type="number"
-          name="min"
-          id="{_type}-min"
-          class="form-control w-25"
-          min="0"
-          value={options.min}
-        />
-      </svelte:fragment>
+      <input
+        {...{ ref: "min" }}
+        type="number"
+        name="min"
+        id="{_type}-min"
+        class="form-control w-25"
+        min="0"
+        value={options.min}
+      />
     </ContentFieldOption>
 
     <ContentFieldOption
@@ -247,18 +243,16 @@
       label={window.trans("Maximum number of selections")}
       attr="show={options.multiple}"
     >
-      <svelte:fragment slot="inside">
-        <input
-          {...{ ref: "max" }}
-          type="number"
-          name="max"
-          id="{_type}-max"
-          class="form-control w-25"
-          min="1"
-          value={options.max}
-          on:change={enterMax}
-        />
-      </svelte:fragment>
+      <input
+        {...{ ref: "max" }}
+        type="number"
+        name="max"
+        id="{_type}-max"
+        class="form-control w-25"
+        min="1"
+        value={options.max}
+        on:change={enterMax}
+      />
     </ContentFieldOption>
 
     <ContentFieldOption
@@ -266,74 +260,69 @@
       required={true}
       label={window.trans("Values")}
     >
-      <svelte:fragment slot="inside">
-        <div class="mt-table--outline mb-3">
-          <table
-            class="table mt-table values-option-table"
-            {...{ ref: "table" }}
-          >
-            <thead>
-              <tr>
-                <th scope="col">{window.trans("Selected")}</th>
-                <th scope="col">{window.trans("Label")}</th>
-                <th scope="col">{window.trans("Value")}</th>
-                <th scope="col" />
+      <div class="mt-table--outline mb-3">
+        <table class="table mt-table values-option-table" {...{ ref: "table" }}>
+          <thead>
+            <tr>
+              <th scope="col">{window.trans("Selected")}</th>
+              <th scope="col">{window.trans("Label")}</th>
+              <th scope="col">{window.trans("Value")}</th>
+              <th scope="col" />
+            </tr>
+          </thead>
+          <tbody>
+            {#each values as v}
+              <tr class="text-center align-middle">
+                <td
+                  ><input
+                    type="checkbox"
+                    class="form-check-input"
+                    checked={v.checked}
+                    on:change={enterInitial}
+                  /></td
+                >
+                <td
+                  ><input
+                    type="text"
+                    class="form-control required"
+                    name="label"
+                    on:input={enterLabel}
+                    value={v.label}
+                  /></td
+                >
+                <td
+                  ><input
+                    type="text"
+                    class="form-control required"
+                    name="value"
+                    on:input={enterValue}
+                    value={v.value}
+                  /></td
+                >
+                <td
+                  ><button
+                    on:click={parent.deleteRow}
+                    type="button"
+                    class="btn btn-default btn-sm"
+                    ><svg role="img" class="mt-icon mt-icon--sm"
+                      ><title>{window.trans("delete")}</title><use
+                        xlink:href="{window.StaticURI}images/sprite.svg#ic_trash"
+                      /></svg
+                    >{window.trans("delete")}</button
+                  ></td
+                >
               </tr>
-            </thead>
-            <tbody>
-              {#each values as v}
-                <tr class="text-center align-middle">
-                  <td
-                    ><input
-                      type="checkbox"
-                      class="form-check-input"
-                      checked={v.checked}
-                      on:change={enterInitial}
-                    /></td
-                  >
-                  <td
-                    ><input
-                      type="text"
-                      class="form-control required"
-                      name="label"
-                      on:input={enterLabel}
-                      value={v.label}
-                    /></td
-                  >
-                  <td
-                    ><input
-                      type="text"
-                      class="form-control required"
-                      name="value"
-                      on:input={enterValue}
-                      value={v.value}
-                    /></td
-                  >
-                  <td
-                    ><button
-                      on:click={parent.deleteRow}
-                      type="button"
-                      class="btn btn-default btn-sm"
-                      ><svg role="img" class="mt-icon mt-icon--sm"
-                        ><title>{window.trans("delete")}</title><use
-                          xlink:href="{window.StaticURI}images/sprite.svg#ic_trash"
-                        /></svg
-                      >{window.trans("delete")}</button
-                    ></td
-                  >
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
-        <button on:click={addRow} type="button" class="btn btn-default btn-sm"
-          ><svg role="img" class="mt-icon mt-icon--sm"
-            ><title>{window.trans("add")}</title><use
-              xlink:href="{window.StaticURI}images/sprite.svg#ic_add"
-            /></svg
-          >{window.trans("add")}</button
-        >
-      </svelte:fragment>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+      <button on:click={addRow} type="button" class="btn btn-default btn-sm"
+        ><svg role="img" class="mt-icon mt-icon--sm"
+          ><title>{window.trans("add")}</title><use
+            xlink:href="{window.StaticURI}images/sprite.svg#ic_add"
+          /></svg
+        >{window.trans("add")}</button
+      >
     </ContentFieldOption>
   </svelte:fragment>
 </ContentFieldOptionGroup>

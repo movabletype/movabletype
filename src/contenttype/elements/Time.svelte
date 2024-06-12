@@ -26,17 +26,15 @@
       id="{_type}-initial-value"
       label={window.trans("Initial Value")}
     >
-      <svelte:fragment slot="inside">
-        <input
-          {...{ ref: "initial_value" }}
-          type="text"
-          name="initial_value"
-          id="{_type}-initial-value"
-          class="form-control time-field w-25"
-          value={options?.initial_value}
-          placeholder="HH:mm:ss"
-        />
-      </svelte:fragment>
+      <input
+        {...{ ref: "initial_value" }}
+        type="text"
+        name="initial_value"
+        id="{_type}-initial-value"
+        class="form-control time-field w-25"
+        value={options?.initial_value}
+        placeholder="HH:mm:ss"
+      />
     </ContentFieldOption>
   </svelte:fragment>
 </ContentFieldOptionGroup>
