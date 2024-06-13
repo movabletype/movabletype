@@ -320,6 +320,9 @@ sub _request_internally {
             if ($mt->param('username') && $mt->param('password')) {
                 return $org_login->($mt);
             }
+            if (MT->has_plugin('MFA') && $0 !~ /\bMFA\b/) {
+                $mt->session(mfa_verified => 1);
+            }
             return ($user, 0)
         };
         if ($self->{app_class} eq 'MT::App::DataAPI') {
