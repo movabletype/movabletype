@@ -22,7 +22,7 @@
   //  import Tags from './Tags.svelte';
   //  import List from './List.svelte';
   //  import Table from './Table.svelte';
-  //  import TextLabel from './TextLabel.svelte';
+  import TextLabel from "./TextLabel.svelte";
   //  import Common from './Common.svelte';
   // selection_common_script
 
@@ -215,6 +215,14 @@
 -->
   {:else if type === "embedded-text"}
     <EmbeddedText
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:label
+      options={item.options || {}}
+    />
+  {:else if type === "text-label"}
+    <TextLabel
       id={`field-options-${id}`}
       {isNew}
       fieldId={id}
