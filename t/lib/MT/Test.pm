@@ -161,6 +161,9 @@ sub init_app {
                 else {
                     $app->session_user( $user, $session_id );
                 }
+                if (MT->has_plugin('MFA') && $0 !~ /\bMFA\b/) {
+                    $app->session(mfa_verified => 1);
+                }
                 $app->param( 'magic_token', $app->current_magic );
                 $app->user($user);
                 return ( $user, 0 );
