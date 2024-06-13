@@ -286,22 +286,12 @@
 
     rebuildLabelFields();
     window.setDirty(false);
-    const fieldOptions: Array<{
-      type?: string;
-      order?: number;
-      id?: string;
-      options?: object;
-    }> = [];
+    const fieldOptions: Array<MT.ContentType.FieldOptions> = [];
     if ($cfields) {
       const child = getTags();
       child.forEach(function (c, i) {
         const options = gatheringData(c);
-        const newData: {
-          type?: string;
-          order?: number;
-          id?: string;
-          options?: object;
-        } = {};
+        const newData: MT.ContentType.FieldOptions = {};
         newData.type = $cfields[i].type;
         newData.options = options;
         if (!$cfields[i].isNew) {

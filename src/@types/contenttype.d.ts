@@ -36,6 +36,10 @@ declare namespace MT.ContentType {
     unique_id?: string;
   }
 
+  interface FieldOptions {
+    [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  }
+
   type ObservableInstanceAny =
     import("@riotjs/observable").ObservableInstance<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
