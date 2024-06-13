@@ -30,7 +30,6 @@
   export let isNew: boolean;
   export let isShow: string;
   export let item: MT.ContentType.Field;
-  export let label: string;
   export let realId: string;
   export let type: string;
   export let typeLabel: string;
@@ -38,6 +37,8 @@
   export let gatheringData: (c: HTMLDivElement) => object;
   export let isEmpty: boolean;
   export let parent: HTMLDivElement;
+
+  let label = item.label;
 
   const deleteField = (): void => {
     const label = item.label ? item.label : window.trans("No Name");

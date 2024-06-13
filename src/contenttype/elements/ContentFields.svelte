@@ -728,7 +728,6 @@
             isNew={f.isNew || false}
             isShow={f.isShow || ""}
             item={f}
-            label={f.label || ""}
             realId={f.realdId || ""}
             type={f.type}
             typeLabel={f.typeLabel}
