@@ -193,7 +193,9 @@
           pos++;
         }
       }
-      _moveField(draggedItem, pos);
+      if (draggedItem) {
+        _moveField(draggedItem, pos);
+      }
       window.setDirty(true);
       update();
     } else {
@@ -400,7 +402,7 @@
     });
   };
 
-  const _moveField = (item, pos: number): void => {
+  const _moveField = (item: MT.ContentType.Field, pos: number): void => {
     cfields.update((fields) => {
       for (let i = 0; i < fields.length; i++) {
         let field = fields[i];
@@ -457,6 +459,7 @@
     return res;
   };
 
+  // copy from lib/MT/Template/ContextHandler.pm
   const gatheringData = (c: HTMLDivElement): object => {
     const data = {};
     const flds = c.querySelectorAll("[data-is] [ref]");
@@ -467,6 +470,7 @@
         if (f.name in data) {
           if (Array.isArray(data[f.name])) {
             data[f.name].push(val);
+            /* comented out because never used */
             // } else {
             //   const array = [];
             //   array.push(data[f.name]);
