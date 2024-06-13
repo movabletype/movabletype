@@ -304,9 +304,8 @@
         } = {};
         newData.type = $cfields[i].type;
         newData.options = options;
-        const newDataId = c.id.replace(/^content-field-block-/, "");
-        if (!c.getAttribute("isNew")) {
-          newData.id = newDataId;
+        if (!$cfields[i].isNew) {
+          newData.id = options["id"];
         }
         const innerField = $cfields.filter(function (v) {
           return v.id == newData.id;

@@ -1,21 +1,24 @@
 <script lang="ts">
-  import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
+  import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   export let fieldId: string;
-  export let options: any;
-  export let label: string;
-  export let isNew: boolean;
-
   export let id: string;
-
-  const type = "date-only";
-  const _type = type.replace(/-/g, "_");
+  export let isNew: boolean;
+  export let label: string;
+  export let options: MT.ContentType.Options;
 </script>
 
-<ContentFieldOptionGroup {type} {id} {fieldId} {options} bind:label {isNew}>
+<ContentFieldOptionGroup
+  type="date_only"
+  {id}
+  {fieldId}
+  {options}
+  bind:label
+  {isNew}
+>
   <ContentFieldOption
-    id="{_type}-initial-date_value"
+    id="date_only-initial-date_value"
     label={window.trans("Initial Value")}
   >
     <!-- I guess id attribute should be date_only-initial_value. But original date.tmpl uses initial_value -->

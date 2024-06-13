@@ -38,7 +38,7 @@
   export let isEmpty: boolean;
   export let parent: HTMLDivElement;
 
-  let label = item.label;
+  let label = item.label || "";
 
   const deleteField = (): void => {
     const label = item.label ? item.label : window.trans("No Name");
@@ -154,7 +154,7 @@
       id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={item.options}
+      options={item.options || {}}
       {isNew}
     />
   {:else if type === "multi-line-text"}
@@ -170,7 +170,7 @@
       id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={item.options}
+      options={item.options || {}}
       {isNew}
     />
   {:else if type === "url"}
@@ -178,7 +178,7 @@
       id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={item.options}
+      options={item.options || {}}
       {isNew}
     />
   {:else if type === "date-and-time"}
@@ -186,7 +186,7 @@
       id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={item.options}
+      options={item.options || {}}
       {isNew}
     />
   {:else if type === "date-only"}
@@ -194,7 +194,7 @@
       id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={item.options}
+      options={item.options || {}}
       {isNew}
     />
   {:else if type === "time-only"}
@@ -202,7 +202,7 @@
       id={`field-options-${id}`}
       fieldId={id}
       bind:label
-      options={item.options}
+      options={item.options || {}}
       {isNew}
     />
   {:else if type === "select-box"}

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
+  import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   export let fieldId: string;
   export let id: string;
