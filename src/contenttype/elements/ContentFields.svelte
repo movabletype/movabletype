@@ -304,18 +304,17 @@
         } = {};
         newData.type = $cfields[i].type;
         newData.options = options;
-        if (c.getAttribute("isNew")) {
-          newData.order = i + 1;
+        const newDataId = c.id.replace(/^content-field-block-/, "");
+        if (!c.getAttribute("isNew")) {
+          newData.id = newDataId;
+        }
+        const innerField = $cfields.filter(function (v) {
+          return v.id == newData.id;
+        });
+        if (innerField.length && innerField[0].order) {
+          newData.order = innerField[0].order;
         } else {
-          newData.id = c.id.replace(/^content-field-block-/, "");
-          const innerField = $cfields.filter(function (v) {
-            return v.id == newData.id;
-          });
-          if (innerField.length) {
-            newData.order = innerField[0].order;
-          } else {
-            newData.order = i + 1;
-          }
+          newData.order = i + 1;
         }
         fieldOptions.push(newData);
       });
