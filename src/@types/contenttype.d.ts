@@ -36,7 +36,7 @@ declare namespace MT.ContentType {
     unique_id?: string;
   }
 
-  interface FieldOptions {
+  interface FieldOption {
     [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 

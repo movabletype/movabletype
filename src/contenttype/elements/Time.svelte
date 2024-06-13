@@ -27,7 +27,7 @@
       name="initial_value"
       id="time_only-initial-value"
       class="form-control time-field w-25"
-      value={options?.initial_value}
+      value={options.initial_value ?? ""}
       placeholder="HH:mm:ss"
     />
   </ContentFieldOption>

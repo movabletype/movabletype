@@ -152,10 +152,10 @@
   {#if type === "single-line-text"}
     <SingleLineText
       id={`field-options-${id}`}
+      {isNew}
       fieldId={id}
       bind:label
       options={item.options || {}}
-      {isNew}
     />
   {:else if type === "multi-line-text"}
     <!--
@@ -168,10 +168,10 @@
   {:else if type === "number"}
     <Number
       id={`field-options-${id}`}
+      {isNew}
       fieldId={id}
       bind:label
       options={item.options || {}}
-      {isNew}
     />
   {:else if type === "url"}
     <URL
@@ -184,26 +184,26 @@
   {:else if type === "date-and-time"}
     <DateTime
       id={`field-options-${id}`}
+      {isNew}
       fieldId={id}
       bind:label
       options={item.options || {}}
-      {isNew}
     />
   {:else if type === "date-only"}
     <Date
       id={`field-options-${id}`}
+      {isNew}
       fieldId={id}
       bind:label
       options={item.options || {}}
-      {isNew}
     />
   {:else if type === "time-only"}
     <Time
       id={`field-options-${id}`}
+      {isNew}
       fieldId={id}
       bind:label
       options={item.options || {}}
-      {isNew}
     />
   {:else if type === "select-box"}
     <!--
