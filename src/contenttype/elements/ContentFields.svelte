@@ -211,6 +211,7 @@
         isNew: true,
         isShow: "show",
         canDataLabel: canDataLabel,
+        options: {},
       };
       cfields.update((arr) => [...arr, newField]);
       window.setDirty(true);

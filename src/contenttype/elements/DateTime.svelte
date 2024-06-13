@@ -6,7 +6,7 @@
   export let id: string;
   export let isNew: boolean;
   export let label: string;
-  export let options: MT.ContentType.Options = {};
+  export let options: MT.ContentType.Options;
 </script>
 
 <ContentFieldOptionGroup
