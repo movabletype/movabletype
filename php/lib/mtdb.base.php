@@ -2190,7 +2190,6 @@ abstract class MTDatabase {
                 $ids[] = $categories->Fields('category_id');
                 $categories->MoveNext();
             }
-            $list = implode(",", $ids);
 
             require_once('class.mt_category.php');
             $category = new Category;
