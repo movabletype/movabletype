@@ -315,6 +315,11 @@ jobs:
 
   cloud7:
     needs: [fedora39]
+    if: >-
+      ${{
+        (github.repository == 'movabletype/movabletype' )
+        || contains(github.ref_name, 'cron')
+      }}
     env:
       TEST_IMAGE_NAME: cloud7
     runs-on: ubuntu-latest
