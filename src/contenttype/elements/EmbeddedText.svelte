@@ -9,8 +9,9 @@
   export let options: MT.ContentType.Options;
 </script>
 
+<!-- convert snake case to chain case in Riot.js implementation -->
 <ContentFieldOptionGroup
-  type="embedded_text"
+  type="embedded-text"
   {fieldId}
   {id}
   {isNew}

@@ -26,6 +26,7 @@
   });
 </script>
 
+<!-- convert snake case to chain case in Riot.js implementation -->
 <ContentFieldOptionGroup
   type="text-label"
   {fieldId}

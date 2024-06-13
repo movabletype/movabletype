@@ -9,8 +9,9 @@
   export let options: MT.ContentType.Options;
 </script>
 
+<!-- convert snake case to chain case in Riot.js implementation -->
 <ContentFieldOptionGroup
-  type="date_and_time"
+  type="date-and-time"
   {id}
   {fieldId}
   {options}
