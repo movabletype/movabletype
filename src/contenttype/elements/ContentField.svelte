@@ -19,8 +19,8 @@
   // AssetImage
   import EmbeddedText from "./EmbeddedText.svelte";
   //  import Categories from './Categories.svelte';
-  //  import Tags from './Tags.svelte';
-  //  import List from './List.svelte';
+  import Tags from "./Tags.svelte";
+  import List from "./List.svelte";
   import Tables from "./Tables.svelte";
   import TextLabel from "./TextLabel.svelte";
   //  import Common from './Common.svelte';
@@ -215,6 +215,22 @@
 -->
   {:else if type === "embedded-text"}
     <EmbeddedText
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:label
+      options={item.options || {}}
+    />
+  {:else if type === "tags"}
+    <Tags
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:label
+      options={item.options || {}}
+    />
+  {:else if type === "list"}
+    <List
       id={`field-options-${id}`}
       {isNew}
       fieldId={id}
