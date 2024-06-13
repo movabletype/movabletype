@@ -13,7 +13,7 @@
   //  import SelectBox from './SelectBox.svelte';
   //  import RadioButton from './RadioButton.svelte';
   //  import Checkboxes from './Checkboxes.svelte';
-  //  import Asset from './Asset.svelte';
+  import Asset from "./Asset.svelte";
   // AssetAudio
   // AssetVideo
   // AssetImage
@@ -213,6 +213,14 @@
       options={ { "description": "", "required": "", "displays": "", "multiple": 0, "min": "", "max": "", "can_add": "", "values": "" } }
       isNew={ isNew } />
 -->
+  {:else if type === "asset"}
+    <Asset
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:label
+      options={item.options || {}}
+    />
   {:else if type === "embedded-text"}
     <EmbeddedText
       id={`field-options-${id}`}
