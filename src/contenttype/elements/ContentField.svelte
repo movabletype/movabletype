@@ -17,7 +17,7 @@
   // AssetAudio
   // AssetVideo
   // AssetImage
-  // EmbeddedText
+  import EmbeddedText from "./EmbeddedText.svelte";
   //  import Categories from './Categories.svelte';
   //  import Tags from './Tags.svelte';
   //  import List from './List.svelte';
@@ -213,5 +213,13 @@
       options={ { "description": "", "required": "", "displays": "", "multiple": 0, "min": "", "max": "", "can_add": "", "values": "" } }
       isNew={ isNew } />
 -->
+  {:else if type === "embedded-text"}
+    <EmbeddedText
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:label
+      options={item.options || {}}
+    />
   {/if}
 </div>
