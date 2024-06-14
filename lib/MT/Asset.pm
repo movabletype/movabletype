@@ -24,6 +24,8 @@ __PACKAGE__->install_properties(
             'file_ext'    => 'string(20)',
             'mime_type'   => 'string(255)',
             'parent'      => 'integer',
+            'width'       => 'integer',
+            'height'      => 'integer',
         },
         indexes => {
             label      => 1,
