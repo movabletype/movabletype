@@ -281,6 +281,8 @@ class Mockdata {
                 $otag->object_id = self::$last_entry_id;
             } elseif ($args['object_datasource'] === 'content_data') {
                 $otag->object_id = self::$last_content_data_id;
+            } elseif ($args['object_datasource'] === 'asset') {
+                $otag->object_id = self::$last_asset_id;
             }
         }
         $otag->cf_id = 0;
@@ -350,6 +352,7 @@ class Mockdata {
         $ct = new ContentType();
         $ct->blog_id = $args['blog_id'] ?? self::$last_blog_id ?? 1;
         $ct->unique_id = $args['unique_id'] ?? md5(uniqid(rand(), true));
+        $ct->name = $args['name'] ?? 'my_ct';
         $ct->save();
 
         self::$last_content_type_id = $ct->id;
@@ -446,7 +449,9 @@ class Mockdata {
         $finfo->category_id = $args['category_id'] ?? self::$last_category_id;
         $finfo->author_id = $args['author_id'] ?? self::$last_author_id;
         $finfo->archive_type = $args['archive_type'] ?? 'Individual';
+        $finfo->template_id = $args['template_id'] ?? self::$last_template_id;
         $finfo->templatemap_id = $args['templatemap_id'];
+        $finfo->url = $args['url'];
         $finfo->save();
         return $finfo;
     }
