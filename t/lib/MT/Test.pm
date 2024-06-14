@@ -568,6 +568,7 @@ sub init_data {
                 created_on     => '19780131074500',
                 modified_on    => '19780131074600',
                 authored_on    => '19780131074500',
+                unpublished_on => '19780131074700',
                 author_id      => $chuckd->id,
                 pinged_urls    => 'http://technorati.com/',
                 allow_comments => 1,
@@ -1234,6 +1235,7 @@ sub init_data {
             created_on  => '19780131074500',
             authored_on => '19780131074500',
             modified_on => '19780131074600',
+            unpublished_on => '19780131074700',
             author_id   => $chuckd->id,
             status      => MT::Entry::RELEASE(),
         }
