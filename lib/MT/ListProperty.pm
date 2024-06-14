@@ -34,7 +34,15 @@ sub init {
     if ( !defined $id && $cls =~ m/\./ ) {
         ( $cls, $id ) = split /\./, $cls, 2;
     }
-    die 'Object type and Property ID are required' if ( !$cls || !$id );
+    if (!$cls || !$id) {
+        MT->log({
+            message  => MT->translate('Object type and Property ID are required: [_1]', $cls || $id || ''),
+            class    => 'system',
+            category => 'listing',
+            level    => MT::Log::ERROR(),
+        });
+        return;
+    }
 
     my $setting = MT->registry( listing_screens => $cls ) || {};
     my $object_type = $setting->{object_type} || $cls;
@@ -62,10 +70,16 @@ sub _init_core {
         my $common_props = MT->registry( list_properties => '__common' );
         $prop = $common_props->{$id};
 
-        # Property is undefined
-        die MT->translate( q{Cannot initialize list property [_1].[_2].},
-            $cls, $id )
-            if !$prop;
+        if (!$prop) {
+            # Property is undefined
+            MT->log({
+                message  => MT->translate( q{Cannot initialize list property [_1].[_2].}, $cls, $id ),
+                class    => 'system',
+                category => 'listing',
+                level    => MT::Log::ERROR(),
+            });
+            return;
+        }
     }
 
     delete $prop->{plugin};
@@ -195,9 +209,13 @@ sub base {
         my $prop_class = $self->class;
         require MT::Meta;
         if ( !$class->has_column($id) ) {
-            die MT->translate(
-                'Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].',
-                $prop_class, $id, $id, );
+            MT->log({
+                message => MT->translate('Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].', $prop_class, $id, $id),
+                class    => 'system',
+                category => 'listing',
+                level    => MT::Log::ERROR(),
+            });
+            return;
         }
         my $def;
         if ( $class->has_meta && $class->is_meta_column($id) ) {
@@ -209,11 +227,16 @@ sub base {
             $def = $class->column_def($id);
         }
         my $column_type = $def->{type};
-        my $auto_type   = $AUTO{$column_type}
-            or die MT->translate(
-            'Failed to initialize auto list property [_1].[_2]: unsupported column type.',
-            $prop_class, $id
-            );
+        my $auto_type   = $AUTO{$column_type};
+        if (!$auto_type) {
+            MT->log({
+                message  => MT->translate('Failed to initialize auto list property [_1].[_2]: unsupported column type.', $prop_class, $id),
+                class    => 'system',
+                category => 'listing',
+                level    => MT::Log::ERROR(),
+            });
+            return;
+        }
         $orig_obj->{col} = $id;
         my $prop = __PACKAGE__->instance( '__virtual', $auto_type );
         return $prop;
