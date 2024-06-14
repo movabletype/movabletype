@@ -14,7 +14,7 @@
   //  import RadioButton from './RadioButton.svelte';
   //  import Checkboxes from './Checkboxes.svelte';
   import Asset from "./Asset.svelte";
-  // AssetAudio
+  import AssetAudio from "./AssetAudio.svelte";
   // AssetVideo
   // AssetImage
   import EmbeddedText from "./EmbeddedText.svelte";
@@ -215,6 +215,14 @@
 -->
   {:else if type === "asset"}
     <Asset
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:label
+      options={item.options || {}}
+    />
+  {:else if type === "asset-audio"}
+    <AssetAudio
       id={`field-options-${id}`}
       {isNew}
       fieldId={id}
