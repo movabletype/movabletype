@@ -1,16 +1,14 @@
 <script lang="ts">
-  import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
+  import { afterUpdate } from "svelte";
+
   import ContentFieldOption from "./ContentFieldOption.svelte";
-  import { mtConfig } from "../Store";
+  import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   export let fieldId: string;
-  export let options: any;
-  export let label: string;
-  export let isNew: boolean;
   export let id: string;
-
-  const type = "select-box";
-  const _type = type.replace(/-/g, "_");
+  export let isNew: boolean;
+  export let label: string;
+  export let options: MT.ContentType.Options;
 
   if (options.can_add === "0") {
     options.can_add = 0;
@@ -20,6 +18,10 @@
     options.multiple = 0;
   }
 
+  let multiple = options.multiple;
+
+  let refsTable: HTMLTableElement;
+
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
   // Copy from selection_common_script.tmpl below
   let values = options.values;
@@ -27,92 +29,77 @@
     values = [
       {
         checked: "",
+        label: "",
+        value: "",
       },
     ];
   }
 
-  // TODO When is updated event triggered?
-  //  this.on('updated', function() {
-  //    validateTable();
-  //  })
+  afterUpdate(() => {
+    validateTable();
+  });
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const addRow = () => {
-    console.log("addRow");
-    values.push({ checked: "" });
+  const addRow = (): void => {
+    values = [...values, { checked: "" }];
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const enterLabel = (e) => {
-    console.log("enterLabel");
-    console.log(e);
-    e.item.label = e.target.value;
+  export const gather = (): object => {
+    return {
+      values: values,
+    };
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const enterValue = (e) => {
-    console.log("enterValue");
-    e.item.value = e.target.value;
+  const validateTable = (): void => {
+    const jqTable = jQuery(refsTable);
+    const tableIsValidated = jqTable.data("mtValidator") ? true : false;
+    if (tableIsValidated) {
+      const jqNotValidatedLabelsValues = jqTable.find(
+        "input[type=text]:not(.is-invalid)",
+      );
+      if (jqNotValidatedLabelsValues.length > 0) {
+        /* @ts-expect-error : mtValidate is not defined */
+        jqNotValidatedLabelsValues.mtValidate("simple");
+      } else {
+        /* @ts-expect-error : mtValid is not defined */
+        jqTable.mtValid({ focus: false });
+      }
+    }
   };
-
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  // const gather = () => {
-  //   console.log("gather");
-  //   return {
-  //     values: values,
-  //   };
-  // };
-
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  // const validateTable = () => {
-  //   console.log("validateTable");
-  //   // TODO refs.table の別呼び出し方法
-  //   const jqTable = jQuery(this.refs.table);
-  //   const tableIsValidated = jqTable.data("mtValidator") ? true : false;
-  //   if (tableIsValidated) {
-  //     const jqNotValidatedLabelsValues = jqTable.find(
-  //       "input[type=text]:not(.is-invalid)"
-  //     );
-  //     if (jqNotValidatedLabelsValues.length > 0) {
-  //       jqNotValidatedLabelsValues.mtValidate("simple");
-  //     } else {
-  //       jqTable.mtValid({ focus: false });
-  //     }
-  //   }
-  // };
   // Copy from selection_common_script.tmpl above
+  // <mt:include name="content_field_type_options/selection_common_script.tmpl">
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  // const deleteRow = (e) => {
-  //   console.log("deleteRow");
-  //   item = e.item;
-  //   index = values.indexOf(item);
-  //   values.splice(index, 1);
-  //   if (values.length === 0) {
-  //     values = [
-  //       {
-  //         checked: "checked",
-  //       },
-  //     ];
-  //   } else {
-  //     found = false;
-  //     values.forEach(function (v) {
-  //       if (v.checked === "checked") {
-  //         found = true;
-  //       }
-  //     });
-  //     if (!found) {
-  //       values[0].checked = "checked";
-  //     }
-  //   }
-  // };
+  const deleteRow = (index: number): void => {
+    values.splice(index, 1);
+    if (values.length === 0) {
+      values = [
+        {
+          checked: "checked",
+          label: "",
+          value: "",
+        },
+      ];
+    } else {
+      let found = false;
+      values.forEach(function (v: {
+        checked: string;
+        label: string;
+        value: string;
+      }) {
+        if (v.checked === "checked") {
+          found = true;
+        }
+      });
+      if (!found) {
+        values[0].checked = "checked";
+      }
+    }
+    refreshView();
+  };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const enterInitial = (e) => {
-    console.log("enterInitial");
-    var target = e.target;
-    var state = target.checked;
-    var block = jQuery(e.target).parents(".mt-contentfield");
+  const enterInitial = (e: Event, index: number): void => {
+    const target = e.target as HTMLInputElement;
+    const state = target.checked;
+    const block = jQuery(e.target as HTMLElement).parents(".mt-contentfield");
 
     // Clear all check when not to allow multiple selection
     if (
@@ -124,21 +111,20 @@
     }
 
     // Set current item status
-    const item = e.item;
-    const index = values.indexOf(item);
-    e.target.checked = state;
+    (e.target as HTMLInputElement).checked = state;
     values[index].checked = state ? "checked" : "";
 
     if (options.multiple || options.multiple === 1) {
       _updateInittialField(block);
     }
+
+    refreshView();
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const changeStateMultiple = (e) => {
-    console.log("changeStateMultiple");
-    var block = jQuery(e.target).parents(".mt-contentfield");
-    options.multiple = e.target.checked;
+  const changeStateMultiple = (e: Event): void => {
+    const target = e.target as HTMLInputElement;
+    const block = jQuery(target).parents(".mt-contentfield");
+    options.multiple = target.checked;
     if (
       !options.multiple &&
       block.find(".values-option-table").find('input[type="checkbox"]:checked')
@@ -146,116 +132,131 @@
     ) {
       _clearAllInitial(block);
     }
+    refreshView();
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const enterMax = (e) => {
-    console.log("enterMax");
-    var block = jQuery(e.target).parents(".mt-contentfield");
+  const enterMax = (e: Event): void => {
+    const block = jQuery(e.target as HTMLElement).parents(".mt-contentfield");
     _updateInittialField(block);
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const _updateInittialField = (block) => {
-    console.log("_updateInittialField");
-    var max = Number(block.find('input[name="max"]').val());
-    var cur = block
+  const _updateInittialField = (block: JQuery<HTMLElement>): void => {
+    const max = Number(block.find('input[name="max"]').val());
+    const cur = block
       .find(".values-option-table")
       .find('input[type="checkbox"]:checked').length;
     if (max === 0 || cur < max) {
-      let chkbox = block
+      const chkbox = block
         .find(".values-option-table")
         .find('input[type="checkbox"]');
-      jQuery.each(chkbox, function (i) {
+      jQuery.each(chkbox, function (i: number) {
         jQuery(chkbox[i]).prop("disabled", false);
       });
     } else {
-      let chkbox = block
+      const chkbox = block
         .find(".values-option-table")
         .find('input[type="checkbox"]:not(:checked)');
-      jQuery.each(chkbox, function (i) {
+      jQuery.each(chkbox, function (i: number) {
         jQuery(chkbox[i]).prop("disabled", true);
       });
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const _clearAllInitial = (block) => {
-    console.log("_clearAllInitial");
-    var initials = block
+  const _clearAllInitial = (block: JQuery<HTMLElement>): void => {
+    const initials = block
       .find(".values-option-table")
       .find('input[type="checkbox"]');
     if (initials.length > 1) {
-      jQuery.each(initials, function (v) {
-        var elm = jQuery(initials[v]);
+      jQuery.each(initials, function (v: number) {
+        const elm = jQuery(initials[v]);
         elm.prop("checked", false);
         elm.prop("disabled", false);
       });
     }
-    values.forEach(function (v) {
+    values.forEach(function (v: {
+      checked: string;
+      label: string;
+      value: string;
+    }) {
       v.checked = "";
     });
   };
+
+  const refreshView = (): void => {
+    // eslint-disable-next-line no-self-assign
+    values = values;
+  };
 </script>
 
-<ContentFieldOptionGroup {type} {id} {fieldId} {options} bind:label {isNew}>
+<ContentFieldOptionGroup
+  type="select-box"
+  {fieldId}
+  {id}
+  {isNew}
+  bind:label
+  {options}
+>
   <ContentFieldOption
-    id="{_type}-multiple"
+    id="select_box-multiple"
     label={window.trans("Allow users to select multiple values?")}
   >
     <input
       {...{ ref: "multiple" }}
       type="checkbox"
       class="mt-switch form-control form-check-input"
-      id="{_type}-multiple"
+      id="select_box-multiple"
       name="multiple"
-      checked={options.multiple}
+      bind:checked={multiple}
       on:click={changeStateMultiple}
-    /><label for="{_type}-multiple" class="form-label"
+    /><label for="select_box-multiple" class="form-label"
       >{window.trans("Allow users to select multiple values?")}</label
     >
   </ContentFieldOption>
 
   <ContentFieldOption
-    id="{_type}-min"
+    id="select_box-min"
     label={window.trans("Minimum number of selections")}
-    attr="show={options.multiple}"
+    attrShow={multiple ? true : false}
   >
     <input
       {...{ ref: "min" }}
       type="number"
       name="min"
-      id="{_type}-min"
+      id="select_box-min"
       class="form-control w-25"
       min="0"
-      value={options.min}
+      value={options.min ?? ""}
     />
   </ContentFieldOption>
 
   <ContentFieldOption
-    id="{_type}-max"
+    id="select_box-max"
     label={window.trans("Maximum number of selections")}
-    attr="show={options.multiple}"
+    attrShow={multiple ? true : false}
   >
     <input
       {...{ ref: "max" }}
       type="number"
       name="max"
-      id="{_type}-max"
+      id="select_box-max"
       class="form-control w-25"
       min="1"
-      value={options.max}
+      value={options.max ?? ""}
       on:change={enterMax}
     />
   </ContentFieldOption>
 
   <ContentFieldOption
-    id="{_type}-values"
+    id="select_box-values"
     required={1}
     label={window.trans("Values")}
   >
     <div class="mt-table--outline mb-3">
-      <table class="table mt-table values-option-table" {...{ ref: "table" }}>
+      <table
+        class="table mt-table values-option-table"
+        {...{ ref: "table" }}
+        bind:this={refsTable}
+      >
         <thead>
           <tr>
             <th scope="col">{window.trans("Selected")}</th>
@@ -265,14 +266,16 @@
           </tr>
         </thead>
         <tbody>
-          {#each values as v}
+          {#each values as v, index}
             <tr class="text-center align-middle">
               <td
                 ><input
                   type="checkbox"
-                  class="form-check-input"
+                  class="form-check-input mt-3"
                   checked={v.checked}
-                  on:change={enterInitial}
+                  on:change={(e) => {
+                    enterInitial(e, index);
+                  }}
                 /></td
               >
               <td
@@ -280,8 +283,7 @@
                   type="text"
                   class="form-control required"
                   name="label"
-                  on:input={enterLabel}
-                  value={v.label}
+                  bind:value={v.label}
                 /></td
               >
               <td
@@ -289,13 +291,14 @@
                   type="text"
                   class="form-control required"
                   name="value"
-                  on:input={enterValue}
-                  value={v.value}
+                  bind:value={v.value}
                 /></td
               >
               <td
                 ><button
-                  on:click={parent.deleteRow}
+                  on:click={() => {
+                    deleteRow(index);
+                  }}
                   type="button"
                   class="btn btn-default btn-sm"
                   ><svg role="img" class="mt-icon mt-icon--sm"

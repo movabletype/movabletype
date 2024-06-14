@@ -10,7 +10,7 @@
   import DateTime from "./DateTime.svelte";
   import Date from "./Date.svelte";
   import Time from "./Time.svelte";
-  //  import SelectBox from './SelectBox.svelte';
+  import SelectBox from "./SelectBox.svelte";
   //  import RadioButton from './RadioButton.svelte';
   //  import Checkboxes from './Checkboxes.svelte';
   import Asset from "./Asset.svelte";
@@ -34,9 +34,10 @@
   export let type: string;
   export let typeLabel: string;
   export let itemIndex: number;
-  export let gatheringData: (c: HTMLDivElement) => object;
+  export let gatheringData: (c: HTMLDivElement, index: number) => object;
   export let isEmpty: boolean;
   export let parent: HTMLDivElement;
+  export let gather: (() => object) | undefined;
 
   let label = item.label || "";
 
@@ -65,7 +66,7 @@
 
   const duplicateField = (): void => {
     const newItem = jQuery.extend({}, $cfields[itemIndex]);
-    newItem.options = gatheringData(parent);
+    newItem.options = gatheringData(parent, itemIndex);
     newItem.id = Math.random().toString(36).slice(-8);
     let label = item.label;
     if (!label) {
@@ -206,13 +207,14 @@
       options={item.options || {}}
     />
   {:else if type === "select-box"}
-    <!--
     <SelectBox
-      fieldId={ id }
-      bind:label={ label }
-      options={ { "description": "", "required": "", "displays": "", "multiple": 0, "min": "", "max": "", "can_add": "", "values": "" } }
-      isNew={ isNew } />
--->
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:gather
+      bind:label
+      options={item.options || {}}
+    />
   {:else if type === "asset"}
     <Asset
       id={`field-options-${id}`}

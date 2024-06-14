@@ -30,6 +30,8 @@
 
   const tags: Array<HTMLDivElement> = [];
 
+  const gathers: { [key: string]: (() => object) | undefined } = {};
+
   const getTags = (): NodeListOf<HTMLDivElement> => {
     return root.querySelectorAll('div[data-is="content-field"]');
   };
@@ -290,7 +292,7 @@
     if ($cfields) {
       const child = getTags();
       child.forEach(function (c, i) {
-        const options = gatheringData(c);
+        const options = gatheringData(c, i);
         const newData: MT.ContentType.FieldOption = {};
         newData.type = $cfields[i].type;
         newData.options = options;
@@ -448,7 +450,7 @@
   };
 
   // copy from lib/MT/Template/ContextHandler.pm
-  const gatheringData = (c: HTMLDivElement): object => {
+  const gatheringData = (c: HTMLDivElement, index: number): object => {
     const data = {};
     const flds = c.querySelectorAll("[data-is] [ref]");
     Object.keys(flds).forEach(function (k) {
@@ -472,11 +474,15 @@
       }
     });
 
-    // TODO
-    //    if (typeof this.gather === 'function') {
-    //      const customData = this.gather();
-    //      jQuery.extend(data, customData);
-    //    }
+    const fieldId = $cfields[index].id;
+    if (fieldId) {
+      const gather = gathers[fieldId];
+      if (gather) {
+        const customData = gather();
+        jQuery.extend(data, customData);
+      }
+    }
+
     return data;
   };
 
@@ -723,6 +729,7 @@
             {gatheringData}
             bind:isEmpty
             parent={tags[fieldIndex]}
+            bind:gather={gathers[f.id || ""]}
           />
         </div>
       {/each}
