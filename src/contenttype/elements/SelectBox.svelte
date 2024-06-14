@@ -1,6 +1,8 @@
 <script lang="ts">
   import { afterUpdate } from "svelte";
 
+  import { addRow, deleteRow, validateTable } from "../SelectionCommonScript";
+
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
@@ -24,7 +26,7 @@
 
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
   // Copy from selection_common_script.tmpl below
-  let values = options.values;
+  let values: Array<MT.ContentType.SelectionValue> = options.values;
   if (!values) {
     values = [
       {
@@ -36,65 +38,16 @@
   }
 
   afterUpdate(() => {
-    validateTable();
+    validateTable(refsTable);
   });
-
-  const addRow = (): void => {
-    values = [...values, { checked: "" }];
-  };
 
   export const gather = (): object => {
     return {
       values: values,
     };
   };
-
-  const validateTable = (): void => {
-    const jqTable = jQuery(refsTable);
-    const tableIsValidated = jqTable.data("mtValidator") ? true : false;
-    if (tableIsValidated) {
-      const jqNotValidatedLabelsValues = jqTable.find(
-        "input[type=text]:not(.is-invalid)",
-      );
-      if (jqNotValidatedLabelsValues.length > 0) {
-        /* @ts-expect-error : mtValidate is not defined */
-        jqNotValidatedLabelsValues.mtValidate("simple");
-      } else {
-        /* @ts-expect-error : mtValid is not defined */
-        jqTable.mtValid({ focus: false });
-      }
-    }
-  };
   // Copy from selection_common_script.tmpl above
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
-
-  const deleteRow = (index: number): void => {
-    values.splice(index, 1);
-    if (values.length === 0) {
-      values = [
-        {
-          checked: "checked",
-          label: "",
-          value: "",
-        },
-      ];
-    } else {
-      let found = false;
-      values.forEach(function (v: {
-        checked: string;
-        label: string;
-        value: string;
-      }) {
-        if (v.checked === "checked") {
-          found = true;
-        }
-      });
-      if (!found) {
-        values[0].checked = "checked";
-      }
-    }
-    refreshView();
-  };
 
   const enterInitial = (e: Event, index: number): void => {
     const target = e.target as HTMLInputElement;
@@ -173,11 +126,7 @@
         elm.prop("disabled", false);
       });
     }
-    values.forEach(function (v: {
-      checked: string;
-      label: string;
-      value: string;
-    }) {
+    values.forEach(function (v: MT.ContentType.SelectionValue) {
       v.checked = "";
     });
   };
@@ -272,7 +221,7 @@
                 ><input
                   type="checkbox"
                   class="form-check-input mt-3"
-                  checked={v.checked}
+                  checked={v.checked ? true : false}
                   on:change={(e) => {
                     enterInitial(e, index);
                   }}
@@ -297,7 +246,7 @@
               <td
                 ><button
                   on:click={() => {
-                    deleteRow(index);
+                    values = deleteRow(values, index);
                   }}
                   type="button"
                   class="btn btn-default btn-sm"
@@ -313,7 +262,12 @@
         </tbody>
       </table>
     </div>
-    <button on:click={addRow} type="button" class="btn btn-default btn-sm"
+    <button
+      on:click={() => {
+        values = addRow(values);
+      }}
+      type="button"
+      class="btn btn-default btn-sm"
       ><svg role="img" class="mt-icon mt-icon--sm"
         ><title>{window.trans("add")}</title><use
           xlink:href="{window.StaticURI}images/sprite.svg#ic_add"

@@ -11,7 +11,7 @@
   import Date from "./Date.svelte";
   import Time from "./Time.svelte";
   import SelectBox from "./SelectBox.svelte";
-  //  import RadioButton from './RadioButton.svelte';
+  import RadioButton from "./RadioButton.svelte";
   //  import Checkboxes from './Checkboxes.svelte';
   import Asset from "./Asset.svelte";
   import AssetAudio from "./AssetAudio.svelte";
@@ -208,6 +208,15 @@
     />
   {:else if type === "select-box"}
     <SelectBox
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:gather
+      bind:label
+      options={item.options || {}}
+    />
+  {:else if type === "radio-button"}
+    <RadioButton
       id={`field-options-${id}`}
       {isNew}
       fieldId={id}

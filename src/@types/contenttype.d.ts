@@ -47,6 +47,13 @@ declare namespace MT.ContentType {
   interface Options {
     [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
+
+  interface SelectionValue {
+    checked: string;
+    label: string;
+    value: string;
+  }
+
   // edit_content_type.tmpl
   interface Type {
     data_label: number;
