@@ -15,7 +15,7 @@
   //  import Checkboxes from './Checkboxes.svelte';
   import Asset from "./Asset.svelte";
   import AssetAudio from "./AssetAudio.svelte";
-  // AssetVideo
+  import AssetVideo from "./AssetVideo.svelte";
   // AssetImage
   import EmbeddedText from "./EmbeddedText.svelte";
   //  import Categories from './Categories.svelte';
@@ -223,6 +223,14 @@
     />
   {:else if type === "asset-audio"}
     <AssetAudio
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:label
+      options={item.options || {}}
+    />
+  {:else if type === "asset-video"}
+    <AssetVideo
       id={`field-options-${id}`}
       {isNew}
       fieldId={id}
