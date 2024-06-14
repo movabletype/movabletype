@@ -4,7 +4,7 @@ use utf8;
 use IPC::Run3 qw/run3/;
 use File::Spec;
 use FindBin;
-use lib "$FindBin::Bin/../lib";    # t/lib
+use lib "$FindBin::Bin/../../../../t/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -40,12 +40,12 @@ is(MT::PluginData->count(), 12, 'test data prepared');
     is(MT::Log->count() - $log_count, 0,  'right number of logs left');
 
     ($stdin, $stdout, $stderr) = do_command(['--delete']);
-    is(MT::PluginData->count(),                                                                       4, 'deleted');
+    is(MT::PluginData->count(),                                                              4, 'deleted');
     is(MT::PluginData->count({ plugin => 'NotInstalled', key => 'configuration:blog:10' }),  1, 'right record remains');
     is(MT::PluginData->count({ plugin => 'NotInstalled', key => 'configuration' }),          1, 'right record remains');
     is(MT::PluginData->count({ plugin => 'FormattedText', key => 'configuration:blog:10' }), 1, 'right record remains');
-    is(MT::PluginData->count({ plugin => 'FormattedText', key => 'configuration' }),        1, 'right record remains');
-    is(MT::Log->count() - $log_count,                                                                 2, 'right number of logs left');
+    is(MT::PluginData->count({ plugin => 'FormattedText', key => 'configuration' }),         1, 'right record remains');
+    is(MT::Log->count() - $log_count,                                                        2, 'right number of logs left');
     my @log = MT::Log->load({}, { sort => 'id', direction => 'decend', limit => 2 });
     is(scalar(split(',', ($log[0]->metadata =~ /keys:(.+)/)[0])), 2, 'right number of ids in metadata');
     is(scalar(split(',', ($log[1]->metadata =~ /keys:(.+)/)[0])), 2, 'right number of ids in metadata');
@@ -61,12 +61,12 @@ is(MT::PluginData->count(), 12, 'test data prepared');
     $pd->save;
     is(MT::PluginData->count(), 5, 'added');
     my ($stdin, $stdout, $stderr) = do_command(['--delete']);
-    is(MT::PluginData->count(),                                                                       4, 'deleted');
+    is(MT::PluginData->count(),                                                              4, 'deleted');
     is(MT::PluginData->count({ plugin => 'NotInstalled', key => 'configuration:blog:10' }),  1, 'right record remains');
     is(MT::PluginData->count({ plugin => 'NotInstalled', key => 'configuration' }),          1, 'right record remains');
     is(MT::PluginData->count({ plugin => 'FormattedText', key => 'configuration:blog:10' }), 1, 'right record remains');
-    is(MT::PluginData->count({ plugin => 'FormattedText', key => 'configuration' }),        1, 'right record remains');
-    is(MT::Log->count() - $log_count,                                                                 1, 'right number of logs left');
+    is(MT::PluginData->count({ plugin => 'FormattedText', key => 'configuration' }),         1, 'right record remains');
+    is(MT::Log->count() - $log_count,                                                        1, 'right number of logs left');
     my @log = MT::Log->load({}, { sort => 'id', direction => 'decend', limit => 1 });
     is(scalar(split(',', ($log[0]->metadata =~ /keys:(.+)/)[0])), 2, 'right number of ids in metadata');
 }
@@ -76,7 +76,7 @@ sub do_command {
     my @cmd = (
         $^X, '-I',
         File::Spec->catdir($ENV{MT_HOME}, 't/lib'),
-        File::Spec->catfile($ENV{MT_HOME}, 'tools/remove-broken-plugindata'),
+        File::Spec->catfile($ENV{MT_HOME}, 'tools/Diagnosis/plugindata'),
         @{ $cmd_options || [] },
     );
 
