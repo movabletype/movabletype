@@ -1033,12 +1033,12 @@ sub optional {
     push @$transfer, { id => 'sendmail', name => $app->translate('Sendmail') };
 
     foreach (@$transfer) {
-        if ( $_->{id} eq $param{mail_transfer} ) {
+        if ( $_->{id} eq ($param{mail_transfer} || '') ) {
             $_->{selected} = 1;
         }
     }
 
-    $param{ 'use_' . $param{mail_transfer} } = 1;
+    $param{ 'use_' . $param{mail_transfer} } = 1 if $param{mail_transfer};
     $param{mail_loop}                        = $transfer;
     $param{config}                           = $app->serialize_config(%param);
 
@@ -1076,17 +1076,14 @@ sub optional {
                     if $param{smtp_server};
                 $cfg->SMTPPort( $param{smtp_port} )
                     if $param{smtp_port};
-                $cfg->SMTPAuth(1)
-                    if $param{smtp_auth};
-                if ( $cfg->SMTPAuth ) {
+                if ( $param{smtp_auth} ) {
                     $cfg->SMTPUser( $param{smtp_auth_username} )
                         if $param{smtp_auth_username};
                     $cfg->SMTPpassword( $param{smtp_auth_password} )
                         if $param{smtp_auth_password};
-                    $cfg->SMTPAuth('ssl')
-                        if $param{smtp_ssl} eq 'ssl';
-                    $cfg->SMTPAuth('starttls')
-                        if $param{smtp_ssl} eq 'tls';
+                    $cfg->SMTPAuth( $param{smtp_ssl} || 1 );
+                } elsif ( $param{smtp_ssl} ) {
+                    $cfg->SMTPS( $param{smtp_ssl} );
                 }
             }
 
@@ -1234,7 +1231,7 @@ sub seed {
         }
     }
 
-    if ( $param{temp_dir} eq $app->config->TempDir ) {
+    if ( ( $param{temp_dir} || '') eq $app->config->TempDir ) {
         $param{temp_dir} = '';
     }
 
@@ -1253,17 +1250,11 @@ sub seed {
 
     $param{tmpl_loop} = \@tmpl_loop;
 
-    # If TLS is enabled, SMTPAuth should be 'starttls'
-    $param{smtp_auth} = 'starttls'
-        if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' )
-        && $param{smtp_auth}
-        && $param{smtp_ssl} eq 'tls';
-
-    # If SSL is enabled, SMTPAuth should be 'ssl'
-    $param{smtp_auth} = 'ssl'
-        if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' )
-        && $param{smtp_auth}
-        && $param{smtp_ssl} eq 'ssl';
+    if ( $param{mail_transfer} && $param{mail_transfer} eq 'smtp' ) {
+        if ($param{smtp_auth} && $param{smtp_ssl}) {
+            $param{smtp_auth} = delete $param{smtp_ssl};
+        }
+    }
 
     my $data = $app->build_page( "mt-config.tmpl", \%param );
 
@@ -1368,7 +1359,7 @@ sub module_check {
         else {
             $desc = $self->translate($desc);
         }
-        eval( "use $mod" . ( $ver ? " $ver;" : ";" ) );
+        eval( "use $mod" . ( $ver ? " $ver ();" : " ();" ) );
         $mod .= $ver if $mod eq 'DBD::ODBC';
         $sort = $mod unless defined $sort;
         if ($@) {
