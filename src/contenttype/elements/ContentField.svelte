@@ -6,7 +6,7 @@
   import SingleLineText from "./SingleLineText.svelte";
   //  import MultiLineText from './MultiLineText.svelte';
   import Number from "./Number.svelte";
-  import URL from "./URL.svelte";
+  import Url from "./Url.svelte";
   import DateTime from "./DateTime.svelte";
   import Date from "./Date.svelte";
   import Time from "./Time.svelte";
@@ -174,7 +174,7 @@
       options={item.options || {}}
     />
   {:else if type === "url"}
-    <URL
+    <Url
       id={`field-options-${id}`}
       fieldId={id}
       bind:label
