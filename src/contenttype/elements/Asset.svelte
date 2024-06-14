@@ -15,6 +15,8 @@
   if (options.allow_upload === "0") {
     options.allow_upload = 0;
   }
+
+  let multiple = options.multiple;
 </script>
 
 <ContentFieldOptionGroup
@@ -35,7 +37,7 @@
       class="mt-switch form-control"
       id="asset-multiple"
       name="multiple"
-      bind:checked={options.multiple}
+      bind:checked={multiple}
     /><label for="asset-multiple" class="form-label">
       {window.trans("Allow users to select multiple assets?")}
     </label>
@@ -44,7 +46,7 @@
   <ContentFieldOption
     id="asset-min"
     label={window.trans("Minimum number of selections")}
-    attr="show={options.multiple}"
+    attrShow={multiple}
   >
     <input
       {...{ ref: "min" }}
@@ -60,7 +62,7 @@
   <ContentFieldOption
     id="asset-max"
     label={window.trans("Maximum number of selections")}
-    attr="show={options.multiple}"
+    attrShow={multiple}
   >
     <input
       {...{ ref: "max" }}
@@ -83,7 +85,7 @@
       class="mt-switch form-control"
       id="asset-allow_upload"
       name="allow_upload"
-      checked={options.allow_upload}
+      bind:checked={options.allow_upload}
     /><label for="asset-allow_upload" class="form-label">
       {window.trans("Allow users to upload a new asset?")}
     </label>

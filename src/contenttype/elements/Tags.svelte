@@ -15,6 +15,8 @@
   if (options.can_add === "0") {
     options.can_add = 0;
   }
+
+  let multiple = options.multiple;
 </script>
 
 <ContentFieldOptionGroup
@@ -36,7 +38,7 @@
       class="mt-switch form-control"
       id="tags-multiple"
       name="multiple"
-      bind:checked={options.multiple}
+      bind:checked={multiple}
     /><label for="tags-multiple" class="form-label">
       {window.trans("Allow users to select multiple values?")}
     </label>
@@ -45,7 +47,7 @@
   <ContentFieldOption
     id="tags-min"
     label={window.trans("Minimum number of selections")}
-    attr="show={options.multiple}"
+    attrShow={multiple ? true : false}
   >
     <input
       {...{ ref: "min" }}
@@ -61,7 +63,7 @@
   <ContentFieldOption
     id="tags-max"
     label={window.trans("Maximum number of selections")}
-    attr="show={options.multiple}"
+    attrShow={multiple ? true : false}
   >
     <input
       {...{ ref: "max" }}

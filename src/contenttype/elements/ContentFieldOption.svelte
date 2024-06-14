@@ -2,6 +2,7 @@
   export let id: string;
 
   export let attr = "";
+  export let attrShow: boolean | null = null;
   export let hint = "";
   export let label = "";
   export let required = 0;
@@ -11,9 +12,33 @@
   if (!id) {
     alert("ConetntFieldOption: 'id' attribute missing");
   }
+
+  const attrProp = attr ? { attr: attr } : {};
+
+  let attrShowProps = {};
+  $: {
+    if (attrShow !== null) {
+      if (attrShow) {
+        attrShowProps = {
+          style: "",
+        };
+      } else {
+        attrShowProps = {
+          hidden: "",
+          style: "display: none;",
+        };
+      }
+    }
+  }
 </script>
 
-<div id="{id}-field" class="form-group" class:required {...{ attr: attr }}>
+<div
+  id="{id}-field"
+  class="form-group"
+  class:required
+  {...attrProp}
+  {...attrShowProps}
+>
   {#if label && showLabel}
     <label for={id}>
       {label}
