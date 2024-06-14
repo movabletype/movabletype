@@ -16,7 +16,7 @@
   import Asset from "./Asset.svelte";
   import AssetAudio from "./AssetAudio.svelte";
   import AssetVideo from "./AssetVideo.svelte";
-  // AssetImage
+  import AssetImage from "./AssetImage.svelte";
   import EmbeddedText from "./EmbeddedText.svelte";
   //  import Categories from './Categories.svelte';
   import Tags from "./Tags.svelte";
@@ -231,6 +231,14 @@
     />
   {:else if type === "asset-video"}
     <AssetVideo
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:label
+      options={item.options || {}}
+    />
+  {:else if type === "asset-image"}
+    <AssetImage
       id={`field-options-${id}`}
       {isNew}
       fieldId={id}
