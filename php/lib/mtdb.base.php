@@ -171,6 +171,9 @@ abstract class MTDatabase {
     }
 
     public function include_exclude_blogs(&$args) {
+
+        trigger_error('function include_exclude_blogs is deprecated', E_USER_DEPRECATED);
+
         if ( empty( $args['include_parent_site'] ) && empty( $args['include_with_website'] ) )
             $include_with_website = false;
         else
@@ -296,6 +299,141 @@ abstract class MTDatabase {
                 }
                 else
                     return " > 0";
+            }
+        }
+    }
+
+    private function _include_exclude_blogs($name, &$bind, &$args) {
+        if (empty($args['include_parent_site']) && empty($args['include_with_website'])) {
+            $include_with_website = false;
+        } else {
+            $include_with_website = true;
+        }
+
+        $incl = null;
+        $excl = null;
+        if (isset($args['include_sites'])
+        || isset($args['blog_ids'])
+        || isset($args['include_blogs'])
+        || isset($args['site_ids'])
+        || isset($args['include_websites'])) {
+            // The following are aliased
+            if (!empty($args['include_sites'])) {
+                $incl = $args['include_sites'];
+            } elseif (!empty($args['blog_ids'])) {
+                $incl = $args['blog_ids'];
+            } elseif (!empty($args['include_blogs'])) {
+                $incl = $args['include_blogs'];
+            } elseif (!empty($args['site_ids'])) {
+                $incl = $args['site_ids'];
+            } elseif (!empty($args['include_websites'])) {
+                $incl = $args['include_websites'];
+            }
+            $args['include_blogs'] = $incl;
+            unset($args['include_sites']);
+            unset($args['blog_ids']);
+            unset($args['site_ids']);
+            unset($args['include_websites']);
+        } elseif (isset($args['site_id'])) {
+            $incl = $args['site_id'];
+        } elseif (isset($args['blog_id'])) {
+            $incl = $args['blog_id'];
+        }
+
+        if (isset($args['exclude_sites']) || isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
+            $excl = isset($args['exclude_sites']) ? $args['exclude_sites'] : null;
+            $excl or $excl = (isset($args['exclude_blogs']) ? $args['exclude_blogs'] : null);
+            $excl or $excl = (isset($args['exclude_websites']) ? $args['exclude_websites'] : null);
+
+            if (!isset($args['include_blogs'])) {
+                # If only exclude_blogs supplied, set include_blogs as all
+                $incl = 'all';
+                $args['include_blogs'] = 'all';
+            }
+        }
+
+        // Compute include_blogs
+        if (!empty($incl)) {
+            $incl = $this->parse_blog_ids($incl, $include_with_website);
+        }
+        if (isset($args['allows'])) {
+            if (empty($incl)) {
+                $incl = $args['allows'];
+            } else {
+                $incl = array_intersect($incl, $args['allows']);
+            }
+        }
+
+        // Compute exclude_blogs
+        if (!empty($excl)) {
+            $excl = $this->parse_blog_ids($excl);
+        }
+
+        if (isset($args['denies'])) {
+            foreach ($args['denies'] as $val) {
+                $denies[$val] = 1;
+            }
+            if (!empty($excl)) {
+                foreach ($excl as $e) {
+                    if (!array_key_exists($e, $denies)) {
+                        $denies[$e] = 1;
+                    }
+                }
+            }
+            $excl = array_keys($denies);
+        }
+
+        if (!empty($incl) && !empty($excl)) {
+            $incl = array_diff($incl, $excl);
+            if (empty($incl)) {
+                $mt = MT::get_instance();
+                trigger_error($mt->translate(
+                    "When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them."
+                ));
+            } else {
+                $incl = array_values($incl);
+                $excl = null; // remove all exclude pattern.
+            }
+        }
+
+        if (!empty($incl)) {
+            if (count($incl) > 1) {
+                return " in (" . $this->in_ph($name, $bind, $incl) . ' )';
+            } else {
+                return " = " . $this->ph($name, $bind, array_shift($incl));
+            }
+        } elseif (!empty($excl)) {
+            return " not in (" . $this->in_ph($name, $bind, $excl) . ' )';
+        } else {
+            if (isset($args['include_blogs']) && strtolower($args['include_blogs']) == 'all') {
+                return " >= 0";
+            } elseif (isset($args['blog_id']) && is_numeric($args['blog_id'])) {
+                return " = " . $this->ph($name, $bind, $args['blog_id']);
+            } elseif (isset($args['include_blogs'])) {
+                return " = 0";
+            } else {
+                $mt = MT::get_instance();
+                $ctx = $mt->context();
+                $blog = $ctx->stash('blog');
+                if (!empty($blog)) {
+                    $tag = is_array($ctx->_tag_stack) ? $ctx->_tag_stack[count($ctx->_tag_stack)-1][0] : null;
+                    if (!empty($tag)
+                    && ($tag === 'mtwebsitepingcount'
+                        || $tag === 'mtwebsiteentrycount'
+                        || $tag === 'mtwebsitepagecount'
+                        || $tag === 'mtwebsitecommentcount')) {
+                        $website = $blog->is_blog() ? $blog->website() : $blog;
+                        if (empty($website)) {
+                            return " = -1";
+                        } else {
+                            return " = " . $this->ph($name, $bind, $website->id);
+                        }
+                    } else {
+                        return " = " . $this->ph($name, $bind, $blog->id);
+                    }
+                } else {
+                    return " > 0";
+                }
             }
         }
     }
@@ -443,16 +581,11 @@ abstract class MTDatabase {
 
     public function fetch_blogs($args = null) {
         $bind = [];
-        if ($blog_ids = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'blog_id ' . $blog_ids;
-        } else {
-            $blog_filter = '1 = 1'; // TODO: Unreachable because include_exclude_blogs is never empty.
-        }
 
         if (!isset($args['class']))
             $args['class'] = 'blog';
 
-        $cond[] = $blog_filter;
+        $cond[] = 'blog_id '. $this->_include_exclude_blogs('blog_id', $bind, $args);
         if ($args['class'] !== '*') {
             $cond[] = "blog_class = ". $this->ph('blog_class', $bind, $args['class']);
         }
@@ -877,18 +1010,12 @@ abstract class MTDatabase {
         require_once('class.mt_entry.php');
         $extras = array();
 
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and entry_blog_id ' . $sql;
-            $mt = MT::get_instance();
-            $ctx = $mt->context();
-            $blog = $ctx->stash('blog');
-            if ( !empty( $blog ) )
-                $blog_id = $blog->blog_id;
-        } elseif (isset($args['blog_id'])) {
-            // TODO: Unreachable because include_exclude_blogs is never empty.
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and entry_blog_id = '. $this->ph('entry_blog_id', $bind_blog_filter, $blog_id);
-            $blog = $this->fetch_blog($blog_id);
+        $blog_filter = 'and entry_blog_id ' . $this->_include_exclude_blogs('entry_blog_id', $bind_blog_filter, $args);
+        $mt = MT::get_instance();
+        $ctx = $mt->context();
+        $blog = $ctx->stash('blog');
+        if (!empty($blog)) {
+            $blog_id = $blog->blog_id;
         }
 
         if (empty($blog))
@@ -1699,19 +1826,7 @@ abstract class MTDatabase {
             $entry_filter = 'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where '. $sub_where. ')';
         }
 
-        $blog_filter = $this->include_exclude_blogs($args);
-        if ($blog_filter == '' and isset($args['blog_id'])) {
-            if ($cacheable) {
-                if (!isset($args['entry_id'])) {
-                    if (isset($this->_blog_tag_cache[$args['blog_id'].":$class"])) {
-                        return $this->_blog_tag_cache[$args['blog_id'].":$class"];
-                    }
-                }
-            }
-            $blog_filter = ' = '. intval($args['blog_id']);
-        }
-        if ($blog_filter != '') 
-            $blog_filter = 'and objecttag_blog_id ' . $blog_filter;
+        $blog_filter = 'and objecttag_blog_id ' . $this->_include_exclude_blogs('objecttag_blog_id', $bind, $args);
 
         if (! empty($args['tags'])) {
             require_once("MTUtil.php");
@@ -1885,12 +2000,7 @@ abstract class MTDatabase {
         # load categories
         $bind = [];
         $bind_join = [];
-        if ($blog_filter = $this->include_exclude_blogs($args)) {
-             $blog_filter = 'and category_blog_id '. $blog_filter;
-        } elseif (isset($args['blog_id'])) {
-            // TODO: Unreachable because include_exclude_blogs is never empty.
-            $blog_filter = 'and category_blog_id = '. $this->ph('category_blog_id', $bind, $args['blog_id']);
-        }
+        $blog_filter = 'and category_blog_id '. $this->_include_exclude_blogs('category_blog_id', $bind, $args);
         if (isset($args['parent'])) {
             $parent = $args['parent'];
             if (is_array($parent)) {
@@ -2212,10 +2322,8 @@ abstract class MTDatabase {
     public function fetch_authors($args) {
         # Adds blog join
         $extras = array();
-        $blog_ids = $this->include_exclude_blogs($args);
         $mt = MT::get_instance();
         $ctx = $mt->context();
-        $blog_ids or $blog_ids = " = " . $ctx->stash('blog_id');
 
         # Adds author filter
         $author_filter = '';
@@ -2253,8 +2361,8 @@ abstract class MTDatabase {
                 );
             $extras['distinct'] = 'distinct';
             $entry_filter = " and entry_status = 2";
-            if ( $blog_ids )
-                $entry_filter .= " and entry_blog_id " . $blog_ids;
+            $entry_filter .= " and entry_blog_id ".
+                                            $this->_include_exclude_blogs('entry_blog_id', $bind_entry_filter, $args);
         }
         elseif (!empty($args['need_content']) && !(isset($args['id']) || isset($args['username']))) {
             $extras['join']['mt_cd'] = array(
@@ -2262,9 +2370,7 @@ abstract class MTDatabase {
                 );
             $extras['distinct'] = 'distinct';
             $cd_filter = " and cd_status = 2";
-            if ($blog_ids) {
-                $cd_filter .= " and cd_blog_id" . $blog_ids;
-            }
+            $cd_filter .= " and cd_blog_id " . $this->_include_exclude_blogs('cd_blog_id', $bind_cd_filter, $args);
             if (isset($content_type)) {
                 $cd_filter .= " and cd_content_type_id = ".
                                                 $this->ph('cd_content_type_id', $bind_cd_filter, $content_type->id);
@@ -2272,15 +2378,18 @@ abstract class MTDatabase {
         } else {
             $extras['distinct'] = 'distinct';
             if (!isset($args['roles']) and !isset($args['role'])) {
+                $bind_join = [];
                 $join_sql = "permission_author_id = author_id";
                 if ( isset($args['need_association']) && $args['need_association'] ) {
-                    $join_sql .= " and permission_blog_id" . $blog_ids;
+                    $join_sql .= " and permission_blog_id ".
+                                                $this->_include_exclude_blogs('permission_blog_id1', $bind_join, $args);
                 }
+                $join_blog_filter = $this->_include_exclude_blogs('permission_blog_id2', $bind_join, $args);
                 if ( empty($args['any_type']) ) {
                     $join_sql .= "
                         and (
                             (
-                                permission_blog_id $blog_ids
+                                permission_blog_id $join_blog_filter
                                 and (
                                     permission_permissions like '%create_post%' or
                                     permission_permissions like '%publish_post%'
@@ -2297,7 +2406,7 @@ abstract class MTDatabase {
                         and
                             (
                                 (
-                                    permission_blog_id $blog_ids
+                                    permission_blog_id $join_blog_filter
                                     and permission_permissions is not null
                                 )
                             or
@@ -2316,7 +2425,8 @@ abstract class MTDatabase {
                 
                 $sql = $join_sql;
                 $extras['join']['mt_permission'] = array(
-                    'condition' => $sql
+                    'condition' => $sql,
+                    'bind' => $bind_join,
                 );
             }
         }
@@ -2604,12 +2714,7 @@ abstract class MTDatabase {
         $bind = [];
         $cond = [];
         // Blog filter
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $cond[] = 'permission_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            // TODO: Unreachable because include_exclude_blogs is never empty.
-            $cond[] = "permission_blog_id = ". $this->ph('permission_blog_id', $bind, intval($args['blog_id']));
-        }
+        $cond[] = 'permission_blog_id ' . $this->_include_exclude_blogs('permission_blog_id', $bind, $args);
 
         // Author filter
         if (isset($args['id'])) {
@@ -2648,9 +2753,7 @@ abstract class MTDatabase {
         }
 
         // Blog Filter
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $cond[] = 'association_blog_id  ' . $sql;
-        }
+        $cond[] = 'association_blog_id ' . $this->_include_exclude_blogs('association_blog_id', $bind, $args);
 
         require_once('class.mt_association.php');
         $assoc = new Association;
@@ -2915,13 +3018,7 @@ abstract class MTDatabase {
         $cond = [];
         $cond[] = 'entry_status = 2';
         $cond[] = 'entry_class = '. $this->ph('entry_class', $bind, $args['class'] ?? 'entry');
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $cond[] = 'entry_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            // TODO: Unreachable because include_exclude_blogs is never empty.
-            $blog_id = intval($args['blog_id']);
-            $cond[] = 'entry_blog_id = ' . $blog_id;
-        }
+        $cond[] = 'entry_blog_id ' . $this->_include_exclude_blogs('entry_blog_id', $bind, $args);
 
         if (isset($args['author_id'])) {
             $cond[] = 'entry_author_id = ' . $this->ph('entry_author_id', $bind, intval($args['author_id']));
@@ -2934,12 +3031,7 @@ abstract class MTDatabase {
     }
 
     function author_content_count($args) {
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and cd_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and cd_blog_id = ' . $blog_id;
-        }
+        $blog_filter = 'and cd_blog_id ' . $this->_include_exclude_blogs('cd_blog_id', $bind, $args);
         $content_type_filter = '';
         if (isset($args['content_type_id'])) {
             $content_type_filter = 'and cd_content_type_id = '.
@@ -2951,8 +3043,8 @@ abstract class MTDatabase {
         }
 
         $where = "cd_status = 2
-                  $content_type_filter
                   $blog_filter
+                  $content_type_filter
                   $author_filter";
 
         require_once('class.mt_content_data.php');
@@ -2963,12 +3055,7 @@ abstract class MTDatabase {
 
     public function blog_comment_count($args) {
         $bind = [];
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and comment_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            // TODO: Unreachable because include_exclude_blogs is never empty.
-            $blog_filter = 'and comment_blog_id = '. $this->ph('comment_blog_id', $bind, intval($args['blog_id']));
-        }
+        $blog_filter = 'and comment_blog_id ' . $this->_include_exclude_blogs('comment_blog_id', $bind, $args);
 
         $where = "entry_status = 2
                   and comment_visible = 1
@@ -3012,12 +3099,7 @@ abstract class MTDatabase {
     }
 
     public function blog_ping_count($args) {
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and tbping_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and tbping_blog_id = ' . $blog_id;
-        }
+        $blog_filter = 'and tbping_blog_id ' . $this->_include_exclude_blogs('tbping_blog_id', $bind, $args);
 
         $where = "tbping_visible = 1
                   $blog_filter";
@@ -3029,18 +3111,13 @@ abstract class MTDatabase {
 
         require_once('class.mt_tbping.php');
         $tbping = new TBPing;
-        $result = $tbping->count(array('where' => $where, 'join' => $join));
+        $result = $tbping->count(array('where' => $where, 'bind' => $bind, 'join' => $join));
         return $result;
     }
 
     public function blog_category_count($args) {
         $bind = [];
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and category_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            // TODO: Unreachable because include_exclude_blogs is never empty.
-            $blog_filter = 'and category_blog_id = '. $this->ph('category_blog_id', $bind, intval($args['blog_id']));
-        }
+        $blog_filter = 'and category_blog_id ' . $this->_include_exclude_blogs('category_blog_id', $bind, $args);
 
         $where = "category_class = 'category'
                   $blog_filter";
@@ -3094,12 +3171,8 @@ abstract class MTDatabase {
         $cond = [];
         $cond[] = 'entry_status = 2';
         $cond[] = 'entry_class = '. $this->ph('entry_class', $bind, $args['class'] ?? 'entry');
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $cond[] = 'entry_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            // TODO: Unreachable because include_exclude_blogs is never empty.
-            $cond[] = 'entry_blog_id = '. $this->ph('entry_blog_id', $bind, intval($args['blog_id']));
-        }
+        $cond[] = 'entry_blog_id ' . $this->_include_exclude_blogs('entry_blog_id', $bind, $args);
+
         if (isset($args['author_id'])) {
             $cond[] = "entry_author_id = ". $this->ph('entry_author_id', $bind, intval($args['author_id']));
         }
@@ -3140,9 +3213,7 @@ abstract class MTDatabase {
             return;
         }
 
-        $blog_filter = $this->include_exclude_blogs($args);
-        if ($blog_filter != '')
-            $blog_filter = 'and objecttag_blog_id' . $blog_filter;
+        $blog_filter = 'and objecttag_blog_id ' . $this->_include_exclude_blogs('objecttag_blog_id', $bind, $args);
 
         $extras = array();
         if (isset($args['datasource']) && strtolower($args['datasource']) == 'asset') {
@@ -3191,14 +3262,9 @@ abstract class MTDatabase {
 
         $entry_id = isset($args['entry_id']) ? intval($args['entry_id']) : 0;
 
-        $sql = $this->include_exclude_blogs($args);
-        if ($sql != '') {
-            $blog_filter = 'and comment_blog_id ' . $sql;
-            if (isset($args['blog_id']))
-                $blog = $this->fetch_blog(intval($args['blog_id']));
-        } elseif ($args['blog_id']) {
+        $blog_filter = 'and comment_blog_id ' . $this->_include_exclude_blogs('comment_blog_id', $bind, $args);
+        if (isset($args['blog_id'])) {
             $blog = $this->fetch_blog(intval($args['blog_id']));
-            $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 
         # Adds a score or rate filter to the filters list.
@@ -3296,7 +3362,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_comment.php');
         $comment = new Comment;
-        $result = $comment->Find($where, false, false, $extras);
+        $result = $comment->Find($where, $bind, false, $extras);
         if (empty($result)) return null;
 
         $comments = array();
@@ -3385,14 +3451,9 @@ abstract class MTDatabase {
 
         $parent_id = intval($args['parent_id']);
 
-        $sql = $this->include_exclude_blogs($args);
-        if ($sql != '') {
-            $blog_filter = 'and comment_blog_id ' . $sql;
-            if (isset($args['blog_id']))
-                $blog = $this->fetch_blog($args['blog_id']);
-        } elseif ($args['blog_id']) {
+        $blog_filter = 'and comment_blog_id ' . $this->_include_exclude_blogs('comment_blog_id', $bind, $args);
+        if (isset($args['blog_id'])) {
             $blog = $this->fetch_blog($args['blog_id']);
-            $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 
         $where = sprintf("1 = 1
@@ -3416,14 +3477,9 @@ abstract class MTDatabase {
 
         $comment_id = intval($args['comment_id']);
 
-        $sql = $this->include_exclude_blogs($args);
-        if ($sql != '') {
-            $blog_filter = 'and comment_blog_id ' . $sql;
-            if (isset($args['blog_id']))
-                $blog = $this->fetch_blog($args['blog_id']);
-        } elseif ($args['blog_id']) {
+        $blog_filter = 'and comment_blog_id ' . $this->_include_exclude_blogs('comment_blog_id', $bind, $args);
+        if (isset($args['blog_id'])) {
             $blog = $this->fetch_blog($args['blog_id']);
-            $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 
         $order = 'asc';
@@ -3455,7 +3511,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_comment.php');
         $comment = new Comment;
-        $comments = $comment->Find($where, false, false, $extras);
+        $comments = $comment->Find($where, $bind, false, $extras);
         if (empty($comments))
             return array();
 
@@ -3504,16 +3560,10 @@ abstract class MTDatabase {
 
     public function fetch_pings($args) {
         # load pings  
-        $sql = $this->include_exclude_blogs($args);
         $bind = [];
-        if ($sql != '') {
-            $blog_filter = 'and tbping_blog_id ' . $sql;
-            if (isset($args['blog_id']))
-                $blog = $this->fetch_blog($args['blog_id']);
-        } elseif (isset($args['blog_id'])) {
-            // TODO: Unreachable because include_exclude_blogs is never empty.
+        $blog_filter = 'and tbping_blog_id ' . $this->_include_exclude_blogs('tbping_blog_id', $bind, $args);
+        if (isset($args['blog_id'])) {
             $blog = $this->fetch_blog($args['blog_id']);
-            $blog_filter = ' and tbping_blog_id = '. $this->ph('tbping_blog_id', $bind, $blog->blog_id);
         }
 
         $order = isset($args['lastn']) ? 'desc' : 'asc';
@@ -3632,13 +3682,7 @@ abstract class MTDatabase {
         $extras = array();
         $filters = array();
 
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and asset_blog_id ' . $sql;
-        } elseif( isset($args['blog_id']) ) {
-            // TODO: Unreachable because include_exclude_blogs is never empty.
-            $blog_filter = 'and asset_blog_id = '.
-                                            $this->ph('asset_blog_id', $bind_blog_filter, intval($args['blog_id']));
-        }
+        $blog_filter = 'and asset_blog_id ' . $this->_include_exclude_blogs('asset_blog_id', $bind_blog_filter, $args);
 
         # Adds a thumbnail filter to the filters list.
         if(isset($args['exclude_thumb']) && $args['exclude_thumb']) {
@@ -4316,12 +4360,9 @@ abstract class MTDatabase {
     public function fetch_content_types($args) {
         require_once('class.mt_content_type.php');
 
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'content_type_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'content_type_blog_id = ' . $blog_id;
-        }
+        $bind_blog_filter = [];
+        $blog_filter = 'content_type_blog_id ' . 
+                                        $this->_include_exclude_blogs('content_type_blog_id', $bind_blog_filter, $args);
 
         $content_types= array();
         if (isset($args['content_type'])) {
@@ -4336,7 +4377,7 @@ abstract class MTDatabase {
                         where
                             content_type_id = %s
                             $blog_filter", $this->ph('content_type_id', $bind, $str));
-                $result = $this->SelectLimit($sql, -1, -1, $bind);
+                $result = $this->SelectLimit($sql, -1, -1, array_merge($bind, $bind_blog_filter));
             }
             if (!isset($result) || $result->EOF) {
                 $bind = [];
@@ -4346,7 +4387,7 @@ abstract class MTDatabase {
                         where
                             content_type_unique_id = %s
                             $blog_filter", $this->ph('content_type_unique_id', $bind, $str));
-                $result = $this->SelectLimit($sql, -1, -1, $bind);
+                $result = $this->SelectLimit($sql, -1, -1, array_merge($bind, $bind_blog_filter));
                 if ($result->EOF) {
                     $bind = [];
                     $sql = sprintf("select
@@ -4355,7 +4396,7 @@ abstract class MTDatabase {
                             where
                                 content_type_name = %s
                                 $blog_filter", $this->ph('content_type_name', $bind, $str));
-                    $result = $this->SelectLimit($sql, -1, -1, $bind);
+                    $result = $this->SelectLimit($sql, -1, -1, array_merge($bind, $bind_blog_filter));
                 }
                 if ($result->EOF) return null;
             }
@@ -4365,7 +4406,7 @@ abstract class MTDatabase {
                     from mt_content_type
                     where
                         $blog_filter";
-            $result = $this->SelectLimit($sql);
+            $result = $this->SelectLimit($sql, -1, -1, $bind_blog_filter);
             if ($result->EOF) return null;
         }
 
@@ -5418,14 +5459,14 @@ abstract class MTDatabase {
         if (empty($id_list)) {
             return;
         }
+
+        $blog_filter = 'and objectcategory_blog_id '.
+                                                $this->_include_exclude_blogs('objectcategory_blog_id', $bind, $args);
+
         $cf_filter = '';
         if (isset($args['cf_id']) && is_numeric($args['cf_id'])) {
             $cf_filter = 'and objectcategory_cf_id = '. $this->ph('objectcategory_cf_id', $bind, $args['cf_id']);
         }
-
-        $blog_filter = $this->include_exclude_blogs($args);
-        if ($blog_filter != '')
-            $blog_filter = 'and objectcategory_blog_id' . $blog_filter;
 
         $extras = array();
         $datasource = 'content_data';
@@ -5494,20 +5535,8 @@ abstract class MTDatabase {
             );
         }
 
-        $blog_filter = $this->include_exclude_blogs($args);
-        if ($blog_filter == '' and isset($args['blog_id'])) {
-            // TODO: Unreachable because include_exclude_blogs is never empty.
-            if ($cacheable) {
-                if (!isset($args['cd_id'])) {
-                    if (isset($this->_blog_tag_cache[$args['blog_id'].":$class"])) {
-                        return $this->_blog_tag_cache[$args['blog_id'].":$class"];
-                    }
-                }
-            }
-            $blog_filter = ' = '. $this->ph('blog_id', $bind_blog_filter, intval($args['blog_id']));
-        }
-        if ($blog_filter != '') 
-            $blog_filter = 'and objecttag_blog_id ' . $blog_filter;
+        $blog_filter = 'and objecttag_blog_id ' . 
+                                        $this->_include_exclude_blogs('objecttag_blog_id', $bind_blog_filter, $args);
 
         $ct_filter = '';
         if (isset($args['content_type_id'])) {
@@ -5551,7 +5580,7 @@ abstract class MTDatabase {
         }
 
         $bind = array_merge(
-            isset($bind_blog_filter) ? $blog_filter : [],
+            isset($bind_blog_filter) ? $bind_blog_filter : [],
             isset($bind_tag_filter) ? $bind_tag_filter : [],
             isset($bind_cd_filter) ? $bind_cd_filter : [],
             isset($bind_ct_filter) ? $bind_ct_filter : []
@@ -5617,15 +5646,10 @@ abstract class MTDatabase {
     }
     
     public function content_count($args){
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and cd_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and cd_blog_id = ' . $blog_id;
-        }
+        $bind = [];
+        $blog_filter = 'and cd_blog_id ' . $this->_include_exclude_blogs('cd_blog_id', $bind, $args);
         $where = "cd_status = 2
                   $blog_filter";
-        $bind = [];
         if (isset($args['content_type'])) {
             $content_types = $this->fetch_content_types($args);
             if ($content_types) {
