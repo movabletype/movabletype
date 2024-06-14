@@ -11,6 +11,7 @@ use List::Util qw(uniq);
 use File::Basename;
 
 our @CARP_NOT;
+my $content_field_types;
 
 sub prepare {
     my ($class, $spec, $objs) = @_;
@@ -62,6 +63,22 @@ sub _note_or_croak {
     } else {
         Test::More::note(@_);
     }
+}
+
+sub _type_label {
+    my $type = shift;
+    $content_field_types ||= MT->registry('content_field_types');
+    my $label = $content_field_types->{$type}->{label};
+    $label = $label->() if ref $label eq 'CODE';
+    $label;
+}
+
+sub _fix_fields {
+    my $fields = shift;
+    for my $field (@$fields) {
+        $field->{type_label} ||= _type_label($field->{type});
+    }
+    $fields;
 }
 
 sub prepare_author {
@@ -679,7 +696,7 @@ sub prepare_content_type {
                     unique_id => $cf->unique_id,
                     };
             }
-            $ct->fields(\@fields);
+            $ct->fields(_fix_fields(\@fields));
             $ct->save;
         }
     }
