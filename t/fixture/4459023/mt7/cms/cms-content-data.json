@@ -497,17 +497,17 @@
             3,
             null,
             "__NOW__",
-            "e58fed2e74229d1f1000cd135f4befb3aaf7c6b4",
+            "bf2c000414ccb531c6a45128bf5adc9af8508a2a",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0003-\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u00013",
             1,
-            "11f6fd74cdd09e9874dc01c79bafa95c91c1e825",
+            "a9aebb9d6d31485189e353cc61dcfd9f311a5546",
             "test cd",
             null,
             "__NOW__",
-            0,
+            3,
             2,
-            "11f6fd74cdd09e9874dc01c79bafa95c91c1e825",
+            "a9aebb9d6d31485189e353cc61dcfd9f311a5546",
             null,
             201722
          ]
@@ -547,7 +547,7 @@
             null,
             null,
             "tags",
-            "6fed9682a04827b9b45d5b7f15f5bfbc62f5912e"
+            "f200a0b0d4114aeb8111e94c93b5971e258fdf4b"
          ]
       ]
    },
@@ -663,7 +663,7 @@
             null,
             "__NOW__",
             "ct without ct archive",
-            "06882a8d6229eea7c8d622b4767e6143f5e2f536",
+            "db14b8ffab1bd161828323369985616b75420b40",
             null,
             null
          ],
@@ -678,7 +678,7 @@
             null,
             "__NOW__",
             "ct with ct archive",
-            "4d7f6c5f96e073e3287d66dcee626fdc4bd8c12c",
+            "0d30ac2eba91c03eeae71880f931d6e67749129b",
             null,
             null
          ],
@@ -688,12 +688,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(6fed9682a04827b9b45d5b7f15f5bfbc62f5912e\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0014Sample Content Field\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\u0004tags\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(f200a0b0d4114aeb8111e94c93b5971e258fdf4b\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011",
             3,
             null,
             "__NOW__",
             "test ct",
-            "e58fed2e74229d1f1000cd135f4befb3aaf7c6b4",
+            "bf2c000414ccb531c6a45128bf5adc9af8508a2a",
             null,
             null
          ]

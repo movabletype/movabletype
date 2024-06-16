@@ -27,8 +27,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 1",
             "jpg",
-            "TjSu5Xfo3V.jpg",
-            "__TEST_ROOT__/TjSu5Xfo3V.jpg",
+            "PdTPET_dg_.jpg",
+            "__TEST_ROOT__/PdTPET_dg_.jpg",
             null,
             1,
             "Sample Image 1",
@@ -46,8 +46,8 @@
             "1978-01-31 07:45:00",
             "Sample Image 2",
             "jpg",
-            "TjSu5Xfo3V.jpg",
-            "__TEST_ROOT__/TjSu5Xfo3V.jpg",
+            "PdTPET_dg_.jpg",
+            "__TEST_ROOT__/PdTPET_dg_.jpg",
             null,
             2,
             "Sample Image 2",
@@ -562,7 +562,7 @@
             null,
             null,
             "asset_image",
-            "d8b892aa5932c7c78833e15e13e97f6b2d6c4a79"
+            "d34d06dea97d5dad8bf945df45ccdc1e827fd2b1"
          ]
       ]
    },
@@ -606,7 +606,7 @@
             null,
             "__NOW__",
             "content type 1",
-            "519feff9058cb125eb03e2e5d10f0decf22e7829",
+            "53203f4367b8969cbdb7275abfe2061d5dede44b",
             null,
             null
          ]
