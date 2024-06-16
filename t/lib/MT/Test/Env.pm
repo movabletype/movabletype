@@ -780,6 +780,16 @@ sub _fixture_file {
     return "$id.json";
 }
 
+sub _fixture_readme {
+    my $self = shift;
+    "$self->{fixture_dirs}[-1]/README";
+}
+
+sub _fixture_home_readme {
+    my $self = shift;
+    "$self->{fixture_dirs}[0]/README";
+}
+
 sub fix_mysql_create_table_sql {
     my $class = shift;
     return unless $class->mysql_charset eq 'utf8mb4';
@@ -877,7 +887,8 @@ sub prepare_fixture {
 
         if ($self->{fixture_dirs}[-1]) {
             mkpath $self->{fixture_dirs}[-1] unless -d $self->{fixture_dirs}[-1];
-            open my $fh, '>', "$self->{fixture_dirs}[-1]/README" or die $!;
+            open my $fh, '>', $self->_fixture_readme or die $!;
+            print $fh "SchemaVersion ", MT->schema_version, "\n";
             print $fh join "\n", @{ $self->{addons_and_plugins} }, "";
             close $fh;
         }
@@ -1116,6 +1127,22 @@ sub save_schema {
     }
 
     $self->_set_fixture_dirs;
+
+    my $saved_schema_version = '';
+    if (-f $self->_fixture_home_readme) {
+        open my $fh, '<', $self->_fixture_home_readme or die $!;
+        while(<$fh>) {
+            chomp;
+            if (/SchemaVersion ([0-9.]+)/) {
+                $saved_schema_version = $1;
+                last;
+            }
+        }
+    }
+    if ($saved_schema_version ne MT->schema_version) {
+        print STDERR "Schema version has changed from $saved_schema_version to " . MT->schema_version . "\n";
+        $force = 1;
+    }
 
     #  always save in MT_HOME/t/fixture
     my $file = join "/", $self->{fixture_dirs}[0], $self->_schema_file;
