@@ -214,6 +214,8 @@ sub edit {
         $param->{$name} = $app->param($name) if $app->param($name);
     }
 
+    my $options_html_params_hash = {};
+
     # Content Field Options
     foreach my $key ( keys %$content_field_types ) {
 
@@ -228,6 +230,8 @@ sub edit {
             if ( 'CODE' eq ref $options_html_params ) {
                 $options_html_params = $options_html_params->( $app, $param );
             }
+
+            $options_html_params_hash->{$key} = $options_html_params;
         }
 
         # Template
@@ -270,6 +274,8 @@ sub edit {
         }
     }
 
+    $param->{options_html_params_json} = JSON::to_json(_deep_resolve_copy($options_html_params_hash));
+
     $app->add_breadcrumb(
         $app->translate('Content Types'),
         $app->uri(
@@ -288,6 +294,21 @@ sub edit {
     }
 
     $app->build_page( $app->load_tmpl('edit_content_type.tmpl'), $param );
+}
+
+sub _deep_resolve_copy {
+    my ($arg) = @_;
+    my $ref_arg = ref $arg;
+
+    # deep copy
+    return $arg                                                          if !$ref_arg;
+    return [map { _deep_resolve_copy($_) } @{$arg}]                      if $ref_arg eq 'ARRAY';
+    return { map { $_ => _deep_resolve_copy($arg->{$_}) } keys %{$arg} } if $ref_arg eq 'HASH';
+
+    # resove coderef
+    return $arg->() if $ref_arg eq 'CODE';
+
+    die 'unresolvable ref type: ' . $ref_arg;
 }
 
 sub tmpl_param_list_common {

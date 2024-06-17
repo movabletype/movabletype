@@ -98,6 +98,8 @@
       NumberFieldMinValue: <mt:var name="config.numberfieldminvalue" escape="js">,
       NumberFieldDecimalPlaces: <mt:var name="config.numberfielddecimalplaces" escape="js">
     }
+
+    window.svelteMountOptionsHtmlParams = <mt:var name="options_html_params_json">;
   </script>
 </mt:unless>
 
@@ -262,7 +264,11 @@ document.addEventListener('DOMContentLoaded', () => {
   <mt:if name="config.useriot">
     riot.mount('content-fields', opts);
   <mt:else>
-    svelteMountContentFields({ config: svelteMountConfig, opts: opts });
+    svelteMountContentFields({
+      config: svelteMountConfig,
+      optionsHtmlParams: svelteMountOptionsHtmlParams,
+      opts: opts,
+    });
   </mt:if>
 });
 </mt:setvarblock>

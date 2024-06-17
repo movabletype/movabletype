@@ -9,6 +9,7 @@
   import ContentField from "./ContentField.svelte";
 
   export let config: MT.ContentType.ConfigOpts;
+  export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
   export let opts: MT.ContentType.ContentFieldsOpts;
   export let root: Element;
 
@@ -730,6 +731,7 @@
             bind:isEmpty
             parent={tags[fieldIndex]}
             bind:gather={gathers[f.id || ""]}
+            {optionsHtmlParams}
           />
         </div>
       {/each}

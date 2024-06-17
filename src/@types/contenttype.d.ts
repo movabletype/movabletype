@@ -48,6 +48,10 @@ declare namespace MT.ContentType {
     [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 
+  interface OptionsHtmlParams {
+    [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  }
+
   interface SelectionValue {
     checked: string;
     label: string;

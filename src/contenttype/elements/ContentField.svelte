@@ -1,7 +1,9 @@
 <script lang="ts">
   import { recalcHeight, update } from "../Utils";
   import { cfields } from "../Store";
+
   import SVG from "../../svg/elements/SVG.svelte";
+
   //  import ContentType from './ContentType.svelte';
   import SingleLineText from "./SingleLineText.svelte";
   //  import MultiLineText from './MultiLineText.svelte';
@@ -18,7 +20,7 @@
   import AssetVideo from "./AssetVideo.svelte";
   import AssetImage from "./AssetImage.svelte";
   import EmbeddedText from "./EmbeddedText.svelte";
-  //  import Categories from './Categories.svelte';
+  import Categories from "./Categories.svelte";
   import Tags from "./Tags.svelte";
   import List from "./List.svelte";
   import Tables from "./Tables.svelte";
@@ -38,6 +40,7 @@
   export let isEmpty: boolean;
   export let parent: HTMLDivElement;
   export let gather: (() => object) | undefined;
+  export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
   let label = item.label || "";
 
@@ -272,6 +275,15 @@
       fieldId={id}
       bind:label
       options={item.options || {}}
+    />
+  {:else if type === "categories"}
+    <Categories
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:label
+      options={item.options || {}}
+      {optionsHtmlParams}
     />
   {:else if type === "tags"}
     <Tags
