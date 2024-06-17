@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { recalcHeight, update } from "../Utils";
   import { cfields } from "../Store";
+  import { recalcHeight, update } from "../Utils";
 
   import SVG from "../../svg/elements/SVG.svelte";
 
@@ -43,6 +43,30 @@
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
   let label = item.label || "";
+
+  const ContentfieldMap = {
+    "content-type": ContentType,
+    "single-line-text": SingleLineText,
+    "multi-line-text": MultiLineText,
+    number: Number,
+    url: Url,
+    "date-and-time": DateTime,
+    "date-only": Date,
+    "time-only": Time,
+    "select-box": SelectBox,
+    "radio-button": RadioButton,
+    checkboxes: Checkboxes,
+    asset: Asset,
+    "asset-audio": AssetAudio,
+    "asset-video": AssetVideo,
+    "asset-image": AssetImage,
+    "embedded-text": EmbeddedText,
+    categories: Categories,
+    tags: Tags,
+    list: List,
+    tables: Tables,
+    "text-label": TextLabel,
+  };
 
   const deleteField = (): void => {
     const label = item.label ? item.label : window.trans("No Name");
@@ -153,179 +177,13 @@
   id="field-options-{id}"
   {...{ fieldid: id, isnew: isNew }}
 >
-  {#if type === "content-type"}
-    <ContentType
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-      {optionsHtmlParams}
-    />
-  {:else if type === "single-line-text"}
-    <SingleLineText
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "multi-line-text"}
-    <MultiLineText
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-      {optionsHtmlParams}
-    />
-  {:else if type === "number"}
-    <Number
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "url"}
-    <Url
-      id={`field-options-${id}`}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-      {isNew}
-    />
-  {:else if type === "date-and-time"}
-    <DateTime
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "date-only"}
-    <Date
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "time-only"}
-    <Time
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "select-box"}
-    <SelectBox
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:gather
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "radio-button"}
-    <RadioButton
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:gather
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "checkboxes"}
-    <Checkboxes
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:gather
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "asset"}
-    <Asset
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "asset-audio"}
-    <AssetAudio
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "asset-video"}
-    <AssetVideo
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "asset-image"}
-    <AssetImage
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "embedded-text"}
-    <EmbeddedText
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "categories"}
-    <Categories
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-      {optionsHtmlParams}
-    />
-  {:else if type === "tags"}
-    <Tags
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "list"}
-    <List
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "tables"}
-    <Tables
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {:else if type === "text-label"}
-    <TextLabel
-      id={`field-options-${id}`}
-      {isNew}
-      fieldId={id}
-      bind:label
-      options={item.options || {}}
-    />
-  {/if}
+  <svelte:component
+    this={ContentfieldMap[type]}
+    id={`field-options-${id}`}
+    {isNew}
+    fieldId={id}
+    bind:label
+    options={item.options || {}}
+    {optionsHtmlParams}
+  />
 </div>
