@@ -179,10 +179,10 @@
 >
   <svelte:component
     this={ContentfieldMap[type]}
-    id={`field-options-${id}`}
-    {isNew}
     fieldId={id}
     bind:gather
+    id={`field-options-${id}`}
+    {isNew}
     bind:label
     options={item.options || {}}
     {optionsHtmlParams}
