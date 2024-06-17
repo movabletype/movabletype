@@ -4202,7 +4202,7 @@ abstract class MTDatabase {
         $type_filter = '';
         if (!empty($types)) {
             if ($type_user) {
-                $type_filter = 'and touch_object_type ="author"';
+                $type_filter = 'and touch_object_type =\'author\'';
             } else {
                 if (is_array($types)) {
                     $ph = $this->in_ph('touch_object_type', $bind, $types);
