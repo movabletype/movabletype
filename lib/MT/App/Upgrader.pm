@@ -210,10 +210,10 @@ sub upgrade {
 
     my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
-    if ( $] < 5.016000 ) {    # our minimal requirement for support
+    if ( $] < 5.016003 ) {    # our minimal requirement for support
         $param{version_warning} = 1;
         $param{perl_version}    = $ver;
-        $param{perl_minimum}    = '5.16.0';
+        $param{perl_minimum}    = '5.16.3';
     }
 
     my $method = $app->request_method;
@@ -784,10 +784,10 @@ sub main {
 
     my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
-    if ( $] < 5.016000 ) {    # our minimal requirement for support
+    if ( $] < 5.016003 ) {    # our minimal requirement for support
         $param->{version_warning} = 1;
         $param->{perl_version}    = $ver;
-        $param->{perl_minimum}    = '5.16.0';
+        $param->{perl_minimum}    = '5.16.3';
     }
 
     my $driver       = MT::Object->driver;
