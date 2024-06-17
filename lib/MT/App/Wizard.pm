@@ -290,6 +290,16 @@ sub pre_start {
     my $app = shift;
     my %param;
 
+    if ($] < 5.016000) {
+        $param{perl_is_too_old} = 1;
+        $param{version}         = ref($^V) eq 'version' ? $^V->normal : ( $^V ? join( '.', unpack 'C*', $^V ) : $] );
+    }
+    if (eval { require MT::Util::Dependencies; 1 }) {
+        if (MT::Util::Dependencies->lacks_core_modules) {
+            $param{perl_lacks_core_modules} = 1;
+        }
+    }
+
     eval { use File::Spec; };
     my ($static_file_path);
     if ( !$@ ) {
