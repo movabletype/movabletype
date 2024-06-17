@@ -100,15 +100,7 @@ class ClassTest extends TestCase {
     public function testPage() {
 
         $page = MockData::makePage();
-
-        require_once('class.mt_folder.php');
-        $folder = new Folder();
-        $folder->blog_id = 1;
-        $folder->class = 'folder';
-        $folder->category_category_set_id = 0;
-        $folder->label = '';
-        $folder->save();
-
+        $folder = MockData::makeFolder(['blog_id' => 1]);
         $placement = MockData::makeObjectPlacement(['blog_id' => 1, 'category_id' => $folder->id]);
 
         $folder2 = $page->folder();
