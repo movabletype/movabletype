@@ -11,6 +11,8 @@
   export let isNew: boolean;
   export let label: string;
   export let options: MT.ContentType.Options;
+  // svelte-ignore unused-export-let
+  export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
   if (options.can_add === "0") {
     options.can_add = 0;

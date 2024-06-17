@@ -10,6 +10,8 @@
   export let isNew: boolean;
   export let label: string;
   export let options: MT.ContentType.Options;
+  // svelte-ignore unused-export-let
+  export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
   let maxValue = options.max_value || $mtConfig.NumberFieldMaxValue;
   let minValue = options.min_value || $mtConfig.NumberFieldMinValue;

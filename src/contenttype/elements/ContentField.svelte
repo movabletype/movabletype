@@ -182,6 +182,7 @@
     id={`field-options-${id}`}
     {isNew}
     fieldId={id}
+    bind:gather
     bind:label
     options={item.options || {}}
     {optionsHtmlParams}

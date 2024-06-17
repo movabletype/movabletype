@@ -7,6 +7,8 @@
   export let isNew: boolean;
   export let label: string;
   export let options: MT.ContentType.Options;
+  // svelte-ignore unused-export-let
+  export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
   if (options.increase_decrease_rows === "0") {
     options.increase_decrease_rows = 0;
