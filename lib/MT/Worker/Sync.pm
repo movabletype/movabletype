@@ -51,9 +51,9 @@ sub work {
     foreach $job (@jobs) {
         my $fi_id = $job->uniqkey;
         my $fi    = MT::FileInfo->load($fi_id);
-        my $file  = $fi->absolute_file_path;
+        my $file  = $fi ? $fi->absolute_file_path : '';
 
-        if ( $fi && ( -f $file ) ) {
+        if ( $file && ( -f $file ) ) {
             ##MT::TheSchwartz->debug("Syncing: " . RebuildQueue::Daemon::_summary($fi));
             push @files, $file;
             unless ( $fi->template_id ) {
