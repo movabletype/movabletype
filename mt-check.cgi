@@ -481,7 +481,7 @@ require MT::Util::Dependencies;
 my $perl_lacks_core_modules = '';
 if (MT::Util::Dependencies->lacks_core_modules) {
     $perl_lacks_core_modules = <<EOT;
-<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="Your Perl does not have some of the core modules so that you may encounter unexpected behaviors. Please ask your system administrator to install perl (or perl-core) properly."></p></div>
+<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="Movable Type does not work because your Perl does not have some of the core modules. Please ask your system administrator to install perl (or perl-core) properly."></p></div>
 EOT
 }
 
