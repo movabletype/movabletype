@@ -1050,7 +1050,7 @@ USED:
             }
         }
         # ignore core pragma modules
-        next if $module =~ /^[a-z0-9:]+$/ && Module::CoreList::is_core($module, undef, '5.016000');
+        next if $module =~ /^[a-z0-9:]+$/ && Module::CoreList::is_core($module, undef, '5.016003');
         my $used_in_mt;
         for my $where (keys %{ $used->{$module} }) {
             next unless $where =~ /^MT\b/;
@@ -1059,7 +1059,7 @@ USED:
             $used_in_mt = 1;
         }
         next unless $used_in_mt;
-        if (Module::CoreList::is_core($module, undef, '5.016000')) {
+        if (Module::CoreList::is_core($module, undef, '5.016003')) {
             $core_hash{$module} //= {};
             next;
         }
@@ -1095,8 +1095,8 @@ sub _modify_hash {
         $hash{$module}{url} = $CustomURL{$module} || $url;
 
         my $version = $hash{$module}{version};
-        if (Module::CoreList::is_core($module, $version, '5.016000') && Module::CoreList::is_core($module, $version)) {
-            $hash{$module}{perl_core} = $Module::CoreList::version{'5.016000'}{$module};
+        if (Module::CoreList::is_core($module, $version, '5.016003') && Module::CoreList::is_core($module, $version)) {
+            $hash{$module}{perl_core} = $Module::CoreList::version{'5.016003'}{$module};
             if ($index->{package}{$module} =~ /\bperl\b/) {
                 $hash{$module}{perl_only} = 1;
             }
