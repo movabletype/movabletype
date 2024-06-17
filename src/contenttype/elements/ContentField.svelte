@@ -4,7 +4,7 @@
 
   import SVG from "../../svg/elements/SVG.svelte";
 
-  //  import ContentType from './ContentType.svelte';
+  import ContentType from "./ContentType.svelte";
   import SingleLineText from "./SingleLineText.svelte";
   //  import MultiLineText from './MultiLineText.svelte';
   import Number from "./Number.svelte";
@@ -153,7 +153,16 @@
   id="field-options-{id}"
   {...{ fieldid: id, isnew: isNew }}
 >
-  {#if type === "single-line-text"}
+  {#if type === "content-type"}
+    <ContentType
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:label
+      options={item.options || {}}
+      {optionsHtmlParams}
+    />
+  {:else if type === "single-line-text"}
     <SingleLineText
       id={`field-options-${id}`}
       {isNew}
