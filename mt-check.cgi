@@ -755,7 +755,7 @@ MSG
     print_encode("\n\t</div>\n\n");
 }
 
-if ($is_good) {
+if ($is_good && !$perl_ver_check && !$perl_lacks_core_modules) {
     if ( !$view ) {
         print_encode( trans_templ(<<HTML) );
     <div class="bg-success msg msg-success">
