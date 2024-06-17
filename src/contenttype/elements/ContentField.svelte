@@ -6,7 +6,7 @@
 
   import ContentType from "./ContentType.svelte";
   import SingleLineText from "./SingleLineText.svelte";
-  //  import MultiLineText from './MultiLineText.svelte';
+  import MultiLineText from "./MultiLineText.svelte";
   import Number from "./Number.svelte";
   import Url from "./Url.svelte";
   import DateTime from "./DateTime.svelte";
@@ -171,13 +171,14 @@
       options={item.options || {}}
     />
   {:else if type === "multi-line-text"}
-    <!--
     <MultiLineText
-      fieldId={ id }
-      bind:label={ label }
-      options={ { "description": "", "required": "", "displays": "", "initial_value": "", "input_formats": "", "full_rich_text": "" } }
-      isNew={ isNew } />
--->
+      id={`field-options-${id}`}
+      {isNew}
+      fieldId={id}
+      bind:label
+      options={item.options || {}}
+      {optionsHtmlParams}
+    />
   {:else if type === "number"}
     <Number
       id={`field-options-${id}`}
