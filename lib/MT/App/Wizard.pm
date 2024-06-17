@@ -290,7 +290,7 @@ sub pre_start {
     my $app = shift;
     my %param;
 
-    if ($] < 5.016000) {
+    if ($] < 5.016003) {
         $param{perl_is_too_old} = 1;
         $param{version}         = ref($^V) eq 'version' ? $^V->normal : ( $^V ? join( '.', unpack 'C*', $^V ) : $] );
     }
