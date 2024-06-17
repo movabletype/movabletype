@@ -1475,7 +1475,7 @@ sub rebuild_file {
                 $relfile = File::Spec->abs2rel($file, $blog->site_path);
             }
             $finfo = MT::FileInfo->set_info_for_url(
-                $rel_url, $file, $at,
+                $rel_url, $relfile, $at,
                 {   Blog        => $blog->id,
                     TemplateMap => $map->id,
                     Template    => $tmpl_id,
