@@ -3257,7 +3257,7 @@ sub convert_file_path {
                 }
 
                 my $new = $relative ? $fi->relative_file_path($site_path) : $fi->absolute_file_path($site_path);
-                die $app->translate("Found a file path that does not belong to the site: [_1]") if $new =~ /\.\./;
+                die $app->translate("Found a file path that does not belong to the site: [_1]", $current) if $new =~ /\.\./;
                 if ($new ne $current) {
                     $fi->file_path($new);
                     $fi->save;
