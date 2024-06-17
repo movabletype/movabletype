@@ -3226,7 +3226,7 @@ sub convert_file_path {
 
     my %param = (
         blog_id      => $blog_id,
-        use_relative => MT->config->UseRelativeFilePath,
+        use_relative => MT->config->UseRelativeFilePath || 0,
     );
 
     $app->add_breadcrumb($app->translate('Convert File Paths'));
