@@ -1501,7 +1501,7 @@ sub set_form_fields {
         if ( $data->{element} eq 'select' ) {
             my @options;
             my $option = $data->{option};
-            foreach my $key ( keys %$option ) {
+            foreach my $key ( sort keys %$option ) {
                 my $select = {};
                 $select->{value} = $key;
                 $select->{label} = $option->{$key};
