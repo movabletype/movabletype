@@ -187,7 +187,7 @@
   <svelte:component
     this={ContentfieldMap[field.type]}
     {config}
-    fieldId={field.id}
+    bind:field
     bind:gather
     id={`field-options-${field.id}`}
     isNew={field.isNew}

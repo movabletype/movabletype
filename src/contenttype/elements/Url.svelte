@@ -4,7 +4,7 @@
 
   // svelte-ignore unused-export-let
   export let config: MT.ContentType.ConfigSettings;
-  export let fieldId: string;
+  export let field: MT.ContentType.Field;
   export let id: string;
   export let isNew: boolean;
   export let label: string;
@@ -13,7 +13,14 @@
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 </script>
 
-<ContentFieldOptionGroup type="url" {id} {fieldId} {isNew} bind:label {options}>
+<ContentFieldOptionGroup
+  type="url"
+  {id}
+  fieldId={field.id ?? ""}
+  {isNew}
+  bind:label
+  {options}
+>
   <ContentFieldOption
     id="url-initial_value"
     label={window.trans("Initial Value")}

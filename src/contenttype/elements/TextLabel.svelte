@@ -6,7 +6,7 @@
 
   // svelte-ignore unused-export-let
   export let config: MT.ContentType.ConfigSettings;
-  export let fieldId: string;
+  export let field: MT.ContentType.Field;
   export let id: string;
   export let isNew: boolean;
   export let label: string;
@@ -33,7 +33,7 @@
 <!-- convert snake case to chain case in Riot.js implementation -->
 <ContentFieldOptionGroup
   type="text-label"
-  {fieldId}
+  fieldId={field.id ?? ""}
   {id}
   {isNew}
   bind:label

@@ -5,7 +5,7 @@
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
   export let config: MT.ContentType.ConfigSettings;
-  export let fieldId: string;
+  export let field: MT.ContentType.Field;
   export let id: string;
   export let isNew: boolean;
   export let label: string;
@@ -37,7 +37,14 @@
   const type = "number";
 </script>
 
-<ContentFieldOptionGroup {type} {id} {isNew} {fieldId} bind:label {options}>
+<ContentFieldOptionGroup
+  {type}
+  {id}
+  {isNew}
+  fieldId={field.id ?? ""}
+  bind:label
+  {options}
+>
   <ContentFieldOption id="number-min_value" label={window.trans("Min Value")}>
     <input
       {...{ ref: "min_value" }}

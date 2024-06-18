@@ -6,7 +6,7 @@
 
   // svelte-ignore unused-export-let
   export let config: MT.ContentType.ConfigSettings;
-  export let fieldId: string;
+  export let field: MT.ContentType.Field;
   export let id: string;
   export let isNew: boolean;
   export let label: string;
@@ -29,7 +29,7 @@
 
 <ContentFieldOptionGroup
   type="categories"
-  {fieldId}
+  fieldId={field.id ?? ""}
   {id}
   {isNew}
   bind:label
