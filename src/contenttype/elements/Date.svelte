@@ -12,7 +12,7 @@
 </script>
 
 <ContentFieldOptionGroup
-  type="date_only"
+  type="date-only"
   {id}
   fieldId={field.id ?? ""}
   {options}
