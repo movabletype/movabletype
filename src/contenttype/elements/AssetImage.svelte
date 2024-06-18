@@ -33,8 +33,6 @@
   if (options.preview_height === null) {
     options.preview_height = 80;
   }
-
-  let multiple = options.multiple;
 </script>
 
 <ContentFieldOptionGroup
@@ -55,7 +53,7 @@
       class="mt-switch form-control"
       id="asset_image-multiple"
       name="multiple"
-      bind:checked={multiple}
+      bind:checked={options.multiple}
     /><label for="asset_image-multiple" class="form-label">
       {window.trans("Allow users to select multiple image assets?")}
     </label>
@@ -64,7 +62,7 @@
   <ContentFieldOption
     id="asset_image-min"
     label={window.trans("Minimum number of selections")}
-    attrShow={multiple ? true : false}
+    attrShow={options.multiple ? true : false}
   >
     <input
       {...{ ref: "min" }}
@@ -80,7 +78,7 @@
   <ContentFieldOption
     id="asset_image-max"
     label={window.trans("Maximum number of selections")}
-    attrShow={multiple ? true : false}
+    attrShow={options.multiple ? true : false}
   >
     <input
       {...{ ref: "max" }}

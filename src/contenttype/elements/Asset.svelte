@@ -25,8 +25,6 @@
   if (options.max === null) {
     options.max = "";
   }
-
-  let multiple = options.multiple;
 </script>
 
 <ContentFieldOptionGroup
@@ -47,7 +45,7 @@
       class="mt-switch form-control"
       id="asset-multiple"
       name="multiple"
-      bind:checked={multiple}
+      bind:checked={options.multiple}
     /><label for="asset-multiple" class="form-label">
       {window.trans("Allow users to select multiple assets?")}
     </label>
@@ -56,7 +54,7 @@
   <ContentFieldOption
     id="asset-min"
     label={window.trans("Minimum number of selections")}
-    attrShow={multiple}
+    attrShow={options.multiple}
   >
     <input
       {...{ ref: "min" }}
@@ -72,7 +70,7 @@
   <ContentFieldOption
     id="asset-max"
     label={window.trans("Maximum number of selections")}
-    attrShow={multiple}
+    attrShow={options.multiple}
   >
     <input
       {...{ ref: "max" }}

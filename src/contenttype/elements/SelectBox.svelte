@@ -30,8 +30,6 @@
     options.max = "";
   }
 
-  let multiple = options.multiple;
-
   let refsTable: HTMLTableElement;
 
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
@@ -165,7 +163,7 @@
       class="mt-switch form-control form-check-input"
       id="select_box-multiple"
       name="multiple"
-      bind:checked={multiple}
+      bind:checked={options.multiple}
       on:click={changeStateMultiple}
     /><label for="select_box-multiple" class="form-label"
       >{window.trans("Allow users to select multiple values?")}</label
@@ -175,7 +173,7 @@
   <ContentFieldOption
     id="select_box-min"
     label={window.trans("Minimum number of selections")}
-    attrShow={multiple ? true : false}
+    attrShow={options.multiple ? true : false}
   >
     <input
       {...{ ref: "min" }}
@@ -191,7 +189,7 @@
   <ContentFieldOption
     id="select_box-max"
     label={window.trans("Maximum number of selections")}
-    attrShow={multiple ? true : false}
+    attrShow={options.multiple ? true : false}
   >
     <input
       {...{ ref: "max" }}
