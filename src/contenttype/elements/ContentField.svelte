@@ -137,7 +137,7 @@
       class="mt-icon--secondary"
       href="{window.StaticURI}images/sprite.svg#ic_contentstype"
     />
-    {field.label} ({field.typeLabel})
+    {field.label ?? ""} ({field.typeLabel})
     {#if field.realId}<span>(ID: {field.realId})</span>{/if}
   </div>
   <div class="col-auto p-0">
