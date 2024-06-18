@@ -6,7 +6,6 @@
   export let config: MT.ContentType.ConfigSettings;
   export let field: MT.ContentType.Field;
   export let id: string;
-  export let label: string;
   export let options: MT.ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
@@ -17,7 +16,7 @@
   {id}
   fieldId={field.id ?? ""}
   {options}
-  bind:label
+  bind:label={field.label}
   isNew={field.isNew ? true : false}
 >
   <ContentFieldOption

@@ -8,7 +8,7 @@
   export let fieldId: string;
   export let id: string;
   export let isNew: boolean;
-  export let label: string;
+  export let label: string | undefined;
   export let options: MT.ContentType.Options;
   export let type: string;
 
