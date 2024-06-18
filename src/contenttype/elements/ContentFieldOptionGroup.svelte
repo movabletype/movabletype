@@ -7,7 +7,6 @@
 
   export let field: MT.ContentType.Field;
   export let id: string;
-  export let isNew: boolean;
   export let options: MT.ContentType.Options;
   export let type: string;
 
@@ -75,7 +74,7 @@
   name="id"
   id="{type}-id"
   class="form-control"
-  value={isNew ? `id:${field.id}` : field.id}
+  value={field.isNew ? `id:${field.id}` : field.id}
 />
 
 <ContentFieldOption

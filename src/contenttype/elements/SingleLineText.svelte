@@ -24,13 +24,7 @@
 </script>
 
 <!-- convert snake case to chain case in Riot.js implementation -->
-<ContentFieldOptionGroup
-  type="single-line-text"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="single-line-text" bind:field {id} bind:options>
   <ContentFieldOption
     id="single_line_text-min_length"
     label={window.trans("Min Length")}

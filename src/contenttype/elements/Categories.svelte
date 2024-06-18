@@ -31,13 +31,7 @@
   }
 </script>
 
-<ContentFieldOptionGroup
-  type="categories"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="categories" bind:field {id} bind:options>
   <ContentFieldOption
     id="categories-multiple"
     label={window.trans("Allow users to select multiple categories?")}

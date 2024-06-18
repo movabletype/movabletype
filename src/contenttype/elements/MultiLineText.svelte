@@ -25,13 +25,7 @@
   }
 </script>
 
-<ContentFieldOptionGroup
-  type="multi-line-text"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="multi-line-text" bind:field {id} bind:options>
   <ContentFieldOption
     id="multi_line_text-initial_value"
     label={window.trans("Initial Value")}

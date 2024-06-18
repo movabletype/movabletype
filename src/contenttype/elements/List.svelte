@@ -10,10 +10,4 @@
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 </script>
 
-<ContentFieldOptionGroup
-  type="list"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
-/>
+<ContentFieldOptionGroup type="list" bind:field {id} bind:options />

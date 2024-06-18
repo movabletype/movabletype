@@ -104,13 +104,7 @@
   };
 </script>
 
-<ContentFieldOptionGroup
-  type="checkboxes"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="checkboxes" bind:field {id} bind:options>
   <ContentFieldOption
     id="checkboxes-min"
     label={window.trans("Minimum number of selections")}

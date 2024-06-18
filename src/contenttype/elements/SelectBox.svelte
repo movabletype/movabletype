@@ -145,13 +145,7 @@
   };
 </script>
 
-<ContentFieldOptionGroup
-  type="select-box"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="select-box" bind:field {id} bind:options>
   <ContentFieldOption
     id="select_box-multiple"
     label={window.trans("Allow users to select multiple values?")}

@@ -15,13 +15,7 @@
   }
 </script>
 
-<ContentFieldOptionGroup
-  type="time-only"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="time-only" bind:field {id} bind:options>
   <ContentFieldOption
     id="time_only-initial-value"
     label={window.trans("Initial Value")}

@@ -16,13 +16,7 @@
 </script>
 
 <!-- convert snake case to chain case in Riot.js implementation -->
-<ContentFieldOptionGroup
-  type="embedded-text"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="embedded-text" bind:field {id} bind:options>
   <ContentFieldOption
     id="embedded_text-initial_value"
     label={window.trans("Initial Value")}

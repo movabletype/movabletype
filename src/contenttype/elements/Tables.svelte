@@ -26,13 +26,7 @@
   }
 </script>
 
-<ContentFieldOptionGroup
-  type="table"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="table" bind:field {id} bind:options>
   <ContentFieldOption
     id="tables-initial_rows"
     label={window.trans("Initial Rows")}

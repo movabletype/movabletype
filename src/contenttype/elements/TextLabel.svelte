@@ -33,13 +33,7 @@
 </script>
 
 <!-- convert snake case to chain case in Riot.js implementation -->
-<ContentFieldOptionGroup
-  type="text-label"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="text-label" bind:field {id} bind:options>
   <ContentFieldOption
     id="text_label-text"
     label={window.trans("__TEXT_LABEL_TEXT")}

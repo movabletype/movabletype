@@ -20,13 +20,7 @@
 </script>
 
 <!-- convert snake case to chain case in Riot.js implementation -->
-<ContentFieldOptionGroup
-  type="date-and-time"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="date-and-time" bind:field {id} bind:options>
   <ContentFieldOption
     id="date_and_time-initial-date_value"
     label={window.trans("Initial Value (Date)")}

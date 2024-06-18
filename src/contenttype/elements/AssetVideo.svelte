@@ -27,13 +27,7 @@
   }
 </script>
 
-<ContentFieldOptionGroup
-  type="asset-video"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="asset-video" bind:field {id} bind:options>
   <ContentFieldOption
     id="asset_video-multiple"
     label={window.trans("Allow users to select multiple video assets?")}

@@ -31,13 +31,7 @@
   }
 </script>
 
-<ContentFieldOptionGroup
-  type="tags"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="tags" bind:field {id} bind:options>
   <ContentFieldOption
     id="tags-multiple"
     label={window.trans("Allow users to input multiple values?")}

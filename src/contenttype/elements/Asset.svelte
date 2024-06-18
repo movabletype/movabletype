@@ -27,13 +27,7 @@
   }
 </script>
 
-<ContentFieldOptionGroup
-  type="asset"
-  bind:field
-  {id}
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="asset" bind:field {id} bind:options>
   <ContentFieldOption
     id="asset-multiple"
     label={window.trans("Allow users to select multiple assets?")}

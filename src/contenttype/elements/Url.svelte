@@ -15,13 +15,7 @@
   }
 </script>
 
-<ContentFieldOptionGroup
-  type="url"
-  {id}
-  bind:field
-  isNew={field.isNew ? true : false}
-  bind:options
->
+<ContentFieldOptionGroup type="url" {id} bind:field bind:options>
   <ContentFieldOption
     id="url-initial_value"
     label={window.trans("Initial Value")}
