@@ -22,6 +22,14 @@
     options.multiple = 0;
   }
 
+  if (options.min === null) {
+    options.min = "";
+  }
+
+  if (options.max === null) {
+    options.max = "";
+  }
+
   let refsTable: HTMLTableElement;
 
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
@@ -102,7 +110,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="checkboxes-min"
@@ -115,7 +123,7 @@
       id="checkboxes-min"
       class="form-control w-25"
       min="0"
-      value={options.min ?? ""}
+      bind:value={options.min}
     />
   </ContentFieldOption>
 
@@ -130,7 +138,7 @@
       id="checkboxes-max"
       class="form-control w-25"
       min="1"
-      value={options.max ?? ""}
+      bind:value={options.max}
       on:change={enterMax}
     />
   </ContentFieldOption>

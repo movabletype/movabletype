@@ -12,6 +12,10 @@
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
+  if (options.text === null) {
+    options.text = "";
+  }
+
   onMount(() => {
     // description, required, display field is hidden.
     (
@@ -35,7 +39,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="text_label-text"
@@ -49,7 +53,8 @@
       {...{ ref: "text" }}
       name="text"
       id="text_label-text"
-      class="form-control">{options.text ?? ""}</textarea
-    >
+      class="form-control"
+      bind:value={options.text}
+    ></textarea>
   </ContentFieldOption>
 </ContentFieldOptionGroup>

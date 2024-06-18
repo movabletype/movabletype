@@ -18,6 +18,18 @@
     options.can_add = 0;
   }
 
+  if (options.min === null) {
+    options.min = "";
+  }
+
+  if (options.max === null) {
+    options.max = "";
+  }
+
+  if (options.initial_value === null) {
+    options.initial_value = "";
+  }
+
   let multiple = options.multiple;
 </script>
 
@@ -27,7 +39,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="tags-multiple"
@@ -58,7 +70,7 @@
       id="tags-min"
       class="form-control w-25"
       min="0"
-      value={options.min ?? ""}
+      bind:value={options.min}
     />
   </ContentFieldOption>
 
@@ -74,7 +86,7 @@
       id="tags-max"
       class="form-control w-25"
       min="1"
-      value={options.max ?? ""}
+      bind:value={options.max}
     />
   </ContentFieldOption>
 
@@ -88,7 +100,7 @@
       name="initial_value"
       id="tags-initial_value"
       class="form-control"
-      value={options.initial_value ?? ""}
+      bind:value={options.initial_value}
     />
   </ContentFieldOption>
 

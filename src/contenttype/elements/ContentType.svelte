@@ -22,6 +22,14 @@
     options.can_add = 0;
   }
 
+  if (options.min === null) {
+    options.min = "";
+  }
+
+  if (options.max === null) {
+    options.max = "";
+  }
+
   let multiple = options.multiple;
 </script>
 
@@ -31,7 +39,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="content_type-multiple"
@@ -61,7 +69,7 @@
       id="content_type-min"
       class="form-control w-25"
       min="0"
-      value={options.min ?? ""}
+      bind:value={options.min}
     />
   </ContentFieldOption>
 
@@ -77,7 +85,7 @@
       id="content_type-max"
       class="form-control w-25"
       min="1"
-      value={options.max ?? ""}
+      bind:value={options.max}
     />
   </ContentFieldOption>
 
@@ -92,9 +100,10 @@
         name="source"
         id="content_type-source"
         class="custom-select form-control html5-form form-select"
+        bind:value={options.source}
       >
         {#each contentTypes as ct}
-          <option value={ct.id} selected={ct.id === options.source}>
+          <option value={ct.id}>
             {ct.name}
           </option>
         {/each}

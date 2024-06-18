@@ -9,15 +9,19 @@
   export let options: MT.ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
+
+  if (options.initial_value === null) {
+    options.initial_value = "";
+  }
 </script>
 
 <ContentFieldOptionGroup
   type="date-only"
-  {id}
   fieldId={field.id ?? ""}
-  {options}
-  bind:label={field.label}
+  {id}
   isNew={field.isNew ? true : false}
+  bind:label={field.label}
+  bind:options
 >
   <ContentFieldOption
     id="date_only-initial-date_value"
@@ -30,7 +34,7 @@
       name="initial_value"
       id="initial_value"
       class="form-control date-field w-25"
-      value={options.initial_value ?? ""}
+      bind:value={options.initial_value}
       placeholder="YYYY-MM-DD"
     />
   </ContentFieldOption>

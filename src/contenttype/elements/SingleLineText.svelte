@@ -9,6 +9,18 @@
   export let options: MT.ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
+
+  if (options.min_length === null) {
+    options.min_length = 0;
+  }
+
+  if (options.max_length === null) {
+    options.max_length = 255;
+  }
+
+  if (options.initial_value === null) {
+    options.initial_value = "";
+  }
 </script>
 
 <!-- convert snake case to chain case in Riot.js implementation -->
@@ -18,7 +30,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="single_line_text-min_length"
@@ -31,7 +43,7 @@
       id="single_line_text-min_length"
       class="form-control w-25"
       min="0"
-      value={options.min_length || 0}
+      bind:value={options.min_length}
     />
   </ContentFieldOption>
 
@@ -46,7 +58,7 @@
       id="single_line_text-max_length"
       class="form-control w-25"
       min="1"
-      value={options.max_length || 255}
+      bind:value={options.max_length}
     />
   </ContentFieldOption>
 
@@ -60,7 +72,7 @@
       name="initial_value"
       id="single_line_text-initial_value"
       class="form-control"
-      value={options.initial_value ?? ""}
+      bind:value={options.initial_value}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

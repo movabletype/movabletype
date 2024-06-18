@@ -12,21 +12,16 @@
   const textFilters: Array<{ filter_label: string; filter_key: string }> =
     optionsHtmlParams.multi_line_text.text_filters;
 
-  options.input_formats = {};
-  textFilters.forEach((filter) => {
-    options.input_formats[filter.filter_key] = "";
-  });
-
-  if (options.input_format) {
-    options.input_formats[options.input_format] = "selected";
-  }
-
   if (field.isNew) {
     options.full_rich_text = 1;
   }
 
   if (options.full_rich_text === "0") {
     options.full_rich_text = 0;
+  }
+
+  if (options.initial_value === null) {
+    options.initial_value = "";
   }
 </script>
 
@@ -36,7 +31,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="multi_line_text-initial_value"
@@ -46,8 +41,9 @@
       {...{ ref: "initial_value" }}
       name="initial_value"
       id="multi_line_text-initial_value"
-      class="form-control">{options.initial_value ?? ""}</textarea
-    >
+      class="form-control"
+      bind:value={options.initial_value}
+    ></textarea>
   </ContentFieldOption>
 
   <ContentFieldOption
@@ -59,13 +55,10 @@
       name="input_format"
       id="multi_line_text-input_format"
       class="custom-select form-control form-select"
+      bind:value={options.input_format}
     >
       {#each textFilters as filter}
-        <option
-          value={filter.filter_key}
-          selected={options.input_formats[filter.filter_key]}
-          >{filter.filter_label}</option
-        >
+        <option value={filter.filter_key}>{filter.filter_label}</option>
       {/each}
     </select>
   </ContentFieldOption>
@@ -80,7 +73,7 @@
       class="mt-switch form-control"
       id="multi_line_text-full_rich_text"
       name="full_rich_text"
-      checked={options.full_rich_text}
+      bind:checked={options.full_rich_text}
     /><label for="multi_line_text-full_rich_text" class="form-label">
       {window.trans("Use all rich text decoration buttons")}
     </label>

@@ -22,11 +22,15 @@
     options.can_add = 0;
   }
 
-  let multiple = options.multiple;
+  if (options.min === null) {
+    options.min = "";
+  }
 
-  const updateOptionsCategorySet = (e: Event): void => {
-    options.category_set = (e.currentTarget as HTMLSelectElement).value;
-  };
+  if (options.max === null) {
+    options.max = "";
+  }
+
+  let multiple = options.multiple;
 </script>
 
 <ContentFieldOptionGroup
@@ -35,7 +39,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="categories-multiple"
@@ -65,7 +69,7 @@
       id="categories-min"
       class="form-control w-25"
       min="0"
-      value={options.min ?? ""}
+      bind:value={options.min}
     />
   </ContentFieldOption>
 
@@ -81,7 +85,7 @@
       id="categories-max"
       class="form-control w-25"
       min="1"
-      value={options.max ?? ""}
+      bind:value={options.max}
     />
   </ContentFieldOption>
 
@@ -112,10 +116,10 @@
         name="category_set"
         id="categories-category_set"
         class="custom-select form-control html5-form form-select"
-        on:change={updateOptionsCategorySet}
+        bind:value={options.category_set}
       >
         {#each categorySets as cs}
-          <option value={cs.id} selected={cs.id === options.category_set}>
+          <option value={cs.id}>
             {cs.name}
           </option>
         {/each}

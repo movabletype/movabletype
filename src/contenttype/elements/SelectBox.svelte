@@ -22,6 +22,14 @@
     options.multiple = 0;
   }
 
+  if (options.min === null) {
+    options.min = "";
+  }
+
+  if (options.max === null) {
+    options.max = "";
+  }
+
   let multiple = options.multiple;
 
   let refsTable: HTMLTableElement;
@@ -145,7 +153,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="select_box-multiple"
@@ -176,7 +184,7 @@
       id="select_box-min"
       class="form-control w-25"
       min="0"
-      value={options.min ?? ""}
+      bind:value={options.min}
     />
   </ContentFieldOption>
 
@@ -192,7 +200,7 @@
       id="select_box-max"
       class="form-control w-25"
       min="1"
-      value={options.max ?? ""}
+      bind:value={options.max}
       on:change={enterMax}
     />
   </ContentFieldOption>

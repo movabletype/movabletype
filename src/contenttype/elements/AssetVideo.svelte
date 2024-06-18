@@ -18,6 +18,14 @@
     options.allow_upload = 0;
   }
 
+  if (options.min === null) {
+    options.min = "";
+  }
+
+  if (options.max === null) {
+    options.max = "";
+  }
+
   let multiple = options.multiple;
 </script>
 
@@ -27,7 +35,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="asset_video-multiple"
@@ -57,7 +65,7 @@
       id="asset_video-min"
       class="form-control w-25"
       min="0"
-      value={options.min ?? ""}
+      bind:value={options.min}
     />
   </ContentFieldOption>
 
@@ -73,7 +81,7 @@
       id="asset_video-max"
       class="form-control w-25"
       min="1"
-      value={options.max ?? ""}
+      bind:value={options.max}
     />
   </ContentFieldOption>
 

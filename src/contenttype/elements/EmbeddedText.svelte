@@ -9,6 +9,10 @@
   export let options: MT.ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
+
+  if (options.initial_value === null) {
+    options.initial_value = "";
+  }
 </script>
 
 <!-- convert snake case to chain case in Riot.js implementation -->
@@ -18,7 +22,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="embedded_text-initial_value"
@@ -29,7 +33,8 @@
       {...{ ref: "initial_value" }}
       name="initial_value"
       id="embeddedded_text-initial_value"
-      class="form-control">{options.initial_value ?? ""}</textarea
-    >
+      class="form-control"
+      bind:value={options.initial_value}
+    ></textarea>
   </ContentFieldOption>
 </ContentFieldOptionGroup>

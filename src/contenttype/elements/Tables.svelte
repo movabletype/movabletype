@@ -16,6 +16,14 @@
   if (options.increase_decrease_cols === "0") {
     options.increase_decrease_cols = 0;
   }
+
+  if (options.initial_rows === null) {
+    options.initial_rows = 1;
+  }
+
+  if (options.initial_cols === null) {
+    options.initial_cols = 1;
+  }
 </script>
 
 <ContentFieldOptionGroup
@@ -24,7 +32,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="tables-initial_rows"
@@ -37,7 +45,7 @@
       id="tables-initial_rows"
       class="form-control w-25"
       min="1"
-      value={options.initial_rows || 1}
+      bind:value={options.initial_rows}
     />
   </ContentFieldOption>
 
@@ -52,7 +60,7 @@
       id="tables-initial_cols"
       class="form-control w-25"
       min="1"
-      value={options.initial_cols || 1}
+      bind:value={options.initial_cols}
     />
   </ContentFieldOption>
 

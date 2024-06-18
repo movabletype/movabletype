@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { update } from "../Utils";
-
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
@@ -11,8 +9,21 @@
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  let maxValue = options.max_value || config.NumberFieldMaxValue;
-  let minValue = options.min_value || config.NumberFieldMinValue;
+  if (options.max_value === null) {
+    options.max_value = config.NumberFieldMaxValue;
+  }
+
+  if (options.min_value === null) {
+    options.min_value = config.NumberFieldMinValue;
+  }
+
+  if (options.decimal_places === null) {
+    options.decimal_places = 0;
+  }
+
+  if (options.initial_value === null) {
+    options.initial_value = "";
+  }
 
   // jQuery(document).ready(function () {...}) is depcated
   jQuery(function () {
@@ -41,7 +52,7 @@
   isNew={field.isNew ? true : false}
   fieldId={field.id ?? ""}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption id="number-min_value" label={window.trans("Min Value")}>
     <input
@@ -50,10 +61,9 @@
       name="min_value"
       id="number-min_value"
       class="form-control html5-form w-25"
-      bind:value={minValue}
-      min={config.NumberFieldMinValue || 0}
-      max={config.NumberFieldMaxValue || 0}
-      on:keyup={update}
+      bind:value={options.min_value}
+      min={config.NumberFieldMinValue}
+      max={config.NumberFieldMaxValue}
     />
   </ContentFieldOption>
 
@@ -64,10 +74,9 @@
       name="max_value"
       id="number-max_value"
       class="form-control html5-form w-25"
-      bind:value={maxValue}
-      min={config.NumberFieldMinValue || 0}
-      max={config.NumberFieldMaxValue || 0}
-      on:keyup={update}
+      bind:value={options.max_value}
+      min={config.NumberFieldMinValue}
+      max={config.NumberFieldMaxValue}
     />
   </ContentFieldOption>
 
@@ -83,7 +92,7 @@
       class="form-control html5-form w-25"
       min="0"
       max={config.NumberFieldDecimalPlaces}
-      value={options.decimal_places || 0}
+      bind:value={options.decimal_places}
     />
   </ContentFieldOption>
 
@@ -97,9 +106,9 @@
       name="initial_value"
       id="number-initial_value"
       class="form-control html5-form w-25"
-      value={options.initial_value ?? ""}
-      min={minValue}
-      max={maxValue}
+      bind:value={options.initial_value}
+      min={options.min_value}
+      max={options.max_value}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

@@ -18,6 +18,22 @@
     options.allow_upload = 0;
   }
 
+  if (options.min === null) {
+    options.min = "";
+  }
+
+  if (options.max === null) {
+    options.max = "";
+  }
+
+  if (options.preview_width === null) {
+    options.preview_width = 80;
+  }
+
+  if (options.preview_height === null) {
+    options.preview_height = 80;
+  }
+
   let multiple = options.multiple;
 </script>
 
@@ -27,7 +43,7 @@
   {id}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="asset_image-multiple"
@@ -57,7 +73,7 @@
       id="asset_image-min"
       class="form-control w-25"
       min="0"
-      value={options.min ?? ""}
+      bind:value={options.min}
     />
   </ContentFieldOption>
 
@@ -73,7 +89,7 @@
       id="asset_image-max"
       class="form-control w-25"
       min="1"
-      value={options.max ?? ""}
+      bind:value={options.max}
     />
   </ContentFieldOption>
 
@@ -103,7 +119,7 @@
       class="form-control w-25"
       id="asset_image-preview_width"
       name="preview_width"
-      value={options.preview_width || 80}
+      bind:value={options.preview_width}
     />
   </ContentFieldOption>
 
@@ -117,7 +133,7 @@
       class="form-control w-25"
       id="asset_image-preview_height"
       name="preview_height"
-      value={options.preview_height || 80}
+      bind:value={options.preview_height}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>

@@ -116,7 +116,7 @@
     id="{type}-description"
     class="form-control"
     aria-describedby="{type}-description-field-help"
-    value={options.description || ""}
+    bind:value={options.description}
   />
 </ContentFieldOption>
 

@@ -9,6 +9,10 @@
   export let options: MT.ContentType.Options;
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
+
+  if (options.initial_value === null) {
+    options.initial_value = "";
+  }
 </script>
 
 <ContentFieldOptionGroup
@@ -17,7 +21,7 @@
   fieldId={field.id ?? ""}
   isNew={field.isNew ? true : false}
   bind:label={field.label}
-  {options}
+  bind:options
 >
   <ContentFieldOption
     id="url-initial_value"
@@ -29,7 +33,7 @@
       name="initial_value"
       id="url-initial_value"
       class="form-control"
-      value={options.initial_value ?? ""}
+      bind:value={options.initial_value}
     />
   </ContentFieldOption>
 </ContentFieldOptionGroup>
