@@ -1,5 +1,5 @@
 <script lang="ts">
-  import StatusMsgInternal from "./StatusMsgInternal.svelte";
+  import StatusMsgTmpl from "./StatusMsgTmpl.svelte";
 
   export let blogId = "";
   export let canClose: number | undefined;
@@ -21,7 +21,7 @@
   }
 </script>
 
-<StatusMsgInternal
+<StatusMsgTmpl
   {blogId}
   {canClose}
   canRebuild={0}
@@ -36,4 +36,4 @@
   <svelte:fragment slot="msg">
     <slot name="msg" />
   </svelte:fragment>
-</StatusMsgInternal>
+</StatusMsgTmpl>
