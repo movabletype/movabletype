@@ -4,7 +4,7 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
-  export let config: MT.ContentType.ConfigOpts;
+  export let config: MT.ContentType.ConfigSettings;
   export let fieldId: string;
   export let id: string;
   export let isNew: boolean;

@@ -1,5 +1,5 @@
 declare namespace MT.ContentType {
-  interface ConfigOpts {
+  interface ConfigSettings {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
   }
