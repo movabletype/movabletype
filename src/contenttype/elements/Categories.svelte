@@ -23,6 +23,10 @@
   }
 
   let multiple = options.multiple;
+
+  const updateOptionsCategorySet = (e: Event): void => {
+    options.category_set = (e.currentTarget as HTMLSelectElement).value;
+  };
 </script>
 
 <ContentFieldOptionGroup
@@ -108,6 +112,7 @@
         name="category_set"
         id="categories-category_set"
         class="custom-select form-control html5-form form-select"
+        on:change={updateOptionsCategorySet}
       >
         {#each categorySets as cs}
           <option value={cs.id} selected={cs.id === options.category_set}>
