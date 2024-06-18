@@ -4,6 +4,7 @@
 
   // svelte-ignore unused-export-let
   export let config: MT.ContentType.ConfigSettings;
+  export let field: MT.ContentType.Field;
   export let fieldId: string;
   export let id: string;
   export let isNew: boolean;

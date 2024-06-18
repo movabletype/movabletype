@@ -702,34 +702,28 @@
           <p>{window.trans("Please add a content field.")}</p>
         </div>
       {/if}
-      {#each $fieldsStore as f, fieldIndex}
+      {#each $fieldsStore as field, index}
         <div
           class="mt-contentfield"
           draggable="true"
           aria-grabbed="false"
           data-is="content-field"
           on:dragstart={(e) => {
-            onDragStart(e, f);
+            onDragStart(e, field);
           }}
           on:dragend={onDragEnd}
           style="width: 100%;"
-          id="content-field-block-{f.id}"
-          bind:this={tags[fieldIndex]}
+          id="content-field-block-{field.id}"
+          bind:this={tags[index]}
         >
           <ContentField
             {config}
-            id={f.id || ""}
-            isNew={f.isNew || false}
-            isShow={f.isShow || ""}
-            item={f}
-            realId={f.realId || ""}
-            type={f.type}
-            typeLabel={f.typeLabel}
-            itemIndex={fieldIndex}
+            bind:field
+            itemIndex={index}
             {gatheringData}
             bind:isEmpty
-            parent={tags[fieldIndex]}
-            bind:gather={gathers[f.id || ""]}
+            parent={tags[index]}
+            bind:gather={gathers[field.id || ""]}
             {optionsHtmlParams}
           />
         </div>

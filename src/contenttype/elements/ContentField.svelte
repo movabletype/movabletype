@@ -29,13 +29,7 @@
   // selection_common_script
 
   export let config: MT.ContentType.ConfigSettings;
-  export let id: string;
-  export let isNew: boolean;
-  export let isShow: string;
-  export let item: MT.ContentType.Field;
-  export let realId: string;
-  export let type: string;
-  export let typeLabel: string;
+  export let field: MT.ContentType.Field;
   export let itemIndex: number;
   export let gatheringData: (c: HTMLDivElement, index: number) => object;
   export let isEmpty: boolean;
@@ -43,7 +37,17 @@
   export let gather: (() => object) | undefined;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  let label = item.label || "";
+  if (field.isNew === null) {
+    field.isNew = false;
+  }
+
+  if (field.isShow === null) {
+    field.isShow = "";
+  }
+
+  if (field.realId === null) {
+    field.realId = "";
+  }
 
   const ContentfieldMap = {
     "content-type": ContentType,
@@ -70,13 +74,13 @@
   };
 
   const deleteField = (): void => {
-    const label = item.label ? item.label : window.trans("No Name");
+    const label = field.label ? field.label : window.trans("No Name");
     if (
       !confirm(
         window.trans(
           "Do you want to delete [_1]([_2])?",
           label,
-          item.typeLabel,
+          field.typeLabel,
         ),
       )
     ) {
@@ -96,9 +100,9 @@
     const newItem = jQuery.extend({}, $fieldsStore[itemIndex]);
     newItem.options = gatheringData(parent, itemIndex);
     newItem.id = Math.random().toString(36).slice(-8);
-    let label = item.label;
+    let label = field.label;
     if (!label) {
-      label = jQuery("#content-field-block-" + item.id)
+      label = jQuery("#content-field-block-" + field.id)
         .find('[name="label"]')
         .val() as string;
       if (label === "") {
@@ -131,8 +135,8 @@
       class="mt-icon--secondary"
       href="{window.StaticURI}images/sprite.svg#ic_contentstype"
     />
-    {label} ({typeLabel})
-    {#if realId}<span>(ID: {realId})</span>{/if}
+    {field.label} ({field.typeLabel})
+    {#if field.realId}<span>(ID: {field.realId})</span>{/if}
   </div>
   <div class="col-auto p-0">
     <!-- svelte-ignore a11y-invalid-attribute -->
@@ -159,9 +163,9 @@
     >
     <a
       data-bs-toggle="collapse"
-      href="#field-options-{id}"
-      aria-expanded={isShow === "show" ? "true" : "false"}
-      aria-controls="field-options-{id}"
+      href="#field-options-{field.id}"
+      aria-expanded={field.isShow === "show" ? "true" : "false"}
+      aria-controls="field-options-{field.id}"
       class="d-inline-block"
       ><SVG
         title={window.trans("Edit")}
@@ -172,21 +176,21 @@
   </div>
 </div>
 <div
-  data-is={type}
+  data-is={field.type}
   class="collapse mt-collapse__content"
-  class:show={isShow === "show"}
-  id="field-options-{id}"
-  {...{ fieldid: id, isnew: isNew }}
+  class:show={field.isShow === "show"}
+  id="field-options-{field.id}"
+  {...{ fieldid: field.id, isnew: field.isNew }}
 >
   <svelte:component
-    this={ContentfieldMap[type]}
+    this={ContentfieldMap[field.type]}
     {config}
-    fieldId={id}
+    fieldId={field.id}
     bind:gather
-    id={`field-options-${id}`}
-    {isNew}
-    bind:label
-    options={item.options || {}}
+    id={`field-options-${field.id}`}
+    isNew={field.isNew}
+    bind:label={field.label}
+    options={field.options || {}}
     {optionsHtmlParams}
   />
 </div>
