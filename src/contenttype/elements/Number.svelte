@@ -1,8 +1,7 @@
 <script lang="ts">
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
   import ContentFieldOption from "./ContentFieldOption.svelte";
-
-  import { mtConfig } from "../Store";
+  import { configStore } from "../Store";
   import { update } from "../Utils";
 
   export let fieldId: string;
@@ -13,8 +12,8 @@
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  let maxValue = options.max_value || $mtConfig.NumberFieldMaxValue;
-  let minValue = options.min_value || $mtConfig.NumberFieldMinValue;
+  let maxValue = options.max_value || $configStore.NumberFieldMaxValue;
+  let minValue = options.min_value || $configStore.NumberFieldMinValue;
 
   // jQuery(document).ready(function () {...}) is depcated
   jQuery(function () {
@@ -46,8 +45,8 @@
       id="number-min_value"
       class="form-control html5-form w-25"
       bind:value={minValue}
-      min={$mtConfig.NumberFieldMinValue || 0}
-      max={$mtConfig.NumberFieldMaxValue || 0}
+      min={$configStore.NumberFieldMinValue || 0}
+      max={$configStore.NumberFieldMaxValue || 0}
       on:keyup={update}
     />
   </ContentFieldOption>
@@ -60,8 +59,8 @@
       id="number-max_value"
       class="form-control html5-form w-25"
       bind:value={maxValue}
-      min={$mtConfig.NumberFieldMinValue || 0}
-      max={$mtConfig.NumberFieldMaxValue || 0}
+      min={$configStore.NumberFieldMinValue || 0}
+      max={$configStore.NumberFieldMaxValue || 0}
       on:keyup={update}
     />
   </ContentFieldOption>
@@ -77,7 +76,7 @@
       id="number-decimal_places"
       class="form-control html5-form w-25"
       min="0"
-      max={$mtConfig.NumberFieldDecimalPlaces}
+      max={$configStore.NumberFieldDecimalPlaces}
       value={options.decimal_places || 0}
     />
   </ContentFieldOption>

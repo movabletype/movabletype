@@ -2,7 +2,7 @@
   import { afterUpdate } from "svelte";
 
   import { recalcHeight, update } from "../Utils";
-  import { cfields, mtConfig } from "../Store";
+  import { cfields, configStore } from "../Store";
 
   import SVG from "../../svg/elements/SVG.svelte";
 
@@ -13,7 +13,7 @@
   export let opts: MT.ContentType.ContentFieldsOpts;
   export let root: Element;
 
-  mtConfig.set(config);
+  configStore.set(config);
 
   cfields.set(opts.fields);
   let isEmpty = $cfields.length > 0 ? false : true;
