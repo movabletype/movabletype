@@ -45,6 +45,7 @@
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/content-type.css?v=<$mt:var name="mt_version_id" escape="url"$>">
 <mt:unless name="config.useriot">
+  <mt:ignore><!-- Moved from content-fields.tag, because this style tag did not work in ContentFields.svelte --></mt:ignore>
   <style>
     div.mt-draggable__area > div.placeholder {
       height: 26px;
@@ -62,8 +63,8 @@
 <mt:setvarblock name="js_include" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/cms.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 
-<mt:if name="config.useriot">
 <mt:ignore><!-- Do not indent the following lines to avoid Riot.js error. --></mt:ignore>
+<mt:if name="config.useriot">
 <mt:if name="options_htmls">
 <script type="riot/tag">
 <mt:loop name="options_htmls"><mt:var name="html">
@@ -92,13 +93,11 @@
     window.riot.observable = observable
     window.svelteMountContentFields = svelteMountContentFields
 
-    <mt:ignore>/* Enable to update this by JavaScript */</mt:ignore>
     window.svelteMountConfig = {
       NumberFieldMaxValue: <mt:var name="config.numberfieldmaxvalue" escape="js">,
       NumberFieldMinValue: <mt:var name="config.numberfieldminvalue" escape="js">,
       NumberFieldDecimalPlaces: <mt:var name="config.numberfielddecimalplaces" escape="js">
     }
-
     window.svelteMountOptionsHtmlParams = <mt:var name="options_html_params_json">;
   </script>
 </mt:unless>
