@@ -18,7 +18,6 @@
 <ContentFieldOptionGroup
   type="date-only"
   bind:field
-  fieldId={field.id ?? ""}
   {id}
   isNew={field.isNew ? true : false}
   bind:options

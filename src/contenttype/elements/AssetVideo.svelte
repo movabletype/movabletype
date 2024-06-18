@@ -30,7 +30,6 @@
 <ContentFieldOptionGroup
   type="asset-video"
   bind:field
-  fieldId={field.id ?? ""}
   {id}
   isNew={field.isNew ? true : false}
   bind:options

@@ -19,7 +19,6 @@
   type="url"
   {id}
   bind:field
-  fieldId={field.id ?? ""}
   isNew={field.isNew ? true : false}
   bind:options
 >

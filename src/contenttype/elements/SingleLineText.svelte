@@ -27,7 +27,6 @@
 <ContentFieldOptionGroup
   type="single-line-text"
   bind:field
-  fieldId={field.id || ""}
   {id}
   isNew={field.isNew ? true : false}
   bind:options

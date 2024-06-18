@@ -6,7 +6,6 @@
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
   export let field: MT.ContentType.Field;
-  export let fieldId: string;
   export let id: string;
   export let isNew: boolean;
   export let options: MT.ContentType.Options;
@@ -54,7 +53,7 @@
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
 
-    jQuery("a[aria-controls='field-options-" + fieldId + "']").attr(
+    jQuery("a[aria-controls='field-options-" + field.id + "']").attr(
       "aria-expanded",
       "false",
     );
@@ -66,7 +65,7 @@
   };
 
   const getRoot = (): Element | null => {
-    return document.querySelector("#field-options-" + fieldId);
+    return document.querySelector("#field-options-" + field.id);
   };
 </script>
 
@@ -76,7 +75,7 @@
   name="id"
   id="{type}-id"
   class="form-control"
-  value={isNew ? `id:${fieldId}` : fieldId}
+  value={isNew ? `id:${field.id}` : field.id}
 />
 
 <ContentFieldOption
