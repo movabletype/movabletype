@@ -1,10 +1,11 @@
 declare namespace MT.ContentType {
+  // edit_content_type.tmpl
   interface ConfigSettings {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
   }
 
-  // edit_content_type.tmpl
+  // order is same as in edit_content_type.tmpl
   interface ContentFieldsOpts {
     blog_id: string;
     magic_token: string;
@@ -36,10 +37,6 @@ declare namespace MT.ContentType {
     unique_id?: string;
   }
 
-  interface FieldOption {
-    [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-  }
-
   type ObservableInstanceAny =
     import("@riotjs/observable").ObservableInstance<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -56,6 +53,10 @@ declare namespace MT.ContentType {
     checked: string;
     label: string;
     value: string;
+  }
+
+  interface SubmitFieldOption {
+    [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 
   // edit_content_type.tmpl

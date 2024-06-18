@@ -287,12 +287,12 @@
 
     rebuildLabelFields();
     window.setDirty(false);
-    const fieldOptions: Array<MT.ContentType.FieldOption> = [];
+    const fieldOptions: Array<MT.ContentType.SubmitFieldOption> = [];
     if ($fieldsStore) {
       const child = getTags();
       child.forEach(function (c, i) {
         const options = gatheringData(c, i);
-        const newData: MT.ContentType.FieldOption = {};
+        const newData: MT.ContentType.SubmitFieldOption = {};
         newData.type = $fieldsStore[i].type;
         newData.options = options;
         if (!$fieldsStore[i].isNew && options["id"].match(/^\d+$/)) {
