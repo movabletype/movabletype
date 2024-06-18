@@ -722,7 +722,7 @@
             isNew={f.isNew || false}
             isShow={f.isShow || ""}
             item={f}
-            realId={f.realdId || ""}
+            realId={f.realId || ""}
             type={f.type}
             typeLabel={f.typeLabel}
             itemIndex={fieldIndex}

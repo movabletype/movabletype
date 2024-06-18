@@ -33,7 +33,7 @@ declare namespace MT.ContentType {
     label?: string;
     options?: Options;
     order?: number;
-    realdId?: string;
+    realId?: string;
     unique_id?: string;
   }
 
