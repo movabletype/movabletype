@@ -190,7 +190,6 @@
     bind:field
     bind:gather
     id={`field-options-${field.id}`}
-    isNew={field.isNew}
     bind:label={field.label}
     options={field.options || {}}
     {optionsHtmlParams}

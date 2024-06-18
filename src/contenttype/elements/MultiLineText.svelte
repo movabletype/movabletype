@@ -6,7 +6,6 @@
   export let config: MT.ContentType.ConfigSettings;
   export let field: MT.ContentType.Field;
   export let id: string;
-  export let isNew: boolean;
   export let label: string;
   export let options: MT.ContentType.Options;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
@@ -23,7 +22,7 @@
     options.input_formats[options.input_format] = "selected";
   }
 
-  if (isNew) {
+  if (field.isNew) {
     options.full_rich_text = 1;
   }
 
@@ -36,7 +35,7 @@
   type="multi-line-text"
   fieldId={field.id ?? ""}
   {id}
-  {isNew}
+  isNew={field.isNew ? true : false}
   bind:label
   {options}
 >

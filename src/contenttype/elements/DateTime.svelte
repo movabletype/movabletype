@@ -6,7 +6,6 @@
   export let config: MT.ContentType.ConfigSettings;
   export let field: MT.ContentType.Field;
   export let id: string;
-  export let isNew: boolean;
   export let label: string;
   export let options: MT.ContentType.Options;
   // svelte-ignore unused-export-let
@@ -20,7 +19,7 @@
   fieldId={field.id ?? ""}
   {options}
   bind:label
-  {isNew}
+  isNew={field.isNew ? true : false}
 >
   <ContentFieldOption
     id="date_and_time-initial-date_value"

@@ -8,7 +8,6 @@
   export let config: MT.ContentType.ConfigSettings;
   export let field: MT.ContentType.Field;
   export let id: string;
-  export let isNew: boolean;
   export let label: string;
   export let options: MT.ContentType.Options;
   // svelte-ignore unused-export-let
@@ -35,7 +34,7 @@
   type="text-label"
   fieldId={field.id ?? ""}
   {id}
-  {isNew}
+  isNew={field.isNew ? true : false}
   bind:label
   {options}
 >
