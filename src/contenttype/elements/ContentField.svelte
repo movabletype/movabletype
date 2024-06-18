@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { cfields } from "../Store";
+  import { fieldsStore } from "../Store";
   import { recalcHeight, update } from "../Utils";
 
   import SVG from "../../svg/elements/SVG.svelte";
@@ -81,18 +81,18 @@
     ) {
       return;
     }
-    cfields.update((arr) => {
+    fieldsStore.update((arr) => {
       const newArray = arr.slice(0, itemIndex).concat(arr.slice(itemIndex + 1));
       return newArray;
     });
     update();
-    isEmpty = $cfields.length > 0 ? false : true;
+    isEmpty = $fieldsStore.length > 0 ? false : true;
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
   };
 
   const duplicateField = (): void => {
-    const newItem = jQuery.extend({}, $cfields[itemIndex]);
+    const newItem = jQuery.extend({}, $fieldsStore[itemIndex]);
     newItem.options = gatheringData(parent, itemIndex);
     newItem.id = Math.random().toString(36).slice(-8);
     let label = item.label;
@@ -106,10 +106,10 @@
     }
     newItem.label = window.trans("Duplicate") + "-" + label;
     newItem.options.label = newItem.label;
-    newItem.order = $cfields.length + 1;
+    newItem.order = $fieldsStore.length + 1;
     newItem.isNew = true;
     newItem.isShow = "show";
-    cfields.update((arr) => [...arr, newItem]);
+    fieldsStore.update((arr) => [...arr, newItem]);
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
     update();

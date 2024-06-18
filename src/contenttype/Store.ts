@@ -1,7 +1,7 @@
 import { writable } from "svelte/store";
 
-const fields: Array<MT.ContentType.Field> = [];
 const config: MT.ContentType.ConfigOpts = {};
+const fields: Array<MT.ContentType.Field> = [];
 
-export const cfields = writable(fields);
 export const configStore = writable(config);
+export const fieldsStore = writable(fields);
