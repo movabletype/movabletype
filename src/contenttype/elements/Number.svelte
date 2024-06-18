@@ -42,12 +42,10 @@
       jqInitialValue.mtValid({ focus: false });
     });
   });
-
-  const type = "number";
 </script>
 
 <ContentFieldOptionGroup
-  {type}
+  type="number"
   {id}
   isNew={field.isNew ? true : false}
   fieldId={field.id ?? ""}
