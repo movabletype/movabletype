@@ -2,7 +2,7 @@
   import { afterUpdate } from "svelte";
 
   import { recalcHeight, update } from "../Utils";
-  import { configStore, fieldsStore } from "../Store";
+  import { fieldsStore } from "../Store";
 
   import SVG from "../../svg/elements/SVG.svelte";
 
@@ -12,8 +12,6 @@
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
   export let opts: MT.ContentType.ContentFieldsOpts;
   export let root: Element;
-
-  configStore.set(config);
 
   fieldsStore.set(opts.fields);
   let isEmpty = $fieldsStore.length > 0 ? false : true;
@@ -719,6 +717,7 @@
           bind:this={tags[fieldIndex]}
         >
           <ContentField
+            {config}
             id={f.id || ""}
             isNew={f.isNew || false}
             isShow={f.isShow || ""}

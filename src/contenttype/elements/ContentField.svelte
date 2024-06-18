@@ -28,6 +28,7 @@
   //  import Common from './Common.svelte';
   // selection_common_script
 
+  export let config: MT.ContentType.ConfigOpts;
   export let id: string;
   export let isNew: boolean;
   export let isShow: string;
@@ -179,6 +180,7 @@
 >
   <svelte:component
     this={ContentfieldMap[type]}
+    {config}
     fieldId={id}
     bind:gather
     id={`field-options-${id}`}

@@ -4,6 +4,8 @@
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
+  // svelte-ignore unused-export-let
+  export let config: MT.ContentType.ConfigOpts;
   export let fieldId: string;
   export let id: string;
   export let isNew: boolean;

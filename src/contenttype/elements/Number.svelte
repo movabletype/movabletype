@@ -1,9 +1,10 @@
 <script lang="ts">
-  import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
-  import ContentFieldOption from "./ContentFieldOption.svelte";
-  import { configStore } from "../Store";
   import { update } from "../Utils";
 
+  import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
+  import ContentFieldOption from "./ContentFieldOption.svelte";
+
+  export let config: MT.ContentType.ConfigOpts;
   export let fieldId: string;
   export let id: string;
   export let isNew: boolean;
@@ -12,8 +13,8 @@
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  let maxValue = options.max_value || $configStore.NumberFieldMaxValue;
-  let minValue = options.min_value || $configStore.NumberFieldMinValue;
+  let maxValue = options.max_value || config.NumberFieldMaxValue;
+  let minValue = options.min_value || config.NumberFieldMinValue;
 
   // jQuery(document).ready(function () {...}) is depcated
   jQuery(function () {
@@ -45,8 +46,8 @@
       id="number-min_value"
       class="form-control html5-form w-25"
       bind:value={minValue}
-      min={$configStore.NumberFieldMinValue || 0}
-      max={$configStore.NumberFieldMaxValue || 0}
+      min={config.NumberFieldMinValue || 0}
+      max={config.NumberFieldMaxValue || 0}
       on:keyup={update}
     />
   </ContentFieldOption>
@@ -59,8 +60,8 @@
       id="number-max_value"
       class="form-control html5-form w-25"
       bind:value={maxValue}
-      min={$configStore.NumberFieldMinValue || 0}
-      max={$configStore.NumberFieldMaxValue || 0}
+      min={config.NumberFieldMinValue || 0}
+      max={config.NumberFieldMaxValue || 0}
       on:keyup={update}
     />
   </ContentFieldOption>
@@ -76,7 +77,7 @@
       id="number-decimal_places"
       class="form-control html5-form w-25"
       min="0"
-      max={$configStore.NumberFieldDecimalPlaces}
+      max={config.NumberFieldDecimalPlaces}
       value={options.decimal_places || 0}
     />
   </ContentFieldOption>
