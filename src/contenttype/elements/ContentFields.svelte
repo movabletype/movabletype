@@ -218,7 +218,6 @@
       };
       fieldsStore.update((arr) => [...arr, newField]);
       window.setDirty(true);
-      isEmpty = false;
       update();
 
       recalcHeight(document.getElementsByClassName("mt-draggable__area")[0]);
@@ -721,7 +720,6 @@
             bind:field
             {fieldIndex}
             {gatheringData}
-            {isEmpty}
             parent={tags[fieldIndex]}
             bind:gather={gathers[field.id || ""]}
             {optionsHtmlParams}

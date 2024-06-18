@@ -32,7 +32,6 @@
   export let field: MT.ContentType.Field;
   export let fieldIndex: number;
   export let gatheringData: (c: HTMLDivElement, index: number) => object;
-  export let isEmpty: boolean;
   export let parent: HTMLDivElement;
   export let gather: (() => object) | undefined;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
@@ -93,7 +92,6 @@
       return newArray;
     });
     update();
-    isEmpty = $fieldsStore.length > 0 ? false : true;
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
   };
