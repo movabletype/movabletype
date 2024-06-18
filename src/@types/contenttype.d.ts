@@ -1,5 +1,4 @@
 declare namespace MT.ContentType {
-  // edit_content_type.tmpl
   interface ConfigSettings {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: any;
@@ -22,6 +21,7 @@ declare namespace MT.ContentType {
     labelField: string;
   }
 
+  // used in ContentFieldOpts
   interface Field {
     type: string;
     typeLabel: string;
@@ -40,7 +40,7 @@ declare namespace MT.ContentType {
   type ObservableInstanceAny =
     import("@riotjs/observable").ObservableInstance<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  // Options can be expanded by options_pre_load_handler
+  // used in Field
   interface Options {
     [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
@@ -49,6 +49,7 @@ declare namespace MT.ContentType {
     [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 
+  // used in Checkboxes, RadioButton and SelctBox
   interface SelectionValue {
     checked: string;
     label: string;
@@ -59,7 +60,7 @@ declare namespace MT.ContentType {
     [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 
-  // edit_content_type.tmpl
+  // used in ContentFieldsOpts
   interface Type {
     data_label: number;
     icon: string;
