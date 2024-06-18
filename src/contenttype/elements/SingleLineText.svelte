@@ -26,10 +26,10 @@
 <!-- convert snake case to chain case in Riot.js implementation -->
 <ContentFieldOptionGroup
   type="single-line-text"
+  bind:field
   fieldId={field.id || ""}
   {id}
   isNew={field.isNew ? true : false}
-  bind:label={field.label}
   bind:options
 >
   <ContentFieldOption

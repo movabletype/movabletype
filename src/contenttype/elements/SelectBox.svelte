@@ -147,10 +147,10 @@
 
 <ContentFieldOptionGroup
   type="select-box"
+  bind:field
   fieldId={field.id ?? ""}
   {id}
   isNew={field.isNew ? true : false}
-  bind:label={field.label}
   bind:options
 >
   <ContentFieldOption

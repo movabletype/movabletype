@@ -1,14 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  import { recalcHeight, update } from "../Utils";
+  import { recalcHeight } from "../Utils";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
+  export let field: MT.ContentType.Field;
   export let fieldId: string;
   export let id: string;
   export let isNew: boolean;
-  export let label: string | undefined;
   export let options: MT.ContentType.Options;
   export let type: string;
 
@@ -40,12 +40,6 @@
       }
     });
   });
-
-  const inputLabel = (e: Event): void => {
-    const target = e.target as HTMLInputElement;
-    label = target.value;
-    update();
-  };
 
   // move gatheringData to Utils.ts
 
@@ -96,8 +90,7 @@
     name="label"
     id="{type}-label"
     class="form-control html5-form"
-    on:input={inputLabel}
-    value={label || ""}
+    bind:value={field.label}
     required
     data-mt-content-field-unique
   />

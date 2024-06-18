@@ -46,10 +46,10 @@
 
 <ContentFieldOptionGroup
   type="number"
+  bind:field
+  fieldId={field.id ?? ""}
   {id}
   isNew={field.isNew ? true : false}
-  fieldId={field.id ?? ""}
-  bind:label={field.label}
   bind:options
 >
   <ContentFieldOption id="number-min_value" label={window.trans("Min Value")}>
