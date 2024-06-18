@@ -274,7 +274,7 @@ sub edit {
         }
     }
 
-    $param->{options_html_params_json} = JSON::to_json(_deep_resolve_copy($options_html_params_hash));
+    $param->{options_html_params_json} = JSON::to_json(_deep_copy_and_resolve_coderef($options_html_params_hash));
 
     $app->add_breadcrumb(
         $app->translate('Content Types'),
@@ -296,16 +296,16 @@ sub edit {
     $app->build_page( $app->load_tmpl('edit_content_type.tmpl'), $param );
 }
 
-sub _deep_resolve_copy {
+sub _deep_copy_and_resolve_coderef {
     my ($arg) = @_;
     my $ref_arg = ref $arg;
 
     # deep copy
-    return $arg                                                          if !$ref_arg;
-    return [map { _deep_resolve_copy($_) } @{$arg}]                      if $ref_arg eq 'ARRAY';
-    return { map { $_ => _deep_resolve_copy($arg->{$_}) } keys %{$arg} } if $ref_arg eq 'HASH';
+    return $arg                                                                      if !$ref_arg;
+    return [map { _deep_copy_and_resolve_coderef($_) } @{$arg}]                      if $ref_arg eq 'ARRAY';
+    return { map { $_ => _deep_copy_and_resolve_coderef($arg->{$_}) } keys %{$arg} } if $ref_arg eq 'HASH';
 
-    # resove coderef
+    # resolve coderef
     return $arg->() if $ref_arg eq 'CODE';
 
     die 'unresolvable ref type: ' . $ref_arg;
