@@ -30,7 +30,7 @@
 
   export let config: MT.ContentType.ConfigSettings;
   export let field: MT.ContentType.Field;
-  export let itemIndex: number;
+  export let fieldIndex: number;
   export let gatheringData: (c: HTMLDivElement, index: number) => object;
   export let isEmpty: boolean;
   export let parent: HTMLDivElement;
@@ -87,7 +87,9 @@
       return;
     }
     fieldsStore.update((arr) => {
-      const newArray = arr.slice(0, itemIndex).concat(arr.slice(itemIndex + 1));
+      const newArray = arr
+        .slice(0, fieldIndex)
+        .concat(arr.slice(fieldIndex + 1));
       return newArray;
     });
     update();
@@ -97,8 +99,8 @@
   };
 
   const duplicateField = (): void => {
-    const newItem = jQuery.extend({}, $fieldsStore[itemIndex]);
-    newItem.options = gatheringData(parent, itemIndex);
+    const newItem = jQuery.extend({}, $fieldsStore[fieldIndex]);
+    newItem.options = gatheringData(parent, fieldIndex);
     newItem.id = Math.random().toString(36).slice(-8);
     let label = field.label;
     if (!label) {

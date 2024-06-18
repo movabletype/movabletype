@@ -14,7 +14,7 @@
   export let root: Element;
 
   fieldsStore.set(opts.fields);
-  let isEmpty = $fieldsStore.length > 0 ? false : true;
+  $: isEmpty = $fieldsStore.length > 0 ? false : true;
   let data = "";
   let droppable = false;
   const observer = opts.observer;
@@ -702,7 +702,7 @@
           <p>{window.trans("Please add a content field.")}</p>
         </div>
       {/if}
-      {#each $fieldsStore as field, index}
+      {#each $fieldsStore as field, fieldIndex}
         <div
           class="mt-contentfield"
           draggable="true"
@@ -714,15 +714,15 @@
           on:dragend={onDragEnd}
           style="width: 100%;"
           id="content-field-block-{field.id}"
-          bind:this={tags[index]}
+          bind:this={tags[fieldIndex]}
         >
           <ContentField
             {config}
             bind:field
-            itemIndex={index}
+            {fieldIndex}
             {gatheringData}
-            bind:isEmpty
-            parent={tags[index]}
+            {isEmpty}
+            parent={tags[fieldIndex]}
             bind:gather={gathers[field.id || ""]}
             {optionsHtmlParams}
           />
