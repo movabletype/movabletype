@@ -208,11 +208,10 @@ sub upgrade {
     my $install_mode;
     my %param;
 
-    my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
     if ( $] < 5.016003 ) {    # our minimal requirement for support
         $param{version_warning} = 1;
-        $param{perl_version}    = $ver;
+        $param{perl_version}    = sprintf('%vd', $^V);
         $param{perl_minimum}    = '5.16.3';
     }
 
@@ -818,11 +817,10 @@ sub main {
     my $app = shift;
     my ($param) = @_;
 
-    my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
     if ( $] < 5.016003 ) {    # our minimal requirement for support
         $param->{version_warning} = 1;
-        $param->{perl_version}    = $ver;
+        $param->{perl_version}    = sprintf('%vd', $^V);
         $param->{perl_minimum}    = '5.16.3';
     }
 
