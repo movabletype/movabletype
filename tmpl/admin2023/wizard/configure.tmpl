@@ -271,6 +271,7 @@ var database = new Array();
     show_fields();
 
     jQuery('#more').on('click', function(event) {
+        event.preventDefault();
         jQuery('#advanced_fields').show();
         jQuery(this).remove();
     });
