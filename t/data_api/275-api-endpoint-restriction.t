@@ -201,6 +201,78 @@ sub suite {
                     'Restriction, non-superuser, system.' );
             },
         },
+
+        # Restriction (blog_id=1 is disabled and MakeSuperuserRespectDataAPIDisableSite is true).
+        {
+            # superuser.
+            # blog.
+            path         => '/v2/sites/1/entries',
+            method       => 'GET',
+            is_superuser => 1,
+            code         => 403,
+            setup        => sub {
+                $app->config->DataAPIDisableSite(1);
+                $app->config->MakeSuperuserRespectDataAPIDisableSite(1);
+                $app->config->save_config;
+            },
+        },
+        {
+            # superuser.
+            # website.
+            path         => '/v2/sites/2/entries',
+            method       => 'GET',
+            is_superuser => 1,
+            complete     => sub {
+                my ( $data, $body ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( $got->{totalResults}, 1,
+                    'Restriction, superuser, website.' );
+            },
+        },
+        {
+            # superuser.
+            # system.
+            path         => '/v2/sites/0/entries',
+            method       => 'GET',
+            is_superuser => 1,
+            complete     => sub {
+                my ( $data, $body ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( $got->{totalResults}, 9,
+                    'Restriction, superuser, system.' );
+            },
+        },
+        {
+            # non-superuser.
+            # blog.
+            path   => '/v2/sites/1/entries',
+            method => 'GET',
+            code   => 403,
+        },
+        {
+            # non-superuser.
+            # website.
+            path     => '/v2/sites/2/entries',
+            method   => 'GET',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( $got->{totalResults}, 1,
+                    'Restriction, non-superuser, website.' );
+            },
+        },
+        {
+            # non-superuser.
+            # system.
+            path     => '/v2/sites/0/entries',
+            method   => 'GET',
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $got = $app->current_format->{unserialize}->($body);
+                is( $got->{totalResults}, 1,
+                    'Restriction, non-superuser, system.' );
+            },
+        },
     ];
 }
 
