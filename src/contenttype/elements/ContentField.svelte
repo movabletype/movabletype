@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fieldsStore } from "../Store";
-  import { recalcHeight, update } from "../Utils";
+  import { recalcHeight } from "../Utils";
 
   import SVG from "../../svg/elements/SVG.svelte";
 
@@ -91,7 +91,6 @@
         .concat(arr.slice(fieldIndex + 1));
       return newArray;
     });
-    update();
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
   };
@@ -117,7 +116,6 @@
     fieldsStore.update((arr) => [...arr, newItem]);
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
-    update();
   };
 </script>
 

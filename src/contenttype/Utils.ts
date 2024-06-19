@@ -15,15 +15,3 @@ export function recalcHeight(droppableArea: Element): void {
     }
   }
 }
-
-export function update(): void {
-  const select = document.querySelector("#label_field") as HTMLSelectElement;
-  jQuery(select)
-    .find("option")
-    .each(function (index, option) {
-      if (option.attributes.getNamedItem("selected")) {
-        select.selectedIndex = index;
-        return false;
-      }
-    });
-}

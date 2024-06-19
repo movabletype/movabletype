@@ -1,8 +1,8 @@
 <script lang="ts">
   import { afterUpdate } from "svelte";
 
-  import { recalcHeight, update } from "../Utils";
   import { fieldsStore } from "../Store";
+  import { recalcHeight } from "../Utils";
 
   import SVG from "../../svg/elements/SVG.svelte";
 
@@ -61,7 +61,6 @@
   // Show detail modal
   jQuery(document).on("show.bs.modal", "#editDetail", function () {
     rebuildLabelFields();
-    update(); // TODO
   });
 
   // Hide detail modal
@@ -70,7 +69,6 @@
     if (jQuery("#name-field > input").mtValidate("simple")) {
       opts.name = jQuery("#name-field > input").val()?.toString() || "";
       window.setDirty(true);
-      update(); // TODO
     } else {
       return false;
     }
@@ -198,7 +196,6 @@
         _moveField(draggedItem, pos);
       }
       window.setDirty(true);
-      update();
     } else {
       // Drag from field list
       const fieldType = e.dataTransfer?.getData("text") || "";
@@ -218,7 +215,6 @@
       };
       fieldsStore.update((arr) => [...arr, newField]);
       window.setDirty(true);
-      update();
 
       recalcHeight(document.getElementsByClassName("mt-draggable__area")[0]);
     }
@@ -253,7 +249,6 @@
     dragged = null;
     draggedItem = null;
     dragoverState = false;
-    update();
   };
 
   const stopSubmitting = (e: KeyboardEvent): boolean => {
@@ -312,7 +307,6 @@
       data = "";
     }
     updateInputData();
-    update();
     document.forms["content-type-form"].submit();
   };
 
@@ -345,7 +339,6 @@
       }
     }
     labelFields = fields;
-    update();
   };
 
   const toggleAll = (): void => {
@@ -369,7 +362,6 @@
       }
     });
     isExpanded = isAllExpanded ? true : false;
-    update();
   };
 
   const updateAllIsShowInCfields = (): void => {
