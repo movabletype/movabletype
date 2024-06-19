@@ -461,14 +461,11 @@ my $cwd = '';
     }
 }
 
-my $ver
-    = ref($^V) eq 'version'
-    ? $^V->normal
-    : ( $^V ? join( '.', unpack 'C*', $^V ) : $] );
+my $ver = sprintf('%vd', $^V);
 my $perl_ver_check = '';
 if ( $] < 5.016003 ) {    # our minimal requirement for support
-    $perl_ver_check = <<EOT;
-<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.10.1"></p></div>
+    $perl_ver_check = <<"EOT";
+<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.16.3"></p></div>
 EOT
 }
 
