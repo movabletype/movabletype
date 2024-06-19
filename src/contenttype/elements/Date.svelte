@@ -10,9 +10,7 @@
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  if (options.initial_value === null) {
-    options.initial_value = "";
-  }
+  options.initial_value ??= "";
 </script>
 
 <ContentFieldOptionGroup type="date-only" bind:field {id} bind:options>

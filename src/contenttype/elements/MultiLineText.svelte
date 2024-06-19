@@ -20,9 +20,7 @@
     options.full_rich_text = 0;
   }
 
-  if (options.initial_value === null) {
-    options.initial_value = "";
-  }
+  options.initial_value ??= "";
 </script>
 
 <ContentFieldOptionGroup type="multi-line-text" bind:field {id} bind:options>

@@ -18,13 +18,8 @@
     options.allow_upload = 0;
   }
 
-  if (options.min === null) {
-    options.min = "";
-  }
-
-  if (options.max === null) {
-    options.max = "";
-  }
+  options.min ??= "";
+  options.max ??= "";
 </script>
 
 <ContentFieldOptionGroup type="asset-audio" bind:field {id} bind:options>

@@ -18,21 +18,10 @@
     options.allow_upload = 0;
   }
 
-  if (options.min === null) {
-    options.min = "";
-  }
-
-  if (options.max === null) {
-    options.max = "";
-  }
-
-  if (options.preview_width === null) {
-    options.preview_width = 80;
-  }
-
-  if (options.preview_height === null) {
-    options.preview_height = 80;
-  }
+  options.min ??= "";
+  options.max ??= "";
+  options.preview_width ??= 80;
+  options.preivew_height ??= 80;
 </script>
 
 <ContentFieldOptionGroup type="asset-image" bind:field {id} bind:options>

@@ -9,21 +9,10 @@
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  if (options.max_value === null) {
-    options.max_value = config.NumberFieldMaxValue;
-  }
-
-  if (options.min_value === null) {
-    options.min_value = config.NumberFieldMinValue;
-  }
-
-  if (options.decimal_places === null) {
-    options.decimal_places = 0;
-  }
-
-  if (options.initial_value === null) {
-    options.initial_value = "";
-  }
+  options.max_value ??= config.NumberFieldMaxValue;
+  options.min_value ??= config.NumberFieldMinValue;
+  options.decimal_places ??= 0;
+  options.initial_value ??= "";
 
   // jQuery(document).ready(function () {...}) is depcated
   jQuery(function () {

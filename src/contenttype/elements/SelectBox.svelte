@@ -22,13 +22,8 @@
     options.multiple = 0;
   }
 
-  if (options.min === null) {
-    options.min = "";
-  }
-
-  if (options.max === null) {
-    options.max = "";
-  }
+  options.min ??= "";
+  options.max ??= "";
 
   let refsTable: HTMLTableElement;
 

@@ -22,13 +22,8 @@
     options.can_add = 0;
   }
 
-  if (options.min === null) {
-    options.min = "";
-  }
-
-  if (options.max === null) {
-    options.max = "";
-  }
+  options.min ??= "";
+  options.max ??= "";
 </script>
 
 <ContentFieldOptionGroup type="content-type" bind:field {id} bind:options>

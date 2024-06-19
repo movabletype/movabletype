@@ -12,9 +12,7 @@
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  if (options.text === null) {
-    options.text = "";
-  }
+  options.text ??= "";
 
   onMount(() => {
     // description, required, display field is hidden.

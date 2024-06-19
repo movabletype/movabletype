@@ -10,9 +10,7 @@
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  if (options.initial_value === null) {
-    options.initial_value = "";
-  }
+  options.initial_value ??= "";
 </script>
 
 <!-- convert snake case to chain case in Riot.js implementation -->

@@ -10,13 +10,8 @@
   // svelte-ignore unused-export-let
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  if (options.initial_date === null) {
-    options.initial_date = "";
-  }
-
-  if (options.initial_time === null) {
-    options.initial_time = "";
-  }
+  options.initial_date ??= "";
+  options.initial_time ??= "";
 </script>
 
 <!-- convert snake case to chain case in Riot.js implementation -->

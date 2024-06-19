@@ -18,17 +18,9 @@
     options.can_add = 0;
   }
 
-  if (options.min === null) {
-    options.min = "";
-  }
-
-  if (options.max === null) {
-    options.max = "";
-  }
-
-  if (options.initial_value === null) {
-    options.initial_value = "";
-  }
+  options.min ??= "";
+  options.max ??= "";
+  options.initial_value ??= "";
 </script>
 
 <ContentFieldOptionGroup type="tags" bind:field {id} bind:options>
