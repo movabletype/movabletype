@@ -24,8 +24,6 @@
   import List from "./List.svelte";
   import Tables from "./Tables.svelte";
   import TextLabel from "./TextLabel.svelte";
-  //  import Common from './Common.svelte';
-  // selection_common_script
 
   export let config: MT.ContentType.ConfigSettings;
   export let field: MT.ContentType.Field;
@@ -48,6 +46,11 @@
     field.realId = "";
   }
 
+  if (field.options === null) {
+    field.options = {};
+  }
+
+  // TODO: enable to customize
   const ContentfieldMap = {
     "content-type": ContentType,
     "single-line-text": SingleLineText,
@@ -86,6 +89,7 @@
       return;
     }
     fields = fields.slice(0, fieldIndex).concat(fields.slice(fieldIndex + 1));
+    // update is not needed in Svelte
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
   };
@@ -111,6 +115,7 @@
     fields = [...fields, newItem];
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
+    // update is not needed in Svelte
   };
 </script>
 
@@ -181,7 +186,7 @@
     bind:field
     bind:gather
     id={`field-options-${field.id}`}
-    options={field.options || {}}
+    bind:options={field.options}
     {optionsHtmlParams}
   />
 </div>
