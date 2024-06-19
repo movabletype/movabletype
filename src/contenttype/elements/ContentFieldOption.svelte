@@ -1,4 +1,6 @@
 <script lang="ts">
+  // copy original code from lib/MT/Template/ContextHandlers.pm
+
   export let id: string;
 
   export let attr = "";
@@ -10,7 +12,7 @@
   export let showLabel = 1;
 
   if (!id) {
-    alert("ConetntFieldOption: 'id' attribute missing");
+    console.error("ConetntFieldOption: 'id' attribute missing");
   }
 
   const attrProp = attr ? { attr: attr } : {};

@@ -1,4 +1,6 @@
 <script lang="ts">
+  // copy original code from lib/MT/Template/ContextHandlers.pm
+
   import { onMount } from "svelte";
 
   import { recalcHeight } from "../Utils";
@@ -9,6 +11,10 @@
   export let id: string;
   export let options: MT.ContentType.Options;
   export let type: string;
+
+  if (!type) {
+    console.error('ContentFieldOptionGroup: "type" attribute is required.');
+  }
 
   // Initialize
   if (!options.display) {
@@ -32,7 +38,9 @@
     });
   });
 
-  // move gatheringData to Utils.ts
+  // inputLabel was removed because unused
+
+  // gatheringData was moved to ContentFields.svelte
 
   const closePanel = (): void => {
     const root = getRoot();
@@ -51,11 +59,11 @@
     );
   };
 
-  const changeStateRequired = (e: Event): void => {
-    const target = e.target as HTMLInputElement;
-    options.required = target.checked;
-  };
+  // changeStateRequired was removed bacause unused
 
+  // $script was removed, and script is written in field svelte file
+
+  // added in Svelte
   const getRoot = (): Element | null => {
     return document.querySelector("#field-options-" + field.id);
   };
@@ -114,8 +122,7 @@
     class="mt-switch form-control"
     id="{type}-required"
     name="required"
-    checked={options.required || false}
-    on:click={changeStateRequired}
+    bind:checked={options.required}
   />
   <label for="{type}-required">
     {window.trans("Is this field required?")}
