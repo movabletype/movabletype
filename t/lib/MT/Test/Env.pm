@@ -344,7 +344,7 @@ sub connect_info {
     } else {
         my @keys = qw(
             ObjectDriver Database DBPort DBHost DBSocket
-            DBUser DBPassword ODBCDriver
+            DBUser DBPassword ODBCDriver ODBCEncrypt
         );
         for my $key (@keys) {
             my $env_key = "MT_TEST_" . (uc $key);

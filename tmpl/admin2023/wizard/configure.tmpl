@@ -108,8 +108,18 @@
           <mtapp:setting
              id="<mt:var name="id">"
              label="<mt:var name="label">"
-             label_class="top-label">
+             label_class="top-label"
+             hint="<mt:var name="hint">"
+             show_hint="<mt:var name="show_hint">">
+          <mt:if name="element" eq="select">
+            <select id="<mt:var name="id">" class="custom-select form-control form-select" name="<mt:var name="id">">
+            <mt:loop name="option_loop">
+              <option value="<mt:var name="value">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label"></option>
+            </mt:loop>
+            </select>
+          <mt:else>
             <input type="<mt:var name="type">" name="<mt:var name="id">" class="form-control <mt:var name="type"><mt:if name="type" eq="text"> full</mt:if>" value="<mt:if name="$id"><mt:var name="$id" escape="html"><mt:else><mt:var name="default" escape="html"></mt:if>" />
+          </mt:if>
           </mtapp:setting>
         </mt:loop>
         </div>
@@ -261,6 +271,7 @@ var database = new Array();
     show_fields();
 
     jQuery('#more').on('click', function(event) {
+        event.preventDefault();
         jQuery('#advanced_fields').show();
         jQuery(this).remove();
     });
