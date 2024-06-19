@@ -402,6 +402,8 @@
     for (let i = 0; i < fields.length; i++) {
       fields[i].order = i + 1;
     }
+
+    // eslint-disable-next-line no-self-assign
     fields = fields;
   };
 
