@@ -11,15 +11,8 @@
   export let type: string;
 
   // Initialize
-  options.displays = {};
-  options.displays.force = "";
-  options.displays.default = "";
-  options.displays.optional = "";
-  options.displays.none = "";
-  if (options.display) {
-    options.displays[options.display] = "selected";
-  } else {
-    options.displays["default"] = "selected";
+  if (!options.display) {
+    options.display = "default";
   }
 
   onMount(() => {
@@ -143,19 +136,12 @@
     name="display"
     id="{type}-display"
     class="custom-select form-control form-select"
+    bind:value={options.display}
   >
-    <option value="force" selected={options.displays.force}
-      >{window.trans("Force")}</option
-    >
-    <option value="default" selected={options.displays.default}
-      >{window.trans("Default")}</option
-    >
-    <option value="optional" selected={options.displays.optional}
-      >{window.trans("Optional")}</option
-    >
-    <option value="none" selected={options.displays.none}
-      >{window.trans("None")}</option
-    >
+    <option value="force">{window.trans("Force")}</option>
+    <option value="default">{window.trans("Default")}</option>
+    <option value="optional">{window.trans("Optional")}</option>
+    <option value="none">{window.trans("None")}</option>
   </select>
 </ContentFieldOption>
 
