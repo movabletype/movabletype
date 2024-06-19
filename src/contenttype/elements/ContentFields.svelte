@@ -1,6 +1,8 @@
 <script lang="ts">
   import { afterUpdate } from "svelte";
 
+  import { recalcHeight } from "../Utils";
+
   import SVG from "../../svg/elements/SVG.svelte";
 
   import ContentField from "./ContentField.svelte";
@@ -316,24 +318,7 @@
     document.forms["content-type-form"].submit();
   };
 
-  const recalcHeight = (droppableArea: Element): void => {
-    // Calculate droppable area height
-    const contentFields =
-      droppableArea.getElementsByClassName("mt-contentfield");
-    let clientHeight = 0;
-    for (let i = 0; i < contentFields.length; i++) {
-      clientHeight += (contentFields[i] as HTMLElement).offsetHeight;
-    }
-    if (clientHeight >= droppableArea.clientHeight) {
-      jQuery(droppableArea).height(clientHeight + 100);
-    } else {
-      if (clientHeight >= 400) {
-        jQuery(droppableArea).height(clientHeight + 100);
-      } else {
-        jQuery(droppableArea).height(400 - 8);
-      }
-    }
-  };
+  // recalcHeight was moved to Utils.ts
 
   const rebuildLabelFields = (): void => {
     const newLabelFields: Array<{ value: string; label: string }> = [];
@@ -738,7 +723,6 @@
             parent={tags[fieldIndex]}
             bind:gather={gathers[fieldId]}
             {optionsHtmlParams}
-            {recalcHeight}
           />
         </div>
       {/each}
