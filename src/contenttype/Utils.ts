@@ -1,3 +1,5 @@
+// moved from ContentFields.svelte
+
 export function recalcHeight(droppableArea: Element): void {
   // Calculate droppable area height
   const contentFields = droppableArea.getElementsByClassName("mt-contentfield");

@@ -1,3 +1,5 @@
+// copied from selection_common_script.tmpl
+
 export const addRow = (
   values: Array<MT.ContentType.SelectionValue>,
 ): Array<MT.ContentType.SelectionValue> => {

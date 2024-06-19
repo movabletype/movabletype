@@ -431,7 +431,7 @@
     return res;
   };
 
-  // copy original code from lib/MT/Template/ContextHandler.pm
+  // copied from lib/MT/Template/ContextHandler.pm
   const gatheringData = (c: HTMLDivElement, index: number): object => {
     const data = {};
     const flds = c.querySelectorAll("[data-is] [ref]");

@@ -1,5 +1,5 @@
 <script lang="ts">
-  // copy original code from lib/MT/Template/ContextHandlers.pm
+  // copied from lib/MT/Template/ContextHandlers.pm
 
   export let id: string;
 
