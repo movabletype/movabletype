@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { fieldsStore } from "../Store";
   import { recalcHeight } from "../Utils";
 
   import SVG from "../../svg/elements/SVG.svelte";
@@ -30,6 +29,7 @@
 
   export let config: MT.ContentType.ConfigSettings;
   export let field: MT.ContentType.Field;
+  export let fields: Array<MT.ContentType.Field>;
   export let fieldIndex: number;
   export let gatheringData: (c: HTMLDivElement, index: number) => object;
   export let parent: HTMLDivElement;
@@ -85,18 +85,13 @@
     ) {
       return;
     }
-    fieldsStore.update((arr) => {
-      const newArray = arr
-        .slice(0, fieldIndex)
-        .concat(arr.slice(fieldIndex + 1));
-      return newArray;
-    });
+    fields = fields.slice(0, fieldIndex).concat(fields.slice(fieldIndex + 1));
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
   };
 
   const duplicateField = (): void => {
-    const newItem = jQuery.extend({}, $fieldsStore[fieldIndex]);
+    const newItem = jQuery.extend({}, field);
     newItem.options = gatheringData(parent, fieldIndex);
     newItem.id = Math.random().toString(36).slice(-8);
     let label = field.label;
@@ -110,10 +105,10 @@
     }
     newItem.label = window.trans("Duplicate") + "-" + label;
     newItem.options.label = newItem.label;
-    newItem.order = $fieldsStore.length + 1;
+    newItem.order = fields.length + 1;
     newItem.isNew = true;
     newItem.isShow = "show";
-    fieldsStore.update((arr) => [...arr, newItem]);
+    fields = [...fields, newItem];
     const target = document.getElementsByClassName("mt-draggable__area")[0];
     recalcHeight(target);
   };

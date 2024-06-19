@@ -1,7 +1,6 @@
 <script lang="ts">
   import { afterUpdate } from "svelte";
 
-  import { fieldsStore } from "../Store";
   import { recalcHeight } from "../Utils";
 
   import SVG from "../../svg/elements/SVG.svelte";
@@ -13,8 +12,8 @@
   export let opts: MT.ContentType.ContentFieldsOpts;
   export let root: Element;
 
-  fieldsStore.set(opts.fields);
-  $: isEmpty = $fieldsStore.length > 0 ? false : true;
+  let fields = opts.fields;
+  $: isEmpty = fields.length > 0 ? false : true;
   let data = "";
   let droppable = false;
   const observer = opts.observer;
@@ -153,10 +152,11 @@
           }
         }
         if (target.className === "mt-draggable__area") {
-          const fields = target.getElementsByClassName("mt-contentfield");
+          const fieldElements =
+            target.getElementsByClassName("mt-contentfield");
           if (
-            fields.length === 0 ||
-            (fields.length === 1 && fields[0] === dragged)
+            fieldElements.length === 0 ||
+            (fieldElements.length === 1 && fieldElements[0] === dragged)
           ) {
             target.appendChild(placeholder);
           }
@@ -213,7 +213,7 @@
         canDataLabel: canDataLabel,
         options: {},
       };
-      fieldsStore.update((arr) => [...arr, newField]);
+      fields = [...fields, newField];
       window.setDirty(true);
 
       recalcHeight(document.getElementsByClassName("mt-draggable__area")[0]);
@@ -261,10 +261,10 @@
   };
 
   const canSubmit = (): boolean => {
-    if ($fieldsStore.length === 0) {
+    if (fields.length === 0) {
       return true;
     }
-    const invalidFields = $fieldsStore.filter(function (field) {
+    const invalidFields = fields.filter(function (field) {
       return opts.invalid_types[field.type];
     });
     return invalidFields.length === 0 ? true : false;
@@ -282,17 +282,17 @@
     rebuildLabelFields();
     window.setDirty(false);
     const fieldOptions: Array<MT.ContentType.SubmitFieldOption> = [];
-    if ($fieldsStore) {
+    if (fields) {
       const child = getTags();
       child.forEach(function (c, i) {
         const options = gatheringData(c, i);
         const newData: MT.ContentType.SubmitFieldOption = {};
-        newData.type = $fieldsStore[i].type;
+        newData.type = fields[i].type;
         newData.options = options;
-        if (!$fieldsStore[i].isNew && options["id"].match(/^\d+$/)) {
+        if (!fields[i].isNew && options["id"].match(/^\d+$/)) {
           newData.id = options["id"];
         }
-        const innerField = $fieldsStore.filter(function (v) {
+        const innerField = fields.filter(function (v) {
           return v.id == newData.id;
         });
         if (innerField.length && innerField[0].order) {
@@ -313,41 +313,40 @@
   // recalcHeight was moved to Utils.ts
 
   const rebuildLabelFields = (): void => {
-    const fields: Array<{ value: string; label: string }> = [];
-    for (let i = 0; i < $fieldsStore.length; i++) {
-      const required = jQuery("#content-field-block-" + $fieldsStore[i].id)
+    const newLabelFields: Array<{ value: string; label: string }> = [];
+    for (let i = 0; i < fields.length; i++) {
+      const required = jQuery("#content-field-block-" + fields[i].id)
         .find('[name="required"]')
         .prop("checked");
-      if (required && $fieldsStore[i].canDataLabel === 1) {
-        let label = $fieldsStore[i].label;
-        let id = $fieldsStore[i].unique_id || "";
+      if (required && fields[i].canDataLabel === 1) {
+        let label = fields[i].label;
+        let id = fields[i].unique_id || "";
         if (!label) {
           label =
-            jQuery("#content-field-block-" + $fieldsStore[i].id)
+            jQuery("#content-field-block-" + fields[i].id)
               .find('[name="label"]')
               .val()
               ?.toString() || "";
           if (label === "") {
             label = window.trans("No Name");
           }
-          id = "id:" + $fieldsStore[i].id;
+          id = "id:" + fields[i].id;
         }
-        fields.push({
+        newLabelFields.push({
           value: id,
           label: label,
         });
       }
     }
-    labelFields = fields;
+    labelFields = newLabelFields;
   };
 
   const toggleAll = (): void => {
     isExpanded = !isExpanded;
-    fieldsStore.update((arr) => {
-      arr.forEach((field) => {
-        field.isShow = isExpanded ? "show" : "";
-      });
-      return arr;
+    const newIsShow = isExpanded ? "show" : "";
+    fields = fields.map((field) => {
+      field.isShow = newIsShow;
+      return field;
     });
   };
 
@@ -366,33 +365,29 @@
 
   const updateAllIsShowInCfields = (): void => {
     const collapseEls = document.querySelectorAll(".mt-collapse__content");
-    fieldsStore.update((arr) => {
-      for (let i = 0; i < arr.length; i++) {
-        if (collapseEls[i].classList.contains("show")) {
-          arr[i].isShow = "show";
-        } else {
-          arr[i].isShow = "";
-        }
+    fields = fields.map((field, i) => {
+      if (collapseEls[i].classList.contains("show")) {
+        field.isShow = "show";
+      } else {
+        field.isShow = "";
       }
-      return arr;
+      return field;
     });
   };
 
   const _moveField = (item: MT.ContentType.Field, pos: number): void => {
-    fieldsStore.update((fields) => {
-      for (let i = 0; i < fields.length; i++) {
-        let field = fields[i];
-        if (field.id === item.id) {
-          fields.splice(i, 1);
-          break;
-        }
+    for (let i = 0; i < fields.length; i++) {
+      let field = fields[i];
+      if (field.id === item.id) {
+        fields.splice(i, 1);
+        break;
       }
-      fields.splice(pos, 0, item);
-      for (let i = 0; i < fields.length; i++) {
-        fields[i].order = i + 1;
-      }
-      return fields;
-    });
+    }
+    fields.splice(pos, 0, item);
+    for (let i = 0; i < fields.length; i++) {
+      fields[i].order = i + 1;
+    }
+    fields = fields;
   };
 
   const _validateFields = (): boolean => {
@@ -460,7 +455,7 @@
       }
     });
 
-    const fieldId = $fieldsStore[index].id;
+    const fieldId = fields[index].id;
     if (fieldId) {
       const gather = gathers[fieldId];
       if (gather) {
@@ -686,7 +681,7 @@
           <p>{window.trans("Please add a content field.")}</p>
         </div>
       {/if}
-      {#each $fieldsStore as field, fieldIndex}
+      {#each fields as field, fieldIndex}
         <div
           class="mt-contentfield"
           draggable="true"
@@ -703,6 +698,7 @@
           <ContentField
             {config}
             bind:field
+            bind:fields
             {fieldIndex}
             {gatheringData}
             parent={tags[fieldIndex]}
