@@ -18,9 +18,8 @@
 
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
   // Copy from selection_common_script.tmpl below
-  let values: Array<MT.ContentType.SelectionValue> = options.values;
-  if (!values) {
-    values = [
+  if (!options.values) {
+    options.values = [
       {
         checked: "",
         label: "",
@@ -35,23 +34,23 @@
 
   export const gather = (): object => {
     return {
-      values: values,
+      values: options.values,
     };
   };
   // Copy from selection_common_script.tmpl above
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
 
   const enterInitial = (index: number): void => {
-    values.forEach(function (v: MT.ContentType.SelectionValue) {
+    options.values.forEach(function (v: MT.ContentType.SelectionValue) {
       v.checked = "";
     });
-    values[index].checked = "checked";
+    options.values[index].checked = "checked";
     refreshView();
   };
 
   const refreshView = (): void => {
     // eslint-disable-next-line no-self-assign
-    values = values;
+    options = options;
   };
 </script>
 
@@ -82,7 +81,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each values as v, index}
+          {#each options.values as v, index}
             <tr class="text-center align-middle">
               <td
                 ><input
@@ -114,7 +113,7 @@
               <td
                 ><button
                   on:click={() => {
-                    values = deleteRow(values, index);
+                    options.values = deleteRow(options.values, index);
                   }}
                   type="button"
                   class="btn btn-default btn-sm"
@@ -132,7 +131,7 @@
     </div>
     <button
       on:click={() => {
-        values = addRow(values);
+        options.values = addRow(options.values);
       }}
       type="button"
       class="btn btn-default btn-sm"
