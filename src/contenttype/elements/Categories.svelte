@@ -24,6 +24,8 @@
 
   options.min ??= "";
   options.max ??= "";
+
+  // changeStateMultiple was removed because unused
 </script>
 
 <ContentFieldOptionGroup type="categories" bind:field {id} bind:options>
@@ -31,6 +33,7 @@
     id="categories-multiple"
     label={window.trans("Allow users to select multiple categories?")}
   >
+    <!-- onclick was removed and bind is used -->
     <input
       {...{ ref: "multiple" }}
       type="checkbox"
@@ -96,7 +99,8 @@
     label={window.trans("Source Category Set")}
     required={1}
   >
-    {#if categorySets.length > 0}
+    {#if categorySets && categorySets.length > 0}
+      <!-- selected was removed and bind is used -->
       <select
         {...{ ref: "category_sets" }}
         name="category_set"

@@ -18,7 +18,7 @@
     id="date_only-initial-date_value"
     label={window.trans("Initial Value")}
   >
-    <!-- I guess id attribute should be date_only-initial_value. But original date.tmpl uses initial_value -->
+    <!-- id attribute should be date_only-initial_value. But original date.tmpl uses initial_value -->
     <input
       {...{ ref: "initial_value" }}
       type="text"

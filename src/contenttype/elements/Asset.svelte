@@ -18,6 +18,8 @@
     options.allow_upload = 0;
   }
 
+  // changeStateMultiple was removed because unused
+
   options.min ??= "";
   options.max ??= "";
 </script>
@@ -27,6 +29,7 @@
     id="asset-multiple"
     label={window.trans("Allow users to select multiple assets?")}
   >
+    <!-- onclick was removed and bind is used -->
     <input
       {...{ ref: "multiple" }}
       type="checkbox"

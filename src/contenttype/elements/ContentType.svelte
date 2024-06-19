@@ -22,6 +22,8 @@
     options.can_add = 0;
   }
 
+  // changeStateMultiple was removed because unused
+
   options.min ??= "";
   options.max ??= "";
 </script>
@@ -31,6 +33,7 @@
     id="content_type-multiple"
     label={window.trans("Allow users to select multiple values?")}
   >
+    <!-- onclick was removed and bind is used -->
     <input
       {...{ ref: "multiple" }}
       type="checkbox"
@@ -81,6 +84,7 @@
     label={window.trans("Source Content Type")}
   >
     {#if contentTypes.length > 0}
+      <!-- selected was removed and bind is used -->
       <select
         {...{ ref: "source" }}
         name="source"

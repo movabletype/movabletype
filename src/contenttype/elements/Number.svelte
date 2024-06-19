@@ -14,7 +14,7 @@
   options.decimal_places ??= 0;
   options.initial_value ??= "";
 
-  // jQuery(document).ready(function () {...}) is depcated
+  // jQuery(document).ready(function () {...}) is deprecated
   jQuery(function () {
     const minValueOrMaxValueSelector =
       "input[id^=number-min_value-field-options-], input[id^=number-max_value-field-options-]";

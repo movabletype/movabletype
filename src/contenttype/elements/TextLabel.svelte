@@ -30,7 +30,6 @@
   });
 </script>
 
-<!-- convert snake case to chain case in Riot.js implementation -->
 <ContentFieldOptionGroup type="text-label" bind:field {id} bind:options>
   <ContentFieldOption
     id="text_label-text"

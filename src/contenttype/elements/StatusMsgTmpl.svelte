@@ -1,4 +1,6 @@
 <script lang="ts">
+  // copied from mtapp_statusmsg.tmpl
+
   export let blogId: string = "";
   export let canClose: number | undefined;
   export let canRebuild: number;

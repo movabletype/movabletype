@@ -28,7 +28,7 @@
   let refsTable: HTMLTableElement;
 
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
-  // Copy from selection_common_script.tmpl below
+  // copoied some functions from selection_common_script.tmpl below
   if (!options.values) {
     options.values = [
       {
@@ -48,8 +48,10 @@
       values: options.values,
     };
   };
-  // Copy from selection_common_script.tmpl above
+  // copied some functions from selection_common_script.tmpl above
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
+
+  // deleteRow was moved to SelectionCommonScript.svelte
 
   const enterInitial = (e: Event, index: number): void => {
     const target = e.target as HTMLInputElement;
@@ -73,6 +75,7 @@
       _updateInittialField(block);
     }
 
+    // added in Svelte
     refreshView();
   };
 
@@ -133,6 +136,7 @@
     });
   };
 
+  // added in Svelte
   const refreshView = (): void => {
     // eslint-disable-next-line no-self-assign
     options = options;

@@ -570,7 +570,7 @@
                       <label for="label_field" class="form-control-label"
                         >{window.trans("Data Label Field")}</label
                       >
-                      <!-- remove onchange because unused in Svelte -->
+                      <!-- onchange and selected were removed and bind is used -->
                       <select
                         id="label_field"
                         name="label_field"
@@ -753,4 +753,4 @@
   on:click={submit}>{window.trans("Save")}</button
 >
 
-<!-- style was moved to edit_content_type.tmpl  -->
+<!-- style was moved to edit_content_type.tmpl, because style did not work here  -->

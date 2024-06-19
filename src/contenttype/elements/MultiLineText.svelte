@@ -20,6 +20,8 @@
     options.full_rich_text = 0;
   }
 
+  // changeStateFullRichText was removed because unused
+
   options.initial_value ??= "";
 </script>
 
@@ -41,6 +43,7 @@
     id="multi_line_text-input_format"
     label={window.trans("Input format")}
   >
+    <!-- selected was removed and bind is used -->
     <select
       {...{ ref: "input_format" }}
       name="input_format"
@@ -58,6 +61,7 @@
     id="multi_line_text-full_rich_text"
     label={window.trans("Use all rich text decoration buttons")}
   >
+    <!-- onclick was removed and bind is used -->
     <input
       {...{ ref: "full_rich_text" }}
       type="checkbox"

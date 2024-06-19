@@ -13,13 +13,12 @@
   options.initial_value ??= "";
 </script>
 
-<!-- convert snake case to chain case in Riot.js implementation -->
 <ContentFieldOptionGroup type="embedded-text" bind:field {id} bind:options>
   <ContentFieldOption
     id="embedded_text-initial_value"
     label={window.trans("Initial Value")}
   >
-    <!-- "embeddedded" is not modified, because matching the Riot.js implmentation -->
+    <!-- "embeddedded" is typo, as same in Riot.js  -->
     <textarea
       {...{ ref: "initial_value" }}
       name="initial_value"

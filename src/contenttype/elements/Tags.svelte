@@ -18,6 +18,8 @@
     options.can_add = 0;
   }
 
+  // changeStateMultiple was removed because unused
+
   options.min ??= "";
   options.max ??= "";
   options.initial_value ??= "";
@@ -28,7 +30,7 @@
     id="tags-multiple"
     label={window.trans("Allow users to input multiple values?")}
   >
-    <!-- onclick is removed bacause it is not needed  -->
+    <!-- onclick was removed bacause unused  -->
     <input
       {...{ ref: "multiple" }}
       type="checkbox"

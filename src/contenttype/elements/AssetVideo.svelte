@@ -20,6 +20,8 @@
 
   options.min ??= "";
   options.max ??= "";
+
+  // changeStateMultiple was removed because unused
 </script>
 
 <ContentFieldOptionGroup type="asset-video" bind:field {id} bind:options>
@@ -27,6 +29,7 @@
     id="asset_video-multiple"
     label={window.trans("Allow users to select multiple video assets?")}
   >
+    <!-- onclick was removed and bind is used -->
     <input
       {...{ ref: "multiple" }}
       type="checkbox"

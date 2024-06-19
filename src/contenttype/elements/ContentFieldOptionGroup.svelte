@@ -61,7 +61,7 @@
 
   // changeStateRequired was removed bacause unused
 
-  // $script was removed, and script is written in field svelte file
+  // $script was removed, and script is written in content field svelte file
 
   // added in Svelte
   const getRoot = (): Element | null => {
@@ -138,6 +138,7 @@
     "Choose the display options for this content field in the listing screen.",
   )}
 >
+  <!-- selected was removed and bind is used -->
   <select
     {...{ ref: "display" }}
     name="display"

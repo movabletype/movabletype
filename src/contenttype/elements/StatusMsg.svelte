@@ -1,4 +1,6 @@
 <script lang="ts">
+  // copied from lib/MT/Template/ContextHandlers.pm
+
   import StatusMsgTmpl from "./StatusMsgTmpl.svelte";
 
   export let blogId = "";

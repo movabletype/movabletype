@@ -17,8 +17,8 @@
     options.increase_decrease_cols = 0;
   }
 
-  options.initial_rows ??= "";
-  options.initial_cols ??= "";
+  options.initial_rows ??= 1;
+  options.initial_cols ??= 1;
 </script>
 
 <ContentFieldOptionGroup type="table" bind:field {id} bind:options>
