@@ -348,10 +348,6 @@
     update();
   };
 
-  const changeLabelField = (e: Event): void => {
-    labelField = (e.target as HTMLSelectElement).value;
-  };
-
   const toggleAll = (): void => {
     isExpanded = !isExpanded;
     fieldsStore.update((arr) => {
@@ -574,18 +570,15 @@
                         id="label_field"
                         name="label_field"
                         class="custom-select form-control html5-form form-select"
-                        on:change={changeLabelField}
+                        bind:value={labelField}
                       >
-                        <option value="" selected={labelField === ""}
+                        <option value=""
                           >{window.trans(
                             "Show input field to enter data label",
                           )}</option
                         >
                         {#each labelFields as lf}
-                          <option
-                            value={lf.value}
-                            selected={lf.value === labelField}
-                          >
+                          <option value={lf.value}>
                             {lf.label}
                           </option>
                         {/each}
