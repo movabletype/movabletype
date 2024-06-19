@@ -292,7 +292,7 @@ sub pre_start {
 
     if ($] < 5.016003) {
         $param{perl_is_too_old} = 1;
-        $param{version}         = ref($^V) eq 'version' ? $^V->normal : ( $^V ? join( '.', unpack 'C*', $^V ) : $] );
+        $param{version}         = sprintf('%vd', $^V);
     }
     if (eval { require MT::Util::Dependencies; 1 }) {
         if (MT::Util::Dependencies->lacks_core_modules) {
