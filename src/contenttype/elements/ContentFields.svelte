@@ -24,13 +24,8 @@
   let labelField = opts.labelField;
   let isExpanded = false;
 
-  const tags: Array<HTMLDivElement> = [];
-
   const gathers: { [key: string]: (() => object) | undefined } = {};
-
-  const getTags = (): NodeListOf<HTMLDivElement> => {
-    return root.querySelectorAll('div[data-is="content-field"]');
-  };
+  const tags: Array<HTMLDivElement> = [];
 
   afterUpdate(() => {
     const select = root.querySelector("#label_field") as HTMLSelectElement;
@@ -58,6 +53,7 @@
   // Show detail modal
   jQuery(document).on("show.bs.modal", "#editDetail", function () {
     rebuildLabelFields();
+    // update is not needed in Svelte
   });
 
   // Hide detail modal
@@ -66,6 +62,7 @@
     if (jQuery("#name-field > input").mtValidate("simple")) {
       opts.name = jQuery("#name-field > input").val()?.toString() || "";
       window.setDirty(true);
+      // update is not needed in Svelte
     } else {
       return false;
     }
@@ -78,7 +75,7 @@
     function () {
       const target = document.getElementsByClassName("mt-draggable__area")[0];
       recalcHeight(target);
-      updateAllIsShowInCfields();
+      updateFieldsIsShowAll(); // need to update in Svelte
       updateToggleAll();
     },
   );
@@ -90,7 +87,7 @@
     function () {
       const target = document.getElementsByClassName("mt-draggable__area")[0];
       recalcHeight(target);
-      updateAllIsShowInCfields();
+      updateFieldsIsShowAll(); // need to update in Svelte
       updateToggleAll();
     },
   );
@@ -118,6 +115,7 @@
     if (droppable) {
       const currentTarget = e.currentTarget as HTMLElement;
       const target = e.target as HTMLElement;
+
       if (
         target.className !== "mt-draggable__area" &&
         target.className !== "mt-draggable" &&
@@ -129,7 +127,7 @@
 
       // Highlight droppable area
       if (!dragoverState) {
-        // e.currentTarget is correct here, but Riot.js implementation is not fixed, because it works fine now.
+        // replace with e.currentTarget in Svelte
         currentTarget.classList.add("mt-draggable__area--dragover");
         dragoverState = true;
       }
@@ -138,7 +136,7 @@
         if (target.className === "mt-contentfield") {
           // Inside the dragOver method
 
-          // comment out because not used
+          // comment out because unused
           // self.over = e.target;
 
           const targetRect = target.getBoundingClientRect();
@@ -161,9 +159,11 @@
         }
       } else {
         // Dragged from content field types
-        // e.currentTarget is correct here, but Riot.js implementation is not fixed, because it works fine now.
+
+        // replace with e.currentTarget in Svelte
         currentTarget.appendChild(placeholder);
       }
+
       e.preventDefault();
     }
   };
@@ -194,6 +194,7 @@
         _moveField(draggedItem, pos);
       }
       window.setDirty(true);
+      // update is not needed in Svelte
     } else {
       // Drag from field list
       const fieldType = e.dataTransfer?.getData("text") || "";
@@ -209,10 +210,11 @@
         isNew: true,
         isShow: "show",
         canDataLabel: canDataLabel,
-        options: {},
+        options: {}, // add in Svelte
       };
       fields = [...fields, newField];
       window.setDirty(true);
+      // update is not needed in Svelte
 
       recalcHeight(document.getElementsByClassName("mt-draggable__area")[0]);
     }
@@ -224,7 +226,7 @@
 
   const onDragLeave = (e: DragEvent): void => {
     if (dragoverState) {
-      // e.currentTarget is correct here, but Riot.js implementation is not fixed, because it works fine now.
+      // replace with e.currentTarget in Svelte
       (e.currentTarget as HTMLElement).classList.remove(
         "mt-draggable__area--dragover",
       );
@@ -235,7 +237,7 @@
   const onDragStart = (e: DragEvent, f: MT.ContentType.Field): void => {
     dragged = e.target;
     draggedItem = f;
-    e.dataTransfer?.setData("text", f.id || "");
+    (e.dataTransfer as DataTransfer).setData("text", f.id || "");
     droppable = true;
   };
 
@@ -247,11 +249,12 @@
     dragged = null;
     draggedItem = null;
     dragoverState = false;
+    // update is not needed in Svelte
   };
 
   const stopSubmitting = (e: KeyboardEvent): boolean => {
+    // e.which is deprecate
     if (e.key === "Enter") {
-      // e.which is deprecated
       e.preventDefault();
       return false;
     }
@@ -281,7 +284,7 @@
     window.setDirty(false);
     const fieldOptions: Array<MT.ContentType.SubmitFieldOption> = [];
     if (fields) {
-      const child = getTags();
+      const child = tags;
       child.forEach(function (c, i) {
         const options = gatheringData(c, i);
         const newData: MT.ContentType.SubmitFieldOption = {};
@@ -304,7 +307,12 @@
     } else {
       data = "";
     }
+
+    // bind:value={data} does not work
     updateInputData();
+
+    // update is not needed in Svelte
+
     document.forms["content-type-form"].submit();
   };
 
@@ -354,7 +362,10 @@
       }
     }
     labelFields = newLabelFields;
+    // update is not needed in Svelte
   };
+
+  // changeLabelFields was removed because unused
 
   const toggleAll = (): void => {
     isExpanded = !isExpanded;
@@ -376,18 +387,6 @@
       }
     });
     isExpanded = isAllExpanded ? true : false;
-  };
-
-  const updateAllIsShowInCfields = (): void => {
-    const collapseEls = document.querySelectorAll(".mt-collapse__content");
-    fields = fields.map((field, i) => {
-      if (collapseEls[i].classList.contains("show")) {
-        field.isShow = "show";
-      } else {
-        field.isShow = "";
-      }
-      return field;
-    });
   };
 
   const _moveField = (item: MT.ContentType.Field, pos: number): void => {
@@ -447,7 +446,7 @@
     return res;
   };
 
-  // copy from lib/MT/Template/ContextHandler.pm
+  // copy original code from lib/MT/Template/ContextHandler.pm
   const gatheringData = (c: HTMLDivElement, index: number): object => {
     const data = {};
     const flds = c.querySelectorAll("[data-is] [ref]");
@@ -484,10 +483,26 @@
     return data;
   };
 
+  // create in Svelte
+  const updateFieldsIsShowAll = (): void => {
+    const collapseEls = document.querySelectorAll(".mt-collapse__content");
+    fields = fields.map((field, i) => {
+      if (collapseEls[i].classList.contains("show")) {
+        field.isShow = "show";
+      } else {
+        field.isShow = "";
+      }
+      return field;
+    });
+  };
+
+  // create in Svelte
   const updateInputData = (): void => {
-    const form = document.forms.namedItem("content-type-form");
-    const inputData = form?.querySelector('input[name="data"]');
-    inputData?.setAttribute("value", data);
+    const form = document.forms.namedItem(
+      "content-type-form",
+    ) as HTMLFormElement;
+    const inputData = form.querySelector('input[name="data"]') as Element;
+    inputData.setAttribute("value", data);
   };
 </script>
 
@@ -570,6 +585,7 @@
                       <label for="label_field" class="form-control-label"
                         >{window.trans("Data Label Field")}</label
                       >
+                      <!-- remove onchange because unused in Svelte -->
                       <select
                         id="label_field"
                         name="label_field"
@@ -699,6 +715,7 @@
         </div>
       {/if}
       {#each fields as field, fieldIndex}
+        {@const fieldId = field.id ?? ""}
         <div
           class="mt-contentfield"
           draggable="true"
@@ -709,7 +726,7 @@
           }}
           on:dragend={onDragEnd}
           style="width: 100%;"
-          id="content-field-block-{field.id}"
+          id="content-field-block-{fieldId}"
           bind:this={tags[fieldIndex]}
         >
           <ContentField
@@ -719,7 +736,7 @@
             {fieldIndex}
             {gatheringData}
             parent={tags[fieldIndex]}
-            bind:gather={gathers[field.id || ""]}
+            bind:gather={gathers[fieldId]}
             {optionsHtmlParams}
             {recalcHeight}
           />
@@ -751,3 +768,5 @@
   disabled={!canSubmit()}
   on:click={submit}>{window.trans("Save")}</button
 >
+
+<!-- style was moved to edit_content_type.tmpl  -->
