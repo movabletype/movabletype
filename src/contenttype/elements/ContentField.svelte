@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { recalcHeight } from "../Utils";
-
   import SVG from "../../svg/elements/SVG.svelte";
 
   import ContentType from "./ContentType.svelte";
@@ -35,6 +33,7 @@
   export let parent: HTMLDivElement;
   export let gather: (() => object) | undefined;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
+  export let recalcHeight: (droppableArea: Element) => void;
 
   if (field.isNew === null) {
     field.isNew = false;
