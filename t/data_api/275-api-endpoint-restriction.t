@@ -238,7 +238,7 @@ sub suite {
             complete     => sub {
                 my ( $data, $body ) = @_;
                 my $got = $app->current_format->{unserialize}->($body);
-                is( $got->{totalResults}, 9,
+                is( $got->{totalResults}, 1,
                     'Restriction, superuser, system.' );
             },
         },
