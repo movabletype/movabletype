@@ -328,7 +328,7 @@
         .prop("checked");
       if (required && fields[i].canDataLabel === 1) {
         let label = fields[i].label;
-        let id = fields[i].unique_id || "";
+        let id = fields[i].unique_id;
         if (!label) {
           label =
             jQuery("#content-field-block-" + fields[i].id)
@@ -338,6 +338,9 @@
           if (label === "") {
             label = window.trans("No Name");
           }
+        }
+        if (!id) {
+          // new field
           id = "id:" + fields[i].id;
         }
         newLabelFields.push({
