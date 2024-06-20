@@ -2656,6 +2656,61 @@ sub dialog_adjust_sitepath {
     $app->load_tmpl( 'dialog/adjust_sitepath.tmpl', $param );
 }
 
+sub _find_pidfiles {
+    my $app = shift;
+
+    my $pidfile = MT->config->PIDFilePath or return { no_pidfile => 1 };
+
+    # TODO: support extra pidfiles
+    my @files = ($pidfile);
+
+    my %warning;
+    for my $file (@files) {
+        if (open my $fh, '<', $file) {
+            my $pid = <$fh>;
+            chomp $pid;
+            if (!$pid or $pid !~ /^[0-9]+$/) {
+                $warning{$file} = $app->translate("Invalid pid file: [_1]", $file);
+            } elsif (!kill 0, $pid) {
+                $warning{$file} = $app->translate("Failed to send signal to the process in [_1].", $file);
+            }
+        } else {
+            $warning{$file} = $app->translate("Failed to open pid file [_1]: [_2]", $file, $!);
+        }
+    }
+
+    return {
+        pidfile  => $pidfile,
+        warnings => [map {$warning{$_}} sort keys %warning],
+    };
+}
+
+sub start_reboot {
+    my $app = shift;
+    return $app->permission_denied() unless $app->user->is_superuser();
+
+    my $param = _find_pidfiles($app);
+
+    $app->add_breadcrumb($app->translate('Reboot'));
+    $app->load_tmpl('reboot.tmpl', $param);
+}
+
+sub reboot {
+    my $app = shift;
+    $app->validate_magic or return;
+    return $app->permission_denied() unless $app->user->is_superuser();
+
+    $app->log({
+        message  => $app->translate('Reboot is requested by [_1]', $app->user->name),
+        level    => MT::Log::INFO(),
+        class    => 'system',
+        category => 'reboot',
+    });
+
+    $app->reboot;
+    $app->return_to_dashboard(redirect => 1);
+}
+
 sub convert_to_html {
     my $app       = shift;
     my $format    = $app->param('format') || '';

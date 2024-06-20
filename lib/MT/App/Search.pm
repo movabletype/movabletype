@@ -429,6 +429,9 @@ sub check_cache {
 sub process {
     my $app = shift;
 
+    # do nothing if init_request has already returned an error
+    return if $app->errstr;
+
     require MT::Util::Log;
     MT::Util::Log::init();
 

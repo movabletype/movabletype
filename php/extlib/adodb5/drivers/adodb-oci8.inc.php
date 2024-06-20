@@ -92,7 +92,7 @@ END;
 	var $random = "abs(mod(DBMS_RANDOM.RANDOM,10000001)/10000000)";
 	var $noNullStrings = false;
 	var $connectSID = false;
-	var $_bind = false;
+	var $_bind = array();
 	var $_nestedSQL = true;
 	var $_getarray = false; // currently not working
 	var $leftOuter = '';  // oracle wierdness, $col = $value (+) for LEFT OUTER, $col (+)= $value for RIGHT OUTER
@@ -781,6 +781,11 @@ END;
 			$hint = '';
 		}
 
+		// If non-bound statement, $inputarr is false
+		if (!$inputarr) {
+			$inputarr = array();
+		}
+
 		if ($offset == -1 || ($offset < $this->selectOffsetAlg1 && 0 < $nrows && $nrows < 1000)) {
 			if ($nrows > 0) {
 				if ($offset > 0) {
@@ -788,10 +793,6 @@ END;
 				}
 				$sql = "select * from (".$sql.") where rownum <= :adodb_offset";
 
-				// If non-bound statement, $inputarr is false
-				if (!$inputarr) {
-					$inputarr = array();
-				}
 				$inputarr['adodb_offset'] = $nrows;
 				$nrows = -1;
 			}
@@ -809,32 +810,31 @@ END;
 			}
 			$stmt = $stmt_arr[1];
 
-			if (is_array($inputarr)) {
-				foreach($inputarr as $k => $v) {
-					$i=0;
-					if ($this->databaseType == 'oci8po') {
-						$bv_name = ":".$i++;
+			foreach($inputarr as $k => $v) {
+				$i = 0;
+				if ($this->databaseType == 'oci8po') {
+					$bv_name = ":" . $i++;
+				} else {
+					$bv_name = ":" . $k;
+				}
+				if (is_array($v)) {
+					// suggested by g.giunta@libero.
+					if (sizeof($v) == 2) {
+						oci_bind_by_name($stmt, $bv_name, $inputarr[$k][0], $v[1]);
 					} else {
-						$bv_name = ":".$k;
+						oci_bind_by_name($stmt, $bv_name, $inputarr[$k][0], $v[1], $v[2]);
 					}
-					if (is_array($v)) {
-						// suggested by g.giunta@libero.
-						if (sizeof($v) == 2) {
-							oci_bind_by_name($stmt,$bv_name,$inputarr[$k][0],$v[1]);
-						}
-						else {
-							oci_bind_by_name($stmt,$bv_name,$inputarr[$k][0],$v[1],$v[2]);
-						}
+				} else {
+					$len = -1;
+					if ($v === ' ') {
+						$len = 1;
+					}
+					if (isset($bindarr)) {
+						// prepared sql, so no need to oci_bind_by_name again
+						$bindarr[$k] = $v;
 					} else {
-						$len = -1;
-						if ($v === ' ') {
-							$len = 1;
-						}
-						if (isset($bindarr)) {	// is prepared sql, so no need to oci_bind_by_name again
-							$bindarr[$k] = $v;
-						} else { 				// dynamic sql, so rebind every time
-							oci_bind_by_name($stmt,$bv_name,$inputarr[$k],$len);
-						}
+						// dynamic sql, so rebind every time
+						oci_bind_by_name($stmt, $bv_name, $inputarr[$k], $len);
 					}
 				}
 			}
@@ -1578,6 +1578,9 @@ SELECT /*+ RULE */ distinct b.column_name
 	{
 		if ($this->noNullStrings && strlen($s) == 0) {
 			$s = ' ';
+		}
+		else if (strlen($s) == 0) {
+			return "''";
 		}
 		if ($this->replaceQuote[0] == '\\'){
 			$s = str_replace('\\','\\\\',$s);

@@ -73,13 +73,18 @@ sub image_height {
     if ( !-e $asset->file_path || !-r $asset->file_path ) {
         return undef;
     }
-    require MT::Image;
-    my ( $w, $h, $id ) = MT::Image->get_image_info( Filename => $asset->file_path );
-    $asset->meta( 'image_height', $h );
-    if ( $asset->id ) {
-        $asset->save;
+    if (!$asset->{__image_info}) {
+        require MT::Image;
+        $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path ) || {};
     }
-    return $h;
+    if (my $h = $asset->{__image_info}{height}) {
+        $asset->meta( 'image_height', $h );
+        if ( $asset->id ) {
+            $asset->save;
+        }
+        return $h;
+    }
+    return;
 }
 
 sub image_width {
@@ -90,13 +95,18 @@ sub image_width {
     if ( !-e $asset->file_path || !-r $asset->file_path ) {
         return undef;
     }
-    require MT::Image;
-    my ( $w, $h, $id ) = MT::Image->get_image_info( Filename => $asset->file_path );
-    $asset->meta( 'image_width', $w );
-    if ( $asset->id ) {
-        $asset->save;
+    if (!$asset->{__image_info}) {
+        require MT::Image;
+        $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path ) || {};
     }
-    return $w;
+    if (my $w = $asset->{__image_info}{width}) {
+        $asset->meta( 'image_width', $w );
+        if ( $asset->id ) {
+            $asset->save;
+        }
+        return $w;
+    }
+    return;
 }
 
 sub has_thumbnail {

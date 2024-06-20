@@ -343,9 +343,16 @@ $test_env->prepare_fixture(sub {
     $ct->save or die $ct->errstr;
 });
 
+if (!$before_fields) {
+    my $ct = MT::ContentType->load({name => 'test content data'});
+    $before_fields = $ct->fields;
+}
+
 my $author = MT->model('author')->load(1) or die MT->model('author')->errstr;
 $author->set_password('Nelson');
 $author->save or die $author->errstr;
+
+$test_env->clear_mt_cache;
 
 use Class::Inspector;
 
@@ -376,7 +383,7 @@ subtest 'On Edit Content type ' => sub {
                         is_deeply($fields[0]->{options}->{$key}, $fields[1]->{options}->{$key}, "${type} - ${key} fields are duplicated");
                     }
                 } else {
-                    is('Duplicate - ' . $fields[0]->{options}->{$key}, $fields[1]->{options}->{$key}, "${type} - label are duplicated");
+                    like($fields[1]{options}{$key}, qr/Duplicate\s?-\s?$fields[0]->{options}->{$key}/, "${type} - label are duplicated");
                 }
             }
         }

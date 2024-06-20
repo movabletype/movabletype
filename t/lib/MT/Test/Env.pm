@@ -55,6 +55,7 @@ sub new {
     $root = Cwd::realpath($root);
     $ENV{MT_TEST_ROOT} = $root;
     $ENV{PERL_JSON_BACKEND} ||= 'JSON::PP';
+    $ENV{MT_PROHIBIT_PHP_DYNAMIC_PROPERTY} = 1;
 
     my $driver = _driver();
 

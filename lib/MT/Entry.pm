@@ -1116,7 +1116,7 @@ sub permalink {
     my $blog  = $entry->blog() || return;
     my $url   = $entry->archive_url( $_[0] );
     my $effective_archive_type
-        = ( $_[0] || $blog->archive_type_preferred || $blog->archive_type );
+        = ( $_[0] || $blog->archive_type_preferred || $blog->archive_type || '');
     $url
         .= '#'
         . ( $_[1]->{valid_html} ? 'a' : '' )

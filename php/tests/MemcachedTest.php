@@ -2,14 +2,14 @@
 
 use PHPUnit\Framework\TestCase;
 
-include_once("php/lib/mtcache_base.php");
-include_once("php/lib/class.basecache.php");
-include_once("php/mt.php");
+require_once('mtcache_base.php');
+require_once('class.basecache.php');
+require_once('mt.php');
 
 class MemcachedTest extends TestCase {
 
     public function testMain() {
-        $mt = MT::get_instance(1, realpath( "t/mysql-test.cfg" ));
+        $mt = MT::get_instance();
         $this->_testCacheLib($mt);
         $this->_testMTCacheSession($mt);
         $this->_testCacheSession($mt);
@@ -25,26 +25,26 @@ class MemcachedTest extends TestCase {
     }
 
     public function _testMTCacheSession($mt) {
-        include_once("php/lib/mtcache_session.php");
+        require_once('mtcache_session.php');
         $a = new MTCache_session();
         $this->assertCache($a, true);
     }
 
     public function _testCacheSession($mt) {
-        include_once("php/lib/class.cachesession.php");
+        require_once('class.cachesession.php');
         $a = new CacheSession();
         $this->assertCache($a, true);
     }
-    
+
     public function _testCacheMemcache($mt) {
-        include_once("php/lib/class.cachememcached.php");
+        require_once('class.cachememcached.php');
         $mt->config('MemcachedServers', '127.0.0.1:11211');
         $a = new CacheMemcached();
         $this->assertCache($a);
     }
-    
+
     public function _testMTCacheMemcached($mt) {
-        include_once("php/lib/mtcache_memcached.php");
+        require_once('mtcache_memcached.php');
         $a = new MTCache_memcached();
         $a->connect('127.0.0.1:11211');
         $this->assertCache($a);
@@ -64,14 +64,14 @@ class MemcachedTest extends TestCase {
         $class->add('a', 'b', 10);
         $class->add('c', 'd', 10);
         $class->add('e', 'f', 10);
-        $multi = $class->get_multi(array('a', 'c'));
+        $multi = $class->get_multi(['a', 'c']);
         if ($flat) {
-            $this->assertEquals(array('b','d'), $multi);
+            $this->assertEquals(['b', 'd'], $multi);
         } else {
             $this->assertEquals('b', $multi['a']);
             $this->assertEquals('d', $multi['c']);
             $this->assertEquals(2, count($multi));
-            }
+        }
         $class->flush_all();
     }
 }

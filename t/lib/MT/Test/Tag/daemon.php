@@ -1,18 +1,25 @@
 <?php
 
-$opts = getopt('', ['port:', 'mt_home:', 'mt_config:', 'log:', 'init_blog_id:']);
+ini_set("memory_limit", "-1");
+
+$opts = getopt('', ['port:', 'mt_home:', 'mt_config:', 'log:', 'init_blog_id:', 'ignore_php_dynamic_properties_warnings:']);
 
 $socket = stream_socket_server("tcp://127.0.0.1:". $opts['port']);
 
 include_once($opts['mt_home'] . '/php/mt.php');
 include_once($opts['mt_home'] . '/php/lib/MTUtil.php');
+include_once($opts['mt_home'] . '/t/lib/MT/Test/Tag/error_handler.php');
+
+$error_handler = new MT_Test_Error_Handler();
+set_error_handler([$error_handler, 'handler']);
+$error_handler->log = $opts['log'];
+$error_handler->ignore_php_dynamic_properties_warnings = $opts['ignore_php_dynamic_properties_warnings'];
 
 # fix following tests by using first blog_id for init.
 # - t/tag/35-tags-assets.t
 # - t/mt7/tag/archive/archive-type-label.t
 $mt = MT::get_instance($opts['init_blog_id'], $opts['mt_config']);
 
-$mt->config('PHPErrorLogFilePath', $opts['log'] ?? null);
 $mt->init_plugins();
 $db = $mt->db();
 if (is_a($db, 'MTDatabaseoracle')) {
@@ -22,18 +29,12 @@ if (is_a($db, 'MTDatabaseoracle')) {
 }
 $ctx = $mt->context();
 
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
-    if ($error_no & E_USER_ERROR) {
-        print($error_msg."\n");
-    } else {
-        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
-    }
-});
-
 while ($remote = stream_socket_accept($socket)) {
-    
+
     $stream = stream_get_contents($remote);
-    if (!$stream) continue;
+    if (!$stream) {
+        continue;
+    }
 
     // $mt->cache_driver()->flush_all();
 
@@ -47,7 +48,8 @@ while ($remote = stream_socket_accept($socket)) {
     # fix tests with local config
     $mt->configure_from_db();
 
-    list($blog_id, $tmpl, $extra) = json_decode($stream);
+    list($blog_id, $tmpl, $extra, $log) = json_decode($stream);
+    $error_handler->log = $log;
     $blog = $db->fetch_blog($blog_id);
     $ctx->stash('blog', $blog);
     $ctx->stash('blog_id', $blog_id);
@@ -62,10 +64,11 @@ while ($remote = stream_socket_accept($socket)) {
         }
     }
 
-    if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
+    try {
+        $ctx->_compile_source('evaluated template', $tmpl, $_var_compiled);
         fwrite($remote, $_var_compiled);
-    } else {
-        throw new Exception('Error compiling template module.');
+    } catch (Throwable $e) {
+        trigger_error("Error: ". $e->getMessage() ."\n" . $e->getTraceAsString());
     }
 
     fclose($remote);

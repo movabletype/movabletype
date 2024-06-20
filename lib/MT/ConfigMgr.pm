@@ -24,6 +24,7 @@ sub new {
         __paths             => [],
         __dirty             => 0,
         __overwritable_keys => {},
+        __env               => {},
         },
         $_[0];
     $mgr->init;
@@ -31,6 +32,14 @@ sub new {
 }
 
 sub init {
+    my $mgr = shift;
+    for my $key (grep /^MT_CONFIG_/i, keys %ENV) {
+        (my $name = $key) =~ s/^MT_CONFIG_//i;
+        $name =~ s/_//g;
+        my $value = $ENV{$key};
+        $value = '' if $value eq q{''};
+        $mgr->{__env}{lc $name} = $value;
+    }
 }
 
 sub define {
@@ -95,6 +104,8 @@ sub get_internal {
         return $mgr->get($alias);
     }
 
+    return $mgr->{__env}{$var} if exists $mgr->{__env}{$var};
+
     $val = $mgr->{__dbvar}{$var} if $mgr->is_overwritable($var);
     $val = $mgr->{__var}{$var} unless defined($val);
     $val = { %{ $mgr->{__dbvar}{$var} }, %$val } if ($mgr->type($var) eq 'HASH' && $val && $mgr->{__dbvar}{$var});
@@ -110,6 +121,7 @@ sub get_internal {
 sub get {
     my $mgr = shift;
     my $var = lc shift;
+    return $mgr->{__env}{$var} if exists $mgr->{__env}{$var};
     if ( my $h = $mgr->{__settings}{$var}{handler} ) {
         $h = MT->handler_to_coderef($h) unless ref $h;
         return $h->($mgr);
@@ -151,6 +163,7 @@ sub set_internal {
     my $mgr = shift;
     my ( $var, $val, $db_flag ) = @_;
     $var = lc $var;
+    return $mgr->{__env}{$var} if exists $mgr->{__env}{$var};
     $mgr->set_dirty() if defined($db_flag) && $db_flag;
     my $set = $db_flag ? '__dbvar' : '__var';
     if ( defined( my $alias = $mgr->{__settings}{$var}{alias} ) ) {
@@ -194,6 +207,7 @@ sub set {
     my $mgr = shift;
     my ( $var, $val, $db_flag ) = @_;
     $var = lc $var;
+    return $mgr->{__env}{$var} if exists $mgr->{__env}{$var};
     $mgr->set_dirty($var);
     if ( my $h = $mgr->{__settings}{$var}{handler} ) {
         $h = MT->handler_to_coderef($h) unless ref $h;

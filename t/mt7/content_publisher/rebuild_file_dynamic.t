@@ -23,6 +23,8 @@ BEGIN { plan skip_all => "Can't find executable file: php" unless has_php(); }
 use MT::Test::PHP;
 use MT::Test::ArchiveType;
 use MT::Test::Fixture::ArchiveType;
+use MT::Test::Tag;
+use MT::Util::UniqueID;
 
 use MT;
 use MT::Template::Context;
@@ -58,14 +60,17 @@ for my $map ( sort { $a->archive_type cmp $b->archive_type } @ct_maps ) {
     );
     $tmpl->save or die;
 
+    my $log = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} ||
+                File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
+
     my $test_script = <<PHP;
 <?php
-
 \$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
 \$MT_CONFIG = '@{[ MT->instance->find_config ]}';
 \$blog_id   = '$blog_id';
 
 \$_SERVER['REQUEST_URI'] = '$request_uri';
+\$log = '$log';
 PHP
 
     $test_script .= <<'PHP';
@@ -73,18 +78,8 @@ include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
 
 $mt = MT::get_instance($blog_id, $MT_CONFIG);
+$mt->config('PHPErrorLogFilePath', $log);
 $mt->view();
-
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line) {
-    print($error_msg."\n");
-}, E_USER_ERROR );
-
-$ctx = $mt->context();
-if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
-} else {
-    print('Error compiling template module.');
-}
 PHP
 
     my $result = MT::Test::PHP->run($test_script);
@@ -103,6 +98,17 @@ PHP
         ? 'content stash exists'
         : 'content stash does not exist';
     is( $result, $expected, $test_name );
+
+    my $php_error = MT::Test::Tag->_retrieve_php_logs($log);
+
+    if ($ENV{MT_TEST_IGNORE_PHP_WARNINGS} && $php_error) {
+        SKIP: {
+            local $TODO = 'for now';
+            ok !$php_error, 'no php warnings';
+        }
+    } else {
+        is($php_error, '', 'no php warnings');
+    }
 }
 
 done_testing;

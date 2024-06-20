@@ -12,6 +12,7 @@ use parent qw(Plack::Component);
 use Plack::Util::Accessor qw(script application _app);
 use MT;
 use MT::Component;
+use MT::Util::RequestError qw(parse_init_cgi_error);
 use Carp;
 use FindBin;
 use CGI::PSGI;
@@ -55,7 +56,11 @@ my $mt_app = sub {
     return sub {
         my $env = shift;
         eval "require $app_class";
-        my $cgi = CGI::PSGI->new($env);
+        my $cgi = eval { CGI::PSGI->new($env) };
+        if (my $err = $@) {
+            my $res = parse_init_cgi_error($err);
+            return [$res->{code}, [], [$res->{message}]];
+        }
         local *ENV = { %ENV, %$env };    # some MT::App method needs this
         my $app = $app_class->new(CGIObject => $cgi);
         delete $app->{init_request};
@@ -85,7 +90,11 @@ my $mt_app_streaming = sub {
     return sub {
         my $env = shift;
         eval "require $app_class";
-        my $cgi = CGI::PSGI->new($env);
+        my $cgi = eval { CGI::PSGI->new($env) };
+        if (my $err = $@) {
+            my $res = parse_init_cgi_error($err);
+            return [$res->{code}, [], [$res->{message}]];
+        }
         local *ENV = { %ENV, %$env };    # some MT::App method needs this
         my $app = $app_class->new(CGIObject => $cgi);
         delete $app->{init_request};

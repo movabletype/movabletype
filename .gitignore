@@ -62,6 +62,7 @@ t/selenium/evidence/
 
 /node_modules/
 yarn-error.log
+yarn.lock
 
 .perl-version
 perltidy.LOG

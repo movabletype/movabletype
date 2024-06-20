@@ -1,12 +1,13 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-include_once('php/lib/archive_lib.php');
+
+require_once('archive_lib.php');
 
 class ArchiveLibTest extends TestCase {
-    
+
     public function testDecTs() {
-        foreach (array(new TestArchiver(), new TestArchiver2()) as $archiver) {
+        foreach ([new TestArchiver(), new TestArchiver2()] as $archiver) {
             $ts = $archiver->public_dec_ts('20211231235959');
             $this->assertEquals('20211231235958', $ts, 'right ts');
 

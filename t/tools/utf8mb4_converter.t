@@ -67,6 +67,7 @@ subtest 'convert from utf8' => sub {
     my ( $out, $err ) = run( %connect_info, verbose => 1 );
     ok $out =~ /Altered .* 'mt_test'/, "altered database"   or note $out;
     ok $out =~ /Altered 'mt_ts_job'/,  "altered last table" or note $out;
+    $err =~ s/\s*WARNING: MYSQL_OPT_RECONNECT is deprecated and will be removed in a future version.\s*//s;
     ok !$err or note $err;
 
     my $dbh = $test_env->dbh;

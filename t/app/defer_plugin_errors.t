@@ -48,7 +48,13 @@ use MT;
     ok eval { MT->instance }, "mt instance" or note $@;
 }
 
+$test_env->prepare_fixture('db');
+
 my $entry = MT->model('entry')->new;
 ok $entry->can('my_plugin_meta_column'), "entry has a meta column from my plugin";
+
+my $config = MT->config->stringify_config;
+
+unlike $config => qr!PluginSwitch Broken/Broken.pl=1!, "Broken plugin is not listed in PluginSwitch";
 
 done_testing;

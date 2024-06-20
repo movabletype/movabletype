@@ -1,6 +1,6 @@
-<div <mt:if name="id">id=<$mt:var name="id"></mt:if> class="alert <mt:if name="class">alert-<$mt:var name="class"><mt:else>alert-info</mt:if> <mt:if name="can_close">alert-dismissable</mt:if>" <mt:if name="hidden">style="display: none;"</mt:if> <mt:if name="class" like="\bwarning|\bdanger">role="alert"</mt:if>>
+<div <mt:if name="id">id=<$mt:var name="id"></mt:if> class="alert <mt:if name="class">alert-<$mt:var name="class"><mt:else>alert-info</mt:if> <mt:if name="can_close">alert-dismissible</mt:if>" <mt:if name="hidden">style="display: none;"</mt:if> <mt:if name="class" like="\bwarning|\bdanger">role="alert"</mt:if>>
     <mt:if name="can_close">
-        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     </mt:if>
     <$mt:var name="msg">
     <mt:if name="did_replace">

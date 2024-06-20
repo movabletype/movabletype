@@ -27,6 +27,12 @@ my $entry = MT->model('entry')->load({
     status  => MT::Entry::RELEASE(),
 });
 
+my $template = MT->model('template')->load({name => 'Search Results', blog_id => $blog->id});
+my $text = $template->text;
+$text =~ s!(<\$mt:Include module="Entry Summary" )!$1 parent="2"!;
+$template->text($text);
+$template->save;
+
 my @suite = ({
         label  => 'Found an entry',
         params => {
@@ -81,6 +87,51 @@ my @suite = ({
         expected   => qr|<h1[^>]*>Instructions</h1>|,
         unexpected => _create_qr_for_undefined_error(),
     },
+    {
+        label  => 'No uuv with bogus SearchMaxResults',
+        params => {
+            search           => $entry->title,
+            IncludeBlogs     => $blog->id,
+            limit            => 20,
+            SearchMaxResults => 'test',
+        },
+        generic_error => 1,
+        no_warnings   => 1,
+    },
+    {
+        label  => 'No uuv with bogus SearchMaxResults and valid tags',
+        params => {
+            IncludeBlogs     => $blog->id,
+            limit            => 20,
+            tag              => 'rain',
+            SearchMaxResults => 'test',
+        },
+        generic_error => 1,
+        no_warnings   => 1,
+    },
+    {
+        label  => 'No uuv with if-modified-since and valid tags',
+        params => {
+            IncludeBlogs => $blog->id,
+            limit        => 20,
+            tag          => 'rain',
+        },
+        headers     => { if_modified_since => HTTP::Date::time2str(time) },
+        expected    => qr/id="entry-@{[ $entry->id ]}"/,
+        no_warnings => 1,
+    },
+    {
+        label  => 'No uuv with format=js',
+        params => {
+            IncludeBlogs => $blog->id,
+            search       => $entry->title,
+            limit        => 20,
+            format       => 'js',
+        },
+        headers     => { if_modified_since => HTTP::Date::time2str(time) },
+        expected    => qr/id=\\"entry-@{[ $entry->id ]}\\"/,
+        no_warnings => 1,
+    },
 );
 
 my $json_encoder = JSON->new->canonical;
@@ -93,17 +144,29 @@ for my $data (@suite) {
     my $params_str = $json_encoder->encode($data->{params});
 
     my $app = MT::Test::App->new('MT::App::Search');
+    my @warnings;
+    local $SIG{__WARN__} = sub { push @warnings, @_ };
+    local %ENV = %ENV;
+    if ($data->{headers}) {
+        $ENV{'HTTP_' . uc $_} = $data->{headers}{$_} for keys %{$data->{headers}};
+    }
     $app->get_ok($data->{params});
 
     note($data->{label});
     if ($data->{expected}) {
-        $app->content_like($data->{expected});
+        $app->content_like($data->{expected}) or note $app->content;
     }
     if ($data->{unexpected}) {
         $app->content_unlike($data->{unexpected});
     }
+    if ($data->{generic_error}) {
+        ok $app->generic_error, "showed an error message: " . $app->generic_error;
+    }
+    if ($data->{no_warnings}) {
+        ok !@warnings, "no warnings" or note explain \@warnings;
+    }
 
-    unless ($data->{expected} || $data->{unexpected}) {
+    unless ($data->{expected} || $data->{unexpected} || $data->{generic_error} || $data->{no_warnings}) {
         die 'no test';
     }
 }

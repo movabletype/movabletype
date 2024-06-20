@@ -179,11 +179,11 @@
         editor.mtProxies = {}
         editor.supportedButtonsCache = {}
         initButtonSettings(editor)
-        editor.on('init', function () {
-            updateButtonVisibility(editor)
-        })
 
-        editor.on('NodeChange', function () {
+        editor.on('NodeChange', function (args) {
+            if (args.initial) {
+                updateButtonVisibility(editor)
+            }
             var s = editor.mtEditorStatus
             if (s.mode == 'source' && s.format != 'none.tinymce_temp') {
                 $(editor.container).find('.tox-toolbar:eq(0)').css('display', 'none')
@@ -379,7 +379,12 @@
                             editor.off('CloseWindow')
                         })
                     })
+
+                    var selectedText = editor.mtProxies['source'].editor.getSelectedText()
+                    editor.setContent('<div>' + selectedText + '</div>')
+                    editor.selection.select(editor.dom.select('div')[0])
                     editor.execCommand('mceLink')
+
                     editor.once('CloseWindow', function (dialog) {
                         var data = dialog.dialog.getData()
                         if (data.url.value)

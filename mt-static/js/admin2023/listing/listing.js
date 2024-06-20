@@ -363,7 +363,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
           .attr('class', 'msg msg-' + cls )
           .append(
             jQuery('<p />')
-              .attr('class', 'msg-text alert alert-danger alert-dismissable')
+              .attr('class', 'msg-text alert alert-danger alert-dismissible')
               .append('<button type="button" class="close btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
               .append(content)
           )
@@ -375,7 +375,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
           .attr('class', 'msg msg-' + cls )
           .append(
             jQuery('<p />')
-              .attr('class', 'msg-text alert alert-danger alert-dismissable')
+              .attr('class', 'msg-text alert alert-danger alert-dismissible')
               .append('<button type="button" class="close btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
               .append(content)
           )

@@ -53,6 +53,8 @@ class Entry extends BaseObject
     public $entry_junk_log;
     public $entry_revision;
 
+    public $entry_max_comment_created_on;
+
     public function category () {
         $places = $this->placement(true);
         if (empty($places))

@@ -426,7 +426,7 @@ function showMessage( content, cls ){
   var error_block;
   jQuery('#msg-block').append(
     error_block = jQuery('<div />')
-    .attr('class', 'alert alert-dismissable alert-' + cls )
+    .attr('class', 'alert alert-dismissible alert-' + cls )
     .append(
       jQuery('<button class="close" data-dismiss="alert" aria-label="Close" />')
         .append('<span aria-hidden="true">&times;</span>')

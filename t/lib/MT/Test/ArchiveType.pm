@@ -397,9 +397,15 @@ PHP
 
             $test_script .= <<'PHP';
 
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line) {
-    print($error_msg."\n");
-}, E_USER_ERROR );
+$stderr = fopen('php://stderr', 'w');
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($stderr) {
+    if ($error_no & E_USER_ERROR) {
+        print($error_msg."\n");
+    } else {
+        fwrite($stderr, "no:$error_no error:$error_msg file:$error_file line:$error_line\n");
+        return true;
+    }
+});
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
     $ctx->_eval('?>' . $_var_compiled);
@@ -410,7 +416,7 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 ?>
 PHP
 
-            my $result = MT::Test::PHP->run($test_script);
+            my $result = MT::Test::PHP->run($test_script, \my $php_error);
 
             # those with $method_name have higher precedence
             # and todo does, too
@@ -452,6 +458,15 @@ PHP
                 if $expected_method =~ /^expected_(?:php_)?todo/
                 or $ENV{MARK_ALL_PHP_TESTS_TODO};
             is( $result, $expected, "$name $test_info" );
+
+            if ($ENV{MT_TEST_IGNORE_PHP_WARNINGS} && $php_error) {
+                SKIP: {
+                    local $TODO = 'for now';
+                    ok !$php_error, 'no php warnings';
+                }
+            } else {
+                is($php_error, '', 'no php warnings');
+            }
         }
     }
 }

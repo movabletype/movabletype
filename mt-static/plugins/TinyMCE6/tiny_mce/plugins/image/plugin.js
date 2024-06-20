@@ -1,5 +1,5 @@
 /**
- * TinyMCE version 6.5.1 (2023-06-19)
+ * TinyMCE version 6.8.3 (2024-02-08)
  */
 
 (function () {
@@ -992,7 +992,8 @@
         name: 'src',
         type: 'urlinput',
         filetype: 'image',
-        label: 'Source'
+        label: 'Source',
+        picker_text: 'Browse files'
       };
       const imageList = info.imageList.map(items => ({
         name: 'images',
@@ -1487,7 +1488,7 @@
         onAction: Dialog(editor).open,
         onSetup: onSetupEditable(editor)
       });
-      editor.ui.registry.addContextMenu('image', { update: element => isFigure(element) || isImage(element) && !isPlaceholderImage(element) ? ['image'] : [] });
+      editor.ui.registry.addContextMenu('image', { update: element => editor.selection.isEditable() && (isFigure(element) || isImage(element) && !isPlaceholderImage(element)) ? ['image'] : [] });
     };
 
     var Plugin = () => {

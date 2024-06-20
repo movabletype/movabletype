@@ -149,7 +149,7 @@
           .attr('class', 'msg msg-' + cls )
           .append(
             jQuery('<p />')
-              .attr('class', 'msg-text alert alert-danger alert-dismissable')
+              .attr('class', 'msg-text alert alert-danger alert-dismissible')
               .append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
               .append(content)
           )
@@ -161,7 +161,7 @@
           .attr('class', 'msg msg-' + cls )
           .append(
             jQuery('<p />')
-              .attr('class', 'msg-text alert alert-danger alert-dismissable')
+              .attr('class', 'msg-text alert alert-danger alert-dismissible')
               .append('<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>')
               .append(content)
           )
