@@ -38,7 +38,7 @@ test_data_api($suite);
 done_testing;
 
 sub suite {
-    return +[
+    my @tests = (
 
         # search - irregular tests
         {   path   => '/v2/search',
@@ -301,7 +301,52 @@ sub suite {
                 };
             },
         },
+    );
 
+    my @ok_tests = grep {!$_->{code}} @tests;
+
+    # Respect DataAPIDisableSite
+    my @extra_tests;
+    for my $ok_test (@ok_tests) {
+        my %new_test = %$ok_test;
+        delete $new_test{result};
+        $new_test{code} = 403;
+        push @extra_tests, \%new_test;
+    }
+    $extra_tests[0]{setup} = sub {
+        $app->config->DataAPIDisableSite($blog->id);
+        $app->config->save_config;
+        $blog->allow_data_api(0);
+        $blog->save;
+    };
+    push @tests, @extra_tests;
+
+    # Respect DataAPIDisableSite (but a superuser ignores it)
+    my @extra_tests_for_superuser;
+    for my $ok_test (@ok_tests) {
+        my %new_test = %$ok_test;
+        $new_test{is_superuser} = 1;
+        push @extra_tests_for_superuser, \%new_test;
+    }
+    push @tests, @extra_tests_for_superuser;
+
+    # Make Superuser Respect DataAPIDisableSite
+    my @extra_tests_for_respecting_superuser;
+    for my $ok_test (@ok_tests) {
+        my %new_test = %$ok_test;
+        delete $new_test{result};
+        $new_test{code} = 403;
+        $new_test{is_superuser} = 1;
+        push @extra_tests_for_respecting_superuser, \%new_test;
+    }
+    $extra_tests_for_respecting_superuser[0]{setup} = sub {
+        $app->config->MakeSuperuserRespectDataAPIDisableSite(1);
+        $app->config->save_config;
+    };
+    push @tests, @extra_tests_for_respecting_superuser;
+
+    # These tests should be the last.
+    push @tests, (
         {    # no blog. (bugid:113059)
             path   => '/v2/search',
             method => 'GET',
@@ -318,6 +363,8 @@ sub suite {
             params  => { tagSearch => 1, tag => 'tag' },
             result => sub { +{ totalResults => 0, items => [] } },
         },
-    ];
+    );
+
+    return \@tests;
 }
 
