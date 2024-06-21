@@ -286,8 +286,8 @@
     window.setDirty(false);
     const fieldOptions: Array<MT.ContentType.SubmitFieldOption> = [];
     if (fields) {
-      const child = tags;
-      child.forEach(function (c, i) {
+      for (let i = 0; i < fields.length; i++) {
+        const c = tags[i];
         const options = gatheringData(c, i);
         const newData: MT.ContentType.SubmitFieldOption = {};
         newData.type = fields[i].type;
@@ -304,7 +304,7 @@
           newData.order = i + 1;
         }
         fieldOptions.push(newData);
-      });
+      }
       data = JSON.stringify(fieldOptions);
     } else {
       data = "";
