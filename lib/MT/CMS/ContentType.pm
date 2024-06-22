@@ -272,6 +272,45 @@ sub edit {
                     { id => $key, html => $out };
             }
         }
+
+	# Script
+	if ( my $options_script = $content_field_types->{$key}{options_script} ) {
+            my $plugin = $content_field_types->{$key}{plugin};
+            my $tmpl;
+            if ( !ref $options_script ) {
+                if ( $options_script =~ /\.tmpl$/ ) {
+                    $tmpl
+                        = $plugin->id eq 'core'
+                        ? $app->load_tmpl($options_script)
+                        : $plugin->load_tmpl($options_script);
+                }
+                else {
+                    $options_script = MT->handler_to_coderef($options_script);
+                }
+            }
+            if ( 'CODE' eq ref $options_script ) {
+                $options_script = $options_script->( $app, $param );
+
+                require MT::Template;
+                $tmpl = MT::Template->new(
+                    type   => 'scalarref',
+                    source => ref $options_script
+                    ? $options_script
+                    : \$options_script
+                );
+            }
+
+            if ($tmpl) {
+                $tmpl->param($options_html_params)
+                    if $options_html_params;
+                my $out = $tmpl->output();
+                $out = $plugin->translate_templatized($out)
+                    if $plugin->id ne 'core'
+                    and $out =~ m/<(?:__trans|mt_trans) /i;
+                push @{ $param->{options_scripts} },
+                    { id => $key, script => $out };
+            }
+        }
     }
 
     $param->{options_html_params_json} = JSON::to_json(_deep_copy_and_resolve_coderef($options_html_params_hash));

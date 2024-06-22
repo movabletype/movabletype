@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { Writable, writable } from "svelte/store";
+
   import { recalcHeight } from "../Utils";
 
   import SVG from "../../svg/elements/SVG.svelte";
@@ -25,10 +27,13 @@
   import Tables from "./Tables.svelte";
   import TextLabel from "./TextLabel.svelte";
 
+  import Custom from "./Custom.svelte";
+
   export let config: MT.ContentType.ConfigSettings;
   export let field: MT.ContentType.Field;
   export let fields: Array<MT.ContentType.Field>;
   export let fieldIndex: number;
+  export let fieldsStore: Writable<Array<MT.ContentType.Field>>;
   export let gatheringData: (c: HTMLDivElement, index: number) => object;
   export let parent: HTMLDivElement;
   export let gather: (() => object) | undefined;
@@ -179,6 +184,7 @@
   class:show={field.isShow === "show"}
   id="field-options-{field.id}"
   {...{ fieldid: field.id, isnew: field.isNew }}
+  bind:this={parent}
 >
   <svelte:component
     this={ContentfieldMap[field.type]}
@@ -187,6 +193,14 @@
     bind:gather
     id={`field-options-${field.id}`}
     bind:options={field.options}
+    {optionsHtmlParams}
+  />
+  <Custom
+    {config}
+    {fieldIndex}
+    {fieldsStore}
+    bind:gather
+    id={`field-options-${field.id}`}
     {optionsHtmlParams}
   />
 </div>

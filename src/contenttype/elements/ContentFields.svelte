@@ -1,5 +1,6 @@
 <script lang="ts">
   import { afterUpdate } from "svelte";
+  import { writable } from "svelte/store";
 
   import { recalcHeight } from "../Utils";
 
@@ -12,8 +13,8 @@
   export let opts: MT.ContentType.ContentFieldsOpts;
   export let root: Element;
 
-  let fields = opts.fields;
-  $: isEmpty = fields.length > 0 ? false : true;
+  const fieldsStore = writable(opts.fields);
+  $: isEmpty = $fieldsStore.length > 0 ? false : true;
   let data = "";
   let droppable = false;
   const observer = opts.observer;
@@ -214,7 +215,7 @@
         canDataLabel: canDataLabel,
         options: {}, // add in Svelte
       };
-      fields = [...fields, newField];
+      fieldsStore.update((fields) => [...fields, newField]);
       window.setDirty(true);
       // update is not needed in Svelte
 
@@ -264,10 +265,10 @@
   };
 
   const canSubmit = (): boolean => {
-    if (fields.length === 0) {
+    if ($fieldsStore.length === 0) {
       return true;
     }
-    const invalidFields = fields.filter(function (field) {
+    const invalidFields = $fieldsStore.filter(function (field) {
       return opts.invalid_types[field.type];
     });
     return invalidFields.length === 0 ? true : false;
@@ -285,17 +286,17 @@
     rebuildLabelFields();
     window.setDirty(false);
     const fieldOptions: Array<MT.ContentType.SubmitFieldOption> = [];
-    if (fields) {
-      for (let i = 0; i < fields.length; i++) {
+    if ($fieldsStore) {
+      for (let i = 0; i < $fieldsStore.length; i++) {
         const c = tags[i];
         const options = gatheringData(c, i);
         const newData: MT.ContentType.SubmitFieldOption = {};
-        newData.type = fields[i].type;
+        newData.type = $fieldsStore[i].type;
         newData.options = options;
-        if (!fields[i].isNew && options["id"].match(/^\d+$/)) {
+        if (!$fieldsStore[i].isNew && options["id"].match(/^\d+$/)) {
           newData.id = options["id"];
         }
-        const innerField = fields.filter(function (v) {
+        const innerField = $fieldsStore.filter(function (v) {
           return v.id == newData.id;
         });
         if (innerField.length && innerField[0].order) {
@@ -322,16 +323,16 @@
 
   const rebuildLabelFields = (): void => {
     const newLabelFields: Array<{ value: string; label: string }> = [];
-    for (let i = 0; i < fields.length; i++) {
-      const required = jQuery("#content-field-block-" + fields[i].id)
+    for (let i = 0; i < $fieldsStore.length; i++) {
+      const required = jQuery("#content-field-block-" + $fieldsStore[i].id)
         .find('[name="required"]')
         .prop("checked");
-      if (required && fields[i].canDataLabel === 1) {
-        let label = fields[i].label;
-        let id = fields[i].unique_id;
+      if (required && $fieldsStore[i].canDataLabel === 1) {
+        let label = $fieldsStore[i].label;
+        let id = $fieldsStore[i].unique_id;
         if (!label) {
           label =
-            jQuery("#content-field-block-" + fields[i].id)
+            jQuery("#content-field-block-" + $fieldsStore[i].id)
               .find('[name="label"]')
               .val()
               ?.toString() || "";
@@ -341,7 +342,7 @@
         }
         if (!id) {
           // new field
-          id = "id:" + fields[i].id;
+          id = "id:" + $fieldsStore[i].id;
         }
         newLabelFields.push({
           value: id,
@@ -358,10 +359,12 @@
   const toggleAll = (): void => {
     isExpanded = !isExpanded;
     const newIsShow = isExpanded ? "show" : "";
-    fields = fields.map((field) => {
-      field.isShow = newIsShow;
-      return field;
-    });
+    fieldsStore.update((fields) =>
+      fields.map((field) => {
+        field.isShow = newIsShow;
+        return field;
+      }),
+    );
   };
 
   const updateToggleAll = (): void => {
@@ -378,20 +381,20 @@
   };
 
   const _moveField = (item: MT.ContentType.Field, pos: number): void => {
-    for (let i = 0; i < fields.length; i++) {
-      let field = fields[i];
-      if (field.id === item.id) {
-        fields.splice(i, 1);
-        break;
+    fieldsStore.update((fields) => {
+      for (let i = 0; i < fields.length; i++) {
+        let field = fields[i];
+        if (field.id === item.id) {
+          fields.splice(i, 1);
+          break;
+        }
       }
-    }
-    fields.splice(pos, 0, item);
-    for (let i = 0; i < fields.length; i++) {
-      fields[i].order = i + 1;
-    }
-
-    // eslint-disable-next-line no-self-assign
-    fields = fields;
+      fields.splice(pos, 0, item);
+      for (let i = 0; i < fields.length; i++) {
+        fields[i].order = i + 1;
+      }
+      return fields;
+    });
   };
 
   const _validateFields = (): boolean => {
@@ -459,7 +462,7 @@
       }
     });
 
-    const fieldId = fields[index].id;
+    const fieldId = $fieldsStore[index].id;
     if (fieldId) {
       const gather = gathers[fieldId];
       if (gather) {
@@ -474,14 +477,16 @@
   // create in Svelte
   const updateFieldsIsShowAll = (): void => {
     const collapseEls = document.querySelectorAll(".mt-collapse__content");
-    fields = fields.map((field, i) => {
-      if (collapseEls[i].classList.contains("show")) {
-        field.isShow = "show";
-      } else {
-        field.isShow = "";
-      }
-      return field;
-    });
+    fieldsStore.update((fields) =>
+      fields.map((field, i) => {
+        if (collapseEls[i].classList.contains("show")) {
+          field.isShow = "show";
+        } else {
+          field.isShow = "";
+        }
+        return field;
+      }),
+    );
   };
 
   // create in Svelte
@@ -702,7 +707,7 @@
           <p>{window.trans("Please add a content field.")}</p>
         </div>
       {/if}
-      {#each fields as field, fieldIndex}
+      {#each $fieldsStore as field, fieldIndex}
         {@const fieldId = field.id ?? ""}
         <div
           class="mt-contentfield"
@@ -720,8 +725,9 @@
           <ContentField
             {config}
             bind:field
-            bind:fields
+            bind:fields={$fieldsStore}
             {fieldIndex}
+            {fieldsStore}
             {gatheringData}
             parent={tags[fieldIndex]}
             bind:gather={gathers[fieldId]}
