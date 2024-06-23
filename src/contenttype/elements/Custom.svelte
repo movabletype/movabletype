@@ -25,11 +25,7 @@
 
     type = field.type;
 
-    if (component) {
-      component.fieldIndex = fieldIndex;
-      component.fieldsStore = fieldsStore;
-      /* @ts-expect-error : window.svelteAdditionalTypes is not defined */
-    } else if (window.svelteAdditionalTypes[field.type]) {
+    if (!component && window.svelteAdditionalTypes[field.type]) {
       /* @ts-expect-error : window.svelteAdditionalTypes is not defined */
       component = window.svelteAdditionalTypes[field.type](
         {
