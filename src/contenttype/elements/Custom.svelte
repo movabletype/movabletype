@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { afterUpdate, onMount, onDestroy } from "svelte";
+  import { afterUpdate, onDestroy } from "svelte";
   import { Writable } from "svelte/store";
 
   export let config: MT.ContentType.ConfigSettings;
@@ -9,8 +9,10 @@
   export let gather: (() => object) | undefined;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let component: any;
   let target: Element;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let type: any;
 
   afterUpdate(() => {
