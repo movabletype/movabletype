@@ -9,22 +9,22 @@
   export let gather: (() => object) | undefined;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let component: any;
+  let destroyComponentFunction: (() => void) | null;
   let target: Element;
   let type: string | null;
 
   afterUpdate(() => {
     const field = $fieldsStore[fieldIndex];
 
-    if (field.type !== type && component) {
-      component.$destroy();
-      component = null;
+    if (field.type !== type && destroyComponentFunction) {
+      destroyComponentFunction();
+      destroyComponentFunction = null;
     }
 
-    if (!component && window.svelteAdditionalTypes[field.type]) {
+    /* @ts-expect-error : window.svelteAdditionalTypes is not defined */
+    if (!destroyComponentFunction && window.svelteAdditionalTypes[field.type]) {
       /* @ts-expect-error : window.svelteAdditionalTypes is not defined */
-      component = window.svelteAdditionalTypes[field.type](
+      destroyComponentFunction = window.svelteAdditionalTypes[field.type](
         {
           config: config,
           fieldIndex: fieldIndex,
@@ -39,9 +39,9 @@
   });
 
   onDestroy(() => {
-    if (component) {
-      component.$destroy();
-      component = null;
+    if (destroyComponentFunction) {
+      destroyComponentFunction();
+      destroyComponentFunction = null;
     }
     type = null;
   });
