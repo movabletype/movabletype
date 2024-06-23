@@ -7,7 +7,6 @@
   export let fieldsStore: Writable<Array<MT.ContentType.Field>>;
   // svelte-ignore unused-export-let
   export let gather: (() => object) | undefined;
-  export let id: string;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
   let component: any;

@@ -195,12 +195,5 @@
     bind:options={field.options}
     {optionsHtmlParams}
   />
-  <Custom
-    {config}
-    {fieldIndex}
-    {fieldsStore}
-    bind:gather
-    id={`field-options-${field.id}`}
-    {optionsHtmlParams}
-  />
+  <Custom {config} {fieldIndex} {fieldsStore} bind:gather {optionsHtmlParams} />
 </div>
