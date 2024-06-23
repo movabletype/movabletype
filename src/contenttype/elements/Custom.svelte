@@ -13,9 +13,9 @@
   let target: Element;
   let type: string | null;
 
-  afterUpdate(() => {
-    const field = $fieldsStore[fieldIndex];
+  $: field = $fieldsStore[fieldIndex];
 
+  afterUpdate(() => {
     if (field.type !== type && destroyComponentFunction) {
       destroyComponentFunction();
       destroyComponentFunction = null;
@@ -47,4 +47,8 @@
   });
 </script>
 
-<div class="custom-content-field-container" bind:this={target}></div>
+<div
+  id="mt-custom-content-field-{field.id}"
+  class="mt-custom-content-field__container"
+  bind:this={target}
+></div>
