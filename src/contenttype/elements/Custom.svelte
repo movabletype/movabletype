@@ -9,6 +9,7 @@
   export let gather: (() => object) | undefined;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
+  let customComponentObject: MT.ContentType.CustomComponentObject | null;
   let destroyComponentFunction: (() => void) | null;
   let target: Element;
   let type: string | null;
@@ -16,15 +17,15 @@
   $: field = $fieldsStore[fieldIndex];
 
   afterUpdate(() => {
-    if (field.type !== type && destroyComponentFunction) {
-      destroyComponentFunction();
-      destroyComponentFunction = null;
+    if (field.type !== type && customComponentObject) {
+      customComponentObject.destroy();
+      customComponentObject = null;
     }
 
     /* @ts-expect-error : window.svelteAdditionalTypes is not defined */
-    if (!destroyComponentFunction && window.svelteAdditionalTypes[field.type]) {
+    if (!customComponentObject && window.svelteAdditionalTypes[field.type]) {
       /* @ts-expect-error : window.svelteAdditionalTypes is not defined */
-      destroyComponentFunction = window.svelteAdditionalTypes[field.type](
+      customComponentObject = window.svelteAdditionalTypes[field.type](
         {
           config: config,
           fieldIndex: fieldIndex,
@@ -39,9 +40,9 @@
   });
 
   onDestroy(() => {
-    if (destroyComponentFunction) {
-      destroyComponentFunction();
-      destroyComponentFunction = null;
+    if (customComponentObject) {
+      customComponentObject.destroy();
+      customComponentObject = null;
     }
     type = null;
   });

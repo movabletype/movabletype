@@ -21,6 +21,13 @@ declare namespace MT.ContentType {
     labelField: string;
   }
 
+  interface CustomComponentObject {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    component: any;
+    destroy: () => void;
+    gather?: () => object;
+  }
+
   // used in ContentFieldOpts
   interface Field {
     type: string;
