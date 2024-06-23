@@ -5,12 +5,10 @@
   export let config: MT.ContentType.ConfigSettings;
   export let fieldIndex: number;
   export let fieldsStore: Writable<Array<MT.ContentType.Field>>;
-  // svelte-ignore unused-export-let
-  export let gather: (() => object) | undefined;
+  export let gather: (() => object) | null | undefined;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
   let customComponentObject: MT.ContentType.CustomComponentObject | null;
-  let destroyComponentFunction: (() => void) | null;
   let target: Element;
   let type: string | null;
 
@@ -20,6 +18,7 @@
     if (field.type !== type && customComponentObject) {
       customComponentObject.destroy();
       customComponentObject = null;
+      gather = null;
     }
 
     /* @ts-expect-error : window.svelteAdditionalTypes is not defined */
@@ -34,6 +33,7 @@
         },
         target,
       );
+      gather = customComponentObject?.gather;
     }
 
     type = field.type;
@@ -41,6 +41,7 @@
 
   onDestroy(() => {
     if (customComponentObject) {
+      gather = null;
       customComponentObject.destroy();
       customComponentObject = null;
     }
