@@ -12,18 +12,15 @@
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let component: any;
   let target: Element;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let type: any;
+  let type: string | null;
 
   afterUpdate(() => {
     const field = $fieldsStore[fieldIndex];
 
-    if (type !== field.type && component) {
+    if (field.type !== type && component) {
       component.$destroy();
       component = null;
     }
-
-    type = field.type;
 
     if (!component && window.svelteAdditionalTypes[field.type]) {
       /* @ts-expect-error : window.svelteAdditionalTypes is not defined */
@@ -37,6 +34,8 @@
         target,
       );
     }
+
+    type = field.type;
   });
 
   onDestroy(() => {
