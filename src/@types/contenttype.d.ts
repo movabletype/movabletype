@@ -21,13 +21,6 @@ declare namespace MT.ContentType {
     labelField: string;
   }
 
-  interface CustomComponentObject {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    component: any;
-    destroy: () => void;
-    gather?: () => object;
-  }
-
   type CustomContentFieldMountFunction = (
     props: {
       config: ConfigSettings;
@@ -37,6 +30,13 @@ declare namespace MT.ContentType {
     },
     target: Element,
   ) => CustomComponentObject;
+
+  interface CustomContentFieldObject {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    component: any;
+    destroy: () => void;
+    gather?: () => object;
+  }
 
   // used in ContentFieldOpts
   interface Field {

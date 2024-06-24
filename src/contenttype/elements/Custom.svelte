@@ -10,7 +10,7 @@
   export let gather: (() => object) | null | undefined;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  let customComponentObject: MT.ContentType.CustomComponentObject | null;
+  let customContentFieldObject: MT.ContentType.CustomContentFieldObject | null;
   let target: Element;
   let type: string | null;
 
@@ -20,14 +20,14 @@
   );
 
   afterUpdate(() => {
-    if (field.type !== type && customComponentObject) {
-      customComponentObject.destroy();
-      customComponentObject = null;
+    if (field.type !== type && customContentFieldObject) {
+      customContentFieldObject.destroy();
+      customContentFieldObject = null;
       gather = null;
     }
 
-    if (!customComponentObject && customContentFieldMountFunction) {
-      customComponentObject = customContentFieldMountFunction(
+    if (!customContentFieldObject && customContentFieldMountFunction) {
+      customContentFieldObject = customContentFieldMountFunction(
         {
           config: config,
           fieldIndex: fieldIndex,
@@ -36,17 +36,17 @@
         },
         target,
       );
-      gather = customComponentObject?.gather;
+      gather = customContentFieldObject?.gather;
     }
 
     type = field.type;
   });
 
   onDestroy(() => {
-    if (customComponentObject) {
+    if (customContentFieldObject) {
       gather = null;
-      customComponentObject.destroy();
-      customComponentObject = null;
+      customContentFieldObject.destroy();
+      customContentFieldObject = null;
     }
     type = null;
   });
