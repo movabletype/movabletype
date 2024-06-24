@@ -5,30 +5,34 @@ import ContentFields from "./contenttype/elements/ContentFields.svelte";
 import { ContentFieldTypes } from "./contenttype/ContentFieldTypes";
 
 class ContentTypeEditor {
+  static accessor config = {};
+  static accessor optionsHtmlParams = {};
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static registerType(type: string, mountFunction: any): void {
     ContentFieldTypes.registerCustomType(type, mountFunction);
   }
 
-  static mount(props: {
-    config: MT.ContentType.ConfigSettings;
-    optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
-    opts: MT.ContentType.ContentFieldsOpts;
-  }): void {
-    const target = this.getContentFieldsTarget();
+  static mount(
+    targetSelector: string,
+    opts: MT.ContentType.ContentFieldsOpts,
+  ): void {
+    const target = this.getContentFieldsTarget(targetSelector);
     new ContentFields({
       props: {
-        ...props,
+        config: this.config,
+        optionsHtmlParams: this.optionsHtmlParams,
+        opts: opts,
         root: target,
       },
       target: target,
     });
   }
 
-  private static getContentFieldsTarget(): Element {
-    const target = document.querySelector('[data-is="content-fields"]');
+  private static getContentFieldsTarget(selector: string): Element {
+    const target = document.querySelector(`[data-is="${selector}"]`);
     if (!target) {
-      throw new Error("Target element is not found");
+      throw new Error("Target element is not found: " + selector);
     }
     return target;
   }
