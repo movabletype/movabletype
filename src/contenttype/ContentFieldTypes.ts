@@ -54,15 +54,16 @@ export class ContentFieldTypes {
     return !this.customTypes[type] && this.coreTypes[type];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static getCustomType(
     type: string,
   ): MT.ContentType.CustomContentFieldMountFunction {
     return this.customTypes[type];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static registerCustomType(type: string, mountFunction: any): void {
+  static registerCustomType(
+    type: string,
+    mountFunction: MT.ContentType.CustomContentFieldMountFunction,
+  ): void {
     this.customTypes[type] = mountFunction;
   }
 }
