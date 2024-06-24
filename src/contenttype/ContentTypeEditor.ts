@@ -7,8 +7,10 @@ export default class ContentTypeEditor {
   static accessor optionsHtmlParams: MT.ContentType.OptionsHtmlParams = {};
   static accessor opts: MT.ContentType.ContentFieldsOpts;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static registerCustomType(type: string, mountFunction: any): void {
+  static registerCustomType(
+    type: string,
+    mountFunction: MT.ContentType.CustomContentFieldMountFunction,
+  ): void {
     ContentFieldTypes.registerCustomType(type, mountFunction);
   }
 
