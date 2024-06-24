@@ -2,7 +2,7 @@
   import { afterUpdate, onDestroy } from "svelte";
   import { Writable } from "svelte/store";
 
-  import { ContentFieldTypes } from "../ContentFieldTypes";
+  import ContentFieldTypes from "../ContentFieldTypes";
 
   export let config: MT.ContentType.ConfigSettings;
   export let fieldIndex: number;

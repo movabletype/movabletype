@@ -20,7 +20,7 @@ import List from "./elements/List.svelte";
 import Tables from "./elements/Tables.svelte";
 import TextLabel from "./elements/TextLabel.svelte";
 
-export class ContentFieldTypes {
+export default class ContentFieldTypes {
   private static coreTypes = {
     "content-type": ContentType,
     "single-line-text": SingleLineText,

@@ -1,8 +1,8 @@
-import { ContentFieldTypes } from "./ContentFieldTypes";
+import ContentFieldTypes from "./ContentFieldTypes";
 
 import ContentFields from "./elements/ContentFields.svelte";
 
-export class ContentTypeEditor {
+export default class ContentTypeEditor {
   static accessor config: MT.ContentType.ConfigSettings = {};
   static accessor optionsHtmlParams: MT.ContentType.OptionsHtmlParams = {};
 

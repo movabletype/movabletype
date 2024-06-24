@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Writable } from "svelte/store";
 
-  import { ContentFieldTypes } from "../ContentFieldTypes";
+  import ContentFieldTypes from "../ContentFieldTypes";
   import { recalcHeight } from "../Utils";
 
   import Custom from "./Custom.svelte";
