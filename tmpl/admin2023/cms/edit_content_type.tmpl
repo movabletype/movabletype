@@ -92,12 +92,12 @@
   </mt:if>
 
   <script type="module">
-    import { observable, svelteMountContentFields } from "<mt:var name="static_uri">js/build/contenttype.js?v=<mt:var name="mt_version_id" escape="url">"
+    import { ContentTypeEditor, observable } from "<mt:var name="static_uri">js/build/contenttype.js?v=<mt:var name="mt_version_id" escape="url">"
     if (!window.riot) {
       window.riot = {}
     }
     window.riot.observable = observable
-    window.svelteMountContentFields = svelteMountContentFields
+    window.ContentTypeEditor = ContentTypeEditor
 
     window.svelteMountConfig = {
       NumberFieldMaxValue: <mt:var name="config.numberfieldmaxvalue" escape="js">,
@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <mt:if name="config.useriot">
     riot.mount('content-fields', opts);
   <mt:else>
-    svelteMountContentFields({
+    ContentTypeEditor.mount({
       config: svelteMountConfig,
       optionsHtmlParams: svelteMountOptionsHtmlParams,
       opts: opts,
