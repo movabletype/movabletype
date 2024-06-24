@@ -1,12 +1,12 @@
 import observable from "@riotjs/observable";
 
-import ContentFields from "./contenttype/elements/ContentFields.svelte";
-
 import { ContentFieldTypes } from "./contenttype/ContentFieldTypes";
 
+import ContentFields from "./contenttype/elements/ContentFields.svelte";
+
 class ContentTypeEditor {
-  static accessor config = {};
-  static accessor optionsHtmlParams = {};
+  static accessor config: MT.ContentType.ConfigSettings = {};
+  static accessor optionsHtmlParams: MT.ContentType.OptionsHtmlParams = {};
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static registerCustomType(type: string, mountFunction: any): void {

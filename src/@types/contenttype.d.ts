@@ -28,6 +28,16 @@ declare namespace MT.ContentType {
     gather?: () => object;
   }
 
+  type CustomContentFieldMountFunction = (
+    props: {
+      config: ConfigSettings;
+      fieldIndex: number;
+      fieldsStore: Writable<Array<Field>>;
+      optionsHtmlParams: OptionsHtmlParams;
+    },
+    target: Element,
+  ) => CustomComponentObject;
+
   // used in ContentFieldOpts
   interface Field {
     type: string;

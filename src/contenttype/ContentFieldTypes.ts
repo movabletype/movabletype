@@ -45,7 +45,9 @@ export class ContentFieldTypes {
     "text-label": TextLabel,
   };
 
-  private static customTypes = {};
+  private static customTypes: {
+    [type: string]: MT.ContentType.CustomContentFieldMountFunction;
+  } = {};
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   static getCoreType(type: string): any {
@@ -53,7 +55,9 @@ export class ContentFieldTypes {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static getCustomType(type: string): any {
+  static getCustomType(
+    type: string,
+  ): MT.ContentType.CustomContentFieldMountFunction {
     return this.customTypes[type];
   }
 
