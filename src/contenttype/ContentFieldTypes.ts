@@ -1,5 +1,3 @@
-import ContentFields from "./elements/ContentFields.svelte";
-
 import ContentType from "./elements/ContentType.svelte";
 import SingleLineText from "./elements/SingleLineText.svelte";
 import MultiLineText from "./elements/MultiLineText.svelte";
@@ -22,8 +20,8 @@ import List from "./elements/List.svelte";
 import Tables from "./elements/Tables.svelte";
 import TextLabel from "./elements/TextLabel.svelte";
 
-export class ContentTypeEditor {
-  static readonly coreTypes = {
+export class ContentFieldTypes {
+  private static coreTypes = {
     "content-type": ContentType,
     "single-line-text": SingleLineText,
     "multi-line-text": MultiLineText,
@@ -47,26 +45,20 @@ export class ContentTypeEditor {
     "text-label": TextLabel,
   };
 
-  static mount(props: {
-    config: MT.ContentType.ConfigSettings;
-    optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
-    opts: MT.ContentType.ContentFieldsOpts;
-  }): void {
-    const target = this.getContentFieldsTarget();
-    new ContentFields({
-      props: {
-        ...props,
-        root: target,
-      },
-      target: target,
-    });
+  private static customTypes = {};
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static getCoreType(type: string): any {
+    return !this.customTypes[type] && this.coreTypes[type];
   }
 
-  private static getContentFieldsTarget(): Element {
-    const target = document.querySelector('[data-is="content-fields"]');
-    if (!target) {
-      throw new Error("Target element is not found");
-    }
-    return target;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static getCustomType(type: string): any {
+    return this.customTypes[type];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static registerCustomType(type: string, mountFunction: any): void {
+    this.customTypes[type] = mountFunction;
   }
 }

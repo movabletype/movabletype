@@ -2,6 +2,8 @@
   import { afterUpdate, onDestroy } from "svelte";
   import { Writable } from "svelte/store";
 
+  import { ContentFieldTypes } from "../ContentFieldTypes";
+
   export let config: MT.ContentType.ConfigSettings;
   export let fieldIndex: number;
   export let fieldsStore: Writable<Array<MT.ContentType.Field>>;
@@ -13,6 +15,9 @@
   let type: string | null;
 
   $: field = $fieldsStore[fieldIndex];
+  $: customContentFieldMountFunction = ContentFieldTypes.getCustomType(
+    field.type,
+  );
 
   afterUpdate(() => {
     if (field.type !== type && customComponentObject) {
@@ -21,10 +26,8 @@
       gather = null;
     }
 
-    /* @ts-expect-error : window.svelteAdditionalTypes is not defined */
-    if (!customComponentObject && window.svelteAdditionalTypes[field.type]) {
-      /* @ts-expect-error : window.svelteAdditionalTypes is not defined */
-      customComponentObject = window.svelteAdditionalTypes[field.type](
+    if (!customComponentObject && customContentFieldMountFunction) {
+      customComponentObject = customContentFieldMountFunction(
         {
           config: config,
           fieldIndex: fieldIndex,

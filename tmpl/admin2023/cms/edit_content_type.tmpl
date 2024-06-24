@@ -85,12 +85,6 @@
 </mt:if>
 
 <mt:unless name="config.useriot">
-  <mt:if name="options_scripts">
-    <mt:loop name="options_scripts">
-      <mt:var name="script">
-    </mt:loop>
-  </mt:if>
-
   <script type="module">
     import { ContentTypeEditor, observable } from "<mt:var name="static_uri">js/build/contenttype.js?v=<mt:var name="mt_version_id" escape="url">"
     if (!window.riot) {
@@ -106,6 +100,12 @@
     }
     window.svelteMountOptionsHtmlParams = <mt:var name="options_html_params_json">;
   </script>
+
+  <mt:if name="options_scripts">
+    <mt:loop name="options_scripts">
+      <mt:var name="script">
+    </mt:loop>
+  </mt:if>
 </mt:unless>
 
 <script>

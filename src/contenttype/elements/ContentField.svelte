@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Writable } from "svelte/store";
 
-  import { ContentTypeEditor } from "../ContentTypeEditor";
+  import { ContentFieldTypes } from "../ContentFieldTypes";
   import { recalcHeight } from "../Utils";
 
   import Custom from "./Custom.svelte";
@@ -140,7 +140,7 @@
   bind:this={parent}
 >
   <svelte:component
-    this={ContentTypeEditor.coreTypes[field.type]}
+    this={ContentFieldTypes.getCoreType(field.type)}
     {config}
     bind:field
     bind:gather
