@@ -87,6 +87,7 @@
 <mt:unless name="config.useriot">
   <script type="module">
     import { ContentTypeEditor, observable } from "<mt:var name="static_uri">js/build/contenttype.js?v=<mt:var name="mt_version_id" escape="url">"
+
     if (!window.riot) {
       window.riot = {}
     }

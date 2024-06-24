@@ -9,7 +9,7 @@ class ContentTypeEditor {
   static accessor optionsHtmlParams = {};
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static registerType(type: string, mountFunction: any): void {
+  static registerCustomType(type: string, mountFunction: any): void {
     ContentFieldTypes.registerCustomType(type, mountFunction);
   }
 
