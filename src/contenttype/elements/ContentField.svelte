@@ -1,33 +1,11 @@
 <script lang="ts">
   import { Writable } from "svelte/store";
 
+  import { ContentTypeEditor } from "../ContentTypeEditor";
   import { recalcHeight } from "../Utils";
 
-  import SVG from "../../svg/elements/SVG.svelte";
-
-  import ContentType from "./ContentType.svelte";
-  import SingleLineText from "./SingleLineText.svelte";
-  import MultiLineText from "./MultiLineText.svelte";
-  import Number from "./Number.svelte";
-  import Url from "./Url.svelte";
-  import DateTime from "./DateTime.svelte";
-  import Date from "./Date.svelte";
-  import Time from "./Time.svelte";
-  import SelectBox from "./SelectBox.svelte";
-  import RadioButton from "./RadioButton.svelte";
-  import Checkboxes from "./Checkboxes.svelte";
-  import Asset from "./Asset.svelte";
-  import AssetAudio from "./AssetAudio.svelte";
-  import AssetVideo from "./AssetVideo.svelte";
-  import AssetImage from "./AssetImage.svelte";
-  import EmbeddedText from "./EmbeddedText.svelte";
-  import Categories from "./Categories.svelte";
-  import Tags from "./Tags.svelte";
-  import List from "./List.svelte";
-  import Tables from "./Tables.svelte";
-  import TextLabel from "./TextLabel.svelte";
-
   import Custom from "./Custom.svelte";
+  import SVG from "../../svg/elements/SVG.svelte";
 
   export let config: MT.ContentType.ConfigSettings;
   export let field: MT.ContentType.Field;
@@ -54,31 +32,6 @@
   if (field.options === null) {
     field.options = {};
   }
-
-  // TODO: enable to customize
-  const ContentfieldMap = {
-    "content-type": ContentType,
-    "single-line-text": SingleLineText,
-    "multi-line-text": MultiLineText,
-    number: Number,
-    url: Url,
-    "date-and-time": DateTime,
-    "date-only": Date,
-    "time-only": Time,
-    "select-box": SelectBox,
-    "radio-button": RadioButton,
-    checkboxes: Checkboxes,
-    asset: Asset,
-    "asset-audio": AssetAudio,
-    "asset-video": AssetVideo,
-    "asset-image": AssetImage,
-    "embedded-text": EmbeddedText,
-    categories: Categories,
-    tags: Tags,
-    list: List,
-    tables: Tables,
-    "text-label": TextLabel,
-  };
 
   const deleteField = (): void => {
     const label = field.label ? field.label : window.trans("No Name");
@@ -187,7 +140,7 @@
   bind:this={parent}
 >
   <svelte:component
-    this={ContentfieldMap[field.type]}
+    this={ContentTypeEditor.coreTypes[field.type]}
     {config}
     bind:field
     bind:gather
