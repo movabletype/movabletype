@@ -21,6 +21,7 @@ declare namespace MT.ContentType {
     labelField: string;
   }
 
+  // used in Custom.svelte
   type CustomContentFieldMountFunction = (
     props: {
       config: ConfigSettings;
@@ -31,6 +32,7 @@ declare namespace MT.ContentType {
     target: Element,
   ) => CustomComponentObject;
 
+  // used in Custom.svelte
   interface CustomContentFieldObject {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     component: any;
