@@ -74,7 +74,7 @@ sub _make_cert {
     my $root = shift;
     my $dir  = "$root/.priv";
     mkdir $dir unless -d $dir;
-    my $file = "$dir/ftpd.pem";
+    my $file = "$dir/mailpit.pem";
     system(
         qw( openssl req -x509 -nodes -newkey rsa:2048 -days 3650 -subj /C=JP/CN=mt ),
         "-keyout", $file, "-out", $file

@@ -2907,6 +2907,9 @@ use vars qw( @ISA %Lexicon );
 	'add administer_site permission for Blog Administrator...' => 'ブログ管理者にサイトの管理権限を付与しています...',
 	'change [_1] to [_2]' => '[_1]を[_2]に変更しています',
 
+## lib/MT/Upgrade/v8.pm
+	'Migrating image width/height meta data...' => '画像の幅/高さを移行しています...',
+
 ## lib/MT/Util.pm
 	'[quant,_1,day,days] from now' => '[quant,_1,日,日]後',
 	'[quant,_1,day,days]' => '[quant,_1,日,日]',

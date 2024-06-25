@@ -37,6 +37,7 @@ use MT;
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Selenium;
+use MT::Test::Fixture;
 
 my $blog_id = 1;
 
@@ -283,6 +284,7 @@ $test_env->prepare_fixture(sub {
             order   => 12,
             type    => $cf_list->type,
             options => { label => $cf_list->name },
+            unique_id => $cf_list->unique_id,
         },
         {
             id      => $cf_table->id,
@@ -293,6 +295,7 @@ $test_env->prepare_fixture(sub {
                 initial_rows => 3,
                 initial_cols => 3,
             },
+            unique_id => $cf_table->unique_id,
         },
         {
             id      => $cf_tag->id,
@@ -304,6 +307,7 @@ $test_env->prepare_fixture(sub {
                 max      => 5,
                 min      => 1,
             },
+            unique_id => $cf_tag->unique_id,
         },
         {
             id      => $cf_category->id,
@@ -316,6 +320,7 @@ $test_env->prepare_fixture(sub {
                 max          => 5,
                 min          => 1,
             },
+            unique_id => $cf_category->unique_id,
         },
         {
             id      => $cf_image->id,
@@ -327,6 +332,7 @@ $test_env->prepare_fixture(sub {
                 max      => 5,
                 min      => 1,
             },
+            unique_id => $cf_image->unique_id,
         },
         {
             id      => $cf_ct->id,
@@ -337,9 +343,10 @@ $test_env->prepare_fixture(sub {
                 multiple => 1,
                 source   => $child_ct->id,
             },
+            unique_id => $cf_ct->unique_id,
         },
     ];
-    $ct->fields($before_fields);
+    $ct->fields(MT::Test::Fixture::_fix_fields($before_fields));
     $ct->save or die $ct->errstr;
 });
 
