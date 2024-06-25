@@ -5,7 +5,6 @@
 
   import ContentField from "./ContentField.svelte";
   import SVG from "../../svg/elements/SVG.svelte";
-  import ContentType from "./ContentType.svelte";
 
   export let config: MT.ContentType.ConfigSettings;
   export let fieldsStore: MT.ContentType.FieldsStore;
