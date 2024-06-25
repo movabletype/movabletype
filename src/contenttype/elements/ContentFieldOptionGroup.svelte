@@ -72,6 +72,7 @@
   };
 </script>
 
+<!-- merge 2 input tags in Riot.js implementation to 1 input tag -->
 <input
   type="hidden"
   {...{ ref: "id" }}
@@ -86,6 +87,7 @@
   label={window.trans("Label")}
   required={1}
 >
+  <!-- oninput was removed and bind is used -->
   <input
     type="text"
     {...{ ref: "label" }}
@@ -119,6 +121,7 @@
   id="{type}-required"
   label={window.trans("Is this field required?")}
 >
+  <!-- onclick was removed and bind is used -->
   <input
     {...{ ref: "required" }}
     type="checkbox"

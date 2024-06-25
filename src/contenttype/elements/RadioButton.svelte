@@ -98,7 +98,8 @@
                 /></td
               >
               <td
-                ><input
+                ><!-- oninput was removed and bind is used -->
+                <input
                   type="text"
                   class="form-control required"
                   name="label"
@@ -106,7 +107,8 @@
                 /></td
               >
               <td
-                ><input
+                ><!-- oninput was removed and bind is used -->
+                <input
                   type="text"
                   class="form-control required"
                   name="value"
