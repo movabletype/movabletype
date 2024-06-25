@@ -6,12 +6,13 @@ export default class ContentTypeEditor {
   static accessor config: MT.ContentType.ConfigSettings = {};
   static accessor optionsHtmlParams: MT.ContentType.OptionsHtmlParams = {};
   static accessor opts: MT.ContentType.ContentFieldsOpts;
+  static readonly types = ContentFieldTypes;
 
   static registerCustomType(
     type: string,
     mountFunction: MT.ContentType.CustomContentFieldMountFunction,
   ): void {
-    ContentFieldTypes.registerCustomType(type, mountFunction);
+    this.types.registerCustomType(type, mountFunction);
   }
 
   static mount(
