@@ -663,4 +663,20 @@ sub _hdlr_blog_page_count {
     $ctx->invoke_handler( 'blogentrycount', $args, $cond );
 }
 
+###########################################################################
+
+=head2 PageUnpublishedDate
+
+Outputs the unpublishing date of the current page in context.
+See the L<Date> tag for supported attributes.
+
+=for tags date
+
+=cut
+
+sub _hdlr_page_unpublished_date {
+    return undef unless $_[0]->check_page;
+    shift->invoke_handler( 'entryunpublisheddate', @_ );
+}
+
 1;

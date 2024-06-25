@@ -5,8 +5,20 @@ use warnings;
 use Test::More;
 use MT::App::Wizard;
 use Exporter 'import';
+use Test::TCP;
 
 our @EXPORT = qw(test_wizard);
+
+sub start_server {
+    my $static_server = Test::TCP->new(
+        code => sub {
+            my $port = shift;
+            exec "plackup", "-I", "$ENV{MT_HOME}/lib", "-I", "$ENV{MT_HOME}/extlib", "-p", $port,
+                "-M", "Plack::App::Directory", "-M", "Plack::App::URLMap",
+                "-e", "my \$map = Plack::App::URLMap->new; \$map->map('/mt-static' => Plack::App::Directory->new({root => '$ENV{MT_HOME}/mt-static'}) ); \$map";
+        },
+    );
+}
 
 my @steps = qw(
     pre_start
@@ -46,6 +58,12 @@ sub test_wizard {
     my %param = @_;
     my $guard = MT::Test::Wizard::ConfigGuard->new;
 
+    local $ENV{MT_TEST_RUN_APP_AS_CGI} = 0;
+
+    my $static_server = start_server();
+    my $port          = $static_server->port;
+    $default{pre_start}{set_static_uri_to} = "http://127.0.0.1:$port/mt-static";
+
     my $app = MT::Test::App->new('MT::App::Wizard');
     if (MT->component('enterprise')) {
         # XXX: dirty hack to reinitialize a handler
@@ -55,10 +73,19 @@ sub test_wizard {
     $app->get_ok();
 
     my %seen;
+    my $ct        = 0;
+    my $prev_step = '';
     until ((my $step = current_step($app) || '') eq 'seed') {
         die $app->content unless $step;
+        die $app->content if $ct > 2;
         note "current step: $step";
         next_step($app, $seen{$step}++ ? {} : $param{$step} || $default{$step});
+        if ($prev_step eq $step) {
+            $ct++;
+        } else {
+            $ct = 0;
+        }
+        $prev_step = $step;
     }
 
     $app->content_like(qr/You've successfully configured Movable Type./);
