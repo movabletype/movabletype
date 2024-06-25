@@ -301,6 +301,13 @@ sub suite {
                 };
             },
         },
+
+        # tagSearch=1.
+        {   path    => '/v2/search',
+            method  => 'GET',
+            params  => { tagSearch => 1, tag => 'tag' },
+            result => sub { +{ totalResults => 0, items => [] } },
+        },
     );
 
     my @ok_tests = grep {!$_->{code}} @tests;
@@ -355,13 +362,6 @@ sub suite {
                 MT->model('blog')->remove_all;
                 is( MT->model('blog')->count, 0, 'There is no blog.' );
             },
-        },
-
-        # tagSearch=1.
-        {   path    => '/v2/search',
-            method  => 'GET',
-            params  => { tagSearch => 1, tag => 'tag' },
-            result => sub { +{ totalResults => 0, items => [] } },
         },
     );
 
