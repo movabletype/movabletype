@@ -3,9 +3,9 @@
 
   import { recalcHeight } from "../Utils";
 
-  import SVG from "../../svg/elements/SVG.svelte";
-
   import ContentField from "./ContentField.svelte";
+  import SVG from "../../svg/elements/SVG.svelte";
+  import ContentType from "./ContentType.svelte";
 
   export let config: MT.ContentType.ConfigSettings;
   export let fieldsStore: MT.ContentType.FieldsStore;
@@ -214,7 +214,10 @@
         canDataLabel: canDataLabel,
         options: {}, // add in Svelte
       };
-      fieldsStore.update((fields) => [...fields, newField]);
+      fieldsStore.update((fields: MT.ContentType.Fields) => [
+        ...fields,
+        newField,
+      ]);
       window.setDirty(true);
       // update is not needed in Svelte
 
@@ -358,8 +361,8 @@
   const toggleAll = (): void => {
     isExpanded = !isExpanded;
     const newIsShow = isExpanded ? "show" : "";
-    fieldsStore.update((fields) =>
-      fields.map((field) => {
+    fieldsStore.update((fields: MT.ContentType.Fields) =>
+      fields.map((field: MT.ContentType.Field) => {
         field.isShow = newIsShow;
         return field;
       }),
@@ -380,7 +383,7 @@
   };
 
   const _moveField = (item: MT.ContentType.Field, pos: number): void => {
-    fieldsStore.update((fields) => {
+    fieldsStore.update((fields: MT.ContentType.Fields) => {
       for (let i = 0; i < fields.length; i++) {
         let field = fields[i];
         if (field.id === item.id) {
@@ -476,8 +479,8 @@
   // create in Svelte
   const updateFieldsIsShowAll = (): void => {
     const collapseEls = document.querySelectorAll(".mt-collapse__content");
-    fieldsStore.update((fields) =>
-      fields.map((field, i) => {
+    fieldsStore.update((fields: MT.ContentType.Fields) =>
+      fields.map((field: MT.ContentType.Field, i: number) => {
         if (collapseEls[i].classList.contains("show")) {
           field.isShow = "show";
         } else {
@@ -622,6 +625,8 @@
                           "Allow users to change the display and sort of fields by display option",
                         )}</label
                       >
+                      <!-- checked="checked" is not added to input tag after click checkbox,
+            but check parameter of input element returns true. So, do not fix this. -->
                       <input
                         type="checkbox"
                         class="mt-switch form-control"
@@ -711,7 +716,6 @@
         </div>
       {/if}
       {#each $fieldsStore as field, fieldIndex}
-        {@const fieldId = field.id ?? ""}
         <div
           class="mt-contentfield"
           draggable="true"
@@ -722,7 +726,7 @@
           }}
           on:dragend={onDragEnd}
           style="width: 100%;"
-          id="content-field-block-{fieldId}"
+          id="content-field-block-{field.id}"
           bind:this={tags[fieldIndex]}
         >
           <ContentField
@@ -733,7 +737,7 @@
             {fieldsStore}
             {gatheringData}
             parent={tags[fieldIndex]}
-            bind:gather={gathers[fieldId]}
+            bind:gather={gathers[field.id]}
             {optionsHtmlParams}
           />
         </div>
