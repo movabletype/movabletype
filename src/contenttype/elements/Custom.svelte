@@ -6,7 +6,7 @@
 
   export let config: MT.ContentType.ConfigSettings;
   export let fieldIndex: number;
-  export let fieldsStore: Writable<Array<MT.ContentType.Field>>;
+  export let fieldsStore: MT.ContentType.FieldsStore;
   export let gather: (() => object) | null | undefined;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 

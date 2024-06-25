@@ -9,7 +9,7 @@
   import ContentField from "./ContentField.svelte";
 
   export let config: MT.ContentType.ConfigSettings;
-  export let fieldsStore: Writable<Array<MT.ContentType.Field>>;
+  export let fieldsStore: MT.ContentType.FieldsStore;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
   export let opts: MT.ContentType.ContentFieldsOpts;
   export let root: Element;

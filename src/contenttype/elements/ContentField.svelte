@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { Writable } from "svelte/store";
-
   import ContentFieldTypes from "../ContentFieldTypes";
   import { recalcHeight } from "../Utils";
 
@@ -9,9 +7,9 @@
 
   export let config: MT.ContentType.ConfigSettings;
   export let field: MT.ContentType.Field;
-  export let fields: Array<MT.ContentType.Field>;
+  export let fields: MT.ContentType.Fields;
   export let fieldIndex: number;
-  export let fieldsStore: Writable<Array<MT.ContentType.Field>>;
+  export let fieldsStore: MT.ContentType.FieldsStore;
   export let gatheringData: (c: HTMLDivElement, index: number) => object;
   export let parent: HTMLDivElement;
   export let gather: (() => object) | undefined;

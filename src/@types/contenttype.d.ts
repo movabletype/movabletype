@@ -14,7 +14,7 @@ declare namespace MT.ContentType {
     name: string;
     description: string;
     user_disp_option: string;
-    fields: Array<Field>;
+    fields: Fields;
     types: Array<Type>;
     invalid_types: { [fieldType: string]: boolean };
     observer: Common.ObservableInstanceAny;
@@ -26,7 +26,7 @@ declare namespace MT.ContentType {
     props: {
       config: ConfigSettings;
       fieldIndex: number;
-      fieldsStore: Writable<Array<Field>>;
+      fieldsStore: FieldsStore;
       optionsHtmlParams: OptionsHtmlParams;
     },
     target: Element,
@@ -55,6 +55,10 @@ declare namespace MT.ContentType {
     realId?: string;
     unique_id?: string;
   }
+
+  type Fields = Array<Field>;
+
+  type FieldsStore = Writable<Fields>;
 
   type ObservableInstanceAny =
     import("@riotjs/observable").ObservableInstance<any>; // eslint-disable-line @typescript-eslint/no-explicit-any

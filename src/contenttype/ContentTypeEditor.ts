@@ -1,4 +1,4 @@
-import { Writable, writable } from "svelte/store";
+import { writable } from "svelte/store";
 
 import ContentFieldTypes from "./ContentFieldTypes";
 
@@ -6,7 +6,7 @@ import ContentFields from "./elements/ContentFields.svelte";
 
 export default class ContentTypeEditor {
   static accessor config: MT.ContentType.ConfigSettings = {};
-  static accessor fieldsStore: Writable<Array<MT.ContentType.Field>>;
+  static accessor fieldsStore: MT.ContentType.FieldsStore;
   static accessor optionsHtmlParams: MT.ContentType.OptionsHtmlParams = {};
   static accessor opts: MT.ContentType.ContentFieldsOpts;
   static readonly types = ContentFieldTypes;
