@@ -147,25 +147,6 @@ sub search_terms {
             = sort { $counter->($a) cmp $counter->($b) } @or_tag_names;
     }
 
-    my @or_tags;
-    my $terms
-        = { $app->config->SearchPrivateTags ? () : ( is_private => '0' ) };
-    foreach my $or_tag_name (@or_tag_names) {
-        my %tags = map { $_ => 1, $tag_class->normalize($_) => 1 }
-            ( split( /,/, $or_tag_name ), $or_tag_name );
-        $terms->{name} = [ keys %tags ];
-        my @tags = $tag_class->load($terms);
-        my @tmp;
-        foreach my $tag (@tags) {
-            push @tmp, $tag->id;
-            my @more = $tag_class->load(
-                { n8d_id => $tag->n8d_id ? $tag->n8d_id : $tag->id } );
-            push @tmp, $_->id foreach @more;
-        }
-        push @or_tags, \@tmp if @tmp;
-    }
-    return ( undef, undef ) unless @or_tags;
-
     my $ot_class = $app->model('objecttag');
     my $class    = $app->model( $app->{searchparam}{Type} )
         or return $app->error( $app->errstr );
@@ -203,6 +184,25 @@ sub search_terms {
             }
         }
     }
+
+    my @or_tags;
+    my $terms
+        = { $app->config->SearchPrivateTags ? () : ( is_private => '0' ) };
+    foreach my $or_tag_name (@or_tag_names) {
+        my %tags = map { $_ => 1, $tag_class->normalize($_) => 1 }
+            ( split( /,/, $or_tag_name ), $or_tag_name );
+        $terms->{name} = [ keys %tags ];
+        my @tags = $tag_class->load($terms);
+        my @tmp;
+        foreach my $tag (@tags) {
+            push @tmp, $tag->id;
+            my @more = $tag_class->load(
+                { n8d_id => $tag->n8d_id ? $tag->n8d_id : $tag->id } );
+            push @tmp, $_->id foreach @more;
+        }
+        push @or_tags, \@tmp if @tmp;
+    }
+    return ( undef, undef ) unless @or_tags;
 
     my $depth = 1;
     my $alias = $ot_class->datasource . '_' . $depth;
