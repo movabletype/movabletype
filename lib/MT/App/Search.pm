@@ -633,7 +633,7 @@ sub search_terms {
         if (!$app->user or !$app->user->is_superuser or $app->config->MakeSuperuserRespectDataAPIDisableSite) {
             my @blog_term;
             for my $term (@terms) {
-                next unless ref $term eq 'HASH' && $term->{blog_id};
+                next unless $term->{blog_id};
                 push @blog_term, {id => $term->{blog_id}};
                 last;
             }
