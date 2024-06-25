@@ -1426,11 +1426,16 @@ sub init_plugins {
         $timer->pause_partial if $timer;
         eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin';";
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
-        if ($@) {
+        if (my $error = $@) {
             $Plugins{$plugin_sig}{error} = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
-            $Plugins{$plugin_sig}{system_error} = $@;
+            $Plugins{$plugin_sig}{system_error} = $error;
             $Plugins{$plugin_sig}{enabled} = 0;
             $PluginSwitch->{$plugin_sig} = 0;
+            eval {
+                require MT::Util::Log;
+                MT::Util::Log::init();
+                MT::Util::Log->error($error);
+            };
             return;
         }
         else {
