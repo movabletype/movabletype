@@ -53,7 +53,7 @@
 
 <!-- added block in Svelte implementation -->
 <div
-  id="mt-custom-content-field-{field.id}"
-  class="mt-custom-content-field__container"
+  id="custom-content-field-block-{field.id}"
+  class="mt-custom-contentfield"
   bind:this={target}
 ></div>
