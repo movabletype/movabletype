@@ -378,6 +378,25 @@ sub search_terms {
         push @terms, \%def_terms;
     }
 
+    if ($app->id eq 'data_api') {
+        if (!$app->user or !$app->user->is_superuser or $app->config->MakeSuperuserRespectDataAPIDisableSite) {
+            my @blog_term;
+            for my $term (@terms) {
+                next unless $term->{blog_id};
+                push @blog_term, {id => $term->{blog_id}};
+                last;
+            }
+            push @blog_term, {class => '*'} unless @blog_term;
+            my @sites = $app->model('blog')->load(@blog_term);
+            require MT::CMS::Blog;
+            for my $site (@sites) {
+                if (!MT::CMS::Blog::data_api_is_enabled($app, $site->id, $site)) {
+                    return $app->error('Forbidden', 403);
+                }
+            }
+        }
+    }
+
     my ( $date_start, $date_end );
     if ( $app->param('archive_type') && $app->param('year') ) {
         my $year         = $app->param('year');
