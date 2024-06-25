@@ -50,7 +50,6 @@
         {#each column.sub_fields as subField}
           {@const hiddenSubField =
             subField.force_display != null && subField.force_display != 0}
-          {@const pidProp = { pid: subField.parent_id }}
           <li
             class="list-inline-item"
             hidden={hiddenSubField}
@@ -62,7 +61,7 @@
               <input
                 type="checkbox"
                 id={subField.id}
-                {...pidProp}
+                {...{ pid: subField.parent_id }}
                 class="form-check-input {subField.class}"
                 disabled={!column.checked}
                 checked={subField.checked != 0}

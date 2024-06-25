@@ -2,8 +2,6 @@
   export let changeLimit: (e: Event) => void;
   export let store: MT.Listing.ListStore;
 
-  const refLimitProp = { ref: "limit" };
-
   $: limit = store.limit || 0;
   $: limitToString = limit.toString();
 </script>
@@ -17,7 +15,7 @@
     id="row"
     class="custom-select form-control form-select"
     style="width: 100px;"
-    {...refLimitProp}
+    {...{ ref: "limit" }}
     bind:value={limitToString}
     on:change={changeLimit}
   >
