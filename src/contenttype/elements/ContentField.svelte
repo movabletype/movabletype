@@ -31,6 +31,8 @@
     field.options = {};
   }
 
+  $: id = `field-options-${field.id}`;
+
   const deleteField = (): void => {
     const label = field.label ? field.label : window.trans("No Name");
     if (
@@ -133,7 +135,7 @@
   data-is={field.type}
   class="collapse mt-collapse__content"
   class:show={field.isShow === "show"}
-  id="field-options-{field.id}"
+  {id}
   {...{ fieldid: field.id, isnew: field.isNew }}
   bind:this={parent}
 >
@@ -142,7 +144,7 @@
     {config}
     bind:field
     bind:gather
-    id={`field-options-${field.id}`}
+    {id}
     bind:options={field.options}
     {optionsHtmlParams}
   />
