@@ -5,6 +5,8 @@
   // svelte-ignore unused-export-let
   export let config: MT.ContentType.ConfigSettings;
   export let field: MT.ContentType.Field;
+  // svelte-ignore unused-export-let
+  export let gather = null;
   export let id: string;
   export let options: MT.ContentType.Options;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
