@@ -311,7 +311,7 @@
     }
 
     // bind:value={data} does not work
-    updateInputData();
+    addInputData();
 
     // update is not needed in Svelte
 
@@ -489,12 +489,16 @@
   };
 
   // create in Svelte
-  const updateInputData = (): void => {
+  const addInputData = (): void => {
     const form = document.forms.namedItem(
       "content-type-form",
     ) as HTMLFormElement;
-    const inputData = form.querySelector('input[name="data"]') as Element;
+    const inputId = form.querySelector('input[name="id"]') as Element;
+    const inputData = document.createElement("input") as Element;
+    inputData.setAttribute("type", "hidden");
+    inputData.setAttribute("name", "data");
     inputData.setAttribute("value", data);
+    form.insertBefore(inputData, inputId.nextElementSibling);
   };
 </script>
 
@@ -505,7 +509,7 @@
   <input type="hidden" name="return_args" value={opts.return_args} />
   <input type="hidden" name="_type" value="content_type" />
   <input type="hidden" name="id" value={opts.id} />
-  <input type="hidden" name="data" value={data} />
+  <!-- input[name="data"] is added in addInputData() -->
 
   <div class="row">
     <div class="col">
