@@ -1,6 +1,6 @@
 <script lang="ts">
   import { afterUpdate } from "svelte";
-  import { writable } from "svelte/store";
+  import { Writable } from "svelte/store";
 
   import { recalcHeight } from "../Utils";
 
@@ -9,11 +9,11 @@
   import ContentField from "./ContentField.svelte";
 
   export let config: MT.ContentType.ConfigSettings;
+  export let fieldsStore: Writable<Array<MT.ContentType.Field>>;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
   export let opts: MT.ContentType.ContentFieldsOpts;
   export let root: Element;
 
-  const fieldsStore = writable(opts.fields);
   $: isEmpty = $fieldsStore.length > 0 ? false : true;
   let data = "";
   let droppable = false;
