@@ -32,7 +32,7 @@
     id="tags-multiple"
     label={window.trans("Allow users to input multiple values?")}
   >
-    <!-- onclick was removed bacause unused  -->
+    <!-- onclick was removed bacause unused -->
     <input
       {...{ ref: "multiple" }}
       type="checkbox"

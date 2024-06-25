@@ -20,7 +20,7 @@
     id="embedded_text-initial_value"
     label={window.trans("Initial Value")}
   >
-    <!-- "embeddedded" is typo, as same in Riot.js  -->
+    <!-- "embeddedded" that may be a typo, is same as Riot.js implementation -->
     <textarea
       {...{ ref: "initial_value" }}
       name="initial_value"

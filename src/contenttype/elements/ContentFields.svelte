@@ -768,4 +768,4 @@
   on:click={submit}>{window.trans("Save")}</button
 >
 
-<!-- style was moved to edit_content_type.tmpl, because style did not work here  -->
+<!-- style was moved to edit_content_type.tmpl, because style did not work here -->
