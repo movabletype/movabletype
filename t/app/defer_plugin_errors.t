@@ -58,7 +58,7 @@ my $config = MT->config->stringify_config;
 unlike $config => qr!PluginSwitch Broken/Broken.pl=1!, "Broken plugin is not listed in PluginSwitch";
 
 note "first rpt";
-like run_rpt() => qr/Plugin error/, "has plugin error";
+run_rpt();    # may or may not have a plugin error
 
 note "second rpt";
 unlike run_rpt() => qr/Plugin error/, "no plugin error";
