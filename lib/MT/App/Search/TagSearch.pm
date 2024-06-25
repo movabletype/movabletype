@@ -189,6 +189,21 @@ sub search_terms {
         $terms{blog_id} = $app->{searchparam}{IncludeBlogs};
     }
 
+    if ($app->id eq 'data_api') {
+        if (!$app->user or !$app->user->is_superuser or $app->config->MakeSuperuserRespectDataAPIDisableSite) {
+            my @blog_term;
+            push @blog_term, {id => $terms{blog_id}} if defined $terms{blog_id};
+            push @blog_term, {class => '*'} unless @blog_term;
+            my @sites = $app->model('blog')->load(@blog_term);
+            require MT::CMS::Blog;
+            for my $site (@sites) {
+                if (!MT::CMS::Blog::data_api_is_enabled($app, $site->id, $site)) {
+                    return $app->error('Forbidden', 403);
+                }
+            }
+        }
+    }
+
     my $depth = 1;
     my $alias = $ot_class->datasource . '_' . $depth;
 
