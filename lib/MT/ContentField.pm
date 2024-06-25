@@ -66,6 +66,10 @@ sub list_props {
             base    => '__virtual.id',
             display => 'none',
         },
+        name => {
+            base    => '__virtual.name',
+            display => 'none',
+        },
         created_on => {
             base    => '__virtual.created_on',
             display => 'none',
@@ -85,6 +89,18 @@ sub list_props {
         type => {
             auto    => 1,
             display => 'none',
+        },
+        unique_id => {
+            base    => '__virtual.unique_id',
+            display => 'none',
+            sort    => 1,
+            col     => 'unique_id',
+        },
+        data_label => {
+            base    => '__virtual.data_label',
+            display => 'none',
+            sort    => 1,
+            col     => 'data_label',
         },
         user_custom => {
             bulk_sort => sub {
