@@ -1,6 +1,5 @@
 <script lang="ts">
   import { afterUpdate, onDestroy } from "svelte";
-  import { Writable } from "svelte/store";
 
   import ContentFieldTypes from "../ContentFieldTypes";
 

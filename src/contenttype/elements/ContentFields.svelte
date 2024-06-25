@@ -1,6 +1,5 @@
 <script lang="ts">
   import { afterUpdate } from "svelte";
-  import { Writable } from "svelte/store";
 
   import { recalcHeight } from "../Utils";
 
