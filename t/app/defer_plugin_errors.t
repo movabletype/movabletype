@@ -57,4 +57,17 @@ my $config = MT->config->stringify_config;
 
 unlike $config => qr!PluginSwitch Broken/Broken.pl=1!, "Broken plugin is not listed in PluginSwitch";
 
+note "first rpt";
+like run_rpt() => qr/Plugin error/, "has plugin error";
+
+note "second rpt";
+unlike run_rpt() => qr/Plugin error/, "no plugin error";
+
 done_testing;
+
+sub run_rpt {
+    MT::Session->remove( { kind => 'PT' } );
+    my $res = `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
+    note $res;
+    $res;
+}

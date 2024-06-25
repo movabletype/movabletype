@@ -47,6 +47,8 @@ use MT;
 use MT::Test;
 use MT::PSGI;
 
+$test_env->prepare_fixture('db');
+
 ok eval { MT->instance }, "mt instance" or note $@;
 
 my $switch = MT->config->PluginSwitch || {};
@@ -59,4 +61,17 @@ ok eval { MT::PSGI->new->to_app }, "psgi app without an error" or note $@;
 my $log = $test_env->slurp_logfile;
 like $log => qr/Conflicted plugin MyPlugin 0.1 is disabled/, "logged correctly";
 
+note "first rpt";
+like run_rpt() => qr/Conflicted plugin MyPlugin 0.1 is disabled/, "has plugin error";
+
+note "second rpt";
+unlike run_rpt() => qr/Conflicted plugin MyPlugin 0.1 is disabled/, "no plugin error";
+
 done_testing;
+
+sub run_rpt {
+    MT::Session->remove( { kind => 'PT' } );
+    my $res = `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
+    note $res;
+    $res;
+}
