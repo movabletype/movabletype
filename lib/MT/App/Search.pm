@@ -637,6 +637,7 @@ sub search_terms {
                 push @blog_term, {id => $term->{blog_id}};
                 last;
             }
+            push @blog_term, {class => '*'} unless @blog_term;
             my @sites = $app->model('blog')->load(@blog_term);
             require MT::CMS::Blog;
             for my $site (@sites) {
