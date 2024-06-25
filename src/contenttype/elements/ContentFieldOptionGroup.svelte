@@ -29,7 +29,10 @@
 
     const elms = root.querySelectorAll("*");
     Array.prototype.slice.call(elms).forEach(function (v) {
-      if (v.hasAttribute("id")) {
+      if (
+        v.hasAttribute("id") &&
+        !v.classList.contains("mt-custom-contentfield") // do not change id in Custom.svelte
+      ) {
         v.setAttribute("id", v.getAttribute("id") + "-" + id);
       }
       if (v.tagName.toLowerCase() == "label" && v.hasAttribute("for")) {
