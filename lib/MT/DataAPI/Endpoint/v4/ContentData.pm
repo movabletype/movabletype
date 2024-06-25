@@ -77,20 +77,20 @@ DESCRIPTION
                     type => 'string',
                     enum => [
                         'id',
-                        'uniqueID',
-                        'authored_on',
-                        'created_on',
-                        'modified_on',
+                        'uniqueId',
+                        'authoredOn',
+                        'createdOn',
+                        'modifiedOn',
                     ],
                     default => 'id',
                 },
                 description => <<'DESCRIPTION',
 The field name for sort. You can specify one of following values.
 - id
-- uniqueID
-- authored_on
-- created_on
-- modified_on
+- uniqueId
+- authoredOn
+- createdOn
+- modifiedOn
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/content_data_sortOrder' },

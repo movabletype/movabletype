@@ -22,14 +22,14 @@ sub fields {
             alias => 'user_disp_option',
             type  => 'MT::DataAPI::Resource::DataType::Boolean',
         },
-        {   name  => 'uniqueID',
+        {   name  => 'uniqueId',
             alias => 'unique_id',
         },
         {   name        => 'contentFields',
             from_object => sub {
                 my ( $obj, $hash ) = @_;
                 MT::DataAPI::Resource->from_object( $obj->field_objs,
-                    [ 'id', 'label', 'type', 'uniqueID' ] );
+                    [ 'id', 'label', 'type', 'uniqueId' ] );
             },
             schema => {
                 type  => 'array',
@@ -39,7 +39,7 @@ sub fields {
                         id       => { type => 'string' },
                         label    => { type => 'string' },
                         type     => { type => 'string' },
-                        uniqueID => { type => 'string' },
+                        uniqueId => { type => 'string' },
                     },
                 },
             },
