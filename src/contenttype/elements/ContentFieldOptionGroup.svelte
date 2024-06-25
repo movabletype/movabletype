@@ -16,9 +16,11 @@
     console.error('ContentFieldOptionGroup: "type" attribute is required.');
   }
 
-  // Initialize
-  if (!options.display) {
-    options.display = "default";
+  $: {
+    // Initialize
+    if (!options.display) {
+      options.display = "default";
+    }
   }
 
   onMount(() => {

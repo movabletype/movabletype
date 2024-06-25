@@ -15,7 +15,7 @@
     console.error("ConetntFieldOption: 'id' attribute missing");
   }
 
-  const attrProp = attr ? { attr: attr } : {};
+  $: attrProp = attr ? { attr: attr } : {};
 
   let attrShowProps = {};
   $: {

@@ -12,14 +12,18 @@
   export let noLink = "";
   export let rebuild = "";
 
-  if (!className) {
-    className = "info";
+  $: {
+    if (!className) {
+      className = "info";
+    }
+    className = className.replace(/\balert\b/, "warning");
+    className = className.replace(/\berror\b/, "danger");
   }
-  className = className.replace(/\balert\b/, "warning");
-  className = className.replace(/\berror\b/, "danger");
 
-  if (id && (canClose || canClose === null)) {
-    canClose = 1;
+  $: {
+    if (id && (canClose || canClose === null)) {
+      canClose = 1;
+    }
   }
 </script>
 

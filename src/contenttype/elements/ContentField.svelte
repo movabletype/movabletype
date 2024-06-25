@@ -15,23 +15,25 @@
   export let gather: (() => object) | undefined;
   export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
 
-  if (field.isNew === null) {
-    field.isNew = false;
-  }
-
-  if (field.isShow === null) {
-    field.isShow = "";
-  }
-
-  if (field.realId === null) {
-    field.realId = "";
-  }
-
-  if (field.options === null) {
-    field.options = {};
-  }
-
   $: id = `field-options-${field.id}`;
+
+  $: {
+    if (field.isNew === null) {
+      field.isNew = false;
+    }
+
+    if (field.isShow === null) {
+      field.isShow = "";
+    }
+
+    if (field.realId === null) {
+      field.realId = "";
+    }
+
+    if (field.options === null) {
+      field.options = {};
+    }
+  }
 
   const deleteField = (): void => {
     const label = field.label ? field.label : window.trans("No Name");
