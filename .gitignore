@@ -83,7 +83,7 @@ cover_db/
 
 t/selenium/**/evidence
 
-mt-static/js/build
+mt-static/js/build/*.map
 
 CHECKSUMS
 
