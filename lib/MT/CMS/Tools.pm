@@ -2002,11 +2002,13 @@ sub adjust_sitepath {
                 $path = $blog->archive_path;
             }
 
-            my $file_path        = $fi->absolute_file_path($blog);
+            my $file_path        = $fi->file_path;
             my $old_delim        = $file_path =~ m/^\// ? '/' : '\\';
             my $quoted_old_delim = quotemeta $old_delim;
             my $quoted_old_path  = quotemeta $old_path;
 
+            # No need to change relative file paths
+            if ( File::Spec->file_name_is_absolute($file_path) ) {
             # Remove site/archive path part in fileinfo_file_path.
             if ( $blog->is_blog ) {
                 $file_path =~ s/^.*$quoted_old_path(.*)$/$1/;
@@ -2034,6 +2036,7 @@ sub adjust_sitepath {
                     $fi->id
                 )
             );
+            }
 
             ## Change fileinfo_url
             my ( $old_rel_url, $rel_url );
