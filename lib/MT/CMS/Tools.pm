@@ -2008,34 +2008,31 @@ sub adjust_sitepath {
             my $quoted_old_path  = quotemeta $old_path;
 
             # No need to change relative file paths
-            if ( File::Spec->file_name_is_absolute($file_path) ) {
-            # Remove site/archive path part in fileinfo_file_path.
-            if ( $blog->is_blog ) {
-                $file_path =~ s/^.*$quoted_old_path(.*)$/$1/;
-                $file_path =~ s/$quoted_old_delim$//;
-            }
-            else {
-                $file_path =~ s/^$quoted_old_path//;
-            }
+            if (File::Spec->file_name_is_absolute($file_path)) {
+                # Remove site/archive path part in fileinfo_file_path.
+                if ($blog->is_blog) {
+                    $file_path =~ s/^.*$quoted_old_path(.*)$/$1/;
+                    $file_path =~ s/$quoted_old_delim$//;
+                } else {
+                    $file_path =~ s/^$quoted_old_path//;
+                }
 
-            # Replace delimiters if needing.
-            $file_path =~ s/^$quoted_old_delim//;
-            if ( $old_delim ne $delim ) {
-                $file_path =~ s/$quoted_old_delim/$delim/g;
-            }
+                # Replace delimiters if needing.
+                $file_path =~ s/^$quoted_old_delim//;
+                if ($old_delim ne $delim) {
+                    $file_path =~ s/$quoted_old_delim/$delim/g;
+                }
 
-            if (MT->config->UseRelativeFilePath) {
-                $fi->file_path($file_path);
-            } else {
-                $fi->file_path( File::Spec->catfile( $path, $file_path ) );
-            }
+                if (MT->config->UseRelativeFilePath) {
+                    $fi->file_path($file_path);
+                } else {
+                    $fi->file_path(File::Spec->catfile($path, $file_path));
+                }
 
-            $app->print_encode(
-                $app->translate(
+                $app->print_encode($app->translate(
                     "Changing file path for FileInfo record (ID:[_1])...",
                     $fi->id
-                )
-            );
+                ));
             }
 
             ## Change fileinfo_url
