@@ -140,7 +140,7 @@ foreach my $blog (@blogs) {
     my @errors = MT::TheSchwartz::Error->load();
     ok( @errors, "Error should have been found" );
     @jobs = MT::TheSchwartz::Job->load();
-    ok( !@jobs, "Jobs were not found, everything went through" );
+    ok( !@jobs, "Jobs were not found, everything went through" ) or diag explain \@jobs;
 
     ## need reload for getting latest status, since rpt run as other process.
     $test_env->clear_mt_cache;
@@ -169,5 +169,5 @@ foreach my $blog (@blogs) {
     ok( $rebuild, "Rebuilt all without the publish queue" );
     @jobs      = MT::TheSchwartz::Job->load();
     $job_count = scalar(@jobs);
-    ok( $job_count == 0, "There are no new jobs" );
+    ok( $job_count == 0, "There are no new jobs" ) or diag explain \@jobs;
 }
