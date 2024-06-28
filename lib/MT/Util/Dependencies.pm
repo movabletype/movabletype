@@ -16,7 +16,7 @@ my %CustomURL = (
 our %Requirements = (
     "Archive::Tar" => {
         label     => "This module is optional. It is used to manipulate files during backup and restore operations.",
-        perl_core => 1.52,
+        perl_core => 1.82,
         tags      => ["Archive"],
         url       => "https://metacpan.org/pod/Archive::Tar",
     },
@@ -97,13 +97,13 @@ our %Requirements = (
     },
     "Digest::MD5" => {
         label     => "This module is used to make checksums.",
-        perl_core => 2.39,
+        perl_core => 2.51,
         tags      => ["Digest"],
         url       => "https://metacpan.org/pod/Digest::MD5",
     },
     "Digest::SHA" => {
         label     => "Digest::SHA is required in order to provide enhanced protection of user passwords.",
-        perl_core => 5.47,
+        perl_core => 5.71,
         tags      => ["Digest"],
         url       => "https://metacpan.org/pod/Digest::SHA",
     },
@@ -114,7 +114,7 @@ our %Requirements = (
     },
     "Encode" => {
         label     => "Encode is required to handle multibyte characters correctly.",
-        perl_core => 2.35,
+        perl_core => 2.44,
         required  => 1,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Encode",
@@ -126,14 +126,14 @@ our %Requirements = (
     },
     "File::Spec" => {
         label     => "File::Spec is required to work with file system path information on all supported operating systems.",
-        perl_core => "3.30",
+        perl_core => "3.39_02",
         required  => 1,
         tags      => ["Base", "Filesys"],
         url       => "https://metacpan.org/pod/File::Spec",
         version   => 0.8,
     },
     "File::Temp" => {
-        extlib    => 0.2304,
+        extlib    => 0.2311,
         label     => "File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.",
         perl_core => 0.22,
         tags      => ["Base", "Filesys"],
@@ -167,13 +167,13 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/HTTP::DAV",
     },
     "HTTP::Request" => {
-        extlib => 6.36,
+        extlib => 6.43,
         label  => "This module is optional. It is used to download assets from a website.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/HTTP::Request",
     },
     "Image::ExifTool" => {
-        extlib => "12.30",
+        extlib => "12.50",
         label  => "Image::ExifTool is used to manipulate image metadata.",
         tags   => ["Image"],
         url    => "https://metacpan.org/pod/Image::ExifTool",
@@ -196,7 +196,7 @@ our %Requirements = (
     },
     "IO::Compress::Gzip" => {
         label     => "IO::Compress::Gzip is required in order to compress files during a backup operation.",
-        perl_core => "2.020",
+        perl_core => 2.048,
         tags      => ["Archive"],
         url       => "https://metacpan.org/pod/IO::Compress::Gzip",
     },
@@ -207,7 +207,7 @@ our %Requirements = (
     },
     "IO::Uncompress::Gunzip" => {
         label     => "IO::Uncompress::Gunzip is required in order to decompress files during a restore operation.",
-        perl_core => "2.020",
+        perl_core => 2.048,
         tags      => ["Archive"],
         url       => "https://metacpan.org/pod/IO::Uncompress::Gunzip",
     },
@@ -217,17 +217,18 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/IPC::Run",
     },
     "JSON" => {
-        extlib   => 4.07,
+        extlib   => "4.10",
         label    => "JSON is required to use DataAPI, Content Type, and listing framework.",
         required => 1,
         tags     => ["JSON"],
         url      => "https://metacpan.org/pod/JSON",
     },
     "JSON::PP" => {
-        extlib => "4.10",
-        label  => "JSON::PP is used internally to process JSON by default.",
-        tags   => ["JSON"],
-        url    => "https://metacpan.org/pod/JSON::PP",
+        extlib    => 4.12,
+        label     => "JSON::PP is used internally to process JSON by default.",
+        perl_core => "2.27200",
+        tags      => ["JSON"],
+        url       => "https://metacpan.org/pod/JSON::PP",
     },
     "JSON::XS" => {
         label => "JSON::XS accelerates JSON processing.",
@@ -236,7 +237,7 @@ our %Requirements = (
     },
     "List::Util" => {
         label     => "List::Util is required to manipulate a list of numbers.",
-        perl_core => 1.21,
+        perl_core => 1.23,
         required  => 1,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/List::Util",
@@ -263,14 +264,14 @@ our %Requirements = (
         url    => "https://metacpan.org/pod/LWP::Protocol::https",
     },
     "LWP::UserAgent" => {
-        extlib => 6.62,
+        extlib => 6.67,
         label  => "LWP::UserAgent is optional. It is used to fetch information from local and external servers.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::UserAgent",
     },
     "MIME::Base64" => {
         label     => "MIME::Base64 is required to send mail and handle blobs during backup/restore operations.",
-        perl_core => 3.08,
+        perl_core => 3.13,
         tags      => ["Mail", "Encoding"],
         url       => "https://metacpan.org/pod/MIME::Base64",
     },
@@ -325,20 +326,20 @@ our %Requirements = (
     },
     "Safe" => {
         label     => "This module is used in a test attribute for the MTIf conditional tag.",
-        perl_core => 2.18,
+        perl_core => "2.31_01",
         tags      => ["System"],
         url       => "https://metacpan.org/pod/Safe",
     },
     "Scalar::Util" => {
         label     => "Scalar::Util is required to avoid memory leaks.",
-        perl_core => 1.21,
+        perl_core => 1.23,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Scalar::Util",
         version   => "1.10",
     },
     "Storable" => {
         label     => "Storable is required to make deep-copy of complicated data structures.",
-        perl_core => "2.20",
+        perl_core => 2.34,
         required  => 1,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Storable",
@@ -361,7 +362,7 @@ our %Requirements = (
     },
     "Time::HiRes" => {
         label     => "This module is required for profiling.",
-        perl_core => 1.9719,
+        perl_core => 1.9725,
         tags      => ["System", "DateTime"],
         url       => "https://metacpan.org/pod/Time::HiRes",
     },
@@ -426,9 +427,10 @@ our %ExtLibOnly = (
         used_in => ["HTML::Diff"],
     },
     "AutoLoader" => {
-        extlib    => "5.70",
+        extlib    => 5.74,
+        not_used  => 1,
         note      => "used inexplicitly in many modules including MT::ConfigMgr",
-        perl_core => 5.68,
+        perl_core => 5.72,
         url       => "https://metacpan.org/pod/AutoLoader",
     },
     "boolean" => {
@@ -437,7 +439,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Theme"],
     },
     "CGI::Fast" => {
-        extlib  => 2.13,
+        extlib  => 2.16,
         url     => "https://metacpan.org/pod/CGI::Fast",
         used_in => ["MT::Util"],
     },
@@ -457,9 +459,9 @@ our %ExtLibOnly = (
         used_in => ["URI::Fetch"],
     },
     "Class::Inspector" => {
-        extlib  => 1.36,
-        url     => "https://metacpan.org/pod/Class::Inspector",
-        used_in => ["SOAP::Lite"],
+        extlib   => 1.36,
+        not_used => 1,
+        url      => "https://metacpan.org/pod/Class::Inspector",
     },
     "Class::Method::Modifiers" => {
         extlib  => 2.13,
@@ -487,8 +489,19 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::UniqueID"],
     },
     "Data::ObjectDriver" => {
-        extlib => 0.21,
-        url    => "https://metacpan.org/pod/Data::ObjectDriver",
+        extlib  => 0.22,
+        url     => "https://metacpan.org/pod/Data::ObjectDriver",
+        used_in => [
+            "MT::Object",
+            "MT::Object::BaseCache",
+            "MT::ObjectDriver::Driver::Cache::RAM",
+            "MT::ObjectDriver::Driver::CacheWrapper",
+            "MT::ObjectDriver::Driver::DBD::Pg",
+            "MT::ObjectDriver::Driver::DBD::SQLite",
+            "MT::ObjectDriver::Driver::DBD::mysql",
+            "MT::ObjectDriver::Driver::DBI",
+            "MT::ObjectDriver::SQL",
+        ],
     },
     "Date::Parse" => {
         extlib  => 2.33,
@@ -508,7 +521,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::Digest::MD5"],
     },
     "Digest::SHA::PurePerl" => {
-        extlib  => 6.02,
+        extlib  => 6.03,
         url     => "https://metacpan.org/pod/Digest::SHA::PurePerl",
         used_in => ["MT::Util::Digest::SHA"],
     },
@@ -558,9 +571,9 @@ our %ExtLibOnly = (
         used_in => ["LWP::UserAgent"],
     },
     "HTTP::Daemon" => {
-        extlib  => 6.14,
-        url     => "https://metacpan.org/pod/HTTP::Daemon",
-        used_in => ["SOAP::Transport::HTTP"],
+        extlib   => 6.14,
+        not_used => 1,
+        url      => "https://metacpan.org/pod/HTTP::Daemon",
     },
     "HTTP::Date" => {
         extlib  => 6.05,
@@ -574,7 +587,8 @@ our %ExtLibOnly = (
     },
     "I18N::LangTags::List" => {
         extlib    => 0.35,
-        perl_core => 0.35,
+        perl_core => "0.35_01",
+        perl_only => 1,
         url       => "https://metacpan.org/pod/I18N::LangTags::List",
         used_in   => ["MT::L10N"],
     },
@@ -584,9 +598,9 @@ our %ExtLibOnly = (
         used_in => ["HTTP::Message"],
     },
     "IO::SessionSet" => {
-        extlib  => "undef",
-        url     => "https://metacpan.org/pod/IO::SessionSet",
-        used_in => ["SOAP::Transport::TCP"],
+        extlib   => "undef",
+        not_used => 1,
+        url      => "https://metacpan.org/pod/IO::SessionSet",
     },
     "IO::Socket::IP" => {
         extlib  => 0.41,
@@ -604,8 +618,8 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::Archive::BinZip"],
     },
     "Locale::Maketext" => {
-        extlib    => 1.31,
-        perl_core => 1.13,
+        extlib    => 1.32,
+        perl_core => 1.22,
         url       => "https://metacpan.org/pod/Locale::Maketext",
         used_in   => ["MT::L10N"],
     },
@@ -625,8 +639,8 @@ our %ExtLibOnly = (
         used_in => ["MIME::Lite"],
     },
     "Math::BigInt" => {
-        extlib    => "1.999830",
-        perl_core => 1.89,
+        extlib    => 1.999837,
+        perl_core => 1.998,
         url       => "https://metacpan.org/pod/Math::BigInt",
         used_in   => ["JSON::PP"],
     },
@@ -636,7 +650,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::UniqueID"],
     },
     "MIME::Charset" => {
-        extlib  => 1.012002,
+        extlib  => 1.013001,
         url     => "https://metacpan.org/pod/MIME::Charset",
         used_in => ["MIME::EncWords"],
     },
@@ -668,8 +682,9 @@ our %ExtLibOnly = (
     "parent" => {
         extlib    => 0.238,
         note      => "used in many extlib modules",
-        perl_core => 0.221,
+        perl_core => 0.225,
         url       => "https://metacpan.org/pod/parent",
+        used_in   => ["MT::PSGI"],
     },
     "Sub::Uplevel" => {
         extlib  => "0.2800",
@@ -678,7 +693,7 @@ our %ExtLibOnly = (
     },
     "Time::Local" => {
         extlib    => "1.30",
-        perl_core => 1.1901,
+        perl_core => "1.2000",
         url       => "https://metacpan.org/pod/Time::Local",
         used_in   => ["MT::Util"],
     },
@@ -698,7 +713,7 @@ our %ExtLibOnly = (
         url      => "https://metacpan.org/pod/UNIVERSAL::require",
     },
     "URI::Fetch" => {
-        extlib   => 0.13,
+        extlib   => 0.15,
         not_used => 1,
         url      => "https://metacpan.org/pod/URI::Fetch",
     },
@@ -708,8 +723,8 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::UniqueID"],
     },
     "version" => {
-        extlib    => 0.9918,
-        perl_core => 0.77,
+        extlib    => 0.9929,
+        perl_core => 0.99,
         url       => "https://metacpan.org/pod/version",
         used_in   => ["MT::version"],
     },
@@ -724,9 +739,9 @@ our %ExtLibOnly = (
         used_in => ["XML::SAX::PurePerl"],
     },
     "XML::Parser::Lite" => {
-        extlib  => 0.722,
-        url     => "https://metacpan.org/pod/XML::Parser::Lite",
-        used_in => ["SOAP::Lite"],
+        extlib   => 0.722,
+        not_used => 1,
+        url      => "https://metacpan.org/pod/XML::Parser::Lite",
     },
     "XML::SAX::Base" => {
         extlib  => 1.09,
@@ -736,6 +751,77 @@ our %ExtLibOnly = (
 );
 
 our %HiddenCoreDeps = (
+    "Carp"         => { perl_core => 1.26, url => "https://metacpan.org/pod/Carp" },
+    "Data::Dumper" => {
+        perl_core => "2.135_06",
+        url       => "https://metacpan.org/pod/Data::Dumper",
+    },
+    "DirHandle" => {
+        perl_core => 1.04,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/DirHandle",
+    },
+    "English" => {
+        perl_core => 1.05,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/English",
+    },
+    "Exporter"           => { perl_core => 5.66, url => "https://metacpan.org/pod/Exporter" },
+    "ExtUtils::Manifest" => {
+        perl_core => 1.61,
+        url       => "https://metacpan.org/pod/ExtUtils::Manifest",
+    },
+    "Fcntl" => {
+        perl_core => 1.11,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/Fcntl",
+    },
+    "File::Basename" => {
+        perl_core => 2.84,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/File::Basename",
+    },
+    "File::Copy" => {
+        perl_core => 2.23,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/File::Copy",
+    },
+    "File::Find" => {
+        perl_core => "1.20",
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/File::Find",
+    },
+    "File::Path" => {
+        perl_core => "2.08_01",
+        url       => "https://metacpan.org/pod/File::Path",
+    },
+    "FindBin"      => { perl_core => 1.51, url => "https://metacpan.org/pod/FindBin" },
+    "Getopt::Long" => { perl_core => 2.38, url => "https://metacpan.org/pod/Getopt::Long" },
+    "IO::File"     => { perl_core => 1.16, url => "https://metacpan.org/pod/IO::File" },
+    "IPC::Open3"   => {
+        perl_core => 1.12,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/IPC::Open3",
+    },
+    "POSIX" => {
+        perl_core => "1.30",
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/POSIX",
+    },
+    "Symbol" => {
+        perl_core => 1.07,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/Symbol",
+    },
+    "Sys::Hostname" => {
+        perl_core => 1.16,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/Sys::Hostname",
+    },
+    "Text::Wrap" => {
+        perl_core => 2009.0305,
+        url       => "https://metacpan.org/pod/Text::Wrap",
+    },
 );
 
 sub required_modules {
