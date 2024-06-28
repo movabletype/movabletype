@@ -5,9 +5,6 @@
   export let listFilterTopUpdate: () => void;
   export let store: MT.Listing.ListStore;
 
-  const refLabelProp = { ref: "label" };
-  const refModalProp = { ref: "modal" };
-
   let isEditingFilter: { [key: string]: boolean } = {};
   let modal: HTMLDivElement;
 
@@ -84,7 +81,7 @@
   class="modal fade"
   id="select-filter"
   tabindex="-1"
-  {...refModalProp}
+  {...{ ref: "modal" }}
   bind:this={modal}
 >
   <div class="modal-dialog">
@@ -137,7 +134,7 @@
                           type="text"
                           class="form-control rename-filter-input"
                           value={filter.label}
-                          {...refLabelProp}
+                          {...{ ref: "label" }}
                         />
                         <button
                           class="btn btn-default form-control"
