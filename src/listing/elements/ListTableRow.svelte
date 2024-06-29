@@ -9,7 +9,7 @@
     const nameClass = store.showColumns[index].id;
     let classes: string;
     if (store.hasMobileColumn()) {
-      if (store.getMobileColumnIndex().toString() == index) {
+      if (store.getMobileColumnIndex().toString() === index) {
         classes = "d-md-none";
       } else {
         classes = "d-none d-md-table-cell";

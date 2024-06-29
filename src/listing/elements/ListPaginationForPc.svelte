@@ -39,7 +39,7 @@
   {/if}
 
   {#if page - 1 >= 1}
-    <li class="page-item" class:first-last={page - 1 == 1}>
+    <li class="page-item" class:first-last={page - 1 === 1}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"
@@ -61,7 +61,7 @@
   </li>
 
   {#if page + 1 <= store.pageMax}
-    <li class="page-item" class:first-last={page + 1 == store.pageMax}>
+    <li class="page-item" class:first-last={page + 1 === store.pageMax}>
       <!-- svelte-ignore a11y-invalid-attribute -->
       <a
         href="javascript:void(0);"

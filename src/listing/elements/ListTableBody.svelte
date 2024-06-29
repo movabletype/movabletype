@@ -14,9 +14,9 @@
 
     const target = e.target as HTMLElement;
     if (
-      target.tagName == "A" ||
-      target.tagName == "IMG" ||
-      target.tagName == "svg"
+      target.tagName === "A" ||
+      target.tagName === "IMG" ||
+      target.tagName === "svg"
     ) {
       return false;
     }
@@ -25,7 +25,7 @@
     /* @ts-expect-error : MT is not defined */
     if (MT.Util.isMobileView()) {
       let $mobileColumn: JQuery<HTMLElement>;
-      if (target.dataset.is == "list-table-column") {
+      if (target.dataset.is === "list-table-column") {
         $mobileColumn = jQuery(target);
       } else {
         $mobileColumn = jQuery(target).parents("[data-is=list-table-column]");
@@ -58,7 +58,7 @@
   };
 </script>
 
-{#if objects.length == 0}
+{#if objects.length === 0}
   <tr>
     <td colspan={store.columns.length + 1}>
       {window.trans("No [_1] could be found.", zeroStateLabel)}

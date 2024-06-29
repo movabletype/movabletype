@@ -25,7 +25,7 @@
   <div class="field-content">
     <ul id="disp_cols" class="list-inline m-0">
       {#each store.columns as column}
-        {@const hiddenColumn = column.force_display != 0}
+        {@const hiddenColumn = Boolean(column.force_display)}
         <li
           class="list-inline-item"
           hidden={hiddenColumn}
@@ -38,7 +38,7 @@
               type="checkbox"
               class="form-check-input"
               id={column.id}
-              checked={column.checked != 0}
+              checked={Boolean(column.checked)}
               on:change={toggleColumn}
               disabled={store.isLoading}
             />
@@ -48,8 +48,7 @@
           </div>
         </li>
         {#each column.sub_fields as subField}
-          {@const hiddenSubField =
-            subField.force_display != null && subField.force_display != 0}
+          {@const hiddenSubField = Boolean(subField.force_display)}
           <li
             class="list-inline-item"
             hidden={hiddenSubField}
@@ -64,7 +63,7 @@
                 {...{ pid: subField.parent_id }}
                 class="form-check-input {subField.class}"
                 disabled={!column.checked}
-                checked={subField.checked != 0}
+                checked={Boolean(subField.checked)}
                 on:change={toggleSubField}
               />
               <label class="form-check-label form-label" for={subField.id}>

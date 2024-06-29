@@ -109,7 +109,7 @@
   const checkCount = (): boolean => {
     const checkedRowCount = getCheckedRowCount();
 
-    if (checkedRowCount == 0) {
+    if (!checkedRowCount) {
       alertNoSelectedError();
       return false;
     }
@@ -165,7 +165,7 @@
   const getConfirmMessage = (): string => {
     const checkedRowCount = getCheckedRowCount();
 
-    if (checkedRowCount == 1) {
+    if (checkedRowCount === 1) {
       return window.trans(
         "Are you sure you want to [_2] this [_1]?",
         singular,

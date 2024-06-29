@@ -42,7 +42,8 @@
         "allowExpressions": true,
         "allowTypedFunctionExpressions": true
       }
-    ]
+    ],
+    "eqeqeq": "error"
   },
   "settings": {
     "svelte/typescript": true
