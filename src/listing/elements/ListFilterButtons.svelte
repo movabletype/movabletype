@@ -47,14 +47,15 @@
 
 <button
   class="btn btn-primary"
-  disabled={currentFilter.items.length == 0}
+  disabled={currentFilter.items.length === 0}
   on:click={applyFilter}
 >
   {window.trans("Apply")}
 </button>
 <button
   class="btn btn-default"
-  disabled={currentFilter.items.length == 0 || currentFilter.can_save == 0}
+  disabled={currentFilter.items.length === 0 ||
+    currentFilter.can_save.toString() === "0"}
   on:click={saveFilter}
 >
   {window.trans("Save")}

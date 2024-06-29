@@ -10,7 +10,7 @@
   let isTooNarrowWidth: boolean;
   let previousDisabledProp: { disabled?: string } = {};
 
-  $: page = store.page == null ? 0 : store.page;
+  $: page = store.page || 0;
   $: {
     previousDisabledProp = {};
     if (page <= 1) {

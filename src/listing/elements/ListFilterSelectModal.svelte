@@ -34,7 +34,7 @@
         .mtListFilterId;
     const filterLabel = (target.previousElementSibling as HTMLInputElement)
       .value;
-    if (filterId == null || filterId == "") {
+    if (filterId === null || filterId === undefined || filterId === "") {
       return;
     }
     store.trigger("rename_filter_by_id", filterId, filterLabel);
@@ -51,7 +51,7 @@
       "Are you sure you want to remove filter '[_1]'?",
       filterData.mtListFilterLabel || "",
     );
-    if (confirm(message) == false) {
+    if (confirm(message) === false) {
       return false;
     }
     store.trigger("remove_filter_by_id", filterData.mtListFilterId);
@@ -61,7 +61,7 @@
     const filterData = (e.target as HTMLElement).parentElement?.parentElement
       ?.dataset;
     const filterId = filterData?.mtListFilterId || "";
-    if (filterId == "") {
+    if (filterId === "") {
       return;
     }
     stopEditingAllFilters();
@@ -97,7 +97,7 @@
           <h6 class="filter-list-label">{window.trans("My Filters")}</h6>
           <ul id="user-filters" class="list-unstyled editable">
             {#each store.filters as filter}
-              {#if filter.can_save == 1}
+              {#if filter.can_save.toString() === "1"}
                 <li
                   class="filter line"
                   data-mt-list-filter-id={filter.id}
@@ -180,7 +180,7 @@
             </h6>
             <ul id="built-in-filters" class="list-unstyled">
               {#each store.filters as filter}
-                {#if filter.can_save == 0}
+                {#if filter.can_save.toString() === "0"}
                   <li
                     class="filter line"
                     data-mt-list-filter-id={filter.id}

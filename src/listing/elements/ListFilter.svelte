@@ -13,7 +13,7 @@
 
   const validateFilterName = (name: string): boolean => {
     return !store.filters.some(function (filter) {
-      return filter.label == name;
+      return filter.label === name;
     });
   };
 
@@ -21,7 +21,7 @@
   jQuery.mtValidateRules["[name=filter_name], .rename-filter-input"] =
     function ($e: JQuery<HTMLElement>) {
       const val = $e.val()?.toString();
-      if (val == null) {
+      if (val === undefined) {
         return;
       }
 
@@ -58,7 +58,7 @@
     itemIndex: string,
     contentIndex: string,
   ): void => {
-    if (currentFilter.items[itemIndex].type != "pack") {
+    if (currentFilter.items[itemIndex].type !== "pack") {
       const items = [currentFilter.items[itemIndex]];
       currentFilter.items[itemIndex] = {
         type: "pack",
@@ -126,7 +126,7 @@
     currentFilter.items = vals;
   };
 
-  $: isAllpassFilter = currentFilter.id == store.allpassFilter.id;
+  $: isAllpassFilter = currentFilter.id === store.allpassFilter.id;
 
   /* add "filter" argument for updating this output after changing "filter" */
   const isFilterItemSelected = (
@@ -134,7 +134,7 @@
     type: string,
   ): boolean => {
     return filter.items.some(function (item) {
-      return item.type == type;
+      return item.type === type;
     });
   };
 

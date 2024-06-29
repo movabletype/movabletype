@@ -29,7 +29,7 @@
   export let store: MT.Listing.ListStore;
   export let zeroStateLabel: string;
 
-  $: hidden = store.count == 0;
+  $: hidden = store.count === 0;
 
   onMount(() => {
     store.trigger("load_list");

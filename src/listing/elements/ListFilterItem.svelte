@@ -41,7 +41,7 @@
     const itemIndex = getListItemIndex(target);
     const contentIndex = getListItemContentIndex(target);
     let item = currentFilter.items[itemIndex];
-    if (item.type == "pack") {
+    if (item.type === "pack") {
       item = item.args.items[contentIndex];
     }
     jQuery(target)
@@ -163,7 +163,7 @@
 
   const initializeOptionWithBlank = (): void => {
     const changeOption = ($node: JQuery<HTMLElement>): void => {
-      if ($node.val() == "blank" || $node.val() == "not_blank") {
+      if ($node.val() === "blank" || $node.val() === "not_blank") {
         $node.parent().find("input[type=text]").hide();
       } else {
         $node.parent().find("input[type=text]").show();
@@ -211,7 +211,7 @@
   >
     <span aria-hidden="true">&times;</span>
   </button>
-  {#if item.type == "pack"}
+  {#if item.type === "pack"}
     <div>
       {#each item.args.items as loopItem, index}
         {#if filterTypeHash[loopItem.type]}
@@ -263,7 +263,7 @@
       {/each}
     </div>
   {/if}
-  {#if item.type != "type" && filterTypeHash[item.type]}
+  {#if item.type !== "type" && filterTypeHash[item.type]}
     <div
       data-mt-list-item-content-index="0"
       class={"filtertype type-" + item.type}

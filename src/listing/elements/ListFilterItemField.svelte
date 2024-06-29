@@ -16,15 +16,15 @@
 
     for (let key in item.args) {
       if (
-        typeof item.args[key] != "string" &&
-        typeof item.args[key] != "number"
+        typeof item.args[key] !== "string" &&
+        typeof item.args[key] !== "number"
       ) {
         continue;
       }
       const selector = "." + item.type + "-" + key;
       const elements = parentDiv.querySelectorAll(selector);
       Array.prototype.slice.call(elements).forEach(function (element) {
-        if (element.tagName == "INPUT" || element.tagName == "SELECT") {
+        if (element.tagName === "INPUT" || element.tagName === "SELECT") {
           element.value = item.args[key];
         } else {
           element.textContent = item.args[key];

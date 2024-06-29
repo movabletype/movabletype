@@ -5,10 +5,10 @@
   export let toggleSortColumn: (e: Event) => void;
 
   const classProps = (column: MT.Listing.ListColumn): object => {
-    if (column.sortable && store.sortBy == column.id) {
-      if (store.sortOrder == "ascend") {
+    if (column.sortable && store.sortBy === column.id) {
+      if (store.sortOrder === "ascend") {
         return { class: "mt-table__ascend" };
-      } else if (store.sortOrder == "descend") {
+      } else if (store.sortOrder === "descend") {
         return { class: "mt-table__descend" };
       } else {
         return {};
@@ -41,13 +41,13 @@
     </th>
   {/if}
   {#each store.columns as column}
-    {#if column.checked && column.id != "__mobile"}
+    {#if column.checked && column.id !== "__mobile"}
       <th
         scope="col"
         data-id={column.id}
         class:primary={column.primary}
         class:sortable={column.sortable}
-        class:sorted={store.sortBy == column.id}
+        class:sorted={store.sortBy === column.id}
         class="text-truncate"
       >
         {#if column.sortable}

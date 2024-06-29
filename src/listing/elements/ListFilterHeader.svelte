@@ -39,7 +39,7 @@
         />
       </li>
       <li class="list-inline-item">
-        {#if isAllpassFilter == false}
+        {#if isAllpassFilter === false}
           <!-- svelte-ignore a11y-invalid-attribute -->
           <a href="#" id="allpass-filter" on:click={resetFilter}>
             [ {window.trans("Reset Filter")} ]

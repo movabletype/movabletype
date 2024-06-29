@@ -1,11 +1,11 @@
 <script lang="ts">
   export let store: MT.Listing.ListStore;
 
-  $: count = store.count == null ? 0 : store.count;
-  $: limit = store.limit == null ? 0 : store.limit;
-  $: page = store.page == null ? 0 : store.page;
+  $: count = store.count || 0;
+  $: limit = store.limit || 0;
+  $: page = store.page || 0;
 
-  $: from = count == 0 ? 0 : limit * (page - 1) + 1;
+  $: from = count === 0 ? 0 : limit * (page - 1) + 1;
   $: to = limit * page > count ? count : limit * page;
 </script>
 
