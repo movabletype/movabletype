@@ -37,7 +37,7 @@
       ) {
         v.setAttribute("id", v.getAttribute("id") + "-" + id);
       }
-      if (v.tagName.toLowerCase() == "label" && v.hasAttribute("for")) {
+      if (v.tagName.toLowerCase() === "label" && v.hasAttribute("for")) {
         v.setAttribute("for", v.getAttribute("for") + "-" + id);
       }
     });

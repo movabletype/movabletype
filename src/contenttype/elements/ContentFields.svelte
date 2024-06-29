@@ -298,7 +298,7 @@
           newData.id = options["id"];
         }
         const innerField = $fieldsStore.filter(function (v) {
-          return v.id == newData.id;
+          return v.id === newData.id;
         });
         if (innerField.length && innerField[0].order) {
           newData.order = innerField[0].order;
