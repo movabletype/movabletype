@@ -35,6 +35,16 @@
     }
   }
 
+  let gatherCore: (() => object) | undefined;
+  let gatherCustom: (() => object) | undefined;
+  $: {
+    if (ContentFieldTypes.getCoreType(field.type)) {
+      gather = gatherCore;
+    } else {
+      gather = gatherCustom;
+    }
+  }
+
   const deleteField = (): void => {
     const label = field.label ? field.label : window.trans("No Name");
     if (
@@ -145,10 +155,16 @@
     this={ContentFieldTypes.getCoreType(field.type)}
     {config}
     bind:field
-    bind:gather
+    bind:gather={gatherCore}
     {id}
     bind:options={field.options}
     {optionsHtmlParams}
   />
-  <Custom {config} {fieldIndex} {fieldsStore} bind:gather {optionsHtmlParams} />
+  <Custom
+    {config}
+    {fieldIndex}
+    {fieldsStore}
+    bind:gather={gatherCustom}
+    {optionsHtmlParams}
+  />
 </div>
