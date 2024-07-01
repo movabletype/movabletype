@@ -21,18 +21,14 @@
   jQuery.mtValidateRules["[name=filter_name], .rename-filter-input"] =
     function ($e: JQuery<HTMLElement>) {
       const val = $e.val();
-      const typeOfVal = typeof val;
-      if (typeOfVal !== "string") {
-        return this.raise(window.trans("Invalid type: [_1]", typeOfVal));
+      if (typeof val !== "string") {
+        return this.raise(window.trans("Invalid type: [_1]", typeof val));
       }
 
-      const strVal = val as string;
-      if (validateFilterName(strVal)) {
+      if (validateFilterName(val)) {
         return true;
       } else {
-        return this.raise(
-          window.trans('Label "[_1]" is already in use.', strVal),
-        );
+        return this.raise(window.trans('Label "[_1]" is already in use.', val));
       }
     };
 
