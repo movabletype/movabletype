@@ -48,9 +48,8 @@ sub _mt_getcwd {
 
 sub check_perl {
     my ($class, $param) = @_;
-    my $perl_version = ref($^V) eq 'version' ? $^V->normal : ($^V ? join('.', unpack 'C*', $^V) : $]);
-    $param->{perl_is_too_old} = 1 if $] < 5.016000;
-    $param->{perl_version}    = $perl_version;
+    $param->{perl_is_too_old} = 1 if $] < 5.016003;
+    $param->{perl_version}    = sprintf('%vd', $^V);
 
     my %seen;
     $param->{perl_include_path} = [grep { !$seen{$_}++ } @INC];

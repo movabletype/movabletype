@@ -75,7 +75,14 @@ label {
 </mt:unless>
 
 <mt:setvarblock name="page_content">
-<mt:unless name="cfg_exists">
+<mt:if name="cfg_exists">
+<p><__trans phrase="A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type." params="mt.cgi"></p>
+<p><__trans phrase="To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page"></p>
+<mt:elseif name="perl_is_too_old">
+<div class="msg msg-error"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="<mt:var name="version">%%5.16.3"></p></div>
+<mt:elseif name="perl_lacks_core_modules">
+<div class="msg msg-error"><p class="msg-text"><__trans phrase="Movable Type does not work because your Perl does not have some of the core modules. Please ask your system administrator to install perl (or perl-core) properly."></p></div>
+<mt:else>
 <form method="post" onsubmit="return check_static_uri();">
   <input type="hidden" name="__mode" value="next_step" />
   <input type="hidden" name="step" value="pre_start" />
@@ -160,10 +167,7 @@ label {
     </button>
   </div>
 </form>
-<mt:else>
-<p><__trans phrase="A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type." params="mt.cgi"></p>
-<p><__trans phrase="To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page"></p>
-</mt:unless>
+</mt:if>
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
