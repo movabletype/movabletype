@@ -34,7 +34,7 @@
         .mtListFilterId;
     const filterLabel = (target.previousElementSibling as HTMLInputElement)
       .value;
-    if (filterId === null || filterId === undefined || filterId === "") {
+    if (!filterId) {
       return;
     }
     store.trigger("rename_filter_by_id", filterId, filterLabel);
