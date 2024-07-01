@@ -56,7 +56,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">
-          {window.trans(saveAs ? "Save As Filter" : "Save Filter")}
+          {saveAs
+            ? window.trans("Save As Filter")
+            : window.trans("Save Filter")}
         </h5>
         <button
           type="button"
