@@ -60,17 +60,17 @@
     (e.target as HTMLInputElement).checked = state;
     options.values[index].checked = state ? "checked" : "";
 
-    _updateInittialField(block);
+    _updateInitialField(block);
 
     refreshView();
   };
 
   const enterMax = (e: Event): void => {
     const block = jQuery(e.target as HTMLElement).parents(".mt-contentfield");
-    _updateInittialField(block);
+    _updateInitialField(block);
   };
 
-  const _updateInittialField = (block: JQuery<HTMLElement>): void => {
+  const _updateInitialField = (block: JQuery<HTMLElement>): void => {
     const max = Number(block.find('input[name="max"]').val());
     const cur = block
       .find(".values-option-table")
