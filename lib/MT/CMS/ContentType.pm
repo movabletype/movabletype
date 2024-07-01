@@ -273,8 +273,8 @@ sub edit {
             }
         }
 
-	# Script
-	if ( my $options_script = $content_field_types->{$key}{options_script} ) {
+        # Script
+        if ( my $options_script = $content_field_types->{$key}{options_script} ) {
             my $plugin = $content_field_types->{$key}{plugin};
             my $tmpl;
             if ( !ref $options_script ) {
