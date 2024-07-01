@@ -20,15 +20,19 @@
   /* @ts-expect-error : mtValidateRules is not defined */
   jQuery.mtValidateRules["[name=filter_name], .rename-filter-input"] =
     function ($e: JQuery<HTMLElement>) {
-      const val = $e.val()?.toString();
-      if (val === undefined) {
-        return;
+      const val = $e.val();
+      const typeOfVal = typeof val;
+      if (typeOfVal !== "string") {
+        return this.raise(window.trans("Invalid type: [_1]", typeOfVal));
       }
 
-      if (validateFilterName(val)) {
+      const strVal = val as string;
+      if (validateFilterName(strVal)) {
         return true;
       } else {
-        return this.raise(window.trans('Label "[_1]" is already in use.', val));
+        return this.raise(
+          window.trans('Label "[_1]" is already in use.', strVal),
+        );
       }
     };
 
