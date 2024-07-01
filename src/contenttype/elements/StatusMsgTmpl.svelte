@@ -61,7 +61,9 @@
         "[_1]Publish[_2] your [_3] to see these changes take effect.",
         `<a href="${window.CMSScriptURI}?__mode=rebuild_confirm&blog_id=${blogId}&prompt=index" class="mt-rebuild alert-link">`,
         "</a>",
-        window.trans(rebuild === "blog" ? "blog(s)" : "website(s)"),
+        rebuild === "blog"
+          ? window.trans("blog(s)")
+          : window.trans("website(s)"),
       )}
     {/if}
   {:else if canRebuild}
