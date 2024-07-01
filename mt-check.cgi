@@ -473,7 +473,15 @@ my $ver
 my $perl_ver_check = '';
 if ( $] < 5.010001 ) {    # our minimal requirement for support
     $perl_ver_check = <<EOT;
-<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.10.1"></p></div>
+<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.16.3"></p></div>
+EOT
+}
+
+require MT::Util::Dependencies;
+my $perl_lacks_core_modules = '';
+if (MT::Util::Dependencies->lacks_core_modules) {
+    $perl_lacks_core_modules = <<EOT;
+<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="Your Perl does not have some of the core modules so that you may encounter unexpected behaviors. Please ask your system administrator to install perl (or perl-core) properly."></p></div>
 EOT
 }
 
@@ -482,6 +490,7 @@ my $inc_path = join "<br />\n", @INC;
 print_encode( trans_templ(<<INFO) );
 <h2 id="system-info"><__trans phrase="System Information"></h2>
 $perl_ver_check
+$perl_lacks_core_modules
 INFO
 if ($release_version) {
 
@@ -576,7 +585,6 @@ if ($mt) {
     }
 }
 
-require MT::Util::Dependencies;
 my ($CORE_REQ, $CORE_DATA, $CORE_OPT) = MT::Util::Dependencies->requirements_for_check($mt);
 
 @REQ  = @$CORE_REQ  unless @REQ;
