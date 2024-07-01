@@ -85,21 +85,15 @@
 </mt:if>
 
 <mt:unless name="config.useriot">
-  <script type="module">
-    import { ContentTypeEditor, observable } from "<mt:var name="static_uri">js/build/contenttype.js?v=<mt:var name="mt_version_id" escape="url">"
-
-    if (!window.riot) {
-      window.riot = {}
-    }
-    window.riot.observable = observable
-
-    window.ContentTypeEditor = ContentTypeEditor
-
-    ContentTypeEditor.config["NumberFieldMaxValue"] = <mt:var name="config.numberfieldmaxvalue" escape="js">;
-    ContentTypeEditor.config["NumberFieldMinValue"] = <mt:var name="config.numberfieldminvalue" escape="js">;
-    ContentTypeEditor.config["NumberFieldDecimalPlaces"] = <mt:var name="config.numberfielddecimalplaces" escape="js">;
-
-    ContentTypeEditor.optionsHtmlParams = JSON.parse('<mt:var name="options_html_params_json" escae="js">');
+  <script
+    type="module"
+    id="script-contenttype"
+    src="<mt:var name="static_uri">js/build/contenttype.js?v=<mt:var name="mt_version_id" escape="url">"
+    data-config-number-field-max-value="<mt:var name="config.numberfieldmaxvalue" escape="html">"
+    data-config-number-field-min-value="<mt:var name="config.numberfieldminvalue" escape="html">"
+    data-config-number-field-decimal-places="<mt:var name="config.numberfielddecimalplaces" escape="html">"
+    data-options-html-params="<mt:var name="options_html_params_json" escape="html">"
+  >
   </script>
 
   <mt:if name="options_scripts">
