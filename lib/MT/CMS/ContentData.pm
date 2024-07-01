@@ -725,7 +725,7 @@ sub save {
             next if $finfo->archive_type eq 'ContentType';
             my %params = (
                 Blog        => $blog,
-                File        => $finfo->file_path,
+                File        => $finfo->absolute_file_path($blog),
                 ArchiveType => $finfo->archive_type,
                 FileInfo    => $finfo,
                 ContentData => $orig,

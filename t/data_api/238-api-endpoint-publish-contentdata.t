@@ -142,9 +142,9 @@ sub suite {
 
                 my $fi = $app->model('fileinfo')
                     ->load( { template_id => $tmpl_id } );
-                $fmgr->delete( $fi->file_path );
+                $fmgr->delete( $fi->absolute_file_path($blog) );
 
-                $data->{template_file_path} = $fi->file_path;
+                $data->{template_file_path} = $fi->absolute_file_path($blog);
             },
             result   => { status => 'success' },
             complete => sub {

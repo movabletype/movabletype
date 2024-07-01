@@ -2002,34 +2002,38 @@ sub adjust_sitepath {
                 $path = $blog->archive_path;
             }
 
-            my $old_delim        = $fi->file_path =~ m/^\// ? '/' : '\\';
+            my $file_path        = $fi->file_path;
+            my $old_delim        = $file_path =~ m/^\// ? '/' : '\\';
             my $quoted_old_delim = quotemeta $old_delim;
             my $quoted_old_path  = quotemeta $old_path;
 
-            # Remove site/archive path part in fileinfo_file_path.
-            my $file_path = $fi->file_path;
-            if ( $blog->is_blog ) {
-                $file_path =~ s/^.*$quoted_old_path(.*)$/$1/;
-                $file_path =~ s/$quoted_old_delim$//;
-            }
-            else {
-                $file_path =~ s/^$quoted_old_path//;
-            }
+            # No need to change relative file paths
+            if (File::Spec->file_name_is_absolute($file_path)) {
+                # Remove site/archive path part in fileinfo_file_path.
+                if ($blog->is_blog) {
+                    $file_path =~ s/^.*$quoted_old_path(.*)$/$1/;
+                    $file_path =~ s/$quoted_old_delim$//;
+                } else {
+                    $file_path =~ s/^$quoted_old_path//;
+                }
 
-            # Replace delimiters if needing.
-            $file_path =~ s/^$quoted_old_delim//;
-            if ( $old_delim ne $delim ) {
-                $file_path =~ s/$quoted_old_delim/$delim/g;
-            }
+                # Replace delimiters if needing.
+                $file_path =~ s/^$quoted_old_delim//;
+                if ($old_delim ne $delim) {
+                    $file_path =~ s/$quoted_old_delim/$delim/g;
+                }
 
-            $fi->file_path( File::Spec->catfile( $path, $file_path ) );
+                if (MT->config->UseRelativeFilePath) {
+                    $fi->file_path($file_path);
+                } else {
+                    $fi->file_path(File::Spec->catfile($path, $file_path));
+                }
 
-            $app->print_encode(
-                $app->translate(
+                $app->print_encode($app->translate(
                     "Changing file path for FileInfo record (ID:[_1])...",
                     $fi->id
-                )
-            );
+                ));
+            }
 
             ## Change fileinfo_url
             my ( $old_rel_url, $rel_url );
@@ -3167,6 +3171,113 @@ sub _call_pre_save_blog {
         $filter_result &&= $app->run_callbacks( 'cms_pre_save.' . $t, $app, $blog, $original );
     }
     return $filter_result;
+}
+
+sub start_convert_file_path {
+    my $app = shift;
+
+    return $app->permission_denied unless $app->user->is_superuser;
+
+    my $blog_id = $app->param('blog_id') or return $app->return_to_dashboard( redirect => 1 );;
+
+    my $use_relative = MT->config->UseRelativeFilePath;
+    my %param = (
+        blog_id      => $blog_id,
+        use_relative => $use_relative
+    );
+
+    my $site = $app->blog;
+
+    # If the site_path is not a parent of the archive_path, we can't decide a base path.
+    my $site_path    = $site->site_path;
+    my $archive_path = $site->archive_path;
+    if (File::Spec->abs2rel($archive_path, $site_path) =~ /\.\./) {
+        $param{cannot_convert} = 1;
+    }
+
+    my $sep = substr(File::Spec->rootdir, -1, 1);
+    my ($fi) = MT->model('fileinfo')->search({ blog_id => $blog_id, file_path => { op => 'like', value => $site_path . $sep . '%' } }, { limit => 1 });
+    $param{has_something_to_convert} = ($use_relative xor $fi) ? 0 : 1;
+
+    if (!$fi) {
+        ($fi) = MT->model('fileinfo')->search({ blog_id => $blog_id }, { limit => 1 });
+        if (!$fi) {
+            $param{has_something_to_convert} = 0;
+        } elsif ( File::Spec->file_name_is_absolute($fi->file_path) ) {
+            # site_path may have been altered (by import?)
+            $param{requires_previous_site_path} = 1;
+            $param{has_something_to_convert}    = 1;
+        }
+    }
+
+    $app->add_breadcrumb($app->translate('Convert File Paths'));
+    $app->load_tmpl('convert_file_path.tmpl', \%param);
+}
+
+sub convert_file_path {
+    my $app = shift;
+    $app->validate_magic or return;
+    return $app->permission_denied unless $app->user->is_superuser;
+
+    my $blog_id   = $app->param('blog_id') or return $app->return_to_dashboard( redirect => 1 );;
+    my $site      = $app->blog;
+    my $site_path = $site->site_path;
+    my $prev_path = $app->param('previous_site_path');
+
+    my %param = (
+        blog_id      => $blog_id,
+        use_relative => MT->config->UseRelativeFilePath || 0,
+    );
+
+    $app->add_breadcrumb($app->translate('Convert File Paths'));
+
+    $app->{no_print_body} = 1;
+
+    local $| = 1;
+    $app->send_http_header('text/html');
+
+    $app->print_encode( $app->build_page( 'convert_file_path_start.tmpl', \%param ) );
+
+    my $relative = MT->config->UseRelativeFilePath;
+    my $model    = MT->model('fileinfo');
+    my $total    = $model->count({ blog_id => $blog_id });
+    my $offset   = 0;
+    while ($total > $offset) {
+        my @fileinfo = $model->search({ blog_id => $blog_id }, { offset => $offset, limit => 1000 });
+        $model->driver->begin_work;
+        eval {
+            for my $fi (@fileinfo) {
+                my $current = $fi->file_path;
+
+                # If prev_path is set, first convert the current path with the prev_path.
+                if ( $prev_path && File::Spec->file_name_is_absolute($current) ) {
+                    my $tmp_path = File::Spec->abs2rel($current, $prev_path);
+                    die $app->translate("The previous site path is invalid: [_1]", $prev_path) if $tmp_path =~ /\.\./;
+                    $fi->file_path($tmp_path);
+                }
+
+                my $new = $relative ? $fi->relative_file_path($site_path) : $fi->absolute_file_path($site_path);
+                die $app->translate("Found a file path that does not belong to the site: [_1]", $current) if $new =~ /\.\./;
+                if ($new ne $current) {
+                    $fi->file_path($new);
+                    $fi->save;
+                }
+                $offset++;
+                $app->print_encode("$current => $new\n") if $MT::DebugMode;
+            }
+        };
+        if (my $error = $@) {
+            $model->driver->rollback;
+            $error =~ s/at .+? line \d+\.*$//;
+            $param{error} = $error;
+            last;
+        } else {
+            $model->driver->commit;
+        }
+        $app->print_encode("$offset/$total\n");
+    }
+    $param{success} = 1 unless $param{error};
+    $app->print_encode( $app->build_page( 'convert_file_path_end.tmpl', \%param ) );
 }
 
 1;

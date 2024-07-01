@@ -157,9 +157,9 @@ sub suite {
 
                 my $fi = $app->model('fileinfo')
                     ->load( { template_id => $blog_individual_tmpl_id } );
-                $fmgr->delete( $fi->file_path );
+                $fmgr->delete( $fi->absolute_file_path($blog) );
 
-                $data->{template_file_path} = $fi->file_path;
+                $data->{template_file_path} = $fi->absolute_file_path($blog);
             },
             result   => { status => 'success' },
             complete => sub {
@@ -176,9 +176,9 @@ sub suite {
 
                 my $fi = $app->model('fileinfo')
                     ->load( { template_id => $blog_index_tmpl_id } );
-                $fmgr->delete( $fi->file_path );
+                $fmgr->delete( $fi->absolute_file_path($blog) );
 
-                $data->{template_file_path} = $fi->file_path;
+                $data->{template_file_path} = $fi->absolute_file_path($blog);
             },
             result   => { status => 'success' },
             complete => sub {
@@ -195,9 +195,9 @@ sub suite {
 
                 my $fi = $app->model('fileinfo')
                     ->load( { template_id => $blog_archive_tmpl_id } );
-                $fmgr->delete( $fi->file_path );
+                $fmgr->delete( $fi->absolute_file_path($blog) );
 
-                $data->{template_file_path} = $fi->file_path;
+                $data->{template_file_path} = $fi->absolute_file_path($blog);
             },
             result   => { status => 'success' },
             complete => sub {

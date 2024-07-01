@@ -31,6 +31,7 @@ my $mock_author = Test::MockModule->new('MT::Author');
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
+my $blog = MT->model('blog')->load(1);
 
 my $tmpl_class = $app->model('template');
 
@@ -605,9 +606,9 @@ sub suite {
 
                 my $fi = $app->model('fileinfo')
                     ->load( { template_id => $blog_index_tmpl->id } );
-                $fmgr->delete( $fi->file_path );
+                $fmgr->delete( $fi->absolute_file_path($blog) );
 
-                $data->{template_file_path} = $fi->file_path;
+                $data->{template_file_path} = $fi->absolute_file_path($blog);
             },
             result => sub {
                 return +{ status => 'success' };

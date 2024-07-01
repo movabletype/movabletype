@@ -1296,7 +1296,12 @@ sub upload_file_to_sync {
         $fi->blog_id($blog_id);
         $fi->url($base_url);
     }
-    $fi->file_path($file);
+    if (MT->config->UseRelativeFilePath && File::Spec->file_name_is_absolute($file)) {
+        my $relpath = File::Spec->abs2rel($file, $blog->site_path);
+        $fi->file_path($relpath);
+    } else {
+        $fi->file_path($file);
+    }
     $fi->save;
 
     require MT::TheSchwartz;

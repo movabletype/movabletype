@@ -37,6 +37,7 @@ $author->email('melody@example.com');
 $author->save;
 
 my $blog_id = $objs->{blog_id} or die;
+my $blog    = MT::Blog->load($blog_id);
 
 my @ct_tmpl = MT::Template->load( { blog_id => $blog_id, type => 'ct' } );
 my @ct      = map { $_->content_type } @ct_tmpl;
@@ -346,7 +347,7 @@ sub suite {
                 my $fi = $app->model('fileinfo')
                     ->load( { template_id => $ct_tmpl[1]->id } ) or return;
 
-                my $file_path = $fi->file_path;
+                my $file_path = $fi->absolute_file_path($blog);
                 $fmgr->delete($file_path);
             },
             result => sub {
@@ -357,7 +358,7 @@ sub suite {
                 ok my $fi = $app->model('fileinfo')
                     ->load( { template_id => $ct_tmpl[1]->id } ) or return;
 
-                my $file_path = $fi->file_path;
+                my $file_path = $fi->absolute_file_path($blog);
                 ok( $fmgr->exists($file_path), "'$file_path' exists." );
             },
         },
@@ -370,7 +371,7 @@ sub suite {
                 my $fi = $app->model('fileinfo')
                     ->load( { template_id => $ct_archive_tmpl[1]->id } ) or return;
 
-                my $file_path = $fi->file_path;
+                my $file_path = $fi->absolute_file_path($blog);
                 $fmgr->delete($file_path);
             },
             result => sub {
@@ -381,7 +382,7 @@ sub suite {
                 ok my $fi = $app->model('fileinfo')
                     ->load( { template_id => $ct_archive_tmpl[1]->id } ) or return;
 
-                my $file_path = $fi->file_path;
+                my $file_path = $fi->absolute_file_path($blog);
                 ok( $fmgr->exists($file_path), "'$file_path' exists." );
             },
         },

@@ -8,6 +8,7 @@ our $test_env;
 
 BEGIN {
     $test_env = MT::Test::Env->new(
+        UseRelativeFilePath     => $ENV{MT_TEST_USE_RELATIVE_FILE_PATH} // 0,
         DeleteFilesAfterRebuild => $ENV{MT_TEST_DELETE_FILES_AFTER_REBUILD} // 1,
         DeleteFilesAtRebuild    => 1,
         RebuildAtDelete         => 1,
@@ -110,7 +111,7 @@ sub list_files {
     if ( $ENV{MT_TEST_PUBLISH_DYNAMIC} ) {
         return
             sort { $a cmp $b }
-            uniq map { $_->file_path } MT::FileInfo->load( { blog_id => $blog_id } );
+            uniq map { $_->absolute_file_path($site) } MT::FileInfo->load( { blog_id => $blog_id } );
     }
     else {
         return $test_env->files($site_root);
@@ -132,10 +133,11 @@ sub diff_should_be {
 
     my @current_files = list_files();
     my $diff          = Array::Diff->diff( \@prev_files, \@current_files );
-    my @added         = @{ $diff->added };
-    my @deleted       = @{ $diff->deleted };
+    my @added         = map { File::Spec->canonpath($_) } @{ $diff->added };
+    my @deleted       = map { File::Spec->canonpath($_) } @{ $diff->deleted };
     note explain \@added;
     note explain \@deleted;
+
     if ( !@delta ) {
         is @added => $expected, "$expected files are added";
         ok !@deleted, "nothing should be deleted" or note explain \@deleted;
@@ -143,7 +145,13 @@ sub diff_should_be {
         @delta      = @added;
 
         # all the added files should have their FileInfo
-        my @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => [map {File::Spec->canonpath($_)} @added] } );
+        my @infos;
+        if (MT->config->UseRelativeFilePath) {
+            my @paths = map {File::Spec->file_name_is_absolute($_) ? ($_, File::Spec->abs2rel($_, $site->site_path)) : ($_, File::Spec->rel2abs($_, $site->site_path)) } @added;
+            @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => \@paths });
+        } else {
+            @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => \@added } );
+        }
         is scalar @infos => scalar @added, "all the added files have their FileInfo";
     }
     else {
@@ -153,7 +161,13 @@ sub diff_should_be {
         @delta      = ();
 
         # all the deleted files should not have their FileInfo
-        my @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => [map {File::Spec->canonpath($_)} @deleted] } );
+        my @infos;
+        if (MT->config->UseRelativeFilePath) {
+            my @paths = map {File::Spec->file_name_is_absolute($_) ? ($_, File::Spec->abs2rel($_, $site->site_path)) : ($_, File::Spec->rel2abs($_, $site->site_path)) } @deleted;
+            @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => \@paths } );
+        } else {
+            @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => \@deleted } );
+        }
         ok !@infos, "all the deleted files do not have their FileInfo"
             or note explain [ map { $_->file_path } @infos ];
     }

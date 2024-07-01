@@ -188,4 +188,39 @@ sub mark_to_remove {
     $self->remove;
 }
 
+sub absolute_file_path {
+    my ($self, $site_path) = @_;
+    require File::Spec;
+    my $path = $self->file_path;
+    return $path if File::Spec->file_name_is_absolute($path);
+    if (!$site_path && $self->blog_id) {
+        my $site = MT->model('website')->load($self->blog_id);
+        $site_path = $site->site_path;
+    } elsif (ref $site_path and $site_path->isa('MT::Blog')) {
+        $site_path = $site_path->site_path;
+    }
+    File::Spec->catfile($site_path, $path);
+}
+
+sub relative_file_path {
+    my ($self, $site_path) = @_;
+    require File::Spec;
+    my $path = $self->file_path;
+    return $path unless File::Spec->file_name_is_absolute($path);
+    if (!$site_path && $self->blog_id) {
+        my $site = MT->model('website')->load($self->blog_id);
+        $site_path = $site->site_path;
+    } elsif (ref $site_path and $site_path->isa('MT::Blog')) {
+        $site_path = $site_path->site_path;
+    }
+    my $rel_path = File::Spec->abs2rel($path, $site_path);
+
+    # If site_path doesn't match (altered by import?),
+    # it's better to return the original absolute path.
+    if ($rel_path =~ /\.\./) {
+        return $path;
+    }
+    $rel_path;
+}
+
 1;
