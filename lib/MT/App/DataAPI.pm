@@ -964,7 +964,7 @@ sub api {
         $app->param( 'blog_id', $id );
 
         require MT::CMS::Blog;
-        if (   !$user->is_superuser
+        if (   (!$user->is_superuser or MT->config->SuperuserRespectsDataAPIDisableSite)
             && !MT::CMS::Blog::data_api_is_enabled( $app, $id, $app->blog ) )
         {
             return $app->print_error(403);
