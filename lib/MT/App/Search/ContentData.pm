@@ -379,7 +379,7 @@ sub search_terms {
     }
 
     if ($app->id eq 'data_api') {
-        if (!$app->user or !$app->user->is_superuser or $app->config->MakeSuperuserRespectDataAPIDisableSite) {
+        if (!$app->user or !$app->user->is_superuser or $app->config->SuperuserRespectsDataAPIDisableSite) {
             my @blog_term;
             for my $term (@terms) {
                 next unless $term->{blog_id};
