@@ -2282,7 +2282,7 @@ BEGIN {
                 default => {}
             },
             'DataAPIDisableSite'   => undef,
-            'MakeSuperuserRespectDataAPIDisableSite' => undef,
+            'SuperuserRespectsDataAPIDisableSite' => undef,
             'RebuildOffsetSeconds' => { default => 20 },
             'DisableDataAPI'       => { default => 0 },
 
