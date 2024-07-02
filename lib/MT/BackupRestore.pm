@@ -775,7 +775,7 @@ sub _sync_asset_id {
     $new_text
         =~ s!(<form[^>]*?\s)mt:asset-id=(["'])(\d+)(["'])(?=[^>]*?>.+?</form>)!
         my $asset = $related->{$3};
-        $1 . ( $asset ? ( 'mt:asset-id=' . $2 . $asset->id . $4 ) : ' ' );
+        $1 . ( $asset ? ( 'mt:asset-id-replaced=' . $2 . $asset->id . $4 ) : ' ' );
     !igem;
     return $new_text ? $new_text : $text;
 }
@@ -1099,7 +1099,7 @@ sub _sync_asset_url {
     } @children;
 
     $text
-        =~ s!<form([^>]*?\s)mt:asset-id=(["'])$id(["'])([^>]*?)>(.+?)</form>!
+        =~ s!<form([^>]*?\s)mt:asset-id-replaced=(["'])$id(["'])([^>]*?)>(.+?)</form>!
         my $result = '<form' . $1 . 'mt:asset-id=' . $2 . $id . $3 . $4 . '>';
         my $html = $5;
         $html =~ s#<a([^>]*? )href=(["'])[^>]+?/$filename(["'])([^>]*?)>#<a$1href=$2$url$3$4>#gim;
