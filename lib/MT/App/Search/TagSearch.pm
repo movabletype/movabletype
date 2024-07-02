@@ -147,25 +147,6 @@ sub search_terms {
             = sort { $counter->($a) cmp $counter->($b) } @or_tag_names;
     }
 
-    my @or_tags;
-    my $terms
-        = { $app->config->SearchPrivateTags ? () : ( is_private => '0' ) };
-    foreach my $or_tag_name (@or_tag_names) {
-        my %tags = map { $_ => 1, $tag_class->normalize($_) => 1 }
-            ( split( /,/, $or_tag_name ), $or_tag_name );
-        $terms->{name} = [ keys %tags ];
-        my @tags = $tag_class->load($terms);
-        my @tmp;
-        foreach my $tag (@tags) {
-            push @tmp, $tag->id;
-            my @more = $tag_class->load(
-                { n8d_id => $tag->n8d_id ? $tag->n8d_id : $tag->id } );
-            push @tmp, $_->id foreach @more;
-        }
-        push @or_tags, \@tmp if @tmp;
-    }
-    return ( undef, undef ) unless @or_tags;
-
     my $ot_class = $app->model('objecttag');
     my $class    = $app->model( $app->{searchparam}{Type} )
         or return $app->error( $app->errstr );
@@ -188,6 +169,40 @@ sub search_terms {
     if ( exists $app->{searchparam}{IncludeBlogs} ) {
         $terms{blog_id} = $app->{searchparam}{IncludeBlogs};
     }
+
+    if ($app->id eq 'data_api') {
+        if (!$app->user or !$app->user->is_superuser or $app->config->SuperuserRespectsDataAPIDisableSite) {
+            my @blog_term;
+            push @blog_term, {id => $terms{blog_id}} if defined $terms{blog_id};
+            push @blog_term, {class => '*'} unless @blog_term;
+            my @sites = $app->model('blog')->load(@blog_term);
+            require MT::CMS::Blog;
+            for my $site (@sites) {
+                if (!MT::CMS::Blog::data_api_is_enabled($app, $site->id, $site)) {
+                    return $app->error('Forbidden', 403);
+                }
+            }
+        }
+    }
+
+    my @or_tags;
+    my $terms
+        = { $app->config->SearchPrivateTags ? () : ( is_private => '0' ) };
+    foreach my $or_tag_name (@or_tag_names) {
+        my %tags = map { $_ => 1, $tag_class->normalize($_) => 1 }
+            ( split( /,/, $or_tag_name ), $or_tag_name );
+        $terms->{name} = [ keys %tags ];
+        my @tags = $tag_class->load($terms);
+        my @tmp;
+        foreach my $tag (@tags) {
+            push @tmp, $tag->id;
+            my @more = $tag_class->load(
+                { n8d_id => $tag->n8d_id ? $tag->n8d_id : $tag->id } );
+            push @tmp, $_->id foreach @more;
+        }
+        push @or_tags, \@tmp if @tmp;
+    }
+    return ( undef, undef ) unless @or_tags;
 
     my $depth = 1;
     my $alias = $ot_class->datasource . '_' . $depth;
