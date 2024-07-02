@@ -262,8 +262,6 @@ sub edit {
             $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
             if (MT->config->SuperuserRespectsDataAPIDisableSite) {
                 $param->{superuser_respects_enable_data_api} = 1;
-            } elsif (!$param->{enable_data_api}) {
-                $param->{superuser_can_use_data_api} = 1;
             }
 
             _set_show_data_api_params($app, $cfg, $param);
@@ -357,8 +355,6 @@ sub edit {
         $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
         if (MT->config->SuperuserRespectsDataAPIDisableSite) {
             $param->{superuser_respects_enable_data_api} = 1;
-        } elsif (!$param->{enable_data_api}) {
-            $param->{superuser_can_use_data_api} = 1;
         }
 
         _set_show_data_api_params($app, $cfg, $param);
