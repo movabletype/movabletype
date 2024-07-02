@@ -347,7 +347,7 @@ sub suite {
         push @extra_tests_for_respecting_superuser, \%new_test;
     }
     $extra_tests_for_respecting_superuser[0]{setup} = sub {
-        $app->config->MakeSuperuserRespectDataAPIDisableSite(1);
+        $app->config->SuperuserRespectsDataAPIDisableSite(1);
         $app->config->save_config;
     };
     push @tests, @extra_tests_for_respecting_superuser;

@@ -171,7 +171,7 @@ sub search_terms {
     }
 
     if ($app->id eq 'data_api') {
-        if (!$app->user or !$app->user->is_superuser or $app->config->MakeSuperuserRespectDataAPIDisableSite) {
+        if (!$app->user or !$app->user->is_superuser or $app->config->SuperuserRespectsDataAPIDisableSite) {
             my @blog_term;
             push @blog_term, {id => $terms{blog_id}} if defined $terms{blog_id};
             push @blog_term, {class => '*'} unless @blog_term;
