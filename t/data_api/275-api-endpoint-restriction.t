@@ -202,7 +202,7 @@ sub suite {
             },
         },
 
-        # Restriction (blog_id=1 is disabled and MakeSuperuserRespectDataAPIDisableSite is true).
+        # Restriction (blog_id=1 is disabled and SuperuserRespectsDataAPIDisableSite is true).
         {
             # superuser.
             # blog.
@@ -212,7 +212,7 @@ sub suite {
             code         => 403,
             setup        => sub {
                 $app->config->DataAPIDisableSite(1);
-                $app->config->MakeSuperuserRespectDataAPIDisableSite(1);
+                $app->config->SuperuserRespectsDataAPIDisableSite(1);
                 $app->config->save_config;
             },
         },
