@@ -51,7 +51,7 @@ sub fields {
         {   name  => 'label',
             alias => 'name',
         },
-        {   name  => 'uniqueID',
+        {   name  => 'uniqueId',
             alias => 'unique_id',
         },
         {   name             => 'updatable',
