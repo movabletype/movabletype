@@ -135,6 +135,7 @@ function smarty_function_mtinclude($args, &$ctx) {
             $cache_ttl = intval($tmpl_meta->cache_expire_interval);
         else
             $cache_ttl = 60 * 60; # default 60 min.
+        $ttl_for_set = $cache_ttl;
 
         if (isset($cache_expire_type) && $cache_expire_type == '2') {
             $expire_types = preg_split('/,/', $tmpl_meta->cache_expire_event, -1, PREG_SPLIT_NO_EMPTY);
@@ -255,8 +256,8 @@ function smarty_function_mtinclude($args, &$ctx) {
     _clear_vars($ctx, $ext_args);
 
     if ($cache_enable) {
-        $cache_driver = $mt->cache_driver($cache_ttl);
-        $cache_driver->set($cache_key, $_contents, $cache_ttl);
+        $cache_driver = $mt->cache_driver($ttl_for_set);
+        $cache_driver->set($cache_key, $_contents, $ttl_for_set);
     }
 
     if ($ssi_enable) {
