@@ -51,12 +51,27 @@ ok eval { MT->instance }, "mt instance" or note $@;
 
 my $switch = MT->config->PluginSwitch || {};
 
-ok !exists $switch->{'MyPlugin0.1/MyPlugin.pl'}, "older version is not listed in PluginSwitch";
-ok $switch->{'MyPlugin1.0/MyPlugin.pl'},         "newer version is listed in PluginSwitch";
+ok !$switch->{'MyPlugin0.1/MyPlugin.pl'}, "older version is listed in PluginSwitch but is 0";
+ok $switch->{'MyPlugin1.0/MyPlugin.pl'},  "newer version is listed in PluginSwitch";
 
 ok eval { MT::PSGI->new->to_app }, "psgi app without an error" or note $@;
 
 my $log = $test_env->slurp_logfile;
 like $log => qr/Conflicted plugin MyPlugin 0.1 is disabled/, "logged correctly";
 
+$test_env->prepare_fixture('db');
+
+note "first rpt";
+run_rpt();    # may or may not have a plugin error
+
+note "second rpt";
+unlike run_rpt() => qr/Conflicted plugin MyPlugin 0.1 is disabled/, "no plugin error";
+
 done_testing;
+
+sub run_rpt {
+    MT::Session->remove( { kind => 'PT' } );
+    my $res = `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
+    note $res;
+    $res;
+}
