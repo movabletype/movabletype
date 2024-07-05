@@ -380,15 +380,8 @@ sub _update_config {
     my %prev;
     for my $key (keys %$config) {
         $prev{$key} = MT->instance->config($key);
-        if (!defined($config->{$key})) {
-            my $mgr = MT->config;
-            delete $mgr->{__var}{lc $key};
-            my $deleted = delete $mgr->{__dbvar}{lc $key};
-            $mgr->set_dirty() if defined($deleted);
-        } else {
-            MT->config($key, $config->{$key});
-            MT->config($key, $config->{$key}, 1);
-        }
+        MT->config($key, $config->{$key});
+        MT->config($key, $config->{$key}, 1);
     }
     MT->config->save_config;
     return \%prev;

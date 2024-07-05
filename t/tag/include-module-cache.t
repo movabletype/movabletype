@@ -118,7 +118,7 @@ __DATA__
 === include module cache 1
 --- reset_test_count
 --- mt_config
-{MemcachedServers => undef}
+{MemcachedServers => []]}
 --- template_module_cache_setting
 {cache_expire_type => undef}
 --- template
@@ -149,7 +149,7 @@ MODULE-CONTENT4
 === include module cache (cache_expire_type=2, type=entry) 1
 --- reset_test_count
 --- mt_config
-{MemcachedServers => undef}
+{MemcachedServers => []}
 --- template_module_cache_setting
 {cache_expire_type => 2, cache_expire_event => 'entry'}
 --- template
@@ -177,7 +177,7 @@ MODULE-CONTENT3
 === include module cache (cache_expire_type=2, type=author) 1
 --- reset_test_count
 --- mt_config
-{MemcachedServers => undef}
+{MemcachedServers => []}
 --- template_module_cache_setting
 {cache_expire_type => 2, cache_expire_event => 'author'}
 --- template
@@ -205,7 +205,7 @@ MODULE-CONTENT3
 === include module cache with memcached 1
 --- reset_test_count
 --- mt_config memcached_filter
-{MemcachedServers => 'MEMCACHED_SERVER'}
+{MemcachedServers => ['MEMCACHED_SERVER']}
 --- template_module_cache_setting
 {cache_expire_type => undef}
 --- template
