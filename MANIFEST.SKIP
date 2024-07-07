@@ -370,7 +370,7 @@ build-language-stamp
 ^rollup.config.ts
 ^tsconfig.json
 \.babelrc
-\.eslintrc.js
+\.eslintrc.json
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion
