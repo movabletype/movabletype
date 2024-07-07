@@ -47,7 +47,7 @@
     "build-svelte": "npm run build-svelte:app",
     "svelte-dev": "rollup --config rollup.config.ts --configPlugin typescript -w",
     "svelte-check-types": "tsc",
-    "svelte-format": "prettier --plugin prettier-plugin-svelte --write src/**/*.{ts,tsx,svelte}",
+    "svelte-format": "prettier --plugin prettier-plugin-svelte --write src/**/*.{ts,svelte}",
     "svelte-lint": "eslint --fix --ext .ts --ext .tsx --ext .svelte src"
   },
   "repository": {
@@ -83,6 +83,7 @@
     "prettier": "^3.3.0",
     "prettier-plugin-svelte": "^3.2.3",
     "rollup": "^4.17.2",
+    "rollup-plugin-cleaner": "^1.0.0",
     "rollup-plugin-css-only": "^4.3.0",
     "rollup-plugin-esbuild": "^6.1.1",
     "rollup-plugin-livereload": "^2.0.5",

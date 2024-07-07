@@ -214,6 +214,8 @@ sub edit {
         $param->{$name} = $app->param($name) if $app->param($name);
     }
 
+    my $options_html_params_hash = {};
+
     # Content Field Options
     foreach my $key ( keys %$content_field_types ) {
 
@@ -228,6 +230,8 @@ sub edit {
             if ( 'CODE' eq ref $options_html_params ) {
                 $options_html_params = $options_html_params->( $app, $param );
             }
+
+            $options_html_params_hash->{$key} = $options_html_params;
         }
 
         # Template
@@ -268,7 +272,48 @@ sub edit {
                     { id => $key, html => $out };
             }
         }
+
+        # Script
+        if ( my $options_script = $content_field_types->{$key}{options_script} ) {
+            my $plugin = $content_field_types->{$key}{plugin};
+            my $tmpl;
+            if ( !ref $options_script ) {
+                if ( $options_script =~ /\.tmpl$/ ) {
+                    $tmpl
+                        = $plugin->id eq 'core'
+                        ? $app->load_tmpl($options_script)
+                        : $plugin->load_tmpl($options_script);
+                }
+                else {
+                    $options_script = MT->handler_to_coderef($options_script);
+                }
+            }
+            if ( 'CODE' eq ref $options_script ) {
+                $options_script = $options_script->( $app, $param );
+
+                require MT::Template;
+                $tmpl = MT::Template->new(
+                    type   => 'scalarref',
+                    source => ref $options_script
+                    ? $options_script
+                    : \$options_script
+                );
+            }
+
+            if ($tmpl) {
+                $tmpl->param($options_html_params)
+                    if $options_html_params;
+                my $out = $tmpl->output();
+                $out = $plugin->translate_templatized($out)
+                    if $plugin->id ne 'core'
+                    and $out =~ m/<(?:__trans|mt_trans) /i;
+                push @{ $param->{options_scripts} },
+                    { id => $key, script => $out };
+            }
+        }
     }
+
+    $param->{options_html_params_json} = JSON::to_json(_deep_copy_and_resolve_coderef($options_html_params_hash));
 
     $app->add_breadcrumb(
         $app->translate('Content Types'),
@@ -288,6 +333,21 @@ sub edit {
     }
 
     $app->build_page( $app->load_tmpl('edit_content_type.tmpl'), $param );
+}
+
+sub _deep_copy_and_resolve_coderef {
+    my ($arg) = @_;
+    my $ref_arg = ref $arg;
+
+    # deep copy
+    return $arg                                                                      if !$ref_arg;
+    return [map { _deep_copy_and_resolve_coderef($_) } @{$arg}]                      if $ref_arg eq 'ARRAY';
+    return { map { $_ => _deep_copy_and_resolve_coderef($arg->{$_}) } keys %{$arg} } if $ref_arg eq 'HASH';
+
+    # resolve coderef
+    return $arg->() if $ref_arg eq 'CODE';
+
+    die 'unresolvable ref type: ' . $ref_arg;
 }
 
 sub tmpl_param_list_common {
