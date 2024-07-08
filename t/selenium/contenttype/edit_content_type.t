@@ -30,7 +30,7 @@ BEGIN {
         # more reliable to depend on something else.
         ImageDriver => 'Imager',
 
-        # UseRiot => 1,
+        $ENV{MT_TEST_EDIT_CONTENT_TYPE_RIOT} ? (UseRiot => 1) : (),
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
