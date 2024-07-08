@@ -127,7 +127,7 @@ function smarty_function_mtinclude($args, &$ctx) {
             ? $args['key']
             : ( isset($args['cache_key'])
                 ? $args['cache_key']
-                : md5('blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name));
+                : md5('PHP:'. 'blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name));
 
         if (isset($args['ttl']))
             $cache_ttl = intval($args['ttl']);
