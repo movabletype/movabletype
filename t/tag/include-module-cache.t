@@ -18,7 +18,6 @@ use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Tag;
 use MT::Memcached;
-use MT::Test::Memcached;
 use MT::Touch;
 
 my $app = MT->instance;
@@ -45,6 +44,8 @@ for my $cache_driver ('session', 'memcached') {
     MT::Memcached->cleanup;    # unset is_available flag so that cache driver can be switchable
     my $memcached_servers;
     if ($cache_driver eq 'memcached') {
+        next if $^O eq 'MSWin32';
+        require MT::Test::Memcached;
         $memd              = MT::Test::Memcached->new;
         $memcached_servers = [$memd->address];
     } else {
@@ -55,13 +56,20 @@ for my $cache_driver ('session', 'memcached') {
     MT->config->save_config;
 
     if (@$memcached_servers) {
-        subtest 'memcache is working' => sub {
+        subtest 'driver is memcached and is working' => sub {
             require MT::Cache::Negotiate;
             my $cache_driver = MT::Cache::Negotiate->new;
             my $driver       = $cache_driver->{__cache_driver};
-            is('MT::Memcached', ref($driver), 'cache server is memcached');
+            is(ref($driver), 'MT::Memcached', 'cache provider is memcached');
             $cache_driver->set('writable', 'working');
-            is('working', $cache_driver->get('writable'), 'cache server is working');
+            is($cache_driver->get('writable'), 'working', 'mecached is working');
+        };
+    } else {
+        subtest 'driver is session' => sub {
+            require MT::Cache::Negotiate;
+            my $cache_driver = MT::Cache::Negotiate->new;
+            my $driver       = $cache_driver->{__cache_driver};
+            is(ref($driver), 'MT::Cache::Session', 'cache provider is session');
         };
     }
 
