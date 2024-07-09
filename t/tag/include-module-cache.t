@@ -55,23 +55,18 @@ for my $cache_driver ('session', 'memcached') {
     MT->config('MemcachedServers', $memcached_servers, 1);
     MT->config->save_config;
 
-    if (@$memcached_servers) {
-        subtest 'driver is memcached and is working' => sub {
-            require MT::Cache::Negotiate;
-            my $cache_driver = MT::Cache::Negotiate->new;
-            my $driver       = $cache_driver->{__cache_driver};
-            is(ref($driver), 'MT::Memcached', 'cache provider is memcached');
+    subtest 'cache driver is right one' => sub {
+        require MT::Cache::Negotiate;
+        my $cache_driver = MT::Cache::Negotiate->new;
+        my $driver       = $cache_driver->{__cache_driver};
+        if (@$memcached_servers) {
+            is(ref($driver), 'MT::Memcached', 'cache driver is memcached');
             $cache_driver->set('writable', 'working');
             is($cache_driver->get('writable'), 'working', 'mecached is working');
-        };
-    } else {
-        subtest 'driver is session' => sub {
-            require MT::Cache::Negotiate;
-            my $cache_driver = MT::Cache::Negotiate->new;
-            my $driver       = $cache_driver->{__cache_driver};
-            is(ref($driver), 'MT::Cache::Session', 'cache provider is session');
-        };
-    }
+        } else {
+            is(ref($driver), 'MT::Cache::Session', 'cache driver is session');
+        }
+    };
 
     subtest $cache_driver => sub {
         MT::Test::Tag->run_perl_tests($blog->id, sub { setup($_[1]); });
