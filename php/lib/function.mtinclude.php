@@ -164,7 +164,7 @@ function smarty_function_mtinclude($args, &$ctx) {
 
         require_once("class.basecache.php");
         try {
-            $cache_driver = CacheProviderFactory::get_provider('cachememcachedexpirable');
+            $cache_driver = CacheProviderFactory::get_provider('memcachedexpirable');
         } catch (Exception $e) {
             $cache_driver = CacheProviderFactory::get_provider('session');
         }
