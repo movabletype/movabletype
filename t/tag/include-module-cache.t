@@ -145,7 +145,7 @@ MODULE-CONTENT4
 --- expected
 MODULE-CONTENT2
 
-=== cache is expires by template modified_on
+=== cache expires by template modified_on
 --- set_template_modified_on
 --- template
 <mt:Include module="MyTemplate" cache="1">
