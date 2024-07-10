@@ -20,16 +20,7 @@ jobs:
   fedora39:
     env:
       TEST_IMAGE_NAME: fedora39
-    if: >-
-      ${{
-        (
-          (github.event_name != 'schedule')
-          || (
-            (github.repository == 'movabletype/movabletype' )
-            && (github.event_name == 'schedule')
-          )
-        )
-      }}
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -64,15 +55,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -107,15 +93,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -150,15 +131,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -194,15 +170,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -232,15 +203,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -275,15 +241,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -315,11 +276,7 @@ jobs:
 
   cloud7:
     needs: [fedora39]
-    if: >-
-      ${{
-        (github.repository == 'movabletype/movabletype' )
-        || contains(github.ref_name, 'cron')
-      }}
+    if: ${{ always() }}
     env:
       TEST_IMAGE_NAME: cloud7
     runs-on: ubuntu-latest
@@ -351,15 +308,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -384,15 +336,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -420,16 +367,7 @@ jobs:
     - cloud7
     - extra
     - node_lts
-    if: >-
-      ${{
-        (
-          (github.event_name != 'schedule')
-          || (
-            (github.repository == 'movabletype/movabletype' )
-            && (github.event_name == 'schedule')
-          )
-        )
-      }}
+    if: ${{ always() }}
     steps:
     - name: Install jq
       run: |
