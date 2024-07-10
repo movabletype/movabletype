@@ -65,15 +65,15 @@ jobs:
     if: >-
       ${{
         (
-          (
-            (github.repository == 'movabletype/movabletype' )
-            && (github.event_name == 'schedule')
+          (github.repository == 'movabletype/movabletype' )
+          && (
+            github.event_name == 'schedule'
+            || startsWith(github.ref_name, 'support-')
+            || startsWith(github.ref_name, 'release-')
+            || (github.ref_name == 'develop')
           )
-          || contains(github.ref_name, 'cron')
-          || startsWith(github.ref_name, 'support-')
-          || startsWith(github.ref_name, 'release-')
-          || (github.ref_name == 'develop')
         )
+        || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
     env:
