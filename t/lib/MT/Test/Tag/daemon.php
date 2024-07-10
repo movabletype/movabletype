@@ -36,13 +36,9 @@ while ($remote = stream_socket_accept($socket)) {
         continue;
     }
 
-    // $mt->cache_driver()->flush_all();
-
     # fix t/mt7/tag/preferred_archive_type_and_permalink.t
     $db->flush_cache();
 
-    # fix memcache test(t/tag/include-module-cache.t)
-    $mt->clear_cache_driver();
     $_REQUEST = [];
 
     # fix tests with local config

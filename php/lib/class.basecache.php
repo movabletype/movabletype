@@ -24,6 +24,7 @@ abstract class CacheProviderFactory {
     private static $_provider = array(
         'session' => 'cachesession',
         'memcached' => 'cachememcached',
+        'memcachedexpirable' => 'cachememcachedexpirable',
         'memory' => 'cachememory'
         );
 
