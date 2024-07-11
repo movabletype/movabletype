@@ -1,5 +1,5 @@
 // rollup.config.js
-import glob from "glob";
+import { glob } from "glob";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import esbuild from 'rollup-plugin-esbuild'
@@ -8,17 +8,20 @@ import sveltePreprocess from "svelte-preprocess";
 import typescript from '@rollup/plugin-typescript';
 import svelte from "rollup-plugin-svelte";
 import css from "rollup-plugin-css-only";
+import cleaner from "rollup-plugin-cleaner";
 
 const production = !process.env.ROLLUP_WATCH;
+const outputDir = "mt-static/js/build";
 
 export default {
-  input: ["src/bootstrap.ts"].concat(glob.sync("src/api/*.ts")),
+  input: ["src/bootstrap.ts", "src/contenttype.ts", "src/listing.ts"].concat(glob.sync("src/api/*.ts")),
   output: {
-    dir: "mt-static/js/build",
+    dir: outputDir,
     format: "esm",
-    sourcemap: true
+    sourcemap: !production
   },
   plugins: [
+    cleaner({ targets: [outputDir] }),
     resolve({
       browser: true,
       dedupe: ["svelte"],
@@ -39,7 +42,7 @@ export default {
 
     // Watch the `public` directory and refresh the
     // browser on changes when not in production
-    !production && livereload("mt-static/js/build"),
+    !production && livereload(outputDir),
     typescript({ sourceMap: !production })
   ],
 };
