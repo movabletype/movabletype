@@ -276,6 +276,10 @@ sub core_methods {
         'system_check'             => "${pkg}Tools::system_check",
         'start_reboot'             => "${pkg}Tools::start_reboot",
         'reboot'                   => "${pkg}Tools::reboot",
+        'detect_reduce_revisions'  => {
+            code     => "${pkg}Tools::detect_reduce_revisions",
+            app_mode => 'JSON',
+        },
         'start_reduce_revisions'   => "${pkg}Tools::start_reduce_revisions",
         'dialog_refresh_templates' =>
             "${pkg}Template::dialog_refresh_templates",

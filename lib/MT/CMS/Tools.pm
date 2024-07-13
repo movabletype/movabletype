@@ -2711,6 +2711,112 @@ sub reboot {
     $app->return_to_dashboard(redirect => 1);
 }
 
+sub detect_reduce_revisions {
+    my $app = shift;
+    return $app->permission_denied() unless $app->user->is_superuser();
+    $app->validate_magic() or return;
+
+    $app->validate_param({
+        reduce_revisions_what => [qw/IDS/],
+    }) or return;
+
+    my $blog_ids = $app->param('reduce_revisions_what') || '';
+    my @blog_ids = split ',', $blog_ids;
+
+    my @target_ds;
+    if ($app->param('target_entry')) {
+        push @target_ds, 'entry';
+    }
+    if ($app->param('target_cd')) {
+        push @target_ds, 'cd';
+    }
+    if ($app->param('target_template')) {
+        push @target_ds, 'template';
+    }
+
+    my @response;
+    my $term;
+    if (@blog_ids) {
+        $term = [
+            { class => '*' },
+            '-and',
+            [
+                { id => [ @blog_ids ] },
+                '-or',
+                { parent_id => [ @blog_ids ] },
+            ],
+        ];
+    } else {
+        $term = { class => '*' };
+    }
+    my $filter_date;
+    if ($app->param('use_filter_date')) {
+        $filter_date = $app->param('filter_date');
+    }
+    my $site_iter = MT->model('blog')->load_iter($term);
+    while (my $site = $site_iter->()) {
+        for my $ds (@target_ds) {
+            my $col = 'max_revisions_' . $ds;
+            my $max = $site->$col || $MT::Revisable::MAX_REVISIONS;
+            my $result  = _gather_violations($ds, $site->id, $max, $filter_date);
+            push @response, +{
+                blogId   => $site->id,
+                blogName => $site->name,
+                max      => $max,
+                ds       => $ds,
+                dsLabel  => $ds eq 'entry'
+                         ? 'Entry'
+                         : $ds eq 'cd'
+                         ? 'Content Data'
+                         : $ds eq 'template'
+                         ? 'Template'
+                         : '',
+                result   => $result,
+            };
+        }
+    }
+    if ($app->param('target_global_template')) {
+        my $ds      = 'template';
+        my $blog_id = 0;
+        my $max     = MT->config->GlobalTemplateMaxRevisions;
+        my $result  = _gather_violations($ds, $blog_id, $max, $filter_date);
+        push @response, +{
+            blogId   => $blog_id,
+            blogName => $app->translate('system'),
+            max      => $max,
+            ds       => $ds,
+            dsLabel  => 'Global Template',
+            result   => $result,
+        };
+    }
+    return $app->json_result(\@response);
+}
+
+sub _gather_violations {
+    my ($ds, $blog_id, $max, $filter_date) = @_;
+    my $model     = MT->model($ds);
+    my $rev_class = MT->model($ds . ':revision');
+    my $count_iter;
+    if ($filter_date) {
+        $filter_date =~ s/\D//g;
+        $count_iter = $rev_class->count_group_by({ created_on => { op => '<', value => $filter_date . '000000' } }, {
+            join   => $model->join_on(undef, { id => \"= ${ds}_rev_${ds}_id", blog_id => $blog_id }),
+            group  => ["${ds}_id"],
+        });
+    } else {
+        $count_iter = $rev_class->count_group_by(undef, {
+            join   => $model->join_on(undef, { id => \"= ${ds}_rev_${ds}_id", blog_id => $blog_id }),
+            group  => ["${ds}_id"],
+            having => { "count(${ds}_rev_${ds}_id)" => \"> $max" },
+        });
+    }
+    my @result;
+    while (my ($count, $id) = $count_iter->()) {
+        push @result, { count => $count, id => $id };
+    }
+    return \@result;
+}
+
 sub start_reduce_revisions {
     my $app = shift;
     return $app->permission_denied() unless $app->user->is_superuser();
