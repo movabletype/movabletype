@@ -15,6 +15,13 @@
     </ul>
   </mtapp:statusmsg>
 </mt:if>
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success">
+    <__trans phrase="Reduce revisions jobs are being registered. This job will be executed in next run-periodic-tasks execution.">
+  </mtapp:statusmsg>
+</mt:if>
 
 <p class="page-desc">
 Movable Type を長期間利用している環境では、記事やコンテンツデータの更新履歴（リビジョン）が増加し、肥大化の要因になっている場合があります。
@@ -25,7 +32,7 @@ Movable Type を長期間利用している環境では、記事やコンテン�
 
 <div id="reduce-revisions-panel">
   <form id="reduce-revisions-form" method="post" action="<mt:var name="script_url">">
-    <input type="hidden" name="__mode" value="start_reduce_revisions" />
+    <input type="hidden" name="__mode" value="reduce_revisions" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
     <mtapp:setting
@@ -140,7 +147,7 @@ jQuery(function() {
       return false;
     }
     const inputData = $('#reduce-revisions-form').serialize();
-    const data = inputData.replace(/start_reduce_revisions/, 'detect_reduce_revisions');
+    const data = inputData.replace(/reduce_revisions/, 'detect_reduce_revisions');
     jQuery.ajax({
       type: 'POST',
       contentType: 'application/x-www-form-urlencoded; charset=utf-8',

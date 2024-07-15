@@ -276,6 +276,7 @@ sub core_methods {
         'system_check'             => "${pkg}Tools::system_check",
         'start_reboot'             => "${pkg}Tools::start_reboot",
         'reboot'                   => "${pkg}Tools::reboot",
+        'reduce_revisions'         => "${pkg}Tools::reduce_revisions",
         'detect_reduce_revisions'  => {
             code     => "${pkg}Tools::detect_reduce_revisions",
             app_mode => 'JSON',

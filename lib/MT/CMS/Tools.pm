@@ -2711,6 +2711,113 @@ sub reboot {
     $app->return_to_dashboard(redirect => 1);
 }
 
+sub reduce_revisions {
+    my $app = shift;
+    return $app->permission_denied() unless $app->user->is_superuser();
+    $app->validate_magic() or return;
+
+    $app->validate_param({
+        reduce_revisions_what => [qw/IDS/],
+    }) or return;
+
+    my $blog_ids = $app->param('reduce_revisions_what') || '';
+    my @blog_ids = split ',', $blog_ids;
+
+    my @target_ds;
+    if ($app->param('target_entry')) {
+        push @target_ds, 'entry';
+    }
+    if ($app->param('target_cd')) {
+        push @target_ds, 'cd';
+    }
+    if ($app->param('target_template')) {
+        push @target_ds, 'template';
+    }
+
+    my $term;
+    if (@blog_ids) {
+        $term = [
+            { class => '*' },
+            '-and',
+            [
+                { id => [ @blog_ids ] },
+                '-or',
+                { parent_id => [ @blog_ids ] },
+            ],
+        ];
+    } else {
+        $term = { class => '*' };
+    }
+    my $filter_date;
+    if ($app->param('use_filter_date')) {
+        $filter_date = $app->param('filter_date');
+    }
+    my $site_iter = MT->model('blog')->load_iter($term);
+    while (my $site = $site_iter->()) {
+        for my $ds (@target_ds) {
+            my $col      = 'max_revisions_' . $ds;
+            my $max      = $site->$col || $MT::Revisable::MAX_REVISIONS;
+            my $result   = _gather_violations($ds, $site->id, $max, $filter_date);
+            my $ds_label = _ds_label($ds);
+            if (scalar(@$result) > 0) {
+                _insert_reduce_revisions_job($ds, $ds_label, $site->id, $max, $result);
+            }
+        }
+    }
+    if ($app->param('target_global_template')) {
+        my $ds      = 'template';
+        my $blog_id = 0;
+        my $max     = MT->config->GlobalTemplateMaxRevisions;
+        my $result  = _gather_violations($ds, $blog_id, $max, $filter_date);
+        if (scalar(@$result) > 0) {
+            _insert_reduce_revisions_job($ds, 'Global Template', $blog_id, $max, $result);
+        }
+    }
+
+    my $args = {};
+    $args->{saved} = 1;
+    $app->redirect(
+        $app->uri(
+            'mode' => 'start_reduce_revisions',
+            'args' => $args,
+        ),
+    );
+}
+
+sub _ds_label {
+    my ($ds) = @_;
+    my $ds_label = $ds eq 'entry'
+                 ? 'Entry'
+                 : $ds eq 'cd'
+                 ? 'Content Data'
+                 : $ds eq 'template'
+                 ? 'Template'
+                 : '';
+    return $ds_label;
+}
+
+sub _insert_reduce_revisions_job {
+    my ($ds, $ds_label, $blog_id, $max, $result) = @_;
+    my %args = (
+        blog_id  => $blog_id,
+        ds       => $ds,
+        ds_label => $ds_label,
+        max      => $max,
+        result   => $result,
+    );
+    require MT::TheSchwartz;
+    require TheSchwartz::Job;
+    require JSON;
+    my $job = TheSchwartz::Job->new();
+    $job->funcname('MT::Worker::ReduceRevisions');
+    $job->uniqkey(join(':::', ($ds, $blog_id)));
+    my $priority = 10;
+    $job->priority($priority);
+    $job->run_after(time);
+    $job->arg(JSON::encode_json(\%args));
+    MT::TheSchwartz->insert($job) or return;
+}
+
 sub detect_reduce_revisions {
     my $app = shift;
     return $app->permission_denied() unless $app->user->is_superuser();
@@ -2764,13 +2871,7 @@ sub detect_reduce_revisions {
                 blogName => $site->name,
                 max      => $max,
                 ds       => $ds,
-                dsLabel  => $ds eq 'entry'
-                         ? 'Entry'
-                         : $ds eq 'cd'
-                         ? 'Content Data'
-                         : $ds eq 'template'
-                         ? 'Template'
-                         : '',
+                dsLabel  => _ds_label($ds),
                 result   => $result,
             };
         }
@@ -2821,7 +2922,11 @@ sub start_reduce_revisions {
     my $app = shift;
     return $app->permission_denied() unless $app->user->is_superuser();
     $app->add_breadcrumb($app->translate('Reduce Revisions'));
-    $app->load_tmpl('reduce_revisions.tmpl');
+    my $param;
+    if ($app->param('saved')) {
+        $param->{saved} = $app->param('saved');
+    }
+    $app->load_tmpl('reduce_revisions.tmpl', $param);
 }
 
 sub convert_to_html {

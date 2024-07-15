@@ -3075,6 +3075,11 @@ use vars qw( @ISA %Lexicon );
 	'Published: [_1] ([_2] bytes)' => '公開されたファイル: [_1] ([_2]バイト)',
 	'Published ([_1]):' => '公開されたファイル ([_1]):',
 
+## lib/MT/Worker/ReduceRevisions.pm
+	'[_1] revisions have successfully removed.' => '[_1]件の履歴を削除しました',
+	'Revision type ([_1])' => '履歴種別([_1])',
+	'Site ([_1])' => 'サイト([_1])',
+
 ## lib/MT/Worker/Sync.pm
 	'Done Synchronizing Files' => 'ファイルを同期しました。',
 	'Done syncing files to [_1] ([_2])' => '[_1]へファイルを同期しました。([_2])',
@@ -5460,6 +5465,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/admin2023/cms/reduce_revisions.tmpl
 	'Detect' => '診断',
 	'Filter revisions by date' => '日付で履歴を絞り込む',
+	'Reduce revisions jobs are being registered. This job will be executed in next run-periodic-tasks execution.' => '履歴データの削除をスケジュール登録しました。配信処理は、次回のスケジュールタスクでサーバー側で処理されます。',
 	'Target objects' => '対象オブジェクト',
 	'What to reduce revisions' => '履歴データ削除対象サイト',
 
