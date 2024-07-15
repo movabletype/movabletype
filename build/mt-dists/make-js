@@ -67,6 +67,7 @@ $js .= `cat tmpl/cms/include/category_selector.tmpl`;
 $js .= `cat tmpl/cms/include/content_data_list.tmpl`;
 $js .= `cat tmpl/cms/list_category.tmpl`;
 $js .= `cat tmpl/cms/listing/tag_list_header.tmpl`;
+$js .= `cat tmpl/admin2023/cms/reduce_revisions.tmpl`;
 
 my $addon_path = File::Spec->catdir('addons');
 local *DH;

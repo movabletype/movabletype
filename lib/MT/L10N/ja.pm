@@ -5463,11 +5463,16 @@ use vars qw( @ISA %Lexicon );
 	'Return' => '戻る',
 
 ## tmpl/admin2023/cms/reduce_revisions.tmpl
+	'As you use Movable Type for a long time, the update history of articles and content data will increase, and the database will become bloated.Database bloat can be one of the reasons that processes such as Movable Type upgrades time out and fail.This function allows you to diagnose whether the revisions stored in the database exceeds the currently set limit, and if so, delete the target data.<br>Please note that deleting the revisions will make it impossible to track changes, so please be careful when making this decision.' => 'Movable Type を長期間利用している環境では、記事やコンテンツデータの更新履歴（リビジョン）が増加し、肥大化の要因になっている場合があります。更新履歴が肥大化すると、Movable Type のアップグレードなどの処理の際に、タイムアウトを引き起こし、アップグレードが失敗する要因のひとつになります。この機能を利用することで、現時点で設定されている上限数を超えて保存されている更新履歴がデータベースに存在しないか診断し、確認された場合には対象のデータを削除することができます。<br>更新履歴を削除することで変更内容を追従できなくなりますので削除の決定は慎重に行なってください。',
 	'Detect' => '診断',
+	'Detection Results' => '診断結果',
 	'Filter revisions by date' => '日付で履歴を絞り込む',
-	'Reduce revisions jobs are being registered. This job will be executed in next run-periodic-tasks execution.' => '履歴データの削除をスケジュール登録しました。配信処理は、次回のスケジュールタスクでサーバー側で処理されます。',
+	'Reduce revisions jobs are being registered. This job will be executed in next run-periodic-tasks execution.' => '履歴データの削除をスケジュール登録しました。削除処理は、次回のスケジュールタスクでサーバー側で処理されます。',
+	'Revision created is before [_1]' => '履歴の作成日が [_1] より前',
 	'Target objects' => '対象オブジェクト',
+	'Violation detected' => '超過検出',
 	'What to reduce revisions' => '履歴データ削除対象サイト',
+	'revisions' => '件',
 
 ## tmpl/admin2023/cms/refresh_results.tmpl
 	'No templates were selected to process.' => 'テンプレートが選択されていません。',

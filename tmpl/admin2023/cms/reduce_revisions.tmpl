@@ -24,10 +24,7 @@
 </mt:if>
 
 <p class="page-desc">
-Movable Type を長期間利用している環境では、記事やコンテンツデータの更新履歴（リビジョン）が増加し、肥大化の要因になっている場合があります。
-更新履歴が肥大化すると、Movable Type のアップグレードなどの処理の際に、タイムアウトを引き起こし、アップグレードが失敗する要因のひとつになります。
-この機能を利用することで、現時点で設定されている上限数を超えて保存されている更新履歴がデータベースに存在しないか診断し、確認された場合には対象のデータを削除することができます。<br>
-更新履歴の削除を削除することで変更内容を追従できなくなりますので削除の決定は慎重に行なってください。
+<__trans phrase="As you use Movable Type for a long time, the update history of articles and content data will increase, and the database will become bloated.Database bloat can be one of the reasons that processes such as Movable Type upgrades time out and fail.This function allows you to diagnose whether the revisions stored in the database exceeds the currently set limit, and if so, delete the target data.<br>Please note that deleting the revisions will make it impossible to track changes, so please be careful when making this decision.">
 </p>
 
 <div id="reduce-revisions-panel">
@@ -87,12 +84,9 @@ Movable Type を長期間利用している環境では、記事やコンテン�
          </div>
        </p>
        <div class="item-content form-inline" id="date-options">
- 履歴の作成日
-  <span class="date-options">
-    <span class="date-option date" style="">が<input type="text" name="filter_date" class="form-control m-1 text-date text date" id="date-range"></span>
-  </span>
-    <span>より前</span>
-   </div>
+         <__trans phrase="Revision created is before [_1]"
+                  params="<input type="text" name="filter_date" class="form-control m-1 text-date text date" id="date-range">">
+       </div>
     </mtapp:setting>
 
     <mt:setvarblock name="action_buttons">
@@ -157,22 +151,27 @@ jQuery(function() {
       success: function(result) {
         jQuery('#print-detection').empty();
         jQuery('#detect').attr('disabled', 'disabled');
-        let container = '<ul>';
+        let container = `<div class="h4"><__trans phrase="Detection Results"></div>`;
+        container += '<ul>';
         for (const target of result['result']) {
             container += '<li>';
+            // trans('Content Data');
+            // trans('Entry');
+            // trans('Global Template');
+            // trans('Template');
             container += `${target['blogName']} ${trans(target['dsLabel'])}`;
             if (target['result'].length > 0) {
               container += '<ul>';
               for (const res of target['result']) {
                 container += '<li>';
                 if (jQuery('input[name="use_filter_date"]:checked').length > 0) {
-                  container += `Violation detected(${res['count']})`;
+                  container += `<__trans phrase="Violation detected">(${res['count']} <__trans phrase="revisions">)`;
                 } else {
-                  container += `Violation detected(${res['count']}/${target['max']})`;
+                  container += `<__trans phrase="Violation detected">(${res['count']}/${target['max']} <__trans phrase="revisions">)`;
                 }
                 const url = new URL(window.location.href);
                 url.search = '';
-                container += ` for id=<a target="_blank" href="${url.toString()}?__mode=view&_type=${target['ds']}&blog_id=${target['blogId']}&id=${res['id']}">${res['id']}</a>`;
+                container += ` id=<a target="_blank" href="${url.toString()}?__mode=view&_type=${target['ds']}&blog_id=${target['blogId']}&id=${res['id']}">${res['id']}</a>`;
                 container += '</li>';
               }
               container += '</ul>';
