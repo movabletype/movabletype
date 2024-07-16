@@ -67,7 +67,7 @@ sub metadata {
 
 sub image_height {
     my $asset = shift;
-    my $height = $asset->meta( 'image_height', @_ );
+    my $height = $asset->height(@_);
     return $height if $height || @_;
 
     if ( !-e $asset->file_path || !-r $asset->file_path ) {
@@ -78,7 +78,7 @@ sub image_height {
         $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path ) || {};
     }
     if (my $h = $asset->{__image_info}{height}) {
-        $asset->meta( 'image_height', $h );
+        $asset->height($h);
         if ( $asset->id ) {
             $asset->save;
         }
@@ -89,7 +89,7 @@ sub image_height {
 
 sub image_width {
     my $asset = shift;
-    my $width = $asset->meta( 'image_width', @_ );
+    my $width = $asset->width(@_);
     return $width if $width || @_;
 
     if ( !-e $asset->file_path || !-r $asset->file_path ) {
@@ -100,7 +100,7 @@ sub image_width {
         $asset->{__image_info} = MT::Image->get_image_info( Filename => $asset->file_path ) || {};
     }
     if (my $w = $asset->{__image_info}{width}) {
-        $asset->meta( 'image_width', $w );
+        $asset->width($w);
         if ( $asset->id ) {
             $asset->save;
         }

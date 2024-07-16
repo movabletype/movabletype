@@ -5131,3 +5131,15 @@ download-,info-download,nightly-
 <MTAuthors><MTAuthorPrevious></MTAuthorPrevious></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
 --- expected
 []
+
+=== test 906 entry unpublished date (MTC-27309)
+--- template
+<MTEntries lastn="1"><MTEntryUnpublishedDate></MTEntries>
+--- expected
+January 31, 1978  7:47 AM
+
+=== test 907 page unpublished date (MTC-27309)
+--- template
+<MTPages id="20"><MTPageUnpublishedDate></MTPages>
+--- expected
+January 31, 1978  7:47 AM

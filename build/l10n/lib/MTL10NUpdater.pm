@@ -358,6 +358,7 @@ sub find_phrases {
         themes/mont-blanc/
         themes/rainier/
         php/lib/content_field_type_lib.php
+        php/tests/
     ));
 
     my $verbose = $self->{verbose};

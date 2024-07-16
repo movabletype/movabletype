@@ -278,6 +278,13 @@ jQuery(window).on('load resize', function () {
                   selector.redraw();
                   selector.open();
 
+                  <mt:unless name="options{can_add}">
+                  if ( categoryList.length === 0 ) {
+                      jQuery('#category-list-' + contentFieldId).html(
+                          '<span class="text-muted"><__trans phrase="[_1] is missing" params="<__trans phrase="Category">"></span>'
+                      );
+                  }
+                  </mt:unless>
               });
           /* ]]> */
           </script>

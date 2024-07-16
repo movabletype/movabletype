@@ -365,20 +365,17 @@
             var data = {}
             data.type = c.type
             data.options = options
-            if ( c.isNew ) {
-              data.order = i + 1
+            if (!c.isNew) {
+              data.id = c.id
+            }
+            var innerField = self.fields.filter( function (v) {
+              return v.id == c.id
+            })
+            if (innerField.length && innerField[0].order) {
+              data.order = innerField[0].order
             }
             else {
-              data.id = c.id
-              var innerField = self.fields.filter( function (v) {
-                return v.id == c.id
-              })
-              if (innerField.length) {
-                data.order = innerField[0].order
-              }
-              else {
-                data.order = i + 1
-              }
+              data.order = i + 1
             }
             fieldOptions.push(data)
           })

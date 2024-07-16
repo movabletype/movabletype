@@ -2601,4 +2601,24 @@ sub _hdlr_blog_entry_count {
     return $ctx->count_format( $count, $args );
 }
 
+###########################################################################
+
+=head2 EntryUnpublishedDate
+
+Outputs the unpublishing date of the current entry in context.
+See the L<Date> tag for supported attributes.
+
+=for tags date
+
+=cut
+
+sub _hdlr_entry_unpublished_date {
+    my ( $ctx, $args, $cond ) = @_;
+    my $entry = $ctx->stash('entry')
+        or return $ctx->_no_entry_error();
+
+    $args->{ts} = $entry->unpublished_on or return '';
+    return $ctx->build_date($args);
+}
+
 1;

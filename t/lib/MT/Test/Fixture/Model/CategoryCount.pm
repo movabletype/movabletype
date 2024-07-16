@@ -160,7 +160,7 @@ sub prepare_fixture {
             };
         }
 
-        $ct->fields( \@field_data );
+        $ct->fields(MT::Test::Fixture::_fix_fields(\@field_data));
         $ct->save or die $ct->errstr;
 
         # create 4 content data

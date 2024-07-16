@@ -9,13 +9,15 @@
          "asset_file_ext",
          "asset_file_name",
          "asset_file_path",
+         "asset_height",
          "asset_id",
          "asset_label",
          "asset_mime_type",
          "asset_modified_by",
          "asset_modified_on",
          "asset_parent",
-         "asset_url"
+         "asset_url",
+         "asset_width"
       ],
       "rows" : [
          [
@@ -27,13 +29,15 @@
             "png",
             "movable-type-logo.png",
             "./mt-static/images/logo/movable-type-logo.png",
+            25,
             1,
             "Userpic",
             null,
             null,
             "__NOW__",
             null,
-            "%s/images/logo/movable-type-logo.png"
+            "%s/images/logo/movable-type-logo.png",
+            128
          ],
          [
             1,
@@ -44,58 +48,14 @@
             null,
             null,
             null,
+            null,
             2,
             "Website Asset 1",
             null,
             null,
             "__NOW__",
             null,
-            null
-         ]
-      ]
-   },
-   "mt_asset_meta" : {
-      "cols" : [
-         "asset_meta_asset_id",
-         "asset_meta_type",
-         "asset_meta_vblob",
-         "asset_meta_vchar",
-         "asset_meta_vchar_idx",
-         "asset_meta_vclob",
-         "asset_meta_vdatetime",
-         "asset_meta_vdatetime_idx",
-         "asset_meta_vfloat",
-         "asset_meta_vfloat_idx",
-         "asset_meta_vinteger",
-         "asset_meta_vinteger_idx"
-      ],
-      "rows" : [
-         [
-            1,
-            "image_height",
             null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            25,
-            null
-         ],
-         [
-            1,
-            "image_width",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            128,
             null
          ]
       ]
@@ -823,7 +783,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0000\nTrimFilePath 1\n",
+            "DataAPIDisableSite 0\nDefaultSupportedLanguages en_us,ja\nDisableDataAPI 0\nDisableNotificationPings 1\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion blockeditor=1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce5=1\nPluginSchemaVersion tinymce6=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=0\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE5=0\nPluginSwitch FormattedTextForTinyMCE6=1\nPluginSwitch GoogleAnalyticsV4=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=0\nPluginSwitch TinyMCE5=0\nPluginSwitch TinyMCE6=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=0\nSchemaVersion 8.0001\nTrimFilePath 1\n",
             1
          ]
       ]
@@ -1091,7 +1051,7 @@
             null,
             "tag:localhost,2024:/first_website//2.8",
             1,
-            "2024-02-01 06:08:59",
+            "2024-06-14 20:39:37",
             "blog_entry_1",
             2,
             null,
@@ -1116,7 +1076,7 @@
             "Blog Entry 1",
             null,
             null,
-            202405
+            202424
          ]
       ]
    },
@@ -2616,13 +2576,13 @@
       ],
       "rows" : [
          [
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\tauthor_id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bremember-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005start-\u0000\u0000\u0000\n1706767737\u0000\u0000\u0000\u000bmagic_token-\u0000\u0000\u0000(8e057b82f91e64c07416cc136d4acfe0271c89f7",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u000bmagic_token-\u0000\u0000\u0000(3d46836aac343f69c29df7222a0491dd3fed6843\u0000\u0000\u0000\u0005start-\u0000\u0000\u0000\n1718397576\u0000\u0000\u0000\bremember-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tauthor_id-\u0000\u0000\u0000\u00011",
             null,
             null,
-            "c7fbfdaeadf1d716f353f7c2397e46f8d1c44fab",
+            "1b0786011c2b9e7c52e21cfa263a81491c91f07b",
             "US",
             "1",
-            1706767737
+            1718397576
          ]
       ]
    },
@@ -4242,5 +4202,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; blockeditor 1; contenttypecolumn 0.01; core 8.0000; formattedtext 1.00; tinymce5 1; tinymce6 1"
+   "schema_version" : "WidgetManager 1.1; blockeditor 1; contenttypecolumn 0.01; core 8.0001; formattedtext 1.00; tinymce5 1; tinymce6 1"
 }
