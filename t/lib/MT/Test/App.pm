@@ -275,9 +275,16 @@ sub _request_locally {
     my $res = $ua->request($req);
 }
 
+sub _script_name {
+    my $self = shift;
+    my ($name) = $self->{app_class} =~ /::(\w+)$/;
+    MT->config($name . 'Script') || MT->config->AdminScript;
+}
+
 sub _request_internally {
     my ($self, $params) = @_;
     local $ENV{HTTP_HOST} = 'localhost';    ## for app->base
+    local $ENV{SCRIPT_NAME} = $self->_script_name;
     CGI::initialize_globals();
     $self->_clear_cache;
 
@@ -312,6 +319,9 @@ sub _request_internally {
             my $mt = shift;
             if ($mt->param('username') && $mt->param('password')) {
                 return $org_login->($mt);
+            }
+            if (MT->has_plugin('MFA') && $0 !~ /\bMFA\b/) {
+                $mt->session(mfa_verified => 1);
             }
             return ($user, 0)
         };

@@ -127,7 +127,7 @@ function smarty_function_mtinclude($args, &$ctx) {
             ? $args['key']
             : ( isset($args['cache_key'])
                 ? $args['cache_key']
-                : md5('blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name));
+                : md5('PHP:'. 'blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name));
 
         if (isset($args['ttl']))
             $cache_ttl = intval($args['ttl']);
@@ -135,6 +135,7 @@ function smarty_function_mtinclude($args, &$ctx) {
             $cache_ttl = intval($tmpl_meta->cache_expire_interval);
         else
             $cache_ttl = 60 * 60; # default 60 min.
+        $ttl_for_set = $cache_ttl;
 
         if (isset($cache_expire_type) && $cache_expire_type == '2') {
             $expire_types = preg_split('/,/', $tmpl_meta->cache_expire_event, -1, PREG_SPLIT_NO_EMPTY);
@@ -161,7 +162,12 @@ function smarty_function_mtinclude($args, &$ctx) {
             $cache_ttl = $elapsed_time;
         }
 
-        $cache_driver = $mt->cache_driver($cache_ttl);
+        require_once("class.basecache.php");
+        try {
+            $cache_driver = CacheProviderFactory::get_provider('memcachedexpirable');
+        } catch (Exception $e) {
+            $cache_driver = CacheProviderFactory::get_provider('session');
+        }
         $cached_val = $cache_driver->get($cache_key, $cache_ttl);
         if (!empty($cached_val)) {
             _clear_vars($ctx, $ext_args);
@@ -255,8 +261,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     _clear_vars($ctx, $ext_args);
 
     if ($cache_enable) {
-        $cache_driver = $mt->cache_driver($cache_ttl);
-        $cache_driver->set($cache_key, $_contents, $cache_ttl);
+        $cache_driver->set($cache_key, $_contents, $ttl_for_set);
     }
 
     if ($ssi_enable) {

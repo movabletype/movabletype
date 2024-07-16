@@ -140,6 +140,15 @@ our %FixtureSpec = (
                         min      => 1,
                     },
                 },
+                cf_image_single => {
+                    type    => 'asset_image',
+                    name    => 'asset_image_single',
+                    options => {
+                        multiple => 0,
+                        max      => 1,
+                        min      => 1,
+                    },
+                },
                 cf_content_type => {
                     type   => 'content_type',
                     name   => 'content type',
@@ -407,6 +416,7 @@ our %FixtureSpec = (
                 cf_tags         => [ 'tag2',      'tag1',      \$invalid_id ],
                 cf_categories   => [ 'category2', 'category1', \$invalid_id ],
                 cf_image        => [ 'test2.jpg', 'test.jpg',  \$invalid_id ],
+                cf_image_single => [ 'test2.jpg' ],
                 cf_content_type => [ 'cd2',       \$invalid_id ],
                 cf_text_label => '',
             },

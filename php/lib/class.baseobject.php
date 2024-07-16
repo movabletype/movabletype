@@ -31,10 +31,7 @@ abstract class BaseObject extends ADOdb_Active_Record
             'list_prefs' => 'vblob',
             'lockout_recover_salt' => 'vchar'
             ),
-        'asset' => array(
-            'image_width' => 'vinteger',
-            'image_height' => 'vinteger',
-            ),
+        'asset' => array(),
         'entry' => array(
             'junk_log' => 'vstring',
             'revision' => 'vinteger'
@@ -126,6 +123,10 @@ abstract class BaseObject extends ADOdb_Active_Record
             preg_match('/^'. $this->_prefix. '__(next|previous):/', $name)) {
             // Workarround for dynamic properties warnings
             return array_key_exists($name, $this->_extra) ? $this->_extra[$name] : null;
+        }
+
+        if (method_exists($this, $name)) {
+            return $this->$name();
         }
 
         if (!property_exists($this, $name)) {

@@ -1360,14 +1360,6 @@ sub core_list_actions {
                     $count > 1 ? 1 : 0;
                 }
             },
-            clone_blog => {
-                label         => "Clone Child Site",
-                order         => 150,
-                code          => "${pkg}Blog::clone",
-                permit_action => 'clone_blog',
-                max           => 1,
-                dialog        => 1,
-            },
         },
         'template' => {
             refresh_tmpl_templates => {

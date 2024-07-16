@@ -35,14 +35,14 @@ class MemcachedTest extends TestCase {
         $a = new CacheSession();
         $this->assertCache($a, true);
     }
-    
+
     public function _testCacheMemcache($mt) {
         require_once('class.cachememcached.php');
         $mt->config('MemcachedServers', '127.0.0.1:11211');
         $a = new CacheMemcached();
         $this->assertCache($a);
     }
-    
+
     public function _testMTCacheMemcached($mt) {
         require_once('mtcache_memcached.php');
         $a = new MTCache_memcached();
@@ -64,14 +64,14 @@ class MemcachedTest extends TestCase {
         $class->add('a', 'b', 10);
         $class->add('c', 'd', 10);
         $class->add('e', 'f', 10);
-        $multi = $class->get_multi(array('a', 'c'));
+        $multi = $class->get_multi(['a', 'c']);
         if ($flat) {
-            $this->assertEquals(array('b','d'), $multi);
+            $this->assertEquals(['b', 'd'], $multi);
         } else {
             $this->assertEquals('b', $multi['a']);
             $this->assertEquals('d', $multi['c']);
             $this->assertEquals(2, count($multi));
-            }
+        }
         $class->flush_all();
     }
 }
