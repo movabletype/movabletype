@@ -35,12 +35,16 @@ class Association extends BaseObject
 
             require_once('class.mt_role.php');
             $role = new Role;
-            $role->Load("role_id = $role_id");
+            $role->LoadByIntId($role_id);
         }
 
         return $role;
     }
 
+    /**
+     *
+     * @TODO This method is not in use from core and doesn't even work because class.mt_group.php is not implemented.
+     */
     public function group () {
         $col_name = "association_group_id";
         $group = null;
@@ -49,7 +53,7 @@ class Association extends BaseObject
 
             require_once('class.mt_group.php');
             $group = new Group;
-            $group->Load("group_id = $group_id");
+            $group->LoadByIntId($group_id);
         }
 
         return $group;

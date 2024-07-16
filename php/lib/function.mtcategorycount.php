@@ -20,7 +20,7 @@ function smarty_function_mtcategorycount($args, &$ctx) {
                 $cf_arg = $args['content_field'];
                 require_once("class.mt_content_field.php");
                 $content_field = new ContentField();
-                $content_field->Load("cf_unique_id = '$cf_arg'");
+                $content_field->Load("cf_unique_id = ". $ctx->mt->db()->ph('cf_unique_id', $bind, $cf_arg), $bind);
                 if ($content_field->id) {
                     $terms['content_field_id'] = $content_field->id;
                 } else {

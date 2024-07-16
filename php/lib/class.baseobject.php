@@ -182,9 +182,18 @@ abstract class BaseObject extends ADOdb_Active_Record
         return isset($this->$name);
     }
 
+    public function LoadByIntId($id) {
+        if (!is_int($id) && !ctype_digit($id)) {
+            throw new MTDBException('id must be an integer');
+        }
+        return $this->Load($this->_prefix. 'id = '. $this->DB()->param('p1'), ['p1' => $id]);
+    }
+
     public function Load( $where = null, $bindarr = false, $lock = false ) {
-       if ( is_numeric( $where ) )
-            $where = $this->_prefix . "id = " . $where;
+        if (empty($bindarr) && is_numeric($where)) {
+            $bindarr = ['p1' => $where];
+            $where = $this->_prefix. 'id = '. $this->DB()->param('p1');
+        }
 
         $ret = parent::Load($where, $bindarr, $lock);
         if ($ret && $this->has_meta())
@@ -198,6 +207,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (!$db || empty($this->_table))
             return false;
 
+        $bind_join = [];
         $join = '';
         if (isset($extra['join'])) {
             $joins = $extra['join'];
@@ -209,6 +219,7 @@ abstract class BaseObject extends ADOdb_Active_Record
                 if (isset($joins[$key]['type']))
                     $type = $joins[$key]['type'];
                 $join .= ' ' . strtolower($type) . ' JOIN ' . $table . ' ON ' . $cond;
+                $bind_join = array_merge($bind_join, isset($joins[$key]['bind']) ? $joins[$key]['bind'] : []);
             }
         }
 
@@ -222,10 +233,12 @@ abstract class BaseObject extends ADOdb_Active_Record
             }
         }
 
+        $bind = array_merge($bind_join, $bindarr ? $bindarr : []);
+        
         $objs = $db->GetActiveRecordsClass(get_class($this),
                                           $this->_table . $join,
                                           $whereOrderBy,
-                                          $bindarr,
+                                          $bind,
                                           $pkeysArr,
                                           $extra);
         $ret_objs = array();
@@ -483,12 +496,13 @@ abstract class BaseObject extends ADOdb_Active_Record
 
         $sql = "select count(*) " .
             "from " . $this->_table . $join;
-        if (!empty($where))
+        if (!empty($where)) {
             $sql = $sql . " where $where";
+        }
 
         $db = $this->db();
         $saved = $db->SetFetchMode(ADODB_FETCH_NUM);
-        $result = $db->Execute($sql);
+        $result = $db->Execute($sql, $args['bind'] ?? []);
         $cnt = $result->fields[0];
         $db->SetFetchMode($saved);
         return $cnt;
@@ -519,14 +533,14 @@ abstract class BaseObject extends ADOdb_Active_Record
             if (empty($blog)) {
                 require_once('class.mt_blog.php');
                 $blog = new Blog;
-                $blog->Load("blog_id = $blog_id");
+                $blog->LoadByIntId($blog_id);
             }
         }
 
         if ($blog->class == 'website') {
             require_once('class.mt_website.php');
             $blog = new Website;
-            $blog->Load("blog_id = $blog_id");
+            $blog->LoadByIntId($blog_id);
         }
         if (!empty($blog))
             $this->cache($this->_prefix . ":" . $this->id . ":blog:" . $blog->id, $blog);
@@ -544,7 +558,7 @@ abstract class BaseObject extends ADOdb_Active_Record
             if (empty($author)) {
                 require_once('class.mt_author.php');
                 $author = new Author;
-                $author->Load("author_id = $author_id");
+                $author->LoadByIntId($author_id);
                 $this->cache($this->_prefix . ":" . $this->id . ":author:" . $author->id, $author);
             }
         }
@@ -562,7 +576,7 @@ abstract class BaseObject extends ADOdb_Active_Record
             if (empty($author)) {
                 require_once('class.mt_author.php');
                 $author = new Author;
-                $author->Load("author_id = $author_id");
+                $author->LoadByIntId($author_id);
                 $this->cache($this->_prefix . ":" . $this->id . ":author:" . $author->id, $author);
             }
         }
@@ -580,7 +594,7 @@ abstract class BaseObject extends ADOdb_Active_Record
             if (empty($entry)) {
                 require_once('class.mt_entry.php');
                 $entry = new Entry;
-                $entry->Load("entry_id = $entry_id");
+                $entry->LoadByIntId($entry_id);
                 $this->cache($this->_prefix . ":" . $this->id . ":entry:" . $entry->id, $entry);
             }
         }

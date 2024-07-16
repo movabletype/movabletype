@@ -10,7 +10,6 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
         $at = $args['type'] ?? $args['archive_type'] ?? null;
-        $at = preg_quote($at);
         if (preg_match('/ContentType/i', $at) && empty($args['content_type'])) {
             $repeat = false;
             return $ctx->error(
@@ -22,7 +21,7 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
         }
         $blog_at = ',' . $blog->blog_archive_type . ',';
         $enabled = 0;
-        $at_exists = preg_match("/,$at,/", $blog_at);
+        $at_exists = preg_match("/,\Q$at\E,/", $blog_at);
         if ($at_exists) {
             $params = array('type' => $at, 'blog_id' => $blog->blog_id);
             if ( preg_match('/ContentType/i', $at) ){

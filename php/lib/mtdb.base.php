@@ -45,6 +45,7 @@ abstract class MTDatabase {
     private $_cd_id_cache = array();
     private $_content_type_id_cache; // XXX consider changing the cache storage
     private $_content_field_id_cache;
+    private $_cd_tag_cache;
 
     // Construction
     public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
@@ -84,8 +85,8 @@ abstract class MTDatabase {
         return $this->conn;
     }
 
-    public function execute($sql) {
-        return $this->conn->Execute($sql);
+    public function execute($sql, $bindarr=false) {
+        return $this->conn->Execute($sql, $bindarr);
     }
 
     public function decorate_column( $order ) {
@@ -96,8 +97,8 @@ abstract class MTDatabase {
         return $column;
     }
 
-    public function SelectLimit($sql, $limit = -1, $offset = -1) {
-        return $this->conn->SelectLimit($sql, $limit, $offset);
+    public function SelectLimit($sql, $limit = -1, $offset = -1, $bindarr=false) {
+        return $this->conn->SelectLimit($sql, $limit, $offset, $bindarr);
     }
 
     public function unserialize($data) {
@@ -170,6 +171,9 @@ abstract class MTDatabase {
     }
 
     public function include_exclude_blogs(&$args) {
+
+        trigger_error('function include_exclude_blogs is deprecated', E_USER_DEPRECATED);
+
         if ( empty( $args['include_parent_site'] ) && empty( $args['include_with_website'] ) )
             $include_with_website = false;
         else
@@ -299,6 +303,141 @@ abstract class MTDatabase {
         }
     }
 
+    private function _include_exclude_blogs($name, &$bind, &$args) {
+        if (empty($args['include_parent_site']) && empty($args['include_with_website'])) {
+            $include_with_website = false;
+        } else {
+            $include_with_website = true;
+        }
+
+        $incl = null;
+        $excl = null;
+        if (isset($args['include_sites'])
+        || isset($args['blog_ids'])
+        || isset($args['include_blogs'])
+        || isset($args['site_ids'])
+        || isset($args['include_websites'])) {
+            // The following are aliased
+            if (!empty($args['include_sites'])) {
+                $incl = $args['include_sites'];
+            } elseif (!empty($args['blog_ids'])) {
+                $incl = $args['blog_ids'];
+            } elseif (!empty($args['include_blogs'])) {
+                $incl = $args['include_blogs'];
+            } elseif (!empty($args['site_ids'])) {
+                $incl = $args['site_ids'];
+            } elseif (!empty($args['include_websites'])) {
+                $incl = $args['include_websites'];
+            }
+            $args['include_blogs'] = $incl;
+            unset($args['include_sites']);
+            unset($args['blog_ids']);
+            unset($args['site_ids']);
+            unset($args['include_websites']);
+        } elseif (isset($args['site_id'])) {
+            $incl = $args['site_id'];
+        } elseif (isset($args['blog_id'])) {
+            $incl = $args['blog_id'];
+        }
+
+        if (isset($args['exclude_sites']) || isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
+            $excl = isset($args['exclude_sites']) ? $args['exclude_sites'] : null;
+            $excl or $excl = (isset($args['exclude_blogs']) ? $args['exclude_blogs'] : null);
+            $excl or $excl = (isset($args['exclude_websites']) ? $args['exclude_websites'] : null);
+
+            if (!isset($args['include_blogs'])) {
+                # If only exclude_blogs supplied, set include_blogs as all
+                $incl = 'all';
+                $args['include_blogs'] = 'all';
+            }
+        }
+
+        // Compute include_blogs
+        if (!empty($incl)) {
+            $incl = $this->parse_blog_ids($incl, $include_with_website);
+        }
+        if (isset($args['allows'])) {
+            if (empty($incl)) {
+                $incl = $args['allows'];
+            } else {
+                $incl = array_intersect($incl, $args['allows']);
+            }
+        }
+
+        // Compute exclude_blogs
+        if (!empty($excl)) {
+            $excl = $this->parse_blog_ids($excl);
+        }
+
+        if (isset($args['denies'])) {
+            foreach ($args['denies'] as $val) {
+                $denies[$val] = 1;
+            }
+            if (!empty($excl)) {
+                foreach ($excl as $e) {
+                    if (!array_key_exists($e, $denies)) {
+                        $denies[$e] = 1;
+                    }
+                }
+            }
+            $excl = array_keys($denies);
+        }
+
+        if (!empty($incl) && !empty($excl)) {
+            $incl = array_diff($incl, $excl);
+            if (empty($incl)) {
+                $mt = MT::get_instance();
+                trigger_error($mt->translate(
+                    "When the exclude_blogs and include_blogs attributes are used together, the same blog IDs should not be listed as parameters to both of them."
+                ));
+            } else {
+                $incl = array_values($incl);
+                $excl = null; // remove all exclude pattern.
+            }
+        }
+
+        if (!empty($incl)) {
+            if (count($incl) > 1) {
+                return " in (" . $this->in_ph($name, $bind, $incl) . ' )';
+            } else {
+                return " = " . $this->ph($name, $bind, array_shift($incl));
+            }
+        } elseif (!empty($excl)) {
+            return " not in (" . $this->in_ph($name, $bind, $excl) . ' )';
+        } else {
+            if (isset($args['include_blogs']) && strtolower($args['include_blogs']) == 'all') {
+                return " >= 0";
+            } elseif (isset($args['blog_id']) && is_numeric($args['blog_id'])) {
+                return " = " . $this->ph($name, $bind, $args['blog_id']);
+            } elseif (isset($args['include_blogs'])) {
+                return " = 0";
+            } else {
+                $mt = MT::get_instance();
+                $ctx = $mt->context();
+                $blog = $ctx->stash('blog');
+                if (!empty($blog)) {
+                    $tag = is_array($ctx->_tag_stack) ? $ctx->_tag_stack[count($ctx->_tag_stack)-1][0] : null;
+                    if (!empty($tag)
+                    && ($tag === 'mtwebsitepingcount'
+                        || $tag === 'mtwebsiteentrycount'
+                        || $tag === 'mtwebsitepagecount'
+                        || $tag === 'mtwebsitecommentcount')) {
+                        $website = $blog->is_blog() ? $blog->website() : $blog;
+                        if (empty($website)) {
+                            return " = -1";
+                        } else {
+                            return " = " . $this->ph($name, $bind, $website->id);
+                        }
+                    } else {
+                        return " = " . $this->ph($name, $bind, $blog->id);
+                    }
+                } else {
+                    return " > 0";
+                }
+            }
+        }
+    }
+
     public function db2ts($dbts) {
         $dbts = preg_replace('/[^0-9]/', '', $dbts ?? '');
         return $dbts;
@@ -357,7 +496,6 @@ abstract class MTDatabase {
 
         $mt = MT::get_instance();
         $index = $this->escape($mt->config('IndexBasename'));
-        $escindex = $this->escape($index);
 
         require_once('class.mt_fileinfo.php');
         $records = null;
@@ -372,12 +510,19 @@ abstract class MTDatabase {
         );
 
         foreach ( array($path, urldecode($path), urlencode($path)) as $p ) {
-            $where = "fileinfo_blog_id = $blog_id
-                      and ((fileinfo_url = '%1\$s' or fileinfo_url = '%1\$s/') or (fileinfo_url like '%1\$s/$escindex%%'))
-                      and template_type != 'backup'
-                      order by length(fileinfo_url) asc";
+            $cond = [];
+            $bind = [];
+            $cond[] = 'fileinfo_blog_id = '. $this->ph('fileinfo_blog_id', $bind, $blog_id);
+            $cond[] = sprintf(
+                '((fileinfo_url = %s or fileinfo_url = %s) or (fileinfo_url like %s))',
+                $this->ph('fileinfo_url1', $bind, $p),
+                $this->ph('fileinfo_url2', $bind, $p. '/'),
+                $this->ph('fileinfo_url3', $bind, $p. '/'. $index. '%')
+            );
+            $cond[] = "template_type != 'backup'";
+            $where = implode(' and ', $cond). ' order by length(fileinfo_url) asc';
             $fileinfo= new FileInfo;
-            $records = $fileinfo->Find(sprintf($where, $this->escape($p)),  false, false, $extras);
+            $records = $fileinfo->Find($where, $bind, false, $extras);
             if (!empty($records))
                 break;
         }
@@ -435,56 +580,58 @@ abstract class MTDatabase {
     }
 
     public function fetch_blogs($args = null) {
-        if ($blog_ids = $this->include_exclude_blogs($args))
-            $blog_filter = 'blog_id ' . $blog_ids;
-        else
-            $blog_filter = '1 = 1';
+        $bind = [];
 
         if (!isset($args['class']))
             $args['class'] = 'blog';
 
-        $where = $blog_filter;
-        $where .= $args['class'] == '*' ? "" : " and blog_class = '".$args['class']."'";
-        $where .= ' order by blog_name';
+        $cond[] = 'blog_id '. $this->_include_exclude_blogs('blog_id', $bind, $args);
+        if ($args['class'] !== '*') {
+            $cond[] = "blog_class = ". $this->ph('blog_class', $bind, $args['class']);
+        }
 
         require_once('class.mt_blog.php');
         $blogs = null;
         $blog = new Blog();
-        $blogs = $blog->Find($where);
+        $blogs = $blog->Find(implode(' and ', $cond). ' order by blog_name', $bind);
         return $blogs;
     }
 
     public function fetch_templates($args = null) {
+        $cond = [];
+
         if (isset($args['type'])) {
-            $type_filter = 'and template_type = \'' . $this->escape($args['type']) . '\'';
+            $cond[] = 'template_type = '. $this->ph('template_type', $bind, $args['type']);
         }
         if (isset($args['blog_id'])) {
-            $blog_filter = 'and template_blog_id = ' . intval($args['blog_id']);
+            $cond[] = 'template_blog_id = '. $this->ph('template_blog_id', $bind, intval($args['blog_id']));
         }
 
-        $where = "1 = 1
-                  $blog_filter
-                  $type_filter
-                  order by template_name";
+        $where = implode(' and ', $cond). ' order by template_name';
 
         require_once('class.mt_template.php');
         $template = new Template;
-        $result = $template->Find($where);
+        $result = $template->Find($where, $bind);
         return $result;
     }
 
     public function fetch_templatemap($args = null) {
+
+        $cond = [];
+
         if (isset($args['type'])) {
-            $type_filter = 'and templatemap_archive_type = \'' . $this->escape($args['type']) . '\'';
+            $cond[] = 'templatemap_archive_type = '. $this->ph('templatemap_archive_type', $bind, $args['type']);
         }
         if (isset($args['blog_id'])) {
-            $blog_filter = 'and templatemap_blog_id = ' . intval($args['blog_id']);
+            $cond[] = 'templatemap_blog_id = '. $this->ph('templatemap_blog_id', $bind, intval($args['blog_id']));
         }
         if (isset($args['preferred'])) {
-            $preferred_filter = 'and templatemap_is_preferred = ' . intval($args['preferred']);
+            $cond[] = 'templatemap_is_preferred = '.
+                                            $this->ph('templatemap_is_preferred', $bind, intval($args['preferred']));
         }
         if (isset($args['build_type'])) {
-            $build_type_filter = 'and templatemap_build_type = ' . intval($args['build_type']);
+            $cond[] = 'templatemap_build_type = '.
+                                            $this->ph('templatemap_build_type', $bind, intval($args['build_type']));
         }
         if (isset($args['content_type'])) {
             $params = array('content_type' => $args['content_type']);
@@ -492,65 +639,70 @@ abstract class MTDatabase {
                 $params['blog_id'] = $args['blog_id'];
             }
             $content_types = $this->fetch_content_types($params);
+            
             if (isset($content_types)) {
                 $content_type = $content_types[0];
-                $extras['join'] = array(
-                    'mt_template' => array(
-                        'condition' => "template_id = templatemap_template_id"
-                        )
-                    );
-                $content_type_filter = 'and template_content_type_id = ' . intval($content_type->id);
+                $extras['join'] = [
+                    'mt_template' => [
+                        'condition' => implode(' and ', [
+                            "template_id = templatemap_template_id",
+                            'template_content_type_id = '.
+                                    $this->ph('template_content_type_id', $bind_join, intval($content_type->id)),
+                        ]),
+                        'bind' => $bind_join,
+                    ]
+                ];
             }
             else {
                 return '';
             }
         }
         if (isset($args['content_type_id'])) {
-            $extras['join'] = array(
-                'mt_template' => array(
-                    'condition' => "template_id = templatemap_template_id"
-                    )
-                );
             if (is_array($args['content_type_id'])) {
                 $content_type_id = $args['content_type_id'][0];
             } else {
                 $content_type_id = $args['content_type_id'];
             }
-            $content_type_filter = 'and template_content_type_id = ' . intval($content_type_id);
+            $extras['join'] = [
+                'mt_template' => [
+                    'condition' => implode(' and ', [
+                        "template_id = templatemap_template_id",
+                        'template_content_type_id = '.
+                                $this->ph('template_content_type_id', $bind_join, intval($content_type_id))
+                    ]),
+                    'bind' => $bind_join,
+                ]
+            ];
         }
 
-        $where = implode(' ', array(
-            '1 = 1',
-            isset($blog_filter) ? $blog_filter : '',
-            isset($type_filter) ? $type_filter : '',
-            isset($preferred_filter) ? $preferred_filter : '',
-            isset($build_type_filter) ? $build_type_filter : '',
-            isset($content_type_filter) ? $content_type_filter : '',
-            'order by templatemap_archive_type'
-        ));
+        $where = implode(' and ', $cond). ' order by templatemap_archive_type';
 
         require_once('class.mt_templatemap.php');
         $tmap = new TemplateMap;
-        $result = $tmap->Find($where, false, false, isset($extras) ? $extras : null);
+        $result = $tmap->Find($where, $bind, false, isset($extras) ? $extras : null);
         return $result;
     }
 
     public function load_special_template($ctx, $tmpl, $type, $blog_id = null) {
         if (empty($blog_id))
             $blog_id = $ctx->stash('blog_id');
-        $tmpl_name = $this->escape($tmpl);
 
-        $where = "template_blog_id = $blog_id";
+        $cond = [];
+        $cond[] = 'template_blog_id = '. $this->ph('template_blog_id', $bind, $blog_id);
+
         if (!empty($tmpl)) {
-            $where .= " and (template_name = '$tmpl_name'
-                        or template_outfile = '$tmpl_name'
-                        or template_identifier='$tmpl_name')";
+            $cond[] = sprintf(
+                '(template_name = %s or template_outfile = %s or template_identifier = %s)',
+                $this->ph('template_name', $bind, $tmpl),
+                $this->ph('template_outfile', $bind, $tmpl),
+                $this->ph('template_identifier', $bind, $tmpl)
+            );
         }
-        $where .= " and template_type = '".$this->escape($type)."'";
+        $cond[] = 'template_type = '. $this->ph('template_type', $bind, $type);
 
         require_once('class.mt_template.php');
         $template = new Template;
-        $template->Load($where);
+        $template->Load(implode(' and ', $cond), $bind);
         return $template;
     }
 
@@ -569,12 +721,13 @@ abstract class MTDatabase {
             if ($at == 'ContentType-Category' && !$content_type_id) {
                 return null;
             }
-
-            $where = "fileinfo_category_id = $cid and
-                      fileinfo_archive_type = '$at'";
+            
+            $cond = [];
+            $cond[] = 'fileinfo_category_id = '. $this->ph('fileinfo_category_id', $bind, $cid);
+            $cond[] = 'fileinfo_archive_type = '. $this->ph('fileinfo_archive_type', $bind, $at);
             require_once('class.mt_fileinfo.php');
             $finfo = new FileInfo;
-            $finfos = $finfo->Find($where);
+            $finfos = $finfo->Find(implode(' and ', $cond), $bind);
             if (empty($finfos))
                 return null;
 
@@ -610,16 +763,25 @@ abstract class MTDatabase {
         return $url;
     }
 
-    public function archive_link($ts, $at, $sql, $args) {
+    public function archive_link($ts, $at, $args) {
         $blog_id = intval($args['blog_id']);
         if (isset($this->_archive_link_cache[$blog_id.';'.$ts.';'.$at])) {
             $url = $this->_archive_link_cache[$blog_id.';'.$ts.';'.$at];
         } else {
+
+            $ar = ArchiverFactory::get_archiver($at);
+            $bind = [];
+            $sql = $ar->get_archive_link_sql($ts, $at, $args, $bind);
+
             if (empty($sql)) {
-                $sql = "fileinfo_startdate = '$ts'
-                        and fileinfo_blog_id = $blog_id
-                        and fileinfo_archive_type = '" . $this->escape($at). "'" .
-                        " and templatemap_is_preferred = 1";
+                $sql = sprintf(
+                    "fileinfo_startdate = %s
+                            and fileinfo_blog_id = %s
+                            and fileinfo_archive_type = %s and templatemap_is_preferred = 1",
+                    $this->ph('fileinfo_startdate', $bind, $ts),
+                    $this->ph('fileinfo_blog_id', $bind, $blog_id),
+                    $this->ph('fileinfo_archive_type', $bind, $at)
+                );
             }
             $extras['join'] = array(
                 'mt_templatemap' => array(
@@ -629,7 +791,7 @@ abstract class MTDatabase {
             
             require_once('class.mt_fileinfo.php');
             $finfo = new FileInfo;
-            $infos = $finfo->Find($sql, false, false, $extras);
+            $infos = $finfo->Find($sql, $bind, false, $extras);
             if (empty($infos))
                 return null;
 
@@ -663,14 +825,20 @@ abstract class MTDatabase {
                     'condition' => "templatemap_id = fileinfo_templatemap_id"
                     )
                 );
-            $filter = '';
+            $cond = [];
+            $cond[] = 'templatemap_archive_type = '. $this->ph('templatemap_archive_type', $bind, $at);
+            $cond[] = 'templatemap_is_preferred = 1';
+
+            if (isset($args['blog_id'])) {
+                $cond[] = 'fileinfo_blog_id = '. $this->ph('fileinfo_blog_id', $bind, $args['blog_id']);
+            }
 
             if (preg_match('/Category/', $at)) {
                 $extras['join']['mt_placement'] = array(
                     'condition' => "fileinfo_category_id = placement_category_id"
-                    );
-                $filter = " and placement_entry_id = $eid
-                           and placement_is_primary = 1";
+                );
+                $cond[] = 'placement_entry_id = '. $this->ph('placement_entry_id', $bind, $eid);
+                $cond[] = 'placement_is_primary = 1';
             }
 
             if (preg_match('/Page/', $at)) {
@@ -693,23 +861,18 @@ abstract class MTDatabase {
             } elseif (preg_match('/Yearly$/', $at)) {
                 $ts = substr($ts, 0, 4) . '0101000000';
             } elseif ($at == 'Individual' || $at == 'Page') {
-                $filter .= " and fileinfo_entry_id = $eid";
+                $cond[] = 'fileinfo_entry_id = '. $this->ph('fileinfo_entry_id', $bind, $eid);
             }
             if (preg_match('/(Monthly|Daily|Weekly|Yearly)$/', $at)) {
-                $filter .= " and fileinfo_startdate = '$ts'";
+                $cond[] = 'fileinfo_startdate = '. $this->ph('fileinfo_startdate', $bind, $ts);
             }
             if (preg_match('/Author/', $at)) {
-                $filter .= " and fileinfo_author_id = ". $entry->entry_author_id;
+                $cond[] = 'fileinfo_author_id = '. $this->ph('fileinfo_author_id', $bind, $entry->entry_author_id);
             }
 
-            $where = "templatemap_archive_type = '$at'
-                       and templatemap_is_preferred = 1
-                       $filter";
-            if (isset($args['blog_id']))
-                $where .= " and fileinfo_blog_id = " . $args['blog_id'];
             require_once('class.mt_fileinfo.php');
             $finfo = new FileInfo;
-            $infos = $finfo->Find($where, false, false, $extras);
+            $infos = $finfo->Find(implode(' and ', $cond), $bind, false, $extras);
             if (empty($infos))
                 return null;
 
@@ -744,29 +907,30 @@ abstract class MTDatabase {
         if (empty($blog_id))
             $blog_id = $ctx->stash('blog_id');
 
-        if ($type === 'custom' || $type === 'widget'|| $type === 'widgetset') {
-            $col = 'template_name';
-            $type_filter = "and template_type='$type'";
-        } else {
-            $col = 'template_identifier';
-            $type_filter = "";
-        }
+        $bind = [];
+        $cond = [];
 
         if (!isset($global)) {
-            $blog_filter = "template_blog_id in (".$this->escape($blog_id).",0)";
+            $ph = $this->in_ph('template_blog_id', $bind, [$blog_id, 0]);
+            $cond[] = "template_blog_id in ($ph)";
         } elseif ($global) {
-            $blog_filter = "template_blog_id = 0";
+            $cond[] = "template_blog_id = 0";
         } else {
-            $blog_filter = "template_blog_id = ".$this->escape($blog_id);
+            $cond[] = "template_blog_id = ". $this->ph('template_blog_id', $bind, $blog_id);
+        }
+
+        if ($type === 'custom' || $type === 'widget'|| $type === 'widgetset') {
+            $col = 'template_name';
+            $cond[] = "$col = ". $this->ph($col, $bind, $module);
+            $cond[] = 'template_type = '. $this->ph('template_type', $bind, $type);
+        } else {
+            $col = 'template_identifier';
+            $cond[] = "$col = ". $this->ph($col, $bind, $module);
         }
 
         require_once('class.mt_template.php');
         $template = new Template;
-        $where = "$blog_filter
-                  and $col = '".$this->escape($module)."'
-                  $type_filter
-                  order by template_blog_id desc";
-        $tmpls = $template->Find($where);
+        $tmpls = $template->Find(implode(' and ', $cond). ' order by template_blog_id desc', $bind);
         if (empty($tmpls)) return '';
 
         $tmpl = $tmpls[0]->text;
@@ -806,7 +970,7 @@ abstract class MTDatabase {
         }
         require_once('class.mt_website.php');
         $blog = new Website;
-        $blog->Load("blog_id = $blog_id");
+        $blog->LoadByIntId($blog_id);
         $this->_blog_id_cache[$blog_id] = $blog;
         return $blog;
     }
@@ -817,7 +981,7 @@ abstract class MTDatabase {
         }
         require_once('class.mt_blog.php');
         $blog = new Blog;
-        $blog->Load("blog_id = $blog_id");
+        $blog->LoadByIntId($blog_id);
         $this->_blog_id_cache[$blog_id] = $blog;
         return $blog;
     }
@@ -833,7 +997,7 @@ abstract class MTDatabase {
         }
         require_once("class.mt_entry.php");
         $entry = New Entry;
-        $entry->Load( $eid );
+        $entry->LoadByIntId($eid);
         if ( !empty( $entry ) ) {
             $this->_entry_id_cache[$eid] = $entry;
             return $entry;
@@ -846,17 +1010,12 @@ abstract class MTDatabase {
         require_once('class.mt_entry.php');
         $extras = array();
 
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and entry_blog_id ' . $sql;
-            $mt = MT::get_instance();
-            $ctx = $mt->context();
-            $blog = $ctx->stash('blog');
-            if ( !empty( $blog ) )
-                $blog_id = $blog->blog_id;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and entry_blog_id = ' . $blog_id;
-            $blog = $this->fetch_blog($blog_id);
+        $blog_filter = 'and entry_blog_id ' . $this->_include_exclude_blogs('entry_blog_id', $bind_blog_filter, $args);
+        $mt = MT::get_instance();
+        $ctx = $mt->context();
+        $blog = $ctx->stash('blog');
+        if (!empty($blog)) {
+            $blog_id = $blog->blog_id;
         }
 
         if (empty($blog))
@@ -931,23 +1090,24 @@ abstract class MTDatabase {
 
         # special case for selecting a particular entry
         if (isset($args['entry_id'])) {
-            $entry_filter = 'and entry_id = '.$args['entry_id'];
+            $entry_filter = 'and entry_id = '. $this->ph('entry_id', $bind_entry_filter, $args['entry_id']);
             $start = ''; $end = ''; $limit = 1; $blog_filter = ''; $day_filter = '';
+            $bind_blog_filter = [];
         } else {
             $entry_filter = '';
+            $bind_entry_filter = [];
         }
 
         # special case for selecting some particular entries
         if (isset($args['entry_ids'])) {
-            $entry_filter .=
-                ' and entry_id IN (' .
-                join(',', preg_grep('/\A\d+\z/', $args['entry_ids'])) .
-                ')';
+            $entry_ids = preg_grep('/\A\d+\z/', $args['entry_ids']);
+            $ph = $this->in_ph('entry_id', $bind_entry_filter, $entry_ids);
+            $entry_filter .= ' and entry_id IN ('. $ph. ')';
         }
 
         # special case for excluding a particular entry
         if (isset($args['not_entry_id'])) {
-            $entry_filter .= ' and entry_id != '.$args['not_entry_id'];
+            $entry_filter .= ' and entry_id != '. $this->ph('not_entry_id', $bind_entry_filter, $args['not_entry_id']);
         }
 
         $entry_list = array();
@@ -1126,29 +1286,31 @@ abstract class MTDatabase {
 
         # Adds an count of comment filter
         if (isset($args['max_comment']) && is_numeric($args['max_comment'])) {
-            $max_comment_filter = 'and entry_comment_count <= ' . intval($args['max_comment']);
+            $max_comment_filter = 'and entry_comment_count <= '.
+                            $this->ph('entry_comment_count', $bind_max_comment_filter, intval($args['max_comment']));
         }
         if (isset($args['min_comment']) && is_numeric($args['min_comment'])) {
-            $min_comment_filter = 'and entry_comment_count >= ' . intval($args['min_comment']);
+            $min_comment_filter = 'and entry_comment_count >= '.
+                            $this->ph('entry_comment_count', $bind_min_comment_filter, intval($args['min_comment']));
         }
 
-        if (count($entry_list) && ($entry_filter == '')) {
-            $entry_list = implode(",", array_keys($entry_list));
-            # set a reasonable cap on the entry list cache. if
-            # user is selecting something too big, then they'll
-            # just have to wait through a scan.
-            if (strlen($entry_list) < 2048)
-                $entry_filter = "and entry_id in ($entry_list)";
+        # set a reasonable cap on the entry list cache. if
+        # user is selecting something too big, then they'll
+        # just have to wait through a scan.
+        if (!empty($entry_list) && count($entry_list) < 1024 && ($entry_filter == '')) {
+            $bind_entry_filter = [];
+            $ph = $this->in_ph('entry_id', $bind_entry_filter, array_keys($entry_list));
+            $entry_filter = "and entry_id in ($ph)";
         }
 
         if (isset($args['author'])) {
-            $author_filter = 'and author_name = \'' .
-                $this->escape($args['author']) . "'";
+            $author_filter = 'and author_name = '. $this->ph('author_name', $bind_author_filter, $args['author']);
             $extras['join']['mt_author'] = array(
                     'condition' => "entry_author_id = author_id"
                     );
         } elseif (isset($args['author_id']) && preg_match('/^\d+$/', $args['author_id']) && $args['author_id'] > 0) {
-            $author_filter = "and entry_author_id = '" . $args['author_id'] . "'";
+            $author_filter = "and entry_author_id = ".
+                                            $this->ph('entry_author_id', $bind_author_filter, $args['author_id']);
         }
 
         $date_filter = '';
@@ -1186,7 +1348,7 @@ abstract class MTDatabase {
                 (isset($blog))) {
                 if ($days = $blog->blog_days_on_index) {
                     if (!isset($args['recently_commented_on'])) {
-                        $day_filter = 'and ' . $this->limit_by_day_sql('entry_authored_on', $days);
+                        $day_filter = 'and ' . $this->limit_by_day_sql('entry_authored_on', intval($days));
                     }
                 } elseif ($posts = $blog->blog_entries_on_index) {
                     $limit = $posts;
@@ -1211,24 +1373,30 @@ abstract class MTDatabase {
         }
 
         if (isset($args['class'])) {
-            $class = $this->escape($args['class']);
+            $class = $args['class'];
         } else {
             $class = 'entry';
         }
-        $class_filter = "and entry_class='$class'";
-        if ($args['class'] == '*') $class_filter = '';
-
+        if ($args['class'] == '*') {
+            $class_filter = '';
+        } else {
+            $class_filter = "and entry_class=". $this->ph('entry_class', $bind_class_filter, $class);
+        }
 
         if ( isset($args['sort_by'])
-             && (($args['sort_by'] == 'score') || ($args['sort_by'] == 'rate'))) {
-             $extras['join'] = array(
-                 'mt_objectscore' => array(
-                     'type' => 'left',
-                     'condition' => "objectscore_object_id = entry_id and objectscore_namespace='".
-                     $args['namespace']."' and objectscore_object_ds='".$class."'"
-                     )
-                 );
-             $extras['distinct'] = 1;
+            && (($args['sort_by'] == 'score') || ($args['sort_by'] == 'rate'))) {
+            $extras['join'] = array(
+                'mt_objectscore' => array(
+                    'type' => 'left',
+                    'condition' => sprintf(
+                        "objectscore_object_id = entry_id and objectscore_namespace=%s and objectscore_object_ds=%s",
+                        $this->ph('objectscore_namespace', $bind_objectscore, $args['namespace']),
+                        $this->ph('objectscore_object_ds', $bind_objectscore, $class)
+                    ),
+                    'bind' => $bind_objectscore,
+                )
+            );
+            $extras['distinct'] = 1;
         }
 
         if (isset($args['offset']))
@@ -1258,6 +1426,9 @@ abstract class MTDatabase {
                     $limit = 0; $offset = 0;
                     $no_resort = 0;
                 } else {
+                    if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                        throw new MTDBException('illegal sort_by name');
+                    }
                     $sort_field = 'entry_' . $args['sort_by'];
                 }
                 if (!empty($sort_field)) $no_resort = 1;
@@ -1300,13 +1471,17 @@ abstract class MTDatabase {
                 foreach ($fields as $name => $value) {
                     if (isset($entry_meta_info['field.'.$name])) {
                         $meta_col = $entry_meta_info['field.'.$name];
-                        $value = $this->escape($value);
                         $table = "mt_entry_meta entry_meta$meta_join_num";
                         $extras['join'][$table] = array(
-                            'condition' => "(entry_meta$meta_join_num.entry_meta_entry_id = entry_id
-                                and entry_meta$meta_join_num.entry_meta_type = 'field.$name'
-                                and entry_meta$meta_join_num.entry_meta_$meta_col='$value')\n"
-                            );
+                            'condition' => sprintf(
+                                "(entry_meta$meta_join_num.entry_meta_entry_id = entry_id
+                                and entry_meta$meta_join_num.entry_meta_type = %s
+                                and entry_meta$meta_join_num.entry_meta_$meta_col=%s)\n",
+                                $this->ph("entry_meta{$meta_join_num}_1", $bind_entry_meta, "field.$name"),
+                                $this->ph("entry_meta{$meta_join_num}_2", $bind_entry_meta, $value)
+                            ),
+                            'bind' => $bind_entry_meta,
+                        );
                         $meta_join_num++;
                     }
                 }
@@ -1317,6 +1492,7 @@ abstract class MTDatabase {
         if (isset($extras['join'])) {
             $joins = $extras['join'];
             $keys = array_keys($joins);
+            $bind_join_clause = [];
             foreach($keys as $key) {
                 $table = $key;
                 $cond = $joins[$key]['condition'];
@@ -1324,8 +1500,20 @@ abstract class MTDatabase {
                 if (isset($joins[$key]['type']))
                     $type = $joins[$key]['type'];
                 $join_clause .= ' ' . strtolower($type) . ' JOIN ' . $table . ' ON ' . $cond;
+                $bind_join_clause =
+                    array_merge($bind_join_clause, isset($joins[$key]['bind']) ? $joins[$key]['bind'] : []);
             }
         }
+        
+        $bind = array_merge(
+            isset($bind_join_clause) ? $bind_join_clause : [],
+            isset($bind_blog_filter) ? $bind_blog_filter : [],
+            isset($bind_entry_filter) ? $bind_entry_filter : [],
+            isset($bind_author_filter) ? $bind_author_filter : [],
+            isset($bind_class_filter) ? $bind_class_filter : [],
+            isset($bind_max_comment_filter) ? $bind_max_comment_filter : [],
+            isset($bind_min_comment_filter) ? $bind_min_comment_filter : []
+        );
 
         $sql = implode(' ', array(
             'select mt_entry.* from mt_entry', $join_clause, 'where', 'entry_status = 2',
@@ -1339,9 +1527,9 @@ abstract class MTDatabase {
             isset($min_comment_filter) ? $min_comment_filter : ''
         ));
         if (!empty($sort_field)) {
-            $sql .= "order by $sort_field $base_order";
+            $sql .= " order by $sort_field $base_order";
             if ($sort_field == 'entry_authored_on') {
-                $sql .= ",entry_id $base_order";
+                $sql .= ", entry_id $base_order";
             }
         }
 
@@ -1359,7 +1547,7 @@ abstract class MTDatabase {
 
         if (empty($limit) || $limit <= 0) $limit = -1;
         if (empty($offset) || $offset <= 0) $offset = -1;
-        $result = $this->db()->SelectLimit($sql, $limit, $offset);
+        $result = $this->SelectLimit($sql, $limit, $offset, $bind);
         if ($result->EOF) return null;
 
         $field_names = array_keys($result->fields);
@@ -1438,6 +1626,9 @@ abstract class MTDatabase {
                 } elseif (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
                     $sort_field = 'entry_field.' . $match[1];
                 } else {
+                    if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                        throw new MTDBException('illegal sort_by name');
+                    }
                     $sort_field = 'entry_' . $args['sort_by'];
                 }
             } else {
@@ -1445,6 +1636,12 @@ abstract class MTDatabase {
             }
 
             if ($sort_field) {
+                $bind2 = array_merge(
+                    isset($bind_blog_filter) ? $bind_blog_filter : [],
+                    isset($bind_entry_filter) ? $bind_entry_filter : [],
+                    isset($bind_author_filter) ? $bind_author_filter : [],
+                    isset($bind_class_filter) ? $bind_class_filter : []
+                );
                 if ($sort_field == 'score') {
                     $offset = !empty($post_sort_offset) ? $post_sort_offset : 0;
                     $limit = !empty($post_sort_limit) ? $post_sort_limit : 0;
@@ -1459,8 +1656,9 @@ abstract class MTDatabase {
                             isset($author_filter) ? $author_filter : '',
                             isset($date_filter) ? $date_filter : '',
                             isset($day_filter) ? $day_filter : '',
-                            isset($class_filter) ? $class_filter : ''
-                        ))
+                            isset($class_filter) ? $class_filter : '',
+                        )),
+                        $bind2
                     );
                     $entries_sorted = array();
                     foreach($scores as $score) {
@@ -1495,7 +1693,8 @@ abstract class MTDatabase {
                             isset($date_filter) ? $date_filter : '',
                             isset($day_filter) ? $day_filter : '',
                             isset($class_filter) ? $class_filter : ''
-                        ))
+                        )),
+                        $bind2
                     );
                     $entries_sorted = array();
                     foreach($scores as $score) {
@@ -1589,15 +1788,14 @@ abstract class MTDatabase {
     }
 
     public function fetch_plugin_data($plugin, $key) {
-        $plugin = $this->escape($plugin);
-        $key = $this->escape($key);
 
         require_once('class.mt_plugindata.php');
         $class = new PluginData;
-        $where = "plugindata_plugin = '$plugin'
-                  and plugindata_key = '$key'";
+        $cond = [];
+        $cond[] = 'plugindata_plugin = '. $this->ph('plugindata_plugin', $bind, $plugin);
+        $cond[] = 'plugindata_key = '. $this->ph('plugindata_key', $bind, $key);
 
-        $pdatas = $class->Find($where);
+        $pdatas = $class->Find(implode(' and ', $cond), $bind);
         if (!empty($pdatas)) {
 
             $data = $pdatas[0]->data;
@@ -1610,6 +1808,7 @@ abstract class MTDatabase {
 
     public function fetch_entry_tags($args) {
         # load tags
+        $bind = [];
 
         $class = isset($args['class']) ? $args['class'] : 'entry';
         $cacheable 
@@ -1623,38 +1822,20 @@ abstract class MTDatabase {
                     return $this->_entry_tag_cache[$args['entry_id']];
                 }
             }
-            $entry_filter = 'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where objecttag_object_id='.intval($args['entry_id']).')';
+            $sub_where = 'objecttag_object_id = '. $this->ph('objecttag_object_id', $bind, intval($args['entry_id']));
+            $entry_filter = 'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where '. $sub_where. ')';
         }
 
-        $blog_filter = $this->include_exclude_blogs($args);
-        if ($blog_filter == '' and isset($args['blog_id'])) {
-            if ($cacheable) {
-                if (!isset($args['entry_id'])) {
-                    if (isset($this->_blog_tag_cache[$args['blog_id'].":$class"])) {
-                        return $this->_blog_tag_cache[$args['blog_id'].":$class"];
-                    }
-                }
-            }
-            $blog_filter = ' = '. intval($args['blog_id']);
-        }
-        if ($blog_filter != '') 
-            $blog_filter = 'and objecttag_blog_id ' . $blog_filter;
+        $blog_filter = 'and objecttag_blog_id ' . $this->_include_exclude_blogs('objecttag_blog_id', $bind, $args);
 
-        if (empty($args['include_private'])) {
-            $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
-        }
         if (! empty($args['tags'])) {
-            $tag_list = '';
             require_once("MTUtil.php");
             $tag_array = tag_split($args['tags']);
-            foreach ($tag_array as $tag) {
-                if ($tag_list != '') $tag_list .= ',';
-                $tag_list .= "'" . $this->escape($tag) . "'";
-            }
-            if ($tag_list != '') {
-                $tag_filter = 'and (tag_name in (' . $tag_list . '))';
-                $private_filter = '';
-            }
+            $ph = $this->in_ph('tag_name', $bind, $tag_array);
+            $tag_filter = 'and (tag_name in (' . $ph. '))';
+        }
+        if (empty($tag_filter) && empty($args['include_private'])) {
+            $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
         }
 
         $sort_col = isset($args['sort_by']) ? $args['sort_by'] : 'name';
@@ -1681,11 +1862,11 @@ abstract class MTDatabase {
             isset($blog_filter) ? $blog_filter : '',
             isset($tag_filter) ? $tag_filter : '',
             isset($private_filter) ? $private_filter : '',
-            "and entry_class = '$class'",
+            "and entry_class = ". $this->ph('entry_class', $bind, $class),
             "group by tag_id, tag_name",
             "order by $sort_col $order $id_order, tag_id desc"
         ));
-        $rs = $this->db()->SelectLimit($sql);
+        $rs = $this->SelectLimit($sql, -1, -1, $bind);
 
         require_once('class.mt_tag.php');
         $tags = array();
@@ -1707,13 +1888,18 @@ abstract class MTDatabase {
     }
 
     public function fetch_asset_tags($args) {
+        $bind = [];
+        $cond = [];
+        $cond[] = 'objecttag_tag_id = tag_id';
+        $cond[] = 'asset_id = objecttag_object_id';
+        $cond[] = "objecttag_object_datasource='asset'";
 
         # load tags by asset
         $cacheable = empty( $args['tags'] )
             && empty( $args['include_private'] );
 
         if (empty($args['include_private'])) {
-            $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
+            $private_filter = '(tag_is_private = 0 or tag_is_private is null)';
         }
 
         if (isset($args['asset_id'])) {
@@ -1721,7 +1907,7 @@ abstract class MTDatabase {
                 if (isset($this->_asset_tag_cache[$args['asset_id']]))
                     return $this->_asset_tag_cache[$args['asset_id']];
             }
-            $asset_filter = 'and objecttag_object_id = '.intval($args['asset_id']);
+            $cond[] = 'objecttag_object_id = '. $this->ph('objecttag_object_id', $bind, intval($args['asset_id']));
         }
         
         if (isset($args['blog_id'])) {
@@ -1729,21 +1915,20 @@ abstract class MTDatabase {
                 if (isset($this->_blog_asset_tag_cache[$args['blog_id']]))
                     return $this->_blog_asset_tag_cache[$args['blog_id']];
             }
-            $blog_filter = 'and objecttag_blog_id = '.intval($args['blog_id']);
+            $cond[] = 'objecttag_blog_id = '. $this->ph('objecttag_blog_id', $bind, intval($args['blog_id']));
         }
 
         if (! empty($args['tags'])) {
-            $tag_list = '';
             require_once("MTUtil.php");
             $tag_array = tag_split($args['tags']);
-            foreach ($tag_array as $tag) {
-                if ($tag_list != '') $tag_list .= ',';
-                $tag_list .= "'" . $this->escape($tag) . "'";
-            }
-            if ($tag_list != '') {
-                $tag_filter = 'and (tag_name in (' . $tag_list . '))';
+            if (!empty($tag_array)) {
+                $cond[] = 'tag_name in (' . $this->in_ph('tag_name', $bind, $tag_array). ')';
                 $private_filter = '';
             }
+        }
+
+        if (!empty($private_filter)) {
+            $cond[] = $private_filter;
         }
 
         $sort_col = isset($args['sort_by']) ? $args['sort_by'] : 'name';
@@ -1762,17 +1947,12 @@ abstract class MTDatabase {
         $sql = implode(' ', array(
             "select tag_id, tag_name, count(*) as tag_count",
             "from mt_tag, mt_objecttag, mt_asset",
-            "where objecttag_tag_id = tag_id",
-            "and asset_id = objecttag_object_id and objecttag_object_datasource='asset'",
-            isset($blog_filter) ? $blog_filter : '',
-            isset($private_filter) ? $private_filter : '',
-            isset($tag_filter) ? $tag_filter : '',
-            isset($asset_filter) ? $asset_filter : '',
+            "where",
+            implode(' and ', $cond),
             "group by tag_id, tag_name",
             "order by $sort_col $order $id_order"
         ));
-
-        $rs = $this->db()->SelectLimit($sql);
+        $rs = $this->SelectLimit($sql, -1, -1, $bind);
 
         require_once('class.mt_tag.php');
         $tags = array();
@@ -1818,17 +1998,16 @@ abstract class MTDatabase {
 
     public function fetch_categories($args) {
         # load categories
-        if ($blog_filter = $this->include_exclude_blogs($args)) {
-             $blog_filter = 'and category_blog_id '. $blog_filter;
-        } elseif (isset($args['blog_id'])) {
-            $blog_filter = 'and category_blog_id = '.intval($args['blog_id']);
-        }
+        $bind = [];
+        $bind_join = [];
+        $blog_filter = 'and category_blog_id '. $this->_include_exclude_blogs('category_blog_id', $bind, $args);
         if (isset($args['parent'])) {
             $parent = $args['parent'];
             if (is_array($parent)) {
-                $parent_filter = 'and category_parent in (' . implode(',', $parent) . ')';
+                $ph = $this->in_ph('category_parent', $bind, $parent);
+                $parent_filter = 'and category_parent in (' . $ph . ')';
             } else {
-                $parent_filter = 'and category_parent = '.intval($parent);
+                $parent_filter = 'and category_parent = '. $this->ph('category_parent', $bind, $parent);
             }
         }
         $cat_filter = '';
@@ -1846,22 +2025,17 @@ abstract class MTDatabase {
                     }
                 }
 
-                $cat_filter = 'and category_parent = '.intval($args['category_id']);
+                $cat_filter = 'and category_parent = '. $this->ph('category_parent', $bind, $args['category_id']);
             } else {
-                $cat_filter = 'and category_id = '.intval($args['category_id']);
+                $cat_filter = 'and category_id = '. $this->ph('category_id', $bind, $args['category_id']);
                 $limit = 1;
             }
         } elseif (isset($args['label'])) {
             if (is_array($args['label'])) {
-                $labels = '';
-                foreach ($args['label'] as $c) {
-                    if ($labels != '')
-                        $labels .= ',';
-                    $labels .= "'".$this->escape($c)."'";
-                }
-                $cat_filter = 'and category_label in ('.$labels.')';
+                $ph = $this->in_ph('category_label', $bind, $args['label']);
+                $cat_filter = 'and category_label in ('. $ph. ')';
             } else {
-                $cat_filter = 'and category_label = \''.$this->escape($args['label']).'\'';
+                $cat_filter = 'and category_label = '. $this->ph('category_label', $bind, $args['label']);
             }
         } else {
             $limit = isset($args['lastn']) ? $args['lastn'] : null;
@@ -1878,6 +2052,9 @@ abstract class MTDatabase {
         }
         $sort_by = 'user_custom';
         if ( isset($args['sort_by']) ) {
+            if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                throw new MTDBException('illegal sort_by name');
+            }
             $sort_by = strtolower($args['sort_by']);
             if ( 'user_custom' != $sort_by ) {
                 require_once('class.mt_category.php');
@@ -1899,7 +2076,8 @@ abstract class MTDatabase {
             if (!empty($args['show_empty'])) {
                 $join_clause = 'left outer join mt_placement on placement_category_id = category_id';
                 if (isset($args['entry_id'])) {
-                    $join_clause .= ' left outer join mt_entry on placement_entry_id = entry_id and entry_id = '.intval($args['entry_id']);
+                    $join_clause .= ' left outer join mt_entry on placement_entry_id = entry_id and entry_id = '.
+                                                        $this->ph('entry_id', $bind_join, intval($args['entry_id']));
                 } else {
                     $join_clause .= ' left outer join mt_entry on placement_entry_id = entry_id and entry_status = 2';
                 }
@@ -1908,7 +2086,8 @@ abstract class MTDatabase {
                 $join_clause = ', mt_entry, mt_placement';
                 $cat_filter .= ' and placement_category_id = category_id';
                 if (isset($args['entry_id'])) {
-                    $entry_filter = ' and placement_entry_id = entry_id and placement_entry_id = '.intval($args['entry_id']);
+                    $entry_filter = ' and placement_entry_id = entry_id and placement_entry_id = '.
+                                                            $this->ph('placement_entry_id', $bind, $args['entry_id']);
                 } else {
                     $entry_filter = ' and placement_entry_id = entry_id and entry_status = 2';
                 }
@@ -1919,7 +2098,8 @@ abstract class MTDatabase {
             if (!empty($args['show_empty'])) {
                 $join_clause = 'left outer join mt_objectcategory on objectcategory_category_id = category_id and objectcategory_object_ds = \'content_data\'';
                 if (isset($args['content_id'])) {
-                    $join_clause .= ' left outer join mt_cd on objectcategory_object_id = cd_id and cd_id = '.intval($args['content_id']);
+                    $join_clause .= ' left outer join mt_cd on objectcategory_object_id = cd_id and cd_id = '.
+                                                    $this->ph('content_id', $bind_join, intval($args['content_id']));
                 } else {
                     $join_clause .= ' left outer join mt_cd on objectcategory_object_id = cd_id and cd_status = 2';
                 }
@@ -1928,7 +2108,8 @@ abstract class MTDatabase {
                 $join_clause = ', mt_cd, mt_objectcategory';
                 $cat_filter .= ' and objectcategory_category_id = category_id and objectcategory_object_ds = \'content_data\'';
                 if (isset($args['content_id'])) {
-                    $entry_filter = ' and objectcategory_object_id = cd_id and objectcategory_object_id = '.intval($args['content_id']);
+                    $entry_filter = ' and objectcategory_object_id = cd_id and objectcategory_object_id = '.
+                                                    $this->ph('objectcategory_object_id', $bind, $args['content_id']);
                 } else {
                     $entry_filter = ' and objectcategory_object_id = cd_id and cd_status = 2';
                 }
@@ -1943,19 +2124,21 @@ abstract class MTDatabase {
                       $content_type = $content_types[0];
                     }
                   }
-                  if (isset($content_type))
-                    $content_type_filter = ' and cd_content_type_id ='.intval($content_type->id);
+                    if (isset($content_type)) {
+                        $content_type_filter = ' and cd_content_type_id = '.
+                                                            $this->ph('cd_content_type_id', $bind, $content_type->id);
+                    }
                 }
                 $count_column = 'objectcategory_id';
             }
         }
 
         if (isset($args['class'])) {
-            $class = $this->escape($args['class']);
+            $class = $args['class'];
         } else {
             $class = "category";
         }
-        $class_filter = " and category_class='$class'";
+        $class_filter = " and category_class = ". $this->ph('category_class', $bind, $class);
 
         if (isset($args['category_set_id'])) {
             if ($args['category_set_id'] !== '*' && $args['category_set_id'] !== '> 0') {
@@ -1967,7 +2150,8 @@ abstract class MTDatabase {
             $category_set_id = 0;
         }
         if (isset($category_set_id)) {
-            $category_set_filter = "and category_category_set_id = $category_set_id";
+            $category_set_filter = "and category_category_set_id = ".
+                                                        $this->ph('category_category_set_id', $bind, $category_set_id);
         }
         elseif (isset($args['category_set_id']) && $args['category_set_id'] === '> 0') {
             $category_set_filter = "and category_category_set_id > 0";
@@ -1986,7 +2170,7 @@ abstract class MTDatabase {
         ));
 
         if (empty($limit) || $limit <= 0) $limit = -1;
-        $categories = $this->db()->SelectLimit($sql, $limit, -1);
+        $categories = $this->SelectLimit($sql, $limit, -1, array_merge($bind_join, $bind));
         if ($categories->EOF)
             return null;
 
@@ -1999,14 +2183,12 @@ abstract class MTDatabase {
                 $ids[] = $categories->Fields('category_id');
                 $categories->MoveNext();
             }
-            $list = implode(",", $ids);
 
             require_once('class.mt_category.php');
             $category = new Category;
             $base_sort = 'user_custom' == $sort_by ? 'category_label' : $sort_by;
-            $where = "category_id in ($list)
-                      order by $base_sort $sort_order";
-            $categories = $category->Find($where);
+            $where = 'category_id in ('. $this->in_ph('template_blog_id', $bind_cat, $ids). ')';
+            $categories = $category->Find($where. " order by $base_sort $sort_order", $bind_cat);
             if (!$categories) $categories = array();
             if ( count($categories) > 1 && 'user_custom' == $sort_by ) {
                 $mt = MT::get_instance();
@@ -2102,7 +2284,7 @@ abstract class MTDatabase {
         }
         require_once("class.mt_page.php");
         $page = New Page;
-        $page->Load( $eid );
+        $page->LoadByIntId($eid);
         if ( !empty( $page ) ) {
             $this->_entry_id_cache[$eid] = $page;
             return $page;
@@ -2126,7 +2308,7 @@ abstract class MTDatabase {
     public function fetch_author_by_name($author_name) {
         $mt = MT::get_instance();
         $args['blog_id'] = $mt->get_current_blog_id();
-        $args['author_name'] = $this->escape($author_name);
+        $args['author_name'] = $author_name;
         $authors = $this->fetch_authors($args);
         if (!isset($authors[0])) {
             return;
@@ -2139,22 +2321,23 @@ abstract class MTDatabase {
     public function fetch_authors($args) {
         # Adds blog join
         $extras = array();
-        $blog_ids = $this->include_exclude_blogs($args);
         $mt = MT::get_instance();
         $ctx = $mt->context();
-        $blog_ids or $blog_ids = " = " . $ctx->stash('blog_id');
 
         # Adds author filter
         $author_filter = '';
+        $bind_author_filter = [];
         if (isset($args['author_id'])) {
             $author_id = intval($args['author_id']);
-            $author_filter .= " and author_id = $author_id";
+            $author_filter .= " and author_id = ". $this->ph('author_id', $bind_author_filter, $author_id);
         }
         if (isset($args['author_nickname'])) {
-            $author_filter .= " and author_nickname = '".$args['author_nickname']."'";
+            $author_filter .= " and author_nickname = ".
+                                            $this->ph('author_nickname', $bind_author_filter, $args['author_nickname']);
         }
         if (isset($args['author_name'])) {
-            $author_filter .= " and author_name = '".$args['author_name']."'";
+            $author_filter .= " and author_name = ".
+                                            $this->ph('author_name', $bind_author_filter, $args['author_name']);
         }
 
         # Adds entry/cd join and filter
@@ -2177,8 +2360,8 @@ abstract class MTDatabase {
                 );
             $extras['distinct'] = 'distinct';
             $entry_filter = " and entry_status = 2";
-            if ( $blog_ids )
-                $entry_filter .= " and entry_blog_id " . $blog_ids;
+            $entry_filter .= " and entry_blog_id ".
+                                            $this->_include_exclude_blogs('entry_blog_id', $bind_entry_filter, $args);
         }
         elseif (!empty($args['need_content']) && !(isset($args['id']) || isset($args['username']))) {
             $extras['join']['mt_cd'] = array(
@@ -2186,22 +2369,26 @@ abstract class MTDatabase {
                 );
             $extras['distinct'] = 'distinct';
             $cd_filter = " and cd_status = 2";
-            if ( $blog_ids )
-                $cd_filter .= " and cd_blog_id" . $blog_ids;
-            if (isset($content_type))
-                $cd_filter .= " and cd_content_type_id = " . $content_type->id;
+            $cd_filter .= " and cd_blog_id " . $this->_include_exclude_blogs('cd_blog_id', $bind_cd_filter, $args);
+            if (isset($content_type)) {
+                $cd_filter .= " and cd_content_type_id = ".
+                                                $this->ph('cd_content_type_id', $bind_cd_filter, $content_type->id);
+            }
         } else {
             $extras['distinct'] = 'distinct';
             if (!isset($args['roles']) and !isset($args['role'])) {
+                $bind_join = [];
                 $join_sql = "permission_author_id = author_id";
                 if ( isset($args['need_association']) && $args['need_association'] ) {
-                    $join_sql .= " and permission_blog_id" . $blog_ids;
+                    $join_sql .= " and permission_blog_id ".
+                                                $this->_include_exclude_blogs('permission_blog_id1', $bind_join, $args);
                 }
+                $join_blog_filter = $this->_include_exclude_blogs('permission_blog_id2', $bind_join, $args);
                 if ( empty($args['any_type']) ) {
                     $join_sql .= "
                         and (
                             (
-                                permission_blog_id $blog_ids
+                                permission_blog_id $join_blog_filter
                                 and (
                                     permission_permissions like '%create_post%' or
                                     permission_permissions like '%publish_post%'
@@ -2218,7 +2405,7 @@ abstract class MTDatabase {
                         and
                             (
                                 (
-                                    permission_blog_id $blog_ids
+                                    permission_blog_id $join_blog_filter
                                     and permission_permissions is not null
                                 )
                             or
@@ -2237,7 +2424,8 @@ abstract class MTDatabase {
                 
                 $sql = $join_sql;
                 $extras['join']['mt_permission'] = array(
-                    'condition' => $sql
+                    'condition' => $sql,
+                    'bind' => $bind_join,
                 );
             }
         }
@@ -2377,6 +2565,9 @@ abstract class MTDatabase {
                 $order_sql = "order by author_created_on desc";
                 $re_sort = true;
             } else {
+                if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                    throw new MTDBException('illegal sort_by name');
+                }
                 $sort_col = $args['sort_by'];
                 if (strtolower($sort_col) == 'display_name') $sort_col = 'nickname';
                 if (!preg_match('/^author_/i', $sort_col)) $sort_col = 'author_' . $sort_col;
@@ -2395,7 +2586,7 @@ abstract class MTDatabase {
                         $val_order = '>';
                     else
                         $val_order = '<';
-                    $sort_filter =  " and $sort_col $val_order '$val'";
+                    $sort_filter =  " and $sort_col $val_order ". $this->ph('sort_start_string', $bind_sort_filter, $val);
                 }
     
                 if (isset($args['start_num'])) {
@@ -2404,7 +2595,7 @@ abstract class MTDatabase {
                         $val_order = '>';
                     else
                         $val_order = '<';
-                    $sort_filter .= " and $sort_col $val_order $val";
+                    $sort_filter .= " and $sort_col $val_order ". $this->ph('sort_start_num', $bind_sort_filter, $val);
                 }
             }
         }
@@ -2421,6 +2612,13 @@ abstract class MTDatabase {
             $post_select_offset = isset($args['offset']) ? $args['offset'] : 0;
         }
 
+        $bind = array_merge(
+            isset($bind_author_filter) ? $bind_author_filter : [],
+            isset($bind_entry_filter) ? $bind_entry_filter : [],
+            isset($bind_cd_filter) ? $bind_cd_filter : [],
+            isset($bind_sort_filter) ? $bind_sort_filter : [],
+            isset($bind_order_sql) ? $bind_order_sql : []
+        );
         $where = implode(' ', array("1 = 1", 
             isset($author_filter) ? $author_filter : '',
             isset($entry_filter) ? $entry_filter : '',
@@ -2432,7 +2630,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_author.php');
         $author = new Author;
-        $results = $author->Find($where, false, false, $extras);
+        $results = $author->Find($where, $bind, false, $extras);
         $authors = array();
         if (empty($args['sort_by']) || $args['sort_by'] != 'score' && $args['sort_by'] != 'rate') {
             $offset = isset($post_select_offset) ? $post_select_offset : 0;
@@ -2462,8 +2660,12 @@ abstract class MTDatabase {
             foreach ($authors as $a) {
                 $authors_tmp[$a->author_id] = $a;
             }
-            $scores = $this->fetch_sum_scores($args['namespace'], 'author', $order,
-                isset($author_filter) ? $author_filter : null
+            $scores = $this->fetch_sum_scores(
+                $args['namespace'],
+                'author',
+                $order,
+                isset($author_filter) ? $author_filter : null,
+                $bind_author_filter
             );
             $offset = $post_select_offset ? $post_select_offset : 0;
             $limit = $post_select_limit ? $post_select_limit : 0;
@@ -2487,9 +2689,7 @@ abstract class MTDatabase {
             foreach ($authors as $a) {
                 $authors_tmp[$a->author_id] = $a;
             }
-            $scores = $this->fetch_avg_scores($args['namespace'], 'author', $order,
-                $author_filter
-            );
+            $scores = $this->fetch_avg_scores($args['namespace'], 'author', $order, $author_filter, $bind_author_filter);
             $offset = $post_select_offset ? $post_select_offset : 0;
             $limit = $post_select_limit ? $post_select_limit : 0;
             $j = 0;
@@ -2510,27 +2710,19 @@ abstract class MTDatabase {
     }
 
     public function fetch_permission($args) {
+        $bind = [];
+        $cond = [];
         // Blog filter
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and permission_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = "and permission_blog_id = $blog_id";
-        }
+        $cond[] = 'permission_blog_id ' . $this->_include_exclude_blogs('permission_blog_id', $bind, $args);
 
         // Author filter
         if (isset($args['id'])) {
-            $id_filter = 'and permission_author_id in ('.$args['id'].')';
+            $cond[] = 'permission_author_id = '. $this->ph('permission_author_id', $bind, $args['id']);
         }
 
         require_once('class.mt_permission.php');
         $perm = new Permission;
-        $where = "1 = 1
-                  $blog_filter
-                  $id_filter
-                  order by permission_id asc";
-
-        $result = $perm->Find($where);
+        $result = $perm->Find(implode(' and ', $cond). ' order by permission_id asc', $bind);
         return $result;
     }
 
@@ -2542,30 +2734,30 @@ abstract class MTDatabase {
     }
 
     public function fetch_associations($args) {
-        $where_list = array();
+        $cond = [];
+        $bind = [];
         if (isset($args['role_id'])) {
-            $id_list = implode(",", $args['role_id']);
-            $where_list[] = "association_role_id in ($id_list)";
+            $ph = $this->in_ph('association_role_id', $bind, $args['role_id']);
+            $cond[] = "association_role_id in ($ph)";
         }
         if (isset($args['group_id'])) {
-            $id_list = implode(",", $args['group_id']);
-            $where_list[] = "association_group_id in ($id_list)";            
+            $ph = $this->in_ph('association_group_id', $bind, $args['group_id']);
+            $cond[] = "association_group_id in ($ph)";
         }
         if (isset($args['type'])) {
-            $where_list[] = "association_type=".intval($args['type']);
+            $cond[] = "association_type=". $this->ph('association_type', $bind, intval($args['type']));
         }
-        if (empty($where_list))
+        if (empty($cond)) {
             return;
+        }
 
         // Blog Filter
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $where_list[] = 'association_blog_id  ' . $sql;
-        }
+        $cond[] = 'association_blog_id ' . $this->_include_exclude_blogs('association_blog_id', $bind, $args);
 
         require_once('class.mt_association.php');
         $assoc = new Association;
-        $where = implode(' and ', $where_list);
-        $result = $assoc->Find($where);
+        $where = implode(' and ', $cond);
+        $result = $assoc->Find($where, $bind);
         if (!$result)
             return array();
         return $result;
@@ -2579,7 +2771,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_tag.php');
         $tag = new Tag;
-        $loaded = $tag->Load("tag_id = $tag_id");
+        $loaded = $tag->LoadByIntId($tag_id);
         if ($loaded)
             $this->_tag_id_cache[$tag->tag_id] = $tag;
 
@@ -2587,11 +2779,10 @@ abstract class MTDatabase {
     }
 
     public function fetch_tag_by_name($tag_name) {
-        $tag_name = $this->escape($tag_name);
 
         require_once('class.mt_tag.php');
         $tag = new Tag;
-        $loaded = $tag->Load("tag_name = '$tag_name'");
+        $loaded = $tag->Load("tag_name = ". $this->ph('tag_name', $bind, $tag_name), $bind);
         if ($loaded)
             $this->_tag_id_cache[$tag->tag_id] = $tag;
 
@@ -2599,38 +2790,35 @@ abstract class MTDatabase {
     }
 
     public function fetch_scores($namespace, $obj_id, $datasource) {
-        $namespace = $this->escape($namespace);
-        $obj_id = intval($obj_id);
-        $datasource = $this->escape($datasource);
 
-        $where = "objectscore_namespace='$namespace'
-                  and objectscore_object_id='$obj_id'
-                  and objectscore_object_ds='$datasource'";
+        $cond[] = 'objectscore_namespace = '. $this->ph('objectscore_namespace', $bind, $namespace);
+        $cond[] = 'objectscore_object_id = '. $this->ph('objectscore_object_id', $bind, intval($obj_id));
+        $cond[] = 'objectscore_object_ds = '. $this->ph('objectscore_object_ds', $bind, $datasource);
 
         require_once('class.mt_objectscore.php');
         $score = new ObjectScore;
-        $result = $score->Find($where);
+        $result = $score->Find(implode(' and ', $cond), $bind);
         return $result;
     }
 
     public function fetch_score($namespace, $obj_id, $user_id, $datasource) {
-        $namespace = $this->escape($namespace);
-        $obj_id = intval($obj_id);
-        $user_id = intval($user_id);
-        $datasource = $this->escape($datasource);
 
-        $where = "objectscore_namespace='$namespace'
-                  and objectscore_object_id='$obj_id'
-                  and objectscore_object_ds='$datasource'
-                  and objectscore_author_id='$user_id'";
+        $cond = [];
+        $cond[] = 'objectscore_namespace = '. $this->ph('objectscore_namespace', $bind, $namespace);
+        $cond[] = 'objectscore_object_id = '. $this->ph('objectscore_object_id', $bind, intval($obj_id));
+        $cond[] = 'objectscore_object_ds = '. $this->ph('objectscore_object_ds', $bind, $datasource);
+        $cond[] = 'objectscore_author_id = '. $this->ph('objectscore_author_id', $bind, intval($user_id));
 
         require_once('class.mt_objectscore.php');
         $score = new ObjectScore;
-        $loaded = $score->Load($where);
+        $loaded = $score->Load(implode(' and ', $cond), $bind);
         return $loaded ? $score : null;
     }
 
-    public function fetch_sum_scores($namespace, $datasource, $order, $filters) {
+    public function fetch_sum_scores($namespace, $datasource, $order, $filters, $bind=[]) {
+        if (preg_match('/[^a-zA-Z0-9_]/', $datasource)) {
+            throw new MTDBException('illegal datasource name');
+        }
         $othertables = '';
         $otherwhere = '';
         if ($datasource == 'asset') {
@@ -2639,22 +2827,29 @@ abstract class MTDatabase {
         }
         $join_column = $datasource . '_id';
         $join_where = "AND ($join_column = objectscore_object_id)";
-        $sql_scores = "
-             SELECT SUM(objectscore_score) AS sum_objectscore_score, objectscore_object_id
-             FROM mt_objectscore, mt_$datasource $othertables
-             WHERE (objectscore_namespace = '$namespace')
-             AND (objectscore_object_ds = '$datasource')
-             $join_where
-             $otherwhere
-             $filters
-             GROUP BY objectscore_object_id 
-             ORDER BY sum_objectscore_score " . $order;
+        $sql_scores = implode(' ', [
+            "SELECT SUM(objectscore_score) AS sum_objectscore_score, objectscore_object_id
+                FROM mt_objectscore, mt_$datasource $othertables",
+            sprintf(
+                "WHERE (objectscore_namespace = %s) AND (objectscore_object_ds = %s)",
+                $this->ph('objectscore_namespace', $bind_local, $namespace),
+                $this->ph('objectscore_object_ds', $bind_local, $datasource)
+            ),
+            $join_where,
+            $otherwhere,
+            $filters,
+            "GROUP BY objectscore_object_id
+                ORDER BY sum_objectscore_score " . $order
+        ]);
 
-        $scores = $this->db()->Execute($sql_scores);
+        $scores = $this->Execute($sql_scores, array_merge($bind_local ?? [], $bind ?? []));
         return $scores;
     }
 
-    public function fetch_avg_scores($namespace, $datasource, $order, $filters) {
+    public function fetch_avg_scores($namespace, $datasource, $order, $filters, $bind=[]) {
+        if (preg_match('/[^a-zA-Z0-9_]/', $datasource)) {
+            throw new MTDBException('illegal datasource name');
+        }
         $othertables = '';
         $otherwhere = '';
         if ($datasource == 'asset') {
@@ -2663,18 +2858,21 @@ abstract class MTDatabase {
         }
         $join_column = $datasource . '_id';
         $join_where = "AND ($join_column = objectscore_object_id)";
-        $sql_scores = "
-            SELECT AVG(objectscore_score) AS sum_objectscore_score, objectscore_object_id
-             FROM mt_objectscore, mt_$datasource $othertables
-             WHERE (objectscore_namespace = '$namespace')
-             AND (objectscore_object_ds = '$datasource')
-             $join_where
-             $otherwhere
-             $filters
-             GROUP BY objectscore_object_id 
-             ORDER BY sum_objectscore_score " . $order;
+        $sql_scores = implode(' ', [
+            "SELECT AVG(objectscore_score) AS sum_objectscore_score, objectscore_object_id
+                FROM mt_objectscore, mt_$datasource $othertables",
+            sprintf(
+                'WHERE (objectscore_namespace = %s) AND (objectscore_object_ds = %s)',
+                $this->ph('objectscore_namespace', $bind_local, $namespace),
+                $this->ph('objectscore_object_ds', $bind_local, $datasource)
+            ),
+            $join_where,
+            $otherwhere,
+            $filters,
+            "GROUP BY objectscore_object_id ORDER BY sum_objectscore_score " . $order
+        ]);
 
-        $scores = $this->db()->Execute($sql_scores);
+        $scores = $this->Execute($sql_scores, array_merge($bind_local ?? [], $bind ?? []));
         return $scores;
     }
 
@@ -2688,14 +2886,16 @@ abstract class MTDatabase {
         }
         if (empty($ids))
             return;
-        $id_list = implode(",", $ids);
-        if (empty($id_list))
+
+        $ph = $this->in_ph('fileinfo_entry_id', $bind, $ids);
+        if (empty($ph)) {
             return;
+        }
 
         $query = "
             select fileinfo_entry_id, fileinfo_url, A.blog_site_url as blog_site_url, A.blog_file_extension as blog_file_extension, A.blog_archive_url as blog_archive_url, B.blog_site_url as website_url, A.blog_parent_id as blog_parent_id
             from mt_fileinfo, mt_templatemap, mt_blog A, mt_blog B
-            where fileinfo_entry_id in ($id_list)
+            where fileinfo_entry_id in ($ph)
             and fileinfo_archive_type = 'Individual'
             and A.blog_id = fileinfo_blog_id
             and templatemap_id = fileinfo_templatemap_id
@@ -2712,7 +2912,7 @@ abstract class MTDatabase {
             )
         ";
 
-        $results = $this->db()->Execute($query);
+        $results = $this->Execute($query, $bind);
         if (!empty($results)) {
             foreach ($results as $row) {
                 $blog_url = $row['blog_archive_url'];
@@ -2756,14 +2956,15 @@ abstract class MTDatabase {
         }
         if (empty($ids))
             return;
-        $id_list = implode(",", $ids);
-        if (empty($id_list))
+        $ph = $this->in_ph('fileinfo_category_id', $bind, $ids);
+        if (empty($ph)) {
             return;
+        }
 
         $query = "
             select fileinfo_category_id, fileinfo_url, A.blog_site_url as blog_site_url, A.blog_file_extension as blog_file_extension, A.blog_archive_url as blog_archive_url, B.blog_site_url as website_url, A.blog_parent_id as blog_parent_id
               from mt_fileinfo, mt_templatemap, mt_blog A, mt_blog B
-             where fileinfo_category_id in ($id_list)
+             where fileinfo_category_id in ($ph)
                and (fileinfo_archive_type = 'Category' or fileinfo_archive_type = 'ContentType-Category')
               and A.blog_id = fileinfo_blog_id
                and templatemap_id = fileinfo_templatemap_id
@@ -2779,7 +2980,7 @@ abstract class MTDatabase {
                 )
                )
         ";
-        $results = $this->db()->Execute($query);
+        $results = $this->Execute($query, $bind);
         if ($results) {
             foreach ($results as $row) {
                 $blog_url = $row['blog_archive_url'];
@@ -2813,69 +3014,47 @@ abstract class MTDatabase {
     }
 
     function blog_entry_count($args) {
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and entry_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and entry_blog_id = ' . $blog_id;
-        }
-        $class = 'entry';
-        if (isset($args['class'])) {
-            $class = $args['class'];
-        }
-        $author_filter = '';
-        if (isset($args['author_id'])) {
-            $author_id = intval($args['author_id']);
-            $author_filter = 'and entry_author_id = ' . $author_id;
-        }
+        $cond = [];
+        $cond[] = 'entry_status = 2';
+        $cond[] = 'entry_class = '. $this->ph('entry_class', $bind, $args['class'] ?? 'entry');
+        $cond[] = 'entry_blog_id ' . $this->_include_exclude_blogs('entry_blog_id', $bind, $args);
 
-        $where = "entry_status = 2
-                  and entry_class='$class'
-                  $blog_filter
-                  $author_filter";
+        if (isset($args['author_id'])) {
+            $cond[] = 'entry_author_id = ' . $this->ph('entry_author_id', $bind, intval($args['author_id']));
+        }
 
         require_once('class.mt_entry.php');
         $entry = new Entry;
-        $result = $entry->count(array('where' => $where));
+        $result = $entry->count(['where' => implode(' and ', $cond), 'bind' => $bind]);
         return $result;
     }
 
     function author_content_count($args) {
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and cd_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and cd_blog_id = ' . $blog_id;
+        $blog_filter = 'and cd_blog_id ' . $this->_include_exclude_blogs('cd_blog_id', $bind, $args);
+        $content_type_filter = '';
+        if (isset($args['content_type_id'])) {
+            $content_type_filter = 'and cd_content_type_id = '.
+                                $this->ph('cd_content_type_id', $bind, intval($args['content_type_id']));
         }
         $author_filter = '';
         if (isset($args['author_id'])) {
-            $author_id = intval($args['author_id']);
-            $author_filter = 'and cd_author_id = ' . $author_id;
-        }
-        $content_type_filter = '';
-        if (isset($args['content_type_id'])) {
-            $content_type_id = intval($args['content_type_id']);
-            $content_type_filter = 'and cd_content_type_id = ' . $content_type_id;
+            $author_filter = 'and cd_author_id = ' . $this->ph('cd_author_id', $bind, intval($args['author_id']));
         }
 
         $where = "cd_status = 2
-                  $content_type_filter
                   $blog_filter
+                  $content_type_filter
                   $author_filter";
 
         require_once('class.mt_content_data.php');
         $cd = new ContentData;
-        $result = $cd->count(array('where' => $where));
+        $result = $cd->count(array('where' => $where, 'bind' => $bind));
         return $result;
     }
 
     public function blog_comment_count($args) {
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and comment_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and comment_blog_id = ' . $blog_id;
-        }
+        $bind = [];
+        $blog_filter = 'and comment_blog_id ' . $this->_include_exclude_blogs('comment_blog_id', $bind, $args);
 
         $where = "entry_status = 2
                   and comment_visible = 1
@@ -2890,7 +3069,7 @@ abstract class MTDatabase {
             );
         require_once('class.mt_comment.php');
         $comment = new Comment;
-        $result = $comment->count(array('where' => $where, 'join' => $join));
+        $result = $comment->count(['where' => $where, 'join' => $join, 'bind' => $bind ?? null]);
         return $result;
     }
 
@@ -2919,12 +3098,7 @@ abstract class MTDatabase {
     }
 
     public function blog_ping_count($args) {
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and tbping_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and tbping_blog_id = ' . $blog_id;
-        }
+        $blog_filter = 'and tbping_blog_id ' . $this->_include_exclude_blogs('tbping_blog_id', $bind, $args);
 
         $where = "tbping_visible = 1
                   $blog_filter";
@@ -2936,24 +3110,20 @@ abstract class MTDatabase {
 
         require_once('class.mt_tbping.php');
         $tbping = new TBPing;
-        $result = $tbping->count(array('where' => $where, 'join' => $join));
+        $result = $tbping->count(array('where' => $where, 'bind' => $bind, 'join' => $join));
         return $result;
     }
 
     public function blog_category_count($args) {
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and category_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and category_blog_id = ' . $blog_id;
-        }
+        $bind = [];
+        $blog_filter = 'and category_blog_id ' . $this->_include_exclude_blogs('category_blog_id', $bind, $args);
 
         $where = "category_class = 'category'
                   $blog_filter";
 
         require_once('class.mt_category.php');
         $cat = new Category;
-        $result = $cat->count(array('where' => $where));
+        $result = $cat->count(['where' => $where, 'bind' => $bind]);
         return $result;
     }
 
@@ -2986,7 +3156,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_entry.php');
         $entry = new Entry;
-        $loaded = $entry->Load("entry_id = $entry_id");
+        $loaded = $entry->LoadByIntId($entry_id);
         $count = 0;
         if ($loaded) {
             $count = $entry->entry_comment_count;
@@ -2996,41 +3166,31 @@ abstract class MTDatabase {
     }
 
     public function author_entry_count($args) {
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and entry_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and entry_blog_id = ' . $blog_id;
-        }
-        if (isset($args['author_id'])) {
-            $author_id = intval($args['author_id']);
-            $author_filter = " and entry_author_id = $author_id";
-        }
-        $class = 'entry';
-        if (isset($args['class'])) {
-            $class = $args['class'];
-        }
 
-        $where = "entry_status = 2
-                  and entry_class='$class'
-                  $blog_filter
-                  $author_filter";
+        $cond = [];
+        $cond[] = 'entry_status = 2';
+        $cond[] = 'entry_class = '. $this->ph('entry_class', $bind, $args['class'] ?? 'entry');
+        $cond[] = 'entry_blog_id ' . $this->_include_exclude_blogs('entry_blog_id', $bind, $args);
+
+        if (isset($args['author_id'])) {
+            $cond[] = "entry_author_id = ". $this->ph('entry_author_id', $bind, intval($args['author_id']));
+        }
 
         require_once('class.mt_entry.php');
         $entry = new Entry;
-        $count = $entry->count(array('where' => $where));
+        $count = $entry->count(['where' => implode(' and ', $cond), 'bind' => $bind]);
         return $count;
     }
 
     public function fetch_placements($args) {
-        $id_list = '';
-        if (isset($args['category_id']))
-            $id_list = implode(',', $args['category_id']);
-        if (empty($id_list))
+        if (empty($args['category_id'])) {
             return;
-
-        $where = "placement_category_id in ($id_list)
-                  and entry_status = 2";
+        }
+        $ph = $this->in_ph('placement_category_id', $bind, $args['category_id']);
+        if (empty($ph)) {
+            return;
+        }
+        $where = "placement_category_id in ($ph) and entry_status = 2";
         $extras['join'] = array(
             'mt_entry' => array(
                 'condition' => 'entry_id = placement_entry_id'
@@ -3039,19 +3199,20 @@ abstract class MTDatabase {
 
         require_once('class.mt_placement.php');
         $placement = new Placement;
-        return $placement->Find($where, false, false, $extras);
+        return $placement->Find($where, $bind, false, $extras);
     }
 
     public function fetch_objecttags($args) {
-        $id_list = '';
-        if (isset($args['tag_id']))
-            $id_list = implode(',', $args['tag_id']);
-        if (empty($id_list))
+        $bind = [];
+        if (empty($args['tag_id'])) {
             return;
+        }
+        $tag_id_ph = $this->in_ph('objecttag_tag_id', $bind, $args['tag_id']);
+        if (empty($tag_id_ph)) {
+            return;
+        }
 
-        $blog_filter = $this->include_exclude_blogs($args);
-        if ($blog_filter != '')
-            $blog_filter = 'and objecttag_blog_id' . $blog_filter;
+        $blog_filter = 'and objecttag_blog_id ' . $this->_include_exclude_blogs('objecttag_blog_id', $bind, $args);
 
         $extras = array();
         if (isset($args['datasource']) && strtolower($args['datasource']) == 'asset') {
@@ -3085,12 +3246,12 @@ abstract class MTDatabase {
 
         $where = implode(' ', array(
             "objecttag_object_datasource ='$datasource'",
-            "and objecttag_tag_id in ($id_list)",
+            "and objecttag_tag_id in ($tag_id_ph)",
             $blog_filter,
             isset($object_filter) ? $object_filter : ''
         ));
 
-        return $otag->Find($where, false, false, $extras);
+        return $otag->Find($where, $bind, false, $extras);
     }
 
     public function fetch_comments($args) {
@@ -3100,14 +3261,9 @@ abstract class MTDatabase {
 
         $entry_id = isset($args['entry_id']) ? intval($args['entry_id']) : 0;
 
-        $sql = $this->include_exclude_blogs($args);
-        if ($sql != '') {
-            $blog_filter = 'and comment_blog_id ' . $sql;
-            if (isset($args['blog_id']))
-                $blog = $this->fetch_blog(intval($args['blog_id']));
-        } elseif ($args['blog_id']) {
+        $blog_filter = 'and comment_blog_id ' . $this->_include_exclude_blogs('comment_blog_id', $bind, $args);
+        if (isset($args['blog_id'])) {
             $blog = $this->fetch_blog(intval($args['blog_id']));
-            $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 
         # Adds a score or rate filter to the filters list.
@@ -3205,7 +3361,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_comment.php');
         $comment = new Comment;
-        $result = $comment->Find($where, false, false, $extras);
+        $result = $comment->Find($where, $bind, false, $extras);
         if (empty($result)) return null;
 
         $comments = array();
@@ -3294,24 +3450,18 @@ abstract class MTDatabase {
 
         $parent_id = intval($args['parent_id']);
 
-        $sql = $this->include_exclude_blogs($args);
-        if ($sql != '') {
-            $blog_filter = 'and comment_blog_id ' . $sql;
-            if (isset($args['blog_id']))
-                $blog = $this->fetch_blog($args['blog_id']);
-        } elseif ($args['blog_id']) {
+        $blog_filter = 'and comment_blog_id ' . $this->_include_exclude_blogs('comment_blog_id', $bind, $args);
+        if (isset($args['blog_id'])) {
             $blog = $this->fetch_blog($args['blog_id']);
-            $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 
-        $where = "1 = 1
-                  $blog_filter
-                  and comment_id = $parent_id
-                  and comment_visible = 1";
-
+        $where = sprintf("1 = 1
+                        $blog_filter
+                        and comment_id = %s
+                        and comment_visible = 1", $this->ph('comment_id', $bind, $parent_id));
         require_once('class.mt_comment.php');
         $comment = new Comment;
-        $comments = $comment->Find($where);
+        $comments = $comment->Find($where, $bind);
         if (!empty($comments))
             $comment = $comments[0];
         else
@@ -3326,14 +3476,9 @@ abstract class MTDatabase {
 
         $comment_id = intval($args['comment_id']);
 
-        $sql = $this->include_exclude_blogs($args);
-        if ($sql != '') {
-            $blog_filter = 'and comment_blog_id ' . $sql;
-            if (isset($args['blog_id']))
-                $blog = $this->fetch_blog($args['blog_id']);
-        } elseif ($args['blog_id']) {
+        $blog_filter = 'and comment_blog_id ' . $this->_include_exclude_blogs('comment_blog_id', $bind, $args);
+        if (isset($args['blog_id'])) {
             $blog = $this->fetch_blog($args['blog_id']);
-            $blog_filter = ' and comment_blog_id = ' . $blog->blog_id;
         }
 
         $order = 'asc';
@@ -3365,7 +3510,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_comment.php');
         $comment = new Comment;
-        $comments = $comment->Find($where, false, false, $extras);
+        $comments = $comment->Find($where, $bind, false, $extras);
         if (empty($comments))
             return array();
 
@@ -3386,7 +3531,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_entry.php');
         $entry = new Entry;
-        $loaded = $entry->Load("entry_id = $entry_id");
+        $loaded = $entry->LoadByIntId($entry_id);
         $count = 0;
         if ($loaded) {
             $count = $entry->entry_ping_count;
@@ -3414,14 +3559,10 @@ abstract class MTDatabase {
 
     public function fetch_pings($args) {
         # load pings  
-        $sql = $this->include_exclude_blogs($args);
-        if ($sql != '') {
-            $blog_filter = 'and tbping_blog_id ' . $sql;
-            if (isset($args['blog_id']))
-                $blog = $this->fetch_blog($args['blog_id']);
-        } elseif (isset($args['blog_id'])) {
+        $bind = [];
+        $blog_filter = 'and tbping_blog_id ' . $this->_include_exclude_blogs('tbping_blog_id', $bind, $args);
+        if (isset($args['blog_id'])) {
             $blog = $this->fetch_blog($args['blog_id']);
-            $blog_filter = ' and tbping_blog_id = ' . $blog->blog_id;
         }
 
         $order = isset($args['lastn']) ? 'desc' : 'asc';
@@ -3435,7 +3576,8 @@ abstract class MTDatabase {
 
         $extras = array();
         if (isset($args['entry_id'])) {
-            $entry_filter = 'and trackback_entry_id = ' . intval($args['entry_id']);
+            $entry_filter = 'and trackback_entry_id = '.
+                                                    $this->ph('trackback_entry_id', $bind, intval($args['entry_id']));
             $extras['join']['mt_trackback'] = array(
                 'condition' => 'tbping_tb_id = trackback_id'
                 );
@@ -3455,7 +3597,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_tbping.php');
         $tbping = new TBPing;
-        $results = $tbping->Find($where, false, false, $extras);
+        $results = $tbping->Find($where, $bind, false, $extras);
         return $results;
     }
 
@@ -3468,11 +3610,13 @@ abstract class MTDatabase {
         }
         if (empty($ids))
             return;
-        $id_list = implode(",", $ids);
-        if (empty($id_list))
-            return;
 
-        $where = "placement_entry_id in ($id_list)
+        $ph = $this->in_ph('placement_entry_id', $bind, $ids);
+        if (empty($ph)) {
+            return;
+        }
+
+        $where = "placement_entry_id in ($ph)
                and placement_is_primary = 1";
 
         $extras['join'] = array(
@@ -3483,7 +3627,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_placement.php');
         $placement = new Placement;
-        $rows = $placement->Find($where, false, false, $extras);
+        $rows = $placement->Find($where, $bind, false, $extras);
 
         if (!empty($rows)) {
             foreach ($rows as $row) {
@@ -3514,20 +3658,21 @@ abstract class MTDatabase {
     }
 
     public function asset_count($args) {
+        $bind = [];
         if (isset($args['blog_id'])) {
-            $blog_filter = 'and asset_blog_id = '.intval($args['blog_id']);
+            $blog_filter = 'and asset_blog_id = '. $this->ph('asset_blog_id', $bind, intval($args['blog_id']));
         }
 
         # Adds a type filter
         if (isset($args['type'])) {
-            $type_filter = "and asset_class ='" . $args['type'] . "'";
+            $type_filter = "and asset_class =". $this->ph('asset_class', $bind, $args['type']);
         }
 
         $where = "asset_parent is NULL $blog_filter ". (isset($type_filter) ? $type_filter : '');
 
         require_once('class.mt_asset.php');
         $asset = new Asset;
-        $count = $asset->count(array('where' => $where));
+        $count = $asset->count(['where' => $where, 'bind' => $bind]);
         return $count;
     }
 
@@ -3536,11 +3681,7 @@ abstract class MTDatabase {
         $extras = array();
         $filters = array();
 
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and asset_blog_id ' . $sql;
-        } elseif( isset($args['blog_id']) ) {
-            $blog_filter = 'and asset_blog_id = ' . intval($args['blog_id']);
-        }
+        $blog_filter = 'and asset_blog_id ' . $this->_include_exclude_blogs('asset_blog_id', $bind_blog_filter, $args);
 
         # Adds a thumbnail filter to the filters list.
         if(isset($args['exclude_thumb']) && $args['exclude_thumb']) {
@@ -3598,7 +3739,7 @@ abstract class MTDatabase {
 
         # Adds an author filter
         if (isset($args['author'])) {
-            $author_filter = "and author_name = '".$this->escape($args['author']) . "'";
+            $author_filter = "and author_name = ". $this->ph('author_name', $bind_author_filter, $args['author']);
             $extras['join']['mt_author'] = array(
                 'condition' => "author_id = asset_created_by"
                 );
@@ -3606,16 +3747,23 @@ abstract class MTDatabase {
 
         # Adds an entry filter
         if (isset($args['entry_id'])) {
-            $extras['join']['mt_objectasset'] = array(
-                'condition' => "(objectasset_object_ds = 'entry' and objectasset_object_id = " . intval($this->escape($args['entry_id'])) . " and asset_id = objectasset_asset_id)"
-                );
+            $extras['join']['mt_objectasset'] = [
+                'condition' => implode(' and ', [
+                    "objectasset_object_ds = 'entry'",
+                    "objectasset_object_id = ".
+                        $this->ph('objectasset_object_id', $bind_entry_filter, intval($args['entry_id'])),
+                    'asset_id = objectasset_asset_id',
+                ]),
+                'bind' => $bind_entry_filter,
+            ];
         }
 
         # Adds an ID filter
         if ( isset($args['id']) ) {
             if ( $args['id'] == '' ) return null;
-            $id_filter = 'and asset_id = ' . intval($args['id']);
+            $id_filter = 'and asset_id = '. $this->ph('asset_id', $bind_id_filter, intval($args['id']));
             $blog_filter = '';
+            $bind_blog_filter = [];
         }
 
         # Adds a days filter
@@ -3625,12 +3773,12 @@ abstract class MTDatabase {
 
         # Adds a type filter
         if (isset($args['type'])) {
-            $type_filter = "and asset_class ='" . $args['type'] . "'";
+            $type_filter = "and asset_class = ". $this->ph('asset_class', $bind_type_filter, $args['type']);
         }
 
         # Adds a file extension filter
         if (isset($args['file_ext'])) {
-            $ext_filter = "and asset_file_ext ='" . $args['file_ext'] . "'";
+            $ext_filter = "and asset_file_ext = ". $this->ph('asset_file_ext', $bind_ext_filter, $args['file_ext']);
         }
 
         if (!empty($args['ignore_archive_context'])) {
@@ -3682,6 +3830,9 @@ abstract class MTDatabase {
         
         if (isset($args['sort_by'])) {
             if ('score' != $args['sort_by'] && 'rate' != $args['sort_by']) {
+                if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                    throw new MTDBException('illegal sort_by name');
+                }
                 $sort_by = 'asset_' . $args['sort_by'];
             }
         }
@@ -3718,6 +3869,15 @@ abstract class MTDatabase {
         if ($limit) $extras['limit'] = $limit;
         if ($offset) $extras['offset'] = $offset;
 
+        $bind = array_merge(
+            isset($bind_id_filter) ? $bind_id_filter : [],
+            isset($bind_blog_filter) ? $bind_blog_filter : [],
+            isset($bind_author_filter) ? $bind_author_filter : [],
+            isset($bind_type_filter) ? $bind_type_filter : [],
+            isset($bind_ext_filter) ? $bind_ext_filter : [],
+            isset($bind_thumb_filter) ? $bind_thumb_filter : []
+        );
+
         # Build SQL
         $where = implode(' ', array(
             "1 = 1",
@@ -3734,7 +3894,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_asset.php');
         $asset = new Asset;
-        $result = $asset->Find($where, false, false, $extras);
+        $result = $asset->Find($where, $bind, false, $extras);
         if (empty($result)) return null;
 
         $assets = array();
@@ -3778,6 +3938,15 @@ abstract class MTDatabase {
                 $order = 'desc';
         }
 
+        $bind2 = array_merge(
+            isset($bind_id_filter) ? $bind_id_filter : [],
+            isset($bind_blog_filter) ? $bind_blog_filter : [],
+            isset($bind_author_filter) ? $bind_author_filter : [],
+            isset($bind_type_filter) ? $bind_type_filter : [],
+            isset($bind_ext_filter) ? $bind_ext_filter : [],
+            isset($bind_thumb_filter) ? $bind_thumb_filter : []
+        );
+
         # Resort assets
         if (isset($args['sort_by']) && ('score' == $args['sort_by'])) {
             $assets_tmp = array();
@@ -3793,7 +3962,8 @@ abstract class MTDatabase {
                     isset($type_filter) ? $type_filter : '',
                     isset($ext_filter) ? $ext_filter : '',
                     isset($thumb_filter) ? $thumb_filter : ''
-                ))
+                )),
+                $bind2
             );
             $assets_sorted = array();
             foreach($scores as $score) {
@@ -3822,7 +3992,8 @@ abstract class MTDatabase {
                 $day_filter . "\n" .
                 $type_filter . "\n" .
                 $ext_filter . "\n" .
-                $thumb_filter . "\n"
+                $thumb_filter . "\n",
+                $bind2
             );
             $assets_sorted = array();
             foreach($scores as $score) {
@@ -3843,8 +4014,16 @@ abstract class MTDatabase {
             $sort_field = 'asset_created_on';
             if (isset($args['sort_by']) && $asset->has_column($args['sort_by'])) {
                 if (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
+                    // TODO: Unreachable because field.myfield causes SQL error earlier.
+                    // Note that perl also doesn't seem to support field.myfield for assets
+                    if (preg_match('/[^a-zA-Z0-9_]/', $match[1])) {
+                        throw new MTDBException('illegal sort_by name');
+                    }
                     $sort_field = 'asset_field.' . $match[1];
                 } else {
+                    if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                        throw new MTDBException('illegal sort_by name');
+                    }
                     $sort_field = 'asset_' . $args['sort_by'];
                 }
             }  
@@ -3883,26 +4062,29 @@ abstract class MTDatabase {
         $at = $args['archive_type'];
         $where = isset($args['where']) ? $args['where'] : '';
 
-        $range = '';
+        $cond = [];
+        $cond[] = sprintf(
+            "fileinfo_archive_type = %s and fileinfo_blog_id = %s and templatemap_is_preferred = 1",
+            $this->ph('fileinfo_archive_type', $bind, $at),
+            $this->ph('fileinfo_blog_id', $bind, $blog_id)
+        );
+
         if (isset($args['hi']) && isset($args['low'])) {
-            $hi = $args['hi'];
-            $low = $args['low'];
-            $range = " and fileinfo_startdate between '$low' and '$hi'";
+            $cond[] = sprintf(
+                "fileinfo_startdate between %s and %s",
+                $this->ph('fileinfo_startdate1', $bind, $args['low']),
+                $this->ph('fileinfo_startdate2', $bind, $args['hi'])
+            );
         }
 
-        $sql = "
-            fileinfo_archive_type = '$at'
-            and fileinfo_blog_id = $blog_id
-            and templatemap_is_preferred = 1
-            $range
-            $where";
+        $sql = implode(' ', [implode(' and ', $cond), $where]);
         $extras['join']['mt_templatemap'] = array(
             'condition' => "templatemap_id = fileinfo_templatemap_id"
             );
 
         require_once('class.mt_fileinfo.php');
         $fileinfo = new FileInfo();
-        $finfos = $fileinfo->Find($sql, false, false, $extras);
+        $finfos = $fileinfo->Find($sql, $bind, false, $extras);
         if (!empty($finfos)) {
             $mt = MT::get_instance();
             foreach($finfos as $finfo) {
@@ -3946,16 +4128,15 @@ abstract class MTDatabase {
 
     public function fetch_unexpired_session($ids, $ttl = 0) {
         $expire_sql = '';
+        $bind = [];
         if (!empty($ttl) && $ttl > 0)
             $expire_sql = "and session_start >= " . (time() - $ttl);
         $key_sql = '';
         if (is_array($ids)) {
-            $ids = array_map(function($id){
-                return $this->conn->Quote($id);
-            }, $ids);
-            $key_sql = 'and session_id in (' . join(",", $ids) . ')';
+            $ph = $this->in_ph('session_id', $bind, $ids);
+            $key_sql = 'and session_id in (' . $ph . ')';
         } else {
-            $key_sql = "and session_id = '$ids'";
+            $key_sql = "and session_id = ". $this->ph('session_id', $bind, $ids);
         }
 
         $where = "session_kind = 'CO'
@@ -3964,7 +4145,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_session.php');
         $session = new Session;
-        $sessions = $session->Find($where);
+        $sessions = $session->Find($where, $bind);
         return $sessions;
     }
 
@@ -4007,27 +4188,27 @@ abstract class MTDatabase {
             $type_user = $types == 'author';
         }
 
+        $bind = [];
+
         $blog_filter = '';
         if (!empty($blog_id)) {
             if ($type_user)
                 $blog_filter = 'and touch_blog_id = 0';
-            else
-                $blog_filter = 'and touch_blog_id = ' . $blog_id;
+            else {
+                $blog_filter = 'and touch_blog_id = '. $this->ph('touch_blog_id', $bind, $blog_id);
+            }
         }
 
         $type_filter = '';
         if (!empty($types)) {
             if ($type_user) {
-                $type_filter = 'and touch_object_type ="author"';
+                $type_filter = 'and touch_object_type =\'author\'';
             } else {
                 if (is_array($types)) {
-                    foreach ($types as $type) {
-                        if ($type_filter != '') $type_filter .= ',';
-                        $type_filter .= "'$type'";
-                    }
-                    $type_filter = 'and touch_object_type in (' . $type_filter . ')';
+                    $ph = $this->in_ph('touch_object_type', $bind, $types);
+                    $type_filter = 'and touch_object_type in (' . $ph . ')';
                 } else {
-                    $type_filter = "and touch_object_type ='$types'";
+                    $type_filter = 'and touch_object_type = '. $this->ph('touch_object_type', $bind, $types);
                 }
             }
         }
@@ -4041,7 +4222,7 @@ abstract class MTDatabase {
 
         require_once('class.mt_touch.php');
         $touch = new Touch;
-        $touches = $touch->Find($where, false, false, $extras);
+        $touches = $touch->Find($where, $bind, false, $extras);
 
         if (!empty($touches))
             return $touches[0];
@@ -4050,32 +4231,26 @@ abstract class MTDatabase {
     }
 
     public function fetch_template_meta($type, $name, $blog_id, $global) {
+
+        $cond = [];
         if ($type === 'identifier') {
-            $col = 'template_identifier';
-            $type_filter = "";
+            $cond[] = "template_identifier = ". $this->ph('template_identifier', $bind, $name);
         } else {
-            $col = 'template_name';
-            $type_filter = "and template_type='$type'";
+            $cond[] = "template_name = ". $this->ph('template_name', $bind, $name);
+            $cond[] = "template_type=". $this->ph('template_type', $bind, $type);
         }
         if (!isset($global)) {
-            $blog_filter = "and template_blog_id in (".$this->escape($blog_id).",0)";
+            $cond[] = 'template_blog_id in ('. $this->in_ph('template_blog_id', $bind, [$blog_id, 0]). ')';
         } elseif ($global) {
-            $blog_filter = "and template_blog_id=0";
+            $cond[] = 'template_blog_id = 0';
         } else {
-            $blog_filter = "and template_blog_id=".$this->escape($blog_id);
+            $cond[] = "template_blog_id = ". $this->ph('template_blog_id', $bind, $blog_id);
         }
-
-        $tmpl_name = $this->escape($name);
-
-        $where = "$col = '$tmpl_name'
-                  $blog_filter
-                  $type_filter
-                  order by
-                      template_blog_id desc";
+        $where = implode(' and ', $cond). ' order by template_blog_id desc';
 
         require_once('class.mt_template.php');
         $tmpl = new Template();
-        $tmpls = $tmpl->Find($where);
+        $tmpls = $tmpl->Find($where, $bind);
         if (empty($tmpls))
             $tmpl = null;
         else
@@ -4090,13 +4265,15 @@ abstract class MTDatabase {
         }
         require_once('class.mt_category_set.php');
         $category_set = new CategorySet;
-        $loaded = $category_set->Load("category_set_id = $category_set_id");
+        $loaded = $category_set->LoadByIntId($category_set_id);
         if (!$loaded) return null;
         $this->_category_set_id_cache[$category_set_id] = $category_set;
         return $category_set;
     }
 
     public function fetch_category_sets($args) {
+        $cond = [];
+        $bind = [];
         $extras = array();
         if (!empty($args['limit']) && $args['limit'] > 0) {
             $extras['limit'] = $args['limit'];
@@ -4104,14 +4281,10 @@ abstract class MTDatabase {
             $extras['limit'] = -1;
         }
         if ($args['blog_id'] && $args['blog_id'] > 0) {
-            $blog_filter = "and category_set_blog_id = " . $args['blog_id'];
-        } else {
-            $blog_filter = "";
+            $cond[] = "category_set_blog_id = ". $this->ph('category_set_blog_id', $bind, $args['blog_id']);
         }
         if (isset($args['name']) && !empty($args['name'])) {
-            $name_filter = "and category_set_name = '" . $this->escape($args['name']) . "'";
-        } else {
-            $name_filter = "";
+            $cond[] = "category_set_name = ". $this->ph('category_set_name', $bind, $args['name']);
         }
         if( isset($args['content_type']) ){
             $content_types = $this->fetch_content_types($args);
@@ -4125,17 +4298,14 @@ abstract class MTDatabase {
                         'condition' => "cf_type = 'categories'",
                     )
                 );
-                $field_filter = " and cf_content_type_id in (" . implode(',', $ct_ids) . ")
-                    and category_set_id = cf_related_cat_set_id";
+                $cond[] = 'cf_content_type_id in ('. $this->in_ph('cf_content_type_id', $bind, $ct_ids). ')';
+                $cond[] = 'category_set_id = cf_related_cat_set_id';
             }
         }
         
-        $where = implode(' ', array(
-            "1 = 1", $blog_filter, $name_filter, isset($field_filter) ? $field_filter : ''
-        ));
         require_once('class.mt_category_set.php');
         $category_set = new CategorySet;
-        return $category_set->Find($where, false, false, $extras);
+        return $category_set->Find(implode(' and ', $cond), $bind, false, $extras);
     }
 
     private function build_date_filter($args, $field) {
@@ -4165,7 +4335,8 @@ abstract class MTDatabase {
         }
         require_once('class.mt_rebuild_trigger.php');
         $rebuild_trigger = new RebuildTrigger;
-        $rebuild_trigger->Load("rebuild_trigger_blog_id = $blog_id");
+        $rebuild_trigger->Load("rebuild_trigger_blog_id = ".
+                                                        $this->ph('rebuild_trigger_blog_id', $bind, $blog_id), $bind);
         $this->_rebuild_trigger_cache[$blog_id] = $rebuild_trigger;
         return $rebuild_trigger;
     }
@@ -4176,7 +4347,7 @@ abstract class MTDatabase {
         }
         require_once("class.mt_content_type.php");
         $content_type= New ContentType;
-        $loaded = $content_type->Load( $id );
+        $loaded = $content_type->LoadByIntId($id);
         if ($loaded) {
             $this->_content_type_id_cache[$id] = $content_type;
             return $content_type;
@@ -4188,12 +4359,9 @@ abstract class MTDatabase {
     public function fetch_content_types($args) {
         require_once('class.mt_content_type.php');
 
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'content_type_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'content_type_blog_id = ' . $blog_id;
-        }
+        $bind_blog_filter = [];
+        $blog_filter = 'content_type_blog_id ' . 
+                                        $this->_include_exclude_blogs('content_type_blog_id', $bind_blog_filter, $args);
 
         $content_types= array();
         if (isset($args['content_type'])) {
@@ -4201,30 +4369,33 @@ abstract class MTDatabase {
             if (isset($blog_filter))
                 $blog_filter = 'and '.$blog_filter;
             if (ctype_digit(strval($str))) {
-                $sql = "select
+                $bind = [];
+                $sql = sprintf("select
                             mt_content_type.*
                         from mt_content_type
                         where
-                            content_type_id = $str
-                            $blog_filter";
-                $result = $this->db()->SelectLimit($sql);
+                            content_type_id = %s
+                            $blog_filter", $this->ph('content_type_id', $bind, $str));
+                $result = $this->SelectLimit($sql, -1, -1, array_merge($bind, $bind_blog_filter));
             }
             if (!isset($result) || $result->EOF) {
-                $sql = "select
+                $bind = [];
+                $sql = sprintf("select
                             mt_content_type.*
                         from mt_content_type
                         where
-                            content_type_unique_id = '$str'
-                            $blog_filter";
-                $result = $this->db()->SelectLimit($sql);
+                            content_type_unique_id = %s
+                            $blog_filter", $this->ph('content_type_unique_id', $bind, $str));
+                $result = $this->SelectLimit($sql, -1, -1, array_merge($bind, $bind_blog_filter));
                 if ($result->EOF) {
-                    $sql = "select
+                    $bind = [];
+                    $sql = sprintf("select
                                 mt_content_type.*
                             from mt_content_type
                             where
-                                content_type_name = '$str'
-                                $blog_filter";
-                    $result = $this->db()->SelectLimit($sql);
+                                content_type_name = %s
+                                $blog_filter", $this->ph('content_type_name', $bind, $str));
+                    $result = $this->SelectLimit($sql, -1, -1, array_merge($bind, $bind_blog_filter));
                 }
                 if ($result->EOF) return null;
             }
@@ -4234,7 +4405,7 @@ abstract class MTDatabase {
                     from mt_content_type
                     where
                         $blog_filter";
-            $result = $this->db()->SelectLimit($sql);
+            $result = $this->SelectLimit($sql, -1, -1, $bind_blog_filter);
             if ($result->EOF) return null;
         }
 
@@ -4265,7 +4436,7 @@ abstract class MTDatabase {
         }
         require_once("class.mt_content_data.php");
         $cd = New ContentData;
-        $cd ->Load( $cid );
+        $cd->LoadByIntId($cid);
         if ( !empty( $cd) ) {
             $this->_cd_id_cache[$cid] = $cd;
             return $cd;
@@ -4296,19 +4467,18 @@ abstract class MTDatabase {
             $blog_id = $blog->blog_id;
         }
 
-        $blog_filter = 'and cd_blog_id = ' . $blog_id;
+        $blog_filter = 'and cd_blog_id = '. $this->ph('cd_blog_id', $bind_blog_filter, $blog_id);
 
         if (empty($blog))
             return null;
 
         if (isset($content_type_id)) {
             if (is_array($content_type_id)) {
-                if ( count($content_type_id) > 1 )
-                    $content_type_filter = "and cd_content_type_id in (" . implode(',', $content_type_id) . ' )';
-                else
-                    $content_type_filter = "and cd_content_type_id = " . $content_type_id[0];
+                $ph = $this->in_ph('cd_content_type_id', $bind_content_type_filter, $content_type_id);
+                $content_type_filter = "and cd_content_type_id in (" . $ph. ' )';
             } else {
-                $content_type_filter = 'and cd_content_type_id = '.$content_type_id;
+                $content_type_filter = 'and cd_content_type_id = '.
+                                        $this->ph('cd_content_type_id', $bind_content_type_filter, $content_type_id);
             }
         }
 
@@ -4362,8 +4532,9 @@ abstract class MTDatabase {
 
         # special case for selecting a particular content
         if (isset($args['id'])) {
-            $content_filter = 'and cd_id = '.$args['id'];
+            $content_filter = 'and cd_id = '. $this->ph('cd_id', $bind_content_filter, $args['id']);
             $start = ''; $end = ''; $limit = 1; $blog_filter = ''; $day_filter = '';
+            $bind_blog_filter = [];
         } else {
             $content_filter = '';
         }
@@ -4371,6 +4542,7 @@ abstract class MTDatabase {
         $content_list = array();
 
         if (count($content_list) && ($content_filter == '')) {
+            // TODO: Unreachable becaulse $content_list is initialized right before the if-block. If it's still needed, fix it for MTC-27980.
             $content_list = implode(",", array_keys($content_list));
             # set a reasonable cap on the content list cache. if
             # user is selecting something too big, then they'll
@@ -4380,13 +4552,12 @@ abstract class MTDatabase {
         }
 
         if (isset($args['author'])) {
-            $author_filter = 'and author_name = \'' .
-                $this->escape($args['author']) . "'";
+            $author_filter = 'and author_name = '. $this->ph('author_name', $bind_author_filter, $args['author']);
             $extras['join']['mt_author'] = array(
                     'condition' => "cd_author_id = author_id"
                     );
         } elseif (isset($args['author_id']) && preg_match('/^\d+$/', $args['author_id']) && $args['author_id'] > 0) {
-            $author_filter = "and cd_author_id = '" . $args['author_id'] . "'";
+            $author_filter = "and cd_author_id = ". $this->ph('cd_author_id', $bind_author_filter, $args['author_id']);
         }
 
         $join_clause = '';
@@ -4406,24 +4577,29 @@ abstract class MTDatabase {
                     ? $args['current_timestamp_end'] : null;
                 $alias = 'cf_idx_' . $dt_field_id;
                 $field = "$alias.cf_idx_value_datetime";
+                $ph_prefix = preg_replace('/[\._]/', '', $field);
                 if ($start and $end) {
                     $start = $this->ts2db($start);
                     $end = $this->ts2db($end);
-                    $field_filter = " and $field between '$start' and '$end'";
+                    $field_filter_ts = sprintf(
+                        " and $field between %s and %s",
+                        $this->ph($ph_prefix. '1', $bind_field_filter_ts, $start),
+                        $this->ph($ph_prefix. '2', $bind_field_filter_ts, $end)
+                    );
                 } elseif ($start) {
                     $start = $this->ts2db($start);
-                    $field_filter = " and $field >= '$start'";
+                    $field_filter_ts = " and $field >= ". $this->ph($ph_prefix, $bind_field_filter_ts, $start);
                 } elseif ($end) {
                     $end = $this->ts2db($end);
-                    $field_filter = " and $field <= '$end'";
+                    $field_filter_ts = " and $field <= ". $this->ph($ph_prefix, $bind_field_filter_ts, $end);
                 } else {
                     return '';
                 }
                 $join_table = "mt_cf_idx $alias";
-                $join_condition = "$alias.cf_idx_content_field_id = " . $dt_field_id .
-                                  " and $alias.cf_idx_content_data_id = cd_id" .
-                                  $field_filter;
-                $extras['join'][$join_table] = array('condition' => $join_condition);
+                $join_condition = "$alias.cf_idx_content_field_id = " . intval($dt_field_id) .
+                                " and $alias.cf_idx_content_data_id = cd_id" .
+                                $field_filter_ts;
+                $extras['join'][$join_table] = ['condition' => $join_condition, 'bind' => $bind_field_filter_ts];
                 if (isset($args['_current_timestamp_sort']) && $args['_current_timestamp_sort']) {
                     $sort_field = "$alias.cf_idx_value_datetime";
                 }
@@ -4573,6 +4749,9 @@ abstract class MTDatabase {
                         $limit = 0; $offset = 0;
                         $no_resort = 0;
                     } else {
+                        if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                            throw new MTDBException('illegal sort_by name');
+                        }
                         $sort_field = 'cd_' . $args['sort_by'];
                     }
                     if ($sort_field) $no_resort = 1;
@@ -4768,13 +4947,13 @@ abstract class MTDatabase {
                                       " and $alias.cf_idx_content_data_id = cd_id";
                     $extras['join'][$join_table] = array('condition' => $join_condition);
 
-                    $quote = $data_type == 'integer' || $data_type == 'double' ? '' : '\'';
+                    $ph = $this->ph($alias.'_cf_idx_value_'. $data_type, $bind_field_filter, $value);
                     if ($data_type == 'text') {
                         $field = "$alias.cf_idx_value_$data_type";
                         $field = $this->decorate_column($field);
-                        $field_filter .= " and $field = $quote$value$quote\n";
+                        $field_filter .= " and $field = ". $ph. "\n";
                     } else {
-                        $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
+                        $field_filter .= " and $alias.cf_idx_value_$data_type = ". $ph. "\n";
                     }
                 }
             }
@@ -4789,6 +4968,7 @@ abstract class MTDatabase {
         if (isset($extras['join'])) {
             $joins = $extras['join'];
             $keys = array_keys($joins);
+            $bind_join_clause = [];
             foreach($keys as $key) {
                 $table = $key;
                 $cond = $joins[$key]['condition'];
@@ -4796,12 +4976,24 @@ abstract class MTDatabase {
                 if (isset($joins[$key]['type']))
                     $type = $joins[$key]['type'];
                 $join_clause .= ' ' . strtolower($type) . ' JOIN ' . $table . ' ON ' . $cond;
+                $bind_join_clause = array_merge($bind_join_clause, isset($joins[$key]['bind']) ? $joins[$key]['bind'] : []);
             }
         }
 
         if (isset($args['unique_id'])) {
-            $unique_id_filter = 'and cd_unique_id = \'' . $args['unique_id'] . '\'';
+            $unique_id_filter = 'and cd_unique_id = '.
+                                                $this->ph('cd_unique_id', $bind_unique_id_filter, $args['unique_id']);
         }
+
+        $bind = array_merge(
+            isset($bind_join_clause) ? $bind_join_clause : [],
+            isset($bind_blog_filter) ? $bind_blog_filter : [],
+            isset($bind_content_type_filter) ? $bind_content_type_filter : [],
+            isset($bind_content_filter) ? $bind_content_filter : [],
+            isset($bind_author_filter) ? $bind_author_filter : [],
+            isset($bind_field_filter) ? $bind_field_filter : [],
+            isset($bind_unique_id_filter) ? $bind_unique_id_filter : []
+        );
 
         $sql = implode(' ', array(
             'select mt_cd.* from mt_cd', $join_clause, 'where cd_status = 2',
@@ -4828,7 +5020,7 @@ abstract class MTDatabase {
 
         if (empty($limit) || $limit <= 0) $limit = -1;
         if (empty($offset) || $offset <= 0) $offset = -1;
-        $result = $this->db()->SelectLimit($sql, $limit, $offset);
+        $result = $this->SelectLimit($sql, $limit, $offset, $bind);
         if (!$result || $result->EOF) return null;
 
         $field_names = array_keys($result->fields);
@@ -4891,6 +5083,7 @@ abstract class MTDatabase {
         if (empty($no_resort)) {
             $sort_field = '';
             if (isset($args['sort_by'])) {
+                // TODO: This if-block is totaly wrong where field prefix should be cd_ instead of entry_
                 if ($args['sort_by'] == 'title') {
                     $sort_field = 'entry_title';
                 } elseif ($args['sort_by'] == 'id') {
@@ -4914,6 +5107,9 @@ abstract class MTDatabase {
                 } elseif (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
                     $sort_field = 'entry_field.' . $match[1];
                 } else {
+                    if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                        throw new MTDBException('illegal sort_by name');
+                    }
                     $sort_field = 'entry_' . $args['sort_by'];
                 }
             } else {
@@ -4977,6 +5173,7 @@ abstract class MTDatabase {
     }
 
     public function fetch_next_prev_content($direction, $args) {
+        $bind = [];
         require_once('class.mt_content_data.php');
         $mt = MT::get_instance();
         $ctx = $mt->context();
@@ -4990,7 +5187,6 @@ abstract class MTDatabase {
 
         if (isset($args['by_author'])) {
             $author_id = $obj->author_id;
-            $author_filter = "and cd_author_id = $author_id";
         }
 
         if ( isset($args['category_field']) && ($arg = $args['category_field']) ) {
@@ -5003,7 +5199,7 @@ abstract class MTDatabase {
                 if (isset($cfs)) $cf = $cfs[0];
             }
             if (isset($cf)) $cat_field_id = $cf->id;
-            $obj_cats = $this->fetch_objectcategories(array('object_id' => $obj->id, 'category_field_id' => $cat_field_id));
+            $obj_cats = $this->fetch_objectcategories(['object_id' => $obj->id, 'category_field_id' => $cat_field_id]) ?? [];
             foreach ($obj_cats as $obj_cat) {
                 if ($obj_cat->is_primary)
                     $category_id = $obj_cat->category_id;
@@ -5048,8 +5244,9 @@ abstract class MTDatabase {
             $label .= ':author=' . $author_id;
         if (isset($by))
             $label .= ':by_' . $by;
-        if (isset($cat_field_id))
-            $label .= ":category_field_id=$cat_field_id:category_id=$category_id";
+        if (isset($cat_field_id)) {
+            $label .= ":category_field_id=$cat_field_id:category_id=". ($category_id ?? '');
+        }
         if (isset($dt_field_id))
             $label .= ":date_field_id=$dt_field_id";
         if (isset($obj->$label))
@@ -5062,13 +5259,16 @@ abstract class MTDatabase {
             if (isset($category_id)) {
                 $joins .= "join mt_cf_idx cat_cf_idx";
                 $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
-                $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
-                $joins .= " and cat_cf_idx.cf_idx_value_integer = '$category_id'";
+                $joins .= " and cat_cf_idx.cf_idx_content_field_id = ".
+                            $this->ph('cf_idx_content_field_id1', $bind, $cat_field_id);
+                $joins .= " and cat_cf_idx.cf_idx_value_integer = ".
+                            $this->ph('cf_idx_value_integer', $bind, $category_id);
             }
             else {
                 $joins .= "left join mt_cf_idx cat_cf_idx";
                 $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
-                $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
+                $joins .= " and cat_cf_idx.cf_idx_content_field_id = ".
+                            $this->ph('cf_idx_content_field_id1', $bind, $cat_field_id);
                 $joins .= " and cat_cf_idx.cf_idx_value_integer IS NULL";
             }
         }
@@ -5080,19 +5280,28 @@ abstract class MTDatabase {
             if (!empty($joins)) $joins .= ' ';
             $joins .= "join mt_cf_idx dt_cf_idx";
             $joins .= " on dt_cf_idx.cf_idx_content_data_id = cd_id";
-            $joins .= " and dt_cf_idx.cf_idx_content_field_id = '$dt_field_id'";
-            $joins .= " and dt_cf_idx.cf_idx_value_datetime $op '$date_field_value'";
+            $joins .= " and dt_cf_idx.cf_idx_content_field_id = ".
+                        $this->ph('cf_idx_content_field_id2', $bind, $dt_field_id);
+            $joins .= " and dt_cf_idx.cf_idx_value_datetime $op ".
+                        $this->ph('cf_idx_value_datetime', $bind, $date_field_value);
             $order_by = "order by dt_cf_idx.cf_idx_value_datetime $desc, dt_cf_idx.cf_idx_id $desc";
         }
 
         if (!isset($by)) $by = 'authored_on';
 
-        $sql = "select * from mt_cd ". (isset($joins) ? $joins : '').
-            " where cd_blog_id = '$blog_id' and cd_content_type_id = '$content_type_id' and cd_status = '2'";
+        $cond = [];
+        $cond[] = 'cd_blog_id = '. $this->ph('cd_blog_id', $bind, $blog_id);
+        $cond[] = 'cd_content_type_id = '. $this->ph('cd_content_type_id', $bind, $content_type_id);
+        $cond[] = "cd_status = '2'";
+
+        if (isset($author_id)) {
+            $cond[] = 'cd_author_id = '. $this->ph('cd_author_id', $bind, $author_id);
+        }
+
+        $sql = "select * from mt_cd $joins where";
 
         if (!empty($dt_field_id)) {
-            $sql .= (isset($author_filter) ? $author_filter : ''). " $order_by";
-            $result = $this->db()->SelectLimit($sql, 1, false);
+            $result = $this->SelectLimit($sql. ' '. implode(' and ', $cond). " $order_by", 1, false, $bind);
             if (!$result || $result->EOF) return null;
         }
         else {
@@ -5101,20 +5310,20 @@ abstract class MTDatabase {
             $by_value = $this->db2ts($obj->$by);
             $id       = $obj->id;
 
-            $additional_sql = implode(' ', array(
-                "and cd_$by $op '$by_value'",
-                isset($author_filter) ? $author_filter : '',
+            $sql_try1 = implode(' ', [
+                $sql,
+                implode(' and ', array_merge($cond, ["cd_$by $op '$by_value'"])),
                 "order by cd_$by $desc, cd_id $desc"
-            ));
-            $result = $this->db()->SelectLimit($sql . $additional_sql, 1, false);
+            ]);
+            $result = $this->SelectLimit($sql_try1, 1, false, $bind);
 
             if (!$result || $result->EOF) {
-                $additional_sql = implode(' ', array(
-                    "and cd_$by = '$by_value' and cd_id $op $id",
-                    isset($author_filter) ? $author_filter : null,
+                $sql_try2 = implode(' ', [
+                    $sql,
+                    implode(' and ', array_merge($cond, ["cd_$by = '$by_value'", "cd_id $op $id"])),
                     "order by cd_$by $desc, cd_id $desc"
-                ));
-                $result = $this->db()->SelectLimit($sql . $additional_sql, 1, false);
+                ]);
+                $result = $this->SelectLimit($sql_try2, 1, false, $bind);
                 if (!$result || $result->EOF) return null;
             }
         }
@@ -5150,7 +5359,7 @@ abstract class MTDatabase {
         }
         require_once("class.mt_content_field.php");
         $content_field= New ContentField;
-        $content_field->Load( $id );
+        $content_field->LoadByIntId($id);
         if ( !empty( $content_field ) ) {
             $this->_content_field_id_cache[$id] = $content_field;
             return $content_field;
@@ -5161,17 +5370,16 @@ abstract class MTDatabase {
 
     public function fetch_content_fields($args) {
         if (isset($args['unique_id'])) {
-            $unique_id_filter = 'and cf_unique_id = \'' . $args['unique_id'] . '\'';
+            $unique_id_filter = 'and cf_unique_id = '.
+                $this->ph('cf_unique_id', $bind_unique_filter, $args['unique_id']);
         } else {
             if (isset($args['content_type_id'])) {
                 if (is_array($args['content_type_id'])) {
-                    if (count($args['content_type_id']) > 1) {
-                        $content_type_id_filter = 'and cf_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
-                    } else {
-                        $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'][0];
-                    }
+                    $ph = $this->in_ph('cf_content_type_id', $bind_content_type_id_filter, $args['content_type_id']);
+                    $content_type_id_filter = ' and cf_content_type_id IN ('. $ph. ')';
                 } else {
-                    $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'];
+                    $content_type_id_filter = 'and cf_content_type_id = '.
+                        $this->ph('cf_content_type_id', $bind_content_type_id_filter, $args['content_type_id']);
                 }
             }
 
@@ -5186,18 +5394,26 @@ abstract class MTDatabase {
                     $blog_id = $blog->blog_id;
             }
             if (isset($blog_id)) {
-                $blog_filter = "and cf_blog_id = $blog_id";
+                $blog_filter = "and cf_blog_id = ". $this->ph('cf_blog_id', $bind_blog_filter, $blog_id);
             }
 
             if (!isset($blog_id) && !isset($args['content_type_id'])) return null;
 
             if (isset($args['name'])) {
-                $name_filter = 'and cf_name = \'' . $args['name'] . '\'';
+                $name_filter = 'and cf_name = '. $this->ph('cf_name', $bind_name_filter, $args['name']);
             }
             if (isset($args['related_cat_set_id'])) {
-                $related_cat_set_id_filter = 'and cf_related_cat_set_id = \'' . $args['related_cat_set_id'] . '\'';
+                $related_cat_set_id_filter = 'and cf_related_cat_set_id = '.
+                    $this->ph('cf_related_cat_set_id', $bind_related_cat_set_id_filter, $args['related_cat_set_id']);
             }
         }
+        $bind = array_merge(
+            isset($bind_blog_filter) ? $bind_blog_filter : [],
+            isset($bind_content_type_id_filter) ? $bind_content_type_id_filter : [],
+            isset($bind_name_filter) ? $bind_name_filter : [],
+            isset($bind_unique_filter) ? $bind_unique_filter : [],
+            isset($bind_related_cat_set_id_filter) ? $bind_related_cat_set_id_filter : []
+        );
         $sql = implode(' ', array(
             "select * from mt_cf",
             "where 1 = 1",
@@ -5207,7 +5423,7 @@ abstract class MTDatabase {
             isset($unique_id_filter) ? $unique_id_filter : '',
             isset($related_cat_set_id_filter) ? $related_cat_set_id_filter : ''
         ));
-        $result = $this->db()->SelectLimit($sql);
+        $result = $this->SelectLimit($sql, -1, -1, $bind);
         if ($result->EOF) return null;
 
         $field_names = array_keys($result->fields);
@@ -5233,20 +5449,23 @@ abstract class MTDatabase {
     }
 
     public function fetch_objectcategory($args) {
-        $id_list = '';
-        if (isset($args['category_id']))
-            $id_list = implode(',', $args['category_id']);
-        if (empty($id_list))
+
+        $bind = [];
+
+        if (isset($args['category_id'])) {
+            $id_list = $this->in_ph('objectcategory_category_id', $bind, $args['category_id']);
+        }
+        if (empty($id_list)) {
             return;
+        }
+
+        $blog_filter = 'and objectcategory_blog_id '.
+                                                $this->_include_exclude_blogs('objectcategory_blog_id', $bind, $args);
 
         $cf_filter = '';
         if (isset($args['cf_id']) && is_numeric($args['cf_id'])) {
-            $cf_filter = 'and objectcategory_cf_id = ' . $args['cf_id'];
+            $cf_filter = 'and objectcategory_cf_id = '. $this->ph('objectcategory_cf_id', $bind, $args['cf_id']);
         }
-
-        $blog_filter = $this->include_exclude_blogs($args);
-        if ($blog_filter != '')
-            $blog_filter = 'and objectcategory_blog_id' . $blog_filter;
 
         $extras = array();
         $datasource = 'content_data';
@@ -5266,7 +5485,7 @@ abstract class MTDatabase {
                 $cf_filter
                 $object_filter";
 
-        return $ocat->Find($where, false, false, $extras);
+        return $ocat->Find($where, $bind, false, $extras);
     }
 
     public function fetch_objectcategories($args) {
@@ -5283,11 +5502,15 @@ abstract class MTDatabase {
         require_once('class.mt_objectcategory.php');
         $ocat = new ObjectCategory;
 
-        $where = "objectcategory_cf_id = '$category_field_id'
-                  and objectcategory_object_ds = 'content_data'
-                  and objectcategory_object_id = '$object_id'";
+        $where = sprintf(
+            "objectcategory_cf_id = %s
+                                and objectcategory_object_ds = 'content_data'
+                                and objectcategory_object_id = %s",
+            $this->ph('objectcategory_cf_id', $bind, $category_field_id),
+            $this->ph('objectcategory_object_id', $bind, $object_id)
+        );
 
-        return $ocat = $ocat->Find($where);
+        return $ocat = $ocat->Find($where, $bind);
     }
 
     public function fetch_content_tags($args) {
@@ -5305,33 +5528,23 @@ abstract class MTDatabase {
                     return $this->_cd_tag_cache[$args['cd_id']];
                 }
             }
-            $cd_filter = 'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where objecttag_object_id='.intval($args['cd_id']).')';
+            $cd_filter = sprintf(
+                'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where objecttag_object_id=%s)',
+                $this->ph('objecttag_object_id', $bind_cd_filter, intval($args['cd_id']))
+            );
         }
 
-        $blog_filter = $this->include_exclude_blogs($args);
-        if ($blog_filter == '' and isset($args['blog_id'])) {
-            if ($cacheable) {
-                if (!isset($args['cd_id'])) {
-                    if (isset($this->_blog_tag_cache[$args['blog_id'].":$class"])) {
-                        return $this->_blog_tag_cache[$args['blog_id'].":$class"];
-                    }
-                }
-            }
-            $blog_filter = ' = '. intval($args['blog_id']);
-        }
-        if ($blog_filter != '') 
-            $blog_filter = 'and objecttag_blog_id ' . $blog_filter;
+        $blog_filter = 'and objecttag_blog_id ' . 
+                                        $this->_include_exclude_blogs('objecttag_blog_id', $bind_blog_filter, $args);
 
         $ct_filter = '';
         if (isset($args['content_type_id'])) {
             if (is_array($args['content_type_id'])) {
-                if (count($args['content_type_id']) > 1) {
-                    $ct_filter = 'and cd_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
-                } else {
-                    $ct_filter = 'and cd_content_type_id = ' . $args['content_type_id'][0];
-                }
+                $ph = $this->in_ph('cd_content_type_id', $bind_ct_filter, $args['content_type_id']);
+                $ct_filter = 'and cd_content_type_id in (' . $ph. ')';
             } else {
-                $ct_filter = 'and cd_content_type_id = ' . $args['content_type_id'];
+                $ct_filter = 'and cd_content_type_id = '.
+                        $this->ph('cd_content_type_id', $bind_ct_filter, $args['content_type_id']);
             }
         }
 
@@ -5342,13 +5555,12 @@ abstract class MTDatabase {
             $tag_list = '';
             require_once("MTUtil.php");
             $tag_array = tag_split($args['tags']);
-            foreach ($tag_array as $tag) {
-                if ($tag_list != '') $tag_list .= ',';
-                $tag_list .= "'" . $this->escape($tag) . "'";
-            }
-            if ($tag_list != '') {
-                $tag_filter = 'and (tag_name in (' . $tag_list . '))';
-                $private_filter = '';
+            if (!empty($tag_array)) {
+                $ph = $this->in_ph('tag_name', $bind_tag_filter, $tag_array);
+                if (!empty($ph)) {
+                    $tag_filter = 'and (tag_name in (' . $ph . '))';
+                    $private_filter = '';
+                }
             }
         }
 
@@ -5366,6 +5578,12 @@ abstract class MTDatabase {
             $id_order = ', lower(tag_name)';
         }
 
+        $bind = array_merge(
+            isset($bind_blog_filter) ? $bind_blog_filter : [],
+            isset($bind_tag_filter) ? $bind_tag_filter : [],
+            isset($bind_cd_filter) ? $bind_cd_filter : [],
+            isset($bind_ct_filter) ? $bind_ct_filter : []
+        );
         $sql = implode(' ', array(
             'select tag_id, tag_name, count(*) as tag_count',
             'from mt_tag, mt_objecttag, mt_cd',
@@ -5380,7 +5598,7 @@ abstract class MTDatabase {
             "group by tag_id, tag_name",
             "order by $sort_col $order $id_order, tag_id desc"
         ));
-        $rs = $this->db()->SelectLimit($sql);
+        $rs = $this->SelectLimit($sql, -1, -1, $bind);
 
         require_once('class.mt_tag.php');
         $tags = array();
@@ -5407,18 +5625,18 @@ abstract class MTDatabase {
         if (isset($args['content_type'])) {
             $str = $args['content_type'];
             if (ctype_digit($str)) {
-                $where = "content_type_id = $str";
-                $ct->Load($where);
+                $ct->LoadByIntId($str);
             }
             if (is_null($ct->id)) {
-                $str = $this->escape($str);
-                $where = "content_type_unique_id = '$str'";
-                $ct->Load($where);
+                $ct->Load('content_type_unique_id = '. $this->ph('content_type_unique_id', $bind, $str), $bind);
                 if (is_null($ct->id)) {
-                    $where = "content_type_name = '$str'";
-                    if (isset($args['blog_id']))
-                        $where .= " and content_type_blog_id = " . intval($args['blog_id']);
-                    $ct->Load($where);
+                    $cond = [];
+                    $cond[] = 'content_type_name = '. $this->ph('content_type_name', $bind2, $str);
+                    if (isset($args['blog_id'])) {
+                        $cond[] = 'content_type_blog_id = '.
+                            $this->ph('content_type_blog_id', $bind2, intval($args['blog_id']));
+                    }
+                    $ct->Load(implode(' and ', $cond), $bind2);
                 }
                 if (is_null($ct->id)) return null;
             }
@@ -5427,24 +5645,20 @@ abstract class MTDatabase {
     }
     
     public function content_count($args){
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and cd_blog_id ' . $sql;
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and cd_blog_id = ' . $blog_id;
-        }
+        $bind = [];
+        $blog_filter = 'and cd_blog_id ' . $this->_include_exclude_blogs('cd_blog_id', $bind, $args);
         $where = "cd_status = 2
                   $blog_filter";
         if (isset($args['content_type'])) {
             $content_types = $this->fetch_content_types($args);
             if ($content_types) {
-                $where .= ' and cd_content_type_id = ' . $content_types[0]->id;
+                $where .= ' and cd_content_type_id = ' . $this->ph('cd_content_type_id', $bind, $content_types[0]->id);
             }
         }
 
         require_once('class.mt_content_data.php');
         $ct = new ContentData();
-        $count = $ct->count(array('where' => $where));
+        $count = $ct->count(['where' => $where, 'bind' => $bind]);
         return $count;
     }
 
@@ -5461,12 +5675,15 @@ abstract class MTDatabase {
                 );
             $filter = '';
 
+            $bind_filter = [];
+
             if (preg_match('/Category/', $at)) {
                 $extras['join']['mt_objectcategory'] = array(
                     'condition' => "fileinfo_category_id = objectcategory_category_id"
                 );
                 $filter = " and objectcategory_object_ds = 'content_data'";
-                $filter .= " and objectcategory_object_id = $cid";
+                $filter .= ' and objectcategory_object_id = '.
+                        $this->ph('objectcategory_object_id', $bind_filter, $cid);
                 $filter .= " and objectcategory_is_primary = 1";
             }
 
@@ -5486,23 +5703,24 @@ abstract class MTDatabase {
             } elseif (preg_match('/Yearly$/', $at)) {
                 $ts = substr($ts, 0, 4) . '0101000000';
             } elseif ($at == 'ContentType') {
-                $filter .= " and fileinfo_cd_id = $cid";
+                $filter .= " and fileinfo_cd_id = ". $this->ph('fileinfo_cd_id', $bind_filter, $cid);
             }
             if (preg_match('/(Monthly|Daily|Weekly|Yearly)$/', $at)) {
-                $filter .= " and fileinfo_startdate = '$ts'";
+                $filter .= ' and fileinfo_startdate = '. $this->ph('fileinfo_startdate', $bind_filter, $ts);
             }
             if (preg_match('/Author/', $at)) {
-                $filter .= " and fileinfo_author_id = ". $content->author_id;
+                $filter .= ' and fileinfo_author_id = '.
+                    $this->ph('fileinfo_author_id', $bind_filter, $content->author_id);
             }
-
-            $where = "templatemap_archive_type = '$at'
-                       and templatemap_is_preferred = 1
-                       $filter";
-            if (isset($args['blog_id']))
-                $where .= " and fileinfo_blog_id = " . $args['blog_id'];
+            $where = 'templatemap_archive_type = '. $this->ph('templatemap_archive_type', $bind, $at);
+            $where .= ' and templatemap_is_preferred = 1 '. $filter;
+            $bind = array_merge($bind, $bind_filter ?? []);
+            if (isset($args['blog_id'])) {
+                $where .= ' and fileinfo_blog_id = '. $this->ph('fileinfo_blog_id', $bind, $args['blog_id']);
+            }
             require_once('class.mt_fileinfo.php');
             $finfo = new FileInfo;
-            $infos = $finfo->Find($where, false, false, $extras);
+            $infos = $finfo->Find($where, $bind, false, $extras);
             if (empty($infos))
                 return null;
 
@@ -5535,6 +5753,21 @@ abstract class MTDatabase {
 
     public function flush_cache() {
         $this->_blog_id_cache = array();
+    }
+
+    public function in_ph($name, &$bind, $values) {
+        $ph = array();
+        foreach($values as $i => $v) {
+            if (is_null($v)) continue;
+            $ph[] = $this->conn->param($name. $i);
+            $bind[$name. $i] = $values[$i];
+        }
+        return join(',', $ph);
+    }
+
+    public function ph($name, &$bind, $value) {
+        $bind[$name] = $value;
+        return $this->conn->param($name);
     }
 }
 ?>

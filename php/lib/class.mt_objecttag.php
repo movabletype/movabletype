@@ -27,7 +27,7 @@ class ObjectTag extends BaseObject
         require_once("class.mt_" . $this->object_datasource . ".php");
         $class = $this->object_datasource;
         $obj = new $class;
-        $obj->Load($this->object_datasource . "_id = " . $this->object_id);
+        $obj->LoadByIntId($this->object_id);
         return $obj;
     }
 
@@ -35,11 +35,9 @@ class ObjectTag extends BaseObject
         $col_name = "objecttag_tag_id";
         $tag = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
-            $tag_id = $this->$col_name;
-
             require_once('class.mt_tag.php');
             $tag = new Tag;
-            $tag->Load("tag_id = $tag_id");
+            $tag->LoadByIntId($this->$col_name);
         }
 
         return $tag;

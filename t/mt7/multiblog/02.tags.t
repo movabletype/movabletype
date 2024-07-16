@@ -184,7 +184,7 @@ foreach($ctx_stash as $k => $v) {
     if ($k == 'archive_category' || $k == 'category') {
         require_once('class.mt_category.php');
         $cat = new Category;
-        $cat->Load($v);
+        $cat->LoadByIntId($v);
         $v = $cat;
     }
     if ($k == 'entries') {
@@ -192,7 +192,7 @@ foreach($ctx_stash as $k => $v) {
         $entries = array();
         foreach ($v as $id) {
             $e = new Entry;
-            $e->Load($id);
+            $e->LoadByIntId($id);
             $entries[] = $e;
         }
         $v = $entries;
