@@ -9,13 +9,13 @@ declare namespace MT.Listing {
 
   // lib/MT/CMS/Filter.pm
   interface Filter {
-    can_delete: number;
-    can_edit: number;
-    can_save: number;
-    id: string;
     items: Array<Item>;
     label: string;
 
+    can_delete?: number;
+    can_edit?: number;
+    can_save?: number;
+    id?: string;
     legacy?: number;
     order?: number;
   }
