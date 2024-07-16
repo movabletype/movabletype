@@ -333,4 +333,25 @@ sub _hdlr_script {
   return sprintf('<script src="%s?v=%s"%s%s%s></script>', $script_path, $version, $type, $async, $defer);
 }
 
+###########################################################################
+
+=head2 Stylesheet
+
+Returns the html code snippet of information gathering for stats of current blog/site.
+If any stats provider was not found, this template tag will return blank string.
+
+=cut
+
+sub _hdlr_stylesheet {
+  my ( $ctx, $args ) = @_;
+
+  my $name    = $args->{name} || "";
+  my $version = MT::Util::encode_url(MT->version_id);
+
+  $name =~ s!^/+!! if $name;
+  my $stylesheet_path = MT->static_path . $name;
+
+  return sprintf('<link rel="stylesheet" href="%s?v=%s">', $stylesheet_path, $version);
+}
+
 1;
