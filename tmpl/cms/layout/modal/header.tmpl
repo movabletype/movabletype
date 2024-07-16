@@ -20,18 +20,19 @@
 
   <mt:var name="html_head">
 
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:script type="text/javascript" path="mt.js">
   <mt:if name="local_lang_id" eq="en-us">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_en_us.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+  <mt:script type="text/javascript" path="mt_en_us.js">
   <mt:else>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+  <mt:setvarblock name="mt_lang_js">&lt;mt:script type="text/javascript" path="mt_<mt:var name="local_lang_id">.js"&gt;</mt:setvarblock>
+  <mt:var name="mt_lang_js" decode_html="1" mteval="1">
   </mt:if>
   <mt:unless name="optimize_ui">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:script type="text/javascript" path="jquery/jquery.mt.js">
   <mt:else>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:script type="text/javascript" path="jquery/jquery.mt.min.js">
   </mt:unless>
-  <script type="text/javascript" src="<mt:var name="static_uri">js/mt/util.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:script type="text/javascript" path="js/mt/util.js">
 
   <mt:var name="js_include">
 

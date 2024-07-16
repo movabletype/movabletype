@@ -122,9 +122,9 @@
 
 <mt:setvarblock name="js_include" append="1">
 <mt:unless name="optimize_ui">
-  <script type="text/javascript" src="<mt:var name="static_uri">jqueryui/jquery.ui.touch-punch.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:script type="text/javascript" path="jqueryui/jquery.ui.touch-punch.js">
 <mt:else>
-  <script type="text/javascript" src="<mt:var name="static_uri">jqueryui/jquery.ui.touch-punch.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:script type="text/javascript" path="jqueryui/jquery.ui.touch-punch.min.js">
 </mt:unless>
 </mt:setvarblock>
 
