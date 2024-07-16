@@ -2734,19 +2734,9 @@ sub reduce_revisions {
         push @target_ds, 'template';
     }
 
-    my $term;
+    my $term = { class => '*' };
     if (@blog_ids) {
-        $term = [
-            { class => '*' },
-            '-and',
-            [
-                { id => [ @blog_ids ] },
-                '-or',
-                { parent_id => [ @blog_ids ] },
-            ],
-        ];
-    } else {
-        $term = { class => '*' };
+        $term->{id} = [ @blog_ids ];
     }
     my $filter_date;
     if ($app->param('use_filter_date')) {
@@ -2842,19 +2832,9 @@ sub detect_reduce_revisions {
     }
 
     my @response;
-    my $term;
+    my $term = { class => '*' };
     if (@blog_ids) {
-        $term = [
-            { class => '*' },
-            '-and',
-            [
-                { id => [ @blog_ids ] },
-                '-or',
-                { parent_id => [ @blog_ids ] },
-            ],
-        ];
-    } else {
-        $term = { class => '*' };
+        $term->{id} = [ @blog_ids ];
     }
     my $filter_date;
     if ($app->param('use_filter_date')) {

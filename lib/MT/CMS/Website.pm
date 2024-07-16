@@ -484,7 +484,11 @@ sub dialog_select_website {
         $args->{join} = MT::Permission->join_on( 'blog_id',
             { author_id => $user->id } );
     }
-    $terms->{class} = 'website';
+    if ($app->param('both')) {
+        $terms->{class} = '*';
+    } else {
+        $terms->{class} = 'website';
+    }
 
     my $hasher = sub {
         my ( $obj, $row ) = @_;
