@@ -6,12 +6,12 @@
   <meta charset="<$mt:var name="language_encoding"$>" />
   <title><mt:loop name="page_titles"><mt:var name="bc_name" escape="html"> | </mt:loop><mt:var name="mt_product_name"></title>
 <mt:unless name="optimize_ui">
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:stylesheet path="styles.css">
 <mt:else>
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:stylesheet path="css/main.css">
 </mt:unless>
   <!--[if IE]>
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:stylesheet path="css/hacks/ie.css">
   <![endif]-->
 <mt:unless name="optimize_ui">
   <mt:script type="text/javascript" path="jquery/jquery.js">
@@ -59,7 +59,8 @@
 <mt:if name="local_lang_id" eq="en-us">
   <mt:script type="text/javascript" path="mt_en_us.js">
 <mt:else>
-  <link rel="stylesheet" href="<mt:var name="static_uri">styles_<mt:var name="local_lang_id">.css?v=<mt:var name="mt_version_id" escape="URL">" />
+  <mt:setvarblock name="mt_lang_css">&lt;mt:stylesheet path="styles_<mt:var name="local_lang_id">.css"&gt;</mt:setvarblock>
+  <mt:var name="mt_lang_css" decode_html="1" mteval="1">
   <mt:setvarblock name="mt_lang_js">&lt;mt:script type="text/javascript" path="mt_<mt:var name="local_lang_id">.js"&gt;</mt:setvarblock>
   <mt:var name="mt_lang_js" decode_html="1" mteval="1">
 </mt:if>

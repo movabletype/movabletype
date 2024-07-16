@@ -10,12 +10,12 @@
 <mt:setvarblock name="html_head" prepend="1">
   <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
 <mt:unless name="optimize_ui">
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:stylesheet path="styles.css">
 <mt:else>
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:stylesheet path="css/main.css">
 </mt:unless>
   <!--[if IE]>
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:stylesheet path="css/hacks/ie.css">
   <![endif]-->
   <script type="text/javascript">
   /* <![CDATA[ */

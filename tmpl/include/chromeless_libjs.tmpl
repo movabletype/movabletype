@@ -1,10 +1,11 @@
 <mt:unless name="cfg_exists">
   <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
   <!--[if IE]>
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:stylesheet path="css/hacks/ie.css">
   <![endif]-->
   <mt:if name="local_lang_id" ne="en-us">
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <mt:setvarblock name="mt_lang_css">&lt;mt:stylesheet path="styles_<mt:var name="local_lang_id">.css"&gt;</mt:setvarblock>
+  <mt:var name="mt_lang_css" decode_html="1" mteval="1">
   </mt:if>
   <mt:script type="text/javascript" path="js/tc.js">
 </mt:unless>
