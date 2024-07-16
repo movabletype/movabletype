@@ -45,7 +45,8 @@ filters {
 
 my $blog
     = MT::Test::Permission->make_blog( parent_id => 0, name => 'test blog' );
-$blog->archive_type('ContentType-Author,ContentType-Category,ContentType-Category-Monthly');
+$blog->archive_type(join(',', 'ContentType-Author', 'ContentType-Category', 'ContentType-Category-Monthly',
+                        'ContentType-Category-Weekly', 'ContentType-Category-Yearly', 'ContentType-Category-Daily'));
 $blog->save;
 
 my $content_type_01 = MT::Test::Permission->make_content_type(
@@ -217,6 +218,37 @@ my $map_04 = MT::Test::Permission->make_templatemap(
     cat_field_id  => $cf_category_03->id,
     build_type    => 3,
 );
+
+my $map_05 = MT::Test::Permission->make_templatemap(
+    template_id   => $template->id,
+    blog_id       => $blog->id,
+    archive_type  => 'ContentType-Category-Weekly',
+    file_template => '%-c/%y/%m/%d-week/%i',
+    is_preferred  => 1,
+    cat_field_id  => $cf_category->id,
+    build_type    => 3,
+);
+
+my $map_06 = MT::Test::Permission->make_templatemap(
+    template_id   => $template->id,
+    blog_id       => $blog->id,
+    archive_type  => 'ContentType-Category-Yearly',
+    file_template => '%-c/%y/%i',
+    is_preferred  => 1,
+    cat_field_id  => $cf_category->id,
+    build_type    => 3,
+);
+
+my $map_07 = MT::Test::Permission->make_templatemap(
+    template_id   => $template->id,
+    blog_id       => $blog->id,
+    archive_type  => 'ContentType-Category-Daily',
+    file_template => '%-c/%y/%i',
+    is_preferred  => 1,
+    cat_field_id  => $cf_category->id,
+    build_type    => 3,
+);
+
 $vars->{content_type_01_unique_id} = $content_type_01->unique_id;
 $vars->{content_type_02_unique_id} = $content_type_02->unique_id;
 $vars->{content_type_03_unique_id} = $content_type_03->unique_id;
@@ -302,3 +334,85 @@ No Content Type could be found.
 <mt:ArchiveList type="ContentType-Category" content_type="[% content_type_03_unique_id %]"><mt:CategoryLabel></mt:ArchiveList>
 --- expected
 
+=== mt:ArchiveList nested ContentType-Daily
+--- template
+<mt:ArchiveList type="ContentType-Yearly" content_type="[% content_type_01_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Daily" content_type="[% content_type_01_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[2017]September 27, 2017;
+
+=== mt:ArchiveList nested ContentType-Weekly
+--- template
+<mt:ArchiveList type="ContentType-Yearly" content_type="[% content_type_01_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Weekly" content_type="[% content_type_01_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[2017]September 24, 2017 - September 30, 2017;
+
+=== mt:ArchiveList nested ContentType-Monthly
+--- template
+<mt:ArchiveList type="ContentType-Yearly" content_type="[% content_type_01_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Monthly" content_type="[% content_type_01_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[2017]September 2017;
+
+=== mt:ArchiveList nested ContentType-Yearly
+--- template
+<mt:ArchiveList type="ContentType-Yearly" content_type="[% content_type_01_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Yearly" content_type="[% content_type_01_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[2017]2017;
+
+=== mt:ArchiveList mt:ArchiveTitle for author (TODO Fix php MTC-29633)
+--- skip_php
+--- template
+<mt:ArchiveList type="ContentType-Author" content_type="[% content_type_01_unique_id %]">[<mt:ArchiveTitle>]</mt:ArchiveList>
+--- expected
+[Masahiro Yanagida][Yuki Ishikawa]
+
+=== mt:ArchiveList nested ContentType-Author-Daily (TODO Fix php MTC-29633)
+--- skip_php
+--- template
+<mt:ArchiveList type="ContentType-Author-Yearly" content_type="[% content_type_01_unique_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Author-Daily" content_type="[% content_type_01_unique_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[Masahiro Yanagida: 2017]Masahiro Yanagida: September 27, 2017;[Yuki Ishikawa: 2017]Yuki Ishikawa: September 27, 2017;
+
+=== mt:ArchiveList nested ContentType-Author-Weekly (TODO Fix php MTC-29633)
+--- skip_php
+--- template
+<mt:ArchiveList type="ContentType-Author-Yearly" content_type="[% content_type_01_unique_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Author-Weekly" content_type="[% content_type_01_unique_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[Masahiro Yanagida: 2017]Masahiro Yanagida: September 24, 2017 - September 30, 2017;[Yuki Ishikawa: 2017]Yuki Ishikawa: September 24, 2017 - September 30, 2017;
+
+=== mt:ArchiveList nested ContentType-Author-Monthly (TODO Fix php MTC-29633)
+--- skip_php
+--- template
+<mt:ArchiveList type="ContentType-Author-Yearly" content_type="[% content_type_01_unique_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Author-Monthly" content_type="[% content_type_01_unique_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[Masahiro Yanagida: 2017]Masahiro Yanagida: September 2017;[Yuki Ishikawa: 2017]Yuki Ishikawa: September 2017;
+
+=== mt:ArchiveList nested ContentType-Author-Yearly (TODO Fix php MTC-29633)
+--- skip_php
+--- template
+<mt:ArchiveList type="ContentType-Author-Yearly" content_type="[% content_type_01_unique_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Author-Yearly" content_type="[% content_type_01_unique_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[Masahiro Yanagida: 2017]Masahiro Yanagida: 2017;[Yuki Ishikawa: 2017]Yuki Ishikawa: 2017;
+
+=== mt:ArchiveList nested ContentType-Category-Daily
+--- template
+<mt:ArchiveList type="ContentType-Category-Yearly" content_type="[% content_type_01_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Category-Daily" content_type="[% content_type_01_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[category2: 2017]category2: September 27, 2017;
+
+=== mt:ArchiveList nested ContentType-Category-Weekly
+--- template
+<mt:ArchiveList type="ContentType-Category-Yearly" content_type="[% content_type_01_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Category-Weekly" content_type="[% content_type_01_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[category2: 2017]category2: September 24, 2017 - September 30, 2017;
+
+=== mt:ArchiveList nested ContentType-Category-Monthly
+--- template
+<mt:ArchiveList type="ContentType-Category-Yearly" content_type="[% content_type_01_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Category-Monthly" content_type="[% content_type_01_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[category2: 2017]category2: September 2017;
+
+=== mt:ArchiveList nested ContentType-Category-Yearly
+--- template
+<mt:ArchiveList type="ContentType-Category-Yearly" content_type="[% content_type_01_id %]">[<mt:ArchiveTitle>]<mt:ArchiveList type="ContentType-Category-Yearly" content_type="[% content_type_01_id %]"><mt:ArchiveTitle>;</mt:ArchiveList></mt:ArchiveList>
+--- expected
+[category2: 2017]category2: 2017;

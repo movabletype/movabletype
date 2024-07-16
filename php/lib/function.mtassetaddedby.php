@@ -11,7 +11,7 @@ function smarty_function_mtassetaddedby($args, &$ctx) {
 
     require_once('class.mt_author.php');
     $author = new Author();
-    $author->Load("author_id = " . $asset->created_by);
+    $author->LoadByIntId($asset->created_by);
     if ($author->nickname != '')
         return $author->nickname;
 

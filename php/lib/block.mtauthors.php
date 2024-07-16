@@ -28,6 +28,9 @@ function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
                 $args['sort_by'] = 'nickname';
             }
             if ($args['sort_by'] != 'score' && $args['sort_by'] != 'rate') {
+                if (preg_match('/[^a-zA-Z0-9_]/', $args['sort_by'])) {
+                    throw new MTDBException('illegal sort_by name');
+                }
                 $args['sort_by'] = 'author_'.$args['sort_by'];
             }
         } else {
