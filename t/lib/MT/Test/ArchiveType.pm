@@ -316,7 +316,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_fileinfo.php');
 \$fileinfo = new FileInfo;
-\$fileinfo->Load($finfo_id);
+\$fileinfo->LoadByIntId($finfo_id);
 \$ctx->stash('_fileinfo', \$fileinfo);
 PHP
             }
@@ -330,7 +330,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_content_type.php');
 \$ct = new ContentType;
-\$ct->Load($ct_id);
+\$ct->LoadByIntId($ct_id);
 \$ctx->stash('content_type', \$ct);
 PHP
             }
@@ -348,7 +348,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_category.php');
 \$cat = new Category;
-\$cat->Load($category_id);
+\$cat->LoadByIntId($category_id);
 \$ctx->stash('category', \$cat);
 \$ctx->stash('archive_category', \$cat);
 PHP
@@ -359,7 +359,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_author.php');
 \$author = new Author;
-\$author->Load($author_id);
+\$author->LoadByIntId($author_id);
 \$ctx->stash('author', \$author);
 \$ctx->stash('archive_author', \$author);
 PHP
@@ -370,7 +370,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_entry.php');
 \$entry = new Entry;
-\$entry->Load($entry_id);
+\$entry->LoadByIntId($entry_id);
 \$ctx->stash('entry', \$entry);
 PHP
             }
@@ -380,7 +380,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_content_data.php');
 \$cd = new ContentData;
-\$cd->Load($cd_id);
+\$cd->LoadByIntId($cd_id);
 \$ctx->stash('content', \$cd);
 PHP
             }
@@ -390,7 +390,7 @@ PHP
                 $test_script .= <<"PHP";
 require_once('class.mt_category_set.php');
 \$category_set = new CategorySet;
-\$category_set->Load($category_set_id);
+\$category_set->LoadByIntId($category_set_id);
 \$ctx->stash('category_set', \$category_set);
 PHP
             }

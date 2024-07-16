@@ -840,6 +840,68 @@ a rainy day
 --- expected
 [January 1978-http://narnia.na/nana/archives/1978/01/; January 1965-http://narnia.na/nana/archives/1965/01/; January 1964-http://narnia.na/nana/archives/1964/01/; January 1963-http://narnia.na/nana/archives/1963/01/; January 1962-http://narnia.na/nana/archives/1962/01/; January 1961-http://narnia.na/nana/archives/1961/01/; ]
 
+=== test 147-2 nested Monthly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Monthly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] January 1978;[1965] January 1965;[1964] January 1964;[1963] January 1963;[1962] January 1962;[1961] January 1961;
+
+=== test 147-3 nested Daily ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Daily"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] January 31, 1978;[1965] January 31, 1965;[1964] January 31, 1964;[1963] January 31, 1963;[1962] January 31, 1962;[1961] January 31, 1961;
+
+=== test 147-4 nested Weekly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Weekly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] January 29, 1978 - February  4, 1978;[1965] January 31, 1965 - February  6, 1965;[1964] January 26, 1964 - February  1, 1964;[1963] January 27, 1963 - February  2, 1963;[1962] January 28, 1962 - February  3, 1962;[1961] January 29, 1961 - February  4, 1961;
+
+=== test 147-5 nested Author-Monthly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Author-Monthly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] Chucky Dee: January 1978;[1965] Chucky Dee: January 1965;[1964] Chucky Dee: January 1964;[1963] Dylan: January 1963;[1962] Chucky Dee: January 1962;[1961] Chucky Dee: January 1961;
+
+=== test 147-6 nested Author-Daily ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Author-Daily"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] Chucky Dee: January 31, 1978;[1965] Chucky Dee: January 31, 1965;[1964] Chucky Dee: January 31, 1964;[1963] Dylan: January 31, 1963;[1962] Chucky Dee: January 31, 1962;[1961] Chucky Dee: January 31, 1961;
+
+=== test 147-7 nested Author-Weekly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Author-Weekly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] Chucky Dee: January 29, 1978 - February  4, 1978;[1965] Chucky Dee: January 31, 1965 - February  6, 1965;[1964] Chucky Dee: January 26, 1964 - February  1, 1964;[1963] Dylan: January 27, 1963 - February  2, 1963;[1962] Chucky Dee: January 28, 1962 - February  3, 1962;[1961] Chucky Dee: January 29, 1961 - February  4, 1961;
+
+=== test 147-8 nested Category-Yearly ArchiveList (TODO check the difference between Perl and php result)
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Category-Yearly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] foo: 1963;subfoo: 1964;[1965] foo: 1963;subfoo: 1964;[1964] foo: 1963;subfoo: 1964;[1963] foo: 1963;subfoo: 1964;[1962] foo: 1963;subfoo: 1964;[1961] foo: 1963;subfoo: 1964;
+--- expected_php
+[1978] [1965] [1964] subfoo: 1964;[1963] foo: 1963;[1962] [1961]
+
+=== test 147-9 nested Category-Monthly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Category-Monthly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] [1965] [1964] subfoo: January 1964;[1963] foo: January 1963;[1962] [1961]
+
+=== test 147-10 nested Category-Daily ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Category-Daily"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] [1965] [1964] subfoo: January 31, 1964;[1963] foo: January 31, 1963;[1962] [1961]
+
+=== test 147-11 nested Category-Weekly ArchiveList
+--- template
+<MTArchiveList archive_type="Yearly">[<MTArchiveTitle>] <MTArchiveList archive_type="Category-Weekly"><MTArchiveTitle>;</MTArchiveList></MTArchiveList>
+--- expected
+[1978] [1965] [1964] subfoo: January 26, 1964 - February  1, 1964;[1963] foo: January 27, 1963 - February  2, 1963;[1962] [1961]
+
 === test 148
 --- template
 [Previous: <MTArchiveList archive_type="Monthly"><MTArchivePrevious><MTArchiveTitle>-<MTArchiveLink>;</MTArchivePrevious> </MTArchiveList>]

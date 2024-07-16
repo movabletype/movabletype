@@ -35,11 +35,9 @@ class Trackback extends BaseObject
         $col_name = "trackback_category_id";
         $category = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
-            $category_id = $this->$col_name;
-
             require_once('class.mt_category.php');
             $category = new Category;
-            $ret = $category->Load("category_id = $category_id");
+            $ret = $category->LoadByIntId($this->$col_name);
             if (!$ret) $category = null;
         }
 

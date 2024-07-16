@@ -90,7 +90,7 @@ foreach my $archive_type (@archive_types) {
 \$blog->archive_type = "$blog_archive_type";
 require_once('class.mt_fileinfo.php');
 \$fileinfo = new FileInfo;
-\$fileinfo->Load($finfo_id);
+\$fileinfo->LoadByIntId($finfo_id);
 \$ctx->stash('_fileinfo', \$fileinfo);
 PHP
         },
