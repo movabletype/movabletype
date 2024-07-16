@@ -309,4 +309,28 @@ sub _hdlr_has_plugin {
     return MT->has_plugin($name) ? 1 : 0;
 }
 
+###########################################################################
+
+=head2 Script
+
+Returns the html code snippet of information gathering for stats of current blog/site.
+If any stats provider was not found, this template tag will return blank string.
+
+=cut
+
+sub _hdlr_script {
+  my ( $ctx, $args ) = @_;
+
+  my $name    = $args->{name} || "";
+  my $type    = $args->{type} ? " type=\"$args->{type}\"" : "";
+  my $async   = $args->{async} ? " async" : "";
+  my $defer   = $args->{defer} ? " defer" : "";
+  my $version = MT::Util::encode_url(MT->version_id);
+
+  $name =~ s!^/+!! if $name;
+  my $script_path = MT->static_path . $name;
+
+  return sprintf('<script src="%s?v=%s"%s%s%s></script>', $script_path, $version, $type, $async, $defer);
+}
+
 1;
