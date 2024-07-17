@@ -132,9 +132,6 @@ jobs:
     if: >-
       ${{
         github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -171,9 +168,6 @@ jobs:
     if: >-
       ${{
         github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -204,9 +198,6 @@ jobs:
     if: >-
       ${{
         github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -276,7 +267,14 @@ jobs:
 
   cloud7:
     needs: [fedora39]
-    if: ${{ always() }}
+    if: >-
+      ${{
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
+        || contains(github.ref_name, 'cron')
+      }}
     env:
       TEST_IMAGE_NAME: cloud7
     runs-on: ubuntu-latest
