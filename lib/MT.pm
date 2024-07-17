@@ -909,11 +909,7 @@ sub init_config {
                 = ( $Config::Config{osname}, $Config::Config{osvers} );
             print $PERFLOG "# Operating System: $osname/$osvers\n";
             print $PERFLOG "# Platform: $^O\n";
-            my $ver
-                = ref($^V) eq 'version'
-                ? $^V->normal
-                : ( $^V ? join( '.', unpack 'C*', $^V ) : $] );
-            print $PERFLOG "# Perl Version: $ver\n";
+            printf $PERFLOG "# Perl Version: %vd\n", $^V;
             print $PERFLOG "# Web Server: $ENV{SERVER_SOFTWARE}\n";
             require MT::Object;
             my $driver = MT::Object->driver;
