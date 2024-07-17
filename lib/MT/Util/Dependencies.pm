@@ -808,18 +808,21 @@ our %ExtLibOnly = (
 our %HiddenCoreDeps = (
     "Carp"         => { perl_core => 1.26, url => "https://metacpan.org/pod/Carp" },
     "Data::Dumper" => {
-        perl_core => "2.135_06",
-        url       => "https://metacpan.org/pod/Data::Dumper",
+        dropped_in => ["centos7"],
+        perl_core  => "2.135_06",
+        url        => "https://metacpan.org/pod/Data::Dumper",
     },
     "DirHandle" => {
-        perl_core => 1.04,
-        perl_only => 1,
-        url       => "https://metacpan.org/pod/DirHandle",
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 1.04,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/DirHandle",
     },
     "English" => {
-        perl_core => 1.05,
-        perl_only => 1,
-        url       => "https://metacpan.org/pod/English",
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 1.05,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/English",
     },
     "Exporter" => { perl_core => 5.66, url => "https://metacpan.org/pod/Exporter" },
     "Fcntl"    => {
@@ -833,20 +836,26 @@ our %HiddenCoreDeps = (
         url       => "https://metacpan.org/pod/File::Basename",
     },
     "File::Copy" => {
-        perl_core => 2.23,
-        perl_only => 1,
-        url       => "https://metacpan.org/pod/File::Copy",
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 2.23,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/File::Copy",
     },
     "File::Find" => {
-        perl_core => "1.20",
-        perl_only => 1,
-        url       => "https://metacpan.org/pod/File::Find",
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => "1.20",
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/File::Find",
     },
     "File::Path" => {
         perl_core => "2.08_01",
         url       => "https://metacpan.org/pod/File::Path",
     },
-    "FindBin"      => { perl_core => 1.51, url => "https://metacpan.org/pod/FindBin" },
+    "FindBin" => {
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 1.51,
+        url        => "https://metacpan.org/pod/FindBin",
+    },
     "Getopt::Long" => { perl_core => 2.38, url => "https://metacpan.org/pod/Getopt::Long" },
     "IO::File"     => { perl_core => 1.16, url => "https://metacpan.org/pod/IO::File" },
     "IPC::Open3"   => {
@@ -865,9 +874,10 @@ our %HiddenCoreDeps = (
         url       => "https://metacpan.org/pod/Symbol",
     },
     "Sys::Hostname" => {
-        perl_core => 1.16,
-        perl_only => 1,
-        url       => "https://metacpan.org/pod/Sys::Hostname",
+        dropped_in => ["amazonlinux2023"],
+        perl_core  => 1.16,
+        perl_only  => 1,
+        url        => "https://metacpan.org/pod/Sys::Hostname",
     },
     "Text::Wrap" => {
         perl_core => 2009.0305,
