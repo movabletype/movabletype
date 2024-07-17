@@ -13,7 +13,7 @@ jQuery(document).ready(function () {
   var html;
   <mt:loop name="assets">
     html = '<div class="mt-draggable"<mt:if name="can_multi"> draggable="true" aria-grabbed="false"</mt:if>>'
-         +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html" escape="js">" value="<mt:var name="asset_id" escape="html" escape="js">">'
+         +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html" escape="js">" value="<mt:var name="asset_id" escape="html" escape="js">" mt:raw-name="1">'
          +   '<div class="col-auto">'
     <mt:if name="can_multi">
          +     '<mtapp:svgicon id="ic_move" title="Draggable" strip_linefeeds="1" escape="js">'

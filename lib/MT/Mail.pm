@@ -202,30 +202,30 @@ sub _send_mt_smtp {
     my $user      = $mgr->SMTPUser;
     my $pass      = $mgr->SMTPPassword;
     my $localhost = hostname() || 'localhost';
-    my $port
-        = $mgr->SMTPPort          ? $mgr->SMTPPort
-        : $mgr->SMTPAuth eq 'ssl' ? 465
-        :                           25;
-    my ( $auth, $tls, $ssl );
-    if ( $mgr->SMTPAuth ) {
 
-        if ( 'starttls' eq $mgr->SMTPAuth ) {
-            $tls  = 1;
-            $auth = 1;
-        }
-        elsif ( 'ssl' eq $mgr->SMTPAuth ) {
-            $ssl  = 1;
-            $auth = 1;
-        }
-        else {
-            $auth = 1;
-        }
+    my ($auth, $tls, $ssl);
+    my $do_ssl   = '';
+    my $smtpauth = $mgr->SMTPAuth || '';
+    my $smtps    = $mgr->SMTPS    || '';
+    if ($mgr->SMTPAuth) {
+        $auth = 1;
     }
-    my $do_ssl = ( $ssl || $tls ) ? $mgr->SMTPAuth : '';
+    if ($smtps eq 'starttls' or $smtpauth eq 'starttls') {
+        $tls    = 1;
+        $do_ssl = 'starttls';
+    }
+    if ($smtps eq 'ssl' or $smtpauth eq 'ssl') {
+        $ssl    = 1;
+        $do_ssl = 'ssl';
+    }
     my $ssl_verify_mode
         = $do_ssl
         ? ( ( $mgr->SSLVerifyNone || $mgr->SMTPSSLVerifyNone ) ? 0 : 1 )
         : undef;
+    my $port
+        = $mgr->SMTPPort ? $mgr->SMTPPort
+        : $ssl           ? 465
+        :                  25;
 
     return $class->error(
         MT->translate(

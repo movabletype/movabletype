@@ -213,7 +213,7 @@ sub suite {
                 my $got_logs = $app->current_format->{unserialize}->($body);
                 my @expected_logs
                     = MT->model('log')->load( { class => '*', blog_id => 1 },
-                    { sort => 'created_on', direction => 'descend' } );
+                    { sort => [map {+{column => $_, desc => 'DESC'}} qw(created_on id)] });
 
                 my @got_log_ids = map { $_->{id} } @{ $got_logs->{items} };
                 my @expected_log_ids = map { $_->id } @expected_logs;
@@ -233,7 +233,7 @@ sub suite {
             ],
             result => sub {
                 my @logs = $app->model('log')->load( { class => '*' },
-                    { sort => 'created_on', direction => 'descend' } );
+                    { sort => [map {+{column => $_, desc => 'DESC'}} qw(created_on id)] });
                 return +{
                     totalResults => scalar @logs,
                     items => MT::DataAPI::Resource->from_object( \@logs ),

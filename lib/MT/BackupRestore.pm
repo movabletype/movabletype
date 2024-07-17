@@ -967,7 +967,7 @@ sub cb_restore_objects {
             $related{ $asset_hash->{old_id} } = $asset_hash->{object};
         }
 
-        if ( $entry->class == 'entry' ) {
+        if ( $entry->class eq 'entry' ) {
             $callback->(
                 MT->translate(
                     "Importing asset associations in entry ... ( [_1] )",

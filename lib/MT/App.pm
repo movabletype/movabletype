@@ -13,6 +13,7 @@ use base qw( MT );
 use File::Spec;
 use MT::Request;
 use MT::Util qw( encode_html encode_url is_valid_email is_url );
+use MT::Util::RequestError qw( parse_init_cgi_error );
 use MT::I18N;
 use MT::Util::Encode;
 
@@ -826,7 +827,6 @@ sub json_result {
     my $app = shift;
     return if $app->{finalized}++;
     my ($result) = @_;
-    $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
     $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
     $app->print_encode(
@@ -840,7 +840,6 @@ sub json_error {
     return if $app->{finalized}++;
     $app->response_code($status)
         if defined $status;
-    $app->set_header( 'X-Content-Type-Options' => 'nosniff' );
     $app->send_http_header("application/json");
     $app->{no_print_body} = 1;
     $app->print_encode( MT::Util::to_json( { error => $error } ) );
@@ -1141,7 +1140,13 @@ sub init_request {
             }
             require CGI;
             $CGI::POST_MAX = $app->config->CGIMaxUpload;
-            $app->{query} = CGI->new( $app->{no_read_body} ? {} : () );
+            $app->{query} = eval { CGI->new( $app->{no_read_body} ? {} : () ) };
+            if (my $err = $@) {
+                my $res = parse_init_cgi_error($err);
+                $app->{query} = CGI->new( {} );
+                $app->response_code($res->{code});
+                die $res->{message};
+            }
         }
     }
     $app->init_query();
@@ -3177,13 +3182,14 @@ sub run {
         $timer->pause_partial();
     }
 
-    if ( my $cache_control = $app->config->HeaderCacheControl ) {
+    if ( my $cache_control = $app->config->ForceCacheControl ) {
         $app->set_header( 'Cache-Control' => $cache_control );
     }
 
     $app->set_x_frame_options_header;
     $app->set_x_xss_protection_header;
     $app->set_referrer_policy;
+    $app->set_header('X-Content-Type-Options' => 'nosniff');
 
     my ($body);
 
@@ -4622,6 +4628,14 @@ sub DESTROY {
 
 sub set_no_cache {
     my $app = shift;
+
+    if (my $cache_control = $app->config->CacheControl) {
+        # No need to set another Cache-Control header if one is already set
+        if (!$app->config->ForceCacheControl) {
+            $app->set_header('Cache-Control' => $cache_control);
+        }
+    }
+
     ## Add the Pragma: no-cache header.
     if ( MT::Util::is_mod_perl1() ) {
         $app->{apache}->no_cache(1);

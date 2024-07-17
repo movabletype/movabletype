@@ -621,8 +621,8 @@ sub js_upload_file {
 sub upload_file {
     my $app = shift;
 
-    # require MT::Util::Deprecated;
-    # MT::Util::Deprecated::warning(since => '7.8');
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.3.0');
 
     if ( my $perms = $app->permissions ) {
         return $app->error( $app->translate("Permission denied.") )
@@ -1486,9 +1486,10 @@ sub _upload_file_compat {
         $local_file,     $asset_file,   $base_url,
         $asset_base_url, $relative_url, $relative_path
     );
+    my $image_info = MT::Image->get_image_info(Fh => $fh) || {};
     if ( $blog_id = $app->param('blog_id') ) {
         unless ($has_overwrite) {
-            if (my $ext_new = MT::Image->get_image_type($fh)) {
+            if (my $ext_new = $image_info->{ext}) {
                 my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
                 if ($asset_class eq 'MT::Asset::Image' && !MT->config->DisableFileExtensionConversion) {
                     my $ext_old = (File::Basename::fileparse($basename, qr/[A-Za-z0-9]+$/))[2];
@@ -1792,7 +1793,8 @@ sub _upload_file_compat {
         Fmgr   => $fmgr,
         Local  => $local_file,
         Max    => $upload_param{max_size},
-        MaxDim => $upload_param{max_image_dimension}
+        MaxDim => $upload_param{max_image_dimension},
+        Info   => $image_info,
     );
 
     return $app->error( MT::Image->errstr )
@@ -2034,7 +2036,8 @@ sub _upload_file {
         File::Basename::basename($basename) );
 
     # Change to real file extension
-    if (my $ext_new = MT::Image->get_image_type($fh)) {
+    my $image_info = MT::Image->get_image_info(Fh => $fh) || {};
+    if (my $ext_new = $image_info->{ext}) {
         my $asset_class = MT::Asset->handler_for_file("test.$ext_new");
         if ($asset_class eq 'MT::Asset::Image' && !MT->config->DisableFileExtensionConversion) {
             my $ext_old = (File::Basename::fileparse($basename, qr/[A-Za-z0-9]+$/))[2];
@@ -2352,7 +2355,8 @@ sub _upload_file {
         Fmgr   => $fmgr,
         Local  => $local_file,
         Max    => $upload_param{max_size},
-        MaxDim => $upload_param{max_image_dimension}
+        MaxDim => $upload_param{max_image_dimension},
+        Info   => $image_info,
     );
 
     return $app->error( MT::Image->errstr )

@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 class MTSerializeTest extends TestCase {
     public function testGetInstace() {
-        include_once('php/lib/MTSerialize.php');
+        require_once('MTSerialize.php');
         $serializer1 = MTSerialize::get_instance();
         $this->assertInstanceOf('MTSerialize', $serializer1);
 

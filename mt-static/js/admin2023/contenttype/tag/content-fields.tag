@@ -74,12 +74,24 @@
   <form>
     <fieldset id="content-fields" class="form-group">
       <legend class="h3">{ trans('Content Fields') }</legend>
+      <div class="mt-collapse__all">
+        <a data-bs-toggle="collapse" onclick={ toggleAll } href="" aria-expanded="{ isExpanded ? 'true' : 'false' }" aria-controls="" class="d-inline-block">
+          { isExpanded ? trans('Close all') : trans('Edit all') }
+          <ss title="{ trans('Edit') }" class="mt-icon--secondary expand-all-icon" href="{ StaticURI }images/sprite.svg#ic_collapse"></ss>
+        </a>
+      </div>
       <div class="mt-draggable__area" style="height:400px;" ondrop={ onDrop } ondragover={ onDragOver } ondragleave={ onDragLeave }>
         <div show={ isEmpty } class="mt-draggable__empty">
           <img src="{ StaticURI }images/dragdrop.gif" alt="{ trans('Drag and drop area') }" width="240" height="120">
           <p>{ trans('Please add a content field.') }</p>
         </div>
         <div class="mt-contentfield" draggable="true" aria-grabbed="false" each={ fields } data-is="content-field" ondragstart={ onDragStart } ondragend={ onDragEnd } style="width: 100%;"></div>
+      </div>
+      <div class="mt-collapse__all">
+        <a data-bs-toggle="collapse" onclick={ toggleAll } href=".mt-collapse__content" aria-expanded="{ isExpanded ? 'true' : 'false' }" aria-controls="" class="d-inline-block">
+          { isExpanded ? trans('Close all') : trans('Edit all') }
+          <ss title="{ trans('Edit') }" class="mt-icon--secondary expand-all-icon" href="{ StaticURI }images/sprite.svg#ic_collapse"></ss>
+        </a>
       </div>
     </fieldset>
   </form>
@@ -111,6 +123,7 @@
     self.dragoverState = false
     self.labelFields = null
     self.labelField = opts.labelField
+    self.isExpanded = false
 
     self.on('updated', function () {
       var select = self.root.querySelector('#label_field')
@@ -155,12 +168,14 @@
     jQuery(document).on('shown.bs.collapse', '.mt-collapse__content', function(e) {
       var target = document.getElementsByClassName('mt-draggable__area')[0]
       self.recalcHeight(target);
+      self.updateToggleAll()
     })
 
     // Hide collaped block
     jQuery(document).on('hidden.bs.collapse', '.mt-collapse__content', function(e) {
       var target = document.getElementsByClassName('mt-draggable__area')[0]
       self.recalcHeight(target);
+      self.updateToggleAll()
     })
 
     // Cannot drag while focusing on input / textarea
@@ -421,6 +436,27 @@
 
     changeLabelField(e) {
         self.labelField = e.target.value
+    }
+
+    toggleAll() {
+      self.isExpanded = !self.isExpanded
+      self.fields.forEach(field => {
+        field.isShow = self.isExpanded ? 'show' : ''
+      })
+    }
+
+    updateToggleAll() {
+      collapseEls = document.querySelectorAll('.mt-collapse__content')
+      var isAllExpanded = true
+      collapseEls.forEach(collapseEl => {
+        if (collapseEl.classList.contains('show')) {
+          isAllExpanded = true
+        } else {
+          isAllExpanded = false
+        }
+      })
+      self.isExpanded = isAllExpanded ? true : false
+      self.update()
     }
 
     _moveField(item, pos) {

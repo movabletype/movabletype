@@ -591,7 +591,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Members' => 'メンバーの管理',
 	'Manage' => '一覧',
 	'Movable Type News' => 'Movable Typeニュース',
-	'Move child site(s) ' => 'サイトの移動',
+	'Move Child Site(s) ' => 'サイトの移動',
 	'New' => '新規',
 	'No such blog [_1]' => '[_1]というブログはありません。',
 	'None' => 'なし',
@@ -3068,8 +3068,11 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Worker/Publish.pm
 	'-- set complete ([quant,_1,file,files] in [_2] seconds)' => '-- 完了 ([_1]ファイル - [_2]秒)',
 	'Background Publishing Done' => 'バックグラウンドパブリッシングが完了しました',
+	'Background Publishing Started' => 'バックグラウンドパブリッシングを開始しました',
+	'bytes' => 'バイト',
 	'Error rebuilding file [_1]:[_2]' => '[_1]の再構築中にエラーが発生しました: [_2]',
-	'Published: [_1]' => '公開されたファイル: [_1]',
+	'Published: [_1] ([_2] bytes)' => '公開されたファイル: [_1] ([_2]バイト)',
+	'Published ([_1]):' => '公開されたファイル ([_1]):',
 
 ## lib/MT/Worker/Sync.pm
 	'Done Synchronizing Files' => 'ファイルを同期しました。',
@@ -3097,6 +3100,7 @@ use vars qw( @ISA %Lexicon );
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされているPerl ([_1])は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlを[_2]以上にアップグレードしてください。',
 	'Web server:' => 'ウェブサーバー',
 	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
+	'Your Perl does not have some of the core modules so that you may encounter unexpected behaviors. Please ask your system administrator to install perl (or perl-core) properly.' => 'お使いのPerlはコアモジュールが不足しているため予期せぬ動作をする可能性があります。システム管理者にperl（またはperl-core）を適切にインストールするよう依頼してください。',
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'サーバーに [_1]か、[_1]の動作に必要な他のモジュールがインストールされていません。',
 	'Your server has [_1] installed (version [_2]).' => 'サーバーに [_1] がインストールされています(バージョン [_2])。',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'お使いのサーバーには、Movable Type の動作に必要なすべてのモジュールがインストールされています。モジュールを追加インストール作業は必要はありません。マニュアルに従い、インストールを続けてください。',
@@ -3146,6 +3150,8 @@ use vars qw( @ISA %Lexicon );
 	'Show input field to enter data label' => 'ユーザーが入力する',
 	'Unique ID' => 'ユニークID',
 	'close' => '閉じる',
+	'Edit all' => 'すべて編集',
+	'Close all' => 'すべて閉じる',
 
 ## mt-static/js/admin2023/listing/list_data.js
 	'[_1] - Filter [_2]' => '[_1] - フィルタ [_2]',
@@ -3203,6 +3209,7 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/admin2023/mt.js
 	'Are you certain you want to remove these [_1] roles? By doing so you will be taking away the permissions currently assigned to any users and groups associated with these roles.' => 'これら[_1]つのロールをしてもよろしいですか? 削除してしまうと、これらのロールを通じて権限を付与されているすべてのユーザーとグループから権限を剥奪することになります。',
 	'Are you certain you want to remove this role? By doing so you will be taking away the permissions currently assigned to any users and groups associated with this role.' => 'このロールを本当に削除してもよろしいですか? ロールを通じて権限を付与されているすべてのユーザーとグループから権限を剥奪することになります。',
+	'Are you sure you want to remove this asset?' => 'アセットを削除してもよろしいですか？',
 	'Enter URL:' => 'URLを入力:',
 	'Enter email address:' => 'メールアドレスを入力:',
 	'Same name tag already exists.' => '同名のタグがすでに存在します',
@@ -4096,10 +4103,10 @@ use vars qw( @ISA %Lexicon );
 	'You must set a valid Site URL.' => '有効なサイトURLを指定してください。',
 	'You must set a valid local site path.' => '有効なサイトパスを指定してください。',
 	q{Enter the new URL of your public child site. End with '/'. Example: http://www.example.com/blog/} => q{新しいサイトURLを入力してください。末尾は'/'で終わります。例: http://www.example.com/blog/},
-	q{Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{新しくアーカイブのインデックスファイルを公開するパスを入力して下さい。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog or C:\www\public_html\blog},
-	q{Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{新しくアーカイブのインデックスファイルを公開するパスを入力して下さい。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog or C:\www\public_html\blog},
-	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{新しくインデックスファイルを公開するパスを入力して下さい。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog or C:\www\public_html\blog},
-	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{新しくインデックスファイルを公開するパスを入力して下さい。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog or C:\www\public_html\blog},
+	q{Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{新しくアーカイブのインデックスファイルを公開するパスを入力して下さい。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog または C:\www\public_html\blog},
+	q{Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{新しくアーカイブのインデックスファイルを公開するパスを入力して下さい。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog または C:\www\public_html\blog},
+	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{新しくインデックスファイルを公開するパスを入力して下さい。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog または C:\www\public_html\blog},
+	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{新しくインデックスファイルを公開するパスを入力して下さい。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨します。末尾には'/'や'\'を含めません。例: /home/mt/public_html/blog または C:\www\public_html\blog},
 
 ## tmpl/admin2023/cms/dialog/asset_edit.tmpl
 	'Close (x)' => '閉じる (x)',

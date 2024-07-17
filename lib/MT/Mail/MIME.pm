@@ -136,33 +136,43 @@ sub _send_mt_smtp {
     my $host = $conf->SMTPServer;
     my $user = $conf->SMTPUser;
     my $pass = $conf->SMTPPassword;
-    my $port = $conf->SMTPPort || ($conf->SMTPAuth eq 'ssl' ? 465 : 25);
+
+    my $smtpauth = $conf->SMTPAuth || '';
+    my $smtps    = $conf->SMTPS    || '';
+    my $do_ssl   = '';
+    if ($smtps eq 'starttls' or $smtpauth eq 'starttls') {
+        $do_ssl = 'starttls';
+    }
+    if ($smtps eq 'ssl' or $smtpauth eq 'ssl') {
+        $do_ssl = 'ssl';
+    }
+
+    my $port = $conf->SMTPPort || ($do_ssl eq 'ssl' ? 465 : 25);
     my %args = (
         Port    => $port,
         Timeout => $conf->SMTPTimeout,
         Hello   => hostname() || 'localhost',
+        doSSL   => $do_ssl,
         ($MT::DebugMode ? (Debug => 1) : ()),
-        doSSL => '',    # must be defined to avoid uuv
     );
 
     # If SMTP user ID is valid email address, it's more suitable for Sender header.
     $hdrs->{Sender} = $user if $user && $hdrs->{From} ne $user && is_valid_email($user);
 
-    if ($conf->SMTPAuth) {
+    if ($smtpauth) {
         return $class->error(MT->translate("Username and password is required for SMTP authentication.")) if !$user or !$pass;
         return unless $class->_can_use('Authen::SASL', 'MIME::Base64');
-        if ($conf->SMTPAuth =~ /^(?:starttls|ssl)$/) {
-            return unless $class->_can_use('IO::Socket::SSL', 'Net::SSLeay');
-            %args = (
-                %args,
-                doSSL               => $conf->SMTPAuth,
-                SSL_verify_mode     => ($conf->SSLVerifyNone || $conf->SMTPSSLVerifyNone) ? 0 : 1,
-                SSL_version         => $conf->SSLVersion || $conf->SMTPSSLVersion || 'SSLv23:!SSLv3:!SSLv2',
-                SSL_verifycn_name   => $host,
-                SSL_verifycn_scheme => 'smtp',
-            );
-            $args{SSL_ca_file} = Mozilla::CA::SSL_ca_file() if (eval { require Mozilla::CA; 1 });
-        }
+    }
+    if ($do_ssl) {
+        return unless $class->_can_use('IO::Socket::SSL', 'Net::SSLeay');
+        %args = (
+            %args,
+            SSL_verify_mode     => ($conf->SSLVerifyNone || $conf->SMTPSSLVerifyNone) ? 0 : 1,
+            SSL_version         => $conf->SSLVersion || $conf->SMTPSSLVersion || 'SSLv23:!SSLv3:!SSLv2',
+            SSL_verifycn_name   => $host,
+            SSL_verifycn_scheme => 'smtp',
+        );
+        $args{SSL_ca_file} = Mozilla::CA::SSL_ca_file() if (eval { require Mozilla::CA; 1 });
     }
     require Net::SMTPS;
 
@@ -184,7 +194,7 @@ sub _send_mt_smtp {
     my $smtp = Net::SMTPS->new($host, %args)
         or return $class->error(MT->translate('Error connecting to SMTP server [_1]:[_2]', $host, $port));
 
-    if ($conf->SMTPAuth) {
+    if ($smtpauth) {
         my $mech = $conf->SMTPAuthSASLMechanism || do {
 
             # Disable DIGEST-MD5.
