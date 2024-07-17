@@ -104,6 +104,33 @@ subtest 'site dialog in "Site Export"' => sub {
     }
 };
 
+subtest 'site dialog in "Reduce Revsions"' => sub {
+    my $current_blog_count = MT->model('blog')->count({ class => '*' });
+
+    my $site = MT::Test::Permission->make_website(
+        name => "reduce-revisions-parent",
+    );
+    my $blog = MT::Test::Permission->make_blog(
+        parent_id => $site->id,
+        name      => 'reduce-revisions-child',
+    );
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+    $app->get_ok({
+        __mode    => 'dialog_select_website',
+        both      => 1,
+        multi     => 1,
+        idfield   => 'selected_blog_ids',
+        namefield => 'selected_blogs',
+        dialog    => 1,
+        offset    => $current_blog_count, # for skipping blogs created in previous tests
+    });
+    my @site_names = $app->wq_find('#selector-blog tbody .panel-label')->text;
+    cmp_bag(\@site_names, ['reduce-revisions-parent', 'reduce-revisions-child']);
+    note explain(\@site_names);
+};
+
 subtest 'content_data' => sub {
     my $ct_id  = $objs->{content_type}{ct}{content_type}->id;
     my $ct_id2 = $objs->{content_type}{ct2}{content_type}->id;
