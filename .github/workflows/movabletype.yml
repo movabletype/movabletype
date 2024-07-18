@@ -165,39 +165,6 @@ jobs:
         if: ${{ matrix.test == 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
-  # Perl 5.10 / PHP 5.5 / MySQL 5.1
-  centos6:
-    needs: [fedora39]
-    if: >-
-      ${{
-        github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
-        || contains(github.ref_name, 'cron')
-      }}
-    runs-on: ubuntu-latest
-    env:
-      TEST_IMAGE_NAME: centos6
-    strategy:
-      matrix:
-        test:
-          - "t/*.t"
-          - "t/mt7/[^t]*"
-          - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
-          - "t/cms_permission/"
-          - "t/data_api/"
-          - "t/tag/"
-          - "plugins/*/t"
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4.1.0
-      - name: login
-        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
-      - name: test
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_DISABLE_OBJECT_CACHE=1 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
-
   # Perl 5.32 / PHP 7.4 / MariaDB 10.5
   bullseye:
     needs: [fedora39]
@@ -363,7 +330,6 @@ jobs:
     - fedora40
     - fedora35
     - fedora37
-    - centos6
     - bullseye
     - buster
     - cloud7
