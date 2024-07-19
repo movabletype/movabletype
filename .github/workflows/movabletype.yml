@@ -165,8 +165,8 @@ jobs:
         if: ${{ matrix.test == 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
-  # Perl 5.10 / PHP 5.5 / MySQL 5.1
-  centos6:
+  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
+  centos7:
     needs: [fedora39]
     if: >-
       ${{
@@ -178,7 +178,7 @@ jobs:
       }}
     runs-on: ubuntu-latest
     env:
-      TEST_IMAGE_NAME: centos6
+      TEST_IMAGE_NAME: centos7
     strategy:
       matrix:
         test:
@@ -363,7 +363,7 @@ jobs:
     - fedora40
     - fedora35
     - fedora37
-    - centos6
+    - centos7
     - bullseye
     - buster
     - cloud7
