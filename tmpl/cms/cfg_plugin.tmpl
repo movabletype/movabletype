@@ -49,11 +49,13 @@
     </mtapp:widget>
   </mt:unless>
   <mt:if name="is_administrator">
+    <mt:if name="is_psgi">
     <mtapp:widget
       id="reboot"
       label="<__trans phrase="Reboot">">
       <p><__trans phrase="If an installed plugin is not listed here, visit the [_1] menu to reboot MT manually." params="<a href="<mt:var name="script_url">?__mode=start_reboot"><__trans phrase="Reboot"></a>"></p>
     </mtapp:widget>
+    </mt:if>
   </mt:if>
 </mt:setvarblock>
 
