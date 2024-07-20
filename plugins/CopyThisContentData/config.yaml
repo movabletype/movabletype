@@ -1,0 +1,19 @@
+id: CopyThisContentData
+key: CopyThisContentData
+name: Copy This Content Data
+description: <MT_TRANS phrase="This plugin provides a simple way to copy existing content data.">
+version: 0.03
+author_name: Six Apart Ltd.
+plugin_link: https://github.com/movabletype/mt-plugin-copy-this-content-data
+
+l10n_class: CopyThisContentData::L10N
+
+callbacks:
+  pre_run: $CopyThisContentData::CopyThisContentData::Callback::pre_run
+  template_param.edit_content_data: $CopyThisContentData::CopyThisContentData::Transformer::template_param_edit_content_data
+
+applications:
+  cms:
+    methods:
+      copy_this_content_data: $CopyThisContentData::CopyThisContentData::CMS::hdlr_copy_this_content_data
+
