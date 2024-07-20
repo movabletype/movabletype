@@ -61,7 +61,7 @@ sub template_param_edit_content_data {
     # Support Script
     $param->{jq_js_include} ||= '';
     $param->{jq_js_include} .= <<SCRIPT;
-    jQuery('#copy-this-content-data').click(function() {
+    jQuery('#copy-this-content-data').on('click', function() {
         window.changed = false;
         jQuery('[name=edit-content-type-data-form] > [name=__mode]').val('copy_this_content_data');
         jQuery('[name=edit-content-type-data-form]').submit();
