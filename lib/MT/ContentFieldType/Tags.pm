@@ -22,7 +22,8 @@ sub field_html_params {
 
     my $tag_names;
     if (@value) {
-        if ( $app->param('reedit') && !$app->param('had_error') ) {
+        # origin parameter check is for copy_this_content_data
+        if ( $app->param('reedit') && !$app->param('had_error') && !$app->param('origin') ) {
             $tag_names = join $tag_delim, @value;
         }
         else {
