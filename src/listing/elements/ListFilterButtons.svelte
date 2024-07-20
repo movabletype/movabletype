@@ -55,7 +55,7 @@
 <button
   class="btn btn-default"
   disabled={currentFilter.items.length === 0 ||
-    currentFilter.can_save.toString() === "0"}
+    currentFilter.can_save?.toString() === "0"}
   on:click={saveFilter}
 >
   {window.trans("Save")}

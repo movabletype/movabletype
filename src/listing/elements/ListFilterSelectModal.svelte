@@ -97,13 +97,14 @@
           <h6 class="filter-list-label">{window.trans("My Filters")}</h6>
           <ul id="user-filters" class="list-unstyled editable">
             {#each store.filters as filter}
-              {#if filter.can_save.toString() === "1"}
+              {@const filterId = filter.id ?? ""}
+              {#if filter.can_save?.toString() === "1"}
                 <li
                   class="filter line"
                   data-mt-list-filter-id={filter.id}
                   data-mt-list-filter-label={filter.label}
                 >
-                  {#if !isEditingFilter[filter.id]}
+                  {#if !isEditingFilter[filterId]}
                     <!-- svelte-ignore a11y-invalid-attribute -->
                     <a href="#" on:click={applyFilter}>
                       {filter.label}
@@ -127,7 +128,7 @@
                       </a>
                     </div>
                   {/if}
-                  {#if isEditingFilter[filter.id]}
+                  {#if isEditingFilter[filterId]}
                     <div class="form-inline">
                       <div class="form-group form-group-sm">
                         <input
@@ -145,7 +146,7 @@
                         <!-- add filter.id to argument because Event object cannot be gotten in on:click function -->
                         <button
                           class="btn btn-default form-control"
-                          on:click={() => stopEditingFilter(filter.id)}
+                          on:click={() => stopEditingFilter(filterId)}
                         >
                           {window.trans("Cancel")}
                         </button>
@@ -180,7 +181,7 @@
             </h6>
             <ul id="built-in-filters" class="list-unstyled">
               {#each store.filters as filter}
-                {#if filter.can_save.toString() === "0"}
+                {#if filter.can_save?.toString() === "0"}
                   <li
                     class="filter line"
                     data-mt-list-filter-id={filter.id}
