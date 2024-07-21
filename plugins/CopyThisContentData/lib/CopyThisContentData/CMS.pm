@@ -2,7 +2,10 @@ package CopyThisContentData::CMS;
 use strict;
 use warnings;
 
+use JSON ();
+
 use MT::CMS::ContentData;
+use MT::Serialize;
 
 sub hdlr_copy_this_content_data {
     my $app = shift;
@@ -20,6 +23,18 @@ sub hdlr_copy_this_content_data {
         unless MT::CMS::ContentData::can_save( undef, $app, undef,
         $content_data )
         && MT::CMS::ContentData::can_save( undef, $app, $id, $content_data );
+
+    $app->param( 'reedit', 1 );
+
+    my $serialized_data = JSON::encode_json( $content_data->data );
+    $app->param( 'serialized_data', $serialized_data );
+
+    if (my $convert_breaks = MT::Serialize->unserialize($content_data->convert_breaks)) {
+        for my $content_field_id (keys %{$$convert_breaks}) {
+            my $key = "content-field-${content_field_id}_convert_breaks";
+            $app->param($key, $$convert_breaks->{$content_field_id});
+        }
+    }
 
     MT::CMS::ContentData::edit($app);
 }

@@ -9,7 +9,6 @@ plugin_link: https://github.com/movabletype/mt-plugin-copy-this-content-data
 l10n_class: CopyThisContentData::L10N
 
 callbacks:
-  pre_run: $CopyThisContentData::CopyThisContentData::Callback::pre_run
   template_param.edit_content_data: $CopyThisContentData::CopyThisContentData::Transformer::template_param_edit_content_data
 
 applications:
