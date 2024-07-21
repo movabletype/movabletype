@@ -59,12 +59,19 @@ sub template_param_edit_content_data {
         $tmpl->getElementById('entry-publishing-widget') );
 
     # Support Script
+    my $id = $app->param('id');
+    my $content_type_id = $app->param('content_type_id');
+    my $blog_id = $app->blog->id;
     $param->{jq_js_include} ||= '';
     $param->{jq_js_include} .= <<SCRIPT;
     jQuery('#copy-this-content-data').on('click', function() {
         window.changed = false;
-        jQuery('[name=edit-content-type-data-form] > [name=__mode]').val('copy_this_content_data');
-        jQuery('[name=edit-content-type-data-form]').submit();
+        window.location.href = ScriptURI + '?__mode=copy_this_content_data'
+                                        + '&_type=content_data'
+                                        + '&type=content_data_${content_type_id}'
+                                        + '&content_type_id=${content_type_id}'
+                                        + '&blog_id=${blog_id}'
+                                        + '&origin=${id}';
     });
 SCRIPT
 }

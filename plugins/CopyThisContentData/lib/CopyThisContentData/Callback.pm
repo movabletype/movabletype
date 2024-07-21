@@ -8,9 +8,7 @@ use MT::Serialize;
 
 sub pre_run {
     my ( $cb, $app ) = @_;
-    return
-        unless ( $app->param('__mode') || '' ) eq 'view'
-        && ( $app->param('_type') || '' ) eq 'content_data';
+    return unless ( $app->param('__mode') || '' ) eq 'copy_this_content_data';
 
     my $orig_id = $app->param('origin') or return;
     my $origin = $app->model('content_data')->load($orig_id) or return;
