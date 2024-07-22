@@ -260,6 +260,9 @@ sub edit {
             $param->{pings_loop} = \@pings;
 
             $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
+            if (MT->config->SuperuserRespectsDataAPIDisableSite) {
+                $param->{superuser_respects_enable_data_api} = 1;
+            }
 
             _set_show_data_api_params($app, $cfg, $param);
         }
@@ -350,6 +353,9 @@ sub edit {
         # System level web services settings.
         $param->{disable_data_api} = $app->config->DisableDataAPI || grep { 'data_api' eq $_ } $app->config->RestrictedPSGIApp;
         $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id, $blog );
+        if (MT->config->SuperuserRespectsDataAPIDisableSite) {
+            $param->{superuser_respects_enable_data_api} = 1;
+        }
 
         _set_show_data_api_params($app, $cfg, $param);
     }
