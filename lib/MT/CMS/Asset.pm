@@ -918,7 +918,7 @@ sub can_save {
 
 sub pre_save {
     my $eh = shift;
-    my ( $app, $obj ) = @_;
+    my ( $app, $obj, $original ) = @_;
 
     # save tags
     my $tags = $app->param('tags');
