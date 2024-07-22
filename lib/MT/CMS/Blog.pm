@@ -1692,6 +1692,11 @@ sub pre_save {
                     delete $obj->{changed_cols}{junk_folder_expiry};
                 }
             }
+
+            if ( ( $obj->sanitize_spec || '' ) eq '1' ) {
+                my $sanitize_spec_manual = $app->param('sanitize_spec_manual');
+                $obj->sanitize_spec($sanitize_spec_manual);
+            }
         }
         if ( $screen eq 'cfg_web_services' ) {
             my $ping_servers = $app->registry('ping_servers');
@@ -1805,11 +1810,6 @@ sub pre_save {
             : $app->translate('Website Root')
             )
             unless $fmgr->exists($site_path) && $fmgr->can_write($site_path);
-    }
-
-    if ( ( $obj->sanitize_spec || '' ) eq '1' ) {
-        my $sanitize_spec_manual = $app->param('sanitize_spec_manual');
-        $obj->sanitize_spec($sanitize_spec_manual);
     }
 
     1;
