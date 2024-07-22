@@ -4,7 +4,6 @@ use warnings;
 use lib './lib', './extlib', './plugins/CopyThisContentData/lib';
 use Test::More;
 
-use_ok('CopyThisContentData::Callback');
 use_ok('CopyThisContentData::CMS');
 use_ok('CopyThisContentData::Transformer');
 

@@ -32,7 +32,7 @@ jobs:
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
-          - "plugins/*/t"
+          - "plugins/*/t/[^selenium]*"
           - selenium
           - php
     steps:
@@ -74,7 +74,7 @@ jobs:
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
-          - "plugins/*/t"
+          - "plugins/*/t/[^selenium]*"
           - php
     steps:
       - name: checkout
@@ -112,7 +112,7 @@ jobs:
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
-          - "plugins/*/t"
+          - "plugins/*/t/[^selenium]*"
           - php
     steps:
       - name: checkout
@@ -150,7 +150,7 @@ jobs:
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
-          - "plugins/*/t"
+          - "plugins/*/t/[^selenium]*"
           - php
 
     steps:
@@ -189,7 +189,7 @@ jobs:
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
-          - "plugins/*/t"
+          - "plugins/*/t/[^selenium]*"
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
@@ -222,7 +222,7 @@ jobs:
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
-          - "plugins/*/t"
+          - "plugins/*/t/[^selenium]*"
           - php
     steps:
       - name: checkout
@@ -260,7 +260,7 @@ jobs:
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
-          - "plugins/*/t"
+          - "plugins/*/t/[^selenium]*"
           - php
     steps:
       - name: checkout
@@ -290,7 +290,7 @@ jobs:
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
-          - "plugins/*/t"
+          - "plugins/*/t/[^selenium]*"
           - php
     steps:
       - name: checkout
