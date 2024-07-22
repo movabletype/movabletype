@@ -1594,7 +1594,8 @@ sub can_delete {
 
 sub pre_save {
     my $eh = shift;
-    my ( $app, $obj ) = @_;
+    my ( $app, $obj, $original ) = @_;
+
     my $overlay = $app->param('overlay');
     my $screen = $app->param('cfg_screen') || '';
 
