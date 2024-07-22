@@ -433,6 +433,7 @@ use_ok('MT::Meta::Proxy');
 
 # Job worker
 use_ok('MT::Worker::Publish');
+use_ok('MT::Worker::ReduceRevisions');
 use_ok('MT::Worker::Sync');
 use_ok('MT::Worker::Summarize');
 use_ok('MT::Worker::SummaryWatcher');

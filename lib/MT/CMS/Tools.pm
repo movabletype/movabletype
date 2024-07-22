@@ -2902,7 +2902,7 @@ sub start_reduce_revisions {
     my $app = shift;
     return $app->permission_denied() unless $app->user->is_superuser();
     $app->add_breadcrumb($app->translate('Reduce Revisions'));
-    my $param;
+    my $param = {};
     if ($app->param('saved')) {
         $param->{saved} = $app->param('saved');
     }
