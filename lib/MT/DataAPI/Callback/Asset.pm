@@ -19,7 +19,7 @@ sub cms_pre_load_filtered_list {
 
 # TODO: Should merge with MT::CMS::Asset::pre_save?
 sub pre_save {
-    my ( $cb, $app, $obj ) = @_;
+    my ( $cb, $app, $obj, $original ) = @_;
 
     # save normalized tags
     my @tags = $obj->tags;

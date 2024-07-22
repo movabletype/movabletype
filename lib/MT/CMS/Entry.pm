@@ -2640,7 +2640,7 @@ sub can_delete {
 
 sub pre_save {
     my $eh = shift;
-    my ( $app, $obj ) = @_;
+    my ( $app, $obj, $original ) = @_;
 
     # The following is only for specific mode and type (ie. not for searching/replacing)
     my $mode = $app->mode;

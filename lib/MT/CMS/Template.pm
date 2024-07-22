@@ -2101,7 +2101,7 @@ sub _path_contains_inappropriate_whitespaces {
 
 sub pre_save {
     my $eh = shift;
-    my ( $app, $obj ) = @_;
+    my ( $app, $obj, $original ) = @_;
 
     ## Strip linefeed characters.
     if ( my $text = $obj->column('text') ) {
