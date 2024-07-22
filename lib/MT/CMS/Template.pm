@@ -2127,6 +2127,11 @@ sub pre_save {
         }
     }
 
+    # The following is only for specific mode and type (ie. not for searching/replacing)
+    my $mode = $app->mode;
+    my $type = $app->param('_type') || '';
+    return 1 unless ($mode eq 'save' and $type eq 'template');
+
     # update text heights if necessary
     if ($perms) {
         my $prefs = $perms->template_prefs || '';
