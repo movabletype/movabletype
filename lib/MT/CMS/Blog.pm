@@ -1804,8 +1804,8 @@ sub pre_save {
     }
 
     # Set parent site ID
-    my $blog_id = $app->param('blog_id');
     if ( !$obj->id and $obj->class eq 'blog' ) {
+        my $blog_id = $app->param('blog_id');
         $obj->parent_id($blog_id);
     }
 
