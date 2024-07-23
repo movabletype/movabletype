@@ -98,6 +98,7 @@
     "jquery-ui-touch-punch": "github:movabletype/jquery-ui-touch-punch",
     "jquery-validation": "1.20.0",
     "js-cookie": "3.0.1",
+    "mt-chart-api": "github:movabletype/mt-chart-api-sdk-js#v1.0.1",
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
     "popper.js": "^1.16.1",
     "riot": "3.7.4",
