@@ -192,6 +192,7 @@ sub check_dependencies {
                     my $formats = join ", ", map { $imglib{$_} ? "<strong>$_</strong>" : $_ } sort Graphics::Magick->QueryFormat;
                     $hash{extra_html} = MT->translate("Supported format: [_1]", $formats);
                 } elsif ($module eq 'Imager') {
+                    eval { require Imager::File::WEBP; };
                     my $formats = join ", ", map { $imglib{$_} ? "<strong>$_</strong>" : $_ } sort Imager->read_types;
                     $hash{extra_html} = MT->translate("Supported format: [_1]", $formats);
                 }
