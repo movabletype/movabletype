@@ -963,7 +963,7 @@ FORMAT:
         opendir my $dh, $libpath or next;
         while(my $file = readdir $dh) {
             next unless $file =~ /^lib($re)\.(?:so|dll|a)(?:[\.0-9]*)$/;
-            $found_imglib{$1} ||= delete $lib{$1};
+            $found_imglib{$1} = delete $lib{$1};
             last FORMAT unless %lib;
             $re = join '|', keys %lib;
         }
