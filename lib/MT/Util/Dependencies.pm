@@ -892,8 +892,10 @@ sub requirements_for_check {
     return (\@core, \@data, \@opts);
 }
 
+my %found_imglib;
 sub check_imglib {
     my $class = shift;
+    return %found_imglib if %found_imglib;
     require Config;
     my %lib = (
         avif => 'libavif',
@@ -904,21 +906,19 @@ sub check_imglib {
         webp => 'libwebp',
     );
     my @libpaths = split / /, $Config::Config{libpth};
+    my $re = join '|', keys %lib;
 
-    my %found;
 FORMAT:
-    for my $format (keys %lib) {
-        for my $libpath (@libpaths) {
-            for my $ext (qw/so dll a/) {
-                my $lib = "$libpath/$lib{$format}.$ext";
-                if (-f $lib) {
-                    $found{$format} = 1;
-                    next FORMAT;
-                }
-            }
+    for my $libpath (@libpaths) {
+        opendir my $dh, $libpath or next;
+        while(my $file = readdir $dh) {
+            next unless $file =~ /^lib($re)\.(?:so|dll|a)(?:(?:\.[0-9]+)*)$/;
+            $found_imglib{$1} = delete $lib{$1};
+            last FORMAT unless %lib;
+            $re = join '|', keys %lib;
         }
     }
-    %found;
+    %found_imglib;
 }
 
 sub lacks_core_modules {
