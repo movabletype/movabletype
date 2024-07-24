@@ -1,0 +1,9 @@
+runs:
+  using: "Composite"
+  steps:
+    - name: docker login
+      run: echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      shell: bash
+    - name: docker pull
+      run: docker pull ghcr.io/movabletype/test:$TEST_IMAGE_NAME
+      shell: bash
