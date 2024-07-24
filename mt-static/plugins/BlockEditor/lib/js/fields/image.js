@@ -16,7 +16,7 @@
     $.extend(BEF.Image.prototype, BEF.prototype, {
         id: '',
         input_field: '',
-        options_array: ['alt','title','width','align','caption','thumbnail'],
+        options_array: ['alt','title','width','height','keep_aspect_ratio','align','caption','thumbnail'],
 
         get_id: function () {
             return self.id;
@@ -115,7 +115,8 @@
             var img = $('<img>');
             img.attr('src', self.data.asset_url);
             Object.keys(self.data.options).forEach(function(key){
-                if( key == 'caption' || key == 'thumbnail' ) return;
+                if( key == 'caption' || key == 'thumbnail' || key == 'keep_aspect_ratio' ) return;
+                if( ( key === 'width' || key === 'height' ) && self.data.options[key] === '' ) return;
                 if( key == 'align') {
                     img.addClass('mt-image-' + self.data.options[key]);
                     if(self.data.options[key] == 'left'){
