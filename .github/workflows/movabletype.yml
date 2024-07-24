@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: true
 env:
   MT_TEST_IGNORE_FIXTURE: '0'
+  GHCR_TOKEN: "${{ secrets.GHCR_TOKEN }}"
 jobs:
   # Perl 5.38 / PHP 8.2 / MySQL 8.0
   fedora39:
@@ -37,7 +38,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4.1.0
       - name: docker pull
-        run: docker pull ghcr.io/movabletype/test:$TEST_IMAGE_NAME
+        run: |
+          docker login ghcr.io -u USERNAME --password $GHCR_TOKEN
+          docker pull ghcr.io/movabletype/test:$TEST_IMAGE_NAME
       - name: test
         if: ${{ (matrix.test != 'php' && matrix.test != 'selenium') }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
