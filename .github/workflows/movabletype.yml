@@ -122,7 +122,7 @@ jobs:
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_RUN_APP_AS_CGI=1 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit php/tests/*Test.php && make test-php-lint"
+        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   # Perl 5.36 / PHP 8.1 / MySQL 8.0
   fedora37:
