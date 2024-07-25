@@ -105,9 +105,9 @@ jQuery(function () {
         return;
       }
       if (fromWidth) {
-        $height.val(Math.round($width.val() / ratio));
+        $height.val(Math.round(parseFloat($width.val()) / ratio));
       } else {
-        $width.val(Math.round($height.val() * ratio));
+        $width.val(Math.round(parseFloat($height.val()) * ratio));
       }
     }
   }
