@@ -233,7 +233,7 @@ jQuery(function() {
         jQuery('#website_form').submit();
     });
     jQuery('#website_form').submit( function () {
-        if ( jQuery('#website_form > input[name=back]').val() > 0 ) return true;
+        if ( jQuery('#website_form > input[name=finish]').val() === '0' ) return true;
         return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
     });
 

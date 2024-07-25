@@ -20,16 +20,7 @@ jobs:
   fedora39:
     env:
       TEST_IMAGE_NAME: fedora39
-    if: >-
-      ${{
-        (
-          (github.event_name != 'schedule')
-          || (
-            (github.repository == 'movabletype/movabletype' )
-            && (github.event_name == 'schedule')
-          )
-        )
-      }}
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -64,16 +55,11 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (
-            (github.repository == 'movabletype/movabletype' )
-            && (github.event_name == 'schedule')
-          )
-          || contains(github.ref_name, 'cron')
-          || startsWith(github.ref_name, 'support-')
-          || startsWith(github.ref_name, 'release-')
-          || (github.ref_name == 'develop')
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
+        || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
     env:
@@ -107,15 +93,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -150,15 +131,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -189,25 +165,20 @@ jobs:
         if: ${{ matrix.test == 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
-  # Perl 5.10 / PHP 5.5 / MySQL 5.1
-  centos6:
+  # Perl 5.16 / PHP 7.1 / MariaDB 5.5
+  centos7:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
     env:
-      TEST_IMAGE_NAME: centos6
+      TEST_IMAGE_NAME: centos7
     strategy:
       matrix:
         test:
@@ -232,15 +203,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -275,15 +241,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -315,11 +276,7 @@ jobs:
 
   cloud7:
     needs: [fedora39]
-    if: >-
-      ${{
-        (github.repository == 'movabletype/movabletype' )
-        || contains(github.ref_name, 'cron')
-      }}
+    if: ${{ always() }}
     env:
       TEST_IMAGE_NAME: cloud7
     runs-on: ubuntu-latest
@@ -351,15 +308,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -384,15 +336,10 @@ jobs:
     needs: [fedora39]
     if: >-
       ${{
-        (
-          (github.repository == 'movabletype/movabletype' )
-          && (
-            github.event_name == 'schedule'
-            || startsWith(github.ref_name, 'support-')
-            || startsWith(github.ref_name, 'release-')
-            || (github.ref_name == 'develop')
-          )
-        )
+        github.event_name == 'schedule'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
         || contains(github.ref_name, 'cron')
       }}
     runs-on: ubuntu-latest
@@ -403,6 +350,12 @@ jobs:
         run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
       - name: test npm ci
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm ci"
+      - name: test svelte commands
+        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm run svelte-check-types && npm run svelte-lint && npm run svelte-format && npm run build-svelte && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only"
+      - name: reset git add
+        run: git reset
+      - name: test to copy files
+        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'npm run copy && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
       - name: test to build Riot.js tags
         # TODO: replace yarn with npm run
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'yarn && yarn build-riot && yarn build-riot-admin2023 && yarn build-ss && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
@@ -414,22 +367,13 @@ jobs:
     - fedora40
     - fedora35
     - fedora37
-    - centos6
+    - centos7
     - bullseye
     - buster
     - cloud7
     - extra
     - node_lts
-    if: >-
-      ${{
-        (
-          (github.event_name != 'schedule')
-          || (
-            (github.repository == 'movabletype/movabletype' )
-            && (github.event_name == 'schedule')
-          )
-        )
-      }}
+    if: ${{ always() }}
     steps:
     - name: Install jq
       run: |

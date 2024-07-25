@@ -296,6 +296,7 @@ sub init_upgrade {
     clear_cache();
 
     if (lc($ENV{MT_TEST_BACKEND} // '') eq 'oracle') {
+        require MT::Test::Env;
         MT::Test::Env->update_sequences;
     }
 
@@ -1500,6 +1501,7 @@ sub init_data {
     }
 
     if (lc($ENV{MT_TEST_BACKEND} // '') =~ /^(oracle|pg)/) {
+        require MT::Test::Env;
         MT::Test::Env->update_sequences;
     }
 
