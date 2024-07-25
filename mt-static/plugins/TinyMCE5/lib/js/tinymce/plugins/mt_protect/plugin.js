@@ -1,9 +1,1 @@
-tinymce.PluginManager.add('mt_protect', function (ed) {
-  ed.on('PreInit', function () {
-    ed.parser.addNodeFilter('noscript', function (nodes) {
-      nodes.forEach(function (node) {
-        node.remove();
-      });
-    });
-  })
-});
+function d(n){if(n.attr("srcdoc"))return!0;const o=n.attr("src");if(!o)return!0;const t=document.createElement("a");return t.href=o,t.hostname===window.location.hostname&&t.protocol===window.location.protocol&&t.port===window.location.port}tinymce.PluginManager.add("mt_protect",function(n){n.on("PreInit",function(){n.parser.addNodeFilter("noscript",function(t){t.forEach(function(r){r.remove()})});const o=n.parser.getNodeFilters().find(function(t){return t.name==="iframe"});o&&o.callbacks.unshift(function(t){t.forEach(function(r){const a=r.attr("sandbox"),l=r.replace;r.replace=function(c){const i=c.children();if(i[0]&&i[0].name==="iframe"){const e=i[0];if(!d(e))e.attr("sandbox",a);else{let s="allow-scripts";a===void 0?e.attr("data-mt-protect-no-sandbox","1"):(e.attr("data-mt-protect-sandbox",a),s=a.split(/\s+/).filter(function(f){return!/allow-same-origin/i.test(f)}).join(" ")),e.attr("sandbox",s)}}return l.apply(this,[c]),this}})})})});
