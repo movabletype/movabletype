@@ -9,6 +9,7 @@ use strict;
 use warnings;
 
 use MT;
+use MT::Util qw( encode_html );
 use MT::Util::Encode;
 use MT::Request;
 use MT::Category;
@@ -313,22 +314,42 @@ sub _hdlr_has_plugin {
 
 =head2 Script
 
-Returns the html code snippet of information gathering for stats of current blog/site.
-If any stats provider was not found, this template tag will return blank string.
+Returns a script tag for loading a JavaScript file under the mt-static directory.
+
+B<Attributes:>
+
+=over 4
+
+=item * path (required)
+
+The path to the JavaScript file.
+If the path contains the string '%l', replace '%l' with the corresponding language code.
+
+=item * type (optional)
+
+=item * async (optional)
+
+=item * defer (optional)
+
+=back
 
 =cut
 
 sub _hdlr_script {
   my ( $ctx, $args ) = @_;
 
-  my $name    = $args->{name} || "";
-  my $type    = $args->{type} ? " type=\"$args->{type}\"" : "";
-  my $async   = $args->{async} ? " async" : "";
-  my $defer   = $args->{defer} ? " defer" : "";
-  my $version = MT::Util::encode_url(MT->version_id);
+  my $path    = $args->{path} or return $ctx->error( MT->translate("path is required.") );
+  my $type    = $args->{type} ? ' type="' . encode_html($args->{type}) . '"' : '';
+  my $async   = $args->{async} ? ' async' : '';
+  my $defer   = $args->{defer} ? ' defer' : '';
+  my $version = MT->version_id;
 
-  $name =~ s!^/+!! if $name;
-  my $script_path = MT->static_path . $name;
+  my $lang_id = lc MT->current_language || 'en_us';
+  $lang_id = 'ja' if $lang_id eq 'jp';
+  $lang_id =~ s/-/_/g;
+  $path =~ s/%l/$lang_id/g;
+  $path =~ s!^/+!!;
+  my $script_path = MT->static_path . encode_html($path);
 
   return sprintf('<script src="%s?v=%s"%s%s%s></script>', $script_path, $version, $type, $async, $defer);
 }

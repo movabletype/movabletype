@@ -6,6 +6,15 @@
 # $Id$
 
 function smarty_function_mtscript($args, &$ctx) {
+    $path = $args['path'];
+    if (!isset($path)) {
+      return $ctx->error($ctx->mt->translate('path is required.'));
+    }
+    $type    = $args["type"] ? ' type="' . encode_html($args["type"]) . '"' : '';
+    $async   = $args["async"] ? ' async' : '';
+    $defer   = $args["defer"] ? ' defer' : '';
+    $version = VERSION_ID;
+
     $static_path = $ctx->mt->config('StaticWebPath');
     if (!$static_path) {
         require_once "function.mtcgipath.php";
@@ -15,14 +24,15 @@ function smarty_function_mtscript($args, &$ctx) {
         $static_path .= '/';
     }
 
-    $file_path = $args['name'] ?? '';
-    $file_path = ltrim($file_path, '/');
-    $script_path = $static_path . $file_path;
-    $type  = $args["type"] ? ' type="' . $args["type"] . '"' : '';
-    $async = $args["async"] == '1' ? ' async' : '';
-    $defer = $args["defer"] == '1' ? ' defer' : '';
-    $version = urlencode(VERSION_ID);
-    $version = preg_replace('/\+/', '%20', $version);
+    $lang_id = strtolower($ctx->mt->config('DefaultLanguage')) ?? 'en_us';
+    if ($lang_id == 'jp') {
+      $lang_id = 'ja';
+    }
+    $lang_id = str_replace('-', '_', $lang_id);
+
+    $path = str_replace('%l', $lang_id, $path);
+    $path = ltrim($path, '/');
+    $script_path = $static_path . encode_html($path);
 
     return sprintf('<script src="%s?v=%s"%s%s%s></script>', $script_path, $version, $type, $async, $defer);
 }
