@@ -6,6 +6,11 @@
  * $Id$
  */
 ;(function($) {
+    $.extend(tinymce.defaultSettings, {
+        external_plugins: {
+            'mt_protect': StaticURI + 'plugins/TinyMCE5/lib/js/tinymce/plugins/mt_protect/plugin.js',
+        },
+    });
 
     // XXX: Remove localStrage items for TinyMCE 5.x.
     // The silver theme use some JSON strigified storage items.
@@ -39,6 +44,7 @@
             external_plugins: {
                 'mt': StaticURI + 'plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin' + suffix + '.js',
                 'mt_fullscreen': StaticURI + 'plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin' + suffix + '.js',
+                'mt_protect': StaticURI + 'plugins/TinyMCE5/lib/js/tinymce/plugins/mt_protect/plugin.js',
             },
   
             language: $('html').attr('lang'),
