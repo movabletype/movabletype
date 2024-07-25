@@ -6,6 +6,12 @@
 # $Id$
 
 function smarty_function_mtstylesheet($args, &$ctx) {
+    $path = $args['path'];
+    if (!isset($path)) {
+      return $ctx->error($ctx->mt->translate('path is required.'));
+    }
+    $version = VERSION_ID;
+
     $static_path = $ctx->mt->config('StaticWebPath');
     if (!$static_path) {
         require_once "function.mtcgipath.php";
@@ -15,11 +21,14 @@ function smarty_function_mtstylesheet($args, &$ctx) {
         $static_path .= '/';
     }
 
-    $file_path = $args['name'] ?? '';
-    $file_path = ltrim($file_path, '/');
-    $stylesheet_path = $static_path . $file_path;
-    $version = urlencode(VERSION_ID);
-    $version = preg_replace('/\+/', '%20', $version);
+    $lang_id = strtolower($ctx->mt->config('DefaultLanguage')) ?? 'en_us';
+    if ($lang_id == 'jp') {
+      $lang_id = 'ja';
+    }
+    $lang_id = str_replace('-', '_', $lang_id);
+    $path = str_replace('%l', $lang_id, $path);
+    $path = ltrim($path, '/');
+    $stylesheet_path = $static_path . encode_html($path);
 
     return sprintf('<link rel="stylesheet" href="%s?v=%s">', $stylesheet_path, $version);
 }

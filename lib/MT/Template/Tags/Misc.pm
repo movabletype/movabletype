@@ -358,19 +358,33 @@ sub _hdlr_script {
 
 =head2 Stylesheet
 
-Returns the html code snippet of information gathering for stats of current blog/site.
-If any stats provider was not found, this template tag will return blank string.
+Returns a link tag for loading a CSS file under the mt-static directory.
+
+B<Attributes:>
+
+=over 4
+
+=item * path (required)
+
+The path to the CSS file.
+If the path contains the string '%l', replace '%l' with the corresponding language code.
+
+=back
 
 =cut
 
 sub _hdlr_stylesheet {
   my ( $ctx, $args ) = @_;
 
-  my $name    = $args->{name} || "";
-  my $version = MT::Util::encode_url(MT->version_id);
+  my $path    = $args->{path} or return $ctx->error( MT->translate("path is required.") );
+  my $version = MT->version_id;
 
-  $name =~ s!^/+!! if $name;
-  my $stylesheet_path = MT->static_path . $name;
+  my $lang_id = lc MT->current_language || 'en_us';
+  $lang_id = 'ja' if $lang_id eq 'jp';
+  $lang_id =~ s/-/_/g;
+  $path =~ s/%l/$lang_id/g;
+  $path =~ s!^/+!!;
+  my $stylesheet_path = MT->static_path . encode_html($path);
 
   return sprintf('<link rel="stylesheet" href="%s?v=%s">', $stylesheet_path, $version);
 }
