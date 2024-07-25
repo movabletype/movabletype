@@ -105,7 +105,7 @@ jQuery(function () {
         return;
       }
       if (fromWidth) {
-        $height.val(Math.round($width.val() * 1/ratio));
+        $height.val(Math.round($width.val() / ratio));
       } else {
         $width.val(Math.round($height.val() * ratio));
       }
