@@ -7,6 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
+    "test": "vitest",
     "build-mt-css": "npm run build-mt-css-compile && npm run build-mt-css-prefix && npm run build-mt-css-minify",
     "build-mt-css-compile": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 scss/mt.scss mt-static/css/mt.css",
     "build-mt-css-minify": "cleancss -O1 --source-map --source-map-inline-sources --output mt-static/css/mt.min.css mt-static/css/mt.css",
