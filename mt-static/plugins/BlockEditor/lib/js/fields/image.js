@@ -30,13 +30,21 @@
         get_icon: function() {
             return BEF.Image.get_icon();
         },
+        _update_view_field: function(html) {
+            this.view_field.empty();
+            this.view_field.append(html);
+            this.view_field.find("img[width][height]").each(function() {
+              var $img = $(this);
+              $img.css('aspect-ratio', $img.attr('width') + ' / ' + $img.attr('height'));
+          });
+        },
         create: function (id, data) {
             var self = this;
             self.data = data;
             var asset_id = '';
             self.id = id;
             self.view_field = $('<div class="form-group asset_field clearfix"></div>');
-            self.view_field.append(self.get_html());
+            self._update_view_field(self.get_html());
             return self.view_field;
         },
         get_edit_field: function(){
@@ -88,8 +96,7 @@
             self.data.options[option] = self.options_field.find('.step3 ' + field_name).val();
           });
           var html = self.get_html();
-          self.view_field.empty();
-          this.view_field.append(html);
+          self._update_view_field(html);
         },
         set_option: function (name, val) {
             var style_name = name.replace('field_option_', '');
