@@ -29,12 +29,7 @@
 
 <mt:unless name="cfg_exists">
   <mt:script type="text/javascript" path="mt.js">
-  <mt:if name="local_lang_id" eq="en-us">
-  <mt:script type="text/javascript" path="mt_en_us.js">
-  <mt:else>
-  <mt:setvarblock name="mt_lang_js">&lt;mt:script type="text/javascript" path="mt_<mt:var name="local_lang_id">.js"&gt;</mt:setvarblock>
-  <mt:var name="mt_lang_js" decode_html="1" mteval="1">
-  </mt:if>
+  <mt:script type="text/javascript" path="mt_%l.js">
   <mt:unless name="optimize_ui">
     <mt:script type="text/javascript" path="jquery/jquery.mt.js">
   <mt:else>
