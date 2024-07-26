@@ -5084,60 +5084,72 @@ January 31, 1978  7:47 AM
 
 === test 908 script (MTC-25985)
 --- template
-<MTScript name="foo/bar.js">
+<MTScript path="foo/bar.js">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID"></script>
 
 === test 909 script (MTC-25985)
 --- template
-<MTScript name="/foo/bar.js">
+<MTScript path="/foo/bar.js">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID"></script>
 
 === test 910 script (MTC-25985)
 --- template
-<MTScript>
+<MTScript path="/foo/bar_%l.js">
 --- expected
-<script src="/mt-static/?v=VERSION_ID"></script>
+<script src="/mt-static/foo/bar_en_us.js?v=VERSION_ID"></script>
 
 === test 911 script (MTC-25985)
 --- template
-<MTScript name="/foo/bar.js" async="1">
---- expected
-<script src="/mt-static/foo/bar.js?v=VERSION_ID" async></script>
+<MTScript>
+--- expected_error
+path is required.
 
 === test 912 script (MTC-25985)
 --- template
-<MTScript name="/foo/bar.js" defer="1">
+<MTScript path="/foo/bar.js" async="1">
 --- expected
-<script src="/mt-static/foo/bar.js?v=VERSION_ID" defer></script>
+<script src="/mt-static/foo/bar.js?v=VERSION_ID" async></script>
 
 === test 913 script (MTC-25985)
 --- template
-<MTScript name="/foo/bar.js" type="text/javascript">
+<MTScript path="/foo/bar.js" defer="1">
 --- expected
-<script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript"></script>
+<script src="/mt-static/foo/bar.js?v=VERSION_ID" defer></script>
 
 === test 914 script (MTC-25985)
 --- template
-<MTScript name="/foo/bar.js" type="text/javascript" async="1" defer="1">
+<MTScript path="/foo/bar.js" type="text/javascript">
+--- expected
+<script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript"></script>
+
+=== test 915 script (MTC-25985)
+--- template
+<MTScript path="/foo/bar.js" type="text/javascript" async="1" defer="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" async defer></script>
 
-=== test 915 stylesheet (MTC-25985)
---- template
-<MTStylesheet name="/foo/bar.css">
---- expected
-<link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
-
 === test 916 stylesheet (MTC-25985)
 --- template
-<MTStylesheet name="foo/bar.css">
+<MTStylesheet path="/foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
 === test 917 stylesheet (MTC-25985)
 --- template
-<MTStylesheet>
+<MTStylesheet path="foo/bar.css">
 --- expected
-<link rel="stylesheet" href="/mt-static/?v=VERSION_ID">
+<link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
+
+=== test 918 stylesheet (MTC-25985)
+--- template
+<MTStylesheet path="foo/bar_%l.css">
+--- expected
+<link rel="stylesheet" href="/mt-static/foo/bar_en_us.css?v=VERSION_ID">
+
+=== test 919 stylesheet (MTC-25985)
+--- template
+<MTStylesheet>
+--- expected_error
+path is required.
