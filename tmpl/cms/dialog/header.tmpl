@@ -59,10 +59,11 @@
 <mt:if name="local_lang_id" eq="en-us">
   <mt:script type="text/javascript" path="mt_en_us.js">
 <mt:else>
-  <mt:setvarblock name="mt_lang_css">&lt;mt:stylesheet path="styles_<mt:var name="local_lang_id">.css"&gt;</mt:setvarblock>
-  <mt:var name="mt_lang_css" decode_html="1" mteval="1">
   <mt:setvarblock name="mt_lang_js">&lt;mt:script type="text/javascript" path="mt_<mt:var name="local_lang_id">.js"&gt;</mt:setvarblock>
   <mt:var name="mt_lang_js" decode_html="1" mteval="1">
+</mt:if>
+<mt:if name="local_lang_id" ne="en-us">
+  <mt:stylesheet path="styles_%l.css">
 </mt:if>
 
 <mt:unless name="optimize_ui">

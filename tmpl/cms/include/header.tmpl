@@ -18,8 +18,7 @@
   <mt:stylesheet path="css/hacks/ie.css">
   <![endif]-->
 <mt:if name="local_lang_id" ne="en-us">
-  <mt:setvarblock name="mt_lang_css">&lt;mt:stylesheet path="styles_<mt:var name="local_lang_id">.css"&gt;</mt:setvarblock>
-  <mt:var name="mt_lang_css" decode_html="1" mteval="1">
+  <mt:stylesheet path="styles_%l.css">
 </mt:if>
   <script type="text/javascript">
   /* <![CDATA[ */
