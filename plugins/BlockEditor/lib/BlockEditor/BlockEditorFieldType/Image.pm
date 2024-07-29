@@ -481,12 +481,25 @@ sub _insert_options {
             ? $blog->image_default_align
             : 'none';
     }
-    if ( !$param->{width} ) {
-        $param->{width}
-            = $blog->image_default_width
+
+    $param->{aspect_ratio} = $asset->image_width / $asset->image_height;
+    if (!defined($param->{width})) {
+        $param->{width} =
+               $blog->image_default_width
             || $asset->image_width
             || 0;
     }
+    if (!defined($param->{height})) {
+        $param->{height} =
+            $blog->image_default_width
+            ? ($blog->image_height * $asset->image_width / $blog->image_default_width)
+            : ($asset->image_height || 0);
+    }
+    my $cur_aspect_ratio = $param->{width} && $param->{height} && ($param->{width} / $param->{height}) || 0;
+    $param->{keep_aspect_ratio} =
+          defined($param->{keep_aspect_ratio})                                ? $param->{keep_aspect_ratio}
+        : (int($cur_aspect_ratio * 100) == int($param->{aspect_ratio} * 100)) ? 1
+        :                                                                       0;
 
     return plugin()->load_tmpl( 'cms/include/insert_options.tmpl', $param );
 }

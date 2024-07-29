@@ -27,6 +27,19 @@
         <div class="input-group-append"><span class="input-group-text">px</span></div>
       </div>
   </div>
+  <div class="form-group">
+    <label class="form-control-label"><__trans phrase="height:"></label>
+    <div class="input-group">
+      <input type="number" name="thumb_height-<$mt:var name="id"$>" class="form-control" name="asset-option-height" id="asset-option-height" value="<mt:var name="height" escape="html">" mt:watch-change="1">
+      <div class="input-group-append"><span class="input-group-text">px</span></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="custom-control custom-checkbox">
+      <input type="checkbox" id="thumb_keep_aspect_ratio-<$mt:var name="id"$>" name="thumb_keep_aspect_ratio-<$mt:var name="id"$>" class="custom-control-input" <mt:if name="keep_aspect_ratio">checked="checked"</mt:if> data-mt-aspect-ratio="<mt:var name="aspect_ratio" escape="html">" value="1">
+      <label class="custom-control-label" for="thumb_keep_aspect_ratio-<$mt:var name="id"$>"><__trans phrase="Keep aspect ratio"></label>
+    </div>
+  </div>
   <div class="form-group alignbutton">
     <button type="button" class="btn btn-default p-1 alignleft<mt:if name="align" eq="left"> active</mt:if>" data-align="left" title="<__trans phrase="Align Left">" data-toggle="button" aria-pressed="false" >
       <svg role="img" class="mt-icon">
@@ -78,4 +91,28 @@ setTimeout(function(){
 jQuery(function () {
   jQuery('.modal-blockeditor .modal-body:visible').scrollTop(0);
 });
+
+// width and height
+(function(id) {
+  var $width = jQuery('[name="thumb_width-' + id + '"]');
+  var $height = jQuery('[name="thumb_height-' + id + '"]');
+  var $keepAspectRatio = jQuery('[name="thumb_keep_aspect_ratio-' + id + '"]');
+  var ratio = parseFloat($keepAspectRatio.data('mt-aspect-ratio'));
+
+  function updateFn(fromWidth) {
+    return function() {
+      if (!$keepAspectRatio.is(':checked') || $width.val() === '' || $height.val() === '') {
+        return;
+      }
+      if (fromWidth) {
+        $height.val(Math.round($width.val() / ratio));
+      } else {
+        $width.val(Math.round($height.val() * ratio));
+      }
+    }
+  }
+  $width.on('input', updateFn(true));
+  $height.on('input', updateFn(false));
+  $keepAspectRatio.on('change', updateFn(true));
+})('<$mt:var name="id" encode_js="1"$>');
 </script>
