@@ -11,6 +11,7 @@ function smarty_function_mtscript($args, &$ctx) {
       return $ctx->error($ctx->mt->translate('path is required.'));
     }
     $type    = $args["type"] ? ' type="' . encode_html($args["type"]) . '"' : '';
+    $charset = ' charset="' . ( $args["charset"] ? encode_html($args["charset"]) : 'utf-8' ) . '"';
     $async   = $args["async"] ? ' async' : '';
     $defer   = $args["defer"] ? ' defer' : '';
     $version = VERSION_ID;
@@ -34,6 +35,6 @@ function smarty_function_mtscript($args, &$ctx) {
     $path = ltrim($path, '/');
     $script_path = $static_path . encode_html($path);
 
-    return sprintf('<script src="%s?v=%s"%s%s%s></script>', $script_path, $version, $type, $async, $defer);
+    return sprintf('<script src="%s?v=%s"%s%s%s%s></script>', $script_path, $version, $type, $async, $defer, $charset);
 }
 ?>

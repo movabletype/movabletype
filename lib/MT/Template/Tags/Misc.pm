@@ -340,6 +340,7 @@ sub _hdlr_script {
 
   my $path    = $args->{path} or return $ctx->error( MT->translate("path is required.") );
   my $type    = $args->{type} ? ' type="' . encode_html($args->{type}) . '"' : '';
+  my $charset = ' charset="' . ( $args->{charset} ? encode_html($args->{charset}) : 'utf-8' ) . '"';
   my $async   = $args->{async} ? ' async' : '';
   my $defer   = $args->{defer} ? ' defer' : '';
   my $version = MT->version_id;
@@ -351,7 +352,7 @@ sub _hdlr_script {
   $path =~ s!^/+!!;
   my $script_path = MT->static_path . encode_html($path);
 
-  return sprintf('<script src="%s?v=%s"%s%s%s></script>', $script_path, $version, $type, $async, $defer);
+  return sprintf('<script src="%s?v=%s"%s%s%s%s></script>', $script_path, $version, $type, $async, $defer, $charset);
 }
 
 ###########################################################################
