@@ -3671,6 +3671,7 @@ use vars qw( @ISA %Lexicon );
 	'Your preferences have been saved.' => '設定を保存しました。',
 	'pixels' => 'ピクセル',
 	'width:' => '幅:',
+	'height:' => '高さ:',
 	q{'Popup image' template does not exist or is empty and cannot be selected.} => q{'ポップアップ画像' テンプレートが存在しない、もしくは空のため選択できません。},
 	q{ASCII equivalents (&quot;, ', ..., -, --)} => q{対応するASCII文字 (&quot;、'、...、-、--)},
 
