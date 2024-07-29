@@ -25,13 +25,14 @@ function smarty_function_mtscript($args, &$ctx) {
         $static_path .= '/';
     }
 
-    $lang_id = strtolower($ctx->mt->config('DefaultLanguage')) ?? 'en_us';
-    if ($lang_id == 'jp') {
-      $lang_id = 'ja';
+    if (strpos($path, '%l') !== false) {
+        $lang_id = strtolower($ctx->mt->config('DefaultLanguage')) ?? 'en_us';
+        if ($lang_id == 'jp') {
+          $lang_id = 'ja';
+        }
+        $lang_id = str_replace('-', '_', $lang_id);
+        $path = str_replace('%l', $lang_id, $path);
     }
-    $lang_id = str_replace('-', '_', $lang_id);
-
-    $path = str_replace('%l', $lang_id, $path);
     $path = ltrim($path, '/');
     $script_path = $static_path . encode_html($path);
 

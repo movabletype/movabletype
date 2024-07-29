@@ -343,14 +343,16 @@ sub _hdlr_script {
   my $charset = ' charset="' . ( $args->{charset} ? encode_html($args->{charset}) : 'utf-8' ) . '"';
   my $async   = $args->{async} ? ' async' : '';
   my $defer   = $args->{defer} ? ' defer' : '';
-  my $version = MT->version_id;
+  my $version = $ctx->{__stash}{vars}{mt_version_id} || MT->version_id;
 
-  my $lang_id = lc MT->current_language || 'en_us';
-  $lang_id = 'ja' if $lang_id eq 'jp';
-  $lang_id =~ s/-/_/g;
-  $path =~ s/%l/$lang_id/g;
+  if ( $path =~ /%l/ ) {
+    my $lang_id = lc MT->current_language || 'en_us';
+    $lang_id = 'ja' if $lang_id eq 'jp';
+    $lang_id =~ s/-/_/g;
+    $path =~ s/%l/$lang_id/g;
+  }
   $path =~ s!^/+!!;
-  my $script_path = MT->static_path . encode_html($path);
+  my $script_path = ( $ctx->{__stash}{vars}{static_uri} || MT->static_path ) . encode_html($path);
 
   return sprintf('<script src="%s?v=%s"%s%s%s%s></script>', $script_path, $version, $type, $async, $defer, $charset);
 }
@@ -378,14 +380,16 @@ sub _hdlr_stylesheet {
   my ( $ctx, $args ) = @_;
 
   my $path    = $args->{path} or return $ctx->error( MT->translate("path is required.") );
-  my $version = MT->version_id;
+  my $version = $ctx->{__stash}{vars}{mt_version_id} || MT->version_id;
 
-  my $lang_id = lc MT->current_language || 'en_us';
-  $lang_id = 'ja' if $lang_id eq 'jp';
-  $lang_id =~ s/-/_/g;
-  $path =~ s/%l/$lang_id/g;
+  if ( $path =~ /%l/ ) {
+    my $lang_id = lc MT->current_language || 'en_us';
+    $lang_id = 'ja' if $lang_id eq 'jp';
+    $lang_id =~ s/-/_/g;
+    $path =~ s/%l/$lang_id/g;
+  }
   $path =~ s!^/+!!;
-  my $stylesheet_path = MT->static_path . encode_html($path);
+  my $stylesheet_path = ( $ctx->{__stash}{vars}{static_uri} || MT->static_path ) . encode_html($path);
 
   return sprintf('<link rel="stylesheet" href="%s?v=%s">', $stylesheet_path, $version);
 }
