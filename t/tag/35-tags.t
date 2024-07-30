@@ -5086,19 +5086,19 @@ January 31, 1978  7:47 AM
 --- template
 <MTScript path="foo/bar.js">
 --- expected
-<script src="/mt-static/foo/bar.js?v=VERSION_ID"></script>
+<script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 909 script (MTC-25985)
 --- template
 <MTScript path="/foo/bar.js">
 --- expected
-<script src="/mt-static/foo/bar.js?v=VERSION_ID"></script>
+<script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 910 script (MTC-25985)
 --- template
 <MTScript path="/foo/bar_%l.js">
 --- expected
-<script src="/mt-static/foo/bar_en_us.js?v=VERSION_ID"></script>
+<script src="/mt-static/foo/bar_en_us.js?v=VERSION_ID" charset="utf-8"></script>
 
 === test 911 script (MTC-25985)
 --- template
@@ -5110,45 +5110,51 @@ path is required.
 --- template
 <MTScript path="/foo/bar.js" async="1">
 --- expected
-<script src="/mt-static/foo/bar.js?v=VERSION_ID" async></script>
+<script src="/mt-static/foo/bar.js?v=VERSION_ID" async charset="utf-8"></script>
 
 === test 913 script (MTC-25985)
 --- template
 <MTScript path="/foo/bar.js" defer="1">
 --- expected
-<script src="/mt-static/foo/bar.js?v=VERSION_ID" defer></script>
+<script src="/mt-static/foo/bar.js?v=VERSION_ID" defer charset="utf-8"></script>
 
 === test 914 script (MTC-25985)
 --- template
 <MTScript path="/foo/bar.js" type="text/javascript">
 --- expected
-<script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript"></script>
+<script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" charset="utf-8"></script>
 
 === test 915 script (MTC-25985)
 --- template
+<MTScript path="/foo/bar.js" charset="euc-jp">
+--- expected
+<script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="euc-jp"></script>
+
+=== test 916 script (MTC-25985)
+--- template
 <MTScript path="/foo/bar.js" type="text/javascript" async="1" defer="1">
 --- expected
-<script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" async defer></script>
+<script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" async defer charset="utf-8"></script>
 
-=== test 916 stylesheet (MTC-25985)
+=== test 917 stylesheet (MTC-25985)
 --- template
 <MTStylesheet path="/foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
-=== test 917 stylesheet (MTC-25985)
+=== test 918 stylesheet (MTC-25985)
 --- template
 <MTStylesheet path="foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
-=== test 918 stylesheet (MTC-25985)
+=== test 919 stylesheet (MTC-25985)
 --- template
 <MTStylesheet path="foo/bar_%l.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar_en_us.css?v=VERSION_ID">
 
-=== test 919 stylesheet (MTC-25985)
+=== test 920 stylesheet (MTC-25985)
 --- template
 <MTStylesheet>
 --- expected_error
