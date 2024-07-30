@@ -39,6 +39,8 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: docker pull
         uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ (matrix.test != 'php' && matrix.test != 'selenium') }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
@@ -80,6 +82,8 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: docker pull
         uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
@@ -118,6 +122,8 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: docker pull
         uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_RUN_APP_AS_CGI=1 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
@@ -157,6 +163,8 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: docker pull
         uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_BUILDER=MT::Builder::Fast prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
@@ -194,6 +202,8 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: docker pull
         uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_DISABLE_OBJECT_CACHE=1 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
 
@@ -228,6 +238,8 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: docker pull
         uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_ADMIN_THEME_ID=0 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
@@ -266,6 +278,8 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: docker pull
         uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_FORCE_DATAAPI_VERSION=5 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
@@ -296,6 +310,8 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: docker pull
         uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
@@ -324,9 +340,15 @@ jobs:
         uses: actions/checkout@v4.1.0
       - name: docker pull
         uses: ./.github/actions/docker-mt-test
+        with:
+          tag: 'chromiumdriver'
       - name: test selenium
         if: ${{ matrix.test == 'selenium' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "BUILD_RELEASE_NUMBER=1 make && MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: 'buster'
       - name: test xt
         if: ${{ matrix.test == 'xt' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
@@ -345,8 +367,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
       - name: test npm ci
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm ci"
       - name: test to copy files
