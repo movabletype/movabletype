@@ -346,9 +346,9 @@ sub _hdlr_script {
   my $version = $MT::DebugMode ? time : ( $ctx->{__stash}{vars}{mt_version_id} || MT->version_id );
 
   if ( $path =~ /%l/ ) {
-    my $lang_id = lc MT->current_language || 'en_us';
-    $lang_id =~ s/-/_/g;
-    $path =~ s/%l/$lang_id/g;
+      my $lang_id = lc MT->current_language || 'en_us';
+      $lang_id =~ s/-/_/g;
+      $path =~ s/%l/$lang_id/g;
   }
   $path =~ s!^/+!!;
   my $script_path = ( $ctx->{__stash}{vars}{static_uri} || MT->static_path ) . encode_html($path);
@@ -382,9 +382,9 @@ sub _hdlr_stylesheet {
   my $version = $MT::DebugMode ? time : ( $ctx->{__stash}{vars}{mt_version_id} || MT->version_id );
 
   if ( $path =~ /%l/ ) {
-    my $lang_id = lc MT->current_language || 'en_us';
-    $lang_id =~ s/-/_/g;
-    $path =~ s/%l/$lang_id/g;
+      my $lang_id = lc MT->current_language || 'en_us';
+      $lang_id =~ s/-/_/g;
+      $path =~ s/%l/$lang_id/g;
   }
   $path =~ s!^/+!!;
   my $stylesheet_path = ( $ctx->{__stash}{vars}{static_uri} || MT->static_path ) . encode_html($path);
