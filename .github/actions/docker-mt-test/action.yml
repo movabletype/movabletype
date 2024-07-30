@@ -1,3 +1,7 @@
+inputs:
+  tag:
+    description: 'docker image tag'
+    required: true
 runs:
   using: "Composite"
   steps:
@@ -5,5 +9,5 @@ runs:
       run: echo $GITHUB_TOKEN | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       shell: bash
     - name: docker pull
-      run: docker pull ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME
+      run: docker pull ghcr.io/movabletype/movabletype/test:${{ inputs.tag }}
       shell: bash
