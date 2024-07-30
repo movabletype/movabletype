@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 env:
   MT_TEST_IGNORE_FIXTURE: '0'
-  GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   # Perl 5.38 / PHP 8.2 / MySQL 8.0
   fedora39:
