@@ -347,7 +347,6 @@ sub _hdlr_script {
 
   if ( $path =~ /%l/ ) {
     my $lang_id = lc MT->current_language || 'en_us';
-    $lang_id = 'ja' if $lang_id eq 'jp';
     $lang_id =~ s/-/_/g;
     $path =~ s/%l/$lang_id/g;
   }
@@ -384,7 +383,6 @@ sub _hdlr_stylesheet {
 
   if ( $path =~ /%l/ ) {
     my $lang_id = lc MT->current_language || 'en_us';
-    $lang_id = 'ja' if $lang_id eq 'jp';
     $lang_id =~ s/-/_/g;
     $path =~ s/%l/$lang_id/g;
   }
