@@ -43,7 +43,7 @@ use_ok('MT::Upgrade::v8');
 ok $MT::Upgrade::v8::MIGRATE_META_BATCH_SIZE, 'should be defined';
 
 subtest 'upgrade' => sub {
-    subtest 'should be migrated' => sub {
+    subtest 'An image object should migrate successfully' => sub {
         my $image = create_image();
 
         ok !defined($image->column_values->{width});
@@ -56,7 +56,7 @@ subtest 'upgrade' => sub {
         is $image->column_values->{height}, 480;
     };
 
-    subtest 'should be remain migrated width and height when reapplied' => sub {
+    subtest 'Image data that has already been migrated should not change when re-applied' => sub {
         my $image = create_image();
 
         MT::Test::Upgrade->upgrade(from => 8.0000);
@@ -67,7 +67,7 @@ subtest 'upgrade' => sub {
         is $image->column_values->{height}, 480;
     };
 
-    subtest 'should not call `MT::Asset::save` if metadata are not exists' => sub {
+    subtest '`MT::Asset::save` should not be called if metadata are not exists' => sub {
         my $image = create_image();
         $image->meta_obj->remove;
 
@@ -84,7 +84,7 @@ subtest 'upgrade' => sub {
         is $saved, 0;
     };
 
-    subtest 'should be reported if got error' => sub {
+    subtest 'The error should be reported if an error occurs' => sub {
         create_image();
 
         my $error_msg;
@@ -106,11 +106,11 @@ subtest 'upgrade' => sub {
         like $error_msg, qr/test error/;
     };
 
-    subtest 'should be divided into steps' => sub {
+    subtest 'Migration should be divided into multiple steps if there are many image data' => sub {
         local $MT::Upgrade::v8::MIGRATE_META_BATCH_SIZE = 2;
 
-        MT->model('asset.image')->remove({blog_id => 0});
-        create_image() for 1..9;
+        MT->model('asset.image')->remove({ blog_id => 0 });
+        create_image() for 1 .. 9;
 
         my $commit_count = 0;
         my $commit_guard = Mock::MonkeyPatch->patch(
@@ -133,12 +133,12 @@ subtest 'upgrade' => sub {
 
         is $commit_count, 5;
         is_deeply [grep { /^Migrating/ } @progress_messages], [
-          'Migrating image width/height meta data...',
-          'Migrating image width/height meta data... (22%)',
-          'Migrating image width/height meta data... (44%)',
-          'Migrating image width/height meta data... (66%)',
-          'Migrating image width/height meta data... (88%)',
-          'Migrating image width/height meta data... (100%)',
+            'Migrating image width/height meta data...',
+            'Migrating image width/height meta data... (22%)',
+            'Migrating image width/height meta data... (44%)',
+            'Migrating image width/height meta data... (66%)',
+            'Migrating image width/height meta data... (88%)',
+            'Migrating image width/height meta data... (100%)',
         ];
 
         my @images = MT->model('asset.image')->load;
