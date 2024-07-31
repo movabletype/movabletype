@@ -1,6 +1,6 @@
 import type { Editor, AstNode } from "tinymce6";
 
-function isSameOrigin(iframe: AstNode) {
+function isSameOrigin(iframe: AstNode): boolean {
   if (iframe.attr("srcdoc")) {
     return true;
   }

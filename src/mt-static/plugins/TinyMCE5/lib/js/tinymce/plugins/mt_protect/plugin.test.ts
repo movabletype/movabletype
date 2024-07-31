@@ -8,6 +8,7 @@ describe("mt_protect", () => {
   let root: HTMLElement;
 
   beforeEach(async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const jsdom = (window as any).jsdom as JSDOM;
     const virtualConsole = jsdom.window._virtualConsole;
     const originalVirtualConsoleEmit = virtualConsole.emit;

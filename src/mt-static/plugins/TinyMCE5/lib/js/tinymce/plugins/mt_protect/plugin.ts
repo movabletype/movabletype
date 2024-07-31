@@ -1,6 +1,8 @@
+/* eslint-disable no-var */
+
 import type { Editor, AstNode } from "tinymce6"; // import type Editor from tinymce6 for compatibility
 
-function isSameOrigin(iframe: AstNode) {
+function isSameOrigin(iframe: AstNode): boolean {
   if (iframe.attr("srcdoc")) {
     return true;
   }

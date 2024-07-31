@@ -21,6 +21,6 @@ export async function createHttpServer(): Promise<Server> {
   });
 }
 
-export function teardown(...args) {
+export function teardown(): void {
   fetch(`http://localhost:${process.env.JSDOM_SERVER_PORT}${closeServerPath}`);
 }
