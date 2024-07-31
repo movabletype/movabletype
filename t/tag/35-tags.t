@@ -2499,7 +2499,7 @@ http://narnia.na/nana/
 
 === test 446
 --- template
-<MTBlogSitePath is='1'>
+<MTBlogSitePath id='1'>
 --- expected
 TEST_ROOT/site/
 
@@ -5081,3 +5081,15 @@ January 31, 1978  7:47 AM
 <MTPages id="20"><MTPageUnpublishedDate></MTPages>
 --- expected
 January 31, 1978  7:47 AM
+
+=== test 908 add id attribute (MTC-29257)
+--- template
+<MTWebsiteURL id='1'>
+--- expected
+http://narnia.na/
+
+=== test 909 add id attribute (MTC-29257)
+--- template
+<MTWebsitePath id='1'>
+--- expected
+TEST_ROOT/
