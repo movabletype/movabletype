@@ -15,7 +15,7 @@ window.addEventListener("unhandledrejection", async (ev) => {
 class GetJSONError extends Error {}
 export async function getJSON(
   input: RequestInfo | URLSearchParams | FormData,
-  init?: RequestInit,
+  init?: RequestInit
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   const sendHttpRequest = await window.MT.import("sendHttpRequest");

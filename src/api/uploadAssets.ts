@@ -29,7 +29,7 @@ export function uploadAssets({
     // 今後JSでUIを作っていく前提になっていく場合ないこともあるかもしれない。
     // <meta name="csrf-token" value="xxxxxx" /> のようなものをヘッダーに入れるのがいいかもしれない。
     const magicToken = document.querySelector<HTMLInputElement>(
-      `input[name="magic_token"]`,
+      `input[name="magic_token"]`
     )?.value;
     if (!magicToken) {
       throw new Error("Failed to get magick token.");
@@ -58,7 +58,7 @@ export function uploadAssets({
               .getAllResponseHeaders()
               .split(/\r\n/)
               .filter((s) => s.includes(":"))
-              .map((line) => line.split(/\s*:\s*/, 2)),
+              .map((line) => line.split(/\s*:\s*/, 2))
           ),
         };
         resolve(new Response(xhr.responseText, responseInit));

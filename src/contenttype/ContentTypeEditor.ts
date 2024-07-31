@@ -13,14 +13,14 @@ export default class ContentTypeEditor {
 
   static registerCustomType(
     type: string,
-    mountFunction: MT.ContentType.CustomContentFieldMountFunction,
+    mountFunction: MT.ContentType.CustomContentFieldMountFunction
   ): void {
     this.types.registerCustomType(type, mountFunction);
   }
 
   static mount(
     targetSelector: string,
-    opts: MT.ContentType.ContentFieldsOpts,
+    opts: MT.ContentType.ContentFieldsOpts
   ): void {
     const target = this.getContentFieldsTarget(targetSelector);
 

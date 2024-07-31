@@ -16,7 +16,7 @@ class SendHttpRequestError extends Error {}
 
 function buildRequest(
   input: RequestInfo | URLSearchParams | FormData,
-  init: RequestInit,
+  init: RequestInit
 ): Request {
   if (input instanceof URLSearchParams) {
     const uri = `${window.CMSScriptURI}?${input.toString()}`;
@@ -26,7 +26,7 @@ function buildRequest(
     // 今後JSでUIを作っていく前提になっていく場合ないこともあるかもしれない。
     // <meta name="csrf-token" value="xxxxxx" /> のようなものをヘッダーに入れるのがいいかもしれない。
     const magicToken = document.querySelector<HTMLInputElement>(
-      `input[name="magic_token"]`,
+      `input[name="magic_token"]`
     )?.value;
     if (!magicToken) {
       throw new Error("Failed to get magick token.");
@@ -39,7 +39,7 @@ function buildRequest(
       Object.assign({}, init, {
         method: init.method ?? "POST",
         body: input,
-      }),
+      })
     );
   } else {
     // TODO: fillin magick_token if POST request
@@ -49,7 +49,7 @@ function buildRequest(
 
 export function sendHttpRequest(
   input: Request | RequestInfo | URLSearchParams | FormData,
-  init?: RequestInit,
+  init?: RequestInit
 ): Promise<Response> {
   const _init = Object.assign({}, init || {});
   _init.headers = Object.assign({}, _init.headers || {});
