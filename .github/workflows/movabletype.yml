@@ -337,6 +337,7 @@ jobs:
     if: >-
       ${{
         github.event_name == 'schedule'
+        || github.event_name == 'pull_request'
         || startsWith(github.ref_name, 'support-')
         || startsWith(github.ref_name, 'release-')
         || (github.ref_name == 'develop')
