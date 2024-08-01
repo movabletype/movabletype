@@ -221,9 +221,11 @@ sub prefer {
                 is_preferred => 1,
             },
             $args
-        ) or return;
-        $preferred->is_preferred(0);
-        $preferred->save or return $map->error( $preferred->errstr );
+        );
+        if ($preferred) {
+            $preferred->is_preferred(0);
+            $preferred->save or return $map->error( $preferred->errstr );
+        }
         $map->is_preferred(1);
         $map->save or return $map->error( $map->errstr );
     }
