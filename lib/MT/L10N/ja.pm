@@ -2611,6 +2611,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/Tags/Misc.pm
 	q{Specified WidgetSet '[_1]' not found.} => q{ウィジェットセット「[_1]」が見つかりません。},
+	'path is required.' => 'pathを指定してください。',
 
 ## lib/MT/Template/Tags/Tag.pm
 	'content_type modifier cannot be used with type "[_1]".' => 'content_typeモディファイアは[_1]と同時に利用できません',

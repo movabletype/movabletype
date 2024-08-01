@@ -9,6 +9,7 @@ use strict;
 use warnings;
 
 use MT;
+use MT::Util qw( encode_html );
 use MT::Util::Encode;
 use MT::Request;
 use MT::Category;
@@ -307,6 +308,88 @@ sub _hdlr_has_plugin {
         $name = $PluginAlias->{$name};
     }
     return MT->has_plugin($name) ? 1 : 0;
+}
+
+###########################################################################
+
+=head2 Script
+
+Returns a script tag for loading a JavaScript file under the mt-static directory.
+
+B<Attributes:>
+
+=over 4
+
+=item * path (required)
+
+The path to the JavaScript file.
+If the path contains the string '%l', replace '%l' with the corresponding language code.
+
+=item * type (optional)
+
+=item * async (optional)
+
+=item * defer (optional)
+
+=back
+
+=cut
+
+sub _hdlr_script {
+    my ($ctx, $args) = @_;
+
+    my $path    = $args->{path} or return $ctx->error(MT->translate("path is required."));
+    my $type    = $args->{type} ? ' type="' . encode_html($args->{type}) . '"' : '';
+    my $charset = ' charset="' . ($args->{charset} ? encode_html($args->{charset}) : 'utf-8') . '"';
+    my $async   = $args->{async} ? ' async' : '';
+    my $defer   = $args->{defer} ? ' defer' : '';
+    my $version = $MT::DebugMode ? time     : ($ctx->{__stash}{vars}{mt_version_id} || MT->version_id);
+
+    if ($path =~ /%l/) {
+        my $lang_id = lc MT->current_language || 'en_us';
+        $lang_id =~ s/-/_/g;
+        $path    =~ s/%l/$lang_id/g;
+    }
+    $path =~ s!^/+!!;
+    my $script_path = ($ctx->{__stash}{vars}{static_uri} || MT->static_path) . encode_html($path);
+
+    return sprintf('<script src="%s?v=%s"%s%s%s%s></script>', $script_path, $version, $type, $async, $defer, $charset);
+}
+
+###########################################################################
+
+=head2 Stylesheet
+
+Returns a link tag for loading a CSS file under the mt-static directory.
+
+B<Attributes:>
+
+=over 4
+
+=item * path (required)
+
+The path to the CSS file.
+If the path contains the string '%l', replace '%l' with the corresponding language code.
+
+=back
+
+=cut
+
+sub _hdlr_stylesheet {
+    my ($ctx, $args) = @_;
+
+    my $path    = $args->{path} or return $ctx->error(MT->translate("path is required."));
+    my $version = $MT::DebugMode ? time : ($ctx->{__stash}{vars}{mt_version_id} || MT->version_id);
+
+    if ($path =~ /%l/) {
+        my $lang_id = lc MT->current_language || 'en_us';
+        $lang_id =~ s/-/_/g;
+        $path    =~ s/%l/$lang_id/g;
+    }
+    $path =~ s!^/+!!;
+    my $stylesheet_path = ($ctx->{__stash}{vars}{static_uri} || MT->static_path) . encode_html($path);
+
+    return sprintf('<link rel="stylesheet" href="%s?v=%s">', $stylesheet_path, $version);
 }
 
 1;
