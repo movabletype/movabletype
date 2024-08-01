@@ -1,7 +1,7 @@
 // copied some functions from selection_common_script.tmpl
 
 export const addRow = (
-  values: Array<MT.ContentType.SelectionValue>
+  values: Array<MT.ContentType.SelectionValue>,
 ): Array<MT.ContentType.SelectionValue> => {
   values.push({ checked: "", label: "", value: "" });
   return values;
@@ -9,7 +9,7 @@ export const addRow = (
 
 export const deleteRow = (
   values: Array<MT.ContentType.SelectionValue>,
-  index: number
+  index: number,
 ): Array<MT.ContentType.SelectionValue> => {
   values.splice(index, 1);
   if (values.length === 0) {
@@ -39,7 +39,7 @@ export const validateTable = (table: HTMLTableElement): void => {
   const tableIsValidated = jqTable.data("mtValidator") ? true : false;
   if (tableIsValidated) {
     const jqNotValidatedLabelsValues = jqTable.find(
-      "input[type=text]:not(.is-invalid)"
+      "input[type=text]:not(.is-invalid)",
     );
     if (jqNotValidatedLabelsValues.length > 0) {
       /* @ts-expect-error : mtValidate is not defined */

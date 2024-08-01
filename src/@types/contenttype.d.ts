@@ -29,7 +29,7 @@ declare namespace MT.ContentType {
       fieldsStore: FieldsStore;
       optionsHtmlParams: OptionsHtmlParams;
     },
-    target: Element
+    target: Element,
   ) => CustomComponentObject;
 
   // used in Custom.svelte

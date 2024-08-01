@@ -55,14 +55,14 @@ export default class ContentFieldTypes {
   }
 
   static getCustomType(
-    type: string
+    type: string,
   ): MT.ContentType.CustomContentFieldMountFunction {
     return this.customTypes[type];
   }
 
   static registerCustomType(
     type: string,
-    mountFunction: MT.ContentType.CustomContentFieldMountFunction
+    mountFunction: MT.ContentType.CustomContentFieldMountFunction,
   ): void {
     this.customTypes[type] = mountFunction;
   }
