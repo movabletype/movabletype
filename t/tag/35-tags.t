@@ -2499,7 +2499,7 @@ http://narnia.na/nana/
 
 === test 446
 --- template
-<MTBlogSitePath is='1'>
+<MTBlogSitePath id='1'>
 --- expected
 TEST_ROOT/site/
 
@@ -5082,79 +5082,91 @@ January 31, 1978  7:47 AM
 --- expected
 January 31, 1978  7:47 AM
 
-=== test 908 script (MTC-25985)
+=== test 908 add id attribute (MTC-29257)
+--- template
+<MTWebsiteURL id='1'>
+--- expected
+http://narnia.na/
+
+=== test 909 add id attribute (MTC-29257)
+--- template
+<MTWebsitePath id='1'>
+--- expected
+TEST_ROOT/
+
+=== test 910 script (MTC-25985)
 --- template
 <MTScript path="foo/bar.js">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="utf-8"></script>
 
-=== test 909 script (MTC-25985)
+=== test 911 script (MTC-25985)
 --- template
 <MTScript path="/foo/bar.js">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="utf-8"></script>
 
-=== test 910 script (MTC-25985)
+=== test 912 script (MTC-25985)
 --- template
 <MTScript path="/foo/bar_%l.js">
 --- expected
 <script src="/mt-static/foo/bar_en_us.js?v=VERSION_ID" charset="utf-8"></script>
 
-=== test 911 script (MTC-25985)
+=== test 913 script (MTC-25985)
 --- template
 <MTScript>
 --- expected_error
 path is required.
 
-=== test 912 script (MTC-25985)
+=== test 914 script (MTC-25985)
 --- template
 <MTScript path="/foo/bar.js" async="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" async charset="utf-8"></script>
 
-=== test 913 script (MTC-25985)
+=== test 915 script (MTC-25985)
 --- template
 <MTScript path="/foo/bar.js" defer="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" defer charset="utf-8"></script>
 
-=== test 914 script (MTC-25985)
+=== test 916 script (MTC-25985)
 --- template
 <MTScript path="/foo/bar.js" type="text/javascript">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" charset="utf-8"></script>
 
-=== test 915 script (MTC-25985)
+=== test 917 script (MTC-25985)
 --- template
 <MTScript path="/foo/bar.js" charset="euc-jp">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" charset="euc-jp"></script>
 
-=== test 916 script (MTC-25985)
+=== test 918 script (MTC-25985)
 --- template
 <MTScript path="/foo/bar.js" type="text/javascript" async="1" defer="1">
 --- expected
 <script src="/mt-static/foo/bar.js?v=VERSION_ID" type="text/javascript" async defer charset="utf-8"></script>
 
-=== test 917 stylesheet (MTC-25985)
+=== test 919 stylesheet (MTC-25985)
 --- template
 <MTStylesheet path="/foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
-=== test 918 stylesheet (MTC-25985)
+=== test 920 stylesheet (MTC-25985)
 --- template
 <MTStylesheet path="foo/bar.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar.css?v=VERSION_ID">
 
-=== test 919 stylesheet (MTC-25985)
+=== test 921 stylesheet (MTC-25985)
 --- template
 <MTStylesheet path="foo/bar_%l.css">
 --- expected
 <link rel="stylesheet" href="/mt-static/foo/bar_en_us.css?v=VERSION_ID">
 
-=== test 920 stylesheet (MTC-25985)
+=== test 922 stylesheet (MTC-25985)
 --- template
 <MTStylesheet>
 --- expected_error
