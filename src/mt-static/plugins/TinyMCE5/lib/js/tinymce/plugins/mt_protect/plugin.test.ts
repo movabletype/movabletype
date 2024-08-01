@@ -25,6 +25,7 @@ describe("mt_protect", () => {
           inline: true,
           plugins: ["media", "mt_protect"],
           convert_urls: false,
+          verify_html: false,
           setup: (editor) => {
             editor.on("init", () => {
               virtualConsole.emit = originalVirtualConsoleEmit;
@@ -81,6 +82,20 @@ describe("mt_protect", () => {
       ${`<iframe src="//${location.hostname}:${location.port}/test.html" sandbox="allow-scripts allow-popups"></iframe>`}         | ${"allow-scripts allow-popups"}
       // should remove "allow-same-origin" for same origin
       ${`<iframe src="//${location.hostname}:${location.port}/test.html" sandbox="allow-scripts allow-same-origin"></iframe>`}    | ${"allow-scripts"}
+
+      // same origin without src attribute
+      ${`<iframe></iframe>`}                                                                                                      | ${"allow-scripts"}
+      ${`<iframe sandbox="allow-scripts"></iframe>`}                                                                              | ${"allow-scripts"}
+      ${`<iframe sandbox="allow-scripts allow-popups"></iframe>`}                                                                 | ${"allow-scripts allow-popups"}
+      // should remove "allow-same-origin" for same origin
+      ${`<iframe sandbox="allow-scripts allow-same-origin"></iframe>`}                                                            | ${"allow-scripts"}
+
+      // same origin with srcdoc
+      ${`<iframe srcdoc="&lt;p&gt;test&lt;/p&gt;"></iframe>`}                                                                     | ${"allow-scripts"}
+      ${`<iframe srcdoc="&lt;p&gt;test&lt;/p&gt;" sandbox="allow-scripts"></iframe>`}                                             | ${"allow-scripts"}
+      ${`<iframe srcdoc="&lt;p&gt;test&lt;/p&gt;" sandbox="allow-scripts allow-popups"></iframe>`}                                | ${"allow-scripts allow-popups"}
+      // should remove "allow-same-origin" for same origin
+      ${`<iframe srcdoc="&lt;p&gt;test&lt;/p&gt;" sandbox="allow-scripts allow-same-origin"></iframe>`}                           | ${"allow-scripts"}
   `("sandbox attributes of $iframe to $sandbox", ({ iframe, sandbox }) => {
     editor.setContent(iframe);
     expect(root.querySelector("iframe")?.getAttribute("sandbox")).toBe(sandbox);
