@@ -1,10 +1,10 @@
 // rollup.config.js
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-import esbuild from 'rollup-plugin-esbuild'
+import esbuild from "rollup-plugin-esbuild";
 import livereload from "rollup-plugin-livereload";
 import sveltePreprocess from "svelte-preprocess";
-import typescript from '@rollup/plugin-typescript';
+import typescript from "@rollup/plugin-typescript";
 import svelte from "rollup-plugin-svelte";
 import css from "rollup-plugin-css-only";
 import cleaner from "rollup-plugin-cleaner";
@@ -17,7 +17,7 @@ export default {
   output: {
     dir: outputDir,
     format: "esm",
-    sourcemap: !production
+    sourcemap: !production,
   },
   plugins: [
     cleaner({ targets: [outputDir] }),
@@ -42,6 +42,6 @@ export default {
     // Watch the `public` directory and refresh the
     // browser on changes when not in production
     !production && livereload(outputDir),
-    typescript({ sourceMap: !production })
+    typescript({ sourceMap: !production }),
   ],
 };

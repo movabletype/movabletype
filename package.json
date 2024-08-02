@@ -47,7 +47,7 @@
     "build-svelte": "npm run build-svelte:app",
     "svelte-dev": "rollup --config rollup.config.ts --configPlugin typescript -w",
     "svelte-check-types": "tsc",
-    "svelte-format": "prettier --plugin prettier-plugin-svelte --write src/**/*.{ts,svelte}",
+    "svelte-format": "prettier --plugin prettier-plugin-svelte --write src/**/*.{ts,svelte} *.ts",
     "svelte-lint": "eslint --fix --ext .ts --ext .tsx --ext .svelte src"
   },
   "repository": {
