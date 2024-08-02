@@ -513,7 +513,13 @@ sub _loop_through_objects {
 
 sub restore_file {
     my $class = shift;
-    my ( $fh, $errormsg, $schema_version, $overwrite, $callback ) = @_;
+    my ($fh, $errormsg, $schema_version, $overwrite, $skip_fileinfo, $callback);
+    if (ref $_[0] eq 'HASH') {
+        my $args = shift;
+        ($fh, $errormsg, $schema_version, $overwrite, $skip_fileinfo, $callback) = @$args{qw(fh errormsg schema_version overwrite skip_fileinfo callback)};
+    } else {
+        ($fh, $errormsg, $schema_version, $overwrite, $callback) = @_;
+    }
 
     my $objects  = {};
     my $deferred = {};
@@ -534,9 +540,13 @@ sub restore_file {
 
 sub restore_process_single_file {
     my $class = shift;
-    my ( $fh, $objects, $deferred, $errors, $schema_version, $overwrite,
-        $callback )
-        = @_;
+    my ($fh, $objects, $deferred, $errors, $schema_version, $overwrite, $skip_fileinfo, $callback);
+    if (ref $_[0] eq 'HASH') {
+        my $args = shift;
+        ($fh, $objects, $deferred, $errors, $schema_version, $overwrite, $skip_fileinfo, $callback) = @$args{qw(fh objects deferred errors schema_version overwrite skip_fileinfo callback)};
+    } else {
+        ($fh, $objects, $deferred, $errors, $schema_version, $overwrite, $callback) = @_;
+    }
 
     require XML::SAX;
     require MT::Util;
@@ -599,9 +609,13 @@ sub restore_process_single_file {
 
 sub restore_directory {
     my $class = shift;
-    my ( $dir, $errors, $error_assets, $schema_version, $overwrite,
-        $callback )
-        = @_;
+    my ($dir, $errors, $error_assets, $schema_version, $overwrite, $skip_fileinfo, $callback);
+    if (ref $_[0] eq 'HASH') {
+        my $args = shift;
+        ($dir, $errors, $error_assets, $schema_version, $overwrite, $skip_fileinfo, $callback) = @$args{qw(dir errors error_assets schema_version overwrite skip_fileinfo callback)};
+    } else {
+        ($dir, $errors, $error_assets, $schema_version, $overwrite, $callback) = @_;
+    }
 
     require MT::Util::Log;
     MT::Util::Log::init();
