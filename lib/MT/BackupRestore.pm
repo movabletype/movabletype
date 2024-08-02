@@ -526,8 +526,16 @@ sub restore_file {
     my $errors   = [];
 
     my ( $blog_ids, $asset_ids ) = eval {
-        $class->restore_process_single_file( $fh, $objects, $deferred,
-            $errors, $schema_version, $overwrite, $callback );
+        $class->restore_process_single_file({
+            fh             => $fh,
+            objects        => $objects,
+            deferred       => $deferred,
+            errors         => $errors,
+            schema_version => $schema_version,
+            overwrite      => $overwrite,
+            skip_fileinfo  => $skip_fileinfo,
+            callback       => $callback,
+        });
     };
 
     unless ($@) {
@@ -674,8 +682,16 @@ sub restore_directory {
             or push @$errors, MT->translate("Cannot open [_1]."), next;
 
         my ( $tmp_blog_ids, $tmp_asset_ids ) = eval {
-            __PACKAGE__->restore_process_single_file( $fh, \%objects,
-                $deferred, $errors, $schema_version, $overwrite, $callback );
+            __PACKAGE__->restore_process_single_file({
+                fh             => $fh,
+                objects        => \%objects,
+                deferred       => $deferred,
+                errors         => $errors,
+                schema_version => $schema_version,
+                overwrite      => $overwrite,
+                skip_fileinfo  => $skip_fileinfo,
+                callback       => $callback,
+            });
         };
 
         close $fh;
