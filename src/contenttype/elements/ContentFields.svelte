@@ -715,6 +715,7 @@
         </div>
       {/if}
       {#each $fieldsStore as field, fieldIndex}
+        {@const fieldId = field.id ?? ""}
         <div
           class="mt-contentfield"
           draggable="true"
@@ -725,7 +726,7 @@
           }}
           on:dragend={onDragEnd}
           style="width: 100%;"
-          id="content-field-block-{field.id}"
+          id="content-field-block-{fieldId}"
           bind:this={tags[fieldIndex]}
         >
           <ContentField
@@ -736,7 +737,7 @@
             {fieldsStore}
             {gatheringData}
             parent={tags[fieldIndex]}
-            bind:gather={gathers[field.id]}
+            bind:gather={gathers[fieldId]}
             {optionsHtmlParams}
           />
         </div>
