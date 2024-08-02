@@ -1,5 +1,4 @@
 // rollup.config.js
-import { glob } from "glob";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import esbuild from "rollup-plugin-esbuild";
@@ -20,9 +19,7 @@ const mtStaticInputFiles = [
 ];
 
 const defaultConfig = {
-  input: ["src/bootstrap.ts", "src/contenttype.ts", "src/listing.ts"].concat(
-    glob.sync("src/api/*.ts")
-  ),
+  input: ["src/contenttype.ts", "src/listing.ts"],
   output: {
     dir: defaultOutputDir,
     format: "esm",
