@@ -15,7 +15,7 @@ export async function createHttpServer(): Promise<Server> {
 
       res.writeHead(404, { "Content-Type": "text/plain" });
       res.end("");
-    }).listen(0, "localhost", () => {
+    }).listen(0, "0.0.0.0", () => {
       resolve(server);
     });
   });
