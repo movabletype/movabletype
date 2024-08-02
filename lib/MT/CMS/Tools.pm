@@ -2315,6 +2315,7 @@ sub dialog_restore_upload {
     $param->{blogs_meta}          = $app->param('blogs_meta');
     $param->{schema_version}      = $schema_version;
     $param->{overwrite_templates} = $overwrite_template;
+    $param->{skip_fileinfo}       = $skip_fileinfo;
 
     my $uploaded = $app->param('file') || $app->param('fname');
     if ( defined($uploaded) ) {
@@ -3054,6 +3055,8 @@ sub restore_upload_manifest {
         . $param->{schema_version}
         . '&amp;overwrite_templates='
         . $param->{overwrite_templates}
+        . '&amp;skip_fileinfo='
+        . $param->{skip_fileinfo}
         . '&amp;redirect=1';
     if ( length $param->{dialog_params} > 2083 )
     {    # 2083 is Maximum URL length in IE
