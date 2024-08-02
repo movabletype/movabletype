@@ -39,14 +39,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '8.002000', '8.0001' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '8.003000', '8.0001' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   '__PRODUCT_CODE__',
-        '8.2.0',              '__PRODUCT_VERSION_ID__',
+        '8.3.0',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -909,11 +909,7 @@ sub init_config {
                 = ( $Config::Config{osname}, $Config::Config{osvers} );
             print $PERFLOG "# Operating System: $osname/$osvers\n";
             print $PERFLOG "# Platform: $^O\n";
-            my $ver
-                = ref($^V) eq 'version'
-                ? $^V->normal
-                : ( $^V ? join( '.', unpack 'C*', $^V ) : $] );
-            print $PERFLOG "# Perl Version: $ver\n";
+            printf $PERFLOG "# Perl Version: %vd\n", $^V;
             print $PERFLOG "# Web Server: $ENV{SERVER_SOFTWARE}\n";
             require MT::Object;
             my $driver = MT::Object->driver;

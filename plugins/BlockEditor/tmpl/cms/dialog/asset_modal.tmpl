@@ -1,8 +1,8 @@
 <mt:unless name="json">
 <div class="step1">
-<script type="text/javascript" src="<mt:var name="static_uri">js/assetdetail.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/upload_settings.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script src="<mt:var name="static_uri">js/list_table.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<mt:script type="text/javascript" path="js/assetdetail.js">
+<mt:script type="text/javascript" path="js/upload_settings.js">
+<mt:script path="js/list_table.js">
 <script>
   isModal = getByID("list-assets-dialog");
 

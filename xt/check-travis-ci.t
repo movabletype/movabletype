@@ -34,6 +34,7 @@ my @allowed_sub_dirs = qw(
     task
     template
     tools
+    upgrade
     util
     xt
 );

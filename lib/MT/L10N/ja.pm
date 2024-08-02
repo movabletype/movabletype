@@ -2611,6 +2611,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/Tags/Misc.pm
 	q{Specified WidgetSet '[_1]' not found.} => q{ウィジェットセット「[_1]」が見つかりません。},
+	'path is required.' => 'pathを指定してください。',
 
 ## lib/MT/Template/Tags/Tag.pm
 	'content_type modifier cannot be used with type "[_1]".' => 'content_typeモディファイアは[_1]と同時に利用できません',
@@ -3103,7 +3104,7 @@ use vars qw( @ISA %Lexicon );
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされているPerl ([_1])は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlを[_2]以上にアップグレードしてください。',
 	'Web server:' => 'ウェブサーバー',
 	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
-	'Your Perl does not have some of the core modules so that you may encounter unexpected behaviors. Please ask your system administrator to install perl (or perl-core) properly.' => 'お使いのPerlはコアモジュールが不足しているため予期せぬ動作をする可能性があります。システム管理者にperl（またはperl-core）を適切にインストールするよう依頼してください。',
+	'Movable Type does not work because your Perl does not have some of the core modules. Please ask your system administrator to install perl (or perl-core) properly.' => 'お使いのPerlはコアモジュールが不足しているためMovable Typeを利用できません。システム管理者にperl（またはperl-core）を適切にインストールするよう依頼してください。',
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'サーバーに [_1]か、[_1]の動作に必要な他のモジュールがインストールされていません。',
 	'Your server has [_1] installed (version [_2]).' => 'サーバーに [_1] がインストールされています(バージョン [_2])。',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'お使いのサーバーには、Movable Type の動作に必要なすべてのモジュールがインストールされています。モジュールを追加インストール作業は必要はありません。マニュアルに従い、インストールを続けてください。',
@@ -3679,6 +3680,7 @@ use vars qw( @ISA %Lexicon );
 	'Your preferences have been saved.' => '設定を保存しました。',
 	'pixels' => 'ピクセル',
 	'width:' => '幅:',
+	'height:' => '高さ:',
 	q{'Popup image' template does not exist or is empty and cannot be selected.} => q{'ポップアップ画像' テンプレートが存在しない、もしくは空のため選択できません。},
 	q{ASCII equivalents (&quot;, ', ..., -, --)} => q{対応するASCII文字 (&quot;、'、...、-、--)},
 
@@ -4008,11 +4010,13 @@ use vars qw( @ISA %Lexicon );
 	'Data API' => 'Data API',
 	'Disable Data API' => 'Data API を利用しない',
 	'Enable Data API in system scope.' => 'システム領域の設定やデータを Data API の出力結果に含める',
+	'Enable Data API in this site for all users including system administrators.' => 'システム管理者を含むすべてのユーザーにData APIの利用を許可する。',
 	'Enable Data API in this site.' => 'Data API の利用を許可する。',
 	'External Notifications' => '更新通知',
 	'Note: This option is currently ignored because outbound notification pings are disabled system-wide.' => '備考: システム外部ping通知がシステムレベルで無効のため、このオプションは現在無効となっています。',
 	'Notify ping services of [_1] updates' => 'サイト更新pingサービス通知',
 	'Others:' => 'その他:',
+	'System administrators are always allowed to use Data API.' => 'システム管理者は設定によらずData APIを利用できます。',
 	'child site' => '子サイト',
 	'site' => 'サイト',
 
@@ -5620,19 +5624,6 @@ use vars qw( @ISA %Lexicon );
 	'_ERROR_CONFIG_FILE' => 'Movable Type の環境設定ファイルが存在しないか、または読み込みに失敗しました。詳細については、Movable Type マニュアルの<a href="javascript:void(0)">インストールと設定</a>の章を確認してください。',
 	'_ERROR_DATABASE_CONNECTION' => '環境設定ファイルのデータベース設定に問題があるか、または設定がありません。詳細については、Movable Type マニュアルの<a href="javascript:void(0)">インストールと設定</a>の章を確認してください。',
 
-## tmpl/admin2023/wizard/base_site_path.tmpl
-	'Base Site Path Configuration' => 'ベースサイトパスの設定',
-	'Base Site Path works as the default site path for each new site. It also ensures that each site path is within the Base Site Path.' => 'ベースサイトパスは新規サイトのサイトパスの既定値となります。各サイトのサイトパスは必ずベースサイトパスの配下になります。',
-	'[_1] does not exist.' => '[_1]が存在しません。',
-	'[_1] must be an absolute path.' => '[_1]は絶対パスで指定する必要があります。',
-	'[_1] must not be a subdirectory of the Movable Type directory.' => '[_1]はMovable Typeディレクトリ配下であってはなりません。',
-	'_BASE_SITE_PATH' => 'ベースサイトパス',
-
-## tmpl/admin2023/wizard/base_user_directory.tmpl
-	'Base User Directory Configuration' => 'ベースユーザーディレクトリの設定',
-	'Base User Directory is where you should put or upload your image/plugin/theme files (in appropriate subdirectories). The directory itself should not be web-accessible. It should not be the Movable Type directory or its subdirectory as well. It is recommended not to include the Movable Type directory, but you can if needed. If you are not sure, or if you want finer control, you can skip.' => 'ベースユーザーディレクトリはユーザーの画像やプラグイン、テーマを（適切なサブディレクトリに）アップロードしたり格納したりする場所です。ベースユーザーディレクトリ自体はWebブラウザからアクセスできる場所にあってはなりません。また、Movable Typeディレクトリやそのサブディレクトリであってはいけません。配下にMovable Typeディレクトリを含まないようにするのがお勧めですが、必要なら含めるようにもできます。よくわからない場合、またご自身で細かく設定したい場合は設定を省略できます。',
-	'Base User Directory' => 'ベースユーザーディレクトリ',
-
 ## tmpl/admin2023/wizard/cfg_dir.tmpl
 	'TempDir is required.' => 'TempDirが必要です。',
 	'TempDir' => 'TempDir',
@@ -5670,13 +5661,6 @@ use vars qw( @ISA %Lexicon );
 	'Your database configuration is complete.' => 'データベースの設定を完了しました。',
 	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.jp/documentation/[_1]',
 
-## tmpl/admin2023/wizard/content_separation.tmpl
-	'Check this if you prefer to skip extra path configuration.' => '追加のパス設定を省略する場合はチェックしてください。',
-	'Content Separation' => 'コンテンツの分離',
-	'Traditionally, uploaded files go into a directory under the mt-static directory, and user plugins and themes are put under directories where Movable Type system files are present. This traditional setup looks easy to start. However, it may lead to a problem when you upgrade to a new version of Movable Type due to leftovers from the previous version or the removal of the uploaded files.' => '従来アップロードしたファイルはmt-staticディレクトリ配下のディレクトリに入れられましたし、ユーザーのプラグインやテーマはMovable Typeのシステムファイルが存在しているディレクトリにインストールされていました。このやり方は簡単そうですが、Movable Typeを新しいバージョンにアップグレードするときに古いバージョンのファイルが残ったりアップロードしたファイルを消してしまうなどの問題が起こることもありました。',
-	'Use traditional setup' => '従来の設定を利用する',
-	'We recommend extra path configuration to separate your content from the system files.' => '追加のパス設定をして、ユーザーのコンテンツとシステムファイルを分離することをお勧めします。',
-
 ## tmpl/admin2023/wizard/optional.tmpl
 	'Address of your SMTP Server.' => 'SMTPサーバーのアドレスを指定します。',
 	'An error occurred while attempting to send mail: ' => 'メール送信の過程でエラーが発生しました。',
@@ -5708,14 +5692,6 @@ use vars qw( @ISA %Lexicon );
 	'You must set the Sendmail path.' => 'Sendmailのパスは必須入力です。',
 	'You must set the system email address.' => 'システムメールアドレスは必須入力です。',
 	'Your mail configuration is complete.' => 'メール設定を完了しました。',
-
-## tmpl/admin2023/wizard/other_paths.tmpl
-	'Import Directory' => 'インポートディレクトリ',
-	'Other Path Configuration' => 'その他のパス設定',
-	'There are a few more paths you should specify to separate your files from the system files. All of them should not be web-accessible.' => 'ユーザーのファイルとシステムファイルを分離するうえで設定した方がよいパスがいくつかあります。いずれもWebブラウザからアクセスできる場所にあってはなりません。',
-	'User Plugin Directory' => 'ユーザープラグインディレクトリ',
-	'User Template Directory' => 'ユーザーテンプレートディレクトリ',
-	'User Themes Directory' => 'ユーザーテーマディレクトリ',
 
 ## tmpl/admin2023/wizard/packages.tmpl
 	'All required Perl modules were found.' => '必要なPerlモジュールは揃っています。',
@@ -5751,15 +5727,6 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 	q{<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.} => q{エラー: '[_1]'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。},
 	q{The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).} => q{[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、[_1]ディレクトリにはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。},
-
-## tmpl/admin2023/wizard/support_directory.tmpl
-	'Fill both fields (or empty both fields).' => '両方のフィールドに値を入れるか、両方のフィールドを空にしてください。',
-	'Support Directory Configuration' => 'サポートディレクトリの設定',
-	'Support Directory Path is not writable.' => 'サポートディレクトリパスに書き込めません。',
-	'Support Directory Path' => 'サポートディレクトリパス',
-	'Support Directory URL is not web-accessible or points to an incorrect location.' => 'サポートディレクトリURLにWebブラウザからアクセスできません。あるいはサポートディレクトリパスとURLの設定がずれています。',
-	'Support Directory URL' => 'サポートディレクトリURL',
-	'Support Directory is where your asset files are uploaded to. It must be web-accessible. Traditionally it is located under the mt-static directory, but we recommend moving it to a different location.' => 'サポートディレクトリはアップロードしたアセットファイルが入る場所です。Webブラウザからアクセスできる必要があります。従来はmt-staticディレクトリ配下にありましたが、別の場所に移すことをお勧めします。',
 
 ## tmpl/cms/include/content_data_table.tmpl
 	'Unpublish' => '公開取り消し',

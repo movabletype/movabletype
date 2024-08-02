@@ -150,8 +150,8 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/tagcomplete.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:script type="text/javascript" path="jquery/jquery.validate.js">
+<mt:script type="text/javascript" path="js/tc/tagcomplete.js">
 <script type="text/javascript">
 /* <![CDATA[ */
 var tag_delim = '<mt:var name="auth_pref_tag_delim">';
