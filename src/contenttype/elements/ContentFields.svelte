@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type * as ContentType from "../../@types/contenttype";
+
   import { afterUpdate } from "svelte";
 
   import { recalcHeight } from "../Utils";
@@ -6,10 +8,10 @@
   import ContentField from "./ContentField.svelte";
   import SVG from "../../svg/elements/SVG.svelte";
 
-  export let config: MT.ContentType.ConfigSettings;
-  export let fieldsStore: MT.ContentType.FieldsStore;
-  export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
-  export let opts: MT.ContentType.ContentFieldsOpts;
+  export let config: ContentType.ConfigSettings;
+  export let fieldsStore: ContentType.FieldsStore;
+  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
+  export let opts: ContentType.ContentFieldsOpts;
   export let root: Element;
 
   $: isEmpty = $fieldsStore.length > 0 ? false : true;
@@ -17,7 +19,7 @@
   let droppable = false;
   const observer = opts.observer;
   let dragged: EventTarget | null = null;
-  let draggedItem: MT.ContentType.Field | null = null;
+  let draggedItem: ContentType.Field | null = null;
   const placeholder = document.createElement("div");
   placeholder.className = "placeholder";
   let dragoverState = false;
@@ -204,7 +206,7 @@
       const canDataLabel = field.data("can-data-label");
 
       const newId = Math.random().toString(36).slice(-8);
-      const newField: MT.ContentType.Field = {
+      const newField: ContentType.Field = {
         type: fieldType,
         typeLabel: fieldTypeLabel,
         id: newId,
@@ -213,10 +215,7 @@
         canDataLabel: canDataLabel,
         options: {}, // add in Svelte
       };
-      fieldsStore.update((fields: MT.ContentType.Fields) => [
-        ...fields,
-        newField,
-      ]);
+      fieldsStore.update((fields: ContentType.Fields) => [...fields, newField]);
       window.setDirty(true);
       // update is not needed in Svelte
 
@@ -238,7 +237,7 @@
     }
   };
 
-  const onDragStart = (e: DragEvent, f: MT.ContentType.Field): void => {
+  const onDragStart = (e: DragEvent, f: ContentType.Field): void => {
     dragged = e.target;
     draggedItem = f;
     (e.dataTransfer as DataTransfer).setData("text", f.id || "");
@@ -286,12 +285,12 @@
 
     rebuildLabelFields();
     window.setDirty(false);
-    const fieldOptions: Array<MT.ContentType.SubmitFieldOption> = [];
+    const fieldOptions: Array<ContentType.SubmitFieldOption> = [];
     if ($fieldsStore) {
       for (let i = 0; i < $fieldsStore.length; i++) {
         const c = tags[i];
         const options = gatheringData(c, i);
-        const newData: MT.ContentType.SubmitFieldOption = {};
+        const newData: ContentType.SubmitFieldOption = {};
         newData.type = $fieldsStore[i].type;
         newData.options = options;
         if (!$fieldsStore[i].isNew && options["id"].match(/^\d+$/)) {
@@ -360,8 +359,8 @@
   const toggleAll = (): void => {
     isExpanded = !isExpanded;
     const newIsShow = isExpanded ? "show" : "";
-    fieldsStore.update((fields: MT.ContentType.Fields) =>
-      fields.map((field: MT.ContentType.Field) => {
+    fieldsStore.update((fields: ContentType.Fields) =>
+      fields.map((field: ContentType.Field) => {
         field.isShow = newIsShow;
         return field;
       }),
@@ -381,8 +380,8 @@
     isExpanded = isAllExpanded ? true : false;
   };
 
-  const _moveField = (item: MT.ContentType.Field, pos: number): void => {
-    fieldsStore.update((fields: MT.ContentType.Fields) => {
+  const _moveField = (item: ContentType.Field, pos: number): void => {
+    fieldsStore.update((fields: ContentType.Fields) => {
       for (let i = 0; i < fields.length; i++) {
         let field = fields[i];
         if (field.id === item.id) {
@@ -478,8 +477,8 @@
   // create in Svelte
   const updateFieldsIsShowAll = (): void => {
     const collapseEls = document.querySelectorAll(".mt-collapse__content");
-    fieldsStore.update((fields: MT.ContentType.Fields) =>
-      fields.map((field: MT.ContentType.Field, i: number) => {
+    fieldsStore.update((fields: ContentType.Fields) =>
+      fields.map((field: ContentType.Field, i: number) => {
         if (collapseEls[i].classList.contains("show")) {
           field.isShow = "show";
         } else {

@@ -1,17 +1,19 @@
 <script lang="ts">
+  import type * as ContentType from "../../@types/contenttype";
+
   import ContentFieldOption from "./ContentFieldOption.svelte";
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   import StatusMsg from "./StatusMsg.svelte";
 
   // svelte-ignore unused-export-let
-  export let config: MT.ContentType.ConfigSettings;
-  export let field: MT.ContentType.Field;
+  export let config: ContentType.ConfigSettings;
+  export let field: ContentType.Field;
   // svelte-ignore unused-export-let
   export let gather = null;
   export let id: string;
-  export let options: MT.ContentType.Options;
-  export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
+  export let options: ContentType.Options;
+  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
 
   const contentTypes: Array<{ id: string; name: string }> =
     optionsHtmlParams.content_type.content_types;

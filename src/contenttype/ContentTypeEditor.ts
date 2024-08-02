@@ -1,3 +1,5 @@
+import type * as ContentType from "../@types/contenttype";
+
 import { writable } from "svelte/store";
 
 import ContentFieldTypes from "./ContentFieldTypes";
@@ -5,22 +7,22 @@ import ContentFieldTypes from "./ContentFieldTypes";
 import ContentFields from "./elements/ContentFields.svelte";
 
 export default class ContentTypeEditor {
-  static accessor config: MT.ContentType.ConfigSettings = {};
-  static accessor fieldsStore: MT.ContentType.FieldsStore;
-  static accessor optionsHtmlParams: MT.ContentType.OptionsHtmlParams = {};
-  static accessor opts: MT.ContentType.ContentFieldsOpts;
+  static accessor config: ContentType.ConfigSettings = {};
+  static accessor fieldsStore: ContentType.FieldsStore;
+  static accessor optionsHtmlParams: ContentType.OptionsHtmlParams = {};
+  static accessor opts: ContentType.ContentFieldsOpts;
   static readonly types = ContentFieldTypes;
 
   static registerCustomType(
     type: string,
-    mountFunction: MT.ContentType.CustomContentFieldMountFunction,
+    mountFunction: ContentType.CustomContentFieldMountFunction,
   ): void {
     this.types.registerCustomType(type, mountFunction);
   }
 
   static mount(
     targetSelector: string,
-    opts: MT.ContentType.ContentFieldsOpts,
+    opts: ContentType.ContentFieldsOpts,
   ): void {
     const target = this.getContentFieldsTarget(targetSelector);
 
