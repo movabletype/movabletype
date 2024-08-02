@@ -1,5 +1,4 @@
 // rollup.config.js
-import { glob } from "glob";
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import esbuild from 'rollup-plugin-esbuild'
@@ -14,7 +13,7 @@ const production = !process.env.ROLLUP_WATCH;
 const outputDir = "mt-static/js/build";
 
 export default {
-  input: ["src/bootstrap.ts", "src/contenttype.ts", "src/listing.ts"].concat(glob.sync("src/api/*.ts")),
+  input: ["src/contenttype.ts", "src/listing.ts"],
   output: {
     dir: outputDir,
     format: "esm",
