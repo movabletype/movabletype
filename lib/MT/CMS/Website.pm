@@ -88,9 +88,7 @@ sub edit {
                 )
             {
                 $param->{dynamic_enabled} = 1;
-                $param->{warning_include} = 1
-                    unless $blog->include_system eq 'php'
-                    || $blog->include_system eq '';
+                $param->{warning_include} = 1 unless !$blog->include_system || $blog->include_system eq 'php';
             }
             eval "require List::Util; require Scalar::Util;";
             unless ($@) {

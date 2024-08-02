@@ -9,6 +9,8 @@ package MT::Upgrade::v8;
 use strict;
 use warnings;
 
+our $MIGRATE_META_BATCH_SIZE = 100;
+
 sub upgrade_functions {
     return {
         v8_image_size => {
@@ -20,49 +22,68 @@ sub upgrade_functions {
 }
 
 sub _v8_image_size {
-    my $self        = shift;
-    my $asset_class = MT->model('asset');
-    my $meta_class  = $asset_class->meta_pkg;
+    my $self              = shift;
+    my %param             = @_;
+    my $asset_image_class = MT->model('asset.image');
+    my $meta_class        = $asset_image_class->meta_pkg;
 
-    $self->progress($self->translate_escape('Migrating image width/height meta data...'));
+    my $count  = $param{count}  || $asset_image_class->count;
+    my $offset = $param{offset} || 0;
 
-    my $iter = $asset_class->load_iter({ class => 'image' });
+    my $msg = $self->translate_escape('Migrating image width/height meta data...');
+    if ($offset) {
+        $self->progress(
+            sprintf("$msg (%d%%)", ($offset / $count * 100)),
+            $param{step});
+    } else {
+        $self->progress($msg, $param{step});
+    }
+
+    my @image_assets = $asset_image_class->load(
+        undef,
+        {
+            sort   => 'id',
+            offset => $offset,
+            limit  => $MIGRATE_META_BATCH_SIZE,
+        },
+    );
 
     require MT::Meta::Proxy;
-    my $updater = sub {
-        my $assets = shift;
-        MT::Meta::Proxy->bulk_load_meta_objects($assets);
-        $asset_class->begin_work;
-        eval {
-            my @ids;
-            for my $asset (@$assets) {
-                push @ids, $asset->id;
-                $asset->width($asset->meta('image_width'));
-                $asset->height($asset->meta('image_height'));
-                $asset->save;
-            }
+
+    MT::Meta::Proxy->bulk_load_meta_objects(\@image_assets);
+    $asset_image_class->begin_work;
+    eval {
+        my @ids;
+        for my $image (@image_assets) {
+            next unless defined($image->meta('image_width')) || defined($image->meta('image_height'));
+
+            push @ids, $image->id;
+            $image->width($image->meta('image_width'));
+            $image->height($image->meta('image_height'));
+            $image->save;
+        }
+        if (@ids) {
             $meta_class->driver->direct_remove(
                 $meta_class, {
                     asset_id => { op => 'in', value => \@ids },
                     type     => { op => 'in', value => [qw(image_width image_height)] },
                 },
             );
-        };
-        if ($@) {
-            $asset_class->rollback;
-        } else {
-            $asset_class->commit;
         }
     };
-    my @assets;
-    while (my $asset = $iter->next) {
-        push @assets, $asset;
-        if (@assets >= 100) {
-            $updater->(\@assets);
-            @assets = ();
-        }
+    if (my $e = $@) {
+        $asset_image_class->rollback;
+        return $self->error($self->translate_escape("An error occurred: [_1]", $e));
+    } else {
+        $asset_image_class->commit;
     }
-    $updater->(\@assets) if @assets;
+
+    $offset += @image_assets;
+    if ($offset < $count) {
+        return { count => $count, offset => $offset };
+    }
+
+    $self->progress("$msg (100%)", $param{step});
 }
 
 1;

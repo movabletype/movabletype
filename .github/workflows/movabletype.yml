@@ -13,8 +13,7 @@ concurrency:
   cancel-in-progress: true
 env:
   MT_TEST_IGNORE_FIXTURE: '0'
-  DOCKER_USERNAME: "${{ secrets.DOCKER_USERNAME }}"
-  DOCKER_PASSWORD: "${{ secrets.DOCKER_PASSWORD }}"
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   # Perl 5.38 / PHP 8.2 / MySQL 8.0
   fedora39:
@@ -28,7 +27,7 @@ jobs:
           - "t/*.t"
           - "t/mt7/[^t]*"
           - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
@@ -38,17 +37,19 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: login
-        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ (matrix.test != 'php' && matrix.test != 'selenium') }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test selenium
         if: ${{ matrix.test == 'selenium' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "MT_TEST_SELENIUM_MAX_RETRY=5 prove -lr -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:chromiumdriver bash -c "MT_TEST_SELENIUM_MAX_RETRY=5 prove -lr -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium"
       - name: test php
         if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   # Perl 5.38 / PHP 8.3 / MySQL 8.0
   fedora40:
@@ -70,7 +71,7 @@ jobs:
           - "t/*.t"
           - "t/mt7/[^t]*"
           - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
@@ -79,14 +80,16 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: login
-        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   # Perl 5.34 / PHP 8.0 / MySQL 8.0
   fedora35:
@@ -108,7 +111,7 @@ jobs:
           - "t/*.t"
           - "t/mt7/[^t]*"
           - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
@@ -117,14 +120,16 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: login
-        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_RUN_APP_AS_CGI=1 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_RUN_APP_AS_CGI=1 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit php/tests/*Test.php && make test-php-lint"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   # Perl 5.36 / PHP 8.1 / MySQL 8.0
   fedora37:
@@ -146,7 +151,7 @@ jobs:
           - "t/*.t"
           - "t/mt7/[^t]*"
           - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
@@ -156,14 +161,16 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: login
-        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_BUILDER=MT::Builder::Fast prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_BUILDER=MT::Builder::Fast prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   # Perl 5.16 / PHP 7.1 / MariaDB 5.5
   centos7:
@@ -185,7 +192,7 @@ jobs:
           - "t/*.t"
           - "t/mt7/[^t]*"
           - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
@@ -193,10 +200,12 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: login
-        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_DISABLE_OBJECT_CACHE=1 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_DISABLE_OBJECT_CACHE=1 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
 
   # Perl 5.32 / PHP 7.4 / MariaDB 10.5
   bullseye:
@@ -218,7 +227,7 @@ jobs:
           - "t/*.t"
           - "t/mt7/[^t]*"
           - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
@@ -227,14 +236,16 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: login
-        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_ADMIN_THEME_ID=0 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_ADMIN_THEME_ID=0 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
   buster:
@@ -256,7 +267,7 @@ jobs:
           - "t/*.t"
           - "t/mt7/[^t]*"
           - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
@@ -265,14 +276,16 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: login
-        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_FORCE_DATAAPI_VERSION=5 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "MT_TEST_FORCE_DATAAPI_VERSION=5 prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   cloud7:
     needs: [fedora39]
@@ -286,7 +299,7 @@ jobs:
           - "t/*.t"
           - "t/mt7/[^t]*"
           - "t/mt7/t*"
-          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
           - "t/cms_permission/"
           - "t/data_api/"
           - "t/tag/"
@@ -295,14 +308,16 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: login
-        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ env.TEST_IMAGE_NAME }}
       - name: test
         if: ${{ matrix.test != 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
       - name: test php
         if: ${{ matrix.test == 'php' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
   extra:
     needs: [fedora39]
@@ -323,14 +338,20 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: login
-        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: 'chromiumdriver'
       - name: test selenium
         if: ${{ matrix.test == 'selenium' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "BUILD_RELEASE_NUMBER=1 make && MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:chromiumdriver bash -c "BUILD_RELEASE_NUMBER=1 make && MT_TEST_SELENIUM_MAX_RETRY=5 MT_TEST_CRAWL=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: 'buster'
       - name: test xt
         if: ${{ matrix.test == 'xt' }}
-        run: docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:buster bash -c "prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
 
   node_lts:
     needs: [fedora39]
@@ -347,8 +368,6 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: login
-        run: docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
       - name: test npm ci
         run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm ci"
       - name: npm run test

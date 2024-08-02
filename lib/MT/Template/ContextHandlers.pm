@@ -998,6 +998,10 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Misc::_hdlr_captcha_fields',
             'StatsSnippet' =>
                 '$Core::MT::Template::Tags::Misc::_hdlr_stats_snippet',
+            Script =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_script',
+            Stylesheet =>
+                '$Core::MT::Template::Tags::Misc::_hdlr_stylesheet',
 
             # Content Type
             AuthorContentCount =>

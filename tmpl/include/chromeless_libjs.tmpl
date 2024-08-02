@@ -1,53 +1,49 @@
 <mt:unless name="cfg_exists">
   <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
   <!--[if IE]>
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <mt:stylesheet path="css/hacks/ie.css">
   <![endif]-->
   <mt:if name="local_lang_id" ne="en-us">
-  <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <mt:stylesheet path="styles_%l.css">
   </mt:if>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:script type="text/javascript" path="js/tc.js">
 </mt:unless>
 
 <mt:unless name="optimize_ui">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery-migrate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:script type="text/javascript" path="jquery/jquery.js">
+  <mt:script type="text/javascript" path="jquery/jquery-migrate.js">
+  <mt:script type="text/javascript" path="jqueryui/jquery-ui.js">
+  <mt:script type="text/javascript" path="jquery/jquery.validate.js">
 <mt:if name="use_svg4everybody">
-  <script type="text/javascript" src="<mt:var name="static_uri">svg4everybody/svg4everybody.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:script type="text/javascript" path="svg4everybody/svg4everybody.js">
 </mt:if>
 <mt:else>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery-migrate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:script type="text/javascript" path="jquery/jquery.min.js">
+  <mt:script type="text/javascript" path="jquery/jquery-migrate.min.js">
+  <mt:script type="text/javascript" path="jqueryui/jquery-ui.js">
+  <mt:script type="text/javascript" path="jquery/jquery.validate.min.js">
 <mt:if name="use_svg4everybody">
-  <script type="text/javascript" src="<mt:var name="static_uri">svg4everybody/svg4everybody.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <mt:script type="text/javascript" path="svg4everybody/svg4everybody.min.js">
 </mt:if>
 </mt:unless>
 <mt:unless name="cfg_exists">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <mt:script type="text/javascript" path="js/common/Core.js">
 </mt:unless>
 
 <mt:unless name="cfg_exists">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-  <mt:if name="local_lang_id" eq="en-us">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_en_us.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
-  <mt:else>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
-  </mt:if>
+  <mt:script type="text/javascript" path="mt.js">
+  <mt:script type="text/javascript" path="mt_%l.js">
   <mt:unless name="optimize_ui">
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+    <mt:script type="text/javascript" path="jquery/jquery.mt.js">
   <mt:else>
-    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+    <mt:script type="text/javascript" path="jquery/jquery.mt.min.js">
   </mt:unless>
 </mt:unless>
 
 <mt:unless name="optimize_ui">
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>popper/popper.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>bootstrap/js/bootstrap.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <mt:script type="text/javascript" path="popper/popper.js">
+  <mt:script type="text/javascript" path="bootstrap/js/bootstrap.js">
 <mt:else>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>popper/popper.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>bootstrap/js/bootstrap.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <mt:script type="text/javascript" path="popper/popper.min.js">
+  <mt:script type="text/javascript" path="bootstrap/js/bootstrap.min.js">
 </mt:unless>
