@@ -1,3 +1,4 @@
+import type { JSDOM } from "jsdom";
 import type { Editor } from "tinymce6";
 import "../../../../../../../../tests/helpers/tinymce6";
 import "./plugin";
@@ -7,6 +8,12 @@ describe("mt_protect", () => {
   let root: HTMLElement;
 
   beforeEach(async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const jsdom = (window as any).jsdom as JSDOM;
+    const virtualConsole = jsdom.window._virtualConsole;
+    const originalVirtualConsoleEmit = virtualConsole.emit;
+    virtualConsole.emit = () => {}; // disable temporary
+
     const element = document.createElement("div");
     element.id = "editor";
     document.body.appendChild(element);
@@ -19,6 +26,9 @@ describe("mt_protect", () => {
         verify_html: false,
         setup: (editor) => {
           editor.on("init", () => {
+            if (process.env.MT_TEST_ENABLE_JSDOM_VIRTUAL_CONSOLE) {
+              virtualConsole.emit = originalVirtualConsoleEmit;
+            }
             resolve(editor);
           });
         },

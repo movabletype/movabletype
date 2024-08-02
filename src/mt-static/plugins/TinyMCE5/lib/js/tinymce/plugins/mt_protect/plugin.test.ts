@@ -28,11 +28,13 @@ describe("mt_protect", () => {
           verify_html: false,
           setup: (editor) => {
             editor.on("init", () => {
-              virtualConsole.emit = originalVirtualConsoleEmit;
+              if (process.env.MT_TEST_ENABLE_JSDOM_VIRTUAL_CONSOLE) {
+                virtualConsole.emit = originalVirtualConsoleEmit;
+              }
               resolve(editor);
             });
           },
-        },
+        }
       );
       editor.render();
     });
