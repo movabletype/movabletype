@@ -583,6 +583,7 @@ sub restore_process_single_file {
         errors             => $errors,
         schema_version     => $schema_version,
         overwrite_template => $overwrite,
+        skip_fileinfo      => $skip_fileinfo,
     );
 
     $parser = MT::Util::sax_parser();
