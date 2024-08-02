@@ -2289,6 +2289,7 @@ sub dialog_restore_upload {
     my $schema_version = $app->param('schema_version')
         || $app->config('SchemaVersion');
     my $overwrite_template = $app->param('overwrite_templates') ? 1 : 0;
+    my $skip_fileinfo      = $app->param('skip_fileinfo')       ? 1 : 0;
 
     my $objects  = {};
     my $deferred = {};
@@ -2854,6 +2855,7 @@ sub restore_file {
     #  : $app->config('SchemaVersion');
     my $overwrite_template
         = $app->param('overwrite_global_templates') ? 1 : 0;
+    my $skip_fileinfo = $app->param('skip_fileinfo') ? 1 : 0;
 
     require MT::BackupRestore;
     my ($deferred, $blogs) = MT::BackupRestore->restore_file({
@@ -2919,6 +2921,7 @@ sub restore_directory {
 
     my $overwrite_template
         = $app->param('overwrite_global_templates') ? 1 : 0;
+    my $skip_fileinfo = $app->param('skip_fileinfo') ? 1 : 0;
 
     my @errors;
     my %error_assets;
@@ -3032,6 +3035,7 @@ sub restore_upload_manifest {
     #  : $app->config('SchemaVersion');
     $param->{overwrite_templates}
         = $app->param('overwrite_global_templates') ? 1 : 0;
+    $param->{skip_fileinfo} = $app->param('skip_fileinfo') ? 1 : 0;
 
     $param->{dialog_mode} = 'dialog_restore_upload';
     $param->{dialog_params}
