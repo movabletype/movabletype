@@ -44,7 +44,7 @@ describe("mt_protect", () => {
   describe("noscript element", () => {
     it("should remove noscript element", () => {
       editor.setContent(
-        '<p>pre</p><noscript><iframe src="http://example.com/test.html"></iframe></noscript><p>post</p>',
+        '<p>pre</p><noscript><iframe src="/test.html"></iframe></noscript><p>post</p>'
       );
       expect(editor.getContent()).toBe("<p>pre</p>\n<p>post</p>");
     });
@@ -55,9 +55,9 @@ describe("mt_protect", () => {
     test.each`
       iframe                                                                                                                      | sandbox
       // external site
-      ${`<iframe src="http://example.com/test.html"></iframe>`}                                                                   | ${null}
-      ${`<iframe src="http://example.com/test.html" sandbox="allow-scripts"></iframe>`}                                           | ${"allow-scripts"}
-      ${`<iframe src="http://example.com/test.html" sandbox="allow-scripts allow-same-origin"></iframe>`}                         | ${"allow-scripts allow-same-origin"}
+      ${`<iframe src="http://invalid/test.html"></iframe>`}                                                                       | ${null}
+      ${`<iframe src="http://invalid/test.html" sandbox="allow-scripts"></iframe>`}                                               | ${"allow-scripts"}
+      ${`<iframe src="http://invalid/test.html" sandbox="allow-scripts allow-same-origin"></iframe>`}                             | ${"allow-scripts allow-same-origin"}
 
       // same host, but different port
       ${`<iframe src="${location.protocol}//${location.hostname}/test.html"></iframe>`}                                           | ${null}
