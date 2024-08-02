@@ -41,7 +41,7 @@ tinymce.PluginManager.add("mt_protect", function (ed: Editor) {
               if (!isSameOrigin(iframeNode)) {
                 iframeNode.attr("sandbox", origSandbox);
               } else {
-                let newSandbox = "allow-scripts";
+                var newSandbox = "allow-scripts";
                 if (origSandbox === undefined) {
                   iframeNode.attr("data-mt-protect-no-sandbox", "1");
                 } else {
