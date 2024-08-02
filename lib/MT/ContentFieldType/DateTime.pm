@@ -20,7 +20,8 @@ sub field_html_params {
 
     my ( $date, $year, $month,  $day );
     my ( $time, $hour, $minute, $second );
-    if ( $app->param('reedit') ) {
+    # origin parameter check is for copy_this_content_data
+    if ( $app->param('reedit') && !$app->param('origin') ) {
         my $cf_id = $field_data->{content_field_id};
         $date   = $app->param("date-$cf_id");
         $year   = $app->param("date-$cf_id-year");

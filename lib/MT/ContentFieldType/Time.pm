@@ -19,7 +19,8 @@ sub field_html_params {
     my ( $app, $field_data ) = @_;
 
     my ( $time, $hour, $minute, $second );
-    if ( $app->param('reedit') ) {
+    # origin parameter check is for copy_this_content_data
+    if ( $app->param('reedit') && !$app->param('origin') ) {
         my $cf_id = $field_data->{content_field_id};
         $time   = $app->param("time-$cf_id");
         $hour   = $app->param("time-$cf_id-hour");
