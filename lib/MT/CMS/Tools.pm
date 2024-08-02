@@ -2417,9 +2417,16 @@ sub dialog_restore_upload {
     }
     else {
         ( $blog_ids, $asset_ids ) = eval {
-            MT::BackupRestore->restore_process_single_file( $fh, $objects,
-                $deferred, \@errors, $schema_version, $overwrite_template,
-                sub { _progress( $app, @_ ) } );
+            MT::BackupRestore->restore_process_single_file({
+                fh             => $fh,
+                objects        => $objects,
+                deferred       => $deferred,
+                errors         => \@errors,
+                schema_version => $schema_version,
+                overwrite      => $overwrite_template,
+                skip_fileinfo  => $skip_fileinfo,
+                callback       => sub { _progress($app, @_) },
+            });
         };
         if ($@) {
             $last = 1;
@@ -2855,9 +2862,14 @@ sub restore_file {
         = $app->param('overwrite_global_templates') ? 1 : 0;
 
     require MT::BackupRestore;
-    my ( $deferred, $blogs )
-        = MT::BackupRestore->restore_file( $fh, $errormsg, $schema_version,
-        $overwrite_template, sub { _progress( $app, @_ ); } );
+    my ($deferred, $blogs) = MT::BackupRestore->restore_file({
+        fh             => $fh,
+        errormsg       => $errormsg,
+        schema_version => $schema_version,
+        overwrite      => $overwrite_template,
+        skip_fileinfo  => $skip_fileinfo,
+        callback       => sub { _progress($app, @_); },
+    });
 
     $app->log({
         message  => $app->translate('Importing sites is finished.'),
@@ -2924,10 +2936,15 @@ sub restore_directory {
     my @errors;
     my %error_assets;
     require MT::BackupRestore;
-    my ( $deferred, $blogs, $assets )
-        = MT::BackupRestore->restore_directory( $dir, \@errors,
-        \%error_assets, $schema_version, $overwrite_template,
-        sub { _progress( $app, @_ ); } );
+    my ($deferred, $blogs, $assets) = MT::BackupRestore->restore_directory({
+        dir            => $dir,
+        errors         => \@errors,
+        error_assets   => \%error_assets,
+        schema_version => $schema_version,
+        overwrite      => $overwrite_template,
+        skip_fileinfo  => $skip_fileinfo,
+        callback       => sub { _progress($app, @_); },
+    });
 
     $app->log({
         message  => $app->translate('Importing sites is finished.'),
