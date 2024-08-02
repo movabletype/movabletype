@@ -1,9 +1,11 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   import { afterUpdate } from "svelte";
 
   export let field: string;
   export let parentDiv: HTMLDivElement | undefined;
-  export let item: MT.Listing.Item;
+  export let item: Listing.Item;
 
   afterUpdate(() => {
     setValues();

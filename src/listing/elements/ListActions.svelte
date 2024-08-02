@@ -1,20 +1,22 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   import ListActionsForMobile from "./ListActionsForMobile.svelte";
   import ListActionsForPc from "./ListActionsForPc.svelte";
 
-  export let buttonActions: MT.Listing.ButtonActions;
+  export let buttonActions: Listing.ButtonActions;
   export let hasPulldownActions: boolean;
-  export let listActions: MT.Listing.ListActions;
-  export let listActionClient: MT.Listing.ListActionClient;
-  export let moreListActions: MT.Listing.MoreListActions;
+  export let listActions: Listing.ListActions;
+  export let listActionClient: Listing.ListActionClient;
+  export let moreListActions: Listing.MoreListActions;
   export let plural: string;
   export let singular: string;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 
   let selectedAction:
-    | MT.Listing.ButtonAction
-    | MT.Listing.ListAction
-    | MT.Listing.MoreListAction
+    | Listing.ButtonAction
+    | Listing.ListAction
+    | Listing.MoreListAction
     | null;
   let selectedActionId: string;
   let selectedActionPhrase: string;
@@ -90,9 +92,9 @@
   const getAction = (
     actionId: string,
   ):
-    | MT.Listing.ButtonAction
-    | MT.Listing.ListAction
-    | MT.Listing.MoreListAction
+    | Listing.ButtonAction
+    | Listing.ListAction
+    | Listing.MoreListAction
     | null => {
     return (
       buttonActions[actionId] ||

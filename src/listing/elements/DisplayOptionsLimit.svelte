@@ -1,6 +1,8 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   export let changeLimit: (e: Event) => void;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 
   $: limit = store.limit || 0;
   $: limitToString = limit.toString();

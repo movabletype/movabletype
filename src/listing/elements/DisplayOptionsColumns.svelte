@@ -1,6 +1,8 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   export let disableUserDispOption: boolean;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 
   const toggleColumn = (e: Event): void => {
     const columnId = (e.currentTarget as HTMLInputElement)?.id;

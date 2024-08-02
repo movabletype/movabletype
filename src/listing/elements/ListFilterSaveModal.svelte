@@ -1,7 +1,9 @@
 <script lang="ts">
-  export let currentFilter: MT.Listing.Filter;
+  import type * as Listing from "../../@types/listing";
+
+  export let currentFilter: Listing.Filter;
   export let listFilterTopGetItemValues: () => void;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 
   let modal: HTMLDivElement;
   let filterName: HTMLInputElement;

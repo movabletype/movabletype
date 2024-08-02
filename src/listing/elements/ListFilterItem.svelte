@@ -1,13 +1,15 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   import { onMount } from "svelte";
 
   import SVG from "../../svg/elements/SVG.svelte";
 
   import ListFilterItemField from "./ListFilterItemField.svelte";
 
-  export let currentFilter: MT.Listing.Filter;
-  export let filterTypes: Array<MT.Listing.FilterType>;
-  export let item: MT.Listing.Item;
+  export let currentFilter: Listing.Filter;
+  export let filterTypes: Array<Listing.FilterType>;
+  export let item: Listing.Item;
   export let listFilterTopAddFilterItemContent: (
     itemIndex: string,
     contentIndex: string,

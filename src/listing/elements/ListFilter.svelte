@@ -1,12 +1,14 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   import ListFilterDetail from "./ListFilterDetail.svelte";
   import ListFilterHeader from "./ListFilterHeader.svelte";
 
-  export let filterTypes: Array<MT.Listing.FilterType>;
-  export let listActionClient: MT.Listing.ListActionClient;
+  export let filterTypes: Array<Listing.FilterType>;
+  export let listActionClient: Listing.ListActionClient;
   export let localeCalendarHeader: Array<string>;
   export let objectLabel: string;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 
   let currentFilter = store.currentFilter;
   let validateErrorMessage: JQuery<HTMLElement>;
@@ -130,7 +132,7 @@
 
   /* add "filter" argument for updating this output after changing "filter" */
   const isFilterItemSelected = (
-    filter: MT.Listing.Filter,
+    filter: Listing.Filter,
     type: string,
   ): boolean => {
     return filter.items.some(function (item) {

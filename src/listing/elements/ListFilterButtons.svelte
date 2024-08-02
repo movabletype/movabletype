@@ -1,12 +1,14 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   import ListFilterSaveModal from "./ListFilterSaveModal.svelte";
 
-  export let currentFilter: MT.Listing.Filter;
+  export let currentFilter: Listing.Filter;
   export let listFilterTopGetItemValues: () => void;
   export let listFilterTopIsUserFilter: () => boolean;
   export let listFilterTopValidateFilterDetails: () => boolean;
   export let objectLabel: string;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 
   let openModal: (args: { filterLabel?: string; saveAs?: boolean }) => void;
 

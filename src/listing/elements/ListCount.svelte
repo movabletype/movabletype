@@ -1,5 +1,7 @@
 <script lang="ts">
-  export let store: MT.Listing.ListStore;
+  import type * as Listing from "../../@types/listing";
+
+  export let store: Listing.ListStore;
 
   $: count = store.count || 0;
   $: limit = store.limit || 0;
