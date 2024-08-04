@@ -318,6 +318,11 @@ sub reflow {
     my $tmpl = shift;
     my ($tokens) = @_;
     $tokens ||= $tmpl->tokens;
+    if (!Scalar::Util::blessed $tokens->[0]) {
+        for my $node (@$tokens) {
+            bless $node, 'MT::Template::Node';
+        }
+    }
 
     # reconstitute text of template based on tokens
     my $str = '';
