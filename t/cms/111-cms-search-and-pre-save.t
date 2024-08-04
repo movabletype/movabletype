@@ -31,7 +31,7 @@ subtest 'template attributes' => sub {
         build_interval => 60,
         build_type => MT::PublishOption::SCHEDULED(),
     );
-    MT::Test::Permission->make_template(
+    my $org = MT::Test::Permission->make_template(
         blog_id => $site->id,
         name => 'template to replace',
         text => 'Text to replace',
@@ -39,6 +39,8 @@ subtest 'template attributes' => sub {
         outfile => '',
         %params_to_test,
     );
+
+    my $tmpl_id = $org->id;
 
     my $app = MT::Test::App->new;
     $app->login($admin);
@@ -74,7 +76,7 @@ subtest 'template attributes' => sub {
 
     $test_env->clear_mt_cache;
 
-    my $tmpl = MT->model('template')->load($ids[0]);
+    my $tmpl = MT->model('template')->load($tmpl_id);
     for my $key (keys %params_to_test) {
         is $tmpl->$key => $params_to_test{$key}, "$key is intact";
     }
