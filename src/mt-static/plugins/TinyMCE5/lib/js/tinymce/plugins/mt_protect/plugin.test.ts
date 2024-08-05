@@ -34,7 +34,7 @@ describe("mt_protect", () => {
               resolve(editor);
             });
           },
-        }
+        },
       );
       editor.render();
     });
@@ -44,7 +44,7 @@ describe("mt_protect", () => {
   describe("noscript element", () => {
     it("should remove noscript element", () => {
       editor.setContent(
-        '<p>pre</p><noscript><iframe src="/test.html"></iframe></noscript><p>post</p>'
+        '<p>pre</p><noscript><iframe src="/test.html"></iframe></noscript><p>post</p>',
       );
       expect(editor.getContent()).toBe("<p>pre</p>\n<p>post</p>");
     });
