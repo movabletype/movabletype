@@ -2,7 +2,10 @@ name: movabletype/movabletype
 on:
   push:
     branches:
-    - "**/*"
+      - "develop"
+      - "support-*"
+      - "release-*"
+      - "*cron*"
   pull_request:
   schedule:
     - cron:  '30 0 * * 0' # Sunday Only
@@ -55,14 +58,7 @@ jobs:
 
   secondary_test:
     needs: [primary_test]
-    if: >-
-      ${{
-        github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
-        || contains(github.ref_name, 'cron')
-      }}
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'push' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -113,14 +109,7 @@ jobs:
 
   node_lts:
     needs: [primary_test]
-    if: >-
-      ${{
-        github.event_name == 'schedule'
-        || startsWith(github.ref_name, 'support-')
-        || startsWith(github.ref_name, 'release-')
-        || (github.ref_name == 'develop')
-        || contains(github.ref_name, 'cron')
-      }}
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - name: checkout
