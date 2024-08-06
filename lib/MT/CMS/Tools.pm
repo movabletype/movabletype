@@ -2459,6 +2459,12 @@ sub dialog_restore_upload {
     }
     elsif ($last) {
         $param->{restore_end} = 1;
+        $app->log({
+            message  => $app->translate('Importing sites is finished.'),
+            level    => MT::Log::INFO(),
+            class    => 'system',
+            category => 'restore'
+        });
         if ( $param->{is_dirty} ) {
             _log_dirty_restore( $app, $deferred );
             my $log_url = $app->base
@@ -2853,6 +2859,13 @@ sub restore_file {
         = MT::BackupRestore->restore_file( $fh, $errormsg, $schema_version,
         $overwrite_template, sub { _progress( $app, @_ ); } );
 
+    $app->log({
+        message  => $app->translate('Importing sites is finished.'),
+        level    => MT::Log::INFO(),
+        class    => 'system',
+        category => 'restore'
+    });
+
     if ( !defined($deferred) || scalar( keys %$deferred ) ) {
         _log_dirty_restore( $app, $deferred );
         my $log_url
@@ -2915,6 +2928,13 @@ sub restore_directory {
         = MT::BackupRestore->restore_directory( $dir, \@errors,
         \%error_assets, $schema_version, $overwrite_template,
         sub { _progress( $app, @_ ); } );
+
+    $app->log({
+        message  => $app->translate('Importing sites is finished.'),
+        level    => MT::Log::INFO(),
+        class    => 'system',
+        category => 'restore'
+    });
 
     if ( scalar @errors ) {
         $$error = $app->translate('Error occurred during import process.');
