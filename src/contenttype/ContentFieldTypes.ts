@@ -1,3 +1,5 @@
+import type * as CT from "../@types/contenttype";
+
 import ContentType from "./elements/ContentType.svelte";
 import SingleLineText from "./elements/SingleLineText.svelte";
 import MultiLineText from "./elements/MultiLineText.svelte";
@@ -46,7 +48,7 @@ export default class ContentFieldTypes {
   };
 
   private static customTypes: {
-    [type: string]: MT.ContentType.CustomContentFieldMountFunction;
+    [type: string]: CT.CustomContentFieldMountFunction;
   } = {};
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,15 +56,13 @@ export default class ContentFieldTypes {
     return !this.customTypes[type] && this.coreTypes[type];
   }
 
-  static getCustomType(
-    type: string,
-  ): MT.ContentType.CustomContentFieldMountFunction {
+  static getCustomType(type: string): CT.CustomContentFieldMountFunction {
     return this.customTypes[type];
   }
 
   static registerCustomType(
     type: string,
-    mountFunction: MT.ContentType.CustomContentFieldMountFunction,
+    mountFunction: CT.CustomContentFieldMountFunction,
   ): void {
     this.customTypes[type] = mountFunction;
   }

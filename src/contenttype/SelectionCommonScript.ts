@@ -1,16 +1,18 @@
 // copied some functions from selection_common_script.tmpl
 
+import type * as ContentType from "../@types/contenttype";
+
 export const addRow = (
-  values: Array<MT.ContentType.SelectionValue>,
-): Array<MT.ContentType.SelectionValue> => {
+  values: Array<ContentType.SelectionValue>,
+): Array<ContentType.SelectionValue> => {
   values.push({ checked: "", label: "", value: "" });
   return values;
 };
 
 export const deleteRow = (
-  values: Array<MT.ContentType.SelectionValue>,
+  values: Array<ContentType.SelectionValue>,
   index: number,
-): Array<MT.ContentType.SelectionValue> => {
+): Array<ContentType.SelectionValue> => {
   values.splice(index, 1);
   if (values.length === 0) {
     values = [
@@ -22,7 +24,7 @@ export const deleteRow = (
     ];
   } else {
     let found = false;
-    values.forEach(function (v: MT.ContentType.SelectionValue) {
+    values.forEach(function (v: ContentType.SelectionValue) {
       if (v.checked === "checked") {
         found = true;
       }

@@ -1,10 +1,12 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   import DisplayOptionsColumns from "./DisplayOptionsColumns.svelte";
   import DisplayOptionsLimit from "./DisplayOptionsLimit.svelte";
 
   export let changeLimit: (e: Event) => void;
   export let disableUserDispOption: boolean;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 
   const resetColumns = (): void => {
     store.trigger("reset_columns");

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type * as ContentType from "../../@types/contenttype";
+
   import { afterUpdate } from "svelte";
 
   import { addRow, deleteRow, validateTable } from "../SelectionCommonScript";
@@ -7,12 +9,12 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   // svelte-ignore unused-export-let
-  export let config: MT.ContentType.ConfigSettings;
-  export let field: MT.ContentType.Field;
+  export let config: ContentType.ConfigSettings;
+  export let field: ContentType.Field;
   export let id: string;
-  export let options: MT.ContentType.Options;
+  export let options: ContentType.Options;
   // svelte-ignore unused-export-let
-  export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
+  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
 
   if (options.can_add === "0") {
     options.can_add = 0;
@@ -131,7 +133,7 @@
         elm.prop("disabled", false);
       });
     }
-    options.values.forEach(function (v: MT.ContentType.SelectionValue) {
+    options.values.forEach(function (v: ContentType.SelectionValue) {
       v.checked = "";
     });
   };

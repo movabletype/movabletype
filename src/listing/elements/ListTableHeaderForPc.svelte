@@ -1,10 +1,12 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   export let hasListActions: boolean;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
   export let toggleAllRowsOnPage: () => void;
   export let toggleSortColumn: (e: Event) => void;
 
-  const classProps = (column: MT.Listing.ListColumn): object => {
+  const classProps = (column: Listing.ListColumn): object => {
     if (column.sortable && store.sortBy === column.id) {
       if (store.sortOrder === "ascend") {
         return { class: "mt-table__ascend" };

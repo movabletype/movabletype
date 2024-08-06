@@ -1,9 +1,11 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   export let checked: boolean;
   export let hasListActions: boolean;
   export let hasMobilePulldownActions: boolean;
   export let object: Array<string | number>;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 
   const classes = (index: string): string => {
     const nameClass = store.showColumns[index].id;

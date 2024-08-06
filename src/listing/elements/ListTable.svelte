@@ -1,10 +1,12 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   import ListTableBody from "./ListTableBody.svelte";
   import ListTableHeader from "./ListTableHeader.svelte";
 
   export let hasListActions: boolean;
   export let hasMobilePulldownActions: boolean;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
   export let zeroStateLabel: string;
 </script>
 

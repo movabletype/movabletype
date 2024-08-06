@@ -1,19 +1,21 @@
 <script lang="ts">
+  import type * as ContentType from "../../@types/contenttype";
+
   import ContentFieldTypes from "../ContentFieldTypes";
   import { recalcHeight } from "../Utils";
 
   import Custom from "./Custom.svelte";
   import SVG from "../../svg/elements/SVG.svelte";
 
-  export let config: MT.ContentType.ConfigSettings;
-  export let field: MT.ContentType.Field;
-  export let fields: MT.ContentType.Fields;
+  export let config: ContentType.ConfigSettings;
+  export let field: ContentType.Field;
+  export let fields: ContentType.Fields;
   export let fieldIndex: number;
-  export let fieldsStore: MT.ContentType.FieldsStore;
+  export let fieldsStore: ContentType.FieldsStore;
   export let gatheringData: (c: HTMLDivElement, index: number) => object;
   export let parent: HTMLDivElement;
   export let gather: (() => object) | undefined;
-  export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
+  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
 
   $: id = `field-options-${field.id}`;
 

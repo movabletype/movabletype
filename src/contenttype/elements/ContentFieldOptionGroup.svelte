@@ -1,15 +1,17 @@
 <script lang="ts">
   // copied from lib/MT/Template/ContextHandlers.pm
 
+  import type * as ContentType from "../../@types/contenttype";
+
   import { onMount } from "svelte";
 
   import { recalcHeight } from "../Utils";
 
   import ContentFieldOption from "./ContentFieldOption.svelte";
 
-  export let field: MT.ContentType.Field;
+  export let field: ContentType.Field;
   export let id: string;
-  export let options: MT.ContentType.Options;
+  export let options: ContentType.Options;
   export let type: string;
 
   if (!type) {

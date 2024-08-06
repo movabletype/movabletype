@@ -1,9 +1,11 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   import SVG from "../../svg/elements/SVG.svelte";
 
   export let listFilterTopCreateNewFilter: (filterLabel?: string) => void;
   export let listFilterTopUpdate: () => void;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 
   let isEditingFilter: { [key: string]: boolean } = {};
   let modal: HTMLDivElement;
