@@ -89,10 +89,4 @@ sub has_invalid_request {
     ok $error =~ /Invalid Request/i, $message || 'has invalid request';
 }
 
-sub has_no_invalid_request {
-    my ($self, $message) = @_;
-    my $error = $self->_concatenated_error // '';
-    ok $error !~ /Invalid Request/i, $message || 'has no invalid request';
-}
-
 1;
