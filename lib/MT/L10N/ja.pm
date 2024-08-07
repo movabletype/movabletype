@@ -920,6 +920,9 @@ use vars qw( @ISA %Lexicon );
 	'folder_path/page_basename.html' => 'folder_path/page_basename.html',
 	'folder_path/page_basename/index.html' => 'folder_path/page_basename/index.html',
 
+## lib/MT/ArchiveType/Yearly.pm
+	'YEARLY_ARCHIVE_TITLE' => '[_1][_2]年',
+
 ## lib/MT/Asset.pm
 	'Assets of this website' => 'ウェブサイトのアセット',
 	'Assets with Extant File' => 'ファイルが存在するアセット',
