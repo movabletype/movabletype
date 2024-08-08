@@ -57,9 +57,11 @@ sub archive_title {
     my $start = start_end_year($stamp);
     my $year  = MT::Template::Context::_hdlr_date( $ctx,
         { ts => $start, 'format' => "%Y" } );
+    my $lang = lc MT->current_language || 'en_us';
+    $lang = 'ja' if lc($lang) eq 'jp';
     my $author = $obj->display_name($ctx);
 
-    MT->translate('YEARLY_ARCHIVE_TITLE', $author, $year);
+    sprintf( "%s%s%s", $author, $year, ( $lang eq 'ja' ? '&#24180;' : '' ) );
 }
 
 sub archive_file {
