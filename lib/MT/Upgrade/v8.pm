@@ -84,6 +84,7 @@ sub _v8_image_size {
     }
 
     $self->progress("$msg (100%)", $param{step});
+    return 1;
 }
 
 1;
