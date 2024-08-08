@@ -681,7 +681,7 @@ sub can_delete {
 
 sub pre_save {
     my $eh = shift;
-    my ( $app, $obj ) = @_;
+    my ( $app, $obj, $original ) = @_;
     my $pkg = $app->model('category');
     if ( defined( my $pass = $app->param('tb_passphrase') ) ) {
         $obj->{__tb_passphrase} = $pass;

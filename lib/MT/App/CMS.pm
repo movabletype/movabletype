@@ -2815,6 +2815,8 @@ sub set_default_tmpl_params {
     $param->{language_id} = ( $lang !~ /en[_-]us/ ) ? $lang : '';
     $param->{mode} = $app->mode;
 
+    $param->{is_psgi} = $ENV{'psgi.input'} ? 1 : 0;
+
     my $blog_id = $app->param('blog_id') || 0;
     my $blog;
     $blog = $app->blog if $blog_id;

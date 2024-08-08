@@ -48,9 +48,8 @@ sub _mt_getcwd {
 
 sub check_perl {
     my ($class, $param) = @_;
-    my $perl_version = ref($^V) eq 'version' ? $^V->normal : ($^V ? join('.', unpack 'C*', $^V) : $]);
-    $param->{perl_is_too_old} = 1 if $] < 5.016000;
-    $param->{perl_version}    = $perl_version;
+    $param->{perl_is_too_old} = 1 if $] < 5.016003;
+    $param->{perl_version}    = sprintf('%vd', $^V);
 
     my %seen;
     $param->{perl_include_path} = [grep { !$seen{$_}++ } @INC];
@@ -193,6 +192,7 @@ sub check_dependencies {
                     my $formats = join ", ", map { $imglib{$_} ? "<strong>$_</strong>" : $_ } sort Graphics::Magick->QueryFormat;
                     $hash{extra_html} = MT->translate("Supported format: [_1]", $formats);
                 } elsif ($module eq 'Imager') {
+                    eval { require Imager::File::WEBP; };
                     my $formats = join ", ", map { $imglib{$_} ? "<strong>$_</strong>" : $_ } sort Imager->read_types;
                     $hash{extra_html} = MT->translate("Supported format: [_1]", $formats);
                 }
@@ -203,6 +203,7 @@ sub check_dependencies {
         $param->{$key} = \@modified;
         $param->{"missing_$key"} = \@missing;
     }
+    $param->{lacks_core_modules} = MT::Util::Dependencies->lacks_core_modules;
 
     $param;
 }

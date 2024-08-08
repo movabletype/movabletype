@@ -904,11 +904,7 @@ sub init_config {
                 = ( $Config::Config{osname}, $Config::Config{osvers} );
             print $PERFLOG "# Operating System: $osname/$osvers\n";
             print $PERFLOG "# Platform: $^O\n";
-            my $ver
-                = ref($^V) eq 'version'
-                ? $^V->normal
-                : ( $^V ? join( '.', unpack 'C*', $^V ) : $] );
-            print $PERFLOG "# Perl Version: $ver\n";
+            printf $PERFLOG "# Perl Version: %vd\n", $^V;
             print $PERFLOG "# Web Server: $ENV{SERVER_SOFTWARE}\n";
             require MT::Object;
             my $driver = MT::Object->driver;
@@ -1421,11 +1417,16 @@ sub init_plugins {
         $timer->pause_partial if $timer;
         eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire '$plugin';";
         $timer->mark( "Loaded plugin " . $sig ) if $timer;
-        if ($@) {
+        if (my $error = $@) {
             $Plugins{$plugin_sig}{error} = $mt->translate("Errored plugin [_1] is disabled by the system", $plugin_sig);
-            $Plugins{$plugin_sig}{system_error} = $@;
+            $Plugins{$plugin_sig}{system_error} = $error;
             $Plugins{$plugin_sig}{enabled} = 0;
-            delete $PluginSwitch->{$plugin_sig};
+            $PluginSwitch->{$plugin_sig} = 0;
+            eval {
+                require MT::Util::Log;
+                MT::Util::Log::init();
+                MT::Util::Log->error($error);
+            };
             return;
         }
         else {
@@ -1583,7 +1584,7 @@ sub init_plugins {
                 $Plugins{$sig_to_drop}{enabled} = 0;
                 $Plugins{$sig_to_drop}{system_error} = $error;
                 delete $Plugins{$sig_to_drop}{object};
-                delete $PluginSwitch->{$sig_to_drop};
+                $PluginSwitch->{$sig_to_drop} = 0;
                 @Components = grep { ($_->{plugin_sig} || '') ne $sig_to_drop } @Components;
                 next;
             }
