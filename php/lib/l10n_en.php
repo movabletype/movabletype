@@ -38,7 +38,7 @@ $Lexicon = array(
 	'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'Content Type Category Monthly',
 	'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'Content Type Category Daily',
 	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'Content Type Category Weekly',
-	'YEARLY_ARCHIVE_TITLE' => '[_1][_2]'
+	'YEARLY_ARCHIVE_TITLE' => '[_1]'
 );
 
 function translate_phrase($str, $params = null) {
