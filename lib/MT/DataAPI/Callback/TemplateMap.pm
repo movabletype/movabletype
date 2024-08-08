@@ -117,7 +117,7 @@ sub _retrieve_archive_types {
 }
 
 sub pre_save {
-    my ( $cb, $app, $obj ) = @_;
+    my ( $cb, $app, $obj, $original ) = @_;
 
     if ( !$obj->is_preferred ) {
         my $terms = {

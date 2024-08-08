@@ -342,7 +342,7 @@ sub edit {
 
 sub pre_save {
     my $eh = shift;
-    my ( $app, $obj ) = @_;
+    my ( $app, $obj, $original ) = @_;
 
     if ( !$obj->id ) {
         my $site_path = $obj->site_path;
