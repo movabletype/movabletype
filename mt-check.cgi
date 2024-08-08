@@ -113,11 +113,11 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '7.904.0';
+    $version = '7.905.0';
 }
 my $release_version = '__RELEASE_VERSION_ID__';
 if ( $release_version eq '__RELEASE' . '_VERSION_ID__' ) {
-    $release_version = 'r.5503';
+    $release_version = 'r.5504';
 }
 
 my ( $mt, $LH );
@@ -466,14 +466,19 @@ my $cwd = '';
     }
 }
 
-my $ver
-    = ref($^V) eq 'version'
-    ? $^V->normal
-    : ( $^V ? join( '.', unpack 'C*', $^V ) : $] );
+my $ver = sprintf('%vd', $^V);
 my $perl_ver_check = '';
-if ( $] < 5.010001 ) {    # our minimal requirement for support
-    $perl_ver_check = <<EOT;
-<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.10.1"></p></div>
+if ( $] < 5.016003 ) {    # our minimal requirement for support
+    $perl_ver_check = <<"EOT";
+<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.16.3"></p></div>
+EOT
+}
+
+require MT::Util::Dependencies;
+my $perl_lacks_core_modules = '';
+if (MT::Util::Dependencies->lacks_core_modules) {
+    $perl_lacks_core_modules = <<EOT;
+<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="Movable Type does not work because your Perl does not have some of the core modules. Please ask your system administrator to install perl (or perl-core) properly."></p></div>
 EOT
 }
 
@@ -482,6 +487,7 @@ my $inc_path = join "<br />\n", @INC;
 print_encode( trans_templ(<<INFO) );
 <h2 id="system-info"><__trans phrase="System Information"></h2>
 $perl_ver_check
+$perl_lacks_core_modules
 INFO
 if ($release_version) {
 
@@ -576,7 +582,6 @@ if ($mt) {
     }
 }
 
-require MT::Util::Dependencies;
 my ($CORE_REQ, $CORE_DATA, $CORE_OPT) = MT::Util::Dependencies->requirements_for_check($mt);
 
 @REQ  = @$CORE_REQ  unless @REQ;
@@ -752,7 +757,7 @@ MSG
     print_encode("\n\t</div>\n\n");
 }
 
-if ($is_good) {
+if ($is_good && !$perl_ver_check && !$perl_lacks_core_modules) {
     if ( !$view ) {
         print_encode( trans_templ(<<HTML) );
     <div class="bg-success msg msg-success">

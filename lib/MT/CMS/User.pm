@@ -1846,6 +1846,11 @@ sub pre_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
 
+    # It is not allowed to replace user attributes now, but it's better to avoid accidental changes
+    my $mode = $app->mode;
+    my $type = $app->param('_type') || '';
+    return unless $mode eq 'save' and $type eq 'author';
+
     # Authors should only be of type AUTHOR when created from
     # the CMS app; COMMENTERs are created from the Comments app.
     $obj->type( MT::Author::AUTHOR() );

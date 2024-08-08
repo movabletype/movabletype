@@ -1359,6 +1359,8 @@ use vars qw( @ISA %Lexicon );
 	'Page Views' => 'ページビュー',
 	'Please contact your Movable Type system administrator.' => 'システム管理者に問い合わせてください。',
 	'Please install Mozilla::CA module. Writing "SSLVerifyNone 1" in mt-config.cgi can hide this warning, but this is not recommended.' => 'このメッセージを消すには、Mozilla::CA モジュールをインストールするか、mt-config.cgi に "SSLVerifyNone 1" を指定してください。',
+	'Required module [_1] (ver [_2]) is missing.' => '必須モジュール [_1] (バージョン [_2]) がインストールされていません。',
+	'Required module [_1] (ver [_2]) is too old (ver [_3]).' => '必須モジュール [_1] (バージョン [_2]) が古すぎます(バージョン [_3])。',
 	'System' => 'システム',
 	'The support directory is not writable.' => 'サポートディレクトリに書き込めません。',
 	'Unknown Content Type' => '不明なコンテンツタイプ',
@@ -1612,6 +1614,7 @@ use vars qw( @ISA %Lexicon );
 	'Image quality(JPEG) is [_1]' => 'JPEG 画像の品質は [_1] です',
 	'Image quality(PNG) is [_1]' => 'PNG 画像の圧縮レベルは [_1] です',
 	'Importing a file failed: ' => 'ファイルからインポートできませんでした。',
+	'Importing sites is finished.' => 'サイトのインポートが終了しました。',
 	'Invalid SitePath.  The SitePath should be valid and absolute, not relative' => 'サイトパス制限には正しい絶対パスを指定してください。',
 	'Invalid author_id' => 'ユーザーのIDが不正です。',
 	'Invalid email address' => 'メールアドレスのフォーマットが正しくありません',
@@ -1680,7 +1683,7 @@ use vars qw( @ISA %Lexicon );
 	q{Removing Archive Path for the site '[_1]' (ID:[_2])...} => q{'[_1]'(ID:[_2])のアーカイブパスを消去しています...},
 	q{Removing Site Path for the site '[_1]' (ID:[_2])...} => q{'[_1]'(ID:[_2])のサイトパスを消去しています...},
 	q{Site(s) (ID:[_1]) was/were successfully exported by user '[_2]'} => q{'[_2]'がサイト(ID:[_1])をエクスポートしました。},
-	q{Successfully imported objects to Movable Type system by user '[_1]'} => q{'[_1]'がMovable Typeシステムにデータをインポートしました。},
+	q{Successfully imported objects to Movable Type system by user '[_1]'} => q{'[_1]'がMovable Typeシステムにすべてのデータをインポートしました。},
 	q{The password for the user '[_1]' has been recovered.} => q{ユーザー「[_1]」のパスワードが再設定されました。},
 	q{User '[_1]' (user #[_2]) does not have email address} => q{ユーザー'[_1]'(ID:[_2])はメールアドレスがありません},
 
@@ -2137,7 +2140,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/Entry.pm
 	'A resource "[_1]" is required.' => '"[_1]"リソースを指定する必要があります。',
-	'An error occurred during the import process: [_1]. Please check your import file.' => 'インポートの途中でエラーが発生しました : [_1]。インポートファイルを確認してください。',
+	'An error occurred during the import process: [_1]. Please check your import file.' => 'インポート処理の一部でエラーが発生しました : [_1]。インポートファイルを確認してください。',
 	'Could not found archive template for [_1].' => '[_1]のアーカイブテンプレートが見つかりません。',
 	'Invalid convert_breaks: [_1]' => '不正なテキストフォーマットが指定されました: [_1]',
 	'Invalid default_cat_id: [_1]' => '不正な規定のカテゴリーIDが指定されました: [_1]',
@@ -3145,6 +3148,7 @@ use vars qw( @ISA %Lexicon );
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされているPerl ([_1])は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlを[_2]以上にアップグレードしてください。',
 	'Web server:' => 'ウェブサーバー',
 	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
+	'Movable Type does not work because your Perl does not have some of the core modules. Please ask your system administrator to install perl (or perl-core) properly.' => 'お使いのPerlはコアモジュールが不足しているためMovable Typeを利用できません。システム管理者にperl（またはperl-core）を適切にインストールするよう依頼してください。',
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'サーバーに [_1]か、[_1]の動作に必要な他のモジュールがインストールされていません。',
 	'Your server has [_1] installed (version [_2]).' => 'サーバーに [_1] がインストールされています(バージョン [_2])。',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'お使いのサーバーには、Movable Type の動作に必要なすべてのモジュールがインストールされています。モジュールを追加インストール作業は必要はありません。マニュアルに従い、インストールを続けてください。',
@@ -3832,6 +3836,7 @@ use vars qw( @ISA %Lexicon );
 	'Your preferences have been saved.' => '設定を保存しました。',
 	'pixels' => 'ピクセル',
 	'width:' => '幅:',
+	'height:' => '高さ:',
 	q{ASCII equivalents (&quot;, ', ..., -, --)} => q{対応するASCII文字 (&quot;、'、...、-、--)},
 	q{'Popup image' template does not exist or is empty and cannot be selected.} => q{'ポップアップ画像' テンプレートが存在しない、もしくは空のため選択できません。},
 
@@ -4160,11 +4165,13 @@ use vars qw( @ISA %Lexicon );
 	'Data API' => 'Data API',
 	'Disable Data API' => 'Data API を利用しない',
 	'Enable Data API in system scope.' => 'システム領域の設定やデータを Data API の出力結果に含める',
+	'Enable Data API in this site for all users including system administrators.' => 'システム管理者を含むすべてのユーザーにData APIの利用を許可する。',
 	'Enable Data API in this site.' => 'Data API の利用を許可する。',
 	'External Notifications' => '更新通知',
 	'Note: This option is currently ignored because outbound notification pings are disabled system-wide.' => '備考: システム外部ping通知がシステムレベルで無効のため、このオプションは現在無効となっています。',
 	'Notify ping services of [_1] updates' => 'サイト更新pingサービス通知',
 	'Others:' => 'その他:',
+	'System administrators are always allowed to use Data API.' => 'システム管理者は設定によらずData APIを利用できます。',
 
 ## tmpl/cms/content_data/select_list.tmpl
 	'No Content Type.' => 'コンテンツタイプがありません',

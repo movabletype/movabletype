@@ -25,8 +25,9 @@ jQuery.fn.mtModal.open(
 </script>
 
 <mt:unless name="open_dialog">
+<h2><__trans phrase="Importing sites is finished."></h2>
   <mt:if name="restore_success">
-<h2><__trans phrase="All data imported successfully!"></h2>
+<h3><__trans phrase="All data imported successfully!"></h3>
     <mt:unless name="restore_upload">
 <p><__trans phrase="Make sure that you remove the files that you imported from the 'import' folder, so that if/when you run the import process again, those files will not be re-imported."></p>
     </mt:unless>

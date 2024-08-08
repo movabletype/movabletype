@@ -2548,7 +2548,7 @@ http://narnia.na/nana/
 
 === test 446
 --- template
-<MTBlogSitePath is='1'>
+<MTBlogSitePath id='1'>
 --- expected
 TEST_ROOT/site/
 
@@ -5113,3 +5113,15 @@ download-,info-download,nightly-
 <MTAuthors><MTAuthorPrevious></MTAuthorPrevious></MTAuthors>[<MTIfAuthor>HasAuthor:Outside</MTIfAuthor>]
 --- expected
 []
+
+=== test 906 add id attribute (MTC-29257)
+--- template
+<MTWebsiteURL id='1'>
+--- expected
+http://narnia.na/
+
+=== test 907 add id attribute (MTC-29257)
+--- template
+<MTWebsitePath id='1'>
+--- expected
+TEST_ROOT/
