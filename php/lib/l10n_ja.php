@@ -45,7 +45,7 @@ $Lexicon_ja = array(
 	'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'コンテンツタイプ カテゴリ 日別',
 	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'コンテンツタイプ カテゴリ 週別',
 	'Category' => 'カテゴリ',
-	'YEARLY_ARCHIVE_TITLE' => '[_1][_2]年',
+	'YEARLY_ARCHIVE_TITLE' => '[_1]年',
 
 ## php/lib/block.mtarchivelist.php
 	'No Content Type could be found.' => 'コンテンツタイプが見つかりません。',
