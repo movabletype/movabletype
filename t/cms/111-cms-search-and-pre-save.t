@@ -56,6 +56,8 @@ subtest 'template attributes' => sub {
         push @ids, $_->attr('value');
     });
 
+    ok grep({$_ == $tmpl_id} @ids), 'tmpl id is included';
+
     my $form = $app->form;
     my %param = (
         do_search => '',
