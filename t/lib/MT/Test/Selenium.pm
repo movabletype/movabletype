@@ -26,7 +26,7 @@ use MT::PSGI;
 use Selenium::Waiter;
 use constant DEBUG => $ENV{MT_TEST_SELENIUM_DEBUG} ? 1 : $ENV{TRAVIS} ? 1 : 0;
 use constant MY_HOST => $ENV{TRAVIS} ? $ENV{HOSTNAME} : '127.0.0.1';
-use Test::FailWarnings -allow_from => [qw(Selenium::CanStartBinary::FindBinary)];
+use Test::FailWarnings -allow_from => [qw(Selenium::CanStartBinary::FindBinary)];  ## no critic(TooMuchCode::ProhibitUnusedImport)
 
 with qw(
     MT::Test::Role::Wight
