@@ -513,15 +513,29 @@ sub _loop_through_objects {
 
 sub restore_file {
     my $class = shift;
-    my ( $fh, $errormsg, $schema_version, $overwrite, $callback ) = @_;
+    my ($fh, $errormsg, $schema_version, $overwrite, $skip_fileinfo, $callback);
+    if (ref $_[0] eq 'HASH') {
+        my $args = shift;
+        ($fh, $errormsg, $schema_version, $overwrite, $skip_fileinfo, $callback) = @$args{qw(fh errormsg schema_version overwrite skip_fileinfo callback)};
+    } else {
+        ($fh, $errormsg, $schema_version, $overwrite, $callback) = @_;
+    }
 
     my $objects  = {};
     my $deferred = {};
     my $errors   = [];
 
     my ( $blog_ids, $asset_ids ) = eval {
-        $class->restore_process_single_file( $fh, $objects, $deferred,
-            $errors, $schema_version, $overwrite, $callback );
+        $class->restore_process_single_file({
+            fh             => $fh,
+            objects        => $objects,
+            deferred       => $deferred,
+            errors         => $errors,
+            schema_version => $schema_version,
+            overwrite      => $overwrite,
+            skip_fileinfo  => $skip_fileinfo,
+            callback       => $callback,
+        });
     };
 
     unless ($@) {
@@ -534,9 +548,13 @@ sub restore_file {
 
 sub restore_process_single_file {
     my $class = shift;
-    my ( $fh, $objects, $deferred, $errors, $schema_version, $overwrite,
-        $callback )
-        = @_;
+    my ($fh, $objects, $deferred, $errors, $schema_version, $overwrite, $skip_fileinfo, $callback);
+    if (ref $_[0] eq 'HASH') {
+        my $args = shift;
+        ($fh, $objects, $deferred, $errors, $schema_version, $overwrite, $skip_fileinfo, $callback) = @$args{qw(fh objects deferred errors schema_version overwrite skip_fileinfo callback)};
+    } else {
+        ($fh, $objects, $deferred, $errors, $schema_version, $overwrite, $callback) = @_;
+    }
 
     require XML::SAX;
     require MT::Util;
@@ -565,6 +583,7 @@ sub restore_process_single_file {
         errors             => $errors,
         schema_version     => $schema_version,
         overwrite_template => $overwrite,
+        skip_fileinfo      => $skip_fileinfo,
     );
 
     $parser = MT::Util::sax_parser();
@@ -599,9 +618,13 @@ sub restore_process_single_file {
 
 sub restore_directory {
     my $class = shift;
-    my ( $dir, $errors, $error_assets, $schema_version, $overwrite,
-        $callback )
-        = @_;
+    my ($dir, $errors, $error_assets, $schema_version, $overwrite, $skip_fileinfo, $callback);
+    if (ref $_[0] eq 'HASH') {
+        my $args = shift;
+        ($dir, $errors, $error_assets, $schema_version, $overwrite, $skip_fileinfo, $callback) = @$args{qw(dir errors error_assets schema_version overwrite skip_fileinfo callback)};
+    } else {
+        ($dir, $errors, $error_assets, $schema_version, $overwrite, $callback) = @_;
+    }
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -660,8 +683,16 @@ sub restore_directory {
             or push @$errors, MT->translate("Cannot open [_1]."), next;
 
         my ( $tmp_blog_ids, $tmp_asset_ids ) = eval {
-            __PACKAGE__->restore_process_single_file( $fh, \%objects,
-                $deferred, $errors, $schema_version, $overwrite, $callback );
+            __PACKAGE__->restore_process_single_file({
+                fh             => $fh,
+                objects        => \%objects,
+                deferred       => $deferred,
+                errors         => $errors,
+                schema_version => $schema_version,
+                overwrite      => $overwrite,
+                skip_fileinfo  => $skip_fileinfo,
+                callback       => $callback,
+            });
         };
 
         close $fh;
