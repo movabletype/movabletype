@@ -424,7 +424,7 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 ?>
 PHP
 
-            my $result = MT::Test::PHP->run($test_script, \my $php_error);
+            my $result = Encode::decode_utf8(MT::Test::PHP->run($test_script, \my $php_error));
 
             # those with $method_name have higher precedence
             # and todo does, too
