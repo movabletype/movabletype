@@ -20,6 +20,7 @@ use Mock::MonkeyPatch;
 use Sub::Name;
 use Time::HiRes qw/time/;
 use Module::Find qw/findsubmod/;
+use Test::FailWarnings;
 
 our $MT_HOME;
 
