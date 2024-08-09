@@ -147,6 +147,12 @@ SKIP: {
         }
         $archive_type ||= '';
 
+        my $blog = MT::Blog->load($blog_id);
+        if ($blog and $blog->language ne lc MT->config->DefaultLanguage) {
+            $blog->language(MT->config->DefaultLanguage);
+            $blog->save;
+        }
+
         my $test_name_prefix = $self->_test_name_prefix($archive_type);
 
         run {
