@@ -261,6 +261,26 @@ jobs:
         if: ${{ matrix.test == 'php' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "phpunit && make test-php-lint"
 
+  node_lts:
+    needs: [fedora39]
+    if: >-
+      ${{
+        github.event_name == 'schedule'
+        || github.event_name == 'pull_request'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
+        || contains(github.ref_name, 'cron')
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.0
+      - name: test npm ci
+        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm ci"
+      - name: test to copy files
+        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'npm run copy && git config --global --add safe.directory /mt && git add -N . && git diff --exit-code --name-only'
+
   extra:
     needs: [fedora39]
     if: ${{ ( ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) || contains(github.head_ref, 'cron') ) }}
@@ -294,6 +314,7 @@ jobs:
     - buster
     - cloud7
     - extra
+    - node_lts
     if: ${{ ( (github.event_name != 'schedule') || ( (github.repository == 'movabletype/movabletype' ) && (github.event_name == 'schedule') && ((github.ref == 'refs/heads/master') || contains(github.ref, '/develop') || contains(github.ref, '/support-') || contains(github.ref, '/release-')) ) ) }}
     steps:
     - name: Install jq

@@ -93,9 +93,9 @@
     "bootstrap5": "npm:bootstrap@5.2.2",
     "codemirror": "5.61.1",
     "jquery": "3.7.0",
-    "jquery-migrate": "3.4.0",
+    "jquery-migrate": "3.4.1",
     "jquery-ui": "1.13.2",
-    "jquery-ui-touch-punch": "0.2.3",
+    "jquery-ui-touch-punch": "github:movabletype/jquery-ui-touch-punch",
     "jquery-validation": "1.19.5",
     "js-cookie": "3.0.1",
     "mt-chart-api": "github:movabletype/mt-chart-api-sdk-js#v1.0.2",
@@ -108,7 +108,7 @@
     "tinymce5": "npm:tinymce@5.10.9",
     "tinymce5-i18n": "npm:tinymce-i18n@^23.6.19",
     "tinymce6": "npm:tinymce@^6.8.4",
-    "tinymce6-i18n": "npm:tinymce-i18n@^23.6.19",
+    "tinymce6-i18n": "npm:tinymce-i18n@23.6.19",
     "tslib": "^2.6.0",
     "xpath": "0.0.33"
   }
