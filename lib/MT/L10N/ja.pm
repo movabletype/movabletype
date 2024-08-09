@@ -5477,6 +5477,9 @@ use vars qw( @ISA %Lexicon );
 	'Import from Exported file' => 'エクスポートファイルからインポートする',
 	'Overwrite global templates.' => 'グローバルテンプレートを上書きする',
 	'Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.' => 'インポートとエクスポートをするために必要なPerlモジュール(XML::SAXおよび依存モジュール)が見つかりません。',
+	'Published file information' => '公開ファイル情報',
+	'Skip importing' => 'インポートを省略',
+	'You should not import published file information if you import data exported from the same server. Otherwise, you may lose the original published files.' => '同一サーバーからエクスポートしてきたデータをインポートする場合、公開ファイル情報はインポートしないでください。元の公開ファイルを失うことがあります。',
 
 ## tmpl/admin2023/cms/restore_end.tmpl
 	'An error occurred during the import process: [_1] Please check activity log for more details.' => 'インポート中にエラーが発生しました。[_1] 詳細についてはログを確認してください。',

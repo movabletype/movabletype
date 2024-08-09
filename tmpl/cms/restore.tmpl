@@ -40,6 +40,18 @@
       </div>
     </mtapp:setting>
 
+    <mtapp:setting
+       id="skip_importing"
+       label="<__trans phrase="Skip importing">"
+       hint="<__trans phrase="You should not import published file information if you import data exported from the same server. Otherwise, you may lose the original published files.">"
+       show_hint="1"
+       show_label="1">
+      <div class="custom-control custom-checkbox">
+        <input name="skip_fileinfo" id="skip_fileinfo" type="checkbox" class="custom-control-input" value="1" />
+        <label class="custom-control-label" for="skip_fileinfo"><__trans phrase="Published file information"></label>
+      </div>
+    </mtapp:setting>
+
     <mt:setvarblock name="action_buttons">
       <button
          type="submit"
