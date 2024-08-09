@@ -178,6 +178,10 @@ subtest 'Transform image' => sub {
         { sort  => [{ column => 'id', desc => 'DESC' }] },
     );
 
+    # make sure the image file exists
+    require MT::Test::Image;
+    MT::Test::Image->write(file => $newest_asset->file_path);
+
     my $app = MT::Test::App->new('CMS');
     $app->login($admin);
     $app->post_ok({

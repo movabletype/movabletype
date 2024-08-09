@@ -17,7 +17,7 @@ use MT::Test::Fixture::ContentData;
 use MT::Test::DataAPI;
 use JSON;
 
-$test_env->prepare_fixture('content_data');
+$test_env->prepare_fixture('content_data/dirty');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
