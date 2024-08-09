@@ -76,10 +76,8 @@ sub archive_title {
     require MT::Template::Context;
     my $year = MT::Template::Context::_hdlr_date( $ctx,
         { ts => $start, 'format' => "%Y" } );
-    my $lang = lc MT->current_language || 'en_us';
-    $lang = 'ja' if lc($lang) eq 'jp';
 
-    sprintf( "%s%s", $year, ( $lang eq 'ja' ? '&#24180;' : '' ) );
+    MT->translate('YEARLY_ARCHIVE_TITLE', $year);
 }
 
 sub date_range {
