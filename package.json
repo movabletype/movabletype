@@ -74,7 +74,6 @@
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
     "popper.js": "^1.16.1",
     "riot": "3.7.4",
-    "sass-loader": "^13.3.0",
     "svg4everybody": "^2.1.9",
     "tinymce5": "npm:tinymce@5.10.9",
     "tinymce5-i18n": "npm:tinymce-i18n@^23.6.19",
