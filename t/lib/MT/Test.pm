@@ -144,6 +144,7 @@ sub init_app {
             my $app = shift;
             $app->{__test_output} ||= '';
             $app->{__test_output} .= join( '', @_ );
+            return 1;
         };
         *MT::App::login = sub {
             my $app = shift;
