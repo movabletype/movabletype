@@ -25,9 +25,6 @@ use MT::Test::Permission;
 use MT::Test::Fixture;
 use MT::Test::Fixture::ContentData;
 
-# XXX: just for now
-use Test::FailWarnings -allow_from => [qw(MT::ContentFieldType::Categories)];
-
 my $app = MT->instance;
 
 my $vars = {};

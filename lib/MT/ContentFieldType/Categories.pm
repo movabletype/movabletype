@@ -258,7 +258,7 @@ sub tag_handler {
         my @category_ids;
         if ( defined $lastn ) {
             if ( $lastn > 0 ) {
-                if ( $lastn >= %categories ) {
+                if ( $lastn >= scalar keys %categories ) {
                     @category_ids = @{$value};
                 }
                 else {
