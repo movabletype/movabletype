@@ -82,6 +82,8 @@ sub run_tests {
 
             my $blog = MT::Blog->load($blog_id);
             $blog->archive_type_preferred($archive_type);
+            $blog->language(MT->current_language);
+            $blog->date_language(MT->current_language);
             $blog->save;
 
             $self->_run_perl_test( $blog_id, $map, $objs );
