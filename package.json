@@ -7,6 +7,7 @@
     "lib": "lib"
   },
   "scripts": {
+    "test": "vitest",
     "build-mt-css": "npm run build-mt-css-compile && npm run build-mt-css-prefix && npm run build-mt-css-minify",
     "build-mt-css-compile": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 scss/mt.scss mt-static/css/mt.css",
     "build-mt-css-minify": "cleancss -O1 --source-map --source-map-inline-sources --output mt-static/css/mt.min.css mt-static/css/mt.css",
@@ -48,7 +49,7 @@
     "build-svelte": "npm run build-svelte:app",
     "svelte-dev": "rollup --config rollup.config.ts --configPlugin typescript -w",
     "svelte-check-types": "tsc",
-    "svelte-format": "prettier --plugin prettier-plugin-svelte --write src/**/*.{ts,svelte} *.ts",
+    "svelte-format": "prettier --plugin prettier-plugin-svelte --write 'src/**/*.{ts,svelte}' '*.ts'",
     "svelte-lint": "eslint --fix --ext .ts --ext .tsx --ext .svelte src"
   },
   "repository": {
@@ -78,6 +79,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-svelte": "^2.39.0",
     "glob": "^11.0.0",
+    "jsdom": "^24.1.1",
     "node-sass": "^9.0.0",
     "postcss-cli": "^11.0.0",
     "postcss-flexbugs-fixes": "^5.0.1",
@@ -92,7 +94,8 @@
     "svelte": "^4.2.15",
     "svelte-check": "^3.8.5",
     "svelte-preprocess": "^5.0.4",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.4"
   },
   "dependencies": {
     "@riotjs/observable": "^4.1.1",
