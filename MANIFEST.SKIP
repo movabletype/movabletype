@@ -368,6 +368,7 @@ build-language-stamp
 \.php_cs\.dist$
 \.php-cs-fixer\.php
 ^rollup.config.ts
+^vitest.config.ts
 ^tsconfig.json
 \.babelrc
 \.eslintrc.json

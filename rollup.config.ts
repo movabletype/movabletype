@@ -10,17 +10,23 @@ import css from "rollup-plugin-css-only";
 import cleaner from "rollup-plugin-cleaner";
 
 const production = !process.env.ROLLUP_WATCH;
-const outputDir = "mt-static/js/build";
+const defaultOutputDir = "mt-static/js/build";
 
-export default {
+const mtStaticOutputDir = "mt-static";
+const mtStaticInputFiles = [
+  "src/mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_protect/plugin.ts",
+  "src/mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_protect/plugin.ts",
+];
+
+const defaultConfig = {
   input: ["src/contenttype.ts", "src/listing.ts"],
   output: {
-    dir: outputDir,
+    dir: defaultOutputDir,
     format: "esm",
     sourcemap: !production,
   },
   plugins: [
-    cleaner({ targets: [outputDir] }),
+    cleaner({ targets: [defaultOutputDir] }),
     resolve({
       browser: true,
       dedupe: ["svelte"],
@@ -41,7 +47,38 @@ export default {
 
     // Watch the `public` directory and refresh the
     // browser on changes when not in production
-    !production && livereload(outputDir),
+    !production && livereload(defaultOutputDir),
     typescript({ sourceMap: !production }),
   ],
 };
+
+const mtStaticConfig = {
+  input: mtStaticInputFiles,
+  output: {
+    dir: mtStaticOutputDir,
+    format: "esm",
+    sourcemap: !production,
+    entryFileNames: ({ facadeModuleId }) => {
+      return facadeModuleId
+        .replace(/.*\/src\/mt-static\//, "")
+        .replace(/\.ts$/, ".js");
+    },
+  },
+  plugins: [
+    resolve({
+      browser: true,
+    }),
+    commonjs(),
+    esbuild({
+      sourceMap: true,
+      minify: production,
+    }),
+
+    // Watch the `public` directory and refresh the
+    // browser on changes when not in production
+    !production && livereload(mtStaticOutputDir),
+    typescript({ sourceMap: !production }),
+  ],
+};
+
+export default [defaultConfig, mtStaticConfig];

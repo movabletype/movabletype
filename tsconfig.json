@@ -15,7 +15,7 @@
     // Import non-ES modules as default imports.
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "typeRoots": ["node_modules/@types", "src/@types"],
+    "types": ["vitest/globals", "@types/jquery"],
     "noImplicitAny": false,
     "jsx": "preserve",
     "baseUrl": ".",
