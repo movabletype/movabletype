@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type * as ContentType from "../../@types/contenttype";
+
   import { afterUpdate } from "svelte";
 
   import { addRow, deleteRow, validateTable } from "../SelectionCommonScript";
@@ -7,12 +9,12 @@
   import ContentFieldOptionGroup from "./ContentFieldOptionGroup.svelte";
 
   // svelte-ignore unused-export-let
-  export let config: MT.ContentType.ConfigSettings;
-  export let field: MT.ContentType.Field;
+  export let config: ContentType.ConfigSettings;
+  export let field: ContentType.Field;
   export let id: string;
-  export let options: MT.ContentType.Options;
+  export let options: ContentType.Options;
   // svelte-ignore unused-export-let
-  export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
+  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
 
   let refsTable: HTMLTableElement;
 
@@ -41,7 +43,7 @@
   // <mt:include name="content_field_type_options/selection_common_script.tmpl">
 
   const enterInitial = (index: number): void => {
-    options.values.forEach(function (v: MT.ContentType.SelectionValue) {
+    options.values.forEach(function (v: ContentType.SelectionValue) {
       v.checked = "";
     });
     options.values[index].checked = "checked";

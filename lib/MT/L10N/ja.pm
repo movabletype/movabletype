@@ -1528,6 +1528,7 @@ use vars qw( @ISA %Lexicon );
 	'Image quality(JPEG) is [_1]' => 'JPEG 画像の品質は [_1] です',
 	'Image quality(PNG) is [_1]' => 'PNG 画像の圧縮レベルは [_1] です',
 	'Importing a file failed: ' => 'ファイルからインポートできませんでした。',
+	'Importing sites is finished.' => 'サイトのインポートが終了しました。',
 	'Invalid SitePath.  The SitePath should be valid and absolute, not relative' => 'サイトパス制限には正しい絶対パスを指定してください。',
 	'Invalid author_id' => 'ユーザーのIDが不正です。',
 	'Invalid email address' => 'メールアドレスのフォーマットが正しくありません',
@@ -1596,7 +1597,7 @@ use vars qw( @ISA %Lexicon );
 	q{Removing Archive Path for the site '[_1]' (ID:[_2])...} => q{'[_1]'(ID:[_2])のアーカイブパスを消去しています...},
 	q{Removing Site Path for the site '[_1]' (ID:[_2])...} => q{'[_1]'(ID:[_2])のサイトパスを消去しています...},
 	q{Site(s) (ID:[_1]) was/were successfully exported by user '[_2]'} => q{'[_2]'がサイト(ID:[_1])をエクスポートしました。},
-	q{Successfully imported objects to Movable Type system by user '[_1]'} => q{'[_1]'がMovable Typeシステムにデータをインポートしました。},
+	q{Successfully imported objects to Movable Type system by user '[_1]'} => q{'[_1]'がMovable Typeシステムにすべてのデータをインポートしました。},
 	q{The password for the user '[_1]' has been recovered.} => q{ユーザー「[_1]」のパスワードが再設定されました。},
 	q{User '[_1]' (user #[_2]) does not have email address} => q{ユーザー'[_1]'(ID:[_2])はメールアドレスがありません},
 
@@ -2050,7 +2051,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/Entry.pm
 	'A resource "[_1]" is required.' => '"[_1]"リソースを指定する必要があります。',
-	'An error occurred during the import process: [_1]. Please check your import file.' => 'インポートの途中でエラーが発生しました : [_1]。インポートファイルを確認してください。',
+	'An error occurred during the import process: [_1]. Please check your import file.' => 'インポート処理の一部でエラーが発生しました : [_1]。インポートファイルを確認してください。',
 	'Could not found archive template for [_1].' => '[_1]のアーカイブテンプレートが見つかりません。',
 	'Invalid convert_breaks: [_1]' => '不正なテキストフォーマットが指定されました: [_1]',
 	'Invalid default_cat_id: [_1]' => '不正な規定のカテゴリーIDが指定されました: [_1]',

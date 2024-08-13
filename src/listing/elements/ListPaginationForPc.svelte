@@ -1,9 +1,11 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   export let movePage: (e: Event) => void;
   export let nextDisabledProp: { disabled?: string };
   export let page: number;
   export let previousDisabledProp: { disabled?: string };
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 </script>
 
 <ul class="pagination d-none d-md-flex">

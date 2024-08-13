@@ -1,9 +1,11 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   import DisplayOptionsDetail from "./DisplayOptionsDetail.svelte";
 
   export let changeLimit: (e: Event) => void;
   export let disableUserDispOption: boolean;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 </script>
 
 <div class="row">

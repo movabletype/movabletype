@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   import SVG from "../../svg/elements/SVG.svelte";
 
   export let isTooNarrowWidth: boolean;
@@ -6,7 +8,7 @@
   export let nextDisabledProp: { disabled?: string };
   export let page: number;
   export let previousDisabledProp: { disabled?: string };
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 </script>
 
 <ul class="pagination__mobile d-md-none">

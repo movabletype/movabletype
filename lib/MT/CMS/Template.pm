@@ -2101,7 +2101,7 @@ sub _path_contains_inappropriate_whitespaces {
 
 sub pre_save {
     my $eh = shift;
-    my ( $app, $obj ) = @_;
+    my ( $app, $obj, $original ) = @_;
 
     ## Strip linefeed characters.
     if ( my $text = $obj->column('text') ) {
@@ -2114,8 +2114,6 @@ sub pre_save {
         $obj->text($text);
     }
 
-    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-
     if (_path_contains_inappropriate_whitespaces($obj->outfile)) {
         return $eh->error($app->translate("Output filename contains an inappropriate whitespace."));
     }
@@ -2127,7 +2125,13 @@ sub pre_save {
         }
     }
 
+    # The following is only for specific mode and type (ie. not for searching/replacing)
+    my $mode = $app->mode;
+    my $type = $app->param('_type') || '';
+    return 1 unless ($mode eq 'save' and $type eq 'template');
+
     # update text heights if necessary
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     if ($perms) {
         my $prefs = $perms->template_prefs || '';
         my $text_height = $app->param('text_height');

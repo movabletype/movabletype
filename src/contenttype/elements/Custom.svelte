@@ -1,15 +1,17 @@
 <script lang="ts">
+  import type * as ContentType from "../../@types/contenttype";
+
   import { afterUpdate, onDestroy } from "svelte";
 
   import ContentFieldTypes from "../ContentFieldTypes";
 
-  export let config: MT.ContentType.ConfigSettings;
+  export let config: ContentType.ConfigSettings;
   export let fieldIndex: number;
-  export let fieldsStore: MT.ContentType.FieldsStore;
+  export let fieldsStore: ContentType.FieldsStore;
   export let gather: (() => object) | null | undefined;
-  export let optionsHtmlParams: MT.ContentType.OptionsHtmlParams;
+  export let optionsHtmlParams: ContentType.OptionsHtmlParams;
 
-  let customContentFieldObject: MT.ContentType.CustomContentFieldObject | null;
+  let customContentFieldObject: ContentType.CustomContentFieldObject | null;
   let target: Element;
   let type: string | null;
 

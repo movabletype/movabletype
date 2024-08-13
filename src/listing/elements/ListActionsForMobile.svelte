@@ -1,30 +1,29 @@
 <script lang="ts">
-  export let buttonActions: MT.Listing.ButtonActions;
-  export let doAction: (e: Event) => boolean | undefined;
-  export let listActions: MT.Listing.ListActions;
-  export let moreListActions: MT.Listing.MoreListActions;
+  import type * as Listing from "../../@types/listing";
 
-  const buttonActionsForMobile = (): MT.Listing.ButtonActions => {
+  export let buttonActions: Listing.ButtonActions;
+  export let doAction: (e: Event) => boolean | undefined;
+  export let listActions: Listing.ListActions;
+  export let moreListActions: Listing.MoreListActions;
+
+  const buttonActionsForMobile = (): Listing.ButtonActions => {
     return _getActionsForMobile(buttonActions);
   };
 
-  const listActionsForMobile = (): MT.Listing.ListActions => {
+  const listActionsForMobile = (): Listing.ListActions => {
     return _getActionsForMobile(listActions);
   };
 
-  const moreListActionsForMobile = (): MT.Listing.MoreListActions => {
+  const moreListActionsForMobile = (): Listing.MoreListActions => {
     return _getActionsForMobile(moreListActions);
   };
 
   const _getActionsForMobile = (
     actions:
-      | MT.Listing.ButtonActions
-      | MT.Listing.ListActions
-      | MT.Listing.MoreListActions,
-  ):
-    | MT.Listing.ButtonActions
-    | MT.Listing.ListActions
-    | MT.Listing.MoreListActions => {
+      | Listing.ButtonActions
+      | Listing.ListActions
+      | Listing.MoreListActions,
+  ): Listing.ButtonActions | Listing.ListActions | Listing.MoreListActions => {
     const mobileActions = {};
     Object.keys(actions).forEach((key) => {
       const action = actions[key];

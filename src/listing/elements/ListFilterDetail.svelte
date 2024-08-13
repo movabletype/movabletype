@@ -1,11 +1,13 @@
 <script lang="ts">
+  import type * as Listing from "../../@types/listing";
+
   import ListFilterItem from "./ListFilterItem.svelte";
   import ListFilterButtons from "./ListFilterButtons.svelte";
 
-  export let currentFilter: MT.Listing.Filter;
-  export let filterTypes: Array<MT.Listing.FilterType>;
+  export let currentFilter: Listing.Filter;
+  export let filterTypes: Array<Listing.FilterType>;
   export let isFilterItemSelected: (
-    filter: MT.Listing.Filter,
+    filter: Listing.Filter,
     type: string,
   ) => boolean;
   export let listFilterTopAddFilterItem: (filterType: string) => void;
@@ -23,7 +25,7 @@
   export let listFilterTopValidateFilterDetails: () => boolean;
   export let localeCalendarHeader: Array<string>;
   export let objectLabel: string;
-  export let store: MT.Listing.ListStore;
+  export let store: Listing.ListStore;
 
   const addFilterItem = (e: Event): void => {
     if ((e.currentTarget as HTMLElement)?.classList.contains("disabled")) {
