@@ -416,6 +416,9 @@ sub field_value_handler {
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.6.0');
+
     my $cat_ids = 0;
     if ($values) {
         if ( ref $values eq 'ARRAY' ) {
