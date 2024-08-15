@@ -31,7 +31,7 @@
     "rename-riot-compiler": "cd mt-static/riot && mv riot+compiler.js riot-compiler.js && mv riot+compiler.min.js riot-compiler.min.js",
     "copy-svg4everybody": "cd node_modules/svg4everybody/dist && cp -f svg4everybody.js svg4everybody.min.js ../../../mt-static/svg4everybody/",
     "copy-mt-chart-api": "cp -rf node_modules/mt-chart-api/lib/* mt-static/chart-api/",
-    "copy-mt-data-api-sdk": "cp -rf node_modules/mt-data-api-sdk/mt-static/data-api/v4 mt-static/data-api",
+    "copy-mt-data-api-sdk": "cp -rf node_modules/mt-data-api-sdk/mt-static/data-api/* mt-static/data-api",
     "copy-jquery": "yarn copy-jquery-core && yarn copy-jquery-migrate && yarn copy-jquery-validation",
     "copy-jquery-core": "cp -rf node_modules/jquery/dist/jquery.js mt-static/jquery/ && cp -rf node_modules/jquery/dist/jquery.min.* mt-static/jquery/",
     "copy-jquery-migrate": "cp -rf node_modules/jquery-migrate/dist/jquery-migrate.* mt-static/jquery/",
@@ -42,13 +42,7 @@
     "copy-tinymce6-language": "rm -rf mt-static/plugins/TinyMCE6/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE6/tiny_mce/langs; cp -rf node_modules/tinymce6-i18n/langs6/* mt-static/plugins/TinyMCE6/tiny_mce/langs/",
     "copy-codemirror": "cp -rf node_modules/codemirror/addon node_modules/codemirror/keymap node_modules/codemirror/lib node_modules/codemirror/mode node_modules/codemirror/theme mt-static/codemirror/",
     "copy-js-cookie": "cp -rf node_modules/js-cookie/dist/js.cookie.min.js mt-static/js-cookie/",
-    "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && yarn build-riot && yarn build-ss\" && test `git status -s | wc -l` = 0",
-    "build-svelte:app": "rollup --config rollup.config.ts --configPlugin typescript",
-    "build-svelte": "npm run build-svelte:app",
-    "svelte-dev": "rollup --config rollup.config.ts --configPlugin typescript -w",
-    "svelte-check-types": "tsc",
-    "svelte-format": "prettier --write src/**/*.{ts,tsx,svelte}",
-    "svelte-lint": "eslint --fix --ext .ts --ext .tsx --ext .svelte src"
+    "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && yarn build-riot && yarn build-ss\" && test `git status -s | wc -l` = 0"
   },
   "repository": {
     "type": "git",
@@ -60,33 +54,11 @@
   },
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.2",
-    "@rollup/plugin-json": "^6.0.0",
-    "@rollup/plugin-node-resolve": "^15.1.0",
-    "@rollup/plugin-replace": "^5.0.2",
-    "@rollup/plugin-typescript": "^11.1.1",
-    "@tsconfig/svelte": "^5.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.60.0",
-    "@typescript-eslint/parser": "^5.60.0",
     "autoprefixer": "^9.8.8",
     "clean-css-cli": "^5.6.2",
-    "eslint": "^8.44.0",
-    "eslint-plugin-svelte": "^2.32.2",
-    "glob": "^7.2.0",
     "node-sass": "^9.0.0",
     "postcss-cli": "^7.1.2",
-    "postcss-flexbugs-fixes": "^5.0.1",
-    "prettier": "^2.8.8",
-    "prettier-plugin-svelte": "^2.10.1",
-    "rollup": "^3.26.0",
-    "rollup-plugin-css-only": "^4.3.0",
-    "rollup-plugin-esbuild": "^5.0.0",
-    "rollup-plugin-livereload": "^2.0.5",
-    "rollup-plugin-svelte": "^7.1.6",
-    "svelte": "^4.0.1",
-    "svelte-check": "^3.4.4",
-    "svelte-preprocess": "^5.0.4",
-    "typescript": "^5.1.6"
+    "postcss-flexbugs-fixes": "^5.0.1"
   },
   "dependencies": {
     "bootstrap": "4.3.1",
@@ -103,13 +75,10 @@
     "popper.js": "^1.16.1",
     "riot": "3.7.4",
     "sass-loader": "^13.3.0",
-    "sirv-cli": "^2.0.2",
     "svg4everybody": "^2.1.9",
     "tinymce5": "npm:tinymce@5.10.9",
     "tinymce5-i18n": "npm:tinymce-i18n@^23.6.19",
     "tinymce6": "npm:tinymce@^6.8.4",
-    "tinymce6-i18n": "npm:tinymce-i18n@23.6.19",
-    "tslib": "^2.6.0",
-    "xpath": "0.0.33"
+    "tinymce6-i18n": "npm:tinymce-i18n@23.6.19"
   }
 }
