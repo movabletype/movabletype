@@ -31,7 +31,7 @@
     "rename-riot-compiler": "cd mt-static/riot && mv riot+compiler.js riot-compiler.js && mv riot+compiler.min.js riot-compiler.min.js",
     "copy-svg4everybody": "cd node_modules/svg4everybody/dist && cp -f svg4everybody.js svg4everybody.min.js ../../../mt-static/svg4everybody/",
     "copy-mt-chart-api": "cp -rf node_modules/mt-chart-api/lib/* mt-static/chart-api/",
-    "copy-mt-data-api-sdk": "cp -rf node_modules/mt-data-api-sdk/mt-static/data-api/v4 mt-static/data-api",
+    "copy-mt-data-api-sdk": "cp -rf node_modules/mt-data-api-sdk/mt-static/data-api/* mt-static/data-api",
     "copy-jquery": "yarn copy-jquery-core && yarn copy-jquery-migrate && yarn copy-jquery-validation",
     "copy-jquery-core": "cp -rf node_modules/jquery/dist/jquery.js mt-static/jquery/ && cp -rf node_modules/jquery/dist/jquery.min.* mt-static/jquery/",
     "copy-jquery-migrate": "cp -rf node_modules/jquery-migrate/dist/jquery-migrate.* mt-static/jquery/",
@@ -74,12 +74,10 @@
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
     "popper.js": "^1.16.1",
     "riot": "3.7.4",
-    "sass-loader": "^13.3.0",
     "svg4everybody": "^2.1.9",
     "tinymce5": "npm:tinymce@5.10.9",
     "tinymce5-i18n": "npm:tinymce-i18n@^23.6.19",
     "tinymce6": "npm:tinymce@^6.8.4",
-    "tinymce6-i18n": "npm:tinymce-i18n@23.6.19",
-    "xpath": "0.0.33"
+    "tinymce6-i18n": "npm:tinymce-i18n@23.6.19"
   }
 }
