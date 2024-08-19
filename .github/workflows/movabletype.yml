@@ -302,6 +302,27 @@ jobs:
         if: ${{ matrix.test == 'xt' }}
         run: docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
 
+  node_lts:
+    needs: [fedora39]
+    if: >-
+      ${{
+        github.event_name == 'schedule'
+        || github.event_name == 'pull_request'
+        || startsWith(github.ref_name, 'support-')
+        || startsWith(github.ref_name, 'release-')
+        || (github.ref_name == 'develop')
+        || contains(github.ref_name, 'cron')
+      }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.0
+      - name: test npm ci
+        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c "npm ci"
+      - name: test to build Riot.js tags
+        # TODO: replace yarn with npm run
+        run: docker run -t -v $PWD:/mt -w /mt node:lts bash -c 'yarn && yarn build-riot && yarn build-riot-admin2023 && yarn build-ss && git config --global --add safe.directory /mt && test "$(git diff)" = ""'
+
   notify_slack:
     runs-on: ubuntu-latest
     needs:
