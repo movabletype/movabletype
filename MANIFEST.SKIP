@@ -372,6 +372,7 @@ build-language-stamp
 ^tsconfig.json
 \.babelrc
 \.eslintrc.json
+\.eslintignore
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion
