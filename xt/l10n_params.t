@@ -76,5 +76,7 @@ sub _set_skip {
 
         'Found mismatched closing tag [_1] at line #' => '</mt:[_1]>に対応する<mt:[_1]>がありません(#行目)',
         'Tag [_1] left unclosed at line #' => '<mt:[_1]>に対応する</mt:[_1]>がありません(#行目)',
+
+        'YEARLY_ARCHIVE_TITLE' => '[_1]年',
     );
 }

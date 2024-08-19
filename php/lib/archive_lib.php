@@ -552,14 +552,7 @@ class YearlyArchiver extends DateBasedArchiver {
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
         $format = isset($args['format']) ? $args['format'] : null;
-        $blog = $ctx->stash('blog');
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language :
-            $mt->config('DefaultLanguage'));
-        if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
-            $format or $format = "%Y&#24180;";
-        } else {
-            $format or $format = "%Y";
-        }
+        $format or $format = $mt->translate("YEARLY_ARCHIVE_TITLE", "%Y");
 
         return $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
@@ -1240,15 +1233,7 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         $stamp = $ctx->stash('current_timestamp');
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
         $format = isset($args['format']) ? $args['format'] : null;
-        $blog = $ctx->stash('blog');
-
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language :
-            $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
-            $format or $format = "%Y&#24180;";
-        } else {
-            $format or $format = "%Y";
-        }
+        $format or $format = $mt->translate("YEARLY_ARCHIVE_TITLE", "%Y");
 
         return encode_html( strip_tags( $author_name ) )
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
@@ -1934,15 +1919,8 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
         $stamp = $ctx->stash('current_timestamp');
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
         $format = isset($args['format']) ? $args['format'] : null;
-        $blog = $ctx->stash('blog');
+        $format or $format = $mt->translate("YEARLY_ARCHIVE_TITLE", "%Y");
 
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language :
-            $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
-            $format or $format = "%Y&#24180;";
-        } else {
-            $format or $format = "%Y";
-        }
         return encode_html( strip_tags( $cat_name ) )
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
@@ -3010,14 +2988,7 @@ class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
         $format = isset($args['format']) ? $args['format'] : null;
-        $blog = $ctx->stash('blog');
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language :
-            $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
-            $format or $format = "%Y&#24180;";
-        } else {
-            $format or $format = "%Y";
-        }
+        $format or $format = $mt->translate("YEARLY_ARCHIVE_TITLE", "%Y");
 
         return $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
@@ -3427,15 +3398,7 @@ class ContentTypeAuthorYearlyArchiver extends ContentTypeDateBasedAuthorArchiver
         $stamp = $ctx->stash('current_timestamp');
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
         $format = !empty($args['format']) ? $args['format'] : null;
-        $blog = $ctx->stash('blog');
-
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language :
-            $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
-            $format or $format = "%Y&#24180;";
-        } else {
-            $format or $format = "%Y";
-        }
+        $format or $format = $mt->translate("YEARLY_ARCHIVE_TITLE", "%Y");
 
         return encode_html( strip_tags( $author_name ) )
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
@@ -4156,15 +4119,8 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
         $stamp = $ctx->stash('current_timestamp');
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
         $format = isset($args['format']) ? $args['format'] : null;
-        $blog = $ctx->stash('blog');
+        $format or $format = $mt->translate("YEARLY_ARCHIVE_TITLE", "%Y");
 
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language :
-            $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
-            $format or $format = "%Y&#24180;";
-        } else {
-            $format or $format = "%Y";
-        }
         return encode_html( strip_tags( $cat_name ) )
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
