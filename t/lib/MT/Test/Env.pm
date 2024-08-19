@@ -20,6 +20,7 @@ use Mock::MonkeyPatch;
 use Sub::Name;
 use Time::HiRes qw/time/;
 use Module::Find qw/findsubmod/;
+use Test::FailWarnings;
 
 our $MT_HOME;
 
@@ -1007,7 +1008,7 @@ sub load_schema_and_fixture {
         or $fixture_schema_version ne $self->schema_version)
     {
         my $fixture_uid = $self->fixture_uid;
-        diag "FIXTURE ($fixture_uid) IS IGNORED: please update fixture";
+        diag "FIXTURE ($fixture_file) IS IGNORED: please update fixture" unless $self->{config}{PluginSwitch};
         if ($fixture_schema_version && eval { require Text::Diff }) {
             $fixture_schema_version .= "\n";
             my $self_schema_version = $self->schema_version . "\n";

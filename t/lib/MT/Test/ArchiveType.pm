@@ -82,6 +82,8 @@ sub run_tests {
 
             my $blog = MT::Blog->load($blog_id);
             $blog->archive_type_preferred($archive_type);
+            $blog->language(MT->current_language);
+            $blog->date_language(MT->current_language);
             $blog->save;
 
             $self->_run_perl_test( $blog_id, $map, $objs );
@@ -129,6 +131,7 @@ sub _run_perl_test {
             $ctx->stash( blog          => $blog );
             $ctx->stash( blog_id       => $blog->id );
             $ctx->stash( local_blog_id => $blog->id );
+            $ctx->stash( local_lang_id => lc(MT->current_language) );
             $ctx->stash( builder       => MT->builder );
 
             my ( $stash, $skip )
@@ -232,6 +235,13 @@ sub _run_php_test {
 
             my $archive_type = $map->archive_type;
             my $archiver     = MT->publisher->archiver($archive_type);
+
+            my $blog = MT::Blog->load($blog_id);
+            if ($blog and $blog->language ne lc MT->config->DefaultLanguage) {
+                $blog->language(MT->config->DefaultLanguage);
+                $blog->date_language(MT->config->DefaultLanguage);
+                $blog->save;
+            }
 
             ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
@@ -416,7 +426,7 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 ?>
 PHP
 
-            my $result = MT::Test::PHP->run($test_script, \my $php_error);
+            my $result = Encode::decode_utf8(MT::Test::PHP->run($test_script, \my $php_error));
 
             # those with $method_name have higher precedence
             # and todo does, too

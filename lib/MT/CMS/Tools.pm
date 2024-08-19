@@ -2289,6 +2289,7 @@ sub dialog_restore_upload {
     my $schema_version = $app->param('schema_version')
         || $app->config('SchemaVersion');
     my $overwrite_template = $app->param('overwrite_templates') ? 1 : 0;
+    my $skip_fileinfo      = $app->param('skip_fileinfo')       ? 1 : 0;
 
     my $objects  = {};
     my $deferred = {};
@@ -2314,6 +2315,7 @@ sub dialog_restore_upload {
     $param->{blogs_meta}          = $app->param('blogs_meta');
     $param->{schema_version}      = $schema_version;
     $param->{overwrite_templates} = $overwrite_template;
+    $param->{skip_fileinfo}       = $skip_fileinfo;
 
     my $uploaded = $app->param('file') || $app->param('fname');
     if ( defined($uploaded) ) {
@@ -2417,9 +2419,16 @@ sub dialog_restore_upload {
     }
     else {
         ( $blog_ids, $asset_ids ) = eval {
-            MT::BackupRestore->restore_process_single_file( $fh, $objects,
-                $deferred, \@errors, $schema_version, $overwrite_template,
-                sub { _progress( $app, @_ ) } );
+            MT::BackupRestore->restore_process_single_file({
+                fh             => $fh,
+                objects        => $objects,
+                deferred       => $deferred,
+                errors         => \@errors,
+                schema_version => $schema_version,
+                overwrite      => $overwrite_template,
+                skip_fileinfo  => $skip_fileinfo,
+                callback       => sub { _progress($app, @_) },
+            });
         };
         if ($@) {
             $last = 1;
@@ -2853,11 +2862,17 @@ sub restore_file {
     #  : $app->config('SchemaVersion');
     my $overwrite_template
         = $app->param('overwrite_global_templates') ? 1 : 0;
+    my $skip_fileinfo = $app->param('skip_fileinfo') ? 1 : 0;
 
     require MT::BackupRestore;
-    my ( $deferred, $blogs )
-        = MT::BackupRestore->restore_file( $fh, $errormsg, $schema_version,
-        $overwrite_template, sub { _progress( $app, @_ ); } );
+    my ($deferred, $blogs) = MT::BackupRestore->restore_file({
+        fh             => $fh,
+        errormsg       => $errormsg,
+        schema_version => $schema_version,
+        overwrite      => $overwrite_template,
+        skip_fileinfo  => $skip_fileinfo,
+        callback       => sub { _progress($app, @_); },
+    });
 
     $app->log({
         message  => $app->translate('Importing sites is finished.'),
@@ -2920,14 +2935,20 @@ sub restore_directory {
 
     my $overwrite_template
         = $app->param('overwrite_global_templates') ? 1 : 0;
+    my $skip_fileinfo = $app->param('skip_fileinfo') ? 1 : 0;
 
     my @errors;
     my %error_assets;
     require MT::BackupRestore;
-    my ( $deferred, $blogs, $assets )
-        = MT::BackupRestore->restore_directory( $dir, \@errors,
-        \%error_assets, $schema_version, $overwrite_template,
-        sub { _progress( $app, @_ ); } );
+    my ($deferred, $blogs, $assets) = MT::BackupRestore->restore_directory({
+        dir            => $dir,
+        errors         => \@errors,
+        error_assets   => \%error_assets,
+        schema_version => $schema_version,
+        overwrite      => $overwrite_template,
+        skip_fileinfo  => $skip_fileinfo,
+        callback       => sub { _progress($app, @_); },
+    });
 
     $app->log({
         message  => $app->translate('Importing sites is finished.'),
@@ -3035,6 +3056,7 @@ sub restore_upload_manifest {
     #  : $app->config('SchemaVersion');
     $param->{overwrite_templates}
         = $app->param('overwrite_global_templates') ? 1 : 0;
+    $param->{skip_fileinfo} = $app->param('skip_fileinfo') ? 1 : 0;
 
     $param->{dialog_mode} = 'dialog_restore_upload';
     $param->{dialog_params}
@@ -3053,6 +3075,8 @@ sub restore_upload_manifest {
         . $param->{schema_version}
         . '&amp;overwrite_templates='
         . $param->{overwrite_templates}
+        . '&amp;skip_fileinfo='
+        . $param->{skip_fileinfo}
         . '&amp;redirect=1';
     if ( length $param->{dialog_params} > 2083 )
     {    # 2083 is Maximum URL length in IE

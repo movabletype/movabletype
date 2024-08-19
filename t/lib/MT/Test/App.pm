@@ -59,6 +59,7 @@ sub init {
             }
             $app->{__test_output} ||= '';
             $app->{__test_output} .= join('', @_);
+            return 1;
         };
     }
     $Initialized{$app_class} = 1;

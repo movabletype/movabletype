@@ -86,7 +86,7 @@ my $admin = MT->model('author')->load(1);
 my ($website1, $website2, $website3);
 {
     require MT::DefaultTemplates;
-    no warnings 'once';
+    no warnings qw(once redefine);
     local *MT::DefaultTemplates::fill_with_missing_system_templates = sub {};
 
     $website1 = MT::Test::Permission->make_website(

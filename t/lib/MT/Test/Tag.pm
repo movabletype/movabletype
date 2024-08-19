@@ -68,6 +68,7 @@ sub run_perl_tests {
             $ctx->stash( 'blog',          $blog );
             $ctx->stash( 'blog_id',       $blog->id );
             $ctx->stash( 'local_blog_id', $blog->id );
+            $ctx->stash( 'local_lang_id', lc(MT->current_language) );
             $ctx->stash( 'builder',       MT->builder );
 
             $callback->( $ctx, $block ) if $callback;
@@ -146,6 +147,13 @@ SKIP: {
             $vars->{archive_type} = $archive_type;
         }
         $archive_type ||= '';
+
+        my $blog = MT::Blog->load($blog_id);
+        if ($blog and $blog->language ne lc MT->config->DefaultLanguage) {
+            $blog->language(MT->config->DefaultLanguage);
+            $blog->date_language(MT->config->DefaultLanguage);
+            $blog->save;
+        }
 
         my $test_name_prefix = $self->_test_name_prefix($archive_type);
 
