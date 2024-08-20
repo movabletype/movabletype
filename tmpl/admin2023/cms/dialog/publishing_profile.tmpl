@@ -64,48 +64,58 @@ function init() {
             label_class="top-label">
             <ul class="list-unstyled">
                 <li>
-                    <label for="dynamicity-sync" class="form-label">
+                    <label for="dynamicity-sync" class="form-label d-block">
                       <input type="radio" id="dynamicity-sync" name="dynamicity" value="none" <mt:if name="dynamicity" eq="none"> checked="checked"</mt:if>/>
                       <__trans phrase="Static Publishing">
-                      <small class="form-text text-muted hint">
-                        <__trans phrase="Immediately publish all templates statically.">
-                      </small>
+                      <div>
+                        <small class="form-text text-muted hint">
+                          <__trans phrase="Immediately publish all templates statically.">
+                        </small>
+                      </div>
                     </label>
                 </li>
                 <li>
-                    <label for="dynamicity-async" class="form-label">
+                    <label for="dynamicity-async" class="form-label d-block">
                       <input type="radio" id="dynamicity-async" name="dynamicity" value="async_all" <mt:if name="dynamicity" eq="async_all"> checked="checked"</mt:if>/>
                       <__trans phrase="Background Publishing">
-                      <small class="form-text text-muted hint">
-                        <__trans phrase="All templates published statically via Publish Queue.">
-                      </small>
+                      <div>
+                        <small class="form-text text-muted hint">
+                          <__trans phrase="All templates published statically via Publish Queue.">
+                        </small>
+                      </div>
                     </label>
                 </li>
                 <li>
-                    <label for="dynamicity-partialasync" class="form-label">
+                    <label for="dynamicity-partialasync" class="form-label d-block">
                         <input type="radio" id="dynamicity-partialasync" name="dynamicity" value="async_partial" <mt:if name="dynamicity" eq="async_partial"> checked="checked"</mt:if>/>
                         <__trans phrase="High Priority Static Publishing">
-                        <small class="form-text text-muted hint">
-                            <__trans phrase="Immediately publish Main Index and Feed template, Entry archives, Page archives and ContentType archives statically. Use Publish Queue to publish all other templates statically.">
-                        </small>
+                        <div>
+                          <small class="form-text text-muted hint">
+                              <__trans phrase="Immediately publish Main Index and Feed template, Entry archives, Page archives and ContentType archives statically. Use Publish Queue to publish all other templates statically.">
+                          </small>
+                        </div>
                     </label>
                 </li>
                 <li>
-                    <label for="dynamicity-dynamic" class="form-label">
+                    <label for="dynamicity-dynamic" class="form-label d-block">
                       <input type="radio" id="dynamicity-dynamic" name="dynamicity" value="all" <mt:if name="dynamicity" eq="all"> checked="checked"</mt:if>/>
                       <__trans phrase="Dynamic Publishing">
-                      <small class="form-text text-muted hint">
-                        <__trans phrase="Publish all templates dynamically.">
-                      </small>
+                      <div>
+                        <small class="form-text text-muted hint">
+                          <__trans phrase="Publish all templates dynamically.">
+                        </small>
+                      </div>
                     </label>
                 </li>
                 <li>
-                    <label for="dynamicity-archives" class="form-label">
+                    <label for="dynamicity-archives" class="form-label d-block">
                       <input type="radio" id="dynamicity-archives" name="dynamicity" value="archives" <mt:if name="dynamicity" eq="archives"> checked="checked"</mt:if>/>
                       <__trans phrase="Dynamic Archives Only">
-                      <small class="form-text text-muted hint">
-                        <__trans phrase="Publish all Archive templates dynamically. Immediately publish all other templates statically.">
-                      </small>
+                      <div>
+                        <small class="form-text text-muted hint">
+                          <__trans phrase="Publish all Archive templates dynamically. Immediately publish all other templates statically.">
+                        </small>
+                      </div>
                     </label>
                 </li>
             </ul>
