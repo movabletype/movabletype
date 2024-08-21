@@ -68,11 +68,7 @@ jobs:
       matrix:
         config:
           - {image: fedora40, mt_test_env: ''}                                  # Perl 5.38 / PHP 8.3 / MySQL 8.0
-          - {image: bullseye, mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}          # Perl 5.32 / PHP 7.4 / MariaDB 10.5
           - {image: buster,   mt_test_env: 'MT_TEST_FORCE_DATAAPI_VERSION=5'}   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
-          - {image: centos7,  mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}    # Perl 5.16 / PHP 7.1 / MariaDB 5.5
-          - {image: fedora35, mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}          # Perl 5.34 / PHP 8.0 / MySQL 8.0
-          - {image: fedora37, mt_test_env: 'MT_TEST_BUILDER=MT::Builder::Fast'} # Perl 5.36 / PHP 8.1 / MySQL 8.0
         test: 
           - "t/*.t"
           - "t/mt7/[^t]*"
@@ -83,9 +79,6 @@ jobs:
           - "t/tag/"
           - "plugins/*/t"
           - php
-        exclude:
-          - config: {image: centos7, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}
-            test: php
         include:
           - config: {image: chromiumdriver}
             test: selenium
@@ -110,6 +103,54 @@ jobs:
       - name: test xt
         if: ${{ matrix.test == 'xt' }}
         run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
+
+  test_job3:
+    needs: [test_job1]
+    if: >-
+      ${{
+        (github.repository == 'movabletype/movabletype')
+        && (
+          github.event_name == 'schedule'
+          || startsWith(github.ref_name, 'support-')
+          || startsWith(github.ref_name, 'release-')
+          || (github.ref_name == 'develop')
+          || contains(github.ref_name, 'cron')
+        )
+      }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+          - {image: bullseye, mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}          # Perl 5.32 / PHP 7.4 / MariaDB 10.5
+          - {image: fedora37, mt_test_env: 'MT_TEST_BUILDER=MT::Builder::Fast'} # Perl 5.36 / PHP 8.1 / MySQL 8.0
+          - {image: fedora35, mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}          # Perl 5.34 / PHP 8.0 / MySQL 8.0
+          - {image: centos7,  mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}    # Perl 5.16 / PHP 7.1 / MariaDB 5.5
+        test:
+          - "t/*.t"
+          - "t/mt7/[^t]*"
+          - "t/mt7/t*"
+          - "t/admin_theme_id/ t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util t/upgrade"
+          - "t/cms_permission/"
+          - "t/data_api/"
+          - "t/tag/"
+          - "plugins/*/t"
+          - php
+        exclude:
+          - config: {image: centos7, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}
+            test: php
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4.1.0
+      - name: docker pull
+        uses: ./.github/actions/docker-mt-test
+        with:
+          tag: ${{ matrix.config.image }}
+      - name: test
+        if: ${{ matrix.test != 'php' && matrix.test != 'selenium' && matrix.test != 'xt' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "${{ matrix.config.mt_test_env }} prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
+      - name: test php
+        if: ${{ matrix.test == 'php' }}
+        run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "phpunit && make test-php-lint"
 
   node_lts:
     needs: [test_job1]
@@ -145,6 +186,7 @@ jobs:
     needs:
     - test_job1
     - test_job2
+    - test_job3
     - node_lts
     if: ${{ always() }}
     steps:
