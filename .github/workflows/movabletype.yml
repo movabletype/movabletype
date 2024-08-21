@@ -68,8 +68,9 @@ jobs:
     strategy:
       matrix:
         config:
-          - {image: fedora40, mt_test_env: ''}                                  # Perl 5.38 / PHP 8.3 / MySQL 8.0
-          - {image: buster,   mt_test_env: 'MT_TEST_FORCE_DATAAPI_VERSION=5'}   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
+          - {image: fedora40, mt_test_env: ''}                           # Perl 5.38 / PHP 8.3 / MySQL 8.0
+          - {image: buster,   mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}   # Perl 5.28.0 / PHP 7.3 / MariaDB 10.3
+          - {image: centos7,  mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}   # Perl 5.16 / PHP 7.1 / MariaDB 5.5
         test: 
           - "t/*.t"
           - "t/mt7/[^t]*"
@@ -124,10 +125,9 @@ jobs:
     strategy:
       matrix:
         config:
-          - {image: bullseye, mt_test_env: 'MT_TEST_ADMIN_THEME_ID=0'}          # Perl 5.32 / PHP 7.4 / MariaDB 10.5
+          - {image: bullseye, mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}    # Perl 5.32 / PHP 7.4 / MariaDB 10.5
           - {image: fedora37, mt_test_env: 'MT_TEST_BUILDER=MT::Builder::Fast'} # Perl 5.36 / PHP 8.1 / MySQL 8.0
-          - {image: fedora35, mt_test_env: 'MT_TEST_RUN_APP_AS_CGI=1'}          # Perl 5.34 / PHP 8.0 / MySQL 8.0
-          - {image: centos7,  mt_test_env: 'MT_TEST_DISABLE_OBJECT_CACHE=1'}    # Perl 5.16 / PHP 7.1 / MariaDB 5.5
+          - {image: fedora35, mt_test_env: 'MT_TEST_FORCE_DATAAPI_VERSION=5'}   # Perl 5.34 / PHP 8.0 / MySQL 8.0
         test:
           - "t/*.t"
           - "t/mt7/[^t]*"
