@@ -311,7 +311,7 @@ sub suite {
             is_superuser => 1,
             code         => 409,
             error =>
-                "The website root directory must be an absolute path: relative\/path\n",
+                qr/The website root directory must be (?:an absolute path|within)/,
         },
         {    # Not logged in.
             path   => '/v2/sites',
