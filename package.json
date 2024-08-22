@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build-mt-css": "npm run build-mt-css-compile && npm run build-mt-css-prefix && npm run build-mt-css-minify",
-    "build-mt-css-compile": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 scss/mt.scss mt-static/css/mt.css",
+    "build-mt-css-compile": "sass --quiet scss/mt.scss mt-static/css/mt.css",
     "build-mt-css-minify": "cleancss -O1 --source-map --source-map-inline-sources --output mt-static/css/mt.min.css mt-static/css/mt.css",
     "build-mt-css-prefix": "postcss --config build/postcss.config.js --replace mt-static/css/mt.css",
     "build-mt-css-admin2023": "npm run build-mt-css-compile-admin2023 && npm run build-mt-css-prefix-admin2023 && npm run build-mt-css-minify-admin2023",
