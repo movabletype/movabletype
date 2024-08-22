@@ -610,6 +610,9 @@ $Languages = [
         ['janvier', "février", 'mars', 'avril', 'mai', 'juin',
             'juillet', "août", 'septembre', 'octobre', 'novembre', "décembre"],
         ['AM', 'PM'],
+        "%e %B %Y %kh%M",
+        "%e %B %Y",
+        "%kh%M",
     ],
 
     'es' => [
@@ -617,7 +620,9 @@ $Languages = [
         ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto',
             'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
         ['AM', 'PM'],
-],
+        "%e de %B %Y a las %I:%M %p",
+        "%e de %B %Y",
+    ],
 
     'pt' => [
         ['domingo', 'segunda-feira', "terça-feira", 'quarta-feira', 'quinta-feira', 'sexta-feira', "sábado"],
@@ -631,8 +636,9 @@ $Languages = [
         ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus',
                 'september', 'oktober', 'november', 'december'],
         ['am', 'pm'],
-        "%d %B %Y %H:%M",
-        "%d %B %Y"
+        "%e %B %Y %k:%M",
+        "%e %B %Y",
+        "%k:%M",
     ],
 
     'dk' => [
@@ -664,9 +670,9 @@ $Languages = [
         ['Januar', 'Februar', "März", 'April', 'Mai', 'Juni',
             'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
         ['FM', 'EM'],
-        "%d.%m.%y %H:%M",
-        "%d.%m.%y",
-        "%H:%M",
+        "%e.%m.%y %k:%M",
+        "%e.%m.%y",
+        "%k:%M",
     ],
 
     'it' => [
@@ -733,17 +739,6 @@ $Languages = [
         "%k:%M",
     ],
 
-    'jp' => [
-        ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
-        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-        ['AM', 'PM'],
-        "%Y年%b月%e日 %H:%M",
-        "%Y年%b月%e日",
-        "%H:%M",
-        "%Y年%b月",
-        "%b月%e日",
-    ],
-
     'ja' => [
         ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
         ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
@@ -765,6 +760,9 @@ $Languages = [
         "%H:%M",
     ],
 ];
+
+$Languages['en_US'] = $Languages['en_us'] = $Languages['en-us'] = $Languages['en'];
+$Languages['ja'] = $Languages['jp'];
 
 global $_encode_xml_Map;
 $_encode_xml_Map = array('&' => '&amp;', '"' => '&quot;',
