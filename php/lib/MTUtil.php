@@ -597,205 +597,174 @@ function convert_high_ascii($s) {
 }
 
 global $Languages;
-$Languages = array(
-    'en' => array(
-            array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'),
-            array('January','February','March','April','May','June',
-                  'July','August','September','October','November','December'),
-            array('AM','PM'),
-          ),
+$Languages = [
+    'en' => [
+        ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        ['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'],
+        ['AM', 'PM'],
+    ],
 
-    'fr' => array(
-            array('dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi' ),
-            array('janvier', "f&#xe9;vrier", 'mars', 'avril', 'mai', 'juin',
-               'juillet', "ao&#xfb;t", 'septembre', 'octobre', 'novembre',
-               "d&#xe9;cembre"),
-            array('AM','PM'),
-          ),
+    'fr' => [
+        ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi' ],
+        ['janvier', "février", 'mars', 'avril', 'mai', 'juin',
+            'juillet', "août", 'septembre', 'octobre', 'novembre', "décembre"],
+        ['AM', 'PM'],
+    ],
 
-    'es' => array(
-            array('Domingo', 'Lunes', 'Martes', "Mi&#xe9;rcoles", 'Jueves',
-               'Viernes', "S&#xe1;bado"),
-            array('Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto',
-                  'Septiembre','Octubre','Noviembre','Diciembre'),
-            array('AM','PM'),
-          ),
+    'es' => [
+        ['Domingo', 'Lunes', 'Martes', "Miércoles", 'Jueves', 'Viernes', "Sábado"],
+        ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto',
+            'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        ['AM', 'PM'],
+],
 
-    'pt' => array(
-            array('domingo', 'segunda-feira', "ter&#xe7;a-feira", 'quarta-feira',
-               'quinta-feira', 'sexta-feira', "s&#xe1;bado"),
-            array('janeiro', 'fevereiro', "mar&#xe7;o", 'abril', 'maio', 'junho',
-               'julho', 'agosto', 'setembro', 'outubro', 'novembro',
-               'dezembro' ),
-            array('AM','PM'),
-          ),
+    'pt' => [
+        ['domingo', 'segunda-feira', "terça-feira", 'quarta-feira', 'quinta-feira', 'sexta-feira', "sábado"],
+        ['janeiro', 'fevereiro', "março", 'abril', 'maio', 'junho',
+            'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro' ],
+        ['AM', 'PM'],
+    ],
 
-    'nl' => array(
-            array('zondag','maandag','dinsdag','woensdag','donderdag','vrijdag',
-                  'zaterdag'),
-            array('januari','februari','maart','april','mei','juni','juli','augustus',
-                  'september','oktober','november','december'),
-            array('am','pm'),
-             "%d %B %Y %H:%M",
-             "%d %B %Y"
-          ),
+    'nl' => [
+        ['zondag', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag'],
+        ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus',
+                'september', 'oktober', 'november', 'december'],
+        ['am', 'pm'],
+        "%d %B %Y %H:%M",
+        "%d %B %Y"
+    ],
 
-    'dk' => array(
-            array("s&#xf8;ndag", 'mandag', 'tirsdag', 'onsdag', 'torsdag',
-               'fredag', "l&#xf8;rdag"),
-            array('januar','februar','marts','april','maj','juni','juli','august',
-                  'september','oktober','november','december'),
-            array('am','pm'),
-            "%d.%m.%Y %H:%M",
-            "%d.%m.%Y",
-            "%H:%M",
-          ),
+    'dk' => [
+        ["søndag", 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', "lørdag"],
+        ['januar', 'februar', 'marts', 'april', 'maj', 'juni', 'juli', 'august',
+                'september', 'oktober', 'november', 'december'],
+        ['am', 'pm'],
+        "%d.%m.%Y %H:%M",
+        "%d.%m.%Y",
+        "%H:%M",
+    ],
 
-    'se' => array(
-            array("s&#xf6;ndag", "m&#xe5;ndag", 'tisdag', 'onsdag', 'torsdag',
-               'fredag', "l&#xf6;rdag"),
-            array('januari','februari','mars','april','maj','juni','juli','augusti',
-                  'september','oktober','november','december'),
-            array('FM','EM'),
-          ),
+    'se' => [
+        ["söndag", "måndag", 'tisdag', 'onsdag', 'torsdag', 'fredag', "lördag"],
+        ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti',
+                'september', 'oktober', 'november', 'december'],
+        ['FM', 'EM'],
+    ],
 
-    'no' => array(
-            array("S&#xf8;ndag", "Mandag", 'Tirsdag', 'Onsdag', 'Torsdag',
-               'Fredag', "L&#xf8;rdag"),
-            array('Januar','Februar','Mars','April','Mai','Juni','Juli','August',
-                  'September','Oktober','November','Desember'),
-            array('FM','EM'),
-          ),
+    'no' => [
+        ["Søndag", "Mandag", 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', "Lørdag"],
+        ['Januar', 'Februar', 'Mars', 'April', 'Mai', 'Juni', 'Juli', 'August',
+                'September', 'Oktober', 'November', 'Desember'],
+        ['FM', 'EM'],
+    ],
 
-    'de' => array(
-            array('Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag',
-                  'Samstag'),
-            array('Januar', 'Februar', "M&#xe4;rz", 'April', 'Mai', 'Juni',
-               'Juli', 'August', 'September', 'Oktober', 'November',
-               'Dezember'),
-            array('FM','EM'),
-            "%d.%m.%y %H:%M",
-            "%d.%m.%y",
-            "%H:%M",
-          ),
+    'de' => [
+        ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+        ['Januar', 'Februar', "März", 'April', 'Mai', 'Juni',
+            'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+        ['FM', 'EM'],
+        "%d.%m.%y %H:%M",
+        "%d.%m.%y",
+        "%H:%M",
+    ],
 
-    'it' => array(
-            array('Domenica', "Luned&#xec;", "Marted&#xec;", "Mercoled&#xec;",
-               "Gioved&#xec;", "Venerd&#xec;", 'Sabato'),
-            array('Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio',
-                  'Agosto','Settembre','Ottobre','Novembre','Dicembre'),
-            array('AM','PM'),
-            "%d.%m.%y %H:%M",
-            "%d.%m.%y",
-            "%H:%M",
-          ),
+    'it' => [
+        ['Domenica', "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", 'Sabato'],
+        ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio',
+                'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+        ['AM', 'PM'],
+        "%d.%m.%y %H:%M",
+        "%d.%m.%y",
+        "%H:%M",
+    ],
 
-    'pl' => array(
-            array('niedziela', "poniedzia&#322;ek", 'wtorek', "&#347;roda",
-               'czwartek', "pi&#261;tek", 'sobota'),
-            array('stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca',
-               'lipca', 'sierpnia', "wrze&#347;nia", "pa&#378;dziernika",
-               'listopada', 'grudnia'),
-            array('AM','PM'),
-            "%e %B %Y %k:%M",
-            "%e %B %Y",
-            "%k:%M",
-          ),
-            
-    'fi' => array(
-            array('sunnuntai','maanantai','tiistai','keskiviikko','torstai','perjantai',
-                  'lauantai'),
-            array('tammikuu', 'helmikuu', 'maaliskuu', 'huhtikuu', 'toukokuu',
-               "kes&#xe4;kuu", "hein&#xe4;kuu", 'elokuu', 'syyskuu', 'lokakuu',
-               'marraskuu', 'joulukuu'),
-            array('AM','PM'),
-            "%d.%m.%y %H:%M",
-          ),
-            
-    'is' => array(
-            array('Sunnudagur', "M&#xe1;nudagur", "&#xde;ri&#xf0;judagur",
-               "Mi&#xf0;vikudagur", 'Fimmtudagur', "F&#xf6;studagur",
-               'Laugardagur'),
-            array("jan&#xfa;ar", "febr&#xfa;ar", 'mars', "apr&#xed;l", "ma&#xed;",
-               "j&#xfa;n&#xed;", "j&#xfa;l&#xed;", "&#xe1;g&#xfa;st", 'september',             
-               "okt&#xf3;ber", "n&#xf3;vember", 'desember'),
-            array('FH','EH'),
-            "%d.%m.%y %H:%M",
-          ),
-            
-    'si' => array(
-            array('nedelja', 'ponedeljek', 'torek', 'sreda', "&#xe3;etrtek",
-               'petek', 'sobota'),
-            array('januar','februar','marec','april','maj','junij','julij','avgust',
-                  'september','oktober','november','december'),
-            array('AM','PM'),
-            "%d.%m.%y %H:%M",
-          ),
-            
-    'cz' => array(
-            array('Ned&#283;le', 'Pond&#283;l&#237;', '&#218;ter&#253;',
-               'St&#345;eda', '&#268;tvrtek', 'P&#225;tek', 'Sobota'),
-            array('Leden', '&#218;nor', 'B&#345;ezen', 'Duben', 'Kv&#283;ten',
-               '&#268;erven', '&#268;ervenec', 'Srpen', 'Z&#225;&#345;&#237;',
-               '&#216;&#237;jen', 'Listopad', 'Prosinec'),
-            array('AM','PM'),
-            "%e. %B %Y %k:%M",
-            "%e. %B %Y",
-            "%k:%M",
-          ),
-            
-    'sk' => array(
-            array('nede&#318;a', 'pondelok', 'utorok', 'streda',
-               '&#353;tvrtok', 'piatok', 'sobota'),
-            array('janu&#225;r', 'febru&#225;r', 'marec', 'apr&#237;l',
-               'm&#225;j', 'j&#250;n', 'j&#250;l', 'august', 'september',
-               'okt&#243;ber', 'november', 'december'),
-            array('AM','PM'),
-            "%e. %B %Y %k:%M",
-            "%e. %B %Y",
-            "%k:%M",
-          ),
+    'pl' => [
+        ['niedziela', "poniedziałek", 'wtorek', "środa", 'czwartek', "piątek", 'sobota'],
+        ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca',
+            'lipca', 'sierpnia', "września", "października", 'listopada', 'grudnia'],
+        ['AM', 'PM'],
+        "%e %B %Y %k:%M",
+        "%e %B %Y",
+        "%k:%M",
+    ],
 
-    'jp' => array(
-            array('&#26085;&#26332;&#26085;', '&#26376;&#26332;&#26085;',
-              '&#28779;&#26332;&#26085;', '&#27700;&#26332;&#26085;',
-              '&#26408;&#26332;&#26085;', '&#37329;&#26332;&#26085;',
-              '&#22303;&#26332;&#26085;'),
-            array('1','2','3','4','5','6','7','8','9','10','11','12'),
-            array('AM','PM'),
-            "%Y&#24180;%b&#26376;%e&#26085; %H:%M",
-            "%Y&#24180;%b&#26376;%e&#26085;",
-            "%H:%M",
-            "%Y&#24180;%b&#26376;",
-            "%b&#26376;%e&#26085;",
-          ),
+    'fi' => [
+        ['sunnuntai', 'maanantai', 'tiistai', 'keskiviikko', 'torstai', 'perjantai', 'lauantai'],
+        ['tammikuu', 'helmikuu', 'maaliskuu', 'huhtikuu', 'toukokuu',
+            "kesäkuu", "heinäkuu", 'elokuu', 'syyskuu', 'lokakuu', 'marraskuu', 'joulukuu'],
+        ['AM', 'PM'],
+        "%d.%m.%y %H:%M",
+    ],
 
-    'ja' => array(
-            array('&#26085;&#26332;&#26085;', '&#26376;&#26332;&#26085;',
-              '&#28779;&#26332;&#26085;', '&#27700;&#26332;&#26085;',
-              '&#26408;&#26332;&#26085;', '&#37329;&#26332;&#26085;',
-              '&#22303;&#26332;&#26085;'),
-            array('1','2','3','4','5','6','7','8','9','10','11','12'),
-            array('AM','PM'),
-            "%Y&#24180;%b&#26376;%e&#26085; %H:%M",
-            "%Y&#24180;%b&#26376;%e&#26085;",
-            "%H:%M",
-            "%Y&#24180;%b&#26376;",
-            "%b&#26376;%e&#26085;",
-          ),
+    'is' => [
+        ['Sunnudagur', "Mánudagur", "Þriðjudagur", "Miðvikudagur", 'Fimmtudagur', "Föstudagur", 'Laugardagur'],
+        ["janúar", "febrúar", 'mars', "apríl", "maí",
+            "júní", "júlí", "ágúst", 'september', "október", "nóvember", 'desember'],
+        ['FH', 'EH'],
+        "%d.%m.%y %H:%M",
+    ],
 
-    'et' => array(
-            array('ip&uuml;hap&auml;ev','esmasp&auml;ev','teisip&auml;ev',
-                  'kolmap&auml;ev','neljap&auml;ev','reede','laup&auml;ev'),
-            array('jaanuar', 'veebruar', 'm&auml;rts', 'aprill', 'mai',
-               'juuni', 'juuli', 'august', 'september', 'oktoober',
-              'november', 'detsember'),
-            array('AM','PM'),
-            "%m.%d.%y %H:%M",
-            "%e. %B %Y",
-            "%H:%M",
-          ),
-);
+    'si' => [
+        ['nedelja', 'ponedeljek', 'torek', 'sreda', "ãetrtek", 'petek', 'sobota'],
+        ['januar', 'februar', 'marec', 'april', 'maj', 'junij', 'julij', 'avgust',
+                'september', 'oktober', 'november', 'december'],
+        ['AM', 'PM'],
+        "%d.%m.%y %H:%M",
+    ],
+
+    'cz' => [
+        ['Neděle', 'Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota'],
+        ['Leden', 'Únor', 'Březen', 'Duben', 'Květen',
+            'Červen', 'Červenec', 'Srpen', 'Září', 'Øíjen', 'Listopad', 'Prosinec'],
+        ['AM', 'PM'],
+        "%e. %B %Y %k:%M",
+        "%e. %B %Y",
+        "%k:%M",
+    ],
+
+    'sk' => [
+        ['nedeľa', 'pondelok', 'utorok', 'streda', 'štvrtok', 'piatok', 'sobota'],
+        ['január', 'február', 'marec', 'apríl', 'máj', 'jún', 'júl', 'august', 'september',
+            'október', 'november', 'december'],
+        ['AM', 'PM'],
+        "%e. %B %Y %k:%M",
+        "%e. %B %Y",
+        "%k:%M",
+    ],
+
+    'jp' => [
+        ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['AM', 'PM'],
+        "%Y年%b月%e日 %H:%M",
+        "%Y年%b月%e日",
+        "%H:%M",
+        "%Y年%b月",
+        "%b月%e日",
+    ],
+
+    'ja' => [
+        ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
+        ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+        ['AM', 'PM'],
+        "%Y年%b月%e日 %H:%M",
+        "%Y年%b月%e日",
+        "%H:%M",
+        "%Y年%b月",
+        "%b月%e日",
+    ],
+
+    'et' => [
+        ['ipühapäev', 'esmaspäev', 'teisipäev', 'kolmapäev', 'neljapäev', 'reede', 'laupäev'],
+        ['jaanuar', 'veebruar', 'märts', 'aprill', 'mai', 'juuni', 'juuli', 'august', 'september', 'oktoober',
+            'november', 'detsember'],
+        ['AM', 'PM'],
+        "%m.%d.%y %H:%M",
+        "%e. %B %Y",
+        "%H:%M",
+    ],
+];
 
 global $_encode_xml_Map;
 $_encode_xml_Map = array('&' => '&amp;', '"' => '&quot;',

@@ -1534,19 +1534,18 @@ sub mark_odd_rows {
 %Languages = (
     'en' => [
         [qw( Sunday Monday Tuesday Wednesday Thursday Friday Saturday )],
-        [   qw( January February March April May June
-                July August September October November December )
-        ],
+        [qw( January February March April May June
+            July August September October November December )],
         [qw( AM PM )],
     ],
 
     'fr' => [
         [qw( dimanche lundi mardi mercredi jeudi vendredi samedi )],
-        [   (   'janvier',   "février", 'mars',     'avril',
-                'mai',       'juin',     'juillet',  "août",
-                'septembre', 'octobre',  'novembre', "décembre"
-            )
-        ],
+        [(
+            'janvier',   "février", 'mars',     'avril',
+            'mai',       'juin',    'juillet',  "août",
+            'septembre', 'octobre', 'novembre', "décembre"
+        )],
         [qw( AM PM )],
         "%e %B %Y %kh%M",
         "%e %B %Y",
@@ -1554,40 +1553,36 @@ sub mark_odd_rows {
     ],
 
     'es' => [
-        [   (   'Domingo', 'Lunes',   'Martes', "Miércoles",
-                'Jueves',  'Viernes', "Sábado"
-            )
-        ],
-        [   qw( Enero Febrero Marzo Abril Mayo Junio Julio Agosto
-                Septiembre Octubre Noviembre Diciembre )
-        ],
+        [(
+            'Domingo', 'Lunes',   'Martes', "Miércoles",
+            'Jueves',  'Viernes', "Sábado"
+        )],
+        [qw( Enero Febrero Marzo Abril Mayo Junio Julio Agosto
+            Septiembre Octubre Noviembre Diciembre )],
         [qw( AM PM )],
         "%e de %B %Y a las %I:%M %p",
         "%e de %B %Y",
     ],
 
     'pt' => [
-        [   (   'domingo',          'segunda-feira',
-                "ter&#xe7;a-feira", 'quarta-feira',
-                'quinta-feira',     'sexta-feira',
-                "s&#xe1;bado"
-            )
-        ],
-        [   (   'janeiro',  'fevereiro', "mar&#xe7;o", 'abril',
-                'maio',     'junho',     'julho',      'agosto',
-                'setembro', 'outubro',   'novembro',   'dezembro'
-            )
-        ],
+        [(
+            'domingo',      'segunda-feira',
+            "terça-feira",  'quarta-feira',
+            'quinta-feira', 'sexta-feira',
+            "sábado"
+        )],
+        [(
+            'janeiro',  'fevereiro', "março",    'abril',
+            'maio',     'junho',     'julho',    'agosto',
+            'setembro', 'outubro',   'novembro', 'dezembro'
+        )],
         [qw( AM PM )],
     ],
 
     'nl' => [
-        [   qw( zondag maandag dinsdag woensdag donderdag vrijdag
-                zaterdag )
-        ],
-        [   qw( januari februari maart april mei juni juli augustus
-                september oktober november december )
-        ],
+        [qw( zondag maandag dinsdag woensdag donderdag vrijdag zaterdag )],
+        [qw( januari februari maart april mei juni juli augustus
+            september oktober november december )],
         [qw( am pm )],
         "%e %B %Y %k:%M",
         "%e %B %Y",
@@ -1595,13 +1590,8 @@ sub mark_odd_rows {
     ],
 
     'dk' => [
-        [   (   "s&#xf8;ndag", 'mandag', 'tirsdag', 'onsdag',
-                'torsdag',     'fredag', "l&#xf8;rdag"
-            )
-        ],
-        [   qw( januar februar marts april maj juni juli august
-                september oktober november december )
-        ],
+        [("søndag", 'mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', "lørdag")],
+        [qw( januar februar marts april maj juni juli august september oktober november december )],
         [qw( am pm )],
         "%d.%m.%Y %H:%M",
         "%d.%m.%Y",
@@ -1609,36 +1599,24 @@ sub mark_odd_rows {
     ],
 
     'se' => [
-        [   (   "s&#xf6;ndag", "m&#xe5;ndag", 'tisdag', 'onsdag',
-                'torsdag',     'fredag',      "l&#xf6;rdag"
-            )
-        ],
-        [   qw( januari februari mars april maj juni juli augusti
-                september oktober november december )
-        ],
+        [("söndag", "måndag", 'tisdag', 'onsdag', 'torsdag', 'fredag', "lördag")],
+        [qw( januari februari mars april maj juni juli augusti september oktober november december )],
         [qw( FM EM )],
     ],
 
     'no' => [
-        [   (   "S&#xf8;ndag", "Mandag", 'Tirsdag', 'Onsdag',
-                'Torsdag',     'Fredag', "L&#xf8;rdag"
-            )
-        ],
-        [   qw( Januar Februar Mars April Mai Juni Juli August
-                September Oktober November Desember )
-        ],
+        [("Søndag", "Mandag", 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', "Lørdag")],
+        [qw( Januar Februar Mars April Mai Juni Juli August September Oktober November Desember )],
         [qw( FM EM )],
     ],
 
     'de' => [
-        [   qw( Sonntag Montag Dienstag Mittwoch Donnerstag Freitag
-                Samstag )
-        ],
-        [   (   'Januar',    'Februar', "März",    'April',
-                'Mai',       'Juni',    'Juli',     'August',
-                'September', 'Oktober', 'November', 'Dezember'
-            )
-        ],
+        [qw( Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Samstag )],
+        [(
+            'Januar',    'Februar', "März",     'April',
+            'Mai',       'Juni',    'Juli',     'August',
+            'September', 'Oktober', 'November', 'Dezember'
+        )],
         [qw( FM EM )],
         "%e.%m.%y %k:%M",
         "%e.%m.%y",
@@ -1646,15 +1624,9 @@ sub mark_odd_rows {
     ],
 
     'it' => [
-        [   (   'Domenica',     "Luned&#xec;",
-                "Marted&#xec;", "Mercoled&#xec;",
-                "Gioved&#xec;", "Venerd&#xec;",
-                'Sabato'
-            )
-        ],
-        [   qw( Gennaio Febbraio Marzo Aprile Maggio Giugno Luglio
-                Agosto Settembre Ottobre Novembre Dicembre )
-        ],
+        [('Domenica', "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", 'Sabato')],
+        [qw( Gennaio Febbraio Marzo Aprile Maggio Giugno Luglio
+            Agosto Settembre Ottobre Novembre Dicembre )],
         [qw( AM PM )],
         "%d.%m.%y %H:%M",
         "%d.%m.%y",
@@ -1662,20 +1634,20 @@ sub mark_odd_rows {
     ],
 
     'pl' => [
-        [   (   'niedziela', "poniedzia&#322;ek",
-                'wtorek',    "&#347;roda",
-                'czwartek',  "pi&#261;tek",
-                'sobota'
-            )
-        ],
-        [   (   'stycznia',      'lutego',
-                'marca',         'kwietnia',
-                'maja',          'czerwca',
-                'lipca',         'sierpnia',
-                "wrze&#347;nia", "pa&#378;dziernika",
-                'listopada',     'grudnia'
-            )
-        ],
+        [(
+            'niedziela', "poniedziałek",
+            'wtorek',    "środa",
+            'czwartek',  "piątek",
+            'sobota'
+        )],
+        [(
+            'stycznia',  'lutego',
+            'marca',     'kwietnia',
+            'maja',      'czerwca',
+            'lipca',     'sierpnia',
+            "września",  "października",
+            'listopada', 'grudnia'
+        )],
         [qw( AM PM )],
         "%e %B %Y %k:%M",
         "%e %B %Y",
@@ -1683,67 +1655,65 @@ sub mark_odd_rows {
     ],
 
     'fi' => [
-        [   qw( sunnuntai maanantai tiistai keskiviikko torstai perjantai
-                lauantai )
-        ],
-        [   (   'tammikuu',      'helmikuu',
-                'maaliskuu',     'huhtikuu',
-                'toukokuu',      "kes&#xe4;kuu",
-                "hein&#xe4;kuu", 'elokuu',
-                'syyskuu',       'lokakuu',
-                'marraskuu',     'joulukuu'
-            )
-        ],
+        [qw( sunnuntai maanantai tiistai keskiviikko torstai perjantai
+            lauantai )],
+        [(
+            'tammikuu',  'helmikuu',
+            'maaliskuu', 'huhtikuu',
+            'toukokuu',  "kesäkuu",
+            "heinäkuu",  'elokuu',
+            'syyskuu',   'lokakuu',
+            'marraskuu', 'joulukuu'
+        )],
         [qw( AM PM )],
         "%d.%m.%y %H:%M",
     ],
 
     'is' => [
-        [   (   'Sunnudagur',            "M&#xe1;nudagur",
-                "&#xde;ri&#xf0;judagur", "Mi&#xf0;vikudagur",
-                'Fimmtudagur',           "F&#xf6;studagur",
-                'Laugardagur'
-            )
-        ],
-        [   (   "jan&#xfa;ar",    "febr&#xfa;ar",
-                'mars',           "apr&#xed;l",
-                "ma&#xed;",       "j&#xfa;n&#xed;",
-                "j&#xfa;l&#xed;", "&#xe1;g&#xfa;st",
-                'september',      "okt&#xf3;ber",
-                "n&#xf3;vember",  'desember'
-            )
-        ],
+        [(
+            'Sunnudagur',  "Mánudagur",
+            "Þriðjudagur", "Miðvikudagur",
+            'Fimmtudagur', "Föstudagur",
+            'Laugardagur'
+        )],
+        [(
+            "janúar",    "febrúar",
+            'mars',      "apríl",
+            "maí",       "júní",
+            "júlí",      "ágúst",
+            'september', "október",
+            "nóvember",  'desember'
+        )],
         [qw( FH EH )],
         "%d.%m.%y %H:%M",
     ],
 
     'si' => [
-        [   (   'nedelja',      'ponedeljek', 'torek', 'sreda',
-                "&#xe3;etrtek", 'petek',      'sobota',
-            )
-        ],
-        [   qw( januar februar marec april maj junij julij avgust
-                september oktober november december )
-        ],
+        [(
+            'nedelja', 'ponedeljek', 'torek', 'sreda',
+            "ãetrtek", 'petek',      'sobota',
+        )],
+        [qw( januar februar marec april maj junij julij avgust
+            september oktober november december )],
         [qw( AM PM )],
         "%d.%m.%y %H:%M",
     ],
 
     'cz' => [
-        [   (   'Ned&#283;le',     'Pond&#283;l&#237;',
-                '&#218;ter&#253;', 'St&#345;eda',
-                '&#268;tvrtek',    'P&#225;tek',
-                'Sobota'
-            )
-        ],
-        [   (   'Leden',               '&#218;nor',
-                'B&#345;ezen',         'Duben',
-                'Kv&#283;ten',         '&#268;erven',
-                '&#268;ervenec',       'Srpen',
-                'Z&#225;&#345;&#237;', '&#216;&#237;jen',
-                'Listopad',            'Prosinec'
-            )
-        ],
+        [(
+            'Neděle',  'Pondělí',
+            'Úterý',   'Středa',
+            'Čtvrtek', 'Pátek',
+            'Sobota'
+        )],
+        [(
+            'Leden',    'Únor',
+            'Březen',   'Duben',
+            'Květen',   'Červen',
+            'Červenec', 'Srpen',
+            'Září',     'Øíjen',
+            'Listopad', 'Prosinec'
+        )],
         [qw( AM PM )],
         "%e. %B %Y %k:%M",
         "%e. %B %Y",
@@ -1751,26 +1721,26 @@ sub mark_odd_rows {
     ],
 
     'sk' => [
-        [   (   'nede&#318;a',  'pondelok', 'utorok', 'streda',
-                '&#353;tvrtok', 'piatok',   'sobota'
-            )
-        ],
-        [   (   'janu&#225;r', 'febru&#225;r',
-                'marec',       'apr&#237;l',
-                'm&#225;j',    'j&#250;n',
-                'j&#250;l',    'august',
-                'september',   'okt&#243;ber',
-                'november',    'december'
-            )
-        ],
+        [(
+            'nedeľa',  'pondelok', 'utorok', 'streda',
+            'štvrtok', 'piatok',   'sobota'
+        )],
+        [(
+            'január',    'február',
+            'marec',     'apríl',
+            'máj',       'jún',
+            'júl',       'august',
+            'september', 'október',
+            'november',  'december'
+        )],
         [qw( AM PM )],
         "%e. %B %Y %k:%M",
         "%e. %B %Y",
         "%k:%M",
     ],
 
-    'jp' => [
-        [   '日曜日', '月曜日', '火曜日', '水曜日',
+    'jp' => [[
+            '日曜日', '月曜日', '火曜日', '水曜日',
             '木曜日', '金曜日', '土曜日'
         ],
         [qw( 1 2 3 4 5 6 7 8 9 10 11 12 )],
@@ -1783,14 +1753,13 @@ sub mark_odd_rows {
     ],
 
     'et' => [
-        [   qw( p&uuml;hap&auml;ev esmasp&auml;ev teisip&auml;ev
-                kolmap&auml;ev neljap&auml;ev reede laup&auml;ev )
-        ],
-        [   (   'jaanuar',   'veebruar', 'm&auml;rts', 'aprill',
-                'mai',       'juuni',    'juuli',      'august',
-                'september', 'oktoober', 'november',   'detsember'
-            )
-        ],
+        [qw( pühapäev esmaspäev teisipäev
+            kolmapäev neljapäev reede laupäev )],
+        [(
+            'jaanuar',   'veebruar', 'märts',    'aprill',
+            'mai',       'juuni',    'juuli',    'august',
+            'september', 'oktoober', 'november', 'detsember'
+        )],
         [qw( AM PM )],
         "%m.%d.%y %H:%M",
         "%e. %B %Y",
