@@ -189,7 +189,7 @@ January 31, 1978  7:45 AM
 
 === test 13-1
 --- template
-<MTEntries lastn='1'><MTEntryDate language="zz"></MTEntries>
+<MTEntries lastn='1'><MTEntryDate language="xx"></MTEntries>
 --- expected
 1978ねん1がつ31にち 07:45
 
