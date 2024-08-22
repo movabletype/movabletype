@@ -73,7 +73,6 @@
     "eslint": "^8.57.0",
     "eslint-plugin-svelte": "^2.39.0",
     "glob": "^11.0.0",
-    "node-sass": "^9.0.0",
     "postcss-cli": "^11.0.0",
     "postcss-flexbugs-fixes": "^5.0.1",
     "prettier": "^3.3.0",
