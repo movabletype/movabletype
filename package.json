@@ -12,7 +12,7 @@
     "build-mt-css-minify": "cleancss -O1 --source-map --source-map-inline-sources --output mt-static/css/mt.min.css mt-static/css/mt.css",
     "build-mt-css-prefix": "postcss --config build/postcss.config.js --replace mt-static/css/mt.css",
     "build-mt-css-admin2023": "npm run build-mt-css-compile-admin2023 && npm run build-mt-css-prefix-admin2023 && npm run build-mt-css-minify-admin2023",
-    "build-mt-css-compile-admin2023": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 scss/admin2023/mt.scss mt-static/css/admin2023/mt.css",
+    "build-mt-css-compile-admin2023": "sass --quiet scss/admin2023/mt.scss mt-static/css/admin2023/mt.css",
     "build-mt-css-minify-admin2023": "cleancss -O1 --source-map --source-map-inline-sources --output mt-static/css/admin2023/mt.min.css mt-static/css/admin2023/mt.css",
     "build-mt-css-prefix-admin2023": "postcss --config build/postcss.config.js --replace mt-static/css/admin2023/mt.css",
     "build-riot": "npm run build-riot-listing; npm run build-riot-contenttype",
