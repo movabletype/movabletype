@@ -756,7 +756,7 @@ $Languages = [
     ],
 
     'et' => [
-        ['ipühapäev', 'esmaspäev', 'teisipäev', 'kolmapäev', 'neljapäev', 'reede', 'laupäev'],
+        ['pühapäev', 'esmaspäev', 'teisipäev', 'kolmapäev', 'neljapäev', 'reede', 'laupäev'],
         ['jaanuar', 'veebruar', 'märts', 'aprill', 'mai', 'juuni', 'juuli', 'august', 'september', 'oktoober',
             'november', 'detsember'],
         ['AM', 'PM'],
