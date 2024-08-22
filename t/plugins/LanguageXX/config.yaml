@@ -1,0 +1,4 @@
+name: LanguageXX
+
+callbacks:
+  init_app: $LanguageXX::LanguageXX::cb_init_app

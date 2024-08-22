@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use utf8;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
@@ -185,6 +186,12 @@ January 31, 1978  7:45 AM
 <MTEntries lastn='1'><MTEntryDate language="pl"></MTEntries>
 --- expected
 31 stycznia 1978  7:45
+
+=== test 13-1
+--- template
+<MTEntries lastn='1'><MTEntryDate language="zz"></MTEntries>
+--- expected
+1978ねん1がつ31にち 07:45
 
 === test 14
 --- template
