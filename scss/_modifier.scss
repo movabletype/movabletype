@@ -165,8 +165,17 @@ li{
   @include media-breakpoint-up(xs) {
     display: none;
   }
+  @mixin col-md-2 {
+    position: relative;
+    width: 100%;
+    padding-right: 14px;
+    padding-left: 14px;
+
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+  }
   @include media-breakpoint-up(md) {
-    @extend .col-md-2;
+    @include col-md-2;
     display: block;
     padding: 0;
     max-width: 280px;
@@ -501,8 +510,17 @@ li{
     padding-left: 0.5rem;
     padding-right: 0.5rem;
   }
+  @mixin col-md-3 {
+    position: relative;
+    width: 100%;
+    padding-right: 14px;
+    padding-left: 14px;
+
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
   @include media-breakpoint-up(md) {
-    @extend .col-md-3;
+    @include col-md-3;
     max-width: 400px;
     padding-bottom: 4rem;
     padding-left: 14px;
@@ -529,12 +547,22 @@ li{
   background: $gray-lightest;
 }
 /* Main Content */
+@mixin col-md {
+  position: relative;
+  width: 100%;
+  padding-right: 14px;
+  padding-left: 14px;
+
+  flex-basis: 0;
+  flex-grow: 1;
+  max-width: 100%;
+}
 .mt-mainContent{
   @include media-breakpoint-up(xs) {
     @extend .col-12;
   }
   @include media-breakpoint-up(md) {
-    @extend .col-md;
+    @include col-md;
   }
   padding-bottom: 4rem;
   padding-left: 2rem;
@@ -563,7 +591,7 @@ li{
     text-align: center;
   }
   @include media-breakpoint-up(md) {
-    @extend .col-md;
+    @include col-md;
     border-top: 1px solid $gray-light;
     text-align: left;
     .list-inline{

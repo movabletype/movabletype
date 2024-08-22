@@ -690,7 +690,7 @@ pre code {
 
 .col-1, .col-2, .mt-dashboardPanel, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12, .mt-secondaryPanel, .mt-secondaryPanel--scrollable, .mt-mainContent, .mt-mainContent--scrollable, .col, .mt-productHeader, .mt-mobileGlobalMenu__name, .mt-mobileGlobalMenu__name--invert, .mt-widget__data,
 .col-auto, .mt-footer, .mt-mobileGlobalMenu__dropdown, .mt-mobileGlobalMenu__menuActions, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm,
-.col-sm-auto, .col-md-1, .col-md-2, .mt-primaryNavigation, .mt-primaryNavigation__sites, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md,
+.col-sm-auto, .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12, .col-md,
 .col-md-auto, .col-lg-1, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg,
 .col-lg-auto, .col-xl-1, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl,
 .col-xl-auto {
@@ -1019,7 +1019,7 @@ pre code {
 }
 
 @media (min-width: 768px) {
-  .col-md, .mt-mainContent, .mt-mainContent--scrollable, .mt-footer {
+  .col-md {
     flex-basis: 0;
     flex-grow: 1;
     max-width: 100%;
@@ -1033,11 +1033,11 @@ pre code {
     flex: 0 0 8.333333%;
     max-width: 8.333333%;
   }
-  .col-md-2, .mt-primaryNavigation, .mt-primaryNavigation__sites {
+  .col-md-2 {
     flex: 0 0 16.666667%;
     max-width: 16.666667%;
   }
-  .col-md-3, .mt-secondaryPanel, .mt-secondaryPanel--scrollable {
+  .col-md-3 {
     flex: 0 0 25%;
     max-width: 25%;
   }
@@ -9893,6 +9893,12 @@ li {
 
 @media (min-width: 768px) {
   .mt-primaryNavigation, .mt-primaryNavigation__sites {
+    position: relative;
+    width: 100%;
+    padding-right: 14px;
+    padding-left: 14px;
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
     display: block;
     padding: 0;
     max-width: 280px;
@@ -10285,6 +10291,12 @@ li {
 
 @media (min-width: 768px) {
   .mt-secondaryPanel, .mt-secondaryPanel--scrollable {
+    position: relative;
+    width: 100%;
+    padding-right: 14px;
+    padding-left: 14px;
+    flex: 0 0 25%;
+    max-width: 25%;
     max-width: 400px;
     padding-bottom: 4rem;
     padding-left: 14px;
@@ -10317,6 +10329,18 @@ li {
   padding-right: 2rem;
 }
 
+@media (min-width: 768px) {
+  .mt-mainContent, .mt-mainContent--scrollable {
+    position: relative;
+    width: 100%;
+    padding-right: 14px;
+    padding-left: 14px;
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 767.98px) {
   .mt-mainContent, .mt-mainContent--scrollable {
     padding-left: 0.5rem;
@@ -10341,6 +10365,13 @@ li {
 
 @media (min-width: 768px) {
   .mt-footer {
+    position: relative;
+    width: 100%;
+    padding-right: 14px;
+    padding-left: 14px;
+    flex-basis: 0;
+    flex-grow: 1;
+    max-width: 100%;
     border-top: 1px solid #CACACA;
     text-align: left;
   }
