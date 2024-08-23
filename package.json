@@ -100,7 +100,7 @@
     "js-cookie": "3.0.1",
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
     "popper.js": "^1.16.1",
-    "riot": "3.7.4",
+    "riot": "9.2.2",
     "sass-loader": "^16.0.0",
     "sirv-cli": "^2.0.2",
     "svg4everybody": "^2.1.9",
