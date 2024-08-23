@@ -109,6 +109,12 @@ sub next_step {
         my $new_mode = @new_modes == 1 ? $new_modes[0] : 'next_step';
         $mode->value($new_mode);
     }
+    my $test = $form->find_input('test');
+    if ($test and $param->{test} and !$test->value) {
+        $test->readonly(0);
+        $test->value(delete $param->{test});
+        $mode->value('test') if $mode->value eq 'next_step';
+    }
     for my $name (keys %$param) {
         my $input = $form->find_input($name) or die "$name not found";
         $input->value($param->{$name});
