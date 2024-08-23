@@ -2619,11 +2619,6 @@ sub pre_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
 
-    # The following is only for specific mode and type (ie. not for searching/replacing)
-    my $mode = $app->mode;
-    my $type = $app->param('_type') || '';
-    return 1 unless ($mode eq 'save' and $type eq 'entry');
-
     # save tags
     my $tags = $app->param('tags');
     if ( defined $tags ) {
