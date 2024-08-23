@@ -7,6 +7,7 @@ use MT::App::Wizard;
 use MT::Test::App;
 use Exporter 'import';
 use Test::TCP;
+use Module::Find qw/findsubmod/;
 
 our @EXPORT = qw(test_wizard);
 
@@ -21,6 +22,10 @@ sub start_server {
     );
 }
 
+my @extra_modules = do { local @Module::Find::ModuleDirs = grep {m!\bt[\\/]lib\b!} @INC; findsubmod 'MT::Test::Wizard'; };
+for my $module (@extra_modules) {
+    eval "require $module";
+}
 
 my %default = (
     pre_start => {
