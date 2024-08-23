@@ -21,15 +21,6 @@ sub start_server {
     );
 }
 
-my @steps = qw(
-    pre_start
-    content_separation
-    packages
-    configure
-    optional
-    cfg_ldap_auth
-    seed
-);
 
 my %default = (
     pre_start => {
@@ -52,7 +43,6 @@ my %default = (
         mail_transfer      => 'sendmail',
         sendmail_path      => '/usr/sbin/sendmail',
     },
-    cfg_ldap_auth => {},
 );
 
 sub test_wizard {
@@ -66,10 +56,6 @@ sub test_wizard {
     $default{pre_start}{set_static_uri_to} = "http://127.0.0.1:$port/mt-static";
 
     my $app = MT::Test::App->new('MT::App::Wizard');
-    if (MT->component('enterprise')) {
-        # XXX: dirty hack to reinitialize a handler
-        MT->component('enterprise')->{registry}{applications}{wizard}{wizard_template} = '$enterprise::MT::Enterprise::Wizard::template_hdlr';
-    }
 
     $app->get_ok();
 
