@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Test::More;
 use MT::App::Wizard;
+use MT::Test::App;
 use Exporter 'import';
 use Test::TCP;
 
