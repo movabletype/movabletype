@@ -16,7 +16,7 @@ sub start_server {
             my $port = shift;
             exec "plackup", "-I", "$ENV{MT_HOME}/lib", "-I", "$ENV{MT_HOME}/extlib", "-p", $port,
                 "-M", "Plack::App::Directory", "-M", "Plack::App::URLMap",
-                "-e", "my \$map = Plack::App::URLMap->new; \$map->map('/mt-static' => Plack::App::Directory->new({root => '$ENV{MT_HOME}/mt-static'}) ); \$map";
+                "-e", "my \$map = Plack::App::URLMap->new; \$map->map('/mt-static' => Plack::App::Directory->new({root => '$ENV{MT_HOME}/mt-static'})->to_app ); \$map";
         },
     );
 }
