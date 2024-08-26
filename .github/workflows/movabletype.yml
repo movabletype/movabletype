@@ -144,10 +144,12 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
-      - name: docker pull
-        uses: ./.github/actions/docker-mt-test
+      - name: docker login
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
-          tag: ${{ matrix.config.image }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: test
         if: ${{ matrix.test != 'php' && matrix.test != 'selenium' && matrix.test != 'xt' }}
         run: docker run -t -v $PWD:/mt -w /mt ghcr.io/movabletype/movabletype/test:${{ matrix.config.image }} bash -c "${{ matrix.config.mt_test_env }} prove -lr -j4 -PMySQLPool=MT::Test::Env -It/lib ${{ matrix.test }}"
