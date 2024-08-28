@@ -64,19 +64,22 @@ function init() {
             label_class="top-label">
             <ul class="list-unstyled">
                 <li>
-                    <label for="dynamicity-sync" class="form-label d-block">
-                      <input type="radio" id="dynamicity-sync" name="dynamicity" value="none" <mt:if name="dynamicity" eq="none"> checked="checked"</mt:if>/>
+                  <div class="form-check">
+                      <input type="radio" class="form-check-input" id="dynamicity-sync" name="dynamicity" value="none" <mt:if name="dynamicity" eq="none"> checked="checked"</mt:if>/>
+                      <label for="dynamicity-sync" class="form-check-label">
                       <__trans phrase="Static Publishing">
+                      </label>
                       <div>
                         <small class="form-text text-muted hint">
                           <__trans phrase="Immediately publish all templates statically.">
                         </small>
                       </div>
-                    </label>
+                    </div>
                 </li>
                 <li>
-                    <label for="dynamicity-async" class="form-label d-block">
-                      <input type="radio" id="dynamicity-async" name="dynamicity" value="async_all" <mt:if name="dynamicity" eq="async_all"> checked="checked"</mt:if>/>
+                  <div class="form-check">
+                    <input type="radio" class="form-check-input" id="dynamicity-async" name="dynamicity" value="async_all" <mt:if name="dynamicity" eq="async_all"> checked="checked"</mt:if>/>
+                    <label for="dynamicity-async" class="form-check-label">
                       <__trans phrase="Background Publishing">
                       <div>
                         <small class="form-text text-muted hint">
@@ -84,21 +87,25 @@ function init() {
                         </small>
                       </div>
                     </label>
+                  </div>
                 </li>
                 <li>
-                    <label for="dynamicity-partialasync" class="form-label d-block">
-                        <input type="radio" id="dynamicity-partialasync" name="dynamicity" value="async_partial" <mt:if name="dynamicity" eq="async_partial"> checked="checked"</mt:if>/>
-                        <__trans phrase="High Priority Static Publishing">
-                        <div>
-                          <small class="form-text text-muted hint">
-                              <__trans phrase="Immediately publish Main Index and Feed template, Entry archives, Page archives and ContentType archives statically. Use Publish Queue to publish all other templates statically.">
-                          </small>
-                        </div>
+                  <div class="form-check">
+                    <input type="radio" class="form-check-input" id="dynamicity-partialasync" name="dynamicity" value="async_partial" <mt:if name="dynamicity" eq="async_partial"> checked="checked"</mt:if>/>
+                    <label for="dynamicity-partialasync" class="form-check-label">
+                      <__trans phrase="High Priority Static Publishing">
+                      <div>
+                        <small class="form-text text-muted hint">
+                            <__trans phrase="Immediately publish Main Index and Feed template, Entry archives, Page archives and ContentType archives statically. Use Publish Queue to publish all other templates statically.">
+                        </small>
+                      </div>
                     </label>
+                  </div>
                 </li>
                 <li>
-                    <label for="dynamicity-dynamic" class="form-label d-block">
-                      <input type="radio" id="dynamicity-dynamic" name="dynamicity" value="all" <mt:if name="dynamicity" eq="all"> checked="checked"</mt:if>/>
+                  <div class="form-check">
+                    <input type="radio" class="form-check-input" id="dynamicity-dynamic" name="dynamicity" value="all" <mt:if name="dynamicity" eq="all"> checked="checked"</mt:if>/>
+                    <label for="dynamicity-dynamic" class="form-check-label">
                       <__trans phrase="Dynamic Publishing">
                       <div>
                         <small class="form-text text-muted hint">
@@ -106,10 +113,12 @@ function init() {
                         </small>
                       </div>
                     </label>
+                  </div>
                 </li>
                 <li>
-                    <label for="dynamicity-archives" class="form-label d-block">
-                      <input type="radio" id="dynamicity-archives" name="dynamicity" value="archives" <mt:if name="dynamicity" eq="archives"> checked="checked"</mt:if>/>
+                  <div class="form-check">
+                    <input type="radio" class="form-check-input" id="dynamicity-archives" name="dynamicity" value="archives" <mt:if name="dynamicity" eq="archives"> checked="checked"</mt:if>/>
+                    <label for="dynamicity-archives" class="form-check-label">
                       <__trans phrase="Dynamic Archives Only">
                       <div>
                         <small class="form-text text-muted hint">
@@ -117,6 +126,7 @@ function init() {
                         </small>
                       </div>
                     </label>
+                  </div>
                 </li>
             </ul>
         </mtapp:setting>
