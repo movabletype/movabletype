@@ -48,7 +48,6 @@ subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
 };
 
 subtest 'SMTPAuth' => sub {
-    $MT::DebugMode = 1;
     test_wizard(
         optional => {
             email_address_main => 'test@localhost.localdomain',
@@ -67,7 +66,6 @@ subtest 'SMTPAuth' => sub {
 };
 
 subtest 'SMTPS' => sub {
-    $MT::DebugMode = 1;
     test_wizard(
         optional => {
             email_address_main => 'test@localhost.localdomain',
