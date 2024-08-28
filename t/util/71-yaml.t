@@ -38,7 +38,7 @@ for my $class ( @classes ) {
         ok( Encode::is_utf8($str), "$class: Output of Dump is utf-8");
 
         for my $file (@files) {
-            my $data = eval { YAML::Tiny::LoadFile($file) };
+            my $data = eval { MT::Util::YAML::LoadFile($file) };
             ok $data && ref $data, "$class: load $file";
             visit(
                 $data,
