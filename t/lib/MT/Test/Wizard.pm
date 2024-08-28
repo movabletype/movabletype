@@ -62,11 +62,15 @@ sub test_wizard {
 
     my $app = MT::Test::App->new('MT::App::Wizard');
 
+    # XXX: for now
+    local *MT::App::takedown = sub {};
+
     $app->get_ok();
 
     my %seen;
     my $ct        = 0;
     my $prev_step = '';
+    local $MT::DebugMode = 1;
     until ((my $step = current_step($app) || '') eq 'seed') {
         die $app->content unless $step;
         die $app->content if $ct > 2;
@@ -120,6 +124,7 @@ sub next_step {
         $input->value($param->{$name});
     }
     $app->post_ok($form->click);
+    ok !$app->generic_error, "no generic errors";
 }
 
 package MT::Test::Wizard::ConfigGuard;
