@@ -120,6 +120,7 @@ sub next_step {
         $input->value($param->{$name});
     }
     $app->post_ok($form->click);
+    ok !$app->generic_error, "no generic errors";
 }
 
 package MT::Test::Wizard::ConfigGuard;
