@@ -46,7 +46,7 @@ for my $class ( @classes ) {
                     my ($key, $valueref) = @_;
                     return unless defined $$valueref;
                     if ($$valueref =~ /sub\s+\{/) {
-                        eval "no strict; no warnings; $$valueref; 1" or fail "$$valueref is broken: $@";
+                        eval "no strict; no warnings; $$valueref; 1" or fail "$class: $$valueref is broken: $@";
                     }
                 },
             );
