@@ -63,6 +63,7 @@ sub test_wizard {
     my $app = MT::Test::App->new('MT::App::Wizard');
 
     # XXX: for now
+    no warnings 'redefine';
     local *MT::App::takedown = sub {};
 
     $app->get_ok();
