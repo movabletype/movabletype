@@ -76,7 +76,7 @@
     "node-sass": "^9.0.0",
     "postcss-cli": "^11.0.0",
     "postcss-flexbugs-fixes": "^5.0.1",
-    "prettier": "^3.3.0",
+    "prettier": "^3.3.3",
     "prettier-plugin-svelte": "^3.2.3",
     "rollup": "^4.17.2",
     "rollup-plugin-css-only": "^4.3.0",
