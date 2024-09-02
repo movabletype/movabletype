@@ -3704,7 +3704,9 @@ sub build_actions {
         = sort { $a->{order} <=> $b->{order} or $a->{id} cmp $b->{id} }
         @valid_actions;
 
-    $param->{"${registry_key}_for_mobile"} = [grep { !exists $_->{mobile} || $_->{mobile} } @valid_actions];
+    if ($registry_key eq 'menu_actions') {
+        $param->{"${registry_key}_for_mobile"} = [grep { !exists $_->{mobile} || $_->{mobile} } @valid_actions];
+    }
     $param->{$registry_key} = \@valid_actions;
 }
 
