@@ -106,6 +106,7 @@ sub current_step {
 
 sub next_step {
     my ($app, $param) = @_;
+    my $callback = delete $param->{__test_after_post};
     my $form = $app->form or return;
     my $mode = $form->find_input('__mode');
     if (!$mode->value) {
@@ -126,6 +127,9 @@ sub next_step {
     }
     $app->post_ok($form->click);
     ok !$app->generic_error, "no generic errors";
+    if ($callback) {
+        $callback->($app);
+    }
 }
 
 package MT::Test::Wizard::ConfigGuard;
