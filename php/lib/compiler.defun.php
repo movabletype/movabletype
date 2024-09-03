@@ -16,6 +16,9 @@ class smarty_compiler_fun extends Smarty_Internal_CompileBase {
         // check and get attributes
         $attrs = $this->getAttributes($compiler, $args);
         $_func_name = _dequote($attrs['name']); 
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $_func_name)) {
+            throw new MTException('Illigal name for fun');
+        }
         $_func = 'smarty_fun_'.$_func_name; 
         unset($attrs['name']); 
         $_params = var_export($attrs,true);
@@ -35,6 +38,9 @@ class smarty_compiler_defun extends Smarty_Internal_CompileBase {
         array_push($compiler->_tag_stack, array('defun', $attrs, $args)); 
 
         $func_name = _dequote($attrs['name']); 
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $func_name)) {
+            throw new MTException('Illigal name for defun');
+        }
         $func = 'smarty_fun_'.$func_name; 
         $str = '<?php ';
         $str .= "\nif (!function_exists('$func')) {";
