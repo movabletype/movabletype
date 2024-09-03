@@ -1053,7 +1053,8 @@ sub seed {
 
         # write!
         if ( open my $OUT, ">", $cfg_file ) {
-            print $OUT $data;
+            require MT::Util::Encode;
+            print $OUT MT::Util::Encode::encode_utf8_if_flagged($data);
             close $OUT;
         }
         $param{config_created} = 1 if -f $cfg_file;

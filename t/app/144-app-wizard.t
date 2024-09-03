@@ -16,6 +16,7 @@ use MT::Test::Wizard;
 use MT::Test::App;
 use MT::App::Wizard;
 use File::Copy qw/cp/;
+use utf8;
 
 subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
     my $app      = MT::Test::App->new(app_class => 'MT::App::Wizard', no_redirect => 1);
@@ -76,6 +77,18 @@ subtest 'SMTPS' => sub {
         mt_config => {
             like   => ['SMTPS starttls'],
             unlike => ['SMTPAuth starttls'],
+        },
+    );
+};
+
+subtest 'multibyte' => sub {
+    test_wizard(
+        optional => {
+            email_address_main => 'テスト@localhost.localdomain',
+            mail_transfer      => 'sendmail',
+        },
+        mt_config => {
+            like   => ['EmailAddressMain テスト@localhost.localdomain'],
         },
     );
 };
