@@ -565,7 +565,7 @@ sub js_upload_file {
     my $thumb_size = $app->param('thumbnail_size') || $default_thumbnail_size;
     if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
         $asset->remove_broken_png_metadata;
-        my ( $orig_height, $orig_width )
+        my ( $orig_width, $orig_height )
             = ( $asset->image_width, $asset->image_height );
         if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
             ($thumb_url) = $asset->thumbnail_url(
@@ -2725,7 +2725,7 @@ sub dialog_edit_asset {
         $asset->remove_broken_png_metadata;
         my ( $thumb_url, $thumb_w, $thumb_h );
         my $thumb_size = 240;
-        my ( $orig_height, $orig_width )
+        my ( $orig_width, $orig_height )
             = ( $asset->image_width, $asset->image_height );
         if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
             ( $thumb_url, $thumb_w, $thumb_h ) = $asset->thumbnail_url(
@@ -3376,7 +3376,7 @@ sub _make_thumbnail_url {
 
     if ( $asset->has_thumbnail && $asset->can_create_thumbnail ) {
         $asset->remove_broken_png_metadata;
-        my ( $orig_height, $orig_width )
+        my ( $orig_width, $orig_height )
             = ( $asset->image_width, $asset->image_height );
         if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
             ($thumb_url) = $asset->thumbnail_url(
