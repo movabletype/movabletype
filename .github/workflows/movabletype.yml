@@ -32,9 +32,9 @@ jobs:
           - "t/tag/"
           - "plugins/*/t"
           - php
-#        include:
-#          - config: {image: chromiumdriver}
-#            test: selenium
+        include:
+          - config: {image: chromiumdriver}
+            test: selenium
     steps:
       - name: checkout
         uses: actions/checkout@v4.1.0
@@ -82,8 +82,8 @@ jobs:
           - "plugins/*/t"
           - php
         include:
-#          - config: {image: chromiumdriver}
-#            test: selenium
+          - config: {image: chromiumdriver}
+            test: selenium
           - config: {image: buster}
             test: xt
     steps:
