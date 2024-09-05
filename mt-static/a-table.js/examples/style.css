@@ -1,0 +1,60 @@
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.source-area {
+  margin-top: 10px;
+  padding: 5px;
+  width: 100%;
+  background-color: #eee;
+  overflow-x: scroll;
+}
+
+.main {
+  padding: 10px;
+}
+
+.column {
+  padding: 5px;
+  float: left;
+  width: 50%;
+}
+
+.acms-admin-btn-group {
+  display: table;
+  float: left;
+  padding: 7px 10px;
+  padding-left: 0;
+}
+
+.acms-admin-btn-group .acms-admin-btn {
+  border-radius: 0;
+  display: table-cell;
+  height: 28px;
+  border-right: none;
+}
+
+.acms-admin-btn-group .acms-admin-btn:first-child {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.acms-admin-btn-group .acms-admin-btn:last-child {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-right: 1px solid #a7a7aa;
+}
+
+.a-table td.red {
+  color: red;
+}
+
+.a-table td.blue {
+  color: blue;
+}
+
+.a-table td.yellow {
+  color: yellow;
+}

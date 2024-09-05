@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<meta name=viewport content="width=device-width, initial-scale=1">
+	<link rel='stylesheet' href="../fonts/a-table-icon.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+	<link rel="stylesheet" href="../css/a-table.css">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class='debug'></div>
+	<div class="main acms-admin-form">
+		<div class="acms-admin-table-container">
+			<div class="acms-admin-table-wrap">
+			<div class="acms-admin-table-inner">
+			<table class="table">
+				<tr>
+					<td class="center">test</td>
+					<td class="red">hoge</td>
+					<td>test</td>
+					<td>hoge</td>
+					<td>test</td>
+				</tr>
+				<tr>
+					<td>test</td>
+					<td>hoge</td>
+					<td>test</td>
+					<td>hoge</td>
+					<td>test</td>
+				</tr>
+				<tr>
+					<td>test</td>
+					<td>hoge</td>
+					<td>test</td>
+					<td>hoge</td>
+					<td>test</td>
+				</tr>
+				<tr>
+					<td>test</td>
+					<td>hoge</td>
+					<td>test</td>
+					<td>hoge</td>
+					<td>test</td>
+				</tr>
+				<tr>
+					<td>test</td>
+					<td>hoge</td>
+					<td>test</td>
+					<td>hoge</td>
+					<td>test</td>
+				</tr>
+			</table>
+			</div>
+			</div>
+		</div>
+		<div class="column">
+			<p>HTML</p>
+			<div class="source-area">
+				<pre class="test"></pre>
+			</div>
+		</div>
+		<div class="column">
+			<p>Markdown</p>
+			<div class="source-area">
+				<pre class="markdown"></pre>
+			</div>
+		</div>
+	</div>
+	<script
+	src="https://code.jquery.com/jquery-2.2.4.min.js"
+	integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+	crossorigin="anonymous"></script>
+	<script src="../build/a-table.js"></script>
+	<script>
+		var table = new aTable('.table',{
+			lang:'ja',
+			mark:{
+			  icon: {
+				  td:false,
+				  th:false
+				}
+			},
+			selector:{
+				option:[
+					{label:'赤',value:'red'},
+					{label:'青',value:'blue'},
+					{label:'黄色',value:'yellow'}
+				]
+			},
+			tableOption: [
+				{label:'赤',value:'red'},
+				{label:'青',value:'blue'},
+				{label:'黄色',value:'yellow'}
+			]
+		});
+		table.afterRendered =
+		table.afterEntered = function(){
+			document.querySelector('.test').innerText = this.getTable();
+			document.querySelector('.markdown').innerText = this.getMarkdown();
+		}
+		table.afterRendered();
+	</script>
+</body>
+</html>
