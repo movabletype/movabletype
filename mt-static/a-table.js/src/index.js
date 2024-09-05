@@ -661,7 +661,7 @@ export default class aTable extends aTemplate {
     data.mode = 'col';
     data.selectedColNo = -1;
     data.selectedRowNo = i;
-    if (data.increaseDecreaseRows) {
+    if (data.increaseDecreaseColumns) {
       this.contextmenu();
     }
     this.update();
@@ -688,7 +688,7 @@ export default class aTable extends aTemplate {
     data.mode = 'row';
     data.selectedRowNo = -1;
     data.selectedColNo = i;
-    if (data.increaseDecreaseColumns) {
+    if (data.increaseDecreaseRows) {
       this.contextmenu();
     }
     this.update();
