@@ -1078,6 +1078,23 @@ function mtEntryOnLoad() {
     mtFireEvent('usersignin');
 }
 
+function mtEntryOnPagehide(event) {
+    if (event.persisted) {
+        return;
+    }
+
+    if (mtRequestSubmitted) {
+        var cf = document['comments_form'];
+        if (cf) {
+            if (cf.post && cf.post.disabled)
+                cf.post.disabled = false;
+            if (cf.preview_button && cf.preview_button.disabled)
+                cf.preview_button.disabled = false;
+        }
+        mtRequestSubmitted = false;
+    }
+}
+
 function mtEntryOnUnload() {
     if (mtRequestSubmitted) {
         var cf = document['comments_form'];
