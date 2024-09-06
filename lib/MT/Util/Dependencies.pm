@@ -1177,4 +1177,30 @@ sub _make_index {
     return +{ dist => \%dists, package => \%packages };
 }
 
+sub check_extlib {
+    my $class = shift;
+    _require_module('CPAN::Common::Index::Mirror') or return;
+    _require_module('Parse::Distname')             or return;
+    _require_module('version')                     or return;
+    my %modules = (%Requirements, %ExtLibOnly, %HiddenCoreDeps);
+    my %extlib  = map { $_ => $modules{$_}{extlib} } grep { $modules{$_}{extlib} } keys %modules;
+    my $index   = CPAN::Common::Index::Mirror->new;
+    open my $fh, '<', $index->cached_package;
+    my $seen;
+
+    while (<$fh>) {
+        chomp;
+        if ($_ eq '') {
+            $seen = 1;
+            next;
+        }
+        next unless $seen;
+        my ($package, $version, $dist) = split /\s+/;
+        my $extlib_version = $extlib{$package} or next;
+        my $distname       = Parse::Distname::parse_distname($dist)->{name_and_version};
+        next unless version->parse($version) > version->parse($extlib_version);
+        print STDERR "$package ($extlib_version) has a new version $version ($distname)\n";
+    }
+}
+
 1;
