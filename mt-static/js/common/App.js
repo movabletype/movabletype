@@ -116,6 +116,9 @@ App = new Class( Component, Component.Delegator, {
     
     
     eventUnload: function( event ) {
+        // deprecated since 8.5.0
+        console.warn("eventUnload is deprecated and will be removed in the future.");
+
         this.destroy();
     },
     
