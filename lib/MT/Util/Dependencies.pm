@@ -43,7 +43,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Cache::Memcached",
     },
     "CGI" => {
-        extlib   => 4.61,
+        extlib   => 4.66,
         label    => "CGI is required for all Movable Type application functionality.",
         required => 1,
         tags     => ["Base"],
@@ -117,7 +117,7 @@ our %Requirements = (
     },
     "Encode" => {
         label     => "Encode is required to handle multibyte characters correctly.",
-        perl_core => 2.44,
+        perl_core => "2.44_01",
         required  => 1,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Encode",
@@ -248,7 +248,7 @@ our %Requirements = (
     },
     "List::Util" => {
         label     => "List::Util is required to manipulate a list of numbers.",
-        perl_core => 1.23,
+        perl_core => 1.25,
         required  => 1,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/List::Util",
@@ -284,13 +284,13 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Log::Minimal",
     },
     "LWP::Protocol::https" => {
-        extlib => 6.12,
+        extlib => 6.14,
         label  => "LWP::Protocol::https is optional. It provides https support for LWP::UserAgent.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::Protocol::https",
     },
     "LWP::UserAgent" => {
-        extlib => 6.76,
+        extlib => 6.77,
         label  => "LWP::UserAgent is optional. It is used to fetch information from local and external servers.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::UserAgent",
@@ -359,7 +359,7 @@ our %Requirements = (
     },
     "Scalar::Util" => {
         label     => "Scalar::Util is required to avoid memory leaks.",
-        perl_core => 1.23,
+        perl_core => 1.25,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Scalar::Util",
         version   => "1.10",
@@ -395,7 +395,7 @@ our %Requirements = (
         url        => "https://metacpan.org/pod/Time::HiRes",
     },
     "URI" => {
-        extlib => 5.25,
+        extlib => 5.29,
         label  => "This module is sometimes used to parse URI.",
         tags   => ["HTTP", "URI"],
         url    => "https://metacpan.org/pod/URI",
@@ -512,7 +512,7 @@ our %ExtLibOnly = (
         used_in => ["MT"],
     },
     "Crypt::URandom" => {
-        extlib  => 0.39,
+        extlib  => "0.40",
         url     => "https://metacpan.org/pod/Crypt::URandom",
         used_in => ["MT::Util::UniqueID"],
     },
@@ -648,7 +648,7 @@ our %ExtLibOnly = (
     },
     "Math::BigInt" => {
         dropped_in => ["amazonlinux2023"],
-        extlib     => 2.003002,
+        extlib     => 2.003003,
         perl_core  => 1.998,
         url        => "https://metacpan.org/pod/Math::BigInt",
         used_in    => ["JSON::PP"],
@@ -664,12 +664,12 @@ our %ExtLibOnly = (
         used_in => ["MIME::EncWords"],
     },
     "MIME::EncWords" => {
-        extlib  => 1.014003,
+        extlib  => 1.015,
         url     => "https://metacpan.org/pod/MIME::EncWords",
         used_in => ["MT::Mail"],
     },
     "MIME::Types" => {
-        extlib  => 2.24,
+        extlib  => 2.26,
         url     => "https://metacpan.org/pod/MIME::Types",
         used_in => ["MT::Mail::MIME"],
     },
@@ -689,7 +689,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Mail::MIME"],
     },
     "parent" => {
-        extlib    => 0.241,
+        extlib    => 0.242,
         note      => "used in many extlib modules",
         perl_core => 0.225,
         url       => "https://metacpan.org/pod/parent",
@@ -712,7 +712,7 @@ our %ExtLibOnly = (
         used_in   => ["MT::Util"],
     },
     "Try::Tiny" => {
-        extlib  => 0.31,
+        extlib  => 0.32,
         url     => "https://metacpan.org/pod/Try::Tiny",
         used_in => ["LWP::UserAgent"],
     },
@@ -733,7 +733,7 @@ our %ExtLibOnly = (
     },
     "version" => {
         dropped_in => ["amazonlinux2023", "centos7"],
-        extlib     => "0.9930",
+        extlib     => 0.9933,
         perl_core  => 0.99,
         url        => "https://metacpan.org/pod/version",
         used_in    => ["MT::version"],
