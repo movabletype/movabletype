@@ -434,8 +434,14 @@ PERMCHECK: {
         : 'text/csv'
     );
 
+    require File::Temp;
+    my ($fh) = File::Temp->new();
+
+    require Text::CSV;
+    my $csv = Text::CSV->new({ binary => 1 });
+    $csv->say($fh, [qw/timestamp ip weblog by message metadata/]);
+
     my %seen;
-    my $csv = "timestamp,ip,weblog,by,message\n";
     while ( my $log = $iter->() ) {
 
         # columns:
@@ -470,9 +476,8 @@ PERMCHECK: {
         }
         if ($blog) {
             my $name = $blog->name;
-            $name =~ s/"/\\"/gs;
             $name =~ s/[\r\n]+/ /gs;
-            push @col, '"' . $name . '"';
+            push @col, MT::Util::Encode::encode( $enc, $name );
         }
         else {
             push @col, '';
@@ -489,21 +494,31 @@ PERMCHECK: {
             }
         }
         if (defined $author_name && $author_name ne '') {
-            $author_name =~ s/"/\\"/gs;
             $author_name =~ s/[\r\n]+/ /gs;
-            push @col, '"' . $author_name . '"';
+            push @col, MT::Util::Encode::encode( $enc, $author_name );
         } else {
             push @col, '';
         }
         my $msg = $log->message;
         $msg = '' unless defined $msg;
-        $msg =~ s/"/\\"/gs;
         $msg =~ s/[\r\n]+/ /gs;
-        push @col, '"' . $msg . '"';
-        $csv .= ( join ',', @col ) . "\n";
-        $app->print( MT::Util::Encode::encode( $enc, $csv ) );
-        $csv = '';
+        push @col, MT::Util::Encode::encode( $enc, $msg );
+
+        if (my $metadata = $log->metadata) {
+            push @col, MT::Util::Encode::encode( $enc, $metadata );
+        } else {
+            push @col, '';
+        }
+
+        $csv->say($fh, \@col);
     }
+
+    seek $fh, 0, 0;
+    while ( read $fh, my $chunk, 8192 ) {
+        $app->print($chunk);
+    }
+
+    close $fh;
 }
 
 sub apply_log_filter {
