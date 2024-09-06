@@ -24,6 +24,8 @@ __PACKAGE__->mk_accessors(@ACCESSORS);
 #--------------------------------------#
 # Class Methods
 
+sub default_escape_char {}
+
 sub new {
     my $class = shift;
     my %param = @_;

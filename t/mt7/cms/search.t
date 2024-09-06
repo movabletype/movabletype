@@ -254,6 +254,94 @@ subtest q{contaminated date_time_field_id on entry tab is ignored} => sub {
     $entry->remove;
 };
 
+subtest 'wildcards in like condition are escaped' => sub {
+    plan skip_all => 'Empty names are not supported on oracle' unless MT::Object->driver->dbd->sql_class->default_escape_char;
+
+    my $limit_org = MT->config->CMSSearchLimit;
+    $test_env->update_config('CMSSearchLimit', 1);
+
+    my $app   = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
+
+    subtest 'underscore (MTC-26724)' => sub {
+        my @entries;
+        for (1..2) {
+            push @entries, MT::Test::Permission->make_entry(
+                blog_id     => $blog_id,
+                author_id   => $author->id,
+                title       => 'test',
+                authored_on => '20010101120001',
+            );
+        }
+        push @entries, MT::Test::Permission->make_entry(
+            blog_id     => $blog_id,
+            author_id   => $author->id,
+            title       => '__',
+            authored_on => '20010101120000',
+        );
+        $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+        $app->change_tab('entry');
+        $app->search('__', {});
+        ok !$app->generic_error, 'no error';
+        is_deeply($app->found_titles, ['__'], 'search result is also good');
+
+        $_->remove for @entries;
+    };
+
+    subtest 'percent' => sub {
+        my @entries;
+        for (1..2) {
+            push @entries, MT::Test::Permission->make_entry(
+                blog_id     => $blog_id,
+                author_id   => $author->id,
+                title       => '1000%',
+                authored_on => '20010101120001',
+            );
+        }
+        push @entries, MT::Test::Permission->make_entry(
+            blog_id     => $blog_id,
+            author_id   => $author->id,
+            title       => '100%',
+            authored_on => '20010101120000',
+        );
+        $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+        $app->change_tab('entry');
+        $app->search('100%', {});
+        ok !$app->generic_error, 'no error';
+        is_deeply($app->found_titles, ['100%'], 'search result is also good');
+
+        $_->remove for @entries;
+    };
+
+    subtest 'backslash' => sub {
+        my @entries;
+        for (1..2) {
+            push @entries, MT::Test::Permission->make_entry(
+                blog_id     => $blog_id,
+                author_id   => $author->id,
+                title       => 'a100%',
+                authored_on => '20010101120001',
+            );
+        }
+        push @entries, MT::Test::Permission->make_entry(
+            blog_id     => $blog_id,
+            author_id   => $author->id,
+            title       => 'b100\\%',
+            authored_on => '20010101120000',
+        );
+        $app->get_ok({ __mode => 'search_replace', blog_id => $blog_id });
+        $app->change_tab('entry');
+
+        $app->search('100\\', {});
+        ok !$app->generic_error, 'no error';
+        is_deeply($app->found_titles, ['b100\\%'], 'search result is also good');
+
+        $_->remove for @entries;
+    };
+
+    $test_env->update_config('CMSSearchLimit', $limit_org);
+};
+
 subtest 'template' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($author);

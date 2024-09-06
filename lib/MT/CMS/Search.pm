@@ -1604,6 +1604,9 @@ sub make_terms_for_plain_search {
     }
 
     if (my @cols = @$cols_ref) {
+        if (my $escape_char = MT::Object->driver->dbd->sql_class->default_escape_char) {
+            $plain_search =~ s/(\\|_|%)/$escape_char$1/g;
+        }
         my $query_string = "%$plain_search%";
         my @sub;
         for my $col (@cols) {
