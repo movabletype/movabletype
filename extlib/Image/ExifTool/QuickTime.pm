@@ -37,6 +37,7 @@
 #   25) https://cconcolato.github.io/mp4ra/atoms.html
 #   26) https://github.com/SamsungVR/android_upload_sdk/blob/master/SDKLib/src/main/java/com/samsung/msca/samsungvr/sdk/UserVideo.java
 #   27) https://exiftool.org/forum/index.php?topic=11517.0
+#   28) https://docs.mp3tag.de/mapping/
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::QuickTime;
@@ -47,7 +48,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '2.80';
+$VERSION = '2.93';
 
 sub ProcessMOV($$;$);
 sub ProcessKeys($$$);
@@ -62,6 +63,8 @@ sub Process_mebx($$$);
 sub Process_3gf($$$);
 sub Process_gps0($$$);
 sub Process_gsen($$$);
+sub ProcessKenwood($$$);
+sub ProcessLIGO_JSON($$$);
 sub ProcessRIFFTrailer($$$);
 sub ProcessTTAD($$$);
 sub ProcessNMEA($$$);
@@ -223,6 +226,9 @@ my %ftypLookup = (
     'crx ' => 'Canon Raw (.CRX)', #PH (CR3 or CRM; use Canon CompressorVersion to decide)
 );
 
+# use extension to determine file type
+my %useExt = ( GLV => 'MP4' );
+
 # information for int32u date/time tags (time zero is Jan 1, 1904)
 my %timeInfo = (
     Notes => 'converted from UTC to local time if the QuickTimeUTC option is set',
@@ -261,6 +267,24 @@ my %timeInfo = (
     PrintConv => '$self->ConvertDateTime($val)',
     PrintConvInv => '$self->InverseDateTime($val)',
     # (can't put Groups here because they aren't constant!)
+);
+# properties for ISO 8601 format date/time tags
+my %iso8601Date = (
+    Shift => 'Time',
+    ValueConv => q{
+        require Image::ExifTool::XMP;
+        $val =  Image::ExifTool::XMP::ConvertXMPDate($val);
+        $val =~ s/([-+]\d{2})(\d{2})$/$1:$2/; # add colon to timezone if necessary
+        return $val;
+    },
+    ValueConvInv => q{
+        require Image::ExifTool::XMP;
+        my $tmp = Image::ExifTool::XMP::FormatXMPDate($val);
+        ($val = $tmp) =~ s/([-+]\d{2}):(\d{2})$/$1$2/ if defined $tmp; # remove time zone colon
+        return $val;
+    },
+    PrintConv => '$self->ConvertDateTime($val)',
+    PrintConvInv => '$self->InverseDateTime($val,1)', # (add time zone if it didn't exist)
 );
 # information for duration tags
 my %durationInfo = (
@@ -418,6 +442,18 @@ my %channelLabel = (
     0x1ffff => 'Discrete_65535',
 );
 
+my %qtFlags = ( #12
+    0 => 'undef',       22 => 'unsigned int',   71 => 'float[2] size',
+    1 => 'UTF-8',       23 => 'float',          72 => 'float[4] rect',
+    2 => 'UTF-16',      24 => 'double',         74 => 'int64s',
+    3 => 'ShiftJIS',    27 => 'BMP',            75 => 'int8u',
+    4 => 'UTF-8 sort',  28 => 'QT atom',        76 => 'int16u',
+    5 => 'UTF-16 sort', 65 => 'int8s',          77 => 'int32u',
+    13 => 'JPEG',       66 => 'int16s',         78 => 'int64u',
+    14 => 'PNG',        67 => 'int32s',         79 => 'double[3][3]',
+    21 => 'signed int', 70 => 'float[2] point',
+);
+
 # properties which don't get inherited from the parent
 my %dontInherit = (
     ispe => 1,  # size of parent may be different
@@ -434,15 +470,16 @@ my %dupDirOK = ( ipco => 1, '----' => 1 );
 my %eeStd = ( stco => 'stbl', co64 => 'stbl', stsz => 'stbl', stz2 => 'stbl',
               stsc => 'stbl', stts => 'stbl' );
 
+# atoms required for generating ImageDataHash
+my %hashBox = ( vide => { %eeStd }, soun => { %eeStd } );
+
 # boxes and their containers for the various handler types that we want to save
 # when the ExtractEmbedded is enabled (currently only the 'gps ' container name is
 # used, but others have been checked against all available sample files and may be
 # useful in the future if the names are used for different boxes on other locations)
 my %eeBox = (
     # (note: vide is only processed if specific atoms exist in the VideoSampleDesc)
-    vide => { %eeStd,
-        JPEG => 'stsd',
-    },
+    vide => { %eeStd, JPEG => 'stsd' },
     text => { %eeStd },
     meta => { %eeStd },
     sbtl => { %eeStd },
@@ -455,6 +492,9 @@ my %eeBox = (
 my %eeBox2 = (
     vide => { avcC => 'stsd' }, # (parses H264 video stream)
 );
+
+# image types in AVIF and HEIC files
+my %isImageData = ( av01 => 1, avc1 => 1, hvc1 => 1, lhv1 => 1, hvt1 => 1 );
 
 # QuickTime atoms
 %Image::ExifTool::QuickTime::Main = (
@@ -617,6 +657,34 @@ my %eeBox2 = (
             Condition => '$$valPt=~/^\xef\xe1\x58\x9a\xbb\x77\x49\xef\x80\x95\x27\x75\x9e\xb1\xdc\x6f/ and $$self{OPTIONS}{ExtractEmbedded}',
             SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::Tags360Fly' },
         },
+        { #https://c2pa.org/specifications/
+            Name => 'JUMBF',
+            Condition => '$$valPt=~/^\xd8\xfe\xc3\xd6\x1b\x0e\x48\x3c\x92\x97\x58\x28\x87\x7e\xc4\x81.{4}manifest\0/s',
+            Deletable => 1,
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::Jpeg2000::Main',
+                DirName => 'JUMBF',
+                # 16 bytes uuid
+                # +4 bytes 0
+                # +9 bytes "manifest\0"
+                # +8 bytes absolute(!!!) offset to C2PA uuid "merkle\0" box
+                # =37 bytes total
+                Start => 37,
+            },
+        },
+        { #https://c2pa.org/specifications/ (NC)
+            Name => 'CBOR',
+            Condition => '$$valPt=~/^\xd8\xfe\xc3\xd6\x1b\x0e\x48\x3c\x92\x97\x58\x28\x87\x7e\xc4\x81.{4}merkle\0/s',
+            Deletable => 1, # (NC)
+            SubDirectory => {
+                TagTable => 'Image::ExifTool::CBOR::Main',
+                # 16 bytes uuid
+                # +4 bytes 0
+                # +7 bytes "merkle\0"
+                # =27 bytes total
+                Start => 27,
+            },
+        },
         {
             Name => 'SensorData',
             Condition => '$$valPt=~/^\xef\xe1\x58\x9a\xbb\x77\x49\xef\x80\x95\x27\x75\x9e\xb1\xdc\x6f/',
@@ -652,10 +720,24 @@ my %eeBox2 = (
         Name => 'HTCInfo',
         SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::HTCInfo' },
     },
-    udta => {
-        Name => 'UserData',
+    udta => [{
+        Name => 'KenwoodData',
+        Condition => '$$valPt =~ /^VIDEOUUUUUUUUUUUUUUUUUUUUUU/',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::QuickTime::Stream',
+            ProcessProc => \&ProcessKenwood,
+        },
+    },{
+        Name => 'LIGO_JSON',
+        Condition => '$$valPt =~ /^LIGOGPSINFO \{/',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::QuickTime::Stream',
+            ProcessProc => \&ProcessLIGO_JSON,
+        },
+    },{
+        Name => 'FLIRData',
         SubDirectory => { TagTable => 'Image::ExifTool::FLIR::UserData' },
-    },
+    }],
     thum => { #PH
         Name => 'ThumbnailImage',
         Groups => { 2 => 'Preview' },
@@ -763,6 +845,14 @@ my %eeBox2 = (
         SubDirectory => { TagTable => 'Image::ExifTool::Samsung::Trailer' },
     },
     # 'samn'? - seen in Vantrue N2S sample video
+    mpvd => {
+        Name => 'MotionPhotoVideo',
+        Notes => 'MP4-format video saved in Samsung motion-photo HEIC images.',
+        Binary => 1,
+        # note that this may be written and/or deleted, but can't currently be added back again
+        Writable => 1,
+    },
+    # '35AX'? - seen "AT" (Yada RoadCam Pro 4K dashcam)
 );
 
 # stuff seen in 'skip' atom (70mai Pro Plus+ MP4 videos)
@@ -975,7 +1065,8 @@ my %eeBox2 = (
             0 => 'Monoscopic',
             1 => 'Stereoscopic Top-Bottom',
             2 => 'Stereoscopic Left-Right',
-            3 => 'Stereoscopic Stereo-Custom', # (provisional in spec as of 2017-10-10)
+            3 => 'Stereoscopic Stereo-Custom',
+            4 => 'Stereoscopic Right-Left',
         },
     },
     sv3d => {
@@ -1144,7 +1235,10 @@ my %eeBox2 = (
         },
         {
             Name => 'GarminGPS',
-            Condition => '$$valPt=~/^\x9b\x63\x0f\x8d\x63\x74\x40\xec\x82\x04\xbc\x5f\xf5\x09\x17\x28/ and $$self{OPTIONS}{ExtractEmbedded}',
+            Condition => q{
+                $$valPt=~/^\x9b\x63\x0f\x8d\x63\x74\x40\xec\x82\x04\xbc\x5f\xf5\x09\x17\x28/ and
+                $$self{OPTIONS}{ExtractEmbedded}
+            },
             SubDirectory => {
                 TagTable => 'Image::ExifTool::QuickTime::Stream',
                 ProcessProc => \&ProcessGarminGPS,
@@ -1352,12 +1446,14 @@ my %eeBox2 = (
         },
         { #https://github.com/google/spatial-media/blob/master/docs/spherical-video-rfc.md
             Name => 'SphericalVideoXML',
+            # (this tag is readable/writable as a block through the Extra SphericalVideoXML tags)
             Condition => '$$valPt=~/^\xff\xcc\x82\x63\xf8\x55\x4a\x93\x88\x14\x58\x7a\x02\x52\x1f\xdd/',
             WriteGroup => 'GSpherical', # write only GSpherical XMP tags here
             HandlerType => 'vide',      # only write in video tracks
             SubDirectory => {
                 TagTable => 'Image::ExifTool::XMP::Main',
                 Start => 16,
+                ProcessProc => 'Image::ExifTool::XMP::ProcessGSpherical',
                 WriteProc => 'Image::ExifTool::XMP::WriteGSpherical',
             },
         },
@@ -1497,22 +1593,7 @@ my %eeBox2 = (
     "\xa9day" => {
         Name => 'ContentCreateDate',
         Groups => { 2 => 'Time' },
-        Shift => 'Time',
-        # handle values in the form "2010-02-12T13:27:14-0800" (written by Apple iPhone)
-        ValueConv => q{
-            require Image::ExifTool::XMP;
-            $val =  Image::ExifTool::XMP::ConvertXMPDate($val);
-            $val =~ s/([-+]\d{2})(\d{2})$/$1:$2/; # add colon to timezone if necessary
-            return $val;
-        },
-        ValueConvInv => q{
-            require Image::ExifTool::XMP;
-            my $tmp = Image::ExifTool::XMP::FormatXMPDate($val);
-            ($val = $tmp) =~ s/([-+]\d{2}):(\d{2})$/$1$2/ if defined $tmp; # remove time zone colon
-            return $val;
-        },
-        PrintConv => '$self->ConvertDateTime($val)',
-        PrintConvInv => '$self->InverseDateTime($val,1)', # (add time zone if it didn't exist)
+        %iso8601Date,
     },
     "\xa9ART" => 'Artist', #PH (iTunes 8.0.2)
     "\xa9alb" => 'Album', #PH (iTunes 8.0.2)
@@ -1796,21 +1877,7 @@ my %eeBox2 = (
             Apple Photos has been reported to show a crazy date/time for some MP4 files
             containing this tag, but perhaps only if it is missing a time zone
         }, #forum10690/11125
-        Shift => 'Time',
-        ValueConv => q{
-            require Image::ExifTool::XMP;
-            $val =  Image::ExifTool::XMP::ConvertXMPDate($val);
-            $val =~ s/([-+]\d{2})(\d{2})$/$1:$2/; # add colon to timezone if necessary
-            return $val;
-        },
-        ValueConvInv => q{
-            require Image::ExifTool::XMP;
-            $val =  Image::ExifTool::XMP::FormatXMPDate($val);
-            $val =~ s/([-+]\d{2}):(\d{2})$/$1$2/; # remove time zone colon
-            return $val;
-        },
-        PrintConv => '$self->ConvertDateTime($val)',
-        PrintConvInv => '$self->InverseDateTime($val,1)', # (add time zone if it didn't exist)
+        %iso8601Date,
     },
     manu => { # (SX280)
         Name => 'Make',
@@ -1944,7 +2011,7 @@ my %eeBox2 = (
             Name => 'SanyoMOV',
             Condition => q{
                 $$valPt =~ /^SANYO DIGITAL CAMERA\0/ and
-                $self->{VALUE}->{FileType} eq "MOV"
+                $$self{FileType} eq "MOV"
             },
             SubDirectory => {
                 TagTable => 'Image::ExifTool::Sanyo::MOV',
@@ -1955,7 +2022,7 @@ my %eeBox2 = (
             Name => 'SanyoMP4',
             Condition => q{
                 $$valPt =~ /^SANYO DIGITAL CAMERA\0/ and
-                $self->{VALUE}->{FileType} eq "MP4"
+                $$self{FileType} eq "MP4"
             },
             SubDirectory => {
                 TagTable => 'Image::ExifTool::Sanyo::MP4',
@@ -2034,8 +2101,8 @@ my %eeBox2 = (
         ValueConv => 'substr($val, 4)',
         ValueConvInv => '"\0\0\0\x01$val"',
     },
-    # hmtp - "\0\0\0\x01" followed by 408 bytes of zero
-    # vrin - "\0\0\0\x01" followed by 8 bytes of zero
+    # hmtp - 412 bytes: "\0\0\0\x01" then maybe "\0\0\0\x64" and the rest zeros
+    # vrin - 12 bytes: "\0\0\0\x01" followed by 8 bytes of zero
     # ---- GoPro ---- (ref PH)
     GoPr => 'GoProType', # (Hero3+)
     FIRM => { Name => 'FirmwareVersion', Avoid => 1 }, # (Hero4)
@@ -2233,23 +2300,9 @@ my %eeBox2 = (
             symbol in these tag ID's for the Ricoh Theta Z1 and maybe other models
         },
         Groups => { 2 => 'Time' },
-        Shift => 'Time',
         Avoid => 1,
         # handle values in the form "2010-02-12T13:27:14-0800"
-        ValueConv => q{
-            require Image::ExifTool::XMP;
-            $val =  Image::ExifTool::XMP::ConvertXMPDate($val);
-            $val =~ s/([-+]\d{2})(\d{2})$/$1:$2/; # add colon to timezone if necessary
-            return $val;
-        },
-        ValueConvInv => q{
-            require Image::ExifTool::XMP;
-            my $tmp = Image::ExifTool::XMP::FormatXMPDate($val);
-            ($val = $tmp) =~ s/([-+]\d{2}):(\d{2})$/$1$2/ if defined $tmp; # remove time zone colon
-            return $val;
-        },
-        PrintConv => '$self->ConvertDateTime($val)',
-        PrintConvInv => '$self->InverseDateTime($val,1)', # (add time zone if it didn't exist)
+        %iso8601Date,
     },
     '@xyz' => { #PH (iPhone 3GS)
         Name => 'GPSCoordinates',
@@ -2270,16 +2323,33 @@ my %eeBox2 = (
     # RDT9 - only 16-byte header?
     # the boxes below all have a similar header (little-endian):
     #  0 int32u - number of records
-    #  4 ? - "1e 00"
+    #  4 int32u - sample rate (Hz)
     #  6 int16u - record length in bytes
-    #  8 ? - "23 01 00 00 00 00 00 00"
-    #  16 - start of records (each record ends in an int64u timestamp "ts" in ns)
-    # RDTA - float[4],ts: "-0.31289672 -0.2245330 11.303817 0 775.780"
-    # RDTB - float[4],ts: "-0.04841613 -0.2166595 0.0724792 0 775.780"
-    # RDTC - float[4],ts: "27.60925 -27.10037 -13.27285 0 775.829"
+    #  8 int16u - 0x0123 = little-endian, 0x3210 = big endian
+    # 10 int16u[3] - all zeros
+    # 16 - start of records (each record ends in an int64u timestamp "ts" in ns)
+    RDTA => {
+        Name => 'RicohRDTA',
+        SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::RDTA' },
+    },
+    RDTB => {
+        Name => 'RicohRDTB',
+        SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::RDTB' },
+    },
+    RDTC => {
+        Name => 'RicohRDTC',
+        SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::RDTC' },
+    },
     # RDTD - int16s[3],ts: "353 -914 16354 0 775.829"
-    # RDTG - ts: "775.825"
+    RDTG => {
+        Name => 'RicohRDTG',
+        SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::RDTG' },
+    },
     # RDTI - float[4],ts: "0.00165951 0.005770059 0.06838259 0.1744695 775.862"
+    RDTL => {
+        Name => 'RicohRDTL',
+        SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::RDTL' },
+    },
     # ---- Samsung ----
     vndr => 'Vendor', #PH (Samsung PL70)
     SDLN => 'PlayMode', #PH (NC, Samsung ST80 "SEQ_PLAY")
@@ -2303,7 +2373,7 @@ my %eeBox2 = (
     # edli - 52 bytes all zero (Samsung WB30F)
     # @etc - 4 bytes all zero (Samsung WB30F)
     # saut - 4 bytes all zero (Samsung SM-N900T)
-    # smrd - string "TRUEBLUE" (Samsung SM-C101)
+    # smrd - string "TRUEBLUE" (Samsung SM-C101, etc)
     # ---- TomTom Bandit Action Cam ----
     TTMD => {
         Name => 'TomTomMetaData',
@@ -2323,7 +2393,7 @@ my %eeBox2 = (
     # opax - 164 bytes unknown (center and affine arrays? ref 26)
     # opai - 32 bytes (maybe contains a serial number starting at byte 16? - PH) (rgb gains, degamma, gamma? ref 26)
     # intv - 16 bytes all zero
-    # ---- Xaiomi ----
+    # ---- Xiaomi ----
     mcvr => {
         Name => 'PreviewImage',
         Groups => { 2 => 'Preview' },
@@ -2352,6 +2422,7 @@ my %eeBox2 = (
         Name => 'Audible_tags',
         SubDirectory => { TagTable => 'Image::ExifTool::Audible::tags' },
     },
+    # ludt - directory containing 'tlou' tag
 );
 
 # Unknown information stored in HTC One (M8) videos - PH
@@ -2831,6 +2902,25 @@ my %eeBox2 = (
         Name => 'AV1Configuration',
         SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::AV1Config' },
     },
+    clli => {
+        Name => 'ContentLightLevel',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::ContentLightLevel' },
+    },
+    # ref https://nokiatech.github.io/heif/technical.html
+    # cclv - Content Color Volume
+    # mdcv - Mastering Display Color Volume
+    # rrtp - Required reference types
+    # crtt - Creation time information
+    # mdft - Modification time information
+    # udes - User description
+    # altt - Accessibility text
+    # aebr - Auto exposure information
+    # wbbr - White balance information
+    # fobr - Focus information
+    # afbr - Flash exposure information
+    # dobr - Depth of field information
+    # pano - Panorama information
+    # iscl - Image Scaling
 );
 
 # ref https://aomediacodec.github.io/av1-spec/av1-spec.pdf
@@ -2843,65 +2933,69 @@ my %eeBox2 = (
         Name => 'ColorPrimaries',
         Format => 'int16u',
         PrintConv => {
-                1 => 'BT.709',
-                2 => 'Unspecified',
-                4 => 'BT.470 System M (historical)',
-                5 => 'BT.470 System B, G (historical)',
-                6 => 'BT.601',
-                7 => 'SMPTE 240',
-                8 => 'Generic film (color filters using illuminant C)',
-                9 => 'BT.2020, BT.2100',
-                10 => 'SMPTE 428 (CIE 1921 XYZ)',
-                11 => 'SMPTE RP 431-2',
-                12 => 'SMPTE EG 432-1',
-                22 => 'EBU Tech. 3213-E',
-            },
+            1 => 'BT.709',
+            2 => 'Unspecified',
+            4 => 'BT.470 System M (historical)',
+            5 => 'BT.470 System B, G (historical)',
+            6 => 'BT.601',
+            7 => 'SMPTE 240',
+            8 => 'Generic film (color filters using illuminant C)',
+            9 => 'BT.2020, BT.2100',
+            10 => 'SMPTE 428 (CIE 1931 XYZ)', #forum14766
+            11 => 'SMPTE RP 431-2',
+            12 => 'SMPTE EG 432-1',
+            22 => 'EBU Tech. 3213-E',
+        },
     },
     6 => {
         Name => 'TransferCharacteristics',
         Format => 'int16u',
         PrintConv => {
-                0 => 'For future use (0)',
-                1 => 'BT.709',
-                2 => 'Unspecified',
-                3 => 'For future use (3)',
-                4 => 'BT.470 System M (historical)',
-                5 => 'BT.470 System B, G (historical)',
-                6 => 'BT.601',
-                7 => 'SMPTE 240 M',
-                8 => 'Linear',
-                9 => 'Logarithmic (100 : 1 range)',
-                10 => 'Logarithmic (100 * Sqrt(10) : 1 range)',
-                11 => 'IEC 61966-2-4',
-                12 => 'BT.1361',
-                13 => 'sRGB or sYCC',
-                14 => 'BT.2020 10-bit systems',
-                15 => 'BT.2020 12-bit systems',
-                16 => 'SMPTE ST 2084, ITU BT.2100 PQ',
-                17 => 'SMPTE ST 428',
-                18 => 'BT.2100 HLG, ARIB STD-B67',
-            },
+            0 => 'For future use (0)',
+            1 => 'BT.709',
+            2 => 'Unspecified',
+            3 => 'For future use (3)',
+            4 => 'BT.470 System M (historical)',    # Gamma 2.2? (ref forum14960)
+            5 => 'BT.470 System B, G (historical)', # Gamma 2.8? (ref forum14960)
+            6 => 'BT.601',
+            7 => 'SMPTE 240 M',
+            8 => 'Linear',
+            9 => 'Logarithmic (100 : 1 range)',
+            10 => 'Logarithmic (100 * Sqrt(10) : 1 range)',
+            11 => 'IEC 61966-2-4',
+            12 => 'BT.1361',
+            13 => 'sRGB or sYCC',
+            14 => 'BT.2020 10-bit systems',
+            15 => 'BT.2020 12-bit systems',
+            16 => 'SMPTE ST 2084, ITU BT.2100 PQ',
+            17 => 'SMPTE ST 428',
+            18 => 'BT.2100 HLG, ARIB STD-B67',
+        },
     },
     8 => {
         Name => 'MatrixCoefficients',
         Format => 'int16u',
         PrintConv => {
-                0 => 'Identity matrix',
-                1 => 'BT.709',
-                2 => 'Unspecified',
-                3 => 'For future use (3)',
-                4 => 'US FCC 73.628',
-                5 => 'BT.470 System B, G (historical)',
-                6 => 'BT.601',
-                7 => 'SMPTE 240 M',
-                8 => 'YCgCo',
-                9 => 'BT.2020 non-constant luminance, BT.2100 YCbCr',
-                10 => 'BT.2020 constant luminance',
-                11 => 'SMPTE ST 2085 YDzDx',
-                12 => 'Chromaticity-derived non-constant luminance',
-                13 => 'Chromaticity-derived constant luminance',
-                14 => 'BT.2100 ICtCp',
-            },
+            0 => 'Identity matrix',
+            1 => 'BT.709',
+            2 => 'Unspecified',
+            3 => 'For future use (3)',
+            4 => 'US FCC 73.628',
+            5 => 'BT.470 System B, G (historical)',
+            6 => 'BT.601',
+            7 => 'SMPTE 240 M',
+            8 => 'YCgCo',
+            9 => 'BT.2020 non-constant luminance, BT.2100 YCbCr',
+            10 => 'BT.2020 constant luminance',
+            11 => 'SMPTE ST 2085 YDzDx',
+            12 => 'Chromaticity-derived non-constant luminance',
+            13 => 'Chromaticity-derived constant luminance',
+            14 => 'BT.2100 ICtCp',
+        },
+    },
+    10 => {
+        Name => 'VideoFullRangeFlag',
+        Mask => 0x80,
     },
 );
 
@@ -3092,6 +3186,16 @@ my %eeBox2 = (
     },
 );
 
+# ref https://android.googlesource.com/platform/frameworks/av/+/master/media/libstagefright/MPEG4Writer.cpp
+%Image::ExifTool::QuickTime::ContentLightLevel = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 2 => 'Video' },
+    FIRST_ENTRY => 0,
+    FORMAT => 'int16u',
+    0 => 'MaxContentLightLevel',
+    1 => 'MaxPicAverageLightLevel',
+);
+
 %Image::ExifTool::QuickTime::ItemRef = (
     PROCESS_PROC => \&ProcessMOV,
     WRITE_PROC => \&WriteQuickTime,
@@ -3211,22 +3315,7 @@ my %eeBox2 = (
     "\xa9day" => {
         Name => 'ContentCreateDate',
         Groups => { 2 => 'Time' },
-        Shift => 'Time',
-        # handle values in the form "2010-02-12T13:27:14-0800"
-        ValueConv => q{
-            require Image::ExifTool::XMP;
-            $val =  Image::ExifTool::XMP::ConvertXMPDate($val);
-            $val =~ s/([-+]\d{2})(\d{2})$/$1:$2/; # add colon to timezone if necessary
-            return $val;
-        },
-        ValueConvInv => q{
-            require Image::ExifTool::XMP;
-            $val =  Image::ExifTool::XMP::FormatXMPDate($val);
-            $val =~ s/([-+]\d{2}):(\d{2})$/$1$2/; # remove time zone colon
-            return $val;
-        },
-        PrintConv => '$self->ConvertDateTime($val)',
-        PrintConvInv => '$self->InverseDateTime($val,1)', # (add time zone if it didn't exist)
+        %iso8601Date,
     },
     "\xa9des" => 'Description', #4
     "\xa9enc" => 'EncodedBy', #10
@@ -3327,8 +3416,9 @@ my %eeBox2 = (
     },
     albm => { Name => 'Album', Avoid => 1 }, #(ffmpeg source)
     apID => 'AppleStoreAccount',
-    atID => { #10 (or TV series)
-        Name => 'AlbumTitleID',
+    atID => {
+        # (ref 10 called this AlbumTitleID or TVSeries)
+        Name => 'ArtistID', #28 (or Track ID ref https://gist.github.com/maf654321/2b44c7b15d798f0c52ee)
         Format => 'int32u',
         Writable => 'int32s', #27
     },
@@ -3339,6 +3429,7 @@ my %eeBox2 = (
         Format => 'int32u',
         Writable => 'int32s', #27
     },
+    cmID => 'ComposerID', #28 (need sample to get format)
     cprt => { Name => 'Copyright', Groups => { 2 => 'Author' } },
     dscp => { Name => 'Description', Avoid => 1 },
     desc => { Name => 'Description', Avoid => 1 }, #7
@@ -6031,9 +6122,10 @@ my %eeBox2 = (
         PrintConv => { 0 => 'No', 1 => 'Yes' },
     },
     perf => 'Performer',
-    plID => { #10 (or TV season)
-        Name => 'PlayListID',
-        Format => 'int8u',  # actually int64u, but split it up
+    plID => {
+        # (ref 10 called this PlayListID or TVSeason)
+        Name => 'AlbumID', #28
+        Format => 'int64u',
         Writable => 'int32s', #27
     },
     purd => 'PurchaseDate', #7
@@ -6272,12 +6364,10 @@ my %eeBox2 = (
         ValueConvInv => '$val * 1000',
         PrintConv => 'ConvertDuration($val)',
         PrintConvInv => q{
-           $val =~ s/ s$//;
-           my @a = split /(:| days )/, $val;
-           my $sign = ($val =~ s/^-//) ? -1 : 1;
-           $a[0] += shift(@a) * 24 if @a == 4;
-           $a[0] += shift(@a) * 60 while @a > 1;
-           return $a[0] * $sign;
+            my $sign = ($val =~ s/^-//) ? -1 : 1;
+            my @a = $val =~ /(\d+(?:\.\d+)?)/g;
+            unshift @a, 0 while @a < 4;
+            return $sign * (((($a[0] * 24) + $a[1]) * 60 + $a[2]) * 60 + $a[3]);
         },
     },
 
@@ -6326,6 +6416,8 @@ my %eeBox2 = (
         Writable => 'int8s', #27
         PrintConv => { 0 => 'No', 1 => 'Yes' },
     },
+    ownr => 'Owner', #PH (obscure) (ref ChrisAdan private communication)
+    'xid ' => 'ISRC', #PH
 );
 
 # tag decoded from timed face records
@@ -6389,21 +6481,7 @@ my %eeBox2 = (
     creationdate=> {
         Name => 'CreationDate',
         Groups => { 2 => 'Time' },
-        Shift => 'Time',
-        ValueConv => q{
-            require Image::ExifTool::XMP;
-            $val =  Image::ExifTool::XMP::ConvertXMPDate($val,1);
-            $val =~ s/([-+]\d{2})(\d{2})$/$1:$2/; # add colon to timezone if necessary
-            return $val;
-        },
-        ValueConvInv => q{
-            require Image::ExifTool::XMP;
-            $val =  Image::ExifTool::XMP::FormatXMPDate($val);
-            $val =~ s/([-+]\d{2}):(\d{2})$/$1$2/; # remove time zone colon
-            return $val;
-        },
-        PrintConv => '$self->ConvertDateTime($val)',
-        PrintConvInv => '$self->InverseDateTime($val,1)', # (add time zone if it didn't exist)
+        %iso8601Date,
     },
     description => { },
     director    => { },
@@ -6453,21 +6531,7 @@ my %eeBox2 = (
     'location.date' => {
         Name => 'LocationDate',
         Groups => { 2 => 'Time' },
-        Shift => 'Time',
-        ValueConv => q{
-            require Image::ExifTool::XMP;
-            $val =  Image::ExifTool::XMP::ConvertXMPDate($val);
-            $val =~ s/([-+]\d{2})(\d{2})$/$1:$2/; # add colon to timezone if necessary
-            return $val;
-        },
-        ValueConvInv => q{
-            require Image::ExifTool::XMP;
-            $val =  Image::ExifTool::XMP::FormatXMPDate($val);
-            $val =~ s/([-+]\d{2}):(\d{2})$/$1$2/; # remove time zone colon
-            return $val;
-        },
-        PrintConv => '$self->ConvertDateTime($val)',
-        PrintConvInv => '$self->InverseDateTime($val,1)', # (add time zone if it didn't exist)
+        %iso8601Date,
     },
     'location.accuracy.horizontal' => { Name => 'LocationAccuracyHorizontal' },
     'live-photo.auto'           => { Name => 'LivePhotoAuto', Writable => 'int8u' },
@@ -6495,11 +6559,14 @@ my %eeBox2 = (
     'rating.user'  => 'UserRating', # (Canon ELPH 510 HS)
     'collection.user' => 'UserCollection', #22
     'Encoded_With' => 'EncodedWith',
+    'content.identifier' => 'ContentIdentifier', #forum14874
+    'encoder' => { }, # forum15418 (written by ffmpeg)
 #
 # the following tags aren't in the com.apple.quicktime namespace:
 #
     'com.apple.photos.captureMode' => 'CaptureMode',
     'com.android.version' => 'AndroidVersion',
+    'com.android.capture.fps' => 'AndroidCaptureFPS',
 #
 # also seen
 #
@@ -6557,6 +6624,16 @@ my %eeBox2 = (
     'detected-face.roll-angle' => { Name => 'DetectedFaceRollAngle', Writable => 0 },
     # (fiel)com.apple.quicktime.detected-face.yaw-angle (dtyp=23, float)
     'detected-face.yaw-angle'  => { Name => 'DetectedFaceYawAngle',  Writable => 0 },
+    # the following tags generated by ShutterEncoder when "preserve metadata" is selected (forum15610)
+    major_brand       => { Name => 'MajorBrand',       Avoid => 1 },
+    minor_version     => { Name => 'MinorVersion',     Avoid => 1 },
+    compatible_brands => { Name => 'CompatibleBrands', Avoid => 1 },
+    creation_time => {
+        Name => 'CreationTime',
+        Groups => { 2 => 'Time' },
+        Avoid => 1,
+        %iso8601Date,
+    },
 #
 # seen in Apple ProRes RAW file
 #
@@ -7128,7 +7205,7 @@ my %eeBox2 = (
             $$self{AudioFormat} = $val;
             return undef unless $val =~ /^[\w ]{4}$/i;
             # check for protected audio format
-            $self->OverrideFileType('M4P') if $val eq 'drms' and $$self{VALUE}{FileType} eq 'M4A';
+            $self->OverrideFileType('M4P') if $val eq 'drms' and $$self{FileType} eq 'M4A';
             return $val;
         },
         # see this link for print conversions (not complete):
@@ -7150,7 +7227,7 @@ my %eeBox2 = (
 #
 #   AudioFormat  Offset  Child atoms
 #   -----------  ------  ----------------
-#   mp4a         52 *    wave, chan, esds, SA3D(Insta360 spherical video params?,also GoPro Max)
+#   mp4a         52 *    wave, chan, esds, SA3D(Insta360 spherical video params?,also GoPro Max and Garmin VIRB 360)
 #   in24         52      wave, chan
 #   "ms\0\x11"   52      wave
 #   sowt         52      chan
@@ -7183,11 +7260,18 @@ my %eeBox2 = (
     chan => {
         Name => 'AudioChannelLayout',
         SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::ChannelLayout' },
-    }
+    },
+    SA3D => { # written by Garmin VIRB360
+        Name => 'SpatialAudio',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::SpatialAudio' },
+    },
+    btrt => {
+        Name => 'BitrateInfo',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::Bitrate' },
+    },
     # alac - 28 bytes
     # adrm - AAX DRM atom? 148 bytes
     # aabd - AAX unknown 17kB (contains 'aavd' strings)
-    # SA3D - written by Garmin VIRB360
 );
 
 # AMR decode config box (ref 3)
@@ -7535,6 +7619,20 @@ my %eeBox2 = (
     # (arbitrarily decode only first 8 channels)
 );
 
+# spatial audio (ref https://github.com/google/spatial-media/blob/master/docs/spatial-audio-rfc.md)
+%Image::ExifTool::QuickTime::SpatialAudio = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 2 => 'Audio' },
+    NOTES => 'Spatial Audio tags.',
+    0 => 'SpatialAudioVersion',
+    1 => { Name => 'AmbisonicType', PrintConv => { 0 => 'Periphonic' } },
+    2 => { Name => 'AmbisonicOrder', Format => 'int32u' },
+    6 => { Name => 'AmbisonicChannelOrdering', PrintConv => { 0 => 'ACN' } },
+    7 => { Name => 'AmbisonicNormalization', PrintConv => { 0 => 'SN3D' } },
+    8 => { Name => 'AmbisonicChannels', Format => 'int32u' },
+    12 => { Name => 'AmbisonicChannelMap', Format => 'int32u[$val{8}]' },
+);
+
 # scheme type atom
 # ref http://xhelmboyx.tripod.com/formats/mp4-layout.txt
 %Image::ExifTool::QuickTime::SchemeType = (
@@ -7572,7 +7670,7 @@ my %eeBox2 = (
         SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::Rights' },
     },
     name => { Name => 'UserName', Groups => { 2 => 'Author' } },
-    # chtb
+    # chtb - seen 632 bytes of random data
     # priv - private data
     # sign
     # adkm - Adobe DRM key management system (ref http://download.macromedia.com/f4v/video_file_format_spec_v10_1.pdf)
@@ -7595,6 +7693,9 @@ my %eeBox2 = (
     },
     medi => 'MediaFlags', #PH (?)
     mode => 'ModeFlags', #PH (?) 0x04 is HD flag (https://compilr.com/heksesang/requiem-mac/UnDrm.java)
+    # sing - seen 4 zeros
+    # hi32 - seen "00 00 00 04"
+    
 );
 
 # MP4 hint sample description box (ref 5)
@@ -8750,6 +8851,16 @@ sub HandleItemInfo($)
                     $et->VPrint(0, "$$et{INDENT}    [snip $snip bytes]\n") if $snip;
                 }
             }
+            # do hash of AVIF "av01" and HEIC image data
+            if ($isImageData{$type} and $$et{ImageDataHash}) {
+                my $hash = $$et{ImageDataHash};
+                my $tot = 0;
+                foreach $extent (@{$$item{Extents}}) {
+                    $raf->Seek($$extent[1] + $base, 0) or $et->Warn("Seek error in $type image data"), last;
+                    $tot += $et->ImageDataHash($raf, $$extent[2], "$type image", 1);
+                }
+                $et->VPrint(0, "$$et{INDENT}(ImageDataHash: $tot bytes of $type data)\n") if $tot;
+            }
             next unless $name;
             # assemble the data for this item
             undef $buff;
@@ -9196,7 +9307,7 @@ sub ProcessMOV($$;$)
     }
     # more convenient to package data as a RandomAccess file
     unless ($raf) {
-        $raf = new File::RandomAccess($dataPt);
+        $raf = File::RandomAccess->new($dataPt);
         $dirEnd = $dataPos + $$dirInfo{DirLen} + ($$dirInfo{DirStart} || 0) if $$dirInfo{DirLen};
     }
     # skip leading bytes if necessary
@@ -9218,9 +9329,9 @@ sub ProcessMOV($$;$)
     } else {
         # check on file type if called with a RAF
         $$tagTablePtr{$tag} or return 0;
+        my $fileType;
         if ($tag eq 'ftyp' and $size >= 12) {
             # read ftyp atom to see what type of file this is
-            my $fileType;
             if ($raf->Read($buff, $size-8) == $size-8) {
                 $raf->Seek(-($size-8), 1);
                 my $type = substr($buff, 0, 4);
@@ -9238,6 +9349,9 @@ sub ProcessMOV($$;$)
                 }
             }
             $fileType or $fileType = 'MP4'; # default to MP4
+            # set file type from extension if appropriate
+            my $ext = $$et{FILE_EXT};
+            $fileType = $ext if $ext and $useExt{$ext} and $fileType eq $useExt{$ext};
             $et->SetFileType($fileType, $mimeLookup{$fileType} || 'video/mp4');
             # temporarily set ExtractEmbedded option for CRX files
             $saveOptions{ExtractEmbedded} = $et->Options(ExtractEmbedded => 1) if $fileType eq 'CRX';
@@ -9245,13 +9359,15 @@ sub ProcessMOV($$;$)
             $et->SetFileType();     # MOV
         }
         SetByteOrder('MM');
-        $$et{PRIORITY_DIR} = 'XMP';   # have XMP take priority
+        # have XMP take priority except for HEIC
+        $$et{PRIORITY_DIR} = 'XMP' unless $fileType and $fileType eq 'HEIC';
     }
     my $fast = $$et{OPTIONS}{FastScan} || 0;
     $$raf{NoBuffer} = 1 if $fast;   # disable buffering in FastScan mode
 
     my $ee = $$et{OPTIONS}{ExtractEmbedded};
-    if ($ee) {
+    my $hash = $$et{ImageDataHash};
+    if ($ee or $hash) {
         $unkOpt = $$et{OPTIONS}{Unknown};
         require 'Image/ExifTool/QuickTimeStream.pl';
     }
@@ -9333,7 +9449,7 @@ sub ProcessMOV($$;$)
         # set flag to store additional information for ExtractEmbedded option
         my $handlerType = $$et{HandlerType};
         if ($eeBox{$handlerType} and $eeBox{$handlerType}{$tag}) {
-            if ($ee) {
+            if ($ee or $hash) {
                 # (there is another 'gps ' box with a track log that doesn't contain offsets)
                 if ($tag ne 'gps ' or $eeBox{$handlerType}{$tag} eq $dirID) {
                     $eeTag = 1;
@@ -9343,6 +9459,9 @@ sub ProcessMOV($$;$)
                 EEWarn($et);
             }
         } elsif ($ee and $ee > 1 and $eeBox2{$handlerType} and $eeBox2{$handlerType}{$tag}) {
+            $eeTag = 1;
+            $$et{OPTIONS}{Unknown} = 1;
+        } elsif ($hash and $hashBox{$handlerType} and $hashBox{$handlerType}{$tag}) {
             $eeTag = 1;
             $$et{OPTIONS}{Unknown} = 1;
         }
@@ -9383,9 +9502,9 @@ sub ProcessMOV($$;$)
             $et->HandleTag($tagTablePtr, "$tag-offset", $raf->Tell()) if $$tagTablePtr{"$tag-offset"};
         }
         # stop processing at mdat/idat if -fast2 is used
-        last if $fast > 1 and ($tag eq 'mdat' or $tag eq 'idat');
+        last if $fast > 1 and ($tag eq 'mdat' or ($tag eq 'idat' and $$et{FileType} ne 'HEIC'));
         # load values only if associated with a tag (or verbose) and not too big
-        if ($size > 0x2000000) {    # start to get worried above 32 MB
+        if ($size > 0x2000000) {    # start to get worried above 32 MiB
             # check for RIFF trailer (written by Auto-Vox dashcam)
             if ($buff =~ /^(gpsa|gps0|gsen|gsea)...\0/s) { # (yet seen only gpsa as first record)
                 $et->VPrint(0, "Found RIFF trailer");
@@ -9402,9 +9521,9 @@ sub ProcessMOV($$;$)
             if ($tagInfo and not $$tagInfo{Unknown} and not $eeTag) {
                 my $t = PrintableTagID($tag,2);
                 if ($size > 0x8000000) {
-                    $et->Warn("Skipping '${t}' atom > 128 MB", 1);
+                    $et->Warn("Skipping '${t}' atom > 128 MiB", 1);
                 } else {
-                    $et->Warn("Skipping '${t}' atom > 32 MB", 2) or $ignore = 0;
+                    $et->Warn("Skipping '${t}' atom > 32 MiB", 2) or $ignore = 0;
                 }
             }
         }
@@ -9414,13 +9533,17 @@ sub ProcessMOV($$;$)
                 my $items = $$et{ItemInfo};
                 my ($id, $prop, $docNum, $lowest);
                 my $primary = $$et{PrimaryItem} || 0;
-ItemID:         foreach $id (keys %$items) {
+ItemID:         foreach $id (reverse sort { $a <=> $b } keys %$items) {
                     next unless $$items{$id}{Association};
                     my $item = $$items{$id};
                     foreach $prop (@{$$item{Association}}) {
                         next unless $prop == $index;
                         if ($id == $primary or (not $dontInherit{$tag} and
-                            (not $$item{RefersTo} or $$item{RefersTo}{$primary})))
+                            (($$item{RefersTo} and $$item{RefersTo}{$primary}) or
+                            # hack: assume Item 1 is from the main image (eg. hvc1 data)
+                            # to hack the case where the primary item (ie. main image)
+                            # doesn't directly reference this property
+                            (not $$item{RefersTo} and $id == 1))))
                         {
                             # this is associated with the primary item or an item describing
                             # the primary item, so consider this part of the main document
@@ -9431,7 +9554,7 @@ ItemID:         foreach $id (keys %$items) {
                             # this property is already associated with an item that has
                             # an ExifTool document number, so use the lowest associated DocNum
                             $docNum = $$item{DocNum} if not defined $docNum or $docNum > $$item{DocNum};
-                        } elsif (not defined $lowest or $lowest > $id) {
+                        } else {
                             # keep track of the lowest associated item ID
                             $lowest = $id;
                         }
@@ -9577,7 +9700,7 @@ ItemID:         foreach $id (keys %$items) {
                     }
                     if ($tag eq 'stbl') {
                         # process sample data when exiting SampleTable box if extracting embedded
-                        ProcessSamples($et) if $ee;
+                        ProcessSamples($et) if $ee or $hash;
                     } elsif ($tag eq 'minf') {
                         $$et{HandlerType} = ''; # reset handler type at end of media info box
                     }
@@ -9637,6 +9760,7 @@ ItemID:         foreach $id (keys %$items) {
                             }
                         }
                         $langInfo or $langInfo = $tagInfo;
+                        my $str = $qtFlags{$flags} ? " ($qtFlags{$flags})" : '';
                         $et->VerboseInfo($tag, $langInfo,
                             Value   => ref $value ? $$value : $value,
                             DataPt  => \$val,
@@ -9645,7 +9769,7 @@ ItemID:         foreach $id (keys %$items) {
                             Size    => $len,
                             Format  => $format,
                             Index   => $index,
-                            Extra   => sprintf(", Type='${type}', Flags=0x%x, Lang=0x%.4x",$flags,$lang),
+                            Extra   => sprintf(", Type='${type}', Flags=0x%x%s, Lang=0x%.4x",$flags,$str,$lang),
                         ) if $verbose;
                         # use "Keys" in path instead of ItemList if this was defined by a Keys tag
                         my $isKey = $$tagInfo{Groups} && $$tagInfo{Groups}{1} && $$tagInfo{Groups}{1} eq 'Keys';
@@ -9774,7 +9898,7 @@ ItemID:         foreach $id (keys %$items) {
         ++$index if defined $index;
     }
     # tweak file type based on track content ("iso*" and "dash" ftyp only)
-    if ($topLevel and $$et{VALUE}{FileType} and $$et{VALUE}{FileType} eq 'MP4' and
+    if ($topLevel and $$et{FileType} and $$et{FileType} eq 'MP4' and
         $$et{save_ftyp} and $$et{HasHandler} and $$et{save_ftyp} =~ /^(iso|dash)/ and
         $$et{HasHandler}{soun} and not $$et{HasHandler}{vide})
     {
@@ -9839,7 +9963,7 @@ information from QuickTime and MP4 video, M4A audio, and HEIC image files.
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

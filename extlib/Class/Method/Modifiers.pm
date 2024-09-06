@@ -1,11 +1,11 @@
 use strict;
 use warnings;
-package Class::Method::Modifiers; # git description: v2.12-17-gbc38636
+package Class::Method::Modifiers; # git description: v2.14-6-gede37cf
 # ABSTRACT: Provides Moose-like method modifiers
 # KEYWORDS: method wrap modification patch
 # vim: set ts=8 sts=4 sw=4 tw=115 et :
 
-our $VERSION = '2.13';
+our $VERSION = '2.15';
 
 use base 'Exporter';
 
@@ -208,6 +208,7 @@ sub _sub_attrs {
     my ($coderef) = @_;
     local *_sub = $coderef;
     local $@;
+    local $SIG{__DIE__};
     # this assignment will fail to compile if it isn't an lvalue sub.  we
     # never want to actually call the sub though, so we return early.
     (eval 'return 1; &_sub = 1') ? ':lvalue' : '';
@@ -234,7 +235,7 @@ Class::Method::Modifiers - Provides Moose-like method modifiers
 
 =head1 VERSION
 
-version 2.13
+version 2.15
 
 =head1 SYNOPSIS
 
@@ -495,7 +496,7 @@ L<CLOS|https://en.wikipedia.org/wiki/Common_Lisp_Object_System>
 
 =back
 
-=head1 ACKNOWLEDGEMENTS
+=head1 ACKNOWLEDGMENTS
 
 =for stopwords Stevan
 
@@ -515,7 +516,7 @@ Shawn M Moore <sartak@gmail.com>
 
 =head1 CONTRIBUTORS
 
-=for stopwords Karen Etheridge Shawn M Moore Graham Knop Aaron Crane Peter Rabbitson Justin Hunter David Steinbrunner gfx mannih
+=for stopwords Karen Etheridge Shawn M Moore Graham Knop Aaron Crane Peter Rabbitson David Steinbrunner gfx Justin Hunter mannih Yves Orton
 
 =over 4
 
@@ -541,10 +542,6 @@ Peter Rabbitson <ribasushi@cpan.org>
 
 =item *
 
-Justin Hunter <justin.d.hunter@gmail.com>
-
-=item *
-
 David Steinbrunner <dsteinbrunner@pobox.com>
 
 =item *
@@ -553,7 +550,15 @@ gfx <gfuji@cpan.org>
 
 =item *
 
+Justin Hunter <justin.d.hunter@gmail.com>
+
+=item *
+
 mannih <github@lxxi.org>
+
+=item *
+
+Yves Orton <demerphq@gmail.com>
 
 =back
 

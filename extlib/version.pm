@@ -8,7 +8,7 @@ if ($] >= 5.015) {
     warnings::register_categories(qw/version/);
 }
 
-our $VERSION = 0.9929;
+our $VERSION = '0.9933';
 our $CLASS = 'version';
 our (@ISA, $STRICT, $LAX);
 
@@ -28,6 +28,10 @@ our (@ISA, $STRICT, $LAX);
 	*version::new = \&version::vpp::new;
 	*version::numify = \&version::vpp::numify;
 	*version::normal = \&version::vpp::normal;
+	*version::to_decimal = \&version::vpp::to_decimal;
+	*version::to_dotted_decimal = \&version::vpp::to_dotted_decimal;
+	*version::tuple = \&version::vpp::tuple;
+	*version::from_tuple = \&version::vpp::from_tuple;
 	if ($] >= 5.009000) {
 	    no strict 'refs';
 	    *version::stringify = \&version::vpp::stringify;
@@ -47,6 +51,10 @@ our (@ISA, $STRICT, $LAX);
 	*version::new = \&version::vxs::new;
 	*version::numify = \&version::vxs::numify;
 	*version::normal = \&version::vxs::normal;
+	*version::to_decimal = \&version::vxs::to_decimal;
+	*version::to_dotted_decimal = \&version::vxs::to_dotted_decimal;
+	*version::tuple = \&version::vxs::tuple;
+	*version::from_tuple = \&version::vxs::from_tuple;
 	if ($] >= 5.009000) {
 	    no strict 'refs';
 	    *version::stringify = \&version::vxs::stringify;

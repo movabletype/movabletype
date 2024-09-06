@@ -123,7 +123,7 @@ use warnings::register;
 
 use Config;
 
-our $VERSION = 0.9929;
+our $VERSION = '0.9933';
 our $CLASS = 'version::vpp';
 our ($LAX, $STRICT, $WARN_CATEGORY);
 
@@ -775,6 +775,16 @@ sub stringify {
 	    : $self->numify;
 }
 
+sub to_decimal {
+    my ($self) = @_;
+    return ref($self)->new($self->numify);
+}
+
+sub to_dotted_decimal {
+    my ($self) = @_;
+    return ref($self)->new($self->normal);
+}
+
 sub vcmp {
     my ($left,$right,$swap) = @_;
     die "Usage: version::vcmp(lobj, robj, ...)" if @_ < 2;
@@ -865,6 +875,23 @@ sub is_qv {
     return (exists $self->{qv});
 }
 
+sub tuple {
+    my ($self) = @_;
+    return @{ $self->{version} };
+}
+
+sub from_tuple {
+    my ($proto, @args) = @_;
+    my $class = ref($proto) || $proto;
+
+    my @version = map 0+$_, @args;
+    die if @args < 1;
+    return bless {
+	version => \@version,
+	qv => !!1,
+	'v' . join('.', @version),
+    }, $class;
+}
 
 sub _verify {
     my ($self) = @_;

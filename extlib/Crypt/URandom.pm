@@ -8,26 +8,32 @@ use Exporter();
 *import = \&Exporter::import;
 our @EXPORT_OK = qw(
   urandom
+  urandom_ub
 );
 our %EXPORT_TAGS = ( 'all' => \@EXPORT_OK, );
 
-our $VERSION  = '0.36';
+our $VERSION  = '0.40';
 our @CARP_NOT = ('Crypt::URandom');
 
-sub CRYPT_SILENT      { return 64; }               # hex 40
-sub PROV_RSA_FULL     { return 1; }
-sub VERIFY_CONTEXT    { return 4_026_531_840; }    # hex 'F0000000'
-sub W2K_MAJOR_VERSION { return 5; }
-sub W2K_MINOR_VERSION { return 0; }
-sub SINGLE_QUOTE      { return q[']; }
+## no critic (ProhibitConstantPragma)
+# using constant for the speed benefit of constant-folding of values
 
-sub PATH {
+use constant CRYPT_SILENT      => 64;               # hex 40
+use constant PROV_RSA_FULL     => 1;
+use constant VERIFY_CONTEXT    => 4_026_531_840;    # hex 'F0000000'
+use constant W2K_MAJOR_VERSION => 5;
+use constant W2K_MINOR_VERSION => 0;
+
+use constant OS_WIN32 => $OSNAME eq 'MSWin32';
+use constant PATH     => do {
     my $path = '/dev/urandom';
     if ( $OSNAME eq 'freebsd' ) {
         $path = '/dev/random';    # FreeBSD's /dev/random is non-blocking
     }
-    return $path;
-}
+    $path;
+};
+
+## use critic
 
 my $_initialised;
 my $_context;
@@ -36,7 +42,7 @@ my $_rtlgenrand;
 my $_urandom_handle;
 
 sub _init {
-    if ( $OSNAME eq 'MSWin32' ) {
+    if ( OS_WIN32() ) {
         require Win32;
         require Win32::API;
         require Win32::API::Type;
@@ -99,18 +105,25 @@ _RTLGENRANDOM_PROTO_
     else {
         require FileHandle;
         $_urandom_handle = FileHandle->new( PATH(), Fcntl::O_RDONLY() )
-          or Carp::croak( 'Failed to open '
-              . SINGLE_QUOTE()
-              . PATH()
-              . SINGLE_QUOTE()
-              . " for reading:$OS_ERROR" );
+          or Carp::croak(
+            q[Failed to open '] . PATH() . qq['. " for reading:$OS_ERROR] );
         binmode $_urandom_handle;
     }
     return;
 }
 
+sub urandom_ub {
+    my ($length) = @_;
+    return _urandom( 'sysread', $length );
+}
+
 sub urandom {
     my ($length) = @_;
+    return _urandom( 'read', $length );
+}
+
+sub _urandom {
+    my ( $type, $length ) = @_;
 
     my $length_ok;
     if ( defined $length ) {
@@ -126,7 +139,7 @@ sub urandom {
         _init();
         $_initialised = $PROCESS_ID;
     }
-    if ( $OSNAME eq 'MSWin32' ) {
+    if ( OS_WIN32() ) {
         my $buffer = chr(0) x $length;
         if ($_cryptgenrandom) {
 
@@ -145,27 +158,23 @@ sub urandom {
         return $buffer;
     }
     else {
-        my $result = $_urandom_handle->read( my $buffer, $length );
+        my $result = $_urandom_handle->$type( my $buffer, $length );
         if ( defined $result ) {
             if ( $result == $length ) {
                 return $buffer;
             }
             else {
                 $_urandom_handle = undef;
-                Carp::croak( "Only read $result bytes from "
-                      . SINGLE_QUOTE()
-                      . PATH()
-                      . SINGLE_QUOTE() );
+                $_initialised    = undef;
+                Carp::croak(
+                    qq[Only read $result bytes from '] . PATH() . q['] );
             }
         }
         else {
             my $error = $OS_ERROR;
             $_urandom_handle = undef;
-            Carp::croak( 'Failed to read from '
-                  . SINGLE_QUOTE()
-                  . PATH()
-                  . SINGLE_QUOTE()
-                  . ":$error" );
+            $_initialised    = undef;
+            Carp::croak( q[Failed to read from '] . PATH() . qq[':$error] );
         }
     }
 }
@@ -180,7 +189,7 @@ Crypt::URandom - Provide non blocking randomness
 
 =head1 VERSION
 
-This document describes Crypt::URandom version 0.36
+This document describes Crypt::URandom version 0.40
 
 
 =head1 SYNOPSIS
@@ -213,8 +222,18 @@ or equal to Windows 2000.
 =for stopwords cryptographic
 
 This function accepts an integer and returns a string of the same size
-filled with random data.  The first call will initialize the native 
-cryptographic libraries (if necessary) and load all the required Perl libraries
+filled with random data.  The first call will initialize the native
+cryptographic libraries (if necessary) and load all the required Perl libraries.
+This call is a buffered read on non Win32 platforms.
+
+=item C<urandom_ub>
+
+=for stopwords cryptographic
+
+This function accepts an integer and returns a string of the same size
+filled with random data.  The first call will initialize the native
+cryptographic libraries (if necessary) and load all the required Perl libraries.
+This call is a unbuffered sysread on non Win32 platforms.
 
 =back
 
@@ -309,12 +328,7 @@ None reported.
 
 =head1 BUGS AND LIMITATIONS
 
-No bugs have been reported.
-
-Please report any bugs or feature requests to
-C<bug-crypt-urandom@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.
-
+To report a bug, or view the current list of bugs, please visit L<https://github.com/david-dick/crypt-urandom/issues>
 
 =head1 AUTHOR
 
@@ -331,7 +345,7 @@ gratitude from Crypt::Random::Source::Strong::Win32 by Max Kanat-Alexander
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2011, David Dick C<< <ddick@cpan.org> >>. All rights reserved.
+Copyright (c) 2023, David Dick C<< <ddick@cpan.org> >>. All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
