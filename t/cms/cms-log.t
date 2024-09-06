@@ -132,7 +132,10 @@ for my $index (0 .. $#cases) {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($author);
 
-        my $res = $app->get_ok({ __mode => 'export_log', blog_id => $blog->id, _type => 'log' });
+        $app->get_ok({ __mode => 'list', blog_id => $blog->id, _type => 'log' });
+        ok my $link = $app->wq_find('a.icon-download');
+        my $query = URI->new($link->attr('href'))->query_form_hash;
+        my $res   = $app->get_ok($query);
 
         my $io = IO::String->new($res->content);
         my $csv = Text::CSV->new({ binary => 1 });
