@@ -922,12 +922,12 @@ sub check_imglib {
         webp => 'libwebp',
     );
     my @libpaths = split / /, $Config::Config{libpth};
-    my $re = join '|', keys %lib;
+    my $re       = join '|', keys %lib;
 
 FORMAT:
     for my $libpath (@libpaths) {
         opendir my $dh, $libpath or next;
-        while(my $file = readdir $dh) {
+        while (my $file = readdir $dh) {
             next unless $file =~ /^lib($re)\.(?:so|dll|a)(?:(?:\.[0-9]+)*)$/;
             $found_imglib{$1} = delete $lib{$1};
             last FORMAT unless %lib;
