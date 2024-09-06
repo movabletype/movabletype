@@ -24,6 +24,7 @@ use MT::Test::Permission;
 use Text::CSV;
 use IO::String;
 use JSON;
+use utf8;
 
 $test_env->prepare_fixture('db_data');
 
@@ -32,8 +33,7 @@ my $website = MT::Test::Permission->make_website(
 );
 my $author = MT::Author->load(1);
 
-my @cases = (
-    {
+my @cases = ({
         set_data => sub {
             my $blog = MT::Test::Permission->make_blog(
                 parent_id => $website->id,
@@ -94,6 +94,23 @@ my @cases = (
         set_data => sub {
             my $blog = MT::Test::Permission->make_blog(
                 parent_id => $website->id,
+                name      => 'test3-2',
+            );
+            MT::Test::Permission->make_log(
+                blog_id     => $blog->id,
+                message     => "ログメッセージ",
+                metadata    => "ログメタデータ",
+                created_on  => '20050131074500',
+                modified_on => '20050131074600',
+            );
+            return $blog;
+        },
+        expected => ['2005-01-31 04:15:00', '', 'test3-2', '', 'ログメッセージ', "ログメタデータ"],
+    },
+    {
+        set_data => sub {
+            my $blog = MT::Test::Permission->make_blog(
+                parent_id => $website->id,
                 name      => 'test4',
             );
             MT::Test::Permission->make_log(
@@ -129,16 +146,19 @@ for my $index (0 .. $#cases) {
     my $case = $cases[$index];
     subtest "case: $index" => sub {
         my $blog = $case->{set_data}();
-        my $app = MT::Test::App->new('MT::App::CMS');
+        my $app  = MT::Test::App->new('MT::App::CMS');
         $app->login($author);
 
-        my $res = $app->get_ok({ __mode => 'export_log', blog_id => $blog->id, _type => 'log' });
+        $app->get_ok({ __mode => 'list', blog_id => $blog->id, _type => 'log' });
+        ok my $link = $app->wq_find('a.icon-download');
+        my $query = URI->new($link->attr('href'))->query_form_hash;
+        my $res   = $app->get_ok($query);
 
-        my $io = IO::String->new($res->content);
+        my $io  = IO::String->new($res->content);
         my $csv = Text::CSV->new({ binary => 1 });
 
-        is_deeply( $csv->getline($io), [qw/timestamp ip weblog by message metadata/] );
-        is_deeply( $csv->getline($io), $case->{expected} );
+        is_deeply($csv->getline($io), [qw/timestamp ip weblog by message metadata/]);
+        is_deeply($csv->getline($io), $case->{expected});
 
         close $io;
     };
