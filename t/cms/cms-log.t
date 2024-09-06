@@ -33,8 +33,7 @@ my $website = MT::Test::Permission->make_website(
 );
 my $author = MT::Author->load(1);
 
-my @cases = (
-    {
+my @cases = ({
         set_data => sub {
             my $blog = MT::Test::Permission->make_blog(
                 parent_id => $website->id,
@@ -147,7 +146,7 @@ for my $index (0 .. $#cases) {
     my $case = $cases[$index];
     subtest "case: $index" => sub {
         my $blog = $case->{set_data}();
-        my $app = MT::Test::App->new('MT::App::CMS');
+        my $app  = MT::Test::App->new('MT::App::CMS');
         $app->login($author);
 
         $app->get_ok({ __mode => 'list', blog_id => $blog->id, _type => 'log' });
@@ -155,11 +154,11 @@ for my $index (0 .. $#cases) {
         my $query = URI->new($link->attr('href'))->query_form_hash;
         my $res   = $app->get_ok($query);
 
-        my $io = IO::String->new($res->content);
+        my $io  = IO::String->new($res->content);
         my $csv = Text::CSV->new({ binary => 1 });
 
-        is_deeply( $csv->getline($io), [qw/timestamp ip weblog by message metadata/] );
-        is_deeply( $csv->getline($io), $case->{expected} );
+        is_deeply($csv->getline($io), [qw/timestamp ip weblog by message metadata/]);
+        is_deeply($csv->getline($io), $case->{expected});
 
         close $io;
     };
