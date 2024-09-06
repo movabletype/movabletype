@@ -1096,6 +1096,9 @@ function mtEntryOnPagehide(event) {
 }
 
 function mtEntryOnUnload() {
+    // deprecated since 8.5.0
+    console.warn("mtEntryOnUnload is deprecated and will be removed in the future.");
+
     if (mtRequestSubmitted) {
         var cf = document['comments_form'];
         if (cf) {
