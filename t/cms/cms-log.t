@@ -24,6 +24,7 @@ use MT::Test::Permission;
 use Text::CSV;
 use IO::String;
 use JSON;
+use utf8;
 
 $test_env->prepare_fixture('db_data');
 
@@ -89,6 +90,23 @@ my @cases = (
             return $blog;
         },
         expected => ['2005-01-31 04:15:00', '', 'test3', '', 'log message', "log metadata"],
+    },
+    {
+        set_data => sub {
+            my $blog = MT::Test::Permission->make_blog(
+                parent_id => $website->id,
+                name      => 'test3-2',
+            );
+            MT::Test::Permission->make_log(
+                blog_id     => $blog->id,
+                message     => "ログメッセージ",
+                metadata    => "ログメタデータ",
+                created_on  => '20050131074500',
+                modified_on => '20050131074600',
+            );
+            return $blog;
+        },
+        expected => ['2005-01-31 04:15:00', '', 'test3-2', '', 'ログメッセージ', "ログメタデータ"],
     },
     {
         set_data => sub {
