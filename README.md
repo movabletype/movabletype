@@ -21,9 +21,9 @@ if they are not, [how to install them](https://www.cpan.org/misc/cpan-faq.html#H
 
 Upgrading Movable Type
 --------
-If you are upgrading to Movable Type 7 from a previous version, we recommend that you first back up your old installation.
+If you are upgrading Movable Type from a previous version, we recommend that you first back up your old installation.
 Database backup is especially important to restore your system in case of any trouble during the upgrade process.
-Upload Movable Type 7's files over the same files from the previous version of Movable Type.
+Upload Movable Type's files over the same files from the previous version of Movable Type.
 Access Movable Type as you normally do, and you will be taken through the upgrade process.
 
 Installing Movable Type
