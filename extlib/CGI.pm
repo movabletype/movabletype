@@ -1,13 +1,14 @@
 package CGI;
 require 5.008001;
 use Carp 'croak';
+use URI;
 
 my $appease_cpants_kwalitee = q/
 use strict;
 use warnings;
 #/;
 
-$CGI::VERSION='4.61';
+$CGI::VERSION='4.66';
 
 use CGI::Util qw(rearrange rearrange_header make_attributes unescape escape expires ebcdic2ascii ascii2ebcdic);
 
@@ -2747,8 +2748,9 @@ sub url {
     $url .= $path         if $path_info and defined $path;
     $url .= "?$query_str" if $query     and $query_str ne '';
     $url ||= '';
-    $url =~ s/([^a-zA-Z0-9_.%;&?\/\\:+=~-])/sprintf("%%%02X",ord($1))/eg;
-    return $url;
+
+	$url = URI->new( $url )->canonical->as_string;
+	return $url
 }
 
 #### Method: cookie
