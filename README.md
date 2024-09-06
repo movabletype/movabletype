@@ -16,8 +16,8 @@ Movable Type requires the following applications:
  * [DBI](https://metacpan.org/pod/DBI)
  * [HTML::Entities](https://metacpan.org/pod/HTML::Entities), a part of [HTML-Parser](https://metacpan.org/dist/HTML-Parser) distribution
 
-Consult the CPAN documentation to learn how to [determine if a Perl module is already installed](http://www.cpan.org/misc/cpan-faq.html#How_installed_modules) and,
-if they are not, [how to install them](http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules).
+Consult the CPAN documentation to learn how to [determine if a Perl module is already installed](https://www.cpan.org/misc/cpan-faq.html#How_installed_modules) and,
+if they are not, [how to install them](https://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules).
 
 Upgrading Movable Type
 --------
