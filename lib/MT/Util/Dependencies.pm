@@ -700,6 +700,11 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/Sub::Uplevel",
         used_in => ["constant::override"],
     },
+    "Text::CSV" => {
+        extlib  => 2.04,
+        url     => "https://metacpan.org/pod/Text::CSV",
+        used_in => ["MT::CMS::Log"],
+    },
     "Time::Local" => {
         extlib    => 1.35,
         perl_core => "1.2000",
