@@ -42,7 +42,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Cache::Memcached",
     },
     "CGI" => {
-        extlib   => 4.54,
+        extlib   => 4.66,
         label    => "CGI is required for all Movable Type application functionality.",
         required => 1,
         tags     => ["Base"],
@@ -50,7 +50,7 @@ our %Requirements = (
         version  => 4.11,
     },
     "CGI::Cookie" => {
-        extlib   => 4.54,
+        extlib   => 4.59,
         label    => "CGI::Cookie is required for cookie authentication.",
         required => 1,
         tags     => ["Base"],
@@ -114,7 +114,7 @@ our %Requirements = (
     },
     "Encode" => {
         label     => "Encode is required to handle multibyte characters correctly.",
-        perl_core => 2.44,
+        perl_core => "2.44_01",
         required  => 1,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Encode",
@@ -167,13 +167,13 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/HTTP::DAV",
     },
     "HTTP::Request" => {
-        extlib => 6.43,
+        extlib => 6.46,
         label  => "This module is optional. It is used to download assets from a website.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/HTTP::Request",
     },
     "Image::ExifTool" => {
-        extlib => "12.50",
+        extlib => 12.76,
         label  => "Image::ExifTool is used to manipulate image metadata.",
         tags   => ["Image"],
         url    => "https://metacpan.org/pod/Image::ExifTool",
@@ -224,7 +224,7 @@ our %Requirements = (
         url      => "https://metacpan.org/pod/JSON",
     },
     "JSON::PP" => {
-        extlib    => 4.12,
+        extlib    => 4.16,
         label     => "JSON::PP is used internally to process JSON by default.",
         perl_core => "2.27200",
         tags      => ["JSON"],
@@ -237,7 +237,7 @@ our %Requirements = (
     },
     "List::Util" => {
         label     => "List::Util is required to manipulate a list of numbers.",
-        perl_core => 1.23,
+        perl_core => 1.25,
         required  => 1,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/List::Util",
@@ -258,7 +258,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/Log::Minimal",
     },
     "LWP::Protocol::https" => {
-        extlib => "6.10",
+        extlib => 6.14,
         label  => "LWP::Protocol::https is optional. It provides https support for LWP::UserAgent.",
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::Protocol::https",
@@ -332,7 +332,7 @@ our %Requirements = (
     },
     "Scalar::Util" => {
         label     => "Scalar::Util is required to avoid memory leaks.",
-        perl_core => 1.23,
+        perl_core => 1.25,
         tags      => ["Base"],
         url       => "https://metacpan.org/pod/Scalar::Util",
         version   => "1.10",
@@ -367,7 +367,7 @@ our %Requirements = (
         url       => "https://metacpan.org/pod/Time::HiRes",
     },
     "URI" => {
-        extlib => "5.10",
+        extlib => 5.29,
         label  => "This module is sometimes used to parse URI.",
         tags   => ["HTTP", "URI"],
         url    => "https://metacpan.org/pod/URI",
@@ -413,7 +413,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/YAML::Syck",
     },
     "YAML::Tiny" => {
-        extlib => 1.73,
+        extlib => 1.74,
         label  => "YAML::Tiny is the default YAML parser.",
         tags   => ["YAML"],
         url    => "https://metacpan.org/pod/YAML::Tiny",
@@ -439,7 +439,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Theme"],
     },
     "CGI::Fast" => {
-        extlib  => 2.16,
+        extlib  => 2.17,
         url     => "https://metacpan.org/pod/CGI::Fast",
         used_in => ["MT::Util"],
     },
@@ -464,7 +464,7 @@ our %ExtLibOnly = (
         url      => "https://metacpan.org/pod/Class::Inspector",
     },
     "Class::Method::Modifiers" => {
-        extlib  => 2.13,
+        extlib  => 2.15,
         url     => "https://metacpan.org/pod/Class::Method::Modifiers",
         used_in => ["MT::Image::GD"],
     },
@@ -484,7 +484,7 @@ our %ExtLibOnly = (
         used_in => ["MT"],
     },
     "Crypt::URandom" => {
-        extlib  => 0.36,
+        extlib  => "0.40",
         url     => "https://metacpan.org/pod/Crypt::URandom",
         used_in => ["MT::Util::UniqueID"],
     },
@@ -521,7 +521,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::Digest::MD5"],
     },
     "Digest::SHA::PurePerl" => {
-        extlib  => 6.03,
+        extlib  => 6.04,
         url     => "https://metacpan.org/pod/Digest::SHA::PurePerl",
         used_in => ["MT::Util::Digest::SHA"],
     },
@@ -541,7 +541,7 @@ our %ExtLibOnly = (
         used_in => ["MT::CMS::Theme"],
     },
     "File::Listing" => {
-        extlib  => 6.15,
+        extlib  => 6.16,
         url     => "https://metacpan.org/pod/File::Listing",
         used_in => ["LWP::Protocol::ftp"],
     },
@@ -566,17 +566,17 @@ our %ExtLibOnly = (
         url      => "https://metacpan.org/pod/HTML::Template",
     },
     "HTTP::Cookies" => {
-        extlib  => "6.10",
+        extlib  => 6.11,
         url     => "https://metacpan.org/pod/HTTP::Cookies",
         used_in => ["LWP::UserAgent"],
     },
     "HTTP::Daemon" => {
-        extlib   => 6.14,
+        extlib   => 6.16,
         not_used => 1,
         url      => "https://metacpan.org/pod/HTTP::Daemon",
     },
     "HTTP::Date" => {
-        extlib  => 6.05,
+        extlib  => 6.06,
         url     => "https://metacpan.org/pod/HTTP::Date",
         used_in => ["LWP::UserAgent"],
     },
@@ -613,12 +613,12 @@ our %ExtLibOnly = (
         used_in => ["MT::Import"],
     },
     "IPC::Run3" => {
-        extlib  => 0.048,
+        extlib  => 0.049,
         url     => "https://metacpan.org/pod/IPC::Run3",
         used_in => ["MT::Util::Archive::BinZip"],
     },
     "Locale::Maketext" => {
-        extlib    => 1.32,
+        extlib    => 1.33,
         perl_core => 1.22,
         url       => "https://metacpan.org/pod/Locale::Maketext",
         used_in   => ["MT::L10N"],
@@ -639,7 +639,7 @@ our %ExtLibOnly = (
         used_in => ["MIME::Lite"],
     },
     "Math::BigInt" => {
-        extlib    => 1.999837,
+        extlib    => 2.003003,
         perl_core => 1.998,
         url       => "https://metacpan.org/pod/Math::BigInt",
         used_in   => ["JSON::PP"],
@@ -655,17 +655,17 @@ our %ExtLibOnly = (
         used_in => ["MIME::EncWords"],
     },
     "MIME::EncWords" => {
-        extlib  => 1.014003,
+        extlib  => 1.015,
         url     => "https://metacpan.org/pod/MIME::EncWords",
         used_in => ["MT::Mail"],
     },
     "MIME::Types" => {
-        extlib  => 2.22,
+        extlib  => 2.26,
         url     => "https://metacpan.org/pod/MIME::Types",
         used_in => ["MT::Mail::MIME"],
     },
     "Net::HTTPS" => {
-        extlib  => 6.22,
+        extlib  => 6.23,
         url     => "https://metacpan.org/pod/Net::HTTPS",
         used_in => ["MT"],
     },
@@ -680,7 +680,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Mail::MIME"],
     },
     "parent" => {
-        extlib    => 0.238,
+        extlib    => 0.242,
         note      => "used in many extlib modules",
         perl_core => 0.225,
         url       => "https://metacpan.org/pod/parent",
@@ -692,13 +692,13 @@ our %ExtLibOnly = (
         used_in => ["constant::override"],
     },
     "Time::Local" => {
-        extlib    => "1.30",
+        extlib    => 1.35,
         perl_core => "1.2000",
         url       => "https://metacpan.org/pod/Time::Local",
         used_in   => ["MT::Util"],
     },
     "Try::Tiny" => {
-        extlib  => 0.31,
+        extlib  => 0.32,
         url     => "https://metacpan.org/pod/Try::Tiny",
         used_in => ["LWP::UserAgent"],
     },
@@ -723,7 +723,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::UniqueID"],
     },
     "version" => {
-        extlib    => 0.9929,
+        extlib    => 0.9933,
         perl_core => 0.99,
         url       => "https://metacpan.org/pod/version",
         used_in   => ["MT::version"],
