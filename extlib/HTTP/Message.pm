@@ -3,7 +3,7 @@ package HTTP::Message;
 use strict;
 use warnings;
 
-our $VERSION = '6.46';
+our $VERSION = '6.43';
 
 require HTTP::Headers;
 require Carp;
@@ -884,7 +884,7 @@ HTTP::Message - HTTP style message (base class)
 
 =head1 VERSION
 
-version 6.46
+version 6.43
 
 =head1 SYNOPSIS
 
