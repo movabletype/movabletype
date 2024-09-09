@@ -42,6 +42,11 @@ use MT::Util qw(ts2epoch epoch2ts);
 
 $test_env->prepare_fixture('db_data');
 
+my $switch = MT->config->PluginSwitch;
+$switch->{Awesome} = 1;
+MT->config->PluginSwitch($switch, 1);
+MT->config->save_config;
+
 my $server_path = MT->instance->server_path;
 $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
