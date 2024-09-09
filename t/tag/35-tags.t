@@ -7,8 +7,31 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        PluginPath => ['TEST_ROOT/plugins'],
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file('plugins/Awesome/config.yaml', <<'YAML');
+name: Awesome
+key:  awesome
+id:   awesome
+YAML
+
+    $test_env->save_file('plugins/SortMethod/config.yaml', <<'YAML');
+name: SortMethod
+id:   sortmethod
+YAML
+
+    $test_env->save_file('plugins/SortMethod/lib/SortMethod.pm', <<'PM');
+package SortMethod;
+use strict;
+use warnings;
+
+sub sort ($$) { $_[0]->label cmp $_[1]->label }
+
+1;
+PM
 }
 
 use MT::Test::Tag;
@@ -18,6 +41,11 @@ use MT::Test::Util::CreativeCommons;
 use MT::Util qw(ts2epoch epoch2ts);
 
 $test_env->prepare_fixture('db_data');
+
+my $switch = MT->config->PluginSwitch;
+$switch->{Awesome} = 1;
+MT->config->PluginSwitch($switch, 1);
+MT->config->save_config;
 
 my $server_path = MT->instance->server_path;
 $server_path =~ s|\\|/|g if $^O eq 'MSWin32';

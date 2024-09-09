@@ -153,7 +153,6 @@ sub write_config {
     my %config = (
         PluginPath => [qw(
             MT_HOME/plugins
-            MT_HOME/t/plugins
         )],
         TemplatePath       => 'MT_HOME/tmpl',
         SearchTemplatePath => 'MT_HOME/search_templates',
