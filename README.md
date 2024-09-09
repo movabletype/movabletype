@@ -1,10 +1,6 @@
 Welcome to Movable Type
 =============
 
-[![Build Status](https://travis-ci.org/movabletype/movabletype.svg?branch=develop)](https://travis-ci.org/movabletype/movabletype)
-[![CircleCI](https://circleci.com/gh/movabletype/movabletype/tree/develop.svg?style=svg&circle-token=698358bf40b4ca0bda1e4e9571ffce0cb5584d41)](https://circleci.com/gh/movabletype/movabletype/tree/develop)
-[![Coverage Status](https://coveralls.io/repos/github/movabletype/movabletype/badge.svg?branch=develop)](https://coveralls.io/github/movabletype/movabletype?branch=develop)
-
 Thank you for choosing Movable Type, the premiere solution for your blogging and website management needs.
 This file will explain how to get up and running; click on the highlighted sections for more information on that subject.
 
@@ -20,14 +16,14 @@ Movable Type requires the following applications:
  * [DBI](https://metacpan.org/pod/DBI)
  * [HTML::Entities](https://metacpan.org/pod/HTML::Entities), a part of [HTML-Parser](https://metacpan.org/dist/HTML-Parser) distribution
 
-Consult the CPAN documentation to learn how to [determine if a Perl module is already installed](http://www.cpan.org/misc/cpan-faq.html#How_installed_modules) and,
-if they are not, [how to install them](http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules).
+Consult the CPAN documentation to learn how to [determine if a Perl module is already installed](https://www.cpan.org/misc/cpan-faq.html#How_installed_modules) and,
+if they are not, [how to install them](https://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules).
 
 Upgrading Movable Type
 --------
-If you are upgrading to Movable Type 7 from a previous version, we recommend that you first back up your old installation.
+If you are upgrading Movable Type from a previous version, we recommend that you first back up your old installation.
 Database backup is especially important to restore your system in case of any trouble during the upgrade process.
-Upload Movable Type 7's files over the same files from the previous version of Movable Type.
+Upload Movable Type's files over the same files from the previous version of Movable Type.
 Access Movable Type as you normally do, and you will be taken through the upgrade process.
 
 Installing Movable Type
