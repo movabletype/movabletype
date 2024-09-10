@@ -169,6 +169,7 @@ our %Requirements = (
     "HTTP::Request" => {
         extlib => 6.46,
         label  => "This module is optional. It is used to download assets from a website.",
+        pinned => 1,
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/HTTP::Request",
     },
@@ -266,6 +267,7 @@ our %Requirements = (
     "LWP::UserAgent" => {
         extlib => 6.67,
         label  => "LWP::UserAgent is optional. It is used to fetch information from local and external servers.",
+        pinned => 1,
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/LWP::UserAgent",
     },
@@ -527,6 +529,7 @@ our %ExtLibOnly = (
     },
     "Email::Date::Format" => {
         extlib  => 1.005,
+        pinned  => 1,
         url     => "https://metacpan.org/pod/Email::Date::Format",
         used_in => ["MIME::Lite"],
     },
@@ -604,6 +607,7 @@ our %ExtLibOnly = (
     },
     "IO::Socket::IP" => {
         extlib  => 0.41,
+        pinned  => 1,
         url     => "https://metacpan.org/pod/IO::Socket::IP",
         used_in => ["Net::SMTPS"],
     },
