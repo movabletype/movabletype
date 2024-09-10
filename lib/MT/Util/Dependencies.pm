@@ -177,6 +177,7 @@ our %Requirements = (
     "HTTP::Request" => {
         extlib => 6.43,
         label  => "This module is optional. It is used to download assets from a website.",
+        pinned => 1,
         tags   => ["HTTP"],
         url    => "https://metacpan.org/pod/HTTP::Request",
     },
@@ -546,6 +547,7 @@ our %ExtLibOnly = (
     },
     "Email::Date::Format" => {
         extlib  => 1.005,
+        pinned  => 1,
         url     => "https://metacpan.org/pod/Email::Date::Format",
         used_in => ["MIME::Lite"],
     },
@@ -611,6 +613,7 @@ our %ExtLibOnly = (
     },
     "IO::Socket::IP" => {
         extlib  => 0.41,
+        pinned  => 1,
         url     => "https://metacpan.org/pod/IO::Socket::IP",
         used_in => ["Net::SMTPS"],
     },
@@ -1083,6 +1086,12 @@ sub _modify_hash {
         (my $file = "./extlib/$module.pm") =~ s!::!/!g;
         if (-e $file) {
             my $info = Parse::PMFile->new->parse($file);
+            if ($hash{$module}{pinned}) {
+                if (version->parse($hash{$module}{extlib}) < version->parse($info->{$module}{version})) {
+                    print STDERR "$module has a higher version than a pinned version. Please downgrade it!\n";
+                    $info->{$module}{version} = $hash{$module}{extlib};
+                }
+            }
             $hash{$module}{extlib} = $info->{$module}{version};
         } else {
             delete $hash{$module}{extlib};
@@ -1215,7 +1224,8 @@ sub check_extlib {
         my $extlib_version = $extlib{$package} or next;
         my $distname       = Parse::Distname::parse_distname($dist)->{name_and_version};
         next unless version->parse($version) > version->parse($extlib_version);
-        print STDERR "$package ($extlib_version) has a new version $version ($distname)\n";
+        my $pinned = $modules{$package}{pinned} ? ' but it is pinned' : '';
+        print STDERR "$package ($extlib_version) has a new version $version ($distname)$pinned\n";
     }
 }
 
