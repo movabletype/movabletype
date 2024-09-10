@@ -61,10 +61,11 @@ sub new {
     my $driver = _driver();
 
     my $self = bless {
-        root   => $root,
-        driver => $driver,
-        config => \%extra_config,
-        start  => [Time::HiRes::gettimeofday],
+        root           => $root,
+        driver         => $driver,
+        config         => \%extra_config,
+        start          => [Time::HiRes::gettimeofday],
+        ignore_fixture => !!$extra_config{PluginPath},
     }, $class;
 
     for my $module (@extra_modules) {
@@ -863,6 +864,10 @@ sub prepare_fixture {
     }
 
     $self->fix_mysql_create_table_sql;
+
+    local $ENV{MT_TEST_IGNORE_FIXTURE}     = $ENV{MT_TEST_IGNORE_FIXTURE}     || $self->{ignore_fixture};
+    local $ENV{MT_TEST_UPDATE_FIXTURE}     = $ENV{MT_TEST_UPDATE_FIXTURE}     && !$self->{ignore_fixture};
+    local $ENV{MT_TEST_AUTOUPDATE_FIXTURE} = $ENV{MT_TEST_AUTOUPDATE_FIXTURE} && !$self->{ignore_fixture};
 
     my $do_save;
     if ($ENV{MT_TEST_IGNORE_FIXTURE}) {
