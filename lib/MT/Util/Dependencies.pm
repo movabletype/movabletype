@@ -1037,11 +1037,28 @@ USED:
             next if $where =~ /^MT::Plugin::\b/;
             $used_in_mt = 1;
         }
-        next unless $used_in_mt;
+        unless ($used_in_mt) {
+            my $used_in_extlib;
+            for my $where (sort keys %{ $used->{$module} }) {
+                my $type = $used->{$module}{$where};
+                if ($index->{dist}{$dist}{$where}) {
+                    print STDERR " $module (in $dist) is ignored as it is used by $where internally.\n";
+                    next;
+                }
+                if ($type ne 'requires') {
+                    print STDERR " $module (in $dist) is ignored as $where only $type.\n";
+                    next;
+                }
+                print STDERR " $where $type $module (in $dist).\n";
+                $used_in_extlib = 1;
+            }
+            next unless $used_in_extlib;
+        }
         if (Module::CoreList::is_core($module, undef, '5.016003')) {
             $core_hash{$module} //= {};
             next;
         }
+        next if $used_in_mt;
         print STDERR "$module is missing? " . Data::Dump::dump($used->{$module}), "\n";
     }
 
