@@ -952,6 +952,20 @@ sub lacks_core_modules {
 
 #----------------------------------------------------------------------------
 
+my %OptionalModules = map { $_ => 1 } qw(
+    Data::ObjectDriver::Driver::DBD::Oracle
+    HTTP::Cookies::Microsoft
+    JSON::backportPP
+    LWP::Authen::Ntlm
+    LWP::Debug::TraceHTTP
+    Mail::Mailer::smtps
+    MojoX::MIME::Types
+    Net::OAuth::SignatureMethod::HMAC_SHA1
+    URI::urn::isbn
+    URI::otpauth
+    WWW::RobotRules::AnyDBM_File
+);
+
 sub update_me {
     my $class = shift;
     _require_module('Data::Dump')       or return;
@@ -1177,6 +1191,10 @@ sub _find_usage {
                     (my $module = $file) =~ s!^.*?lib/!!;
                     $module              =~ s!/!::!g;
                     $module              =~ s!\.p[ml]$!!;
+                    if ($OptionalModules{$module}) {
+                        print STDERR "$file is ignored: $module is optional.\n";
+                        return;
+                    }
                     print STDERR "$file => $module\n";
                     my $scanner = Perl::PrereqScanner::NotQuiteLite->new(
                         parsers    => [qw/:bundled/],
