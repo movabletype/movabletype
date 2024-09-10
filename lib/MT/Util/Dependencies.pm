@@ -937,8 +937,22 @@ sub lacks_core_modules {
 
 #----------------------------------------------------------------------------
 
+my %OptionalModules = map { $_ => 1 } qw(
+    Data::ObjectDriver::Driver::DBD::Oracle
+    HTTP::Cookies::Microsoft
+    JSON::backportPP
+    LWP::Authen::Ntlm
+    LWP::Debug::TraceHTTP
+    Mail::Mailer::smtps
+    MojoX::MIME::Types
+    Net::OAuth::SignatureMethod::HMAC_SHA1
+    URI::urn::isbn
+    URI::otpauth
+    WWW::RobotRules::AnyDBM_File
+);
+
 sub update_me {
-    my $class = shift;
+    my ($class, %args) = @_;
     _require_module('Data::Dump')       or return;
     _require_module('Module::CoreList') or return;
     _require_module('Perl::Tidy')       or return;
@@ -990,10 +1004,14 @@ sub update_me {
         }
     }
     close $fh;
-    my $used = _find_usage();
+    my $used = _find_usage(%args);
     $req    = _modify_hash($req);
     $extlib = _modify_hash($extlib, $used);
     $core   = _modify_hash($core);
+
+    my @namespaces = map { s!^(plugins|addons)/!!; s!\.pack$!!; $_ } grep -d $_, (glob("plugins/*"), glob("addons/*"));
+    unshift @namespaces, 'MT';
+    my $namespace_re = join '|', @namespaces;
 
     my $index       = _make_index();
     my %req_hash    = eval $req;
@@ -1017,16 +1035,33 @@ USED:
         next if $module =~ /^[a-z0-9:]+$/ && Module::CoreList::is_core($module, undef, '5.016003');
         my $used_in_mt;
         for my $where (keys %{ $used->{$module} }) {
-            next unless $where =~ /^MT\b/;
+            next unless $where =~ /^(?:$namespace_re)\b/;
             next if $used->{$module}{$where} eq 'suggests';
             next if $where =~ /^MT::Plugin::\b/;
             $used_in_mt = 1;
         }
-        next unless $used_in_mt;
+        unless ($used_in_mt) {
+            my $used_in_extlib;
+            for my $where (sort keys %{ $used->{$module} }) {
+                my $type = $used->{$module}{$where};
+                if ($index->{dist}{$dist}{$where}) {
+                    print STDERR " $module (in $dist) is ignored as it is used by $where internally.\n" if $args{debug};
+                    next;
+                }
+                if ($type ne 'requires') {
+                    print STDERR " $module (in $dist) is ignored as $where only $type.\n" if $args{debug};
+                    next;
+                }
+                print STDERR " $where $type $module (in $dist).\n" if $args{debug};
+                $used_in_extlib = 1;
+            }
+            next unless $used_in_extlib;
+        }
         if (Module::CoreList::is_core($module, undef, '5.016003')) {
             $core_hash{$module} //= {};
             next;
         }
+        next if $used_in_mt;
         print STDERR "$module is missing? " . Data::Dump::dump($used->{$module}), "\n";
     }
 
@@ -1071,6 +1106,12 @@ sub _modify_hash {
         (my $file = "./extlib/$module.pm") =~ s!::!/!g;
         if (-e $file) {
             my $info = Parse::PMFile->new->parse($file);
+            if ($hash{$module}{pinned}) {
+                if (version->parse($hash{$module}{extlib}) < version->parse($info->{$module}{version})) {
+                    print STDERR "$module has a higher version than a pinned version. Please downgrade it!\n";
+                    $info->{$module}{version} = $hash{$module}{extlib};
+                }
+            }
             $hash{$module}{extlib} = $info->{$module}{version};
         } else {
             delete $hash{$module}{extlib};
@@ -1127,6 +1168,7 @@ sub _modify_hash {
 }
 
 sub _find_usage {
+    my %args = @_;
     _require_module('Perl::PrereqScanner::NotQuiteLite') or return;
     _require_module('File::Find')                        or return;
     my %usage;
@@ -1139,6 +1181,10 @@ sub _find_usage {
                     (my $module = $file) =~ s!^.*?lib/!!;
                     $module              =~ s!/!::!g;
                     $module              =~ s!\.p[ml]$!!;
+                    if ($OptionalModules{$module}) {
+                        print STDERR "$file is ignored: $module is optional.\n" if $args{debug};
+                        return;
+                    }
                     print STDERR "$file => $module\n";
                     my $scanner = Perl::PrereqScanner::NotQuiteLite->new(
                         parsers    => [qw/:bundled/],
@@ -1164,7 +1210,7 @@ sub _find_usage {
 
 sub _make_index {
     _require_module('CPAN::Common::Index::Mirror') or return;
-    my $index = CPAN::Common::Index::Mirror->new;
+    my $index = CPAN::Common::Index::Mirror->new({ mirror => 'https://www.cpan.org' });
     open my $fh, '<', $index->cached_package;
     my (%dists, %packages, $seen);
     while (<$fh>) {
@@ -1182,13 +1228,13 @@ sub _make_index {
 }
 
 sub check_extlib {
-    my $class = shift;
+    my ($class, %args) = @_;
     _require_module('CPAN::Common::Index::Mirror') or return;
     _require_module('Parse::Distname')             or return;
     _require_module('version')                     or return;
     my %modules = (%Requirements, %ExtLibOnly, %HiddenCoreDeps);
     my %extlib  = map { $_ => $modules{$_}{extlib} } grep { $modules{$_}{extlib} } keys %modules;
-    my $index   = CPAN::Common::Index::Mirror->new;
+    my $index   = CPAN::Common::Index::Mirror->new({ mirror => 'https://www.cpan.org' });
     open my $fh, '<', $index->cached_package;
     my $seen;
 
@@ -1203,7 +1249,12 @@ sub check_extlib {
         my $extlib_version = $extlib{$package} or next;
         my $distname       = Parse::Distname::parse_distname($dist)->{name_and_version};
         next unless version->parse($version) > version->parse($extlib_version);
-        print STDERR "$package ($extlib_version) has a new version $version ($distname)\n";
+        my $pinned = $modules{$package}{pinned} ? ' but it is pinned' : '';
+        unless ($args{debug}) {
+            next if $pinned;
+            next if $distname =~ /^perl-/;
+        }
+        print STDERR "$package ($extlib_version) has a new version $version ($distname)$pinned\n";
     }
 }
 
