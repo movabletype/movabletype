@@ -465,7 +465,6 @@ sub can_do {
     my @perms = split /,/, $self->permissions;
     for my $perm (@perms) {
         $perm =~ s/'(.+)'/$1/;
-        return 1 if 'administer' eq $perm;
         next if $self->is_restricted($perm);
         $perm = join(
             '.',
