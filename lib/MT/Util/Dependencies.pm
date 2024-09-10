@@ -967,7 +967,7 @@ my %OptionalModules = map { $_ => 1 } qw(
 );
 
 sub update_me {
-    my $class = shift;
+    my ($class, %args) = @_;
     _require_module('Data::Dump')       or return;
     _require_module('Module::CoreList') or return;
     _require_module('Perl::Tidy')       or return;
@@ -1060,14 +1060,14 @@ USED:
             for my $where (sort keys %{ $used->{$module} }) {
                 my $type = $used->{$module}{$where};
                 if ($index->{dist}{$dist}{$where}) {
-                    print STDERR " $module (in $dist) is ignored as it is used by $where internally.\n";
+                    print STDERR " $module (in $dist) is ignored as it is used by $where internally.\n" if $args{debug};
                     next;
                 }
                 if ($type ne 'requires') {
-                    print STDERR " $module (in $dist) is ignored as $where only $type.\n";
+                    print STDERR " $module (in $dist) is ignored as $where only $type.\n" if $args{debug};
                     next;
                 }
-                print STDERR " $where $type $module (in $dist).\n";
+                print STDERR " $where $type $module (in $dist).\n" if $args{debug};
                 $used_in_extlib = 1;
             }
             next unless $used_in_extlib;
@@ -1183,6 +1183,7 @@ sub _modify_hash {
 }
 
 sub _find_usage {
+    my %args = @_;
     _require_module('Perl::PrereqScanner::NotQuiteLite') or return;
     _require_module('File::Find')                        or return;
     my %usage;
@@ -1196,7 +1197,7 @@ sub _find_usage {
                     $module              =~ s!/!::!g;
                     $module              =~ s!\.p[ml]$!!;
                     if ($OptionalModules{$module}) {
-                        print STDERR "$file is ignored: $module is optional.\n";
+                        print STDERR "$file is ignored: $module is optional.\n" if $args{debug};
                         return;
                     }
                     print STDERR "$file => $module\n";
@@ -1242,7 +1243,7 @@ sub _make_index {
 }
 
 sub check_extlib {
-    my $class = shift;
+    my ($class, %args) = @_;
     _require_module('CPAN::Common::Index::Mirror') or return;
     _require_module('Parse::Distname')             or return;
     _require_module('version')                     or return;
@@ -1264,6 +1265,10 @@ sub check_extlib {
         my $distname       = Parse::Distname::parse_distname($dist)->{name_and_version};
         next unless version->parse($version) > version->parse($extlib_version);
         my $pinned = $modules{$package}{pinned} ? ' but it is pinned' : '';
+        unless ($args{debug}) {
+            next if $pinned;
+            next if $distname =~ /^perl-/;
+        }
         print STDERR "$package ($extlib_version) has a new version $version ($distname)$pinned\n";
     }
 }
