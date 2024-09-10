@@ -167,7 +167,7 @@ our %Requirements = (
         url   => "https://metacpan.org/pod/HTTP::DAV",
     },
     "HTTP::Request" => {
-        extlib => 6.46,
+        extlib => 6.43,
         label  => "This module is optional. It is used to download assets from a website.",
         pinned => 1,
         tags   => ["HTTP"],
@@ -637,6 +637,11 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/LWP::MediaTypes",
         used_in => ["HTTP::Request::Common"],
     },
+    "LWP::Protocol::http" => {
+        extlib  => 6.67,
+        url     => "https://metacpan.org/pod/LWP::Protocol::http",
+        used_in => ["MT::App::Wizard"],
+    },
     "Mail::Address" => {
         extlib  => 2.21,
         url     => "https://metacpan.org/pod/Mail::Address",
@@ -706,11 +711,6 @@ our %ExtLibOnly = (
         url     => "https://metacpan.org/pod/Try::Tiny",
         used_in => ["LWP::UserAgent"],
     },
-    "UDDI::Lite" => {
-        extlib   => 0.718,
-        not_used => 1,
-        url      => "https://metacpan.org/pod/UDDI::Lite",
-    },
     "UNIVERSAL::require" => {
         extlib   => 0.19,
         not_used => 1,
@@ -755,6 +755,7 @@ our %ExtLibOnly = (
 );
 
 our %HiddenCoreDeps = (
+    "B"            => { perl_core => 1.35, perl_only => 1, url => "https://metacpan.org/pod/B" },
     "Carp"         => { perl_core => 1.26, url => "https://metacpan.org/pod/Carp" },
     "Data::Dumper" => {
         dropped_in => ["centos7"],
@@ -805,14 +806,31 @@ our %HiddenCoreDeps = (
         perl_core => "2.08_01",
         url       => "https://metacpan.org/pod/File::Path",
     },
+    "FileHandle" => {
+        perl_core => 2.02,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/FileHandle",
+    },
     "FindBin" => {
         dropped_in => ["amazonlinux2023"],
         perl_core  => 1.51,
         url        => "https://metacpan.org/pod/FindBin",
     },
-    "Getopt::Long" => { perl_core => 2.38, url => "https://metacpan.org/pod/Getopt::Long" },
-    "IO::File"     => { perl_core => 1.16, url => "https://metacpan.org/pod/IO::File" },
-    "IPC::Open3"   => {
+    "Getopt::Long"   => { perl_core => 2.38, url => "https://metacpan.org/pod/Getopt::Long" },
+    "I18N::LangTags" => {
+        extlib    => 0.35,
+        perl_core => 0.38,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/I18N::LangTags",
+    },
+    "I18N::LangTags::Detect" => {
+        extlib    => 1.03,
+        perl_core => 1.05,
+        perl_only => 1,
+        url       => "https://metacpan.org/pod/I18N::LangTags::Detect",
+    },
+    "IO::File"   => { perl_core => 1.16, url => "https://metacpan.org/pod/IO::File" },
+    "IPC::Open3" => {
         perl_core => 1.12,
         perl_only => 1,
         url       => "https://metacpan.org/pod/IPC::Open3",
@@ -822,6 +840,7 @@ our %HiddenCoreDeps = (
         perl_only => 1,
         url       => "https://metacpan.org/pod/POSIX",
     },
+    "Socket" => { perl_core => 2.001, url => "https://metacpan.org/pod/Socket" },
     "Symbol" => {
         perl_core => 1.07,
         perl_only => 1,
@@ -833,7 +852,8 @@ our %HiddenCoreDeps = (
         perl_only  => 1,
         url        => "https://metacpan.org/pod/Sys::Hostname",
     },
-    "Text::Wrap" => {
+    "Text::Balanced" => { perl_core => 2.02, url => "https://metacpan.org/pod/Text::Balanced" },
+    "Text::Wrap"     => {
         perl_core => 2009.0305,
         url       => "https://metacpan.org/pod/Text::Wrap",
     },
