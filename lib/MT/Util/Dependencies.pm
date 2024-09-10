@@ -1019,10 +1019,14 @@ sub update_me {
         }
     }
     close $fh;
-    my $used = _find_usage();
+    my $used = _find_usage(%args);
     $req    = _modify_hash($req);
     $extlib = _modify_hash($extlib, $used);
     $core   = _modify_hash($core);
+
+    my @namespaces = map { s!^(plugins|addons)/!!; s!\.pack$!!; $_ } grep -d $_, (glob("plugins/*"), glob("addons/*"));
+    unshift @namespaces, 'MT';
+    my $namespace_re = join '|', @namespaces;
 
     my $index       = _make_index();
     my %req_hash    = eval $req;
@@ -1046,7 +1050,7 @@ USED:
         next if $module =~ /^[a-z0-9:]+$/ && Module::CoreList::is_core($module, undef, '5.016003');
         my $used_in_mt;
         for my $where (keys %{ $used->{$module} }) {
-            next unless $where =~ /^MT\b/;
+            next unless $where =~ /^(?:$namespace_re)\b/;
             next if $used->{$module}{$where} eq 'suggests';
             next if $where =~ /^MT::Plugin::\b/;
             $used_in_mt = 1;
