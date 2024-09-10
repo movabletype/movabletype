@@ -1,14 +1,14 @@
-# Copyrights 1999-2021 by [Mark Overmeer <markov@cpan.org>].
+# Copyrights 1999-2024 by [Mark Overmeer <markov@cpan.org>].
 #  For other contributors see ChangeLog.
 # See the manual pages for details on the licensing terms.
-# Pod stripped from pm file by OODoc 2.02.
+# Pod stripped from pm file by OODoc 2.03.
 # This code is part of distribution MIME::Types.  Meta-POD processed with
 # OODoc into POD and HTML manual-pages.  See README.md
 # Copyright Mark Overmeer.  Licensed under the same terms as Perl itself.
 
 package MIME::Types;
 use vars '$VERSION';
-$VERSION = '2.22';
+$VERSION = '2.26';
 
 
 use strict;
@@ -52,7 +52,6 @@ sub _read_db($)
         my $skip_section = $major eq 'EXTENSIONS' ? $skip_extensions
           : (($only_iana && !$is_iana) || ($only_complete && !$has_ext));
 
-#warn "Skipping section $header\n" if $skip_section;
         (my $section = $major) =~ s/^x-//;
         if($major eq 'EXTENSIONS')
         {   local $_;
@@ -107,10 +106,18 @@ sub type($)
 
 
 sub mimeTypeOf($)
-{   my ($self, $name) = @_;
-    (my $ext = lc $name) =~ s/.*\.//;
-    my $type = $typedb{EXTENSIONS}{$ext} or return;
-    $self->type($type);
+{   my $self = shift;
+    my $ext  = lc(shift);
+
+    # Extensions may contains multiple dots (rare)
+    while(1)
+    {   if(my $type = $typedb{EXTENSIONS}{$ext})
+        {   return $self->type($type);
+        }
+        $ext =~ s/.*?\.// or last;
+    }
+
+    undef;
 }
 
 

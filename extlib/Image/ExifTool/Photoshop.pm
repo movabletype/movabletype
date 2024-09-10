@@ -28,7 +28,7 @@ use strict;
 use vars qw($VERSION $AUTOLOAD $iptcDigestInfo %printFlags);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.67';
+$VERSION = '1.70';
 
 sub ProcessPhotoshop($$$);
 sub WritePhotoshop($$$);
@@ -70,11 +70,11 @@ my %thumbnailInfo = (
     Protected => 1,
     RawConv => 'my $img=substr($val,0x1c); $self->ValidateImage(\$img,$tag)',
     ValueConvInv => q{
-        my $et = new Image::ExifTool;
+        my $et = Image::ExifTool->new;
         my @tags = qw{ImageWidth ImageHeight FileType};
         my $info = $et->ImageInfo(\$val, @tags);
         my ($w, $h, $type) = @$info{@tags};
-        $w and $h and $type eq 'JPEG' or warn("Not a valid JPEG image\n"), return undef;
+        $w and $h and $type and $type eq 'JPEG' or warn("Not a valid JPEG image\n"), return undef;
         my $wbytes = int(($w * 24 + 31) / 32) * 4;
         return pack('N6n2', 1, $w, $h, $wbytes, $wbytes * $h, length($val), 24, 1) . $val;
     },
@@ -571,6 +571,13 @@ my %unicodeString = (
         ValueConv => '100 * $val / 255',
         PrintConv => 'sprintf("%d%%",$val)',
     },
+    _xvis  => {
+        Name => 'LayerVisible',
+        Format => 'int8u',
+        List => 1,
+        ValueConv => '$val & 0x02',
+        PrintConv => { 0x02 => 'No', 0x00 => 'Yes' },
+    },
     # tags extracted from additional layer information (tag ID's are real)
     # - must be able to accommodate a blank entry to preserve the list ordering
     luni => {
@@ -589,6 +596,16 @@ my %unicodeString = (
         List => 1,
         Unknown => 1,
     },
+    lclr => {
+        Name => 'LayerColors',
+        Format => 'int16u',
+        Count => 1,
+        List => 1,
+        PrintConv => {
+            0=>'None',  1=>'Red',  2=>'Orange', 3=>'Yellow',
+            4=>'Green', 5=>'Blue', 6=>'Violet', 7=>'Gray',
+        },
+    },
     shmd => { # layer metadata (undocumented structure)
         # (for now, only extract layerTime.  May also contain "layerXMP" --
         #  it would be nice to decode this but I need a sample)
@@ -602,6 +619,13 @@ my %unicodeString = (
         },
         ValueConv => 'length $val ? ConvertUnixTime($val,1) : ""',
         PrintConv => 'length $val ? $self->ConvertDateTime($val) : ""',
+    },
+    lsct => {
+        Name => 'LayerSections',
+        Format => 'int32u',
+        Count => 1,
+        List => 1,
+        PrintConv => { 0 => 'Layer', 1 => 'Folder (open)', 2 => 'Folder (closed)', 3 => 'Divider' },
     },
 );
 
@@ -682,7 +706,7 @@ sub ProcessLayersAndMask($$$)
     local $_;
     my ($et, $dirInfo, $tagTablePtr) = @_;
     my $raf = $$dirInfo{RAF};
-    my $fileType = $$et{VALUE}{FileType};
+    my $fileType = $$et{FileType};
     my $data;
 
     return 0 unless $fileType eq 'PSD' or $fileType eq 'PSB';   # (no layer section in CS1 files)
@@ -748,17 +772,16 @@ sub ProcessLayers($$$)
     my $pos = 0;
     return 0 if $dirLen < 2;
     $raf->Read($buff, 2) == 2 or return 0;
-    my $num = Get16s(\$buff, 0);
+    my $num = Get16s(\$buff, 0);    # number of layers
     $num = -$num if $num < 0;       # (first channel is transparency data if negative)
     $et->VerboseDir('Layers', $num, $dirLen);
     $et->HandleTag($tagTablePtr, '_xcnt', $num, Start => $pos, Size => 2, %dinfo); # LayerCount
     my $oldIndent = $$et{INDENT};
     $$et{INDENT} .= '| ';
-
     $pos += 2;
     my $psb = $$et{IsPSB};  # is PSB format?
     my $psiz = $psb ? 8 : 4;
-    for ($i=0; $i<$num; ++$i) {
+    for ($i=0; $i<$num; ++$i) { # process each layer
         $et->VPrint(0, $oldIndent.'+ [Layer '.($i+1)." of $num]\n");
         last if $pos + 18 > $dirLen;
         $raf->Read($buff, 18) == 18 or last;
@@ -776,6 +799,7 @@ sub ProcessLayers($$$)
         $sig =~ /^(8BIM|MIB8)$/ or last;    # verify signature
         $et->HandleTag($tagTablePtr, '_xbnd', undef, Start => 4, Size => 4, %dinfo);
         $et->HandleTag($tagTablePtr, '_xopc', undef, Start => 8, Size => 1, %dinfo);
+        $et->HandleTag($tagTablePtr, '_xvis', undef, Start =>10, Size => 1, %dinfo);
         my $nxt = $pos + 16 + Get32u(\$buff, 12);
         $n = Get32u(\$buff, 16);        # get size of layer mask data
         $pos += 20 + $n;                # skip layer mask data
@@ -823,7 +847,7 @@ sub ProcessLayers($$$)
                 $raf->Read($buff, $n) == $n or last;
                 $dinfo{DataPos} = $pos;
                 while ($count{$tag} < $i) {
-                    $et->HandleTag($tagTablePtr, $tag, '');
+                    $et->HandleTag($tagTablePtr, $tag, $tag eq 'lsct' ? 0 : '');
                     ++$count{$tag};
                 }
                 $et->HandleTag($tagTablePtr, $tag, undef, Start => 0, Size => $n, %dinfo);
@@ -839,6 +863,13 @@ sub ProcessLayers($$$)
             $pos += $n; # step to start of next structure
         }
         $pos = $nxt;
+    }
+    # pad lists if necessary to have an entry for each layer
+    foreach (sort keys %count) {
+        while ($count{$_} < $num) {
+            $et->HandleTag($tagTablePtr, $_, $_ eq 'lsct' ? 0 : '');
+            ++$count{$_};
+        }
     }
     $$et{INDENT} = $oldIndent;
     return 1;
@@ -861,7 +892,7 @@ sub ProcessDocumentData($$$)
     unless ($raf) {
         my $dataPt = $$dirInfo{DataPt};
         my $start = $$dirInfo{DirStart} || 0;
-        $raf = new File::RandomAccess($dataPt);
+        $raf = File::RandomAccess->new($dataPt);
         $raf->Seek($start, 0) if $start;
         $dirLen = length $$dataPt - $start unless defined $dirLen;
         $et->VerboseDump($dataPt, Start => $start, Len => $dirLen, Base => $$dirInfo{Base});
@@ -1170,7 +1201,7 @@ be preserved when copying Photoshop information via user-defined tags.
 
 =head1 AUTHOR
 
-Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
