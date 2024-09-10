@@ -1224,7 +1224,7 @@ sub _find_usage {
 
 sub _make_index {
     _require_module('CPAN::Common::Index::Mirror') or return;
-    my $index = CPAN::Common::Index::Mirror->new;
+    my $index = CPAN::Common::Index::Mirror->new({ mirror => 'https://www.cpan.org' });
     open my $fh, '<', $index->cached_package;
     my (%dists, %packages, $seen);
     while (<$fh>) {
