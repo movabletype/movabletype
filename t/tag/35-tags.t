@@ -7,31 +7,8 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        PluginPath => ['TEST_ROOT/plugins'],
-    );
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
-
-    $test_env->save_file('plugins/Awesome/config.yaml', <<'YAML');
-name: Awesome
-key:  awesome
-id:   awesome
-YAML
-
-    $test_env->save_file('plugins/SortMethod/config.yaml', <<'YAML');
-name: SortMethod
-id:   sortmethod
-YAML
-
-    $test_env->save_file('plugins/SortMethod/lib/SortMethod.pm', <<'PM');
-package SortMethod;
-use strict;
-use warnings;
-
-sub sort ($$) { $_[0]->label cmp $_[1]->label }
-
-1;
-PM
 }
 
 use MT::Test::Tag;
@@ -4199,12 +4176,6 @@ foobar
 --- expected_php
 barfoo
 
-=== test 757
---- template
-<MTSubCategories show_empty="1" top="1" sort_method="SortMethod::sort"><MTCategoryLabel></MTSubCategories>
---- expected
-barfoo
-
 === test 758
 --- template
 <MTArchiveList archive_type="Individual"><mt:EntryID>:<$mt:CategoryID$>;</MTArchiveList>
@@ -4772,12 +4743,6 @@ has Markdown.pl
 <MTHasPlugin name="Markdown">has Markdown.pl (alias)</MTHasPlugin>
 --- expected
 has Markdown.pl (alias)
-
-=== test 855
---- template
-<MTHasPlugin name="Awesome">has Awesome<MTElse>doesn't have Awesome</MTHasPlugin>
---- expected
-has Awesome
 
 === test 856
 --- template

@@ -61,10 +61,11 @@ sub new {
     my $driver = _driver();
 
     my $self = bless {
-        root   => $root,
-        driver => $driver,
-        config => \%extra_config,
-        start  => [Time::HiRes::gettimeofday],
+        root           => $root,
+        driver         => $driver,
+        config         => \%extra_config,
+        start          => [Time::HiRes::gettimeofday],
+        ignore_fixture => !!$extra_config{PluginPath},
     }, $class;
 
     for my $module (@extra_modules) {
@@ -837,9 +838,11 @@ sub prepare_fixture {
     $self->_set_fixture_dirs;
 
     my $code;
+    my $caller_id;
     if (ref $_[0] eq 'CODE') {
         $self->detect_basename_collision($id);
         $code = shift;
+        $caller_id = 1;
     } else {
         $id = shift;
         $self->detect_basename_collision($id);
@@ -863,6 +866,16 @@ sub prepare_fixture {
     }
 
     $self->fix_mysql_create_table_sql;
+
+    my $is_maintenance = $ENV{MT_TEST_UPDATE_FIXTURE} || $ENV{MT_TEST_AUTOUPDATE_FIXTURE};
+    local $ENV{MT_TEST_IGNORE_FIXTURE}     = $ENV{MT_TEST_IGNORE_FIXTURE}     || $self->{ignore_fixture};
+    local $ENV{MT_TEST_UPDATE_FIXTURE}     = $ENV{MT_TEST_UPDATE_FIXTURE}     && !$self->{ignore_fixture};
+    local $ENV{MT_TEST_AUTOUPDATE_FIXTURE} = $ENV{MT_TEST_AUTOUPDATE_FIXTURE} && !$self->{ignore_fixture};
+    if ($is_maintenance && $self->{ignore_fixture} && $caller_id) {
+        while (my $fixture_file = $self->_find_file($self->_fixture_file($id))) {
+            unlink $fixture_file;
+        }
+    }
 
     my $do_save;
     if ($ENV{MT_TEST_IGNORE_FIXTURE}) {
