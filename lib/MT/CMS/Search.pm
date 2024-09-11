@@ -1604,11 +1604,13 @@ sub make_terms_for_plain_search {
     }
 
     if (my @cols = @$cols_ref) {
+        my $escape_char = '\\';
+        $plain_search =~ s/(\\|_|%)/$escape_char$1/g;
         my $query_string = "%$plain_search%";
         my @sub;
         for my $col (@cols) {
             if ('id' eq $col) {
-                push(@sub, { $col => $plain_search }, '-or');
+                push(@sub, { op => $col, value => $plain_search, escape => $escape_char }, '-or');
             } elsif ($col !~ /^__field:\d+$/) {
                 push(@sub, { $col => { like => $query_string } }, '-or');
             }

@@ -147,6 +147,11 @@ sub as_sql_having {
         '';
 }
 
+sub as_escape {
+    my ($stmt, $escape_char) = @_;
+    return " ESCAPE '$escape_char'";
+}
+
 sub add_where {
     my $stmt = shift;
     ## xxx Need to support old range and transform behaviors.
@@ -270,6 +275,7 @@ sub _mk_term {
                 $term = "$c $val->{op} " . ${$val->{value}};
             } else {
                 $term = "$c $val->{op} ?";
+                $term .= $stmt->as_escape($val->{escape}) if $val->{op} =~ /like/i && $val->{escape};
                 push @bind, $val->{value};
             }
         }
