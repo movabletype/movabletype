@@ -15,6 +15,7 @@ BEGIN {
 }
 
 use MT::Test::DataAPI;
+use MT::Test::Permission;
 
 $test_env->prepare_fixture('db_data');
 
@@ -29,6 +30,10 @@ $author->save;
 my $website = $app->model('website')->load(2);
 $website->site_path($test_env->root);
 $website->save or die $website->errstr;
+
+my $author_site_administrator = MT::Test::Permission->make_author;
+my $role_site_administrator   = MT->model('role')->load({ name => 'Site Administrator' }) or die MT->model('role')->errstr;
+MT->model('association')->link($author_site_administrator => $role_site_administrator => $website);
 
 # TODO: Avoid an error when installing GoogleAnalytics plugin.
 my $mock_cms_common = Test::MockModule->new('MT::CMS::Common');
@@ -1149,14 +1154,16 @@ sub suite {
         },
 
         # delete_site - irregular tests
-        {   path   => '/v2/sites/2',
-            method => 'DELETE',
-            code   => 403,
-            result => sub {
-                +{  error => {
-                        code => 403,
-                        message =>
-                            'Website "update site" (ID:2) was not deleted. You need to delete the blogs under the website first.',
+        {
+            path      => '/v2/sites/2',
+            method    => 'DELETE',
+            author_id => $author_site_administrator->id,
+            code      => 403,
+            result    => sub {
+                +{
+                    error => {
+                        code    => 403,
+                        message => 'Website "update site" (ID:2) was not deleted. You need to delete the blogs under the website first.',
                     },
                 };
             },
@@ -1252,6 +1259,7 @@ sub suite {
             # website
             path      => '/v2/sites/2',
             method    => 'DELETE',
+            author_id => $author_site_administrator->id,
             callbacks => [
                 {   name =>
                         'MT::App::DataAPI::data_api_delete_permission_filter.website',

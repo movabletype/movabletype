@@ -23,6 +23,8 @@ $test_env->prepare_fixture('archive_type');
 my $objs = MT::Test::Fixture::ArchiveType->load_objs;
 
 use MT::App::DataAPI;
+use MT::Test::Permission;
+
 my $app = MT::App::DataAPI->new;
 
 use MT::FileMgr;
@@ -43,6 +45,11 @@ my @ct      = map { $_->content_type } @ct_tmpl;
 
 my @ct_archive_tmpl
     = MT::Template->load( { blog_id => $blog_id, type => 'ct_archive' } );
+
+my $author_site_administrator = MT::Test::Permission->make_author;
+my $role_site_administrator   = MT->model('role')->load({ name => 'Site Administrator' }) or die MT->model('role')->errstr;
+my $blog                      = MT->model('blog')->load($blog_id)                         or die MT->model('blog')->errstr;
+MT->model('association')->link($author_site_administrator => $role_site_administrator => $blog);
 
 # test.
 my $suite = suite();
@@ -338,13 +345,11 @@ sub suite {
             error  => 'Cannot publish ct_archive template.',
         },
         {    # v4 (ct)
-            path => "/v4/sites/$blog_id/templates/"
-                . $ct_tmpl[1]->id
-                . '/publish',
-            method => 'POST',
-            setup  => sub {
-                my $fi = $app->model('fileinfo')
-                    ->load( { template_id => $ct_tmpl[1]->id } ) or return;
+            path      => "/v4/sites/$blog_id/templates/" . $ct_tmpl[1]->id . '/publish',
+            method    => 'POST',
+            author_id => $author_site_administrator->id,
+            setup     => sub {
+                my $fi = $app->model('fileinfo')->load({ template_id => $ct_tmpl[1]->id }) or return;
 
                 my $file_path = $fi->file_path;
                 $fmgr->delete($file_path);
@@ -353,22 +358,19 @@ sub suite {
                 return +{ status => 'success' };
             },
             complete => sub {
-                my ( $data, $body ) = @_;
-                ok my $fi = $app->model('fileinfo')
-                    ->load( { template_id => $ct_tmpl[1]->id } ) or return;
+                my ($data, $body) = @_;
+                ok my $fi = $app->model('fileinfo')->load({ template_id => $ct_tmpl[1]->id }) or return;
 
                 my $file_path = $fi->file_path;
-                ok( $fmgr->exists($file_path), "'$file_path' exists." );
+                ok($fmgr->exists($file_path), "'$file_path' exists.");
             },
         },
         {    # v4 (ct_archive)
-            path => "/v4/sites/$blog_id/templates/"
-                . $ct_archive_tmpl[1]->id
-                . '/publish',
-            method => 'POST',
-            setup  => sub {
-                my $fi = $app->model('fileinfo')
-                    ->load( { template_id => $ct_archive_tmpl[1]->id } ) or return;
+            path      => "/v4/sites/$blog_id/templates/" . $ct_archive_tmpl[1]->id . '/publish',
+            method    => 'POST',
+            author_id => $author_site_administrator->id,
+            setup     => sub {
+                my $fi = $app->model('fileinfo')->load({ template_id => $ct_archive_tmpl[1]->id }) or return;
 
                 my $file_path = $fi->file_path;
                 $fmgr->delete($file_path);
@@ -377,12 +379,11 @@ sub suite {
                 return +{ status => 'success' };
             },
             complete => sub {
-                my ( $data, $body ) = @_;
-                ok my $fi = $app->model('fileinfo')
-                    ->load( { template_id => $ct_archive_tmpl[1]->id } ) or return;
+                my ($data, $body) = @_;
+                ok my $fi = $app->model('fileinfo')->load({ template_id => $ct_archive_tmpl[1]->id }) or return;
 
                 my $file_path = $fi->file_path;
-                ok( $fmgr->exists($file_path), "'$file_path' exists." );
+                ok($fmgr->exists($file_path), "'$file_path' exists.");
             },
         },
 
