@@ -873,7 +873,7 @@ sub prepare_fixture {
     local $ENV{MT_TEST_AUTOUPDATE_FIXTURE} = $ENV{MT_TEST_AUTOUPDATE_FIXTURE} && !$self->{ignore_fixture};
     if ($is_maintenance && $self->{ignore_fixture} && $caller_id) {
         while (my $fixture_file = $self->_find_file($self->_fixture_file($id))) {
-            unlink $fixture_file if -f $fixture_file;
+            unlink $fixture_file;
         }
     }
 
