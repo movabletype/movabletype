@@ -14,6 +14,7 @@ BEGIN {
 
 use MT::Test::DataAPI;
 use MT::Test::Fixture;
+use MT::Test::Permission;
 
 $test_env->prepare_fixture('content_data/dirty');
 
@@ -28,6 +29,10 @@ my $blog_id = $blog->id;
 
 sleep 1;
 $test_env->clear_mt_cache;
+
+my $author_site_administrator = MT::Test::Permission->make_author;
+my $role_site_administrator   = MT->model('role')->load({ name => 'Site Administrator' }) or die MT->model('role')->errstr;
+MT->model('association')->link($author_site_administrator => $role_site_administrator => $blog);
 
 my $start_time
     = MT::Util::ts2iso( $blog, MT::Util::epoch2ts( $blog, time() ), 1 );
@@ -55,9 +60,11 @@ sub suite {
             next_phase_url => qr{/publish/contentData\?.*ids=1},
             complete => sub { sleep 1 },
         },
-        {   path   => '/v4/publish/contentData',
-            method => 'GET',
-            params => {
+        {
+            path      => '/v4/publish/contentData',
+            method    => 'GET',
+            author_id => $author_site_administrator->id,
+            params    => {
                 startTime => $start_time,
                 ids       => '1',
             },
@@ -72,11 +79,10 @@ sub suite {
                     sub {
                         $data->{rebuild_these_content_data}++;
                         $data->{mock}->original('rebuild_these_content_data')->(@_);
-                    }
-                );
+                    });
             },
-            callbacks => [
-                {   name  => 'build_file_filter',
+            callbacks => [{
+                    name  => 'build_file_filter',
                     count => 15,
                 },
             ],
@@ -89,8 +95,10 @@ sub suite {
             complete => sub {
                 my ($data) = @_;
 
-                is( $data->{rebuild_these_content_data},
-                    1, 'MT::App::CMS::rebuild_these_content_data is called once' );
+                is(
+                    $data->{rebuild_these_content_data},
+                    1, 'MT::App::CMS::rebuild_these_content_data is called once'
+                );
                 delete $data->{mock};
                 sleep 1;
             },
@@ -135,23 +143,24 @@ sub suite {
                 sleep 1;
             },
         },
-        {   path => "/v4/sites/$blog_id/templates/$tmpl_id/publish",
-            method => 'POST',
-            setup  => sub {
+        {
+            path      => "/v4/sites/$blog_id/templates/$tmpl_id/publish",
+            method    => 'POST',
+            author_id => $author_site_administrator->id,
+            setup     => sub {
                 my ($data) = @_;
 
-                my $fi = $app->model('fileinfo')
-                    ->load( { template_id => $tmpl_id } );
-                $fmgr->delete( $fi->file_path );
+                my $fi = $app->model('fileinfo')->load({ template_id => $tmpl_id });
+                $fmgr->delete($fi->file_path);
 
                 $data->{template_file_path} = $fi->file_path;
             },
             result   => { status => 'success' },
             complete => sub {
-                my ( $data, $body ) = @_;
+                my ($data, $body) = @_;
 
                 my $file_path = $data->{template_file_path};
-                ok( $fmgr->exists($file_path), "'$file_path' exists." );
+                ok($fmgr->exists($file_path), "'$file_path' exists.");
             },
         },
     ];

@@ -458,13 +458,13 @@ sub global_perms {
 
 sub can_do {
     my $self = shift;
+    return 1 if $self->user && $self->user->is_superuser;
     return unless $self->permissions;
 
     my $action = shift;
     my @perms = split /,/, $self->permissions;
     for my $perm (@perms) {
         $perm =~ s/'(.+)'/$1/;
-        return 1 if 'administer' eq $perm;
         next if $self->is_restricted($perm);
         $perm = join(
             '.',

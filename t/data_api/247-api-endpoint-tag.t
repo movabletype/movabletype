@@ -129,47 +129,50 @@ sub suite {
         },
 
         # list_tags_for_site - normal tests
-        {   path      => '/v2/sites/1/tags',
-            method    => 'GET',
-            callbacks => [
-                {   name  => 'data_api_pre_load_filtered_list.tag',
+        {
+            path         => '/v2/sites/1/tags',
+            method       => 'GET',
+            is_superuser => 1,
+            callbacks    => [{
+                    name  => 'data_api_pre_load_filtered_list.tag',
                     count => 2,
                 },
             ],
             complete => sub {
-                my ( $data, $body ) = @_;
+                my ($data, $body) = @_;
 
-                my $got_logs = $app->current_format->{unserialize}->($body);
+                my $got_logs      = $app->current_format->{unserialize}->($body);
                 my @expected_logs = MT->model('tag')->load(
                     undef,
-                    {   sort => 'name',
+                    {
+                        sort => 'name',
                         join => MT->model('objecttag')->join_on(
                             'tag_id',
                             { blog_id => 1 },
                             { unique  => 1 },
                         ),
-                    }
-                );
+                    });
 
-                my @got_log_names
-                    = map { $_->{name} } @{ $got_logs->{items} };
+                my @got_log_names      = map { $_->{name} } @{ $got_logs->{items} };
                 my @expected_log_names = map { $_->name } @expected_logs;
 
-                is_deeply( \@got_log_names, \@expected_log_names );
+                is_deeply(\@got_log_names, \@expected_log_names);
             },
         },
         {    # System.
-            path      => '/v2/sites/0/tags',
-            method    => 'GET',
-            callbacks => [
-                {   name  => 'data_api_pre_load_filtered_list.tag',
+            path         => '/v2/sites/0/tags',
+            method       => 'GET',
+            is_superuser => 1,
+            callbacks    => [{
+                    name  => 'data_api_pre_load_filtered_list.tag',
                     count => 2,
                 },
             ],
             result => sub {
                 my @tags = $app->model('tag')->load(
                     undef,
-                    {   sort      => 'name',
+                    {
+                        sort      => 'name',
                         direction => 'ascend',
                         join      => MT->model('objecttag')->join_on(
                             'tag_id',
@@ -183,7 +186,7 @@ sub suite {
 
                 return +{
                     totalResults => 2,
-                    items => MT::DataAPI::Resource->from_object( \@tags ),
+                    items        => MT::DataAPI::Resource->from_object(\@tags),
                 };
             },
         },
