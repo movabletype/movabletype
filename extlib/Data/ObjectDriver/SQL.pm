@@ -275,7 +275,7 @@ sub _mk_term {
                 $term = "$c $val->{op} " . ${$val->{value}};
             } else {
                 $term = "$c $val->{op} ?";
-                $term .= $stmt->as_escape($val->{escape}) if $val->{op} =~ /like/i && $val->{escape};
+                $term .= $stmt->as_escape($val->{escape}) if $val->{op} eq 'LIKE' && $val->{escape};
                 push @bind, $val->{value};
             }
         }
