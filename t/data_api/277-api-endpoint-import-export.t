@@ -16,18 +16,11 @@ BEGIN {
 }
 
 use MT::Test::DataAPI;
-use MT::Test::Permission;
 
 $test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
-
-my $blog_id = 2;
-my $author_site_administrator = MT::Test::Permission->make_author;
-my $role_site_administrator   = MT->model('role')->load({ name => 'Site Administrator' }) or die MT->model('role')->errstr;
-my $blog                      = MT->model('blog')->load($blog_id)                         or die MT->model('blog')->errstr;
-MT->model('association')->link($author_site_administrator => $role_site_administrator => $blog);
 
 my $suite = suite();
 test_data_api($suite);
@@ -87,7 +80,6 @@ sub suite {
         {    # Website.
             path   => '/v2/sites/2/entries/export',
             method => 'GET',
-            author_id => $author_site_administrator->id,
         },
 
         # import_entries - irregular tests.
@@ -327,10 +319,9 @@ sub suite {
             },
         },
         {    # Website.
-            path      => '/v2/sites/2/entries/import',
-            method    => 'POST',
-            author_id => $author_site_administrator->id,
-            upload    => [
+            path   => '/v2/sites/2/entries/import',
+            method => 'POST',
+            upload => [
                 'file',
                 File::Spec->catfile(
                     $ENV{MT_HOME}, "t",
@@ -342,8 +333,9 @@ sub suite {
                 return +{ status => 'success', };
             },
             complete => sub {
-                my $entry = $app->model('entry')->load({ blog_id => 2, title => 'Second Entry' });
-                ok($entry, 'A entry has been imported.');
+                my $entry = $app->model('entry')
+                    ->load( { blog_id => 2, title => 'Second Entry' } );
+                ok( $entry, 'A entry has been imported.' );
             },
         },
         {    # import_as_me=0.

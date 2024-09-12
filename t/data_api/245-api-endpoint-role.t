@@ -57,42 +57,37 @@ sub suite {
         },
 
         # list_roles - normal tests
-        {
-            path         => '/v2/roles',
-            method       => 'GET',
-            is_superuser => 1,
-            setup        => sub { $app->user($author) },
-            callbacks    => [{
-                    name  => 'data_api_pre_load_filtered_list.role',
+        {   path      => '/v2/roles',
+            method    => 'GET',
+            setup     => sub { $app->user($author) },
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.role',
                     count => 2,
                 },
             ],
             complete => sub {
-                my ($data, $body) = @_;
+                my ( $data, $body ) = @_;
                 my $result = $app->current_format->{unserialize}->($body);
-                my @roles  = MT->model('role')->load(undef, { sort => 'name' });
+                my @roles
+                    = MT->model('role')->load( undef, { sort => 'name' } );
 
-                is(
-                    $result->{totalResults},
+                is( $result->{totalResults},
                     scalar @roles,
                     'totalResults is "' . $result->{totalResults} . '"'
                 );
 
                 my @result_ids   = map { $_->{id} } @{ $result->{items} };
                 my @expected_ids = map { $_->id } @roles;
-                is_deeply(
-                    \@result_ids, \@expected_ids,
-                    'IDs of items are "' . "@result_ids" . '"'
-                );
+                is_deeply( \@result_ids, \@expected_ids,
+                    'IDs of items are "' . "@result_ids" . '"' );
             },
         },
         {    # Search name.
-            path         => '/v2/roles',
-            method       => 'GET',
-            params       => { search => 'Designer', },
-            is_superuser => 1,
-            callbacks    => [{
-                    name  => 'data_api_pre_load_filtered_list.role',
+            path      => '/v2/roles',
+            method    => 'GET',
+            params    => { search => 'Designer', },
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.role',
                     count => 2,
                 },
             ],
@@ -106,58 +101,53 @@ sub suite {
 
                 return +{
                     totalResults => 2,
-                    items        => MT::DataAPI::Resource->from_object(\@roles),
+                    items => MT::DataAPI::Resource->from_object( \@roles ),
                 };
             },
         },
         {    # Search description.
-            path         => '/v2/roles',
-            method       => 'GET',
-            params       => { search => 'administer', },
-            is_superuser => 1,
-            callbacks    => [{
-                    name  => 'data_api_pre_load_filtered_list.role',
+            path      => '/v2/roles',
+            method    => 'GET',
+            params    => { search => 'administer', },
+            callbacks => [
+                {   name  => 'data_api_pre_load_filtered_list.role',
                     count => 2,
                 },
             ],
             result => sub {
                 my @roles = $app->model('role')->load(
                     { description => { like => '%administer%' } },
-                    { sort        => 'name', direction => 'ascend' },
+                    { sort => 'name', direction => 'ascend' },
                 );
 
                 $app->user($author);
 
                 return +{
                     totalResults => 1,
-                    items        => MT::DataAPI::Resource->from_object(\@roles),
+                    items => MT::DataAPI::Resource->from_object( \@roles ),
                 };
             },
         },
         {    # Can sort by created_by.
-            path         => '/v2/roles',
-            method       => 'GET',
-            params       => { sortBy => 'created_by' },
-            is_superuser => 1,
+            path   => '/v2/roles',
+            method => 'GET',
+            params => { sortBy => 'created_by' },
         },
-            {    # Can sort by modified_by.
-            path         => '/v2/roles',
-            method       => 'GET',
-            params       => { sortBy => 'modified_by' },
-            is_superuser => 1,
-            },
-            {    # Can sort by created_on.
-            path         => '/v2/roles',
-            method       => 'GET',
-            params       => { sortBy => 'created_on' },
-            is_superuser => 1,
-            },
-            {    # Can sort by modified_on.
-            path         => '/v2/roles',
-            method       => 'GET',
-            params       => { sortBy => 'modified_on' },
-            is_superuser => 1,
-            },
+        {    # Can sort by modified_by.
+            path   => '/v2/roles',
+            method => 'GET',
+            params => { sortBy => 'modified_by' },
+        },
+        {    # Can sort by created_on.
+            path   => '/v2/roles',
+            method => 'GET',
+            params => { sortBy => 'created_on' },
+        },
+        {    # Can sort by modified_on.
+            path   => '/v2/roles',
+            method => 'GET',
+            params => { sortBy => 'modified_on' },
+        },
 
         # create_role - irregular tests
         {    # No resource.
@@ -392,18 +382,20 @@ sub suite {
         },
 
         # delete_role - normal tests
-        {
-            path         => "/v2/roles/$role_id",
-            method       => 'DELETE',
-            is_superuser => 1,
-            callbacks    => [{
-                    name  => 'MT::App::DataAPI::data_api_post_delete.role',
+        {   path      => "/v2/roles/$role_id",
+            method    => 'DELETE',
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_delete_permission_filter.role',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_delete.role',
                     count => 1,
                 },
             ],
             complete => sub {
                 my $deleted = MT->model('role')->load($role_id);
-                is($deleted, undef, 'deleted');
+                is( $deleted, undef, 'deleted' );
             },
         },
     ];

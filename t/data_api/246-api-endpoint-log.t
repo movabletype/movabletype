@@ -15,7 +15,6 @@ BEGIN {
 }
 
 use MT::Test::DataAPI;
-use MT::Test::Permission;
 
 $test_env->prepare_fixture('db_data');
 
@@ -26,12 +25,6 @@ my $app = MT::App::DataAPI->new;
 my $author = MT->model('author')->load(1);
 $author->email('melody@example.com');
 $author->save;
-
-my $author_site_administrator = MT::Test::Permission->make_author;
-my $role_site_administrator   = MT->model('role')->load({ name => 'Site Administrator' }) or die MT->model('role')->errstr;
-my $blog                      = MT->model('blog')->load(1)                                or die MT->model('blog')->errstr;
-MT->model('association')->link($author_site_administrator => $role_site_administrator => $blog);
-MT->model('association')->link($author_site_administrator => $role_site_administrator => $blog->website);
 
 # test.
 my $suite = suite();
@@ -439,18 +432,17 @@ sub suite {
             },
         },
         {    # Website.
-            path      => '/v2/sites/2/logs/export',
-            method    => 'GET',
-            author_id => $author_site_administrator->id,
-            setup     => sub {
+            path   => '/v2/sites/2/logs/export',
+            method => 'GET',
+            setup  => sub {
                 my $log = $app->model('log')->new;
-                $log->set_values({ blog_id => 2, });
+                $log->set_values( { blog_id => 2, } );
                 $log->save or die $log->errstr;
             },
             complete => sub {
-                my ($data, $body) = @_;
+                my ( $data, $body ) = @_;
                 my @line = split /\n/, $body;
-                is(scalar @line, 4, '4 lines are output.');
+                is( scalar @line, 4, '4 lines are output.' );
                 print $_[1];
             },
         },
