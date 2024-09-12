@@ -77,7 +77,7 @@ sub suite {
             path   => '/v2/sites/1/entries/export',
             method => 'GET',
         },
-        {    # Website.
+        {    # Whbsite.
             path   => '/v2/sites/2/entries/export',
             method => 'GET',
         },
