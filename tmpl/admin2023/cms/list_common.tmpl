@@ -107,18 +107,9 @@
   <mt:script type="riot/tag" path="js/admin2023/listing/tag/list-table.tag">
   <mt:script type="text/javascript" path="riot/riot-compiler.js">
   </mt:unless>
+<mt:else>
+  <mt:script type="text/javascript" path="js/build/listing.js">
 </mt:if>
-
-<mt:unless name="config.useriot">
-  <script type="module">
-    import { observable, svelteMountListTop } from "<mt:var name="static_uri">js/build/listing.js?v=<mt:var name="mt_version_id" escape="url">"
-    if (!window.riot) {
-      window.riot = {}
-    }
-    window.riot.observable = observable
-    window.svelteMountListTop = svelteMountListTop
-  </script>
-</mt:unless>
 
 <mt:loop name="filter_types">
 <mt:setvarblock name="label"><mt:var name="label" encode_html="1"></mt:setvarblock>
