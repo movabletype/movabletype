@@ -7,7 +7,6 @@ import sveltePreprocess from "svelte-preprocess";
 import typescript from "@rollup/plugin-typescript";
 import svelte from "rollup-plugin-svelte";
 import css from "rollup-plugin-css-only";
-import cleaner from "rollup-plugin-cleaner";
 
 const production = !process.env.ROLLUP_WATCH;
 const defaultOutputDir = "mt-static/js/build";
@@ -27,7 +26,6 @@ const srcConfig = (inputFile) => {
       sourcemap: !production,
     },
     plugins: [
-      cleaner({ targets: [defaultOutputDir] }),
       resolve({
         browser: true,
         dedupe: ["svelte"],
