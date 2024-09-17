@@ -1605,8 +1605,8 @@ sub make_terms_for_plain_search {
 
     if (my @cols = @$cols_ref) {
         my $query_string = $plain_search;
-        my $escape_char = '\\';
-        $query_string =~ s/(\\|_|%)/$escape_char$1/g;
+        my $escape_char = '!';
+        $query_string =~ s/($escape_char|_|%)/$escape_char$1/g;
         $query_string = "%$query_string%";
         my @sub;
         for my $col (@cols) {

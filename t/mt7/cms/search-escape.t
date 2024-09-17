@@ -36,7 +36,7 @@ subtest 'wildcards in like condition are escaped' => sub {
     my @cases = (
         { name => 'underscore (MTC-26724)', titles => ['__',      'test',  'test'] },
         { name => 'percent',                titles => ['100%',    '1000%', '1000%'] },
-        { name => 'backslash',              titles => ['b100\\%', 'a100%', 'a100%'] },
+        { name => 'backslash',              titles => ['b100!%', 'a100%', 'a100%'] },
     );
 
     for my $case (@cases) {
