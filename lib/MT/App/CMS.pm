@@ -303,6 +303,7 @@ sub core_methods {
         'dialog_list_asset'          => "${pkg}Asset::dialog_list_asset",
         'dialog_edit_image'          => "${pkg}Asset::dialog_edit_image",
         'dialog_list_deprecated_log' => "${pkg}Log::dialog_list_deprecated_log",
+        'dialog_export_log'          => "${pkg}Log::dialog_export_log",
 
         'thumbnail_image' =>
             "${pkg}Asset::thumbnail_image",    # Used in Edit Image dialog.
@@ -805,13 +806,14 @@ sub core_content_actions {
                 class         => 'icon-download',
                 label         => 'Download Log (CSV)',
                 icon          => 'ic_download',
-                mode          => 'export_log',
+                mode          => 'dialog_export_log',
                 order         => 200,
                 permit_action => {
                     permit_action => 'export_blog_log',
                     include_all   => 1,
                     system_action => 'export_system_log',
                 },
+                dialog => 1,
             },
         },
         'banlist' => {

@@ -391,6 +391,56 @@ PERMCHECK: {
         };
     }
 
+    my $type = $app->param('type') || '';
+    if ( $type eq 'range' ) {
+        my $from = $app->param('from') || '';
+        my $to = $app->param('to') || '';
+        $from =~ s/\D//g;
+        $to =~ s/\D//g;
+        if ( $from && $to ) {
+            $from .= '000000';
+            $to   .= '235959';
+            $terms{created_on} = [
+                '-and',
+                { op => '>=', value => $from },
+                { op => '<=', value => $to },
+            ];
+        }
+    }
+    elsif ( $type eq 'days' ) {
+        my $days = $app->param('days') || '';
+        $days =~ s!\D!!g;
+        if ( $days ) {
+            my $now    = epoch2ts( $blog, time );
+            my $origin = epoch2ts( $blog, ( time - $days * 60 * 60 * 24 ) );
+            $terms{created_on} = [
+                '-and',
+                { op => '>', value => $origin },
+                { op => '<', value => $now },
+            ];
+        }
+    }
+    elsif ( $type eq 'before' ) {
+        my $origin = $app->param('origin') || '';
+        $origin =~ s!\D!!g;
+        if ( $origin ) {
+            $terms{created_on} = {
+                op    => '<',
+                value => $origin . '000000'
+            };
+        }
+    }
+    elsif ( $type eq 'after' ) {
+        my $origin = $app->param('origin') || '';
+        $origin =~ s!\D!!g;
+        if ( $origin ) {
+            $terms{created_on} = {
+                op    => '>',
+                value => $origin . '235959'
+            };
+        }
+    }
+
     # all classes of log objects
     unless ( exists $terms{class} ) {
         $terms{class} = '*';
@@ -684,6 +734,15 @@ sub dialog_list_deprecated_log {
     }
 
     $app->load_tmpl('dialog/list_deprecated_log.tmpl', \%param);
+}
+
+sub dialog_export_log {
+    my $app       = shift;
+    my $blog_id   = $app->param('blog_id');
+    my $list_pref = $app->list_pref('log');
+    my %param     = (%$list_pref);
+
+    $app->load_tmpl('dialog/export_log.tmpl', \%param);
 }
 
 1;
