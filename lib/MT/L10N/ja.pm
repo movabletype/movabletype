@@ -4997,13 +4997,11 @@ use vars qw( @ISA %Lexicon );
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]',
 	'BETA' => 'BETA',
 	'DEVELOPER PREVIEW' => 'DEVELOPER PREVIEW',
-	'Forums' => 'ユーザーコミュニティ',
 	'MovableType.org' => 'MovableType.jp',
-	'Send Us Feedback' => 'フィードバックはこちらへ',
+	'Send Us Feedback' => 'フィードバック',
 	'Support' => 'サポート',
 	'This is a alpha version of Movable Type and is not recommended for production use.' => 'このMovable Typeはアルファ版です。',
 	'This is a beta version of Movable Type and is not recommended for production use.' => 'このMovable Typeはベータ版です。',
-	'https://forums.movabletype.org/' => 'https://communities.movabletype.jp/',
 	'https://plugins.movabletype.org/' => 'https://plugins.movabletype.jp/',
 	'https://www.movabletype.org' => 'https://www.movabletype.jp',
 	'with' => 'with',
@@ -5071,9 +5069,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/admin2023/cms/include/old_footer.tmpl
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]',
-	'Wiki' => 'Wiki(英語)',
 	'Your Dashboard' => 'ユーザーダッシュボード',
-	'https://wiki.movabletype.org/' => 'https://wiki.movabletype.org/',
 	q{_LOCALE_CALENDAR_HEADER_} => q{'日', '月', '火', '水', '木', '金', '土'},
 
 ## tmpl/admin2023/cms/include/pagination.tmpl
