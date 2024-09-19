@@ -1,8 +1,6 @@
-use strict;
-use warnings;
 package IPC::Run3::ProfReporter;
 
-our $VERSION = 0.049;
+$VERSION = 0.048;
 
 =head1 NAME
 
@@ -36,6 +34,8 @@ Use --app to show only application level statistics (ie don't emit
 a report section for each command run).
 
 =cut
+
+use strict;
 
 my $loaded_by;
 

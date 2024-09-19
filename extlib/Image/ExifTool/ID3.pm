@@ -18,13 +18,12 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.61';
+$VERSION = '1.58';
 
 sub ProcessID3v2($$$);
 sub ProcessPrivate($$$);
 sub ProcessSynText($$$);
 sub ProcessID3Dir($$$);
-sub ProcessGEOB($$$);
 sub ConvertID3v1Text($$);
 sub ConvertTimeStamp($);
 
@@ -420,7 +419,7 @@ my %genre = (
 
 # Tags for ID2v2.2
 %Image::ExifTool::ID3::v2_2 = (
-    PROCESS_PROC => \&ProcessID3v2,
+    PROCESS_PROC => \&Image::ExifTool::ID3::ProcessID3v2,
     GROUPS => { 1 => 'ID3v2_2', 2 => 'Audio' },
     NOTES => q{
         ExifTool extracts mainly text-based tags from ID3v2 information.  The tags
@@ -512,9 +511,6 @@ my %genre = (
     TSC => 'ComposerSortOrder',
     ITU => { Name => 'iTunesU', Description => 'iTunes U', Binary => 1, Unknown => 1 },
     PCS => { Name => 'Podcast', Binary => 1, Unknown => 1 },
-    GP1 => 'Grouping', #github142 (NC)
-    MVN => 'MovementName', #github142 (NC)
-    MVI => 'MovementNumber', #github142 (NC)
 );
 
 # tags common to ID3v2.3 and ID3v2.4
@@ -538,10 +534,7 @@ my %id3v2_common = (
   # COMR => 'Commercial',
   # ENCR => 'EncryptionMethod',
   # ETCO => 'EventTimingCodes',
-    GEOB => {
-        Name => 'GeneralEncapsulatedObject',
-        SubDirectory => { TagTable => 'Image::ExifTool::ID3::GEOB' },
-    },
+  # GEOB => 'GeneralEncapsulatedObject',
   # GRID => 'GroupIdentification',
   # LINK => 'LinkedInformation',
     MCDI => { Name => 'MusicCDIdentifier', Binary => 1 },
@@ -647,25 +640,9 @@ my %id3v2_common = (
     MVIN => 'MovementNumber', # (NC)
 );
 
-%Image::ExifTool::ID3::GEOB = (
-    GROUPS => { 1 => 'ID3v2_3', 2 => 'Other' },
-    PROCESS_PROC => \&ProcessGEOB,
-    'application/x-c2pa-manifest-store' => {
-        Name => 'JUMBF',
-        SubDirectory => {
-            TagTable => 'Image::ExifTool::Jpeg2000::Main',
-            ByteOrder => 'BigEndian',
-        },
-    },
-    'GEOB-Mime' => { },
-    'GEOB-File' => { },
-    'GEOB-Desc' => { },
-    'GEOB-Data' => { },
-);
-
 # Tags for ID3v2.3 (http://www.id3.org/id3v2.3.0)
 %Image::ExifTool::ID3::v2_3 = (
-    PROCESS_PROC => \&ProcessID3v2,
+    PROCESS_PROC => \&Image::ExifTool::ID3::ProcessID3v2,
     GROUPS => { 1 => 'ID3v2_3', 2 => 'Audio' },
     NOTES => q{
         ID3 version 2.3 tags.  Includes some non-standard tags written by other
@@ -685,7 +662,7 @@ my %id3v2_common = (
 
 # Tags for ID3v2.4 (http://www.id3.org/id3v2.4.0-frames)
 %Image::ExifTool::ID3::v2_4 = (
-    PROCESS_PROC => \&ProcessID3v2,
+    PROCESS_PROC => \&Image::ExifTool::ID3::ProcessID3v2,
     GROUPS => { 1 => 'ID3v2_4', 2 => 'Audio' },
     NOTES => q{
         ID3 version 2.4 tags.  Includes some non-standard tags written by other
@@ -825,8 +802,8 @@ my %id3v2_common = (
 
 # lookup to check for existence of tags in other ID3 versions
 my %otherTable = (
-    \%Image::ExifTool::ID3::v2_4 => 'Image::ExifTool::ID3::v2_3',
-    \%Image::ExifTool::ID3::v2_3 => 'Image::ExifTool::ID3::v2_4',
+    \%Image::ExifTool::ID3::v2_4 => \%Image::ExifTool::ID3::v2_3,
+    \%Image::ExifTool::ID3::v2_3 => \%Image::ExifTool::ID3::v2_4,
 );
 
 # ID3 Composite tags
@@ -1098,7 +1075,6 @@ sub ProcessID3v2($$$)
     my $vers    = $$dirInfo{Version};
     my $verbose = $et->Options('Verbose');
     my $len;    # frame data length
-    my $otherTable;
 
     $et->VerboseDir($tagTablePtr->{GROUPS}->{1}, 0, $size);
     $et->VerboseDump($dataPt, Len => $size, Start => $offset);
@@ -1125,11 +1101,7 @@ sub ProcessID3v2($$$)
                 my $oldLen = $len;
                 $len =  UnSyncSafe($len);
                 if (not defined $len or $offset + $len + 10 > $size) {
-                    if ($offset + $len == $size) {
-                        $et->Warn('Missing ID3 terminating frame', 1);
-                    } else {
-                        $et->Warn('Invalid ID3 frame size');
-                    }
+                    $et->Warn('Invalid ID3 frame size');
                     last;
                 }
                 # check next ID to see if it makes sense
@@ -1145,9 +1117,7 @@ sub ProcessID3v2($$$)
         last if $offset + $len > $size;
         my $tagInfo = $et->GetTagInfo($tagTablePtr, $id);
         unless ($tagInfo) {
-            if (not $otherTable and $otherTable{$tagTablePtr}) {
-                $otherTable = GetTagTable($otherTable{$tagTablePtr});
-            }
+            my $otherTable = $otherTable{$tagTablePtr};
             $tagInfo = $et->GetTagInfo($otherTable, $id) if $otherTable;
             if ($tagInfo) {
                 $et->WarnOnce("Frame '${id}' is not valid for this ID3 version", 1);
@@ -1248,7 +1218,7 @@ sub ProcessID3v2($$$)
             my @vals = DecodeString($et, $val);
             foreach (0..1) { $vals[$_] = '' unless defined $vals[$_]; }
             ($val = "($vals[0]) $vals[1]") =~ s/^\(\) //;
-        } elsif ($id =~ /^T/ or $id =~ /^(IPL|IPLS|GP1|MVI|MVN)$/) {
+        } elsif ($id =~ /^T/ or $id =~ /^(IPL|IPLS)$/) {
             $val = DecodeString($et, $val);
         } elsif ($id =~ /^(WXX|WXXX)$/) {
             # one encoded string and one Latin string separated by a null
@@ -1408,7 +1378,7 @@ sub ProcessID3($$)
     $$et{DoneID3} = 1;
 
     # allow this to be called with either RAF or DataPt
-    my $raf = $$dirInfo{RAF} || File::RandomAccess->new($$dirInfo{DataPt});
+    my $raf = $$dirInfo{RAF} || new File::RandomAccess($$dirInfo{DataPt});
     my ($buff, %id3Header, %id3Trailer, $hBuff, $tBuff, $eBuff, $tagTablePtr);
     my $rtnVal = 0;
     my $hdrEnd = 0;
@@ -1613,42 +1583,6 @@ sub ProcessID3Dir($$$)
 }
 
 #------------------------------------------------------------------------------
-# Process ID3 General Encapsulated Object
-# Inputs: 0) ExifTool ref, 1) dirInfo ref, 2) tag table ref
-# Returns: 1 on success
-sub ProcessGEOB($$$)
-{
-    my ($et, $dirInfo, $tagTablePtr) = @_;
-    $et->VerboseDir('GEOB', undef, length ${$$dirInfo{DataPt}});
-    my $dataPt = $$dirInfo{DataPt};
-    my $len = length $$dataPt;
-    $len >= 4 or $et->Warn("Short GEOB frame"), return 0;
-    my ($hdr, $attr);
-    my $enc = unpack('C', $$dataPt);
-    if ($enc == 1 or $enc == 2) {
-        $hdr = ".(.*?)\0((?:..)*?)\0\0((?:..)*?)\0\0";
-    } else {
-        $hdr = ".(.*?)\0(.*?)\0(.*?)\0";
-    }
-    # remove header (encoding, mime, filename, description)
-    $$dataPt =~ s/^$hdr//s or $et->Warn("Invalid GEOB frame"), return 0;
-    my ($mime, $file, $desc) = ($1, DecodeString($et, $2, $enc), DecodeString($et, $3, $enc));
-    $et->HandleTag($tagTablePtr, 'GEOB-Mime', $mime) if length $mime;
-    $et->HandleTag($tagTablePtr, 'GEOB-File', $file) if length $file;
-    $et->HandleTag($tagTablePtr, 'GEOB-Desc', $desc) if length $desc;
-    if ($$tagTablePtr{$mime}) {
-        $et->HandleTag($tagTablePtr, $mime, undef,
-            DataPt => $dataPt,
-            Start  => 0,
-            Size   => length($$dataPt),
-        );
-    } else {
-        $et->HandleTag($tagTablePtr, 'GEOB-Data', $dataPt);
-    }
-    return 1;
-}
-
-#------------------------------------------------------------------------------
 # Extract ID3 information from an MP3 audio file
 # Inputs: 0) ExifTool object reference, 1) dirInfo reference
 # Returns: 1 on success, 0 if this wasn't a valid MP3 file
@@ -1718,7 +1652,7 @@ other types of audio files.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

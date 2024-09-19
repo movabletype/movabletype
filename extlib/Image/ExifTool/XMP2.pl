@@ -843,8 +843,7 @@ my %prismPublicationDate = (
     AVOID => 1,
     NOTES => q{
         Publishing Requirements for Industry Standard Metadata 3.0 namespace
-        tags.  (see
-        L<https://www.w3.org/Submission/2020/SUBM-prism-20200910/prism-basic.html/>)
+        tags.  (see L<http://www.prismstandard.org/>)
     },
     academicField   => { }, # (3.0)
     aggregateIssueNumber => { Writable => 'integer' }, # (3.0)
@@ -1063,7 +1062,7 @@ my %prismPublicationDate = (
     NOTES => q{
         PRISM Rights Language 2.1 namespace tags.  These tags have been deprecated
         since the release of the PRISM Usage Rights 3.0. (see
-        L<https://www.w3.org/submissions/2020/SUBM-prism-20200910/prism-image.html>)
+        L<http://www.prismstandard.org/>)
     },
     geography       => { List => 'Bag' },
     industry        => { List => 'Bag' },
@@ -1386,17 +1385,6 @@ my %sSubVersion = (
     },
     CreditLineReq   => { Writable => 'boolean' },
     ReuseAllowed    => { Writable => 'boolean' },
-);
-
-%Image::ExifTool::XMP::panorama = (
-    %xmpTableDefaults,
-    GROUPS => { 1 => 'XMP-panorama', 2 => 'Image' },
-    NAMESPACE => 'panorama',
-    NOTES => 'Adobe Photoshop Panorama-profile tags.',
-    Transformation      => { },
-    VirtualFocalLength  => { Writable => 'real' },
-    VirtualImageXCenter => { Writable => 'real' },
-    VirtualImageYCenter => { Writable => 'real' },
 );
 
 # Creative Commons namespace properties (cc) (ref 5)
@@ -1873,10 +1861,6 @@ my %sSubVersion = (
         ValueConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
         ValueConvInv => 'Image::ExifTool::XMP::EncodeBase64($val)',
     },
-    HdrPlusMakernote => {
-        ValueConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
-        ValueConvInv => 'Image::ExifTool::XMP::EncodeBase64($val)',
-    },
 );
 
 # Google creations namespace (ref PH)
@@ -2041,37 +2025,6 @@ my %sSubVersion = (
     },
 );
 
-# Google container tags (ref https://developer.android.com/guide/topics/media/platform/hdr-image-format)
-# NOTE: Not included because these namespace prefixes conflict with Google's depth-map Device tags!
-# (see ../pics/GooglePixel8Pro.jpg sample image)
-# %Image::ExifTool::XMP::Container = (
-#     %xmpTableDefaults,
-#     GROUPS => { 1 => 'XMP-Container', 2 => 'Image' },
-#     NAMESPACE => 'Container',
-#     NOTES => 'Google Container namespace.',
-#     Directory => {
-#         Name => 'ContainerDirectory',
-#         FlatName => 'Directory',
-#         List => 'Seq',
-#         Struct => {
-#             STRUCT_NAME => 'Directory',
-#             Item => {
-#                 Namespace => 'Container',
-#                 Struct => {
-#                     STRUCT_NAME => 'Item',
-#                     NAMESPACE => { Item => 'http://ns.google.com/photos/1.0/container/item/'},
-#                     Mime     => { },
-#                     Semantic => { },
-#                     Length   => { Writable => 'integer' },
-#                     Label    => { },
-#                     Padding  => { Writable => 'integer' },
-#                     URI      => { },
-#                 },
-#             },
-#         },
-#     },
-# );
-
 # Getty Images namespace (ref PH)
 %Image::ExifTool::XMP::GettyImages = (
     %xmpTableDefaults,
@@ -2121,46 +2074,6 @@ my %sSubVersion = (
     },
 );
 
-# hdr metadata namespace used by ACR 15.1
-%Image::ExifTool::XMP::hdr = (
-    %xmpTableDefaults,
-    GROUPS => { 1 => 'XMP-hdr', 2 => 'Image' },
-    NAMESPACE   => 'hdr_metadata',
-    TABLE_DESC => 'XMP HDR Metadata',
-    NOTES => q{
-        HDR metadata namespace tags written by ACR 15.1.  The actual namespace
-        prefix is "hdr_metadata", which is the prefix recorded in the file, but
-        ExifTool shortens this for the family 1 group name.
-    },
-    ccv_primaries_xy        => { Name => 'CCVPrimariesXY' }, # (comma-separated string of 6 reals)
-    ccv_white_xy            => { Name => 'CCVWhiteXY' }, # (comma-separated string of 2 reals)
-    ccv_min_luminance_nits  => { Name => 'CCVMinLuminanceNits', Writable => 'real' },
-    ccv_max_luminance_nits  => { Name => 'CCVMaxLuminanceNits', Writable => 'real' },
-    ccv_avg_luminance_nits  => { Name => 'CCVAvgLuminanceNits', Writable => 'real' },
-    scene_referred          => { Name => 'SceneReferred', Writable => 'boolean' },
-);
-
-# HDR Gain Map metadata namespace
-%Image::ExifTool::XMP::hdrgm = (
-    %xmpTableDefaults,
-    GROUPS => { 1 => 'XMP-hdrgm', 2 => 'Image' },
-    NAMESPACE   => 'hdrgm',
-    TABLE_DESC => 'XMP HDR Gain Map Metadata',
-    NOTES => 'Tags used in Adobe gain map images.',
-    Version             => { Avoid => 1 },
-    BaseRenditionIsHDR  => { Writable => 'boolean' },
-    # this is a pain in the ass: List items below may or may not be lists
-    # according to the Adobe specification -- I don't know how to handle tags
-    # with a variable format like this, so just make them lists here for now
-    OffsetSDR           => { Writable => 'real', List => 'Seq' },
-    OffsetHDR           => { Writable => 'real', List => 'Seq' },
-    HDRCapacityMin      => { Writable => 'real' },
-    HDRCapacityMax      => { Writable => 'real' },
-    GainMapMin          => { Writable => 'real', List => 'Seq' },
-    GainMapMax          => { Writable => 'real', List => 'Seq' },
-    Gamma               => { Writable => 'real', List => 'Seq', Avoid => 1 },
-);
-
 # SVG namespace properties (ref 9)
 %Image::ExifTool::XMP::SVG = (
     GROUPS => { 0 => 'SVG', 1 => 'SVG', 2 => 'Image' },
@@ -2191,15 +2104,6 @@ my %sSubVersion = (
     GROUPS => { 0 => 'SVG', 2 => 'Unknown' },
     LANG_INFO => \&GetLangInfo,
     NAMESPACE => undef, # variable namespace
-    'c2pa:manifest' => {
-        Name => 'JUMBF',
-        Groups => { 0 => 'JUMBF' },
-        RawConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
-        SubDirectory => {
-            TagTable => 'Image::ExifTool::Jpeg2000::Main',
-            ByteOrder => 'BigEndian',
-        },
-    },
 );
 
 #------------------------------------------------------------------------------
@@ -2237,7 +2141,7 @@ This file contains definitions for less common XMP namespaces.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

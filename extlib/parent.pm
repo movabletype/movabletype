@@ -1,7 +1,7 @@
 package parent;
 use strict;
 
-our $VERSION = '0.242';
+our $VERSION = '0.238';
 
 sub import {
     my $class = shift;
@@ -12,7 +12,6 @@ sub import {
         shift @_;
     } else {
         for ( my @filename = @_ ) {
-            local @_; # protect us against the loaded module changing @_
             s{::|'}{/}g;
             require "$_.pm"; # dies if the file is not found
         }

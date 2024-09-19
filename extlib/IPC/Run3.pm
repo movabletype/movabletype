@@ -1,18 +1,18 @@
-use strict;
-use warnings;
 package IPC::Run3;
+BEGIN { require 5.006_000; } # i.e. 5.6.0
+use strict;
 
 =head1 NAME
 
-IPC::Run3 - run a subprocess with input/output redirection
+IPC::Run3 - run a subprocess with input/ouput redirection
 
 =head1 VERSION
 
-version 0.049
+version 0.048
 
 =cut
 
-our $VERSION = '0.049';
+our $VERSION = '0.048';
 
 =head1 SYNOPSIS
 
@@ -160,9 +160,9 @@ sub _spool_data_to_child {
         } elsif ( $type eq "CODE" ) {
             warn "run3(): feeding output of CODE ref '$source' to child STDIN\n"
                 if debugging >= 2;
-            my $params = [];  # TODO: get these from $options
+            my $parms = [];  # TODO: get these from $options
             while (1) {
-                my $data = $source->( @$params );
+                my $data = $source->( @$parms );
                 last unless defined $data;
                 print $fh $data or die "$! writing to temp file";
                 $seekit = length $data;
@@ -348,17 +348,16 @@ sub run3 {
     # stage prevents later stages from running, and thus from needing
     # cleanup.
 
-    my ($in_fh, $out_fh, $err_fh);
-    $in_fh  = _spool_data_to_child $in_type, $stdin,
+    my $in_fh  = _spool_data_to_child $in_type, $stdin,
         $options->{binmode_stdin} if defined $stdin;
 
-    $out_fh = _fh_for_child_output "stdout", $out_type, $stdout,
+    my $out_fh = _fh_for_child_output "stdout", $out_type, $stdout,
         $options if defined $stdout;
 
     my $tie_err_to_out =
         defined $stderr && defined $stdout && $stderr eq $stdout;
 
-    $err_fh = $tie_err_to_out
+    my $err_fh = $tie_err_to_out
         ? $out_fh
         : _fh_for_child_output "stderr", $err_type, $stderr,
             $options if defined $stderr;
@@ -368,7 +367,7 @@ sub run3 {
     local *STDOUT_SAVE;
     local *STDERR_SAVE;
 
-    my $saved_fd0 = defined $in_fh ? dup( 0 ) : undef;
+    my $saved_fd0 = dup( 0 ) if defined $in_fh;
 
 #    open STDIN_SAVE,  "<&STDIN"#  or croak "run3(): $! saving STDIN"
 #        if defined $in_fh;
@@ -400,8 +399,6 @@ sub run3 {
 
         $sys_call_time = gettimeofday() if profiling;
 
-        $! = 0;                  # make sure we don't test below against some previous error
-
         my $r = ref $cmd
               ? system { $cmd->[0] } is_win32 ? quote_native( @$cmd ) : @$cmd
               : system $cmd;
@@ -419,7 +416,7 @@ sub run3 {
 
         if (
             defined $r
-            && ( $r == -1 || ( is_win32 && $r == 0xFF00 && $errno != 0 ) )
+            && ( $r == -1 || ( is_win32 && $r == 0xFF00 ) )
             && !$options->{return_if_system_error}
         ) {
             croak( $errno );

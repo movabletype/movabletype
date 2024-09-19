@@ -1,8 +1,8 @@
-package Try::Tiny; # git description: v0.31-2-gc8e3a47
+package Try::Tiny; # git description: v0.30-11-g1b81d0a
 use 5.006;
 # ABSTRACT: Minimal try/catch with proper preservation of $@
 
-our $VERSION = '0.32';
+our $VERSION = '0.31';
 
 use strict;
 use warnings;
@@ -205,7 +205,7 @@ Try::Tiny - Minimal try/catch with proper preservation of $@
 
 =head1 VERSION
 
-version 0.32
+version 0.31
 
 =head1 SYNOPSIS
 

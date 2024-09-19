@@ -3,13 +3,14 @@ package URI::urn;  # RFC 2141
 use strict;
 use warnings;
 
-our $VERSION = '5.29';
+our $VERSION = '5.10';
 
 use parent 'URI';
 
 use Carp qw(carp);
 
 my %implementor;
+my %require_attempted;
 
 sub _init {
     my $class = shift;
@@ -29,11 +30,13 @@ sub _init {
 	$impclass = "URI::urn::$id";
 	no strict 'refs';
 	unless (@{"${impclass}::ISA"}) {
+            if (not exists $require_attempted{$impclass}) {
                 # Try to load it
                 my $_old_error = $@;
                 eval "require $impclass";
                 die $@ if $@ && $@ !~ /Can\'t locate.*in \@INC/;
                 $@ = $_old_error;
+            }
 	    $impclass = "URI::urn" unless @{"${impclass}::ISA"};
 	}
     }
@@ -41,6 +44,7 @@ sub _init {
 	carp("Illegal namespace identifier '$nid' for URN '$self'") if $^W;
     }
     $implementor{$nid} = $impclass;
+
     return $impclass->_urn_init($self, $nid);
 }
 

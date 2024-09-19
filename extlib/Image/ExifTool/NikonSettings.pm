@@ -1512,7 +1512,7 @@ my %infoZSeries = (
             6 => 'None',
         },
     }],
-    0x0ee => { Name => 'MovieAFSpeed', ValueConv => '$val - 6', ValueConvInv => '$val + 6' }, # CSg4-a (Z7_2)
+    0x0ee => { Name => 'MovieAFSpeed',                  ValueConv => '$val - 6', ValueConvInv => '$val + 6' }, # CSg4-a (Z7_2)
     0x0ef => { # CSg4-b (Z7_2)
         Name => 'MovieAFSpeedApply',
         PrintConv => {
@@ -2077,7 +2077,7 @@ Nikon cameras such as the D6 and Z7mk2.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

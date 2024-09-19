@@ -17,7 +17,6 @@
 #                            scalar with a multi-character newline
 #               01/24/2009 - PH Protect against reading too much at once
 #               10/04/2018 - PH Added NoBuffer option
-#               01/20/2024 - PH Set ERROR on file read error
 #
 # Notes:        Calls the normal file i/o routines unless SeekTest() fails, in
 #               which case the file is buffered in memory to allow random access.
@@ -26,10 +25,7 @@
 #
 #               May also be used for string i/o (just pass a scalar reference)
 #
-#               Sets internal ERROR member from $! if there is an error reading
-#               the file.
-#
-# Legal:        Copyright (c) 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+# Legal:        Copyright (c) 2003-2022 Phil Harvey (philharvey66 at gmail.com)
 #               This library is free software; you can redistribute it and/or
 #               modify it under the same terms as Perl itself.
 #------------------------------------------------------------------------------
@@ -41,7 +37,7 @@ require 5.002;
 require Exporter;
 
 use vars qw($VERSION @ISA @EXPORT_OK);
-$VERSION = '1.12';
+$VERSION = '1.11';
 @ISA = qw(Exporter);
 
 sub Read($$$);
@@ -215,8 +211,6 @@ sub Read($$$)
             if ($num) {
                 ${$self->{BUFF_PT}} .= $buff;
                 $self->{LEN} += $num;
-            } elsif (not defined $num) {
-                $self->{ERROR} = $!;
             }
         }
         # number of bytes left in data buffer
@@ -235,11 +229,7 @@ sub Read($$$)
     } else {
         # read directly from file
         $_[0] = '' unless defined $_[0];
-        $rtnVal = read($self->{FILE_PT}, $_[0], $len);
-        unless (defined $rtnVal) {
-            $self->{ERROR} = $!;
-            $rtnVal = 0;
-        }
+        $rtnVal = read($self->{FILE_PT}, $_[0], $len) || 0;
     }
     if ($self->{DEBUG}) {
         my $pos = $self->Tell() - $rtnVal;
@@ -268,10 +258,7 @@ sub ReadLine($$)
             # make sure we have some data after the current position
             while ($self->{LEN} <= $pos) {
                 $num = read($fp, $buff, $CHUNK_SIZE);
-                unless ($num) {
-                    defined $num or $self->{ERROR} = $!;
-                    return 0;
-                }
+                return 0 unless $num;
                 ${$self->{BUFF_PT}} .= $buff;
                 $self->{LEN} += $num;
             }
@@ -283,11 +270,7 @@ sub ReadLine($$)
                     last;
                 }
                 $pos = $self->{LEN};    # have scanned to end of buffer
-                $num = read($fp, $buff, $CHUNK_SIZE);
-                unless ($num) {
-                    defined $num or $self->{ERROR} = $!;
-                    last;
-                }
+                $num = read($fp, $buff, $CHUNK_SIZE) or last;
                 ${$self->{BUFF_PT}} .= $buff;
                 $self->{LEN} += $num;
             }
@@ -331,12 +314,7 @@ sub Slurp($)
     my $fp = $self->{FILE_PT} || return;
     # read whole file into buffer (in large chunks)
     my ($buff, $num);
-    for (;;) {
-        $num = read($fp, $buff, $CHUNK_SIZE * $SLURP_CHUNKS);
-        unless ($num) {
-            defined $num or $self->{ERROR} = $!;
-            last;
-        }
+    while (($num = read($fp, $buff, $CHUNK_SIZE * $SLURP_CHUNKS)) != 0) {
         ${$self->{BUFF_PT}} .= $buff;
         $self->{LEN} += $num;
     }
@@ -361,10 +339,6 @@ sub Purge($)
                 $self->{POS} -= $self->{LEN};
                 ${$self->{BUFF_PT}} = '';
                 $self->{LEN} = read($self->{FILE_PT}, ${$self->{BUFF_PT}}, $SKIP_SIZE);
-                if (not defined $self->{LEN}) {
-                    $self->{ERROR} = $!;
-                    last;
-                }
                 last if $self->{LEN} < $SKIP_SIZE;
             }
         } elsif ($purge > 0) {
