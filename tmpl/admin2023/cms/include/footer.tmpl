@@ -34,7 +34,12 @@
         <a href="<mt:var name="mt_support">">
           <__trans phrase="Support">
         </a>
-      </li>
+      </li><mt:if name="language_id" eq="ja">
+      <li class="list-inline-item">
+        <a href="<__trans phrase="https://forums.movabletype.org/">">
+          <__trans phrase="Forums">
+        </a>
+      </li></mt:if>
       <li class="list-inline-item">
         <a href="<mt:var name="mt_feedback_url">">
           <__trans phrase="Send Us Feedback">
