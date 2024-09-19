@@ -20,7 +20,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.20';
+$VERSION = '1.19';
 
 # road map of directory locations in GIF images
 my %gifMap = (
@@ -84,10 +84,6 @@ my %gifMap = (
         Name => 'MIDISong',
         Groups => { 2 => 'Audio' },
         Binary => 1,
-    },
-    'C2PA_GIF/' => { #https://c2pa.org/specifications/ (NC) (authentication code is 0x010000 binary, so removed from tag ID)
-        Name => 'JUMBF',
-        SubDirectory => { TagTable => 'Image::ExifTool::Jpeg2000::Main' },
     },
 );
 
@@ -545,7 +541,7 @@ write GIF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -3,16 +3,20 @@ use strict;
 use warnings;
 use if $] >= 5.019, 'deprecate';
 
-$CGI::Fast::VERSION='2.17';
+$CGI::Fast::VERSION='2.16';
 
 use CGI;
 use CGI::Carp;
 use FCGI;
-
-our @ISA = ('CGI');
+# use vars works like "our", but is compatible with older Perls.
+use vars qw(
+    @ISA
+    $ignore
+);
+@ISA = ('CGI');
 
 # workaround for known bug in libfcgi
-while (() = each %ENV) { }
+while (($ignore) = each %ENV) { }
 
 # override the initialization behavior so that
 # state is NOT maintained between invocations
@@ -22,7 +26,7 @@ sub save_request {
 
 # If ENV{FCGI_SOCKET_PATH} is specified, we maintain a FCGI Request handle
 # in this package variable.
-our ($Ext_Request, $socket, $socket_perm, $queue);
+use vars qw($Ext_Request $socket $socket_perm $queue);
 
 sub import {
     my ($package,@import) = @_;
@@ -324,11 +328,13 @@ maintained by Lee Johnson
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
-=head1 BUGS
-
 Address bug reports and comments to:
 
     https://github.com/leejo/cgi-fast
+
+=head1 BUGS
+
+This section intentionally left blank.
 
 =head1 SEE ALSO
 

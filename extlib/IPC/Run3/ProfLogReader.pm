@@ -1,8 +1,6 @@
-use strict;
-use warnings;
 package IPC::Run3::ProfLogReader;
 
-our $VERSION = 0.049;
+$VERSION = 0.048;
 
 =head1 NAME
 
@@ -27,6 +25,8 @@ Reads a log file.  Use the filename "-" to read from STDIN.
 
 =cut
 
+use strict;
+
 =head1 METHODS
 
 =head2 C<< IPC::Run3::ProfLogReader->new( ... ) >>
@@ -36,7 +36,7 @@ Reads a log file.  Use the filename "-" to read from STDIN.
 sub new {
     my $class = ref $_[0] ? ref shift : shift;
     my $self = bless { @_ }, $class;
-
+    
     $self->{Source} = "run3.out"
         unless defined $self->{Source} && length $self->{Source};
 
@@ -76,8 +76,7 @@ sub read {
     my $self = shift;
 
     my $fh = $self->{FH};
-    my $ln = <$fh>;
-    my @ln = defined $ln ? (split / /, $ln) : ();
+    my @ln = split / /, <$fh>;
 
     return 0 unless @ln;
     return 1 unless $self->{Handler};

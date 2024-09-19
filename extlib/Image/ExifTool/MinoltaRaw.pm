@@ -17,7 +17,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Minolta;
 
-$VERSION = '1.20';
+$VERSION = '1.16';
 
 sub ProcessMRW($$;$);
 sub WriteMRW($$;$);
@@ -400,7 +400,7 @@ sub ProcessMRW($$;$)
 
     if ($$dirInfo{DataPt}) {
         # make a RAF object for MRW information extracted from other file types
-        $raf = File::RandomAccess->new($$dirInfo{DataPt});
+        $raf = new File::RandomAccess($$dirInfo{DataPt});
         # MRW information in DNG images may not start at beginning of data block
         $raf->Seek($$dirInfo{DirStart}, 0) if $$dirInfo{DirStart};
     }
@@ -489,7 +489,6 @@ sub ProcessMRW($$;$)
         $err and $et->Error("MRW format error", $$et{TIFF_TYPE} eq 'ARW');
     } else {
         $err and $et->Warn("MRW format error");
-        $et->ImageDataHash($raf, undef, 'raw') unless $$et{A100DataOffset};
     }
     return $rtnVal;
 }
@@ -513,7 +512,7 @@ write Konica-Minolta RAW (MRW) images.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

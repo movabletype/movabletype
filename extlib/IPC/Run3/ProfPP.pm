@@ -1,8 +1,6 @@
-use strict;
-use warnings;
 package IPC::Run3::ProfPP;
 
-our $VERSION = 0.049;
+$VERSION = 0.048;
 
 =head1 NAME
 
@@ -23,8 +21,9 @@ This class generates reports on each run3_exit() and app_exit() call.
 =cut
 
 require IPC::Run3::ProfReporter;
-our @ISA = qw( IPC::Run3::ProfReporter );
+@ISA = qw( IPC::Run3::ProfReporter );
 
+use strict;
 use POSIX qw( floor );
 
 =head1 METHODS
@@ -89,7 +88,7 @@ sub handle_app_exit {
         _r( $self->get_run_cumulative_time, $self->get_run_count ),
         " per call",
         "\n");
-    my $exclusive =
+    my $exclusive = 
         $self->get_app_cumulative_time - $self->get_run_cumulative_time;
     $self->_emit( "IPC::Run3 total spent not in run3(): ",
         _t( $exclusive ),

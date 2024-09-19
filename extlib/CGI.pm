@@ -1,14 +1,13 @@
 package CGI;
 require 5.008001;
 use Carp 'croak';
-use URI;
 
 my $appease_cpants_kwalitee = q/
 use strict;
 use warnings;
 #/;
 
-$CGI::VERSION='4.66';
+$CGI::VERSION='4.54';
 
 use CGI::Util qw(rearrange rearrange_header make_attributes unescape escape expires ebcdic2ascii ascii2ebcdic);
 
@@ -1608,9 +1607,9 @@ sub header {
     # if the user indicates an expiration time, then we need
     # both an Expires and a Date header (so that the browser is
     # uses OUR clock)
-    push(@header,"Expires: " . expires($expires))
+    push(@header,"Expires: " . expires($expires,'http'))
 	if $expires;
-    push(@header,"Date: " . expires(0)) if $expires || $cookie || $nph;
+    push(@header,"Date: " . expires(0,'http')) if $expires || $cookie || $nph;
     push(@header,"Pragma: no-cache") if $self->cache();
     push(@header,"Content-Disposition: attachment; filename=\"$attachment\"") if $attachment;
     push(@header,map {ucfirst $_} @other);
@@ -2748,9 +2747,8 @@ sub url {
     $url .= $path         if $path_info and defined $path;
     $url .= "?$query_str" if $query     and $query_str ne '';
     $url ||= '';
-
-	$url = URI->new( $url )->canonical->as_string;
-	return $url
+    $url =~ s/([^a-zA-Z0-9_.%;&?\/\\:+=~-])/sprintf("%%%02X",ord($1))/eg;
+    return $url;
 }
 
 #### Method: cookie
@@ -2763,12 +2761,12 @@ sub url {
 #   -path -> paths for which this cookie is valid (optional)
 #   -domain -> internet domain in which this cookie is valid (optional)
 #   -secure -> if true, cookie only passed through secure channel (optional)
-#   -expires -> expiry date in format Wdy, DD Mon YYYY HH:MM:SS GMT (optional)
+#   -expires -> expiry date in format Wdy, DD-Mon-YYYY HH:MM:SS GMT (optional)
 ####
 sub cookie {
     my($self,@p) = self_or_default(@_);
-    my($name,$value,$path,$domain,$secure,$expires,$httponly,$max_age,$samesite,$priority) =
-	rearrange([NAME,[VALUE,VALUES],PATH,DOMAIN,SECURE,EXPIRES,HTTPONLY,'MAX-AGE',SAMESITE,PRIORITY],@p);
+    my($name,$value,$path,$domain,$secure,$expires,$httponly,$max_age,$samesite) =
+	rearrange([NAME,[VALUE,VALUES],PATH,DOMAIN,SECURE,EXPIRES,HTTPONLY,'MAX-AGE',SAMESITE],@p);
 
     require CGI::Cookie;
 
@@ -2798,7 +2796,6 @@ sub cookie {
     push(@param,'-httponly'=>$httponly) if $httponly;
     push(@param,'-max-age'=>$max_age) if $max_age;
     push(@param,'-samesite'=>$samesite) if $samesite;
-    push(@param,'-priority'=>$priority) if $priority;
 
     return CGI::Cookie->new(@param);
 }

@@ -14,7 +14,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Import;
 
-$VERSION = '1.07';
+$VERSION = '1.05';
 
 sub ProcessJSON($$);
 sub ProcessTag($$$$%);
@@ -59,9 +59,6 @@ sub FoundTag($$$$%)
 
     # avoid conflict with special table entries
     $tag .= '!' if $Image::ExifTool::specialTags{$tag};
-
-    # use underline instead of colon if necessary in tag name
-    $tag =~ s/([A-Z]):([A-Z]{2})/${1}_$2/g;
 
     AddTagToTable($tagTablePtr, $tag, {
         Name => Image::ExifTool::MakeTagName($tag),
@@ -120,7 +117,7 @@ sub ProcessJSON($$)
             my $buff = substr(${$$dirInfo{DataPt}}, $$dirInfo{DirStart}, $$dirInfo{DirLen});
             $dataPt = \$buff;
         }
-        $raf = File::RandomAccess->new($dataPt);
+        $raf = new File::RandomAccess($dataPt);
         # extract as a block if requested
         my $blockName = $$dirInfo{BlockInfo} ? $$dirInfo{BlockInfo}{Name} : '';
         my $blockExtract = $et->Options('BlockExtract');
@@ -179,7 +176,7 @@ information from JSON files.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

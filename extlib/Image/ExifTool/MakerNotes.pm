@@ -21,7 +21,7 @@ sub ProcessKodakPatch($$$);
 sub WriteUnknownOrPreview($$$);
 sub FixLeicaBase($$;$);
 
-$VERSION = '2.15';
+$VERSION = '2.12';
 
 my $debug;          # set to 1 to enable debugging code
 
@@ -92,12 +92,11 @@ my $debug;          # set to 1 to enable debugging code
     {
         Name => 'MakerNoteDJIInfo',
         Condition => '$$valPt =~ /^\[ae_dbg_info:/',
-        NotIFD => 1,
         SubDirectory => { TagTable => 'Image::ExifTool::DJI::Info' },
     },
     {
         Name => 'MakerNoteDJI',
-        Condition => '$$self{Make} eq "DJI" and $$valPt !~ /^(...\@AMBA|DJI)/s',
+        Condition => '$$self{Make} eq "DJI" and $$valPt !~ /^...\@AMBA/s',
         SubDirectory => {
             TagTable => 'Image::ExifTool::DJI::Main',
             Start => '$valuePtr',
@@ -694,7 +693,7 @@ my $debug;          # set to 1 to enable debugging code
         Name => 'MakerNoteLeica8', # used by the Q (Type 116)
         # (Q (Typ 116) starts with "LEICA\0\x08\0", Make is "LEICA CAMERA AG")
         # (SL (Typ 601) and CL start with "LEICA\0\x09\0", Make is "LEICA CAMERA AG")
-        Condition => '$$valPt =~ /^LEICA\0[\x08\x09\x0a]\0/',
+        Condition => '$$valPt =~ /^LEICA\0[\x08\x09]\0/',
         SubDirectory => {
             TagTable => 'Image::ExifTool::Panasonic::Leica5',
             Start => '$valuePtr + 8',
@@ -1831,7 +1830,7 @@ maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

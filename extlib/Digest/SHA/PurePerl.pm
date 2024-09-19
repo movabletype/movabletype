@@ -10,7 +10,7 @@ use Cwd qw(getcwd);
 use integer;
 use Carp qw(croak);
 
-$VERSION = '6.04';
+$VERSION = '6.03';
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -1586,7 +1586,7 @@ the M and the last R were missing."
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2003-2023 Mark Shelor
+Copyright (C) 2003-2022 Mark Shelor
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

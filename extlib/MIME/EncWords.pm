@@ -131,7 +131,7 @@ if (MIME::Charset::USE_ENCODE) {
 #------------------------------
 
 ### The package version, both in 1.23 style *and* usable by MakeMaker:
-$VERSION = '1.015.0';
+$VERSION = '1.014.3';
 
 ### Public Configuration Attributes
 $Config = {
@@ -143,11 +143,7 @@ $Config = {
     MaxLineLen => 76,
     Minimal => 'YES',
 };
-eval {
-    local @INC = @INC;
-    pop @INC if $INC[-1] eq '.';
-    require MIME::EncWords::Defaults;
-};
+eval { require MIME::EncWords::Defaults; };
 
 ### Private Constants
 
@@ -158,7 +154,7 @@ my $UNSAFE = qr{[^\x01-\x20$PRINTABLE]};
 my $WIDECHAR = qr{[^\x00-\xFF]};
 my $ASCIITRANS = qr{^(?:HZ-GB-2312|UTF-7)$}i;
 my $ASCIIINCOMPAT = qr{^UTF-(?:16|32)(?:BE|LE)?$}i;
-my $DISPNAMESPECIAL = qr{[()<>\[\]:;@\\,."]}; # RFC5322 name-addr specials.
+my $DISPNAMESPECIAL = "\\x22(),:;<>\\x40\\x5C"; # RFC5322 name-addr specials.
 
 #------------------------------
 
@@ -260,7 +256,7 @@ However, adjacent encoded-words with same charset will be concatenated
 to handle multibyte sequences safely.
 
 B<**>
-Language information defined by RFC2231, section 5 will be additional
+Language information defined by RFC2231, section 5 will be additonal
 third element, if any.
 
 B<*>
@@ -750,13 +746,12 @@ sub encode_mimewords  {
     my $UNSAFEASCII = ($maxrestlen <= 1)?
 	qr{(?: =\? )}ox:
 	qr{(?: =\? | [$PRINTABLE]{$Params{MaxLineLen}} )}x;
-    $UNSAFEASCII = qr{(?: $DISPNAMESPECIAL | $UNSAFEASCII )}x
+    $UNSAFEASCII = qr{(?: [$DISPNAMESPECIAL] | $UNSAFEASCII )}x
 	if $Params{Minimal} eq 'DISPNAME';
 
     unless (ref($words) eq "ARRAY") {
 	# workaround for UTF-16* & UTF-32*: force UTF-8.
-	if ($charsetobj->as_string
-	    and $charsetobj->as_string =~ /$ASCIIINCOMPAT/) {
+	if ($charsetobj->as_string =~ /$ASCIIINCOMPAT/) {
 	    $words = _utf_to_unicode($charsetobj, $words);
 	    $charsetobj = MIME::Charset->new('UTF-8');
 	}
@@ -777,8 +772,7 @@ sub encode_mimewords  {
 
 		# workaround for ``ASCII transformation'' charsets
 		my $u = $w;
-		if ($charsetobj->as_string
-		    and $charsetobj->as_string =~ /$ASCIITRANS/) {
+		if ($charsetobj->as_string =~ /$ASCIITRANS/) {
 		    if (MIME::Charset::USE_ENCODE) {
 			if (is_utf8($w) or $w =~ /$WIDECHAR/) {
 			    $w = $charsetobj->undecode($u);

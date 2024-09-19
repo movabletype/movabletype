@@ -1,12 +1,12 @@
 use 5.008001; # sane UTF-8 support
 use strict;
 use warnings;
-package YAML::Tiny; # git description: v1.73-12-ge02f827
+package YAML::Tiny; # git description: v1.72-7-g8682f63
 # XXX-INGY is 5.8.1 too old/broken for utf8?
 # XXX-XDG Lancaster consensus was that it was sufficient until
 # proven otherwise
 
-our $VERSION = '1.74';
+our $VERSION = '1.73';
 
 #####################################################################
 # The YAML::Tiny API.
@@ -876,7 +876,7 @@ YAML::Tiny - Read/Write YAML files with as little code as possible
 
 =head1 VERSION
 
-version 1.74
+version 1.73
 
 =head1 PREAMBLE
 
@@ -895,7 +895,7 @@ Like the other C<::Tiny> modules, YAML::Tiny has no non-core dependencies,
 does not require a compiler to install, is back-compatible to Perl v5.8.1,
 and can be inlined into other modules if needed.
 
-In exchange for adding this extreme flexibility, it provides support
+In exchange for this adding this extreme flexibility, it provides support
 for only a limited subset of YAML. But the subset supported contains most
 of the features for the more common uses of YAML.
 
@@ -1361,8 +1361,8 @@ Support for the document boundary marker "---" is required.
 
 Support for the document boundary market "..." is B<not> required.
 
-If necessary, a document boundary should simply be indicated with a
-"---" marker, with no preceding "..." marker.
+If necessary, a document boundary should simply by indicated with a
+"---" marker, with not preceding "..." marker.
 
 Support for empty streams (containing no documents) is required.
 

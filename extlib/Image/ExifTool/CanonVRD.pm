@@ -23,7 +23,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Canon;
 
-$VERSION = '1.37';
+$VERSION = '1.34';
 
 sub ProcessCanonVRD($$;$);
 sub WriteCanonVRD($$;$);
@@ -187,7 +187,6 @@ my $blankFooter = "CANON OPTIONAL DATA\0" . ("\0" x 42) . "\xff\xd9";
     WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
     CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
     WRITABLE => 1,
-    PERMANENT => 1, # (can't add/delete these individually)
     FIRST_ENTRY => 0,
     GROUPS => { 2 => 'Image' },
     DATAMEMBER => [ 0x002 ],   # necessary for writing
@@ -486,7 +485,6 @@ my $blankFooter = "CANON OPTIONAL DATA\0" . ("\0" x 42) . "\xff\xd9";
     WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
     CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
     WRITABLE => 1,
-    PERMANENT => 1, # (can't add/delete these individually)
     FIRST_ENTRY => 0,
     FORMAT => 'int16s',
     DATAMEMBER => [ 0x58, 0xdc, 0xdf, 0xe0 ], # (required for DataMember and var-format tags)
@@ -1001,8 +999,7 @@ my $blankFooter = "CANON OPTIONAL DATA\0" . ("\0" x 42) . "\xff\xd9";
     PROCESS_PROC => \&ProcessDR4,
     WRITE_PROC => \&ProcessDR4,
     WRITABLE => 1,
-    PERMANENT => 1, # (can't add/delete these individually)
-    GROUPS => { 1 => 'CanonDR4', 2 => 'Image' },
+    GROUPS => { 2 => 'Image' },
     VARS => { HEX_ID => 1, SORT_PROC => \&SortDR4 },
     NOTES => q{
         Tags written by Canon DPP version 4 in CanonVRD trailers and DR4 files. Each
@@ -1279,7 +1276,7 @@ my $blankFooter = "CANON OPTIONAL DATA\0" . ("\0" x 42) . "\xff\xd9";
     WRITABLE => 1,
     FIRST_ENTRY => 0,
     FORMAT => 'int32u',
-    GROUPS => { 1 => 'CanonDR4', 2 => 'Image' },
+    GROUPS => { 2 => 'Image' },
     # 0 - value: 'IIII' (presumably byte order)
     # 1 - value: 0x00040004 (currently use this for magic number)
     # 2 - value: 6
@@ -1304,7 +1301,7 @@ my $blankFooter = "CANON OPTIONAL DATA\0" . ("\0" x 42) . "\xff\xd9";
     WRITABLE => 1,
     FIRST_ENTRY => 0,
     FORMAT => 'int32u',
-    GROUPS => { 1 => 'CanonDR4', 2 => 'Image' },
+    GROUPS => { 2 => 'Image' },
     0x00 => {
         Name => 'ToneCurveColorSpace',
         PrintConv => {
@@ -1357,7 +1354,7 @@ my $blankFooter = "CANON OPTIONAL DATA\0" . ("\0" x 42) . "\xff\xd9";
     WRITABLE => 1,
     FIRST_ENTRY => 0,
     FORMAT => 'double',
-    GROUPS => { 1 => 'CanonDR4', 2 => 'Image' },
+    GROUPS => { 2 => 'Image' },
     0x02 => 'GammaContrast',
     0x03 => 'GammaColorTone',
     0x04 => 'GammaSaturation',
@@ -1413,7 +1410,7 @@ my $blankFooter = "CANON OPTIONAL DATA\0" . ("\0" x 42) . "\xff\xd9";
     WRITABLE => 1,
     FIRST_ENTRY => 0,
     FORMAT => 'int32s',
-    GROUPS => { 1 => 'CanonDR4', 2 => 'Image' },
+    GROUPS => { 2 => 'Image' },
     0 => { Name => 'CropActive', %noYes },
     1 => 'CropRotatedOriginalWidth',
     2 => 'CropRotatedOriginalHeight',
@@ -1435,7 +1432,7 @@ my $blankFooter = "CANON OPTIONAL DATA\0" . ("\0" x 42) . "\xff\xd9";
 # DR4 Stamp Tool tags (ref PH)
 %Image::ExifTool::CanonVRD::StampInfo = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
-    GROUPS => { 1 => 'CanonDR4', 2 => 'Image' },
+    GROUPS => { 2 => 'Image' },
     FORMAT => 'int32u',
     FIRST_ENTRY => 0,
     0x02 => 'StampToolCount',
@@ -1444,7 +1441,7 @@ my $blankFooter = "CANON OPTIONAL DATA\0" . ("\0" x 42) . "\xff\xd9";
 # DR4 dust delete information (ref PH)
 %Image::ExifTool::CanonVRD::DustInfo = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
-    GROUPS => { 1 => 'CanonDR4', 2 => 'Image' },
+    GROUPS => { 2 => 'Image' },
     FORMAT => 'int32u',
     FIRST_ENTRY => 0,
     0x02 => { Name => 'DustDeleteApplied', %noYes },
@@ -2011,7 +2008,7 @@ sub ProcessCanonVRD($$;$)
             $verbose and print $out "  Creating CanonVRD trailer\n";
             $created = 1;
         }
-        $raf = File::RandomAccess->new($dataPt);
+        $raf = new File::RandomAccess($dataPt);
     }
     # read and validate the footer
     $raf->Seek(-0x40-$offset, 2)    or return 0;
@@ -2266,7 +2263,7 @@ files, and as a trailer in JPEG, CRW, CR2 and TIFF images.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -58,7 +58,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 use Image::ExifTool::HP;
 
-$VERSION = '3.46';
+$VERSION = '3.41';
 
 sub CryptShutterCount($$);
 sub PrintFilter($$$);
@@ -72,7 +72,10 @@ sub DecodeAFPoints($$$$;$);
     Notes => q{
         The first number gives the series of the lens, and the second identifies the
         lens model.  Note that newer series numbers may not always be properly
-        identified by cameras running older firmware versions.
+        identified by cameras running older firmware versions.  Decimal values have
+        been added to differentiate lenses which would otherwise have the same
+        LensType, and are used by the Composite LensID tag when attempting to
+        identify the specific lens model.
     },
     OTHER => sub {
         my ($val, $inv, $conv) = @_;
@@ -175,7 +178,6 @@ sub DecodeAFPoints($$$$;$);
     '4 2' => 'smc PENTAX-FA 80-320mm F4.5-5.6',
     '4 3' => 'smc PENTAX-FA 43mm F1.9 Limited',
     '4 6' => 'smc PENTAX-FA 35-80mm F4-5.6',
-    '4 7' => 'Irix 45mm F1.4', #27
     '4 8' => 'Irix 150mm F2.8 Macro', #exiv2 issue 1084
     '4 9' => 'Irix 11mm F4 Firefly', #27
     '4 10' => 'Irix 15mm F2.4', #27
@@ -266,7 +268,6 @@ sub DecodeAFPoints($$$$;$);
     '6 14' => 'smc PENTAX-FA* Macro 200mm F4 ED[IF]',
     '7 0' => 'smc PENTAX-DA 21mm F3.2 AL Limited', #13
     '7 58' => 'smc PENTAX-D FA Macro 100mm F2.8 WR', #PH - this bit of information cost me $600 ;)
-  # '7 58' also 'HD PENTAX-D FA MACRO 100mm F2.8 ED AW' (ref 27)
     '7 75' => 'Tamron SP AF 70-200mm F2.8 Di LD [IF] Macro (A001)', #(Anton Bondar)
     '7 201' => 'smc Pentax-DA L 50-200mm F4-5.6 ED WR', #(Bruce Rusk)
     '7 202' => 'smc PENTAX-DA L 18-55mm F3.5-5.6 AL WR', #29
@@ -410,8 +411,7 @@ sub DecodeAFPoints($$$$;$);
 #
 # Ricoh lenses
 #
-    '31 1' => '18.3mm F2.8', #PH (GR III built-in)
-    '31 4' => '26.1mm F2.8', #PH (GR IIIx built-in)
+    '31 1' => 'GR Lens', #PH (GR III 28mm F2.8)
 );
 
 # Pentax model ID codes - PH
@@ -557,8 +557,6 @@ my %pentaxModelID = (
     0x13240 => 'K-1 Mark II', # (Ricoh)
     0x13254 => 'K-3 Mark III', #IB (Ricoh)
     0x13290 => 'WG-70', # (Ricoh)
-    0x1329a => 'GR IIIx', # (Ricoh)
-    0x132d6 => 'K-3 Mark III Monochrome', #github226 (Ricoh)
 );
 
 # Pentax city codes - (PH, Optio WP)
@@ -974,7 +972,6 @@ my %binaryDataAttrs = (
             5 => 'Premium', #PH (K20D)
             7 => 'RAW (pixel shift enabled)', #forum6536 (K-3 II)
             8 => 'Dynamic Pixel Shift', #IB
-            9 => 'Monochrome', #github226
             65535 => 'n/a', #PH (Q MOV video)
         },
     },
@@ -1142,12 +1139,8 @@ my %binaryDataAttrs = (
                 3 => 'Manual',
                 4 => 'Super Macro', #JD
                 5 => 'Pan Focus',
-                6 => 'Auto-area', # (GR III)
-                8 => 'Select', # (GR III)
-                9 => 'Pinpoint', # (GR III)
-                10 => 'Tracking', # (GR III)
-                11 => 'Continuous', # (GR III)
-                12 => 'Snap', # (GR III)
+                # 8 - seen for Ricoh GR III
+                # 9 - seen for Ricoh GR III
                 16 => 'AF-S (Focus-priority)', #17
                 17 => 'AF-C (Focus-priority)', #17
                 18 => 'AF-A (Focus-priority)', #PH (educated guess)
@@ -1571,7 +1564,6 @@ my %binaryDataAttrs = (
             0 => 'Multi-segment',
             1 => 'Center-weighted average',
             2 => 'Spot',
-            6 => 'Highlight', # (GR III)
             # have seen value of 16 for E70
         },
     },
@@ -1909,7 +1901,6 @@ my %binaryDataAttrs = (
             '0 28' => 'Quick Macro', # (Q)
             '0 29' => 'Forest', # (Q)
             '0 30' => 'Backlight Silhouette', # (Q)
-            '0 32' => 'DOF', #PH (GR III)
             # AUTO PICT modes (auto-selected)
             '1 4'  => 'Auto PICT (Standard)', #13
             '1 5'  => 'Auto PICT (Portrait)', #7 (K100D)
@@ -2136,7 +2127,7 @@ my %binaryDataAttrs = (
         PrintConvInv => [ 'Image::ExifTool::Exif::ConvertFraction($val)' ],
     }],
     0x004f => { #PH
-        Name => 'ImageTone', # (Called CustomImageMode for K20D and ImageControlMode for GR III)
+        Name => 'ImageTone', # (Called CustomImageMode in K20D manual)
         Writable => 'int16u',
         PrintConvColumns => 2,
         PrintConv => {
@@ -2152,23 +2143,8 @@ my %binaryDataAttrs = (
             9 => 'Radiant', # (Q)
             10 => 'Cross Processing', #31 (K-70)
             11 => 'Flat', #31 (K-70)
-            # the following values from GR III
-            256 => 'Standard',
-            257 => 'Vivid', 
-            258 => 'Monotone',
-            259 => 'Soft Monotone',
-            260 => 'Hard Monotone',
-            261 => 'Hi-contrast B&W',
-            262 => 'Positive Film',
-            263 => 'Bleach Bypass 2',
-            264 => 'Retro',
-            265 => 'HDR Tone',
-            266 => 'Cross Processing 2',
-            267 => 'Negative Film',
             # 256 - seen for GR III
-            # 257 - seen for GR III
             # 262 - seen for GR III
-            32768 => 'n/a',
         },
     },
     0x0050 => { #PH
@@ -2255,7 +2231,6 @@ my %binaryDataAttrs = (
             18 => '18 (KP)', #PH
             19 => '19 (GR III)', #PH
             20 => '20 (K-3III)', #PH
-            21 => '21 (K-3IIIMonochrome)', #github226
         },
     },
     0x0067 => { #PH (K-5)
@@ -2480,23 +2455,16 @@ my %binaryDataAttrs = (
         },
     },
     0x007a => { #PH
-        Name => 'ISOAutoMinSpeed',
+        Name => 'ISOAutoParameters',
         Writable => 'int8u',
         Count => 2,
-        # From the K-3III menus for the "ISO Auto with Min. Speed" setting: 'Fast' = "Increases
-        # the sensitivity from a shutter speed faster than the standard setting in ISO Auto"
-        ValueConv    => [ undef, '$val ? exp(-Image::ExifTool::Pentax::PentaxEv($val-68)*log(2)) : 0' ],
-        ValueConvInv => [ undef, '$val ? Image::ExifTool::Pentax::PentaxEvInv(-log($val)/log(2))+68 : 0' ],
-        PrintConv    => [
-            {
-                1 => 'Shutter Speed Control',
-                2 => 'Auto Slow',
-                3 => 'Auto Standard',
-                4 => 'Auto Fast',
-            },
-            'Image::ExifTool::Exif::PrintExposureTime($val)',
-        ],
-        PrintConvInv => [ undef, 'Image::ExifTool::Exif::ConvertFraction($val)' ],
+        PrintConv => {
+            '1 0' => 'Slow',
+            '2 0' => 'Standard',
+            '3 0' => 'Fast',
+            # '1 108' - seen for GR III
+            # '3 84' - seen for K-3III
+        },
     },
     0x007b => { #PH (K-5)
         Name => 'CrossProcess',
@@ -2612,10 +2580,8 @@ my %binaryDataAttrs = (
         PrintConv => {
             0 => 'Off',
             1 => 'On',
-            '0 0' => 'Off (Off)', #PH (GR III)
-            '1 1' => 'On (On)', #PH (GR III)
-            '0 2' => 'Off (Auto)', #PH (GR III)
-            '1 2' => 'On (Auto)', #PH (GR III)
+            '0 2' => 'Off (0 2)', #PH (NC, GR III)
+            '1 2' => 'On (1 2)', #PH (NC, GR III)
         },
     },
     0x008b => { #PH (LS465)
@@ -4115,7 +4081,6 @@ my %binaryDataAttrs = (
         ValueConvInv => '$val=~s/\.\d+$//; $val',
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
-        PrintInt => 1,
     },
     3 => { #PH
         Name => 'ExtenderStatus',
@@ -4139,7 +4104,6 @@ my %binaryDataAttrs = (
         ValueConvInv => '$val=~s/\.\d+$//; $val',
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
-        PrintInt => 1,
     },
     3 => {
         Name => 'LensData',
@@ -4175,7 +4139,6 @@ my %binaryDataAttrs = (
         },
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
-        PrintInt => 1,
     },
     4 => {
         Name => 'LensData',
@@ -4211,7 +4174,6 @@ my %binaryDataAttrs = (
         },
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
-        PrintInt => 1,
     },
     13 => {
         Name => 'LensData',
@@ -4247,7 +4209,6 @@ my %binaryDataAttrs = (
         },
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
-        PrintInt => 1,
     },
     12 => {
         Name => 'LensData',
@@ -4284,7 +4245,6 @@ my %binaryDataAttrs = (
         },
         PrintConv => \%pentaxLensTypes,
         SeparateTable => 1,
-        PrintInt => 1,
     },
     15 => {
         Name => 'LensData',
@@ -6360,7 +6320,7 @@ tags, and everyone who helped contribute to the LensType values.
 
 =head1 AUTHOR
 
-Copyright 2003-2024, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2022, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
