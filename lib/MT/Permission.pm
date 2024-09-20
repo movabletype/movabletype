@@ -458,6 +458,7 @@ sub global_perms {
 
 sub can_do {
     my $self = shift;
+    return 1 if $self->user && $self->user->is_superuser;
     return unless $self->permissions;
 
     my $action = shift;
