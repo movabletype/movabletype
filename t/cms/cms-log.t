@@ -33,21 +33,21 @@ my $website = MT::Test::Permission->make_website(
 );
 my $author = MT::Author->load(1);
 
-my $now = time;
-my $today = epoch2ts( $website, $now );
-my $one_day_ago = epoch2ts( $website, ( $now - (24 * 60 * 60) ) );
+my $now         = time;
+my $today       = epoch2ts($website, $now);
+my $one_day_ago = epoch2ts($website, ($now - (24 * 60 * 60)));
 
 subtest 'show dialog' => sub {
-   my $app  = MT::Test::App->new('MT::App::CMS');
-   $app->login($author);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author);
 
-   $app->get_ok({ __mode => 'list', blog_id => $website->id, _type => 'log' });
-   ok my $link = $app->wq_find('a.icon-download');
-   my $query = URI->new($link->attr('href'))->query_form_hash;
+    $app->get_ok({ __mode => 'list', blog_id => $website->id, _type => 'log' });
+    ok my $link = $app->wq_find('a.icon-download');
+    my $query = URI->new($link->attr('href'))->query_form_hash;
 
-   $app->get_ok($query);
-   ok my $form = $app->wq_find('form#export-log-form');
-   ok $form->find('button#export-log-download');
+    $app->get_ok($query);
+    ok my $form = $app->wq_find('form#export-log-form');
+    ok $form->find('button#export-log-download');
 };
 
 subtest 'download' => sub {
@@ -270,13 +270,15 @@ subtest 'download' => sub {
                 type => 'days',
                 days => 1,
             },
-            expected => [ map {
-                ## All Log records are saved with GMT, so do trick here.
-                my $epoch = ts2epoch( undef, $_, 1 );
-                $epoch = offset_time( $epoch, $website );
-                my $ts = epoch2ts( $website, $epoch, 1 );
-                [format_ts( '%Y-%m-%d %H:%M:%S', $ts, $website ), '', 'test7', '', 'log message', ''],
-            } ( $today ) ],
+            expected => [
+                map {
+                    ## All Log records are saved with GMT, so do trick here.
+                    my $epoch = ts2epoch(undef, $_, 1);
+                    $epoch = offset_time($epoch, $website);
+                    my $ts = epoch2ts($website, $epoch, 1);
+                    [format_ts('%Y-%m-%d %H:%M:%S', $ts, $website), '', 'test7', '', 'log message', ''],
+                } ($today)
+            ],
         },
         {
             set_data => sub {
@@ -284,13 +286,13 @@ subtest 'download' => sub {
                     parent_id => $website->id,
                     name      => 'test8',
                 );
-                for my $i (0..1) {
-                  MT::Test::Permission->make_log(
-                      blog_id     => $blog->id,
-                      message     => "log message",
-                      created_on  => "2005013${i}074500",
-                      modified_on => "2005013${i}074600",
-                  );
+                for my $i (0 .. 1) {
+                    MT::Test::Permission->make_log(
+                        blog_id     => $blog->id,
+                        message     => "log message",
+                        created_on  => "2005013${i}074500",
+                        modified_on => "2005013${i}074600",
+                    );
                 }
                 return $blog;
             },
@@ -308,13 +310,13 @@ subtest 'download' => sub {
                     parent_id => $website->id,
                     name      => 'test8-2',
                 );
-                for my $i (0..1) {
-                  MT::Test::Permission->make_log(
-                      blog_id     => $blog->id,
-                      message     => "log message",
-                      created_on  => "2005013${i}074500",
-                      modified_on => "2005013${i}074600",
-                  );
+                for my $i (0 .. 1) {
+                    MT::Test::Permission->make_log(
+                        blog_id     => $blog->id,
+                        message     => "log message",
+                        created_on  => "2005013${i}074500",
+                        modified_on => "2005013${i}074600",
+                    );
                 }
                 return $blog;
             },
@@ -332,13 +334,13 @@ subtest 'download' => sub {
                     parent_id => $website->id,
                     name      => 'test9',
                 );
-                for my $i (0..1) {
-                  MT::Test::Permission->make_log(
-                      blog_id     => $blog->id,
-                      message     => "log message",
-                      created_on  => "2005013${i}074500",
-                      modified_on => "2005013${i}074600",
-                  );
+                for my $i (0 .. 1) {
+                    MT::Test::Permission->make_log(
+                        blog_id     => $blog->id,
+                        message     => "log message",
+                        created_on  => "2005013${i}074500",
+                        modified_on => "2005013${i}074600",
+                    );
                 }
                 return $blog;
             },
@@ -356,13 +358,13 @@ subtest 'download' => sub {
                     parent_id => $website->id,
                     name      => 'test9-2',
                 );
-                for my $i (0..1) {
-                  MT::Test::Permission->make_log(
-                      blog_id     => $blog->id,
-                      message     => "log message",
-                      created_on  => "2005013${i}074500",
-                      modified_on => "2005013${i}074600",
-                  );
+                for my $i (0 .. 1) {
+                    MT::Test::Permission->make_log(
+                        blog_id     => $blog->id,
+                        message     => "log message",
+                        created_on  => "2005013${i}074500",
+                        modified_on => "2005013${i}074600",
+                    );
                 }
                 return $blog;
             },
@@ -384,17 +386,17 @@ subtest 'download' => sub {
             $app->login($author);
 
             my $args = {
-              __mode => 'export_log',
-              blog_id => $blog->id,
-              _type => 'log',
-              ( $case->{args} ? %{$case->{args}} : () ),
+                __mode  => 'export_log',
+                blog_id => $blog->id,
+                _type   => 'log',
+                ($case->{args} ? %{ $case->{args} } : ()),
             };
 
             my $res = $app->get_ok($args);
             my $io  = IO::String->new($res->content);
             my $csv = Text::CSV->new({ binary => 1 });
 
-            is_deeply($csv->getline($io), [qw/timestamp ip weblog by message metadata/]);
+            is_deeply($csv->getline($io),     [qw/timestamp ip weblog by message metadata/]);
             is_deeply($csv->getline_all($io), $case->{expected});
 
             close $io;
