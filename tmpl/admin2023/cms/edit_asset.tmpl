@@ -393,12 +393,8 @@ jQuery(window).on('load', init );
         if (isDirty) {
             var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
             if ( confirm(msg) ) {
-                jQuery(this).mtModal.open(jQuery(this).attr('href'), { large: true });
                 isDirty = false;
             }
-        }
-        else {
-            jQuery(this).mtModal.open(jQuery(this).attr('href'), { large: true });
         }
         return false;
     });
