@@ -1365,8 +1365,9 @@ use vars qw( @ISA %Lexicon );
 	'Publishing' => '公開',
 	q{Activity log for blog '[_1]' (ID:[_2]) reset by '[_3]'} => q{'[_3]'がブログ'[_1]'(ID:[_2])のログをリセットしました。},
 	q{Activity log reset by '[_1]'} => q{'[_1]'がログをリセットしました。},
-	'Please specify the time period' => '期間を指定してください',
-	'Entire period' => '全期間',
+	'Specify the period' => '期間を指定する',
+	q{Download site '[_1]' logs} => q{サイト '[_1]' のログをダウンロードします},
+	'Download system-wide logs' => 'システム全体のログをダウンロードします',
 
 ## lib/MT/CMS/Plugin.pm
 	'Error saving plugin settings: [_1]' => 'プラグインの設定を保存できません: [_1]',
