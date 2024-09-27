@@ -6,34 +6,37 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="modal_body">
-  <mtapp:setting
-    id="export-log-setting"
-    label="<__trans phrase="Please specify the time period">">
-    <div class="form-check">
-      <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1" class="form-check-input cb" />
-      <label class="form-check-label" for="is_dateranged">
-        <__trans phrase="Specify the period">
-      </label>
+  <div class="mb-3">
+    <mt:if name="is_system">
+      <__trans phrase="Download system-wide logs">
+    <mt:else>
+      <__trans phrase="Download site '[_1]' logs" params="<mt:var name="blog_name" escape="html">">
+    </mt:if>
+  </div>
+  <div class="form-check mb-3">
+    <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1" class="form-check-input cb" />
+    <label class="form-check-label" for="is_dateranged">
+      <__trans phrase="Specify the period">
+    </label>
+  </div>
+  <div id="date-range" class="form-inline" style="display: none;">
+    <__trans phrase="Created On">
+    <div class="date-options">
+      <mt:setvarblock name="date_input_from"><input name="from" type="text" class="form-control m-1 text required date text-date" disabled /></mt:setvarblock>
+      <mt:setvarblock name="date_input_to"><input name="to" type="text" class="form-control m-1 text required date text-date" disabled /></mt:setvarblock>
+      <mt:setvarblock name="date_input_origin"><input name="origin" type="text" class="form-control m-1 text required date text-date" disabled style="display: none;" /></mt:setvarblock>
+      <mt:setvarblock name="date_input_days"><input name="days" type="text" class="form-control m-1 text required digit days" disabled style="display: none;" /></mt:setvarblock>
+      <div class="date-option range"><__trans phrase="[_1] and [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">"></div>
+      <div class="date-option date" style="display: none;"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="date_input_origin">"></div>
+      <div class="date-option days" style="display: none;"><__trans phrase="_FILTER_DATE_DAYS" params="<mt:var name="date_input_days">"></div>
     </div>
-    <div id="date-range" class="form-inline" style="display: none;">
-      <__trans phrase="Created On">
-      <div class="date-options">
-        <mt:setvarblock name="date_input_from"><input name="from" type="text" class="form-control m-1 text required date text-date" disabled /></mt:setvarblock>
-        <mt:setvarblock name="date_input_to"><input name="to" type="text" class="form-control m-1 text required date text-date" disabled /></mt:setvarblock>
-        <mt:setvarblock name="date_input_origin"><input name="origin" type="text" class="form-control m-1 text required date text-date" disabled style="display: none;" /></mt:setvarblock>
-        <mt:setvarblock name="date_input_days"><input name="days" type="text" class="form-control m-1 text required digit days" disabled style="display: none;" /></mt:setvarblock>
-        <div class="date-option range"><__trans phrase="[_1] and [_2]" params="<mt:var name="date_input_from">%%<mt:var name="date_input_to">"></div>
-        <div class="date-option date" style="display: none;"><__trans phrase="__FILTER_DATE_ORIGIN" params="<mt:var name="date_input_origin">"></div>
-        <div class="date-option days" style="display: none;"><__trans phrase="_FILTER_DATE_DAYS" params="<mt:var name="date_input_days">"></div>
-      </div>
-      <select name="type" class="filter-date custom-select form-control m-1 form-select" disabled>
-        <option value="range"><__trans phrase="is between"></option>
-        <option value="days"><__trans phrase="is within the last"></option>
-        <option value="before"><__trans phrase="is before"></option>
-        <option value="after"><__trans phrase="is after"></option>
-      </select>
-    </div>
-  </mtapp:setting>
+    <select name="type" class="filter-date custom-select form-control m-1 form-select" disabled>
+      <option value="range"><__trans phrase="is between"></option>
+      <option value="days"><__trans phrase="is within the last"></option>
+      <option value="before"><__trans phrase="is before"></option>
+      <option value="after"><__trans phrase="is after"></option>
+    </select>
+  </div>
 </mt:setvarblock>
 
 <mt:setvarblock name="action_buttons">

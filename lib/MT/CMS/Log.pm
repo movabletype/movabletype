@@ -736,8 +736,11 @@ sub dialog_list_deprecated_log {
 sub dialog_export_log {
     my $app       = shift;
     my $blog_id   = $app->param('blog_id');
+    my $blog      = $app->model('blog')->load($blog_id) if $blog_id;
     my $list_pref = $app->list_pref('log');
     my %param     = (%$list_pref);
+    $param{is_system} = ( $blog_id || 0 ) eq 0 ? 1 : 0;
+    $param{blog_name} = $blog->name if $blog;
 
     $app->load_tmpl('dialog/export_log.tmpl', \%param);
 }
