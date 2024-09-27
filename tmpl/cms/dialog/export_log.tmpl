@@ -9,7 +9,13 @@
   <mtapp:setting
     id="export-log-setting"
     label="<__trans phrase="Please specify the time period">">
-    <div class="form-inline">
+    <div class="form-check">
+      <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1" class="form-check-input cb" />
+      <label class="form-check-label" for="is_dateranged">
+        <__trans phrase="Specify the period">
+      </label>
+    </div>
+    <div id="date-range" class="form-inline" style="display: none;">
       <__trans phrase="Created On">
       <div class="date-options">
         <mt:setvarblock name="date_input_from"><input name="from" type="text" class="form-control m-1 text required date text-date" /></mt:setvarblock>
@@ -26,10 +32,6 @@
         <option value="before"><__trans phrase="is before"></option>
         <option value="after"><__trans phrase="is after"></option>
       </select>
-      <div class="form-check ml-3">
-        <input type="checkbox" id="export-all-logs" class="form-check-input">
-        <label class="form-check-label" for="export-all-logs"><__trans phrase="Entire period"></label>
-      </div>
     </div>
   </mtapp:setting>
 </mt:setvarblock>
@@ -81,11 +83,12 @@ document.addEventListener('DOMContentLoaded', function() {
     nextText: '>'
   });
 
-  jQuery('#export-all-logs').on('change', function () {
-    const checked = jQuery(this).prop('checked');
-    jQuery('.date-options .date-option input').each(function (_, elem) {
-      jQuery(elem).prop('disabled', checked);
-    });
+  jQuery('#is_dateranged').on('change', function () {
+    if ( jQuery(this).prop('checked') ) {
+      jQuery('#date-range').show();
+    } else {
+      jQuery('#date-range').hide();
+    };
   });
 
   jQuery('#export-log-form').on('submit', function (e) {
@@ -94,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const selected_type = detectType(optionNode);
     let url = `<mt:var name="script_url" excape="html"><mt:var name="script_url" excape="html">?__mode=export_log&blog_id=<mt:var name="blog_id">&magic_token=<mt:var name="magic_token" escape="html">`;
 
-    if (!jQuery('#export-all-logs').prop('checked')) {
+    if (!jQuery('#is_dateranged').prop('checked')) {
       url += `&type=${optionNode.val()}`;
       jQuery(`.date-options .date-option.${selected_type} input`).each(function (_, elem) {
         url += `&${elem.name}=${elem.value}`;
