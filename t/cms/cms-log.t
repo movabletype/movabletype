@@ -392,7 +392,7 @@ subtest 'download' => sub {
                 ($case->{args} ? %{ $case->{args} } : ()),
             };
 
-            my $res = $app->get_ok($args);
+            my $res = $app->post_ok($args);
             my $io  = IO::String->new($res->content);
             my $csv = Text::CSV->new({ binary => 1 });
 
