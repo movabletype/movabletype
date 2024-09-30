@@ -34,12 +34,10 @@ while ($remote = stream_socket_accept($socket)) {
     
         $mt->init_plugins();
         $db = $mt->db();
-        if (is_a($db, 'MTDatabaseoracle')) {
-            $db->execute("ALTER SESSION SET TIME_ZONE = '+00:00'");
-        } else if (is_a($db, 'MTDatabasesqlite')) {
-            # DO NOTHING since sqlite assumes doesn't support any time zone handling
-        } else {
+        if (is_a($db, 'MTDatabasemysql')) {
             $db->execute("SET time_zone = '+00:00'");
+        } elseif (is_a($db, 'MTDatabaseoracle')) {
+            $db->execute("ALTER SESSION SET TIME_ZONE = '+00:00'");
         }
         $ctx = $mt->context();
     }
