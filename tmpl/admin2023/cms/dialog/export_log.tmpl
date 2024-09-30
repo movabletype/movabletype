@@ -2,7 +2,7 @@
 <mt:setvarblock name="page_title"><__trans phrase="Download Log (CSV)"></mt:setvarblock>
 
 <mt:setvarblock name="form_header">
-  <form id="export-log-form" method="POST" action="<mt:var name="script_url" excape="html">">
+  <form id="export-log-form" method="POST" action="<mt:var name="script_url" excape="html">" onsubmit="jQuery.fn.mtModal.close();">
     <input type="hidden" name="__mode" value="export_log">
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">">
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">">
