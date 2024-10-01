@@ -10,7 +10,7 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '8.000004');
+define('VERSION', '8.000005');
 define('PRODUCT_VERSION', '8.0.5');
 define('DATA_API_DEFAULT_VERSION', '6');
 
