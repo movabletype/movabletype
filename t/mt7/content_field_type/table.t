@@ -107,6 +107,7 @@ my $field_data = {
     },
 };
 
+# DEPRECATED
 subtest 'feed_value_handler' => sub {
     my @test_cases = (
         { value => '<tr><td>foo</td></tr>', expected => '<table border="1"><tr><td>foo</td></tr></table>' },
