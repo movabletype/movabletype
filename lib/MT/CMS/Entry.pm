@@ -221,7 +221,17 @@ sub edit {
         );
 
         $param->{'mode_view_entry'} = 1;
-        $param->{'basename'} = MT->config->TrimFilePath ? trim_path($obj->basename) : $obj->basename;
+        if ( MT->config->TrimFilePath == 1 ) {
+            my $file = MT->publisher->archive_file_for( $obj, $blog, $at );
+            my $basename = trim_path( $obj->basename );
+            $basename =~ s/[-_]/\[-_\]/g;
+            my $basename_re = qr/$basename/;
+            ( $basename ) = $file =~ /(?:.+\/\s*)?(${basename_re})(?:\s*\..*)?$/;
+            $param->{'basename'} = $basename;
+        }
+        else {
+            $param->{'basename'} = $obj->basename;
+        }
 
         if ( my $ts = $obj->authored_on ) {
             $param->{authored_on_ts} = $ts;
@@ -1250,6 +1260,12 @@ sub save {
         unpublished_on_year       => [qw/MAYBE_STRING/],
         week_number               => [qw/MAYBE_STRING/],
     }) or return;
+
+    if ( MT->config->TrimFilePath == 2 ) {
+        my $basename = $app->param('basename');
+        return $app->error( $app->translate('The basename contains an inappropriate whitespace.') )
+            if $basename ne trim_path( $basename );
+    }
 
     $app->remove_preview_file;
 

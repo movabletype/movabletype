@@ -7,7 +7,7 @@ package MT::CMS::Blog;
 
 use strict;
 use warnings;
-use MT::Util qw( dirify dir_separator );
+use MT::Util qw( dirify dir_separator trim_path );
 
 sub edit {
     my $cb = shift;
@@ -2187,6 +2187,12 @@ sub save_filter {
             MT->translate("Please choose a preferred archive type.") )
             if ( !$app->param('no_archives_are_active')
             && !$app->param('preferred_archive_type') );
+
+        if ( MT->config->TrimFilePath == 2 ) {
+            my $extra_path = $app->param('extra_path') || '';
+            return $eh->error( MT->translate('The upload destination contains an inappropriate whitespace.') )
+                if $extra_path ne trim_path( $extra_path );
+        }
     }
     return 1;
 }
