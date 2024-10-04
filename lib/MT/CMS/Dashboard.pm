@@ -389,6 +389,10 @@ sub generate_site_stats_data {
 
 sub regenerate_site_stats_data {
     my $app = shift;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '8.5.0');
+
     $app->validate_magic() or return;
 
     my $param;
