@@ -2790,10 +2790,8 @@ sub is_authorized {
 
 }
 
-sub set_default_tmpl_params {
-    my $app = shift;
-    $app->SUPER::set_default_tmpl_params(@_);
-    my ($tmpl) = @_;
+sub _get_default_tmpl_params {
+    my $app   = shift;
     my $param = {};
 
     my $mode      = $app->mode;
@@ -2903,6 +2901,21 @@ sub set_default_tmpl_params {
 
     $param->{ "mode_$mode" . ( $type ? "_$type" : '' ) } = 1;
     $param->{return_args} ||= $app->make_return_args;
+
+    return $param;
+}
+
+sub set_default_tmpl_params {
+    my $app = shift;
+    $app->SUPER::set_default_tmpl_params(@_);
+    my ($tmpl) = @_;
+
+    my $cache_key = '__cms_default_tmpl_params';
+    my $param = $app->request($cache_key);
+    if (!$param) {
+        $param = _get_default_tmpl_params($app, @_);
+        $app->request($cache_key, $param);
+    }
 
     $tmpl->param($param);
 }
