@@ -15,6 +15,8 @@ use base qw( MT::ObjectDriver::SQL );
 #--------------------------------------#
 # Instance Methods
 
+sub default_escape_char {'\\'}
+
 sub as_limit {
     my $stmt = shift;
     my $n    = $stmt->limit;

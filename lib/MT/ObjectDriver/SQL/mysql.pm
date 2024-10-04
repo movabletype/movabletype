@@ -12,6 +12,8 @@ use base qw( MT::ObjectDriver::SQL );
 
 *distinct_stmt = \&_subselect_distinct;
 
+sub default_escape_char {'\\'}
+
 sub new {
     my $class = shift;
     my %param = @_;
