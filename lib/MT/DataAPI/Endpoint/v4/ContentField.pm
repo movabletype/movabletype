@@ -35,16 +35,16 @@ DESCRIPTION
                     enum => [
                         'name',
                         'dataLabel',
-                        'uniqueID',
-                        'modified_on',
+                        'uniqueId',
+                        'modifiedOn',
                     ],
                 },
                 description => <<'DESCRIPTION',
 The field name for sort. You can specify one of following values.
 - name
 - dataLabel
-- uniqueID
-- modified_on
+- uniqueId
+- modifiedOn
 DESCRIPTION
             },
             { '$ref' => '#/components/parameters/content_field_sortOrder' },

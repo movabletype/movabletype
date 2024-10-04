@@ -29,7 +29,7 @@ sub fields {
                         id       => { type => 'integer' },
                         label    => { type => 'string' },
                         type     => { type => 'string' },
-                        uniqueID => { type => 'string' },
+                        uniqueId => { type => 'string' },
                     },
                 },
             },

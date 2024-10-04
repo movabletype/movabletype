@@ -1007,6 +1007,10 @@ sub list_props {
             base    => 'entry.status',
             display => 'none',
         },
+        unique_id => {
+            base    => '__virtual.unique_id',
+            display => 'none',
+        },
     };
 }
 
@@ -1238,6 +1242,12 @@ sub make_list_props {
             modified_by => {
                 base  => '__virtual.modified_by',
                 order => $order + 500,
+            },
+            unique_id => {
+                base  => '__virtual.unique_id',
+                order => $order + 600,
+                col     => 'unique_id',
+                sort => 1,
             },
             %{$field_list_props},
         };
