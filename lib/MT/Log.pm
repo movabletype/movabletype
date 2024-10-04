@@ -41,6 +41,7 @@ __PACKAGE__->install_properties(
             created_on => 1,
             blog_id    => 1,
             level      => 1,
+            author_id  => 1,
         },
         defaults => {
             blog_id   => 0,
