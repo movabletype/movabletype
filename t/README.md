@@ -1,82 +1,100 @@
 # MT test documentation
 
-## Setup and Basics
+## Overview
 
 You can learn how to test Movabletype by reading 
 [.github/workflows/movabletype.yml](https://github.com/movabletype/movabletype/blob/develop/.github/workflows/movabletype.yml).
 The following are some small portions of it.
 
-```sh
+```
 $ git clone git@github.com:movabletype/movabletype.git
 $ cd movabletype
-$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 bash -c "BUILD_RELEASE_NUMBER=1 make"
-$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 prove -It/lib t/app
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 /bin/bash
+[root@0919d7f18f05 mt]# BUILD_RELEASE_NUMBER=1 make
+[root@0919d7f18f05 mt]# prove -It/lib t/app
 ```
 
 Some tests need to be run on the dedicated docker images.
 
-```sh
+```
 $ docker run -it -v $PWD:/mt -w /mt movabletype/test:chromiumdriver prove -It/lib t/selenium
 ```
 
-PHP files can be tested by following command.
+## Environment Variables
 
-```sh
-$ docker run -it -v $PWD:/mt -w /mt movabletype/test:chromiumdriver phpunit
+Environment variables starting with `MT_TEST_` (and some common names) change the behavior of tests. Please do `grep -r MT_TEST_ t/` for
+details.
+
+### Examples
+
+```
+[root@0919d7f18f05 mt]# MT_TEST_DEBUG_MODE=7 prove -It/lib t/20-setup.t
+[root@0919d7f18f05 mt]# MT_TEST_QUERY_LOG=1 prove -It/lib t/20-setup.t
+[root@0919d7f18f05 mt]# MT_TEST_CRAWL=1 prove -It/lib t/selenium/crawl.t
+[root@0919d7f18f05 mt]# EXTENDED_TESTING=1 prove -It/lib t/tag/php-only-test.t
 ```
 
-Some tests are skipped by default. These cases can be run by setting environment variables starting with `MT_TEST_`.
-
-For example,
-
-```sh
-$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 bash -c "MT_TEST_CRAWL=1 prove -It/lib t/selenium/crawl.t"
-```
-
-For details, please do `grep -r MT_TEST_ t/`.
-
-mysql is used for tests by default. You can inspect the tables by following command.
-
-```sh
-$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 /bin/bash
-$ prove -It/lib path/to/test.t
-$ mysql -u root --database mt_test
-```
+Note that some test options may need extra cpan modules. Please do `cpanm ...`.
 
 ## Parallel testing
 
 Run tests in parallel. This command needs [App::Prove::Plugin::MySQLPool](https://metacpan.org/pod/App::Prove::Plugin::MySQLPool).
 
-```sh
-$ prove -j4 -PMySQLPool=MT::Test::Env -It/lib ./t ./plugins/**/t
+```
+[root@0919d7f18f05 mt]# prove -j4 -PMySQLPool=MT::Test::Env -It/lib ./t ./plugins/**/t
 ```
 
 ## Fixture
 
-Pre recorded fixtures are used by default for speeding up the tests. You can ignore/update them.
+Pre-recorded fixtures are used by default for speeding up the tests. You can ignore/update them.
 
-### update fixture
+### Update fixture
 
-Fixtures depend on the followings.
+Fixtures depend on the following.
 * installed addons/plugins
 * schema_version of core and addons/plugins
 
 So, when you update fixtures for core tests, you need to remove additional addons/plugins before executing the following command.
 
-```sh
-$ MT_TEST_UPDATE_FIXTURE=1 prove ./t ./plugins/**/t
+```
+[root@0919d7f18f05 mt]# MT_TEST_UPDATE_FIXTURE=1 prove ./t ./plugins/**/t
 ```
 
-### ignore fixture
+### Ignore fixture
 
-```sh
-$ MT_TEST_IGNORE_FIXTURE=1 prove ./t ./plugins/**/t
+```
+[root@0919d7f18f05 mt]# MT_TEST_IGNORE_FIXTURE=1 prove ./t ./plugins/**/t
 ```
 
-### update fixture schema
+### Update fixture schema
 
-```sh
-$ perl -It/lib -MMT::Test::Env -E 'MT::Test::Env->save_schema'
+```
+[root@0919d7f18f05 mt]# perl -It/lib -MMT::Test::Env -E 'MT::Test::Env->save_schema'
+```
+
+## Test for PHP
+
+PHP files can be tested by following command.
+
+```
+[root@0919d7f18f05 mt]# phpunit
+```
+
+Some perl tests also include tests against PHP via `MT::Test::Tag`. The following are just a partial list.
+
+```
+[root@0919d7f18f05 mt]# prove -It/lib t/tag/ t/mt7/tag/ t/mt7/multiblog/
+```
+
+## Database inspection
+
+mysql is used for tests by default and a database named `mt_test` is automatically created.
+You can inspect the tables by following command.
+
+```
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 /bin/bash
+[root@0919d7f18f05 mt]# prove -It/lib path/to/test.t
+[root@0919d7f18f05 mt]# mysql -u root --database mt_test
 ```
 
 ## Test files
@@ -118,6 +136,6 @@ There are test files in ./t and ./plugins/**/t directories.
 * t/upgrade
   * tests for upgrade
 * t/admin_theme_id
-  * tests for theming mechanism of CMS
+  * tests for the theming mechanism of CMS
 * t/*.t
   * tests other than the above
