@@ -1,8 +1,47 @@
 # MT test documentation
 
-## Setup
+## Setup and Basics
 
-...
+You can learn how to test Movabletype by reading 
+[.github/workflows/movabletype.yml](https://github.com/movabletype/movabletype/blob/develop/.github/workflows/movabletype.yml).
+The following are some small portions of it.
+
+```sh
+$ git clone git@github.com:movabletype/movabletype.git
+$ cd movabletype
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 bash -c "BUILD_RELEASE_NUMBER=1 make"
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 prove -It/lib t/app
+```
+
+Some tests need to be run on the dedicated docker images.
+
+```sh
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:chromiumdriver prove -It/lib t/selenium
+```
+
+PHP files can be tested by following command.
+
+```sh
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:chromiumdriver phpunit
+```
+
+Some tests are skipped by default. These cases can be run by setting environment variables starting with `MT_TEST_`.
+
+For example,
+
+```sh
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 bash -c "MT_TEST_CRAWL=1 prove -It/lib t/selenium/crawl.t"
+```
+
+For details, please do `grep -r MT_TEST_ t/`.
+
+mysql is used for tests by default. You can inspect the tables by following command.
+
+```sh
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 /bin/bash
+$ prove -It/lib path/to/test.t
+$ mysql -u root --database mt_test
+```
 
 ## Test commands
 
