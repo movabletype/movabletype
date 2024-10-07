@@ -85,7 +85,7 @@ Some tests are skipped by default. These cases can be run by setting environment
 For example,
 
 ```sh
-$ docker run -it --rm -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "MT_TEST_CRAWL=1 prove -It/lib t/selenium/crawl.t"
+$ docker run -it --rm -v $PWD:/mt -w /mt movabletype/test:centos8 bash -c "MT_TEST_CRAWL=1 prove -It/lib t/selenium/crawl.t"
 ```
 
 For details, please do `grep -r MT_TEST_ t/`.
@@ -97,3 +97,5 @@ $ docker run -it --rm -v $PWD:/mt -w /mt movabletype/test:centos8 /bin/bash
 $ prove -It/lib path/to/test.t
 $ mysql -u root --database mt_test
 ```
+
+See also [t/README.md](https://github.com/movabletype/movabletype/blob/develop/t/README.md).
