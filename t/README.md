@@ -2,13 +2,7 @@
 
 ## Setup
 
-Create database `mt_test` and user `mt`
-
-```
-$ mysql -uroot
-mysql> create database mt_test character set utf8;
-mysql> grant all privileges on mt_test.* to mt@localhost;
-```
+...
 
 ## Test commands
 
@@ -86,18 +80,3 @@ There are test files in ./t and ./plugins/**/t directories.
   * author tests
 * t/*.t
   * tests other than the above
-
-## CI services
-
-### [Travis CI](https://travis-ci.org/movabletype/movabletype)
-
-Test on the following environments.
-
-* all branches
-  * Perl 5.18, PHP 5.5, MySQL 5.5
-* master/develop branch
-  * Perl 5.10, PHP 5.3, MySQL 5.1
-  * Perl 5.24, PHP 7.0, MariaDB 10.1
-  * Perl 5.26, PHP 7.2, MySQL 5.7
-
-Setting file is .travis.yml.
