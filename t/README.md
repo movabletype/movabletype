@@ -139,3 +139,21 @@ There are test files in ./t and ./plugins/**/t directories.
   * tests for the theming mechanism of CMS
 * t/*.t
   * tests other than the above
+
+## Testing your own plugins
+
+For starters, run core tests against Movabletype source with your plugin installed to make sure your plugin doesn't
+break the tests.
+
+```
+$ cd movabletype
+$ cp -r path/to/your-repo/plugins/your-plugin ./plugins/
+$ cp -r path/to/your-repo/mt-static/plugins/your-plugin ./mt-static/plugins/
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 prove -It/lib t
+```
+
+You can also run your own tests.
+
+```
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 prove -It/lib plugins/your-plugin/t
+```
