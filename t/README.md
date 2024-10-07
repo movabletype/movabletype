@@ -9,9 +9,7 @@ The following are some small portions of it.
 ```
 $ git clone git@github.com:movabletype/movabletype.git
 $ cd movabletype
-$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 /bin/bash
-[root@0919d7f18f05 mt]# BUILD_RELEASE_NUMBER=1 make
-[root@0919d7f18f05 mt]# prove -It/lib t/app
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 prove -It/lib t
 ```
 
 Some tests need to be run on the dedicated docker images.
@@ -85,6 +83,18 @@ Some perl tests also include tests against PHP via `MT::Test::Tag`. The followin
 ```
 [root@0919d7f18f05 mt]# prove -It/lib t/tag/ t/mt7/tag/ t/mt7/multiblog/
 ```
+
+## Crawler test
+
+As can be read from the github workflow configurations, you need to `make` before you can run following crawler test.
+
+```
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 bash -c "BUILD_RELEASE_NUMBER=1 make && MT_TEST_CRAWL=1 prove -It/lib t/selenium/crawl.t"
+```
+
+`make` prevents the crawler from detecting 404 errors on `mt-static/mt_ja.js`.
+It overwrites version placeholders in the source but these aren't necessary for tests. You can `git reset` them
+in order not to commit accidentally.
 
 ## Database inspection
 
