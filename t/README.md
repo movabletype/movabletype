@@ -43,15 +43,7 @@ $ prove -It/lib path/to/test.t
 $ mysql -u root --database mt_test
 ```
 
-## Test commands
-
-### default
-
-```sh
-$ prove ./t ./plugins/**/t
-```
-
-### parallel test
+## Parallel testing
 
 Run tests in parallel. This command needs [App::Prove::Plugin::MySQLPool](https://metacpan.org/pod/App::Prove::Plugin::MySQLPool).
 
@@ -59,13 +51,17 @@ Run tests in parallel. This command needs [App::Prove::Plugin::MySQLPool](https:
 $ prove -j4 -PMySQLPool=MT::Test::Env -It/lib ./t ./plugins/**/t
 ```
 
+## Fixture
+
+Pre recorded fixtures are used by default for speeding up the tests. You can ignore/update them.
+
 ### update fixture
 
-Fixture depends on the followings.
+Fixtures depend on the followings.
 * installed addons/plugins
 * schema_version of core and addons/plugins
 
-So, when you update fixture for Travis CI, you need to remove additional addons/plugins before executing the following command.
+So, when you update fixtures for core tests, you need to remove additional addons/plugins before executing the following command.
 
 ```sh
 $ MT_TEST_UPDATE_FIXTURE=1 prove ./t ./plugins/**/t
@@ -117,5 +113,11 @@ There are test files in ./t and ./plugins/**/t directories.
   * tests for MT::Util*
 * t/xt/*.t
   * author tests
+* t/tools
+  * tests for command line tools
+* t/upgrade
+  * tests for upgrade
+* t/admin_theme_id
+  * tests for theming mechanism of CMS
 * t/*.t
   * tests other than the above
