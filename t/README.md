@@ -4,7 +4,7 @@
 
 You can learn how to test Movabletype by reading 
 [.github/workflows/movabletype.yml](https://github.com/movabletype/movabletype/blob/develop/.github/workflows/movabletype.yml).
-The following are some small portions of it.
+This document shows you small portions of it, and some extra information.
 
 ```
 $ git clone git@github.com:movabletype/movabletype.git
@@ -26,13 +26,14 @@ details.
 ### Examples
 
 ```
+$ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 /bin/bash
 [root@0919d7f18f05 mt]# MT_TEST_DEBUG_MODE=7 prove -It/lib t/20-setup.t
 [root@0919d7f18f05 mt]# MT_TEST_QUERY_LOG=1 prove -It/lib t/20-setup.t
 [root@0919d7f18f05 mt]# MT_TEST_CRAWL=1 prove -It/lib t/selenium/crawl.t
 [root@0919d7f18f05 mt]# EXTENDED_TESTING=1 prove -It/lib t/tag/php-only-test.t
 ```
 
-Note that some test options may need extra cpan modules. Please do `cpanm ...`.
+Note that some test options may need extra cpan modules. Please do `cpanm ...` inside the container.
 
 ## Parallel testing
 
@@ -55,13 +56,13 @@ Fixtures depend on the following.
 So, when you update fixtures for core tests, you need to remove additional addons/plugins before executing the following command.
 
 ```
-[root@0919d7f18f05 mt]# MT_TEST_UPDATE_FIXTURE=1 prove ./t ./plugins/**/t
+[root@0919d7f18f05 mt]# MT_TEST_UPDATE_FIXTURE=1 prove -It/lib ./t ./plugins/**/t
 ```
 
 ### Ignore fixture
 
 ```
-[root@0919d7f18f05 mt]# MT_TEST_IGNORE_FIXTURE=1 prove ./t ./plugins/**/t
+[root@0919d7f18f05 mt]# MT_TEST_IGNORE_FIXTURE=1 prove -It/lib ./t ./plugins/**/t
 ```
 
 ### Update fixture schema
@@ -93,7 +94,7 @@ $ docker run -it -v $PWD:/mt -w /mt movabletype/test:centos8 bash -c "BUILD_RELE
 ```
 
 `make` prevents the crawler from detecting 404 errors on `mt-static/mt_ja.js`.
-It overwrites version placeholders in the source but these aren't necessary for tests. You can `git reset` them
+`make` also overwrites version placeholders in the sources but these aren't necessary for tests. You can `git reset` them
 in order not to commit accidentally.
 
 ## Database inspection
@@ -152,8 +153,8 @@ There are test files in ./t and ./plugins/**/t directories.
 
 ## Testing your own plugins
 
-For starters, run core tests against Movabletype source with your plugin installed to make sure your plugin doesn't
-break the tests.
+For starters, run core tests against Movabletype source with your plugin installed to ensure your plugin
+isn't a cause of any regressions.
 
 ```
 $ cd movabletype
