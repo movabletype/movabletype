@@ -3643,9 +3643,11 @@ sub _determine_total {
     my $total = 0;
     if (   $archiver->entry_based
         || $archiver->contenttype_based
+        || $archiver->contenttype_author_based
         || $archiver->date_based )
     {
         if (   $archiver->contenttype_based
+            || $archiver->contenttype_author_based
             || $archiver->contenttype_date_based )
         {
             my $terms = {
@@ -3692,19 +3694,11 @@ sub _determine_total {
         my $terms = {
             blog_id => $blog_id,
             status  => MT::Entry::RELEASE(),
-            (   $archiver->contenttype_author_based ? ()
-                : ( class => 'entry' )
-            ),
-            (   $archiver->contenttype_author_based && $content_type_id
-                ? ( content_type_id => $content_type_id )
-                : ()
-            ),
+            class   => 'entry'
         };
-        my $obj_class
-            = $archiver->contenttype_author_based ? 'content_data' : 'entry';
         $total = MT::Author->count(
             { status => MT::Author::ACTIVE() },
-            {   join => MT->model($obj_class)
+            {   join => MT->model('entry')
                     ->join_on( 'author_id', $terms, { unique => 1 } ),
                 unique => 1,
             }
