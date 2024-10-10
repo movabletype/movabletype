@@ -84,8 +84,8 @@ sub get_config_value {
         } else {
             push @blog_ids, $rt->blog_id;
         }
-        if ($rt->ct_id) {
-            $data->{ $rt->object_type }{ $rt->event }{$_}{ $rt->action }{$rt->ct_id} = 1 for @blog_ids;
+        if (($rt->object_type || 0) == TYPE_CONTENT_TYPE) {
+            $data->{ $rt->object_type }{ $rt->event }{$_}{ $rt->action }{$rt->ct_id || 0} = 1 for @blog_ids;
         } else {
             $data->{ $rt->object_type }{ $rt->event }{$_}{ $rt->action } = 0 for @blog_ids;
         }
