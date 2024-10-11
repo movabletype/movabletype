@@ -11,7 +11,6 @@ import css from "rollup-plugin-css-only";
 const production = !process.env.ROLLUP_WATCH;
 const defaultOutputDir = "mt-static/js/build";
 
-const mtStaticOutputDir = "mt-static";
 const mtStaticInputFiles = [
   "src/mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_protect/plugin.ts",
   "src/mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_protect/plugin.ts",
@@ -52,37 +51,34 @@ const srcConfig = (inputFile) => {
   };
 };
 
-const mtStaticConfig = {
-  input: mtStaticInputFiles,
-  output: {
-    dir: mtStaticOutputDir,
-    format: "esm",
-    sourcemap: !production,
-    entryFileNames: ({ facadeModuleId }) => {
-      return facadeModuleId
-        .replace(/.*\/src\/mt-static\//, "")
-        .replace(/\.ts$/, ".js");
+const mtStaticConfig = (inputfile) => {
+  return {
+    input: inputfile,
+    output: {
+      file: inputfile.replace(/^src\//, "").replace(/ts$/, "js"),
+      format: "iife",
+      sourcemap: !production,
     },
-  },
-  plugins: [
-    resolve({
-      browser: true,
-    }),
-    commonjs(),
-    esbuild({
-      sourceMap: true,
-      minify: production,
-    }),
+    plugins: [
+      resolve({
+        browser: true,
+      }),
+      commonjs(),
+      esbuild({
+        sourceMap: true,
+        minify: production,
+      }),
 
-    // Watch the `public` directory and refresh the
-    // browser on changes when not in production
-    !production && livereload(mtStaticOutputDir),
-    typescript({ sourceMap: !production }),
-  ],
+      // Watch the `public` directory and refresh the
+      // browser on changes when not in production
+      !production && livereload(mtStaticOutputDir),
+      typescript({ sourceMap: !production }),
+    ],
+  };
 };
 
 export default [
   srcConfig("src/contenttype.ts"),
   srcConfig("src/listing.ts"),
-  mtStaticConfig,
+  ...mtStaticInputFiles.map(mtStaticConfig),
 ];
