@@ -11,6 +11,7 @@ import css from "rollup-plugin-css-only";
 const production = !process.env.ROLLUP_WATCH;
 const defaultOutputDir = "mt-static/js/build";
 
+const mtStaticOutputDir = "mt-static";
 const mtStaticInputFiles = [
   "src/mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt_protect/plugin.ts",
   "src/mt-static/plugins/TinyMCE6/lib/js/tinymce/plugins/mt_protect/plugin.ts",
