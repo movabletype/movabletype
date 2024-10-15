@@ -454,7 +454,7 @@ sub _remove_news_widget_cache {
     my $class = MT->model('session')
         or return $self->error(
         $self->translate_escape( "Error loading class: [_1].", 'session' ) );
-    $class->remove( { kind => [qw( NW LW )] } );
+    $class->remove( { kind => [qw( NW LW DW )] } );
 }
 
 sub _uri_unescape_utf8 {
