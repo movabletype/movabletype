@@ -24,6 +24,26 @@ sub new {
 #--------------------------------------#
 # Instance Methods
 
+sub _parse_array_terms {
+    my $stmt = shift;
+    my ($term_list) = @_;
+
+    foreach my $term (@$term_list) {
+        if ( ref $term eq 'HASH' ) {
+            foreach my $key ( keys %$term ) {
+                if ( ref $term->{$key} eq 'HASH' ) {
+                    if ( $term->{$key}->{not_like} ) {
+                        my @array = ( $term->{$key}, \'IS NULL' );
+                        $term->{$key} = \@array;
+                    }
+                }
+            }
+        }
+    }
+
+    return $stmt->SUPER::_parse_array_terms($term_list);
+}
+
 sub as_sql {
     my $stmt = shift;
     return $stmt->SUPER::as_sql(@_) unless exists $stmt->{count_distinct};
