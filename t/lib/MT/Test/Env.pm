@@ -243,6 +243,15 @@ sub _write_config {
                 };
                 print $fh "$key $value\n";
             }
+        } elsif (ref $config->{$key} eq 'HASH') {
+            for my $name (keys %{ $config->{$key} }) {
+                my $value = $config->{$key}{$name};
+                $value =~ s/\bMT_HOME\b/$MT_HOME/;
+                $value =~ s/\bTEST_ROOT\b/$root/ and do {
+                    mkpath($value) unless basename($value) =~ /\./;
+                };
+                print $fh "$key $name=$value\n";
+            }
         } else {
             my $value = $config->{$key};
             $value =~ s/\bMT_HOME\b/$MT_HOME/;
