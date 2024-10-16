@@ -662,8 +662,14 @@ sub pre_remove_tags {
 
 sub tag_cache_key {
     my $obj = shift;
-    return undef unless $obj->id;
-    return sprintf "%stags-%d", $obj->datasource, $obj->id;
+    if (ref $_[0] eq 'HASH') {
+        my $args = shift;
+        return sprintf "%stags-%d", $args->{datasource}, $args->{id};
+    }
+    else {
+        return undef unless $obj->id;
+        return sprintf "%stags-%d", $obj->datasource, $obj->id;
+    }
 }
 
 sub __load_tags {
