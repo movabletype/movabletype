@@ -92,14 +92,14 @@ sub slurp_logfile {
 
 sub last_sent_mail {
     my $self = shift;
-    my $mail = $self->list_messages->[0];
+    my $mail = $self->list_messages->[0] or return;
     my $id   = $mail->{ID};
     $self->get_raw_message($id)->decoded_content; 
 }
 
 sub last_sent_recipients {
     my $self = shift;
-    my $mail = $self->list_messages->[0];
+    my $mail = $self->list_messages->[0] or return;
     my @recipients;
     for my $type (qw(To Cc Bcc)) {
         push @recipients, map {$_->{Address}} @{ $mail->{$type} || [] };
