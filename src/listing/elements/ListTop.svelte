@@ -40,10 +40,9 @@
   });
 
   afterUpdate(() => {
-    // sub_fields are not updated yet in store.on("refresh_view", ...)
+    // update sub_fields not managed in the svelte lifecycle
     updateSubFields();
 
-    // list component is not updated yet in store.on("refresh_view", ...)
     if (callListReady) {
       callListReady = false;
       jQuery(window).trigger("listReady");
@@ -61,7 +60,7 @@
         window.document.body.scrollTop = window.document.body.scrollHeight;
       }
       if (!args.notCallListReady) {
-        // call trigger in afterUpdate()
+        // trigger a "listReady" event in afterUpdate() after the DOM has been updated
         callListReady = true;
       }
     },
