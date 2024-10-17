@@ -482,37 +482,6 @@ sub _connect_info_sqlite {
     );
 }
 
-sub _connect_info_oracle {
-    my $self = shift;
-
-    my %connect_info = (
-        ObjectDriver => 'DBI::Oracle',
-        DBPort       => 1521,
-        DBUser       => 'system',
-    );
-    my @keys = qw(ObjectDriver Database DBPort DBHost DBSocket DBUser DBPassword);
-    for my $key (@keys) {
-        my $env_key = "MT_TEST_" . (uc $key);
-        if ($ENV{$env_key}) {
-            $connect_info{$key} = $ENV{$env_key};
-        }
-    }
-    note "DRIVER: Oracle";
-
-    # for better compatibility
-    $ENV{NLS_LANG}  = $ENV{MT_TEST_NLS_LANG}  || 'AMERICAN_AMERICA.AL32UTF8';
-    $ENV{NLS_NCHAR} = $ENV{MT_TEST_NLS_NCHAR} || 'AL32UTF8';
-    $ENV{NLS_COMP}  = $ENV{MT_TEST_NLS_COMP}  || 'LINGUISTIC';
-    $ENV{NLS_SORT}  = $ENV{MT_TEST_NLS_SORT}  || 'AMERICAN_AMERICA';
-
-    my $dsn = sprintf('dbi:Oracle:host=%s;sid=%s;port=%s',
-        $connect_info{DBHost}, $connect_info{Database}, $connect_info{DBPort});
-    my $dbh = DBI->connect($dsn, $connect_info{DBUser}, $connect_info{DBPassword});
-    $self->_oracle_increase_open_cursors($dbh);
-
-    %connect_info;
-}
-
 sub skip_unless_mysql_supports_utf8mb4 {
     my $self       = shift;
     my $db_charset = $self->mysql_db_charset // '';
@@ -534,12 +503,6 @@ sub show_mysql_db_variables {
         my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
         Test::More::note join ': ', @$_ for @$rows;
     }
-}
-
-sub _oracle_increase_open_cursors {
-    my ($self, $dbh) = @_;
-    return unless $self->driver eq 'oracle';
-    $dbh->do('ALTER SYSTEM SET OPEN_CURSORS = 1000 SCOPE=BOTH') or die $dbh->errstr;
 }
 
 sub mysql_session_variable {
