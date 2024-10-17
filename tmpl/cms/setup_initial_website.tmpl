@@ -214,25 +214,25 @@ jQuery(function() {
 <mt:if name="website_timezone" eq="">
     init();
 </mt:if>
-    jQuery('button#skip_button').click(function() {
+    jQuery('button#skip_button').on('click', function() {
         jQuery('#website_form > input[name=skip]').val('1');
         jQuery('#website_form > input[name=back]').val('0');
         jQuery('#website_form > input[name=finish]').val('0');
-        jQuery('#website_form').submit();
+        jQuery('#website_form').trigger('submit');
     });
-    jQuery('button#finish_button').click(function() {
+    jQuery('button#finish_button').on('click', function() {
         jQuery('#website_form > input[name=skip]').val('0');
         jQuery('#website_form > input[name=back]').val('0');
         jQuery('#website_form > input[name=finish]').val('1');
-        jQuery('#website_form').submit();
+        jQuery('#website_form').trigger('submit');
     });
-    jQuery('button#back_button').click(function() {
+    jQuery('button#back_button').on('click', function() {
         jQuery('#website_form > input[name=skip]').val('0');
         jQuery('#website_form > input[name=back]').val('1');
         jQuery('#website_form > input[name=finish]').val('0');
-        jQuery('#website_form').submit();
+        jQuery('#website_form').trigger('submit');
     });
-    jQuery('#website_form').submit( function () {
+    jQuery('#website_form').on('submit', function () {
         if ( jQuery('#website_form > input[name=finish]').val() === '0' ) return true;
         return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
     });

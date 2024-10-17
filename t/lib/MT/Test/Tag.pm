@@ -178,7 +178,7 @@ SKIP: {
                 my $block_name = $block->name || $block->seq_num;
                 $ENV{REQUEST_URI} = "$0 [$block_name]";
                 my $got;
-                if ($^O eq 'MSWin32' or $ENV{MT_TEST_NO_PHP_DAEMON}) {
+                if ($^O eq 'MSWin32' or $ENV{MT_TEST_NO_PHP_DAEMON} or lc($ENV{MT_TEST_BACKEND} // '') eq 'sqlite') {
                     my $php_script = php_test_script( $block_name, $block->blog_id || $blog_id, $template, $text, $extra );
                     $got = Encode::decode_utf8(MT::Test::PHP->run($php_script));
                 } else {
