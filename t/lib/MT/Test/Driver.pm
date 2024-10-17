@@ -67,7 +67,7 @@ sub clean_db : Test(teardown) {
     reset_table_for(qw( Foo ));
 }
 
-sub escape : Tests(3) {
+sub escape : Tests(5) {
 
     subtest 'escape_char 1' => sub {
         my @got = Foo->load({text => {op => 'LIKE', value => '100!%', escape => '!'}});
@@ -83,6 +83,20 @@ sub escape : Tests(3) {
 
     subtest 'self escape' => sub {
         my @got = Foo->load({text => {op => 'LIKE', value => '100__', escape => '_'}});
+        is scalar(@got), 1, 'right number';
+        is $got[0]->name, 'bar', 'right name';
+    };
+
+    subtest 'escape_char sigle quote' => sub {
+        plan skip_all => "only for mysql" unless lc($ENV{MT_TEST_BACKEND} // '') eq 'mysql';
+        my @got = Foo->load({text => {op => 'LIKE', value => "100'_", escape => "'"}});
+        is scalar(@got), 1, 'right number';
+        is $got[0]->name, 'bar', 'right name';
+    };
+
+    subtest 'escape_char backslash' => sub {
+        plan skip_all => "only for mysql" unless lc($ENV{MT_TEST_BACKEND} // '') eq 'mysql';
+        my @got = Foo->load({text => {op => 'LIKE', value => '100\\_', escape => '\\'}});
         is scalar(@got), 1, 'right number';
         is $got[0]->name, 'bar', 'right name';
     };
