@@ -67,7 +67,7 @@ sub clean_db : Test(teardown) {
     reset_table_for(qw( Foo ));
 }
 
-sub escape : Tests(3) {
+sub escape : Tests(4) {
 
     subtest 'escape_char 1' => sub {
         my @got = Foo->load({text => {op => 'LIKE', value => '100!%', escape => '!'}});
@@ -86,6 +86,34 @@ sub escape : Tests(3) {
         is scalar(@got), 1, 'right number';
         is $got[0]->name, 'bar', 'right name';
     };
+
+    subtest 'use of special characters' => sub {
+        if (Foo->driver->dbh->{Driver}->{Name} eq 'mysql') {
+            subtest 'escape_char single quote' => sub {
+                my @got = Foo->load({text => {op => 'LIKE', value => "100'_", escape => "\\'"}});
+                is scalar(@got), 1, 'right number';
+                is $got[0]->name, 'bar', 'right name';
+            };
+
+            subtest 'escape_char backslash' => sub {
+                my @got = Foo->load({text => {op => 'LIKE', value => '100\\_', escape => '\\\\'}});
+                is scalar(@got), 1, 'right number';
+                is $got[0]->name, 'bar', 'right name';
+            };
+        } else {
+            subtest 'escape_char single quote' => sub {
+                my @got = Foo->load({text => {op => 'LIKE', value => "100'_", escape => "''"}});
+                is scalar(@got), 1, 'right number';
+                is $got[0]->name, 'bar', 'right name';
+            };
+
+            subtest 'escape_char backslash' => sub {
+                my @got = Foo->load({text => {op => 'LIKE', value => '100\\_', escape => '\\'}});
+                is scalar(@got), 1, 'right number';
+                is $got[0]->name, 'bar', 'right name';
+            };
+        }
+    }
 }
 
 package Test::GroupBy;

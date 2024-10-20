@@ -149,9 +149,6 @@ sub as_sql_having {
 
 sub as_escape {
     my ($stmt, $escape_char) = @_;
-    die 'escape_char must be a single character' unless defined($escape_char) && length($escape_char) == 1;
-    $escape_char =~ s/\\/\\\\/;
-    $escape_char =~ s/'/\\'/;
     return " ESCAPE '$escape_char'";
 }
 
