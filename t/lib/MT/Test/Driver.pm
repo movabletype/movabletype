@@ -67,7 +67,7 @@ sub clean_db : Test(teardown) {
     reset_table_for(qw( Foo ));
 }
 
-sub escape : Tests(4) {
+sub escape : Tests(5) {
 
     subtest 'escape_char 1' => sub {
         my @got = Foo->load({text => {op => 'LIKE', value => '100!%', escape => '!'}});
@@ -113,7 +113,14 @@ sub escape : Tests(4) {
                 is $got[0]->name, 'bar', 'right name';
             };
         }
-    }
+    };
+
+    subtest 'is safe' => sub {
+        eval {
+            Foo->load({text => {op => 'LIKE', value => '_', escape => q{!');select 'vulnerable'; -- }}});
+        };
+        like $@, qr/escape_char length must be up to two characters/, 'error occurs';
+    };
 }
 
 package Test::GroupBy;
