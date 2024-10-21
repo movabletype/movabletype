@@ -92,9 +92,14 @@ sub rename_tag {
                 $ot_class->load( { @b_terms, tag_id => $tag2->id } );
         }
 
+        my @tag_cache_keys = ();
         my $iter = $ot_class->load_iter( { @b_terms, tag_id => $tag->id } );
         while ( my $ot = $iter->() ) {
             my $tag_sign = $ot->object_id . '|' . $ot->object_datasource;
+            push @tag_cache_keys, MT::Taggable->tag_cache_key({
+                datasource => $ot->object_datasource,
+                id => $ot->object_id
+            });
             if ( exists $already_tagged{$tag_sign} ) {
                 $ot->remove();
             }
@@ -103,6 +108,12 @@ sub rename_tag {
                 $ot->save;
             }
         }
+
+        require MT::Memcached;
+        if ( MT::Memcached->is_available() ) {
+            MT::Memcached->instance->delete($_) for @tag_cache_keys;
+        }
+
         if ( not $blog_id or not $ot_class->exist( { tag_id => $tag->id } ) )
         {
             $tag->remove();
