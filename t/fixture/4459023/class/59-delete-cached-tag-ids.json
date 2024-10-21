@@ -470,6 +470,38 @@
             null,
             null,
             197805
+         ],
+         [
+            1,
+            1,
+            "tag:narnia.na,1978://2.2",
+            1,
+            "1978-01-31 07:45:00",
+            "a_rainy_day_1",
+            2,
+            null,
+            "entry",
+            0,
+            null,
+            null,
+            "1978-01-31 07:45:00",
+            0,
+            "A story of a stroll.",
+            2,
+            "keywords",
+            null,
+            "1978-01-31 07:46:00",
+            0,
+            "http://technorati.com/",
+            2,
+            null,
+            null,
+            "On a drizzly day last weekend,",
+            "I took my grandpa for a walk.",
+            "A Rainy Day",
+            null,
+            null,
+            197805
          ]
       ]
    },
@@ -490,6 +522,14 @@
             "entry",
             1,
             1
+         ],
+         [
+            2,
+            0,
+            2,
+            "entry",
+            2,
+            2
          ]
       ]
    },
@@ -682,6 +722,12 @@
             1,
             0,
             "@entry"
+         ],
+         [
+            2,
+            1,
+            0,
+            "@entry2"
          ]
       ]
    },
