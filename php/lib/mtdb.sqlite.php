@@ -9,7 +9,7 @@ require_once('mtdb.base.php');
 
 class MTDatabasesqlite extends MTDatabase {
 
-    protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '') {
+    protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $options = []) {
         if (extension_loaded('pdo') && extension_loaded('pdo_sqlite')) {
             $prefix = 'pdo_sqlite';
             $this->pdo_enabled = true;
