@@ -721,6 +721,7 @@ sub _mysqld {
 sub dbh {
     my $self = shift;
     $self->connect_info unless $self->{dsn};
+    my $options = $self->{_config}{DBIConnectOptions} || {};
     DBI->connect(
         $self->{dsn},
         undef, undef,
@@ -728,6 +729,7 @@ sub dbh {
             RaiseError         => 1,
             PrintError         => 0,
             ShowErrorStatement => 1,
+            %$options,
         },
     ) or die $DBI::errstr;
 }
