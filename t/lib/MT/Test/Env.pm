@@ -412,7 +412,7 @@ sub _connect_info_mysql {
         }
     } else {
         $self->{dsn} = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
-        my $dbh = DBI->connect($self->{dsn});
+        my $dbh = do { local $SIG{__WARN__}; DBI->connect($self->{dsn}, undef, undef, { PrintError => 0 }) };
         if (!$dbh) {
             if ($DBI::errstr =~ /Connections using insecure transport are prohibited/) {
                 $dbh = DBI->connect($self->{dsn}, undef, undef, {
