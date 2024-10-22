@@ -705,6 +705,9 @@ sub my_cnf {
         } else {
             $cnf{caching_sha2_password_auto_generate_rsa_keys} = 1;
         }
+        if ($ENV{MT_TEST_FORCE_MYSQL_SECURE_TRANSPORT}) {
+            $cnf{require_secure_transport} = 'true';
+        }
     }
 
     my $charset = $class->mysql_charset;
