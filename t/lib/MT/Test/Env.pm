@@ -674,6 +674,8 @@ sub my_cnf {
     if ((!$is_maria && $major_version >= 8) or ($is_maria && $maria_major == 10 && $maria_minor > 3)) {
         if ($ENV{MT_TEST_FORCE_MYSQL_NATIVE_PASSWORD}) {
             $cnf{default_authentication_plugin} = 'mysql_native_password';
+        } else {
+            $cnf{caching_sha2_password_auto_generate_rsa_keys} = 1;
         }
     }
 
