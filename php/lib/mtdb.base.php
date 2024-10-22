@@ -47,14 +47,14 @@ abstract class MTDatabase {
     private $_content_field_id_cache;
 
     // Construction
-    public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1) {
+    public function __construct($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $retry = 3, $retry_int = 1, $options = []) {
         global $ADODB_QUOTE_FIELDNAMES;
         $ADODB_QUOTE_FIELDNAMES = $this->_adodb_quote_fieldnames;
         $this->id = md5(uniqid('MTDatabase',true));
         $retry_cnt = 0;
         while ( ( empty($this->conn) || ( !empty($this->conn) && !$this->conn->IsConnected() ) ) && $retry_cnt++ < $retry ) {
             try {
-                $this->connect($user, $password, $dbname, $host, $port, $sock);
+                $this->connect($user, $password, $dbname, $host, $port, $sock, $options);
             } catch (Exception $e ) {
                 sleep( $retry_int );
             }
@@ -68,7 +68,7 @@ abstract class MTDatabase {
     }
 
     // Abstract method
-    abstract protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '');
+    abstract protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $options = []);
     abstract public function set_names($mt);
 
     // Utility method

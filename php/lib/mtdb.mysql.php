@@ -9,7 +9,7 @@ require_once('mtdb.base.php');
 
 class MTDatabasemysql extends MTDatabase {
 
-    protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '') {
+    protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '', $options = []) {
         if (extension_loaded('pdo') && extension_loaded('pdo_mysql')) {
             $this->pdo_enabled = true;
             $this->conn = ADONewConnection('pdo');
@@ -22,6 +22,14 @@ class MTDatabasemysql extends MTDatabase {
                 $dsn = "host=$host";
             }
             $dsn = "mysql:$dsn";
+            if (!empty($options['mysql_ssl'])) {
+                $this->conn->pdoParameters = [
+                    PDO::MYSQL_ATTR_SSL_KEY => !empty($options['mysql_ssl_client_key']) ? $options['mysql_ssl_client_key'] : '/var/lib/mysql/client-key.pem',
+                    PDO::MYSQL_ATTR_SSL_CERT => !empty($options['mysql_ssl_client_cert']) ? $options['mysql_ssl_client_cert'] : '/var/lib/mysql/client-cert.pem',
+                    PDO::MYSQL_ATTR_SSL_CA => !empty($options['mysql_ssl_ca_file']) ? $options['mysql_ssl_ca_file'] : '/var/lib/mysql/ca.pem',
+                    PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => !empty($options['mysql_ssl_verify_server_cert']),
+                ];
+            }
             $this->conn->Connect($dsn, $user, $password, $dbname);
         } elseif (extension_loaded('mysqli')) {
             $this->conn = ADONewConnection('mysqli');
@@ -32,6 +40,11 @@ class MTDatabasemysql extends MTDatabase {
                 $dsn = "$host";
                 if (!empty($port))
                     $host .= ":$port";
+            }
+            if (!empty($options['mysql_ssl'])) {
+                $this->conn->ssl_key = !empty($options['mysql_ssl_client_key']) ? $options['mysql_ssl_client_key'] : '/var/lib/mysql/client-key.pem';
+                $this->conn->ssl_cert = !empty($options['mysql_ssl_client_cert']) ? $options['mysql_ssl_client_cert'] : '/var/lib/mysql/client-cert.pem';
+                $this->conn->ssl_ca = !empty($options['mysql_ssl_ca_file']) ? $options['mysql_ssl_ca_file'] : '/var/lib/mysql/ca.pem';
             }
             $this->conn->Connect($dsn, $user, $password, $dbname);
         } else {
