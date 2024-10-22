@@ -405,9 +405,21 @@ sub _connect_info_mysql {
         $self->{dsn} = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
         my $dbh = DBI->connect($self->{dsn});
         if (!$dbh) {
-            die $DBI::errstr unless $DBI::errstr =~ /Unknown database/;
-            (my $dsn = $self->{dsn}) =~ s/dbname=$info{Database};//;
-            $dbh = DBI->connect($dsn) or die $DBI::errstr;
+            if ($DBI::errstr =~ /Connections using insecure transport are prohibited/) {
+                $dbh = DBI->connect($self->{dsn}, undef, undef, {
+                    mysql_ssl                    => 1,
+                    mysql_ssl_verify_server_cert => 0,
+                }) or die $DBI::errstr;
+                $info{DBIConnectOptions} = {
+                    mysql_ssl                    => 1,
+                    mysql_ssl_verify_server_cert => 0,
+                };
+            } elsif ($DBI::errstr =~ /Unknown database/) {
+                (my $dsn = $self->{dsn}) =~ s/dbname=$info{Database};//;
+                $dbh = DBI->connect($dsn) or die $DBI::errstr;
+            } else {
+                die $DBI::errstr;
+            }
         }
         $self->_prepare_mysql_database($dbh);
     }
