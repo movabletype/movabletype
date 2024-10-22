@@ -598,10 +598,16 @@ CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
 END_OF_SQL
 
     my ($major_version, $minor_version, $is_maria, $maria_major, $maria_minor) = _mysql_version();
-    if ($ENV{MT_TEST_MYSQLPOOL_DSN} && $is_maria && $maria_major == 10 && $maria_minor > 3) {
-        $sql .= <<"END_OF_SQL";
+    if ($ENV{MT_TEST_MYSQLPOOL_DSN} && ((!$is_maria && $major_version >= 8) or ($is_maria && $maria_major == 10 && $maria_minor > 3))) {
+        if ($ENV{MT_TEST_FORCE_MYSQL_NATIVE_PASSWORD}) {
+            $sql .= <<"END_OF_SQL";
 ALTER USER root\@localhost IDENTIFIED VIA mysql_native_password USING PASSWORD('');
 END_OF_SQL
+        } else {
+            $sql .= <<"END_OF_SQL";
+ALTER USER root\@localhost IDENTIFIED BY '';
+END_OF_SQL
+        }
     }
 
     for my $statement (split ";\n", $sql) {
@@ -694,7 +700,9 @@ sub my_cnf {
 
     # MySQL 8.0+
     if ((!$is_maria && $major_version >= 8) or ($is_maria && $maria_major == 10 && $maria_minor > 3)) {
-        $cnf{default_authentication_plugin} = 'mysql_native_password';
+        if ($ENV{MT_TEST_FORCE_MYSQL_NATIVE_PASSWORD}) {
+            $cnf{default_authentication_plugin} = 'mysql_native_password';
+        }
     }
 
     my $charset = $class->mysql_charset;
