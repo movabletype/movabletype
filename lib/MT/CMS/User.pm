@@ -324,7 +324,46 @@ sub edit_role {
 
     @perms = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) } @perms;
 
-    $param{'loaded_permissions'} = \@perms;
+    $param{'loaded_permissions'} = \@perms;    # DEPRECATED
+
+    # Make each permission list
+    my %perms_blog;
+    my %perms_content_data;
+    my @blog_groups    = qw(blog_admin auth_pub blog_design blog_upload blog_comment);
+    my %is_blog_groups = map { $_ => 1 } @blog_groups;
+    for my $perm (@perms) {
+        my $group = $perm->{group} or next;
+
+        if ($is_blog_groups{$group}) {
+            push @{ $perms_blog{$group} ||= [] }, $perm;
+
+        } elsif (my $ct_unique_id = $perm->{content_type_unique_id}) {
+            my $id = $perm->{id};
+
+            my $type;
+            if ($id =~ /^manage_content_data/) {
+                $type = 'all';
+            } elsif ($id =~ /^create|publish|edit_all|_contentdata:/) {
+                $type = 'manage_content_data';
+            } else {
+                $type = 'manage_content_field';
+            }
+            $perm->{type} = $type;
+
+            $perms_content_data{$ct_unique_id} ||= {};
+            $perms_content_data{$ct_unique_id}{$type} ||= [];
+
+            push @{ $perms_content_data{$ct_unique_id}{$type} }, $perm;
+        }
+    }
+    for my $group (@blog_groups) {
+        $param{"loaded_permissions_${group}"} = $perms_blog{$group};
+    }
+    for my $perm_group (@{ MT->model('content_type')->permission_groups }) {
+        my $ct_unique_id = $perm_group->{ct_perm_group_unique_id};
+        my $perm_types   = $perms_content_data{$ct_unique_id} or next;
+        push @{ $param{'loaded_permissions_content_data'} }, { %{$perm_types}, %{$perm_group} };
+    }
 
     $param{saved}          = $app->param('saved');
     $param{nav_privileges} = 1;
