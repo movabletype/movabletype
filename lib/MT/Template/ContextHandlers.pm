@@ -1661,6 +1661,7 @@ sub _hdlr_if {
     my $value;
     if ( defined $var ) {
         $ctx->{__stash}{vars}{__cond_tag__} = undef;
+        my $stash_var = $var;
 
         # pick off any {...} or [...] from the name.
         my ( $index, $key );
@@ -1679,6 +1680,7 @@ sub _hdlr_if {
         }
 
         $value = defined $ctx->var($var) ? $ctx->var($var) : '';
+        $var = $stash_var;
 
         if ( ref($value) ) {
             if ( UNIVERSAL::isa( $value, 'MT::Template' ) ) {
