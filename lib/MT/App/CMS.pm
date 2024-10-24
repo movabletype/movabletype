@@ -11,6 +11,7 @@ use warnings;
 use base qw( MT::App );
 
 use MT::CMS::ContentData;
+use MT::CMS::ContentType;
 use MT::Util qw( perl_sha1_digest_hex );
 use MT::App::CMS::Common;
 
@@ -36,6 +37,9 @@ sub init {
     $app->{plugin_template_path} = '';
     $app->{is_admin}             = 1;
     $app->{default_mode}         = 'dashboard';
+
+    MT::CMS::ContentType::init_content_type(undef, $app);
+
     $app;
 }
 

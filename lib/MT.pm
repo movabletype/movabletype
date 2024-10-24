@@ -1254,11 +1254,6 @@ sub init_debug_mode {
                     '$Core::MT::Summary::Triggers::post_init_add_triggers',
             }
         );
-        MT->_register_core_callbacks(
-            {   'post_init' =>
-                    '$Core::MT::CMS::ContentType::init_content_type',
-            }
-        );
         $callbacks_added = 1;
     }
 }

@@ -10,6 +10,7 @@ use strict;
 use warnings;
 use base qw( MT::App );
 
+use MT::CMS::ContentType;
 use MT::DataAPI::Endpoint::v1;
 use MT::DataAPI::Endpoint::v2;
 use MT::DataAPI::Endpoint::v3;
@@ -36,6 +37,9 @@ sub init {
     $app->SUPER::init(@_) or return;
     $app->{template_dir} = 'data_api';
     $app->{default_mode} = 'api';
+
+    MT::CMS::ContentType::init_content_type(undef, $app);
+
     $app;
 }
 
