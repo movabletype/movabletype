@@ -1011,7 +1011,7 @@ sub init {
     $app->{apache} = $param{ApacheObject} if exists $param{ApacheObject};
 
     # start tracing even prior to 'init'
-    local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
+    # local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
     $app->SUPER::init(%param) or return;
     $app->{vtbl}                 = {};
     $app->{is_admin}             = 0;
