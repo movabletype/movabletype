@@ -10,44 +10,37 @@
  * a-template:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: steelydylan
- *   maintainers: appleple <info@appleple.com>, steelydylan <ess_president@me.com>
  *   version: 0.5.5
  *
  * base64-js:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: T. Jameson Little <t.jameson.little@gmail.com>
- *   maintainers: beatgammit <t.jameson.little@gmail.com>, feross <feross@feross.org>
  *   homepage: https://github.com/beatgammit/base64-js
  *   version: 1.3.1
  *
  * buffer:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Feross Aboukhadijeh <feross@feross.org>
- *   maintainers: feross <feross@feross.org>
  *   contributors: Romain Beauxis <toots@rastageeks.org>, James Halliday <mail@substack.net>
  *   homepage: https://github.com/feross/buffer
  *   version: 4.9.1
  *
  * clone:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Paul Vorbach <paul@vorba.ch>
- *   maintainers: pvorb <paul@vorb.de>
- *   contributors: Blake Miner <miner.blake@gmail.com>, Tian You <axqd001@gmail.com>, George Stagas <gstagas@gmail.com>, Tobiasz Cudnik <tobiasz.cudnik@gmail.com>, Pavel Lang <langpavel@phpskelet.org>, Dan MacTough, w1nk, Hugh Kennedy, Dustin Diaz, Ilya Shaisultanov, Nathan MacInnes <nathan@macinn.es>, Benjamin E. Coe <ben@npmjs.com>, Nathan Zadoks, Róbert Oroszi <robert+gh@oroszi.net>, Aurélio A. Heckert, Guy Ellis, fscherwi, rictic, Martin Jurča, Misery Lee <miserylee@foxmail.com>, Clemens Wolff
- *   homepage: https://github.com/pvorb/node-clone#readme
+ *   author: Paul Vorbach <paul@vorba.ch> (http://paul.vorba.ch/)
+ *   contributors: Blake Miner <miner.blake@gmail.com> (http://www.blakeminer.com/), Tian You <axqd001@gmail.com> (http://blog.axqd.net/), George Stagas <gstagas@gmail.com> (http://stagas.com/), Tobiasz Cudnik <tobiasz.cudnik@gmail.com> (https://github.com/TobiaszCudnik), Pavel Lang <langpavel@phpskelet.org> (https://github.com/langpavel), Dan MacTough (http://yabfog.com/), w1nk (https://github.com/w1nk), Hugh Kennedy (http://twitter.com/hughskennedy), Dustin Diaz (http://dustindiaz.com), Ilya Shaisultanov (https://github.com/diversario), Nathan MacInnes <nathan@macinn.es> (http://macinn.es/), Benjamin E. Coe <ben@npmjs.com> (https://twitter.com/benjamincoe), Nathan Zadoks (https://github.com/nathan7), Róbert Oroszi <robert+gh@oroszi.net> (https://github.com/oroce), Aurélio A. Heckert (http://softwarelivre.org/aurium), Guy Ellis (http://www.guyellisrocks.com/), fscherwi (https://fscherwi.github.io), rictic (https://github.com/rictic), Martin Jurča (https://github.com/jurca), Misery Lee <miserylee@foxmail.com> (https://github.com/miserylee), Clemens Wolff (https://github.com/c-w)
  *   version: 2.1.2
  *
  * custom-event-polyfill:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   maintainers: krambuhl <evan.krambuhl@gmail.com>
- *   contributors: Frank Panetta, Mikhail Reenko <reenko@yandex.ru>, Joscha Feth <joscha@feth.com>
- *   homepage: https://github.com/krambuhl/custom-event-polyfill#readme
+ *   author: NO AUTHOR!
+ *   contributors: Frank Panetta (http://www.savvi.io), Mikhail Reenko <reenko@yandex.ru>, Joscha Feth <joscha@feth.com> (http://www.feth.com)
  *   version: 0.3.0
  *
  * deep-extend:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   licenses: MIT (http://opensource.org/licenses/MIT)
  *   author: Viacheslav Lotsmanov <lotsmanov89@gmail.com>
- *   maintainers: unclechu <lotsmanov89@gmail.com>
  *   contributors: Romain Prieto, Max Maximov, Marshall Bowers, Misha Wakerman
  *   homepage: https://github.com/unclechu/node-deep-extend
  *   version: 0.6.0
@@ -55,30 +48,24 @@
  * ie-array-find-polyfill:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Carlos Abdalla
- *   maintainers: abdalla <carlos.abdalla@msdev.com.br>
  *   homepage: https://github.com/abdalla/ie-array-find-polyfill#readme
  *   version: 1.1.0
  *
  * ieee754:
  *   license: BSD-3-Clause (http://opensource.org/licenses/BSD-3-Clause)
  *   author: Feross Aboukhadijeh <feross@feross.org>
- *   maintainers: feross <feross@feross.org>
  *   contributors: Romain Beauxis <toots@rastageeks.org>
- *   homepage: https://github.com/feross/ieee754#readme
  *   version: 1.1.13
  *
  * isarray:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Julian Gruber <mail@juliangruber.com>
- *   maintainers: juliangruber <julian@juliangruber.com>
  *   homepage: https://github.com/juliangruber/isarray
  *   version: 1.0.0
  *
  * morphdom:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Patrick Steele-Idem <pnidem@gmail.com>
- *   maintainers: austinkelleher <austinlkelleher@gmail.com>, chrismccord <chris@chrismccord.com>, dylanpiercey <pierceydylan@gmail.com>, mlrawlings <ml.rawlings@gmail.com>, pnidem <pnidem@gmail.com>, snewcomer <snewcomer24@gmail.com>
- *   homepage: https://github.com/patrick-steele-idem/morphdom#readme
  *   version: 2.5.6
  *
  * This header is generated by licensify (https://github.com/twada/licensify)
@@ -4703,7 +4690,7 @@ var aTable = function (_aTemplate) {
       data.mode = 'col';
       data.selectedColNo = -1;
       data.selectedRowNo = i;
-      if (data.increaseDecreaseRows) {
+      if (data.increaseDecreaseColumns) {
         this.contextmenu();
       }
       this.update();
@@ -4731,7 +4718,7 @@ var aTable = function (_aTemplate) {
       data.mode = 'row';
       data.selectedRowNo = -1;
       data.selectedColNo = i;
-      if (data.increaseDecreaseColumns) {
+      if (data.increaseDecreaseRows) {
         this.contextmenu();
       }
       this.update();
