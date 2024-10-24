@@ -125,7 +125,7 @@ sub import {
                         $max_time     = $cfg->FastCGIMaxTime;
                     }
 
-                    local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
+		    # local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
                     MT->set_instance($app);
                     $app->config->read_config_db();
                     $app->init_request( CGIObject => $cgi );
@@ -191,7 +191,7 @@ sub import {
             else {
                 $ENV{FAST_CGI} = 0;
                 $app = $class->new(%param) or die $class->errstr;
-                local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
+		# local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
                 $app->init_request;
                 $app->run;
             }
