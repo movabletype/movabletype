@@ -28,6 +28,112 @@ __PACKAGE__->install_properties(
     }
 );
 
+package Test::Escape;
+use base qw( Test::Class );
+use Test::More;
+use MT::Test::DriverUtil;
+use POSIX qw(strftime);
+
+sub reset_db : Test(setup) {
+    my $self = shift;
+    $self->clean_db();
+
+    my @obj_data = (
+        {   class  => 'Foo',
+            id     => 1,
+            name   => 'percent',
+            text   => '100%',
+            status => 2,
+        },
+        {   class  => 'Foo',
+            id     => 2,
+            name   => 'underscore',
+            text   => '100_',
+            status => 1,
+        },
+        {   class  => 'Foo',
+            id     => 3,
+            name   => 'exclamation',
+            text   => '100!',
+            status => 1,
+        },
+    );
+
+    for my $data (@obj_data) {
+        my $class = delete $data->{class};
+        my $wait  = delete $data->{__wait};
+        my $obj   = $class->new;
+        $obj->set_values($data);
+        sleep($wait) if $wait;
+        $obj->save();
+    }
+}
+
+sub clean_db : Test(teardown) {
+    reset_table_for(qw( Foo ));
+}
+
+sub escape : Tests(6) {
+
+    subtest 'escape_char 1' => sub {
+        my @got = Foo->load({ text => { op => 'LIKE', value => '100!%', escape => '!' } });
+        is scalar(@got),  1,         'right number';
+        is $got[0]->name, 'percent', 'right name';
+    };
+
+    subtest 'escape_char 2' => sub {
+        my @got = Foo->load({ text => { op => 'LIKE', value => '100#_', escape => '#' } });
+        is scalar(@got),  1,            'right number';
+        is $got[0]->name, 'underscore', 'right name';
+    };
+
+    subtest 'self escape' => sub {
+        my @got = Foo->load({ text => { op => 'LIKE', value => '100!!', escape => '!' } });
+        is scalar(@got),  1,             'right number';
+        is $got[0]->name, 'exclamation', 'right name';
+    };
+
+    subtest 'use wildcard charactor as escapr_char' => sub {
+        plan skip_all => 'MariaDB does not support it' if Foo->driver->dbh->{Driver}->{Name} eq 'MariaDB';
+        my @got = Foo->search({ text => { op => 'LIKE', value => '100_%', escape => '_' } });
+        is scalar(@got),  1,         'right number';
+        is $got[0]->name, 'percent', 'right name';
+    };
+
+    subtest 'use of special characters' => sub {
+        subtest 'escape_char single quote' => sub {
+            my @got = Foo->load({ text => { op => 'LIKE', value => "100'_", escape => "''" } });
+            is scalar(@got),  1,            'right number';
+            is $got[0]->name, 'underscore', 'right name';
+        };
+
+        if (Foo->driver->dbh->{Driver}->{Name} =~ /mysql|mariadb/i) {
+            subtest 'escape_char single quote' => sub {
+                my @got = Foo->load({ text => { op => 'LIKE', value => "100'_", escape => "\\'" } });
+                is scalar(@got),  1,            'right number';
+                is $got[0]->name, 'underscore', 'right name';
+            };
+
+            subtest 'escape_char backslash' => sub {
+                my @got = Foo->load({ text => { op => 'LIKE', value => '100\\_', escape => '\\\\' } });
+                is scalar(@got),  1,            'right number';
+                is $got[0]->name, 'underscore', 'right name';
+            };
+        } else {
+            subtest 'escape_char backslash' => sub {
+                my @got = Foo->load({ text => { op => 'LIKE', value => '100\\_', escape => '\\' } });
+                is scalar(@got),  1,            'right number';
+                is $got[0]->name, 'underscore', 'right name';
+            };
+        }
+    };
+
+    subtest 'is safe' => sub {
+        eval { Foo->load({ text => { op => 'LIKE', value => '_', escape => q{!');select 'vulnerable'; -- } } }); };
+        like $@, qr/escape_char length must be up to two characters/, 'error occurs';
+    };
+}
+
 package Test::GroupBy;
 use base qw( Test::Class );
 use Test::More;
