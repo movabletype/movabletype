@@ -1661,7 +1661,7 @@ sub _hdlr_if {
     my $value;
     if ( defined $var ) {
         $ctx->{__stash}{vars}{__cond_tag__} = undef;
-        my $stash_var = $var;
+        $ctx->{__stash}{vars}{__cond_name__}  = $var;
 
         # pick off any {...} or [...] from the name.
         my ( $index, $key );
@@ -1680,7 +1680,6 @@ sub _hdlr_if {
         }
 
         $value = defined $ctx->var($var) ? $ctx->var($var) : '';
-        $var = $stash_var;
 
         if ( ref($value) ) {
             if ( UNIVERSAL::isa( $value, 'MT::Template' ) ) {
@@ -1709,9 +1708,11 @@ sub _hdlr_if {
         $value = $ctx->tag( $tag, $local_args, $cond );
         $ctx->{__stash}{vars}{__cond_tag__} = $tag;
     }
+    else {
+        $value = $ctx->var('__cond_value__');
+    }
 
     $ctx->{__stash}{vars}{__cond_value__} = $value;
-    $ctx->{__stash}{vars}{__cond_name__}  = $var;
 
     if ( my $op = $args->{op} ) {
         my $rvalue = $args->{'value'};
@@ -1893,16 +1894,6 @@ sub _hdlr_else {
     my ( $ctx, $args, $cond ) = @_;
     local $args->{'@'};
     delete $args->{'@'};
-    if ( ( keys %$args ) >= 1 ) {
-        unless ( $args->{name} || $args->{var} || $args->{tag} ) {
-            if ( my $t = $ctx->var('__cond_tag__') ) {
-                $args->{tag} = $t;
-            }
-            elsif ( my $n = $ctx->var('__cond_name__') ) {
-                $args->{name} = $n;
-            }
-        }
-    }
     if (%$args) {
         defined( my $res = _hdlr_if(@_) ) or return;
         return $res ? $ctx->slurp(@_) : $ctx->else();
@@ -1922,14 +1913,6 @@ An alias for the 'Else' tag.
 
 sub _hdlr_elseif {
     my ( $ctx, $args, $cond ) = @_;
-    unless ( $args->{name} || $args->{var} || $args->{tag} ) {
-        if ( my $t = $ctx->var('__cond_tag__') ) {
-            $args->{tag} = $t;
-        }
-        elsif ( my $n = $ctx->var('__cond_name__') ) {
-            $args->{name} = $n;
-        }
-    }
     return _hdlr_else( $ctx, $args, $cond );
 }
 
