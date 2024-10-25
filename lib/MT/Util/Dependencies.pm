@@ -518,7 +518,7 @@ our %ExtLibOnly = (
         used_in => ["MT::Util::UniqueID"],
     },
     "Data::ObjectDriver" => {
-        extlib  => 0.22,
+        extlib  => 0.23,
         url     => "https://metacpan.org/pod/Data::ObjectDriver",
         used_in => ["MT::Object"],
     },
