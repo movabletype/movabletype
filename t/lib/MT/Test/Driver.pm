@@ -95,6 +95,7 @@ sub escape : Tests(6) {
 
     subtest 'use wildcard charactor as escapr_char' => sub {
         plan skip_all => 'MariaDB does not support it' if Foo->driver->dbh->{Driver}->{Name} eq 'MariaDB';
+        plan skip_all => 'SQLite does not support it' if Foo->driver->dbh->{Driver}->{Name} eq 'SQLite'; # fails with DBD::SQLite@1.44 and older
         my @got = Foo->search({ text => { op => 'LIKE', value => '100_%', escape => '_' } });
         is scalar(@got),  1,         'right number';
         is $got[0]->name, 'percent', 'right name';
