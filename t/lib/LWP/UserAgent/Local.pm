@@ -69,13 +69,7 @@ sub simple_request {
         }
     );
 
-    $ENV{REQUEST_METHOD} = $request_method;
-    my @headers;  # FIXME: always empty array
-    foreach my $header (@headers) {
-        my ( $header_name, $header_val ) = $header =~ /(.*?):(.*)/;
-        $header_name =~ tr/a-z-/A-Z_/;
-        $ENV{ "HTTP_" . $header_name } = $header_val;
-    }
+    $ENV{REQUEST_METHOD}  = $request_method;
     $ENV{SCRIPT_NAME}     = $script_name;
     $ENV{PATH_INFO}       = $path;
     $ENV{QUERY_STRING}    = $request->uri->query || '';
