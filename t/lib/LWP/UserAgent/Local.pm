@@ -21,11 +21,11 @@ to file-system paths.
 =cut
 
 sub new {
-    $class = shift;
+    my $class = shift;
     my %super_args = %{ $_[0] };
     delete $super_args{ScriptAlias};
     delete $super_args{AddHandler};
-    $this  = $class->SUPER::new(%super_args);
+    my $this  = $class->SUPER::new(%super_args);
     %$this = %{ $_[0] };
     $this;
 }
@@ -63,14 +63,15 @@ sub simple_request {
     ###delete $ENV{$_} foreach (grep {/^HTTP_/} (keys %ENV));
     $request->headers()->scan(
         sub {
-            $header_name = $_[0];
+            my $header_name = $_[0];
             $header_name =~ tr/a-z-/A-Z_/;
             $ENV{ "HTTP_" . $header_name } = $_[1];
         }
     );
 
     $ENV{REQUEST_METHOD} = $request_method;
-    foreach $header (@headers) {
+    my @headers;  # FIXME: always empty array
+    foreach my $header (@headers) {
         my ( $header_name, $header_val ) = $header =~ /(.*?):(.*)/;
         $header_name =~ tr/a-z-/A-Z_/;
         $ENV{ "HTTP_" . $header_name } = $header_val;
@@ -99,7 +100,7 @@ sub simple_request {
     my $response = new HTTP::Response();
     $response->request($request);
     my $status_line = '';
-    while ( ( $line = <$RESPONSE> ) !~ /^\s*$/ ) {
+    while ( ( my $line = <$RESPONSE> ) !~ /^\s*$/ ) {
         if ( $line =~ /^Status:/i ) {
             $status_line = $line;
         }
@@ -119,7 +120,7 @@ sub simple_request {
     $response->message($response_desc);
 
     local $/ = undef;
-    $body = <$RESPONSE>;
+    my $body = <$RESPONSE>;
     $response->content($body);
 
     close $RESPONSE;
