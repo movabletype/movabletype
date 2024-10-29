@@ -90,8 +90,8 @@ my @cmd = (
 
 run3 \@cmd, \my $stdin, \my $stdout, \my $stderr;
 
-ok $stdout !~ /failed/, "no failures" or diag $stdout;
-note $stderr if $stderr;
+ok $stdout !~ /failed/, "no failures in stdout" or diag $stdout;
+ok $stderr !~ /failed/, "no failures in stderr" or diag $stderr;
 
 done_testing;
 
