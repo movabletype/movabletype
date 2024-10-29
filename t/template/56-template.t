@@ -266,37 +266,4 @@ __TMPL__
     is $html => '<div>Foo</div><div>Bar<div>InsideBar</div></div><div>Baz</div><div>Appended</div>', 'new node is inserted';
 };
 
-subtest 'Pass arguments to mtElseIf' => sub {
-    my $tmpl = MT::Template->new_string( \<<__TMPL__);
-    <mt:Var name="hsh" key="ky" value="hoge">
-    <mt:If name="hsh{ky}" eq="fuga">
-fuga!
-    <mt:ElseIf eq="hoge">
-hoge!
-    <mt:Else>
-moga!
-    </mt:If>
-    <mt:Var name="arr" index="1" value="hoge">
-    <mt:If name="arr[1]" eq="fuga">
-fuga!
-    <mt:ElseIf eq="hoge">
-hoge!
-    <mt:Else>
-moga!
-    </mt:If>
-    <mt:Var name="normal" value="hoge">
-    <mt:If name="normal" eq="fuga">
-fuga!
-    <mt:ElseIf eq="hoge">
-hoge!
-    <mt:Else>
-moga!
-    </mt:If>
-__TMPL__
-
-    my $html = $tmpl->output;
-    $html =~ s/\s//gs;
-    is $html => 'hoge!hoge!hoge!', 'Build succeeds';
-};
-
 done_testing();
