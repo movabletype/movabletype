@@ -12,58 +12,62 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Template;
-MT->instance;
+use MT::Test::Tag;
+plan tests => (1 + 2) * blocks;
 
-subtest 'Pass hash variable' => sub {
-    my $tmpl = MT::Template->new_string( \<<__TMPL__);
-    <mt:Var name="hsh" key="ky" value="hoge">
-    <mt:If name="hsh{ky}" eq="fuga">
-fuga!
-    <mt:ElseIf eq="hoge">
-hoge!
-    <mt:Else>
-moga!
-    </mt:If>
-__TMPL__
+use MT;
+use MT::Test;
+my $app = MT->instance;
 
-    my $html = $tmpl->output;
-    $html =~ s/\s//gs;
-    is $html => 'hoge!', 'Pass succeeds';
+my $blog_id = 1;
+
+filters {
+    template => [qw( chomp )],
+    expected => [qw( chomp )],
 };
 
-subtest 'Pass array variable' => sub {
-    my $tmpl = MT::Template->new_string( \<<__TMPL__);
-    <mt:Var name="arr" index="1" value="hoge">
-    <mt:If name="arr[1]" eq="fuga">
+$test_env->prepare_fixture('db');
+
+MT::Test::Tag->run_perl_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
+
+__END__
+
+=== Pass hash variable
+--- template
+<mt:Var name="hsh" key="ky" value="hoge">
+<mt:If name="hsh{ky}" eq="fuga">
 fuga!
-    <mt:ElseIf eq="hoge">
+<mt:ElseIf eq="hoge">
 hoge!
-    <mt:Else>
+<mt:Else>
 moga!
-    </mt:If>
-__TMPL__
+</mt:If>
+--- expected
+hoge!
 
-    my $html = $tmpl->output;
-    $html =~ s/\s//gs;
-    is $html => 'hoge!', 'Pass succeeds';
-};
-
-subtest 'Pass primitive variable' => sub {
-    my $tmpl = MT::Template->new_string( \<<__TMPL__);
-    <mt:Var name="normal" value="hoge">
-    <mt:If name="normal" eq="fuga">
+=== Pass array variable
+--- template
+<mt:Var name="arr" index="1" value="hoge">
+<mt:If name="arr[1]" eq="fuga">
 fuga!
-    <mt:ElseIf eq="hoge">
+<mt:ElseIf eq="hoge">
 hoge!
-    <mt:Else>
+<mt:Else>
 moga!
-    </mt:If>
-__TMPL__
+</mt:If>
+--- expected
+hoge!
 
-    my $html = $tmpl->output;
-    $html =~ s/\s//gs;
-    is $html => 'hoge!', 'Pass succeeds';
-};
-
-done_testing();
+=== Pass primitive variable
+--- template
+<mt:Var name="normal" value="hoge">
+<mt:If name="normal" eq="fuga">
+fuga!
+<mt:ElseIf eq="hoge">
+hoge!
+<mt:Else>
+moga!
+</mt:If>
+--- expected
+hoge!
