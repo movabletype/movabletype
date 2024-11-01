@@ -1063,13 +1063,26 @@ abstract class MTDatabase {
             $not_clause = preg_match('/\bNOT\b/i', $tag_arg);
 
             $include_private = 0;
-            $tag_array = tag_split($tag_arg);
-            foreach ($tag_array as $tag) {
-                $tag_body = trim(preg_replace('/\bNOT\b/i','',$tag));
-                if ($tag_body && (substr($tag_body,0,1) == '@')) {
-                    $include_private = 1;
+            if ( preg_match('/\b(AND|OR|NOT)\b|\(|\)/i', $tag_arg) ) {
+                $tag_array = tag_split($tag_arg);
+                foreach ($tag_array as $tag) {
+                    $tag_body = trim(preg_replace('/\bNOT\b/i','',$tag));
+                    if ($tag_body && (substr($tag_body,0,1) == '@')) {
+                        $include_private = 1;
+                    }
+                }
+            } else {
+                # Only comma separated.
+                $tag_array = tag_split($tag_arg);
+                $tag_arg = implode(" or ", $tag_array);
+                foreach ($tag_array as $tag) {
+                    $tag_body = trim($tag);
+                    if ($tag_body && (substr($tag_body,0,1) == '@')) {
+                        $include_private = 1;
+                    }
                 }
             }
+
             if (isset($blog_ctx_arg))
                 $tags = $this->fetch_entry_tags(array_merge($blog_ctx_arg, array('tag' => $tag_arg, 'include_private' => $include_private, 'class' => $args['class'])));
             else

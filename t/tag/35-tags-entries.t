@@ -151,9 +151,6 @@ https://movabletype.atlassian.net/browse/MTC-28120
 foo
 bar
 --- should_not_be_called_object_tag_load
---- expected_php_todo
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-28119
 
 === MTEntries[tag] : Multiple tags of same asset
 --- template
