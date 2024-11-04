@@ -86,7 +86,7 @@
     "svelte": "^4.2.19",
     "svelte-check": "^4.0.5",
     "svelte-preprocess": "^6.0.3",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.3"
   },
   "dependencies": {
     "bootstrap": "4.3.1",
