@@ -240,8 +240,6 @@ sub simple_request {
         . $request->uri()->path();
     $ENV{REQUEST_URI} = $script_alias;
 
-    $this->{cookie_jar}->add_cookie_header($request) if $this->{cookie_jar};
-
     shift;
     ###delete $ENV{$_} foreach (grep {/^HTTP_/} (keys %ENV));
     $request->headers()->scan(
@@ -289,7 +287,6 @@ sub simple_request {
         #	print "S: ", $line;
     }
 
-    $this->{cookie_jar}->extract_cookies($response) if $this->{cookie_jar};
     $status_line =~ s/Status: //i;
     my ( $response_code, $response_desc )
         = $status_line =~ /^(\d\d\d)(\s.*)?$/;
