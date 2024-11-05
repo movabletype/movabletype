@@ -232,10 +232,6 @@ sub simple_request {
     $request_method = "GET" unless $request_method;
 
     my $script_alias = $this->{ScriptAlias};
-    if ( $this->{AddHandler} ) {
-        my ( $handler, $ext ) = split / +/, $this->{AddHandler};
-        return unless $request->uri->path() =~ /$ext$/;
-    }
     my ( $script_name, $path )
         = ( $request->uri->path()
             =~ m|^(?:\w+://[^/]*/?)?$script_alias([^/]*)(/?.*)| );
