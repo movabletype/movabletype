@@ -1,0 +1,92 @@
+#!/usr/bin/perl -w
+package MT::Tool::ReduceRevisions;
+use strict;
+use warnings;
+use utf8;
+use FindBin;
+use lib ("$FindBin::Bin/../../lib", "$FindBin::Bin/../../extlib", "$FindBin::Bin/../../plugins/Diagnosis/lib");
+use Getopt::Long;
+use MT::Bootstrap;
+use MT;
+use MT::Revisable;
+use MT::Plugin::Diagnosis::Department::Revision;
+
+our $BULK_DELETE = 100;
+
+my %target;
+
+GetOptions(
+    'b|blog_id=i' => \my ($blog_id),
+    'l|limit=i'   => \my ($delete_limit),
+    'd|delete'    => \my ($delete),
+    'e|entry'     => sub { $target{entry}    = 1 },
+    'c|cd'        => sub { $target{cd}       = 1 },
+    't|template'  => sub { $target{template} = 1 },
+    "help|?"      => sub { usage(); exit },
+);
+
+map { $target{$_} = 1 } ('entry', 'cd', 'template') unless keys(%target);
+
+my $delete_count = 0;
+my $detect_count = 0;
+my $mt           = MT->new;
+
+my $site_iter = MT::Blog->load_iter($blog_id ? { id => $blog_id } : { class => '*' });
+
+while (my $site = $site_iter->()) {
+
+    for my $ds (keys %target) {
+
+        print "============================================================\n";
+        printf("Checking %s of site(id:%s)\n", $ds, $site->id);
+        print "============================================================\n";
+
+        my $found = 0;
+
+        MT::Plugin::Diagnosis::Department::Revision::count_iter(
+            $ds, $site,
+            sub {
+                my ($count, $id, $max) = @_;
+                $found = 1;
+                $detect_count += ($count - $max);
+
+                printf("Violation detected(%d/%d) for id=%d", $count, $max, $id);
+                if ($delete) {
+                    print " and deleting";
+                    my $plan = $count - $max;
+                    if ($delete_limit) {
+                        $plan = (($plan + $delete_count) <= $delete_limit) ? $plan : $delete_limit - $delete_count;
+                    }
+                    while ($plan > 0) {
+                        my $limit = $plan > $BULK_DELETE ? $BULK_DELETE : $plan;
+                        $plan         -= $limit;
+                        $delete_count += MT::Plugin::Diagnosis::Department::Revision::bulk_remove($ds, $id, $limit);
+                    }
+                }
+                print ".\n";
+            },
+        );
+
+        print(!$found ? "OK.\n\n" : $delete ? "Fixed.\n\n" : "\n");
+    }
+}
+
+print "============================================================\n";
+print "Total Result\n";
+printf(($delete ? "Deleted: $delete_count" : "Detected: $detect_count") . "\n");
+print "============================================================\n";
+
+sub usage {
+    print STDERR << "EOT";
+usage: $0
+
+These options are available:
+
+-b, --blog_id           Blog ID.
+-l, --limit             Maximum number of deletion.
+-d, --delete            Delete revision amount excession.
+-e, --entry             process entries.
+-c, --cd                process content data.
+-t, --template          process templates.
+EOT
+}
