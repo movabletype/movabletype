@@ -81,3 +81,55 @@ left:ab:right
 left:<?php echo 'a'. 'b'?>:right
 --- expected
 left:ab:right
+
+=== test modifier in MTIf with DynamicTemplateAllowTestModifier=1
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowTestModifier => 1}
+--- template
+[<mt:SetVar name="foo" value="1"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="0"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="1"><mt:If name="foo" test="0">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="0"><mt:If name="foo" test="0">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="5"><mt:If name="foo" test='$foo > 4'>true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="5"><mt:If name="foo" test='$foo < 4'>true<mt:else>false</mt:If>]
+--- expected
+[true][true][false][false][true][false]
+
+=== test modifier with DynamicTemplateAllowTestModifier=0
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowTestModifier => 0}
+--- template
+[<mt:SetVar name="foo" value="1"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="0"><mt:If name="foo" test="1">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="1"><mt:If name="foo" test="0">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="0"><mt:If name="foo" test="0">true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="5"><mt:If name="foo" test='$foo > 4'>true<mt:else>false</mt:If>]
+[<mt:SetVar name="foo" value="5"><mt:If name="foo" test='$foo < 4'>true<mt:else>false</mt:If>]
+--- expected
+[true][false][true][false][true][true]
+
+=== test modifier in MTElse with DynamicTemplateAllowTestModifier=1
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowTestModifier => 1}
+--- template
+[<mt:SetVar name="foo" value="1"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="0"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="1"><mt:Unless name="foo" test="0">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="0"><mt:Unless name="foo" test="0">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="5"><mt:Unless name="foo" test='$foo > 4'>true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="5"><mt:Unless name="foo" test='$foo < 4'>true<mt:else>false</mt:Unless>]
+--- expected
+[false][false][true][true][false][true]
+
+=== test modifier with DynamicTemplateAllowTestModifier=0
+--- mt_config
+{DynamicTemplateAllowPHP => 1, DynamicTemplateAllowTestModifier => 0}
+--- template
+[<mt:SetVar name="foo" value="1"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="0"><mt:Unless name="foo" test="1">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="1"><mt:Unless name="foo" test="0">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="0"><mt:Unless name="foo" test="0">true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="5"><mt:Unless name="foo" test='$foo > 4'>true<mt:else>false</mt:Unless>]
+[<mt:SetVar name="foo" value="5"><mt:Unless name="foo" test='$foo < 4'>true<mt:else>false</mt:Unless>]
+--- expected
+[false][true][false][true][false][false]

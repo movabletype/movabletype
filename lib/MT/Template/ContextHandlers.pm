@@ -1797,7 +1797,7 @@ sub _hdlr_if {
         }
         return defined($value) && ( $value =~ m/$like/ ) ? 1 : 0;
     }
-    elsif ( exists $args->{test} ) {
+    elsif ( exists $args->{test} && MT->config->AllowTestModifier) {
         my $expr = $args->{'test'};
         my $safe = $ctx->{__safe_compartment};
         if ( !$safe ) {
