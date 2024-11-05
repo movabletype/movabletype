@@ -7,6 +7,9 @@ use base 'LWP::UserAgent';
 use IPC::Run3 'run3';
 use IO::String;
 
+use MT::Util::Deprecated;
+MT::Util::Deprecated::warning(since => '8.5.0');
+
 =pod
 
 The ScriptAlias parameter to LWP::UserAgent::Local::new is used to
