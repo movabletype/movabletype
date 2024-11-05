@@ -233,8 +233,6 @@ sub simple_request {
         . $request->uri()->path();
     $ENV{REQUEST_URI} = $script_alias;
 
-    shift;
-    ###delete $ENV{$_} foreach (grep {/^HTTP_/} (keys %ENV));
     $request->headers()->scan(
         sub {
             my $header_name = $_[0];
@@ -272,8 +270,6 @@ sub simple_request {
             my ( $hdr_name, $hdr_val ) = ( $line =~ /(.*?):(.*)/ );
             $response->header( $hdr_name => $hdr_val );
         }
-
-        #	print "S: ", $line;
     }
 
     $status_line =~ s/Status: //i;
