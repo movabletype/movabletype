@@ -225,7 +225,7 @@ sub simple_request {
     my ($options) = @_;
 
     Carp::croak
-        "LWP::UserAgent::Local::request requires an HTTP::Request argument"
+        "simple_request requires an HTTP::Request argument"
         unless ref $request && $request->isa('HTTP::Request');
 
     my $request_method = $request->method();
