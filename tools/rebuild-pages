@@ -6,7 +6,6 @@ use warnings;
 use FindBin;
 use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 
-use LWP::UserAgent;
 use Carp ();
 use IPC::Run3 'run3';
 use IO::String;
@@ -80,10 +79,6 @@ my $scraper = scraper {
 
     result 'status_publishing', 'status_error', 'status_success';
 };
-
-### Creates UserAgent
-my $ua = LWP::UserAgent->new;
-%{$ua} = ( ScriptAlias => $script_path );
 
 ### Runs build script.
 foreach my $blog (@blogs) {
@@ -172,7 +167,7 @@ sub run_rebuild {
             $url .= "&username=" . $username;
             $url .= "&password=" . $password;
             my $req = new HTTP::Request( GET => $url );
-            my $resp = simple_request($ua, $req);
+            my $resp = simple_request($script_path, $req);
             if ( $resp->is_success ) {
                 my $content = $resp->decoded_content;
                 my $res = $scraper->scrape($content);
@@ -220,9 +215,9 @@ sub logging {
 }
 
 sub simple_request {
-    my $this      = shift;
-    my $request   = shift;
-    my ($options) = @_;
+    my $script_alias = shift;
+    my $request      = shift;
+    my ($options)    = @_;
 
     Carp::croak
         "simple_request requires an HTTP::Request argument"
@@ -231,7 +226,6 @@ sub simple_request {
     my $request_method = $request->method();
     $request_method = "GET" unless $request_method;
 
-    my $script_alias = $this->{ScriptAlias};
     my ( $script_name, $path )
         = ( $request->uri->path()
             =~ m|^(?:\w+://[^/]*/?)?$script_alias([^/]*)(/?.*)| );
