@@ -61,20 +61,20 @@ class Author extends BaseObject
 
     public function permissions( $blog_id = null ) {
         require_once('class.mt_permission.php');
+        $mtdb = MT::get_instance()->db();
 
-        $whereOrder = "permission_author_id = " . $this->id;
+        $cond = [];
+        $cond[] = 'permission_author_id = '. $mtdb->ph('permission_author_id', $bind, $this->id);
         if ( !is_null( $blog_id ) ) {
             if (is_array($blog_id)) {
-                $ids = join(',', $blog_id);
-                 $whereOrder = $whereOrder . " and permission_blog_id in ( $ids )";
+                $cond[] = 'permission_blog_id in ('. $mtdb->in_ph('permission_blog_id', $bind, $blog_id). ')';
             } else {
-                $whereOrder= $whereOrder . " and permission_blog_id = $blog_id";
+                $cond[] = 'permission_blog_id = '. $mtdb->ph('permission_blog_id', $bind, $blog_id);
             }
         }
-        $whereOrder = $whereOrder . " order by permission_blog_id";
 
         $permission = new Permission;
-        return $permission->Find($whereOrder);
+        return $permission->Find(implode(' and ', $cond). ' order by permission_blog_id', $bind);
     }
 
     public function userpic() {
@@ -85,7 +85,7 @@ class Author extends BaseObject
 
         require_once('class.mt_asset.php');
         $asset = new Asset;
-        $asset->Load("asset_id = $userpic_id");
+        $asset->LoadByIntId($userpic_id);
         return $asset;
     }
 }

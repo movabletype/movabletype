@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2019",
     "module": "ESNext",
     // Search under node_modules for non-relative imports.
     "moduleResolution": "node",
@@ -15,13 +15,11 @@
     // Import non-ES modules as default imports.
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "typeRoots": ["node_modules/@types", "src/@types"],
+    "types": ["vitest/globals", "@types/jquery"],
     "noImplicitAny": false,
     "jsx": "preserve",
     "baseUrl": ".",
-    "paths": {
-      "*": ["src/*"]
-    }
+    "skipLibCheck": true
   },
   "include": ["src"]
 }

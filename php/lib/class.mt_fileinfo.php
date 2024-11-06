@@ -34,11 +34,9 @@ class FileInfo extends BaseObject
         $col_name = "fileinfo_category_id";
         $category = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
-            $category_id = $this->$col_name;
-
             require_once('class.mt_category.php');
             $category = new Category;
-            $category->Load("category_id = $category_id");
+            $category->LoadByIntId($this->$col_name);
         }
 
         return $category;
@@ -48,11 +46,9 @@ class FileInfo extends BaseObject
         $col_name = $this->_prefix . "template_id";
         $template = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
-            $template_id = $this->$col_name;
-
             require_once('class.mt_template.php');
             $template = new Template;
-            $template->Load("template_id = $template_id");
+            $template->LoadByIntId($this->$col_name);
         }
 
         return $template;
@@ -68,7 +64,7 @@ class FileInfo extends BaseObject
             if (empty($templatemap)) {
                 require_once('class.mt_templatemap.php');
                 $templatemap = new TemplateMap;
-                $templatemap->Load("templatemap_id = $templatemap_id");
+                $templatemap->LoadByIntId($templatemap_id);
                 $this->cache($this->_prefix . ":" . $this->id . ":templatemap:" . $templatemap->id, $templatemap);
             }
         }

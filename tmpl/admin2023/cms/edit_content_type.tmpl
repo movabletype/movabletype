@@ -44,11 +44,27 @@
 
 <mt:setvarblock name="html_head" append="1">
 <mt:stylesheet path="css/content-type.css">
+<mt:unless name="config.useriot">
+  <mt:ignore><!-- Moved from content-fields.tag, because this style tag did not work in ContentFields.svelte --></mt:ignore>
+  <style>
+    div.mt-draggable__area > div.placeholder {
+      height: 26px;
+      margin: 4px;
+      margin-left: 10px;
+      border-width: 2px;
+      border-style: dashed;
+      border-radius: 4px;
+      border-color: #aaa;
+    }
+  </style>
+</mt:unless>
 </mt:setvarblock>
 
 <mt:setvarblock name="js_include" append="1">
 <mt:script type="text/javascript" path="js/cms.js">
 
+<mt:ignore><!-- Do not indent the following lines to avoid Riot.js error. --></mt:ignore>
+<mt:if name="config.useriot">
 <mt:if name="options_htmls">
 <script type="riot/tag">
 <mt:loop name="options_htmls"><mt:var name="html">
@@ -56,16 +72,35 @@
 </script>
 </mt:if>
 
-<mt:if name="debug_riot">
-<mt:script type="riot/tag" path="js/ss/tag/ss.tag">
-<mt:script type="riot/tag" path="js/admin2023/contenttype/tag/content-fields.tag">
-<mt:script type="riot/tag" path="js/admin2023/contenttype/tag/content-field.tag">
-<mt:script type="text/javascript" path="riot/riot-compiler.js">
-<mt:else>
-<mt:script type="text/javascript" path="riot/riot-compiler.min.js">
-<mt:script type="text/javascript" path="js/ss/ss.js">
-<mt:script type="text/javascript" path="js/admin2023/contenttype/contenttype.js">
+  <mt:if name="debug_riot">
+    <mt:script type="riot/tag" path="js/ss/tag/ss.tag">
+    <mt:script type="riot/tag" path="js/admin2023/contenttype/tag/content-fields.tag">
+    <mt:script type="riot/tag" path="js/admin2023/contenttype/tag/content-field.tag">
+    <mt:script type="text/javascript" path="riot/riot-compiler.js">
+  <mt:else>
+    <mt:script type="text/javascript" path="riot/riot-compiler.min.js">
+    <mt:script type="text/javascript" path="js/ss/ss.js">
+    <mt:script type="text/javascript" path="js/admin2023/contenttype/contenttype.js">
+  </mt:if>
 </mt:if>
+
+<mt:unless name="config.useriot">
+  <script
+    id="script-contenttype"
+    src="<mt:var name="static_uri">js/build/contenttype.js?v=<mt:var name="mt_version_id" escape="url">"
+    data-config-number-field-max-value="<mt:var name="config.numberfieldmaxvalue" escape="html">"
+    data-config-number-field-min-value="<mt:var name="config.numberfieldminvalue" escape="html">"
+    data-config-number-field-decimal-places="<mt:var name="config.numberfielddecimalplaces" escape="html">"
+    data-options-html-params="<mt:var name="options_html_params_json" escape="html">"
+  >
+  </script>
+
+  <mt:if name="options_scripts">
+    <mt:loop name="options_scripts">
+      <mt:var name="script">
+    </mt:loop>
+  </mt:if>
+</mt:unless>
 
 <script>
   var content_field_types = JSON.parse('<mt:var name="content_field_types_json" escape="js">');
@@ -80,6 +115,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
+document.addEventListener('DOMContentLoaded', () => {
   jQuery('input[type="text"]').on('keyup', function() {
     setDirty(true);
   });
@@ -208,7 +244,7 @@
     observer.trigger('mtDragEnd');
   });
 
-  riot.mount('content-fields', {
+  const opts = {
     blog_id: "<mt:var name="blog_id" escape="js">",
     magic_token: "<mt:var name="magic_token" escape="js">",
     return_args: "<mt:var name="return_args" escape="js">",
@@ -222,7 +258,14 @@
     invalid_types: invalid_types,
     observer: observer,
     labelField: "<mt:var name="label_field" escape="js">"
-  });
+  };
+
+  <mt:if name="config.useriot">
+    riot.mount('content-fields', opts);
+  <mt:else>
+    ContentTypeEditor.mount('content-fields', opts);
+  </mt:if>
+});
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
