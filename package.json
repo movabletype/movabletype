@@ -116,6 +116,6 @@
     "tinymce5-i18n": "npm:tinymce-i18n@^23.6.19",
     "tinymce6": "npm:tinymce@^6.8.4",
     "tinymce6-i18n": "npm:tinymce-i18n@23.6.19",
-    "tslib": "^2.6.3"
+    "tslib": "^2.8.1"
   }
 }
